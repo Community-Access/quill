@@ -14,6 +14,7 @@ from collections.abc import Callable
 import wx
 
 from quill.core.demo_camera import Framing, FramingAnnouncer
+from quill.stability.wx_dispatch import guard_timer_callback
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
 
@@ -72,7 +73,7 @@ class CameraCheckDialog(wx.Dialog):
         self.SetSizerAndFit(layout)
         self.Bind(wx.EVT_WINDOW_DESTROY, self._on_destroy)
         self._timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self._poll, self._timer)
+        self.Bind(wx.EVT_TIMER, guard_timer_callback(self._poll, name="Camera check"), self._timer)
         self._start()
         self.advice.SetFocus()
 
@@ -90,6 +91,9 @@ class CameraCheckDialog(wx.Dialog):
             lambda result: wx.CallAfter(self._framing, result),
             mirrored=self.mirror.GetValue(),
         )
+        # VIDEO-003: "No face in view" waits until the camera has sent pictures
+        # for a moment, so its own start-up is never spoken as a problem.
+        self._announcer = FramingAnnouncer(grace=check.grace)
         try:
             check.start()
         except OSError as error:
@@ -105,7 +109,6 @@ class CameraCheckDialog(wx.Dialog):
             check.stop()  # type: ignore[attr-defined]
 
     def _mirror_changed(self, _event: wx.Event) -> None:
-        self._announcer = FramingAnnouncer()
         self._start()
 
     def _poll(self, _event: wx.TimerEvent) -> None:

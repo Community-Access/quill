@@ -14,6 +14,7 @@ import wx
 from quill.core.demo_recording import SoundSource
 from quill.core.demo_recording_session import saved_level
 from quill.core.studio_capture import CaptureTarget
+from quill.ui.sync_guard import SyncGuard
 
 READER_NAMES = {"jfw.exe": "JAWS", "nvda.exe": "NVDA", "narrator.exe": "Narrator"}
 _IN, _OUT = "In the recording", "Left out"
@@ -25,6 +26,14 @@ def recordable(targets: list[CaptureTarget]) -> list[CaptureTarget]:
 
 
 class DemoSourcesMixin:
+    @property
+    def _showing_level(self) -> SyncGuard:
+        """UX-014: held while the level box is set to show the selected source."""
+        guard = getattr(self, "_level_guard", None)
+        if guard is None:
+            guard = self._level_guard = SyncGuard()
+        return guard
+
     def _saved_source(self, source_id: str) -> dict:
         for row in self.preferences.get("sources", []) or []:
             if isinstance(row, dict) and row.get("source_id") == source_id:
@@ -115,7 +124,8 @@ class DemoSourcesMixin:
             select = min(max(0, select), len(self.sources) - 1)
             self.source_list.Select(select)
             self.source_list.Focus(select)
-            self.level.SetValue(self.sources[select].level_db)
+            with self._showing_level:
+                self.level.SetValue(self.sources[select].level_db)
         self._sync_remove()
         self._stale(None)
 
@@ -125,7 +135,8 @@ class DemoSourcesMixin:
     def _source_selected(self, _event: wx.ListEvent) -> None:
         row = self._selected_source()
         if 0 <= row < len(self.sources):
-            self.level.SetValue(self.sources[row].level_db)
+            with self._showing_level:
+                self.level.SetValue(self.sources[row].level_db)
         self._sync_remove()
 
     def _sync_remove(self) -> None:
@@ -162,7 +173,7 @@ class DemoSourcesMixin:
 
     def _level_changed(self, _event: wx.Event) -> None:
         row = self._selected_source()
-        if 0 <= row < len(self.sources):
+        if 0 <= row < len(self.sources) and not self._showing_level:
             value = round(self.level.GetValue())
             self.sources[row] = replace(self.sources[row], level_db=float(value))
             self.source_list.SetItem(row, 2, f"{value:+.0f} dB")

@@ -478,6 +478,49 @@ video demonstration with optional sound. None is represented as already
 delivered by this milestone.</li>
 </ul>
 <h3
+id="lessons-from-tg-drop-deck-with-thanks-to-tony-gebhard-2026-10-31">Lessons
+from TG Drop Deck, with thanks to Tony Gebhard (2026-10-31)</h3>
+<p>Tony Gebhard’s <a href="https://github.com/tonygeb23/tg-drop-deck">TG
+Drop Deck</a>, an accessible, open-source (MIT) live audio playout app,
+writes down the interface bugs it found the hard way. Studio checked
+itself against those notes and fixed these, with thanks to Tony. No TG
+Drop Deck code was copied; these are its lessons, written again for
+Studio.</p>
+<ul>
+<li><strong>Start and stop are heard whole.</strong> A sentence raised
+from a menu or the tray icon’s menu now waits until the menu has closed
+and the screen reader has said where focus went, so it is no longer cut
+off. The status bar shows it at once. Sentences put the state first,
+such as “Recording started” and “Recording stopped”, and none reads out
+a file path: when a broadcast ends you hear “Broadcast ended. A copy was
+saved.”, and the saved copy’s path is in the status bar (UX-013).</li>
+<li><strong>Moving through a list changes nothing.</strong> The Studio
+Mixer, the broadcast window’s sound list and Record a demonstration’s
+sound sources show the selected row’s volume, sound card, level and mute
+in their controls. Those controls are now written under a guard, so
+showing a row can never run the handler for a change you make, and
+arrowing through a list can never mute, move or re-level what it passes.
+Showing a row in the broadcast window no longer makes a passed check
+stale either (UX-014).</li>
+<li><strong>A failing timer is no longer silent.</strong> Every timer in
+Studio (the status windows’ once-a-second refresh, the camera check, the
+end-of-chapter sleep timer, the voice preview cue and the spoken note)
+now logs a failure, and the main window shows it in the status bar,
+instead of stopping without a word. A timer that fails every time it
+runs is reported once.</li>
+<li><strong>Every preference has a test that watches it work.</strong>
+Each of Studio’s preferences is now changed by a test that observes the
+behaviour it controls, and a new preference without one fails the build.
+All seven were found to be read (UX-015).</li>
+<li><strong>A camera that is starting is not a fault.</strong> A webcam
+takes about half a second to send its first picture, and its first
+pictures are often dark. “Your face left the camera view”, and “No face
+in view” in Check camera framing, now wait until the camera has been
+sending pictures for a second and a half, counted from the frames
+actually read, so the start of every recording no longer gives a false
+alarm (VIDEO-003).</li>
+</ul>
+<h3
 id="lessons-from-quick-describe-with-thanks-to-kelly-ford-2026-10-30">Lessons
 from Quick Describe, with thanks to Kelly Ford (2026-10-30)</h3>
 <p>Kelly Ford’s <a

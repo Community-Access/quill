@@ -6,6 +6,7 @@ import wx
 
 from quill.core.screenshot_note import ScreenshotNoteSession
 from quill.stability.task_manager import UiLifetimeToken
+from quill.stability.wx_dispatch import guard_timer_callback
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
 
@@ -71,7 +72,11 @@ class ScreenshotNoteDialog(wx.Dialog):
         )
         self.Bind(wx.EVT_BUTTON, self._accept, id=wx.ID_OK)
         self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self._finish, self.timer)
+        self.Bind(
+            wx.EVT_TIMER,
+            guard_timer_callback(self._finish, name="Ending the note", report=self.status.SetLabel),
+            self.timer,
+        )
         self.SetSizer(layout)
         start.SetFocus()
         # a11y: needs manual verification — microphone feedback, focus and review with AT.

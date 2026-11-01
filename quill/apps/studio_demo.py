@@ -33,18 +33,18 @@ from quill.core.demo_recording import (
     default_folder,
     spoken_duration,
 )
-from quill.core.demo_recording_session import (
-    preferences_from_plan,
-)
+from quill.core.demo_recording_session import preferences_from_plan
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 from quill.stability.task_manager import UiLifetimeToken
+from quill.ui.post_menu_speech import SettledSpeechMixin
 
 _PREFS_FILE = "studio-demo-recording.json"
 _SUPPRESSED = "Recording a demonstration"
 
 
 class StudioDemoMixin(
+    SettledSpeechMixin,
     StudioDemoSetupMixin,
     StudioDemoFinishMixin,
     StudioPictureVideoMixin,
@@ -91,6 +91,7 @@ class StudioDemoMixin(
         )
 
     def _append_demo_menu(self, capture: wx.Menu) -> list:
+        self._post_menu_speech_for().watch(self.frame)
         capture.AppendSeparator()
         bindings = []
         for command_id, label, handler in self._demo_command_specs():
@@ -107,6 +108,7 @@ class StudioDemoMixin(
 
     def _append_demo_tray(self, menu: wx.Menu) -> None:
         """Recording items act without restoring Studio, so it stays out of the video."""
+        self._post_menu_speech_for().watch(menu)  # UX-013: speak after the reader's focus line
         recorder = getattr(self, "_demo", None)
         if recorder is None:
             entries = [
@@ -195,10 +197,10 @@ class StudioDemoMixin(
         return recorder is not None and recorder.plan.source("screen_reader") is not None
 
     def _demo_say(self, sentence: str, *, failure: bool = False) -> None:
-        """REC-016: failures always speak; other lines only when the reader is not recorded."""
+        """REC-016: failures always speak; others only when the reader is not recorded."""
         self._set_status_quiet(sentence)
         if failure or not self._demo_reader_speech_recorded():
-            self._announce(sentence)
+            self._announce_settled(sentence)
         else:
             from quill.ui import sound_manager
 
@@ -399,7 +401,7 @@ class StudioDemoMixin(
             self.frame.SetTitle(f"Recording - {self._demo_title}")
             self._update_tray_tooltip(f"Recording: {plan.target_label}")
             self._open_demo_status()
-            self._demo_say("Recording.")
+            self._demo_say("Recording started.")
 
         def failed(_task, error):
             self._demo_busy = ""

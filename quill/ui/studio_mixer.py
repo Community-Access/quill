@@ -12,6 +12,12 @@ Lists have a state column, not check boxes (QUILL's list convention). The
 focused row's cells change in place, which the screen reader reads itself, so
 the window speaks only what it alone knows: a failure, or a change Windows
 refused (GATE-13).
+
+The volume, sound card, recording level and input mute controls show the
+selected row, so the window writes them every time the selection moves. It
+writes them under ``self._showing`` (UX-014): a write the app makes must never
+run the handler for a change the user makes, or arrowing through the list
+would set every row it passed to the value on show.
 """
 
 from __future__ import annotations
@@ -23,6 +29,7 @@ import wx
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip, dip_size
+from quill.ui.sync_guard import SyncGuard
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -36,6 +43,7 @@ class StudioMixerDialog(wx.Dialog):
             parent, title="Studio Mixer", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
         self._announce = announce
+        self._showing = SyncGuard()
         self.sessions: list = []
         self.outputs: list = []
         self.inputs: list = []
@@ -279,13 +287,14 @@ class StudioMixerDialog(wx.Dialog):
 
     def _show_program(self, row: int) -> None:
         session = self.sessions[row]
-        self.volume.SetValue(round(session.volume * 100))
         device_id = self._cards.get(session.process_id)
         index = 0
         if device_id:
             index = next((i + 1 for i, d in enumerate(self.outputs) if d.device_id == device_id), 0)
-        self.card.SetSelection(index)
-        self.card.Enable(device_id is not None)
+        with self._showing:
+            self.volume.SetValue(round(session.volume * 100))
+            self.card.SetSelection(index)
+            self.card.Enable(device_id is not None)
 
     def _program_selected(self, _event: wx.ListEvent) -> None:
         row = self._row()
@@ -328,7 +337,7 @@ class StudioMixerDialog(wx.Dialog):
         from quill.platform.windows.audio_sessions import AudioSessionError, set_process_volume
 
         row = self._row()
-        if row < 0:
+        if row < 0 or self._showing:
             return
         level = self.volume.GetValue() / 100
         try:
@@ -343,7 +352,7 @@ class StudioMixerDialog(wx.Dialog):
         from quill.platform.windows.audio_routing import AudioRoutingError, set_app_output
 
         row = self._row()
-        if row < 0:
+        if row < 0 or self._showing:
             return
         index = self.card.GetSelection()
         device_id = self.outputs[index - 1].device_id if index > 0 else ""
@@ -391,14 +400,15 @@ class StudioMixerDialog(wx.Dialog):
             level, muted = input_level(self.inputs[row].device_id)
         except AudioRoutingError:
             return
-        self.input_level.SetValue(round(level * 100))
-        self.input_mute.SetValue(muted)
+        with self._showing:
+            self.input_level.SetValue(round(level * 100))
+            self.input_mute.SetValue(muted)
 
     def _input_level_changed(self, _event: wx.Event) -> None:
         from quill.platform.windows.audio_routing import AudioRoutingError, set_input_level
 
         row = self._input_row()
-        if row < 0:
+        if row < 0 or self._showing:
             return
         try:
             set_input_level(self.inputs[row].device_id, self.input_level.GetValue() / 100)
@@ -411,7 +421,7 @@ class StudioMixerDialog(wx.Dialog):
         from quill.platform.windows.audio_routing import AudioRoutingError, set_input_mute
 
         row = self._input_row()
-        if row < 0:
+        if row < 0 or self._showing:
             return
         try:
             set_input_mute(self.inputs[row].device_id, self.input_mute.GetValue())

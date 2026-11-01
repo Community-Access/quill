@@ -26,7 +26,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from quill.core.demo_camera import Framing, FramingAnnouncer
+from quill.core.demo_camera import FirstFrameGrace, Framing, FramingAnnouncer
 from quill.core.demo_recording import (
     LOW_SPACE_STOP_BYTES,
     DemoPlan,
@@ -245,6 +245,11 @@ class DemoRecorder:
             if alerts and self._faces is None:
                 self._faces = FaceWatcher(self._framing, mirrored=self.plan.camera.mirrored)
                 self._faces.start()
+            if self._faces is not None:
+                # VIDEO-003: every launch of the camera starts its own grace,
+                # counted from the frames this launch actually delivers.
+                grace = FirstFrameGrace()
+                self._faces.grace = self._face_announcer.grace = grace
             self._camera = FFmpegProcess(
                 camera_capture_command(
                     self.ffmpeg,

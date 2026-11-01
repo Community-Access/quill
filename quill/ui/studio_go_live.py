@@ -26,6 +26,7 @@ from quill.core.streaming import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.sync_guard import SyncGuard
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -52,6 +53,7 @@ class GoLiveDialog(wx.Dialog):
         self._check_cb = check
         self._test_cb = test
         self._confirm = confirm
+        self._showing = SyncGuard()
         self.sources = list(settings.sources)
         self.checked: tuple[StreamSettings, str] | None = None
         panel = ScrolledPanel(self)
@@ -279,7 +281,8 @@ class GoLiveDialog(wx.Dialog):
     def _show_level(self) -> None:
         row = self._row()
         if row >= 0:
-            self.level.SetValue(round(self.sources[row].level_db))
+            with self._showing:  # UX-014: showing the row is not changing it
+                self.level.SetValue(round(self.sources[row].level_db))
 
     def _list_key(self, event: wx.KeyEvent) -> None:
         if event.GetKeyCode() == wx.WXK_SPACE and not event.HasAnyModifiers():
@@ -307,6 +310,9 @@ class GoLiveDialog(wx.Dialog):
         self._stale(None)
 
     def _level_changed(self, event: wx.Event) -> None:
+        if self._showing:
+            event.Skip()
+            return
         row = self._row()
         if row >= 0:
             self.sources[row] = replace(self.sources[row], level_db=float(self.level.GetValue()))
@@ -322,6 +328,10 @@ class GoLiveDialog(wx.Dialog):
         self._stale(event)
 
     def _stale(self, event: wx.Event | None) -> None:
+        if self._showing:  # the app showing a row has changed nothing to re-check
+            if event is not None:
+                event.Skip()
+            return
         self.checked = None
         if getattr(self, "go", None) is not None:
             self.go.Enable(False)
