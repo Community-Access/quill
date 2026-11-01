@@ -2608,7 +2608,7 @@ Control coverage: 252 audited sites (252 helped).
 - `self.cost`: What the chosen model might cost for a typical request, and where the provider's real prices are. An estimate, not a price.
 - `self.status`: What the last test said, or whether a key is saved.
 - `test`: Checks the key with the chosen provider, lists every model it can use, then sends one tiny request to the chosen model and says whether it answered. The request costs a fraction of a cent on your account; with Ollama on this computer it checks Ollama is running and costs nothing.
-- `self.remove`: Forgets the saved key for the chosen provider now, and puts AI help back on QUILL's free service with its free allowance.
+- `self.remove`: Forgets the saved key for the chosen provider now. If that key was the AI in use, no AI is in use until you choose one in Choose Your AI.
 #### AiPadFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `self._actions`: Choose what the AI should do with the text above. Each choice has its own description -- press F1 on one to hear it.

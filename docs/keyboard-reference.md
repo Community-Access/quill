@@ -326,7 +326,7 @@ Editor commands with default bindings: 518.
 | Ctrl+3 | Do a Document Task... | `tools.hosted_ai_task` |
 | Ctrl+4 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+6 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
-| Ctrl+7 | Free AI Prompt Library... | `tools.hosted_ai_prompt_library` |
+| Ctrl+7 | Prompt Library... | `tools.hosted_ai_prompt_library` |
 | Ctrl+8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+9 | Web Searches Left | `tools.hosted_ai_web_searches` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |

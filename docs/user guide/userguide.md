@@ -11366,7 +11366,7 @@ the **AI** menu (the `&AI` menu, so `Alt` then `A` opens it).
 | `Ctrl+Alt+G` | Free AI Assistant... | Summarise, rewrite, proofread, shorten or explain the passage you are in |
 | `Ctrl+Alt+Z` | Ask About This Document... | Ask a question about what you are writing |
 | `Ctrl+6` | Ask AI a Question... | Ask: a conversation about this document, with the AI in use |
-| `Ctrl+7` | Free AI Prompt Library... | Run one of your saved prompts on the selection, on the free AI |
+| `Ctrl+7` | Prompt Library... | Run one of your saved prompts on the selection, on the AI in use |
 | `Ctrl+9` | Web Searches Left | How many of this month's web searches are left |
 | `Ctrl+Alt+Shift+F2` | AI Usage... | One list: what each AI you have set up has used |
 | `Ctrl+8` | Which AI Am I Using | Says which AI is in use; pressed twice, opens Choose Your AI |
@@ -11488,9 +11488,9 @@ headings, read fresh every time, so you can move around the document between
 questions. It never sends the whole file. **Ask Quill** (`Alt+Q`) is still
 there for the advanced companion; it has not changed.
 
-#### Your prompts on the free AI (Ctrl+7)
+#### Your prompts on the AI in use (Ctrl+7)
 
-`Ctrl+7` (**AI > Free AI Prompt Library...**) opens the **Prompt Library**,
+`Ctrl+7` (**AI > Prompt Library...**) opens the **Prompt Library**,
 with the same prompts as the Prompts tab of **AI > AI Library...**: QUILL's
 built-in prompts, the ones you wrote, and
 the ones your Quillins add. Choose a prompt and press **Run with AI**. The

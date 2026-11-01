@@ -265,7 +265,7 @@ class HostedAiCommandsMixin(HostedAiMixin):
     #: rows show, and a duplicate is a key Windows may refuse to press (GATE-14).
     _ANSWER_ROWS: tuple[tuple[str, str, str], ...] = (
         ("tools.hosted_ai_chat_key", "Ask AI a Question...", "cmd_ai_chat_key"),
-        ("tools.hosted_ai_prompt_library", "Free AI Prompt Library...", "cmd_ai_prompt_library"),
+        ("tools.hosted_ai_prompt_library", "Prompt Library...", "cmd_ai_prompt_library"),
         ("tools.hosted_ai_web_searches", "Web Searches Left", "cmd_ai_web_searches"),
     )
 
