@@ -15,6 +15,36 @@ in rich text, and arrows that read a table cell by cell), Help > What's New,
 and a full menu bar when every document is closed. Where an entry below says
 "1.2.0" or names a build, it means that testing build.
 
+### Choose Your AI: your plan, GitHub Copilot, Codex or your own key (2026-11-01)
+
+- **Choose Your AI** (**Ctrl+4**, Tools > AI) is one window for where your AI
+  comes from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex,
+  or your own key. Each row says "in use", "signed in" or "not set up", one
+  line says what it can do, who gets your text and what it costs, and one
+  button follows the row: **Use This**, **Sign In...** or **Sign Out**. It
+  speaks only what happened, such as "Now using My ChatGPT plan." Use My Own
+  AI Key (Alt+F2), Use My ChatGPT Subscription (Alt+F5) and Connect or Sign
+  Out (Ctrl+Alt+Shift+F10) keep their keys and open this window on their row.
+- **GitHub Copilot** signs in with a short code from GitHub, spaced so your
+  screen reader reads it one character at a time and already on the
+  clipboard. Copilot Free works too. The Copilot engine ships inside QUILL's
+  shared runtime, so there is nothing else to install.
+- **Codex** runs on your ChatGPT plan with the same sign-in, so once you are
+  signed in it is one key away.
+- **Which AI Am I Using** (**Ctrl+8**) says in one line which AI is in use, the
+  model and one thing about usage; pressed twice quickly it opens Choose Your
+  AI. The status bar's **AI** cell says the same thing shorter.
+- **Usage** (**Ctrl+Alt+Shift+F9**) is one list, all text, with a sentence for
+  each AI you have set up and whose count it is.
+- **Do a Document Task** (**Ctrl+3**) hands a job with several steps to GitHub
+  Copilot or Codex: "Fix the heading levels, then build a table of contents."
+  Before any step that changes something, **Allow This Step?** asks, and every
+  edit goes through **Review AI Changes**, each one undone with Ctrl+Z.
+- **Commands say what they need.** When the AI in use cannot do something, the
+  command keeps its place and key, its name says what it needs, such as "(needs
+  Copilot or Codex)", and pressing it offers to switch rather than failing.
+- QUILL has all of this on the same keys, from the same shared code.
+
 ### Your own key, and your prompts, shared with QUILL (2026-11-01)
 
 - **More providers in Use My Own AI Key** (Alt+F2): Anthropic Claude,
