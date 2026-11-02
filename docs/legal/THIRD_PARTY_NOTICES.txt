@@ -1393,10 +1393,10 @@ Speech engines, voices and recognition models.
 DECtalk
 -------
 
-What it is: The classic DECtalk voices, supported only when installed separately by the user. QUILL does not distribute the runtime or DECtalk voice previews.
+What it is: The classic DECtalk voices, supported only when the user installs DECtalk separately; QUILL's own code drives that copy. QUILL does not distribute the DECtalk runtime or DECtalk voice previews, and the DECtalk binaries were removed from the QUILL repository on 2026-11-01.
 Included in: QUILL for All, QUILL Studio.
-Version: 2023-10-30 build (dectalk/dectalk on GitHub)
-Licence: Not confirmed
+Version: Not distributed (user-installed copy only)
+Licence: Proprietary (Fonix Corporation); not distributed
 Copyright: Originally Digital Equipment Corporation; later Fonix Corporation and others
 Upstream: https://github.com/dectalk/dectalk
 How it reaches you: Not distributed by QUILL; usable only when installed separately.

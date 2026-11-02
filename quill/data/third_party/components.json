@@ -2258,14 +2258,14 @@
       "id": "dectalk",
       "name": "DECtalk",
       "group": "speech",
-      "version": "2023-10-30 build (dectalk/dectalk on GitHub)",
+      "version": "Not distributed (user-installed copy only)",
       "licenses": [
         "Unknown"
       ],
-      "license_label": "Not confirmed",
+      "license_label": "Proprietary (Fonix Corporation); not distributed",
       "copyright": "Originally Digital Equipment Corporation; later Fonix Corporation and others",
       "homepage": "https://github.com/dectalk/dectalk",
-      "what": "The classic DECtalk voices, supported only when installed separately by the user. QUILL does not distribute the runtime or DECtalk voice previews.",
+      "what": "The classic DECtalk voices, supported only when the user installs DECtalk separately; QUILL's own code drives that copy. QUILL does not distribute the DECtalk runtime or DECtalk voice previews, and the DECtalk binaries were removed from the QUILL repository on 2026-11-01.",
       "products": [
         "quill",
         "studio"
