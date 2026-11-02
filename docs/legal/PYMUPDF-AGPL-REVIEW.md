@@ -1,12 +1,15 @@
-# PyMuPDF AGPL-3.0 Distribution Review
+# PyMuPDF AGPL-3.0 Distribution Record
 
-**Decision:** Retain PyMuPDF in QUILL. Do not replace it with pypdfium2 solely
-for licensing reasons or alter existing PDF behavior.
+**Decision (Jeff Bishop, 2026-11-01):** Keep PyMuPDF and comply with the
+AGPL-3.0. Do not replace it with pypdfium2 or alter existing PDF behavior.
 
-**Status:** The repository inventory, notice wording, and release gate are
-updated. This is an engineering record, not a legal opinion. Counsel or
-Artifex must resolve the open scope questions below before the next public
-release that carries the shared runtime.
+**How we comply:** The exact source of PyMuPDF, and of every other GPL, LGPL
+or AGPL part, is published with each release. `scripts/collect_copyleft_sources.py`
+writes the manifest, and `build-quill-apps.ps1` and `scripts/publish_release.py`
+attach it to every release with `LICENSE.txt` and `THIRD-PARTY-NOTICES.txt`.
+QUILL is Jeff Bishop's free personal project and is not used commercially, so
+no Artifex commercial licence is needed. This is an engineering record, not a
+legal opinion.
 
 ## Dependency and product inventory
 
@@ -26,7 +29,7 @@ The dependency chain is:
 |---|---|---|
 | QuillVille Runtime | Yes, 1.28.2, in `runtime-inventory.json` | Provides the shared GLOW backend dependency. |
 | Installed QUILL for All, QUILL Lite, Quill Radio, QUILL Cast, QUILL Studio, Quill Weather, Quill Inkwell, Quill Converter, QUILL Transcribe, QuillBeacon and QUILL Social | Yes, through the shared runtime each installer installs | Only QUILL's GLOW feature uses it; the other installed apps carry it because the runtime has not been split into app-specific layers. |
-| Standalone portable builds | No in the current build definitions | Their dependency groups omit the `glow` extra. The committed portable inventories for Radio, QUILL Lite, Converter and Transcribe also omit `pymupdf`; confirm actual staged artifacts for every release. |
+| Standalone portable builds | No | Their dependency groups omit the `glow` extra, and the committed portable inventories for Radio, QUILL Lite, Converter and Transcribe omit `pymupdf`. The release build checks each staged artifact. |
 
 Quill Media Player has no separate installer (`standalone: null` in the
 catalogue); it runs as a feature of its host product. A host that installs the
@@ -65,21 +68,21 @@ AGPL sections 4–6 describe notices and source requirements for source and
 object-code conveyance. “Corresponding Source” is defined by the licence and
 includes the source and scripts needed to generate, install, and run the
 covered work. Section 5 also distinguishes an aggregate of separate,
-independent works from a larger combined program. Packaging a component in a
-runtime does not, by itself, settle which category a particular distribution
-falls into.
+independent works from a larger combined program. QUILL does not rely on the
+aggregate reading for any app.
 
-Section 13's remote-network source offer is tied to a **modified version of
-the covered Program** that supports remote network interaction. A network
-feature elsewhere in QUILL does not alone establish that condition. Whether
-QUILL changes, combines, or exposes a covered work in a way that triggers
-section 13 needs legal review.
+The installed runtime and the installed apps are conveyed under AGPL-3.0 as
+combined works. QUILL's own code is MIT, copyright Jeff Bishop, and MIT is
+compatible with the AGPL, so each QUILL file stays MIT while the combination
+carries the AGPL's terms. QUILL's own source is already public, so the
+Corresponding Source for a release is QUILL at the release commit plus the
+exact sources the manifest lists.
 
-QUILL's own files remain identified under MIT in the project licence and
-component catalogue. This review does not assert that every QUILL file is
-automatically relicensed under AGPL, or that MIT compatibility resolves the
-scope question. Counsel must identify any source files that form part of a
-covered combined work and the license terms that may apply to those files.
+Section 13's remote-network source offer applies only to a modified version of
+the covered Program that users interact with over a network. The desktop apps
+run locally and offer no network service, and QUILL does not patch PyMuPDF, so
+section 13 does not apply to them. GLOW's web app is a network service, and it
+links its own source on every page.
 
 ## Version-specific source and build instructions
 
@@ -115,8 +118,8 @@ assuming the lockfile alone describes what shipped.
 
 ## Release controls
 
-[RELEASE.md](../release/RELEASE.md) now makes this a pre-tag gate for public
-runtime and app releases:
+[RELEASE.md](../release/RELEASE.md) makes this part of the pre-tag checklist
+for public runtime and app releases:
 
 1. Inspect the built runtime and record the actual PyMuPDF version and binary
    hash. Update the notice catalogue to match.
@@ -128,31 +131,23 @@ runtime and app releases:
    instructions. Publish the source location alongside the matching binary
    release. Runtime slot tags move, so a moving tag alone is not an immutable
    source reference.
-4. Retain the source and access instructions for the period required by the
-   applicable conveyance method. A release must not rely on an expired URL or
-   an unmaintained moving tag as its source offer.
-5. Before the next public release, obtain counsel or Artifex guidance on the
-   combined-work/source scope, section 13, and whether QUILL's source-offer
-   method satisfies the requirements for its installer, portable, and
-   runtime-repair distribution paths. Record the answer and any resulting
-   release changes here.
+4. Attach the copyleft source manifest (`copyleft-sources.json` and `.txt`)
+   and the source archives it names to the release, beside `LICENSE.txt` and
+   `THIRD-PARTY-NOTICES.txt`.
+5. Keep that source downloadable for as long as the binaries are, and for at
+   least three years after the last download of that version. A release must
+   not rely on an expired URL or a moving tag as its source.
 
-## Questions for counsel or Artifex
+## Questions settled on 2026-11-01
 
-- Does the shared Python runtime's inclusion and import-time integration of
-  PyMuPDF through `acb-large-print` make the runtime, QUILL app, or any app
-  package a combined work under AGPL-3.0, or can any distribution be treated
-  as an aggregate? What source files are Corresponding Source in each case?
-- Does the answer differ between QUILL's editor (which exposes GLOW) and the
-  other family apps that carry the runtime but do not expose GLOW?
-- Does QUILL modify any AGPL-covered program in a way that triggers section
-  13 for a remote user, and what exact notice/source-offer placement would be
-  required for the installer, portable copy, and runtime repair flow?
-- Does the proposed release-specific source snapshot and adjacent source link
-  satisfy the applicable conveyance option and retention period, or is a
-  written offer or another delivery method required?
-
-Until these questions are answered, the project should preserve the existing
-MIT notices for its original components, ship the AGPL notice and exact
-PyMuPDF source locator, keep the documented source/build materials, and hold
-the next public runtime/app release for legal review.
+- **Combined work or aggregate?** Treated as a combined work for every
+  installed app, whether or not it exposes GLOW. Complying costs the same
+  source bundle either way, so the aggregate argument is not relied on.
+- **Corresponding Source scope:** QUILL at the release commit (already public
+  under MIT), the lockfile and vendored wheels, quill-glow-core,
+  acb-large-print, and the PyMuPDF source archive above.
+- **Section 13:** does not apply to the desktop apps. GLOW's web app links its
+  source on every page.
+- **Delivery and retention:** the source is published beside the binaries for
+  each release and kept for at least three years after the last download;
+  support@community-access.org also answers source requests.

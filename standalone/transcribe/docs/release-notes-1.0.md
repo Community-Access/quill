@@ -5,10 +5,10 @@ yet been published.
 
 ## A note on the shared runtime's licence
 
-Installed Transcribe uses the shared QuillVille Runtime, which currently
-includes PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Transcribe does not
-itself expose GLOW. Release-specific source and legal review remain open;
-portable packages must be checked separately.
+Installed Transcribe uses the shared QuillVille Runtime, which includes
+PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Transcribe does not itself expose
+GLOW. The exact source of PyMuPDF, and of every other GPL part, is published
+with each release, and the portable package leaves it out.
 
 QUILL Transcribe is new. It types what you say into the program you are using,
 with the same speech models and dictation you know from QUILL and QUILL Lite.

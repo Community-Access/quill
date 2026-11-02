@@ -70,8 +70,11 @@ def test_shipped_files_carry_no_maintainer_review_notes(catalogue) -> None:
     for key, meta in catalogue.products.items():
         if meta.get("standalone"):
             text = tpn.render_text(catalogue, key)
+            assert "Maintainer note" not in text, key
             assert "Needs review" not in text, key
-    assert "Needs review" in tpn.render_markdown(catalogue)
+    family = tpn.render_markdown(catalogue)
+    assert "Maintainer note" in family
+    assert "Needs review" not in family
 
 
 def test_pymupdf_notice_distinguishes_shared_runtime_from_portables(catalogue) -> None:
@@ -79,7 +82,8 @@ def test_pymupdf_notice_distinguishes_shared_runtime_from_portables(catalogue) -
     assert pymupdf.delivery == "shared-runtime"
     assert "QuillVille Runtime" in tpn._included_in(catalogue, pymupdf)
     assert "standalone portable" in tpn._DELIVERY[pymupdf.delivery]
-    assert "portable inventories" in pymupdf.review
+    assert "portable inventories" in pymupdf.obligations
+    assert not pymupdf.review
 
 
 def test_build_only_components_stay_out_of_the_product_files(catalogue) -> None:

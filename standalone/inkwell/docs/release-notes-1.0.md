@@ -4,10 +4,10 @@ Version 1.0.0 (build 2). This first public release is not yet published.
 
 ## A note on the shared runtime's licence
 
-Installed Inkwell uses the shared QuillVille Runtime, which currently includes
-PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Inkwell does not itself expose
-GLOW. Release-specific source and legal review remain open; portable packages
-must be checked separately.
+Installed Inkwell uses the shared QuillVille Runtime, which includes PyMuPDF
+1.28.2 under AGPL-3.0 through GLOW. Inkwell does not itself expose GLOW. The
+exact source of PyMuPDF, and of every other GPL part, is published with each
+release, and the portable package leaves it out.
 
 Quill Inkwell expands abbreviations in every Windows program. Type a short
 word, press space, and Inkwell types what you saved in its place: a phrase, an

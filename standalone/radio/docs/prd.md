@@ -15,10 +15,12 @@ published as a new release. The shared Windows Media dependency moves to PyWinRT
 and player event handlers released at shutdown.
 
 **Distribution licensing:** Installed Radio editions use the QuillVille
-Runtime, which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through
-GLOW, although Radio does not expose GLOW. Release-specific source and legal
-review are required before the next public release; inspect portable builds
-separately. See the PyMuPDF distribution review and Licences and Notices.
+Runtime, which includes PyMuPDF 1.28.2 under AGPL-3.0 through GLOW, although
+Radio does not expose GLOW. The exact source of PyMuPDF, and of every other
+GPL, LGPL or AGPL part, is published with each release
+(`scripts/collect_copyleft_sources.py` writes the manifest), and portable
+builds leave GLOW out. See the PyMuPDF licensing record and Licences and
+Notices.
 
 ## 1. Product statement
 

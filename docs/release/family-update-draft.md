@@ -57,11 +57,10 @@ Installed editions of QUILL, QUILL Lite, Radio, Cast, Studio, Weather, Inkwell,
 Converter, Transcribe, Beacon and Social use the shared QuillVille Runtime.
 The current runtime carries PyMuPDF 1.28.2 under AGPL-3.0. Only QUILL exposes
 the GLOW feature that brings it in; the other apps carry it in the runtime.
-Media Player uses its host's runtime. Standalone portable packages have
-separate contents and must be checked individually.
+Media Player uses its host's runtime. Standalone portable packages leave GLOW,
+and with it PyMuPDF, out.
 
-PyMuPDF's legal and Corresponding Source review remains a public-release gate.
-The remaining GPL-family, asset-licence, attribution and prior-distribution
-reviews are not complete. Update product-specific release notes, validate
-actual staged packages and obtain the necessary approvals before publishing
-this draft.
+The exact source of PyMuPDF, and of every other GPL, LGPL or AGPL part, is
+published with each release beside LICENSE.txt and THIRD-PARTY-NOTICES.txt.
+Before publishing this draft, update the product-specific release notes and
+check the actual staged packages.

@@ -2,6 +2,19 @@
 
 ## 1.0.0
 
+### Licensing settled (2026-11-02)
+
+- **Every shipped document now states the licensing position as decided.**
+  QUILL is Jeff Bishop's free personal project and is not used commercially;
+  its own code is MIT. PyMuPDF (AGPL-3.0), libmpv, mutagen and pillow-heif are
+  kept, and the exact source of every GPL, LGPL or AGPL part is published with
+  each release beside LICENSE.txt and THIRD-PARTY-NOTICES.txt. AGPL section 13
+  does not apply to the desktop apps. BASS is used under Un4seen's free
+  non-commercial licence, DECtalk is not distributed or linked, and all 39 Piper
+  voices stay. The family notices call their remaining entries maintainer notes
+  rather than items that need review, and the release checklist attaches the
+  copyleft source bundle instead of waiting on a legal review.
+
 ### Agent tasks across the family, and Tell Me When This Changes (2026-11-01)
 
 - **Propose Alt Text**, in QUILL's AI menu and QUILL Lite's Tools > AI, opens
@@ -388,9 +401,9 @@ Lite share the code, so both get both.
   Windows Media engine now resolves a selected endpoint from a fresh filtered
   query and removes its event handlers at termination. This fixes the
   `0xC0000005` process-exit crash after audio-device enumeration or switching.
-- Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive, generated
-  notices, Corresponding Source review and pre-release legal gate are
-  documented; PDF behavior is unchanged.
+- Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive and generated
+  notices are documented, and its source is published with each release; PDF
+  behavior is unchanged.
 - Verify and document which family apps check for updates automatically at
   launch in the published privacy statement.
 

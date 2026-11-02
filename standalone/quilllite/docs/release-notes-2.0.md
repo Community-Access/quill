@@ -303,10 +303,11 @@ The same table work as in QUILL, on the same keys.
   and the Windows SDK 10.0.28000.2705 projections. Reading a scanned page works
   as before; nothing new is added to OCR.
 - **Licensing of the shared runtime.** The installed QUILL Lite uses the
-  QuillVille Runtime, which currently includes PyMuPDF 1.28.2 under AGPL-3.0
-  through GLOW. QUILL Lite does not itself expose GLOW. The source and legal
-  review for this release is still open, and the portable package is checked
-  separately. The Licences and Notices button in Help > About has the details.
+  QuillVille Runtime, which includes PyMuPDF 1.28.2 under AGPL-3.0 through
+  GLOW. QUILL Lite does not itself expose GLOW. The exact source of PyMuPDF,
+  and of every other GPL part, is published with each release, and the
+  portable package leaves it out. The Licences and Notices button in Help >
+  About has the details.
 
 ## Word documents, PDFs and other files
 

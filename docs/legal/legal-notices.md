@@ -7,8 +7,9 @@ an accessibility-focused editor that helps people write, edit, convert,
 compare, and publish documents in a screen-reader-friendly environment, and it
 is the editor at the heart of the QuillVille family of apps.
 
-QUILL for All and every app in the family are free and never sold. Donations
-only cover the cost of the free AI service.
+QUILL for All and every app in the family are free and never sold. The family
+is Jeff Bishop's personal project and is not used commercially. Donations only
+cover the cost of the free AI service.
 
 ## Licence
 
@@ -52,31 +53,32 @@ The same notices reach people in three places:
   quill/tools/build_third_party_notices.py, and a test fails if any copy
   drifts from that catalogue or if a build ships a library it does not list.
 
-Some components are under the GNU GPL, LGPL or AGPL. The source code of the
-version we ship is available on request, as the Third-Party Notices explain;
+Some components are under the GNU GPL, LGPL or AGPL. The exact source of every
+one of them, for the version we ship, is published with each release, beside
+LICENSE.txt and THIRD-PARTY-NOTICES.txt, and is also available on request.
 QUILL's own source code is public at https://github.com/Community-Access/quill.
-QUILL retains PyMuPDF under AGPL-3.0. Its full licence text and version-specific
-source archive details appear in every applicable notice. The scope of
-Corresponding Source for QUILL's shared runtime and application packages is
-under legal review; see the [PyMuPDF licensing review](PYMUPDF-AGPL-REVIEW.md).
 
-### GPL-family components and release review
+### PyMuPDF and the other copyleft components
 
-The family also distributes GPL-family components, including libmpv, mutagen
-and some builds of pillow-heif. Their actual licences, copyright notices,
-versions and source locations are listed in Third-Party Notices. FFmpeg,
-eSpeak NG, Pandoc and Git can be distributed as separate programs, but running
-a program separately is not by itself a legal conclusion about every possible
-distribution or integration.
+The shared QuillVille Runtime includes PyMuPDF under the AGPL-3.0. QUILL keeps
+it and complies with that licence: the installed apps are distributed under
+the AGPL as combined works, each of QUILL's own files stays under MIT, and the
+exact PyMuPDF source is published with every release. AGPL section 13 does not
+apply to the desktop apps, because none of them runs a network service; GLOW's
+web app links its own source on every page. The
+[PyMuPDF licensing record](PYMUPDF-AGPL-REVIEW.md) has the details.
 
-The project will preserve each component's applicable notices and source
-information and review the exact binaries, build inputs, source and scripts for
-each release. GPL and AGPL obligations, the boundary between separate and
-combined works, and any source-offer requirements need review for the actual
-distribution. Do not describe the whole family as MIT-only, or declare that
-all original QUILL code is automatically relicensed, without resolving those
-questions. If a component cannot be distributed on acceptable terms, replace
-or omit it before release rather than assuming a source link alone suffices.
+The family also distributes libmpv, mutagen and pillow-heif, which are GPL, and
+keeps them on the same terms: their exact source is published with each
+release. FFmpeg, eSpeak NG, Pandoc and Git run as separate programs; where the
+family ships one, its source is published the same way.
+
+The BASS audio libraries inside sound_lib are used under Un4seen's free
+non-commercial licence, which fits because the family is never sold. DECtalk is
+not distributed or linked: QUILL only drives a copy you install yourself, and
+keeps nine short preview clips so you can hear it. All 39 Piper voices stay
+available, each under the terms its model card names; several of those allow
+only non-commercial use, which is the only way the family is used.
 
 ## Privacy and AI
 

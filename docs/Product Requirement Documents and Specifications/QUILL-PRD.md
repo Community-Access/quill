@@ -3331,7 +3331,7 @@ Plan scope (evaluation first, not automatic ship):
 
 Hard gates before general availability:
 
-- **Licensing and redistribution clarity**: legal review confirms what can be downloaded, redistributed, or user-supplied.
+- **Licensing and redistribution (settled 2026-11-02)**: QUILL does not distribute DECtalk or link it into any app. It drives only a copy the user installs, and keeps nine short preview clips.
 - **Accessibility parity**: DECtalk path must pass the same screen-reader announcement, keyboard-only, and status reporting requirements as other engines.
 - **Stability and performance**: startup, preview, and long-form read-aloud must meet baseline responsiveness and failure-recovery standards.
 - **Configuration parity**: preferred voice, per-voice settings, per-engine defaults, and removal behavior must match other engines.
