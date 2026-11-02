@@ -145,15 +145,15 @@ def test_a_failure_in_the_work_is_said_and_the_window_can_split_again(recordings
     assert not recordings._splitting
 
 
-def test_ctrl_alt_o_on_the_list_splits(recordings, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_alt_shift_t_on_the_list_splits(recordings, monkeypatch: pytest.MonkeyPatch) -> None:
     started: list[object] = []
     monkeypatch.setattr(recordings_split, "split_into_songs", started.append)
     _select_row(recordings, 0)
-    event = _key(ord("O"), ctrl=True, alt=True)
+    event = _key(ord("T"), alt=True, shift=True)
     recordings._on_key(event)
     assert started == [recordings]
     assert event.skipped == []
-    plain = _key(ord("O"))
+    plain = _key(ord("T"))
     recordings._on_key(plain)
     assert started == [recordings]
     assert plain.skipped == [True]

@@ -22,7 +22,7 @@ than by build. A date in brackets says when a change arrived.
   While recordings are marked it reads "Remove 3 Marked..." and can be pressed
   from any row, so the button and the Delete key always do the same thing.
 - **Split a recording you already have into songs** [2026-11-02]. Radio
-  Recordings has Split into Songs (Ctrl+Alt+O), on the Recordings menu and on
+  Recordings has Split into Songs (Alt+Shift+T), on the Recordings menu and on
   a new Shift+F10 menu for the list. Quill Radio now notes the song changes
   while it records even with automatic splitting off, and keeps them beside
   the recording; Split into Songs cuts the recording at them into a folder of

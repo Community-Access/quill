@@ -118,7 +118,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         self._list.SetName(
             "Recordings; the row's status column reads Recording, Recorded, "
             "Scheduled, or Completed. Enter plays a finished recording, Delete removes "
-            "it, Ctrl+Alt+O splits it into songs. Winamp keys: X play, C pause, V stop, "
+            "it, Alt+Shift+T splits it into songs. Winamp keys: X play, C pause, V stop, "
             "B next, Z previous, arrows seek, J jump to file"
         )
         self._build_columns()
@@ -210,7 +210,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         wx = self._wx
         menu_bar = wx.MenuBar()
         surface_menu = wx.Menu()
-        recordings_split.add_menu_row(self, surface_menu)  # Split into Songs, Ctrl+Alt+O
+        recordings_split.add_menu_row(self, surface_menu)  # Split into Songs, Alt+Shift+T
         close_id = wx.NewIdRef()
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)

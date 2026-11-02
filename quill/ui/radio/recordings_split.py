@@ -1,6 +1,6 @@
 """Split into Songs, and the Recordings list's context menu.
 
-**Split into Songs** (Ctrl+Alt+O, on the Recordings menu and the list's
+**Split into Songs** (Alt+Shift+T, on the Recordings menu and the list's
 context menu) cuts a finished recording into one file per song, at the song
 changes the recorder noted while it recorded
 (:mod:`quill.core.radio.recording_song_log`). The songs go into a folder beside
@@ -15,9 +15,14 @@ the end, with the count (GATE-BULK-COUNT), or the plain reason a recording was
 not split: most often that no song changes were recorded for it, because the
 station sends no song titles or it was recorded before Quill Radio kept them.
 
-Why Ctrl+Alt+O: the list's plain letters are its Winamp keys, and every
-Ctrl+Shift letter is taken somewhere in Quill Radio; Ctrl+Alt+O is free in
-every Radio window, including the main window this list can be shown in.
+Why Alt+Shift+T (T for tracks): the list's plain letters are its Winamp
+keys, and every Ctrl+Shift and Ctrl+Alt letter is already a command somewhere
+in Quill Radio -- Ctrl+Alt+O, the first choice, is both Browse Spotify and
+Local Media's Add a Folder. Alt+Shift+T is bound nowhere in Quill Radio, no
+menu in the main window this list can be shown in opens on T, and no control
+in this window has T as its access key, so the chord cannot press one by
+accident. (In QUILL it is New Rich Text Document, but there this window is
+modal and the editor's keys do not reach it.)
 
 Split from ``recordings_manager_dialog`` under GATE-11, which holds that
 module at its budget.
@@ -43,16 +48,16 @@ __all__ = [
 
 #: The menu row, with its key; the same words on the menu bar and the context
 #: menu, so a listener who learns it in one finds it in the other.
-MENU_LABEL = "Split into &Songs\tCtrl+Alt+O"
+MENU_LABEL = "Split into &Songs\tAlt+Shift+T"
 
 
 def is_split_key(wx: Any, event: Any) -> bool:
-    """Ctrl+Alt+O, and nothing else held."""
+    """Alt+Shift+T, and nothing else held."""
     return bool(
-        event.ControlDown()
-        and event.AltDown()
-        and not event.ShiftDown()
-        and event.GetKeyCode() == ord("O")
+        event.AltDown()
+        and event.ShiftDown()
+        and not event.ControlDown()
+        and event.GetKeyCode() == ord("T")
     )
 
 

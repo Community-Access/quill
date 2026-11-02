@@ -3711,7 +3711,7 @@ now, the finished ones, and the scheduled ones.
    plays), **Stop Recording** (on a row being recorded), **Stop All
    Recordings** (when two or more are running), **Open in Folder** (shows the
    file in File Explorer), **Remove...** and **Refresh**.
-5. Press **Ctrl+Alt+O** to split a finished recording into songs (see
+5. Press **Alt+Shift+T** to split a finished recording into songs (see
    "Splitting a recording you already have" later in this chapter).
 6. Press **Delete** to remove a finished recording. **No** is already chosen;
    press **Y** to delete. Your cursor lands on the next recording. If you
@@ -3736,7 +3736,7 @@ once" in Chapter 7):
 
 **Ctrl+Shift+Delete** clears every mark and says how many it cleared.
 
-Marks also choose what **Split into Songs** (Ctrl+Alt+O) works on: with
+Marks also choose what **Split into Songs** (Alt+Shift+T) works on: with
 recordings marked, every marked one is split, and you hear one sentence at the
 end, for example "Split 3 of 3 recordings into 31 songs." Splitting keeps the
 recordings, so it asks nothing first, and your marks stay so you can delete
@@ -3765,11 +3765,11 @@ scheduled, none coming up".
 
 The list keeps itself up to date every couple of seconds, without losing your
 place. **Shift+F10** (or the Applications key) on a finished recording offers
-**Play** (Enter), **Open in Folder**, **Split into Songs** (Ctrl+Alt+O) and
+**Play** (Enter), **Open in Folder**, **Split into Songs** (Alt+Shift+T) and
 **Delete...** (Delete), then **Mark for Deleting** and, while anything is
 marked, **Remove N Marked...** and **Clear Marks**. On a recording still being
 made it offers **Stop Recording**. Its menus are **Recordings** (Alt+R, with
-**Split into Songs**, Ctrl+Alt+O, and **Close**, Ctrl+W), **Station** and
+**Split into Songs**, Alt+Shift+T, and **Close**, Ctrl+W), **Station** and
 **Window**. To choose what each row says,
 see "What each row says" in Chapter 14.
 
@@ -3964,7 +3964,7 @@ To split a recording later:
 
 1. Press **Ctrl+Shift+R** to open Radio Recordings and arrow to the recording.
    To split several, press **.** on each one.
-2. Press **Ctrl+Alt+O**, or choose **Split into Songs** from the **Recordings**
+2. Press **Alt+Shift+T**, or choose **Split into Songs** from the **Recordings**
    menu or the Shift+F10 menu.
 3. Carry on with something else if you like. When it is done you hear one
    sentence, for example "Split KXYZ - 2026-10-17 20-00-00.mp3 into 12 songs,

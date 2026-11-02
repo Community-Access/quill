@@ -13,7 +13,7 @@ The cursor then lands on the nearest surviving row, never back at the top.
 A recording's song log (``<name>.songs.json``) goes with it, and comes back
 with it.
 
-Marks also choose what **Split into Songs** (Ctrl+Alt+O,
+Marks also choose what **Split into Songs** (Alt+Shift+T,
 :mod:`quill.ui.radio.recordings_split`) cuts: every marked recording, rather
 than only the selected one. Splitting keeps the recordings, so it asks nothing.
 
