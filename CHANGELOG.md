@@ -120,7 +120,9 @@
   Enter on it opens Choose Your AI.
 - **AI Usage** is one list, a sentence for each AI you have set up, with Manage
   Usage. It replaces the free AI's allowance window and the own key's usage
-  window. Everything is text.
+  window. Everything is text. Disconnecting this computer from the free AI is
+  now Delete (or Sign Out) on its row in Choose Your AI, and the support ID is
+  in Help > About and in the Connect window when you connect.
 - An AI command the AI in use cannot do keeps its key, says what it needs in
   its menu name, sends nothing, and offers to switch with Yes as the default.
 - Ask AI a Question (Ctrl+6) now opens the AI Conversation about the document

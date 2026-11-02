@@ -51,6 +51,13 @@ of QUILL Lite does.
 - **No dead ends.** When the AI you are using cannot do something, the command
   stays where it was, its name says what it needs, and pressing it offers to
   switch instead of failing quietly.
+- **Nothing switches by itself.** Sign out of the AI in use and no AI is in
+  use until you choose one; the next AI command says "No AI is in use. Choose
+  one." A missing key, an ended sign-in or a reached limit is said once, and
+  nothing is sent anywhere else. Until a build carries QUILL Lite's own GitHub
+  registration, the Copilot row says "not available yet".
+- **Plan Options...**, beside your ChatGPT plan's row, holds Allow web search
+  and Forget on This Computer. Every AI answer is text, never a chart.
 - **Shared with QUILL.** Use My Own AI Key (Alt+F2) now offers Anthropic
   Claude, OpenRouter, Ollama Cloud, a custom service and Ollama on this
   computer, and your saved prompts are the same list QUILL uses. A key or a
@@ -591,8 +598,8 @@ When an answer offers words, Tab to **Choices** and press Enter, or choose
 **Use This Word**. It goes into your document as one step, and one Ctrl+Z
 takes it back.
 
-The AI dictionary needs your ChatGPT subscription or your own AI key. It does
-not use QUILL's free AI service, because a dictionary gets asked many times a
+The AI dictionary works on any AI except the free one: your ChatGPT plan,
+GitHub Copilot, Codex or your own key. It does not use QUILL's free AI service, because a dictionary gets asked many times a
 day and would use up the free allowance quickly.
 
 ### Checking your word lists
@@ -605,11 +612,13 @@ If you would rather not have any of this, turn off **Dictionary and
 thesaurus** in **Tools > Customize Features** (**Ctrl+Alt+F10**). It is on to begin with, and off
 in the WordPad and Notepad profiles.
 
-## AI help with a Google Gemini key
+## AI help with your own key
 
 **Use My Own AI Key** (**Alt+F2**), which used to be called Use My Own OpenAI
-Key, now opens on a **Provider** list: OpenAI or Google Gemini. Choose one,
-paste that company's key, and everything follows your choice: where your text
+Key, now opens on a **Provider** list: OpenAI, Google Gemini, Anthropic
+Claude, OpenRouter, Ollama Cloud, a custom OpenAI-compatible service, or Ollama
+on this computer. Choose one, paste that company's key (Ollama on this
+computer needs none), and everything follows your choice: where your text
 goes, which models you can pick, and what they cost. QUILL Lite never guesses
 from the key or the model name.
 
@@ -619,9 +628,9 @@ dictionary and Tidy Dictated Text.
 
 If you use your ChatGPT plan in more than one Quill app, each app now keeps
 its own sign-in. Signing out of one leaves the others signed in, and **Use My
-ChatGPT Subscription** (**Alt+F5**) tells you when another app on this
-computer is already signed in, so signing in here is one Allow in your
-browser.
+ChatGPT Subscription** (**Alt+F5**) now opens Choose Your AI on your plan's
+row, ready to sign in. If your browser is already signed in to ChatGPT,
+signing in here is one Allow.
 
 ## Knowing what happened
 
@@ -1073,6 +1082,9 @@ reviewing AI-written plans. Thank you, Andre.
 | **Ctrl+6** | Ask AI a Question |
 | **Ctrl+7** | Prompt Library |
 | **Ctrl+9** | Web Searches Left |
+| **Ctrl+8** | Which AI Am I Using |
+| **Ctrl+4** | Choose Your AI |
+| **Ctrl+3** | Do a Document Task |
 | **F11** | Speak a Command |
 | **Shift+F4** | Review Dictation |
 
@@ -1089,7 +1101,9 @@ everything here in thirteen chapters:
 - Chapter 8, What you hear, for Activity and Repeat Last Result.
 - Chapter 9, Writing by voice, for holding Ctrl+F11, the live preview,
   talking to the AI and OpenAI dictation.
-- Chapter 10, AI help, for a Google Gemini key and your ChatGPT plan.
+- Chapter 10, AI help, for Choose Your AI, your own key, your ChatGPT plan,
+  GitHub Copilot, Codex and document tasks. QUILL Lite's AI guide covers the
+  same ground step by step.
 - Chapter 11, Making QUILL Lite yours, for Find a setting and for making
   QUILL Lite your text editor.
 - Chapter 12, Your files, updates and QUILL for All, for keeping QUILL Lite
