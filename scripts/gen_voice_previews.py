@@ -24,7 +24,10 @@ Usage
     python scripts/gen_voice_previews.py preview_text.txt \
         --espeak-exe "C:/Program Files/eSpeak NG/espeak-ng.exe"
 
-Engines: piper  kokoro  espeak  sapi5
+Engines: piper  kokoro  espeak
+
+Windows SAPI 5 voices are not sampled: their recordings are not ours to
+redistribute, and everyone who has those voices can preview them live.
 """
 
 from __future__ import annotations
@@ -38,27 +41,7 @@ from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _PREVIEW_DIR = _REPO_ROOT / "quill" / "data" / "voice-previews"
-_ALL_ENGINES = ("piper", "kokoro", "espeak", "sapi5")
-
-
-def _sapi5_short_name(voice_id: str) -> str:
-    """Mirror MainFrame._pyttsx3_voice_short_name so generated files resolve in the UX.
-
-    'HKEY_..\\TTS_MS_EN-US_DAVID_11.0' -> 'david'. Kept in sync with
-    quill/ui/main_frame.py::_pyttsx3_voice_short_name.
-    """
-    last = voice_id.replace("/", "\\").rsplit("\\", 1)[-1]
-    for part in last.upper().split("_"):
-        if not part or part in {"TTS", "MS"} or "-" in part:
-            continue
-        try:
-            float(part)
-            continue
-        except ValueError:
-            pass
-        if part.isalpha():
-            return part.lower()
-    return last.lower()
+_ALL_ENGINES = ("piper", "kokoro", "espeak")
 
 
 # ---------------------------------------------------------------------------
@@ -234,56 +217,6 @@ def _gen_kokoro(
     return generated, skipped, errored
 
 
-def _gen_sapi5(
-    text: str,
-    out_dir: Path,
-    *,
-    overwrite: bool,
-) -> tuple[int, int, int]:
-    """Synthesize the installed Windows SAPI 5 voices. Returns counts.
-
-    Files are named by the short voice name (e.g. ``david.mp3``) so the running
-    app resolves them for the matching system voice; voices not present on a
-    user's machine simply fall back to live synthesis.
-    """
-    from quill.core.read_aloud import synthesize_to_file_with_sapi5
-    from quill.platform.windows import sapi5
-
-    if not sapi5.available():
-        print("  [sapi5] SKIP — Windows SAPI 5 is not available")
-        return 0, 0, 0
-    voices = sapi5.list_voices()
-
-    generated = skipped = errored = 0
-    out_dir.mkdir(parents=True, exist_ok=True)
-    seen: set[str] = set()
-    for voice in voices:
-        short = _sapi5_short_name(voice.id)
-        if short in seen:
-            continue  # Desktop + non-Desktop variants share a short name
-        seen.add(short)
-        mp3 = out_dir / f"{short}.mp3"
-        if mp3.exists() and not overwrite:
-            print(f"  [sapi5] skip  {short} (already exists)")
-            skipped += 1
-            continue
-        print(f"  [sapi5] gen   {short} ...", end="", flush=True)
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as fh:
-            wav = Path(fh.name)
-        try:
-            synthesize_to_file_with_sapi5(text, wav, voice=voice.id)
-            _wav_to_mp3(wav, mp3)
-            print(f" OK  ({mp3.stat().st_size // 1024} KB)")
-            generated += 1
-        except Exception as exc:  # noqa: BLE001
-            print(f" ERROR: {exc}")
-            errored += 1
-        finally:
-            wav.unlink(missing_ok=True)
-
-    return generated, skipped, errored
-
-
 def _gen_espeak(
     text: str,
     out_dir: Path,
@@ -446,14 +379,6 @@ def main(argv: list[str] | None = None) -> int:
             espeak_rate=args.espeak_rate,
             overwrite=args.overwrite,
         )
-        total_gen += g
-        total_skip += s
-        total_err += e
-        print()
-
-    if "sapi5" in args.engines:
-        print("=== sapi5 (Windows SAPI 5) ===")
-        g, s, e = _gen_sapi5(text, _PREVIEW_DIR / "sapi5", overwrite=args.overwrite)
         total_gen += g
         total_skip += s
         total_err += e
