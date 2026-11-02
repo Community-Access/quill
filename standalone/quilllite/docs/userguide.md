@@ -4395,6 +4395,12 @@ one press.
 QUILL uses the same Sound Scheme window and the same schemes, so a scheme you
 make in one shows up in the other.
 
+Besides QUILL's own sounds, the **Scheme** list offers **VS Code Signals**, the
+accessibility signal sounds from Visual Studio Code, used under the MIT licence.
+They cover errors, saving, dictation starting and stopping, and undo and redo.
+Anything they have no sound for stays quiet, or is spoken where QUILL Lite
+speaks instead.
+
 ### Activity and Repeat Last Result
 
 Sometimes QUILL Lite tells you something while your attention is elsewhere, and

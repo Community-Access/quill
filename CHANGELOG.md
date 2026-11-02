@@ -2,6 +2,19 @@
 
 ## 1.0.0
 
+### VS Code Signals sound pack (2026-11-02)
+
+- **A second sound scheme: VS Code Signals.** The accessibility signal sounds
+  from Visual Studio Code, used under the MIT licence, are in the Scheme list of
+  the Sound Scheme window (Ctrl+Alt+Shift+O) in QUILL and QUILL Lite, and in the
+  setup wizard. They play for errors, warnings, saving, finished and failed
+  tasks, AI requests and answers, questions, dictation and recording starting
+  and stopping, progress, compare differences, corrected words, and undo and
+  redo. Anything they have no sound for stays quiet, or is spoken where the app
+  speaks instead. Ink stays the default. The sounds come from microsoft/vscode
+  at one pinned commit, converted to WAV and otherwise unchanged, with each
+  file's SHA-256 and Microsoft's licence alongside them.
+
 ### Licensing settled (2026-11-02)
 
 - **Every shipped document now states the licensing position as decided.**

@@ -14,7 +14,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 54 components
+  MIT License: 55 components
   BSD 3-Clause License: 23 components
   Apache License, version 2.0: 10 components
   Python Software Foundation License, version 2: 6 components
@@ -1271,6 +1271,17 @@ Copyright: Copyright (c) 2026 Jeff Bishop
 Upstream: https://github.com/Community-Access/quill
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+VS Code accessibility signal sounds (the VS Code Signals sound pack)
+--------------------------------------------------------------------
+
+What it is: The 32 accessibility signal sounds from Visual Studio Code, offered as the optional VS Code Signals sound pack in every app that plays QUILL's sounds. Converted from MP3 to WAV and otherwise unchanged; quill/assets/sound_packs/vscode_signals/SOURCES.json records each file's SHA-256, and the pack carries Microsoft's LICENSE.txt from the same commit.
+Version: microsoft/vscode commit 891b2ac68d2e245f8f83d91c8a748801a81818fc
+Licence: MIT
+Copyright: Copyright (c) Microsoft Corporation
+Upstream: https://github.com/microsoft/vscode/tree/891b2ac68d2e245f8f83d91c8a748801a81818fc/src/vs/platform/accessibilitySignal/browser/media
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep Microsoft's copyright notice and the MIT permission notice (the pack's LICENSE.txt) with the sounds.
 
 Weather alert sound (quill/assets/audio/weather_alert.wav)
 ----------------------------------------------------------
@@ -4263,7 +4274,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav).
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

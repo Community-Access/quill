@@ -166,7 +166,9 @@ class SoundSchemeDialog:
         set_accessible_name(self.scheme_choice, "Scheme")
         self.scheme_choice.SetHelpText(
             "The set of sounds in use. Choosing a different one changes every event "
-            "at once; the list below then shows what that scheme plays."
+            "at once; the list below then shows what that scheme plays. Two come with "
+            "the app: Ink, the family's own, and VS Code Signals, sounds from Visual "
+            "Studio Code used under the MIT licence."
         )
         values = [value for _name, value in self._schemes]
         self.scheme_choice.SetSelection(values.index(current_pack) if current_pack in values else 0)
