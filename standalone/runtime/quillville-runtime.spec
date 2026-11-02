@@ -120,6 +120,13 @@ try:
 except Exception:  # GLOW absent on this build machine: check_build_env names it
     pass
 ytdlp_hidden += word_hidden
+# acb-large-print 8.0.0 no longer reads its own metadata at import, so the
+# tracer stopped collecting its dist-info (and with it its licence) on
+# 2026-11-02; named here so the notices gate keeps finding it.
+try:
+    ytdlp_datas += copy_metadata("acb-large-print")
+except Exception:  # GLOW absent on this build machine: check_build_env names it
+    pass
 
 # Pygments (2026-10-30): spell check lexes code and markup to read only their
 # strings, comments and text (quill/core/spellcheck_spans.py). It finds its
@@ -340,6 +347,19 @@ a = Analysis(
     ],
     noarchive=False,
 )
+
+# Windows 10 and 11 carry the Universal CRT themselves. A build machine whose
+# DLL search turns up its own copies of ucrtbase.dll and the api-ms-win-*
+# forwarders (the Python 3.14 build of 2026-11-02 swept 43 of them) must not
+# ship them: they would shadow the system's, and nothing declared them.
+a.binaries = [
+    entry
+    for entry in a.binaries
+    if not (
+        os.path.basename(entry[0]).lower().startswith("api-ms-win-")
+        or os.path.basename(entry[0]).lower() == "ucrtbase.dll"
+    )
+]
 
 import sys as _sys  # noqa: E402
 
