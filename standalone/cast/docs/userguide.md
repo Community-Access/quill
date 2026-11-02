@@ -3894,12 +3894,12 @@ Everything on the AI Features menu:
 | AI Usage | Ctrl+Alt+Shift+F2 | How much each AI you set up has been used |
 | Connect or Sign Out | Ctrl+Alt+Shift+F4 | Sign in to or out of the free service |
 | Privacy Agreement | Alt+Shift+F2 | Read the agreement again, or withdraw it |
-| Use My Own AI Key | Alt+F2 | Use your own OpenAI or Google Gemini key |
+| Use My Own AI Key | Alt+F2 | Use your own key, such as OpenAI, Google Gemini or Anthropic Claude |
 | Use My ChatGPT Subscription | Alt+F5 | Use the ChatGPT plan you already pay for |
 
 The free service works for show notes. Ask About an Image needs an AI that can
-see pictures: your ChatGPT plan, GitHub Copilot or your own Gemini key. With
-the free AI in use its row says "(needs a connection that sees)".
+see pictures: your ChatGPT plan, GitHub Copilot, or your own OpenAI, Google
+Gemini or Anthropic Claude key. With the free AI in use its row says "(needs a connection that sees)".
 
 #### Choose Your AI
 

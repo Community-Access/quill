@@ -9,11 +9,14 @@ Toolkit (MIT; see the third-party notices):
 * **JPEG**: EXIF ``ImageDescription`` (plain ASCII, as the standard says, so
   accents are folded), EXIF ``XPComment`` (UTF-16, the Comments field Windows
   shows) and XMP ``dc:description`` (UTF-8). The segments are spliced into
-  the file as it is, so the picture is never re-encoded and loses nothing; an
-  XMP packet the original carried is replaced in the copy by one holding the
-  description.
+  the file as it is, so the picture is never re-encoded and loses nothing.
 * **PNG**: an ``iTXt`` ``Description`` chunk and an XMP ``iTXt`` chunk, added
   before the image data. The pixels are copied byte for byte.
+
+An XMP packet the original already carried is **merged**, not replaced
+(:func:`merged_xmp_packet`): every other property it had -- a rating, keywords,
+a photo library's face tags -- stays in the copy, and only a ``dc:description``
+already there gives way to the new one.
 
 Any other kind of picture has no field written here and is left out, said by
 name. The source is only ever read: :func:`write_described_copy` refuses a
@@ -25,6 +28,7 @@ wx-free, strict-typed and network-free.
 from __future__ import annotations
 
 import io
+import re
 import struct
 import unicodedata
 import zlib
@@ -41,6 +45,7 @@ __all__ = [
     "CopyOutcome",
     "DescribedCopyError",
     "jpeg_with_description",
+    "merged_xmp_packet",
     "png_with_description",
     "write_described_copies",
     "write_described_copy",
@@ -78,6 +83,46 @@ def xmp_packet(description: str) -> bytes:
     ).encode()
 
 
+_DC_NAMESPACE = "http://purl.org/dc/elements/1.1/"
+_RDF_CLOSE = re.compile(r"</(?P<prefix>[A-Za-z_][\w.-]*):RDF\s*>")
+
+
+def _description_block(description: str, rdf: str) -> str:
+    text = escape(description, {'"': "&quot;"})
+    return (
+        f'<{rdf}:Description {rdf}:about="" xmlns:dc="{_DC_NAMESPACE}">'
+        f'<dc:description><{rdf}:Alt><{rdf}:li xml:lang="x-default">{text}</{rdf}:li>'
+        f"</{rdf}:Alt></dc:description></{rdf}:Description>"
+    )
+
+
+def merged_xmp_packet(existing: bytes, description: str) -> bytes:
+    """*existing*, an XMP packet, with *description* as its ``dc:description``.
+
+    Everything else in the packet is kept as it was written, byte for byte:
+    only a ``dc:description`` already there (as an element or an attribute,
+    under whatever prefix the packet gives Dublin Core) is taken out, and one
+    ``rdf:Description`` holding the new one is added before ``</rdf:RDF>``.
+    A packet that cannot be read as text, or has no ``rdf:RDF``, gives way to
+    :func:`xmp_packet`, as before.
+    """
+    try:
+        text = existing.decode("utf-8")
+    except UnicodeDecodeError:
+        return xmp_packet(description)
+    if _RDF_CLOSE.search(text) is None:
+        return xmp_packet(description)
+    declared = r"xmlns:([A-Za-z_][\w.-]*)\s*=\s*[\"']" + re.escape(_DC_NAMESPACE)
+    for prefix in set(re.findall(declared, text)):
+        name = re.escape(prefix) + ":description"
+        text = re.sub(rf"<{name}(\s[^>]*)?/>", "", text)
+        text = re.sub(rf"<{name}(\s[^>]*)?>.*?</{name}\s*>", "", text, flags=re.DOTALL)
+        text = re.sub(rf"\s{name}\s*=\s*(\"[^\"]*\"|'[^']*')", "", text)
+    close = list(_RDF_CLOSE.finditer(text))[-1]
+    block = _description_block(description, close.group("prefix"))
+    return (text[: close.start()] + block + text[close.start() :]).encode("utf-8")
+
+
 def _ascii(text: str) -> str:
     folded = unicodedata.normalize("NFKD", text.translate(_FOLD))
     return folded.encode("ascii", "ignore").decode("ascii")
@@ -105,7 +150,7 @@ def jpeg_with_description(data: bytes, description: str) -> bytes:
     if not data.startswith(b"\xff\xd8"):
         raise DescribedCopyError("That file is not a JPEG picture.")
     exif = _segment(0xE1, _exif_payload(data, description))
-    xmp = _segment(0xE1, _XMP_HEADER + xmp_packet(description))
+    existing: bytes | None = None
     head: list[bytes] = []
     position = 2
     while position + 4 <= len(data) and data[position] == 0xFF:
@@ -115,11 +160,16 @@ def jpeg_with_description(data: bytes, description: str) -> bytes:
         (length,) = struct.unpack(">H", data[position + 2 : position + 4])
         segment = data[position : position + 2 + length]
         payload = segment[4:]
-        if not (
-            marker == 0xE1 and (payload.startswith(_EXIF_HEADER) or payload.startswith(_XMP_HEADER))
-        ):
+        if marker == 0xE1 and payload.startswith(_XMP_HEADER):
+            if existing is None:
+                existing = payload[len(_XMP_HEADER) :]
+        elif not (marker == 0xE1 and payload.startswith(_EXIF_HEADER)):
             head.append(segment)
         position += 2 + length
+    packet = (
+        xmp_packet(description) if existing is None else merged_xmp_packet(existing, description)
+    )
+    xmp = _segment(0xE1, _XMP_HEADER + packet)
     app0 = [s for s in head if s[1] == 0xE0]
     others = [s for s in head if s[1] != 0xE0]
     return b"\xff\xd8" + b"".join(app0) + exif + xmp + b"".join(others) + data[position:]
@@ -135,11 +185,34 @@ def _itxt(keyword: str, text: str) -> bytes:
     )
 
 
+def _png_xmp(data: bytes) -> bytes | None:
+    """The XMP packet in *data*'s uncompressed ``iTXt`` chunk, if it has one."""
+    position = len(_PNG_SIGNATURE)
+    while position + 8 <= len(data):
+        (length,) = struct.unpack(">I", data[position : position + 4])
+        kind = data[position + 4 : position + 8]
+        body = data[position + 8 : position + 8 + length]
+        if kind == b"iTXt" and body.startswith(b"XML:com.adobe.xmp\x00"):
+            rest = body[len(b"XML:com.adobe.xmp\x00") :]
+            if rest[:1] == b"\x00":  # not compressed
+                # compression method, then language tag and translated keyword
+                parts = rest[2:].split(b"\x00", 2)
+                if len(parts) == 3:
+                    return parts[2]
+            return None
+        position += 12 + length
+    return None
+
+
 def png_with_description(data: bytes, description: str) -> bytes:
     """*data*, a PNG, with *description* in ``iTXt`` chunks before the image data."""
     if not data.startswith(_PNG_SIGNATURE):
         raise DescribedCopyError("That file is not a PNG picture.")
     ours = (b"Description", b"XML:com.adobe.xmp")
+    existing = _png_xmp(data)
+    packet = (
+        xmp_packet(description) if existing is None else merged_xmp_packet(existing, description)
+    )
     out = [_PNG_SIGNATURE]
     position = len(_PNG_SIGNATURE)
     added = False
@@ -150,7 +223,7 @@ def png_with_description(data: bytes, description: str) -> bytes:
         if kind in (b"IDAT", b"IEND") and not added:
             out += [
                 _itxt("Description", description),
-                _itxt("XML:com.adobe.xmp", xmp_packet(description).decode("utf-8")),
+                _itxt("XML:com.adobe.xmp", packet.decode("utf-8")),
             ]
             added = True
         keyword = data[position + 8 : position + 8 + length].split(b"\x00", 1)[0]

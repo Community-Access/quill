@@ -689,10 +689,11 @@ you choose OpenAI, a saved Gemini key just sits there unused. The status line
 tells you it is there, and choosing Google Gemini is how you use it. Your
 request never goes to a company you did not choose.
 
-**With a Gemini key, Ask About an Image works too.** Gemini's models can read
-pictures, so **Ctrl+F5** works on a Gemini key just as it does on a ChatGPT
-subscription, and so does a picture-reading model in Ollama on this computer.
-The free service and the other providers here cannot.
+**With an OpenAI, Gemini or Claude key, Ask About an Image works too.** Their
+models can read pictures, so **Ctrl+F5** works on an OpenAI, Google Gemini or
+Anthropic Claude key just as it does on a ChatGPT subscription, and so does a
+picture-reading model in Ollama on this computer. The free service and the
+other providers here cannot.
 
 ### What changes with your own key
 
@@ -932,8 +933,8 @@ file, ask a question or ask nothing, and hear what the model sees.
    **Ctrl+Z** takes an insert back.
 
 You need an AI that can see pictures: your ChatGPT plan or Codex, a GitHub
-Copilot model that sees, a Gemini key, or a picture-reading model in Ollama on
-this computer. On any other AI the menu says **Ask About an Image (needs a
+Copilot model that sees, an OpenAI, Gemini or Claude key, or a picture-reading
+model in Ollama on this computer. On any other AI the menu says **Ask About an Image (needs a
 connection that sees)**, and pressing it sends nothing and offers to switch.
 Only the picture and your question are sent. Nothing from your document goes
 with them.
@@ -1072,8 +1073,8 @@ setup, and it is the way to have pictures described and the web searched.
 **Which AI am I using?** Press **Ctrl+8**. Press it twice to change it.
 
 **Can it describe a picture?** Yes, on an AI that can see: your ChatGPT plan,
-Codex, a Copilot model that sees, a Gemini key, or a picture-reading Ollama
-model. Press **Ctrl+F5**, choose the file, and listen. See *Ask About an
+Codex, a Copilot model that sees, an OpenAI, Gemini or Claude key, or a
+picture-reading Ollama model. Press **Ctrl+F5**, choose the file, and listen. See *Ask About an
 Image*.
 
 **Can it do a job with several steps?** Yes, on GitHub Copilot or Codex. Press

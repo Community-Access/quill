@@ -50,7 +50,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         # Not F7 to F11: those are the QuillVille launcher keys, and a launcher
         # always wins, so a command there would never fire.
         "studio.record_discard": "Ctrl+Alt+Shift+Delete",
-        "studio.record_recover": "Ctrl+Alt+Shift+L",
+        "studio.record_recover": "Ctrl+Alt+Shift+N",  # rule 9; L is Narrate (Studio menu)
         "studio.camera_check": "Ctrl+Alt+Shift+C",
         # MX-150 proposes Ctrl+Alt+M for the mixer; the three-modifier form
         # keeps Studio's capture keys one family.

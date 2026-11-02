@@ -16,8 +16,12 @@ right?", then the three every app shares.
 **Describe a Picture** (Ctrl+F5) asks about one picture file, or one frame of a
 video at the time you give: taken on this computer, fitted to the connection
 (:mod:`quill.core.ai.picture_prep`) and described, with the time when it is a
-frame. The same picture asked about again is answered from this session's
-cache and sends nothing.
+frame. The photo's date, camera and lens, read on this computer, go with it as
+one line of context, as they do for Describe a Folder
+(:mod:`quill.core.ai.photo_details`); its GPS location never does, because the
+one check box that sends it is in Describe a Folder and Describe Again, and the
+picture itself is re-encoded before it goes. The same picture asked about again
+is answered from this session's cache and sends nothing.
 
 **The agent tasks** (codex.md Phase 4c): Recording Pre-flight Check (Ctrl+3,
 :mod:`~quill.ui.audio_studio.studio_ai_task`) and Narrate a Recording
@@ -329,19 +333,24 @@ class StudioAiFeaturesMixin:
         scratch = Path(tempfile.mkdtemp(prefix="quill-studio-picture-"))
         self._announce("Working.")  # type: ignore[attr-defined]
 
-        def work(**_kwargs: Any) -> bytes:
+        def work(**_kwargs: Any) -> tuple[bytes, Any]:
+            from quill.core.ai.photo_details import read_photo_details
+
             if at is None:
-                return path.read_bytes()
-            from quill.core.ai.picture_prep import extract_frames
+                data = path.read_bytes()
+            else:
+                from quill.core.ai.picture_prep import extract_frames
 
-            frames = extract_frames(str(ffmpeg), path, [at], scratch)
-            return frames[0].path.read_bytes()
+                frames = extract_frames(str(ffmpeg), path, [at], scratch)
+                data = frames[0].path.read_bytes()
+            return data, read_photo_details(data)
 
-        def took(_task: Any, data: bytes) -> None:
+        def took(_task: Any, result: tuple[bytes, Any]) -> None:
+            data, details = result
             # Kept for Describe Again (studio_ai_pictures), this session only.
             self._studio_last_picture = (data, at, path.name)
             self._studio_last_answers = []
-            self._studio_describe_bytes(data, scratch, at, route)
+            self._studio_describe_bytes(data, scratch, at, route, details=details)
 
         def failed(_task: Any, error: BaseException) -> None:
             shutil.rmtree(scratch, ignore_errors=True)
@@ -357,9 +366,15 @@ class StudioAiFeaturesMixin:
         )
 
     def _studio_describe_bytes(
-        self, data: bytes, scratch: Path, at: float | None, route: Any
+        self, data: bytes, scratch: Path, at: float | None, route: Any, *, details: Any = None
     ) -> None:
-        """Fit *data* to the connection, answer from the cache or ask, then tidy up."""
+        """Fit *data* to the connection, answer from the cache or ask, then tidy up.
+
+        *details* (:class:`~quill.core.ai.photo_details.PhotoDetails`) go in
+        front of the question as one line -- date, camera and lens, never the
+        location -- and the answer says they went.
+        """
+        from quill.core.ai.photo_details import details_line, sent_phrase
         from quill.core.ai.picture_prep import (
             PicturePrepError,
             described_by_sentence,
@@ -379,9 +394,12 @@ class StudioAiFeaturesMixin:
             shutil.rmtree(scratch, ignore_errors=True)
             self._announce(str(error.args[0]))  # type: ignore[attr-defined]
             return
+        line = details_line(details, location=False) if details is not None else ""
+        question = f"{line}\n\n{DESCRIBE_QUESTION}" if line else DESCRIBE_QUESTION
+        went = f" Its {sent_phrase(details)} went with it." if line else ""
         image = prepared.images[0]
         cache = _picture_cache(self)
-        cached = cache.get(image.digest, DESCRIBE_QUESTION, connection)
+        cached = cache.get(image.digest, question, connection)
         if cached is not None:
             shutil.rmtree(scratch, ignore_errors=True)
             self._studio_picture_answer(
@@ -393,10 +411,10 @@ class StudioAiFeaturesMixin:
 
         def done(text: str) -> None:
             shutil.rmtree(scratch, ignore_errors=True)
-            answer = f"{prepared.inspected} {described_by_sentence(connection)} {text.strip()}"
-            cache.put(
-                image.digest, DESCRIBE_QUESTION, answer, connection=connection, prepared=prepared
+            answer = (
+                f"{prepared.inspected} {described_by_sentence(connection)}{went} {text.strip()}"
             )
+            cache.put(image.digest, question, answer, connection=connection, prepared=prepared)
             self._studio_picture_answer(answer)
 
         def failed(sentence: str) -> None:
@@ -405,7 +423,7 @@ class StudioAiFeaturesMixin:
 
         service.describe_image(
             target,
-            DESCRIBE_QUESTION,
+            question,
             on_done=done,
             on_error=failed,
             requires=("text", "pictures"),

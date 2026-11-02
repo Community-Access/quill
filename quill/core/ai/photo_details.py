@@ -2,8 +2,8 @@
 
 A camera writes when a photo was taken, on what, and often where, into the
 file's EXIF block. "A beach at sunset, taken last June" is worth more than "a
-beach at sunset", so Describe a Folder and Describe Again can put one line in
-front of the prompt: "Photo details, read from the file: taken 14 June 2024 at
+beach at sunset", so Describe a Picture, Describe a Folder and Describe Again
+put one line in front of the prompt: "Photo details, read from the file: taken 14 June 2024 at
 6:05 PM, on an Apple iPhone 15, lens iPhone 15 back camera 6.86mm f/1.6."
 
 Three rules, from codex.md 10B.4 and the Image Description Toolkit proposal:
@@ -37,6 +37,7 @@ __all__ = [
     "details_line",
     "details_phrase",
     "read_photo_details",
+    "sent_phrase",
     "spoken_date",
 ]
 
@@ -175,6 +176,23 @@ def details_line(details: PhotoDetails, *, location: bool = False) -> str:
 
 def _article(camera: str) -> str:
     return f"an {camera}" if camera[:1].lower() in "aeiou" else f"a {camera}"
+
+
+def sent_phrase(details: PhotoDetails) -> str:
+    """ "date, camera and lens": what :func:`details_line` sends, as a listener
+    hears it, naming only what the file had. Never the location."""
+    names = [
+        name
+        for name, present in (
+            ("date", details.taken is not None),
+            ("camera", bool(details.camera)),
+            ("lens", bool(details.lens)),
+        )
+        if present
+    ]
+    if len(names) < 2:
+        return "".join(names)
+    return ", ".join(names[:-1]) + " and " + names[-1]
 
 
 def details_phrase(*, details: bool, location: bool) -> str:

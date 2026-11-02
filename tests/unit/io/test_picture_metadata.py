@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import struct
 from pathlib import Path
 
 import pytest
@@ -103,3 +104,102 @@ def test_write_described_copies_uses_the_latest_description_and_says_what_it_did
         "descriptions into JPEG and PNG pictures only. 1 picture (three.jpg) is no longer where "
         "it was described."
     )
+
+
+_THEIR_XMP = (
+    '<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?>'
+    '<x:xmpmeta xmlns:x="adobe:ns:meta/">'
+    '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">'
+    '<rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/"'
+    ' xmlns:dc="http://purl.org/dc/elements/1.1/" xmp:Rating="4">'
+    "<dc:subject><rdf:Bag><rdf:li>Grandma</rdf:li></rdf:Bag></dc:subject>"
+    '<dc:description><rdf:Alt><rdf:li xml:lang="x-default">IMG_0042</rdf:li></rdf:Alt>'
+    "</dc:description></rdf:Description></rdf:RDF></x:xmpmeta>"
+    '<?xpacket end="w"?>'
+)
+
+
+def _jpeg_with_their_xmp(path: Path) -> Path:
+    """A real JPEG, made by Pillow, carrying a photo library's XMP packet."""
+    data = _picture(path, "JPEG").read_bytes()
+    xmp = pm._segment(0xE1, pm._XMP_HEADER + _THEIR_XMP.encode())
+    path.write_bytes(data[:2] + xmp + data[2:])
+    return path
+
+
+def _xmp_in(data: bytes) -> str:
+    """The XMP packet in a JPEG's APP1 segment, read by its own length field."""
+    header = data.index(pm._XMP_HEADER)
+    (length,) = struct.unpack(">H", data[header - 2 : header])
+    return data[header + len(pm._XMP_HEADER) : header + length - 2].decode("utf-8")
+
+
+def test_a_jpeg_copy_merges_into_the_xmp_the_photo_already_had(tmp_path: Path) -> None:
+    from xml.etree import ElementTree
+
+    from PIL import Image
+
+    source = _jpeg_with_their_xmp(tmp_path / "in" / "grandma.jpg")
+    copy = pm.write_described_copy(source, tmp_path / "out" / "grandma.jpg", _TEXT)
+    data = copy.read_bytes()
+    assert data.count(pm._XMP_HEADER) == 1  # one packet, not two
+    packet = _xmp_in(data)
+    root = ElementTree.fromstring(
+        packet[packet.index("<x:xmpmeta") : packet.index("<?xpacket end")]
+    )
+    rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+    dc = "{http://purl.org/dc/elements/1.1/}"
+    xmp = "{http://ns.adobe.com/xap/1.0/}"
+    descriptions = list(root.iter(f"{rdf}Description"))
+    assert [d.get(f"{xmp}Rating") for d in descriptions if d.get(f"{xmp}Rating")] == ["4"]
+    assert [li.text for li in root.iter(f"{rdf}li") if li.text == "Grandma"] == ["Grandma"]
+    said = list(root.iter(f"{dc}description"))
+    assert len(said) == 1  # the old one gave way
+    assert said[0].findtext(f"{rdf}Alt/{rdf}li") == _TEXT
+    assert "IMG_0042" not in packet
+    with Image.open(copy) as opened:
+        opened.load()  # still a picture any viewer opens
+
+
+def test_a_png_copy_merges_into_the_xmp_the_picture_already_had(tmp_path: Path) -> None:
+    from PIL import Image, PngImagePlugin
+
+    info = PngImagePlugin.PngInfo()
+    info.add_itxt("XML:com.adobe.xmp", _THEIR_XMP)
+    source = tmp_path / "shot.png"
+    Image.new("RGB", (8, 8)).save(source, pnginfo=info)
+    copy = pm.write_described_copy(source, tmp_path / "out" / "shot.png", _TEXT)
+    with Image.open(copy) as opened:
+        packet = opened.text["XML:com.adobe.xmp"]
+    assert 'xmp:Rating="4"' in packet and "Grandma" in packet
+    assert _TEXT in packet and "IMG_0042" not in packet
+    assert packet.count("dc:description>") == 2  # one element: open and close
+
+
+def test_merge_keeps_every_byte_it_does_not_replace() -> None:
+    merged = pm.merged_xmp_packet(_THEIR_XMP.encode(), "New words").decode()
+    assert merged.replace(
+        '<rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">'
+        '<dc:description><rdf:Alt><rdf:li xml:lang="x-default">New words</rdf:li></rdf:Alt>'
+        "</dc:description></rdf:Description>",
+        "",
+    ) == _THEIR_XMP.replace(
+        '<dc:description><rdf:Alt><rdf:li xml:lang="x-default">IMG_0042</rdf:li></rdf:Alt>'
+        "</dc:description>",
+        "",
+    )
+
+
+def test_merge_removes_a_description_written_as_an_attribute() -> None:
+    packet = (
+        '<x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF '
+        'xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description '
+        'rdf:about="" xmlns:d="http://purl.org/dc/elements/1.1/" d:description="old" '
+        'd:title="Kept"/></rdf:RDF></x:xmpmeta>'
+    )
+    merged = pm.merged_xmp_packet(packet.encode(), "new").decode()
+    assert 'd:title="Kept"' in merged and "old" not in merged and ">new<" in merged
+
+
+def test_an_unreadable_packet_gives_way_to_a_fresh_one() -> None:
+    assert pm.merged_xmp_packet(b"\xff\xfe junk", "x") == pm.xmp_packet("x")
