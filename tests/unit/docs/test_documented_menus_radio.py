@@ -68,7 +68,7 @@ SPELLED_KEYS: dict[str, str] = {
 
 @pytest.fixture
 def radio_menus(quill_data_dir, monkeypatch) -> Iterator[tuple[list[MenuItem], OptIn]]:
-    """Every menu row a new install shows in the three windows the guide teaches,
+    """Every menu row a new install shows in the four windows the guide teaches,
     and the main bar once there are favorites (Play Favorite Station... is
     appended only then, and the guide says "once you have favorites")."""
     monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
@@ -91,6 +91,22 @@ def radio_menus(quill_data_dir, monkeypatch) -> Iterator[tuple[list[MenuItem], O
         lineups = LineupsWindow(RadioLineupsHost(frame))
         windows.append(lineups._win)
         items += items_from_wx_menu_bar(lineups._win.GetMenuBar())
+        # Radio Recordings has its own menu bar too (Split into Songs lives on
+        # its Recordings menu), so the guide's claims about it resolve here.
+        from quill.ui.radio.recordings_manager_dialog import RecordingsManagerDialog
+
+        recordings = RecordingsManagerDialog(
+            frame.frame,
+            app_host=frame,
+            recorder=frame._radio_recorder,
+            settings=frame._radio_recording_settings,
+            scheduler=frame._radio_scheduler,
+            controller=frame._radio_controller,
+            windows=frame._windows,
+        )
+        recordings._timer.Stop()
+        windows.append(recordings._win)
+        items += items_from_wx_menu_bar(recordings._win.GetMenuBar())
         from quill.core.radio.models import RadioStation
 
         station = RadioStation(name="Gate Station", stream_url="http://example.invalid/1")

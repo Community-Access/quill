@@ -92,14 +92,12 @@ HELP: dict[str, str] = {
         "are doing."
     ),
     "split_songs": (
-        "When a recording finishes, cut it into one file per song at each "
-        "point the station changed its song title, named after the song. "
-        "Nothing is lost between the files, and if the split cannot be done "
-        "the recording is kept whole. It needs a station that sends song "
-        "titles, and a cut can land a few seconds early or late, because "
-        "stations do not change their titles exactly as the music changes. "
-        "Off, the song changes are still kept beside the recording, so Split "
-        "into Songs in Radio Recordings can cut it later."
+        "When a recording finishes, cut it into one file per song, named "
+        "after the song, wherever the station changed its song title. If the "
+        "split cannot be done the recording is kept whole. A cut can land a "
+        "few seconds early or late. Off, the song changes are still kept "
+        "beside the recording, so Split into Songs in Radio Recordings can "
+        "cut it later."
     ),
     "status": "Status",
     "save_button": "Save these recording settings",
