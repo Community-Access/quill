@@ -31,7 +31,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://quill_ai_gateway:${POSTGRES_PASSWORD}@postgres:5432/quill_ai_gateway
+      - DATABASE_URL=postgresql+psycopg2://quill_ai_gateway:${POSTGRES_PASSWORD}@postgres:5432/quill_ai_gateway
       - REDIS_URL=redis://redis:6379/0
       - OPENAI_API_KEY=${OPENAI_API_KEY:?set OPENAI_API_KEY in .env}
       - GATEWAY_SECRET_KEY=${GATEWAY_SECRET_KEY:?set GATEWAY_SECRET_KEY in .env}
