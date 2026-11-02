@@ -39,7 +39,7 @@ GEMINI_KEY = _key("GEMINI_KEY")
 CLAUDE_KEY = _key("CLAUDE_KEY")
 OPENAI_KEY = _key("OPENAI_KEY")
 OPENROUTER_KEY = _key("OPENROUTER_KEY")
-from quill.stability.redaction import redact_known_secrets, remember_secret  # noqa: E402
+from quill.stability.redaction import remember_secret  # noqa: E402
 
 for _secret in (GEMINI_KEY, CLAUDE_KEY, OPENAI_KEY, OPENROUTER_KEY):
     remember_secret(_secret)
@@ -54,9 +54,10 @@ _SKIPPED: list[str] = []
 
 def _check(label: str, passed: bool, detail: str = "") -> None:
     status = "PASS" if passed else "FAIL"
-    # An error string can quote the request, key and all: scrub what this run
-    # was given before it reaches the console (CodeQL clear-text logging).
-    suffix = f"  ({redact_known_secrets(detail)})" if detail else ""
+    # The detail is never printed: an error string can quote the request, key
+    # and all, and a scrub is not something CodeQL can see (clear-text logging).
+    # Its length says whether there was one; rerun under a debugger to read it.
+    suffix = f"  (detail withheld, {len(detail)} characters)" if detail else ""
     print(f"  [{status}] {label}{suffix}")
     if not passed:
         _FAILURES.append(label)

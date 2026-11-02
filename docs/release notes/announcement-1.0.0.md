@@ -163,6 +163,14 @@ first. Run Ollama and everything happens on your own computer at no cost. Or pic
 OpenRouter, where the wizard chooses a free model for you and marks every free
 model "Free." QUILL bundles no keys and takes no cut.
 
+QUILL also has its own free AI, with no account, and if you already pay for
+ChatGPT or GitHub Copilot, or have your own key, you can use that instead. One
+window, **Choose Your AI** (Ctrl+4), lists them all, and **Which AI Am I
+Using** (Ctrl+8) tells you in one line which one is answering. Sign out of the
+one in use and nothing quietly takes its place: QUILL waits for you to choose.
+On Copilot or Codex, **Do a Document Task** (Ctrl+3) works through a job with
+several steps, asking before each change. Every answer is text, never a chart.
+
 One rule runs through every AI feature: **the AI proposes, you dispose.** Every
 suggested edit stops at a review dialog you can judge by ear. Each change is
 announced as what it is, and you can hear the sentence before and after it, so you

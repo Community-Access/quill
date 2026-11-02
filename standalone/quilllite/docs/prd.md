@@ -1016,6 +1016,121 @@ store, a sign-in that stopped working -- is a substitution
 (`quill.core.ai.fallback.plan_substitution`) and asks in a Yes/No box, No the
 default; No sends nothing. Signing in or out of ChatGPT and saving or removing a
 key mark the new route as chosen. Shared with QUILL, which has the same pad.
+Superseded for these commands on 2026-10-31 by the stored choice in 5.6e:
+a request now goes to the connection chosen in Choose Your AI or to nothing.
+
+### 5.6e Choose Your AI, GitHub Copilot, Codex and document tasks (2026-10-31 to 2026-11-01)
+
+Plan of record: the family AI plan of 2026-10-31 (decisions 13, 15, 18, 19,
+20, 21 and 23 are cited by number below). Both editors get every item here in
+the same change, from the shared `quill/ui/hosted_ai_*.py` modules (family
+rule 10); QUILL reaches them through `quill/ui/main_frame_hosted_ai.py`, which
+has no commands of its own.
+
+**Five connections, one stored choice.** `ai_connection` (`free`, `chatgpt`,
+`copilot`, `codex`, `own_key`; empty means not yet decided) is the same field
+in `quill/core/settings.py` and `quill/core/lite/settings.py`. On the first
+read where it is empty it is set once to what the old silent precedence
+chose (ChatGPT signed in, else an own key, else free), so nobody's behaviour
+changes on upgrade. From then on a request goes to the stored connection or to
+nothing (`quill/core/ai/connection_choice.py`). `ai_copilot_model` and
+`ai_codex_model` hold those connections' models; empty means the service
+picks.
+
+**Choose Your AI** (Ctrl+4; `tools.hosted_ai_choose`, Lite `cmd_ai_choose`;
+`quill/ui/hosted_ai_connections.py`). Five controls in tab order:
+Connections (rows read "name, state": in use, signed in, not set up, signed
+out by OpenAI or GitHub, not available yet, not available for your account),
+About this connection (from the capability registry, two sentences at most),
+Model (the service's own order, first marked "(recommended)"), one action
+button whose label follows the row (Use This, Sign In..., Sign Out), and
+Close. Plan Options... appears while the ChatGPT or Codex row is selected and
+signed in (`quill/ui/hosted_ai_plan_options.py`: Allow web search, Forget on
+This Computer). Delete on a signed-in row asks Yes/No with No the default. All
+words come from `quill/core/ai/connection_words.py`; the window speaks only
+outcomes (GATE-13) through the announcement service (GATE-BRAILLE). Every
+connection signs in through one sign-in step: ChatGPT and Codex by the plan's
+loopback sign-in, Copilot by GitHub's device code (spaced out, said once, on
+the clipboard), the own key by the existing Use My Own AI Key dialog, and the
+free AI by its existing Connect step, opened only when somebody asks
+(decision 23). Use My Own AI Key (Alt+F2), Use My ChatGPT Subscription
+(Alt+F5) and Connect or Sign Out keep their ids and keys and open the window
+on their own row with the sign-in step ready.
+
+**Which AI Am I Using** (Ctrl+8; `tools.hosted_ai_which`, Lite
+`cmd_ai_which`) speaks one line from `connection_usage.which_ai_sentence`:
+connection, model, one usage clause. Two presses within 0.5 seconds open
+Choose Your AI. The **AI status cell** (decision 19) is the same text, short
+("AI: free", "AI: ChatGPT plan", "AI: Copilot, Auto", "AI: Codex", "AI: own
+key", "AI: none", "AI: off"), placed last; Enter opens Choose Your AI.
+
+**AI Usage** keeps its keys (QUILL Ctrl+Alt+Shift+F2, Lite Ctrl+Alt+Shift+F9)
+and opens one read-only list (`quill/ui/hosted_ai_usage.py`), a sentence per
+connection that is set up, each naming whose number it is: QUILL's count for
+the free AI, a local count of today's and this week's requests for the
+ChatGPT plan (decision 24, never used to guess a limit), GitHub's quota for
+Copilot, and the provider's last rate-limit headers for an own key. Manage
+Usage opens the selected connection's page. Everything is text (decision 13).
+
+**No silent fall-back (decision 15).** Signing in is choosing. Sign Out of
+the connection in use leaves none in use; the next AI command opens Choose
+Your AI and says once "No AI is in use. Choose one." A revoked token, a
+missing key or a reached limit is said once, nothing is sent, nothing is
+retried and nothing switches. This replaces the session route guard's
+"Send to a Different AI?" question for the hosted-AI commands; the guard
+stays only as a backstop.
+
+**Capability gating (GATE-CAPS).** `quill/core/ai/connection_caps.py` holds
+one record per connection, each claim naming its source. A gated command
+(`connection_words.COMMAND_NEEDS`) stays listed and keyed; when the
+connection in use cannot do it, its label gains "(needs ...)" after the name
+and before any ellipsis, and pressing it sends nothing and offers the switch
+in one Yes/No, Yes the default. `quill/tools/connection_caps_audit.py`
+checks the records.
+
+**GitHub Copilot.** Per app sign-in under the app's agent name, with its own
+token entry apart from the GitHub repository features. The device flow needs
+a GitHub OAuth App client id per app (`copilot_auth.CLIENT_IDS`); while it is
+empty the row is "not available yet" and About says why in one sentence.
+Single requests, conversations and Ask About an Image (on a model that sees)
+go through the SDK; an error is said once.
+
+**Codex** (decision 21) is one keypress once the ChatGPT plan is signed in.
+Single requests while Codex is in use go over the plan's direct route; the
+Codex app-server starts only for document tasks. If the engine is not in the
+build, the row is "not available yet".
+
+**Do a Document Task** (Ctrl+3; `tools.hosted_ai_task`, Lite `cmd_ai_task`;
+`quill/ui/agent_window.py`, `quill/core/ai/document_task.py`) needs agent
+tools, which only Copilot and Codex have. Controls: Conversation, Status,
+Instruction (focus starts here; Enter sends; text sent while a task runs is a
+follow-up), Send, Stop, Close. Tools are limited to `DOCUMENT_TASK_TOOLS`
+(read outline, section, selection and document; apply_patch; the
+accessibility audit; `run_command` limited to `SAFE_TOOL_IDS`). Every
+mutating step asks in Allow This Step? (Allow once, the default; Allow for
+this task; Don't allow, Escape), every edit opens Review AI Changes, each
+applied change is one undo step, and nothing carries over between tasks. The
+closing summary is built from the registry's record of calls, not the model's
+claims, and is the only thing spoken. Engine folders are swept when the task
+ends, on Stop and before the next task (decision 4).
+
+**One family prompt list (decision 18)** at `<app data>/prompts.json`, with a
+run-once, off-thread migration (`quill/core/ai/family_prompt_migration.py`)
+from Prompt Studio, the image prompts and QUILL Lite's own list. Identical
+prompts merge; different text under one name keeps both, the second named by
+its old store. Old files are only read, and kept for one release.
+
+**My own key's providers (decision 20)**: OpenAI, Google Gemini, Anthropic
+Claude, OpenRouter, Ollama Cloud, a custom OpenAI-compatible service and
+Ollama on this computer, which needs no key and whose About line is "Runs on
+this computer. Nothing is sent." (`quill/core/ai/own_key_providers.py`). The
+AI Hub's provider chooser is gone; its Provider page opens Use My Own AI Key,
+and the provider saved there is also the one QUILL's advanced features use.
+
+**Pictures in the editors (decision 13).** Only Ask About an Image (Ctrl+F5,
+gated on pictures) and alt text for a document's own images. No screen,
+screenshot or frame features in the editors, and no AI-generated pictures or
+charts.
 
 ### 5.7 Every switch has a way back, from inside the app
 
@@ -1890,6 +2005,10 @@ own, run with the shell standing in (checked by
 bar was File alone: New, Open and Exit.
 
 ## Choose Your AI, GitHub Copilot and Codex (2026-11-01)
+
+A summary. The full requirements, including decision 15 (no silent fall-back),
+the document task's tools, the family prompt list and the own key's providers,
+are in section 5.6e.
 
 **One window for where the AI comes from.** Choose Your AI (Tools > AI,
 **Ctrl+4**, `cmd_ai_choose`) lists five connections: QUILL's free AI, the

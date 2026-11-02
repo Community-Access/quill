@@ -44,6 +44,18 @@ and release channels.
 - **Commands say what they need.** When the AI in use cannot do something, the
   command keeps its place and key, its name says what it needs, such as "(needs
   Copilot or Codex)", and pressing it offers to switch rather than failing.
+- **Nothing switches by itself.** Sign out of the AI in use and no AI is in
+  use until you choose one; the next AI command says "No AI is in use. Choose
+  one." A missing key, an ended sign-in or a reached limit is said once, and
+  nothing is sent, retried or sent somewhere else.
+- **Plan Options...**, beside the ChatGPT plan's row, holds Allow web search
+  and Forget on This Computer. The Copilot row says "not available yet" until
+  a build carries QUILL Lite's own GitHub registration. Codex's single
+  requests go straight to the plan; the Codex program starts only for a task.
+- Ask About an Image, Tidy Dictated Text and the AI dictionary work on any AI
+  that can do them, Copilot included. Disconnecting this computer from the
+  free AI is Delete (or Sign Out) on its row in Choose Your AI; the Usage
+  window no longer has Sign Out This Computer. Every answer is text.
 - QUILL has all of this on the same keys, from the same shared code.
 
 #### Your own key, and your prompts, shared with QUILL

@@ -1,11 +1,13 @@
 # QUILL Lite's free AI: the complete guide
 
-*QUILL Lite 1.1. Updated September 29, 2026.*
+*QUILL Lite 2.0. Updated November 1, 2026.*
 
 QUILL's free AI helps with the writing in front of you. It can summarize it,
 rewrite it, proofread it, explain it, or answer a question about the document
 you have open. It is built into QUILL Lite and it is free. You do not need an
-account, a password or a card.
+account, a password or a card. If you already pay for ChatGPT or GitHub
+Copilot, or have your own key, QUILL Lite can use those instead, and you pick
+in one window, **Choose Your AI** (**Ctrl+4**).
 
 This guide walks you through all of it: how to start, what each command does,
 exactly which text is sent, what happens to the answer, the limits, and your
@@ -29,9 +31,11 @@ about six minutes.
 - [When something goes wrong](#when-something-goes-wrong)
 - [Your privacy](#your-privacy)
 - [Signing out and changing your mind](#signing-out-and-changing-your-mind)
-- [Which AI is in use](#which-ai-is-in-use)
-- [Using your own OpenAI or Google Gemini key: no limits](#using-your-own-openai-or-google-gemini-key-no-limits)
+- [Choose Your AI: which AI is in use](#choose-your-ai-which-ai-is-in-use)
+- [Using your own AI key: no limits](#using-your-own-ai-key-no-limits)
 - [Using your ChatGPT subscription](#using-your-chatgpt-subscription)
+- [GitHub Copilot and Codex](#github-copilot-and-codex)
+- [Do a Document Task](#do-a-document-task)
 - [Ask About an Image](#ask-about-an-image)
 - [Web search](#web-search)
 - [Tidy Dictated Text](#tidy-dictated-text)
@@ -76,16 +80,25 @@ a document* walks through these same steps with the app guiding you.
 
 ## The keys
 
-All six of these are in **Tools > AI**.
+All of these are in **Tools > AI**.
 
 | Command | Key |
 |---|---|
 | AI Assistant | Ctrl+Alt+G |
 | Ask About This Document | Ctrl+Alt+Z |
+| Ask AI a Question | Ctrl+6 |
+| Prompt Library | Ctrl+7 |
+| Do a Document Task | Ctrl+3 |
 | Usage | Ctrl+Alt+Shift+F9 |
+| Web Searches Left | Ctrl+9 |
+| Which AI Am I Using | Ctrl+8 |
+| Choose Your AI | Ctrl+4 |
 | Connect or Sign Out | Ctrl+Alt+Shift+F10 |
 | Privacy Agreement | Ctrl+Alt+Shift+K |
 | Use My Own AI Key | Alt+F2 |
+| Use My ChatGPT Subscription | Alt+F5 |
+| Ask About an Image | Ctrl+F5 |
+| Tidy Dictated Text | Ctrl+F3 |
 
 You can change any of these keys in **Tools > Keyboard Manager**.
 
@@ -94,9 +107,9 @@ document only changes when you press a button that says it will change it.
 
 ### What you learned, and where to go next
 
-Six keys cover the free AI, and Escape gets you out of any of its windows. The
-next chapter, *The AI pad*, explains what you find when you press
-**Ctrl+Alt+G**.
+Two keys open the pad, Ctrl+4 and Ctrl+8 tell you and change which AI answers,
+and Escape gets you out of any AI window. The next chapter, *The AI pad*,
+explains what you find when you press **Ctrl+Alt+G**.
 
 ## The AI pad
 
@@ -357,8 +370,9 @@ on its own, it is refused before anything is sent.
 ### With your own AI key
 
 None of those limits apply. The whole conversation goes with every message, and
-it is billed to your OpenAI or Google account, so a long conversation costs more for each
-reply. It is only shortened if it grows bigger than the model can read at once,
+it is billed to your provider's account, so a long conversation costs more for each
+reply. The same is true on your ChatGPT plan or GitHub Copilot, where it counts
+toward the plan instead. It is only shortened if it grows bigger than the model can read at once,
 and the window tells you when that happens.
 
 ### What you learned, and where to go next
@@ -369,23 +383,27 @@ you how to check what you have left.
 
 ## Usage, About and your support ID
 
-**Usage** shows what you have used and what is left this month and today, when
-each count starts again, and your **support ID**. It asks the service fresh
-every time you open it, so the numbers are always current. You also find **Sign
-Out This Computer** and **Copy Support ID** here.
+**Usage** (**Ctrl+Alt+Shift+F9**) is one list, with a sentence for each AI you
+have set up. For the free AI it says what you have used today or this month
+and when the count starts again, by QUILL's count, and it asks the service
+fresh every time you open it. Your ChatGPT plan's row is a count kept on this
+computer, GitHub Copilot's is GitHub's own count, and your own key's is what
+the provider said in its last answer. Each sentence says whose number it is.
+**Manage Usage** opens the selected one's own page. It is all text: no meter,
+no chart.
 
 **Help > About** shows the same allowance and support ID, under **QUILL's free
 AI**, once this computer is connected. Give it a moment after About opens,
 because the numbers are fetched while you read.
 
-If you have saved **your own AI key**, both of these show something
-different: the model you are using and where to find your provider's usage page,
-instead of an allowance. See *Using your own OpenAI or Google Gemini key: no
-limits*.
+If **your own AI key** is in use, About shows something different: the model
+you are using and where to find your provider's usage page, instead of an
+allowance. See *Using your own AI key: no limits*.
 
 Your **support ID** is a short code like `A1B2-C3D4`. Support needs it to find
-your account, because there is no name on it. When this computer is connected,
-**Get Help from Support** puts it into your message for you.
+your account, because there is no name on it. It is in **Help > About**, the
+Connect window tells you it when you connect, and **Get Help from Support**
+puts it into your message for you.
 
 ### What you learned, and where to go next
 
@@ -469,11 +487,17 @@ likely to hear:
   This is rare, and nothing is wrong with your computer.
 - **This computer was signed out.** Choose **Connect or Sign Out** and connect
   again.
-- **The way your requests go has changed.** If your own key or your ChatGPT
-  sign-in stops working while QUILL Lite is running, the next request does not
-  quietly go to QUILL's free AI instead. A **Send to a Different AI?** box asks
-  first, with **No** as the default; **No** sends nothing. The user guide's
-  *If the AI you use is not available* has the whole story.
+- **No AI is in use.** You signed out of the one in use, so the next AI command
+  says "No AI is in use. Choose one." and opens Choose Your AI. Nothing was
+  sent.
+- **The AI you chose cannot take it.** If your own key has gone, or OpenAI or
+  GitHub ended your sign-in, you hear so once, for example "Your ChatGPT plan
+  sign-in has ended. Nothing was sent. Press Ctrl+4 to sign in again or choose
+  another." QUILL Lite never sends it to the free AI, or anywhere else,
+  instead.
+- **It needs something the AI in use cannot do.** The command's menu name says
+  what, such as "(needs a connection that sees)". Pressing it sends nothing and
+  asks whether to switch to one that can, with **Yes** as the default.
 
 ### What you learned, and where to go next
 
@@ -483,8 +507,10 @@ message. Next, *Your privacy* explains what is sent and what is kept.
 ## Your privacy
 
 - **What is sent:** only the text shown in **What will be sent**, plus your
-  question if you asked one. It goes to QUILL's service and on to OpenAI, which
-  writes the answer.
+  question if you asked one. On the free AI it goes to QUILL's service and on
+  to OpenAI, which writes the answer. On any other AI it goes straight from
+  your computer to that company, and **About this connection** in Choose Your
+  AI says which.
 - **What is kept:** how many requests you made, how big they were, which kind
   of request each one was, and what it cost.
 - **What is not kept:** what you wrote. What came back. Your name, your email
@@ -505,8 +531,10 @@ step back out.
 
 ## Signing out and changing your mind
 
-- **Sign Out This Computer** is in **Usage**. Press it twice. The second press
-  confirms. You can connect again whenever you like.
+- **To disconnect this computer** from the free AI, open **Choose Your AI**
+  (**Ctrl+4**), arrow to **QUILL's free AI** and press **Delete** (or **Sign
+  Out** when it is the AI in use). It asks first, with **No** as the default.
+  You can connect again whenever you like.
 - **It is safe to read the agreement again.** Once you have agreed, **Privacy
   Agreement** (**Ctrl+Alt+Shift+K**) opens it with two buttons: **Keep Using
   AI**, which is what Enter and Escape do, and **Withdraw and Sign Out**.
@@ -518,30 +546,67 @@ step back out.
 
 ### What you learned, and where to go next
 
-You can sign out from Usage, and withdrawing your agreement also signs you out.
-If you would like more than the free allowance, the next two chapters, *Using
-your own OpenAI or Google Gemini key: no limits* and *Using your ChatGPT
-subscription*, explain the other ways to run AI help.
+You can sign out in Choose Your AI, and withdrawing your agreement also signs
+you out. If you would like more than the free allowance, the next chapters
+explain the other ways to run AI help, starting with the one window where you
+choose.
 
-## Which AI is in use
+## Choose Your AI: which AI is in use
 
-QUILL Lite keeps one record of which AI answers you: the free AI, your ChatGPT
-plan, or your own key. It is the same setting QUILL uses, `ai_connection`, so
-the two programs agree. GitHub Copilot and Codex are on the way and say "not
-available yet" for now; their models will live in `ai_copilot_model` and
-`ai_codex_model`.
+QUILL Lite keeps one record of which AI answers you: QUILL's free AI, your
+ChatGPT plan, your GitHub Copilot, Codex, or your own key. It is the same
+setting QUILL uses, `ai_connection`, so the two programs agree. Copilot's and
+Codex's models are kept in `ai_copilot_model` and `ai_codex_model`; empty means
+the service picks.
+
+**Choose Your AI** (**Ctrl+4**, or **Tools > AI > Choose Your AI...**) is where
+you see and change it. Focus lands on the **Connections** list, on the one in
+use. Each row says its name and then "in use", "signed in" or "not set up",
+such as "My own key, OpenAI, signed in". Tab moves to **About this
+connection** (what it can do, who gets your text and what it costs), then
+**Model** (that connection's own models, the recommended one first), then one
+button that follows the row (**Use This**, **Sign In...** or **Sign Out**),
+then **Close**. **Enter** on a row does what the button says; **Delete** on a
+signed-in row asks whether to sign out, with **No** as the default. While your
+ChatGPT plan's row or Codex's is selected and signed in, **Plan Options...**
+is there too (see *Web search*, below).
+
+QUILL Lite does not talk over your screen reader in this window. It speaks
+only what happened: "Now using My ChatGPT plan.", "Signed in to My ChatGPT
+plan. It is now in use.", or "Signed out. No AI is in use until you choose
+one."
+
+**Which AI Am I Using** (**Ctrl+8**) says in one line which AI is in use, the
+model, and one thing about usage, such as "My ChatGPT plan, gpt-6-luna. 3
+requests today from QUILL Lite, counted on this computer." Press it twice
+quickly to open Choose Your AI. The status bar's **AI** cell says the same
+thing shorter, such as "AI: ChatGPT plan"; press **F6**, arrow to it, and press
+**Enter** to open Choose Your AI.
+
+**When the AI in use cannot do something**, the command stays in the menu with
+its key and its name says what it needs, for example **Ask About an Image
+(needs a connection that sees)** or **Do a Document Task (needs Copilot or
+Codex)**. Pressing it sends nothing and asks whether to switch to one that
+can, with **Yes** as the default. If nothing you have set up can do it, **Yes**
+opens Choose Your AI on a row that can.
+
+**Use My Own AI Key** (**Alt+F2**), **Use My ChatGPT Subscription**
+(**Alt+F5**) and **Connect or Sign Out** (**Ctrl+Alt+Shift+F10**) keep their
+keys, and each opens Choose Your AI on its own row, ready to sign in.
 
 When you first start this version, QUILL Lite keeps what you already had: your
 ChatGPT plan if you were signed in, else your key if you had one saved, else
 the free AI.
 
-After that, signing in is choosing. Sign in with ChatGPT, save a key, or
-connect the free AI, and that one is in use. Sign out of the one in use and no
+After that, signing in is choosing. Sign in with ChatGPT or GitHub Copilot,
+save a key, or connect the free AI, and that one is in use. **Use This**
+switches to a row you are already signed in to. Sign out of the one in use and no
 AI is in use until you pick one; QUILL Lite never quietly sends your text
 somewhere else. The next AI command says "No AI is in use. Choose one."
 
-If OpenAI ends your ChatGPT sign-in, or your plan's limit is reached, you hear
-it once. Nothing is sent, nothing is retried, and nothing switches.
+If OpenAI ends your ChatGPT sign-in, GitHub ends your Copilot sign-in, or a
+limit is reached, you hear it once. Nothing is sent, nothing is retried, and
+nothing switches.
 
 QUILL Lite counts the requests it sends on your ChatGPT plan, today and this
 week, with the token counts OpenAI reports. The count stays on this computer.
@@ -549,10 +614,11 @@ week, with the token counts OpenAI reports. The count stays on this computer.
 Answers are plain text. QUILL Lite asks every AI not to draw charts or
 diagrams, and anything like that which arrives anyway is shown as text.
 
-## Using your own OpenAI or Google Gemini key: no limits
+## Using your own AI key: no limits
 
-If you have an OpenAI account or a Google Gemini key, you can use **your own
-key** instead of QUILL's free service. Then **every limit goes away**: no
+If you have a key from OpenAI, Google Gemini, Anthropic, OpenRouter, Ollama
+Cloud or another OpenAI-compatible service, or Ollama on your own computer, you
+can use **your own key** instead of QUILL's free service. Then **every limit goes away**: no
 monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 48 hours.
 
@@ -572,7 +638,8 @@ is what is in it:
    through it once.
 3. **API key.** Paste the key for the provider you chose. An OpenAI key comes
    from platform.openai.com, under API keys, and starts with `sk-`. A Gemini
-   key comes from Google AI Studio at aistudio.google.com/apikey.
+   key comes from Google AI Studio at aistudio.google.com/apikey. The About box
+   says where to get a key for each of the others.
 4. **Model.** A list of every model your key can use for text. It fills in
    from your account once the key is checked. For OpenAI, **Luna 6 comes
    first, then the other GPT-6 models**. For Gemini, **2.5 Flash comes first,
@@ -591,7 +658,8 @@ is what is in it:
    model list. Then it sends one tiny request to the chosen model and tells you
    whether it answered. That request costs a fraction of a cent.
 8. **Remove the Saved Key.** Forgets the chosen provider's key **straight
-   away** and puts AI help back on QUILL's free service.
+   away**. If your own key was the AI in use, no AI is in use until you choose
+   one.
 
 Press **OK** and your key is saved. QUILL Lite says "AI help uses your own
 OpenAI key, with no limits", or "your own Google Gemini key".
@@ -601,9 +669,10 @@ OpenAI key, with no limits", or "your own Google Gemini key".
 **You can change the model at any time.** With a key saved, the window lists
 your models as soon as it opens. Press **Alt+F2**, pick another, and press OK.
 
-**There is no separate on and off switch.** While a key is saved for the
-provider you chose, AI help uses it. Remove the key and AI help goes back to
-the free service, with its free allowance, straight away.
+**Saving a key is choosing it.** Press OK with a key saved and your own key is
+the AI in use. Remove it while it is in use and no AI is in use until you pick
+one in Choose Your AI. Your text never moves to the free AI unless you choose
+it.
 
 **Ollama on this computer needs no key.** Install Ollama from ollama.com, pull
 a model, and choose **Ollama on this computer**. The About box starts with
@@ -622,22 +691,22 @@ request never goes to a company you did not choose.
 
 **With a Gemini key, Ask About an Image works too.** Gemini's models can read
 pictures, so **Ctrl+F5** works on a Gemini key just as it does on a ChatGPT
-subscription. The free service and an OpenAI key cannot do this here.
+subscription, and so does a picture-reading model in Ollama on this computer.
+The free service and the other providers here cannot.
 
 ### What changes with your own key
 
-- Your text goes **straight from this computer to the provider you chose**,
-  OpenAI or Google, on your account. Nothing passes through QUILL's servers, so
-  QUILL records nothing at all, not even the count it keeps for the free
-  service.
-- **OpenAI or Google bills you** for each request, under that company's own
-  terms and privacy policy.
-- **Usage** (**Ctrl+Alt+Shift+F9**) opens a different window. It tells you
-  which model is answering and that no allowance applies, and it has an **Open
-  My Usage** button that takes you to the usage page on your OpenAI or Google
-  AI Studio account, where your requests and charges are. There is no Sign Out
-  and no support ID here, because you do not need either. **Help > About** also
-  shows the model and that page's address instead of the free allowance.
+- Your text goes **straight from this computer to the provider you chose**, on
+  your account. Nothing passes through QUILL's servers, so QUILL records
+  nothing at all, not even the count it keeps for the free service. With
+  Ollama on this computer, nothing leaves the computer.
+- **That company bills you** for each request, under its own terms and privacy
+  policy. Ollama on this computer bills nothing.
+- **Usage** (**Ctrl+Alt+Shift+F9**) has a row for your key: how many requests
+  are left this minute, from the provider's last answer, where it reports one.
+  **Manage Usage** takes you to your provider's usage page, where your requests
+  and charges are. **Help > About** also shows the model and that page's
+  address instead of the free allowance.
 - You do not need to connect this computer, and you are not asked for the free
   service's agreement. That agreement is about QUILL's servers, and your own
   key never uses them.
@@ -667,13 +736,14 @@ the key you saved. **Test the Key** tells you which one it is.
 ### What you learned, and where to go next
 
 With your own key saved and its provider chosen, AI help has no limits and
-your text goes straight to OpenAI or Google on your account. Remove the key and
-you are back on the free service. If you already pay for ChatGPT, *Using your
+your text goes straight to that provider on your account, or nowhere at all
+with Ollama on this computer. Remove the key while it is in use and no AI is
+in use until you choose one. If you already pay for ChatGPT, *Using your
 ChatGPT subscription* is next, and it needs no key at all.
 
 ## Using your ChatGPT subscription
 
-If you already pay for ChatGPT, QUILL Lite can run every AI command on your
+If you already pay for ChatGPT, QUILL Lite can run its AI commands on your
 plan, and you never have to handle a key. You sign in once in your browser,
 the same way you sign in to ChatGPT itself. From then on, the pad, the
 seventeen things it can do, Ask About This Document and conversations all go to
@@ -682,38 +752,38 @@ through QUILL's servers. Requests draw on your plan's own usage limits,
 shared with ChatGPT and any other app you have connected; ChatGPT's
 **Settings > Usage** lets you set a weekly limit for each app. When the
 limit is reached, QUILL Lite says so and does not switch to an API key. You also get two
-things the free service and an API key cannot do: **pictures, described**, and
-**web search** for an answer about today.
+things the free service cannot do: **pictures, described**, and **web search**
+for an answer about today. The same sign-in also unlocks **Codex**, for
+document tasks.
 
 ### Signing in, step by step
 
-1. Press **Alt+F5** (**Tools > AI > Use My ChatGPT Subscription**). The window
-   opens on **About this**, which tells you where your text goes. Arrow through
-   it once.
-2. Tab to **Continue with ChatGPT** and press it. Your browser opens on
-   OpenAI's own sign-in page.
+1. Press **Alt+F5** (**Tools > AI > Use My ChatGPT Subscription**). **Choose
+   Your AI** opens on **My ChatGPT plan**, with its sign-in step ready.
+2. The step says "To use My ChatGPT plan, approve QUILL Lite on OpenAI's
+   page." Press **Open the Page**. Your browser opens on OpenAI's own sign-in
+   page.
 3. Sign in to ChatGPT there. A page asks whether **QUILL Lite** may use your
    plan. Allow it. That is the name you will see under Apps in ChatGPT's
    settings from now on. Each QuillVille app signs in on its own: QUILL, QUILL
    Cast and Quill Radio each ask under their own name, and signing out of one
-   leaves the others signed in. If another app is already signed in on this
-   computer, the Status line tells you. Your browser is then already signed
-   in, so this step is just one Allow, with no password.
-4. Come back to QUILL Lite. The window says "Signed in with ChatGPT as"
-   followed by your email address. Focus lands on the **Model** list, and the
-   first model your plan offers is already chosen. You are done.
+   leaves the others signed in. If you are already signed in to ChatGPT in
+   your browser, this step is just one Allow, with no password.
+4. Come back to QUILL Lite. The step closes by itself and you hear "Signed in
+   to My ChatGPT plan. It is now in use." You are done.
 
-If the browser did not open, the window tells you and offers **Copy the Sign-In
-Address**. Paste that into any browser on this computer and finish there.
-**Stop Waiting** gives up without changing anything.
+If the browser did not open, the step shows the address. Paste it into any
+browser on this computer and finish there. **Cancel** gives up without
+changing anything.
 
 ### Choosing the model
 
-The **Model** list is read from your account the moment you sign in, so it
-holds exactly what your plan offers. Luna 6 and the GPT-6 models come first,
-then the rest by name. Models that cannot answer in text are left out. Arrow to
-one and it is saved as soon as you land on it, so there is no OK to press.
-**Refresh Models** reads the list again, in case your plan has gained one.
+The **Model** list in Choose Your AI, on the plan's row, is read from your
+account, so it holds exactly what your plan offers, in OpenAI's own order with
+the first marked "(recommended)". Models that cannot answer in text are left
+out. Your choice is saved as soon as you make it, so there is no OK to press.
+If the list cannot be read, the window says so and the recommended model is
+used.
 
 ### What changes
 
@@ -722,27 +792,30 @@ one and it is saved as soon as you land on it, so there is no OK to press.
   instead of three passages. Before you send, the *About to send* line tells
   you how many words are going and that they count toward your plan.
 - **What you use counts toward your plan's usage.** OpenAI keeps track of that
-  and shows it on ChatGPT's own usage page. **Open ChatGPT Usage** in the
-  window takes you there. When you reach a limit, QUILL Lite tells you in
-  words, with the code `QUILL-AI-CHATGPT-LIMIT`, and the usage page shows when
-  it resets.
-- **Usage** (**Ctrl+Alt+Shift+F9**) opens this same window, and **Help >
-  About** names your account and model instead of the free allowance.
+  and shows it on ChatGPT's own usage page. When you reach a limit, QUILL Lite
+  tells you in words, once, with the code `QUILL-AI-CHATGPT-LIMIT`, and the
+  usage page shows when it resets.
+- **Usage** (**Ctrl+Alt+Shift+F9**) has your plan's row: the requests QUILL
+  Lite sent today and this week, with the token counts OpenAI reported, counted
+  on this computer and always called that. **Manage Usage** opens ChatGPT's own
+  usage page. **Help > About** names your account and model instead of the
+  free allowance.
 - You are not asked for the free service's agreement, and this computer does
   not need to be connected to it. That agreement is about QUILL's servers, and
   your subscription never uses them.
-- **If you also have an OpenAI key saved, your ChatGPT sign-in is used first.**
-  Your plan is already paid for, while a key is billed for each request. Sign
-  out, and the key takes over again.
+- **A saved key does not compete with your plan.** Whichever one you chose in
+  Choose Your AI is in use, and the other waits. Sign out of the plan and no AI
+  is in use until you choose one; the key does not take over by itself.
 
 ### Signing out, and forgetting
 
-**Sign Out** (press it twice) asks OpenAI to cancel QUILL Lite's sign-in and
-forgets it on this computer. **Forget on This Computer** only forgets it here.
-Use it on a computer that is offline, or when you have already removed the
-sign-in in ChatGPT's settings. Until you remove it there, QUILL Lite stays
-listed in ChatGPT's settings. You only see these two buttons while you are
-signed in.
+**Sign Out**, in Choose Your AI while the plan is in use (or **Delete** on its
+row, which asks first), asks OpenAI to cancel QUILL Lite's sign-in and forgets
+it on this computer. **Forget on This Computer**, in **Plan Options...**, only
+forgets it here. Use it on a computer that is offline, or when you have
+already removed the sign-in in ChatGPT's settings. Until you remove it there,
+QUILL Lite stays listed in ChatGPT's settings. Either way, if the plan was in
+use, no AI is in use afterwards until you choose one.
 
 ### Where the sign-in is kept
 
@@ -755,10 +828,84 @@ one out leaves the others as they were.
 
 ### What you learned, and where to go next
 
-Press Alt+F5, sign in once in your browser, and every AI command runs on your
-ChatGPT plan with no allowance and no key. Next, *Ask About an Image* and *Web
-search* cover the two things only a subscription (or, for images, a Gemini key)
-can do.
+Press Alt+F5, sign in once in your browser, and your AI commands run on your
+ChatGPT plan with no allowance and no key. Next, *GitHub Copilot and Codex*
+covers the two connections that can carry out document tasks.
+
+## GitHub Copilot and Codex
+
+**My GitHub Copilot** uses your GitHub Copilot plan, Copilot Free included.
+**Sign In...** on its row in Choose Your AI opens the same small sign-in step
+as the plan, with one more field: a short code from GitHub, spaced out so your
+screen reader reads it one character at a time, said once, and already on the
+clipboard. Press **Open the Page**, paste or type the code on GitHub's page,
+and approve QUILL Lite. The step closes by itself and you hear "Signed in to My
+GitHub Copilot. It is now in use." On Copilot Free the only model is "Auto
+(Copilot Free chooses)". QUILL Lite signs in to GitHub on its own, apart from
+QUILL and the other apps.
+
+Signing in from inside QUILL Lite needs QUILL Lite's own registration with
+GitHub. Until a build carries it, the row says "not available yet", and About
+and **Sign In...** both say "Not available yet: GitHub sign-in for QUILL Lite
+has not been registered, so it comes in a later update." Nothing goes to
+GitHub until then.
+
+With Copilot in use, the pad, Ask, the Prompt Library and Ask About an Image
+(on a Copilot model that can see) go to Copilot. **Which AI Am I Using** and
+**Usage** include GitHub's own count, such as "41 of 300 premium requests this
+month, by GitHub's count"; the first time, Ctrl+8 waits a moment for it. A
+Copilot error is said once; nothing is retried or switched.
+
+**Codex, for tasks** runs on your ChatGPT plan with the same sign-in, so once
+you are signed in to the plan, **Use This** on the Codex row is the only key to
+press. While Codex is in use, single requests (the pad, Ask, Ask About an
+Image) go straight to your plan, and Ctrl+8 says "Codex, on your ChatGPT plan.
+Single requests go to the plan directly." The Codex program itself starts only
+for a document task. If this copy does not include the Codex engine, the row
+says "not available yet".
+
+### What you learned, and where to go next
+
+Copilot signs in with a short code from GitHub, and Codex is one keypress once
+your plan is signed in. Next, *Do a Document Task* shows what they are for.
+
+## Do a Document Task
+
+**Do a Document Task** (**Ctrl+3**, in **Tools > AI**) hands a job with several
+steps to GitHub Copilot or Codex, whichever is in use: "Fix the heading levels,
+then build a table of contents", or "Turn these notes into actions grouped by
+owner." On any other AI its name says "(needs Copilot or Codex)", and pressing
+it sends nothing and offers to switch.
+
+The window has six things, in Tab order: **Conversation**, a read-only record
+of the task; **Status**, which says "Using GitHub Copilot" or "Using Codex on
+your ChatGPT plan" and whether it is working; **Instruction**, where focus
+starts; **Send**; **Stop**; and **Close**. Type what you want done and press
+**Enter**. While the task runs, anything you type goes to it as a follow-up.
+**Stop** ends it at once, and **Close** stops a task that is still running.
+
+Nothing changes without you. Before a step that changes something, **Allow This
+Step?** says in one sentence what will happen. **Enter** is **Allow once**;
+**Allow for this task** stops it asking about that kind of step until the task
+ends; **Escape** is **Don't allow**. Every edit then opens **Review AI
+Changes**, so you accept or reject each change, and each one undoes with
+**Ctrl+Z**. The next task asks again.
+
+When the task ends you hear its summary, such as "Done. 1 change applied:
+Changed the document. Each can be undone with Control Z." It is built from
+what really happened and also says how many changes you declined. The AI's own
+summary is in the conversation, one **Shift+Tab** away.
+
+A task can only read your document, propose edits and run a short list of safe
+QUILL Lite commands. It cannot reach the web or your files, and it answers in
+plain text, never charts or diagrams. What the engine keeps while it works is
+deleted when the task ends or you press Stop.
+
+### What you learned, and where to go next
+
+Ctrl+3 hands a job to Copilot or Codex, every step that changes something asks
+first, and every edit is reviewed and undoable. Next, *Ask About an Image* and
+*Web search* cover pictures and looking things up.
 
 ## Ask About an Image
 
@@ -778,15 +925,22 @@ file, ask a question or ask nothing, and hear what the model sees.
 4. Press **Enter**. You hear "Working." The picture is checked on your computer
    first. A file that is not really an image, or one over 20 MB, is refused
    with a sentence telling you why, and nothing is sent. Otherwise it goes to
-   OpenAI on your plan.
+   the AI in use.
 5. The **Image Description** window opens with focus on the text. **Insert
    Below** puts it into your document under the paragraph you are in, which is
    a handy way to caption a picture. **Copy** puts it on the clipboard, and
    **Ctrl+Z** takes an insert back.
 
-You need your ChatGPT subscription for this. If you are not signed in,
-**Ctrl+F5** tells you so and opens the account window. Only the picture and
-your question are sent. Nothing from your document goes with them.
+You need an AI that can see pictures: your ChatGPT plan or Codex, a GitHub
+Copilot model that sees, a Gemini key, or a picture-reading model in Ollama on
+this computer. On any other AI the menu says **Ask About an Image (needs a
+connection that sees)**, and pressing it sends nothing and offers to switch.
+Only the picture and your question are sent. Nothing from your document goes
+with them.
+
+This is the only AI in QUILL Lite that looks at a picture, and only at a file
+you choose. Nothing looks at your screen, and no AI here makes pictures or
+charts: every answer is text.
 
 ### What you learned, and where to go next
 
@@ -796,8 +950,8 @@ model look things up.
 
 ## Web search
 
-Open **Use My ChatGPT Subscription** and check **Allow web search**. Then the
-model may search the web through OpenAI when your question needs it, such as an
+On your ChatGPT plan, check **Allow web search** in **Plan Options...**. Then
+the model may search the web through OpenAI when your question needs it, such as an
 event, a price, or what a page says today, and tell you what it found. This
 works for Ask a general question, Ask a question about the document, and
 conversations.
@@ -808,17 +962,20 @@ you make it.
 
 To turn it on:
 
-1. Press **Alt+F5**.
-2. Press **Alt+W**, or Tab to **Allow web search**.
-3. Press **Space**. You hear "Web search is allowed." It is saved straight
-   away.
+1. Press **Alt+F5**. Choose Your AI opens on **My ChatGPT plan**.
+2. Tab to **Plan Options...** and press it.
+3. Press **Alt+W**, or Tab to **Allow web search**, and press **Space**. It is
+   saved straight away. Press **Escape** to close the options.
 
-Press Space on the same checkbox to turn it off again.
+Press Space on the same check box to turn it off again. The free AI has its
+own ten searches a month instead, through the pad's **Search the web** choice
+and **Web Searches Left** (**Ctrl+9**); with your own key there is no web
+search.
 
 ### What you learned, and where to go next
 
-Web search is off until you check Allow web search, and then the model can look
-up current answers. Next, *Tidy Dictated Text* shows how AI can clean up what
+On your plan, web search is off until you check Allow web search in Plan
+Options, and then the model can look up current answers. Next, *Tidy Dictated Text* shows how AI can clean up what
 you dictated.
 
 ## Tidy Dictated Text
@@ -834,8 +991,9 @@ fillers and false starts. It changes nothing else.
 4. Press **Replace My Selection** to put it back where the dictated text was.
    **Ctrl+Z** undoes it in one step. Press **Escape** to keep what you had.
 
-This runs on a ChatGPT subscription or your own AI key, from OpenAI or
-Google Gemini. If you have neither, it tells you so and opens the account window.
+This runs on any AI except the free one: your ChatGPT plan, GitHub Copilot,
+Codex or your own key. On the free AI it tells you so and opens Choose Your AI
+on your plan's row.
 
 ### What you learned, and where to go next
 
@@ -884,10 +1042,10 @@ the Dictionary submenu again on the same word.
 
 ### What it needs
 
-**It runs only on your ChatGPT subscription or your own AI key (OpenAI or
-Google Gemini), never on the free service.** People look words up many times a day, and that would use
-up a free allowance very quickly. If you have neither, each command tells you
-so and opens the account window. The user guide's *Dictionary* section has the
+**It runs on any AI except the free one: your ChatGPT plan, GitHub Copilot,
+Codex or your own key.** People look words up many times a day, and that would
+use up a free allowance very quickly. On the free AI, each command tells you so
+and opens Choose Your AI. The user guide's *Dictionary* section has the
 full table, and *Look Up* in that section is the dictionary without AI.
 
 ### What you learned, and where to go next
@@ -902,17 +1060,24 @@ Find the Word For... helps when the word is on the tip of your tongue. Last,
 eight-character code connects this computer, and that is all.
 
 **Does it cost anything?** No. It is paid for by Community Access. If you use
-your own AI key instead, OpenAI or Google bills your account and there are no
-limits.
-If you sign in with a ChatGPT subscription, what you use counts toward that
-plan and nothing else is billed.
+your own AI key instead, that provider bills your account and there are no
+limits; Ollama on this computer costs nothing. If you sign in with a ChatGPT
+subscription or GitHub Copilot, what you use counts toward that plan and
+nothing else is billed.
 
-**I pay for ChatGPT. Do I still need a key?** No. Press **Alt+F5**, choose
-Continue with ChatGPT, and sign in the way you do on the web. That is the whole
+**I pay for ChatGPT. Do I still need a key?** No. Press **Alt+F5**, press
+**Open the Page**, and sign in the way you do on the web. That is the whole
 setup, and it is the way to have pictures described and the web searched.
 
-**Can it describe a picture?** Yes, on a ChatGPT subscription. Press
-**Ctrl+F5**, choose the file, and listen. See *Ask About an Image*.
+**Which AI am I using?** Press **Ctrl+8**. Press it twice to change it.
+
+**Can it describe a picture?** Yes, on an AI that can see: your ChatGPT plan,
+Codex, a Copilot model that sees, a Gemini key, or a picture-reading Ollama
+model. Press **Ctrl+F5**, choose the file, and listen. See *Ask About an
+Image*.
+
+**Can it do a job with several steps?** Yes, on GitHub Copilot or Codex. Press
+**Ctrl+3**. See *Do a Document Task*.
 
 **Can it change my document without asking?** No. Nothing goes into your
 document until you press **Replace My Selection** or **Insert Below**, and

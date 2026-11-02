@@ -16,9 +16,8 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-#: Serialized onto one worker: builds a real Quill Radio window, which registers
-#: system-wide hotkeys.
-pytestmark = pytest.mark.machine_global
+#: A real window with its machine-wide doors closed (closed_machine_doors in tests/conftest.py).
+pytestmark = pytest.mark.usefixtures("closed_machine_doors")
 
 
 class _Account:

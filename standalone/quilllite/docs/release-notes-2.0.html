@@ -374,6 +374,15 @@ Changes, and Ctrl+Z undoes each one.</li>
 <li><strong>No dead ends.</strong> When the AI you are using cannot do
 something, the command stays where it was, its name says what it needs,
 and pressing it offers to switch instead of failing quietly.</li>
+<li><strong>Nothing switches by itself.</strong> Sign out of the AI in
+use and no AI is in use until you choose one; the next AI command says
+“No AI is in use. Choose one.” A missing key, an ended sign-in or a
+reached limit is said once, and nothing is sent anywhere else. Until a
+build carries QUILL Lite’s own GitHub registration, the Copilot row says
+“not available yet”.</li>
+<li><strong>Plan Options…</strong>, beside your ChatGPT plan’s row,
+holds Allow web search and Forget on This Computer. Every AI answer is
+text, never a chart.</li>
 <li><strong>Shared with QUILL.</strong> Use My Own AI Key (Alt+F2) now
 offers Anthropic Claude, OpenRouter, Ollama Cloud, a custom service and
 Ollama on this computer, and your saved prompts are the same list QUILL
@@ -413,12 +422,13 @@ many remain. The AI Assistant can put the answer in its window, at the
 cursor, or on the clipboard, and QUILL’s free service can add new tools
 without an update.</li>
 </ul>
-<h3 id="ai-help-with-a-google-gemini-key">AI help with a Google Gemini
-key</h3>
+<h3 id="ai-help-with-your-own-key">AI help with your own key</h3>
 <p><strong>Use My Own AI Key</strong> (<strong>Alt+F2</strong>), which
 used to be called Use My Own OpenAI Key, now opens on a
-<strong>Provider</strong> list: OpenAI or Google Gemini. Choose one,
-paste that company’s key, and everything follows your choice: where your
+<strong>Provider</strong> list: OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter, Ollama Cloud, a custom OpenAI-compatible service, or Ollama
+on this computer. Choose one, paste that company’s key (Ollama on this
+computer needs none), and everything follows your choice: where your
 text goes, which models you can pick, and what they cost. QUILL Lite
 never guesses from the key or the model name.</p>
 <p>You can keep both keys saved and switch with the Provider list. With
@@ -428,8 +438,9 @@ Tidy Dictated Text.</p>
 <p>If you use your ChatGPT plan in more than one Quill app, each app now
 keeps its own sign-in. Signing out of one leaves the others signed in,
 and <strong>Use My ChatGPT Subscription</strong>
-(<strong>Alt+F5</strong>) tells you when another app on this computer is
-already signed in, so signing in here is one Allow in your browser.</p>
+(<strong>Alt+F5</strong>) now opens Choose Your AI on your plan’s row,
+ready to sign in. If your browser is already signed in to ChatGPT,
+signing in here is one Allow.</p>
 <h2 id="finding-the-right-word">Finding the right word</h2>
 <h3 id="the-thesaurus">The thesaurus</h3>
 <p>Press <strong>Shift+F7</strong>, the same key as in Word and QUILL,
@@ -487,9 +498,10 @@ the meaning, and it suggests the word you are reaching for.</li>
 <p>When an answer offers words, Tab to <strong>Choices</strong> and
 press Enter, or choose <strong>Use This Word</strong>. It goes into your
 document as one step, and one Ctrl+Z takes it back.</p>
-<p>The AI dictionary needs your ChatGPT subscription or your own AI key.
-It does not use QUILL’s free AI service, because a dictionary gets asked
-many times a day and would use up the free allowance quickly.</p>
+<p>The AI dictionary works on any AI except the free one: your ChatGPT
+plan, GitHub Copilot, Codex or your own key. It does not use QUILL’s
+free AI service, because a dictionary gets asked many times a day and
+would use up the free allowance quickly.</p>
 <h3 id="checking-your-word-lists">Checking your word lists</h3>
 <p><strong>Tools &gt; Spelling &gt; Dictionary Status</strong>
 (<strong>Alt+Shift+;</strong>) tells you how many words your personal
@@ -1559,6 +1571,18 @@ same echo and is fixed too.</li>
 <td>Web Searches Left</td>
 </tr>
 <tr>
+<td><strong>Ctrl+8</strong></td>
+<td>Which AI Am I Using</td>
+</tr>
+<tr>
+<td><strong>Ctrl+4</strong></td>
+<td>Choose Your AI</td>
+</tr>
+<tr>
+<td><strong>Ctrl+3</strong></td>
+<td>Do a Document Task</td>
+</tr>
+<tr>
 <td><strong>F11</strong></td>
 <td>Speak a Command</td>
 </tr>
@@ -1579,8 +1603,9 @@ AI dictionary.</li>
 <li>Chapter 8, What you hear, for Activity and Repeat Last Result.</li>
 <li>Chapter 9, Writing by voice, for holding Ctrl+F11, the live preview,
 talking to the AI and OpenAI dictation.</li>
-<li>Chapter 10, AI help, for a Google Gemini key and your ChatGPT
-plan.</li>
+<li>Chapter 10, AI help, for Choose Your AI, your own key, your ChatGPT
+plan, GitHub Copilot, Codex and document tasks. QUILL Lite’s AI guide
+covers the same ground step by step.</li>
 <li>Chapter 11, Making QUILL Lite yours, for Find a setting and for
 making QUILL Lite your text editor.</li>
 <li>Chapter 12, Your files, updates and QUILL for All, for keeping QUILL
