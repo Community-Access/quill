@@ -146,6 +146,9 @@ class SplitPlan:
     names: tuple[str, ...]
     splittable: bool
     reason: str = ""
+    #: The raw stream title of each piece, in order (``names`` is built
+    #: from these; a split of a finished recording names its files anew).
+    titles: tuple[str, ...] = ()
 
     @property
     def song_count(self) -> int:
@@ -239,7 +242,7 @@ def plan_split(
         f"{stem} - {index:02d} {song_file_name(title)}{source.suffix}"
         for index, title in enumerate(titles, start=1)
     ]
-    return SplitPlan(source, tuple(cuts), tuple(numbered), splittable=True)
+    return SplitPlan(source, tuple(cuts), tuple(numbered), splittable=True, titles=tuple(titles))
 
 
 def build_segment_command(
@@ -325,12 +328,20 @@ def split_recording(
     ffmpeg: str | None = None,
     runner: _Runner = run_subprocess_safely,
     timeout_seconds: float = _SPLIT_TIMEOUT_SECONDS,
+    destination: Path | None = None,
+    keep_source: bool = False,
 ) -> SplitOutcome:
     """Carry out *plan*, or explain why the recording was kept whole.
 
     Order is the safety contract: cut into a private folder, verify, move
     every song into place, and only then remove the whole recording. If a move
     fails, the songs already moved are removed again and the recording stays.
+
+    *destination* is the folder the songs go to (the recording's own folder
+    by default; it is made when missing and removed again if the split fails
+    and left it empty). *keep_source* leaves the whole recording where it is,
+    which is what splitting a finished recording from the Recordings window
+    does: the songs are an extra, never a replacement.
     """
     source = plan.source
     if not plan.splittable:
@@ -344,10 +355,27 @@ def split_recording(
     except OSError as exc:
         logger.warning("Could not make a work folder to split a recording: %s", exc)
         return SplitOutcome(False, source, (source,), "there was no room to split it")
+    folder = destination if destination is not None else source.parent
+    made_folder = not folder.exists()
     try:
-        return _split_into(plan, binary, muxer, work, runner, timeout_seconds)
+        folder.mkdir(parents=True, exist_ok=True)
+        outcome = _split_into(plan, binary, muxer, work, runner, timeout_seconds, folder)
+    except OSError as exc:
+        logger.warning("Could not make the folder for the split songs: %s", exc)
+        reason = "the folder for the songs could not be made"
+        outcome = SplitOutcome(False, source, (source,), reason)
     finally:
         shutil.rmtree(work, ignore_errors=True)
+    if made_folder and not outcome.split:
+        try:
+            folder.rmdir()  # only when empty: nothing of anybody's is removed
+        except OSError:
+            pass
+    if outcome.split and keep_source:
+        return SplitOutcome(True, source, outcome.files)
+    if outcome.split:
+        return _remove_whole(outcome)
+    return outcome
 
 
 def _split_into(
@@ -357,6 +385,7 @@ def _split_into(
     work: Path,
     runner: _Runner,
     timeout_seconds: float,
+    folder: Path,
 ) -> SplitOutcome:
     source = plan.source
     kept = SplitOutcome(False, source, (source,))
@@ -379,7 +408,7 @@ def _split_into(
     if problem:
         logger.warning("Split recording rejected: %s", problem)
         return SplitOutcome(False, source, kept.files, problem)
-    targets = _unique_targets(source.parent, plan.names)
+    targets = _unique_targets(folder, plan.names)
     moved: list[Path] = []
     for piece, target in zip(pieces, targets, strict=True):
         try:
@@ -393,6 +422,13 @@ def _split_into(
                     pass
             return SplitOutcome(False, source, kept.files, "the song files could not be saved")
         moved.append(target)
+    return SplitOutcome(True, source, tuple(moved))
+
+
+def _remove_whole(outcome: SplitOutcome) -> SplitOutcome:
+    """Every song is in place: remove the whole recording they came from."""
+    source = outcome.source
+    moved = outcome.files
     try:
         source.unlink()
     except OSError as exc:
@@ -401,7 +437,7 @@ def _split_into(
         logger.warning("Could not remove the whole recording after splitting: %s", exc)
         return SplitOutcome(True, source, tuple(moved), "the whole recording was also kept")
     logger.info("Split a recording into %d songs.", len(moved))
-    return SplitOutcome(True, source, tuple(moved))
+    return SplitOutcome(True, source, moved)
 
 
 def describe_split(outcome: SplitOutcome) -> str:

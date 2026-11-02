@@ -10,6 +10,12 @@ Delete with recordings marked removes every one of them after one question
 ("Delete 3 recordings?", default No). The files are held aside the same way a
 single delete holds one, so **Ctrl+Z brings all of them back** in one step.
 The cursor then lands on the nearest surviving row, never back at the top.
+A recording's song log (``<name>.songs.json``) goes with it, and comes back
+with it.
+
+Marks also choose what **Split into Songs** (Ctrl+Alt+O,
+:mod:`quill.ui.radio.recordings_split`) cuts: every marked recording, rather
+than only the selected one. Splitting keeps the recordings, so it asks nothing.
 
 Split from ``recordings_manager_dialog`` under GATE-11, beside its sibling
 :mod:`quill.ui.radio.recordings_delete`, which still owns the one-row delete.
@@ -33,7 +39,7 @@ from quill.ui.radio.marks_shared import (
     yes_no_asker,
 )
 
-__all__ = ["on_key", "remove", "remove_marked", "toggle_selected"]
+__all__ = ["clear", "on_key", "remove", "remove_marked", "toggle_selected"]
 
 _NOUN = "recording"
 
@@ -85,9 +91,11 @@ def remove_marked(dialog: Any, *, ask: Callable[[str], bool] | None = None) -> b
     order = [entry.id for entry in dialog._entries]
     current = dialog._selected()
     landing = landing_after(order, current.id if current else None, marks.keys)
+    from quill.core.radio.recording_song_log import SIDECAR_SUFFIX, companions
     from quill.ui import undo_last_ui
 
     paths = [entry.path for entry in doomed]
+    paths += [log for path in list(paths) for log in companions(path)]
     held = undo_last_ui.hold_or_delete(paths)
     failed = 0
     if not held:
@@ -95,7 +103,7 @@ def remove_marked(dialog: Any, *, ask: Callable[[str], bool] | None = None) -> b
             try:
                 path.unlink(missing_ok=True)
             except OSError:
-                failed += 1
+                failed += 0 if path.name.endswith(SIDECAR_SUFFIX) else 1
 
     def _undo() -> None:
         undo_last_ui.restore(held)
@@ -139,8 +147,18 @@ def on_key(dialog: Any, event: Any) -> None:
     elif action == ACT:
         remove(dialog)
     elif action == CLEAR:
-        clear_marks(marks_on(dialog), announce=dialog._announce)
-        for row, entry in enumerate(dialog._entries):
-            dialog._set_row(row, entry)
+        clear(dialog)
     else:
+        from quill.ui.radio import recordings_split
+
+        if recordings_split.is_split_key(dialog._wx, event):
+            recordings_split.split_into_songs(dialog)
+            return
         event.Skip()
+
+
+def clear(dialog: Any) -> None:
+    """Clear Marks: unmark every recording, say how many, redraw the rows."""
+    clear_marks(marks_on(dialog), announce=dialog._announce)
+    for row, entry in enumerate(dialog._entries):
+        dialog._set_row(row, entry)

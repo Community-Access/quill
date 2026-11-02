@@ -3711,10 +3711,12 @@ now, the finished ones, and the scheduled ones.
    plays), **Stop Recording** (on a row being recorded), **Stop All
    Recordings** (when two or more are running), **Open in Folder** (shows the
    file in File Explorer), **Remove...** and **Refresh**.
-5. Press **Delete** to remove a finished recording. **No** is already chosen;
+5. Press **Ctrl+Alt+O** to split a finished recording into songs (see
+   "Splitting a recording you already have" later in this chapter).
+6. Press **Delete** to remove a finished recording. **No** is already chosen;
    press **Y** to delete. Your cursor lands on the next recording. If you
    change your mind, Ctrl+Z in the main window brings it back.
-6. Press **Escape** to close. Recordings keep going.
+7. Press **Escape** to close. Recordings keep going.
 
 #### Removing several recordings at once
 
@@ -3732,6 +3734,12 @@ once" in Chapter 7):
    is left, and one **Ctrl+Z** in the main window brings all three back.
 
 **Ctrl+Shift+Delete** clears every mark and says how many it cleared.
+
+Marks also choose what **Split into Songs** (Ctrl+Alt+O) works on: with
+recordings marked, every marked one is split, and you hear one sentence at the
+end, for example "Split 3 of 3 recordings into 31 songs." Splitting keeps the
+recordings, so it asks nothing first, and your marks stay so you can delete
+the whole recordings afterwards if you want to.
 
 For example, after a week of scheduled shows you might arrow down the list
 pressing **.** on Monday, Tuesday and Thursday, then press **Delete** once and
@@ -3755,8 +3763,13 @@ Recordings." If you have schedules but none of them will happen, it says "3
 scheduled, none coming up".
 
 The list keeps itself up to date every couple of seconds, without losing your
-place. It has no Shift+F10 menu. Its menus are **Recordings** (Alt+R, with
-**Close**, Ctrl+W), **Station** and **Window**. To choose what each row says,
+place. **Shift+F10** (or the Applications key) on a finished recording offers
+**Play** (Enter), **Open in Folder**, **Split into Songs** (Ctrl+Alt+O) and
+**Delete...** (Delete), then **Mark for Deleting** and, while anything is
+marked, **Remove N Marked...** and **Clear Marks**. On a recording still being
+made it offers **Stop Recording**. Its menus are **Recordings** (Alt+R, with
+**Split into Songs**, Ctrl+Alt+O, and **Close**, Ctrl+W), **Station** and
+**Window**. To choose what each row says,
 see "What each row says" in Chapter 14.
 
 #### Winamp keys in Radio Recordings
@@ -3937,6 +3950,43 @@ Things to know:
 - The first file is whatever was already playing when you pressed Record, so
   it is usually the end of a song.
 - It works with every recording format, including Raw stream.
+
+#### Splitting a recording you already have
+
+You do not have to decide before you record. Whether the setting is on or
+off, Quill Radio notes when the song changes while it records. With the
+setting off, it keeps those notes in a small file beside the recording, with
+the same name and `.songs.json` on the end. Radio Recordings does not list that
+file, and deleting the recording deletes it too.
+
+To split a recording later:
+
+1. Press **Ctrl+Shift+R** to open Radio Recordings and arrow to the recording.
+   To split several, press **.** on each one.
+2. Press **Ctrl+Alt+O**, or choose **Split into Songs** from the **Recordings**
+   menu or the Shift+F10 menu.
+3. Carry on with something else if you like. When it is done you hear one
+   sentence, for example "Split KXYZ - 2026-10-17 20-00-00.mp3 into 12 songs,
+   in the folder KXYZ - 2026-10-17 20-00-00 songs."
+
+The songs go into a new folder beside the recording, named after it with
+" songs" on the end. Each song is called by its artist and title, for example
+`Queen - Somebody to Love.mp3`, or by its title alone when the station gives
+no artist. The same rules about names apply as above: characters a file name
+cannot hold are left out, and a name already in the folder gets " (2)" added.
+**The recording itself is kept**, untouched, so splitting it again or deleting
+it is up to you.
+
+If a recording has nothing to cut at, you hear that plainly, for example
+"KXYZ - 2026-10-17 20-00-00.mp3 has no song changes recorded, so there is
+nothing to split it at." That is what you hear for a station that sends no
+song names, for a talk show, and for anything recorded before Quill Radio
+started keeping these notes. A recording whose stream dropped and reconnected
+is not split either, for the reason given above.
+
+While it records, Quill Radio asks the station for the song name every ten
+seconds. A station that has said no song name at all for a minute is asked
+only once a minute after that.
 
 ### If a recording was in progress when Quill Radio quit
 

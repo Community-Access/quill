@@ -1,13 +1,19 @@
 """Listening for song changes while a recording runs (xradio2 4.8).
 
 The recorder half of **Split the recording at each song change**. When a
-recording starts with that setting on, a :class:`SongSplitter` starts one small
-watcher for it: every :data:`POLL_SECONDS` it reads the stream's ICY
-``StreamTitle`` (the same one short side connection What's Playing uses,
+recording starts, a :class:`SongSplitter` starts one small watcher for it:
+every :data:`POLL_SECONDS` it reads the stream's ICY ``StreamTitle`` (the same
+one short side connection What's Playing uses,
 :func:`quill.core.radio.icy.read_stream_title`) and notes the moment the title
-changes. When the recording is over, :meth:`SongSplitter.finish` hands those
-moments to :mod:`quill.core.radio.recording_split`, which cuts the finished file
-into one file per song.
+changes. When the recording is over, :meth:`SongSplitter.finish` either hands
+those moments to :mod:`quill.core.radio.recording_split`, which cuts the
+finished file into one file per song (the setting on), or keeps them in a
+small log beside the recording (the setting off), so **Split into Songs** in
+the Recordings window can cut it later (:mod:`quill.core.radio.recording_song_log`).
+
+A stream that has said no title at all for :data:`QUIET_POLLS` polls is asked
+only every :data:`QUIET_POLL_SECONDS` after that: plenty of streams carry no
+ICY titles, and asking one every ten seconds for three hours is noise.
 
 Why its own watcher, rather than the title poll the player already runs: a
 recording is often not the station you are listening to -- a scheduled show
@@ -43,6 +49,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.radio.recording_song_log import save_song_log
 from quill.core.radio.recording_split import (
     SongChange,
     SplitOutcome,
@@ -55,12 +62,17 @@ from quill.core.radio.song_history import is_noise_title
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["POLL_SECONDS", "SongSplitter", "SongTimeline"]
+__all__ = ["POLL_SECONDS", "QUIET_POLLS", "QUIET_POLL_SECONDS", "SongSplitter", "SongTimeline"]
 
 #: How often the watcher reads the title. Short enough that a cut is rarely
 #: more than a few seconds off; long enough that a three-hour recording makes
 #: about a thousand tiny requests rather than ten thousand.
 POLL_SECONDS = 10.0
+
+#: Polls with no title ever heard before the watcher slows down, and how often
+#: it asks after that. A talk show that turns into music later is still heard.
+QUIET_POLLS = 6
+QUIET_POLL_SECONDS = 60.0
 
 #: (stream url) -> the current raw title, "" when there is none.
 TitleReader = Callable[[str], str]
@@ -113,8 +125,14 @@ class _Watch:
         read_title: TitleReader,
         clock: Clock,
         poll_seconds: float,
+        *,
+        split: bool = True,
     ) -> None:
         self.timeline = timeline
+        #: Whether this recording is cut when it ends (the setting on) or
+        #: only has its song changes kept beside it for later.
+        self.split = split
+        self.empty_polls = 0
         self.stopped = threading.Event()
         self.lock = threading.Lock()
         self._url = url
@@ -126,7 +144,8 @@ class _Watch:
     def _run(self) -> None:
         while not self.stopped.is_set():
             self.poll_once()
-            self.stopped.wait(self._poll)
+            quiet = self.empty_polls >= QUIET_POLLS and not self.timeline.first_title
+            self.stopped.wait(max(self._poll, QUIET_POLL_SECONDS) if quiet else self._poll)
 
     def poll_once(self) -> None:
         try:
@@ -134,6 +153,8 @@ class _Watch:
         except Exception:  # noqa: BLE001 - a missed title must never touch the recording
             logger.debug("song watch: title read failed", exc_info=True)
             return
+        if not title:
+            self.empty_polls += 1
         with self.lock:
             if self.timeline.hear(title, self._clock()):
                 logger.info("song watch: change at %.1fs", self.timeline.changes[-1].offset)
@@ -187,18 +208,20 @@ class SongSplitter:
         continuation: bool,
     ) -> None:
         """A recording's ffmpeg just started. Begin watching a new recording
-        when the setting is on; mark a watched one interrupted on reconnect."""
+        (cut when it ends when *enabled*, the setting; otherwise its song
+        changes are only kept beside it); mark a watched one interrupted on
+        reconnect."""
         with self._lock:
             existing = self._watches.get(job_id)
             if continuation:
                 if existing is not None:
                     existing.timeline.interrupted = True
                 return
-            if not enabled or existing is not None:
+            if existing is not None:
                 return
             timeline = SongTimeline(station_name=station_name, started=self._clock())
             reader = self._read or _read_icy_title
-            watch = _Watch(stream_url, timeline, reader, self._clock, self._poll)
+            watch = _Watch(stream_url, timeline, reader, self._clock, self._poll, split=enabled)
             self._watches[job_id] = watch
         if self._start_threads:
             watch.thread.start()
@@ -228,8 +251,8 @@ class SongSplitter:
             watch.stopped.set()
 
     def finish(self, job_id: str, path: Path | None, *, lead_trim: float = 0.0) -> str:
-        """Split the finished recording at the songs heard; returns the
-        sentence to say ("" when this recording was not being split).
+        """Split the finished recording at the songs heard, or keep the songs
+        beside it; returns the sentence to say ("" when it was not split).
 
         *path* is the finished file, or ``None`` when its parts could not be
         joined (then it is kept as it is, and said so). *lead_trim* is what the
@@ -244,6 +267,17 @@ class SongSplitter:
             changes = list(timeline.changes)
             first = timeline.first_title
             interrupted = timeline.interrupted
+        if not watch.split:
+            if path is not None:
+                save_song_log(
+                    path,
+                    first_title=first,
+                    changes=changes,
+                    duration=duration,
+                    lead_trim=lead_trim,
+                    interrupted=interrupted,
+                )
+            return ""
         if path is None:
             return "The recording was not split into songs: its parts could not be joined first."
 

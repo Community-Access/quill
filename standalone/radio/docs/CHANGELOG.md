@@ -18,6 +18,14 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **Split a recording you already have into songs** [2026-11-02]. Radio
+  Recordings has Split into Songs (Ctrl+Alt+O), on the Recordings menu and on
+  a new Shift+F10 menu for the list. Quill Radio now notes the song changes
+  while it records even with automatic splitting off, and keeps them beside
+  the recording; Split into Songs cuts the recording at them into a folder of
+  "Artist - Title" files with a straight copy, and keeps the recording. With
+  recordings marked it splits every marked one, and says one sentence with
+  the count at the end. A recording with no song changes noted says so.
 - **A folder for each scheduled recording** [2026-11-02]. Schedule Recording
   has a Save in folder field (Alt+V) and a Browse button (Alt+B), so the
   Saturday jazz show can go in one folder and the news in another. Leave it

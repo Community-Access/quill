@@ -23,6 +23,12 @@ RADIO_LISTENER_ENTRIES: dict[str, str] = {
     # own choice, a flat favourite-key -> chord map, additive and
     # self-describing with nothing to migrate; an unreadable file is no keys.
     "core/radio/favorite_hotkeys.py::save_hotkeys": "content",
+    # Not something the listener wrote, but it lives here beside the other
+    # radio entries: the song changes a recording heard, kept beside it
+    # (<recording>.songs.json) for Split into Songs. Version-stamped, and an
+    # unknown version or an unreadable file is simply "no song changes"; losing
+    # it costs only the chance to split that recording later, never the audio.
+    "core/radio/recording_song_log.py::save_song_log": "cache",
 }
 
 __all__ = ["RADIO_LISTENER_ENTRIES"]
