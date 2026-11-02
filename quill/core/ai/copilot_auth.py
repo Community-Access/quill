@@ -70,23 +70,24 @@ GITHUB_SCOPE = "read:user"
 DEFAULT_AGENT_NAME = "QUILL"
 
 #: One GitHub OAuth App client id per app, keyed by the app's agent name.
-#: Jeff supplies these from the Community-Access organization's OAuth Apps
-#: (one registration per app, Device Flow enabled, no client secret -- a
-#: client id is public and grants nothing). An empty value means that app's
-#: in-app sign-in is not available yet.
+#: Registered by Jeff under the Community-Access organization on 2026-11-02:
+#: one registration per app, Device Flow enabled, no client secret (a client
+#: id is public and grants nothing). An empty value would mean that app's
+#: in-app sign-in is not available.
 CLIENT_IDS: dict[str, str] = {
-    "QUILL": "",
-    "QUILL Lite": "",
-    "QUILL Radio": "",
-    "QUILL Cast": "",
-    "QUILL Studio": "",
-    "QUILL Transcribe": "",
-    "QUILL Converter": "",
-    "QUILL Player": "",
-    "QUILL Weather": "",
-    "QUILL Inkwell": "",
-    "QUILL Beacon": "",
-    "QUILL Social": "",
+    "QUILL": "Ov23linu5BZqJME8nF0I",
+    "QUILL Lite": "Ov23liewaP7mfkZ9ILIR",
+    "QUILL Radio": "Ov23liwIiGP3Crt51dQO",
+    "QUILL Cast": "Ov23liV0Ku3M1Eeg0XYe",
+    "QUILL Studio": "Ov23lig5Pwu6x0NMUcts",
+    "QUILL Transcribe": "Ov23ctEeh9QFKyVPorB1",
+    "QUILL Converter": "Ov23li0ko9C4tKizjqG6",
+    # The Media Player signs in as "QUILL Media Player" (quill/apps/player_ai.py).
+    "QUILL Media Player": "Ov23lihxzHppgleG2MMv",
+    "QUILL Weather": "Ov23ctHW9x3fPqM655bO",
+    "QUILL Inkwell": "Ov23liage2PWAB1k5oDS",
+    "QUILL Beacon": "Ov23liD59fR2frTFHN9D",
+    "QUILL Social": "Ov23licKNTEodWEsN4RV",
 }
 
 #: Developer override for the client id. Honoured only in a dev build
