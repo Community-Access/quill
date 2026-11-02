@@ -18,6 +18,13 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **A second sound scheme: VS Code Signals** [2026-11-02]. Quill Radio plays
+  the QUILL family's sound scheme, and there are now two: Ink, still the
+  default, and VS Code Signals, the accessibility signal sounds from Visual
+  Studio Code, used under the MIT licence. Choose in the Sound Scheme window
+  of QUILL or QUILL Lite, or in QUILL's setup wizard, and Quill Radio plays it
+  from the next time it starts. Anything it has no sound for stays quiet, or
+  is spoken instead.
 - **Enable or disable many schedules at once** [2026-11-02]. In Schedule
   Recording, with schedules marked, the Enable or Disable button (Alt+L)
   reads "Disable 3 Marked" or "Enable 3 Marked" and switches every marked

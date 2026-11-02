@@ -25,6 +25,16 @@ The first public release. The app was first built in July 2026 as an audio
 converter; that build was never published as an installer, and everything it
 had is included here.
 
+### Sound scheme (2026-11-02)
+
+- **A second sound scheme: VS Code Signals** (2026-11-02). Quill Converter
+  plays the QUILL family's sound scheme, and there are now two: Ink, still the
+  default, and VS Code Signals, the accessibility signal sounds from Visual
+  Studio Code, used under the MIT licence. Choose in the Sound Scheme window
+  of QUILL or QUILL Lite, or in QUILL's setup wizard, and Quill Converter
+  plays it from the next time it starts. Anything it has no sound for stays
+  quiet, or is spoken instead.
+
 ### AI, if you want it (2026-11-01)
 
 - **AI, if you want it.** A new AI menu (Alt+I) with Ask (Ctrl+Shift+8),

@@ -533,6 +533,8 @@ If the device you chose is unplugged or asleep, you still hear every sound, on t
 
 This changes the Studio only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
 
+Which sounds you hear comes from the family's sound scheme, and two come with it: Ink, QUILL's own and the one every app starts with, and VS Code Signals, the accessibility signal sounds from Visual Studio Code, used under the MIT licence. Choose one in the Sound Scheme window of QUILL or QUILL Lite, and the Studio plays it too, from the next time it starts. Anything VS Code Signals has no sound for stays quiet, or is spoken instead.
+
 ## The system tray
 
 QUILL Studio's icon is three white-and-gold waveform bars on a dark slate tile. If you have used an earlier build, this is new: the Studio used to share Quill Radio's blue broadcast-wave icon, so on a desktop with more than one QuillVille app installed several of them looked identical. Every app in the family now has its own - the same rounded tile shape and the same gold accent throughout, but its own colour and its own picture each.

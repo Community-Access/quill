@@ -12,6 +12,10 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### VS Code Signals sound scheme (2026-11-02)
+
+- **A second sound scheme: VS Code Signals** (2026-11-02). QUILL Studio plays the QUILL family's sound scheme, and there are now two: Ink, still the default, and VS Code Signals, the accessibility signal sounds from Visual Studio Code, used under the MIT licence. Choose in the Sound Scheme window of QUILL or QUILL Lite, or in QUILL's setup wizard, and QUILL Studio plays it from the next time it starts. Anything it has no sound for stays quiet, or is spoken instead.
+
 ### Describe a Folder, Describe Again and Save Described Copies (2026-11-01)
 
 These follow the approach of Kelly Ford's Image Description Toolkit, and the prompt styles are his.

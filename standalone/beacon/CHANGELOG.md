@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **A second sound scheme: VS Code Signals** (2026-11-02). QuillBeacon plays
+  the QUILL family's sound scheme, and there are now two: Ink, still the
+  default, and VS Code Signals, the accessibility signal sounds from Visual
+  Studio Code, used under the MIT licence. Choose in the Sound Scheme window
+  of QUILL or QUILL Lite, or in QUILL's setup wizard, and QuillBeacon plays it
+  from the next time it starts. Anything it has no sound for stays quiet, or
+  is spoken instead.
 - **AI in the Assist menu, when you want it** (2026-11-01). Suggest Tags,
   Suggest Relationships and Summarize Note stay first and still run on your
   computer. After them, behind a separator, are the AI commands every

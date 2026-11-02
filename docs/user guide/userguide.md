@@ -6591,7 +6591,8 @@ Visual Studio Code plays for its own accessibility signals, used under the MIT
 licence. They cover errors, warnings, saving, finished and failed tasks, AI
 requests and answers, dictation and recording starting and stopping, and undo
 and redo. Anything they have no sound for stays quiet, or is spoken where QUILL
-speaks instead. Choose it in one app and the rest of the family plays it too.
+speaks instead. Choose it in one app and the rest of the family plays it too,
+each from the next time it starts.
 
 #### The sounds themselves
 

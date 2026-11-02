@@ -202,6 +202,10 @@ window plays each sound as you arrow through the list. **Alt+Shift+M** turns all
 of them off at once, for a phone call or a quiet room. Press it again to bring
 them back.
 
+Two sets of sounds come with it: Ink, QUILL's own, and VS Code Signals, the
+sounds Visual Studio Code plays for its accessibility signals. Pick either in
+the same window, and the rest of the QUILL family follows.
+
 ### It tells you the shape of what you are reading
 
 Arrow onto a heading and QUILL Lite says "Heading 2, Installing". Arrow into a

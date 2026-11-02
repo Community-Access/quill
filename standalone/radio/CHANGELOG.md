@@ -14,6 +14,13 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **A second sound scheme: VS Code Signals** [2026-11-02]. Quill Radio plays
+  the QUILL family's sound scheme, and there are now two: Ink, still the
+  default, and VS Code Signals, the accessibility signal sounds from Visual
+  Studio Code, used under the MIT licence. Choose in the Sound Scheme window
+  of QUILL or QUILL Lite, or in QUILL's setup wizard, and Quill Radio plays it
+  from the next time it starts. Anything it has no sound for stays quiet, or
+  is spoken instead.
 - **Watching the video for changes** [2026-11-01]. Video > Start Watching
   for Changes (Ctrl+F9) and Stop Watching for Changes (Ctrl+Shift+F9). While a
   video is showing, Quill Radio compares a picture of it on this computer every
