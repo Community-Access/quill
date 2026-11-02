@@ -2650,7 +2650,7 @@
         "MIT"
       ],
       "license_label": "MIT (QUILL's own work)",
-      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "copyright": "Copyright (c) 2026 Jeff Bishop",
       "homepage": "https://github.com/Community-Access/quill",
       "what": "Every app's icon, drawn by scripts/build_app_icons.py. No third-party artwork.",
       "products": [
@@ -2667,7 +2667,7 @@
         "MIT"
       ],
       "license_label": "MIT (QUILL project)",
-      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS); Copyright (c) 2026 Jeff Bishop",
+      "copyright": "Copyright (c) 2026 Jeff Bishop",
       "homepage": "https://github.com/Community-Access/quill",
       "what": "An original synthesized page-turn-like default sound between chapters in spoken audiobooks; no sampled audio is used.",
       "products": [
@@ -2684,7 +2684,7 @@
         "MIT"
       ],
       "license_label": "MIT (QUILL's own work)",
-      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "copyright": "Copyright (c) 2026 Jeff Bishop",
       "homepage": "https://github.com/Community-Access/quill",
       "what": "Interface sounds, synthesised by scripts/gen_ink_sounds.py and scripts/gen_indent_tones.py. No third-party recordings.",
       "products": [
@@ -2701,7 +2701,7 @@
         "MIT"
       ],
       "license_label": "MIT (QUILL's own work)",
-      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "copyright": "Copyright (c) 2026 Jeff Bishop",
       "homepage": "https://github.com/Community-Access/quill",
       "what": "The weather alert tone, synthesised by scripts/gen_ink_sounds.py.",
       "products": [

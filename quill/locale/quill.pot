@@ -1,5 +1,5 @@
 # Translations template for QUILL.
-# Copyright (C) 2026 BITS
+# Copyright (C) 2026 Jeff Bishop
 # This file is distributed under the same license as the QUILL project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #

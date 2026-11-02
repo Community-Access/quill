@@ -40,7 +40,7 @@ APP_ORGANIZATION = "Community Access"
 APP_FULL_NAME = "QUILL for All by Community Access"
 APP_SHORT_NAME = "QUILL"
 APP_DESCRIPTION = "An open-source, accessibility-focused editor."
-APP_COPYRIGHT = "Copyright (c) 2026 Community Access."
+APP_COPYRIGHT = "Copyright (c) 2026 Jeff Bishop."
 APP_LICENSE_NAME = "MIT License"
 
 #: User-visible brand name for the QUILL Key chord prefix
