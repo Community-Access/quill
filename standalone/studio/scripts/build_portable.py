@@ -59,7 +59,6 @@ EMBEDDED_PYTHON_URL = (
     f"python-{EMBEDDED_PYTHON_VERSION}-embed-amd64.zip"
 )
 EMBEDDED_PYTHON_SHA256 = "a93abe456ab01bd96d7a085b3cdb6566b3063f4241360d114142fbdb07f0a310"
-GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py"
 
 # ``build`` is the CMake scratch tree left by compiling the native pieces in
 # place -- quill/native/optilab/build was 8.5 MB on disk and put 87 files
@@ -398,11 +397,42 @@ def _pip(python_exe: Path, *args: str) -> None:
 def _bootstrap_pip_and_deps(
     python_exe: Path, root_pyproject: Path, groups: tuple[str, ...]
 ) -> None:
-    get_pip = python_exe.parent / "get-pip.py"
-    _download(GET_PIP_URL, get_pip, expected_sha256=None)
     print("  bootstrapping pip")
-    subprocess.run([str(python_exe), str(get_pip), "--no-warn-script-location"], check=True)
-    get_pip.unlink(missing_ok=True)
+    # Installed by this build's own interpreter into the bundle's
+    # site-packages, not through get-pip.py: since pip 26.3 (2026-11) get-pip
+    # runs pip as ``python <tmp>/pip``, which trips pip's Windows guard against
+    # modifying itself, so every portable build failed at this step. pip is pure
+    # Python, so a copy installed by the same Python version runs as well.
+    embedded = subprocess.run(
+        [str(python_exe), "-c", "import sys; print('%d.%d' % sys.version_info[:2])"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    ours = f"{sys.version_info[0]}.{sys.version_info[1]}"
+    if embedded != ours:
+        raise RuntimeError(
+            f"The bundle's Python is {embedded} and this build runs {ours}; run the "
+            "build with the same Python version as the bundle."
+        )
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--disable-pip-version-check",
+            "--no-warn-script-location",
+            "--upgrade",
+            "--target",
+            str(python_exe.parent / "Lib" / "site-packages"),
+            "pip",
+        ],
+        check=True,
+    )
+    # --target puts pip's own launchers (pip.exe and friends) in
+    # site-packagesin; the bundle runs pip as ``python -m pip`` and never ships them.
+    shutil.rmtree(python_exe.parent / "Lib" / "site-packages" / "bin", ignore_errors=True)
     _pip(python_exe, "install", "--no-warn-script-location", "--no-compile", "setuptools")
     deps = _runtime_dependencies(root_pyproject, groups)
     print(f"  installing {len(deps)} runtime dependencies")
