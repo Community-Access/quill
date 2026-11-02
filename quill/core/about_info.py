@@ -107,9 +107,9 @@ _OVERVIEW_PARAGRAPHS: tuple[str, ...] = (
     "app_elements, platform_utils, and keyboard_handler.",
     "QUILL includes private, on-device speech under Tools > Speech: an offline "
     "speech-model manager with machine-aware recommendations, plus transcription, "
-    "captions, and dictation. Bundled Read Aloud voices (DECtalk and eSpeak NG) play "
-    "immediately with no downloads; Piper and Kokoro models install through "
-    "Manage Speech Models.",
+    "captions, and dictation. Read Aloud plays immediately with the voices already "
+    "on the computer; Piper and Kokoro models install through Manage Speech "
+    "Models.",
 )
 
 
