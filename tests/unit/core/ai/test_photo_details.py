@@ -65,3 +65,10 @@ def test_the_fitted_picture_carries_no_exif_so_no_location_leaves_in_it() -> Non
     for png in (False, True):
         fitted = fit_image(_photo(png=png), 200)
         assert pd.read_photo_details(fitted.data) == pd.PhotoDetails(), png
+
+
+def test_sent_phrase_names_only_what_the_file_had() -> None:
+    assert pd.sent_phrase(pd.read_photo_details(_photo())) == "date, camera and lens"
+    assert pd.sent_phrase(pd.PhotoDetails(camera="Pixel 8")) == "camera"
+    assert pd.sent_phrase(pd.PhotoDetails(camera="Pixel 8", lens="wide")) == "camera and lens"
+    assert pd.sent_phrase(pd.PhotoDetails()) == ""

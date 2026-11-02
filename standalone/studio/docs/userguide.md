@@ -382,7 +382,7 @@ The rest of the AI menu:
 - **Ask...** (Ctrl+6) opens a conversation about your recording setup. With each message go the last pre-flight check and what it measured, the last recording check, the recording running now, and the name of the book open in the Chapter Workbench. No picture and no sound ever goes with it. Quick questions starts with **Is my setup ready?** and **Does this recording look right?**. **What can I do here?** is answered on this computer and sends nothing.
 - **Which AI Am I Using** (Ctrl+8) says the AI in use and its model in one line. Press it twice quickly to open Choose Your AI.
 - **Recording Pre-flight Check...** (Ctrl+3) and **Narrate a Recording...** (Ctrl+Shift+3) are tasks an AI works through in steps. See Recording pre-flight check and Narrate a recording, below.
-- **Describe a Picture...** (Ctrl+F5) asks you for a picture, or a video and then the moment in it, like 2:10. Studio takes that one picture on this computer, fits it to the AI in use and reads the description aloud; the description of a video frame starts with its time. Asking about the same picture again in the same session sends nothing. When the AI in use cannot see, the menu row says "(needs a connection that sees)", and pressing it sends nothing and offers to switch to one that can.
+- **Describe a Picture...** (Ctrl+F5) asks you for a picture, or a video and then the moment in it, like 2:10. Studio takes that one picture on this computer, fits it to the AI in use and reads the description aloud; the description of a video frame starts with its time. The photo's date, camera and lens go with it, read from the picture on this computer, the same as Describe a Folder sends, so the description can say when it was taken; you hear which of them went. Its GPS location never goes with Describe a Picture. To send that, use Describe a Folder or Describe Again and check the location box. Asking about the same picture again in the same session sends nothing. When the AI in use cannot see, the menu row says "(needs a connection that sees)", and pressing it sends nothing and offers to switch to one that can.
 - **Describe a Folder...** (Ctrl+Shift+F5), **Stop Describing the Folder** (Alt+Shift+F5), **Describe Again...** (Ctrl+Alt+F5) and **Save Described Copies...** (Ctrl+Alt+F6) work on a whole folder of pictures. See Describing a folder of pictures, below.
 - **Start Watching for Changes** (Ctrl+F9) and **Stop Watching for Changes** (Ctrl+Shift+F9) tell you when something on screen changes. See Watching for changes, below.
 - **Use My ChatGPT Subscription...** (Alt+F5) opens Choose Your AI on the ChatGPT row, ready to sign in. It used to be on the Capture menu.
@@ -412,7 +412,7 @@ While it works, you hear how far it has got now and then, like "20 of 200 descri
 
 **Describe Again** (Ctrl+Alt+F5) adds another description and keeps the earlier ones, so you can compare them. Choose what to describe again: the picture you last described with Describe a Picture, every picture in the folder you last described, one picture from that folder, or a folder you described another time. Then choose a prompt style. It uses the AI in use; to compare two AIs, choose the other one in Choose Your AI first. For one picture, you hear the new description and both are kept in the result window, newest first. For a folder, the same count-and-receiver question comes first, and the document lists every description of each picture, labelled with its style and AI, like "Description 2: Concise style, My own key (Anthropic Claude)".
 
-**Save Described Copies** (Ctrl+Alt+F6) puts each description into a copy of its picture, so the words travel with the photo into Windows Explorer's details, photo libraries and anything that reads picture metadata. Choose the folder you described, then a different folder for the copies. Your pictures are never changed: the copies can't go in the same folder, and an existing file is never replaced. JPEG and PNG pictures get the description; other kinds are left out and named. When a picture has more than one description, the copy gets the newest. Nothing is sent.
+**Save Described Copies** (Ctrl+Alt+F6) puts each description into a copy of its picture, so the words travel with the photo into Windows Explorer's details, photo libraries and anything that reads picture metadata. Choose the folder you described, then a different folder for the copies. Your pictures are never changed: the copies can't go in the same folder, and an existing file is never replaced. JPEG and PNG pictures get the description; other kinds are left out and named. When a picture has more than one description, the copy gets the newest. If the picture already carries details from a photo library, like a rating, keywords or people's names, the copy keeps every one of them; only a description already there is replaced by the new one. Nothing is sent.
 
 Describe a Folder follows the approach of Kelly Ford's Image Description Toolkit, and the twelve prompt styles are his. Thank you, Kelly.
 
@@ -946,7 +946,7 @@ When you start, pause, mark, mute or stop from a menu or the tray icon's menu, S
 | Show the Recording status window | Ctrl+Alt+Shift+W | |
 | Emergency stop and save | Ctrl+Alt+Shift+End | A second stop key, in case one is swallowed |
 | Discard this recording | Ctrl+Alt+Shift+Delete | Asks before deleting anything |
-| Recover unfinished recordings | Ctrl+Alt+Shift+L | |
+| Recover unfinished recordings | Ctrl+Alt+Shift+N | |
 
 Those keys work while Studio has focus. While you are demonstrating, focus is somewhere else, so assign system-wide keys: **Assign keys** in the Record a demonstration window, or **Capture > Capture global hotkeys...**. None is assigned for you, because a system-wide key takes that key away from every other program. Until you assign some, use the tray icon's menu, which has Stop and save, Pause, Add a marker, Recording status and the status window, and acts without bringing Studio back into the picture.
 
@@ -996,7 +996,7 @@ Beside each recording:
 
 ### Recovering an unfinished recording
 
-If Studio or the computer stops in the middle of a recording, nothing is lost up to that point: Studio records in short pieces as it goes. The next time Studio starts it says so on the status line. Choose **Capture > Recover unfinished recordings** (Ctrl+Alt+Shift+L) to finish and check them; each becomes an ordinary recording with the same checks.
+If Studio or the computer stops in the middle of a recording, nothing is lost up to that point: Studio records in short pieces as it goes. The next time Studio starts it says so on the status line. Choose **Capture > Recover unfinished recordings** (Ctrl+Alt+Shift+N) to finish and check them; each becomes an ordinary recording with the same checks.
 
 ### Worked example: a screen reader demonstration for a blog post
 

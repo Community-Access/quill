@@ -22,6 +22,9 @@ These follow the approach of Kelly Ford's Image Description Toolkit, and the pro
 - **Describe Again** (Ctrl+Alt+F5) adds a description in another style, or from another AI chosen first, to the last picture, a folder or one picture of it, and keeps the earlier ones beside it to compare.
 - **Save Described Copies** (Ctrl+Alt+F6) writes each description into a copy of its picture, in a folder you choose, so the words travel with the photo. JPEG and PNG get the description; your pictures are never changed.
 - **Your own OpenAI or Anthropic Claude key now sees pictures**, as a Gemini key already did, so Describe a Picture and the rest work with it.
+- **A described copy keeps the photo's other details.** When a picture already carries XMP details from a photo library, such as a rating, keywords or people's names, Save Described Copies now adds the description to them instead of replacing them. Only a description already there gives way to the new one. This works for JPEG and PNG.
+- **Describe a Picture sends the photo details too.** Ctrl+F5 now sends the picture's date, camera and lens, read on this computer, the same as Describe a Folder and Describe Again, and you hear which of them went. The GPS location never goes with Describe a Picture; it goes only from Describe a Folder or Describe Again, and only when you check that box.
+- **Recover unfinished recordings moved to Ctrl+Alt+Shift+N.** It shared Ctrl+Alt+Shift+L with Narrate a Document in Another Language, so one of the two never worked from the keyboard. Narrate keeps Ctrl+Alt+Shift+L.
 
 ### Recording Pre-flight Check and Narrate a Recording (2026-11-01)
 

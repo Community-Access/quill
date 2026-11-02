@@ -608,8 +608,8 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+I | Inspect capture | `studio.inspect_capture` |
 | Ctrl+Alt+Shift+J | Make picture | `studio.make_picture` |
 | Ctrl+Alt+Shift+K | Ask ai video | `studio.ask_ai_video` |
-| Ctrl+Alt+Shift+L | Record recover | `studio.record_recover` |
 | Ctrl+Alt+Shift+M | Mixer | `studio.mixer` |
+| Ctrl+Alt+Shift+N | Record recover | `studio.record_recover` |
 | Ctrl+Alt+Shift+O | Open capture | `studio.open_capture` |
 | Ctrl+Alt+Shift+P | Record pause | `studio.record_pause` |
 | Ctrl+Alt+Shift+S | Capture | `studio.capture` |

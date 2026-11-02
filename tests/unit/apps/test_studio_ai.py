@@ -335,3 +335,66 @@ def test_the_adapter_has_no_command_of_its_own() -> None:
 
     assert [name for name in vars(StudioAiMixin) if name.startswith("cmd_")] == []
     assert [name for name in vars(StudioAiHost) if name.startswith("cmd_")] == []
+
+
+def _photo(path: Path) -> Path:
+    """A real JPEG with a camera's date, make, model, lens and GPS location."""
+    from PIL import Image
+
+    image = Image.new("RGB", (400, 300), (30, 90, 160))
+    exif = image.getexif()
+    exif[0x010F] = "Apple"
+    exif[0x0110] = "iPhone 15"
+    extra = exif.get_ifd(0x8769)
+    extra[0x9003] = "2024:06:14 18:05:00"
+    extra[0xA434] = "iPhone 15 back camera 6.86mm f/1.6"
+    place = exif.get_ifd(0x8825)
+    place[1], place[2], place[3], place[4] = "N", (51.0, 30.0, 0.0), "W", (0.0, 7.0, 30.0)
+    image.save(path, format="JPEG", exif=exif.tobytes())
+    return path
+
+
+def test_describe_a_picture_sends_the_photo_details_but_never_the_location(
+    studio, monkeypatch, tmp_path: Path
+) -> None:
+    picture = _photo(tmp_path / "beach.jpg")
+    monkeypatch.setattr(type(studio), "_studio_choose_picture", lambda self: picture)
+    monkeypatch.setattr(type(studio), "_show_ai_window", lambda self, frame: None)
+    questions: list[str] = []
+
+    def describe(path, question, *, on_done, on_error, requires):
+        questions.append(question)
+        on_done("A beach at sunset.")
+
+    studio._ai_service().describe_image = describe
+    studio.cmd_studio_describe_picture()
+    assert len(questions) == 1
+    line, rest = questions[0].split("\n\n", 1)
+    assert line == (
+        "Photo details, read from the file: taken 14 June 2024 at 6:05 PM, on an Apple "
+        "iPhone 15, lens iPhone 15 back camera 6.86mm f/1.6."
+    )
+    assert rest.startswith("Describe this picture")
+    assert "latitude" not in questions[0] and "51.5" not in questions[0]
+    assert any(
+        "Its date, camera and lens went with it. A beach at sunset." in s for s in studio.said
+    )
+    studio.cmd_studio_describe_picture()  # the same picture and details: from the cache
+    assert len(questions) == 1
+
+
+def test_a_picture_with_no_details_is_asked_the_plain_question(
+    studio, monkeypatch, tmp_path: Path
+) -> None:
+    from quill.ui.audio_studio.studio_ai_features import DESCRIBE_QUESTION
+
+    picture = _png(tmp_path / "plain.png", 400, 300)
+    monkeypatch.setattr(type(studio), "_studio_choose_picture", lambda self: picture)
+    monkeypatch.setattr(type(studio), "_show_ai_window", lambda self, frame: None)
+    questions: list[str] = []
+    studio._ai_service().describe_image = lambda path, q, *, on_done, on_error, requires: (
+        questions.append(q) or on_done("Blue.")
+    )
+    studio.cmd_studio_describe_picture()
+    assert questions == [DESCRIBE_QUESTION]
+    assert not any("went with it" in s for s in studio.said)
