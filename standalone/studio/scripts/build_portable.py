@@ -430,6 +430,9 @@ def _bootstrap_pip_and_deps(
         ],
         check=True,
     )
+    # --target puts pip's own launchers (pip.exe and friends) in
+    # site-packagesin; the bundle runs pip as ``python -m pip`` and never ships them.
+    shutil.rmtree(python_exe.parent / "Lib" / "site-packages" / "bin", ignore_errors=True)
     _pip(python_exe, "install", "--no-warn-script-location", "--no-compile", "setuptools")
     deps = _runtime_dependencies(root_pyproject, groups)
     print(f"  installing {len(deps)} runtime dependencies")
