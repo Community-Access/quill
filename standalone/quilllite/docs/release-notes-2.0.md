@@ -516,6 +516,14 @@ that too. Preferences no longer says "saved" when it was not.
 
 ### Sounds, speech and braille
 
+- **A second sound scheme: VS Code Signals.** The **Scheme** list in **Tools >
+  Sound Scheme...** (**Ctrl+Alt+Shift+O**) offers VS Code Signals beside
+  QUILL's own Ink: the accessibility signal sounds from Visual Studio Code,
+  used under the MIT licence. They play for errors, saving, printing,
+  corrected words, dictation starting and stopping, and undo and redo;
+  anything they have no sound for stays quiet, or is spoken instead. Choose it
+  here and QUILL and the other QuillVille apps play it too. Ink stays the
+  default.
 - **App Sounds and Alt+Shift+M.** The **App Sounds Play On...** button in
   **Tools > Sound Scheme...** (**Ctrl+Alt+Shift+O**) chooses where QUILL Lite's
   own sounds play: the system default, none, or a sound card or headset by

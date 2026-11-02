@@ -15,6 +15,13 @@ grouped by area; most say where in the user guide to read more.
 
 ### Since build 3 (2026-10-31)
 
+- **A second sound scheme: VS Code Signals** (2026-11-02). QUILL Transcribe
+  plays the QUILL family's sound scheme, and there are now two: Ink, still the
+  default, and VS Code Signals, the accessibility signal sounds from Visual
+  Studio Code, used under the MIT licence. Choose in the Sound Scheme window
+  of QUILL or QUILL Lite, or in QUILL's setup wizard, and QUILL Transcribe
+  plays it from the next time it starts. Anything it has no sound for stays
+  quiet, or is spoken instead.
 - **Speakers, sections and summary** (2026-11-01). Speakers, Sections and
   Summary... on the AI menu (Ctrl+F3) has GitHub Copilot or Codex read a transcript as
   text, name the speakers where the words make it clear, add headings, and

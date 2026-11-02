@@ -4399,7 +4399,8 @@ Besides QUILL's own sounds, the **Scheme** list offers **VS Code Signals**, the
 accessibility signal sounds from Visual Studio Code, used under the MIT licence.
 They cover errors, saving, dictation starting and stopping, and undo and redo.
 Anything they have no sound for stays quiet, or is spoken where QUILL Lite
-speaks instead.
+speaks instead. The choice is the family's: QUILL and the other QuillVille
+apps play the same scheme, each from the next time it starts.
 
 ### Activity and Repeat Last Result
 

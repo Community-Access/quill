@@ -9,6 +9,16 @@ update independently. This version history begins with 2.2.0.
 
 ## 2.2.1 - 2026-10-08
 
+### Sound scheme (2026-11-02)
+
+- **A second sound scheme: VS Code Signals** (2026-11-02). Quill Weather plays
+  the QUILL family's sound scheme, and there are now two: Ink, still the
+  default, and VS Code Signals, the accessibility signal sounds from Visual
+  Studio Code, used under the MIT licence. Choose in the Sound Scheme window
+  of QUILL or QUILL Lite, or in QUILL's setup wizard, and Quill Weather plays
+  it from the next time it starts. Anything it has no sound for stays quiet,
+  or is spoken instead.
+
 ### AI, when you ask for it (2026-11-01)
 
 - **Choose Your AI comes to Quill Weather.** A new AI menu (Alt+I) holds Ask

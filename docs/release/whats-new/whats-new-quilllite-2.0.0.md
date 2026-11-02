@@ -33,7 +33,7 @@ QUILL Lite 2.0 is about words, and about never missing what happened. Your setti
 
 ## Spell check and display
 
-- **Spell check reads only what you wrote.** Web addresses, email addresses, file paths and file names are skipped everywhere; Markdown skips code and link addresses; web pages are read for their text; and in code only strings and comments are checked. The file's extension picks the rule.
+- **Spell check reads only what you wrote.** Web addresses, email addresses, file paths and file names are skipped everywhere; Markdown skips code and link addresses; web pages are read for their text; and in code only strings and comments are checked.
 - **Recovery quotes how each document begins**, and text stays sharp at 150 and 200 percent display scaling.
 
 ## Knowing what happened
@@ -48,4 +48,4 @@ QUILL Lite 2.0 is about words, and about never missing what happened. Your setti
 
 ## More
 
-**Help > What's New** (Alt+H, W) opens the full changelog, and with every document closed the menu bar still has File, Tools and Help. Faster opening of big files and network drives, and many smaller fixes. The full release notes: https://www.quillforall.org/docs/quilllite-release-notes.html. Stuck? Help > Get Help from Support (Ctrl+Alt+F2).
+**Help > What's New** (Alt+H, W) opens the full changelog, and with every document closed the menu bar still has File, Tools and Help. A second sound scheme, VS Code Signals. Faster opening of big files and network drives, and many smaller fixes. The full release notes: https://www.quillforall.org/docs/quilllite-release-notes.html. Stuck? Help > Get Help from Support (Ctrl+Alt+F2).

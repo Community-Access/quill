@@ -1120,6 +1120,8 @@ If the device you chose is unplugged or asleep, you still hear every sound, on t
 
 This changes Quill Converter only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
 
+Which sounds you hear comes from the family's sound scheme, and two come with it: Ink, QUILL's own and the one every app starts with, and VS Code Signals, the accessibility signal sounds from Visual Studio Code, used under the MIT licence. Choose one in the Sound Scheme window of QUILL or QUILL Lite, and Quill Converter plays it too, from the next time it starts. Anything VS Code Signals has no sound for stays quiet, or is spoken instead.
+
 ## Chapter 10: When you need a hand
 
 Everybody gets stuck sometimes. This chapter covers the help that is always one

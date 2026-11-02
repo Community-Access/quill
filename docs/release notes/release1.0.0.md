@@ -439,6 +439,12 @@ called earcons: the Ink sound pack, a family of indentation tones, and room
 for custom packs. Every sound has its own on and off switch in the **Sound
 Events** dialog, and **Toggle Sound Notifications** silences them all.
 
+A second pack comes with it: **VS Code Signals**, the accessibility signal
+sounds from Visual Studio Code, used under the MIT licence. Choose it in the
+**Sound Scheme** window (Ctrl+Alt+Shift+O) or the setup wizard, and every app
+in the family plays it, each from the next time it starts. Ink stays the
+default.
+
 The **status line** is for anything you might want to go back and read.
 
 Two commands let you check all of this. **Repeat Last Announcement** says the

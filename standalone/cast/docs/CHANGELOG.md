@@ -21,6 +21,13 @@ and speed and reliability.
 
 ### Since build 6 (2026-10-27 to 2026-10-31)
 
+- **A second sound scheme: VS Code Signals** [2026-11-02]. QUILL Cast plays
+  the QUILL family's sound scheme, and there are now two: Ink, still the
+  default, and VS Code Signals, the accessibility signal sounds from Visual
+  Studio Code, used under the MIT licence. Choose in the Sound Scheme window
+  of QUILL or QUILL Lite, or in QUILL's setup wizard, and QUILL Cast plays it
+  from the next time it starts. Anything it has no sound for stays quiet, or
+  is spoken instead.
 - **Find and Follow** [2026-11-01]. Help > AI Features > Find and Follow
   (Ctrl+F3) takes a request in plain words, such as "find a podcast about
   birds, follow it and put it in a Nature folder", and carries it out with
