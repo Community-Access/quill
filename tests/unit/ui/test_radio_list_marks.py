@@ -356,3 +356,20 @@ def test_a_marked_row_keeps_its_mark_when_its_branch_is_rebuilt(browse) -> None:
     assert browse._row_label(child) == "Fav 0 (marked)  (from a test)"
     other = BrowseNode(node_id="fav:9", label="Fav 9")
     assert "(marked)" not in browse._row_label(other)
+
+
+def test_the_remove_button_names_the_marked_count(recordings) -> None:
+    button = recordings._remove_btn
+    assert button.GetLabel() == "&Remove..."
+    for row in (0, 1):
+        _select_row(recordings, row)
+        recordings._on_key(_key(PERIOD))
+    assert button.GetLabel() == "&Remove 2 Marked..."
+    assert button.IsEnabled()
+    # Moving the cursor keeps it: the button acts on the marked rows.
+    _select_row(recordings, 3)
+    recordings._on_selection_changed()
+    assert button.GetLabel() == "&Remove 2 Marked..."
+    recordings._on_key(_key(wx.WXK_DELETE, ctrl=True, shift=True))
+    assert recordings.said[-1] == "Cleared 2 marks."
+    assert button.GetLabel() == "&Remove..."

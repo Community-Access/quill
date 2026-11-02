@@ -39,7 +39,14 @@ from quill.ui.radio.marks_shared import (
     yes_no_asker,
 )
 
-__all__ = ["clear", "on_key", "remove", "remove_marked", "toggle_selected"]
+__all__ = [
+    "clear",
+    "on_key",
+    "remove",
+    "remove_marked",
+    "sync_remove_button",
+    "toggle_selected",
+]
 
 _NOUN = "recording"
 
@@ -62,6 +69,7 @@ def toggle_selected(dialog: Any) -> None:
     marks = marks_on(dialog)
     now_marked = marks.toggle(entry.id)
     dialog._set_row(dialog._list.GetFirstSelected(), entry)
+    sync_remove_button(dialog)
     dialog._announce(marks.toggle_sentence(now_marked))
 
 
@@ -162,3 +170,24 @@ def clear(dialog: Any) -> None:
     clear_marks(marks_on(dialog), announce=dialog._announce)
     for row, entry in enumerate(dialog._entries):
         dialog._set_row(row, entry)
+    sync_remove_button(dialog)
+
+
+def sync_remove_button(dialog: Any) -> None:
+    """The Remove button says what it will remove: "Remove 3 Marked..." while
+    recordings are marked, and it is pressable then whatever row the cursor
+    is on; otherwise "Remove..." for the selected recording, as before.
+
+    Nothing is spoken: the count was just said by the key that changed it,
+    and the reader reads the button's new name when it is reached.
+    """
+    marks = marks_on(dialog)
+    marks.keep_only(entry.id for entry in dialog._entries if _markable(entry))
+    button = dialog._remove_btn
+    if marks:
+        button.SetLabel(f"&Remove {len(marks)} Marked...")
+        button.SetName(f"Delete the {plural(len(marks), 'marked recording')}")
+        button.Enable(True)
+    else:
+        button.SetLabel("&Remove...")
+        button.SetName("Delete this recording file")

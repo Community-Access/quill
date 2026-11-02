@@ -447,6 +447,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         self._play_btn.SetName("Stop this recording" if playing else "Play this recording")
         self._open_btn.Enable(bool(is_file))
         self._remove_btn.Enable(bool(is_done))
+        recordings_marks.sync_remove_button(self)  # "Remove 3 Marked..." while marked
         # Stop targets the selected Recording row; Stop All appears only when two
         # or more recordings are running (concurrent recording).
         active = sum(1 for e in self._entries if e.status == STATUS_RECORDING)

@@ -18,6 +18,9 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **The Remove button counts your marks in Radio Recordings** [2026-11-02].
+  While recordings are marked it reads "Remove 3 Marked..." and can be pressed
+  from any row, so the button and the Delete key always do the same thing.
 - **Split a recording you already have into songs** [2026-11-02]. Radio
   Recordings has Split into Songs (Ctrl+Alt+O), on the Recordings menu and on
   a new Shift+F10 menu for the list. Quill Radio now notes the song changes

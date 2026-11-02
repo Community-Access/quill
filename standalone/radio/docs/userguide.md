@@ -3728,7 +3728,8 @@ once" in Chapter 7):
    with "(marked)", so you hear it again as you arrow past.
 2. Mark as many as you like. Press **.** again on a marked row to unmark it;
    you hear "Unmarked" and how many are still marked.
-3. Press **Delete**, or choose **Remove...**. One question asks, for example,
+3. Press **Delete**, or choose the **Remove** button, which now reads
+   **Remove 3 Marked...** and works from any row. One question asks, for example,
    "Delete 3 recordings?", with **No** already chosen. Choose **Yes** and you
    hear "Deleted 3 recordings." Your cursor lands on the nearest recording that
    is left, and one **Ctrl+Z** in the main window brings all three back.
