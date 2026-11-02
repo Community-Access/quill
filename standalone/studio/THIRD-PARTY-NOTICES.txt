@@ -915,7 +915,7 @@ RapidFuzz
 ---------
 
 What it is: Speeds up the dictation vocabulary corrector when present.
-Version: 3.14.6 or later (an optional member of the shared runtime)
+Version: 3.14.6 or later (an optional member of the shared runtime; pyproject.toml pins the minimum)
 Licence: MIT
 Copyright: Copyright (c) 2020 Max Bachmann; Copyright (c) 2011 Adam Cohen
 Upstream: https://github.com/rapidfuzz/RapidFuzz
@@ -1303,7 +1303,7 @@ What the licence asks of us: None.
 Radio station catalog seed
 --------------------------
 
-What it is: A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it.
+What it is: A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it. Xiph directory stations are not in the seed (no published terms for that data); the app still fetches them live.
 Version: built per release (quill/data/radio-catalog/seed.db.xz)
 Licence: Radio Browser directory data (public domain); Project Gutenberg catalog records; Wikidata (CC0-1.0)
 Copyright: Radio Browser community; Project Gutenberg contributors; Wikidata contributors

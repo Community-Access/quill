@@ -208,6 +208,12 @@
       "text": "PSF-2.0.txt",
       "obligations": "Keep the PSF copyright notice and licence with the distribution and summarise any changes we made."
     },
+    "SCOWL": {
+      "name": "SCOWL word-list licence (Kevin Atkinson) and the affix-file licence (Geoff Kuenning, BSD-style)",
+      "text": "SCOWL.txt",
+      "url": "https://github.com/en-wl/wordlist",
+      "obligations": "Keep the SCOWL copyright and permission notice, and the affix-file copyright notice and conditions, with every copy of the dictionaries and in their documentation. The builds put them beside the dictionaries as README_en_SCOWL.txt."
+    },
     "Public-Domain": {
       "name": "Public domain",
       "text": null,
@@ -1413,7 +1419,7 @@
       ],
       "delivery": "bundled",
       "pypi": "pyenchant",
-      "review": "The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus English Hunspell dictionaries whose individual licences were not confirmed."
+      "review": "The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus the English Hunspell dictionaries (see Hunspell dictionaries: SCOWL licence)."
     },
     {
       "id": "pymupdf",
@@ -1734,7 +1740,7 @@
       "id": "rapidfuzz",
       "name": "RapidFuzz",
       "group": "runtime",
-      "version": "3.14.6 or later (an optional member of the shared runtime)",
+      "version": "3.14.6 or later (an optional member of the shared runtime; pyproject.toml pins the minimum)",
       "licenses": [
         "MIT"
       ],
@@ -1746,8 +1752,7 @@
         "all"
       ],
       "delivery": "bundled",
-      "pypi": "rapidfuzz",
-      "review": "Not installed on the machine that built this inventory, so its version and licence were taken from pyproject.toml and upstream, not from installed metadata."
+      "pypi": "rapidfuzz"
     },
     {
       "id": "regex",
@@ -2499,11 +2504,12 @@
       "group": "data",
       "version": "English set bundled with PyEnchant; others from LibreOffice dictionaries at commit 93d537d",
       "licenses": [
+        "SCOWL",
         "MPL-2.0",
         "GPL-3.0",
         "LGPL-3.0"
       ],
-      "license_label": "Per language. The downloadable languages (es_ES, fr_FR and others) are GPL-3.0, LGPL-3.0 or MPL-2.0 as their own README states; each zip carries those files.",
+      "license_label": "Per language. English (en_US, en_GB, en_AU, en_CA and their variants, inside PyEnchant's payload): the SCOWL licence (permissive) and Kuenning's affix-file licence (BSD-style), whose notices ship beside them as README_en_SCOWL.txt. The downloadable languages (es_ES, fr_FR and others) are GPL-3.0, LGPL-3.0 or MPL-2.0 as their own README states; each zip carries those files.",
       "copyright": "Each dictionary's authors (for English: Kevin Atkinson's SCOWL and contributors; for Spanish: RLA-ES; for French: Dicollecte)",
       "homepage": "https://github.com/LibreOffice/dictionaries",
       "what": "Spelling dictionaries for QUILL's spell checker.",
@@ -2511,8 +2517,7 @@
         "quill",
         "runtime"
       ],
-      "delivery": "bundled",
-      "review": "The English dictionaries that ship inside PyEnchant's payload (en_US, en_GB, en_AU and other en_* variants) were not checked one by one; their README files are not in the pruned payload. Confirm and keep their licence files with them."
+      "delivery": "bundled"
     },
     {
       "id": "liblouis",
@@ -2561,7 +2566,7 @@
       "license_label": "Radio Browser directory data (public domain); Project Gutenberg catalog records; Wikidata (CC0-1.0)",
       "copyright": "Radio Browser community; Project Gutenberg contributors; Wikidata contributors",
       "homepage": "https://www.radio-browser.info/",
-      "what": "A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it.",
+      "what": "A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it. Xiph directory stations are not in the seed (no published terms for that data); the app still fetches them live.",
       "products": [
         "all"
       ],

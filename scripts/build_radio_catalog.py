@@ -43,6 +43,12 @@ sys.path.insert(0, str(REPO))
 DEFAULT_OUT = REPO / "quill" / "data" / "radio-catalog"
 BUDGET_MB_DEFAULT = 10
 
+#: Live sources the app still refreshes but the shipped seed leaves out, because
+#: their data has no published redistribution terms. Xiph's directory has none
+#: we could find (2026-11-01 licensing review), so a release ships Radio
+#: Browser's public-domain data and fetches Xiph live on the listener's machine.
+SEED_EXCLUDED_SOURCES = frozenset({"xiph"})
+
 
 def _stations_from_cache(path: Path):
     from quill.core.radio.catalog.sources import row_from_radio_browser
@@ -58,6 +64,9 @@ def _build_stations(writer, *, from_cache: Path | None) -> dict[str, int]:
     counts: dict[str, int] = {}
     now = time.time()
     for spec in station_specs():
+        if spec.id in SEED_EXCLUDED_SOURCES:
+            print(f"  {spec.id}: left out of the seed (no redistribution terms); fetched live")
+            continue
         pages = (
             _stations_from_cache(from_cache)
             if from_cache is not None and spec.id == "radio_browser"

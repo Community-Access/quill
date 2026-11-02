@@ -32,6 +32,12 @@ Dictionaries under ``share/enchant/hunspell`` are deliberately NOT touched.
 They are the payload, they are what a user's locale resolves against, and
 20 MB of them is a fair price for spell checking that works in en_ZA.
 
+The wheel ships the English dictionaries without the README files whose
+copyright notices SCOWL's licence asks every copy to keep, so the prune also
+puts that notice back beside them: ``README_en_SCOWL.txt``, copied from
+``quill/data/third_party/licenses/SCOWL.txt`` (the same text the family's
+third-party notices reproduce).
+
 Usage::
 
     python scripts/prune_enchant_payload.py <dist-dir>          # prune in place
@@ -66,6 +72,14 @@ _LINK_ONLY_SUFFIXES = (".a", ".la")
 #: Spelling engines to keep. Every dictionary QuillVille ships is hunspell
 #: format, so hunspell is the only provider that can resolve one.
 _DEFAULT_PROVIDERS = frozenset({"hunspell"})
+
+#: Where the English dictionaries live inside the payload, and the SCOWL /
+#: affix-file notice that must travel with them (the wheel drops SCOWL's
+#: README files, which are what carry it).
+_DICTIONARY_DIR = Path("share") / "enchant" / "hunspell"
+_LICENCE_DIR = Path(__file__).resolve().parents[1] / "quill" / "data" / "third_party" / "licenses"
+SCOWL_NOTICE = _LICENCE_DIR / "SCOWL.txt"
+SCOWL_NOTICE_NAME = "README_en_SCOWL.txt"
 
 
 class PEError(RuntimeError):
@@ -187,6 +201,21 @@ def reachable(bin_dir: Path, roots: list[Path]) -> set[str]:
     return keep
 
 
+def restore_scowl_notice(root: Path, *, dry_run: bool = False) -> Path | None:
+    """Put the SCOWL notice beside the English dictionaries under *root*.
+
+    Returns the notice path when English dictionaries are present (written
+    unless *dry_run*), or None when there are none to cover.
+    """
+    dictionaries = root / _DICTIONARY_DIR
+    if not dictionaries.is_dir() or not any(dictionaries.glob("en_*.dic")):
+        return None
+    notice = dictionaries / SCOWL_NOTICE_NAME
+    if not dry_run:
+        notice.write_bytes(SCOWL_NOTICE.read_bytes())
+    return notice
+
+
 def prune(
     target: Path, *, providers: frozenset[str] = _DEFAULT_PROVIDERS, dry_run: bool = False
 ) -> int:
@@ -252,8 +281,13 @@ def prune(
                 if not dry_run:
                     item.unlink()
 
+    notice = restore_scowl_notice(root, dry_run=dry_run)
+
     verb = "would remove" if dry_run else "removed"
     print(f"enchant payload at {root}")
+    if notice is not None:
+        verb_notice = "would write" if dry_run else "wrote"
+        print(f"  {verb_notice} {notice.name} beside the English dictionaries")
     print(f"  kept {len(keep)} reachable libraries from {_ENTRY_DLL} and its providers")
     for name, size in sorted(dropped, key=lambda pair: -pair[1])[:10]:
         print(f"    {verb}: {name} ({size / 1024 / 1024:.1f} MB)")
