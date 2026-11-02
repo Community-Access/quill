@@ -107,8 +107,8 @@ def clean_html(html: str) -> str:
     Returns plain text suitable for insertion into Quill editor.
     """
     # Remove script and style blocks.
-    text = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.IGNORECASE | re.DOTALL)
-    text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<script\b[^>]*>.*?</script\b[^>]*>", "", html, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<style\b[^>]*>.*?</style\b[^>]*>", "", text, flags=re.IGNORECASE | re.DOTALL)
 
     # Convert common block elements to double newlines.
     text = re.sub(r"</?(p|div|blockquote|h[1-6])[^>]*>", "\n\n", text, flags=re.IGNORECASE)

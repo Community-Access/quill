@@ -95,6 +95,14 @@ class TestCleanHtml:
         assert "alert" not in text
         assert "color: red" not in text
 
+    def test_strip_script_and_style_with_spaced_end_tags(self) -> None:
+        """A browser ends a script at ``</script >`` too, so the cleaner must."""
+        html = "<p>Visible</p><script>alert('hidden')</script ><style>b{color:red}</STYLE	>"
+        text = clean_html(html)
+        assert "Visible" in text
+        assert "alert" not in text
+        assert "color:red" not in text
+
     def test_preserve_strong_emphasis(self) -> None:
         """Keep <strong> and <em> text (tags stripped, text kept)."""
         html = "<p>This is <strong>important</strong> and <em>emphatic</em>.</p>"
