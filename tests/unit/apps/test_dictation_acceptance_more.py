@@ -143,18 +143,18 @@ def test_correct_a_repeated_word_steps_to_the_one_meant(editor) -> None:
     assert session.text == "Anne met Ann."
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="select next reuses match offsets found before the replacement moved the text",
-)
 def test_select_next_after_replacing_a_match_finds_the_next_one_where_it_now_is(editor) -> None:
     session = _at(editor("The cat sat. The cat ran. The cat slept."), 0).start()
     session.hear("select the cat", "a big dog")
     assert session.text == "A big dog sat. The cat ran. The cat slept."
     session.hear("select next")
-    # Today it selects ". The c" and says so: the old offsets of the second match.
+    # Searched again in the edited text, not the old offsets (". The c").
     assert session.selected() == "The cat"
     assert session.said[-1] == "Selected: The cat."
+    assert session.selection() == (15, 22)
+    session.hear("select previous")
+    # The replaced one is gone: there is no cat before this one now.
+    assert session.said[-1] == "None before that."
 
 
 def test_each_step_is_said_once(editor) -> None:

@@ -91,6 +91,9 @@ class Target:
     matches: tuple[tuple[int, int], ...] = ()
     #: Which of *matches* this is.
     index: int = 0
+    #: The words searched for, normalised, so a step can search again. Empty
+    #: for a "through" range, which has nowhere to step to.
+    words: tuple[str, ...] = ()
 
     def moved(self, step: int) -> Target | None:
         """The next (*step* 1) or previous (-1) match, or ``None`` at the end."""
@@ -98,7 +101,49 @@ class Target:
         if not 0 <= index < len(self.matches):
             return None
         start, end = self.matches[index]
-        return Target(start, end, self.matches, index)
+        return Target(start, end, self.matches, index, self.words)
+
+    def stepped(self, text: str, selection: tuple[int, int], step: int) -> Target | None:
+        """The next (*step* 1) or previous (-1) match in *text* as it is now.
+
+        The offsets in *matches* go stale the moment anything is typed over a
+        match: replacing "the cat" with "a big dog" shifts every later match by
+        two characters, and stepping by the old offsets selected ". The c". So
+        the words are found again in the current text and the step is taken from
+        where the cursor is. When the selection (or a collapsed cursor at either
+        edge) is still one of the matches, the step is from that match;
+        otherwise "next" is the first match starting after the cursor and
+        "previous" the last one starting before it.
+        """
+        if not self.words:
+            return self.moved(step)
+        matches = _find_all(_tokens(text), list(self.words))
+        if not matches:
+            return None
+        sel_start, sel_end = selection
+        current = next(
+            (
+                index
+                for index, (start, end) in enumerate(matches)
+                if (start, end) == (sel_start, sel_end)
+                or (sel_start == sel_end and sel_start in (start, end))
+            ),
+            None,
+        )
+        if current is not None:
+            index = current + step
+        elif step > 0:
+            index = next(
+                (i for i, (start, _end) in enumerate(matches) if start >= sel_end), len(matches)
+            )
+        else:
+            index = next(
+                (i for i in range(len(matches) - 1, -1, -1) if matches[i][0] < sel_start), -1
+            )
+        if not 0 <= index < len(matches):
+            return None
+        start, end = matches[index]
+        return Target(start, end, tuple(matches), index, self.words)
 
 
 def _find_all(tokens: list[tuple[str, int, int]], wanted: list[str]) -> list[tuple[int, int]]:
@@ -149,7 +194,7 @@ def find_target(text: str, caret: int, words: Sequence[str]) -> Target | None:
     if index is None:
         return None
     start, end = matches[index]
-    return Target(start, end, tuple(matches), index)
+    return Target(start, end, tuple(matches), index, tuple(said))
 
 
 def line_number(text: str, position: int) -> int:

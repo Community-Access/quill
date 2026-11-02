@@ -313,7 +313,9 @@ class VoiceCommandsMixin:
             return
         text, caret = self._text_and_caret()
         step = 1 if parsed.command is Command.SELECT_NEXT else -1
-        moved = self._target.moved(step)
+        # Searched again in the text as it is now: an edit since the last
+        # search moves every later match, so stored offsets would be stale.
+        moved = self._target.stepped(text, self._document.selection(), step)
         if moved is None:
             self._say("No more." if step > 0 else "None before that.")
             return
