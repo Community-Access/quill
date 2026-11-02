@@ -47,12 +47,37 @@ def begin(host: Any, query: str) -> None:
         host._announce("The libraries are disabled in Safe Mode; stations only.")
         return
 
-    sources = federated_search.searchable_ids()
+    sources = shown_libraries(federated_search.searchable_ids(), _browse_choice(host))
+    if not sources:
+        return
     host._library_pending = len(sources)
     host._library_found = 0
     host._library_failed = []
     for source_id in sources:
         _submit(host, source_id, wanted)
+
+
+#: A library's id here, where it differs from its Browse branch's id.
+_BROWSE_ROOT = {"apple_podcasts": "apple"}
+
+
+def shown_libraries(sources: tuple[str, ...], browse_choice: object) -> tuple[str, ...]:
+    """The libraries whose Browse branch is not hidden (pure).
+
+    Find Stations has no switch of its own for the libraries, so the one the
+    listener already set in Choose Browse Sources decides: a source somebody
+    has hidden is never searched, from any window (Jeff, 2026-11-01).
+    """
+    from quill.core.radio import browse_sources
+
+    shown = {node_id for node_id, _label in browse_sources.visible_roots(browse_choice)}
+    return tuple(s for s in sources if _BROWSE_ROOT.get(s, s) in shown)
+
+
+def _browse_choice(host: Any) -> object:
+    """The listener's Choose Browse Sources setting, or None for the defaults."""
+    history = getattr(getattr(host, "_app_host", None), "_radio_history", None)
+    return getattr(history, "browse_sources_enabled", None)
 
 
 def _submit(host: Any, source_id: str, query: str) -> None:
