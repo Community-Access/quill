@@ -631,3 +631,34 @@ def test_changing_the_language_changes_which_row_is_live() -> None:
     window.set_document_language("markdown", announce=False)
     assert window.state()["cmd_insert_markdown_tag"] is True
     assert window.state()["cmd_insert_html_tag"] is False
+
+
+# -- an image always comes with its alt text ----------------------------------
+
+
+def _answers(monkeypatch: pytest.MonkeyPatch, *, choice: str, replies: list[str]) -> None:
+    import quill.apps.lite_image_insert as image_insert
+    import quill.apps.lite_window_markup as markup
+
+    queue = list(replies)
+    monkeypatch.setattr(markup, "choose_searchable", lambda *a, **k: choice)
+    monkeypatch.setattr(markup, "ask_text", lambda *a, **k: queue.pop(0))
+    monkeypatch.setattr(image_insert, "ask_text", lambda *a, **k: queue.pop(0))
+
+
+def test_inserting_an_image_asks_for_its_alt_text(monkeypatch: pytest.MonkeyPatch) -> None:
+    win = _Window("", name="notes.md")
+    _answers(monkeypatch, choice="Image", replies=["cat.png", "A cat asleep on a keyboard"])
+    win.cmd_insert_markdown_tag()
+    assert win.text == "![A cat asleep on a keyboard](cat.png)"
+    assert win.said[-1] == "Inserted Image"
+
+
+def test_an_image_with_no_alt_text_says_how_to_get_a_draft(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    win = _Window("", name="notes.md")
+    _answers(monkeypatch, choice="Image", replies=["cat.png", ""])
+    win.cmd_insert_markdown_tag()
+    assert win.text == "![](cat.png)"
+    assert "Propose Alt Text" in win.said[-1]

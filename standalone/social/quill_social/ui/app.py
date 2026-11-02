@@ -380,6 +380,7 @@ class SocialFrame(wx.Frame):
                 ("&User Guide", "user_guide"),
                 ("&Keyboard Reference", "keyboard_reference"),
                 ("&Product Requirements", "product_requirements"),
+                ("&What's New", "whats_new"),
                 None,
                 ("Keyboard &Guide (shortcuts)", "help"),
                 ("&About", "about"),
@@ -465,6 +466,7 @@ class SocialFrame(wx.Frame):
             "user_guide": lambda: self.cmd_open_doc("USER_GUIDE"),
             "keyboard_reference": lambda: self.cmd_open_doc("KEYMAP_SPEC"),
             "product_requirements": lambda: self.cmd_open_doc("QUILL_Social_PRD_Working_Draft"),
+            "whats_new": lambda: self.cmd_open_doc("CHANGELOG"),
             "help": self.cmd_help,
             "about": lambda: self._on_about(None),
         }

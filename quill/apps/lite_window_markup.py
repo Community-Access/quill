@@ -62,6 +62,7 @@ from typing import Any
 
 from quill.apps.lite_dialogs import choose_document_language, choose_searchable
 from quill.apps.lite_dialogs_entry import ask_link, ask_text
+from quill.apps.lite_image_insert import insert_markdown_image
 from quill.core.heading_levels import LevelResult, set_heading_level
 from quill.core.html_forms import is_form_snippet
 from quill.core.links import build_link_text
@@ -445,6 +446,9 @@ class DocumentMarkupMixin:
                 or ""
             ).strip()
         selected = self.control.GetStringSelection()
+        if kind == "Image":
+            insert_markdown_image(self, target, selected)
+            return
         self._apply_insertion(build_markdown_insertion(kind, selected, link_target=target))
         self._announce(f"Inserted {kind}")
         self.control.SetFocus()

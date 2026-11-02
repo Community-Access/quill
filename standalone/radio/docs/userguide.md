@@ -2554,7 +2554,8 @@ address" below.
 
 ### Search All Sources, step by step
 
-**Search All Sources...** at the top of the tree asks every directory at once.
+**Search All Sources...** at the top of the tree asks every directory you have
+not hidden, all at once.
 
 1. Press **Ctrl+B**, then **Home** to go to **Search All Sources...**.
 2. Press **Enter**. A box opens: "What are you looking for? Every source is
@@ -2812,8 +2813,9 @@ If Browse Stations has branches you never use, you can tidy them away.
    Browse Stations is open, it rebuilds at once, and you hear "Browse Stations
    has been updated."
 
-A branch that is off is not in the tree at all, and is never contacted while
-you browse. A source added in a later version shows up unless you hide it.
+A branch that is off is not in the tree at all, and is never contacted, not
+while you browse and not when you search: **Search All Sources** asks only the
+sources you show. A source added in a later version shows up unless you hide it.
 
 You can also tidy up from the tree itself: press **Delete** on a top-level
 branch, or press **Shift+F10** on it and choose **Hide This Source**. **Reset

@@ -46,7 +46,7 @@
   #define AppFileVersion "3.2.0.5"
 #endif
 #define AppPublisher "Community Access"
-#define AppURL "https://github.com/Community-Access/quill-radio"
+#define AppURL "https://quillforall.org/radio.html"
 
 ; -- shared runtime parameters (read by installer\shared-runtime.iss) ----------
 ; AppRefId is the stable per-app key the fragment uses in

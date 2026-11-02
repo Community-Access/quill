@@ -365,3 +365,29 @@ def test_a_plain_name_query_is_never_scanned(
 
     assert scanned == []
     assert [row.label for row in found.rows] == ["Jazz FM"]
+
+
+def test_a_hidden_source_is_never_asked(_routes: dict, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Hiding a source in Choose Browse Sources keeps search away from it too."""
+    asked: list[str] = []
+
+    def recording_fast_find(node_id, query, *, safe_mode=False, catalog=None):
+        asked.append(node_id)
+        return ([], "")
+
+    monkeypatch.setattr(branch_find, "fast_find", recording_fast_find)
+    found = federated_browse.search_everything("jazz", visible={"tunein", "apple"})
+
+    assert sorted(asked) == ["apple", "tunein"]
+    assert sorted(found.asked) == ["Apple Podcasts", "TuneIn"]
+
+
+def test_radio_browser_counts_as_shown_while_any_of_its_branches_is() -> None:
+    stations = (federated_browse.STATIONS,)
+    assert federated_browse.visible_only(stations, {"rbcountry"}) == stations
+    assert federated_browse.visible_only(stations, {"tunein"}) == ()
+
+
+def test_with_every_source_hidden_nothing_is_contacted(_routes: dict) -> None:
+    found = federated_browse.search_everything("jazz", visible=set())
+    assert found.rows == [] and found.asked == []

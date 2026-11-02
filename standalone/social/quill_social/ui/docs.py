@@ -33,6 +33,7 @@ DOC_TITLES: dict[str, str] = {
     "USER_GUIDE": "QUILL Social User Guide",
     "KEYMAP_SPEC": "QUILL Social Keyboard Reference",
     "QUILL_Social_PRD_Working_Draft": "QUILL Social Product Requirements",
+    "CHANGELOG": "What's New in QUILL Social",
 }
 
 

@@ -26,7 +26,7 @@ dependencies = ["quill[ui] @ git+https://github.com/Community-Access/quill.git@1
 quill-radio = "quill_radio:main"
 
 [project.urls]
-Homepage = "https://github.com/Community-Access/quill-radio"
+Homepage = "https://quillforall.org/radio.html"
 Upstream = "https://github.com/Community-Access/quill"
 
 [tool.hatch.build.targets.wheel]

@@ -168,10 +168,11 @@ Example: to plan the week's posts, press Ctrl+Shift+Y for Studio > Agenda / Cale
 **Finding text in a list.** **Tools > Find Text...** (Ctrl+Shift+F) asks for a word or phrase and a direction (Forward or Backward), then moves to the first row of the current list that contains it and tells you where it is, such as "3 of 20". **Tools > Find Next** (F3) and **Tools > Find Previous** (Shift+F3) repeat the search; if you have not searched yet, they open Find Text first. Example: in Unified Home, press Ctrl+Shift+F, type `release`, and press Enter to land on the first post that mentions a release; press F3 for the next. Find searches the rows of the list you are looking at, in any kind of view, and wraps around at the end. It does not search other views; for that, use **Tools > Search** (Ctrl+L). Find Text was on Ctrl+F until 2026-10-17, but Ctrl+F is Favourite, which always answered first.
 
 ### Help and Documentation
-Everything below is installed alongside QUILL Social, so it works with no internet connection. All three open in your browser, where your screen reader already gives you heading, link, and find-in-page navigation.
+Everything below is installed alongside QUILL Social, so it works with no internet connection. All four open in your browser, where your screen reader already gives you heading, link, and find-in-page navigation.
 - **Help > User Guide** (Ctrl+F1): this document.
 - **Help > Keyboard Reference** (Ctrl+Shift+F1): every key QUILL Social ships with, grouped by task, with the menu each command lives on and how to change a key.
 - **Help > Product Requirements** (Alt+Shift+F1): what QUILL Social is meant to be, for the curious.
+- **Help > What's New** (Ctrl+Alt+F1): the changelog, newest changes first.
 - **Help > Keyboard Guide (shortcuts)** (`F1`): the quick in-app list of the shortcuts currently in effect, including any you have remapped. This is the one that reflects *your* keymap rather than the shipped defaults.
 
 ---

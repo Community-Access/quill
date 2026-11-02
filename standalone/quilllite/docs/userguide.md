@@ -3498,7 +3498,10 @@ type.
 This offers bold, italic, inline code, a fenced code block, the six heading
 levels, bullet, numbered and task lists, blockquote, link, image, table and
 footnote. Type a few letters to narrow the list. If you choose Link or Image,
-it asks you for the address next.
+it asks you for the address next. An image then asks for its alt text: a short
+sentence saying what the picture shows and why it is there. Anything you had
+selected is already in the box. Leave it empty only for a decorative image; QUILL
+Lite then tells you that **Tools > AI > Propose Alt Text** can draft it.
 
 ##### HTML Tag (Ctrl+Alt+O)
 
