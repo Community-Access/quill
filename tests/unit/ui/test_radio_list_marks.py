@@ -8,6 +8,7 @@ question is a fake, so nothing modal opens and no input is sent.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -180,6 +181,57 @@ def test_with_nothing_marked_delete_removes_the_selected_schedule(schedule) -> N
     schedule._list.SetSelection(0)
     schedule._on_list_key(_key(wx.WXK_DELETE))
     assert schedule.removed == ["s1"]
+
+
+def _mark_schedules(schedule, rows: tuple[int, ...]) -> None:
+    for row in rows:
+        schedule._list.SetSelection(row)
+        schedule._on_list_key(_key(PERIOD))
+
+
+def test_disable_turns_off_every_marked_schedule(schedule) -> None:
+    updated: list[tuple[str, bool]] = []
+    schedule._on_update = lambda entry: updated.append((entry.id, entry.enabled)) or True
+    _mark_schedules(schedule, (0, 2))
+    assert schedule._toggle_btn.GetLabel() == "Disab&le 2 Marked"
+    schedule._list.SetSelection(4)  # the cursor elsewhere: the button still means the marks
+    schedule_marks.refresh_buttons(schedule)
+    assert schedule._toggle_btn.GetLabel() == "Disab&le 2 Marked"
+    schedule_marks.toggle_button(schedule)
+    assert sorted(updated) == [("s1", False), ("s3", False)]
+    assert schedule.said[-1] == "Disabled 2 schedules."
+    assert not schedule_marks.marks_on(schedule)
+    assert not any("(marked)" in schedule._list.GetString(i) for i in range(5))
+    assert "Marked" not in schedule._toggle_btn.GetLabel()
+
+
+def test_enable_with_any_marked_schedule_off_turns_them_all_on(schedule) -> None:
+    schedule._entries = [
+        replace(entry, enabled=False) if entry.id == "s2" else entry for entry in schedule._entries
+    ]
+    schedule._refresh_list()
+    _mark_schedules(schedule, (0, 1))
+    assert schedule._toggle_btn.GetLabel() == "Enab&le 2 Marked"
+    schedule_marks.toggle_button(schedule)
+    assert schedule.said[-1] == "Enabled 1 schedule. 1 was already enabled."
+    assert all(entry.enabled for entry in schedule._entries)
+
+
+def test_the_menu_offers_enable_and_disable_for_the_marked(
+    schedule, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    shown: list[list[str]] = []
+
+    def popup(menu, *_args) -> bool:
+        shown.append([item.GetItemLabel() for item in menu.GetMenuItems()])
+        return True
+
+    monkeypatch.setattr(schedule._list, "PopupMenu", popup)
+    _mark_schedules(schedule, (0, 1, 2))
+    schedule_marks.on_list_context_menu(schedule)
+    assert "Enab&le 3 Marked" in shown[0]
+    assert "Disa&ble 3 Marked" in shown[0]
+    assert "Disab&le" not in shown[0]
 
 
 def test_toggling_a_schedule_while_others_are_marked_explains_itself(schedule) -> None:

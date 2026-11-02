@@ -3636,8 +3636,9 @@ similar entries are easy to tell apart. With an entry selected:
 - **Remove**, or the **Delete** key, deletes the entry **straight away, without
   asking**.
 - **Shift+F10** on the list offers Edit, Duplicate, Enable or Disable, and
-  Delete, then **Mark for Deleting** (and, while anything is marked, **Remove
-  N Marked...** and **Clear Marks**).
+  Delete, then **Mark for Deleting**. While anything is marked it offers
+  **Enable N Marked** and **Disable N Marked** in place of Enable or Disable,
+  and **Remove N Marked...** and **Clear Marks** at the end.
 
 To remove several schedules at once, press **.** (period) on each one. You
 hear "Marked" and how many are marked, and the row ends with "(marked)". Then
@@ -3648,9 +3649,18 @@ single Delete with nothing marked still removes the selected entry straight
 away; the question is only for several, because one schedule is quick to add
 again and a dozen are not.
 
-**Edit**, **Duplicate** and **Enable** or **Disable** work on the selected
-entry only. If schedules are marked, the first of them you use says so once:
-"That used the selected row only; 2 rows are still marked for Delete."
+To switch several schedules off for a while, say over a holiday, mark them
+the same way and press **Alt+L**, the Enable or Disable button. While
+schedules are marked it reads **Disable 3 Marked** when they are all on, and
+**Enable 3 Marked** when any of them is off, so one press switches them all
+the same way. Nothing asks first, because nothing is lost. You hear, for
+example, "Disabled 3 schedules", or "Enabled 1 schedule. 2 were already
+enabled." The marks are cleared afterwards. To choose outright, use
+**Enable N Marked** or **Disable N Marked** on the Shift+F10 menu.
+
+**Edit** and **Duplicate** work on the selected entry only. If schedules are
+marked, the first of them you use says so once: "That used the selected row
+only; 2 rows are still marked for Delete."
 
 Close the window with **Escape** or **Ctrl+W**. Its menus are **Schedule**
 (Alt+D), **Station** (Alt+S) and **Window** (Alt+W).

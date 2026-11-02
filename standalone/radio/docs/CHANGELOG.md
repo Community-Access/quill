@@ -18,6 +18,11 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **Enable or disable many schedules at once** [2026-11-02]. In Schedule
+  Recording, with schedules marked, the Enable or Disable button (Alt+L)
+  reads "Disable 3 Marked" or "Enable 3 Marked" and switches every marked
+  schedule the same way, with one sentence saying how many changed. The
+  Shift+F10 menu offers Enable N Marked and Disable N Marked.
 - **Add many stations to Favorites from Browse Stations** [2026-11-02].
   Any station row can now be marked with period, not only rows Delete can
   remove. While stations are marked, the Add to Favorites button reads "Add

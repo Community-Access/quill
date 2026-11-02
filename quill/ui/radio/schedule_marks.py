@@ -1,4 +1,4 @@
-"""Marks in the Schedule Recording list: remove many schedules at once.
+"""Marks in the Schedule Recording list: remove, enable or disable many at once.
 
 The Favorites marking keys (:mod:`quill.ui.radio.marks_shared`), on the list of
 scheduled recordings. ``.`` marks the selected schedule and says how many are
@@ -7,9 +7,16 @@ after one question ("Delete 3 schedules?", default No) -- where a single
 Delete removes the selected one straight away, as it always has, because one
 schedule is quickly added back and twelve are not.
 
-Edit, Duplicate and Enable or Disable work on the selected schedule only;
-while schedules are marked, the first of them to run says so, once, and that
-the marks are still there.
+**Enable** or **Disable** while schedules are marked works on every marked
+one. The button then reads "Enable 3 Marked" when any of them is off (so one
+press switches them all on) and "Disable 3 Marked" when all of them are on;
+the list's Shift+F10 menu offers both, so either can be chosen outright. It
+asks nothing -- switching a schedule off loses nothing and is switched back the
+same way -- says one sentence with the count, and clears the marks.
+
+Edit and Duplicate work on the selected schedule only; while schedules are
+marked, the first of them to run says so, once, and that the marks are still
+there.
 
 This module also owns the list's key handler and its context menu, which moved
 here from ``schedule_recording_dialog`` under GATE-11 when marking arrived.
@@ -18,8 +25,10 @@ here from ``schedule_recording_dialog`` under GATE-11 when marking arrived.
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import replace
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.radio.row_marks import (
     delete_question,
     deleted_sentence,
@@ -37,7 +46,16 @@ from quill.ui.radio.marks_shared import (
     yes_no_asker,
 )
 
-__all__ = ["on_list_context_menu", "on_list_key", "remove_marked", "row_text", "toggle_selected"]
+__all__ = [
+    "on_list_context_menu",
+    "on_list_key",
+    "refresh_buttons",
+    "remove_marked",
+    "row_text",
+    "set_marked_enabled",
+    "toggle_button",
+    "toggle_selected",
+]
 
 _NOUN = "schedule"
 
@@ -59,7 +77,74 @@ def toggle_selected(dialog: Any) -> None:
     text = dialog._list.GetString(index)
     base = text[: -len(" (marked)")] if text.endswith(" (marked)") else text
     dialog._list.SetString(index, marked_label(base, now_marked))
+    refresh_buttons(dialog)
     dialog._announce(marks.toggle_sentence(now_marked))
+
+
+def _marked_entries(dialog: Any) -> list[Any]:
+    marks = marks_on(dialog)
+    marks.keep_only(entry.id for entry in dialog._entries)
+    return [entry for entry in dialog._entries if entry.id in marks]
+
+
+def refresh_buttons(dialog: Any) -> None:
+    """Name the list's buttons for what they act on: the selected schedule,
+    or -- for Enable or Disable -- every marked one while any are marked.
+
+    Nothing is spoken; the marking key already said the count.
+    """
+    dialog._refresh_remove_button()
+    marked = _marked_entries(dialog)
+    if not marked:
+        return
+    count = len(marked)
+    button = dialog._toggle_btn
+    if any(not entry.enabled for entry in marked):
+        button.SetLabel(f"Enab&le {count} Marked")
+        button.SetName(f"Enable the {plural(count, 'marked schedule')}")
+    else:
+        button.SetLabel(f"Disab&le {count} Marked")
+        button.SetName(f"Disable the {plural(count, 'marked schedule')}")
+    button.Enable(True)
+
+
+def toggle_button(dialog: Any, event: Any = None) -> None:
+    """The Enable or Disable button: every marked schedule while any are
+    marked (on when any is off, otherwise off), else the selected one."""
+    marked = _marked_entries(dialog)
+    if not marked:
+        dialog._on_toggle_click(event)
+        return
+    set_marked_enabled(dialog, any(not entry.enabled for entry in marked))
+
+
+def set_marked_enabled(dialog: Any, enabled: bool) -> bool:
+    """Switch every marked schedule on (*enabled*) or off. Returns whether
+    any changed. One sentence, every clause a number (GATE-BULK-COUNT)."""
+    marked = _marked_entries(dialog)
+    if not marked:
+        return False
+    changed = failed = 0
+    for entry in marked:
+        if entry.enabled == enabled:
+            continue
+        updated = replace(entry, enabled=enabled)
+        if dialog._on_update(updated):
+            dialog._entries = [updated if e.id == updated.id else e for e in dialog._entries]
+            changed += 1
+        else:
+            failed += 1
+    already = len(marked) - changed - failed
+    state = "enabled" if enabled else "disabled"
+    said = f"{state.capitalize()} {plural(changed, _NOUN)}."
+    if already:
+        said += f" {already} {'was' if already == 1 else 'were'} already {state}."
+    if failed:
+        said += f" {failed} could not be changed."
+    marks_on(dialog).clear()
+    dialog._refresh_list(keep_id=_selected_id(dialog))
+    dialog._announce(said)
+    return changed > 0
 
 
 def remove_marked(dialog: Any, *, ask: Callable[[str], bool] | None = None) -> bool:
@@ -124,8 +209,18 @@ def on_list_context_menu(dialog: Any) -> None:
     entries: list[tuple[str, Callable[[], None]]] = [
         ("&Edit", lambda: dialog._on_edit_click(None)),
         ("D&uplicate", lambda: dialog._on_duplicate_click(None)),
-        ("Enab&le" if not entry.enabled else "Disab&le", lambda: dialog._on_toggle_click(None)),
     ]
+    if marks:
+        # Both, so either can be chosen outright; the button picks for you.
+        entries += [
+            (f"Enab&le {len(marks)} Marked", lambda: set_marked_enabled(dialog, True)),
+            (f"Disa&ble {len(marks)} Marked", lambda: set_marked_enabled(dialog, False)),
+        ]
+    else:
+        entries.append((
+            "Enab&le" if not entry.enabled else "Disab&le",
+            lambda: dialog._on_toggle_click(None),
+        ))
     if not marks:
         # While schedules are marked, Delete removes them all, so the one-row
         # delete gives the key up to the marked row (one claimant per key).

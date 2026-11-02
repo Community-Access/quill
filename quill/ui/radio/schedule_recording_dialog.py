@@ -386,11 +386,11 @@ class ScheduleRecordingDialog:
         self._remove_btn.Bind(wx.EVT_BUTTON, self._on_remove_click)
         self._edit_btn.Bind(wx.EVT_BUTTON, self._on_edit_click)
         self._duplicate_btn.Bind(wx.EVT_BUTTON, self._on_duplicate_click)
-        self._toggle_btn.Bind(wx.EVT_BUTTON, self._on_toggle_click)
+        self._toggle_btn.Bind(wx.EVT_BUTTON, lambda e: schedule_marks.toggle_button(self, e))
         self._add_btn.Bind(wx.EVT_BUTTON, self._on_add_click)
         self._browse_btn.Bind(wx.EVT_BUTTON, self._on_browse_folder)
         self._new_btn.Bind(wx.EVT_BUTTON, lambda _e: self._reset_form())
-        self._list.Bind(wx.EVT_LISTBOX, lambda _e: self._refresh_remove_button())
+        self._list.Bind(wx.EVT_LISTBOX, lambda _e: schedule_marks.refresh_buttons(self))
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
         self._list.Bind(wx.EVT_CONTEXT_MENU, self._on_list_context_menu)
         self._refresh_list()
@@ -514,7 +514,7 @@ class ScheduleRecordingDialog:
                     break
         if self._entries:
             self._list.SetSelection(selected)
-        self._refresh_remove_button()
+        schedule_marks.refresh_buttons(self)  # names each action, and the marked count
 
     def _on_remove_click(self, _event: object) -> None:
         index = self._list.GetSelection()
