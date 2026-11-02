@@ -2250,13 +2250,13 @@
       "license_label": "Proprietary (Fonix Corporation); not distributed",
       "copyright": "Originally Digital Equipment Corporation; later Fonix Corporation and others",
       "homepage": "https://github.com/dectalk/dectalk",
-      "what": "The classic DECtalk voices, supported only when the user installs DECtalk separately; QUILL's own code drives that copy. QUILL does not distribute the DECtalk runtime or DECtalk voice previews, and the DECtalk binaries were removed from the QUILL repository on 2026-11-01.",
+      "what": "The classic DECtalk voices, supported only when the user installs DECtalk separately; QUILL's own code drives that copy. QUILL does not distribute the DECtalk runtime; the DECtalk binaries were removed from the QUILL repository on 2026-11-01. Nine short preview clips synthesised with DECtalk ship with the voice previews. Following NV Access's practice for its add-on store, QUILL does not link to or help obtain a DECtalk engine.",
       "products": [
         "quill",
         "studio"
       ],
       "delivery": "user-installed",
-      "review": "Redistribution rights are not established. Do not redistribute DECtalk or its voice samples without written permission from the rights holder. Previously published builds must be reviewed separately."
+      "review": "Not distributed: the engine files carry proprietary notices and no right to redistribute, so they were removed from the repository on 2026-11-01 (git history untouched) and QUILL only drives a copy the user installs. The nine voice preview clips are QUILL's own synthesised samples, kept as a stated low-risk choice (decided 2026-11-02)."
     },
     {
       "id": "dictation-models",

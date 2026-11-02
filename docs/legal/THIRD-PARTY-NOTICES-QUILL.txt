@@ -1212,7 +1212,7 @@ Speech engines, voices and recognition models.
 DECtalk
 -------
 
-What it is: The classic DECtalk voices, supported only when the user installs DECtalk separately; QUILL's own code drives that copy. QUILL does not distribute the DECtalk runtime or DECtalk voice previews, and the DECtalk binaries were removed from the QUILL repository on 2026-11-01.
+What it is: The classic DECtalk voices, supported only when the user installs DECtalk separately; QUILL's own code drives that copy. QUILL does not distribute the DECtalk runtime; the DECtalk binaries were removed from the QUILL repository on 2026-11-01. Nine short preview clips synthesised with DECtalk ship with the voice previews. Following NV Access's practice for its add-on store, QUILL does not link to or help obtain a DECtalk engine.
 Version: Not distributed (user-installed copy only)
 Licence: Proprietary (Fonix Corporation); not distributed
 Copyright: Originally Digital Equipment Corporation; later Fonix Corporation and others
