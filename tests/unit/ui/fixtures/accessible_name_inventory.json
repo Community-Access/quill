@@ -971,6 +971,7 @@
   "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.TextCtrl#2": "named",
   "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.TextCtrl#3": "named",
   "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.TextCtrl#4": "named",
+  "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.TextCtrl#5": "named",
   "quill/ui/radio/search_sources_dialog.py::SearchSourcesDialog._build_ui::wx.ListBox": "named",
   "quill/ui/radio/skipped_items_dialog.py::show_skipped_items::wx.ListBox": "named",
   "quill/ui/radio/song_history_dialog.py::SongHistoryDialog._build_ui::wx.Choice": "named",

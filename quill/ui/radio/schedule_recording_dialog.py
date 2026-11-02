@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 from zoneinfo import available_timezones
 
 from quill.core.radio.recording_schedule import RecordingScheduleEntry, new_id, next_occurrence
+from quill.core.radio.schedule_folder import folder_problem
 from quill.core.radio.wake_timer import parse_time_of_day
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
 from quill.ui.dpi import dip_size
@@ -75,6 +76,7 @@ def build_schedule_entry(
     duration_minutes: int,
     editing_id: str | None = None,
     now: datetime | None = None,
+    folder: str = "",
 ) -> tuple[RecordingScheduleEntry | None, str | None]:
     """Validate form values and build an entry (wx-free, so it is unit-testable).
 
@@ -84,7 +86,10 @@ def build_schedule_entry(
     local time. A naive-local one-time recording must be in the future; a zoned
     one-time is judged in its own zone at fire time, so the future guard is
     skipped for it. ``editing_id`` reuses that id (edit in place) instead of
-    minting a new one.
+    minting a new one. ``folder`` is where this schedule saves (empty = the
+    Recording Settings folder); one that cannot be written is refused here,
+    when the listener can fix it, rather than at record time when nobody is
+    there to hear the failure.
     """
     name = name.strip()
     url = url.strip()
@@ -107,6 +112,9 @@ def build_schedule_entry(
         run_at_text = run_at.isoformat()
     else:
         run_at_text = f"2026-01-01T{hour:02d}:{minute:02d}:00"
+    problem = folder_problem(folder)
+    if problem:
+        return None, problem
     entry = RecordingScheduleEntry(
         id=editing_id or new_id(),
         station_name=name,
@@ -116,6 +124,7 @@ def build_schedule_entry(
         weekday=weekday_index if recurrence == "weekly" else -1,
         duration_minutes=duration_minutes,
         timezone=timezone_name,
+        folder=folder.strip(),
     )
     return entry, None
 
@@ -318,6 +327,27 @@ class ScheduleRecordingDialog:
         self._minutes_ctrl.SetName("Recording length, minutes (0 to 59), added to the hours")
         grid.Add(self._minutes_ctrl, 0)
 
+        # quill-radio #21: each schedule may save to its own folder.
+        grid.Add(
+            wx.StaticText(self._surface, label="Sa&ve in folder:"), 0, wx.ALIGN_CENTER_VERTICAL
+        )
+        folder_row = wx.BoxSizer(wx.HORIZONTAL)
+        self._folder_ctrl = wx.TextCtrl(self._surface, value="")
+        self._folder_ctrl.SetHint("Default recordings folder")
+        self._folder_ctrl.SetName("Folder for this schedule's recordings; empty uses the default")
+        self._folder_ctrl.SetHelpText(
+            "The folder this schedule's recordings are saved in. Leave it empty to use the "
+            "recordings folder from Recording Settings, or type a full path or choose Browse. "
+            "A folder that cannot be written to is refused when you save the schedule."
+        )
+        folder_row.Add(self._folder_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
+        self._browse_btn = wx.Button(self._surface, label="&Browse...")
+        self._browse_btn.SetHelpText(
+            "Opens a folder chooser and puts the folder you pick in Save in folder."
+        )
+        folder_row.Add(self._browse_btn, 0)
+        grid.Add(folder_row, 1, wx.EXPAND)
+
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
         self._status = wx.StaticText(self._surface, label="")
@@ -358,6 +388,7 @@ class ScheduleRecordingDialog:
         self._duplicate_btn.Bind(wx.EVT_BUTTON, self._on_duplicate_click)
         self._toggle_btn.Bind(wx.EVT_BUTTON, self._on_toggle_click)
         self._add_btn.Bind(wx.EVT_BUTTON, self._on_add_click)
+        self._browse_btn.Bind(wx.EVT_BUTTON, self._on_browse_folder)
         self._new_btn.Bind(wx.EVT_BUTTON, lambda _e: self._reset_form())
         self._list.Bind(wx.EVT_LISTBOX, lambda _e: self._refresh_remove_button())
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
@@ -524,6 +555,7 @@ class ScheduleRecordingDialog:
         self._time_ctrl.SetValue(default_moment.strftime("%H:%M"))
         self._hours_ctrl.SetValue(1)
         self._minutes_ctrl.SetValue(0)
+        self._folder_ctrl.SetValue("")
         self._status.SetLabel("")
         self._enter_add_mode()
 
@@ -543,6 +575,7 @@ class ScheduleRecordingDialog:
             pass
         self._hours_ctrl.SetValue(entry.duration_minutes // 60)
         self._minutes_ctrl.SetValue(entry.duration_minutes % 60)
+        self._folder_ctrl.SetValue(entry.folder)
         if entry.timezone and entry.timezone in _TIMEZONE_CHOICES:
             self._timezone_choice.SetSelection(_TIMEZONE_CHOICES.index(entry.timezone))
         else:
@@ -597,11 +630,32 @@ class ScheduleRecordingDialog:
             timezone_name="" if tz_index <= 0 else _TIMEZONE_CHOICES[tz_index],
             duration_minutes=self._hours_ctrl.GetValue() * 60 + self._minutes_ctrl.GetValue(),
             editing_id=self._editing_id,
+            folder=self._folder_ctrl.GetValue(),
         )
         if error:
             self._status.SetLabel(error)
+            if error == folder_problem(self._folder_ctrl.GetValue()):
+                # Focus stays on the Add button, so the reader would not say
+                # the status line; the folder refusal is spoken (GATE-12).
+                self._announce(error)
             return None
         return entry
+
+    def _on_browse_folder(self, _event: object) -> None:
+        """Pick this schedule's folder with the system folder chooser."""
+        wx = self._wx
+        title = "Choose a folder for this schedule's recordings"
+        with wx.DirDialog(self._win, title, defaultPath=self._folder_ctrl.GetValue()) as chooser:
+            shower = getattr(self._app_host, "_show_modal_dialog", None)
+            if callable(shower):
+                result = shower(chooser, title)
+            else:
+                from quill.ui import dialog_contract
+
+                result = dialog_contract.show_modal_dialog(chooser, title)
+            if result == wx.ID_OK:
+                self._folder_ctrl.SetValue(str(chooser.GetPath()))
+        self._folder_ctrl.SetFocus()
 
     def _on_add_click(self, _event: object) -> None:
         entry = self._build_entry_from_form()

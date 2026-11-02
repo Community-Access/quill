@@ -780,6 +780,7 @@
   "quill/ui/radio/resume_recording_dialog.py::ResumeRecordingDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/resume_recording_dialog.py::ResumeRecordingsBatchDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog._on_browse_folder::wx.DirDialog": "native",
   "quill/ui/radio/search_sources_dialog.py::SearchSourcesDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/second_output_ui.py::_ask_with_dialog.ask::wx.MessageBox": "native",
   "quill/ui/radio/second_output_ui.py::_choose_with_dialog.choose::wx.SingleChoiceDialog": "native",

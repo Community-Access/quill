@@ -3590,11 +3590,19 @@ Schedule last.**
    **Time zone** (Alt+Z). Otherwise leave it on "(local time)".
 8. Set the length in **Duration -- hours** (Alt+H, 0 to 24) and **and
    minutes** (Alt+I, 0 to 59). A three-hour show is 3 and 0.
-9. Choose **Add Schedule** (Alt+A). You should hear "Scheduled recording added
-   for" and the station. Your cursor moves to your new entry in the list, and
-   the form clears, ready for the next one.
+9. If you want this show saved somewhere other than your usual recordings
+   folder, type the folder in **Save in folder** (Alt+V), or choose **Browse**
+   (Alt+B) to pick one. Leave it empty and the recording goes to the folder set
+   in Recording Settings, as before.
+10. Choose **Add Schedule** (Alt+A). You should hear "Scheduled recording added
+    for" and the station. Your cursor moves to your new entry in the list, and
+    the form clears, ready for the next one.
 
 If something is missing, the status line tells you what, and nothing is added.
+If Quill Radio cannot write to the folder you gave, you hear that straight
+away, and the schedule is not added until you pick another folder or clear the
+field. A folder that does not exist yet is created for you. Recordings saved in
+a schedule's own folder still show up in Radio Recordings.
 
 #### Your scheduled recordings
 
@@ -3605,7 +3613,8 @@ similar entries are easy to tell apart. With an entry selected:
 - **Edit** puts it back in the form. The Add button becomes **Save Changes**.
   Choose **New** (Alt+N) to stop editing and start a fresh entry.
 - **Duplicate** starts a new entry copied from this one, with " (copy)" added
-  to its name. It keeps the original's stream until you change it.
+  to its name. It keeps the original's stream and folder until you change
+  them.
 - **Disable** switches an entry off without losing it. It reads "(disabled)"
   and does not record. **Enable** switches it back on.
 - **Remove**, or the **Delete** key, deletes the entry **straight away, without
