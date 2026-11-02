@@ -16982,8 +16982,9 @@ PyPI when a bundled wheelhouse is present, and whisper.cpp
 transcribes with its bundled model immediately, no download step at all.
 Piper is bundled too (<code>_stage_piper_offline</code>): engine zip
 (SHA-256-verified at build time and re-verified at install time) plus a
-starter voice (Lessac, US English, medium), so Piper’s engine and first
-voice both work offline; additional voices still come from the pinned
+starter voice (LJSpeech, US English, medium; Lessac until 2026-11-02,
+whose recordings are research-only), so Piper’s engine and first voice
+both work offline; additional voices still come from the pinned
 HuggingFace catalog when online. <strong>Known gap, tracked, not yet
 closed:</strong> Node.js-based Quillins have no bundling mechanism and
 still require network access on first use even under the Offline
