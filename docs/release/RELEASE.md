@@ -59,6 +59,22 @@ release notes.
    corresponding source and build inputs for each shipped artifact. Obtain
    legal review of combined-work and source-offer obligations where unresolved;
    a separate process or a repository link alone is not proof of compliance.
+   - Run `python scripts\collect_copyleft_sources.py --product <app>
+     --build-dir standalone\runtime\dist\QuillVilleRuntime --out <folder>`
+     for each app. It lists every GPL, AGPL and LGPL component the build
+     ships with its exact version (read from the build folder, or marked
+     "catalogue" when it could not be) and the source archive for each, and
+     writes `copyleft-sources.json` and `copyleft-sources.txt`. Add
+     `--download` to fetch the archives for the release's source bundle; it
+     never downloads without that flag.
+   - Every app's GitHub release must carry `LICENSE.txt`,
+     `THIRD-PARTY-NOTICES.txt`, `copyleft-sources.json` and
+     `copyleft-sources.txt` beside its installer and portable zip.
+     `build-quill-apps.ps1` puts all four in each app's upload folder (the
+     manifest read from the runtime build), and `scripts/publish_release.py`
+     uploads them with a new release, or adds any an `--existing` release
+     lacks. Pass the app's upload folder as `--dist` so the build's manifest
+     is the one published; check the release page lists all four.
 
    **Accessibility.** Before each public release:
    - Add the release's entry to `docs/accessibility-progress.md` (completed,

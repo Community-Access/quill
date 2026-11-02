@@ -275,7 +275,7 @@ quill/tools/build_third_party_notices.py. Do not edit it by hand.</p>
 <ul>
 <li>MIT License: 65 components</li>
 <li>BSD 3-Clause License: 23 components</li>
-<li>Apache License, version 2.0: 15 components</li>
+<li>Apache License, version 2.0: 14 components</li>
 <li>GNU General Public License, version 2: 7 components</li>
 <li>GNU General Public License, version 3: 7 components</li>
 <li>Python Software Foundation License, version 2: 6 components</li>
@@ -304,6 +304,8 @@ component</li>
 bundled libraries: 1 component</li>
 <li>Microsoft Visual C++ Redistributable licence terms: 1 component</li>
 <li>NVIDIA Open Model License: 1 component</li>
+<li>SCOWL word-list licence (Kevin Atkinson) and the affix-file licence
+(Geoff Kuenning, BSD-style): 1 component</li>
 <li>Unicode License v3: 1 component</li>
 <li>WordNet 2.1 licence (Princeton University): 1 component</li>
 <li>wxWindows Library Licence, version 3.1: 1 component</li>
@@ -313,20 +315,16 @@ bundled libraries: 1 component</li>
 obligation the owner should decide on. Each one says why under its own
 heading.</p>
 <ul>
-<li>html_to_text</li>
 <li>mutagen</li>
 <li>pillow-heif</li>
 <li>PyEnchant</li>
 <li>PyMuPDF (with MuPDF)</li>
 <li>pywin32</li>
-<li>RapidFuzz</li>
-<li>sound_lib (with the BASS audio libraries)</li>
 <li>libmpv (libmpv-2.dll)</li>
 <li>OptiLab Core</li>
 <li>DECtalk</li>
 <li>Kokoro-82M voices and kokoro-onnx</li>
 <li>Piper voices</li>
-<li>Hunspell dictionaries</li>
 <li>Voice Previews (synthesised samples)</li>
 <li>Inno Setup</li>
 </ul>
@@ -872,30 +870,6 @@ alongside it or by a written offer valid for at least three years. Any
 program that is a derivative work must also be offered under
 GPL-2.0-compatible terms. Keep the copyright notice and the permission
 notice with every copy.</li>
-</ul>
-<h3 id="html_to_text">html_to_text</h3>
-<ul>
-<li><strong>What it is:</strong> A PyPI HTML processing library included
-in the runtime. QUILL’s paste cleaner expects a different project’s API
-and falls back when this package is installed.</li>
-<li><strong>Included in:</strong> Every product in the family.</li>
-<li><strong>Version:</strong> 1.0.0</li>
-<li><strong>Licence:</strong> Apache-2.0</li>
-<li><strong>Copyright:</strong> Copyright emludei (<a
-href="https://github.com/emludei/html_to_text">https://github.com/emludei/html_to_text</a>)</li>
-<li><strong>Upstream:</strong> <a
-href="https://github.com/emludei/html_to_text">https://github.com/emludei/html_to_text</a></li>
-<li><strong>How it reaches you:</strong> Bundled: it is inside the
-installer or the portable zip.</li>
-<li><strong>What the licence asks of us:</strong> Ship the licence text
-and keep copyright notices. Pass on any NOTICE file the component
-carries. Say so if we changed the component.</li>
-<li><strong>Needs review:</strong> The declared PyPI package is
-emludei’s html_to_text 1.0.0 (Apache-2.0); it does not export the
-html_to_text function the paste cleaner imports. AccessibleApps’
-separately installed project documents that API and is MIT-licensed.
-Choose and test the intended dependency and packaging before pinning or
-replacing either.</li>
 </ul>
 <h3 id="httpcore2">httpcore2</h3>
 <ul>
@@ -1462,9 +1436,9 @@ separate DLLs or modules). Offer the library’s source, or point to the
 exact upstream source of the version we ship.</li>
 <li><strong>Needs review:</strong> The pruned Enchant payload also ships
 GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1,
-GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus
-English Hunspell dictionaries whose individual licences were not
-confirmed.</li>
+GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus the
+English Hunspell dictionaries (see Hunspell dictionaries: SCOWL
+licence).</li>
 </ul>
 <h3 id="pymupdf-with-mupdf">PyMuPDF (with MuPDF)</h3>
 <ul>
@@ -1815,7 +1789,7 @@ notice and the permission notice with every copy.</li>
 corrector when present.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 3.14.6 or later (an optional member of the
-shared runtime)</li>
+shared runtime; pyproject.toml pins the minimum)</li>
 <li><strong>Licence:</strong> MIT</li>
 <li><strong>Copyright:</strong> Copyright (c) 2020 Max Bachmann;
 Copyright (c) 2011 Adam Cohen</li>
@@ -1825,9 +1799,6 @@ href="https://github.com/rapidfuzz/RapidFuzz">https://github.com/rapidfuzz/Rapid
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice and the permission notice with every copy.</li>
-<li><strong>Needs review:</strong> Not installed on the machine that
-built this inventory, so its version and licence were taken from
-pyproject.toml and upstream, not from installed metadata.</li>
 </ul>
 <h3 id="regex">regex</h3>
 <ul>
@@ -1908,7 +1879,8 @@ once.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 0.83</li>
 <li><strong>Licence:</strong> MIT for sound_lib; BASS is proprietary
-freeware from Un4seen Developments, free for non-commercial use</li>
+freeware from Un4seen Developments, used under its free non-commercial
+licence</li>
 <li><strong>Copyright:</strong> sound_lib: Copyright (c) 2010-2022
 Christopher Toth; BASS: Copyright (c) 1999-2026 Un4seen Developments
 Ltd.</li>
@@ -1918,14 +1890,10 @@ href="https://github.com/accessibleapps/sound_lib">https://github.com/accessible
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice and the permission notice with every copy. Free use is limited to
-non-commercial entities and products that make no money. Confirm that
-the QUILL publisher and product qualify before distribution; otherwise
-obtain a commercial BASS licence. Keep Un4seen attribution and these
-terms.</li>
-<li><strong>Needs review:</strong> BASS terms allow free use only for
-non-commercial entities and products that make no money. The publisher’s
-eligibility has not been established. Obtain a commercial licence or
-confirm the non-commercial grant before release.</li>
+non-commercial entities and products that make no money. QUILL uses BASS
+under that free non-commercial licence: the family is published by Jeff
+Bishop as an individual, is free, and has no sales, advertising or other
+commercial use. Keep Un4seen attribution and these terms.</li>
 </ul>
 <h3 id="sqlite">SQLite</h3>
 <ul>
@@ -2349,12 +2317,15 @@ notice and the permission notice with every copy.</li>
 <h3 id="dectalk">DECtalk</h3>
 <ul>
 <li><strong>What it is:</strong> The classic DECtalk voices, supported
-only when installed separately by the user. QUILL does not distribute
-the runtime or DECtalk voice previews.</li>
+only when the user installs DECtalk separately; QUILL’s own code drives
+that copy. QUILL does not distribute the DECtalk runtime or DECtalk
+voice previews, and the DECtalk binaries were removed from the QUILL
+repository on 2026-11-01.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Studio.</li>
-<li><strong>Version:</strong> 2023-10-30 build (dectalk/dectalk on
-GitHub)</li>
-<li><strong>Licence:</strong> Not confirmed</li>
+<li><strong>Version:</strong> Not distributed (user-installed copy
+only)</li>
+<li><strong>Licence:</strong> Proprietary (Fonix Corporation); not
+distributed</li>
 <li><strong>Copyright:</strong> Originally Digital Equipment
 Corporation; later Fonix Corporation and others</li>
 <li><strong>Upstream:</strong> <a
@@ -2644,9 +2615,12 @@ checker.</li>
 Runtime.</li>
 <li><strong>Version:</strong> English set bundled with PyEnchant; others
 from LibreOffice dictionaries at commit 93d537d</li>
-<li><strong>Licence:</strong> Per language. The downloadable languages
-(es_ES, fr_FR and others) are GPL-3.0, LGPL-3.0 or MPL-2.0 as their own
-README states; each zip carries those files.</li>
+<li><strong>Licence:</strong> Per language. English (en_US, en_GB,
+en_AU, en_CA and their variants, inside PyEnchant’s payload): the SCOWL
+licence (permissive) and Kuenning’s affix-file licence (BSD-style),
+whose notices ship beside them as README_en_SCOWL.txt. The downloadable
+languages (es_ES, fr_FR and others) are GPL-3.0, LGPL-3.0 or MPL-2.0 as
+their own README states; each zip carries those files.</li>
 <li><strong>Copyright:</strong> Each dictionary’s authors (for English:
 Kevin Atkinson’s SCOWL and contributors; for Spanish: RLA-ES; for
 French: Dicollecte)</li>
@@ -2654,20 +2628,19 @@ French: Dicollecte)</li>
 href="https://github.com/LibreOffice/dictionaries">https://github.com/LibreOffice/dictionaries</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
-<li><strong>What the licence asks of us:</strong> Ship the licence text.
-Make the source of the MPL-covered files available (we ship them
-unmodified; the upstream source is public) and keep their notices. Our
-own code is not affected. Ship the licence text. Provide the complete
-corresponding source of the component, or a written offer for it, for as
-long as we distribute it (and at least three years). Any program that is
-a derivative work must also be offered under GPL-3.0-compatible terms.
-Ship the LGPL-3.0 and GPL-3.0 texts. Keep the library replaceable. Offer
-the library’s source, or point to the exact upstream source of the
-version we ship.</li>
-<li><strong>Needs review:</strong> The English dictionaries that ship
-inside PyEnchant’s payload (en_US, en_GB, en_AU and other en_* variants)
-were not checked one by one; their README files are not in the pruned
-payload. Confirm and keep their licence files with them.</li>
+<li><strong>What the licence asks of us:</strong> Keep the SCOWL
+copyright and permission notice, and the affix-file copyright notice and
+conditions, with every copy of the dictionaries and in their
+documentation. The builds put them beside the dictionaries as
+README_en_SCOWL.txt. Ship the licence text. Make the source of the
+MPL-covered files available (we ship them unmodified; the upstream
+source is public) and keep their notices. Our own code is not affected.
+Ship the licence text. Provide the complete corresponding source of the
+component, or a written offer for it, for as long as we distribute it
+(and at least three years). Any program that is a derivative work must
+also be offered under GPL-3.0-compatible terms. Ship the LGPL-3.0 and
+GPL-3.0 texts. Keep the library replaceable. Offer the library’s source,
+or point to the exact upstream source of the version we ship.</li>
 </ul>
 <h3 id="liblouis-quill-braille-pack">liblouis (QUILL Braille Pack)</h3>
 <ul>
@@ -2717,7 +2690,9 @@ installer or the portable zip.</li>
 <ul>
 <li><strong>What it is:</strong> A starting directory of stations and
 audio books, so searching works offline on first launch. It ships in
-quill/data, so every product carries it.</li>
+quill/data, so every product carries it. Xiph directory stations are not
+in the seed (no published terms for that data); the app still fetches
+them live.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> built per release
 (quill/data/radio-catalog/seed.db.xz)</li>
@@ -2735,14 +2710,16 @@ installer or the portable zip.</li>
 samples)</h3>
 <ul>
 <li><strong>What it is:</strong> Short recordings so you can hear a
-voice before downloading it.</li>
+voice before downloading it. Windows SAPI 5 voices are previewed live
+with the voice already on the computer; no recordings of them are
+shipped.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> as committed
 (quill/data/voice-previews)</li>
 <li><strong>Licence:</strong> Generated by QUILL from the voices named
 in each sample; the terms follow each voice</li>
 <li><strong>Copyright:</strong> Samples made by the QUILL project with
-Piper, Kokoro, eSpeak NG and Windows SAPI 5 voices</li>
+Piper, Kokoro and eSpeak NG voices</li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Unknown until the
@@ -2813,8 +2790,7 @@ scripts/build_app_icons.py. No third-party artwork.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> generated</li>
 <li><strong>Licence:</strong> MIT (QUILL’s own work)</li>
-<li><strong>Copyright:</strong> Copyright (c) 2026 Blind Information
-Technology Solutions (BITS)</li>
+<li><strong>Copyright:</strong> Copyright (c) 2026 Jeff Bishop</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/Community-Access/quill">https://github.com/Community-Access/quill</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
@@ -2831,8 +2807,7 @@ used.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> generated by scripts/gen_page_turn.py</li>
 <li><strong>Licence:</strong> MIT (QUILL project)</li>
-<li><strong>Copyright:</strong> Copyright (c) 2026 Blind Information
-Technology Solutions (BITS); Copyright (c) 2026 Jeff Bishop</li>
+<li><strong>Copyright:</strong> Copyright (c) 2026 Jeff Bishop</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/Community-Access/quill">https://github.com/Community-Access/quill</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
@@ -2849,8 +2824,7 @@ third-party recordings.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> generated</li>
 <li><strong>Licence:</strong> MIT (QUILL’s own work)</li>
-<li><strong>Copyright:</strong> Copyright (c) 2026 Blind Information
-Technology Solutions (BITS)</li>
+<li><strong>Copyright:</strong> Copyright (c) 2026 Jeff Bishop</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/Community-Access/quill">https://github.com/Community-Access/quill</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
@@ -2866,8 +2840,7 @@ scripts/gen_ink_sounds.py.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> generated</li>
 <li><strong>Licence:</strong> MIT (QUILL’s own work)</li>
-<li><strong>Copyright:</strong> Copyright (c) 2026 Blind Information
-Technology Solutions (BITS)</li>
+<li><strong>Copyright:</strong> Copyright (c) 2026 Jeff Bishop</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/Community-Access/quill">https://github.com/Community-Access/quill</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
@@ -3660,12 +3633,12 @@ if any, to sign a &quot;copyright disclaimer&quot; for the program, if necessary
 For more information on this, and how to apply and follow the GNU AGPL, see
 &lt;https://www.gnu.org/licenses/&gt;.</code></pre>
 <h3 id="apache-license-version-20">Apache License, version 2.0</h3>
-<p>Used by: cryptography, html_to_text, OpenSSL (libssl and libcrypto),
-PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil,
-regex, Requests, sherpa-onnx (with ONNX Runtime), tzdata,
-websocket-client, OpenAI Codex app-server (codex-app-server.exe),
-Kokoro-82M voices and kokoro-onnx, Vosk small English model
-(vosk-model-small-en-us-0.15), Vosk speech recognition (with Kaldi).</p>
+<p>Used by: cryptography, OpenSSL (libssl and libcrypto), PyNaCl (with
+libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests,
+sherpa-onnx (with ONNX Runtime), tzdata, websocket-client, OpenAI Codex
+app-server (codex-app-server.exe), Kokoro-82M voices and kokoro-onnx,
+Vosk small English model (vosk-model-small-en-us-0.15), Vosk speech
+recognition (with Kaldi).</p>
 <p>What it asks of us: Ship the licence text and keep copyright notices.
 Pass on any NOTICE file the component carries. Say so if we changed the
 component.</p>
@@ -3874,9 +3847,10 @@ component.</p>
 licence (Un4seen Developments, proprietary freeware)</h3>
 <p>Used by: sound_lib (with the BASS audio libraries).</p>
 <p>What it asks of us: Free use is limited to non-commercial entities
-and products that make no money. Confirm that the QUILL publisher and
-product qualify before distribution; otherwise obtain a commercial BASS
-licence. Keep Un4seen attribution and these terms.</p>
+and products that make no money. QUILL uses BASS under that free
+non-commercial licence: the family is published by Jeff Bishop as an
+individual, is free, and has no sales, advertising or other commercial
+use. Keep Un4seen attribution and these terms.</p>
 <pre class="text"><code>BASS Licensing Terms
 Source: https://www.un4seen.com/bass.html#license
 Retrieved 2026-10-27.
@@ -8643,6 +8617,305 @@ PERFORMANCE OF THIS SOFTWARE.</code></pre>
 station catalog seed.</p>
 <p>What it asks of us: None.</p>
 <p>The full text is not reproduced here.</p>
+<h3
+id="scowl-word-list-licence-kevin-atkinson-and-the-affix-file-licence-geoff-kuenning-bsd-style">SCOWL
+word-list licence (Kevin Atkinson) and the affix-file licence (Geoff
+Kuenning, BSD-style)</h3>
+<p>Used by: Hunspell dictionaries.</p>
+<p>What it asks of us: Keep the SCOWL copyright and permission notice,
+and the affix-file copyright notice and conditions, with every copy of
+the dictionaries and in their documentation. The builds put them beside
+the dictionaries as README_en_SCOWL.txt.</p>
+<pre class="text"><code>English Hunspell dictionaries (en_US, en_GB, en_AU, en_CA and their
+variants), built from SCOWL (Spell Checker Oriented Word Lists) by its
+speller scripts. The notices below are the ones the SCOWL speller README
+files carry: the SCOWL word-list copyright and the affix-file copyright.
+Source: https://github.com/en-wl/wordlist (scowl/Copyright and
+speller/Copyright.sh), retrieved 2026-11-01.
+
+The collective work is Copyright 2000-2018 by Kevin Atkinson as well
+as any of the copyrights mentioned below:
+
+  Copyright 2000-2018 by Kevin Atkinson
+
+  Permission to use, copy, modify, distribute and sell these word
+  lists, the associated scripts, the output created from the scripts,
+  and its documentation for any purpose is hereby granted without fee,
+  provided that the above copyright notice appears in all copies and
+  that both that copyright notice and this permission notice appear in
+  supporting documentation. Kevin Atkinson makes no representations
+  about the suitability of this array for any purpose. It is provided
+  &quot;as is&quot; without express or implied warranty.
+
+Alan Beale &lt;biljir@pobox.com&gt; also deserves special credit as he has,
+in addition to providing the 12Dicts package and being a major
+contributor to the ENABLE word list, given me an incredible amount of
+feedback and created a number of special lists (those found in the
+Supplement) in order to help improve the overall quality of SCOWL.
+
+The 10 level includes the 1000 most common English words (according to
+the Moby (TM) Words II [MWords] package), a subset of the 1000 most
+common words on the Internet (again, according to Moby Words II), and
+frequently class 16 from Brian Kelk&#39;s &quot;UK English Wordlist
+with Frequency Classification&quot;.
+
+The MWords package was explicitly placed in the public domain:
+
+    The Moby lexicon project is complete and has
+    been place into the public domain. Use, sell,
+    rework, excerpt and use in any way on any platform.
+
+    Placing this material on internal or public servers is
+    also encouraged. The compiler is not aware of any
+    export restrictions so freely distribute world-wide.
+
+    You can verify the public domain status by contacting
+
+    Grady Ward
+    3449 Martha Ct.
+    Arcata, CA  95521-4884
+
+    grady@netcom.com
+    grady@northcoast.com
+
+The &quot;UK English Wordlist With Frequency Classification&quot; is also in the
+Public Domain:
+
+  Date: Sat, 08 Jul 2000 20:27:21 +0100
+  From: Brian Kelk &lt;Brian.Kelk@cl.cam.ac.uk&gt;
+
+  &gt; I was wondering what the copyright status of your &quot;UK English
+  &gt; Wordlist With Frequency Classification&quot; word list as it seems to
+  &gt; be lacking any copyright notice.
+
+  There were many many sources in total, but any text marked
+  &quot;copyright&quot; was avoided. Locally-written documentation was one
+  source. An earlier version of the list resided in a filespace called
+  PUBLIC on the University mainframe, because it was considered public
+  domain.
+
+  Date: Tue, 11 Jul 2000 19:31:34 +0100
+
+  &gt; So are you saying your word list is also in the public domain?
+
+  That is the intention.
+
+The 20 level includes frequency classes 7-15 from Brian&#39;s word list.
+
+The 35 level includes frequency classes 2-6 and words appearing in at
+least 11 of 12 dictionaries as indicated in the 12Dicts package.  All
+words from the 12Dicts package have had likely inflections added via
+my inflection database.
+
+The 12Dicts package and Supplement is in the Public Domain.
+
+The WordNet database, which was used in the creation of the
+Inflections database, is under the following copyright:
+
+  This software and database is being provided to you, the LICENSEE,
+  by Princeton University under the following license.  By obtaining,
+  using and/or copying this software and database, you agree that you
+  have read, understood, and will comply with these terms and
+  conditions.:
+
+  Permission to use, copy, modify and distribute this software and
+  database and its documentation for any purpose and without fee or
+  royalty is hereby granted, provided that you agree to comply with
+  the following copyright notice and statements, including the
+  disclaimer, and that the same appear on ALL copies of the software,
+  database and documentation, including modifications that you make
+  for internal use or for distribution.
+
+  WordNet 1.6 Copyright 1997 by Princeton University.  All rights
+  reserved.
+
+  THIS SOFTWARE AND DATABASE IS PROVIDED &quot;AS IS&quot; AND PRINCETON
+  UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+  IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PRINCETON
+  UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES OF MERCHANT-
+  ABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
+  LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT INFRINGE ANY
+  THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+
+  The name of Princeton University or Princeton may not be used in
+  advertising or publicity pertaining to distribution of the software
+  and/or database.  Title to copyright in this software, database and
+  any associated documentation shall at all times remain with
+  Princeton University and LICENSEE agrees to preserve same.
+
+The 40 level includes words from Alan&#39;s 3esl list found in version 4.0
+of his 12dicts package.  Like his other stuff the 3esl list is also in the
+public domain.
+
+The 50 level includes Brian&#39;s frequency class 1, words appearing
+in at least 5 of 12 of the dictionaries as indicated in the 12Dicts
+package, and uppercase words in at least 4 of the previous 12
+dictionaries.  A decent number of proper names is also included: The
+top 1000 male, female, and Last names from the 1990 Census report; a
+list of names sent to me by Alan Beale; and a few names that I added
+myself.  Finally a small list of abbreviations not commonly found in
+other word lists is included.
+
+The name files form the Census report is a government document which I
+don&#39;t think can be copyrighted.
+
+The file special-jargon.50 uses common.lst and word.lst from the
+&quot;Unofficial Jargon File Word Lists&quot; which is derived from &quot;The Jargon
+File&quot;.  All of which is in the Public Domain.  This file also contain
+a few extra UNIX terms which are found in the file &quot;unix-terms&quot; in the
+special/ directory.
+
+The 55 level includes words from Alan&#39;s 2of4brif list found in version
+4.0 of his 12dicts package.  Like his other stuff the 2of4brif is also
+in the public domain.
+
+The 60 level includes all words appearing in at least 2 of the 12
+dictionaries as indicated by the 12Dicts package.
+
+The 70 level includes Brian&#39;s frequency class 0 and the 74,550 common
+dictionary words from the MWords package.  The common dictionary words,
+like those from the 12Dicts package, have had all likely inflections
+added.  The 70 level also included the 5desk list from version 4.0 of
+the 12Dics package which is in the public domain.
+
+The 80 level includes the ENABLE word list, all the lists in the
+ENABLE supplement package (except for ABLE), the &quot;UK Advanced Cryptics
+Dictionary&quot; (UKACD), the list of signature words from the YAWL package,
+and the 10,196 places list from the MWords package.
+
+The ENABLE package, mainted by M\Cooper &lt;thegrendel@theriver.com&gt;,
+is in the Public Domain:
+
+  The ENABLE master word list, WORD.LST, is herewith formally released
+  into the Public Domain. Anyone is free to use it or distribute it in
+  any manner they see fit. No fee or registration is required for its
+  use nor are &quot;contributions&quot; solicited (if you feel you absolutely
+  must contribute something for your own peace of mind, the authors of
+  the ENABLE list ask that you make a donation on their behalf to your
+  favorite charity). This word list is our gift to the Scrabble
+  community, as an alternate to &quot;official&quot; word lists. Game designers
+  may feel free to incorporate the WORD.LST into their games. Please
+  mention the source and credit us as originators of the list. Note
+  that if you, as a game designer, use the WORD.LST in your product,
+  you may still copyright and protect your product, but you may *not*
+  legally copyright or in any way restrict redistribution of the
+  WORD.LST portion of your product. This *may* under law restrict your
+  rights to restrict your users&#39; rights, but that is only fair.
+
+UKACD, by J Ross Beresford &lt;ross@bryson.demon.co.uk&gt;, is under the
+following copyright:
+
+  Copyright (c) J Ross Beresford 1993-1999. All Rights Reserved.
+
+  The following restriction is placed on the use of this publication:
+  if The UK Advanced Cryptics Dictionary is used in a software package
+  or redistributed in any form, the copyright notice must be
+  prominently displayed and the text of this document must be included
+  verbatim.
+
+  There are no other restrictions: I would like to see the list
+  distributed as widely as possible.
+
+The 95 level includes the 354,984 single words, 256,772 compound
+words, 4,946 female names and the 3,897 male names, and 21,986 names
+from the MWords package, ABLE.LST from the ENABLE Supplement, and some
+additional words found in my part-of-speech database that were not
+found anywhere else.
+
+Accent information was taken from UKACD.
+
+The VarCon package was used to create the American, British, Canadian,
+and Australian word list.  It is under the following copyright:
+
+  Copyright 2000-2016 by Kevin Atkinson
+
+  Permission to use, copy, modify, distribute and sell this array, the
+  associated software, and its documentation for any purpose is hereby
+  granted without fee, provided that the above copyright notice appears
+  in all copies and that both that copyright notice and this permission
+  notice appear in supporting documentation. Kevin Atkinson makes no
+  representations about the suitability of this array for any
+  purpose. It is provided &quot;as is&quot; without express or implied warranty.
+
+  Copyright 2016 by Benjamin Titze
+
+  Permission to use, copy, modify, distribute and sell this array, the
+  associated software, and its documentation for any purpose is hereby
+  granted without fee, provided that the above copyright notice appears
+  in all copies and that both that copyright notice and this permission
+  notice appear in supporting documentation. Benjamin Titze makes no
+  representations about the suitability of this array for any
+  purpose. It is provided &quot;as is&quot; without express or implied warranty.
+
+  Since the original words lists come from the Ispell distribution:
+
+  Copyright 1993, Geoff Kuenning, Granada Hills, CA
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  3. All modifications to the source code must be clearly marked as
+     such.  Binary redistributions based on modified source code
+     must be clearly marked as modified versions in the documentation
+     and/or other materials provided with the distribution.
+  (clause 4 removed with permission from Geoff Kuenning)
+  5. The name of Geoff Kuenning may not be used to endorse or promote
+     products derived from this software without specific prior
+     written permission.
+
+  THIS SOFTWARE IS PROVIDED BY GEOFF KUENNING AND CONTRIBUTORS ``AS IS&#39;&#39; AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED.  IN NO EVENT SHALL GEOFF KUENNING OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.
+
+Affix file Copyright:
+
+  Copyright 1993, Geoff Kuenning, Granada Hills, CA
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  3. All modifications to the source code must be clearly marked as
+     such.  Binary redistributions based on modified source code
+     must be clearly marked as modified versions in the documentation
+     and/or other materials provided with the distribution.
+  (clause 4 removed with permission from Geoff Kuenning)
+  5. The name of Geoff Kuenning may not be used to endorse or promote
+     products derived from this software without specific prior
+     written permission.
+
+  THIS SOFTWARE IS PROVIDED BY GEOFF KUENNING AND CONTRIBUTORS ``AS IS&#39;&#39; AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED.  IN NO EVENT SHALL GEOFF KUENNING OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.</code></pre>
 <h3 id="unicode-license-v3">Unicode License v3</h3>
 <p>Used by: Emoji catalog (Unicode emoji-test.txt, CLDR annotations,
 iamcal/emoji-data).</p>

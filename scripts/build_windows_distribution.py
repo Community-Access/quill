@@ -39,7 +39,7 @@ from quill.core.windows_editor import QUILL as QUILL_EDITOR
 # constant from quill.branding is the safety default when the TOML is
 # absent or missing the ``product_name`` field.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from quill.branding import APP_DISPLAY_NAME, APP_ORGANIZATION  # noqa: E402
+from quill.branding import APP_COPYRIGHT, APP_DISPLAY_NAME, APP_ORGANIZATION  # noqa: E402
 
 # Architecture note: all bundled binaries below are amd64/x86_64.  The Inno
 # Setup script uses ArchitecturesAllowed=x64compatible, which covers both
@@ -2261,6 +2261,9 @@ def _stamp_quill_launcher(
             "CompanyName",
             identity.publisher,
             "--set-version-string",
+            "LegalCopyright",
+            APP_COPYRIGHT,
+            "--set-version-string",
             "OriginalFilename",
             quill_exe.name,
             "--set-version-string",
@@ -2983,7 +2986,7 @@ def _vosk_model_staged(target: Path) -> bool:
 #: catalog accent family keeps the bundle small while making Piper genuinely
 #: usable offline out of the box (more voices install from the bundle-free
 #: HuggingFace path whenever the user is online).
-DEFAULT_BUNDLED_PIPER_VOICES: tuple[str, ...] = ("en_US-lessac-medium",)
+DEFAULT_BUNDLED_PIPER_VOICES: tuple[str, ...] = ("en_US-ljspeech-medium",)
 
 
 def _stage_piper_offline(

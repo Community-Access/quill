@@ -51,4 +51,4 @@ Configure from **Preferences** (Ctrl+Comma) → **Smart Insert**:
 
 ## License
 
-MIT. Copyright (c) Community Access.
+MIT. Copyright (c) 2026 Jeff Bishop.

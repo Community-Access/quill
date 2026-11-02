@@ -162,6 +162,26 @@ def test_dictionaries_are_never_touched(payload: Path) -> None:
     assert (dictionaries / "en_US.aff").exists()
 
 
+def test_the_scowl_notice_is_put_back_beside_the_english_dictionaries(payload: Path) -> None:
+    """SCOWL's licence wants its notice in every copy; the wheel drops the README
+    files that carry it, so the prune restores it."""
+    pruner.prune(payload)
+
+    dictionaries = payload / "data" / "mingw64" / "share" / "enchant" / "hunspell"
+    notice = dictionaries / pruner.SCOWL_NOTICE_NAME
+    assert notice.read_bytes() == pruner.SCOWL_NOTICE.read_bytes()
+    text = notice.read_text(encoding="utf-8")
+    assert "Kevin Atkinson" in text
+    assert "Geoff Kuenning" in text
+
+
+def test_dry_run_writes_no_scowl_notice(payload: Path) -> None:
+    pruner.prune(payload, dry_run=True)
+
+    dictionaries = payload / "data" / "mingw64" / "share" / "enchant" / "hunspell"
+    assert not (dictionaries / pruner.SCOWL_NOTICE_NAME).exists()
+
+
 def test_link_only_artefacts_go(payload: Path) -> None:
     pruner.prune(payload)
 

@@ -5,7 +5,7 @@
 // -DPRODUCT_VERSION / -DPRODUCT_ICON. It embeds:
 //
 //   - VERSIONINFO with ProductName, FileDescription, CompanyName,
-//     OriginalFilename, FileVersion, ProductVersion. The screen-reader
+//     LegalCopyright, OriginalFilename, FileVersion, ProductVersion. The screen-reader
 //     identity (JAWS Ctrl+JAWSKey+V reads the foreground process's
 //     VERSIONINFO at the OS layer) and the AV-replacement identity
 //     (the heuristic that used to flag "repackaged pythonw.exe" sees
@@ -37,6 +37,7 @@ BEGIN
             VALUE "FileDescription",  "@PRODUCT_DISPLAY_NAME@"
             VALUE "FileVersion",      "@PRODUCT_FILE_VERSION@"
             VALUE "InternalName",     "@PRODUCT_NAME@"
+            VALUE "LegalCopyright",   "Copyright (c) 2026 Jeff Bishop"
             VALUE "OriginalFilename", "@PRODUCT_NAME@.exe"
             VALUE "ProductName",      "@PRODUCT_DISPLAY_NAME@"
             VALUE "ProductVersion",   "@PRODUCT_VERSION@"

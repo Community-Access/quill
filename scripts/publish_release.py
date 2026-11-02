@@ -43,6 +43,15 @@ When a newer Beta supersedes older ones, their GitHub release objects are
 deleted (the tags stay) and they leave the feed; ``--keep-superseded`` keeps
 them.
 
+**Licence files (licensing review, 2026-11-01).** Every release carries,
+beside its binaries, the app's ``LICENSE.txt``, its ``THIRD-PARTY-NOTICES.txt``
+and the copyleft source manifest (``copyleft-sources.json`` and ``.txt``, from
+``scripts/collect_copyleft_sources.py``). With ``--dist`` they are staged into
+that folder and uploaded with the release; a manifest ``build-quill-apps.ps1``
+already wrote there (with versions read from the build) is kept, and otherwise
+one is made from the notice catalogue, offline. With ``--existing`` any of them
+the release lacks is uploaded to it. Nothing is downloaded either way.
+
 The feed is signed here with the owner's key (``QUILL_FEED_KEY_FILE`` or
 ``~/.config/quill/quill-feed-priv.key``); ``--no-sign`` writes it unsigned for
 signing later with ``scripts/feed_tool.py sign``. Every run ends with a
@@ -53,6 +62,7 @@ review ``docs/site/updates/v2`` and land it through a pull request.
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 import tempfile
 from collections.abc import Callable
@@ -114,6 +124,53 @@ def signing_problems(files: list[Path], version: ReleaseVersion, signed: Authent
 
 def _kinds(files: list[Path]) -> list[Path]:
     return [p for p in files if rf.asset_kind(p.name) in ("installer", "portable")]
+
+
+#: The licence and source-offer files every release carries beside its binaries.
+COMPLIANCE_NAMES = (
+    "LICENSE.txt",
+    "THIRD-PARTY-NOTICES.txt",
+    "copyleft-sources.json",
+    "copyleft-sources.txt",
+)
+
+
+def licence_sources(app_key: str) -> dict[str, Path]:
+    """The release name of each licence file, and the committed file it comes from."""
+    if app_key == "quill":
+        return {
+            "LICENSE.txt": REPO_ROOT / "LICENSE",
+            "THIRD-PARTY-NOTICES.txt": REPO_ROOT
+            / "docs"
+            / "legal"
+            / "THIRD-PARTY-NOTICES-QUILL.txt",
+        }
+    folder = REPO_ROOT / "standalone" / app_key
+    return {
+        "LICENSE.txt": folder / "LICENSE.txt",
+        "THIRD-PARTY-NOTICES.txt": folder / "THIRD-PARTY-NOTICES.txt",
+    }
+
+
+def stage_compliance_files(app_key: str, folder: Path) -> list[Path]:
+    """Put the licence, notices and copyleft manifest in *folder*; return their paths.
+
+    A manifest already in *folder* is kept: ``build-quill-apps.ps1`` writes it
+    from the build folder, with exact versions. Otherwise one is made from the
+    notice catalogue. Offline either way.
+    """
+    folder.mkdir(parents=True, exist_ok=True)
+    for name, source in licence_sources(app_key).items():
+        shutil.copyfile(source, folder / name)
+    if not (folder / "copyleft-sources.json").is_file():
+        from scripts import collect_copyleft_sources as collector
+
+        entries = collector.collect(collector.load_catalogue(), app_key)
+        data = collector.manifest(
+            entries, product=app_key, commit=collector.release_commit(), build_dir=None
+        )
+        collector.write(data, folder)
+    return [folder / name for name in COMPLIANCE_NAMES]
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -190,9 +247,11 @@ def run(
                 out(f"Refused: {line}")
             return 1
 
+    on_release: set[str] = set()
     with tempfile.TemporaryDirectory() as scratch:
         if args.existing:
             gh(["release", "download", tag, "--repo", repo, "--dir", scratch])
+            on_release = {p.name for p in Path(scratch).iterdir()}
             files = [p for p in Path(scratch).iterdir() if rf.asset_kind(p.name)]
         else:
             files = rf.dist_files(args.dist, args.app, version)
@@ -208,12 +267,29 @@ def run(
     for asset in assets:
         out(f"{asset.kind:10} {asset.name}  {asset.size} bytes  sha256 {asset.sha256}")
 
-    if not args.existing and not args.dry_run:
+    if args.existing:
+        missing = [name for name in COMPLIANCE_NAMES if name not in on_release]
+        if not missing:
+            out("Licence files: already on the release.")
+        elif args.dry_run:
+            out(f"Licence files: would add {', '.join(missing)}.")
+        else:
+            with tempfile.TemporaryDirectory() as staging:
+                staged = stage_compliance_files(args.app, Path(staging))
+                upload = [str(p) for p in staged if p.name in missing]
+                gh(["release", "upload", tag, "--repo", repo, *upload])
+            out(f"Licence files: added {', '.join(missing)}.")
+    elif args.dry_run:
+        out(f"Licence files: would add {', '.join(COMPLIANCE_NAMES)}.")
+    else:
+        compliance = stage_compliance_files(args.app, args.dist)
+        out(f"Licence files: {', '.join(p.name for p in compliance)}.")
         title = f"{rf.app(args.app).name} {ReleaseVersion.parse(version).display()}"
         command = ["release", "create", tag, "--repo", repo, "--title", title]
         command += ["--prerelease", "--latest=false"]
         command += ["--notes-file", str(args.notes_file)] if args.notes_file else ["--notes", ""]
         command += [str(p) for p in rf.dist_files(args.dist, args.app, version)]
+        command += [str(p) for p in compliance]
         gh(command)
 
     writes, reads, lossy = formats_for_build(args.app)

@@ -1054,7 +1054,7 @@ wheels = [
 
 [[package]]
 name = "github-copilot-sdk"
-version = "1.0.20"
+version = "1.0.28"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -1062,7 +1062,7 @@ dependencies = [
     { name = "python-dateutil" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/9b/92922a040f0e52281072818443897e600b23c1883ba90c2f6487ac756e4c/github_copilot_sdk-1.0.20-py3-none-any.whl", hash = "sha256:08718c80d97b6d4b54965f59cf451dab4697a102b67fd8696b04c91e7f1fc39c", size = 802194, upload-time = "2026-10-12T19:01:09.164Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/d8/fa5b5892a08584d169ba8676f3a38ea0217947c60ba91608c8192acf32bd/github_copilot_sdk-1.0.28-py3-none-any.whl", hash = "sha256:191e4b7f22a5a3842504ec9ee92f88abc4cf3aecca4ab04e2d359aa307436dd1", size = 925301, upload-time = "2026-10-28T00:55:38.809Z" },
 ]
 
 [[package]]
@@ -1106,12 +1106,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/4d/59/b35106dfa71b6eef605dc88bd038fe99c7f86fb132a15b60d0bf2f235b2c/hf_xet-1.7.0-cp38-abi3-win_amd64.whl", hash = "sha256:2b7bb5727889b0f2436dbaaad8fc4c3e66b8240d992716989e0c086b4278b1bc", size = 3822644, upload-time = "2026-10-06T20:18:40.052Z" },
     { url = "https://files.pythonhosted.org/packages/48/cd/072313585f74fe9d441e2eb5e0a4703c30586cd709810ea369675f61b74e/hf_xet-1.7.0-cp38-abi3-win_arm64.whl", hash = "sha256:acc3851cf2576a8fb2ae926da863f4efabe21303cf292e9a44332802ab0dcc6a", size = 3662436, upload-time = "2026-10-06T20:18:42.205Z" },
 ]
-
-[[package]]
-name = "html-to-text"
-version = "1.0.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/20/15/246f24df44674151cfe678c94162417a8ee3c80ad0dbb04f50726b34f25b/html_to_text-1.0.0.tar.gz", hash = "sha256:d6593c643efd28796f41a71f0d5522b56fecb2378620e5e1febf95ad41dc58eb", size = 5683, upload-time = "2016-05-24T23:38:52.637Z" }
 
 [[package]]
 name = "httpcore"
@@ -5661,7 +5655,7 @@ runtime = [
     { name = "chat-downloader" },
     { name = "curl-cffi" },
     { name = "faster-whisper" },
-    { name = "html-to-text" },
+    { name = "github-copilot-sdk" },
     { name = "huggingface-hub" },
     { name = "kokoro-onnx" },
     { name = "latex2mathml" },
@@ -5729,7 +5723,6 @@ ssh = [
 ui = [
     { name = "accessible-output2", marker = "sys_platform == 'win32'" },
     { name = "certifi" },
-    { name = "html-to-text" },
     { name = "pillow" },
     { name = "pillow-heif" },
     { name = "prismatoid", marker = "sys_platform == 'win32'" },
@@ -5783,9 +5776,8 @@ requires-dist = [
     { name = "faster-whisper", marker = "extra == 'fasterwhisper'", specifier = ">=1.2.1" },
     { name = "faster-whisper", marker = "extra == 'runtime'", specifier = ">=1.2.1" },
     { name = "feedparser", specifier = ">=6.0.14" },
-    { name = "github-copilot-sdk", marker = "extra == 'ai-copilot'", specifier = ">=1.0.15rc3" },
-    { name = "html-to-text", marker = "extra == 'runtime'", specifier = ">=1.0.0" },
-    { name = "html-to-text", marker = "extra == 'ui'", specifier = ">=1.0.0" },
+    { name = "github-copilot-sdk", marker = "extra == 'ai-copilot'", specifier = "==1.0.28" },
+    { name = "github-copilot-sdk", marker = "extra == 'runtime'", specifier = "==1.0.28" },
     { name = "huggingface-hub", marker = "extra == 'fasterwhisper'", specifier = ">=2.0.0" },
     { name = "huggingface-hub", marker = "extra == 'runtime'", specifier = ">=2.0.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.168.1" },

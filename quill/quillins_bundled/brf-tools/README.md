@@ -26,4 +26,4 @@ No handler code. No `editor.read` or `editor.write`. No network access.
 
 ## License
 
-MIT. Copyright (c) Community Access.
+MIT. Copyright (c) 2026 Jeff Bishop.

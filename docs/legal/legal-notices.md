@@ -16,10 +16,8 @@ The family's own code is released under the MIT License. The full text is in
 the LICENSE file at the root of the source repository, and every installer and
 portable copy ships it as LICENSE.txt beside the program.
 
-The LICENSE file retains the existing holder and also names Jeff Bishop:
+The copyright holder of the family's own code is Jeff Bishop:
 
-> Copyright (c) 2026 Blind Information Technology Solutions (BITS)
->
 > Copyright (c) 2026 Jeff Bishop
 
 The NOTICE file at the root of the repository carries the project's

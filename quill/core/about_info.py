@@ -104,12 +104,12 @@ _OVERVIEW_PARAGRAPHS: tuple[str, ...] = (
     "Special thanks to AccessibleApps (Christopher Toth, "
     "https://github.com/accessibleapps) for the open-source accessibility "
     "libraries that QUILL builds on: app_updater, smart_list, accessible_output2, "
-    "html_to_text, app_elements, platform_utils, and keyboard_handler.",
+    "app_elements, platform_utils, and keyboard_handler.",
     "QUILL includes private, on-device speech under Tools > Speech: an offline "
     "speech-model manager with machine-aware recommendations, plus transcription, "
-    "captions, and dictation. Bundled Read Aloud voices (DECtalk and eSpeak NG) play "
-    "immediately with no downloads; Piper and Kokoro models install through "
-    "Manage Speech Models.",
+    "captions, and dictation. Read Aloud plays immediately with the voices already "
+    "on the computer; Piper and Kokoro models install through Manage Speech "
+    "Models.",
 )
 
 

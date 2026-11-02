@@ -119,7 +119,7 @@
       "name": "BASS licence (Un4seen Developments, proprietary freeware)",
       "text": "BASS-License-Terms.txt",
       "url": "https://www.un4seen.com/bass.html#license",
-      "obligations": "Free use is limited to non-commercial entities and products that make no money. Confirm that the QUILL publisher and product qualify before distribution; otherwise obtain a commercial BASS licence. Keep Un4seen attribution and these terms."
+      "obligations": "Free use is limited to non-commercial entities and products that make no money. QUILL uses BASS under that free non-commercial licence: the family is published by Jeff Bishop as an individual, is free, and has no sales, advertising or other commercial use. Keep Un4seen attribution and these terms."
     },
     "BSD-2-Clause": {
       "name": "BSD 2-Clause License",
@@ -207,6 +207,12 @@
       "name": "Python Software Foundation License, version 2",
       "text": "PSF-2.0.txt",
       "obligations": "Keep the PSF copyright notice and licence with the distribution and summarise any changes we made."
+    },
+    "SCOWL": {
+      "name": "SCOWL word-list licence (Kevin Atkinson) and the affix-file licence (Geoff Kuenning, BSD-style)",
+      "text": "SCOWL.txt",
+      "url": "https://github.com/en-wl/wordlist",
+      "obligations": "Keep the SCOWL copyright and permission notice, and the affix-file copyright notice and conditions, with every copy of the dictionaries and in their documentation. The builds put them beside the dictionaries as README_en_SCOWL.txt."
     },
     "Public-Domain": {
       "name": "Public domain",
@@ -846,25 +852,6 @@
       "delivery": "on-request"
     },
     {
-      "id": "html-to-text",
-      "name": "html_to_text",
-      "group": "runtime",
-      "version": "1.0.0",
-      "licenses": [
-        "Apache-2.0"
-      ],
-      "license_label": "Apache-2.0",
-      "copyright": "Copyright emludei (https://github.com/emludei/html_to_text)",
-      "homepage": "https://github.com/emludei/html_to_text",
-      "what": "A PyPI HTML processing library included in the runtime. QUILL's paste cleaner expects a different project's API and falls back when this package is installed.",
-      "products": [
-        "all"
-      ],
-      "delivery": "bundled",
-      "pypi": "html_to_text",
-      "review": "The declared PyPI package is emludei's html_to_text 1.0.0 (Apache-2.0); it does not export the html_to_text function the paste cleaner imports. AccessibleApps' separately installed project documents that API and is MIT-licensed. Choose and test the intended dependency and packaging before pinning or replacing either."
-    },
-    {
       "id": "httpcore2",
       "name": "httpcore2",
       "group": "runtime",
@@ -1432,7 +1419,7 @@
       ],
       "delivery": "bundled",
       "pypi": "pyenchant",
-      "review": "The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus English Hunspell dictionaries whose individual licences were not confirmed."
+      "review": "The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus the English Hunspell dictionaries (see Hunspell dictionaries: SCOWL licence)."
     },
     {
       "id": "pymupdf",
@@ -1753,7 +1740,7 @@
       "id": "rapidfuzz",
       "name": "RapidFuzz",
       "group": "runtime",
-      "version": "3.14.6 or later (an optional member of the shared runtime)",
+      "version": "3.14.6 or later (an optional member of the shared runtime; pyproject.toml pins the minimum)",
       "licenses": [
         "MIT"
       ],
@@ -1765,8 +1752,7 @@
         "all"
       ],
       "delivery": "bundled",
-      "pypi": "rapidfuzz",
-      "review": "Not installed on the machine that built this inventory, so its version and licence were taken from pyproject.toml and upstream, not from installed metadata."
+      "pypi": "rapidfuzz"
     },
     {
       "id": "regex",
@@ -1852,7 +1838,7 @@
         "MIT",
         "BASS"
       ],
-      "license_label": "MIT for sound_lib; BASS is proprietary freeware from Un4seen Developments, free for non-commercial use",
+      "license_label": "MIT for sound_lib; BASS is proprietary freeware from Un4seen Developments, used under its free non-commercial licence",
       "copyright": "sound_lib: Copyright (c) 2010-2022 Christopher Toth; BASS: Copyright (c) 1999-2026 Un4seen Developments Ltd.",
       "homepage": "https://github.com/accessibleapps/sound_lib",
       "what": "Plays sounds, with several mixed at once.",
@@ -1860,8 +1846,7 @@
         "all"
       ],
       "delivery": "bundled",
-      "pypi": "sound-lib",
-      "review": "BASS terms allow free use only for non-commercial entities and products that make no money. The publisher’s eligibility has not been established. Obtain a commercial licence or confirm the non-commercial grant before release."
+      "pypi": "sound-lib"
     },
     {
       "id": "sqlite",
@@ -2258,14 +2243,14 @@
       "id": "dectalk",
       "name": "DECtalk",
       "group": "speech",
-      "version": "2023-10-30 build (dectalk/dectalk on GitHub)",
+      "version": "Not distributed (user-installed copy only)",
       "licenses": [
         "Unknown"
       ],
-      "license_label": "Not confirmed",
+      "license_label": "Proprietary (Fonix Corporation); not distributed",
       "copyright": "Originally Digital Equipment Corporation; later Fonix Corporation and others",
       "homepage": "https://github.com/dectalk/dectalk",
-      "what": "The classic DECtalk voices, supported only when installed separately by the user. QUILL does not distribute the runtime or DECtalk voice previews.",
+      "what": "The classic DECtalk voices, supported only when the user installs DECtalk separately; QUILL's own code drives that copy. QUILL does not distribute the DECtalk runtime or DECtalk voice previews, and the DECtalk binaries were removed from the QUILL repository on 2026-11-01.",
       "products": [
         "quill",
         "studio"
@@ -2518,11 +2503,12 @@
       "group": "data",
       "version": "English set bundled with PyEnchant; others from LibreOffice dictionaries at commit 93d537d",
       "licenses": [
+        "SCOWL",
         "MPL-2.0",
         "GPL-3.0",
         "LGPL-3.0"
       ],
-      "license_label": "Per language. The downloadable languages (es_ES, fr_FR and others) are GPL-3.0, LGPL-3.0 or MPL-2.0 as their own README states; each zip carries those files.",
+      "license_label": "Per language. English (en_US, en_GB, en_AU, en_CA and their variants, inside PyEnchant's payload): the SCOWL licence (permissive) and Kuenning's affix-file licence (BSD-style), whose notices ship beside them as README_en_SCOWL.txt. The downloadable languages (es_ES, fr_FR and others) are GPL-3.0, LGPL-3.0 or MPL-2.0 as their own README states; each zip carries those files.",
       "copyright": "Each dictionary's authors (for English: Kevin Atkinson's SCOWL and contributors; for Spanish: RLA-ES; for French: Dicollecte)",
       "homepage": "https://github.com/LibreOffice/dictionaries",
       "what": "Spelling dictionaries for QUILL's spell checker.",
@@ -2530,8 +2516,7 @@
         "quill",
         "runtime"
       ],
-      "delivery": "bundled",
-      "review": "The English dictionaries that ship inside PyEnchant's payload (en_US, en_GB, en_AU and other en_* variants) were not checked one by one; their README files are not in the pruned payload. Confirm and keep their licence files with them."
+      "delivery": "bundled"
     },
     {
       "id": "liblouis",
@@ -2580,7 +2565,7 @@
       "license_label": "Radio Browser directory data (public domain); Project Gutenberg catalog records; Wikidata (CC0-1.0)",
       "copyright": "Radio Browser community; Project Gutenberg contributors; Wikidata contributors",
       "homepage": "https://www.radio-browser.info/",
-      "what": "A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it.",
+      "what": "A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it. Xiph directory stations are not in the seed (no published terms for that data); the app still fetches them live.",
       "products": [
         "all"
       ],
@@ -2595,9 +2580,9 @@
         "Unknown"
       ],
       "license_label": "Generated by QUILL from the voices named in each sample; the terms follow each voice",
-      "copyright": "Samples made by the QUILL project with Piper, Kokoro, eSpeak NG and Windows SAPI 5 voices",
+      "copyright": "Samples made by the QUILL project with Piper, Kokoro and eSpeak NG voices",
       "homepage": "",
-      "what": "Short recordings so you can hear a voice before downloading it.",
+      "what": "Short recordings so you can hear a voice before downloading it. Windows SAPI 5 voices are previewed live with the voice already on the computer; no recordings of them are shipped.",
       "products": [
         "all"
       ],
@@ -2664,7 +2649,7 @@
         "MIT"
       ],
       "license_label": "MIT (QUILL's own work)",
-      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "copyright": "Copyright (c) 2026 Jeff Bishop",
       "homepage": "https://github.com/Community-Access/quill",
       "what": "Every app's icon, drawn by scripts/build_app_icons.py. No third-party artwork.",
       "products": [
@@ -2681,7 +2666,7 @@
         "MIT"
       ],
       "license_label": "MIT (QUILL project)",
-      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS); Copyright (c) 2026 Jeff Bishop",
+      "copyright": "Copyright (c) 2026 Jeff Bishop",
       "homepage": "https://github.com/Community-Access/quill",
       "what": "An original synthesized page-turn-like default sound between chapters in spoken audiobooks; no sampled audio is used.",
       "products": [
@@ -2698,7 +2683,7 @@
         "MIT"
       ],
       "license_label": "MIT (QUILL's own work)",
-      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "copyright": "Copyright (c) 2026 Jeff Bishop",
       "homepage": "https://github.com/Community-Access/quill",
       "what": "Interface sounds, synthesised by scripts/gen_ink_sounds.py and scripts/gen_indent_tones.py. No third-party recordings.",
       "products": [
@@ -2715,7 +2700,7 @@
         "MIT"
       ],
       "license_label": "MIT (QUILL's own work)",
-      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "copyright": "Copyright (c) 2026 Jeff Bishop",
       "homepage": "https://github.com/Community-Access/quill",
       "what": "The weather alert tone, synthesised by scripts/gen_ink_sounds.py.",
       "products": [

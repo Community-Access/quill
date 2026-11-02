@@ -73,8 +73,6 @@
     "feedparser",
     "feedparser-sgmllib",
     "feedparser_sgmllib",
-    "html-to-text",
-    "html_to_text",
     "idna",
     "isapi",
     "isodate",
