@@ -2983,7 +2983,7 @@ def _vosk_model_staged(target: Path) -> bool:
 #: catalog accent family keeps the bundle small while making Piper genuinely
 #: usable offline out of the box (more voices install from the bundle-free
 #: HuggingFace path whenever the user is online).
-DEFAULT_BUNDLED_PIPER_VOICES: tuple[str, ...] = ("en_US-lessac-medium",)
+DEFAULT_BUNDLED_PIPER_VOICES: tuple[str, ...] = ("en_US-ljspeech-medium",)
 
 
 def _stage_piper_offline(

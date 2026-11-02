@@ -75,7 +75,7 @@ def test_fallback_refuses_non_https(monkeypatch, tmp_path) -> None:
         download_piper_voice("en_US-amy-low", tmp_path)
 
 
-def test_all_39_piper_voices_are_mirrored() -> None:
+def test_every_catalog_piper_voice_is_mirrored() -> None:
     from quill.core.voice_catalog import PIPER_VOICES
 
     for item in PIPER_VOICES:

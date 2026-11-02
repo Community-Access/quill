@@ -778,13 +778,15 @@ def test_list_piper_voices_empty_when_no_dir() -> None:
     assert list_piper_voices("/nonexistent/path") == []
 
 
-def test_piper_catalog_includes_italian_voices(tmp_path: Path) -> None:
+def test_piper_catalog_lists_the_clean_voices_only(tmp_path: Path) -> None:
+    """The Italian voices left with the 2026-11-01 licensing review (paola is
+    restricted, riccardo's dataset licence is unconfirmed)."""
     voices = read_aloud_module.list_piper_catalog_voices(tmp_path)
     by_id = {v.id: v for v in voices}
-    assert "it_IT-paola-medium" in by_id, "Italian Piper voice missing from catalog"
-    assert "it_IT-riccardo-x_low" in by_id
-    assert by_id["it_IT-paola-medium"].accent == "Italian"
-    assert by_id["it_IT-paola-medium"].installed is False
+    assert "it_IT-paola-medium" not in by_id
+    assert "it_IT-riccardo-x_low" not in by_id
+    assert by_id["en_US-ljspeech-medium"].accent == "American English"
+    assert by_id["en_US-ljspeech-medium"].installed is False
 
 
 def test_resolve_piper_model_path_matches_catalog_installed_check(tmp_path: Path) -> None:

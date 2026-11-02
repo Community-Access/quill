@@ -1,0 +1,37 @@
+# Piper voices QUILL may not redistribute (licensing review, 2026-11-01).
+# Each line is the assets-v1 release file name of a mirrored voice that was
+# removed from the catalogue, the mirror table and the previews. Remove these
+# files from the release; the voices stay on Hugging Face under their own terms.
+# Restricted by training data or lineage (research-only, non-commercial, or no
+# licence), except it_IT-riccardo-x_low, whose dataset licence (M-AILABS) could
+# not be confirmed.
+piper-voice-en_GB-alan-low.zip
+piper-voice-en_GB-alan-medium.zip
+piper-voice-en_GB-alba-medium.zip
+piper-voice-en_GB-aru-medium.zip
+piper-voice-en_GB-jenny_dioco-medium.zip
+piper-voice-en_GB-northern_english_male-medium.zip
+piper-voice-en_GB-semaine-medium.zip
+piper-voice-en_GB-southern_english_female-low.zip
+piper-voice-en_GB-vctk-medium.zip
+piper-voice-en_US-amy-low.zip
+piper-voice-en_US-amy-medium.zip
+piper-voice-en_US-arctic-medium.zip
+piper-voice-en_US-danny-low.zip
+piper-voice-en_US-hfc_female-medium.zip
+piper-voice-en_US-hfc_male-medium.zip
+piper-voice-en_US-joe-medium.zip
+piper-voice-en_US-kathleen-low.zip
+piper-voice-en_US-kusal-medium.zip
+piper-voice-en_US-l2arctic-medium.zip
+piper-voice-en_US-lessac-high.zip
+piper-voice-en_US-lessac-low.zip
+piper-voice-en_US-lessac-medium.zip
+piper-voice-en_US-libritts_r-medium.zip
+piper-voice-en_US-reza_ibrahim-medium.zip
+piper-voice-en_US-ryan-high.zip
+piper-voice-en_US-ryan-low.zip
+piper-voice-en_US-ryan-medium.zip
+piper-voice-en_US-sam-medium.zip
+piper-voice-it_IT-paola-medium.zip
+piper-voice-it_IT-riccardo-x_low.zip

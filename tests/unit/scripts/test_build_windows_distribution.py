@@ -1329,8 +1329,8 @@ def test_stage_piper_offline_stages_engine_and_starter_voice(monkeypatch, tmp_pa
 
     root = portable_dir / "speech-models-bundled" / "piper"
     assert (root / "piper_windows_amd64.zip").is_file()
-    assert (root / "voices" / "en_US-lessac-medium.onnx").is_file()
-    assert (root / "voices" / "en_US-lessac-medium.onnx.json").is_file()
+    assert (root / "voices" / "en_US-ljspeech-medium.onnx").is_file()
+    assert (root / "voices" / "en_US-ljspeech-medium.onnx.json").is_file()
     # The engine zip is verified against the runtime's own pinned hash; the
     # voice URLs are the exact HuggingFace paths the runtime download uses.
     assert calls[0][2] == PIPER_DOWNLOAD_SHA256

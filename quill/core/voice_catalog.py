@@ -216,37 +216,21 @@ ESPEAK_ACCENTS: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 PIPER_VOICES: list[tuple[str, str]] = [
+    # Only voices whose training data QUILL may redistribute (2026-11-01
+    # licensing review of every MODEL_CARD): trained from scratch, or from
+    # another clean voice, on public-domain or permissive data. The other 30
+    # rhasspy voices descend from research-only or non-commercial datasets
+    # (lessac's Blizzard 2013 licence, ryan's CC BY-NC-SA, and others) or have
+    # no stated licence; they are listed in scripts/data/restricted_piper_voices.txt
+    # and must not come back without legal review.
     # British English
-    ("en_GB-alan-low", "Alan (British, low)"),
-    ("en_GB-alan-medium", "Alan (British, medium)"),
-    ("en_GB-alba-medium", "Alba (British, medium)"),
-    ("en_GB-aru-medium", "Aru (British, medium)"),
     ("en_GB-cori-high", "Cori (British, high)"),
     ("en_GB-cori-medium", "Cori (British, medium)"),
-    ("en_GB-jenny_dioco-medium", "Jenny Dioco (British, medium)"),
-    ("en_GB-northern_english_male-medium", "Northern English Male (British, medium)"),
-    ("en_GB-semaine-medium", "Semaine (British, medium)"),
-    ("en_GB-southern_english_female-low", "Southern English Female (British, low)"),
-    ("en_GB-vctk-medium", "VCTK (British, medium)"),
     # American English
-    ("en_US-amy-low", "Amy (US, low)"),
-    ("en_US-amy-medium", "Amy (US, medium)"),
-    ("en_US-arctic-medium", "Arctic (US, medium)"),
     ("en_US-bryce-medium", "Bryce (US, medium)"),
-    ("en_US-danny-low", "Danny (US, low)"),
-    ("en_US-hfc_female-medium", "HFC Female (US, medium)"),
-    ("en_US-hfc_male-medium", "HFC Male (US, medium)"),
-    ("en_US-joe-medium", "Joe (US, medium)"),
     ("en_US-john-medium", "John (US, medium)"),
-    ("en_US-kathleen-low", "Kathleen (US, low)"),
     ("en_US-kristin-medium", "Kristin (US, medium)"),
-    ("en_US-kusal-medium", "Kusal (US, medium)"),
-    ("en_US-l2arctic-medium", "L2Arctic (US, medium)"),
-    ("en_US-lessac-high", "Lessac (US, high)"),
-    ("en_US-lessac-low", "Lessac (US, low)"),
-    ("en_US-lessac-medium", "Lessac (US, medium)"),
-    ("en_US-libritts-high", "LibriTTS (US, high)"),
-    ("en_US-libritts_r-medium", "LibriTTS R (US, medium)"),
+    ("en_US-libritts-high", "LibriTTS (US, high)"),  # CC BY 4.0: credit LibriTTS
     ("en_US-ljspeech-high", "LJSpeech (US, high)"),
     ("en_US-ljspeech-medium", "LJSpeech (US, medium)"),
     # NOT listed: en_US-mike-medium. It exists upstream in rhasspy/piper-voices,
@@ -258,14 +242,6 @@ PIPER_VOICES: list[tuple[str, str]] = [
     # is piper_version <= 1.0.0 with a single-codepoint map. Re-check this list
     # only when the engine pin moves (see OHF-Voice/piper1-gpl).
     ("en_US-norman-medium", "Norman (US, medium)"),
-    ("en_US-reza_ibrahim-medium", "Reza Ibrahim (US, medium)"),
-    ("en_US-ryan-high", "Ryan (US, high)"),
-    ("en_US-ryan-low", "Ryan (US, low)"),
-    ("en_US-ryan-medium", "Ryan (US, medium)"),
-    ("en_US-sam-medium", "Sam (US, medium)"),
-    # Italian — both voices published in rhasspy/piper-voices (it/it_IT).
-    ("it_IT-paola-medium", "Paola (Italian, medium)"),
-    ("it_IT-riccardo-x_low", "Riccardo (Italian, x_low)"),
 ]
 
 # Accent labels for the Piper catalog, keyed by voice-id language prefix.
