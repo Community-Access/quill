@@ -18,6 +18,9 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **Search All Sources leaves hidden sources alone** [2026-11-01]. A source
+  you turned off in Choose Browse Sources is no longer asked when you search,
+  just as it is not opened when you browse.
 - **Watching the video for changes** [2026-11-01]. Video > Start Watching
   for Changes (Ctrl+F9) and Stop Watching for Changes (Ctrl+Shift+F9). While a
   video is showing, Quill Radio compares a picture of it on this computer every

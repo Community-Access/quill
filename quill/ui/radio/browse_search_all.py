@@ -72,6 +72,14 @@ def _ask_query(host: Any, *, title: str, prompt: str) -> str:
         _focus_tree(host)
 
 
+def _visible_ids(host: Any) -> frozenset[str]:
+    """The browse roots this listener shows: a hidden source is never asked."""
+    from quill.core.radio import browse_sources
+
+    chosen = getattr(host, "_visible_sources", None)
+    return frozenset(node_id for node_id, _label in browse_sources.visible_roots(chosen))
+
+
 def run(
     host: Any,
     *,
@@ -114,6 +122,7 @@ def run(
             catalog=getattr(host, "_catalog", None),
             targets=chosen,
             deadline_seconds=deadline,
+            visible=_visible_ids(host),
         )
         if targets is not None:  # "Search for a Podcast..." means podcasts
             return found

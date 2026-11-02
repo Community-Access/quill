@@ -135,6 +135,30 @@ def fast_targets(
     return tuple(target for target in wanted if target.seed_id in FAST_SEED_IDS)
 
 
+#: The station directory has four root branches (by genre, country, language
+#: and format) and is asked once, as :data:`STATIONS`; it counts as shown while
+#: any of the four is.
+_RADIO_BROWSER_ROOTS: frozenset[str] = frozenset({"rbgenre", "rbcountry", "rblang", "rbcodec"})
+
+
+def visible_only(
+    targets: tuple[SearchTarget, ...], visible: frozenset[str] | set[str]
+) -> tuple[SearchTarget, ...]:
+    """The *targets* whose browse branch the listener has not hidden (pure).
+
+    A source hidden in Choose Browse Sources is never contacted, by browsing or
+    by searching (Jeff, 2026-11-01): hiding it is how somebody says they do not
+    want that service asked.
+    """
+
+    def shown(target: SearchTarget) -> bool:
+        if target.seed_id == STATIONS.seed_id:
+            return bool(_RADIO_BROWSER_ROOTS & set(visible))
+        return target.seed_id in visible
+
+    return tuple(target for target in targets if shown(target))
+
+
 def targets_of_type(type_label: str) -> tuple[SearchTarget, ...]:
     """Every source that answers with rows of one type.
 
@@ -275,6 +299,7 @@ def search_everything(
     targets: tuple[SearchTarget, ...] | None = None,
     max_workers: int = 0,
     deadline_seconds: float = SEARCH_DEADLINE_SECONDS,
+    visible: frozenset[str] | set[str] | None = None,
 ) -> FederatedBrowse:
     """Ask every source for *query* at once and merge what comes back.
 
@@ -318,6 +343,10 @@ def search_everything(
         return result
 
     wanted = targets if targets is not None else (STATIONS, *TARGETS)
+    if visible is not None:  # *visible*: the browse roots the listener shows
+        wanted = visible_only(wanted, visible)
+    if not wanted:
+        return result
     by_target: dict[str, list[BrowseNode]] = {}
 
     def _one(target: SearchTarget) -> tuple[SearchTarget, list[BrowseNode], str]:
