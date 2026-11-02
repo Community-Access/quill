@@ -59,6 +59,14 @@ release notes.
    corresponding source and build inputs for each shipped artifact. Obtain
    legal review of combined-work and source-offer obligations where unresolved;
    a separate process or a repository link alone is not proof of compliance.
+   - Run `python scripts\collect_copyleft_sources.py --product <app>
+     --build-dir standalone\runtime\dist\QuillVilleRuntime --out <folder>`
+     for each app. It lists every GPL, AGPL and LGPL component the build
+     ships with its exact version (read from the build folder, or marked
+     "catalogue" when it could not be) and the source archive for each, and
+     writes `copyleft-sources.json` and `copyleft-sources.txt`. Add
+     `--download` to fetch the archives for the release's source bundle; it
+     never downloads without that flag.
 
    **Accessibility.** Before each public release:
    - Add the release's entry to `docs/accessibility-progress.md` (completed,
