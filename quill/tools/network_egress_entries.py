@@ -440,7 +440,13 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "AI generation against the user's explicitly chosen provider (AI-13): My own "
         "key's providers (decision 20: OpenAI, Claude, OpenRouter, Ollama Cloud, custom "
         "service, Ollama on this computer) and the advanced features, only on an explicit "
-        "AI action. Verified TLS; cloud HTTPS enforced by _validate_endpoint_security."
+        "AI action. Verified TLS; cloud HTTPS enforced by _validate_endpoint_security. "
+        "Pictures go this way too (vision.describe_image) on an OpenAI, Claude or local "
+        "Ollama key: Ask About an Image, and QUILL Studio's Describe a Picture, Describe a "
+        "Folder and Describe Again -- each picture fitted and re-encoded first (no EXIF "
+        "block, so no location), behind the capability gate and the per-app picture "
+        "consent, and a folder run only after one confirmation naming the count and the "
+        "receiver."
     ),
     "core/assistant_ai.py::_post_chat_stream": (
         "Streaming variant of AI generation (AI-14). Same gating as _post_chat: "

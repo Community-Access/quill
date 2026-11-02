@@ -108,9 +108,12 @@ _NEEDS: dict[str, tuple[str, str, str]] = {
     SPEECH: ("AI voices need", "your own key", "(needs your own key)"),
 }
 
-#: How a connection is named when it is offered *for one capability*. A Gemini
-#: key is what sees, not "my own key" in general (10A.8's own sentence).
-_OFFER_NAMES: dict[tuple[str, str], str] = {(OWN_KEY, PICTURES): "a Gemini key"}
+#: How a connection is named when it is offered *for one capability*. An
+#: OpenAI, Gemini or Claude key is what sees, not "my own key" in general
+#: (10A.8's own sentence).
+_OFFER_NAMES: dict[tuple[str, str], str] = {(OWN_KEY, PICTURES): "an OpenAI, Gemini or Claude key"}
+#: A key that is set up, named for its provider in the switch offer.
+_KEY_NAMES: dict[str, str] = {"openai": "OpenAI", "gemini": "Gemini", "claude": "Claude"}
 
 # -- the sources, named once ---------------------------------------------------- #
 
@@ -142,8 +145,21 @@ _SRC_OWN_TEXT: dict[str, str] = {
     "ollama": "assistant_ai.generate_assistant_response: Ollama /api/chat on this computer "
     "(docs.ollama.com/api)",
 }
-#: Pictures on the Hub's providers: only local Ollama, and only per model.
-_SRC_OWN_HUB_SEE = "the own-key route sends pictures only on Gemini and per-model Ollama"
+#: Pictures on a keyed provider, each with the page that says its models read
+#: images and the request shape vision.build_image_description_body sends:
+#: OpenAI image_url parts, Anthropic base64 image blocks, Gemini inline_data.
+#: A text-only model answers with the provider's own error, said as it came.
+_SRC_OWN_KEY_SEE: dict[str, str] = {
+    "openai": "platform.openai.com/docs/guides/images-vision (image_url input on "
+    "/v1/chat/completions); sent by vision.describe_image",
+    "gemini": _SRC_OWN_SEE,
+    "claude": "docs.anthropic.com/en/docs/build-with-claude/vision (base64 image blocks "
+    "on /v1/messages); sent by vision.describe_image",
+}
+#: Pictures on the rest of the Hub's providers: only local Ollama, per model.
+_SRC_OWN_HUB_SEE = (
+    "the own-key route sends pictures only on OpenAI, Gemini, Claude and per-model Ollama"
+)
 _SRC_OLLAMA_SEE = "Ollama /api/show capabilities (ollama_capabilities.py), per model"
 _SRC_OWN_NO_STREAM = "assistant_ai.generate_assistant_response answers whole, not streamed"
 _SRC_PLAN_MEDIA = "codex.md 10A.7: plans carry no image generation or speech"
@@ -241,8 +257,11 @@ def _codex() -> ConnectionRecord:
 
 
 def _own_key_pictures(provider: str) -> Claim:
-    if provider in ("openai", "gemini"):
-        return Claim(provider == "gemini", _SRC_OWN_SEE, "Gemini yes; OpenAI here no")
+    if provider in _SRC_OWN_KEY_SEE:
+        # Every current Gemini and Claude model reads pictures; some OpenAI
+        # models (the o-series minis) do not, so that claim is per model.
+        note = "per model" if provider == "openai" else ""
+        return Claim(True, _SRC_OWN_KEY_SEE[provider], note)
     if provider == "ollama":
         return Claim(False, _SRC_OLLAMA_SEE, "per model")
     return Claim(False, _SRC_OWN_HUB_SEE)
@@ -455,7 +474,9 @@ def switch_offer(
 
     "Pictures need a connection that can see. My ChatGPT plan can. Switch to it
     and ask?" when something set up can; otherwise "Pictures need My ChatGPT
-    plan, My GitHub Copilot, Codex or a Gemini key. Choose one now?". The
+    plan, My GitHub Copilot, Codex or an OpenAI, Gemini or Claude key. Choose one
+    now?". A key that is set up is named for its provider ("Your Claude key
+    can."). The
     candidates that *could* do it ignore availability, because they are what
     the person is being told exists, not what this build has switched on.
     """
@@ -467,6 +488,8 @@ def switch_offer(
     if ready:
         target = ready[0]
         who = _offer_name(target, capability)
+        if (target, capability) in _OFFER_NAMES and own_key_provider in _KEY_NAMES:
+            who = f"your {_KEY_NAMES[own_key_provider]} key"
         who = who[:1].upper() + who[1:]
         return SwitchOffer(
             f"{subject} {needed}. {who} can. Switch to it and ask?",

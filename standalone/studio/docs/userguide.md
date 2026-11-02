@@ -375,7 +375,7 @@ All downloads are disabled in Safe Mode.
 
 Studio uses the same AI choice as the rest of the family. **AI > Choose Your AI...** (Ctrl+4) picks where Studio's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. Arrow through the list; each row says whether it is in use, signed in or not set up, and Enter uses the one you are on or signs in to it. Studio signs in on its own, as QUILL Studio, and choosing here changes nothing in QUILL or the other apps. If you had already signed Studio in to your ChatGPT plan, it stays in use.
 
-Every picture Studio asks about goes to the AI chosen here: Describe a Picture, the Screenshot Inspector, automatic screenshot analysis and Ask AI questions about a video. That replaced Studio's old question about which AI should read a picture.
+Every picture Studio asks about goes to the AI chosen here: Describe a Picture, Describe a Folder, Describe Again, the Screenshot Inspector, automatic screenshot analysis and Ask AI questions about a video. That replaced Studio's old question about which AI should read a picture. The AIs that can see are your ChatGPT plan, GitHub Copilot, Codex, and your own OpenAI, Google Gemini or Anthropic Claude key.
 
 The rest of the AI menu:
 
@@ -383,6 +383,7 @@ The rest of the AI menu:
 - **Which AI Am I Using** (Ctrl+8) says the AI in use and its model in one line. Press it twice quickly to open Choose Your AI.
 - **Recording Pre-flight Check...** (Ctrl+3) and **Narrate a Recording...** (Ctrl+Shift+3) are tasks an AI works through in steps. See Recording pre-flight check and Narrate a recording, below.
 - **Describe a Picture...** (Ctrl+F5) asks you for a picture, or a video and then the moment in it, like 2:10. Studio takes that one picture on this computer, fits it to the AI in use and reads the description aloud; the description of a video frame starts with its time. Asking about the same picture again in the same session sends nothing. When the AI in use cannot see, the menu row says "(needs a connection that sees)", and pressing it sends nothing and offers to switch to one that can.
+- **Describe a Folder...** (Ctrl+Shift+F5), **Stop Describing the Folder** (Alt+Shift+F5), **Describe Again...** (Ctrl+Alt+F5) and **Save Described Copies...** (Ctrl+Alt+F6) work on a whole folder of pictures. See Describing a folder of pictures, below.
 - **Start Watching for Changes** (Ctrl+F9) and **Stop Watching for Changes** (Ctrl+Shift+F9) tell you when something on screen changes. See Watching for changes, below.
 - **Use My ChatGPT Subscription...** (Alt+F5) opens Choose Your AI on the ChatGPT row, ready to sign in. It used to be on the Capture menu.
 - **Use My Own AI Key...** (Alt+F2), **AI Usage...** (Ctrl+Alt+Shift+F2) and **Privacy Agreement...** (Alt+Shift+F2).
@@ -390,6 +391,30 @@ The rest of the AI menu:
 **Pictures: asked once, and every screenshot confirmed.** The first time you ask about a picture on a connection, Studio says where pictures go, for example "Pictures you ask about in QUILL Studio go to OpenAI on your ChatGPT plan. Nothing is sent until you ask.", and asks Yes or No; No is the default. Studio asks again if you change to an AI from a different company. A screenshot is still confirmed every time before it goes.
 
 **Make a picture with AI** keeps its own key (Ctrl+Alt+Shift+J) and still needs an OpenAI or Gemini key, because ChatGPT plans don't make pictures for other apps.
+
+### Describing a folder of pictures
+
+A phone full of photos, or a box of family pictures you scanned, can be a lot of Ctrl+F5. **AI > Describe a Folder...** (Ctrl+Shift+F5) describes every picture in a folder, one at a time, and gives you all the descriptions as one document in QUILL, with a heading for each picture so you can move between them with heading navigation.
+
+The window asks for:
+
+- **Folder of pictures**, with a Browse button. JPEG, PNG, WebP, GIF, BMP, TIFF and HEIC pictures are described. Videos are left out. Check **Include the pictures in subfolders** to go into folders inside it as well.
+- **Prompt style**: how the pictures are described. Accessibility suits most people. Concise is short, Detailed is long, and AI Alt Text writes alt text at three lengths. These are the same twelve styles QUILL's Ask About an Image offers.
+- **Send the photo details with each picture: date, camera and lens.** Checked to begin with. Studio reads these from the picture on this computer and sends one line with it, so a description can say "taken on Christmas morning". A picture with no details just goes without that line.
+- **Also send where it was taken (GPS location).** Not checked, and it starts that way every time. Check it only if you want the picture's coordinates to go to the AI too. They go to the same AI as the picture and to nobody else, and Studio never looks up a place name. Without this box, the location never leaves your computer, not even inside the picture: every picture is shrunk and saved fresh before it is sent, which leaves the camera's hidden details behind.
+- **At most this many pictures in one run.** The run stops after that many. It starts at 25 on a ChatGPT plan, Copilot or Codex, because a plan is shared with everything else you do on it; 200 on your own key; and 1000 on a model running on this computer.
+
+Press **Continue** and Studio counts the pictures. Nothing has been sent yet. Then one question names the count and who receives them, for example: "50 pictures will go to OpenAI on your ChatGPT plan, with each picture's date, camera and lens, one at a time. 12 are described already and not sent again. This run stops after 50; 150 are left for the next run. Send them?" No is the default. The first time pictures go to a connection, Studio also asks where pictures go, as Describe a Picture does.
+
+While it works, you hear how far it has got now and then, like "20 of 200 described", never once per picture. When it is done you hear the count, any pictures it couldn't read by name, and how many are left, and the descriptions open in QUILL. **Stop Describing the Folder** (Alt+Shift+F5) stops after the picture being described; what was described is kept, and the document is written but not opened.
+
+**Picking up where it stopped.** Studio keeps each description in a small file of its own, under Studio's own data folder, never in your picture folder. Run Describe a Folder on the same folder again and only the pictures without a description, or pictures that changed since, are sent. A run cut short by Stop, a lost connection or a plan limit carries on where it ended, and nothing is paid for twice.
+
+**Describe Again** (Ctrl+Alt+F5) adds another description and keeps the earlier ones, so you can compare them. Choose what to describe again: the picture you last described with Describe a Picture, every picture in the folder you last described, one picture from that folder, or a folder you described another time. Then choose a prompt style. It uses the AI in use; to compare two AIs, choose the other one in Choose Your AI first. For one picture, you hear the new description and both are kept in the result window, newest first. For a folder, the same count-and-receiver question comes first, and the document lists every description of each picture, labelled with its style and AI, like "Description 2: Concise style, My own key (Anthropic Claude)".
+
+**Save Described Copies** (Ctrl+Alt+F6) puts each description into a copy of its picture, so the words travel with the photo into Windows Explorer's details, photo libraries and anything that reads picture metadata. Choose the folder you described, then a different folder for the copies. Your pictures are never changed: the copies can't go in the same folder, and an existing file is never replaced. JPEG and PNG pictures get the description; other kinds are left out and named. When a picture has more than one description, the copy gets the newest. Nothing is sent.
+
+Describe a Folder follows the approach of Kelly Ford's Image Description Toolkit, and the twelve prompt styles are his. Thank you, Kelly.
 
 ### Recording pre-flight check
 
@@ -588,6 +613,10 @@ All the Quill apps are published from one place, and each one recognizes its own
 | Recording Pre-flight Check | Ctrl+3 |
 | Narrate a Recording | Ctrl+Shift+3 |
 | Describe a Picture | Ctrl+F5 |
+| Describe a Folder | Ctrl+Shift+F5 |
+| Stop Describing the Folder | Alt+Shift+F5 |
+| Describe Again | Ctrl+Alt+F5 |
+| Save Described Copies | Ctrl+Alt+F6 |
 | Start Watching for Changes | Ctrl+F9 |
 | Stop Watching for Changes | Ctrl+Shift+F9 |
 | Use My ChatGPT Subscription | Alt+F5 |

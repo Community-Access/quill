@@ -39,4 +39,9 @@ STUDIO_ENTRIES: dict[str, str] = {
     # Studio's own Choose Your AI choice and picture consent (codex.md Phase 3):
     # names and ids only, never a key or a token; no version stamp yet.
     "core/audio_studio/ai_settings.py::save_ai_settings": "needs-versioning",
+    # Describe a Folder (2026-11-01): one result file per picture under Studio's
+    # data, holding the descriptions the person asked for. Self-describing and
+    # additive (schema_version 1, a later schema read for what is known), and
+    # never config: user-created content.
+    "core/ai/picture_batch.py::save_result": "content",
 }

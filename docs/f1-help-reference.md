@@ -1124,7 +1124,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 297 audited sites (11 help-elsewhere, 286 helped).
+Control coverage: 302 audited sites (11 help-elsewhere, 291 helped).
 
 ### Every window, and what it is for
 
@@ -1159,6 +1159,10 @@ Control coverage: 297 audited sites (11 help-elsewhere, 286 helped).
 **Choose the save folder.** Choose the folder where demonstrations are saved.
 
 **Convert Audio.** Convert audio files or whole folders between formats, on this machine. Build the queue, pick the output format, preset, and destination folder, and Convert runs in the background with spoken progress. The Advanced options only override what you deliberately change; untouched controls leave the preset alone.
+
+**Describe Again.** Choose the last picture you described, or a folder you described or one picture from it, and a prompt style. The new description is kept beside the earlier ones, so you can compare them. To use another AI, choose it in Choose Your AI first.
+
+**Describe a Folder.** Choose a folder of pictures and a prompt style. Studio counts the pictures and asks once before sending any, then describes them one at a time and opens all the descriptions in QUILL. Pictures already described are never sent again, so running the same folder again carries on where it stopped.
 
 **Describe a Picture.** Choose a picture, or a video and then the moment in it. Studio takes that one picture on this computer, fits it to the AI in use and reads the description aloud. Asking about the same picture again sends nothing.
 
@@ -1398,6 +1402,20 @@ Control coverage: 297 audited sites (11 help-elsewhere, 286 helped).
 #### SleepTimerDialog (`quill/ui/audio_studio/sleep_timer_dialog.py`)
 
 - `self._minutes`: How long playback keeps going before the timer stops it, 1 to 480 minutes. Ignored while Stop at end of chapter is checked, and only read while the timer is enabled.
+#### _StyleAndDetails (`quill/ui/audio_studio/studio_picture_dialogs.py`)
+
+- `self.style`: How the pictures are described. Accessibility suits most people; Concise is short, Detailed is long, and AI Alt Text writes three lengths of alt text.
+- `self.details`: Read the date taken, the camera and the lens from the picture on this computer and send them with it, so the description can say when it was taken.
+- `self.location`: Off unless you check it, every time. When checked, the picture's GPS coordinates go to the same AI as the picture, and to nobody else. No place name is looked up.
+- `self.ceiling`: The run stops after this many pictures. Run it again for the rest; pictures already described are never sent twice.
+#### DescribeFolderDialog (`quill/ui/audio_studio/studio_picture_dialogs.py`)
+
+- `self.folder`: The folder whose pictures you want described.
+- `browse`: Choose the folder of pictures.
+- `self.subfolders`: Describe the pictures in folders inside this one as well.
+#### DescribeAgainDialog (`quill/ui/audio_studio/studio_picture_dialogs.py`)
+
+- `self.target`: The picture to describe again, every picture of a folder you described, or one picture from that folder.
 #### CoverPagePanel (`quill/ui/audio_studio/tag_editor.py`)
 
 - `load_btn`: Chooses a JPEG or PNG image to embed as this file's cover art, replacing whatever is there now. The file is checked by its real contents rather than its name, and images over 8 MB are refused.
