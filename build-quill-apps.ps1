@@ -14,7 +14,10 @@
       4. Builds each app's installer and portable zip with its own build script,
          passing the build number the source says (the app's _BUILD / APP_BUILD).
       5. Collects each app's fresh installer and portable zip into one upload folder,
-         zips each app's pair, writes SHA256SUMS.txt, and zips everything together.
+         with the app's LICENSE.txt, THIRD-PARTY-NOTICES.txt and copyleft source
+         manifest (scripts/collect_copyleft_sources.py, versions read from the
+         runtime build, nothing downloaded), zips each app's set, writes
+         SHA256SUMS.txt, and zips everything together.
 
     Progress is plain text, one line per step ("Step 3 of 6: QUILL Cast"), with the
     build's own output shown as it runs and the time each step took, so it reads
@@ -307,6 +310,21 @@ function Get-ScriptParams([string]$script) {
     return $names
 }
 
+# The licence files every release carries beside its binaries (licensing
+# review, 2026-11-01). publish_release.py uploads the same names.
+function Get-LicenceFiles([string]$app) {
+    if ($app -eq "quill") {
+        return @(
+            @{ Name = "LICENSE.txt"; From = (Join-Path $repo "LICENSE") },
+            @{ Name = "THIRD-PARTY-NOTICES.txt"; From = (Join-Path $repo "docs\legal\THIRD-PARTY-NOTICES-QUILL.txt") }
+        )
+    }
+    return @(
+        @{ Name = "LICENSE.txt"; From = (Join-Path $repo "standalone\$app\LICENSE.txt") },
+        @{ Name = "THIRD-PARTY-NOTICES.txt"; From = (Join-Path $repo "standalone\$app\THIRD-PARTY-NOTICES.txt") }
+    )
+}
+
 function Get-SourceBuild([string]$id) {
     $code = "import sys; sys.path.insert(0, 'scripts'); import release_build_number as r; print(r.source_build('$id'))"
     return [int]((& $Python -c $code).Trim())
@@ -384,7 +402,7 @@ foreach ($app in $selected) {
 
 Step "Upload zips"
 if ($DryRun) {
-    Say "  Would copy each app's installer and portable zip to $uploadDir, zip each app, and write SHA256SUMS.txt."
+    Say "  Would copy each app's installer and portable zip, its LICENSE.txt and THIRD-PARTY-NOTICES.txt, and its copyleft source manifest to $uploadDir, zip each app, and write SHA256SUMS.txt."
 } elseif ($artifacts.Count -eq 0) {
     Say "  Nothing was built, so there is nothing to zip."
 } else {
@@ -397,6 +415,30 @@ if ($DryRun) {
             Copy-Item -LiteralPath $file.FullName -Destination $appDir -Force
             $hash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             $sums.Add("$hash  $app/$($file.Name)")
+        }
+        # The licence, the notices and the copyleft source manifest go with every
+        # app. The manifest reads exact versions from the runtime build; it never
+        # downloads (scripts/collect_copyleft_sources.py --download is a separate,
+        # deliberate step when the source bundle is assembled).
+        foreach ($licence in (Get-LicenceFiles $app)) {
+            Copy-Item -LiteralPath $licence.From -Destination (Join-Path $appDir $licence.Name) -Force
+        }
+        $runtimeDist = Join-Path $repo "standalone\runtime\dist\QuillVilleRuntime"
+        $sourcesLog = "{0}-copyleft-sources.log" -f $app
+        $sourcesCode = Invoke-Logged $sourcesLog $Python @(
+            "scripts\collect_copyleft_sources.py", "--product", $catalog[$app].Id,
+            "--build-dir", $runtimeDist, "--out", $appDir
+        )
+        if ($sourcesCode -ne 0) {
+            $failed++
+            Say "  $($catalog[$app].Name): the copyleft source manifest failed. See logs\$sourcesLog."
+        }
+        foreach ($name in @("LICENSE.txt", "THIRD-PARTY-NOTICES.txt", "copyleft-sources.json", "copyleft-sources.txt")) {
+            $extra = Join-Path $appDir $name
+            if (Test-Path -LiteralPath $extra) {
+                $hash = (Get-FileHash -LiteralPath $extra -Algorithm SHA256).Hash.ToLowerInvariant()
+                $sums.Add("$hash  $app/$name")
+            }
         }
         $appZip = Join-Path $uploadDir "$app-$stamp.zip"
         Compress-Archive -Path (Join-Path $appDir "*") -DestinationPath $appZip -Force
