@@ -287,7 +287,7 @@ use of TINDRA:
      budget and a willing seller exist (premium, uncertain) — confirm with an
      authoritative registrar WHOIS first; or (b) **go prefixed/alternate** and
      own it cleanly: `usetindra.com`, `gettindra.com` / `.org`, `tindra.io`, or
-     `tindra.studio`. For a community/nonprofit publisher (Community Access), a
+     `tindra.studio`. For a free personal project (Jeff Bishop's), a
      prefixed `.org` (e.g., `gettindra.org`) reads well and is far cheaper than
      chasing the 2006-era `.com` — **but** a prefixed domain does not cure the
      same-class software collision that the `tindra.app` product creates;

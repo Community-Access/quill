@@ -5710,9 +5710,12 @@ happened, so the user is never left without a voice. <strong>Upgraders
 keep any existing <code>{app}\tools\speech\dectalk</code> /
 <code>espeak-ng</code> copy</strong> (Inno never removes it;
 <code>[InstallDelete]</code> does not touch it; the resolver still
-checks it). eSpeak NG is GPLv3 and DECtalk is BSD-licensed; both are
-already covered by QUILL’s redistribution/compliance notices, so
-re-hosting carries the same terms as bundling did.</p>
+checks it). eSpeak NG is GPLv3, covered by QUILL’s
+redistribution/compliance notices, so re-hosting carries the same terms
+as bundling did. DECtalk is not BSD-licensed, as this section once said:
+its files carry proprietary notices and no right to redistribute, so
+QUILL stopped distributing it on 2026-11-01 and only drives a copy the
+user installs.</p>
 <p><strong>Cloud providers ship as Quillins, not core.</strong> Per the
 consolidation plan (#669), the cloud provider matrix is delivered as
 extensions rather than baked into core. A Quillin declares a provider
@@ -6156,12 +6159,14 @@ constraints:</p>
 only what we are licensed to redistribute. whisper.cpp (MIT), Kokoro
 (Apache-2.0), and Piper are fine; <strong>eSpeak NG is GPLv3</strong>
 (allowed with the source-offer obligation already in the compliance
-notices); <strong>DECtalk is BSD</strong>. All four are re-hosted on
-<code>assets-v1</code> as byte-identical re-publishes of the upstream
-binaries. <strong>ffmpeg is explicitly excluded</strong> — QUILL never
-bundles or re-hosts it (see <code>quill/core/speech/ffmpeg.py</code>);
-it stays user-installed. Every re-hosted asset needs a
-third-party-notices entry.</li>
+notices); <strong>DECtalk is not redistributable</strong> (its files
+carry proprietary notices; the earlier “BSD” note here was wrong, and
+QUILL stopped distributing it on 2026-11-01). The other three are
+re-hosted on <code>assets-v1</code> as byte-identical re-publishes of
+the upstream binaries. <strong>ffmpeg is explicitly excluded</strong> —
+QUILL never bundles or re-hosts it (see
+<code>quill/core/speech/ffmpeg.py</code>); it stays user-installed.
+Every re-hosted asset needs a third-party-notices entry.</li>
 <li><strong>2 GB per-asset limit.</strong> GitHub caps a single release
 asset at 2 GB, so multi-GB assets — speech <code>large-v3</code> (~3.1
 GB) and the GGUF LLMs (<code>phi-4-mini</code> ~2.5 GB) — stay on their

@@ -2511,9 +2511,11 @@ verified acquisition point. Windows' built-in **SAPI 5** voices remain the
 always-present offline floor while a download has not happened, so the user is never
 left without a voice. **Upgraders keep any existing `{app}\tools\speech\dectalk` /
 `espeak-ng` copy** (Inno never removes it; `[InstallDelete]` does not touch it; the
-resolver still checks it). eSpeak NG is GPLv3 and DECtalk is BSD-licensed; both are
-already covered by QUILL's redistribution/compliance notices, so re-hosting carries
-the same terms as bundling did.
+resolver still checks it). eSpeak NG is GPLv3, covered by QUILL's
+redistribution/compliance notices, so re-hosting carries the same terms as bundling
+did. DECtalk is not BSD-licensed, as this section once said: its files carry
+proprietary notices and no right to redistribute, so QUILL stopped distributing it
+on 2026-11-01 and only drives a copy the user installs.
 
 **Cloud providers ship as Quillins, not core.** Per the consolidation plan (#669), the cloud
 provider matrix is delivered as extensions rather than baked into core. A Quillin declares a
@@ -2872,8 +2874,10 @@ API), each SHA-256-pinned and honouring HTTP Range for resumability. Hard constr
 - **License/redistribution gate (per asset).** Re-host only what we are licensed to
   redistribute. whisper.cpp (MIT), Kokoro (Apache-2.0), and Piper are fine; **eSpeak NG
   is GPLv3** (allowed with the source-offer obligation already in the compliance notices);
-  **DECtalk is BSD**. All four are re-hosted on `assets-v1` as byte-identical re-publishes
-  of the upstream binaries. **ffmpeg is explicitly excluded** — QUILL never bundles or
+  **DECtalk is not redistributable** (its files carry proprietary notices; the earlier
+  "BSD" note here was wrong, and QUILL stopped distributing it on 2026-11-01). The
+  other three are re-hosted on `assets-v1` as byte-identical re-publishes of the
+  upstream binaries. **ffmpeg is explicitly excluded** — QUILL never bundles or
   re-hosts it (see `quill/core/speech/ffmpeg.py`); it stays user-installed. Every re-hosted
   asset needs a third-party-notices entry.
 - **2 GB per-asset limit.** GitHub caps a single release asset at 2 GB, so multi-GB assets
