@@ -316,11 +316,37 @@ def test_the_splitter_cuts_at_what_it_heard(tmp_path: Path) -> None:
     assert not splitter.watching("job")
 
 
-def test_the_setting_off_means_no_watch_and_nothing_said(tmp_path: Path) -> None:
+def test_the_setting_off_keeps_the_songs_beside_it_and_says_nothing(tmp_path: Path) -> None:
+    from quill.core.radio.recording_song_log import load_song_log
+
+    clock = _Clock()
+    plans: list[SplitPlan] = []
+    splitter = _splitter(["A - One", "B - Two"], clock, plans)
+    splitter.connection("job", "http://x.test/live", enabled=False, continuation=False)
+    assert splitter.watching("job")  # watched, so it can be split later
+    clock.now = 10.0
+    splitter.poll_now("job")
+    clock.now = 130.0
+    splitter.poll_now("job")
+    clock.now = 400.0
+    source = _source(tmp_path)
+    assert splitter.finish("job", source, lead_trim=5.0) == ""
+    assert plans == []  # not cut now
+    log = load_song_log(source)
+    assert log is not None
+    assert log.first_title == "A - One"
+    assert log.changes == (SongChange(65.0, "B - Two"),)  # the trim is taken off once
+    assert log.duration == 395.0
+
+
+def test_the_setting_off_with_no_song_change_leaves_no_log(tmp_path: Path) -> None:
+    from quill.core.radio.recording_song_log import sidecar_path
+
     splitter = _splitter([], _Clock(), [])
     splitter.connection("job", "http://x.test/live", enabled=False, continuation=False)
-    assert not splitter.watching("job")
-    assert splitter.finish("job", _source(tmp_path)) == ""
+    source = _source(tmp_path)
+    assert splitter.finish("job", source) == ""
+    assert not sidecar_path(source).exists()
 
 
 def test_a_recording_that_dropped_is_kept_whole_and_says_why(tmp_path: Path) -> None:
@@ -449,7 +475,8 @@ def test_the_recorder_says_nothing_extra_with_the_setting_off(
         duration_minutes=60,
     )
     job_id = recorder.active_jobs()[0].job_id
-    assert not recorder._songs.watching(job_id)
+    # Watched (the songs are kept beside it for Split into Songs), not split.
+    assert recorder._songs.watching(job_id)
     recorder.stop()
     assert ended.wait(10)
     time.sleep(0.2)

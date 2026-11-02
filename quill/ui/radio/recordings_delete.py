@@ -44,18 +44,23 @@ def remove_selected(dialog: Any) -> None:
     removed_index = dialog._list.GetFirstSelected()
     if not confirm(dialog._wx, dialog.dialog, entry):
         return
+    from quill.core.radio.recording_song_log import companions
     from quill.ui import undo_last_ui
 
     # Moved aside, not unlinked, so Ctrl+Z brings the recording itself back
     # and not just its name (11.3). Without an app owning undo this is still
-    # an ordinary delete.
-    held = undo_last_ui.hold_or_delete([entry.path])
+    # an ordinary delete. Its song log (Split into Songs) goes and comes back
+    # with it.
+    logs = companions(entry.path)
+    held = undo_last_ui.hold_or_delete([entry.path, *logs])
     if not held and entry.path.exists():
         try:
             entry.path.unlink()
         except OSError as error:
             dialog._announce(f"Could not delete the file: {error}.")
             return
+        for log in logs:
+            log.unlink(missing_ok=True)
 
     def _undo() -> None:
         undo_last_ui.restore(held)

@@ -8,6 +8,7 @@ question is a fake, so nothing modal opens and no input is sent.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -180,6 +181,57 @@ def test_with_nothing_marked_delete_removes_the_selected_schedule(schedule) -> N
     schedule._list.SetSelection(0)
     schedule._on_list_key(_key(wx.WXK_DELETE))
     assert schedule.removed == ["s1"]
+
+
+def _mark_schedules(schedule, rows: tuple[int, ...]) -> None:
+    for row in rows:
+        schedule._list.SetSelection(row)
+        schedule._on_list_key(_key(PERIOD))
+
+
+def test_disable_turns_off_every_marked_schedule(schedule) -> None:
+    updated: list[tuple[str, bool]] = []
+    schedule._on_update = lambda entry: updated.append((entry.id, entry.enabled)) or True
+    _mark_schedules(schedule, (0, 2))
+    assert schedule._toggle_btn.GetLabel() == "Disab&le 2 Marked"
+    schedule._list.SetSelection(4)  # the cursor elsewhere: the button still means the marks
+    schedule_marks.refresh_buttons(schedule)
+    assert schedule._toggle_btn.GetLabel() == "Disab&le 2 Marked"
+    schedule_marks.toggle_button(schedule)
+    assert sorted(updated) == [("s1", False), ("s3", False)]
+    assert schedule.said[-1] == "Disabled 2 schedules."
+    assert not schedule_marks.marks_on(schedule)
+    assert not any("(marked)" in schedule._list.GetString(i) for i in range(5))
+    assert "Marked" not in schedule._toggle_btn.GetLabel()
+
+
+def test_enable_with_any_marked_schedule_off_turns_them_all_on(schedule) -> None:
+    schedule._entries = [
+        replace(entry, enabled=False) if entry.id == "s2" else entry for entry in schedule._entries
+    ]
+    schedule._refresh_list()
+    _mark_schedules(schedule, (0, 1))
+    assert schedule._toggle_btn.GetLabel() == "Enab&le 2 Marked"
+    schedule_marks.toggle_button(schedule)
+    assert schedule.said[-1] == "Enabled 1 schedule. 1 was already enabled."
+    assert all(entry.enabled for entry in schedule._entries)
+
+
+def test_the_menu_offers_enable_and_disable_for_the_marked(
+    schedule, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    shown: list[list[str]] = []
+
+    def popup(menu, *_args) -> bool:
+        shown.append([item.GetItemLabel() for item in menu.GetMenuItems()])
+        return True
+
+    monkeypatch.setattr(schedule._list, "PopupMenu", popup)
+    _mark_schedules(schedule, (0, 1, 2))
+    schedule_marks.on_list_context_menu(schedule)
+    assert "Enab&le 3 Marked" in shown[0]
+    assert "Disa&ble 3 Marked" in shown[0]
+    assert "Disab&le" not in shown[0]
 
 
 def test_toggling_a_schedule_while_others_are_marked_explains_itself(schedule) -> None:
@@ -356,3 +408,96 @@ def test_a_marked_row_keeps_its_mark_when_its_branch_is_rebuilt(browse) -> None:
     assert browse._row_label(child) == "Fav 0 (marked)  (from a test)"
     other = BrowseNode(node_id="fav:9", label="Fav 9")
     assert "(marked)" not in browse._row_label(other)
+
+
+def test_the_remove_button_names_the_marked_count(recordings) -> None:
+    button = recordings._remove_btn
+    assert button.GetLabel() == "&Remove..."
+    for row in (0, 1):
+        _select_row(recordings, row)
+        recordings._on_key(_key(PERIOD))
+    assert button.GetLabel() == "&Remove 2 Marked..."
+    assert button.IsEnabled()
+    # Moving the cursor keeps it: the button acts on the marked rows.
+    _select_row(recordings, 3)
+    recordings._on_selection_changed()
+    assert button.GetLabel() == "&Remove 2 Marked..."
+    recordings._on_key(_key(wx.WXK_DELETE, ctrl=True, shift=True))
+    assert recordings.said[-1] == "Cleared 2 marks."
+    assert button.GetLabel() == "&Remove..."
+
+
+# -- Browse: Add to Favorites ------------------------------------------------------
+
+
+def _add_station_rows(browse, count: int) -> list:
+    """Rows for stations that are not favorites yet, under the test branch."""
+    tree = browse._tree
+    branch = tree.GetItemParent(browse.rows[0])
+    rows = []
+    for index in range(count):
+        station = RadioStation(name=f"New {index}", stream_url=f"https://n{index}.test/")
+        item = tree.AppendItem(branch, station.name)
+        tree.SetItemData(item, {"node_id": f"genre-station:{index}", "station": station})
+        rows.append(item)
+    return rows
+
+
+def test_a_station_that_is_not_a_favorite_can_be_marked(browse) -> None:
+    new = _add_station_rows(browse, 1)
+    browse._tree.SelectItem(new[0])
+    assert browse_marks.handle_key(browse, _key(PERIOD))
+    assert browse.said[-1] == "Marked. 1 marked."
+    assert browse._favorite_btn.GetLabel() == "Add 1 Marked t&o Favorites"
+    assert browse._favorite_btn.IsEnabled()
+
+
+def test_add_to_favorites_adds_every_marked_station(browse) -> None:
+    saved: list[bool] = []
+    browse._on_favorites_changed = lambda: saved.append(True)
+    new = _add_station_rows(browse, 2)
+    for row in (new[0], new[1], browse.rows[0]):
+        browse._tree.SelectItem(row)
+        browse_marks.handle_key(browse, _key(PERIOD))
+    assert browse._favorite_btn.GetLabel() == "Add 3 Marked t&o Favorites"
+    browse_marks.favorite_button(browse)
+    assert browse.said[-1] == "Added 2 stations to Favorites. 1 was already there."
+    names = [favorite.station.name for favorite in browse.store.favorites]
+    assert names[-2:] == ["New 0", "New 1"]
+    assert saved == [True]
+    # The marks did their job and are gone, from the rows and the button.
+    assert not browse_marks.marks_on(browse)
+    assert "(marked)" not in browse._tree.GetItemText(new[0])
+    assert "Marked" not in browse._favorite_btn.GetLabel()
+
+
+def test_the_favorites_button_adds_the_marked_stations(browse) -> None:
+    new = _add_station_rows(browse, 2)
+    for row in new:
+        browse._tree.SelectItem(row)
+        browse_marks.handle_key(browse, _key(PERIOD))
+    browse._tree.SelectItem(browse.rows[3])  # a folder: the button still adds the marks
+    assert browse._favorite_btn.IsEnabled()
+    browse_marks.favorite_button(browse)
+    assert browse.said[-1] == "Added 2 stations to Favorites."
+
+
+def test_with_nothing_marked_the_button_toggles_the_row_as_before(browse) -> None:
+    new = _add_station_rows(browse, 1)
+    browse._tree.SelectItem(new[0])
+    browse_marks.favorite_button(browse)
+    assert browse.said[-1] == "Added New 0 to Favorites."
+    assert len(browse.store.favorites) == 4
+    # Every label keeps the one access key, O; F is Refresh's (GATE-14).
+    assert browse._favorite_btn.GetLabel() == "Remove fr&om Favorites"
+
+
+def test_delete_with_only_stations_marked_says_none_can_be_deleted(browse) -> None:
+    new = _add_station_rows(browse, 2)
+    for row in new:
+        browse._tree.SelectItem(row)
+        browse_marks.handle_key(browse, _key(PERIOD))
+    assert browse_marks.handle_key(browse, _key(wx.WXK_DELETE))
+    assert browse.said[-1] == (
+        "None of the 2 marked rows can be deleted. Alt+O adds them to Favorites."
+    )

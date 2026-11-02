@@ -2785,9 +2785,10 @@ everything a row offers. See “What a row offers” below.</li>
 <li>Press <strong>Tab</strong> to move past the tree. You come to a
 <strong>details box</strong> about the row you are on, then
 <strong>Radio volume</strong>, <strong>Mute</strong>, <strong>Go to
-Player</strong>, <strong>Add to Favorites</strong> (it reads
-<strong>Remove from Favorites</strong> on a row you have saved), and
-<strong>Refresh</strong>, which fetches the highlighted source again
+Player</strong>, <strong>Add to Favorites</strong> (Alt+O; it reads
+<strong>Remove from Favorites</strong> on a row you have saved, and
+<strong>Add 3 Marked to Favorites</strong> while stations are marked),
+and <strong>Refresh</strong>, which fetches the highlighted source again
 from the internet.</li>
 <li>Press <strong>Alt+T</strong> to jump back to the tree from anywhere
 in the window.</li>
@@ -3105,26 +3106,40 @@ Delete hides the source, just like <strong>Hide This Source</strong> on
 the menu, and <strong>Reset Sources to Default</strong> brings it back.
 On a folder inside one of Quill Radio’s own sources, Delete explains
 that there is nothing to delete.</p>
-<h4 id="removing-several-rows-at-once">Removing several rows at
-once</h4>
-<p>Press <strong>.</strong> (period) on each row you want to remove: a
-saved YouTube video or playlist, a followed channel, a server you added,
-or a station that is one of your favorites. You hear “Marked” and how
-many are marked, and the row’s name gains “(marked)”. It keeps the mark
-if you fold its folder and open it again. Then press
+<h4 id="adding-or-removing-several-rows-at-once">Adding or removing
+several rows at once</h4>
+<p>Press <strong>.</strong> (period) on each row you want: any station,
+or a row Delete can remove (a saved YouTube video or playlist, a
+followed channel or a server you added). You hear “Marked” and how many
+are marked, and the row’s name gains “(marked)”. It keeps the mark if
+you fold its folder and open it again. Then:</p>
+<ul>
+<li>To <strong>add every marked station to your favorites</strong>,
+press <strong>Alt+O</strong>, or Tab to the button, which now reads “Add
+3 Marked to Favorites”. Nothing asks first. You hear, for example,
+“Added 3 stations to Favorites”, or “Added 2 stations to Favorites. 1
+was already there.” The marks are cleared.</li>
+<li>To <strong>remove every marked row</strong>, press
 <strong>Delete</strong>: one question asks, for example, “Delete 4
 items?”, and you hear “Deleted 4 items.” Each branch that lost a row
-reloads, so the rows are gone from the tree.
-<strong>Ctrl+Shift+Delete</strong> clears every mark.</p>
+reloads, so the rows are gone from the tree. A station you have not
+saved cannot be removed, so it is left out of the count; if nothing
+marked can be removed, you hear so.</li>
+</ul>
+<p><strong>Ctrl+Shift+Delete</strong> clears every mark.</p>
+<p>For example, to save five stations from a genre you are exploring,
+open the genre, press <strong>.</strong> on each one you like as you
+listen your way down, then press <strong>Alt+O</strong> once.</p>
 <p>For example, to tidy your saved YouTube videos, open
 <strong>YouTube</strong>, then your saved videos, press
 <strong>.</strong> on each one you have finished with, and press
 <strong>Delete</strong> once.</p>
 <p>Things to know:</p>
 <ul>
-<li>A row Delete cannot remove cannot be marked. Pressing
-<strong>.</strong> on a country, a genre or a station you have not saved
-tells you which rows can be marked.</li>
+<li>A folder, such as a country or a genre, cannot be marked. Pressing
+<strong>.</strong> on one tells you which rows can be marked. A station
+that is only looked up when you play it (some TuneIn rows) cannot be
+marked either; <strong>Alt+O</strong> on it alone still adds it.</li>
 <li>The question is the same one Delete asks for a single row, so if you
 checked <strong>Don’t ask me again</strong> there, marked rows go
 without a question too. You still hear how many were deleted.</li>
@@ -4406,9 +4421,11 @@ it back on.</li>
 <li><strong>Remove</strong>, or the <strong>Delete</strong> key, deletes
 the entry <strong>straight away, without asking</strong>.</li>
 <li><strong>Shift+F10</strong> on the list offers Edit, Duplicate,
-Enable or Disable, and Delete, then <strong>Mark for Deleting</strong>
-(and, while anything is marked, <strong>Remove N Marked…</strong> and
-<strong>Clear Marks</strong>).</li>
+Enable or Disable, and Delete, then <strong>Mark for Deleting</strong>.
+While anything is marked it offers <strong>Enable N Marked</strong> and
+<strong>Disable N Marked</strong> in place of Enable or Disable, and
+<strong>Remove N Marked…</strong> and <strong>Clear Marks</strong> at
+the end.</li>
 </ul>
 <p>To remove several schedules at once, press <strong>.</strong>
 (period) on each one. You hear “Marked” and how many are marked, and the
@@ -4420,11 +4437,20 @@ Your cursor lands on the next schedule that is left.
 with nothing marked still removes the selected entry straight away; the
 question is only for several, because one schedule is quick to add again
 and a dozen are not.</p>
-<p><strong>Edit</strong>, <strong>Duplicate</strong> and
-<strong>Enable</strong> or <strong>Disable</strong> work on the selected
-entry only. If schedules are marked, the first of them you use says so
-once: “That used the selected row only; 2 rows are still marked for
-Delete.”</p>
+<p>To switch several schedules off for a while, say over a holiday, mark
+them the same way and press <strong>Alt+L</strong>, the Enable or
+Disable button. While schedules are marked it reads <strong>Disable 3
+Marked</strong> when they are all on, and <strong>Enable 3
+Marked</strong> when any of them is off, so one press switches them all
+the same way. Nothing asks first, because nothing is lost. You hear, for
+example, “Disabled 3 schedules”, or “Enabled 1 schedule. 2 were already
+enabled.” The marks are cleared afterwards. To choose outright, use
+<strong>Enable N Marked</strong> or <strong>Disable N Marked</strong> on
+the Shift+F10 menu.</p>
+<p><strong>Edit</strong> and <strong>Duplicate</strong> work on the
+selected entry only. If schedules are marked, the first of them you use
+says so once: “That used the selected row only; 2 rows are still marked
+for Delete.”</p>
 <p>Close the window with <strong>Escape</strong> or
 <strong>Ctrl+W</strong>. Its menus are <strong>Schedule</strong>
 (Alt+D), <strong>Station</strong> (Alt+S) and <strong>Window</strong>
@@ -4515,6 +4541,9 @@ Recording</strong> (on a row being recorded), <strong>Stop All
 Recordings</strong> (when two or more are running), <strong>Open in
 Folder</strong> (shows the file in File Explorer),
 <strong>Remove…</strong> and <strong>Refresh</strong>.</li>
+<li>Press <strong>Alt+Shift+T</strong> to split a finished recording
+into songs (see “Splitting a recording you already have” later in this
+chapter).</li>
 <li>Press <strong>Delete</strong> to remove a finished recording.
 <strong>No</strong> is already chosen; press <strong>Y</strong> to
 delete. Your cursor lands on the next recording. If you change your
@@ -4533,8 +4562,9 @@ arrow past.</li>
 <li>Mark as many as you like. Press <strong>.</strong> again on a marked
 row to unmark it; you hear “Unmarked” and how many are still
 marked.</li>
-<li>Press <strong>Delete</strong>, or choose <strong>Remove…</strong>.
-One question asks, for example, “Delete 3 recordings?”, with
+<li>Press <strong>Delete</strong>, or choose the <strong>Remove</strong>
+button, which now reads <strong>Remove 3 Marked…</strong> and works from
+any row. One question asks, for example, “Delete 3 recordings?”, with
 <strong>No</strong> already chosen. Choose <strong>Yes</strong> and you
 hear “Deleted 3 recordings.” Your cursor lands on the nearest recording
 that is left, and one <strong>Ctrl+Z</strong> in the main window brings
@@ -4542,6 +4572,12 @@ all three back.</li>
 </ol>
 <p><strong>Ctrl+Shift+Delete</strong> clears every mark and says how
 many it cleared.</p>
+<p>Marks also choose what <strong>Split into Songs</strong>
+(Alt+Shift+T) works on: with recordings marked, every marked one is
+split, and you hear one sentence at the end, for example “Split 3 of 3
+recordings into 31 songs.” Splitting keeps the recordings, so it asks
+nothing first, and your marks stay so you can delete the whole
+recordings afterwards if you want to.</p>
 <p>For example, after a week of scheduled shows you might arrow down the
 list pressing <strong>.</strong> on Monday, Tuesday and Thursday, then
 press <strong>Delete</strong> once and answer <strong>Yes</strong>:
@@ -4564,10 +4600,17 @@ It says this once for each set of marks.</li>
 D:\Music\Quill Radio Recordings.” If you have schedules but none of them
 will happen, it says “3 scheduled, none coming up”.</p>
 <p>The list keeps itself up to date every couple of seconds, without
-losing your place. It has no Shift+F10 menu. Its menus are
-<strong>Recordings</strong> (Alt+R, with <strong>Close</strong>,
-Ctrl+W), <strong>Station</strong> and <strong>Window</strong>. To choose
-what each row says, see “What each row says” in Chapter 14.</p>
+losing your place. <strong>Shift+F10</strong> (or the Applications key)
+on a finished recording offers <strong>Play</strong> (Enter),
+<strong>Open in Folder</strong>, <strong>Split into Songs</strong>
+(Alt+Shift+T) and <strong>Delete…</strong> (Delete), then <strong>Mark
+for Deleting</strong> and, while anything is marked, <strong>Remove N
+Marked…</strong> and <strong>Clear Marks</strong>. On a recording still
+being made it offers <strong>Stop Recording</strong>. Its menus are
+<strong>Recordings</strong> (Alt+R, with <strong>Split into
+Songs</strong>, Alt+Shift+T, and <strong>Close</strong>, Ctrl+W),
+<strong>Station</strong> and <strong>Window</strong>. To choose what
+each row says, see “What each row says” in Chapter 14.</p>
 <h4 id="winamp-keys-in-radio-recordings">Winamp keys in Radio
 Recordings</h4>
 <p>If Winamp’s classic keys are second nature to you, they work in the
@@ -4816,6 +4859,44 @@ dropped while it recorded”.</li>
 Record, so it is usually the end of a song.</li>
 <li>It works with every recording format, including Raw stream.</li>
 </ul>
+<h4 id="splitting-a-recording-you-already-have">Splitting a recording
+you already have</h4>
+<p>You do not have to decide before you record. Whether the setting is
+on or off, Quill Radio notes when the song changes while it records.
+With the setting off, it keeps those notes in a small file beside the
+recording, with the same name and <code>.songs.json</code> on the end.
+Radio Recordings does not list that file, and deleting the recording
+deletes it too.</p>
+<p>To split a recording later:</p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+R</strong> to open Radio Recordings and
+arrow to the recording. To split several, press <strong>.</strong> on
+each one.</li>
+<li>Press <strong>Alt+Shift+T</strong>, or choose <strong>Split into
+Songs</strong> from the <strong>Recordings</strong> menu or the
+Shift+F10 menu.</li>
+<li>Carry on with something else if you like. When it is done you hear
+one sentence, for example “Split KXYZ - 2026-10-17 20-00-00.mp3 into 12
+songs, in the folder KXYZ - 2026-10-17 20-00-00 songs.”</li>
+</ol>
+<p>The songs go into a new folder beside the recording, named after it
+with “ songs“ on the end. Each song is called by its artist and title,
+for example <code>Queen - Somebody to Love.mp3</code>, or by its title
+alone when the station gives no artist. The same rules about names apply
+as above: characters a file name cannot hold are left out, and a name
+already in the folder gets “ (2)“ added. <strong>The recording itself is
+kept</strong>, untouched, so splitting it again or deleting it is up to
+you.</p>
+<p>If a recording has nothing to cut at, you hear that plainly, for
+example “KXYZ - 2026-10-17 20-00-00.mp3 has no song changes recorded, so
+there is nothing to split it at.” That is what you hear for a station
+that sends no song names, for a talk show, and for anything recorded
+before Quill Radio started keeping these notes. A recording whose stream
+dropped and reconnected is not split either, for the reason given
+above.</p>
+<p>While it records, Quill Radio asks the station for the song name
+every ten seconds. A station that has said no song name at all for a
+minute is asked only once a minute after that.</p>
 <h3 id="if-a-recording-was-in-progress-when-quill-radio-quit">If a
 recording was in progress when Quill Radio quit</h3>
 <p>A crash, a power cut or a forced restart can stop Quill Radio in the
@@ -10064,6 +10145,10 @@ Schedule Recording)</td>
 <tr>
 <td>Clear every mark</td>
 <td>Ctrl+Shift+Delete</td>
+</tr>
+<tr>
+<td>Add every marked station to Favorites (Browse Stations)</td>
+<td>Alt+O</td>
 </tr>
 <tr>
 <td>Move the selected favorite up or down</td>

@@ -38,7 +38,7 @@ from quill.core.radio.recordings_index import (
 )
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
-from quill.ui.radio import recordings_marks
+from quill.ui.radio import recordings_marks, recordings_split
 from quill.ui.radio.marks_shared import with_ignored_note
 from quill.ui.radio.recordings_queue import RecordingsQueueMixin
 from quill.ui.radio.recordings_row_view import RecordingsRowViewMixin
@@ -117,9 +117,9 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         self._list = wx.ListCtrl(self._surface, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._list.SetName(
             "Recordings; the row's status column reads Recording, Recorded, "
-            "Scheduled, or Completed. Enter plays a finished recording, Delete "
-            "removes it. Winamp keys: X play, C pause, V stop, B next, Z "
-            "previous, arrows seek, J jump to file"
+            "Scheduled, or Completed. Enter plays a finished recording, Delete removes "
+            "it, Alt+Shift+T splits it into songs. Winamp keys: X play, C pause, V stop, "
+            "B next, Z previous, arrows seek, J jump to file"
         )
         self._build_columns()
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
@@ -177,6 +177,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         self._list.Bind(wx.EVT_LIST_ITEM_DESELECTED, lambda _e: self._on_selection_changed())
         self._list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, lambda _e: self._on_play())
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_key)
+        self._list.Bind(wx.EVT_CONTEXT_MENU, lambda e: recordings_split.show_context_menu(self, e))
         # Ctrl+Up/Down adjusts playback volume from anywhere in this modal dialog
         # -- a played recording runs through the same controller/engine as live
         # radio, so it can be turned down just like a live stream (the modal
@@ -209,6 +210,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         wx = self._wx
         menu_bar = wx.MenuBar()
         surface_menu = wx.Menu()
+        recordings_split.add_menu_row(self, surface_menu)  # Split into Songs, Alt+Shift+T
         close_id = wx.NewIdRef()
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
@@ -445,6 +447,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         self._play_btn.SetName("Stop this recording" if playing else "Play this recording")
         self._open_btn.Enable(bool(is_file))
         self._remove_btn.Enable(bool(is_done))
+        recordings_marks.sync_remove_button(self)  # "Remove 3 Marked..." while marked
         # Stop targets the selected Recording row; Stop All appears only when two
         # or more recordings are running (concurrent recording).
         active = sum(1 for e in self._entries if e.status == STATUS_RECORDING)

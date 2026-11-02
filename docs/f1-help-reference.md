@@ -243,7 +243,7 @@ Control coverage: 329 audited sites (215 helped, 114 named-help).
 #### BrowseTreeDialog (`quill/ui/radio/browse_tree_dialog.py`)
 
 - `self._mute_btn`: Silences the radio without stopping it; press again to unmute. The same Mute as the main window and Ctrl+M.
-- `self._favorite_btn`: Saves the highlighted station to your favorites -- or removes it when it is already there; the label says which.
+- `self._favorite_btn`: Saves the highlighted station to your favorites, or removes it when it is already there. With stations marked (period) it adds every marked one.
 #### _CalendarWindow (`quill/ui/radio/calendar_dialog.py`)
 
 - `self._close_btn`: Closes the schedule. Reminders you set stay set.

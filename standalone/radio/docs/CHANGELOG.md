@@ -18,6 +18,29 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **Enable or disable many schedules at once** [2026-11-02]. In Schedule
+  Recording, with schedules marked, the Enable or Disable button (Alt+L)
+  reads "Disable 3 Marked" or "Enable 3 Marked" and switches every marked
+  schedule the same way, with one sentence saying how many changed. The
+  Shift+F10 menu offers Enable N Marked and Disable N Marked.
+- **Add many stations to Favorites from Browse Stations** [2026-11-02].
+  Any station row can now be marked with period, not only rows Delete can
+  remove. While stations are marked, the Add to Favorites button reads "Add
+  3 Marked to Favorites" and Alt+O adds them all from anywhere in the window,
+  with one sentence saying how many were added and how many were favorites
+  already. The button's access key is now O in every state; it used to
+  change to F, which Refresh also uses.
+- **The Remove button counts your marks in Radio Recordings** [2026-11-02].
+  While recordings are marked it reads "Remove 3 Marked..." and can be pressed
+  from any row, so the button and the Delete key always do the same thing.
+- **Split a recording you already have into songs** [2026-11-02]. Radio
+  Recordings has Split into Songs (Alt+Shift+T), on the Recordings menu and on
+  a new Shift+F10 menu for the list. Quill Radio now notes the song changes
+  while it records even with automatic splitting off, and keeps them beside
+  the recording; Split into Songs cuts the recording at them into a folder of
+  "Artist - Title" files with a straight copy, and keeps the recording. With
+  recordings marked it splits every marked one, and says one sentence with
+  the count at the end. A recording with no song changes noted says so.
 - **A folder for each scheduled recording** [2026-11-02]. Schedule Recording
   has a Save in folder field (Alt+V) and a Browse button (Alt+B), so the
   Saturday jazz show can go in one folder and the news in another. Leave it

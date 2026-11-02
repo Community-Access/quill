@@ -44,7 +44,7 @@ from quill.ui.dialog_contract import (
 )
 from quill.ui.dpi import dip_size
 from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
-from quill.ui.radio.browse_marks import row_text
+from quill.ui.radio.browse_marks import favorite_button, row_text
 from quill.ui.radio.volume_row import add_volume_slider
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
@@ -215,8 +215,8 @@ class BrowseTreeDialog:
         )
         self._favorite_btn = wx.Button(self._surface, label="Add t&o Favorites")
         self._favorite_btn.SetHelpText(
-            "Saves the highlighted station to your favorites -- or removes it "
-            "when it is already there; the label says which."
+            "Saves the highlighted station to your favorites, or removes it when it is "
+            "already there. With stations marked (period) it adds every marked one."
         )
         self._favorite_btn.Enable(False)
         # Re&fresh: as the main view, Alt+R is the Record menu and wins.
@@ -255,7 +255,7 @@ class BrowseTreeDialog:
             wx.EVT_BUTTON,
             lambda _e: transport_keys.perform(self, transport_commands.GO_TO_PLAYER),
         )
-        self._favorite_btn.Bind(wx.EVT_BUTTON, lambda _e: self._toggle_favorite())
+        self._favorite_btn.Bind(wx.EVT_BUTTON, lambda _e: favorite_button(self))
         self._refresh_btn.Bind(wx.EVT_BUTTON, lambda _e: self._refresh_selected())
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute)
@@ -790,7 +790,7 @@ class BrowseTreeDialog:
 
     def _update_favorite_label(self, station: RadioStation) -> None:
         saved = self._favorites.contains(station)
-        self._favorite_btn.SetLabel("Remove from &Favorites" if saved else "Add to &Favorites")
+        self._favorite_btn.SetLabel("Remove fr&om Favorites" if saved else "Add t&o Favorites")
 
     def _add_favorite_station(self, station: RadioStation) -> None:
         if self._favorites.contains(station):
