@@ -31,7 +31,15 @@ def _plan(**kw) -> DemoPlan:
     )
 
 
-def _probe_json(*, audio=True, duration="10.0", packets=300):
+BT709 = {
+    "color_space": "bt709",
+    "color_primaries": "bt709",
+    "color_transfer": "bt709",
+    "color_range": "tv",
+}
+
+
+def _probe_json(*, audio=True, duration="10.0", packets=300, colour=None):
     streams = [
         {
             "index": 0,
@@ -41,6 +49,7 @@ def _probe_json(*, audio=True, duration="10.0", packets=300):
             "height": 1080,
             "avg_frame_rate": "30/1",
             "nb_read_packets": str(packets),
+            **(BT709 if colour is None else colour),
         },
     ]
     if audio:
@@ -123,6 +132,46 @@ def test_reports_are_written_beside_the_video(tmp_path):
     assert data["state"] == "Verified" and data["sha256"] == result.sha256
     assert "Intro done" in md_path.read_text("utf-8")
     assert (tmp_path / "Demo.markers.txt").read_text("utf-8").startswith("00:00:01.0")
+
+
+def test_colour_tags_are_read_back_and_untagged_h264_needs_review():
+    """VIDEO-004: REC-014 reads the BT.709 tags back from the finished file."""
+    assert "color_range" in build_probe_command("ffprobe", Path("a.mp4"))[5]
+    good = _classify(parse_probe(_probe_json()))
+    check = next(c for c in good.checks if c.name == "Colour tagged BT.709")
+    assert check.passed and "limited range" in check.detail
+    untagged = _classify(parse_probe(_probe_json(colour={})))
+    assert untagged.state == "Needs review"
+    assert "Colour tagged BT.709" in untagged.sentence
+    wrong = _classify(parse_probe(_probe_json(colour={**BT709, "color_space": "bt470bg"})))
+    detail = next(c for c in wrong.checks if c.name == "Colour tagged BT.709").detail
+    assert detail == "color space is bt470bg, not bt709"
+
+
+def test_a_stream_that_stopped_is_named_and_the_rest_is_kept():
+    """REC-024: the camera's failure is Needs review, by name, not Failed."""
+    result = _classify(
+        parse_probe(_probe_json()),
+        stream_failures={"Camera": "Camera capture stopped: exit code 1."},
+    )
+    assert result.state == "Needs review"
+    assert "Camera stopped early" in result.sentence
+    check = next(c for c in result.checks if c.name == "Camera stopped early")
+    assert "The rest kept recording." in check.detail
+
+
+def test_timing_corrections_go_into_both_reports(tmp_path):
+    """REC-022: the stretch the mix applied is written into the report."""
+    video = tmp_path / "Demo.mp4"
+    video.write_bytes(b"data")
+    result = _classify(parse_probe(_probe_json()))
+    result.path = str(video)
+    result.timing = ["Microphone, segment 1: its clock ran fast."]
+    result.timing_data = {"drift_corrections": [{"source": "Microphone", "tempo": 1.0002}]}
+    json_path, md_path = save_reports(video, result, _plan(), MarkerLog())
+    assert json.loads(json_path.read_text("utf-8"))["timing"]["drift_corrections"][0]["tempo"]
+    text = md_path.read_text("utf-8")
+    assert "## Timing" in text and "its clock ran fast" in text
 
 
 def test_probe_result_defaults():

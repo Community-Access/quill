@@ -52,6 +52,8 @@ def sound_findings(plan: DemoPlan, facts: PreflightFacts, stop: Any, warn: Any) 
                 f"{source.label} delivers exact digital silence. It is probably blocked; for a "
                 "microphone check Windows Settings, Privacy and security, Microphone."
             )
+        elif facts.one_ear.get(source.source_id):
+            warn(facts.one_ear[source.source_id])
     mic = plan.source("microphone")
     if mic is not None and facts.microphone_holder:
         stop(f"The microphone is in use: {facts.microphone_holder}")

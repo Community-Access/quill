@@ -165,6 +165,10 @@ def answer_text(result: object) -> str:
     return ""
 
 
+class CopilotNoReplyError(RuntimeError):
+    """The session went idle without an assistant message, or with an empty one."""
+
+
 def _reject_class() -> Any:
     """``PermissionDecisionReject``, from the public ``copilot.rpc`` namespace.
 
@@ -353,7 +357,14 @@ class CopilotHarness(SdkHarness):
                             # The SDK's timeout only stops waiting; stop the turn too.
                             await session.abort()
                             raise
-                        return answer_text(result)
+                        text = answer_text(result)
+                        if not text.strip():
+                            # Inserting "" would look like success and change
+                            # nothing; say it went wrong instead.
+                            raise CopilotNoReplyError(
+                                "GitHub Copilot finished without an answer. Try again."
+                            )
+                        return text
 
             return asyncio.run(_run())
 

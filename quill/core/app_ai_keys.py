@@ -86,6 +86,18 @@ APP_AI_DIVERGENCES: dict[tuple[str, str], str] = {
         "Ctrl+Alt+Shift+K is Quill Inkwell's Quick Insert Key; Privacy Agreement takes "
         "Radio's and Cast's Alt+Shift+F2."
     ),
+    # The agent tasks (codex.md Phase 4c): each app's task is the family's Do a
+    # Task command, Ctrl+3 in the editors, Studio and Beacon. Where Ctrl+3 is
+    # window 3 it takes Ctrl+F3, the way Which AI moved from Ctrl+8 to Ctrl+F8
+    # (app_keymaps_ai.AGENT_TASK_KEYMAPS).
+    **{
+        (app, "tools.hosted_ai_task"): (
+            "Ctrl+3 is window 3 on this app's Window menu (quill/ui/window_menu.py), "
+            "so the agent task moves to the F-row as Which AI did, Ctrl+8 to Ctrl+F8: "
+            "Ctrl+F3, the same in every app with a Window menu (rule 2)."
+        )
+        for app in ("radio", "cast", "transcribe", "converter", "player", "inkwell")
+    },
     # QuillBeacon keeps the editors' Ctrl+4, Ctrl+6 and Ctrl+8 (no Window menu).
     # QUILL Studio keeps the editors' Ctrl+4, Ctrl+6 and Ctrl+8 (no Window menu).
     ("studio", "tools.hosted_ai_privacy"): (

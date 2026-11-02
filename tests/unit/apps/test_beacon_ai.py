@@ -150,6 +150,7 @@ def test_the_ai_rows_follow_the_three_local_helpers_in_assist(beacon) -> None:
         "&Which AI Am I Using\tCtrl+8",
         "&Choose Your AI...\tCtrl+4",
         "&Describe a Saved Picture...\tCtrl+F5",
+        "Or&ganize What I Saved (needs Copilot or Codex)...\tCtrl+3",
         "Use My C&hatGPT Subscription...\tAlt+F5",
         "Use My &Own AI Key...\tAlt+F2",
         "A&I Usage...\tCtrl+Alt+Shift+F2",

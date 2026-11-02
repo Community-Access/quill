@@ -26,6 +26,13 @@ build, grouped by subject; then the first build itself.
   and check the suggestions you want in a list where every box starts
   unchecked. Only the checked ones are added, and one you already have is
   never suggested.
+- **Add Abbreviations from a Document** (Ctrl+F3), an AI task. Say what you
+  want, pick the document, say yes to sending its text, and talk the set over
+  with the AI, which can read the abbreviations you already have. Before
+  anything is added you see every entry as "abbreviation -> expansion", with
+  any that clashes with one of yours left out and shown beside it. Apply adds
+  them; Don't Apply adds none. Needs GitHub Copilot or Codex; with another AI the
+  item says "(needs Copilot or Codex)" and sends nothing.
 - **The Quick Insert button is now Alt+N.** Alt+I is the AI menu, and when a
   button and a menu share a letter Windows presses the button. Ctrl+K still
   opens Quick Insert.

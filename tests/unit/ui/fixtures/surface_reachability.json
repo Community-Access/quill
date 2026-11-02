@@ -19,6 +19,7 @@
   "quill.ui.ai_thesaurus_dialog": "reachable",
   "quill.ui.ai_transcribe_dialog": "reachable",
   "quill.ui.ai_translation_dialog": "reachable",
+  "quill.ui.app_agent_task": "reachable",
   "quill.ui.app_context_help": "reachable",
   "quill.ui.app_features_dialog": "reachable",
   "quill.ui.app_preferences_dialog": "reachable",

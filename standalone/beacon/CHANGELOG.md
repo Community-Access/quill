@@ -22,6 +22,13 @@
   to add it to the beacon's note (No is the default; Ctrl+Z takes it back out).
   If the AI in use cannot see pictures and you do not switch, nothing is sent
   and you get the words read on your computer instead.
+- **Organize What I Saved** (Ctrl+3, in the Assist menu). Tell the AI how you
+  want your saved things organised and it searches, reads and suggests tags
+  (Suggest Tags still runs on your computer), then tags beacons and moves them
+  into collections. Each change is shown as text first and made only when you
+  press Apply, one Ctrl+Z each. It never deletes, opens or publishes anything.
+  Needs GitHub Copilot or Codex; with another AI the item says "(needs Copilot
+  or Codex)" and sends nothing.
 - **An AI line at the bottom of the results pane** says which AI is in use.
   Tab to it; Enter opens Choose Your AI. Nothing in QuillBeacon's AI runs on a
   timer, and Safe Mode turns all of it off.

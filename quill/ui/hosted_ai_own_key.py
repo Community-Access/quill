@@ -26,8 +26,9 @@ advanced features use, which the AI Hub's Provider list used to set
 (:func:`~quill.core.ai.own_key_providers.use_for_advanced_features`).
 
 There is no separate switch: **a saved key for the chosen provider lifts every
-limit**, and **Remove the Saved Key** puts AI help straight back on QUILL's free
-service. Saving a key here *is* the consent for this route: the free service's
+limit**, and **Remove the Saved Key** forgets it; if this route was the AI in use,
+no AI is in use until the person chooses one (decision 15, never a silent
+fall-back). Saving a key here *is* the consent for this route: the free service's
 agreement is about QUILL's servers, which this route never touches.
 
 Each key is stored where QUILL's AI Hub keeps that provider's key (Windows
@@ -247,8 +248,8 @@ class OwnKeyDialog(wx.Dialog):
         test.Bind(wx.EVT_BUTTON, self._on_test)
         self.remove = wx.Button(self, label="&Remove the Saved Key")
         self.remove.SetHelpText(
-            "Forgets the saved key for the chosen provider now, and puts AI help "
-            "back on QUILL's free service with its free allowance."
+            "Forgets the saved key for the chosen provider now. If that key was the "
+            "AI in use, no AI is in use until you choose one in Choose Your AI."
         )
         self.remove.Bind(wx.EVT_BUTTON, self._on_remove)
         self.remove.Enable(saved)
@@ -342,7 +343,7 @@ class OwnKeyDialog(wx.Dialog):
                 f"A {name} key is saved, so AI help uses your {name} account with no "
                 f"limits.{other_note}"
             )
-        return f"No {name} key is saved, so AI help uses QUILL's free service.{other_note}"
+        return f"No {name} key is saved, so this route cannot be used until one is.{other_note}"
 
     def _label(self, model: str) -> str:
         return choice_label(model, self._provider)
@@ -477,7 +478,7 @@ class OwnKeyDialog(wx.Dialog):
         self._set_status(sentence)
 
     def _on_remove(self, _event: Any) -> None:
-        """Forget the chosen provider's key now: the free service is back before OK."""
+        """Forget the chosen provider's key now, before OK (no fall-back, decision 15)."""
         from quill.core.assistant_ai import clear_provider_api_key
 
         name = provider_name(self._provider)
@@ -493,7 +494,7 @@ class OwnKeyDialog(wx.Dialog):
                 "environment, so AI help keeps using it until that is removed."
             )
             return
-        self._set_status(f"The {name} key was removed. AI help is back on QUILL's free service.")
+        self._set_status(f"The {name} key was removed.")
 
     # -- after OK -------------------------------------------------------- #
 
@@ -517,12 +518,9 @@ class OwnKeyDialog(wx.Dialog):
             except OSError:
                 return f"The server address could not be saved, so {name} keeps the old one."
         if typed and not save_provider_api_key(provider, typed):
-            return (
-                "The key could not be stored securely on this computer, so it was not "
-                "saved. AI help stays on QUILL's free service."
-            )
+            return "The key could not be stored securely on this computer, so it was not saved."
         if not has_own_key(provider):
-            return "AI help uses QUILL's free service."
+            return f"No {name} key is saved, so this route cannot be used until one is."
         try:  # the advanced AI features follow the same choice (decision 20)
             use_for_advanced_features(provider, settings.ai_own_key_model)
         except Exception:  # noqa: BLE001 - the basic AI is saved either way

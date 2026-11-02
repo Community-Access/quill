@@ -136,3 +136,35 @@ def test_safe_mode_says_ai_is_off_and_opens_nothing(lite_window, agent_window, m
 
     assert agent_window.last is None
     assert "Safe Mode" in win.announcements[-1]
+
+
+def test_propose_alt_text_opens_the_task_with_the_request_filled_in(
+    lite_window, agent_window, monkeypatch
+):
+    """codex.md 6.4: the same window, the alt-text request typed in, nothing sent."""
+    from quill.core.ai.doc_images import ALT_TEXT_INSTRUCTION
+
+    win = lite_window("![](a.png)")
+    service = _Service("copilot", tools=True)
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_ai_alt_text())(win)
+
+    hooks = agent_window.last["args"][1]
+    assert hooks.starter == ALT_TEXT_INSTRUCTION
+    assert hooks.title == "Do a Document Task"
+    assert win.announcements == []
+
+
+def test_propose_alt_text_on_the_free_ai_sends_nothing(lite_window, agent_window, monkeypatch):
+    import quill.ui.hosted_ai_connections as connections
+
+    win = lite_window("![](a.png)")
+    monkeypatch.setattr(win, "_ai_service", lambda: _Service("free", tools=False))
+    monkeypatch.setattr(connections, "ask_yes_no", lambda *_a, **_k: False)
+
+    (lambda w: w.cmd_ai_alt_text())(win)
+
+    assert agent_window.last is None
+    label = win._ai_gated_label("cmd_ai_alt_text", "Propose Alt &Text...")
+    assert label == "Propose Alt &Text (needs Copilot or Codex)..."

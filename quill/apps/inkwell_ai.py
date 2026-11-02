@@ -18,6 +18,9 @@ What Quill Inkwell *does* with AI is :class:`InkwellAiFeaturesMixin`:
   start cleared. Only the checked ones are added, through the same library
   save Manage Abbreviations uses; nothing proposed can overwrite an entry
   (:func:`quill.core.ai.app_requests.parse_suggestions`).
+* **Add Abbreviations from a Document...** (Ctrl+F3): the agent task
+  (:mod:`quill.apps.inkwell_ai_task`), which can read the library and talk the
+  set over before it shows every entry and adds them on Apply.
 
 **Never driven by a model.** System-wide expansion, the keyboard hook and the
 matcher never see the AI, and no typed text is ever read or sent. The file's
@@ -64,7 +67,7 @@ _WILDCARD = (
 )
 
 #: The AI menu: command id, label, handler name; "" is a separator. Letters are
-#: unique within the menu (A W C D H O S P).
+#: unique within the menu (A W C D B H O S P).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
     ("tools.hosted_ai_which", "&Which AI Am I Using", "cmd_ai_which"),
@@ -75,6 +78,7 @@ AI_ROWS: tuple[tuple[str, str, str], ...] = (
         "Suggest Abbreviations from a &Document...",
         "cmd_inkwell_suggest",
     ),
+    ("tools.hosted_ai_task", "Add A&bbreviations from a Document...", "cmd_ai_task"),
     ("", "", ""),
     ("tools.hosted_ai_chatgpt", "Use My C&hatGPT Subscription...", "cmd_ai_chatgpt"),
     ("tools.hosted_ai_own_key", "Use My &Own AI Key...", "cmd_ai_own_key"),
@@ -136,6 +140,25 @@ def send_sentence(file_name: str, text: str, connection_name: str) -> str:
 
 class InkwellAiFeaturesMixin:
     """Suggest Abbreviations from a Document. Mixed in through ``InkwellAiMixin``."""
+
+    def cmd_ai_task(self) -> None:
+        """Add Abbreviations from a Document (Ctrl+F3, codex.md 6.12): pick a
+        document, talk it over, and add the abbreviations in the shared agent
+        window. Every entry is shown before any is added; a clash is left out.
+        System-wide expansion is never driven by the model."""
+        from quill.apps.inkwell_ai_task import (
+            ADD_FROM_DOCUMENT,
+            INSTRUCTION_HELP,
+            inkwell_task_facts,
+            inkwell_task_tools,
+        )
+
+        self._open_app_task(  # type: ignore[attr-defined]
+            ADD_FROM_DOCUMENT,
+            lambda ctx: inkwell_task_tools(self, ctx),
+            instruction_help=INSTRUCTION_HELP,
+            context=lambda: inkwell_task_facts(self),
+        )
 
     def cmd_inkwell_suggest(self) -> None:
         """Suggest Abbreviations from a Document (Ctrl+Shift+A)."""

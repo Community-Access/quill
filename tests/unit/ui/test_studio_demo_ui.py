@@ -146,7 +146,11 @@ def test_level_and_added_program(parent, tmp_path):
         dialog.Destroy()
 
 
-def test_plan_leaves_reader_out_of_system_sound(parent, tmp_path):
+def test_plan_leaves_reader_out_of_system_sound(parent, tmp_path, monkeypatch):
+    from quill.platform.windows import demo_audio
+
+    # The fixture reader's pid is "running", whatever runs on this machine.
+    monkeypatch.setattr(demo_audio, "alive", lambda pid: pid == 444)
     dialog, _ = _dialog(parent, tmp_path)
     try:
         system = _row(dialog, "system")
@@ -662,3 +666,31 @@ def test_stream_check_and_mute_from_studio(parent):
     host._live = live
     host.mute_broadcast()
     assert live.mixer.public_muted and host.spoken[-1] == "Everything public is muted."
+
+
+def test_a_reader_restarted_since_the_window_opened_is_excluded_by_name(
+    parent, tmp_path, monkeypatch
+):
+    from quill.platform.windows import demo_audio
+
+    monkeypatch.setattr(demo_audio, "alive", lambda pid: False)
+    monkeypatch.setattr(demo_audio, "find_process", lambda name, avoid=0: 555)
+    dialog, _ = _dialog(parent, tmp_path)
+    try:
+        dialog.source_list.Select(_row(dialog, "system"))
+        dialog._toggle_source()
+        source = dialog.build_plan().source("system")
+        assert (source.exclude_process_id, source.exclude_name) == (555, "jfw.exe")
+    finally:
+        dialog.Destroy()
+
+
+def test_microphone_channel_choice_reaches_the_plan(parent, tmp_path):
+    dialog, _ = _dialog(parent, tmp_path)
+    try:
+        assert dialog.mic_channels.GetStringSelection() == "Both inputs mixed"
+        dialog.mic_channels.SetSelection(1)
+        mic = next(s for s in dialog.build_plan().sources if s.kind == "microphone")
+        assert mic.channel_mode == "1"
+    finally:
+        dialog.Destroy()

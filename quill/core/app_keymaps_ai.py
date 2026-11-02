@@ -10,7 +10,7 @@ from the editors' has its comment here and a row in
 
 from __future__ import annotations
 
-__all__ = ["SMALL_APP_AI_KEYMAPS"]
+__all__ = ["AGENT_TASK_KEYMAPS", "AGENT_TASK_TITLES", "SMALL_APP_AI_KEYMAPS", "with_agent_tasks"]
 
 SMALL_APP_AI_KEYMAPS: dict[str, dict[str, str]] = {
     "weather": {
@@ -110,3 +110,52 @@ SMALL_APP_AI_KEYMAPS: dict[str, dict[str, str]] = {
         "beacon.describe_picture": "Ctrl+F5",
     },
 }
+
+#: The agent tasks (codex.md Phase 4c), merged into each app's row by
+#: :func:`with_agent_tasks`. Each app's task is the family's Do a Task command
+#: (``tools.hosted_ai_task``, Ctrl+3 in the editors), so it keeps the editors'
+#: chord where it is free (rule 2): in QUILL Studio and QuillBeacon, which have
+#: no Window menu. Where Ctrl+1 to Ctrl+9 are the Window menu's it moves to the
+#: F-row the way Which AI did (Ctrl+8 to Ctrl+F8): Ctrl+F3, the same in every
+#: such app. Each divergence is this comment and an app_ai_keys row (rule 11).
+#: Tell Me When This Changes (decision 25) is Ctrl+F9 to start and
+#: Ctrl+Shift+F9 to stop, the same in Studio and Radio, both free there.
+#: Studio's second task, Narrate a Recording, takes Ctrl+Shift+3, beside Ctrl+3.
+AGENT_TASK_KEYMAPS: dict[str, dict[str, str]] = {
+    **{
+        app: {"tools.hosted_ai_task": "Ctrl+F3"}
+        for app in ("radio", "cast", "transcribe", "converter", "player", "inkwell")
+    },
+    "studio": {
+        "tools.hosted_ai_task": "Ctrl+3",
+        "studio.ai_narrative": "Ctrl+Shift+3",
+        "studio.ai_watch_start": "Ctrl+F9",
+        "studio.ai_watch_stop": "Ctrl+Shift+F9",
+    },
+    "beacon": {"tools.hosted_ai_task": "Ctrl+3"},
+}
+AGENT_TASK_KEYMAPS["radio"].update({
+    "radio.ai_watch_start": "Ctrl+F9",
+    "radio.ai_watch_stop": "Ctrl+Shift+F9",
+})
+
+
+#: What ``tools.hosted_ai_task`` is called in each app's menu, for the generated
+#: keyboard reference (the editors call it Do a Document Task).
+AGENT_TASK_TITLES: dict[str, str] = {
+    "radio": "Find and Record...",
+    "cast": "Find and Follow...",
+    "transcribe": "Speakers, Sections and Summary...",
+    "studio": "Recording Pre-flight Check...",
+    "converter": "Make This Right for My Player...",
+    "beacon": "Organize What I Saved...",
+    "player": "Find the Part Where...",
+    "inkwell": "Add Abbreviations from a Document...",
+}
+
+
+def with_agent_tasks(keymaps: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
+    """*keymaps* with :data:`AGENT_TASK_KEYMAPS` merged into each app's row."""
+    for app, rows in AGENT_TASK_KEYMAPS.items():
+        keymaps.setdefault(app, {}).update(rows)
+    return keymaps

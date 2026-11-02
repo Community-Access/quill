@@ -68,6 +68,9 @@ def test_the_ai_menu_sits_before_quillville_on_the_fallback_keys(transcribe) -> 
     labels = [
         i.GetItemLabel() for i in _menu(transcribe, "AI").GetMenuItems() if not i.IsSeparator()
     ]
+    # The agent task's label says what it needs on a connection without agent tools.
+    task = labels.pop(3)
+    assert task.startswith("Sp&eakers, Sections and Summary") and task.endswith("...\tCtrl+F3")
     assert labels == [
         "&Ask...\tCtrl+Shift+8",
         "&Which AI Am I Using\tCtrl+F8",

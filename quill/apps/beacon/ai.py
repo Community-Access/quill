@@ -21,6 +21,9 @@ What Beacon *does* with AI is :class:`BeaconAiFeaturesMixin`:
   fitted and sent once (10B.2). The answer is shown, then offered as a note in
   one Yes/No, No the default. A connection that cannot see, when the person
   does not switch, gets the words read on this computer and nothing is sent.
+* **Organize What I Saved...** (Ctrl+3): the agent task
+  (:mod:`quill.apps.beacon.ai_task`): search, read, tag and move saved items,
+  each change shown as text and made only on Apply, one Ctrl+Z each.
 
 **Keys (decision 14).** Beacon has no Window menu and no Ctrl+digit key, so the
 editors' Ctrl+6, Ctrl+8 and Ctrl+4 hold (``APP_KEYMAPS["beacon"]``).
@@ -59,7 +62,7 @@ NOTE_CAPTION = "Add to Note"
 #: The AI rows appended to the Assist menu, after its three local helpers
 #: (Suggest &Tags, Suggest &Relationships, &Summarize Note): command id, label,
 #: handler name; "" is a separator. Letters are unique within Assist
-#: (T R S, then A W C D H O I P).
+#: (T R S, then A W C D G H O I P).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("", "", ""),
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
@@ -67,6 +70,7 @@ AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_choose", "&Choose Your AI...", "cmd_ai_choose"),
     ("", "", ""),
     ("beacon.describe_picture", "&Describe a Saved Picture...", "cmd_beacon_describe_picture"),
+    ("tools.hosted_ai_task", "Or&ganize What I Saved...", "cmd_ai_task"),
     ("", "", ""),
     ("tools.hosted_ai_chatgpt", "Use My C&hatGPT Subscription...", "cmd_ai_chatgpt"),
     ("tools.hosted_ai_own_key", "Use My &Own AI Key...", "cmd_ai_own_key"),
@@ -112,6 +116,24 @@ class BeaconAiFeaturesMixin:
     """Describe a Saved Picture and what Ask reads. Mixed in through ``BeaconAiMixin``."""
 
     # -- Describe a Saved Picture ------------------------------------------------ #
+
+    def cmd_ai_task(self) -> None:
+        """Organize What I Saved (Ctrl+3, codex.md 6.10): search, read, tag and move
+        saved items in the shared agent window. Each tag or move is shown as text
+        and waits for Apply; nothing is deleted, opened or published."""
+        from quill.apps.beacon.ai_task import (
+            INSTRUCTION_HELP,
+            ORGANIZE,
+            beacon_task_facts,
+            beacon_task_tools,
+        )
+
+        self._open_app_task(  # type: ignore[attr-defined]
+            ORGANIZE,
+            lambda ctx: beacon_task_tools(self, ctx),
+            instruction_help=INSTRUCTION_HELP,
+            context=lambda: beacon_task_facts(self),
+        )
 
     def cmd_beacon_describe_picture(self) -> None:
         """Describe a Saved Picture (Ctrl+F5): OCR here first, then one picture sent."""

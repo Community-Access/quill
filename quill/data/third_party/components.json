@@ -2238,6 +2238,23 @@
       "review": "The Commons Clause forbids selling the software. QUILL is free and never sold, and the upstream NOTICE grants royalty-free use for producing and streaming audio, so this fits today; it would block any paid edition."
     },
     {
+      "id": "tg-drop-deck",
+      "name": "TG Drop Deck (adapted code)",
+      "group": "audio-video",
+      "version": "3.9.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2026 Tony Gebhard",
+      "homepage": "https://github.com/tonygeb23/tg-drop-deck",
+      "what": "Studio's sound capture adapts two small pieces of Tony Gebhard's live-show deck: the check that a captured program is still running, and listing sound devices one at a time so one bad name cannot empty the list. Several other capture fixes follow lessons TG Drop Deck published.",
+      "products": [
+        "studio"
+      ],
+      "delivery": "bundled"
+    },
+    {
       "id": "dectalk",
       "name": "DECtalk",
       "group": "speech",

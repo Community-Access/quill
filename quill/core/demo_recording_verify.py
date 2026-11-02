@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -25,6 +25,7 @@ from quill.core.demo_recording import (
     spoken_duration,
 )
 from quill.core.storage import write_json_atomic, write_text_atomic
+from quill.core.video_colour import EXPECTED_PROBE, colour_problems
 
 State = Literal["Verified", "Needs review", "Failed"]
 DURATION_TOLERANCE = 1.0
@@ -44,6 +45,8 @@ class ProbeResult:
     video_codec: str = ""
     audio_codec: str = ""
     error: str = ""
+    #: VIDEO-004: the picture's colour tags as ffprobe reads them back.
+    colour: dict[str, str] = field(default_factory=dict)
 
 
 def build_probe_command(ffprobe: str, path: Path) -> list[str]:
@@ -53,7 +56,8 @@ def build_probe_command(ffprobe: str, path: Path) -> list[str]:
         "error",
         "-count_packets",
         "-show_entries",
-        "stream=index,codec_type,codec_name,width,height,avg_frame_rate,nb_read_packets"
+        "stream=index,codec_type,codec_name,width,height,avg_frame_rate,nb_read_packets,"
+        "color_space,color_primaries,color_transfer,color_range"
         ":format=duration",
         "-of",
         "json",
@@ -98,6 +102,7 @@ def parse_probe(text: str) -> ProbeResult:
         duration=duration,
         video_codec=str(first.get("codec_name", "")),
         audio_codec=str(audio[0].get("codec_name", "")) if audio else "",
+        colour={key: str(first.get(key, "") or "") for key in EXPECTED_PROBE},
     )
 
 
@@ -182,6 +187,14 @@ class Verification:
     sha256: str = ""
     path: str = ""
     duration: float = 0.0
+    #: What was done to the timing, one sentence each: REC-022's drift
+    #: corrections, and VERIFY-009's measured sync when it was measured.
+    timing: list[str] = field(default_factory=list)
+    #: The same, as data for the JSON report.
+    timing_data: dict[str, Any] = field(default_factory=dict)
+    #: Per source: samples measured, drift against the monotonic span and
+    #: glitch counts (REC-022, REC-023), from ``source_timing_summary``.
+    source_timing: list[dict[str, Any]] = field(default_factory=list)
 
     def report_markdown(self, plan: DemoPlan, markers: MarkerLog) -> str:
         lines = [
@@ -198,6 +211,8 @@ class Verification:
             lines.append(
                 f"- {'Passed' if check.passed else 'Problem'}: {check.name}. {check.detail}"
             )
+        if self.timing:
+            lines += ["", "## Timing", ""] + [f"- {line}" for line in self.timing]
         lines += ["", "## Recording", "", f"- Target: {plan.target_label}"]
         lines.append(f"- Requested frame rate: {plan.fps}")
         lines.append(f"- {screen_reader_sentence(plan)}")
@@ -206,9 +221,26 @@ class Verification:
         if plan.camera.enabled:
             lines.append(f"- Camera: {plan.camera.device}, {plan.camera.position}")
         lines.append(f"- SHA-256: {self.sha256}")
+        if self.source_timing:
+            lines += ["", "## Sound timing", ""]
+            lines += [f"- {timing_sentence(row)}" for row in self.source_timing]
         if markers.markers:
             lines += ["", "## Markers", "", markers.text().rstrip()]
         return "\n".join(lines) + "\n"
+
+
+def timing_sentence(row: dict[str, Any]) -> str:
+    """One source's timing and glitch counts, as the report says them."""
+    return (
+        f"{row.get('label', row.get('source_id', 'Source'))}: "
+        f"{int(row.get('measured_frames', 0))} samples over "
+        f"{float(row.get('monotonic_seconds', 0.0)):.1f} seconds, drift "
+        f"{float(row.get('drift_ms', 0.0)):+.1f} ms "
+        f"(ratio {float(row.get('drift_ratio', 1.0)):.6f}); "
+        f"{int(row.get('discontinuity_count', 0))} gaps reported by Windows, "
+        f"{int(row.get('overflow_count', 0))} input overflows, "
+        f"{int(row.get('stall_count', 0))} stalls."
+    )
 
 
 def sha256_file(path: Path) -> str:
@@ -230,8 +262,14 @@ def classify(
     markers: MarkerLog,
     dropped_frames: int = 0,
     folder_label: str = "",
+    stream_failures: Mapping[str, str] | None = None,
 ) -> Verification:
-    """Every REC-014 check, and the one sentence that is spoken."""
+    """Every REC-014 check, and the one sentence that is spoken.
+
+    *stream_failures* (REC-024) names each stream that stopped while the
+    others went on recording; each is its own Needs review check, so the
+    result says which one rather than only that something went wrong.
+    """
     checks: list[Check] = []
 
     def add(name: str, passed: bool, detail: str, severity: Literal["fail", "review"]) -> None:
@@ -274,6 +312,8 @@ def classify(
             else f"peak {level.peak_dbfs:.1f} dBFS, average {level.rms_dbfs:.1f} dBFS"
         )
         add(f"{level.label} present", level.present, detail, "review")
+    for name, reason in (stream_failures or {}).items():
+        add(f"{name} stopped early", False, f"{reason} The rest kept recording.", "review")
     if markers.failures:
         add(
             "No problems during recording",
@@ -321,6 +361,14 @@ def _picture_checks(
         else "none found",
         "review",
     )
+    if probe.video_codec == "h264":
+        problems = colour_problems(probe.colour)
+        add(
+            "Colour tagged BT.709",
+            not problems,
+            "; ".join(problems) if problems else "BT.709, limited range",
+            "review",
+        )
 
 
 def result_sentence(
@@ -384,6 +432,8 @@ def save_reports(
         "screen_reader": screen_reader_sentence(plan),
         "camera": plan.camera.device if plan.camera.enabled else "",
         "markers": [asdict(marker) for marker in markers.markers],
+        "timing": verification.timing_data,
+        "source_timing": verification.source_timing,
     }
     json_path = sidecar(video, ".verification.json")
     md_path = sidecar(video, ".verification.md")

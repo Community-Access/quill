@@ -17,12 +17,12 @@ nothing else. wx-free, so the rule is testable without a UI.
 
 from __future__ import annotations
 
-from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS
+from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS, with_agent_tasks
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
 
 #: app id -> {command id: binding}.
-APP_KEYMAPS: dict[str, dict[str, str]] = {
+APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
     "studio": {
         "studio.capture": "Ctrl+Alt+Shift+S",
         "studio.inspect_capture": "Ctrl+Alt+Shift+I",
@@ -505,7 +505,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
     },
     **{app: rows for app, rows in SMALL_APP_AI_KEYMAPS.items() if app != "weather"},
-}
+})
 
 #: The QuillVille menu's sibling launchers, numbered in menu order. Kept here
 #: with the rest of the app-key data rather than inline in the menu builder.

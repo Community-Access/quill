@@ -615,7 +615,8 @@ def _build_auth_headers(provider: str, host: str, api_key: str) -> dict[str, str
 
     parsed = urlparse(host)
     is_https = parsed.scheme.lower() == "https"
-    is_ollama_cloud = "ollama.com" in parsed.netloc.lower()
+    hostname = (parsed.hostname or "").lower()  # exact host or subdomain, never a substring
+    is_ollama_cloud = hostname == "ollama.com" or hostname.endswith(".ollama.com")
     if provider in {"openai", "openrouter", "custom", "ollama_cloud"} or (
         is_https and is_ollama_cloud
     ):

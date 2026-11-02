@@ -2082,3 +2082,67 @@ One prompt list:
 
 - [ ] All eleven with NVDA.
 - [ ] All eleven with JAWS.
+
+## Agent tasks across the family, Propose Alt Text and Tell Me When This Changes (codex.md Phase 4c, 2026-11-01)
+
+Set up GitHub Copilot (or Codex) in Choose Your AI in each app first. Keyboard only.
+
+QUILL and QUILL Lite, Propose Alt Text:
+
+1. Open a Markdown file with two pictures, one with alt text and one without,
+   saved beside it. On the free AI, AI > Propose Alt Text reads "(needs
+   Copilot or Codex)" and pressing it offers to switch; say No and nothing
+   opens.
+2. On Copilot, press it: the window title is Do a Document Task, focus lands
+   in Instruction and the reader says the filled-in request. Nothing is
+   spoken by QUILL itself.
+3. Press Enter. If the AI can see, Allow This Step? names the picture
+   ("Send the picture ... from this document"); the first time on this AI a
+   Yes/No about pictures follows, No the default.
+4. Review AI Changes opens on one change only, the alt text for the picture
+   without it. Accept: Ctrl+Z after the task removes exactly that change.
+5. The closing summary is spoken once, for example "Done. 1 change applied:
+   Set alt text for an image." The picture that already had alt text is
+   untouched.
+
+Each app's task (Quill Radio Find and Record and QUILL Cast Find and Follow on
+Ctrl+F3; QUILL Transcribe Speakers, Sections and Summary on Ctrl+F3; QUILL
+Studio Recording Pre-flight Check on Ctrl+3 and Narrate a Recording on
+Ctrl+Shift+3; Quill Converter, Quill Media Player and Quill Inkwell on Ctrl+F3;
+QuillBeacon Organize What I Saved on Ctrl+3):
+
+6. On the free AI the row says "(needs Copilot or Codex)" and the key offers
+   to switch, sending nothing. In Safe Mode the key says AI is off.
+7. On Copilot the key opens the agent window with the app's own title; the
+   reader says the title and the Instruction field, and the app says nothing.
+   F1 on Instruction gives the app's own sentence.
+8. Ask for something that changes data (follow a show, schedule a recording,
+   tag an item, add abbreviations, write sections). Allow This Step? asks in
+   one specific sentence; for a data change Review Proposed Change then shows
+   the whole change as text, Enter applies and Escape does not. Say Don't
+   allow once and confirm nothing changed.
+9. The summary is spoken once and brailled; the conversation fills in
+   silently and Shift+Tab reaches it. Stop ends a running task within a
+   second; Close does the same.
+10. Studio pre-flight: with the webcam microphone as default, the checklist
+    names it. If the AI can see, the still is asked about first, naming what
+    is captured.
+
+Tell Me When This Changes (QUILL Studio, Quill Radio):
+
+11. Studio: choose a window in Capture, press Ctrl+F9. Hear "Watching ... for
+    changes." once. Change the words in that window: within a few seconds one
+    sentence says what the words changed to, read on this computer.
+12. Press Ctrl+F9 again: "Already watching". Press Ctrl+Shift+F9: "Stopped
+    watching ...". Press it again: "Nothing was being watched."
+13. Radio: with no video showing, Ctrl+F9 says there is no picture to watch.
+    With a video stream showing, start a watch; hide the video and hear the
+    watch stop with a reason.
+14. On the free AI, Start Watching reads "(needs a connection that sees)" and
+    offers to switch. In Safe Mode it is refused aloud. Declining the picture
+    consent starts nothing.
+15. Close the window while watching: nothing more is said or sent. AI Usage
+    counts each question the watch asked.
+
+- [ ] All fifteen with NVDA.
+- [ ] All fifteen with JAWS.

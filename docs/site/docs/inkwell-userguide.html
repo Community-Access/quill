@@ -851,6 +851,10 @@ reader is never moved.</p>
 <td>Ctrl+Shift+A</td>
 </tr>
 <tr>
+<td>Add Abbreviations from a Document</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
 <td>Use My ChatGPT Subscription</td>
 <td>Alt+F5</td>
 </tr>
@@ -911,8 +915,9 @@ else.</li>
 stops it, and Safe Mode never starts it.</li>
 <li><strong>Never sent to an AI.</strong> The AI menu (section 21) never
 sees what you type in other programs, and it has no part in expansion.
-Ask sends your abbreviation list; Suggest Abbreviations sends the text
-of a document you pick, and only after you say yes.</li>
+Ask sends your abbreviation list; Suggest Abbreviations and Add
+Abbreviations from a Document send the text of a document you pick, and
+only after you say yes.</li>
 <li><strong>Self-repairing, not self-extending.</strong> Windows
 silently removes a keyboard hook that responds too slowly, so Inkwell
 quietly re-installs its own every few minutes. That refresh changes
@@ -1321,6 +1326,26 @@ OK; Cancel adds none.</li>
 away, in QUILL too. An abbreviation you already have is never suggested,
 so nothing here can replace one of yours. You can change or delete any
 of them later in Manage Abbreviations.</p>
+<h3 id="add-abbreviations-from-a-document">Add Abbreviations from a
+Document</h3>
+<p><strong>AI &gt; Add Abbreviations from a Document…</strong> (Ctrl+F3)
+does the same job as a conversation instead of one request. Type what
+you want, such as “add abbreviations for the long names and phrases in
+my report”, and the AI asks you to pick the document with the same Open
+window. Inkwell then asks the same question Suggest does before any of
+its text goes, with No as the default. The AI can look at the
+abbreviations you already have, so it does not suggest a second one for
+something you have covered, and you can tell it what to change: “make
+them shorter”, “leave out the people’s names”.</p>
+<p>When it is ready it shows you every abbreviation it wants to add, one
+a line, like “tpm -&gt; the Tuesday planning meeting”. Any that clashes
+with one you already have is listed separately as left out, with yours
+beside it, so nothing here can replace one of yours. Press Apply to add
+them all, or Don’t Apply to add none; they go into the same library
+QUILL uses.</p>
+<p>This needs an AI that can run tasks, which today means GitHub Copilot
+or Codex. With any other AI the menu item says “(needs Copilot or
+Codex)” and offers to switch instead of sending anything.</p>
 <p>The AI never types for you. Expansion in other programs works exactly
 as it did, and the AI has no part in it.</p>
 <h2 id="finding-a-setting-or-a-command">Finding a setting or a

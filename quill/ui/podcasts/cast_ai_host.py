@@ -42,11 +42,16 @@ __all__ = ["CastAiHost", "CastAiMixin", "AI_ROWS"]
 _FEATURE = "hosted_ai"
 
 #: The submenu's rows: command id, label, handler name. Mnemonics are unique
-#: within the submenu (A M R E N K G C Y O U, and cast_ai_features' own).
+#: within the submenu (A M R E N K G C Y O U L, and cast_ai_features' own).
+#: Find and Follow is the family's agent task (codex.md 6.5); its handler is
+#: cast_ai_features', because this adapter has no command of its own. Every
+#: other letter of "Find and Follow" is taken in this submenu, so it is Fo&llow
+#: (Build Me a Listening Run moved to the free B to give up the L).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
     ("tools.hosted_ai_which", "Which AI A&m I Using", "cmd_ai_which"),
     ("tools.hosted_ai_choose", "Choose You&r AI...", "cmd_ai_choose"),
+    ("tools.hosted_ai_task", "Find and Fo&llow...", "cmd_ai_task"),
     ("", "", ""),
     ("tools.hosted_ai_assistant", "Fr&ee AI Assistant...", "cmd_ai_assistant"),
     ("tools.hosted_ai_ask_document", "Ask About These Show &Notes...", "cmd_ai_ask_document"),

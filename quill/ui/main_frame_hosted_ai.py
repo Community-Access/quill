@@ -265,7 +265,7 @@ class HostedAiCommandsMixin(HostedAiMixin):
     #: rows show, and a duplicate is a key Windows may refuse to press (GATE-14).
     _ANSWER_ROWS: tuple[tuple[str, str, str], ...] = (
         ("tools.hosted_ai_chat_key", "Ask AI a Question...", "cmd_ai_chat_key"),
-        ("tools.hosted_ai_prompt_library", "Free AI Prompt Library...", "cmd_ai_prompt_library"),
+        ("tools.hosted_ai_prompt_library", "Prompt Library...", "cmd_ai_prompt_library"),
         ("tools.hosted_ai_web_searches", "Web Searches Left", "cmd_ai_web_searches"),
     )
 
@@ -307,6 +307,8 @@ class HostedAiCommandsMixin(HostedAiMixin):
         ("tools.hosted_ai_choose", "Choose Your AI...", "cmd_ai_choose"),
         # Do a Document Task (codex.md 6.2): quill/ui/hosted_ai_task_commands.py.
         ("tools.hosted_ai_task", "Do a Document Task...", "cmd_ai_task"),
+        # Propose Alt Text (codex.md 6.4): the same window, the request filled in.
+        ("tools.hosted_ai_alt_text", "Propose Alt Text...", "cmd_ai_alt_text"),
     )
 
     def _choose_menu_ids(self) -> dict[str, Any]:

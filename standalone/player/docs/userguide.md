@@ -563,6 +563,26 @@ and the list of chapters, so you can ask things like "how many chapters are
 left?" or pick **Remind me who this character is** from Quick questions. No
 file names or folders go with it, and no audio.
 
+### Find the Part Where
+
+**AI > Find the Part Where...** (**Ctrl+F3**) takes you to a place you describe:
+"the chapter where the storm starts", "the bookmark I left about the map", "an
+hour and two minutes in". The AI looks at what's open, the chapter list with
+each chapter's start time, and your bookmarks with their times and notes, and
+works out where you mean. Before it moves you, it asks, naming the time and the
+book: "Go to 1:02:30 in Treasure Island." Say yes and it jumps there the same
+way Go to Position does, so a time past the end lands at the end.
+
+It finds places by chapters, bookmarks and times only. There's no transcript of
+the audio for it to search, so "the part where the captain gets angry" works
+only if a chapter title or one of your bookmark notes says so, or if the AI
+already knows the book. Good bookmark notes make it much better at this.
+
+This needs an AI that can run tasks, which today means GitHub Copilot or Codex.
+With any other AI the menu item says "(needs Copilot or Codex)" and offers to
+switch instead of sending anything. Nothing is sent but the book's title, the
+chapter titles, your bookmark notes and times; never the audio.
+
 ---
 
 ## 14. Settings
@@ -656,7 +676,7 @@ Per-book overrides and importing or exporting settings, specified in the PRD
 | Open file / folder / DAISY, resume | Always-on hotword (say a wake word to start) |
 | **Hands-free voice (offline, QUILL's speech engines)** | Spoken chapter intros / soundscape |
 | Chapter **tree** (multi-level, DAISY) | Spoken chapter intros / soundscape |
-| **Summarize Chapter + AI Recap, Ask (AI)** | Automatic (server) cross-device sync |
+| **Summarize Chapter + AI Recap, Ask, Find the Part Where (AI)** | Automatic (server) cross-device sync |
 | **Copy/Export bookmarks + Sync bundle** | Embedded in-QUILL window; zero-gap gapless |
 | Book Library (LibriVox) + multi-track | BARD sources (NLS contract) |
 | 10-band EQ, boost, normalize, skip-silence | Embedded in-QUILL player window |

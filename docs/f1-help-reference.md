@@ -1124,7 +1124,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 296 audited sites (11 help-elsewhere, 285 helped).
+Control coverage: 297 audited sites (11 help-elsewhere, 286 helped).
 
 ### Every window, and what it is for
 
@@ -1493,6 +1493,7 @@ Control coverage: 296 audited sites (11 help-elsewhere, 285 helped).
 - `self.remove`: Remove a program you added. Built-in sources cannot be removed.
 - `hear`: Mute or unmute what you hear from any program, as the Windows volume mixer does. A program you mute there is silent for you and for every recording.
 - `self.microphone`: Which microphone the Microphone source records. It opens only while you record and only when the Microphone source is in the recording.
+- `self.mic_channels`: Which input of the microphone device is recorded. Both inputs mixed suits most microphones; on a two-input interface with the microphone plugged into one input, choose that input so it is recorded at full level in both ears.
 - `self.reader`: The screen reader whose speech Studio keeps private. Its speech is left out of the recording unless you put Screen reader speech in.
 - `self.exclude_reader`: When System sound is in the recording, record everything except your screen reader. Studio's own sounds are silenced while it records the system.
 - `self.camera_on`: Record your camera too. It is off unless you turn it on, and the camera opens only while you check its framing or record.
@@ -2607,7 +2608,7 @@ Control coverage: 252 audited sites (252 helped).
 - `self.cost`: What the chosen model might cost for a typical request, and where the provider's real prices are. An estimate, not a price.
 - `self.status`: What the last test said, or whether a key is saved.
 - `test`: Checks the key with the chosen provider, lists every model it can use, then sends one tiny request to the chosen model and says whether it answered. The request costs a fraction of a cent on your account; with Ollama on this computer it checks Ollama is running and costs nothing.
-- `self.remove`: Forgets the saved key for the chosen provider now, and puts AI help back on QUILL's free service with its free allowance.
+- `self.remove`: Forgets the saved key for the chosen provider now. If that key was the AI in use, no AI is in use until you choose one in Choose Your AI.
 #### AiPadFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `self._actions`: Choose what the AI should do with the text above. Each choice has its own description -- press F1 on one to hear it.

@@ -7656,6 +7656,43 @@ works is deleted when the task ends or you press **Stop**. If Copilot or Codex
 is in use but cannot be started, you hear "Document tasks need My GitHub
 Copilot or Codex. Press Ctrl+4 to choose one."
 
+### Propose Alt Text
+
+**Tools > AI > Propose Alt Text...** opens the same window with the request
+already typed in: give alt text to every picture in this document that has
+none. Press **Enter** to send it, or change it first. It has no key of its own;
+**Ctrl+3** reaches the same window.
+
+The task proposes short alt text for each Markdown or HTML picture that is
+missing it, one at a time, and each proposal opens **Review AI Changes** on
+that one change, undone with **Ctrl+Z**. When the AI in use can see pictures,
+the task may ask to look at one, and **Allow This Step?** names it; the first
+picture on each AI also asks whether pictures may go to that company. Only
+pictures saved on this computer are sent, never one from a web address. On an
+AI that cannot see, the proposals come from the words around each picture.
+QUILL has the same command in its AI menu.
+
+### Propose Alt Text
+
+**Tools > AI > Propose Alt Text...** opens the same window as Do a Document
+Task with the request already typed in: give alt text to every picture in this
+document that has none. Press **Enter** to send it as it is, or change it
+first. It has no key of its own, because **Ctrl+3** gets you to the same
+window; from the menu it is **Alt+T**, **A**, **T**.
+
+The task finds the document's pictures, in Markdown and HTML alike, and
+proposes short alt text for each one that is missing it, one picture at a
+time. Each proposal opens **Review AI Changes** on just that change, so you
+hear exactly what will be written, and each one undoes with **Ctrl+Z**.
+Pictures that already have alt text are left alone.
+
+If the AI in use can see pictures, the task may ask to look at one, and
+**Allow This Step?** names the picture first. Only pictures saved on this
+computer are ever sent; a picture on a web address is never fetched. On an AI
+that cannot see pictures, every proposal comes from the words around the
+picture, and the summary says so. Like Do a Document Task, it needs GitHub
+Copilot or Codex.
+
 ### QUILL's free AI
 
 Unless you choose otherwise, AI help runs on QUILL's own free service. There

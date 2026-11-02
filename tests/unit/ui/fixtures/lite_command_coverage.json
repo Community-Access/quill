@@ -3,6 +3,7 @@
   "cmd_activity": "covered",
   "cmd_add_inline_note": "covered",
   "cmd_add_word_to_dictionary": "covered",
+  "cmd_ai_alt_text": "covered",
   "cmd_ai_ask_document": "covered",
   "cmd_ai_assistant": "covered",
   "cmd_ai_chat_key": "covered",

@@ -230,8 +230,16 @@ def generate() -> str:
             "above and never inside the QUILL editor."
         )
         lines.append("")
+        from quill.core.app_keymaps_ai import AGENT_TASK_TITLES
+
         rows = [
-            (format_binding_for_display(binding), _title_for(command_id, titles), command_id)
+            (
+                format_binding_for_display(binding),
+                AGENT_TASK_TITLES.get(app_id, "")
+                if command_id == "tools.hosted_ai_task" and app_id in AGENT_TASK_TITLES
+                else _title_for(command_id, titles),
+                command_id,
+            )
             for command_id, binding in keymap.items()
         ]
         rows.sort(key=lambda row: (row[0], row[2]))

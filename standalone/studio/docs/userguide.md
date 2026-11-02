@@ -381,13 +381,48 @@ The rest of the AI menu:
 
 - **Ask...** (Ctrl+6) opens a conversation about your recording setup. With each message go the last pre-flight check and what it measured, the last recording check, the recording running now, and the name of the book open in the Chapter Workbench. No picture and no sound ever goes with it. Quick questions starts with **Is my setup ready?** and **Does this recording look right?**. **What can I do here?** is answered on this computer and sends nothing.
 - **Which AI Am I Using** (Ctrl+8) says the AI in use and its model in one line. Press it twice quickly to open Choose Your AI.
+- **Recording Pre-flight Check...** (Ctrl+3) and **Narrate a Recording...** (Ctrl+Shift+3) are tasks an AI works through in steps. See Recording pre-flight check and Narrate a recording, below.
 - **Describe a Picture...** (Ctrl+F5) asks you for a picture, or a video and then the moment in it, like 2:10. Studio takes that one picture on this computer, fits it to the AI in use and reads the description aloud; the description of a video frame starts with its time. Asking about the same picture again in the same session sends nothing. When the AI in use cannot see, the menu row says "(needs a connection that sees)", and pressing it sends nothing and offers to switch to one that can.
+- **Start Watching for Changes** (Ctrl+F9) and **Stop Watching for Changes** (Ctrl+Shift+F9) tell you when something on screen changes. See Watching for changes, below.
 - **Use My ChatGPT Subscription...** (Alt+F5) opens Choose Your AI on the ChatGPT row, ready to sign in. It used to be on the Capture menu.
 - **Use My Own AI Key...** (Alt+F2), **AI Usage...** (Ctrl+Alt+Shift+F2) and **Privacy Agreement...** (Alt+Shift+F2).
 
 **Pictures: asked once, and every screenshot confirmed.** The first time you ask about a picture on a connection, Studio says where pictures go, for example "Pictures you ask about in QUILL Studio go to OpenAI on your ChatGPT plan. Nothing is sent until you ask.", and asks Yes or No; No is the default. Studio asks again if you change to an AI from a different company. A screenshot is still confirmed every time before it goes.
 
 **Make a picture with AI** keeps its own key (Ctrl+Alt+Shift+J) and still needs an OpenAI or Gemini key, because ChatGPT plans don't make pictures for other apps.
+
+### Recording pre-flight check
+
+Before a recording that matters, press **Ctrl+3** (**AI > Recording Pre-flight Check...**) and then Enter. An AI goes over your set-up and gives you a short checklist in plain words, most important first. For example: "The microphone is the webcam mic, not the USB headset. The captured window is Settings, not the browser you named." If you say what you are about to record before pressing Enter, like "a demo of Firefox with my headset mic", it checks against that.
+
+It reads the same check Record a Demonstration runs when you press Check, made fresh: what will be recorded, every Stop and Warn, what was measured, and the Studio Mixer's devices, levels and the programs playing sound. It uses the set-up you last checked in Record a Demonstration. If you haven't checked one yet this session, it uses your saved settings on your main display and tells the AI so. All of that is text.
+
+Two things it can do along the way, and each asks you first (Allow once, Allow for this task, or Don't allow):
+
+- **Look at one picture of what would be recorded.** Only when the AI in use can see. The question names what is captured, like "Take one picture of Notepad and send it to My ChatGPT plan." The first picture on a connection also asks where pictures go, as Describe a Picture does. For a whole display, Studio's own windows are kept out of the picture.
+- **Open the Studio Mixer**, so you can change a device or a level yourself. The AI never changes one.
+
+Sound and video never leave this computer. This needs GitHub Copilot or Codex; with another AI in use the menu row says "(needs Copilot or Codex)" and pressing it offers to switch.
+
+### Narrate a recording
+
+**AI > Narrate a Recording...** (Ctrl+Shift+3) writes an accessible narrative of a recording: what is seen and what is said, in order, with the time of each part. It works on the recording Studio last made. If there isn't one, Studio's file chooser asks for a video the first time it is needed. Press Enter to start, or say what the narrative is for first, like "for a blind colleague who missed the meeting".
+
+What is said comes from the captions beside the video, an .srt or .vtt file with the same name. What is seen comes from contact sheets: up to 16 frames from a stretch of the video as one picture, each labelled with its time, the same sheets Ask AI questions about a video makes. Each sheet asks you first, naming the file and the stretch, and only goes to an AI that can see. With an AI that cannot see, the narrative is written from the captions alone, and says so.
+
+When it is done, you read the whole narrative before anything is saved. Enter applies it: Studio saves it as a Markdown file beside the video, named after it, like "Demo narrative.md", and opens it in QUILL. An existing file is never replaced; the new one gets a number. Escape saves nothing. Sound and video never leave this computer. Like the pre-flight check, this needs GitHub Copilot or Codex.
+
+### Watching for changes
+
+Sometimes you are waiting for something on screen: an installer to finish, a progress dialog to go away, a slide to change in a meeting. **AI > Start Watching for Changes** (Ctrl+F9) watches it for you and tells you when it changes. **Stop Watching for Changes** (Ctrl+Shift+F9) ends it.
+
+Studio watches the target you last chose in **Capture screen**, the same one **Repeat last selected target** uses. If you haven't chosen one, it watches the whole screen and keeps Studio's own windows out of the picture until you stop.
+
+Every 4 seconds Studio takes a small picture on this computer and compares it with the last one. Nothing happens until enough of it changes. When it does, Studio reads the words on screen with OCR on this computer, and if the words changed it tells you the new words and sends nothing. Only when the words don't explain the change does it ask the AI in use, sending the before and after as one picture, labelled Before and After. It asks at most once a minute, and at most 30 times in one watch. After the 30th question it stops and tells you so; start it again to keep watching.
+
+You hear "Watching" and the name of what is watched when it starts, one sentence each time something changes, and nothing in between. If the AI answers that nothing meaningful changed, you hear nothing. The watch also ends when you close Studio, when the AI in use changes (pictures were agreed for the one before), or when the AI can't answer, and you hear why. It is off in Safe Mode.
+
+It needs an AI that can see. The first time, Studio asks the same picture question as Describe a Picture, and No starts nothing. Each question to the AI counts in AI Usage like any other request.
 
 ### Set Up AI
 
@@ -550,7 +585,11 @@ All the Quill apps are published from one place, and each one recognizes its own
 | Ask (AI) | Ctrl+6 |
 | Which AI Am I Using | Ctrl+8 |
 | Choose Your AI | Ctrl+4 |
+| Recording Pre-flight Check | Ctrl+3 |
+| Narrate a Recording | Ctrl+Shift+3 |
 | Describe a Picture | Ctrl+F5 |
+| Start Watching for Changes | Ctrl+F9 |
+| Stop Watching for Changes | Ctrl+Shift+F9 |
 | Use My ChatGPT Subscription | Alt+F5 |
 | Use My Own AI Key | Alt+F2 |
 | AI Usage | Ctrl+Alt+Shift+F2 |
@@ -802,7 +841,7 @@ Two check boxes decide the picture, and the Sound sources list decides the sound
 
 - **The program's own sound** (for example "msedge sound") is in by default when you chose a window. It is that program's sound and nothing else, so your screen reader is not in it. Windows records it directly from the program, so it does not matter which sound card the program plays on, or whether you have muted it for yourself.
 - **System sound** is everything your computer plays. It starts left out. With **Leave the screen reader out of system sound** checked, which is the default, Studio records everything except your screen reader. Studio's own sounds are switched off while it records the system and come back when you stop.
-- **Microphone** starts left out, every time. Studio never remembers that it was on, so you never record your voice by accident. Choose which microphone under **Microphone device**. If another QUILL app is dictating, the check tells you which one.
+- **Microphone** starts left out, every time. Studio never remembers that it was on, so you never record your voice by accident. Choose which microphone under **Microphone device**, and under **Microphone channels** whether to record input 1, input 2 or both inputs mixed; use one input when your interface has the microphone plugged into only that one. If another QUILL app is dictating, the check tells you which one.
 - **Screen reader speech** (for example "JAWS speech") starts left out. Putting it in asks you to confirm, because everything your screen reader says while you record ends up in the file. While it is in, Studio stops talking to you through it except to report a failure; confirmations become sounds instead.
 - **Add a program's sound...** adds any other program that is playing sound, such as a media player, as a row of its own. The same list ends with **Everything playing on** each sound card, to record all a card plays, such as your headphones. If your screen reader speaks on that card, its speech is recorded too, and the check says so. **Remove program** takes a row off again.
 
@@ -885,10 +924,13 @@ Those keys work while Studio has focus. While you are demonstrating, focus is so
 If something goes wrong while you record, you hear it once and it is marked at that moment:
 
 - The window you are recording closes: the recording stops and saves what it has.
-- A program or your screen reader quits: that sound is silent until the same program starts again.
+- A program or your screen reader quits: Studio notices within two seconds, and that sound is silent until the same program starts again, when you hear that it is back.
+- Your screen reader restarts while it is left out of system sound: system sound is muted at once, so the new screen reader is never recorded, and comes back once the new one is left out too.
+- A sound card you are recording is unplugged or changes format: silent until the same card comes back, and then reopened.
 - A microphone is unplugged: silent until the same microphone comes back. A different microphone is never swapped in.
+- Sound stops arriving, or a microphone overflows: you hear it the first time, and the check report counts every time.
 - The display changes: the recording pauses.
-- The camera stops or falls behind.
+- The screen capture, the camera or one sound source stops: you hear which one, and everything else keeps recording. The result is Needs review and names it. Studio stops and saves only if nothing is left recording.
 - The disk runs low: a warning at two minutes left, then a stop and save before it runs out.
 
 **Known limitations.** Some of this does not yet work reliably, and is being fixed. Thanks to Tony Gebhard (TG Studios), who wrote TG Drop Deck (MIT licence, [github.com/tonygeb23/tg-drop-deck](https://github.com/tonygeb23/tg-drop-deck)) and published the measurements and fixes that showed us these gaps:
@@ -901,7 +943,7 @@ Until these are fixed, if a program or your screen reader restarts while you rec
 
 ### When you stop
 
-Studio joins the pieces, mixes the sounds at your levels, adds the camera picture, and then checks the finished file on its own, without trusting anything it measured while recording: one picture stream and one sound stream, the right length and frame count, clean decoding at the start, middle and end, no long black stretches, and each sound source actually present. You hear one sentence, for example "Demonstration saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a second. Picture and sound checked. msedge sound and Microphone present; screen reader left out."
+Studio joins the pieces, mixes the sounds at your levels, adds the camera picture, and then checks the finished file on its own, without trusting anything it measured while recording: one picture stream and one sound stream, the right length and frame count, clean decoding at the start, middle and end, no long black stretches, colour tagged as BT.709 so every player shows it the same way, and each sound source actually present. You hear one sentence, for example "Demonstration saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a second. Picture and sound checked. msedge sound and Microphone present; screen reader left out."
 
 The result is **Verified** when every check passed, **Needs review** when it plays but something may be spoiled, or **Failed** when a stream is missing or it does not decode, in which case the recorded pieces are kept so nothing is lost.
 
@@ -955,7 +997,7 @@ You want to show how to fill in a web form with your screen reader, with your vo
 - **My screen reader is in the recording and I did not want it.** Check which rows are in. "Everything playing on" a sound card includes your screen reader if it speaks on that card; use the program's own sound or System sound with "Leave the screen reader out" instead.
 - **A covering window is in the video.** A window recording records the window's area of the screen. Bring the window to the front, turn on Do Not Disturb, or record the whole display.
 - **My stop key does nothing.** Studio's own keys work only while Studio has focus. Assign system-wide keys, or use the tray icon's menu.
-- **The result says Needs review.** Open the result window's list of checks: it says which check did not pass, such as a long black stretch or a sound source that was silent throughout.
+- **The result says Needs review.** Open the result window's list of checks: it says which check did not pass, such as a long black stretch, a sound source that was silent throughout, or a stream that stopped early, such as the camera.
 - **Do Not Disturb did not turn on.** Some Windows editions and policies do not allow it. Turn it on yourself before you start.
 
 ### What this does not do yet

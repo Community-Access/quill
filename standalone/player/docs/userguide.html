@@ -1019,6 +1019,26 @@ the chapter you’re in, your place in it and the list of chapters, so you
 can ask things like “how many chapters are left?” or pick <strong>Remind
 me who this character is</strong> from Quick questions. No file names or
 folders go with it, and no audio.</p>
+<h3 id="find-the-part-where">Find the Part Where</h3>
+<p><strong>AI &gt; Find the Part Where…</strong>
+(<strong>Ctrl+F3</strong>) takes you to a place you describe: “the
+chapter where the storm starts”, “the bookmark I left about the map”,
+“an hour and two minutes in”. The AI looks at what’s open, the chapter
+list with each chapter’s start time, and your bookmarks with their times
+and notes, and works out where you mean. Before it moves you, it asks,
+naming the time and the book: “Go to 1:02:30 in Treasure Island.” Say
+yes and it jumps there the same way Go to Position does, so a time past
+the end lands at the end.</p>
+<p>It finds places by chapters, bookmarks and times only. There’s no
+transcript of the audio for it to search, so “the part where the captain
+gets angry” works only if a chapter title or one of your bookmark notes
+says so, or if the AI already knows the book. Good bookmark notes make
+it much better at this.</p>
+<p>This needs an AI that can run tasks, which today means GitHub Copilot
+or Codex. With any other AI the menu item says “(needs Copilot or
+Codex)” and offers to switch instead of sending anything. Nothing is
+sent but the book’s title, the chapter titles, your bookmark notes and
+times; never the audio.</p>
 <hr />
 <h2 id="14-settings">14. Settings</h2>
 <p><strong>File &gt; Preferences…</strong> (Ctrl+,) gathers the player’s
@@ -1134,7 +1154,8 @@ engines)</strong></td>
 <td>Spoken chapter intros / soundscape</td>
 </tr>
 <tr>
-<td><strong>Summarize Chapter + AI Recap, Ask (AI)</strong></td>
+<td><strong>Summarize Chapter + AI Recap, Ask, Find the Part Where
+(AI)</strong></td>
 <td>Automatic (server) cross-device sync</td>
 </tr>
 <tr>

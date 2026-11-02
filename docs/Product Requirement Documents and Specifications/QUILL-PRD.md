@@ -4898,7 +4898,7 @@ release (family rule 10):
   Ask Quill now uses too, into the host's `ai-sessions` folder; QUILL's is Ask
   Quill's, so AI Session Branches lists them. **Saved Conversations...** opens
   one to carry on, or deletes one after asking.
-- **Free AI Prompt Library...** (`Ctrl+7`) opens the same `PromptLibraryDialog`
+- **Prompt Library...** (`Ctrl+7`, called Free AI Prompt Library before Choose Your AI) opens the same `PromptLibraryDialog`
   and the same library (Quillin prompts included) as Tools, AI, Prompt Library,
   in hosted mode: Run fills the prompt (`quill/core/prompt_fill.py`) and the
   shared command sends it as a general question on the free AI.

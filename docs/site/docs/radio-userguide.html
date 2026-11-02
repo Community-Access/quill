@@ -1486,6 +1486,8 @@ Settings…</strong> (Ctrl+Shift+Alt+T).</li>
 <li><strong>Video Information</strong> (Ctrl+Shift+I).</li>
 <li><strong>Take a Snapshot</strong> (Ctrl+Shift+Alt+H).</li>
 <li><strong>Describe the Video</strong> (Ctrl+F5).</li>
+<li><strong>Start Watching for Changes</strong> (Ctrl+F9) and
+<strong>Stop Watching for Changes</strong> (Ctrl+Shift+F9).</li>
 <li><strong>Full Screen</strong> (F11).</li>
 <li><strong>Read Comments…</strong> (Ctrl+Shift+7): the comments on the
 YouTube video that is playing. See “Read a video’s comments” in Chapter
@@ -1511,8 +1513,9 @@ away. See Chapter 8, Recording.</p>
 <ul>
 <li><strong>Ask…</strong> (Ctrl+Shift+8): a conversation that already
 knows what is playing, on the AI you chose.</li>
-<li><strong>AI</strong>: <strong>Which AI Am I Using</strong> (Ctrl+F8),
-<strong>Choose Your AI…</strong> (Ctrl+Shift+F8), <strong>Use My ChatGPT
+<li><strong>AI</strong>: <strong>Find and Record…</strong> (Ctrl+F3),
+<strong>Which AI Am I Using</strong> (Ctrl+F8), <strong>Choose Your
+AI…</strong> (Ctrl+Shift+F8), <strong>Use My ChatGPT
 Subscription…</strong> (Alt+F5), <strong>Use My Own AI Key…</strong>
 (Alt+F2), <strong>AI Usage…</strong> (Ctrl+Alt+Shift+F2) and
 <strong>Privacy Agreement…</strong> (Alt+Shift+F2).</li>
@@ -2615,6 +2618,9 @@ current picture into your recordings folder, for example so you can read
 a slide with OCR. You should hear “Snapshot saved as” and its name.</li>
 <li><strong>Describe the Video</strong> (Ctrl+F5) asks the AI you chose
 what is on screen. See Chapter 13.</li>
+<li><strong>Start Watching for Changes</strong> (Ctrl+F9) tells you each
+time the picture changes, until <strong>Stop Watching for
+Changes</strong> (Ctrl+Shift+F9). See Chapter 13.</li>
 <li><strong>Video Size</strong> (Ctrl+Alt+4 to Ctrl+Alt+7) sets the
 window to Fit, 50%, 100% or 200%.</li>
 </ul>
@@ -7173,6 +7179,79 @@ sound and no video ever leave your computer. QUILL’s free AI cannot see
 pictures, so with it in use the menu item says “(needs a connection that
 sees)”, and pressing it sends nothing and offers to switch to one that
 can.</p>
+<h3 id="watching-the-video-for-changes">Watching the video for
+changes</h3>
+<p>When a video is showing, <strong>Start Watching for Changes</strong>
+(<strong>Ctrl+F9</strong>, Video menu) tells you when the picture
+changes: a new slide in a lecture, a score on screen, a caption that
+appears. <strong>Stop Watching for Changes</strong>
+(<strong>Ctrl+Shift+F9</strong>) ends it.</p>
+<p>Every 4 seconds Quill Radio takes a picture of the video on this
+computer, the way Take a Snapshot does, without the captions, and
+compares it with the last one. When enough of it changes, it reads the
+words on screen with OCR on this computer, and if the words changed it
+tells you the new words and sends nothing. Only when the words don’t
+explain the change does it ask the AI in use, sending the before and
+after as one picture. It asks at most once a minute and at most 30 times
+in one watch; after the 30th question it stops and tells you so.</p>
+<p>You hear when it starts and stops, one sentence each time something
+changes, and nothing in between. The watch also ends when you hide the
+video, close Quill Radio, change the AI in use, or the AI can’t answer,
+and you hear why. It is off in Safe Mode. It needs an AI that can see;
+the first time it asks the same picture question as Describe the Video,
+and No starts nothing. Each question counts in AI Usage like any other
+request. No sound and no video file ever leave your computer.</p>
+<h3 id="find-and-record">Find and Record</h3>
+<p><strong>Find and Record…</strong> (<strong>Ctrl+F3</strong>,
+Community &gt; AI) lets you say what you want in plain words and have
+the AI do it with Quill Radio’s own tools. For example: “Find a jazz
+station from New Orleans and record it tonight from 8 for an hour”, or
+“Record WBGO every Friday at 7:30 PM for half an hour”, or “What was
+that song on the station I’m listening to?”</p>
+<p>It needs an AI that can carry out tasks: My GitHub Copilot, or Codex
+on your ChatGPT plan. With any other AI in use, the menu item says
+“(needs Copilot or Codex)”, and pressing it sends nothing and offers to
+switch.</p>
+<p>What it can do:</p>
+<ul>
+<li><strong>Find stations.</strong> It searches your favorites, the
+station list kept on this computer, and the Radio Browser directory, the
+same places Find Stations looks. It can also read your favorites, the
+songs heard on a station, and the recordings you already have scheduled.
+Reading never asks you anything.</li>
+<li><strong>Play a station.</strong> It asks first.</li>
+<li><strong>Record a station now</strong>, for as long as it says. It
+asks first, naming the station and the length. The recording is made by
+Quill Radio’s own recorder, with your Recording Settings and Sound
+Enhancements, and shows in the Recordings list like any other.</li>
+<li><strong>Schedule a recording</strong>, once on a date, every day, or
+every week on a day. It asks first, and the question says the station,
+the day, the time and the length, for example “Schedule a recording of
+WBGO every Friday at 7:30 PM, for 30 minutes.” The entry goes into
+Schedule Recording, where you can change or delete it.</li>
+</ul>
+<p>Each question has three answers: <strong>Allow once</strong>,
+<strong>Allow for this task</strong>, and <strong>Don’t allow</strong>.
+Enter is Allow once and Escape is Don’t allow. Nothing you allow carries
+over to the next task.</p>
+<p>Scheduled recordings are made by Quill Radio itself while it is
+running, the same as one you add by hand. The AI is finished when the
+task ends; it never wakes up later, so nothing runs on your plan in the
+background.</p>
+<h4 id="find-and-record-step-by-step">Find and Record, step by step</h4>
+<ol type="1">
+<li>Press <strong>Ctrl+F3</strong>. The Find and Record window opens
+with your cursor in the instruction box.</li>
+<li>Type what you want and press <strong>Enter</strong>. The station and
+song playing go with your first message, so “record this for an hour”
+works.</li>
+<li>Answer each question as it comes. The conversation shows every
+step.</li>
+<li>When it is done you hear a short summary of what changed. Type a
+follow-up and press Enter to carry on, or close the window with
+<strong>Close</strong> or <strong>Ctrl+W</strong>. <strong>Stop</strong>
+ends a task that is still running.</li>
+</ol>
 <h3 id="acb-media-podcasts-step-by-step">ACB Media Podcasts, step by
 step</h3>
 <ol type="1">
@@ -9794,6 +9873,14 @@ minutes)</td>
 <td>Ctrl+F5</td>
 </tr>
 <tr>
+<td>Start Watching for Changes</td>
+<td>Ctrl+F9</td>
+</tr>
+<tr>
+<td>Stop Watching for Changes</td>
+<td>Ctrl+Shift+F9</td>
+</tr>
+<tr>
 <td>Full screen</td>
 <td>F11</td>
 </tr>
@@ -10053,6 +10140,10 @@ Schedule Recording)</td>
 <tr>
 <td>Ask</td>
 <td>Ctrl+Shift+8</td>
+</tr>
+<tr>
+<td>Find and Record</td>
+<td>Ctrl+F3</td>
 </tr>
 <tr>
 <td>Which AI Am I Using (twice: Choose Your AI)</td>

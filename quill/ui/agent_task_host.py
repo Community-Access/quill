@@ -58,6 +58,11 @@ class AgentTaskHost:
         self._title = title
         self._applied_in_preview = False
 
+    @property
+    def bridge(self) -> UiThreadBridge:
+        """The task's UI bridge, for a tool that must ask on the UI thread."""
+        return self._bridge
+
     # -- reads ------------------------------------------------------------ #
 
     def _read(self, fn: Callable[[Any], Any], default: Any) -> Any:

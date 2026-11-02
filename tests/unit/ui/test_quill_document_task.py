@@ -88,3 +88,29 @@ def test_quills_task_tools_read_its_editor_and_run_its_registry(opened) -> None:
     assert host._control() is quill.editor
     quill._ai_run_command("format.bold")
     assert quill.commands.ran == ["format.bold"]
+
+
+def test_quills_propose_alt_text_fills_in_the_request(opened) -> None:
+    """codex.md 6.4: QUILL reaches the same shared handler as QUILL Lite."""
+    from quill.core.ai.doc_images import ALT_TEXT_INSTRUCTION
+
+    quill = _Quill()
+    quill.cmd_ai_alt_text()
+
+    assert opened["parent"] is quill.frame
+    assert opened["hooks"].starter == ALT_TEXT_INSTRUCTION
+    assert quill.said == []
+
+
+def test_a_task_on_a_connection_that_sees_gets_the_picture_tool(opened, tmp_path) -> None:
+    from quill.core.ai.approvals import UiThreadBridge
+
+    quill = _Quill()
+    quill.document = type("Doc", (), {"path": tmp_path / "trip.md"})()
+    loader = quill._ai_doc_pictures(UiThreadBridge(lambda fn: fn()))
+    assert callable(loader)
+    assert quill._ai_document_path() == tmp_path / "trip.md"
+    from quill.core.ai.doc_images import list_document_images
+
+    image = list_document_images("![](https://example.com/a.png)")[0]
+    assert "not on this computer" in loader(image)  # a web address is never fetched

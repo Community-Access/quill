@@ -11370,7 +11370,7 @@ the **AI** menu (the `&AI` menu, so `Alt` then `A` opens it).
 | `Ctrl+Alt+G` | Free AI Assistant... | Summarise, rewrite, proofread, shorten or explain the passage you are in |
 | `Ctrl+Alt+Z` | Ask About This Document... | Ask a question about what you are writing |
 | `Ctrl+6` | Ask AI a Question... | Ask: a conversation about this document, with the AI in use |
-| `Ctrl+7` | Free AI Prompt Library... | Run one of your saved prompts on the selection, on the AI in use |
+| `Ctrl+7` | Prompt Library... | Run one of your saved prompts on the selection, on the AI in use |
 | `Ctrl+9` | Web Searches Left | How many of this month's web searches are left |
 | `Ctrl+Alt+Shift+F2` | AI Usage... | One list: what each AI you have set up has used |
 | `Ctrl+8` | Which AI Am I Using | Says which AI is in use; pressed twice, opens Choose Your AI |
@@ -11399,9 +11399,7 @@ Each command runs on whichever AI is in use: QUILL's free AI, your ChatGPT
 plan, GitHub Copilot, Codex or your own key. *Choose Your AI*, later in this
 chapter, is where you pick. A few need something the free AI does not have
 (pictures, document tasks, the dictionary, Tidy Dictated Text), and when the AI
-in use cannot do a command, its menu name says what it needs. The Prompt
-Library's menu name still starts with "Free AI", but it runs on the AI in use
-like everything else.
+in use cannot do a command, its menu name says what it needs.
 
 #### What it works on
 
@@ -11500,9 +11498,9 @@ headings, read fresh every time, so you can move around the document between
 questions. It never sends the whole file. **Ask Quill** (`Alt+Q`) is still
 there for the advanced companion; it has not changed.
 
-#### Your prompts on the free AI (Ctrl+7)
+#### Your prompts on the AI in use (Ctrl+7)
 
-`Ctrl+7` (**AI > Free AI Prompt Library...**) opens the **Prompt Library**,
+`Ctrl+7` (**AI > Prompt Library...**) opens the **Prompt Library**,
 with the same prompts as the Prompts tab of **AI > AI Library...**: QUILL's
 built-in prompts, the ones you wrote, and
 the ones your Quillins add. Choose a prompt and press **Run with AI**. The
@@ -12312,6 +12310,32 @@ the rest of AI.
 it works is deleted when the task ends, when you press Stop, and again before
 the next task starts, so even a crash leaves nothing behind. The changes you allowed stay in your document, where
 `Ctrl+Z` takes each one back.
+
+### Propose Alt Text
+
+**AI > Propose Alt Text...** opens the same window as Do a Document Task with
+the request already typed in: give alt text to every picture in this document
+that has none. Press `Enter` to send it as it is, or change it first. It has no
+key of its own, because `Ctrl+3` gets you to the same window.
+
+The task lists the document's pictures, Markdown and HTML alike, and proposes
+short alt text for each one that is missing it, one picture at a time. Each
+proposal opens **Review AI Changes** on just that change, so you hear exactly
+what will be written, and each one undoes with `Ctrl+Z`. Pictures that already
+have alt text are left alone.
+
+If the AI in use can see pictures, the task may ask to look at one. **Allow
+This Step?** names the picture ("Send the picture beach.png from this document
+to your AI, to describe it"), and the first picture on each AI also asks
+whether pictures may go to that company at all. Only pictures saved on this
+computer are ever sent; a picture on a web address is never fetched, and the
+task writes its proposal from the words around it and tells you it could not
+see it. On an AI that cannot see pictures, every proposal comes from the
+words around the picture, and the summary says so.
+
+A Word or EPUB file you opened through Import / Convert keeps its pictures
+inside the original file, so the task can propose alt text for them from the
+words only.
 
 ### If the AI you chose is not available
 

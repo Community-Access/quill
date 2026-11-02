@@ -344,6 +344,18 @@ press it.
   The description is read to you and shown in a window you can copy from, and
   then you are asked whether to add it to the beacon's note. No is the default
   there too. If you say Yes and change your mind, Ctrl+Z takes it back out.
+- **Assist > Organize What I Saved...** (Ctrl+3) hands tidying up to the AI.
+  Say what you want, such as "tag everything about knitting as crafts and put
+  it in a Crafts collection". It searches your library the way the search box
+  does, reads the items it finds, and can use Suggest Tags, which still runs on
+  your computer. Every change it wants to make, adding or removing tags or
+  moving a beacon into a collection, is shown to you as text first: the beacon,
+  what it has now and what it will have after. Nothing changes until you press
+  Apply, and Ctrl+Z takes each change back. It never deletes, trashes, archives,
+  opens or publishes anything, and a file you saved is named as "a file on this
+  computer", never by its path. This needs an AI that can run tasks, which
+  today means GitHub Copilot or Codex; with any other AI the item says "(needs
+  Copilot or Codex)" and offers to switch instead of sending anything.
 - **Assist > Use My ChatGPT Subscription...** (Alt+F5),
   **Assist > Use My Own AI Key...** (Alt+F2), **Assist > AI Usage...**
   (Ctrl+Alt+Shift+F2) and **Assist > Privacy Agreement...**

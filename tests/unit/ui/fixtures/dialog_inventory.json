@@ -136,6 +136,7 @@
   "quill/ui/ai_transcribe_dialog.py::AITranscriptionResultDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/ai_translation_dialog.py::AITranslationDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/ai_translation_dialog.py::AITranslationDialog._on_lt_help::wx.MessageBox": "native",
+  "quill/ui/app_agent_task.py::ProposedChangeDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/app_features_dialog.py::AppFeaturesDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/app_preferences_dialog.py::PreferencesDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/app_quillins.py::QuillinsAppMixin._quillin_consent::wx.MessageDialog": "native",

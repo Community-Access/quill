@@ -37,6 +37,7 @@ from typing import Any
 
 from quill.ui.hosted_ai_commands import HostedAiMixin
 from quill.ui.radio.radio_ai_features import RadioAiFeaturesMixin
+from quill.ui.radio.radio_ai_watch import RadioWatchMixin
 
 __all__ = ["AGENT_NAME", "AI_ROWS", "RadioAiHost", "RadioAiMixin"]
 
@@ -46,8 +47,10 @@ AGENT_NAME = "QUILL Radio"
 _SAFE_MODE = "AI is off in Safe Mode."
 
 #: Community > AI: command id, label, handler name. Letters unique within the
-#: submenu (W C G O U P D).
+#: submenu (F W C G O U P). Find and Record is the family's agent task
+#: (``tools.hosted_ai_task``, codex.md 6.5), in radio_ai_features.
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
+    ("tools.hosted_ai_task", "&Find and Record...", "cmd_ai_task"),
     ("tools.hosted_ai_which", "&Which AI Am I Using", "cmd_ai_which"),
     ("tools.hosted_ai_choose", "&Choose Your AI...", "cmd_ai_choose"),
     ("radio.chatgpt_account", "Use My Chat&GPT Subscription...", "cmd_ai_chatgpt"),
@@ -117,7 +120,7 @@ class RadioAiHost:
             pass
 
 
-class RadioAiMixin(RadioAiFeaturesMixin, HostedAiMixin):
+class RadioAiMixin(RadioAiFeaturesMixin, RadioWatchMixin, HostedAiMixin):
     """The shared hosted-AI commands on Quill Radio's frame: hooks, no commands."""
 
     #: Radio has no document: an answer is copied, never inserted.
@@ -192,8 +195,9 @@ class RadioAiMixin(RadioAiFeaturesMixin, HostedAiMixin):
         ask_id, label, _handler = ASK_ROW
         menu.Append(ids[ask_id], self._menu_label(label, ask_id))  # type: ignore[attr-defined]
         sub = wx.Menu()
-        for command_id, row_label, _h in AI_ROWS:
-            sub.Append(ids[command_id], self._menu_label(row_label, command_id))  # type: ignore[attr-defined]
+        for command_id, row_label, handler_name in AI_ROWS:
+            shown = self._ai_gated_label(handler_name, row_label)  # codex.md 10A.8
+            sub.Append(ids[command_id], self._menu_label(shown, command_id))  # type: ignore[attr-defined]
         menu.AppendSubMenu(sub, "A&I")
         if getattr(self, "_radio_ai_wired", False):
             return
@@ -208,6 +212,8 @@ class RadioAiMixin(RadioAiFeaturesMixin, HostedAiMixin):
             (ASK_ROW[0], "Ask", ASK_ROW[2]),
             *((cid, label.replace("&", "").rstrip("."), h) for cid, label, h in AI_ROWS),
             ("radio.describe_video", "Describe the Video", "cmd_radio_describe_video"),
+            ("radio.ai_watch_start", "Start Watching for Changes", "cmd_radio_watch_start"),
+            ("radio.ai_watch_stop", "Stop Watching for Changes", "cmd_radio_watch_stop"),
         )
         for command_id, label, handler_name in rows:
             self.commands.try_register(  # type: ignore[attr-defined]

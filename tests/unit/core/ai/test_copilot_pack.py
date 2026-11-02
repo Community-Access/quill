@@ -291,11 +291,6 @@ def test_blank_system_prompt_sends_no_system_message(rec: _Recorder, no_token) -
     assert pack.system_message_for("") is None
 
 
-def test_none_reply_is_empty_text_not_a_repr(rec: _Recorder, no_token) -> None:
-    rec.reply = None
-    assert _run() == ""
-
-
 def test_token_passed_explicitly_and_never_in_environ(rec: _Recorder, monkeypatch) -> None:
     seen: list[str] = []
 
@@ -396,6 +391,13 @@ def test_a_bundle_that_fails_the_pin_is_never_launched(
         _run()
     assert rec.client_kwargs == {}  # no client was ever made
     assert rec.calls == []
+
+
+@pytest.mark.parametrize("reply", [None, _Event(""), _Event("   ")])
+def test_an_empty_reply_is_an_error_not_an_empty_insert(rec: _Recorder, no_token, reply) -> None:
+    rec.reply = reply
+    with pytest.raises(pack.CopilotNoReplyError, match="without an answer"):
+        _run()
 
 
 def test_answer_text_shapes() -> None:

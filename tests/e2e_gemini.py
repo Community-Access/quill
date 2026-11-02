@@ -15,6 +15,9 @@ import textwrap
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[1]))
 
 GEMINI_KEY = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("GEMINI_API_KEY", "")
+from quill.stability.redaction import remember_secret  # noqa: E402
+
+remember_secret(GEMINI_KEY)
 if not GEMINI_KEY:
     print("FAIL: no key — pass as argv[1] or set GEMINI_API_KEY")
     sys.exit(1)
@@ -22,7 +25,10 @@ if not GEMINI_KEY:
 
 def _check(label: str, passed: bool, detail: str = "") -> None:
     status = "PASS" if passed else "FAIL"
-    suffix = f"  ({detail})" if detail else ""
+    # The detail is never printed: an error string can quote the request, key
+    # and all, and a scrub is not something CodeQL can see (clear-text logging).
+    # Its length says whether there was one; rerun under a debugger to read it.
+    suffix = f"  (detail withheld, {len(detail)} characters)" if detail else ""
     print(f"  [{status}] {label}{suffix}")
     if not passed:
         _FAILURES.append(label)
