@@ -2179,8 +2179,9 @@ plays the row you are on.
    See "What a row offers" below.
 8. Press **Tab** to move past the tree. You come to a **details box** about the
    row you are on, then **Radio volume**, **Mute**, **Go to Player**, **Add to
-   Favorites** (it reads **Remove from Favorites** on a row you have saved),
-   and **Refresh**, which fetches the highlighted source again from the
+   Favorites** (Alt+O; it reads **Remove from Favorites** on a row you have
+   saved, and **Add 3 Marked to Favorites** while stations are marked), and
+   **Refresh**, which fetches the highlighted source again from the
    internet.
 9. Press **Alt+T** to jump back to the tree from anywhere in the window.
 10. Inside a branch, press **Escape** to go back to the row you opened it
@@ -2448,15 +2449,28 @@ hides the source, just like **Hide This Source** on the menu, and **Reset
 Sources to Default** brings it back. On a folder inside one of Quill Radio's
 own sources, Delete explains that there is nothing to delete.
 
-#### Removing several rows at once
+#### Adding or removing several rows at once
 
-Press **.** (period) on each row you want to remove: a saved YouTube video or
-playlist, a followed channel, a server you added, or a station that is one of
-your favorites. You hear "Marked" and how many are marked, and the row's name
-gains "(marked)". It keeps the mark if you fold its folder and open it again.
-Then press **Delete**: one question asks, for example, "Delete 4 items?", and
-you hear "Deleted 4 items." Each branch that lost a row reloads, so the rows
-are gone from the tree. **Ctrl+Shift+Delete** clears every mark.
+Press **.** (period) on each row you want: any station, or a row Delete can
+remove (a saved YouTube video or playlist, a followed channel or a server you
+added). You hear "Marked" and how many are marked, and the row's name gains
+"(marked)". It keeps the mark if you fold its folder and open it again. Then:
+
+- To **add every marked station to your favorites**, press **Alt+O**, or Tab
+  to the button, which now reads "Add 3 Marked to Favorites". Nothing asks
+  first. You hear, for example, "Added 3 stations to Favorites", or "Added 2
+  stations to Favorites. 1 was already there." The marks are cleared.
+- To **remove every marked row**, press **Delete**: one question asks, for
+  example, "Delete 4 items?", and you hear "Deleted 4 items." Each branch that
+  lost a row reloads, so the rows are gone from the tree. A station you have
+  not saved cannot be removed, so it is left out of the count; if nothing
+  marked can be removed, you hear so.
+
+**Ctrl+Shift+Delete** clears every mark.
+
+For example, to save five stations from a genre you are exploring, open the
+genre, press **.** on each one you like as you listen your way down, then
+press **Alt+O** once.
 
 For example, to tidy your saved YouTube videos, open **YouTube**, then your
 saved videos, press **.** on each one you have finished with, and press
@@ -2464,8 +2478,10 @@ saved videos, press **.** on each one you have finished with, and press
 
 Things to know:
 
-- A row Delete cannot remove cannot be marked. Pressing **.** on a country, a
-  genre or a station you have not saved tells you which rows can be marked.
+- A folder, such as a country or a genre, cannot be marked. Pressing **.**
+  on one tells you which rows can be marked. A station that is only looked up
+  when you play it (some TuneIn rows) cannot be marked either; **Alt+O** on it
+  alone still adds it.
 - The question is the same one Delete asks for a single row, so if you checked
   **Don't ask me again** there, marked rows go without a question too. You
   still hear how many were deleted.
@@ -8243,6 +8259,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Mark or unmark a row for deleting (favorites, Recordings, Browse, Schedule Recording) | . (period) |
 | Remove every marked row (one question) | Delete |
 | Clear every mark | Ctrl+Shift+Delete |
+| Add every marked station to Favorites (Browse Stations) | Alt+O |
 | Move the selected favorite up or down | Alt+Shift+Up / Alt+Shift+Down |
 | Sort: A to Z, Z to A, manual | Ctrl+Alt+Shift+F4 / F5 / F6 |
 | Expand or collapse all folders | Ctrl+Alt+E / Ctrl+Alt+Shift+E |

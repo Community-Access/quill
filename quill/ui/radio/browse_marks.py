@@ -1,10 +1,25 @@
-"""Marks in Browse Stations: remove many rows with one question.
+"""Marks in Browse Stations: add many stations to Favorites, or remove many rows.
 
 The Favorites marking keys (:mod:`quill.ui.radio.marks_shared`), in the Browse
-tree. A row can be marked when Delete could remove it: a saved YouTube video
-or playlist, a followed channel, a server you added, or a station that is one
-of your favorites (wherever in the tree it appears). Any other row says what
-can be marked instead of doing nothing.
+tree. A row can be marked when it is a station, or when Delete could remove it:
+a saved YouTube video or playlist, a followed channel, a server you added, or a
+station that is one of your favorites (wherever in the tree it appears). Any
+other row says what can be marked instead of doing nothing.
+
+**Add to Favorites** with stations marked -- the window's Add to Favorites
+button, which then reads "Add 3 Marked to Favorites" and is Alt+O from
+anywhere in the window, the tree included -- adds every marked station that is
+not already a favorite, says how many were added and how many were there
+already, and clears the marks. It asks nothing: adding is undone by removing,
+and nothing is lost. A station that only resolves when played (TuneIn) has no
+stream to save until then, so it cannot be marked; the button on it alone still
+resolves and adds it, as before.
+
+No chord of its own, on purpose: every Ctrl+Alt and Ctrl+Shift letter is
+already a command somewhere in Quill Radio (Ctrl+Alt+F, the obvious one, is
+Repair FFmpeg), and the button's access key was already the way to add a
+favorite here. The button's labels keep the one access key, O, in every
+state; they used to switch to F, which Refresh also claims (GATE-14).
 
 Delete with rows marked removes **every** marked row after one question
 ("Delete 4 items?"), the same question Browse's own Delete asks -- so a
@@ -21,6 +36,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.counted import plural
 from quill.core.radio.browse_nodes import split_id
 from quill.core.radio.row_marks import (
     MARK_SUFFIX,
@@ -40,18 +56,21 @@ from quill.ui.radio.marks_shared import (
 
 __all__ = [
     "CANNOT_MARK",
+    "add_marked_to_favorites",
+    "favorite_button",
     "handle_key",
     "label",
     "remove_marked",
     "row_text",
+    "sync_favorite_button",
     "toggle_selected",
 ]
 
 _NOUN = "item"
 
 CANNOT_MARK = (
-    "Only rows Delete can remove can be marked: a saved YouTube video or "
-    "playlist, a followed channel, a server you added, or a favorite station."
+    "Only stations, and rows Delete can remove, can be marked: a saved YouTube "
+    "video or playlist, a followed channel, or a server you added."
 )
 
 
@@ -101,25 +120,118 @@ def _rows(dialog: Any) -> dict[str, tuple[str, Any]]:
     return rows
 
 
+def _stations(dialog: Any) -> dict[str, Any]:
+    """Node id -> the station on a marked row, for Add to Favorites."""
+    stations = getattr(dialog, "_marked_stations", None)
+    if stations is None:
+        stations = {}
+        dialog._marked_stations = stations
+    return stations
+
+
 def toggle_selected(dialog: Any) -> None:
     """Mark or unmark the selected row, saying the running count."""
     tree = dialog._tree
     node = tree.GetSelection()
     data = dialog._node_data(node) if node is not None else None
     what = _what(dialog, data)
-    if what is None or data is None:
+    station = data.get("station") if data is not None else None
+    if data is None or (what is None and station is None):
         dialog._announce(CANNOT_MARK)
         return
     node_id = str(data.get("node_id") or "")
     marks = marks_on(dialog)
     now_marked = marks.toggle(node_id)
-    rows = _rows(dialog)
-    if now_marked:
+    rows, stations = _rows(dialog), _stations(dialog)
+    rows.pop(node_id, None)
+    stations.pop(node_id, None)
+    if now_marked and what is not None:
         rows[node_id] = what
-    else:
-        rows.pop(node_id, None)
+    if now_marked and station is not None:
+        stations[node_id] = station
     tree.SetItemText(node, _with_mark(str(tree.GetItemText(node)), now_marked))
+    sync_favorite_button(dialog)
     dialog._announce(marks.toggle_sentence(now_marked))
+
+
+def _forget_marks(dialog: Any) -> None:
+    """Every mark gone: the set, what it pointed at, and the rows' "(marked)"."""
+    marks_on(dialog).clear()
+    _rows(dialog).clear()
+    _stations(dialog).clear()
+    _unmark_all_rows(dialog)
+    sync_favorite_button(dialog)
+
+
+def _addable(dialog: Any) -> list[Any]:
+    """The marked stations, in the order marked, each once."""
+    stations = _stations(dialog)
+    seen: set[str] = set()
+    found: list[Any] = []
+    for node_id in marks_on(dialog).keys:
+        station = stations.get(node_id)
+        if station is None:
+            continue
+        key = str(getattr(station, "station_uuid", "") or getattr(station, "stream_url", ""))
+        if key and key not in seen:
+            seen.add(key)
+            found.append(station)
+    return found
+
+
+def add_marked_to_favorites(dialog: Any) -> bool:
+    """Add every marked station to Favorites. Returns whether any was added.
+
+    One sentence, every clause a number (GATE-BULK-COUNT): how many were added
+    and how many were favorites already. The marks are cleared afterwards --
+    the job they were made for is done.
+    """
+    stations = _addable(dialog)
+    marked = len(marks_on(dialog))
+    if not stations:
+        dialog._announce(
+            f"None of the {plural(marked, 'marked row')} is a station to add to Favorites."
+        )
+        return False
+    added = sum(1 for station in stations if dialog._favorites.add(station))
+    already = len(stations) - added
+    said = f"Added {plural(added, 'station')} to Favorites."
+    if already:
+        verb = "was" if already == 1 else "were"
+        said += f" {already} {verb} already there."
+    _forget_marks(dialog)
+    if added:
+        dialog._on_favorites_changed()
+        dialog._refresh_favorites_branch()
+    dialog._announce(said)
+    return added > 0
+
+
+def favorite_button(dialog: Any) -> None:
+    """The Add to Favorites button: every marked station while any are marked,
+    otherwise the highlighted row's add-or-remove, as it always was."""
+    if _addable(dialog):
+        add_marked_to_favorites(dialog)
+        return
+    dialog._toggle_favorite()
+
+
+def sync_favorite_button(dialog: Any) -> None:
+    """While stations are marked, the button says it adds them and can be
+    pressed from any row. Nothing is spoken: the marking key said the count."""
+    count = len(_addable(dialog))
+    button = dialog._favorite_btn
+    if count:
+        button.SetLabel(f"Add {count} Marked t&o Favorites")
+        button.Enable(True)
+        return
+    if "Marked" in str(button.GetLabel()):
+        # Put back what the highlighted row's own button says. The label is
+        # reset first, so describe_selection's own call back here stops.
+        from quill.ui.radio.browse_details import describe_selection
+
+        button.SetLabel("Add t&o Favorites")
+        describe_selection(dialog, dialog._selected_data())
 
 
 def remove_marked(dialog: Any) -> bool:
@@ -130,6 +242,8 @@ def remove_marked(dialog: Any) -> bool:
     rows = _rows(dialog)
     doomed = [(node_id, rows[node_id]) for node_id in marks.keys if node_id in rows]
     if not doomed:
+        count = plural(len(marks), "marked row")
+        dialog._announce(f"None of the {count} can be deleted. Alt+O adds them to Favorites.")
         return False
     if not browse_delete.confirm(dialog, delete_question(len(doomed), _NOUN)):
         dialog._announce("Nothing was deleted.")
@@ -149,8 +263,7 @@ def remove_marked(dialog: Any) -> bool:
             removed += 1
         except Exception:  # noqa: BLE001 - one failed row must not stop the rest
             failed += 1
-    marks.clear()
-    rows.clear()
+    _forget_marks(dialog)
     for root in sorted(roots):
         browse_delete.reload_branch(dialog, root)
     dialog._announce(deleted_sentence(removed, _NOUN, failed=failed))
@@ -169,8 +282,7 @@ def handle_key(dialog: Any, event: Any) -> bool:
         return True
     if action == CLEAR:
         clear_marks(marks_on(dialog), announce=dialog._announce)
-        _rows(dialog).clear()
-        _unmark_all_rows(dialog)
+        _forget_marks(dialog)
         return True
     if action == ACT and marks_on(dialog):
         remove_marked(dialog)

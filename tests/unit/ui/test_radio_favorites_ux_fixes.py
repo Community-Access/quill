@@ -42,7 +42,7 @@ def test_a_lazily_resolved_station_can_be_favorited_from_browse() -> None:
     # browse window lost its duplicate player (2026-08-18); the behaviour they
     # pin -- a not-yet-resolved row can still be favorited -- did not.
     details = _read("quill/ui/radio/browse_details.py")
-    assert '("Add to &Favorites"' in details
+    assert '("Add t&o Favorites"' in details
     assert "dialog._favorite_btn.Enable(True)" in details
 
 

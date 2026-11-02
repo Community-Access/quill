@@ -18,6 +18,13 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **Add many stations to Favorites from Browse Stations** [2026-11-02].
+  Any station row can now be marked with period, not only rows Delete can
+  remove. While stations are marked, the Add to Favorites button reads "Add
+  3 Marked to Favorites" and Alt+O adds them all from anywhere in the window,
+  with one sentence saying how many were added and how many were favorites
+  already. The button's access key is now O in every state; it used to
+  change to F, which Refresh also uses.
 - **The Remove button counts your marks in Radio Recordings** [2026-11-02].
   While recordings are marked it reads "Remove 3 Marked..." and can be pressed
   from any row, so the button and the Delete key always do the same thing.

@@ -373,3 +373,79 @@ def test_the_remove_button_names_the_marked_count(recordings) -> None:
     recordings._on_key(_key(wx.WXK_DELETE, ctrl=True, shift=True))
     assert recordings.said[-1] == "Cleared 2 marks."
     assert button.GetLabel() == "&Remove..."
+
+
+# -- Browse: Add to Favorites ------------------------------------------------------
+
+
+def _add_station_rows(browse, count: int) -> list:
+    """Rows for stations that are not favorites yet, under the test branch."""
+    tree = browse._tree
+    branch = tree.GetItemParent(browse.rows[0])
+    rows = []
+    for index in range(count):
+        station = RadioStation(name=f"New {index}", stream_url=f"https://n{index}.test/")
+        item = tree.AppendItem(branch, station.name)
+        tree.SetItemData(item, {"node_id": f"genre-station:{index}", "station": station})
+        rows.append(item)
+    return rows
+
+
+def test_a_station_that_is_not_a_favorite_can_be_marked(browse) -> None:
+    new = _add_station_rows(browse, 1)
+    browse._tree.SelectItem(new[0])
+    assert browse_marks.handle_key(browse, _key(PERIOD))
+    assert browse.said[-1] == "Marked. 1 marked."
+    assert browse._favorite_btn.GetLabel() == "Add 1 Marked t&o Favorites"
+    assert browse._favorite_btn.IsEnabled()
+
+
+def test_add_to_favorites_adds_every_marked_station(browse) -> None:
+    saved: list[bool] = []
+    browse._on_favorites_changed = lambda: saved.append(True)
+    new = _add_station_rows(browse, 2)
+    for row in (new[0], new[1], browse.rows[0]):
+        browse._tree.SelectItem(row)
+        browse_marks.handle_key(browse, _key(PERIOD))
+    assert browse._favorite_btn.GetLabel() == "Add 3 Marked t&o Favorites"
+    browse_marks.favorite_button(browse)
+    assert browse.said[-1] == "Added 2 stations to Favorites. 1 was already there."
+    names = [favorite.station.name for favorite in browse.store.favorites]
+    assert names[-2:] == ["New 0", "New 1"]
+    assert saved == [True]
+    # The marks did their job and are gone, from the rows and the button.
+    assert not browse_marks.marks_on(browse)
+    assert "(marked)" not in browse._tree.GetItemText(new[0])
+    assert "Marked" not in browse._favorite_btn.GetLabel()
+
+
+def test_the_favorites_button_adds_the_marked_stations(browse) -> None:
+    new = _add_station_rows(browse, 2)
+    for row in new:
+        browse._tree.SelectItem(row)
+        browse_marks.handle_key(browse, _key(PERIOD))
+    browse._tree.SelectItem(browse.rows[3])  # a folder: the button still adds the marks
+    assert browse._favorite_btn.IsEnabled()
+    browse_marks.favorite_button(browse)
+    assert browse.said[-1] == "Added 2 stations to Favorites."
+
+
+def test_with_nothing_marked_the_button_toggles_the_row_as_before(browse) -> None:
+    new = _add_station_rows(browse, 1)
+    browse._tree.SelectItem(new[0])
+    browse_marks.favorite_button(browse)
+    assert browse.said[-1] == "Added New 0 to Favorites."
+    assert len(browse.store.favorites) == 4
+    # Every label keeps the one access key, O; F is Refresh's (GATE-14).
+    assert browse._favorite_btn.GetLabel() == "Remove fr&om Favorites"
+
+
+def test_delete_with_only_stations_marked_says_none_can_be_deleted(browse) -> None:
+    new = _add_station_rows(browse, 2)
+    for row in new:
+        browse._tree.SelectItem(row)
+        browse_marks.handle_key(browse, _key(PERIOD))
+    assert browse_marks.handle_key(browse, _key(wx.WXK_DELETE))
+    assert browse.said[-1] == (
+        "None of the 2 marked rows can be deleted. Alt+O adds them to Favorites."
+    )

@@ -41,7 +41,7 @@ def describe_selection(dialog: Any, data: dict | None) -> None:
         # demand (#1210), so the button is live. Label it Add -- we cannot
         # know the saved state before resolving.
         dialog._favorite_btn.Enable(True)
-        dialog._favorite_btn.SetLabel("Add to &Favorites")
+        dialog._favorite_btn.SetLabel("Add t&o Favorites")
     elif dialog._is_folder_data(data) and data is not None:
         # A branch explains where its answers come from (catalog UX, 6.5):
         # "Answers from your catalog, updated 2 hours ago." or "Asks the
@@ -65,6 +65,10 @@ def describe_selection(dialog: Any, data: dict | None) -> None:
     else:
         dialog._details.ChangeValue("")
         dialog._favorite_btn.Enable(False)
+    # While stations are marked the button adds them, from whatever row.
+    from quill.ui.radio.browse_marks import sync_favorite_button
+
+    sync_favorite_button(dialog)
 
 
 def _with_note(item: object, details: str) -> str:

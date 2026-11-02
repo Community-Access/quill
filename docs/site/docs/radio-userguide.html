@@ -2785,9 +2785,10 @@ everything a row offers. See “What a row offers” below.</li>
 <li>Press <strong>Tab</strong> to move past the tree. You come to a
 <strong>details box</strong> about the row you are on, then
 <strong>Radio volume</strong>, <strong>Mute</strong>, <strong>Go to
-Player</strong>, <strong>Add to Favorites</strong> (it reads
-<strong>Remove from Favorites</strong> on a row you have saved), and
-<strong>Refresh</strong>, which fetches the highlighted source again
+Player</strong>, <strong>Add to Favorites</strong> (Alt+O; it reads
+<strong>Remove from Favorites</strong> on a row you have saved, and
+<strong>Add 3 Marked to Favorites</strong> while stations are marked),
+and <strong>Refresh</strong>, which fetches the highlighted source again
 from the internet.</li>
 <li>Press <strong>Alt+T</strong> to jump back to the tree from anywhere
 in the window.</li>
@@ -3105,26 +3106,40 @@ Delete hides the source, just like <strong>Hide This Source</strong> on
 the menu, and <strong>Reset Sources to Default</strong> brings it back.
 On a folder inside one of Quill Radio’s own sources, Delete explains
 that there is nothing to delete.</p>
-<h4 id="removing-several-rows-at-once">Removing several rows at
-once</h4>
-<p>Press <strong>.</strong> (period) on each row you want to remove: a
-saved YouTube video or playlist, a followed channel, a server you added,
-or a station that is one of your favorites. You hear “Marked” and how
-many are marked, and the row’s name gains “(marked)”. It keeps the mark
-if you fold its folder and open it again. Then press
+<h4 id="adding-or-removing-several-rows-at-once">Adding or removing
+several rows at once</h4>
+<p>Press <strong>.</strong> (period) on each row you want: any station,
+or a row Delete can remove (a saved YouTube video or playlist, a
+followed channel or a server you added). You hear “Marked” and how many
+are marked, and the row’s name gains “(marked)”. It keeps the mark if
+you fold its folder and open it again. Then:</p>
+<ul>
+<li>To <strong>add every marked station to your favorites</strong>,
+press <strong>Alt+O</strong>, or Tab to the button, which now reads “Add
+3 Marked to Favorites”. Nothing asks first. You hear, for example,
+“Added 3 stations to Favorites”, or “Added 2 stations to Favorites. 1
+was already there.” The marks are cleared.</li>
+<li>To <strong>remove every marked row</strong>, press
 <strong>Delete</strong>: one question asks, for example, “Delete 4
 items?”, and you hear “Deleted 4 items.” Each branch that lost a row
-reloads, so the rows are gone from the tree.
-<strong>Ctrl+Shift+Delete</strong> clears every mark.</p>
+reloads, so the rows are gone from the tree. A station you have not
+saved cannot be removed, so it is left out of the count; if nothing
+marked can be removed, you hear so.</li>
+</ul>
+<p><strong>Ctrl+Shift+Delete</strong> clears every mark.</p>
+<p>For example, to save five stations from a genre you are exploring,
+open the genre, press <strong>.</strong> on each one you like as you
+listen your way down, then press <strong>Alt+O</strong> once.</p>
 <p>For example, to tidy your saved YouTube videos, open
 <strong>YouTube</strong>, then your saved videos, press
 <strong>.</strong> on each one you have finished with, and press
 <strong>Delete</strong> once.</p>
 <p>Things to know:</p>
 <ul>
-<li>A row Delete cannot remove cannot be marked. Pressing
-<strong>.</strong> on a country, a genre or a station you have not saved
-tells you which rows can be marked.</li>
+<li>A folder, such as a country or a genre, cannot be marked. Pressing
+<strong>.</strong> on one tells you which rows can be marked. A station
+that is only looked up when you play it (some TuneIn rows) cannot be
+marked either; <strong>Alt+O</strong> on it alone still adds it.</li>
 <li>The question is the same one Delete asks for a single row, so if you
 checked <strong>Don’t ask me again</strong> there, marked rows go
 without a question too. You still hear how many were deleted.</li>
@@ -10119,6 +10134,10 @@ Schedule Recording)</td>
 <tr>
 <td>Clear every mark</td>
 <td>Ctrl+Shift+Delete</td>
+</tr>
+<tr>
+<td>Add every marked station to Favorites (Browse Stations)</td>
+<td>Alt+O</td>
 </tr>
 <tr>
 <td>Move the selected favorite up or down</td>
