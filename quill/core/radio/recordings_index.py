@@ -4,7 +4,8 @@ Recordings Manager (embedded QUILL and standalone Quill Radio alike).
 
 Completed recordings are simply the audio files in the recordings folder
 (the ``destination_root`` from :class:`~quill.core.radio.recording.
-RecordingSettings`, default ``~/Music/Quill Radio Recordings``); the active
+RecordingSettings`, default ``~/Music/Quill Radio Recordings``) and in any
+folder a schedule saves to on its own; the active
 recording is whichever file the :class:`RadioRecorder` is writing right now
 -- found by identity, not by folder, so a recording writing to a temp dir
 still shows as "Recording" (R1/quill-radio #8, the temp-dir invisibility
@@ -268,6 +269,12 @@ def list_recordings(
     temp_root = str(getattr(settings, "temp_dir", "") or "")
     if temp_root and Path(temp_root) != folder:
         folders.append((Path(temp_root), TEMP_FOLDER_DETAIL))
+    # A schedule may save to its own folder (quill-radio #21); its finished
+    # recordings are recordings too, so those folders are scanned as well.
+    for sched_item in scheduled or []:
+        own = str(getattr(sched_item, "folder", "") or "").strip()
+        if own and all(Path(own) != where for where, _detail in folders):
+            folders.append((Path(own), ""))
     candidates: list[tuple[Path, str]] = []
     for where, where_detail in folders:
         try:

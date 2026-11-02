@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 327 audited sites (213 helped, 114 named-help).</p>
+<p>Control coverage: 329 audited sites (215 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -924,6 +924,12 @@ made.</li>
 id="schedulerecordingdialog-quilluiradioschedule_recording_dialogpy">ScheduleRecordingDialog
 (<code>quill/ui/radio/schedule_recording_dialog.py</code>)</h4>
 <ul>
+<li><code>self._folder_ctrl</code>: The folder this schedule’s
+recordings are saved in. Leave it empty to use the recordings folder
+from Recording Settings, or type a full path or choose Browse. A folder
+that cannot be written to is refused when you save the schedule.</li>
+<li><code>self._browse_btn</code>: Opens a folder chooser and puts the
+folder you pick in Save in folder.</li>
 <li><code>self._add_btn</code>: Saves the form as a scheduled recording
 – or saves your changes, when you are editing an existing one; the label
 says which.</li>

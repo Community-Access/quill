@@ -41,6 +41,7 @@ from quill.core.radio.recording import (
     RecordingLimitError,
     RecordingSettings,
 )
+from quill.core.radio.schedule_folder import settings_for_folder
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,8 @@ class RecordingScheduleEntry:
     ``last_fired_date`` (an ISO date in the entry's zone) guards against firing
     more than once for the same day -- for ``"once"`` it also means "already
     used," and R2 additionally sets ``enabled=False`` on a successful once-fire.
+    ``folder`` is where this schedule's recordings are saved; empty means the
+    recordings folder from Recording Settings (quill-radio #21).
     """
 
     id: str
@@ -79,6 +82,7 @@ class RecordingScheduleEntry:
     timezone: str = ""
     enabled: bool = True
     last_fired_date: str = ""
+    folder: str = ""
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -92,6 +96,7 @@ class RecordingScheduleEntry:
             "timezone": self.timezone,
             "enabled": self.enabled,
             "last_fired_date": self.last_fired_date,
+            "folder": self.folder,
         }
 
     @classmethod
@@ -118,6 +123,7 @@ class RecordingScheduleEntry:
             timezone=str(data.get("timezone", "")).strip(),
             enabled=bool(data.get("enabled", True)),
             last_fired_date=str(data.get("last_fired_date", "")),
+            folder=str(data.get("folder", "") or "").strip(),
         )
 
 
@@ -551,7 +557,7 @@ class RecordingScheduler:
             self._recorder.start(
                 station_name=entry.station_name,
                 stream_url=entry.stream_url,
-                settings=self._recording_settings,
+                settings=settings_for_folder(self._recording_settings, entry.folder),
                 duration_minutes=remaining_minutes(entry, now),
                 filter_graph=self._filter_graph_provider(),
                 entry_id=entry.id,

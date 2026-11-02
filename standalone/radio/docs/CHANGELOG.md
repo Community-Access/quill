@@ -18,6 +18,13 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **A folder for each scheduled recording** [2026-11-02]. Schedule Recording
+  has a Save in folder field (Alt+V) and a Browse button (Alt+B), so the
+  Saturday jazz show can go in one folder and the news in another. Leave it
+  empty to use the folder from Recording Settings; schedules you already have
+  keep recording where they did. A folder that cannot be written to is turned
+  down when you add the schedule, not when the show starts. Duplicate copies
+  the folder, and Radio Recordings lists what lands there.
 - **Search All Sources leaves hidden sources alone** [2026-11-01]. A source
   you turned off in Choose Browse Sources is no longer asked when you search,
   just as it is not opened when you browse.

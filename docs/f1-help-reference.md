@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 327 audited sites (213 helped, 114 named-help).
+Control coverage: 329 audited sites (215 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -335,6 +335,8 @@ Control coverage: 327 audited sites (213 helped, 114 named-help).
 - `cancel_btn`: Closes without changing how recordings are made.
 #### ScheduleRecordingDialog (`quill/ui/radio/schedule_recording_dialog.py`)
 
+- `self._folder_ctrl`: The folder this schedule's recordings are saved in. Leave it empty to use the recordings folder from Recording Settings, or type a full path or choose Browse. A folder that cannot be written to is refused when you save the schedule.
+- `self._browse_btn`: Opens a folder chooser and puts the folder you pick in Save in folder.
 - `self._add_btn`: Saves the form as a scheduled recording -- or saves your changes, when you are editing an existing one; the label says which.
 - `close_btn`: Closes this window. Every schedule in the list stays armed and fires at its time.
 #### SearchSourcesDialog (`quill/ui/radio/search_sources_dialog.py`)
