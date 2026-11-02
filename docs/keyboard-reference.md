@@ -591,7 +591,10 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | --- | --- | --- |
 | Alt+F5 | Use My ChatGPT Subscription... | `studio.chatgpt_account` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Alt+Shift+F5 | Stop Describing the Folder | `studio.describe_folder_stop` |
 | Ctrl+3 | Recording Pre-flight Check... | `tools.hosted_ai_task` |
+| Ctrl+Alt+F5 | Describe Again... | `studio.describe_again` |
+| Ctrl+Alt+F6 | Save Described Copies... | `studio.save_described_copies` |
 | Ctrl+Alt+Shift+B | Record marker | `studio.record_marker` |
 | Ctrl+Alt+Shift+C | Camera check | `studio.camera_check` |
 | Ctrl+Alt+Shift+Delete | Record discard | `studio.record_discard` |
@@ -620,6 +623,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+F5 | Describe a Picture... | `studio.describe_picture` |
 | Ctrl+F9 | Start Watching for Changes | `studio.ai_watch_start` |
 | Ctrl+Shift+3 | Narrate a Recording... | `studio.ai_narrative` |
+| Ctrl+Shift+F5 | Describe a Folder... | `studio.describe_folder` |
 | Ctrl+Shift+F9 | Stop Watching for Changes | `studio.ai_watch_stop` |
 
 ## QUILL Transcribe (app keys)

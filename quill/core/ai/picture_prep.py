@@ -117,14 +117,26 @@ _LONGEST_SIDE: dict[str, tuple[int, str]] = {
     OWN_KEY: (3072, "ai.google.dev/gemini-api/docs/image-understanding: tiles up to 3072"),
 }
 
+#: An own key's provider, where it differs from Gemini's 3072.
+_OWN_KEY_SIDE: dict[str, tuple[int, str]] = {
+    "openai": (2048, "platform.openai.com/docs/guides/images-vision: high detail fits 2048 square"),
+    "claude": (
+        1568,
+        "docs.anthropic.com/en/docs/build-with-claude/vision: a long edge over 1568 is scaled down",
+    ),
+}
 
-def longest_side_for(connection: str) -> int:
+
+def longest_side_for(connection: str, own_key_provider: str = "") -> int:
     """The longest side, in pixels, a picture is fitted to for *connection*.
 
-    Zero for a connection that cannot see at all (QUILL's free AI).
+    Zero for a connection that cannot see at all (QUILL's free AI). On My own
+    key, *own_key_provider* picks the provider's own size where it has one.
     """
     if connection == FREE:
         return 0
+    if connection == OWN_KEY and own_key_provider in _OWN_KEY_SIDE:
+        return _OWN_KEY_SIDE[own_key_provider][0]
     return _LONGEST_SIDE.get(connection, (2048, ""))[0]
 
 
@@ -407,12 +419,14 @@ def prepare_request(
     times: Sequence[float] = (),
     sheet_frame_count: int = 0,
     captions: bool = False,
+    own_key_provider: str = "",
 ) -> PreparedRequest:
     """Fit *pictures* to *record*, enforcing the cap, and say what was inspected.
 
     Either one contact sheet (``sheet_frame_count`` frames, at most 16) or at
     most four single pictures. Raises :class:`CapabilityMissing` when the
-    connection cannot see, before anything is prepared.
+    connection cannot see, before anything is prepared. *own_key_provider*
+    sizes the picture for that provider on My own key.
     """
     require(record, PICTURES)
     if not pictures:
@@ -424,7 +438,7 @@ def prepare_request(
             raise PicturePrepError(f"A contact sheet holds at most {MAX_SHEET_FRAMES} frames.")
     elif len(pictures) > MAX_SINGLE_FRAMES:
         raise PicturePrepError(f"At most {MAX_SINGLE_FRAMES} pictures go with one question.")
-    side = longest_side_for(record.connection)
+    side = longest_side_for(record.connection, own_key_provider)
     fitted = tuple(fit_image(data, side) for data in pictures)
     count = sheet_frame_count or len(pictures)
     return PreparedRequest(

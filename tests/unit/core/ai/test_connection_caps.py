@@ -31,7 +31,8 @@ def test_the_table_of_10a7() -> None:
     assert caps.can(plan, "pictures") and caps.can(plan, "streaming")
     assert not caps.can(plan, "agent_tools") and not caps.can(plan, "image_generation")
     assert caps.can(caps.record_for("own_key", own_key_provider="gemini"), "pictures")
-    assert not caps.can(caps.record_for("own_key", own_key_provider="openai"), "pictures")
+    assert caps.can(caps.record_for("own_key", own_key_provider="openai"), "pictures")
+    assert caps.can(caps.record_for("own_key", own_key_provider="claude"), "pictures")
     assert caps.can(caps.record_for("own_key"), "image_generation")
 
 
@@ -76,21 +77,39 @@ def test_the_switch_offer_names_a_set_up_connection_that_can() -> None:
 def test_the_offer_lists_who_could_when_nothing_set_up_can() -> None:
     offer = caps.switch_offer("pictures", set_up=["free"], in_use="free")
     assert offer.sentence == (
-        "Pictures need My ChatGPT plan, My GitHub Copilot, Codex or a Gemini key. Choose one now?"
+        "Pictures need My ChatGPT plan, My GitHub Copilot, Codex or an OpenAI, Gemini or "
+        "Claude key. Choose one now?"
     )
     assert offer.target == "" and offer.open_row == "chatgpt"
     tasks = caps.switch_offer("agent_tools", set_up=["free"], in_use="free")
     assert tasks.sentence == "Agent tasks need My GitHub Copilot or Codex. Choose one now?"
 
 
-def test_an_openai_key_does_not_count_as_seeing_but_a_gemini_key_does() -> None:
-    openai = caps.switch_offer("pictures", set_up=["own_key"], in_use="free")
-    assert openai.target == ""
-    gemini = caps.switch_offer(
-        "pictures", set_up=["own_key"], in_use="free", own_key_provider="gemini"
+def test_openai_gemini_and_claude_keys_see_and_are_offered_by_name() -> None:
+    for provider, name in (("openai", "OpenAI"), ("gemini", "Gemini"), ("claude", "Claude")):
+        offer = caps.switch_offer(
+            "pictures", set_up=["own_key"], in_use="free", own_key_provider=provider
+        )
+        assert offer.target == "own_key"
+        assert offer.sentence == (
+            f"Pictures need a connection that can see. Your {name} key can. Switch to it and ask?"
+        )
+    openrouter = caps.switch_offer(
+        "pictures", set_up=["own_key"], in_use="free", own_key_provider="openrouter"
     )
-    assert gemini.target == "own_key"
-    assert gemini.sentence.startswith("Pictures need a connection that can see. A Gemini key")
+    assert openrouter.target == ""
+
+
+def test_every_own_key_picture_claim_cites_where_it_was_read() -> None:
+    """The OpenAI and Claude claims (2026-11-01) cite the provider's vision page."""
+    records = caps.own_key_records()
+    assert "images-vision" in records["openai"].claim("pictures").source
+    assert "build-with-claude/vision" in records["claude"].claim("pictures").source
+    for provider in ("openai", "gemini", "claude"):
+        assert records[provider].claim("pictures").supported
+    assert records["openai"].claim("pictures").note == "per model"
+    for provider in ("openrouter", "ollama_cloud", "custom"):
+        assert not records[provider].claim("pictures").supported
 
 
 def test_menu_labels_say_what_a_command_needs() -> None:
