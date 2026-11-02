@@ -208,7 +208,6 @@ Quill is built on open-source foundations and integrates best practices from the
   - `app_updater` (MIT) — cross-platform incremental update delivery and automatic installer bootstrapper. Vendored at `quill/_vendor/autoupdate/`.
   - `smart_list` (MIT) — accessible, model-based list view for large outlines and datasets.
   - `accessible_output2` (MIT) — optional fallback for speech and braille output when Prism is unavailable.
-  - `html_to_text` (MIT) — converts HTML from clipboard pastes to clean, structured plain text. Used in `quill/ui/html_paste_cleaner.py`.
   - `app_elements`, `platform_utils`, `keyboard_handler` — small cross-platform utilities for dialogs, clipboard, and hotkeys.
 
   Full license text is reproduced in `docs/legal/THIRD_PARTY_NOTICES.md`.

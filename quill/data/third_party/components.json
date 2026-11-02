@@ -846,25 +846,6 @@
       "delivery": "on-request"
     },
     {
-      "id": "html-to-text",
-      "name": "html_to_text",
-      "group": "runtime",
-      "version": "1.0.0",
-      "licenses": [
-        "Apache-2.0"
-      ],
-      "license_label": "Apache-2.0",
-      "copyright": "Copyright emludei (https://github.com/emludei/html_to_text)",
-      "homepage": "https://github.com/emludei/html_to_text",
-      "what": "A PyPI HTML processing library included in the runtime. QUILL's paste cleaner expects a different project's API and falls back when this package is installed.",
-      "products": [
-        "all"
-      ],
-      "delivery": "bundled",
-      "pypi": "html_to_text",
-      "review": "The declared PyPI package is emludei's html_to_text 1.0.0 (Apache-2.0); it does not export the html_to_text function the paste cleaner imports. AccessibleApps' separately installed project documents that API and is MIT-licensed. Choose and test the intended dependency and packaging before pinning or replacing either."
-    },
-    {
       "id": "httpcore2",
       "name": "httpcore2",
       "group": "runtime",

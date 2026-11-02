@@ -1,8 +1,9 @@
 """
 HTML paste cleaner — intelligently detects and cleans HTML from clipboard.
 
-Integrates AccessibleApps html_to_text (MIT) to detect HTML content and offer
-intelligent cleaning options: strip to plain text, preserve structure, or keep as-is.
+Detects HTML content and offers cleaning options: strip to plain text, preserve
+structure, or keep as-is. The converter is QUILL's own and needs no third-party
+library.
 
 This module provides:
 - is_html(text) → bool: Heuristic detection of HTML content
@@ -17,6 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from html import unescape
 
 __all__ = ["is_html", "clean_html", "HtmlPasteContext", "HTML_PASTE_HEURISTIC_TAGS"]
 
@@ -93,8 +95,7 @@ def clean_html(html: str) -> str:
     """
     Convert HTML to plain text, preserving document structure.
 
-    Uses AccessibleApps html_to_text (MIT) if available; falls back to
-    basic regex stripping if the library is not installed.
+    Uses QUILL's own regex-based converter (no third-party library).
 
     Behavior:
     - Strips scripts, styles, and metadata
@@ -105,39 +106,28 @@ def clean_html(html: str) -> str:
 
     Returns plain text suitable for insertion into Quill editor.
     """
-    try:
-        from html_to_text import html_to_text
+    # Remove script and style blocks.
+    text = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.IGNORECASE | re.DOTALL)
 
-        return html_to_text(html).strip()
-    except ImportError:
-        # Graceful fallback: basic regex-based stripping.
-        # Remove script and style blocks.
-        text = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.IGNORECASE | re.DOTALL)
-        text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.IGNORECASE | re.DOTALL)
+    # Convert common block elements to double newlines.
+    text = re.sub(r"</?(p|div|blockquote|h[1-6])[^>]*>", "\n\n", text, flags=re.IGNORECASE)
 
-        # Convert common block elements to double newlines.
-        text = re.sub(r"</?(p|div|blockquote|h[1-6])[^>]*>", "\n\n", text, flags=re.IGNORECASE)
+    # Convert <br> and <hr> to newlines.
+    text = re.sub(r"<br\s*/?>\s*", "\n", text, flags=re.IGNORECASE)
+    text = re.sub(r"<hr\s*/?>\s*", "\n" + "-" * 80 + "\n", text, flags=re.IGNORECASE)
 
-        # Convert <br> and <hr> to newlines.
-        text = re.sub(r"<br\s*/?>\s*", "\n", text, flags=re.IGNORECASE)
-        text = re.sub(r"<hr\s*/?>\s*", "\n" + "-" * 80 + "\n", text, flags=re.IGNORECASE)
+    # Strip remaining tags.
+    text = re.sub(r"<[^>]+>", "", text)
 
-        # Strip remaining tags.
-        text = re.sub(r"<[^>]+>", "", text)
+    # Decode HTML entities.
+    text = unescape(text)
 
-        # Decode HTML entities.
-        try:
-            from html import unescape
+    # Collapse excess whitespace.
+    text = re.sub(r"\n\s*\n+", "\n\n", text)
+    text = re.sub(r" +", " ", text)
 
-            text = unescape(text)
-        except ImportError:
-            pass
-
-        # Collapse excess whitespace.
-        text = re.sub(r"\n\s*\n+", "\n\n", text)
-        text = re.sub(r" +", " ", text)
-
-        return text.strip()
+    return text.strip()
 
 
 @dataclass(slots=True)

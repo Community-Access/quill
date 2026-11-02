@@ -16,7 +16,7 @@ Summary by licence
 
   MIT License: 54 components
   BSD 3-Clause License: 23 components
-  Apache License, version 2.0: 11 components
+  Apache License, version 2.0: 10 components
   Python Software Foundation License, version 2: 6 components
   GNU Lesser General Public License, version 2.1: 4 components
   The Unlicense (public domain dedication): 4 components
@@ -392,17 +392,6 @@ Copyright: Copyright (c) 2006-2022 by the respective authors (see AUTHORS file)
 Upstream: https://pygments.org/
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
-
-html_to_text
-------------
-
-What it is: A PyPI HTML processing library included in the runtime. QUILL's paste cleaner expects a different project's API and falls back when this package is installed.
-Version: 1.0.0
-Licence: Apache-2.0
-Copyright: Copyright emludei (https://github.com/emludei/html_to_text)
-Upstream: https://github.com/emludei/html_to_text
-How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 
 httpcore2
 ---------
@@ -1996,7 +1985,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 Apache License, version 2.0
 ---------------------------
 
-Used by: cryptography, html_to_text, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe).
+Used by: cryptography, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe).
 
 What it asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 

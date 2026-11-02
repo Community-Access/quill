@@ -16,7 +16,7 @@ Summary by licence
 
   MIT License: 62 components
   BSD 3-Clause License: 23 components
-  Apache License, version 2.0: 15 components
+  Apache License, version 2.0: 14 components
   GNU General Public License, version 3: 7 components
   Python Software Foundation License, version 2: 6 components
   GNU General Public License, version 2: 5 components
@@ -404,17 +404,6 @@ Copyright: Git: Copyright (C) Linus Torvalds and the Git contributors; GitHub CL
 Upstream: https://gitforwindows.org/
 How it reaches you: Downloaded only when you ask for it, from QUILL's own pinned release, so QUILL still redistributes it.
 What the licence asks of us: Ship the licence text. Provide the complete corresponding source of the component, either alongside it or by a written offer valid for at least three years. Any program that is a derivative work must also be offered under GPL-2.0-compatible terms. Keep the copyright notice and the permission notice with every copy.
-
-html_to_text
-------------
-
-What it is: A PyPI HTML processing library included in the runtime. QUILL's paste cleaner expects a different project's API and falls back when this package is installed.
-Version: 1.0.0
-Licence: Apache-2.0
-Copyright: Copyright emludei (https://github.com/emludei/html_to_text)
-Upstream: https://github.com/emludei/html_to_text
-How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 
 httpcore2
 ---------
@@ -2216,7 +2205,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 Apache License, version 2.0
 ---------------------------
 
-Used by: cryptography, html_to_text, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, sherpa-onnx (with ONNX Runtime), tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe), Kokoro-82M voices and kokoro-onnx, Vosk small English model (vosk-model-small-en-us-0.15), Vosk speech recognition (with Kaldi).
+Used by: cryptography, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, sherpa-onnx (with ONNX Runtime), tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe), Kokoro-82M voices and kokoro-onnx, Vosk small English model (vosk-model-small-en-us-0.15), Vosk speech recognition (with Kaldi).
 
 What it asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 

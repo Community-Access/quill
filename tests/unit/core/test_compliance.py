@@ -24,20 +24,19 @@ def test_normalize_requirement_name() -> None:
     assert normalize_requirement_name("pytest-xdist>=3.6 ; extra == 'dev'") == "pytest-xdist"
 
 
-def test_html_to_text_notice_identifies_pypi_package(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setattr(
-        "quill.core.compliance._distribution_metadata", lambda _name: ("unknown", "", "")
-    )
-    pyproject = tmp_path / "pyproject.toml"
-    pyproject.write_text('[project]\ndependencies = ["html_to_text>=1.0.0"]\n', encoding="utf-8")
-    rows = build_dependency_notices(pyproject, include_optional=False, include_build=False)
-    assert len(rows) == 1
-    assert "emludei" in rows[0]["notes"]
-    assert "AccessibleApps" in rows[0]["notes"]
-    assert rows[0]["license"] == "Apache-2.0"
-    assert rows[0]["homepage"] == "https://github.com/emludei/html_to_text"
+def test_html_to_text_is_not_a_dependency() -> None:
+    """The PyPI html_to_text never had the API the paste cleaner wanted, and the
+    project that did has no licence; QUILL's own converter is the only path."""
+    root = Path(__file__).resolve().parents[3]
+    with (root / "pyproject.toml").open("rb") as source:
+        project = tomllib.load(source)["project"]
+    declared = list(project.get("dependencies", []))
+    for group in project.get("optional-dependencies", {}).values():
+        declared.extend(group)
+    names = {normalize_requirement_name(item) for item in declared}
+    assert "html_to_text" not in names and "html-to-text" not in names
+    cleaner = (root / "quill" / "ui" / "html_paste_cleaner.py").read_text(encoding="utf-8")
+    assert "import html_to_text" not in cleaner and "from html_to_text" not in cleaner
 
 
 def test_social_metadata_has_unique_authors() -> None:
