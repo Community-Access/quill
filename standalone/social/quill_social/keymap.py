@@ -93,6 +93,8 @@ DEFAULT_BINDINGS: dict[str, str] = {
     "user_guide": "Ctrl+F1",
     "keyboard_reference": "Ctrl+Shift+F1",
     "product_requirements": "Alt+Shift+F1",
+    # Ctrl+Shift+F1, the family's What's New key, is the Keyboard Reference here.
+    "whats_new": "Ctrl+Alt+F1",
     "about": "Alt+F1",
 }
 

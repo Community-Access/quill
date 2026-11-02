@@ -120,6 +120,7 @@ Example: open a feed, press Ctrl+Shift+L, and the first unread article starts. P
 | **Ctrl+F1** | User Guide | Help | Opens the user guide in your browser. |
 | **Ctrl+Shift+F1** | Keyboard Reference | Help | Opens this document. |
 | **Alt+Shift+F1** | Product Requirements | Help | Opens the product requirements document. |
+| **Ctrl+Alt+F1** | What's New | Help | Opens the changelog, newest changes first. |
 | **Alt+F1** | About | Help | The version of QUILL Social you have. |
 
 Rarely used commands, such as the Help documents and the settings-like Tools windows, have longer keys on purpose, so the short ones stay free for what you do every few minutes. Ctrl+Alt keys and keyboard layouts: where the right Alt key types accented letters, a Ctrl+Alt key may run its command instead of typing the letter while the search box has focus; the menu always works.

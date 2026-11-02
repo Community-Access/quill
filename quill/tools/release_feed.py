@@ -107,6 +107,25 @@ APPS: dict[str, AppRelease] = {
             "quill/apps/transcribe.py",
             "_VERSION",
         ),
+        # Converter and Weather joined on 2026-11-01 (Quill-Converter-*, Quill-Weather-*).
+        AppRelease(
+            "converter",
+            "Quill Converter",
+            "quill-converter-v",
+            "Quill-Converter",
+            "standalone/converter/docs/CHANGELOG.md",
+            "quill/apps/converter.py",
+            "_VERSION",
+        ),
+        AppRelease(
+            "weather",
+            "Quill Weather",
+            "quill-weather-v",
+            "Quill-Weather",
+            "standalone/weather/docs/CHANGELOG.md",
+            "quill/apps/weather.py",
+            "_VERSION",
+        ),
     )
 }
 

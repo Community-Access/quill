@@ -96,6 +96,7 @@ def test_every_menu_command_has_a_default_chord():
         "user_guide",
         "keyboard_reference",
         "product_requirements",
+        "whats_new",
         "about",
         "preferences",
     ):

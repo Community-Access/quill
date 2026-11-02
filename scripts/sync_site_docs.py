@@ -81,12 +81,15 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         # The changelog moved into docs/ beside the other Cast documents and
         # joined the site with 2.0.0 (2026-10-03).
         "changelog": "CHANGELOG.html",
+        # The tutorials joined the site on 2026-11-01, as Radio's and QUILL Lite's did.
+        "tutorials": "tutorials.html",
     },
     "weather": {
         "userguide": "userguide.html",
         "prd": "prd.html",
         # 2.2.1, the version Help > Release Notes opens (quill/apps/weather.py).
         "release-notes": "release-notes-2.2.1.html",
+        "tutorials": "tutorials.html",
     },
     "studio": {
         "userguide": "userguide.html",
@@ -118,6 +121,7 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         "prd": "prd.html",
         "release-notes": "release-notes-1.0.html",
         "changelog": "CHANGELOG.html",
+        "tutorials": "tutorials.html",
     },
     "quilllite": {
         "userguide": "userguide.html",
