@@ -131,6 +131,14 @@ def load_history(data_dir: Path) -> RadioHistory:
         )
         history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
         history.share_family_prefs = bool(raw.get("share_family_prefs", False))
+        from quill.core.ai.connection_choice import load_ai_fields
+
+        for name, value in load_ai_fields(raw).items():
+            setattr(history, name, value)
+        history.ai_privacy_accepted_version = _coerce_int(raw.get("ai_privacy_accepted_version"), 0)
+        consent = raw.get("ai_picture_consent", [])
+        if isinstance(consent, list):
+            history.ai_picture_consent = [str(item) for item in consent if str(item).strip()]
         history.transcript_detail = transcript_export.normalize_detail(raw.get("transcript_detail"))
         template = raw.get("now_playing_template")
         if isinstance(template, str) and template.strip():
@@ -323,6 +331,13 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
         "use_global_volume": history.use_global_volume,
         "song_history_enabled": history.song_history_enabled,
         "recording_resume_choice": history.recording_resume_choice,
+        "ai_privacy_accepted_version": history.ai_privacy_accepted_version,
+        "ai_own_key_model": history.ai_own_key_model,
+        "ai_own_key_provider": history.ai_own_key_provider,
+        "ai_connection": history.ai_connection,
+        "ai_copilot_model": history.ai_copilot_model,
+        "ai_codex_model": history.ai_codex_model,
+        "ai_picture_consent": list(history.ai_picture_consent),
         "stations": [station.to_dict() for station in history.stations],
     })
 

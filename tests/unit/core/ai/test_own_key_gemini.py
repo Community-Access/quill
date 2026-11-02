@@ -13,6 +13,7 @@ import threading
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from types import SimpleNamespace
+from urllib.parse import urlparse
 
 import pytest
 
@@ -141,8 +142,8 @@ def test_asking_openai_with_only_a_gemini_key_says_so_rather_than_switching(monk
 
 def test_names_and_addresses_follow_the_provider() -> None:
     assert own_key.provider_name("gemini") == "Google Gemini"
-    assert "aistudio.google.com" in own_key.key_url("gemini")
-    assert own_key.usage_url("gemini").startswith("https://aistudio.google.com")
+    assert own_key.key_url("gemini").split("/")[0] == "aistudio.google.com"  # shown, no scheme
+    assert urlparse(own_key.usage_url("gemini")).hostname == "aistudio.google.com"
     assert own_key.default_model("gemini").startswith("gemini")
     warning = own_key.size_warning(
         "some words", "gemini-2.5-flash", free_limit_tokens=10, provider="gemini"
@@ -232,4 +233,6 @@ def test_a_gemini_key_describes_an_image_through_the_vision_client(monkeypatch, 
     said = own_key.describe_image_with_own_key(picture, "What colour?", provider="gemini")
 
     assert said == "A red door."
-    assert seen == [("gemini", "gemini-2.5-flash", "What colour?")]
+    from quill.core.ai.text_only import with_family_instruction
+
+    assert seen == [("gemini", "gemini-2.5-flash", with_family_instruction("What colour?"))]

@@ -81,7 +81,10 @@
           "terminal",
           "web",
           "memory",
-          "run_command"
+          "run_command",
+          "capture_screen",
+          "record_audio",
+          "schedule"
         ]
       },
       "additionalProperties": {

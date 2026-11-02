@@ -268,6 +268,21 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.hosted_ai_chat_key": "Ctrl+6",
     "tools.hosted_ai_prompt_library": "Ctrl+7",
     "tools.hosted_ai_web_searches": "Ctrl+9",  # rule 9 wanted longer; none was free
+    # Choose Your AI (codex.md 10A.9, 2026-10-31): QUILL Lite's chords (rule 2);
+    # core/lite/commands_ai.py says why these two. Checked free here, in
+    # DEFAULT_ALIASES, in every APP_KEYMAPS app and in the system-wide keys.
+    # Not in Quill Radio or QUILL Cast (codex.md Phase 3): Ctrl+1 to Ctrl+9
+    # are their Window menu keys on every window, so there Which AI is Ctrl+F8,
+    # Choose Your AI Ctrl+Shift+F8 and Ask Ctrl+Shift+8 -- a comment in
+    # app_keymaps.py and a row in app_ai_keys.APP_AI_DIVERGENCES (rule 11).
+    "tools.hosted_ai_which": "Ctrl+8",
+    "tools.hosted_ai_choose": "Ctrl+4",
+    # Do a Document Task (codex.md 6.2): the last plain chord 10A.9 found free in
+    # both editors and every APP_KEYMAPS app; core/lite/commands_ai.py says why.
+    "tools.hosted_ai_task": "Ctrl+3",
+    # Propose Alt Text (codex.md 6.4): Do a Document Task with the request
+    # filled in. No key in either editor; rule 8 reason in the family gate.
+    "tools.hosted_ai_alt_text": "",
     "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
     # The dictionary (2026-10-02; quill/ui/word_tools_commands.py, shared).
     # Look Up is the dictionary without AI (DICT-2's window, now reachable and
@@ -1073,13 +1088,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "github.dispatch_workflow": "",
     "github.view_notifications": "",
     "github.view_security_alerts": "",
-    # GitHub Tier 3 (Codespaces + Copilot CLI, needs live-device
+    # GitHub Tier 3 (Codespaces, needs live-device
     # verification -- see quill/core/github/gh_bridge.py). No default
     # chords -- the leader-chord space is fully claimed.
     "github.list_codespaces": "",
     "github.create_codespace": "",
-    "github.copilot_suggest": "",
-    "github.copilot_explain": "",
     # Local git (Tools > Local Git). No default chords -- the single-letter
     # leader-chord space is fully claimed (see the github.* block above);
     # these are reachable via the menu and the Command Palette, and freely

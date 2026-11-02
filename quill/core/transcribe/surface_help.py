@@ -115,6 +115,27 @@ PURPOSES: dict[str, str] = {
         "what changed. Control Enter inserts them where they were going; nothing is "
         "written before that."
     ),
+    "Ask": (
+        "A conversation about your dictation, on whichever AI is in use: the transcript "
+        "you last reviewed, or this session's dictated phrases, go with every message, "
+        "never your voice. Type in Your message and press Enter; the reply is read aloud "
+        "and added to the conversation above. Quick questions holds Who said what? and "
+        "a few more."
+    ),
+    "Choose Your AI": (
+        "Choose where QUILL Transcribe's AI comes from: QUILL's free AI, your ChatGPT "
+        "plan, GitHub Copilot, Codex or your own key. QUILL Transcribe signs in on its "
+        "own, as QUILL Transcribe. The list says which is in use; Enter uses the selected "
+        "one or signs in to it, and Delete signs a signed-in one out."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and whose "
+        "count it is. Manage Usage opens the selected one's own page."
+    ),
     "Review with AI": (
         "Before the first change is asked for, this says who receives the words "
         "being reviewed and what is sent. No is the default and sends nothing."

@@ -10670,7 +10670,7 @@ release (family rule 10):
   Ask Quill now uses too, into the host&#39;s `ai-sessions` folder; QUILL&#39;s is Ask
   Quill&#39;s, so AI Session Branches lists them. **Saved Conversations...** opens
   one to carry on, or deletes one after asking.
-- **Free AI Prompt Library...** (`Ctrl+7`) opens the same `PromptLibraryDialog`
+- **Prompt Library...** (`Ctrl+7`, called Free AI Prompt Library before Choose Your AI) opens the same `PromptLibraryDialog`
   and the same library (Quillin prompts included) as Tools, AI, Prompt Library,
   in hosted mode: Run fills the prompt (`quill/core/prompt_fill.py`) and the
   shared command sends it as a general question on the free AI.
@@ -10788,7 +10788,9 @@ That half was not taken. The requirements instead:
 - **No fallback between providers.** With Gemini chosen and only an OpenAI key
   saved, the route is not active and AI help is on the free service; OK says so
   and names the unused key. A request made anyway is refused with a sentence
-  before anything is sent.
+  before anything is sent. (Since 2026-10-31 the stored `ai_connection` decides
+  instead, and a missing key leaves no AI in use rather than the free service;
+  see 5.84m4.)
 - **Earlier consent is kept.** An empty `ai_own_key_provider` means OpenAI, the
   only provider there was when 1.1 keys were saved. An unknown value means *no*
   provider, never a guess.
@@ -10831,6 +10833,119 @@ That half was not taken. The requirements instead:
   audit. Tests: `tests/unit/core/ai/test_own_key_gemini_route.py` runs the
   shipped code against a loopback server shaped like both providers, with
   synthetic keys.
+
+### 5.84m4 Choose Your AI, GitHub Copilot, Codex and document tasks (2026-10-31 to 2026-11-01)
+
+Plan of record: the family AI plan of 2026-10-31 (decisions 13, 15, 18, 19,
+20, 21 and 23 are cited by number below). Both editors get every item here in
+the same change, from the shared `quill/ui/hosted_ai_*.py` modules (family
+rule 10); QUILL reaches them through `quill/ui/main_frame_hosted_ai.py`, which
+has no commands of its own.
+
+**Five connections, one stored choice.** `ai_connection` (`free`, `chatgpt`,
+`copilot`, `codex`, `own_key`; empty means not yet decided) is the same field
+in `quill/core/settings.py` and `quill/core/lite/settings.py`. On the first
+read where it is empty it is set once to what the old silent precedence
+chose (ChatGPT signed in, else an own key, else free), so nobody&#39;s behaviour
+changes on upgrade. From then on a request goes to the stored connection or to
+nothing (`quill/core/ai/connection_choice.py`). `ai_copilot_model` and
+`ai_codex_model` hold those connections&#39; models; empty means the service
+picks.
+
+**Choose Your AI** (Ctrl+4; `tools.hosted_ai_choose`, Lite `cmd_ai_choose`;
+`quill/ui/hosted_ai_connections.py`). Five controls in tab order:
+Connections (rows read &quot;name, state&quot;: in use, signed in, not set up, signed
+out by OpenAI or GitHub, not available yet, not available for your account),
+About this connection (from the capability registry, two sentences at most),
+Model (the service&#39;s own order, first marked &quot;(recommended)&quot;), one action
+button whose label follows the row (Use This, Sign In..., Sign Out), and
+Close. Plan Options... appears while the ChatGPT or Codex row is selected and
+signed in (`quill/ui/hosted_ai_plan_options.py`: Allow web search, Forget on
+This Computer). Delete on a signed-in row asks Yes/No with No the default. All
+words come from `quill/core/ai/connection_words.py`; the window speaks only
+outcomes (GATE-13) through the announcement service (GATE-BRAILLE). Every
+connection signs in through one sign-in step: ChatGPT and Codex by the plan&#39;s
+loopback sign-in, Copilot by GitHub&#39;s device code (spaced out, said once, on
+the clipboard), the own key by the existing Use My Own AI Key dialog, and the
+free AI by its existing Connect step, opened only when somebody asks
+(decision 23). Use My Own AI Key (Alt+F2), Use My ChatGPT Subscription
+(Alt+F5) and Connect or Sign Out keep their ids and keys and open the window
+on their own row with the sign-in step ready.
+
+**Which AI Am I Using** (Ctrl+8; `tools.hosted_ai_which`, Lite
+`cmd_ai_which`) speaks one line from `connection_usage.which_ai_sentence`:
+connection, model, one usage clause. Two presses within 0.5 seconds open
+Choose Your AI. The **AI status cell** (decision 19) is the same text, short
+(&quot;AI: free&quot;, &quot;AI: ChatGPT plan&quot;, &quot;AI: Copilot, Auto&quot;, &quot;AI: Codex&quot;, &quot;AI: own
+key&quot;, &quot;AI: none&quot;, &quot;AI: off&quot;), placed last; Enter opens Choose Your AI.
+
+**AI Usage** keeps its keys (QUILL Ctrl+Alt+Shift+F2, Lite Ctrl+Alt+Shift+F9)
+and opens one read-only list (`quill/ui/hosted_ai_usage.py`), a sentence per
+connection that is set up, each naming whose number it is: QUILL&#39;s count for
+the free AI, a local count of today&#39;s and this week&#39;s requests for the
+ChatGPT plan (decision 24, never used to guess a limit), GitHub&#39;s quota for
+Copilot, and the provider&#39;s last rate-limit headers for an own key. Manage
+Usage opens the selected connection&#39;s page. Everything is text (decision 13).
+
+**No silent fall-back (decision 15).** Signing in is choosing. Sign Out of
+the connection in use leaves none in use; the next AI command opens Choose
+Your AI and says once &quot;No AI is in use. Choose one.&quot; A revoked token, a
+missing key or a reached limit is said once, nothing is sent, nothing is
+retried and nothing switches. This replaces the session route guard&#39;s
+&quot;Send to a Different AI?&quot; question for the hosted-AI commands; the guard
+stays only as a backstop.
+
+**Capability gating (GATE-CAPS).** `quill/core/ai/connection_caps.py` holds
+one record per connection, each claim naming its source. A gated command
+(`connection_words.COMMAND_NEEDS`) stays listed and keyed; when the
+connection in use cannot do it, its label gains &quot;(needs ...)&quot; after the name
+and before any ellipsis, and pressing it sends nothing and offers the switch
+in one Yes/No, Yes the default. `quill/tools/connection_caps_audit.py`
+checks the records.
+
+**GitHub Copilot.** Per app sign-in under the app&#39;s agent name, with its own
+token entry apart from the GitHub repository features. The device flow needs
+a GitHub OAuth App client id per app (`copilot_auth.CLIENT_IDS`); while it is
+empty the row is &quot;not available yet&quot; and About says why in one sentence.
+Single requests, conversations and Ask About an Image (on a model that sees)
+go through the SDK; an error is said once.
+
+**Codex** (decision 21) is one keypress once the ChatGPT plan is signed in.
+Single requests while Codex is in use go over the plan&#39;s direct route; the
+Codex app-server starts only for document tasks. If the engine is not in the
+build, the row is &quot;not available yet&quot;.
+
+**Do a Document Task** (Ctrl+3; `tools.hosted_ai_task`, Lite `cmd_ai_task`;
+`quill/ui/agent_window.py`, `quill/core/ai/document_task.py`) needs agent
+tools, which only Copilot and Codex have. Controls: Conversation, Status,
+Instruction (focus starts here; Enter sends; text sent while a task runs is a
+follow-up), Send, Stop, Close. Tools are limited to `DOCUMENT_TASK_TOOLS`
+(read outline, section, selection and document; apply_patch; the
+accessibility audit; `run_command` limited to `SAFE_TOOL_IDS`). Every
+mutating step asks in Allow This Step? (Allow once, the default; Allow for
+this task; Don&#39;t allow, Escape), every edit opens Review AI Changes, each
+applied change is one undo step, and nothing carries over between tasks. The
+closing summary is built from the registry&#39;s record of calls, not the model&#39;s
+claims, and is the only thing spoken. Engine folders are swept when the task
+ends, on Stop and before the next task (decision 4).
+
+**One family prompt list (decision 18)** at `&lt;app data&gt;/prompts.json`, with a
+run-once, off-thread migration (`quill/core/ai/family_prompt_migration.py`)
+from Prompt Studio, the image prompts and QUILL Lite&#39;s own list. Identical
+prompts merge; different text under one name keeps both, the second named by
+its old store. Old files are only read, and kept for one release.
+
+**My own key&#39;s providers (decision 20)**: OpenAI, Google Gemini, Anthropic
+Claude, OpenRouter, Ollama Cloud, a custom OpenAI-compatible service and
+Ollama on this computer, which needs no key and whose About line is &quot;Runs on
+this computer. Nothing is sent.&quot; (`quill/core/ai/own_key_providers.py`). The
+AI Hub&#39;s provider chooser is gone; its Provider page opens Use My Own AI Key,
+and the provider saved there is also the one QUILL&#39;s advanced features use.
+
+**Pictures in the editors (decision 13).** Only Ask About an Image (Ctrl+F5,
+gated on pictures) and alt text for a document&#39;s own images. No screen,
+screenshot or frame features in the editors, and no AI-generated pictures or
+charts.
 
 ### 5.84d Free / low-cost AI for everyone (writing-first)
 
@@ -19969,12 +20084,13 @@ GitHub command in QUILL with a real dollar cost</strong> — Codespaces
 consume GitHub compute and storage minutes — so its confirmation dialog
 says so explicitly, in those words, distinct from every other GitHub
 command’s “this changes something on GitHub” framing.</li>
-<li><strong>Ask Copilot for a Command…</strong> — prompts for a
-plain-language request (e.g. “undo my last commit”) and shows
-<code>gh copilot suggest</code>’s answer in a message box.</li>
-<li><strong>Explain a Command…</strong> — prompts for a git or
-<code>gh</code> command and shows <code>gh copilot explain</code>’s
-answer.</li>
+<li><strong>Ask Copilot for a Command…</strong> and <strong>Explain a
+Command…</strong> (removed 2026-10-31) — wrapped
+<code>gh copilot suggest</code> and <code>gh copilot explain</code>.
+GitHub retired that extension on 2025-10-25, so both could only fail;
+<code>github.copilot_suggest</code> and
+<code>github.copilot_explain</code> no longer exist. Copilot is reached
+through the GitHub Copilot engine instead.</li>
 </ul>
 <p><strong>Architecture.</strong>
 <code>quill/core/github/gh_bridge.py</code> (wx-free) wraps each

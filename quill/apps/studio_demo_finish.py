@@ -118,6 +118,7 @@ class StudioDemoFinishMixin:
         from quill.ui.studio_demo_result import DemoResultDialog
 
         path = Path(verification.path)
+        self._studio_last_verification = verification  # Ask's "Last recording check"
         self._restore_from_tray()
         self._announce(verification.sentence)
         lines = [verification.state, "", verification.sentence, "", "Checks:"]

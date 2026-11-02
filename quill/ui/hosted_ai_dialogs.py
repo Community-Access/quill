@@ -46,7 +46,6 @@ from quill.ui.dpi import dip_size
 
 __all__ = [
     "AiSignInFrame",
-    "AiUsageFrame",
     "ask_ai_privacy_agreement",
     "focus_on",
     "take_focus",
@@ -384,95 +383,6 @@ class AiSignInFrame(wx.Frame):
         # when it takes focus -- so an announcement as well said it twice.
         focus_on(self, field)
         take_focus(self)
-
-
-# --------------------------------------------------------------------------- #
-# Usage
-# --------------------------------------------------------------------------- #
-
-
-class AiUsageFrame(wx.Frame):
-    """How much is left, and the way to sign this computer out."""
-
-    def __init__(self, parent: wx.Window, service: Any, announce: Callable[[str], None]) -> None:
-        super().__init__(parent, title="AI Usage")
-        self._service = service
-        self._announce = announce
-        self._confirming = False
-
-        panel = wx.Panel(self)
-        self._sizer = wx.BoxSizer(wx.VERTICAL)
-        panel.SetSizer(self._sizer)
-        self._panel = panel
-
-        self._body = _read_only(
-            panel,
-            self._sizer,
-            "Your allowance",
-            "Asking QUILL how much is left...",
-            "How many free AI requests you have left this month and today, when "
-            "the count starts again, and this computer's support ID.",
-        )
-        self._buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self._sign_out = wx.Button(panel, label="Sign &Out This Computer")
-        self._sign_out.SetHelpText(
-            "Disconnects this computer from QUILL's free AI. You can connect it again at any time."
-        )
-        self._sign_out.Bind(wx.EVT_BUTTON, self._on_sign_out)
-        copy = wx.Button(panel, label="Copy Support &ID")
-        copy.SetHelpText("Puts this computer's support ID on the clipboard.")
-        copy.Bind(wx.EVT_BUTTON, self._on_copy)
-        _close_row(self, self._sizer, self._sign_out, copy)
-        focus_on(self, self._body)
-
-        self.SetInitialSize(dip_size(self, 520, 380))
-        self.Centre()
-        service.fetch_quota(on_done=self._show, on_error=self._failed)
-
-    def _show(self, quota: Any) -> None:
-        if not self:
-            return
-        from quill.core.ai.gateway_quota_text import describe_quota
-
-        self._body.SetValue(
-            f"{describe_quota(quota)}\n\nThis computer\nSupport ID {self._service.support_id}."
-        )
-        # A label change on an unfocused control, which the reader does not say.
-        self._announce(f"{quota.monthly_left} of {quota.monthly_cap} requests left this month.")
-
-    def _failed(self, message: str) -> None:
-        if not self:
-            return
-        show_problem(self, self._body, message, self._announce)
-
-    def _on_copy(self, _event: wx.CommandEvent) -> None:
-        if wx.TheClipboard.Open():
-            try:
-                wx.TheClipboard.SetData(wx.TextDataObject(self._service.support_id))
-            finally:
-                wx.TheClipboard.Close()
-            self._announce("Support ID copied.")
-
-    def _on_sign_out(self, _event: wx.CommandEvent) -> None:
-        """Confirm in place, with a second press -- never a modal.
-
-        A message box raised from this window would be a modal over a modeless
-        frame, and the family already knows where that road goes on wxMSW. Two
-        presses of one button is the whole confirmation, and the label says
-        which press you are on.
-        """
-        if not self._confirming:
-            self._confirming = True
-            self._sign_out.SetLabel("Yes, Sign &Out")
-            self._announce("Press again to sign this computer out.")
-            return
-        self._service.sign_out()
-        self._body.SetValue(
-            "This computer is signed out of QUILL's free AI.\n\n"
-            "Choose Connect or Sign Out in the AI menu to connect it again whenever you like."
-        )
-        self._sign_out.Disable()
-        self._announce("Signed out.")
 
 
 # --------------------------------------------------------------------------- #

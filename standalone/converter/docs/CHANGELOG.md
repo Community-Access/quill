@@ -12,6 +12,35 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
+## Unreleased
+
+- **AI, if you want it.** A new AI menu (Alt+I) with Ask (Ctrl+Shift+8),
+  Which AI Am I Using (Ctrl+F8), Choose Your AI (Ctrl+Shift+F8), Use My
+  ChatGPT Subscription (Alt+F5), Use My Own AI Key (Alt+F2), AI Usage
+  (Ctrl+Alt+Shift+F2) and Privacy Agreement (Ctrl+Alt+Shift+K). Quill
+  Converter signs in on its own, as QUILL Converter, and keeps its choice in
+  `converter-ai.json`. An AI line in the main window says which AI is in use;
+  Enter on it opens Choose Your AI.
+- **Will This Play on My Device?** (Ctrl+Shift+D) asks which device, reads the
+  queued files and asks the AI whether they will play, and what to convert
+  them to if not. An empty queue sends nothing.
+- **Ask** carries the queue's file details, the Convert to choice and the last
+  conversion's report. The AI gets the text File Properties shows -- file
+  names, never folders -- and never the sound. The files are read in the
+  background, so the window never waits.
+- **Make This Right for My Player...** (Ctrl+F3) is an agent task: say what you
+  want ("one M4B audiobook with a chapter per file, small enough for my
+  phone") and the AI reads the queue's details, checks the formats this
+  computer can write, and starts one Convert, Join into One File or Split by
+  Chapters job on the queue. It asks first, naming the files, format, bit rate
+  and chapters, and sets the main window's own choices so you can see what it
+  picked. A joined file never overwrites one already there. Needs GitHub
+  Copilot or Codex; with another AI the item says "(needs Copilot or Codex)"
+  and sends nothing.
+- Safe Mode refuses everything in the AI menu.
+- Broadcast polish in Advanced Options no longer has an access key: Alt+I is
+  the AI menu now, and every other letter in its name was already taken.
+
 ## Planned, not released
 
 - Studio's consolidated plan proposes an accessible project-to-Converter

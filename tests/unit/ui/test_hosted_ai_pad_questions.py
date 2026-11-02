@@ -36,7 +36,7 @@ class _Service:
     def unavailable_reason(self, _feature: str = "") -> str:
         return ""
 
-    def ask(self, feature, prompt, chunks, *, on_done, on_error) -> None:  # noqa: ANN001
+    def ask(self, feature, prompt, chunks, *, on_done, on_error, **_kw) -> None:  # noqa: ANN001
         self.sent.append((feature, prompt, chunks))
 
 

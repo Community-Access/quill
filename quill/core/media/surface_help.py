@@ -66,6 +66,39 @@ PURPOSES: dict[str, str] = {
         "as the main window; there is no second audio stream, and closing "
         "it stops nothing."
     ),
+    # -- the AI windows (codex.md 10E.8) ------------------------------------------
+    "Ask": (
+        "A conversation about the book you are listening to, on whichever AI is in "
+        "use: the book's title, the chapter, your place in it and the list of chapters "
+        "go with every message, and the audio never does. Type in Your message and "
+        "press Enter; the reply is read aloud and added to the conversation above. "
+        "Quick questions holds Remind me who this character is and a few more."
+    ),
+    "Chapter Summary": (
+        "The AI's summary of the chapter you are in, in a sentence or two, made from "
+        "the book's own text or a short transcript made on this computer. Copy puts "
+        "it on the clipboard; asking again for the same chapter gives the same answer "
+        "without sending anything."
+    ),
+    "Recap": (
+        "The AI's reminder of what was happening up to your place in the book, with "
+        "nothing from further on. It is made from the book's own text or a transcript "
+        "of at most five minutes, made on this computer. Copy puts it on the clipboard."
+    ),
+    "Choose Your AI": (
+        "Choose where Quill Media Player's AI comes from: QUILL's free AI, your ChatGPT "
+        "plan, GitHub Copilot, Codex or your own key. The player signs in on its own, as "
+        "QUILL Media Player. The list says which is in use; Enter uses the selected one "
+        "or signs in to it, and Delete signs a signed-in one out."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and whose "
+        "count it is. Manage Usage opens the selected one's own page."
+    ),
     # -- the dialogs -------------------------------------------------------------
     "Go to Position": (
         "Jump to an exact place in the open file. Give it hours, minutes "

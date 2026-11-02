@@ -1,8 +1,7 @@
 """The thesaurus and the dictionary, shared by QUILL and QUILL Lite.
 
-A base of :class:`quill.ui.hosted_ai_commands.HostedAiMixin`, the way the
-ChatGPT commands are: both editors get every command here the moment they get
-the rest, and neither writes a line of its own.
+A base of :class:`quill.ui.hosted_ai_commands.HostedAiMixin`, like the ChatGPT
+commands: both editors get every command here, and neither writes its own.
 
 Two things, with one word under the cursor between them:
 
@@ -392,6 +391,7 @@ class WordToolsMixin:
                 word_tools.FIND_WORD, "", answer, on_use=self._insert_at_caret
             ),
             on_error=self._announce,  # type: ignore[attr-defined]
+            requires=("text",),
         )
 
     # -- plumbing --------------------------------------------------------- #
@@ -429,6 +429,7 @@ class WordToolsMixin:
             None,
             on_done=done,
             on_error=self._announce,  # type: ignore[attr-defined]
+            requires=("text",),
         )
 
     def _show_word_answer(

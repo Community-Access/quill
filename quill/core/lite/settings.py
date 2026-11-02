@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
+from quill.core.ai.connection_choice import load_connection_fields
 from quill.core.inline_note_cue import coerce_note_line_cue
 from quill.core.lite.paths import settings_path
 from quill.core.lite.settings_values import clamp_ms as _clamp_ms
@@ -222,6 +223,10 @@ class Settings(DictationSettings):
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""  # own-key AI model; key in the OS store (core/ai/own_key.py)
     ai_own_key_provider: str = "openai"  # or "gemini": the explicit choice, QUILL's field too
+    # Choose Your AI, QUILL's fields (core/ai/connection_choice.py): the AI in use and two models.
+    ai_connection: str = ""  # free, chatgpt, copilot, codex, own_key; "" until decided
+    ai_copilot_model: str = ""
+    ai_codex_model: str = ""
     ai_answer_delivery: str = "window"  # or cursor/clipboard; QUILL's field (ai/answer_delivery)
     #: Whether reopening asks first: "always", "when_it_matters" or "never".
     #: Same field name and same three values as QUILL, because it is the same
@@ -495,7 +500,8 @@ class Settings(DictationSettings):
         self.windows_dictation_phrase_feedback = str(
             _coerce_action_feedback(self.windows_dictation_phrase_feedback)
         )
-        for name, value in load_dictation_fields(asdict(self)).items():
+        data = asdict(self)
+        for name, value in (load_dictation_fields(data) | load_connection_fields(data)).items():
             setattr(self, name, value)  # the same cleaning QUILL's loader does
         return self
 

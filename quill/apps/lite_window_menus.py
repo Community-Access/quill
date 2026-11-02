@@ -152,6 +152,9 @@ class DocumentMenuMixin:
             # and a label ending in a bare tab is a menu item advertising an
             # accelerator that is not there, which is the exact regression
             # class PRD 8.14's binding/label gate names.
+            gate = getattr(self, "_ai_gated_label", None)  # codex.md 10A.8
+            if callable(gate):
+                label = gate(handler, label)
             item = menu.Append(
                 wx.ID_ANY,
                 f"{label}	{key}" if key else label,

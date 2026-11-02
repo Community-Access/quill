@@ -170,7 +170,7 @@ def test_clamp_index_keeps_a_move_inside_the_bar() -> None:
     assert clamp_index(4, 0) == 0
 
 
-def test_the_nine_cells_appear_in_the_order_a_listening_session_does() -> None:
+def test_the_cells_appear_in_the_order_a_listening_session_does() -> None:
     """The order is the design: transport, loudness, speed, then what is next.
 
     Pinned because a cell inserted in the middle moves every cell to its right,
@@ -189,6 +189,7 @@ def test_the_nine_cells_appear_in_the_order_a_listening_session_does() -> None:
         "notifications",  # qc.md 5b: between Downloads and the sleep timer
         "sleep_timer",
         "clock",
+        "ai",  # codex.md decision 19: short and last, so nothing else moves
     ]
 
 

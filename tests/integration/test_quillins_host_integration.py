@@ -258,3 +258,32 @@ def test_main_module_escaping_directory_is_rejected(tmp_path: Path) -> None:
         assert "escapes" in str(excinfo.value) or "import" in str(excinfo.value)
     finally:
         host.close()
+
+
+def test_worker_cannot_see_github_or_copilot_tokens(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The Copilot sign-in once exported the GitHub token to os.environ, and the
+    # worker inherited it (2026-10-31). Whatever puts one there, a Quillin must
+    # not be able to read it.
+    for name in ("GH_TOKEN", "GITHUB_TOKEN", "COPILOT_GITHUB_TOKEN"):
+        monkeypatch.setenv(name, "gho_leaked_secret")
+    _write_extension(
+        tmp_path,
+        "import os\n"
+        "def register(api):\n"
+        "    def run(ctx):\n"
+        "        found = sorted(k for k, v in os.environ.items() if 'gho_leaked' in v)\n"
+        "        ctx.announce('seen:' + ','.join(found))\n"
+        "    api.register_command('run', run)\n",
+    )
+    editor = _FakeEditor()
+    manifest = _manifest("ui.announce", "ui.command")
+    host = ExtensionHost(manifest, tmp_path, editor, consent=lambda c, d: True)
+    try:
+        host.start()
+        host.load()
+        host.invoke("ext.t.run", {})
+    finally:
+        host.close()
+    assert editor.announced == ["seen:"]

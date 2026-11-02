@@ -235,11 +235,13 @@ def test_no_fallback_gemini_chosen_with_only_an_openai_key_sends_nothing(provide
 def test_an_unknown_saved_provider_is_no_provider_and_sends_nothing(providers, monkeypatch):
     _host, rec = providers
     _keys(monkeypatch, openai=OPENAI_KEY, gemini=GEMINI_KEY)
-    settings = SimpleNamespace(ai_own_key_provider="claude", ai_own_key_model="")
+    # Claude is one of My own key's providers since decision 20; a provider no
+    # copy of QUILL offers is still no provider at all.
+    settings = SimpleNamespace(ai_own_key_provider="mistral", ai_own_key_model="")
     assert own_key.chosen_provider(settings) == ""
     assert own_key.own_key_active(settings) is False
     with pytest.raises(own_key.OwnKeyError, match="No provider is chosen"):
-        own_key.ask_with_own_key("summarize", "x", provider="claude")
+        own_key.ask_with_own_key("summarize", "x", provider="mistral")
     assert rec.requests == []
 
 

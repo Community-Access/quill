@@ -44,6 +44,11 @@ class _Host:
         self.frame = frame
         self.kept: list[Any] = []
 
+    def _append_radio_ai_rows(self, menu: Any) -> None:
+        """Ask's row, as the real method appends first; the rest of the AI rows
+        have their own tests (test_radio_ai.py)."""
+        menu.Append(wx.ID_ANY, self._menu_label("Ask...", "radio.ask_quill_radio"))
+
     def _menu_label(self, title: str, command_id: str) -> str:
         # Read from the real keymap rather than a copy of it. A local dict got
         # this test to pass while the fourth item had no binding at all, which
@@ -98,7 +103,7 @@ def test_every_schedule_item_advertises_a_key(host) -> None:
         assert "\t" in item.GetItemLabel(), f"{item.GetItemLabel()} has no keyboard route"
 
 
-def test_an_empty_community_menu_opens_on_the_schedule_not_a_separator(host) -> None:
+def test_an_empty_community_menu_opens_on_a_row_not_a_separator(host) -> None:
     """A separator at the top of a menu is a row a screen reader still lands on."""
     from quill.apps.radio_launch_tasks import append_calendar_menu
 

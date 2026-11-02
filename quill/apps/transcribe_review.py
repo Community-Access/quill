@@ -17,24 +17,25 @@ What QUILL Transcribe supplies:
   written, nothing is typed, the reason is said, and the words are in Recent
   Phrases for Insert Again. With dictation off, Insert types into the program
   you switch to, as Insert Again does.
-* **The AI.** QUILL Transcribe has no AI menu of its own, so it reads the
-  family's: QUILL's ChatGPT sign-in (the same data folder and credential
-  store, reachable from this separate process) or the own key saved in Use My
-  Own AI Key (the Windows credential store), with the provider and model QUILL
-  saved. Requests go through the family's existing AI service
+* **The AI.** Whichever AI is in use in QUILL Transcribe's own Choose Your AI
+  (:mod:`quill.apps.transcribe_ai`), through the family's AI service
   (:class:`quill.ui.hosted_ai_service.AiService`), so no new network call site
-  exists. Safe Mode, or no ChatGPT sign-in and no own key, is AI off: the
-  window still edits and inserts. The consent is QUILL Transcribe's own.
+  exists. Its ChatGPT sign-in is QUILL Transcribe's own, "QUILL Transcribe"
+  (codex.md decision 2): until Phase 3 it borrowed QUILL's (risk R1), and the
+  first time a review needs a plan it does not have, it says so once
+  (:func:`~quill.apps.transcribe_ai.own_sign_in_notice`). Safe Mode, or no plan
+  and no own key, is AI off: the window still edits and inserts. The consent is
+  QUILL Transcribe's own.
 """
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 
 import wx
+
+from quill.ui.windows_dictation_review import NO_DIRECT_ROUTE, ServiceReviewAi
 
 __all__ = ["RESCUE_FILE", "TranscribeReviewMixin", "later"]
 
@@ -46,26 +47,23 @@ _INSERT_DELAY_MS = 400
 later: Any = wx.CallLater
 
 
-class _FamilyAi:
-    """What :class:`~quill.ui.hosted_ai_service.AiService` asks of an app,
-    answered from QUILL's saved choices -- read, never written."""
+class _TranscribeReviewAi(ServiceReviewAi):
+    """The shared review route, saying once that QUILL Transcribe signs in on its own."""
 
-    ai_agent_name = "QUILL"  # QUILL's ChatGPT sign-in, not a new one
+    def __init__(self, service: Any, *, notice: Any = None, **hooks: Any) -> None:
+        super().__init__(service, **hooks)
+        self._notice = notice
 
-    def __init__(self, data_dir: Path) -> None:
-        self.data_dir = data_dir
+    def reason(self) -> str:
+        said = str(super().reason())
+        if not said or self._notice is None or not self._needs_plan(said):
+            return said
+        first = str(self._notice() or "")
+        return f"{first} {said}" if first else said
 
-    @property
-    def settings(self) -> Any:
-        from quill.core.ai.own_key import load_settings_fields
-
-        try:
-            from quill.core.settings import settings_path
-
-            data = json.loads(settings_path().read_text(encoding="utf-8"))
-        except Exception:  # noqa: BLE001 - no QUILL settings: the defaults
-            data = {}
-        return SimpleNamespace(**load_settings_fields(data if isinstance(data, dict) else {}))
+    def _needs_plan(self, said: str) -> bool:
+        """No plan or key to review with: not Safe Mode, which is not about a sign-in."""
+        return said == NO_DIRECT_ROUTE
 
 
 class TranscribeReviewMixin:
@@ -110,30 +108,40 @@ class TranscribeReviewMixin:
     def _review_say(self, text: str) -> None:
         self._announce(text, force=True)  # type: ignore[attr-defined]
 
-    def _review_ai(self) -> Any:
+    def _review_ai(self, *, notice: bool = True) -> Any:
         from quill.core.windows_dictation.review_session import CONSENT_VERSION
-        from quill.ui.windows_dictation_review import SAFE_MODE, ServiceReviewAi
+        from quill.ui.windows_dictation_review import SAFE_MODE
 
-        service = getattr(self, "_review_service", None)
-        if service is None:
-            from quill.ui.hosted_ai_service import AiService
-
-            service = AiService(_FamilyAi(self._data_dir))
-            self._review_service = service
-        return ServiceReviewAi(
-            service,
+        return _TranscribeReviewAi(
+            self._ai_service(),  # type: ignore[attr-defined]
             off=lambda: SAFE_MODE if self._safe_mode else "",
             consent=lambda: self._settings.dictation.get("windows_dictation_review_consent", 0),
             agree=lambda: self._set_dictation_field(  # type: ignore[attr-defined]
                 "windows_dictation_review_consent", CONSENT_VERSION
             ),
+            notice=self._own_sign_in_notice if notice else None,
         )
+
+    def _own_sign_in_notice(self) -> str:
+        """The one sentence about QUILL Transcribe's own sign-in, the first time a
+        review needs a plan it does not have (codex.md decision 2); then ""."""
+        if self._settings.ai_sign_in_noticed:
+            return ""
+        from quill.apps.transcribe_ai import own_sign_in_notice
+
+        self._settings.ai_sign_in_noticed = True
+        self._save()  # type: ignore[attr-defined]
+        sentence = own_sign_in_notice(self._ai_host().ai_choose_key)  # type: ignore[attr-defined]
+        # Spoken and brailled, once: it lands in the review's Status line too,
+        # which the reader does not read out by itself (GATE-13's other half).
+        self._review_say(sentence)
+        return sentence
 
     def _review_ai_on(self) -> bool:
         """Whether a review could ask the AI now: Dictation Settings offers
-        the Polished style only then (D-20)."""
+        the Polished style only then (D-20). Never says the sign-in sentence."""
         try:
-            ai = self._review_ai()
+            ai = self._review_ai(notice=False)
             return bool(ai is not None and not ai.reason())
         except Exception:  # noqa: BLE001 - unknown is off
             return False

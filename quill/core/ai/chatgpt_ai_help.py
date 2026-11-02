@@ -19,6 +19,11 @@ Two things are decided here and nowhere else:
   content is the text and any images, with the instructions in the request's
   own ``instructions`` field rather than a system message.
 
+Every request on the plan leaves through :func:`respond_on_plan`, which adds
+the family's text-only line after the instructions (decision 13) and, once the
+answer is in, adds it to this app's local request count
+(:mod:`quill.core.ai.chatgpt_usage`, decision 24).
+
 wx-free and strict-typed.
 """
 
@@ -40,6 +45,7 @@ __all__ = [
     "ask_with_chatgpt",
     "converse_with_chatgpt",
     "describe_image_with_chatgpt",
+    "respond_on_plan",
     "size_note",
 ]
 
@@ -78,6 +84,46 @@ def _limits() -> GatewayLimits:
 CHATGPT_LIMITS: GatewayLimits = _limits()
 
 
+def respond_on_plan(
+    account: ChatGptAccount,
+    *,
+    items: Sequence[dict[str, Any]],
+    instructions: str = "",
+    model: str = "",
+    tools: Sequence[dict[str, Any]] = (),
+    on_delta: Callable[[str], None] | None = None,
+    stop: Callable[[], bool] | None = None,
+) -> ChatGptAnswer:
+    """One request on *account*'s plan: the family line added, the answer counted.
+
+    The only way a request reaches :func:`respond` from the AI layer, so the
+    local count covers every request and every connection-level instruction
+    is added in one place. The count is written after the answer arrives and
+    never raises.
+    """
+    from quill.core.ai.chatgpt_usage import record_request
+    from quill.core.ai.text_only import with_family_instruction
+
+    answer = respond(
+        account.access_token(),
+        model=model or account.model,
+        items=items,
+        instructions=with_family_instruction(instructions),
+        tools=tools,
+        on_delta=on_delta,
+        stop=stop,
+    )
+    data_dir = getattr(account, "data_dir", None)
+    if data_dir is not None:
+        record_request(
+            data_dir,
+            str(getattr(account, "slug", "") or ""),
+            input_tokens=int(getattr(answer, "input_tokens", 0) or 0),
+            output_tokens=int(getattr(answer, "output_tokens", 0) or 0),
+        )
+    return answer
+
+
 def _tools(account: ChatGptAccount) -> list[dict[str, Any]]:
     return [{"type": "web_search"}] if account.web_search else []
 
@@ -107,9 +153,8 @@ def ask_with_chatgpt(
     except OwnKeyError as error:
         said = str(error.args[0]) if error.args else "That is not available."
         raise ChatGptError(said) from error
-    answer = respond(
-        account.access_token(),
-        model=account.model,
+    answer = respond_on_plan(
+        account,
         items=[_user_item(user)],
         instructions=instructions,
         tools=_tools(account),
@@ -153,9 +198,8 @@ def converse_with_chatgpt(
         else:
             items.append(_user_item(text))
     items.append(_user_item(prompt))
-    answer: ChatGptAnswer = respond(
-        account.access_token(),
-        model=account.model,
+    answer: ChatGptAnswer = respond_on_plan(
+        account,
         items=items,
         instructions=instructions or INSTRUCTIONS["chat"],
         tools=_tools(account),
@@ -181,9 +225,8 @@ def describe_image_with_chatgpt(
     """
     part = image_part(path)
     text = question.strip() or "Describe this image."
-    answer = respond(
-        account.access_token(),
-        model=account.model,
+    answer = respond_on_plan(
+        account,
         items=[_user_item(text, [part])],
         instructions=IMAGE_INSTRUCTIONS,
         tools=_tools(account),

@@ -1803,16 +1803,6 @@
     "body": "Sets the rules a branch enforces: how many approving reviews a pull request needs, which status checks must pass, and whether administrators are held to the same rules. The same dialog can remove all protection from a branch, which is confirmed before it happens. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
   },
   {
-    "id": "github.copilot_explain",
-    "title": "GitHub: Explain a Command",
-    "body": "Paste a git or GitHub command you do not recognise and Copilot explains what it does, before you run it somewhere it matters. Needs the GitHub command-line tool and Copilot access on your account. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
-  },
-  {
-    "id": "github.copilot_suggest",
-    "title": "GitHub: Ask Copilot for a Command",
-    "body": "Describe in ordinary words what you are trying to do -- \"undo my last commit but keep the changes\" -- and Copilot answers with the command that would do it. QUILL only shows you the command; nothing runs, so you can read it before deciding. Needs the GitHub command-line tool and Copilot access on your account. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
-  },
-  {
     "id": "github.create_codespace",
     "title": "GitHub: Create Codespace",
     "body": "Creates a codespace -- a development machine GitHub runs for you -- for a repository and optional branch. Unlike every other GitHub command here, this one can cost money: codespaces use compute and storage time on your account, and the confirmation says so before anything is created. Needs the GitHub command-line tool. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."

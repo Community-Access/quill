@@ -7,6 +7,15 @@ the editors and Inkwell use (:mod:`quill.core.windows_dictation.anywhere`).
 What is Transcribe's own is how the app behaves: whether setup has been done,
 the start and stop key, and the tray.
 
+**Its own AI choice** (codex.md Phase 3, decision 2): ``ai_connection`` and the
+fields beside it, under the names both editors use and cleaned by the same
+loader (:func:`~quill.core.ai.connection_choice.load_ai_fields`), so Choose Your
+AI works here as everywhere. QUILL Transcribe signs in to ChatGPT as itself,
+"QUILL Transcribe"; it no longer reads QUILL's sign-in. ``ai_seeded`` records
+that the own key's provider and model were copied once from QUILL's settings
+(names, never a key or a token), and ``ai_sign_in_noticed`` that the one
+sentence about the new sign-in has been said.
+
 **A key from the start.** ``dictation_hotkey`` is Alt+Shift+\\ until the
 listener chooses another (owner, 2026-10-12: a dictation app with no key to
 start it was one more step before the first word). Emptying it is still a
@@ -87,6 +96,17 @@ class TranscribeSettings:
     inkwell_checked: bool = False
     #: The shared dictation settings, under their shared names.
     dictation: dict[str, Any] = field(default_factory=dict)
+    #: Choose Your AI (codex.md 10A.6): "" is "not yet decided", migrated once.
+    ai_connection: str = ""
+    ai_own_key_provider: str = "openai"
+    ai_own_key_model: str = ""
+    ai_copilot_model: str = ""
+    ai_codex_model: str = ""
+    ai_privacy_accepted_version: int = 0
+    #: The own key's provider and model were copied from QUILL's settings, once.
+    ai_seeded: bool = False
+    #: The one sentence about QUILL Transcribe's own sign-in has been said.
+    ai_sign_in_noticed: bool = False
     #: Set when the file came from a newer build: read, never written back.
     read_only: bool = False
 
@@ -120,6 +140,7 @@ def load_settings(data_dir: Path) -> TranscribeSettings:
             for name, value in dictation.items()
             if str(name).startswith("windows_dictation_")
         }
+    _load_ai(settings, raw)
     try:
         version = int(raw.get("schema_version", SCHEMA_VERSION) or SCHEMA_VERSION)
     except (TypeError, ValueError):
@@ -147,8 +168,35 @@ def save_settings(data_dir: Path, settings: TranscribeSettings) -> None:
             "close_to_tray": settings.close_to_tray,
             "inkwell_checked": settings.inkwell_checked,
             "dictation": dict(settings.dictation),
+            **{name: getattr(settings, name) for name in _AI_FIELDS},
         },
     )
+
+
+#: Choose Your AI's fields, saved as they are.
+_AI_FIELDS = (
+    "ai_connection",
+    "ai_own_key_provider",
+    "ai_own_key_model",
+    "ai_copilot_model",
+    "ai_codex_model",
+    "ai_privacy_accepted_version",
+    "ai_seeded",
+    "ai_sign_in_noticed",
+)
+
+
+def _load_ai(settings: TranscribeSettings, raw: dict[str, Any]) -> None:
+    from quill.core.ai.connection_choice import load_ai_fields
+
+    for name, value in load_ai_fields(raw).items():
+        setattr(settings, name, value)
+    try:
+        settings.ai_privacy_accepted_version = int(raw.get("ai_privacy_accepted_version", 0) or 0)
+    except (TypeError, ValueError):
+        settings.ai_privacy_accepted_version = 0
+    settings.ai_seeded = bool(raw.get("ai_seeded", False))
+    settings.ai_sign_in_noticed = bool(raw.get("ai_sign_in_noticed", False))
 
 
 def take_from_inkwell(settings: TranscribeSettings, data_dir: Path) -> str:

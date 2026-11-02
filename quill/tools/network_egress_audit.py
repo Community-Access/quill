@@ -114,6 +114,7 @@ def _is_qualified_egress(call: ast.Call) -> bool:
 # The reviewed table moved to its own module under GATE-11 (extract, never
 # rebaseline): it is data that grows with every networked feature, while the
 # scanner below is logic that does not.
+# Child-process egress (bundled agent runtimes) is _CHILD_PROCESS_EGRESS there.
 from quill.tools.network_egress_entries import _REVIEWED_EGRESS  # noqa: E402
 
 # ---------------------------------------------------------------------------
@@ -295,13 +296,12 @@ from quill.tools.network_egress_entries import _REVIEWED_EGRESS  # noqa: E402
 # here actually reaches the network.
 #
 # quill/core/github/gh_bridge.py (Tools > GitHub > Codespaces.../Create
-# Codespace.../Ask Copilot for a Command.../Explain a Command...; 0.9.0
-# Beta 3, docs/planning/github.md section 1's Tier 3) -- `gh codespace
-# list/create/stop/delete/ssh` and `gh copilot suggest/explain` run in a
+# Codespace...; 0.9.0 Beta 3, docs/planning/github.md section 1's Tier 3;
+# the `gh copilot suggest/explain` pair was removed 2026-10-31 after GitHub
+# retired that extension) -- `gh codespace list/create/stop/delete/ssh` run in a
 # subprocess exactly like git_sync.py's git calls above; the network call
-# (when one happens -- listing/creating/stopping/deleting a codespace, or
-# Copilot's own API call for a suggestion) is performed by the user's own
-# `gh` installation reaching api.github.com and Copilot's service using
+# (when one happens -- listing/creating/stopping/deleting a codespace) is
+# performed by the user's own `gh` installation reaching api.github.com using
 # `gh`'s own stored auth, not by an urlopen in quill/ source. QUILL never
 # stores or injects a credential for these calls. Gated on the same
 # executable allowlist as local_git.py above, Safe Mode, and (for
@@ -310,7 +310,7 @@ from quill.tools.network_egress_entries import _REVIEWED_EGRESS  # noqa: E402
 # integration command in QUILL with a real dollar cost. **Needs live-device
 # verification** (see the module's own docstring): unit-tested with a fake
 # `gh` runner, not yet exercised against a real `gh` install, a real
-# Codespaces-enabled repository, or real Copilot CLI access.
+# Codespaces-enabled repository.
 
 # ---------------------------------------------------------------------------
 # ffmpeg subprocess egress (Sound Enhancements relay: Radio + Podcasts) — manually documented

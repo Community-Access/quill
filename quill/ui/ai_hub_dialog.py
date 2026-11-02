@@ -1,12 +1,23 @@
-"""AI Hub dialog — tabbed settings center for all AI features.
+"""AI Hub dialog — tabbed settings center for QUILL's advanced AI features.
 
 Tabs:
-  1. Provider  — cloud/local provider, API key, model, host, test connection
-  2. On-Device — Ollama URL and local model guidance
-  3. Audio     — Deepgram API key, default max speakers (transcription/diarization)
-  4. Advanced  — consent summary, network audit notes, safe mode, reset
+  1. Provider  — which AI is in use, and the way to Use My Own AI Key
+  2. Engines   — the agent engines
+  3. On-Device — what Ollama on this computer is, in words
+  4. Audio     — Deepgram API key, default max speakers (transcription/diarization)
+  5. Services, Instructions, Sessions
+  6. Advanced  — consent summary, network audit notes, safe mode
 
-This dialog is the single entry point for all AI configuration.
+**The Provider list is gone** (codex.md decision 20). It was a second way to pick
+an AI beside Choose Your AI, and every provider it offered -- Anthropic Claude,
+OpenRouter, Ollama Cloud, a custom OpenAI-compatible service and Ollama on this
+computer -- is now a provider in Use My Own AI Key, which also sets the
+connection these advanced features use
+(:func:`quill.core.ai.own_key_providers.use_for_advanced_features`). The
+Provider page says which provider is in use and has one button, Open Use My Own
+AI Key, which saves the Hub and opens that window. The Ollama address moved
+there too, and so did "reset the provider", which is just choosing another.
+
 Settings are saved on OK; Cancel discards changes.
 """
 
@@ -14,21 +25,10 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.core.i18n import _, lazy_gettext
+from quill.core.i18n import _
 from quill.core.platform_nouns import credential_store_name
-from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, set_accessible_name
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
-
-_PROVIDER_CHOICES: tuple[tuple[str, object], ...] = (
-    ("off", lazy_gettext("Off (AI disabled)")),
-    ("ollama", lazy_gettext("Ollama (local, free)")),
-    ("openai", lazy_gettext("OpenAI")),
-    ("claude", lazy_gettext("Anthropic Claude")),
-    ("gemini", lazy_gettext("Google Gemini")),
-    ("openrouter", lazy_gettext("OpenRouter")),
-    ("ollama_cloud", lazy_gettext("Ollama Cloud")),
-    ("custom", lazy_gettext("Custom (OpenAI-compatible)")),
-)
 
 _DEEPGRAM_KEY_CRED_TARGET = "QUILL_DEEPGRAM_API_KEY"
 _DEEPGRAM_MAX_SPEAKERS_KEY = "deepgram_default_max_speakers"
@@ -109,8 +109,11 @@ class AIHubDialog:
     announce:
         Optional callback(message) for status bar announcements.
     open_advanced_connection:
-        Optional callback to open the full AssistantConnectionDialog
-        for providers not exposed in the simplified Tab 1.
+        Accepted for older callers and no longer used: the Provider page's
+        only route is Use My Own AI Key (decision 20).
+    open_own_key:
+        Opens Use My Own AI Key. Called after the Hub has saved and closed,
+        when the person pressed Open Use My Own AI Key.
     """
 
     def __init__(
@@ -120,6 +123,7 @@ class AIHubDialog:
         announce: Callable[[str], None] | None = None,
         open_advanced_connection: Callable[[], None] | None = None,
         initial_page: str | None = None,
+        open_own_key: Callable[[], None] | None = None,
     ) -> None:
         import wx
 
@@ -133,21 +137,12 @@ class AIHubDialog:
 
         _base_announce = announce or (lambda _m: None)
         self._announce = lambda message: _base_announce(speak_legacy_text(message))
-        self._open_advanced = open_advanced_connection
+        self._open_own_key = open_own_key
+        self._own_key_after_close = False
 
-        from quill.core.assistant_ai import (
-            load_assistant_connection_settings,
-            provider_api_key_source,
-            stored_provider_api_key,
-        )
+        from quill.core.assistant_ai import load_assistant_connection_settings
 
         self._settings = load_assistant_connection_settings()
-        # stored_* not load_*: this value populates an EDITABLE field whose Save
-        # writes it back to the credential store. Prefilling it from an
-        # environment variable would silently persist a key the user never
-        # entered here, and keep using it after they unset the variable.
-        self._provider_key = stored_provider_api_key(self._settings.provider or "ollama")
-        self._provider_key_source = provider_api_key_source(self._settings.provider or "ollama")
         self._deepgram_key = _load_deepgram_key()
         self._deepgram_max_speakers = _load_deepgram_max_speakers()
 
@@ -230,247 +225,52 @@ class AIHubDialog:
     # ------------------------------------------------------------------
 
     def _build_provider_tab(self) -> object:
+        """Which AI the advanced features use, and the one way to change it."""
         wx = self._wx
         panel = wx.Panel(self._notebook)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        # Provider selector
-        sizer.Add(wx.StaticText(panel, label=_("AI provider:")), 0, wx.ALL, 6)
-        provider_ids = [pid for pid, _label in _PROVIDER_CHOICES]
-        provider_labels = [str(label) for _pid, label in _PROVIDER_CHOICES]
-        self._provider_choice = wx.Choice(panel, choices=provider_labels)
-        self._provider_choice.SetName("AI provider")
-        try:
-            idx = provider_ids.index(self._settings.provider or "ollama")
-        except ValueError:
-            idx = 1
-        self._provider_choice.SetSelection(idx)
-        sizer.Add(self._provider_choice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        from quill.core.ai.own_key import provider_name
 
-        # API key
-        sizer.Add(wx.StaticText(panel, label=_("API key:")), 0, wx.LEFT | wx.TOP, 6)
-        key_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._key_ctrl = wx.TextCtrl(
-            panel,
-            value=self._provider_key,
-            style=wx.TE_PASSWORD,
+        provider = self._settings.provider or "ollama"
+        model = self._settings.model or ""
+        in_use = provider_name(provider) if provider != "off" else str(_("none"))
+        text = _(
+            "The AI these advanced features use is chosen in Use My Own AI Key, "
+            "with the rest of QUILL's AI. Every provider this page used to list is "
+            "there: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud, "
+            "a custom OpenAI-compatible service, and Ollama on this computer, which "
+            "needs no key. Saving a provider there makes it the one used here.\n\n"
+            "In use now: {provider}{model}."
+        ).format(provider=in_use, model=f", {model}" if model and provider != "off" else "")
+        sizer.Add(wx.StaticText(panel, label=_("&Provider in use:")), 0, wx.ALL, 6)
+        self._provider_summary = wx.TextCtrl(
+            panel, value=str(text), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
         )
-        self._key_ctrl.SetName("API key")
-        self._reveal_btn = wx.ToggleButton(panel, label=_("Show"))
-        key_row.Add(self._key_ctrl, 1, wx.RIGHT, 4)
-        key_row.Add(self._reveal_btn, 0)
-        sizer.Add(key_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
-        if self._provider_key_source == "environment":
-            # Say so out loud rather than leaving the field mysteriously empty
-            # on a provider that nonetheless works: the key is real, it just
-            # lives in the environment, and typing here overrides it.
-            env_note = wx.StaticText(
-                panel,
-                label=_(
-                    "This provider is using an API key from an environment "
-                    "variable. Leave this box empty to keep using it, or type a "
-                    "key here to save one in QUILL instead."
-                ),
+        set_accessible_name(self._provider_summary, str(_("Provider in use")))
+        self._provider_summary.SetHelpText(
+            str(_("Which AI the advanced features use, and where it is chosen now."))
+        )
+        sizer.Add(self._provider_summary, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        own_key_btn = wx.Button(panel, label=_("Open Use My Own AI &Key..."))
+        own_key_btn.SetHelpText(
+            str(
+                _(
+                    "Saves the AI Hub, closes it and opens Use My Own AI Key, where "
+                    "the provider, its key, its model and its address are chosen."
+                )
             )
-            sizer.Add(env_note, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
-        self._set_key_field_enabled(self._settings.provider or "ollama")
-
-        # Host (shown only for Ollama / custom)
-        sizer.Add(
-            wx.StaticText(panel, label=_("Host URL (Ollama/custom only):")), 0, wx.LEFT | wx.TOP, 6
         )
-        self._host_ctrl = wx.TextCtrl(panel, value=self._settings.host or "")
-        self._host_ctrl.SetName("Host URL")
-        sizer.Add(self._host_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
-
-        # Model — an editable dropdown: pick a recommended model (free-first) or
-        # type any id. "List models" fills it with everything the account/device
-        # offers; changing the provider refreshes the suggestions.
-        sizer.Add(wx.StaticText(panel, label=_("Model:")), 0, wx.LEFT | wx.TOP, 6)
-        model_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._model_ctrl = wx.ComboBox(panel, style=wx.CB_DROPDOWN)
-        self._model_ctrl.SetName("Model — choose a suggestion or type a model id")
-        self._list_models_btn = wx.Button(panel, label=_("&List models"))
-        model_row.Add(self._model_ctrl, 1, wx.RIGHT, 4)
-        model_row.Add(self._list_models_btn, 0)
-        sizer.Add(model_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
-        self._populate_hub_models(
-            self._settings.provider or "ollama", select=self._settings.model or ""
-        )
-
-        # Test connection button + result
-        test_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._test_btn = wx.Button(panel, label=_("Test &Connection"))
-        self._test_label = wx.StaticText(panel, label="")
-        test_row.Add(self._test_btn, 0, wx.RIGHT, 8)
-        test_row.Add(self._test_label, 1, wx.ALIGN_CENTER_VERTICAL)
-        sizer.Add(test_row, 0, wx.ALL, 6)
-
-        # Full settings link
-        if self._open_advanced is not None:
-            adv_btn = wx.Button(panel, label=_("Full Connection Settings..."))
-            sizer.Add(adv_btn, 0, wx.LEFT | wx.BOTTOM, 6)
-            adv_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_advanced())
-
+        own_key_btn.Enable(self._open_own_key is not None)
+        own_key_btn.Bind(wx.EVT_BUTTON, self._on_open_own_key)
+        sizer.Add(own_key_btn, 0, wx.ALL, 6)
         panel.SetSizer(sizer)
-        self._reveal_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_reveal_key)
-        self._test_btn.Bind(wx.EVT_BUTTON, self._on_test_connection)
-        self._provider_choice.Bind(wx.EVT_CHOICE, self._on_hub_provider_changed)
-        self._list_models_btn.Bind(wx.EVT_BUTTON, self._on_hub_list_models)
-        self._model_ctrl.Bind(wx.EVT_COMBOBOX, self._on_hub_model_selected)
-        # Discovered Ollama model -> live capabilities (from /api/show). Populated
-        # by "List models"; empty for providers that do not report capabilities.
-        self._ollama_capabilities: dict[str, list[str]] = {}
         return panel
 
-    def _hub_provider(self) -> str:
-        idx = self._provider_choice.GetSelection()
-        return _PROVIDER_CHOICES[idx][0] if idx >= 0 else "ollama"
-
-    def _set_key_field_enabled(self, provider: str) -> None:
-        """Grey out the API key field for providers that don't need one.
-
-        Local Ollama (and any future no-key provider) needs no credential, so
-        the field must not read as a required prompt (#883-adjacent gap: this
-        dialog never consulted provider_requires_api_key, unlike the older
-        AssistantConnectionDialog).
-        """
-        from quill.core.ai.providers import provider_requires_api_key
-
-        requires_key = provider_requires_api_key(provider)
-        self._key_ctrl.Enable(requires_key)
-        self._reveal_btn.Enable(requires_key)
-
-    def _populate_hub_models(self, provider: str, *, select: str = "") -> None:
-        """Fill the model dropdown with recommended (free-first) ids for a provider."""
-        from quill.core.ai.providers import (
-            default_model_for_provider,
-            recommended_models_for_provider,
-        )
-
-        suggestions = recommended_models_for_provider(provider)
-        self._model_ctrl.Set(suggestions)
-        fallback = suggestions[0] if suggestions else default_model_for_provider(provider)
-        self._model_ctrl.SetValue(select.strip() or fallback)
-
-    def _on_hub_provider_changed(self, _event: object) -> None:
-        # A model id is provider-specific, so show the new provider's recommended
-        # default (free-first for OpenRouter) rather than carrying the old id over.
-        # #883: repopulating the model combo can steal focus back to it on MSW
-        # when the provider choice was navigated via arrow keys without opening
-        # its dropdown; restore focus to the provider choice if that happened.
-        provider = self._hub_provider()
-        had_focus = self._provider_choice.HasFocus()
-        self._populate_hub_models(provider)
-        self._set_key_field_enabled(provider)
-        if had_focus and not self._provider_choice.HasFocus():
-            self._provider_choice.SetFocus()
-        # Auto-probe Ollama on selection: a consented localhost /api/tags ping
-        # so the user hears immediately whether Ollama is running (and how many
-        # models are available) instead of discovering it via a failed request.
-        if provider == "ollama":
-            self._auto_probe_ollama()
-
-    def _auto_probe_ollama(self) -> None:
-        import threading
-
-        self._test_label.SetLabel(_("Checking Ollama..."))
-
-        def _run() -> None:
-            import wx as _wx
-
-            from quill.core.ai.onboarding import list_provider_models
-
-            models, error = list_provider_models("ollama")
-            if error:
-                msg = error  # already plain-language (e.g. the "not running" message)
-            else:
-                msg = _(
-                    "Ollama running. {n} models available -- use List models to choose."
-                ).format(n=len(models))
-            _wx.CallAfter(self._on_auto_probe_done, msg)
-
-        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
-
-    def _on_auto_probe_done(self, message: str) -> None:
-        if not dialog_alive(self.dialog):
-            return  # dialog closed before the background probe finished (#1067)
-        self._test_label.SetLabel(message)
-
-    def _on_hub_list_models(self, _event: object) -> None:
-        import threading
-
-        provider = self._hub_provider()
-        self._test_label.SetLabel(_("Listing models..."))
-        self._list_models_btn.Enable(False)
-
-        def _run() -> None:
-            import wx as _wx
-
-            from quill.core.ai.onboarding import list_provider_models
-
-            models, error = list_provider_models(provider)
-            # For local Ollama, enrich each discovered model with its REAL
-            # capabilities (queried dynamically via /api/show) so the user can
-            # see which models do vision/tools -- no hardcoded model-name list,
-            # so this stays correct as models are added or renamed. Best-effort:
-            # models whose capabilities can't be determined are shown by name
-            # only (never falsely labelled text-only).
-            capabilities: dict[str, list[str]] = {}
-            if not error and models and provider == "ollama":
-                from quill.core.ai.ollama_capabilities import enrich_capabilities
-                from quill.core.ai.providers import default_host_for_provider
-
-                host = self._host_ctrl.GetValue().strip() or default_host_for_provider(provider)
-                try:
-                    capabilities = enrich_capabilities(host, models)
-                except Exception:  # noqa: BLE001 - enrichment is best-effort
-                    capabilities = {}
-            _wx.CallAfter(self._on_hub_models_listed, models, error, capabilities)
-
-        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: model discovery
-
-    def _on_hub_models_listed(
-        self, models: list, error: str, capabilities: dict | None = None
-    ) -> None:
-        if not dialog_alive(self.dialog):
-            return  # dialog closed before model discovery finished (#1067)
-        self._list_models_btn.Enable(True)
-        self._ollama_capabilities = {str(k): list(v) for k, v in (capabilities or {}).items()}
-        if not models:
-            self._test_label.SetLabel(error or _("No models were returned."))
-            return
-        current = self._model_ctrl.GetValue().strip()
-        self._model_ctrl.Set(models)
-        self._model_ctrl.SetValue(current if current in models else models[0])
-        if self._ollama_capabilities:
-            from quill.core.ai.ollama_capabilities import capability_summary
-
-            summary = capability_summary(models, self._ollama_capabilities)
-            self._test_label.SetLabel(
-                _("Loaded {n} models: {summary}").format(n=len(models), summary=summary)
-            )
-            self._announce_capability_for_current()
-        else:
-            self._test_label.SetLabel(_("Loaded {n} models.").format(n=len(models)))
-
-    def _on_hub_model_selected(self, _event: object) -> None:
-        self._announce_capability_for_current()
-
-    def _announce_capability_for_current(self) -> None:
-        # Speak the selected model's capability badge when we know it. Unknown
-        # capabilities are left unannounced (never claim "text only" on a guess);
-        # a plain completion model has no badge, so nothing is spoken -- keeping
-        # the chatter down for the common case.
-        model = self._model_ctrl.GetValue().strip()
-        caps = self._ollama_capabilities.get(model) if self._ollama_capabilities else None
-        if not caps:
-            return
-        from quill.core.ai.ollama_capabilities import capability_badge
-
-        badge = capability_badge(caps)
-        if badge:
-            self._announce(str(_("{model}: {badge}").format(model=model, badge=badge)))
+    def _on_open_own_key(self, event: object) -> None:
+        """Save the Hub and close it; :meth:`show` opens Use My Own AI Key after."""
+        self._own_key_after_close = True
+        self._on_ok(event)
 
     # ------------------------------------------------------------------
     # Tab: Engines (harnesses) — pick the agentic engine; install / sign in.
@@ -499,38 +299,15 @@ class AIHubDialog:
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         intro = _(
-            "QUILL supports on-device AI via Ollama. Ollama runs large language models "
-            "locally on your machine — no API key or internet connection needed.\n\n"
-            "Install Ollama from https://ollama.com, pull a model "
-            "(e.g. 'ollama pull llama3.2:1b-instruct-q4_K_M'), then select "
-            "'Ollama (local)' on the Provider tab and set the host below."
+            "Ollama runs AI models on this computer: no API key, no account, and "
+            "nothing sent anywhere. Install Ollama from https://ollama.com and pull "
+            "a model, then choose Ollama on this computer in Use My Own AI Key. That "
+            "window lists every model Ollama has, says which ones read pictures, and "
+            "keeps the address Ollama listens on (usually http://localhost:11434)."
         )
         intro_label = wx.StaticText(panel, label=intro)
         intro_label.Wrap(620)
         sizer.Add(intro_label, 0, wx.ALL, 8)
-
-        sizer.Add(wx.StaticText(panel, label=_("Ollama base URL:")), 0, wx.LEFT, 8)
-        self._ollama_url_ctrl = wx.TextCtrl(
-            panel,
-            value=self._settings.host
-            if "localhost" in (self._settings.host or "")
-            else "http://localhost:11434",
-        )
-        self._ollama_url_ctrl.SetName("Ollama base URL")
-        sizer.Add(self._ollama_url_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP | wx.BOTTOM, 8)
-
-        note = wx.StaticText(
-            panel,
-            label=_(
-                "Recommended models (2025):\n"
-                "  llama3.2:1b-instruct-q4_K_M  — fast, 1 GB\n"
-                "  llama3.2:3b-instruct-q4_K_M  — better quality, 2 GB\n"
-                "  mistral:7b-instruct-q4_K_M   — higher quality, 4 GB\n\n"
-                "Vision models (for AI Image Description):\n"
-                "  llava:7b-v1.6-mistral-q4_K_M"
-            ),
-        )
-        sizer.Add(note, 0, wx.LEFT | wx.BOTTOM, 8)
 
         panel.SetSizer(sizer)
         return panel
@@ -1339,9 +1116,6 @@ class AIHubDialog:
 
         sizer.Add(wx.StaticLine(panel), 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-        reset_btn = wx.Button(panel, label=_("&Reset AI Settings to Defaults"))
-        sizer.Add(reset_btn, 0, wx.LEFT | wx.BOTTOM, 8)
-
         safe_mode_label = wx.StaticText(
             panel,
             label=_(
@@ -1354,21 +1128,11 @@ class AIHubDialog:
         sizer.Add(safe_mode_label, 0, wx.LEFT | wx.BOTTOM, 8)
 
         panel.SetSizer(sizer)
-        reset_btn.Bind(wx.EVT_BUTTON, self._on_reset)
         return panel
 
     # ------------------------------------------------------------------
     # Event handlers
     # ------------------------------------------------------------------
-
-    def _on_reveal_key(self, event: object) -> None:
-        if self._reveal_btn.GetValue():
-            self._key_ctrl.SetWindowStyleFlag(0)
-            self._reveal_btn.SetLabel(_("Hide"))
-        else:
-            self._key_ctrl.SetWindowStyleFlag(self._wx.TE_PASSWORD)
-            self._reveal_btn.SetLabel(_("Show"))
-        self._key_ctrl.Refresh()
 
     def _on_reveal_dg_key(self, event: object) -> None:
         if self._dg_reveal_btn.GetValue():
@@ -1379,104 +1143,9 @@ class AIHubDialog:
             self._dg_reveal_btn.SetLabel(_("Show"))
         self._deepgram_key_ctrl.Refresh()
 
-    def _on_advanced(self) -> None:
-        if self._open_advanced:
-            self._open_advanced()
-
-    def _on_test_connection(self, event: object) -> None:
-        import threading
-
-        provider_idx = self._provider_choice.GetSelection()
-        provider = _PROVIDER_CHOICES[provider_idx][0] if provider_idx >= 0 else "ollama"
-        api_key = self._key_ctrl.GetValue().strip()
-        host = self._host_ctrl.GetValue().strip()
-        model = self._model_ctrl.GetValue().strip()
-
-        self._test_label.SetLabel(_("Testing..."))
-        self._test_btn.Enable(False)
-
-        from quill.core.assistant_ai import AssistantConnectionSettings
-
-        conn = AssistantConnectionSettings(provider=provider, host=host, model=model)
-
-        def _run() -> None:
-            import wx as _wx
-
-            try:
-                from quill.core.assistant_ai import generate_assistant_response
-
-                text, error = generate_assistant_response(
-                    conn,
-                    api_key,
-                    "Reply with only the word OK.",
-                    max_tokens=10,
-                    timeout_seconds=15.0,
-                )
-                if error:
-                    msg = _("Failed: {error}").format(error=error)
-                else:
-                    msg = _("Connection OK.")
-            except Exception as exc:  # noqa: BLE001
-                msg = _("Error: {exc}").format(exc=exc)
-            _wx.CallAfter(self._on_test_done, msg)
-
-        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
-
-    def _on_test_done(self, message: str) -> None:
-        if not dialog_alive(self.dialog):
-            return  # dialog closed before the connection test finished (#1067)
-        self._test_label.SetLabel(message)
-        self._test_btn.Enable(True)
-
-    def _on_reset(self, event: object) -> None:
-        wx = self._wx
-        result = wx.MessageBox(  # GATE-41-OK: standalone dialog  # MSGBOX-OK: standalone dialog
-            _(
-                "Reset all AI settings to defaults? This clears the provider, model, and host "
-                "settings (but not stored API keys)."
-            ),
-            _("Reset AI Settings"),
-            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
-            self.dialog,
-        )
-        if result != wx.YES:
-            return
-        from quill.core.assistant_ai import (
-            AssistantConnectionSettings,
-            save_assistant_connection_settings,
-        )
-
-        save_assistant_connection_settings(AssistantConnectionSettings())
-        self._announce(_("AI settings reset to defaults."))
-        self.dialog.EndModal(wx.ID_OK)
-
     def _on_ok(self, event: object) -> None:
-        provider_idx = self._provider_choice.GetSelection()
-        provider = _PROVIDER_CHOICES[provider_idx][0] if provider_idx >= 0 else "ollama"
-        api_key = self._key_ctrl.GetValue().strip()
-        host = self._host_ctrl.GetValue().strip() or None
-        model = self._model_ctrl.GetValue().strip()
-
-        # Ollama URL from on-device tab overrides if provider is ollama
-        ollama_url = self._ollama_url_ctrl.GetValue().strip()
-        if provider == "ollama" and ollama_url:
-            host = ollama_url
-
-        from quill.core.assistant_ai import (
-            AssistantConnectionSettings,
-            save_assistant_connection_settings,
-            save_provider_api_key,
-        )
-
-        settings = AssistantConnectionSettings(
-            provider=provider,
-            host=host or "",
-            model=model,
-        )
-        save_assistant_connection_settings(settings)
-        if api_key:
-            save_provider_api_key(provider, api_key)
-
+        # The provider, its key and its address are saved by Use My Own AI Key
+        # now (decision 20); the Hub saves only what is still its own.
         # Audio settings
         _save_deepgram_key(self._deepgram_key_ctrl.GetValue())
         _save_deepgram_max_speakers(self._max_speakers_spin.GetValue())
@@ -1523,3 +1192,5 @@ class AIHubDialog:
         # is required (it names the modal region for screen readers).
         self._show_modal(self.dialog, _("AI Hub"))
         self.dialog.Destroy()
+        if self._own_key_after_close and self._open_own_key is not None:
+            self._open_own_key()

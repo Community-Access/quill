@@ -251,9 +251,9 @@ Computer</h1>
 <h2 id="introduction">Introduction</h2>
 <p>Quill Converter changes audio and video files from one format into
 another, on your own computer, without uploading anything to a website
-unless you ask it to (Chapter 7). Sound to sound, video to sound, and
-video to video. It can clean up the sound on the way through, let you
-hear the result before you commit, join a pile of files into one
+unless you ask it to (Chapters 7 and 8). Sound to sound, video to sound,
+and video to video. It can clean up the sound on the way through, let
+you hear the result before you commit, join a pile of files into one
 audiobook, and split a chaptered book back into its chapters.</p>
 <p>It is a small window with a queue, a few choices and a Convert
 button. Focus lands on the queue the moment it opens, every control has
@@ -275,7 +275,10 @@ chapters;</li>
 <li>download the sound of a video, a playlist or a channel from a
 link;</li>
 <li>send recordings to your own Auphonic account for post-production,
-and get the results back, without opening Auphonic’s website.</li>
+and get the results back, without opening Auphonic’s website;</li>
+<li>ask an AI of your choosing whether your files will play on a phone,
+a car stereo or a smart speaker, and what to convert them to if they
+will not.</li>
 </ul>
 <h3 id="how-this-guide-is-laid-out">How this guide is laid out</h3>
 <p>Each chapter starts with what it covers and ends with a short summary
@@ -296,6 +299,8 @@ the report, and Advanced Options.</li>
 a channel.</li>
 <li><strong>Processing online with Auphonic</strong> – optional
 post-production through your own Auphonic account.</li>
+<li><strong>Asking the AI</strong> – choosing an AI, asking about your
+files, and Will This Play on My Device?</li>
 <li><strong>Out of the way, and easy to find</strong> – the tray, a key
 to show and hide Quill Converter, and finding any command by name.</li>
 <li><strong>When you need a hand</strong> – F1, troubleshooting, updates
@@ -432,10 +437,13 @@ nothing is converting. It is not in the Tab order, because a progress
 bar never takes focus; review the window to find it, or simply listen to
 the status bar, which says the same in words with about how long is
 left.</li>
+<li><strong>AI</strong> – a read-only line saying which AI is in use.
+Press Enter on it to open Choose Your AI. See <a
+href="#chapter-8-asking-the-ai">Chapter 8</a>.</li>
 </ul>
-<p>The menu bar is File, Queue, View, Convert, QuillVille, Help and
+<p>The menu bar is File, Queue, View, Convert, AI, QuillVille, Help and
 Window, and no control on the window uses a menu’s letter, so Alt+F
-always opens the File menu.</p>
+always opens the File menu and Alt+I the AI menu.</p>
 <p>While a conversion runs, the Convert button becomes <strong>Stop
 Converting</strong>, and Ctrl+Enter stops as well.</p>
 <p>Press F1 on any control to hear what it does, after a sentence about
@@ -1048,10 +1056,10 @@ FLAC and the other lossless formats. Compressed formats ignore it.</li>
 <li><strong>If a file already exists</strong> (Alt+X) – number the new
 one (the default, which never destroys anything), skip it, or replace
 it.</li>
-<li><strong>Broadcast polish</strong> (Alt+I) – runs each converted file
-through the OptiLab Core engine: Podcast Leveler for speech, Stream
-Polish for music, Smooth Limiter for peaks. Off by default, and
-unavailable when the build does not include it.</li>
+<li><strong>Broadcast polish</strong> – runs each converted file through
+the OptiLab Core engine: Podcast Leveler for speech, Stream Polish for
+music, Smooth Limiter for peaks. Off by default, and unavailable when
+the build does not include it.</li>
 <li><strong>Look in subfolders too</strong> – a check box, on by
 default. When a folder is in the queue, its subfolders are converted
 too, and the same folder layout is rebuilt in the output folder.</li>
@@ -1269,9 +1277,87 @@ where to go next</h3>
 your own Auphonic account, as separate productions or one multitrack
 production, after one confirmation that names everything. Stop is safe
 at every stage, and Auphonic Work Waiting (Ctrl+Alt+A) fetches anything
-Auphonic finished later. Chapter 8 is about keeping Quill Converter out
-of the way while it works.</p>
-<h2 id="chapter-8-out-of-the-way-and-easy-to-find">Chapter 8: Out of the
+Auphonic finished later. Chapter 8 is about asking an AI about your
+files.</p>
+<h2 id="chapter-8-asking-the-ai">Chapter 8: Asking the AI</h2>
+<p>Quill Converter can ask an AI about the files in your queue: whether
+they will play on your phone or in your car, what a setting means, or
+how to make them smaller. It is all in the <strong>AI</strong> menu
+(Alt+I), and none of it is needed to convert anything. Nothing is sent
+to any AI until you choose one and ask.</p>
+<p>The AI never hears your audio. What it gets is the same text File
+Properties (Alt+Enter) shows you: each file’s name, length, size,
+format, sample rate, channels, tags and chapters. It gets the file’s
+name, never the folder it is in.</p>
+<h3 id="choosing-your-ai">Choosing your AI</h3>
+<p><strong>AI &gt; Choose Your AI…</strong> (Ctrl+Shift+F8) lists where
+the AI can come from: QUILL’s free AI, your ChatGPT plan, GitHub
+Copilot, Codex, or your own key from a provider. Arrow to one and press
+Enter to use it, or to sign in to it. Quill Converter signs in on its
+own, as QUILL Converter, so signing it in or out does not touch QUILL or
+any other app in the family.</p>
+<p><strong>AI &gt; Which AI Am I Using</strong> (Ctrl+F8) says which one
+is in use. The same words are on the <strong>AI</strong> line near the
+bottom of the main window; Tab to it and press Enter to open Choose Your
+AI.</p>
+<p>The rest of the AI menu: <strong>Use My ChatGPT
+Subscription…</strong> (Alt+F5), <strong>Use My Own AI Key…</strong>
+(Alt+F2), <strong>AI Usage…</strong> (Ctrl+Alt+Shift+F2), which says how
+much each AI you have set up has been used, and <strong>Privacy
+Agreement…</strong> (Ctrl+Alt+Shift+K).</p>
+<h3 id="will-this-play-on-my-device">Will This Play on My Device?</h3>
+<p>Queue your files, then choose <strong>AI &gt; Will This Play on My
+Device?…</strong> (Ctrl+Shift+D). It asks which device you mean. Type
+something like “iPhone”, “2015 Honda car stereo” or “Echo Dot”, or leave
+it empty and the answer covers a phone, a car stereo playing from a USB
+stick, and a smart speaker. Cancel sends nothing.</p>
+<p>Quill Converter then reads the queued files, which takes a moment for
+a long queue, and asks. The answer goes file kind by file kind: yes or
+no, why, and when it is no, what to choose in Convert to so it will
+play. It is read out and also shown in a window you can arrow through
+and copy. With an empty queue it tells you so and asks nothing.</p>
+<h3 id="make-this-right-for-my-player">Make This Right for My
+Player</h3>
+<p><strong>AI &gt; Make This Right for My Player…</strong> (Ctrl+F3)
+hands the whole job to the AI. You say what you want in your own words,
+such as “make these 40 MP3s one M4B audiobook with a chapter per file,
+small enough for my phone”, and it works it out: it lists the queue,
+reads each file’s details the way File Properties does, checks which
+formats this computer can write, and picks the format, preset, bit rate
+and chapter marks.</p>
+<p>Before anything starts it asks you, and the question names
+everything: the files, the format, the bit rate, and whether it will
+convert each file, join them into one, or split them at their chapters.
+Choose Allow once, Allow for this task, or Don’t allow. On a yes it sets
+the main window’s own choices, so you can see exactly what it picked,
+and starts Convert Now, Join into One File or Split by Chapters, the
+same as if you had pressed them. A joined file goes in the output folder
+under a new name; nothing is ever written over.</p>
+<p>This needs an AI that can run tasks, which today means GitHub Copilot
+or Codex. With any other AI in use the menu item says “(needs Copilot or
+Codex)”, and choosing it offers to switch instead of sending anything.
+While a task runs, anything you type goes to it as a follow-up. When it
+finishes it tells you what it started and anything it could not do.</p>
+<h3 id="ask">Ask</h3>
+<p><strong>AI &gt; Ask…</strong> (Ctrl+Shift+8) opens a conversation
+about your files. Every message carries the queue’s details, the Convert
+to choice, and the last conversion’s report, so you can ask “why did two
+of these fail?” right after a conversion. Quick questions holds a few
+ready-made ones, such as “Will this play in my car?” and “Make this
+smaller without losing much”.</p>
+<p>A file Quill Converter has not read yet is sent by name only, and
+read in the background, so the next message has its details. Asking
+never makes the window wait.</p>
+<h3 id="what-you-learned-and-where-to-go-next-7">What you learned, and
+where to go next</h3>
+<p>Choose Your AI (Ctrl+Shift+F8) picks the AI, Will This Play on My
+Device? (Ctrl+Shift+D) checks the queue against a device, Make This
+Right for My Player (Ctrl+F3) works out and starts the conversion for
+you after asking, and Ask (Ctrl+Shift+8) is a conversation about your
+files. Only the files’ details are sent, never the sound or the folders.
+Safe Mode turns all of it off. Chapter 9 is about keeping Quill
+Converter out of the way while it works.</p>
+<h2 id="chapter-9-out-of-the-way-and-easy-to-find">Chapter 9: Out of the
 way, and easy to find</h2>
 <p>A long conversion can run in the notification area while you do
 something else. This chapter covers the tray, choosing a key to show and
@@ -1311,12 +1397,12 @@ in. An option also says whether it is on or off.</li>
 <p>Enter does exactly what choosing that row from its menu would do. For
 an option, it switches it and tells you whether it is now on or off.
 Escape closes the window without doing anything.</p>
-<h3 id="what-you-learned-and-where-to-go-next-7">What you learned, and
+<h3 id="what-you-learned-and-where-to-go-next-8">What you learned, and
 where to go next</h3>
 <p>Ctrl+W tucks Quill Converter into the tray and brings it back. If you
 want one key that works from any program, choose it in File &gt; Show
 and Hide Key… (Ctrl+Alt+Shift+H). Ctrl+Alt+Shift+S finds any command by
-name. Chapter 9 is for when something goes wrong.</p>
+name. Chapter 10 is for when something goes wrong.</p>
 <h3 id="where-quill-converters-own-sounds-play">Where Quill Converter’s
 own sounds play</h3>
 <p>Quill Converter makes short sounds of its own, such as the ones that
@@ -1348,7 +1434,7 @@ the device comes back, the sounds go back to it by themselves.</p>
 own choice, unless you have checked “Share these choices with my other
 Quill apps”, which copies a change here to the others that share. Your
 screen reader is never moved.</p>
-<h2 id="chapter-9-when-you-need-a-hand">Chapter 9: When you need a
+<h2 id="chapter-10-when-you-need-a-hand">Chapter 10: When you need a
 hand</h2>
 <p>Everybody gets stuck sometimes. This chapter covers the help that is
 always one key away, what to do when something does not work, where your
@@ -1417,8 +1503,10 @@ Uninstalling never deletes the shared data folder; another app in the
 family may still be using it.</p>
 <p>Starting with the environment variable <code>QUILL_SAFE_MODE=1</code>
 runs Quill Converter in Safe Mode. Everything local still works; Convert
-from URL, Process with Auphonic and Auphonic Work Waiting are
-refused.</p>
+from URL, Process with Auphonic, Auphonic Work Waiting and everything in
+the AI menu are refused.</p>
+<p>Your AI choice is kept in its own file,
+<code>converter-ai.json</code>, in the same data folder.</p>
 <h3 id="your-version-and-updates">Your version and updates</h3>
 <p><strong>Help &gt; About Quill Converter</strong> (Alt+F1) shows your
 version with a build number, such as 1.0.0 (build 1). The build number
@@ -1453,7 +1541,7 @@ href="mailto:support@community-access.org">support@community-access.org</a></str
 yourself always works just as well. Say which app you were using and
 what happened. If a conversion failed, open the Conversion Report
 (Ctrl+R), press Copy All, and paste it into your message.</p>
-<h3 id="what-you-learned-and-where-to-go-next-8">What you learned, and
+<h3 id="what-you-learned-and-where-to-go-next-9">What you learned, and
 where to go next</h3>
 <p>F1 explains wherever you are, Troubleshooting covers the common
 problems, and Help &gt; Get Help from Support… (Ctrl+Alt+F2) writes to a
@@ -1621,6 +1709,53 @@ through.</p>
 <tr>
 <td>Open Output Folder When Done</td>
 <td>Ctrl+Shift+W</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ai-menu">AI menu</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ask…</td>
+<td>Ctrl+Shift+8</td>
+</tr>
+<tr>
+<td>Which AI Am I Using</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>Choose Your AI…</td>
+<td>Ctrl+Shift+F8</td>
+</tr>
+<tr>
+<td>Will This Play on My Device?…</td>
+<td>Ctrl+Shift+D</td>
+</tr>
+<tr>
+<td>Make This Right for My Player…</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
+<td>Use My ChatGPT Subscription…</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Use My Own AI Key…</td>
+<td>Alt+F2</td>
+</tr>
+<tr>
+<td>AI Usage…</td>
+<td>Ctrl+Alt+Shift+F2</td>
+</tr>
+<tr>
+<td>Privacy Agreement…</td>
+<td>Ctrl+Alt+Shift+K</td>
 </tr>
 </tbody>
 </table>

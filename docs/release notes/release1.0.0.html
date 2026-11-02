@@ -272,6 +272,32 @@ accident.</p>
 trying, and QUILLBee explains. They’re new around here, and <a
 href="https://www.quillforall.org/meet-quillbert-and-quillbee.html">Meet
 QUILLBert and QUILLBee</a> has the proper introductions.</p>
+<h2
+id="new-in-this-build-choose-your-ai-with-github-copilot-and-codex">New
+in this build: Choose Your AI, with GitHub Copilot and Codex</h2>
+<p>Press <strong>Ctrl+4</strong> (<strong>AI &gt; Choose Your
+AI…</strong>) and one window lists every place your AI can come from:
+QUILL’s free AI, your ChatGPT plan, your GitHub Copilot, Codex, or your
+own key. Each row tells you whether it is in use, signed in or not set
+up, and one line says what it can do, who gets your text and what it
+costs. Enter uses it or signs you in. GitHub Copilot signs in with a
+short code that your screen reader spells out and that is already on the
+clipboard; Copilot Free works too, and the Copilot engine comes with
+QUILL, so there is nothing else to install. Codex uses your ChatGPT
+plan’s sign-in.</p>
+<p><strong>Which AI Am I Using</strong> (<strong>Ctrl+8</strong>) tells
+you in one line where your words are going, the model, and one thing
+about usage. <strong>AI Usage</strong>
+(<strong>Ctrl+Alt+Shift+F2</strong>) is one plain list, a sentence for
+each AI you have set up, each saying whose count it is: no meters, no
+charts. <strong>Do a Document Task</strong> (<strong>Ctrl+3</strong>)
+hands GitHub Copilot or Codex a job with several steps, asks before
+every step that changes something, and sends every edit through the
+review you already know, one undo each. When the AI you are using cannot
+do something, the command stays where it was, its name says what it
+needs, and pressing it offers to switch. QUILL Lite has all of this on
+the same keys, from the same code. See “Choose Your AI” in the user
+guide.</p>
 <h2 id="new-in-this-build-find-in-open-documents">New in this build:
 Find in Open Documents</h2>
 <p>Press <strong>Ctrl+Shift+F10</strong> to find and replace across
@@ -1408,9 +1434,9 @@ questions about the word <em>as it is used in this sentence</em>:</p>
 <p>Each one sends the word and its sentence. The answer is written to be
 listened to, and each choice says why it fits. Press Enter on a choice
 to replace the word as one undo step, as long as the word is still where
-it was. The AI dictionary runs on your own OpenAI key or your ChatGPT
-subscription, never the free allowance. QUILL Lite has the same thirteen
-items on the same keys.</p>
+it was. The AI dictionary runs on any AI except the free one (your
+ChatGPT plan, GitHub Copilot, Codex or your own key), never the free
+allowance. QUILL Lite has the same thirteen items on the same keys.</p>
 <h3 id="proofreading-and-language">Proofreading and language</h3>
 <p><strong>Proofread before publish</strong> can run a spelling pass for
 you on save, on save-as, or on a Mastodon post before it goes out.</p>
@@ -2152,6 +2178,52 @@ model running on your own computer with nothing leaving it. QUILL comes
 with no keys and takes no cut.</p>
 <p>Everything is on the <strong>AI</strong> menu at the top level, and
 all of it is turned off in Safe Mode.</p>
+<h3 id="choose-your-ai">Choose Your AI</h3>
+<p>QUILL has its own free AI, with no account and no key, and it is
+where AI help starts. If you already pay for something, QUILL can use
+that instead, and one window, <strong>Choose Your AI</strong>
+(<strong>Ctrl+4</strong>), lists every place your AI can come from:</p>
+<ul>
+<li><strong>QUILL’s free AI</strong>, within its monthly allowance.</li>
+<li><strong>My ChatGPT plan</strong>, signed in once in your browser,
+with no key and no bill per request.</li>
+<li><strong>My GitHub Copilot</strong>, Copilot Free included, signed in
+with GitHub’s short code, spaced out for your screen reader and already
+on the clipboard. It says “not available yet” until a build carries
+QUILL’s own GitHub registration.</li>
+<li><strong>Codex, for tasks</strong>, one key once your ChatGPT plan is
+signed in.</li>
+<li><strong>My own key</strong>: OpenAI, Google Gemini, Anthropic
+Claude, OpenRouter, Ollama Cloud, a custom OpenAI-compatible service, or
+Ollama on this computer, which needs no key and sends nothing
+anywhere.</li>
+</ul>
+<p>Each row says whether it is in use, signed in or not set up, and one
+button follows the row: Use This, Sign In or Sign Out. <strong>Which AI
+Am I Using</strong> (<strong>Ctrl+8</strong>) tells you in one line
+which AI is answering, the model and one thing about usage; press it
+twice to open the window. An <strong>AI</strong> cell in the status bar
+says the same thing shorter. <strong>AI Usage</strong> is one list, a
+sentence for each AI you have set up, each saying whose count it is.</p>
+<p>Two rules hold everywhere. <strong>Signing in is choosing, and
+nothing switches by itself</strong>: sign out of the AI in use and no AI
+is in use until you pick one, and a missing key, an ended sign-in or a
+reached limit is said once with nothing sent anywhere else. And
+<strong>a command never pretends</strong>: when the AI in use cannot do
+something, the menu name says what it needs, such as “(needs a
+connection that sees)”, and pressing it offers to switch. Every answer
+is text; nothing in QUILL’s AI draws a chart, a diagram or a
+picture.</p>
+<p><strong>Do a Document Task</strong> (<strong>Ctrl+3</strong>) hands a
+job with several steps to GitHub Copilot or Codex: “Fix the heading
+levels, then build a table of contents, then list broken links.” It
+works only with QUILL’s own document tools. Every step that changes
+something asks first (Allow once, Allow for this task, Don’t allow),
+every edit opens the review you already know and undoes with Ctrl+Z,
+Stop ends it at once, and you hear a plain summary at the end.</p>
+<p>QUILL Lite has all of this, on the same keys, from the same code.
+Your saved prompts are one list for the whole family, shared with QUILL
+Lite.</p>
 <h3 id="setting-it-up">Setting it up</h3>
 <p>The <strong>AI Setup Wizard</strong> asks one question at a time, in
 a Basic or an Advanced mode. It ends with Test Connection, which either
@@ -2176,13 +2248,18 @@ progress.</p>
 <p>AI on your own computer is a full option in its own right: Apple
 Foundation Models on macOS, and llama.cpp with GGUF models on
 Windows.</p>
-<p>The <strong>AI Hub</strong> holds all the AI settings, on eight
+<p>The <strong>AI Hub</strong> holds the advanced AI settings, on eight
 tabs:</p>
 <ul>
-<li><strong>Provider</strong> and <strong>On-Device</strong>: your
-connection settings.</li>
-<li><strong>Engines</strong>: sign in to and set up the agent engines
-described under Agents below.</li>
+<li><strong>Provider</strong>: which provider the advanced features use.
+It opens <strong>Use My Own AI Key</strong> (<strong>Alt+F2</strong>),
+where you choose it; the Hub no longer has a provider list of its
+own.</li>
+<li><strong>On-Device</strong>: what Ollama on this computer is and how
+to start with it.</li>
+<li><strong>Engines</strong>: set up the agent engines described under
+Agents below. GitHub Copilot ships with QUILL, so for Copilot this is
+only the sign-in.</li>
 <li><strong>Audio Services</strong>: transcription and speech.</li>
 <li><strong>Services</strong>: document conversion and OCR. It says
 plainly that the free converter and the OCR engine on your computer
@@ -2349,10 +2426,12 @@ with <code>&lt;figure&gt;</code> and
 <code>&lt;figcaption&gt;</code>.</li>
 </ul>
 <h3 id="agents">Agents</h3>
-<p>QUILL can carry out tasks that take several steps, and you choose the
+<p>Besides <strong>Do a Document Task</strong> (above), QUILL’s advanced
+agents can carry out tasks that take several steps, and you choose the
 engine that runs them:</p>
 <ul>
-<li><strong>GitHub Copilot</strong>, signing in with a device code.</li>
+<li><strong>GitHub Copilot</strong>, signing in with a device code. It
+ships with QUILL; there is nothing to install.</li>
 <li>The <strong>Claude Agent SDK</strong> or the <strong>OpenAI Agents
 SDK</strong>, with your existing API keys.</li>
 <li>QUILL’s own <strong>Native</strong> engine.</li>
@@ -2578,13 +2657,12 @@ big actions ask you to type the exact name or number before they go
 ahead: renaming a repository, changing its visibility, deleting a branch
 and merging a pull request. Every other change asks a question that
 names exactly what will change.</p>
-<p>Two more commands use the <code>gh</code> command-line tool you have
-installed. <strong>Ask Copilot for a Command</strong> takes a
-description of what you want to do and suggests a git or <code>gh</code>
-command. <strong>Explain a Command</strong> takes a command you do not
-recognize and explains it in plain language. You can manage Codespaces
-too. Codespaces use real compute and storage minutes, so their
-confirmation says so in plain words.</p>
+<p>You can manage Codespaces too, through the <code>gh</code>
+command-line tool you have installed. (Ask Copilot for a Command and
+Explain a Command are gone: GitHub retired the <code>gh copilot</code>
+extension they used. Copilot is in Choose Your AI now.) Codespaces use
+real compute and storage minutes, so their confirmation says so in plain
+words.</p>
 <p>No <code>git</code> or <code>gh</code> on your computer? <strong>Help
 &gt; Download Optional Components</strong> has a portable Git for
 Windows and the GitHub CLI for Windows and macOS, each checked against

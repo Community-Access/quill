@@ -32,6 +32,12 @@ and QUILLBee explains. They're new around here, and
 has the proper introductions.
 
 
+## New in this build: Choose Your AI, with GitHub Copilot and Codex
+
+Press **Ctrl+4** (**AI > Choose Your AI...**) and one window lists every place your AI can come from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex, or your own key. Each row tells you whether it is in use, signed in or not set up, and one line says what it can do, who gets your text and what it costs. Enter uses it or signs you in. GitHub Copilot signs in with a short code that your screen reader spells out and that is already on the clipboard; Copilot Free works too, and the Copilot engine comes with QUILL, so there is nothing else to install. Codex uses your ChatGPT plan's sign-in.
+
+**Which AI Am I Using** (**Ctrl+8**) tells you in one line where your words are going, the model, and one thing about usage. **AI Usage** (**Ctrl+Alt+Shift+F2**) is one plain list, a sentence for each AI you have set up, each saying whose count it is: no meters, no charts. **Do a Document Task** (**Ctrl+3**) hands GitHub Copilot or Codex a job with several steps, asks before every step that changes something, and sends every edit through the review you already know, one undo each. When the AI you are using cannot do something, the command stays where it was, its name says what it needs, and pressing it offers to switch. QUILL Lite has all of this on the same keys, from the same code. See "Choose Your AI" in the user guide.
+
 ## New in this build: Find in Open Documents
 
 Press **Ctrl+Shift+F10** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL Lite has it too, on Ctrl+Alt+Shift+F8. Thanks to Chris Nova for asking.
@@ -1100,8 +1106,8 @@ half of the submenu on a word. It answers thirteen questions about the word
 Each one sends the word and its sentence. The answer is written to be
 listened to, and each choice says why it fits. Press Enter on a choice to
 replace the word as one undo step, as long as the word is still where it
-was. The AI dictionary runs on your own OpenAI key or your ChatGPT
-subscription, never the free allowance. QUILL Lite has the same thirteen
+was. The AI dictionary runs on any AI except the free one (your ChatGPT
+plan, GitHub Copilot, Codex or your own key), never the free allowance. QUILL Lite has the same thirteen
 items on the same keys.
 
 ### Proofreading and language
@@ -1832,6 +1838,50 @@ no cut.
 Everything is on the **AI** menu at the top level, and all of it is turned
 off in Safe Mode.
 
+### Choose Your AI
+
+QUILL has its own free AI, with no account and no key, and it is where AI help
+starts. If you already pay for something, QUILL can use that instead, and one
+window, **Choose Your AI** (**Ctrl+4**), lists every place your AI can come
+from:
+
+- **QUILL's free AI**, within its monthly allowance.
+- **My ChatGPT plan**, signed in once in your browser, with no key and no bill
+  per request.
+- **My GitHub Copilot**, Copilot Free included, signed in with GitHub's short
+  code, spaced out for your screen reader and already on the clipboard. It
+  says "not available yet" until a build carries QUILL's own GitHub
+  registration.
+- **Codex, for tasks**, one key once your ChatGPT plan is signed in.
+- **My own key**: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama
+  Cloud, a custom OpenAI-compatible service, or Ollama on this computer, which
+  needs no key and sends nothing anywhere.
+
+Each row says whether it is in use, signed in or not set up, and one button
+follows the row: Use This, Sign In or Sign Out. **Which AI Am I Using**
+(**Ctrl+8**) tells you in one line which AI is answering, the model and one
+thing about usage; press it twice to open the window. An **AI** cell in the
+status bar says the same thing shorter. **AI Usage** is one list, a sentence
+for each AI you have set up, each saying whose count it is.
+
+Two rules hold everywhere. **Signing in is choosing, and nothing switches by
+itself**: sign out of the AI in use and no AI is in use until you pick one, and
+a missing key, an ended sign-in or a reached limit is said once with nothing
+sent anywhere else. And **a command never pretends**: when the AI in use cannot
+do something, the menu name says what it needs, such as "(needs a connection
+that sees)", and pressing it offers to switch. Every answer is text; nothing
+in QUILL's AI draws a chart, a diagram or a picture.
+
+**Do a Document Task** (**Ctrl+3**) hands a job with several steps to GitHub
+Copilot or Codex: "Fix the heading levels, then build a table of contents,
+then list broken links." It works only with QUILL's own document tools. Every
+step that changes something asks first (Allow once, Allow for this task, Don't
+allow), every edit opens the review you already know and undoes with Ctrl+Z,
+Stop ends it at once, and you hear a plain summary at the end.
+
+QUILL Lite has all of this, on the same keys, from the same code. Your saved
+prompts are one list for the whole family, shared with QUILL Lite.
+
 ### Setting it up
 
 The **AI Setup Wizard** asks one question at a time, in a Basic or an
@@ -1857,11 +1907,14 @@ rest, with live download progress.
 AI on your own computer is a full option in its own right: Apple Foundation
 Models on macOS, and llama.cpp with GGUF models on Windows.
 
-The **AI Hub** holds all the AI settings, on eight tabs:
+The **AI Hub** holds the advanced AI settings, on eight tabs:
 
-- **Provider** and **On-Device**: your connection settings.
-- **Engines**: sign in to and set up the agent engines described under
-  Agents below.
+- **Provider**: which provider the advanced features use. It opens **Use My
+  Own AI Key** (**Alt+F2**), where you choose it; the Hub no longer has a
+  provider list of its own.
+- **On-Device**: what Ollama on this computer is and how to start with it.
+- **Engines**: set up the agent engines described under Agents below.
+  GitHub Copilot ships with QUILL, so for Copilot this is only the sign-in.
 - **Audio Services**: transcription and speech.
 - **Services**: document conversion and OCR. It says plainly that the free
   converter and the OCR engine on your computer always go first, and that
@@ -2015,10 +2068,11 @@ voice was missing.
 
 ### Agents
 
-QUILL can carry out tasks that take several steps, and you choose the engine
-that runs them:
+Besides **Do a Document Task** (above), QUILL's advanced agents can carry out
+tasks that take several steps, and you choose the engine that runs them:
 
-- **GitHub Copilot**, signing in with a device code.
+- **GitHub Copilot**, signing in with a device code. It ships with QUILL;
+  there is nothing to install.
 - The **Claude Agent SDK** or the **OpenAI Agents SDK**, with your existing
   API keys.
 - QUILL's own **Native** engine.
@@ -2251,11 +2305,10 @@ repository, changing its visibility, deleting a branch and merging a pull
 request. Every other change asks a question that names exactly what will
 change.
 
-Two more commands use the `gh` command-line tool you have installed. **Ask
-Copilot for a Command** takes a description of what you want to do and
-suggests a git or `gh` command. **Explain a Command** takes a command you do
-not recognize and explains it in plain language. You can manage Codespaces
-too. Codespaces use real compute and storage minutes, so their confirmation
+You can manage Codespaces too, through the `gh` command-line tool you have
+installed. (Ask Copilot for a Command and Explain a Command are gone: GitHub
+retired the `gh copilot` extension they used. Copilot is in Choose Your AI
+now.) Codespaces use real compute and storage minutes, so their confirmation
 says so in plain words.
 
 No `git` or `gh` on your computer? **Help > Download Optional Components** has

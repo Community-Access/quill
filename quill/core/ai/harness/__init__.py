@@ -19,12 +19,17 @@ returns ``(False, "Install the X pack")`` and QUILL keeps working.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from quill.core.ai.context_builder import ContextScope
 from quill.core.ai.permissions import Decision, PermissionBroker, PermissionCategory, RiskLevel
 from quill.core.ai.tool_gateway import Emit, SafeEditorToolGateway
+
+if TYPE_CHECKING:
+    from quill.core.ai.approvals import Approver
+    from quill.core.ai.family_tools import FamilyToolRegistry
 
 __all__ = [
     "HarnessCapabilities",
@@ -34,6 +39,10 @@ __all__ = [
     "HarnessSession",
     "Harness",
     "HarnessRegistry",
+    "ToolSession",
+    "ToolHarness",
+    "TurnUsage",
+    "supports_app_tools",
 ]
 
 
@@ -61,6 +70,9 @@ class HarnessCapabilities:
     images: bool = False
     audio: bool = False
     long_context: bool = False
+    # Takes QUILL's family tools through ``start_tool_session`` (codex.md 5.1a):
+    # a multi-turn session whose tool calls come back to the FamilyToolRegistry.
+    app_tools: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -151,6 +163,77 @@ class Harness(Protocol):
         broker: PermissionBroker,
         emit: Emit,
     ) -> HarnessSession: ...
+
+
+@dataclass(frozen=True, slots=True)
+class TurnUsage:
+    """What one model call cost, as the engine reports it (feeds the usage line).
+
+    Token counts only -- never converted to money (codex.md 8).
+    """
+
+    engine: str
+    model: str = ""
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+
+@runtime_checkable
+class ToolSession(Protocol):
+    """A multi-turn agent session over the family tools (codex.md 5.1a).
+
+    Beside :class:`HarnessSession`, not instead of it: Native and the
+    existing packs keep their one-shot sessions. Threading contract:
+
+    - :meth:`run` blocks; call it on a worker thread (``QuillTaskManager``),
+      never the UI thread. It runs the first prompt, then every follow-up
+      given to :meth:`send`, and returns when the turn queue is empty --
+      or, for a session started with ``keep_open=True``, when :meth:`end`
+      or :meth:`cancel` is called. Every tool call and approval happens on
+      worker threads; the approver marshals to the UI itself.
+    - :meth:`send`, :meth:`cancel` and :meth:`end` are safe from any thread.
+    - :meth:`cancel` (Stop) ends the turn within a second, unblocks any
+      pending approval, and :meth:`run` returns ``status="cancelled"``.
+    - "For this task" grants last exactly as long as one :meth:`run`.
+    """
+
+    @property
+    def session_id(self) -> str: ...
+    def run(self) -> HarnessResult: ...
+    def cancel(self) -> None: ...
+    def send(self, follow_up: str) -> None: ...
+    def end(self) -> None: ...
+
+
+@runtime_checkable
+class ToolHarness(Protocol):
+    """A harness that can run a :class:`ToolSession` (``app_tools`` is True)."""
+
+    @property
+    def id(self) -> str: ...
+    def capabilities(self) -> HarnessCapabilities: ...
+    def start_tool_session(
+        self,
+        agent: AgentSpec,
+        ctx: AIContext,
+        tools: FamilyToolRegistry,
+        approver: Approver,
+        emit: Emit,
+        *,
+        keep_open: bool = False,
+        on_usage: Callable[[TurnUsage], None] | None = None,
+    ) -> ToolSession: ...
+
+
+def supports_app_tools(harness: object) -> bool:
+    """True when ``harness`` declares ``app_tools`` and has ``start_tool_session``."""
+    caps = getattr(harness, "capabilities", None)
+    if not callable(caps) or not callable(getattr(harness, "start_tool_session", None)):
+        return False
+    try:
+        return bool(caps().app_tools)
+    except Exception:  # noqa: BLE001 - a broken pack is simply not a tool harness
+        return False
 
 
 class HarnessRegistry:

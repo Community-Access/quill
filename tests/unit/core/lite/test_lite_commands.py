@@ -53,6 +53,9 @@ def _items() -> list[tuple[str, str, str, str]]:
 #: reason). The route is the menu's own Alt path, which the access-key checks
 #: below keep unique. Shrink this, never grow it without an argument.
 KEYLESS_WITH_REASON: dict[str, str] = {
+    "cmd_ai_alt_text": "As in QUILL (rule 2), where Propose Alt Text has no key either: "
+    "Do a Document Task (Ctrl+3) takes the same request, and this row only types it in. "
+    "Rule 9: an occasional repair pass gets a way in, not a chord -- Alt+T, A, T.",
     "cmd_release_channel": "Deliberately vacated 2026-10-03 in all four channel apps: "
     "Alt+Shift+F4 closed a dialog or a separate window wherever Windows read it as "
     "Alt+F4, and rule 4 fixes destructive habits first. Rule 9: once a year needs a "

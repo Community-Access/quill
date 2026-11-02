@@ -9,6 +9,12 @@ of names, because the app has already said them.
 
 Pure functions, wx-free, so the sentences are testable and the window is not
 the place they are written.
+
+Since codex.md Phase 3 (2026-11-01) Ask QUILL Radio is Ask, the family's one
+conversation window (:mod:`quill.ui.radio.radio_ai_features`): its facts come
+from :func:`quill.core.ai.app_ask_context.radio_context`, and the quick
+questions, :func:`extra_context` and :func:`describe_extra` here are still the
+ones it offers and says before anything goes.
 """
 
 from __future__ import annotations

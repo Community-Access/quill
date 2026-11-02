@@ -304,7 +304,7 @@ choose a file.</p>
 <p>Moving through the window with Tab (or your screen reader’s
 controls), you meet these regions in order:</p>
 <ol type="1">
-<li><strong>Menu bar</strong> - File, Navigation, Playback, View,
+<li><strong>Menu bar</strong> - File, Navigation, Playback, View, AI,
 QuillVille, Help and Window. Press Alt (or F10) to reach it, Left and
 Right to move between the menus, and Down to open one. For example, to
 set the sleep timer, press Alt, Right twice to Playback, Down, then T
@@ -319,6 +319,9 @@ volume slider.</li>
 Audio. Press Ctrl+Tab to move between them. The Book Library is a window
 of its own (File &gt; Book Library…, Ctrl+L); a play queue is not built
 yet.</li>
+<li><strong>AI</strong> - a read-only line saying which AI the player
+uses, if any. Press Enter on it to open Choose Your AI (Section
+13b).</li>
 <li><strong>Status bar</strong> — live state you can review field by
 field (Section 11).</li>
 </ol>
@@ -417,7 +420,7 @@ the buttons moved:</p>
 <td>W</td>
 <td>Window menu</td>
 <td>I</td>
-<td>Where am I?</td>
+<td>AI menu</td>
 </tr>
 <tr>
 <td>D</td>
@@ -447,8 +450,11 @@ the buttons moved:</p>
 </table>
 <p>The Play button says Play or Pause depending on what is happening,
 and the Mute button says Mute or Unmute, but each keeps one letter, so
-Alt+A and Alt+U always work. For example: press Alt+P and the Playback
-menu opens; press Escape, then Alt+A, and the book plays or pauses. The
+Alt+A and Alt+U always work. Where am I? has no Alt letter any more: it
+used to have I, which the AI menu took on 2026-11-01, and every other
+letter in its name was already in use. Tab to it, or press Shift+F6 to
+hear the status bar. For example: press Alt+P and the Playback menu
+opens; press Escape, then Alt+A, and the book plays or pauses. The
 Bookmarks and Audio letters work while that page is the one showing
 (Ctrl+Tab moves between pages).</p>
 <h3 id="arrows-in-the-chapters-tree-sliders-and-page-tabs">Arrows in the
@@ -889,18 +895,9 @@ Player</strong> opens a compact, always-on-top window (Play/Pause,
 Previous/Next chapter) so playback stays reachable while you work
 elsewhere. <strong>View &gt; Compact Mode</strong> shrinks the main
 window to just the transport. <em>(Available now.)</em></li>
-<li><strong>Summarize This Chapter (AI)</strong> — <strong>Playback &gt;
-Summarize This Chapter (AI)</strong> asks your configured AI for a one-
-or two-sentence summary and speaks it (also shown in a dialog you can
-read).</li>
-<li><strong>AI Recap of Where I Am</strong> — <strong>Playback &gt; AI
-Recap of Where I Am</strong> recaps the passage up to your current point
-(“here’s what’s been happening”), so you can pick a book back up after a
-break. Both use the AI: for a book with a text layer (DAISY/EPUB) they
-summarize the text directly; for pure audio they transcribe the passage
-first, so that needs the offline speech engine installed. Both require
-an AI provider set up in QUILL’s AI Hub, are off in Safe Mode, and never
-run on protected BARD content. <em>(Available now.)</em></li>
+<li><strong>Summarize This Chapter (AI)</strong> and <strong>AI Recap of
+Where I Am</strong> are in the Playback menu. They use whichever AI you
+chose; see Section 13b.</li>
 <li><strong>Magical Mode</strong> — <strong>View &gt; Magical
 Mode</strong> turns on opt-in flourishes. Today it gives a warm spoken
 <strong>welcome-back recap</strong> when you reopen a book (“Welcome
@@ -974,6 +971,75 @@ instrumental, or the file does not say its artist and title.</p>
 never in Safe Mode, and they are kept in memory only: nothing is written
 to your computer.</p>
 <hr />
+<h2 id="13b-ai-summaries-recaps-and-ask">13b. AI: summaries, recaps and
+Ask</h2>
+<p>The player can use an AI to tell you about the book you’re listening
+to. It uses the AI you pick for it, and nothing is sent until you ask.
+The audio itself never leaves your computer.</p>
+<h3 id="picking-an-ai">Picking an AI</h3>
+<p>Open <strong>AI &gt; Choose Your AI…</strong>
+(<strong>Ctrl+Shift+F8</strong>). You can use QUILL’s free AI, your
+ChatGPT plan, GitHub Copilot, Codex, or your own key. The player signs
+in on its own, as QUILL Media Player, so signing in here doesn’t sign in
+any other QuillVille app. To hear which one is in use, press
+<strong>Ctrl+F8</strong> (<strong>AI &gt; Which AI Am I Using</strong>).
+The AI line in the main window says the same thing; press Enter on it to
+open Choose Your AI.</p>
+<p>The rest of the AI menu: <strong>Use My ChatGPT
+Subscription…</strong> (<strong>Alt+F5</strong>), <strong>Use My Own AI
+Key…</strong> (<strong>Alt+F2</strong>), <strong>AI Usage…</strong>
+(<strong>Ctrl+Alt+Shift+F2</strong>) and <strong>Privacy
+Agreement…</strong> (<strong>Ctrl+Alt+Shift+K</strong>).</p>
+<h3 id="summarize-this-chapter-and-ai-recap-of-where-i-am">Summarize
+This Chapter and AI Recap of Where I Am</h3>
+<ul>
+<li><strong>Summarize This Chapter (AI)</strong>
+(<strong>Ctrl+Alt+C</strong>) gives you the chapter you’re in, in a
+sentence or two.</li>
+<li><strong>AI Recap of Where I Am</strong>
+(<strong>Ctrl+Alt+R</strong>) reminds you what was going on up to your
+place in the book, without giving away anything further on. It’s handy
+after a few days away from a book.</li>
+</ul>
+<p>Both are in the Playback menu, where they’ve always been. The answer
+is read aloud and also shown in a window you can read again and copy.
+Ask for the same chapter again and you get the same answer straight
+away, without sending anything.</p>
+<p>The AI can only read text, so the player finds some first. For pure
+audio it makes a short transcript of the passage, at most five minutes,
+right here on your computer; that needs QUILL’s offline speech engine
+installed. Only that text goes to the AI. You can also say “summarize”
+or “recap” to the voice command bar.</p>
+<p>Neither one works in Safe Mode, and neither ever runs on protected
+BARD content.</p>
+<h3 id="ask">Ask</h3>
+<p><strong>AI &gt; Ask…</strong> (<strong>Ctrl+Shift+8</strong>) opens a
+conversation about the book. Each message takes along the book’s title,
+the chapter you’re in, your place in it and the list of chapters, so you
+can ask things like “how many chapters are left?” or pick <strong>Remind
+me who this character is</strong> from Quick questions. No file names or
+folders go with it, and no audio.</p>
+<h3 id="find-the-part-where">Find the Part Where</h3>
+<p><strong>AI &gt; Find the Part Where…</strong>
+(<strong>Ctrl+F3</strong>) takes you to a place you describe: “the
+chapter where the storm starts”, “the bookmark I left about the map”,
+“an hour and two minutes in”. The AI looks at what’s open, the chapter
+list with each chapter’s start time, and your bookmarks with their times
+and notes, and works out where you mean. Before it moves you, it asks,
+naming the time and the book: “Go to 1:02:30 in Treasure Island.” Say
+yes and it jumps there the same way Go to Position does, so a time past
+the end lands at the end.</p>
+<p>It finds places by chapters, bookmarks and times only. There’s no
+transcript of the audio for it to search, so “the part where the captain
+gets angry” works only if a chapter title or one of your bookmark notes
+says so, or if the AI already knows the book. Good bookmark notes make
+it much better at this.</p>
+<p>This needs an AI that can run tasks, which today means GitHub Copilot
+or Codex. With any other AI the menu item says “(needs Copilot or
+Codex)” and offers to switch instead of sending anything. Nothing is
+sent but the book’s title, the chapter titles, your bookmark notes and
+times; never the audio.</p>
+<hr />
 <h2 id="14-settings">14. Settings</h2>
 <p><strong>File &gt; Preferences…</strong> (Ctrl+,) gathers the player’s
 settings in one window: <strong>Audio Output Device…</strong>,
@@ -1005,8 +1071,12 @@ sources you choose; there is no telemetry.</li>
 <li><strong>Lyrics</strong> are fetched from LRCLIB only when you open
 the Lyrics window, sending the song’s artist, title, album and length,
 and are kept in memory only.</li>
-<li><strong>Safe Mode</strong> disables all network sources — local
-playback still works.</li>
+<li><strong>AI</strong> is used only when you ask, through the AI you
+chose (Section 13b). What goes is text: the book’s title, chapter names
+and your place, and for a summary or recap a short transcript made on
+your computer. Audio never goes.</li>
+<li><strong>Safe Mode</strong> disables all network sources and every AI
+command — local playback still works.</li>
 <li>Protected BARD content is handled only through the sanctioned
 mechanism; a decrypted copy is never written to disk.</li>
 <li>Your BARD sign-in and any keys live only in your operating system’s
@@ -1084,7 +1154,8 @@ engines)</strong></td>
 <td>Spoken chapter intros / soundscape</td>
 </tr>
 <tr>
-<td><strong>Summarize Chapter + AI Recap (AI)</strong></td>
+<td><strong>Summarize Chapter + AI Recap, Ask, Find the Part Where
+(AI)</strong></td>
 <td>Automatic (server) cross-device sync</td>
 </tr>
 <tr>

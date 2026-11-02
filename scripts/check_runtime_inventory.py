@@ -78,7 +78,17 @@ _LAYOUTS: dict[str, tuple[tuple[str, str], ...]] = {
 #: and the person reading the failure needs to know it is expected and what to
 #: do, not to go hunting for a stray package. Remove an entry once the
 #: committed inventory lists the name.
-KNOWN_ADDITIONS: dict[str, str] = {}
+KNOWN_ADDITIONS: dict[str, str] = {
+    "copilot": (
+        "The GitHub Copilot SDK's package data (py.typed), collected whole by "
+        "quillville-runtime.spec since 2026-10-31 (codex.md 10A.12). Expected: "
+        "rebaseline with --write after the first build that carries it."
+    ),
+    "github-copilot-sdk": (
+        "The GitHub Copilot SDK's dist-info, for the notices gate (2026-10-31, "
+        "codex.md 10A.12). Expected: rebaseline with --write."
+    ),
+}
 
 
 def explain(name: str) -> str:

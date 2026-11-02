@@ -1,6 +1,6 @@
 # QUILL 1.0.0 Sign-off — Editor commands
 
-**645 core-editor commands** (of 718 total). Legend per item: **W**=Works · **S**=Surface-exact (label/shortcut/menu path + accessible name) · **A**=Accessible (keyboard + announced). Verify each across every §A environment in the master plan.
+**643 core-editor commands** (of 716 total). Legend per item: **W**=Works · **S**=Surface-exact (label/shortcut/menu path + accessible name) · **A**=Accessible (keyboard + announced). Verify each across every §A environment in the master plan.
 
 > `[GATED ...]` = only present when its feature flag is on; scope in/out of the pass explicitly.
 
@@ -543,14 +543,12 @@
 - [ ] W  [ ] S  [ ] A  `help.why_dont_i_see_feature` — Why Don't I See a Feature?
 - [ ] W  [ ] S  [ ] A  `help.why_unavailable` — Why Is This Unavailable?  `Alt+F1`
 
-## `github.*` (17)
+## `github.*` (15)
 - [ ] W  [ ] S  [ ] A  `github.browse_organization` — GitHub: Browse Organization Repositories...
 - [ ] W  [ ] S  [ ] A  `github.change_default_branch` — GitHub: Change Default Branch...  `Ctrl+Shift+Grave, Shift+B`
 - [ ] W  [ ] S  [ ] A  `github.change_repository_visibility` — GitHub: Change Repository Visibility...  `Ctrl+Shift+Grave, Shift+V`
 - [ ] W  [ ] S  [ ] A  `github.commit_multiple_files` — GitHub: Commit Multiple Files...  `Ctrl+Shift+Grave, Shift+U`
 - [ ] W  [ ] S  [ ] A  `github.configure_branch_protection` — GitHub: Configure Branch Protection...  `Ctrl+Shift+Grave, Shift+L`
-- [ ] W  [ ] S  [ ] A  `github.copilot_explain` — GitHub: Explain a Command...
-- [ ] W  [ ] S  [ ] A  `github.copilot_suggest` — GitHub: Ask Copilot for a Command...
 - [ ] W  [ ] S  [ ] A  `github.create_codespace` — GitHub: Create Codespace...
 - [ ] W  [ ] S  [ ] A  `github.create_release` — GitHub: Create Release...
 - [ ] W  [ ] S  [ ] A  `github.create_repository` — GitHub: Create Repository...  `Ctrl+Shift+Grave, Shift+K`

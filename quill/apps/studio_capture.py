@@ -8,13 +8,13 @@ import wx
 
 from quill.apps.studio_capture_hotkeys import StudioCaptureHotkeysMixin
 from quill.apps.studio_demo import StudioDemoMixin
-from quill.apps.studio_vision_route import StudioVisionRouteMixin
 from quill.core.paths import app_data_dir
 from quill.core.studio_capture import save_capture_report
 from quill.stability.task_manager import UiLifetimeToken
+from quill.ui.audio_studio.studio_ai_host import StudioAiMixin
 
 
-class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioVisionRouteMixin):
+class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioAiMixin):
     def _capture_command_specs(self):
         return (
             ("studio.capture", "&Capture screen...", self.capture_screen),
@@ -29,8 +29,8 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioVisio
                 self.capture_selected_target,
             ),
             ("studio.capture_hotkeys", "Capture global &hotkeys...", self.open_capture_hotkeys),
-            # No access key: the Capture menu has none left (GATE-14).
-            ("studio.chatgpt_account", "Use My ChatGPT Subscription...", self.open_chatgpt_account),
+            # Use My ChatGPT Subscription moved to the AI menu with Choose Your
+            # AI (codex.md Phase 3; studio_ai_host.AI_ROWS), keeping its id.
         )
 
     def _append_capture_menu(self, menu_bar):
@@ -50,6 +50,7 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioVisio
                 command_id, label.replace("&", ""), handler, self._binding_for(command_id)
             )
         self._register_demo_commands()
+        self._register_studio_ai_commands()
 
     def _append_capture_tray(self, menu):
         self._append_demo_tray(menu)
@@ -336,37 +337,40 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioVisio
     ):
         from quill.core.studio_capture_ai import inspect_screenshot
 
-        def work(*, cancellation_token, **_kwargs):
-            if connection is not None and self._safe_mode:
-                raise RuntimeError("AI is disabled in Safe Mode.")
-            return inspect_screenshot(
+        if connection is not None:
+            # The connection in use now, read here on the UI thread; the worker
+            # re-reads only the saved permission before anything is prepared.
+            actual = self._automatic_vision_connection({}) if automatic else None
+
+            def auto_permission():
+                from quill.core.ai.model_manager import load_ai_enabled
+                from quill.core.studio_capture_ai import (
+                    auto_ai_allowed,
+                    connection_identity,
+                    load_capture_ai_preferences,
+                )
+
+                return connection_identity(actual) == connection_identity(
+                    connection
+                ) and auto_ai_allowed(
+                    load_capture_ai_preferences(),
+                    actual,
+                    ai_enabled=load_ai_enabled(),
+                    safe_mode=self._safe_mode,
+                )
+
+            return self._studio_send_inspection(
                 evidence,
-                connection=connection,
-                instructions=instructions,
-                question=question,
-                history=history,
-                cancellation_token=cancellation_token,
+                (instructions, question, history),
+                connection,
+                on_success,
+                on_failure,
+                lifetime,
                 can_send=auto_permission if automatic else None,
             )
 
-        def auto_permission():
-            from quill.core.ai.model_manager import load_ai_enabled
-            from quill.core.studio_capture_ai import (
-                auto_ai_allowed,
-                connection_identity,
-                load_capture_ai_preferences,
-            )
-
-            preferences = load_capture_ai_preferences()
-            actual = self._automatic_vision_connection(preferences)
-            return connection_identity(actual) == connection_identity(
-                connection
-            ) and auto_ai_allowed(
-                preferences,
-                actual,
-                ai_enabled=load_ai_enabled(),
-                safe_mode=self._safe_mode,
-            )
+        def work(*, cancellation_token, **_kwargs):
+            return inspect_screenshot(evidence, cancellation_token=cancellation_token)
 
         return self._task_manager.submit(
             "Inspect screenshot",

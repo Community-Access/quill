@@ -63,6 +63,7 @@ def test_the_bar_leads_with_actions_and_dropped_the_readout_cells() -> None:
         "sleep_timer",
         "notifications",
         "clock",
+        "ai",  # decision 19: the AI cell, last; Enter opens Choose Your AI
     ]
 
 

@@ -14,16 +14,16 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 45 components
-  BSD 3-Clause License: 21 components
-  Apache License, version 2.0: 10 components
+  MIT License: 52 components
+  BSD 3-Clause License: 23 components
+  Apache License, version 2.0: 11 components
   Python Software Foundation License, version 2: 6 components
   GNU Lesser General Public License, version 2.1: 4 components
+  The Unlicense (public domain dedication): 4 components
   BSD 2-Clause License: 3 components
   GNU General Public License, version 2: 3 components
   Mozilla Public License, version 2.0: 3 components
   Public domain: 3 components
-  The Unlicense (public domain dedication): 3 components
   ISC License: 2 components
   BSD Zero Clause License: 1 component
   GNU Affero General Public License, version 3: 1 component
@@ -31,6 +31,7 @@ Summary by licence
   Creative Commons Zero 1.0 (public domain dedication): 1 component
   GCC Runtime Library Exception, version 3.1: 1 component
   GNU General Public License, version 3: 1 component
+  GitHub Copilot CLI License (proprietary): 1 component
   Historical Permission Notice and Disclaimer (HPND): 1 component
   GNU Lesser General Public License, version 3: 1 component
   MIT No Attribution License: 1 component
@@ -92,6 +93,28 @@ Version: 0.17
 Licence: MIT
 Copyright: Copyright (c) 2019 Christopher Toth and contributors
 Upstream: https://github.com/accessibleapps/accessible_output2
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+annotated-types
+---------------
+
+What it is: Type annotations pydantic reads, a dependency of pydantic.
+Version: 0.8.0
+Licence: MIT
+Copyright: Copyright (c) 2022 the contributors
+Upstream: https://github.com/annotated-types/annotated-types
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+AnyIO
+-----
+
+What it is: Asynchronous networking underneath httpx, a dependency of the GitHub Copilot SDK.
+Version: 4.15.1
+Licence: MIT
+Copyright: Copyright (c) 2018 Alex Grönholm
+Upstream: https://github.com/agronholm/anyio
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
@@ -314,6 +337,50 @@ Copyright: Copyright (c) 2001-present Python Software Foundation
 Upstream: https://github.com/kurtmckee/feedparser-sgmllib
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the PSF copyright notice and licence with the distribution and summarise any changes we made.
+
+GitHub Copilot SDK (copilot)
+----------------------------
+
+What it is: The Python side of the My GitHub Copilot connection: it starts the bundled Copilot CLI in tools\copilot and talks to it. Ships in the shared runtime unmodified; its licence text is the repository's LICENSE at tag v1.0.28 (SHA-256 2510b446bc1f0cf9702453075d20cd88631e20e5642658edb7325d9c1eb534f7), the MIT text with GitHub's copyright.
+Version: 1.0.28
+Licence: MIT
+Copyright: Copyright GitHub, Inc.
+Upstream: https://github.com/github/copilot-sdk
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+h11
+---
+
+What it is: HTTP/1.1 protocol handling underneath httpx.
+Version: 0.16.0
+Licence: MIT
+Copyright: Copyright (c) 2016 Nathaniel J. Smith and other contributors
+Upstream: https://github.com/python-hyper/h11
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+httpcore
+--------
+
+What it is: The HTTP transport underneath httpx.
+Version: 1.0.9
+Licence: BSD-3-Clause
+Copyright: Copyright (c) 2020, Encode OSS Ltd.
+Upstream: https://github.com/encode/httpcore
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary. Do not use the authors' names to promote the product without permission.
+
+httpx
+-----
+
+What it is: An HTTP client, a dependency of the GitHub Copilot SDK.
+Version: 0.28.1
+Licence: BSD-3-Clause
+Copyright: Copyright (c) 2019, Encode OSS Ltd.
+Upstream: https://github.com/encode/httpx
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary. Do not use the authors' names to promote the product without permission.
 
 Pygments
 --------
@@ -756,6 +823,17 @@ Upstream: https://github.com/scanny/python-pptx
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
+six
+---
+
+What it is: Python 2 and 3 compatibility helpers, a dependency of python-dateutil.
+Version: 1.17.0
+Licence: MIT
+Copyright: Copyright (c) 2010-2024 Benjamin Peterson
+Upstream: https://github.com/benjaminp/six
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
 python-sounddevice (with PortAudio)
 -----------------------------------
 
@@ -777,6 +855,17 @@ Copyright: Copyright (c) 2013, Bastian Bechtold; libsndfile: Copyright (C) 1999-
 Upstream: https://github.com/bastibe/python-soundfile
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary. Do not use the authors' names to promote the product without permission. Ship the licence text. Keep the library a separate, replaceable file (all are shipped as separate DLLs or modules). Offer the library's source, or point to the exact upstream source of the version we ship.
+
+typing-inspection
+-----------------
+
+What it is: Type inspection helpers, a dependency of pydantic.
+Version: 0.4.4
+Licence: MIT
+Copyright: Copyright (c) Pydantic Services Inc. 2025 to present
+Upstream: https://github.com/pydantic/typing-inspection
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
 python-zstandard
 ----------------
@@ -1019,6 +1108,39 @@ Copyright: Copyright Simon Sawicki and the yt-dlp authors
 Upstream: https://github.com/yt-dlp/ejs
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: None. Keep the copyright notice and the permission notice with every copy. Keep the copyright notice and the permission notice.
+
+GitHub Copilot CLI runtime (copilot-runtime.exe, runtime.node)
+--------------------------------------------------------------
+
+What it is: The engine behind the My GitHub Copilot connection, run as a separate program: the runtime bundle the GitHub Copilot SDK installs for itself, taken from GitHub's github-copilot-1.0.105-win32-x64 package. Ships unmodified in the shared runtime's tools\copilot with its licence as COPILOT-CLI-LICENSE.txt. The bundle also carries components GitHub ships inside it -- Microsoft's sign-in libraries (OneAuthInterop.dll, with its licence as OneAuthInterop.LICENSE.txt, and msalruntime.dll), and Microsoft's tgrep -- each signed by GitHub or Microsoft and covered by that licence -- and ripgrep, which has its own entry.
+Version: 1.0.105
+Licence: GitHub Copilot CLI License (proprietary; redistribution of unmodified copies permitted)
+Copyright: Copyright (c) GitHub, Inc.
+Upstream: https://github.com/github/copilot-cli
+How it reaches you: Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
+What the licence asks of us: Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept.
+
+ripgrep (rg.exe)
+----------------
+
+What it is: A fast text search program the GitHub Copilot CLI runtime carries in tools\copilot\ripgrep, shipped inside GitHub's package unmodified. Its licence texts are LICENSE-MIT (SHA-256 0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f) and UNLICENSE (SHA-256 7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c) at ripgrep tag 15.0.0, the version the bundled rg.exe reports.
+Version: 15.0.0 (rev 3a612f88b8)
+Licence: Unlicense or MIT (your choice)
+Copyright: Copyright (c) 2015 Andrew Gallant
+Upstream: https://github.com/BurntSushi/ripgrep
+How it reaches you: Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
+What the licence asks of us: None. Keep the copyright notice and the permission notice with every copy.
+
+OpenAI Codex app-server (codex-app-server.exe)
+----------------------------------------------
+
+What it is: The Codex agent engine, run as a separate program. Ships unmodified, signed by OpenAI, in the shared runtime's tools\codex with its licence as CODEX-LICENSE.txt and its NOTICE as CODEX-NOTICE.txt.
+Version: 0.166.0
+Licence: Apache-2.0
+Copyright: Copyright 2025 OpenAI
+Upstream: https://github.com/openai/codex
+How it reaches you: Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
+What the licence asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 
 DATA AND DICTIONARIES
 =====================
@@ -1852,7 +1974,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 Apache License, version 2.0
 ---------------------------
 
-Used by: cryptography, html_to_text, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, tzdata, websocket-client.
+Used by: cryptography, html_to_text, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe).
 
 What it asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 
@@ -2120,7 +2242,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 BSD 3-Clause License
 --------------------
 
-Used by: Click, colorama, cryptography, httpcore2, httpx2, idna, isodate, lxml, MarkupSafe, NumPy, pillow-heif, psutil, pycparser, pypdf, pypdfium2 (with PDFium), pyreadline3, python-dateutil, python-soundfile (with libsndfile), python-zstandard, websockets, Werkzeug.
+Used by: Click, colorama, cryptography, httpcore, httpx, httpcore2, httpx2, idna, isodate, lxml, MarkupSafe, NumPy, pillow-heif, psutil, pycparser, pypdf, pypdfium2 (with PDFium), pyreadline3, python-dateutil, python-soundfile (with libsndfile), python-zstandard, websockets, Werkzeug.
 
 What it asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary. Do not use the authors' names to promote the product without permission.
 
@@ -2318,6 +2440,49 @@ You have permission to propagate a work of Target Code formed by combining the R
 2. No Weakening of GCC Copyleft.
 
 The availability of this Exception does not imply any general presumption that third-party software is unaffected by the copyleft requirements of the license of GCC.
+
+GitHub Copilot CLI License (proprietary)
+----------------------------------------
+
+Used by: GitHub Copilot CLI runtime (copilot-runtime.exe, runtime.node).
+
+What it asks of us: Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept.
+
+GitHub Copilot CLI License
+
+1. License Grant
+   Subject to the terms of this License, GitHub grants you a non‑exclusive, non‑transferable, royalty‑free license to install and run copies of the GitHub Copilot CLI (the “Software”). Subject to Section 2 below, GitHub also grants you the right to reproduce and redistribute unmodified copies of the Software as part of an application or service.
+
+2. Redistribution Rights and Conditions
+   You may reproduce and redistribute the Software only in accordance with all of the following conditions:
+   The Software is distributed only in unmodified form;
+   The Software is redistributed solely as part of an application or service that provides material functionality beyond the Software itself;
+   The Software is not distributed on a standalone basis or as a primary product;
+   You include a copy of this License and retain all applicable copyright, trademark, and attribution notices; and
+   Your application or service is licensed independently of the Software.
+   Nothing in this License restricts your choice of license for your application or service, including distribution under an open source license. This License applies solely to the Software and does not modify or supersede the license terms governing your application or its source code.
+
+3. Scope Limitations
+   This License does not grant you the right to:
+   Modify, adapt, translate, or create derivative works of the Software;
+   Redistribute the Software except as expressly permitted in Section 2;
+   Remove, alter, or obscure any proprietary notices included in the Software; or
+   Use GitHub trademarks, logos, or branding except as necessary to identify the Software.
+
+4. Reservation of Rights
+   GitHub and its licensors retain all right, title, and interest in and to the Software. All rights not expressly granted by this License are reserved.
+
+5. Disclaimer of Warranty
+   THE SOFTWARE IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WITHOUT LIMITATION WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON‑INFRINGEMENT. THE ENTIRE RISK ARISING OUT OF USE OF THE SOFTWARE REMAINS WITH YOU.
+
+6. Limitation of Liability
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL GITHUB OR ITS LICENSORS BE LIABLE FOR ANY DAMAGES ARISING OUT OF OR RELATING TO THIS LICENSE OR THE USE OR DISTRIBUTION OF THE SOFTWARE, WHETHER IN CONTRACT, TORT, OR OTHERWISE.
+
+7. Termination
+   This License terminates automatically if you fail to comply with its terms. Upon termination, you must cease all use and distribution of the Software.
+
+8. Notice Regarding GitHub Services (Informational Only)
+   Use of the Software may require access to GitHub services and is subject to the applicable GitHub Terms of Service and GitHub Copilot terms. This License governs only rights related to the Software and does not grant any rights to access or use GitHub services.
 
 GNU General Public License, version 2
 -------------------------------------
@@ -4087,7 +4252,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, python-sounddevice (with PortAudio), PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 
@@ -6524,7 +6689,7 @@ The full text is not reproduced here.
 The Unlicense (public domain dedication)
 ----------------------------------------
 
-Used by: yt-dlp, yt-dlp-ejs, words_alpha (dwyl/english-words).
+Used by: yt-dlp, yt-dlp-ejs, ripgrep (rg.exe), words_alpha (dwyl/english-words).
 
 What it asks of us: None.
 

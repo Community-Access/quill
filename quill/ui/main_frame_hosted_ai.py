@@ -230,12 +230,10 @@ class HostedAiCommandsMixin(HostedAiMixin):
             chatgpt_id,
             self._menu_label(_("Use My ChatGPT S&ubscription..."), "tools.hosted_ai_chatgpt"),
         )
-        ai_menu.Append(
-            image_id, self._menu_label(_("As&k About an Image..."), "tools.hosted_ai_image")
-        )
-        ai_menu.Append(
-            tidy_id, self._menu_label(_("Tidy Dictated Te&xt..."), "tools.dictation_tidy")
-        )
+        image = self._ai_gated_label("cmd_ai_image", _("As&k About an Image..."))
+        ai_menu.Append(image_id, self._menu_label(image, "tools.hosted_ai_image"))
+        tidy = self._ai_gated_label("cmd_dictation_tidy", _("Tidy Dictated Te&xt..."))
+        ai_menu.Append(tidy_id, self._menu_label(tidy, "tools.dictation_tidy"))
         if not getattr(self, "_hosted_ai_chatgpt_wired", False):
             self._hosted_ai_chatgpt_wired = True
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_ai_chatgpt(), id=chatgpt_id)
@@ -267,7 +265,7 @@ class HostedAiCommandsMixin(HostedAiMixin):
     #: rows show, and a duplicate is a key Windows may refuse to press (GATE-14).
     _ANSWER_ROWS: tuple[tuple[str, str, str], ...] = (
         ("tools.hosted_ai_chat_key", "Ask AI a Question...", "cmd_ai_chat_key"),
-        ("tools.hosted_ai_prompt_library", "Free AI Prompt Library...", "cmd_ai_prompt_library"),
+        ("tools.hosted_ai_prompt_library", "Prompt Library...", "cmd_ai_prompt_library"),
         ("tools.hosted_ai_web_searches", "Web Searches Left", "cmd_ai_web_searches"),
     )
 
@@ -287,8 +285,9 @@ class HostedAiCommandsMixin(HostedAiMixin):
         from quill.core.i18n import _
 
         ids = self._answer_menu_ids()
-        for command_id, label, _handler in self._ANSWER_ROWS:
-            ai_menu.Append(ids[command_id], self._menu_label(_(label), command_id))
+        for command_id, label, handler_name in self._ANSWER_ROWS:
+            shown = self._ai_gated_label(handler_name, _(label))  # codex.md 10A.8
+            ai_menu.Append(ids[command_id], self._menu_label(shown, command_id))
         if getattr(self, "_hosted_ai_answers_wired", False):
             return
         self._hosted_ai_answers_wired = True
@@ -299,10 +298,65 @@ class HostedAiCommandsMixin(HostedAiMixin):
                 command_id, label.rstrip("."), handler, self._binding_for(command_id)
             )
 
+    #: Which AI Am I Using and Choose Your AI (codex.md 10A.9, 2026-10-31):
+    #: QUILL Lite's two rows on QUILL Lite's two chords, from the shared module
+    #: (quill/ui/hosted_ai_choose_commands.py). No access keys, for the reason
+    #: the answer rows above have none: this menu has spent the letters.
+    _CHOOSE_ROWS: tuple[tuple[str, str, str], ...] = (
+        ("tools.hosted_ai_which", "Which AI Am I Using", "cmd_ai_which"),
+        ("tools.hosted_ai_choose", "Choose Your AI...", "cmd_ai_choose"),
+        # Do a Document Task (codex.md 6.2): quill/ui/hosted_ai_task_commands.py.
+        ("tools.hosted_ai_task", "Do a Document Task...", "cmd_ai_task"),
+        # Propose Alt Text (codex.md 6.4): the same window, the request filled in.
+        ("tools.hosted_ai_alt_text", "Propose Alt Text...", "cmd_ai_alt_text"),
+    )
+
+    def _choose_menu_ids(self) -> dict[str, Any]:
+        ids = getattr(self, "_hosted_ai_choose_ids", None)
+        if ids is None:
+            import wx
+
+            ids = {cid: wx.NewIdRef() for cid, _label, _h in self._CHOOSE_ROWS}
+            self._hosted_ai_choose_ids = ids
+        return ids
+
+    def _append_choose_rows(self, ai_menu: Any) -> None:
+        """The two rows, registered and bound here once, like the answer rows."""
+        import wx
+
+        from quill.core.i18n import _
+
+        ids = self._choose_menu_ids()
+        for command_id, label, handler_name in self._CHOOSE_ROWS:
+            shown = self._ai_gated_label(handler_name, _(label))  # codex.md 10A.8
+            ai_menu.Append(ids[command_id], self._menu_label(shown, command_id))
+        if getattr(self, "_hosted_ai_choose_wired", False):
+            return
+        self._hosted_ai_choose_wired = True
+        for command_id, label, handler_name in self._CHOOSE_ROWS:
+            handler = getattr(self, handler_name)
+            self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=ids[command_id])
+            self.commands.try_register(
+                command_id, label.rstrip("."), handler, self._binding_for(command_id)
+            )
+
     def _ai_prompt_library(self) -> Any:
         """QUILL's one cached library, Quillin prompts included, so the free AI's
         Prompt Library and Tools, AI, Prompt Library show the same list."""
         return self._get_prompt_library()
+
+    def _start_family_prompt_migration(self) -> None:
+        """Bring the old prompt stores into the family list once, on a worker
+        (decision 18). Not in Safe Mode. A failure is logged; startup goes on."""
+        if getattr(self, "_safe_mode", False):
+            return
+        from quill.core.ai.family_prompt_migration import schedule
+
+        schedule(self._task_manager.submit, on_done=self._family_prompts_arrived)
+
+    def _family_prompts_arrived(self, _report: Any) -> None:
+        """Prompts arrived after the list was cached: read the file again next time."""
+        self.__dict__.pop("_prompt_library_cache", None)
 
     #: The Dictionary submenu's rows: command id, label, handler name. QUILL
     #: Lite's rows, QUILL Lite's two chords (quill/core/lite/commands.py).
@@ -406,6 +460,7 @@ class HostedAiCommandsMixin(HostedAiMixin):
         mapping["tools.hosted_ai_own_key"] = self._own_key_menu_id()
         mapping.update(self._dictionary_menu_ids())
         mapping.update(self._answer_menu_ids())
+        mapping.update(self._choose_menu_ids())
         if getattr(self, "_look_up_menu_id", None) is not None:
             mapping["tools.look_up"] = self._look_up_menu_id
         chatgpt_id, image_id, tidy_id = self._chatgpt_menu_ids()

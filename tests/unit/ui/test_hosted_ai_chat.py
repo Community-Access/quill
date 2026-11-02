@@ -38,7 +38,7 @@ class _Service:
     def unavailable_reason(self, _feature: str = "") -> str:
         return self.reason
 
-    def converse(self, prompt, chunks, history, *, on_done, on_error) -> None:  # noqa: ANN001
+    def converse(self, prompt, chunks, history, *, on_done, on_error, **_kw) -> None:  # noqa: ANN001
         self.sent.append((prompt, chunks, history))
         on_done(f"Reply to {prompt}", SimpleNamespace(monthly_cap=90, daily_cap=19), self.dropped)
 
@@ -206,7 +206,8 @@ class _PadService:
     def unavailable_reason(self, _feature: str = "") -> str:
         return ""
 
-    def ask(self, feature, prompt, chunks, *, on_done, on_error, **extra) -> None:  # noqa: ANN001
+    def ask(self, feature, prompt, chunks, *, on_done, on_error, requires=(), **extra) -> None:  # noqa: ANN001
+        assert requires == ("text",)  # GATE-CAPS: the pad says what it needs
         self.sent.append((feature, prompt, chunks, extra))
 
 

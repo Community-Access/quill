@@ -101,6 +101,43 @@ PURPOSES: dict[str, str] = {
         "sign-in prompts are always excluded whether or not you list them. "
         "OK saves the list immediately."
     ),
+    # -- the AI (codex.md Phase 3, quill/apps/inkwell_ai.py) ---------------------
+    "Ask": (
+        "A conversation about your abbreviations, on whichever AI is in use: each "
+        "abbreviation by name and expansion, most used first, goes with every "
+        "message, and nothing you type in other programs ever does. Type in Your "
+        "message and press Enter; the reply is read aloud and added to the "
+        "conversation above. Quick questions holds What do I type most? and a few more."
+    ),
+    "Choose a Document": (
+        "Pick the document Suggest Abbreviations reads: plain text, Markdown, Word "
+        "or rich text. Nothing is sent yet; you are asked first, and Cancel sends nothing."
+    ),
+    "Send the Document?": (
+        "Whether the text of the document you picked goes to the AI in use, and how "
+        "much of it. The file's name and folder stay on this computer. No is the "
+        "default and sends nothing."
+    ),
+    "Suggest Abbreviations": (
+        "The abbreviations the AI suggested from your document, one check box each, "
+        "all starting cleared. Check the ones you want and press OK to add them to "
+        "the library QUILL shares; Cancel adds none. An abbreviation you already "
+        "have is never suggested, so nothing here can replace one of yours."
+    ),
+    "Choose Your AI": (
+        "Choose where Quill Inkwell's AI comes from: QUILL's free AI, your ChatGPT "
+        "plan, GitHub Copilot, Codex or your own key. Quill Inkwell signs in on its "
+        "own, as QUILL Inkwell. The list says which is in use; Enter uses the selected "
+        "one or signs in to it, and Delete signs a signed-in one out."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and whose "
+        "count it is. Manage Usage opens the selected one's own page."
+    ),
     "Update downloaded": (
         "A new Quill Inkwell is on disk and ready. Install and restart now "
         "applies it and relaunches -- your abbreviations and settings are "

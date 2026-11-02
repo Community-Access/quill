@@ -13,12 +13,14 @@ from __future__ import annotations
 from quill.core.error_codes import CodedError
 
 __all__ = [
+    "ChatGptBusyError",
     "ChatGptError",
     "ChatGptLimitError",
     "ChatGptSignInError",
     "ChatGptSignedOutError",
     "ChatGptUnavailableError",
     "ChatGptUnsupportedError",
+    "ChatGptUsageUnavailableError",
 ]
 
 
@@ -66,6 +68,17 @@ class ChatGptLimitError(ChatGptError):
     )
 
 
+class ChatGptBusyError(ChatGptLimitError):
+    """A plain 429 with no plan code: OpenAI asking for a moment, not a used-up plan.
+
+    A subclass of the limit error so every caller that already handles a limit
+    still does; Choose Your AI tells the two apart, because only the plan's
+    own limit is "your limit is reached" (codex.md 10A.5)."""
+
+    code = "QUILL-AI-CHATGPT-BUSY"
+    user_hint = "OpenAI asked QUILL to wait a moment. Try again shortly."
+
+
 class ChatGptUnavailableError(ChatGptError):
     """OpenAI says plan usage from other apps is not available right now."""
 
@@ -74,6 +87,13 @@ class ChatGptUnavailableError(ChatGptError):
         "Using a ChatGPT plan from other apps is not available on this account "
         "just now. Try again later, or use QUILL's free AI or your own API key."
     )
+
+
+class ChatGptUsageUnavailableError(ChatGptUnavailableError):
+    """``subscription_sharing_usage_unavailable``: the plan's usage could not be
+    checked. Retried within the shared ladder, then said like a limit (10A.5)."""
+
+    code = "QUILL-AI-CHATGPT-USAGE-UNAVAILABLE"
 
 
 class ChatGptUnsupportedError(ChatGptError):

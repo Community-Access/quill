@@ -33,6 +33,7 @@ from pathlib import Path
 import wx
 import wx.adv
 
+from quill.apps.transcribe_ai import TranscribeAiMixin
 from quill.apps.transcribe_coach import TranscribeCoachMixin
 from quill.apps.transcribe_commands import TranscribeCommandsMixin
 from quill.apps.transcribe_dictation import TranscribeDictationMixin
@@ -71,6 +72,7 @@ class QuillTranscribeFrame(
     TranscribeRecentMixin,
     TranscribeReviewMixin,
     TranscribeCoachMixin,
+    TranscribeAiMixin,
 ):
     """The status window for a dictation service that lives in the tray."""
 
@@ -91,6 +93,8 @@ class QuillTranscribeFrame(
         if not checked:
             self._save()  # once: Inkwell was looked at, so it is never looked at again
         self._windows = WindowManager(wx)
+        # The family's AI rows read their keys from APP_KEYMAPS (codex.md Phase 3).
+        self._apply_app_keymap("transcribe")
         # F1: QUILL Transcribe's authored purposes lead every answer
         # (GATE-TRANSCRIBE-HELP); the shell activated the generic resolver.
         from quill.core.transcribe import surface_help
@@ -156,7 +160,9 @@ class QuillTranscribeFrame(
         panel = wx.Panel(self.frame)
         root = wx.BoxSizer(wx.VERTICAL)
 
-        state_label = wx.StaticText(panel, label="St&ate:")
+        # Alt+E, not Alt+A: Alt+A is the AI menu since codex.md Phase 3, and a
+        # label sharing a menu's letter takes it from the menu (GATE-14).
+        state_label = wx.StaticText(panel, label="Stat&e:")
         self._state_text = wx.TextCtrl(panel, style=wx.TE_READONLY)
         self._state_text.SetName("Dictation state")
         self._state_text.SetHelpText(
@@ -228,6 +234,22 @@ class QuillTranscribeFrame(
         root.Add(next_label, 0, wx.LEFT | wx.RIGHT, _PAD)
         root.Add(self._next_text, 1, wx.EXPAND | wx.ALL, _PAD)
 
+        # The AI line (codex.md decision 19): what Which AI Am I Using says,
+        # shortened. No access key: this window has none left that is not
+        # already a menu's (GATE-14); Tab reaches it.
+        ai_label = wx.StaticText(panel, label="AI:")
+        self._ai_text = wx.TextCtrl(panel, style=wx.TE_READONLY)
+        self._ai_text.SetName("AI")
+        self._ai_text.SetHelpText(
+            "Which AI is in use, as Which AI Am I Using says it. Press Enter to open "
+            "Choose Your AI."
+        )
+        self._ai_text.Bind(wx.EVT_KEY_DOWN, self._on_ai_line_key)
+        ai_row = wx.BoxSizer(wx.HORIZONTAL)
+        ai_row.Add(ai_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        ai_row.Add(self._ai_text, 1)
+        root.Add(ai_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, _PAD)
+
         choices = wx.BoxSizer(wx.HORIZONTAL)
         model_button = wx.Button(panel, label="Choose Mode&l...")
         model_button.SetHelpText(
@@ -250,6 +272,12 @@ class QuillTranscribeFrame(
 
         panel.SetSizer(root)
         self._panel = panel
+
+    def _on_ai_line_key(self, event: wx.KeyEvent) -> None:
+        if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            self.cmd_ai_choose()
+            return
+        event.Skip()
 
     def _focus_initial_control(self) -> None:
         self._state_text.SetFocus()
@@ -311,6 +339,7 @@ class QuillTranscribeFrame(
         ):
             if control.GetValue() != value:
                 control.SetValue(value)
+        self._refresh_ai_line()
         label = start_stop_label(self)
         if self._start_button.GetLabel() != label:
             self._start_button.SetLabel(label)

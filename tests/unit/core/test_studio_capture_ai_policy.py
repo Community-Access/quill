@@ -57,45 +57,85 @@ def test_custom_and_shared_prompts_are_available():
     assert "Do not invent shortcuts" in capture_prompt("screen-controls", settings)
 
 
-@pytest.mark.parametrize(
-    "provider", ["openai", "gemini", "claude", "openrouter", "custom", "ollama", "ollama_cloud"]
-)
-def test_screenshots_reuse_shared_provider_transport_and_credentials(
-    tmp_path, monkeypatch, provider
-):
+def _evidence(tmp_path, size=(3000, 2000)):
     from PIL import Image
 
-    from quill.core.assistant_ai import AssistantConnectionSettings
     from quill.core.studio_capture import verify_capture
-    from quill.core.studio_capture_ai import inspect_screenshot
 
     path = tmp_path / "review.png"
-    Image.new("RGB", (3, 2), "white").save(path)
-    evidence = verify_capture(path, "Test window")
-    connection = AssistantConnectionSettings(
-        provider, "https://configured.example", "configured-model"
+    Image.new("RGB", size, "white").save(path)
+    return verify_capture(path, "Test window")
+
+
+def test_a_connection_that_cannot_see_gets_nothing_prepared(tmp_path):
+    """The capability registry is asked first (GATE-CAPS), before the file is read."""
+    from quill.core.ai.connection_caps import CapabilityMissing, record_for
+    from quill.core.studio_capture_ai import prepare_inspection
+
+    evidence = _evidence(tmp_path)
+    folder = tmp_path / "out"
+    folder.mkdir()
+    with pytest.raises(CapabilityMissing):
+        prepare_inspection(evidence, record=record_for("free"), folder=folder)
+    assert list(folder.iterdir()) == []
+
+
+def test_the_screenshot_is_fitted_to_the_connection_with_the_question(tmp_path):
+    from PIL import Image
+
+    from quill.core.ai.connection_caps import record_for
+    from quill.core.ai.picture_prep import longest_side_for
+    from quill.core.studio_capture_ai import prepare_inspection
+
+    request = prepare_inspection(
+        _evidence(tmp_path),
+        record=record_for("chatgpt"),
+        folder=tmp_path,
+        instructions="My instructions",
+        question="My question",
+        history="Earlier answer",
     )
-    monkeypatch.setattr("quill.core.ai.model_manager.load_ai_enabled", lambda: True)
-    requested_keys = []
+    with Image.open(request.path) as fitted:
+        assert max(fitted.size) <= longest_side_for("chatgpt")
+    assert "My instructions" in request.prompt and "My question" in request.prompt
+    assert "Earlier answer" in request.prompt
+    assert request.prepared.inspected.startswith("Looked at 1 picture")
 
-    def shared_key(selected):
-        requested_keys.append(selected)
-        return "provider-specific-test-key"
 
-    monkeypatch.setattr("quill.core.assistant_ai.load_keyed_provider_api_key", shared_key)
+def test_a_changed_screenshot_is_refused(tmp_path):
+    from PIL import Image
 
-    def shared_vision(settings, key, image, **kwargs):
-        assert settings is connection
-        assert key == "provider-specific-test-key"
-        assert image.read_bytes() == path.read_bytes()
-        assert "My instructions" in kwargs["prompt"]
-        assert "My question" in kwargs["prompt"]
-        return "Shared vision response", None
+    from quill.core.ai.connection_caps import record_for
+    from quill.core.studio_capture_ai import prepare_inspection
 
-    monkeypatch.setattr("quill.core.ai.vision.describe_image", shared_vision)
-    result = inspect_screenshot(
-        evidence, connection=connection, instructions="My instructions", question="My question"
-    )
-    assert requested_keys == [provider]
-    assert f"AI ({provider}, configured-model)" in result
-    assert "Shared vision response" in result
+    evidence = _evidence(tmp_path, (20, 30))
+    Image.new("RGB", (20, 30), "red").save(evidence.path)
+    with pytest.raises(ValueError, match="changed"):
+        prepare_inspection(evidence, record=record_for("chatgpt"), folder=tmp_path)
+
+
+def test_a_withdrawn_permission_stops_before_anything_is_written(tmp_path):
+    from quill.core.ai.connection_caps import record_for
+    from quill.core.studio_capture_ai import prepare_inspection
+
+    folder = tmp_path / "out"
+    folder.mkdir()
+    with pytest.raises(RuntimeError, match="permission changed"):
+        prepare_inspection(
+            _evidence(tmp_path),
+            record=record_for("chatgpt"),
+            folder=folder,
+            can_send=lambda: False,
+        )
+    assert list(folder.iterdir()) == []
+
+
+def test_a_picture_route_is_its_own_identity():
+    from quill.core.studio_capture_ai import PictureRoute
+
+    route = PictureRoute("chatgpt", "gpt-x", "OpenAI on your ChatGPT plan", "My ChatGPT plan")
+    prefs = {"auto_ai_enabled": True, "approved_connection": connection_identity(route)}
+    assert auto_ai_allowed(prefs, route, ai_enabled=True, safe_mode=False)
+    assert not auto_ai_allowed(prefs, PictureRoute("off"), ai_enabled=True, safe_mode=False)
+    other = PictureRoute("copilot", "gpt-x", "GitHub on your Copilot plan", "My GitHub Copilot")
+    assert not auto_ai_allowed(prefs, other, ai_enabled=True, safe_mode=False)

@@ -25,6 +25,7 @@ from typing import Any
 import wx
 
 from quill.apps import player_close
+from quill.apps.player_ai import PlayerAiMixin
 from quill.apps.player_menus import MediaPlayerMenuMixin
 from quill.core.media import DspSettings, build_audio_filters, format_spoken
 from quill.core.media.bookmarks import BookmarkStore, MediaBookmark
@@ -63,6 +64,7 @@ class QuillMediaPlayerFrame(
     NoteCuesMixin,
     MediaWinampKeysMixin,
     AppShellFrame,
+    PlayerAiMixin,
 ):
     """A standalone, tray-resident media player window."""
 
@@ -105,6 +107,8 @@ class QuillMediaPlayerFrame(
         self._listen_timer: wx.Timer | None = None
         self._listen_menu_item: Any = None
         self._listen_last_toggle = 0.0
+        # The AI rows and the two recaps read their keys from APP_KEYMAPS.
+        self._apply_app_keymap("player")
         self._build_menu_bar()
         self._build_main_panel()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
@@ -250,6 +254,8 @@ class QuillMediaPlayerFrame(
         notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._on_page_changed)
         self._notebook = notebook
         root.Add(notebook, 1, wx.EXPAND | wx.ALL, 8)
+        # Which AI is in use (codex.md decision 19); Enter opens Choose Your AI.
+        self._build_ai_line(panel, root)
 
         panel.SetSizer(root)
         self._main_panel = panel
@@ -656,10 +662,10 @@ class QuillMediaPlayerFrame(
         self._read_status_bar()
 
     def voice_summarize(self) -> None:
-        self._on_summarize_chapter(None)
+        self.cmd_player_chapter_summary()
 
     def voice_recap(self) -> None:
-        self._on_welcome_back_recap(None)
+        self.cmd_player_recap()
 
     def voice_set_sleep(self, minutes: int) -> None:
         self._sleep_timer.Stop()
@@ -747,52 +753,6 @@ class QuillMediaPlayerFrame(
     def _on_mini_close(self, event: Any) -> None:
         self._mini_player = None
         event.Skip()
-
-    def _on_summarize_chapter(self, _event: Any) -> None:
-        if not self._book_key and self._book_path is None:
-            self._show_message_box("Open a book first.", _TITLE)
-            return
-        from quill.ui.media.recap_actions import summarize_current_chapter
-
-        index = self._player.current_chapter_index()
-        title, start, duration = "", 0, 0
-        if 0 <= index < len(self._chapters):
-            chapter = self._chapters[index]
-            title = getattr(chapter, "title", "")
-            start = int(getattr(chapter, "start_ms", 0))
-            duration = int(getattr(chapter, "duration_ms", 0))
-        summarize_current_chapter(
-            self,
-            book_key=self._book_key or "book",
-            chapter_index=index,
-            title=title,
-            audio_path=str(self._book_path) if self._book_path else "",
-            start_ms=start,
-            duration_ms=duration,
-        )
-
-    def _on_welcome_back_recap(self, _event: Any) -> None:
-        if not self._book_key and self._book_path is None:
-            self._show_message_box("Open a book first.", _TITLE)
-            return
-        from quill.ui.media.recap_actions import welcome_back_recap
-
-        index = self._player.current_chapter_index()
-        playhead = self._player.playhead_ms()
-        title, start = "", 0
-        if 0 <= index < len(self._chapters):
-            title = getattr(self._chapters[index], "title", "")
-            start = int(getattr(self._chapters[index], "start_ms", 0))
-        # Recap the passage from the chapter start up to the current point.
-        welcome_back_recap(
-            self,
-            book_key=self._book_key or "book",
-            chapter_index=index,
-            title=title,
-            audio_path=str(self._book_path) if self._book_path else "",
-            start_ms=start,
-            duration_ms=max(1_000, playhead - start),
-        )
 
     # -- go to position --------------------------------------------------------
 

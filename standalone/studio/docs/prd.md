@@ -725,26 +725,20 @@ open (`docs/design/quill-studio-capture-milestone.md`).
   `wx.MessageDialog` shown with a bare `ShowModal()` from inside Capture
   screen; it should move to the host's modal contract.
 
-- AS-114. A ChatGPT plan must read Studio's pictures (screenshot inspection,
-  automatic analysis, video questions) with no API key
-  (`quill/core/studio_plan_vision.py`, `quill/apps/studio_vision_route.py`).
-  Studio signs in on its own as "QUILL Studio", with its own client
-  registration and its own refresh token in the credential store; it must
-  never use a token QUILL or QUILL Lite obtained, because plan usage stays
-  with the app the person connected. With only one of plan and provider,
-  Studio uses it without asking; with both, it asks each time, starting on
-  the last choice; with neither, it offers Sign in with your ChatGPT plan,
-  which opens the shared Use My ChatGPT Subscription window (also on the
-  Capture menu) and mentions a signed-in sibling, which makes it one Allow.
-  The approval names the plan and account and says the picture goes to
-  OpenAI on the person's plan. A picture over 20 MB, over 4096 pixels on a
-  side, or not PNG, JPEG, WebP or GIF is scaled and converted first; video
-  stays one bounded contact sheet. The request carries no `temperature`,
-  `max_output_tokens` or system item. A used-up plan stops and offers
-  ChatGPT's Usage settings, never falling back to an API key;
-  `subscription_sharing_unsupported_capability` is explained and never
-  retried; a sign-in OpenAI no longer accepts says where to sign in again.
-  Picture generation stays API-key only: the plan's preview does not offer it.
+- AS-114. Studio's pictures (screenshot inspection, automatic analysis,
+  video questions, Describe a Picture) go to the AI chosen in the family's
+  Choose Your AI (codex.md Phase 3), through the shared hosted-AI service;
+  Studio's own chooser (`studio_vision_route`, `studio_plan_vision`) was
+  folded into it on 2026-11-01. Studio signs in on its own as "QUILL
+  Studio", and never uses a token QUILL or QUILL Lite obtained; the stored
+  choice (`studio-ai.json`, `quill/core/audio_studio/ai_settings.py`) is
+  migrated once, so an existing plan sign-in stays in use. The capability
+  registry is asked before anything is prepared (`prepare_inspection`,
+  `require`), a connection that cannot see sends nothing and offers the
+  switch, and each picture is fitted by `quill/core/ai/picture_prep.py`.
+  The first picture on a connection asks once where pictures go (10B.4);
+  every screenshot is still confirmed. A used-up plan says so once, never
+  falling back to another AI. Picture generation stays own-key only.
 
 ## 5. Non-functional requirements
 

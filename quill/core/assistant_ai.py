@@ -615,7 +615,8 @@ def _build_auth_headers(provider: str, host: str, api_key: str) -> dict[str, str
 
     parsed = urlparse(host)
     is_https = parsed.scheme.lower() == "https"
-    is_ollama_cloud = "ollama.com" in parsed.netloc.lower()
+    hostname = (parsed.hostname or "").lower()  # exact host or subdomain, never a substring
+    is_ollama_cloud = hostname == "ollama.com" or hostname.endswith(".ollama.com")
     if provider in {"openai", "openrouter", "custom", "ollama_cloud"} or (
         is_https and is_ollama_cloud
     ):
@@ -1169,11 +1170,14 @@ def _post_chat(
     provider: str,
     *,
     timeout_seconds: float,
+    on_headers: Callable[[object], None] | None = None,
 ) -> tuple[str | None, _FetchError | None]:
     request = Request(endpoint, data=body, headers=headers, method="POST")
     try:
         with urlopen(request, timeout=timeout_seconds, context=_context_for(endpoint)) as response:
             payload = json.loads(response.read().decode("utf-8", errors="replace"))
+            if on_headers is not None:  # the answer's own headers: no second request
+                on_headers(response.headers)
     except HTTPError as exc:
         category = _category_for_status(exc.code)
         detail = _detail_from_http_error(exc)
@@ -1217,8 +1221,9 @@ def generate_assistant_response(
     timeout_seconds: float = 60.0,
     max_attempts: int = 3,
     system_prompt: str = "",
+    on_headers: Callable[[object], None] | None = None,
 ) -> tuple[str | None, str | None]:
-    """Generate a chat response from the configured provider.
+    """Generate a chat response from the configured provider (*on_headers* sees the reply's).
 
     Returns ``(text, error)``: on success ``text`` is the response and ``error``
     is ``None``; on failure ``text`` is ``None`` and ``error`` is a cause-specific
@@ -1262,7 +1267,14 @@ def generate_assistant_response(
     last_error: _FetchError | None = None
     attempts = max(1, max_attempts)
     for attempt in range(1, attempts + 1):
-        text, error = _post_chat(endpoint, headers, body, provider, timeout_seconds=timeout_seconds)
+        text, error = _post_chat(
+            endpoint,
+            headers,
+            body,
+            provider,
+            timeout_seconds=timeout_seconds,
+            on_headers=on_headers,
+        )
         if error is None:
             return text, None
         last_error = error

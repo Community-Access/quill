@@ -18,7 +18,33 @@ from typing import Any
 
 from quill.core.app_settings_index import INKWELL_SETTINGS
 
-__all__ = ["open_preferences"]
+__all__ = ["InkwellStartupMixin", "open_preferences"]
+
+
+class InkwellStartupMixin:
+    """Start Quill Inkwell with Windows: read and set (moved here under GATE-11)."""
+
+    def _launch_at_startup_enabled(self) -> bool:
+        try:
+            from quill.platform.windows import inkwell_startup
+
+            return bool(inkwell_startup.is_launch_at_startup_enabled())
+        except Exception:  # noqa: BLE001
+            return False
+
+    def _set_launch_at_startup(self, enabled: bool) -> None:
+        try:
+            from quill.platform.windows import inkwell_startup
+
+            inkwell_startup.set_launch_at_startup(enabled)
+        except Exception:  # noqa: BLE001
+            self._announce("Could not change the Windows startup setting.")  # type: ignore[attr-defined]
+            return
+        self._announce(  # type: ignore[attr-defined]
+            "Quill Inkwell will start with Windows."
+            if enabled
+            else "Quill Inkwell will not start with Windows."
+        )
 
 
 def open_preferences(host: Any) -> None:

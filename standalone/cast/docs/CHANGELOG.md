@@ -21,6 +21,28 @@ and speed and reliability.
 
 ### Since build 6 (2026-10-27 to 2026-10-31)
 
+- **Find and Follow** [2026-11-01]. Help > AI Features > Find and Follow
+  (Ctrl+F3) takes a request in plain words, such as "find a podcast about
+  birds, follow it and put it in a Nature folder", and carries it out with
+  Cast's own directory search, follow, folder and Play Queue code. Reading
+  what you follow never asks; following, making a folder, moving a podcast
+  and queueing an episode each ask first, and the first three show the change
+  as text before anything happens. It never unfollows, deletes or downloads.
+  It needs My GitHub Copilot or Codex; with another AI the row says "(needs
+  Copilot or Codex)" and nothing is sent. Build Me a Listening Run's access
+  key is now B, to make room.
+
+- **Choose Your AI and Ask** [2026-11-01]. Cast keeps its own AI choice, with
+  the five rows the editors have; **Choose Your AI** is Ctrl+Shift+F8, **Which
+  AI Am I Using** Ctrl+F8 and **Ask** Ctrl+Shift+8, and the status bar ends with
+  an AI cell. Ask is about the episode you are on, its notes, chapters and your
+  place, never the audio. **What Did I Miss in This Episode?** is a new AI
+  Features row. **Ask About an Image** (Ctrl+Alt+F5) offers the podcast's
+  artwork and the show notes' pictures, fetched once when you choose one. The
+  first time on each AI, it says where pictures go and asks Yes or No first,
+  with No the default, before anything is fetched (2026-11-01). Free
+  AI Usage is now **AI Usage**, one list for every AI you set up.
+
 - **ChatGPT plan sign-in holds through a brief problem** (2026-10-31).
   A temporary failure on OpenAI's side while renewing the sign-in no longer
   signs you out, a renewed sign-in that cannot be saved is reported, the

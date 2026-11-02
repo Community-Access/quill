@@ -47,6 +47,28 @@ PURPOSES: dict[str, str] = {
         "was. Don't ask me again remembers your answer, and Preferences can "
         "set it back to asking."
     ),
+    "Ask": (
+        "A conversation about the episode in front of you, on whichever AI is in "
+        "use: the episode, its show notes, its chapters and where you are in it go "
+        "with every message, never the audio. Type in Your message and press "
+        "Enter; the reply is read aloud and added to the conversation above. The "
+        "Quick questions list holds What did I miss in this episode? and a few "
+        "more: arrow freely and press Enter on one to put it in the message box."
+    ),
+    "Choose Your AI": (
+        "Choose where QUILL Cast's AI comes from: QUILL's free AI, your ChatGPT plan, "
+        "GitHub Copilot, Codex or your own key. The list says which is in use; "
+        "Enter uses the selected one or signs in to it, and Delete signs a "
+        "signed-in one out. Choosing here changes nothing in the other apps."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and "
+        "whose count it is. Manage Usage opens the selected one's own page."
+    ),
     "QUILL Cast": (
         "One window: Find at the top, the Places list -- Inbox, New Episodes, "
         "Continue Listening, Favorites, Personal Audio, the Play Queue, Downloads, "

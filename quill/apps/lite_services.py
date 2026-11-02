@@ -244,6 +244,22 @@ class LiteServicesMixin:
         self.keymap = keymap_mod.default_keymap()
         self.save_keymap()
 
+    # -- the family prompt list ------------------------------------------ #
+
+    def _start_family_prompt_migration(self) -> None:
+        """Bring QUILL Lite's own saved prompts into the family list, once, on a
+        worker (decision 18). Only while the AI area is on: an off feature owns
+        nothing. A failure is logged and startup goes on."""
+        if not self.feature_enabled("hosted_ai"):
+            return
+        try:
+            from quill.apps.lite_window_open import app_task_manager
+            from quill.core.ai.family_prompt_migration import schedule
+
+            schedule(app_task_manager(self).submit)
+        except Exception:  # noqa: BLE001 - never worth a failed launch
+            logger.warning("Could not schedule the family prompt migration", exc_info=True)
+
     # -- menus ------------------------------------------------------------ #
 
     def rebuild_all_menus(self) -> None:

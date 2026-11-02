@@ -1,24 +1,25 @@
 """AI recap orchestration for the media player (PRD Sections 9.5 / 18).
 
 The pure, testable core behind "Summarize this chapter" and the Magical
-"welcome-back" recap. An LLM can only summarize *text*, so this layer resolves the
-text two ways and then summarizes it:
+"welcome-back" recap. A model can only summarize *text*, so this layer finds the
+text two ways:
 
 * **Path A (text-backed books).** DAISY 3 talking books and EPUB/text companions
   carry the chapter text; it is passed in on the :class:`ChapterContext` and
-  summarized directly -- no transcription, fast and accurate.
+  used directly -- no transcription, fast and accurate.
 * **Path B (pure audio).** With no text, an injected ``transcriber`` turns the
-  relevant audio segment into text first (Whisper); if no transcriber is
-  available, :class:`RecapUnavailable` is raised so the UI can explain why.
+  relevant audio segment into text first, on this computer; if no transcriber
+  is available, :class:`RecapUnavailable` is raised so the UI can explain why.
+  The audio itself never leaves the machine.
 
-Everything the layer talks to is injected -- the ``summarizer`` (QUILL's AI), the
-optional ``transcriber``, and the ``cache`` -- so the whole orchestration is unit
-tested with fakes and no network, no model, and no audio device. The prompts live
-here (``recap_prompt``) so they are consistent and testable; the UI only supplies
-a callable that runs the prompt through the configured AI provider.
+Sending the prompt is not this layer's job (codex.md 10E.8): the app sends
+``recap_prompt(kind, text)`` to whichever AI the person chose, then hands the
+answer back to :meth:`RecapService.remember`, so the same chapter is not asked
+about twice. Everything is injected -- the ``transcriber`` and the ``cache`` --
+so the whole layer is unit tested with fakes: no network, no model, no audio.
 
 Guardrails enforced by the caller, not here: never on protected BARD content,
-off in Safe Mode, opt-in, and requires a configured AI provider.
+off in Safe Mode, and an AI chosen in Choose Your AI.
 """
 
 from __future__ import annotations
@@ -28,8 +29,6 @@ from dataclasses import dataclass
 
 from quill.core.media.errors import MediaError
 
-#: Runs a prepared prompt through the AI and returns the summary text.
-Summarizer = Callable[[str], str]
 #: Transcribes an audio segment ``(path, start_ms, duration_ms)`` to text.
 Transcriber = Callable[[str, int, int], str]
 
@@ -80,46 +79,46 @@ def _trim(text: str) -> str:
     return stripped[-_MAX_CHARS:] if len(stripped) > _MAX_CHARS else stripped
 
 
+def recap_key(kind: str, ctx: ChapterContext) -> str:
+    """The cache key for one ``chapter`` summary or ``recap`` of one place in one book."""
+    return f"{kind}:{ctx.book_key}:{ctx.chapter_index}"
+
+
 class RecapService:
-    """Produce chapter summaries and welcome-back recaps, with caching."""
+    """Find the text a recap is made from, and remember the answers (per book+chapter)."""
 
     def __init__(
         self,
-        summarizer: Summarizer,
         *,
         transcriber: Transcriber | None = None,
         cache: MutableMapping[str, str] | None = None,
     ) -> None:
-        self._summarizer = summarizer
         self._transcriber = transcriber
         self._cache: MutableMapping[str, str] = cache if cache is not None else {}
 
-    def chapter_summary(self, ctx: ChapterContext) -> str:
-        """A one-to-two-sentence summary of the chapter (cached per book+chapter)."""
-        return self._summarize(ctx, "chapter")
+    def cached(self, kind: str, ctx: ChapterContext) -> str:
+        """The answer already given for this kind and place, or ""."""
+        return self._cache.get(recap_key(kind, ctx), "")
 
-    def welcome_back(self, ctx: ChapterContext) -> str:
-        """A warm "here's where you are" recap for resuming (cached)."""
-        return self._summarize(ctx, "recap")
-
-    def _summarize(self, ctx: ChapterContext, kind: str) -> str:
-        key = f"{kind}:{ctx.book_key}:{ctx.chapter_index}"
-        cached = self._cache.get(key)
-        if cached:
-            return cached
-        text = self._text_for(ctx)
-        if not text.strip():
-            raise RecapUnavailable("No text was available to summarize.")
-        summary = self._summarizer(recap_prompt(kind, text)).strip()
+    def remember(self, kind: str, ctx: ChapterContext, summary: str) -> None:
+        """Keep *summary* so the same chapter is not asked about again."""
+        summary = summary.strip()
         if summary:
-            self._cache[key] = summary
-        return summary
+            self._cache[recap_key(kind, ctx)] = summary
 
-    def _text_for(self, ctx: ChapterContext) -> str:
+    def text_for(self, ctx: ChapterContext) -> str:
+        """The text to summarize: the book's own, else a local transcript.
+
+        Slow on Path B (it transcribes), so callers run it off the UI thread.
+        Raises :class:`RecapUnavailable` when there is none.
+        """
         if ctx.text and ctx.text.strip():
             return ctx.text
         if self._transcriber is not None and ctx.audio_path:
-            return self._transcriber(ctx.audio_path, ctx.start_ms, ctx.duration_ms)
+            text = self._transcriber(ctx.audio_path, ctx.start_ms, ctx.duration_ms)
+            if text.strip():
+                return text
+            raise RecapUnavailable("No text was available to summarize.")
         raise RecapUnavailable(
             "This book has no text to summarize, and no transcription engine is available."
         )
@@ -129,7 +128,7 @@ __all__ = [
     "ChapterContext",
     "RecapService",
     "RecapUnavailable",
-    "Summarizer",
     "Transcriber",
+    "recap_key",
     "recap_prompt",
 ]

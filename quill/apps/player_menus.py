@@ -109,9 +109,10 @@ class MediaPlayerMenuMixin:
         # Audio Studio's Book Tools menu spells it Sleep &Timer too.
         playback_menu.AppendSubMenu(sleep_menu, "Sleep &Timer")
         self._keep_menu_ids(self._add_note_cue_menu_item(playback_menu, wx))
-        summarize_id, recap_id, voice_id, listen_id = (wx.NewIdRef() for _ in range(4))
-        playback_menu.Append(summarize_id, "Summarize This &Chapter (AI)\tCtrl+Alt+C")
-        playback_menu.Append(recap_id, "AI &Recap of Where I Am\tCtrl+Alt+R")
+        voice_id, listen_id = wx.NewIdRef(), wx.NewIdRef()
+        # The two recaps keep their place, labels and keys (rule 5); they have
+        # command ids now and run on the AI in use (quill.apps.player_ai).
+        self._append_player_recap_rows(playback_menu)
         playback_menu.AppendSeparator()
         self._listen_menu_item = playback_menu.AppendCheckItem(
             listen_id, "&Listen for a Command\tCtrl+Shift+L"
@@ -137,11 +138,9 @@ class MediaPlayerMenuMixin:
         from quill.ui import app_sounds
 
         self._keep_menu_ids(app_sounds.append_menu_item(self, playback_menu))
-        self.frame.Bind(wx.EVT_MENU, self._on_summarize_chapter, id=summarize_id)
-        self.frame.Bind(wx.EVT_MENU, self._on_welcome_back_recap, id=recap_id)
         self.frame.Bind(wx.EVT_MENU, self._on_listen_command, id=listen_id)
         self.frame.Bind(wx.EVT_MENU, self._on_voice_command, id=voice_id)
-        self._keep_menu_ids(summarize_id, recap_id, voice_id, listen_id)
+        self._keep_menu_ids(voice_id, listen_id)
         menu_bar.Append(playback_menu, "&Playback")
 
         view_menu = wx.Menu()
@@ -186,6 +185,10 @@ class MediaPlayerMenuMixin:
             (read_status_id, lambda _e: self._read_status_bar()),
         ):
             self.frame.Bind(wx.EVT_MENU, handler, id=item_id)
+
+        # Ask, Which AI, Choose Your AI and the accounts (codex.md Phase 3).
+        # A&I, not &AI: Alt+A is Play/Pause's button in the main window.
+        self._append_app_ai_menu(menu_bar, "A&I")
 
         from quill.ui.quillville_menu import build_quillville_menu
 

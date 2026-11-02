@@ -1,7 +1,13 @@
 """Screenshot prompts, grounded questions and opt-in automatic analysis.
 
-Uses the shared vision prompt library and provider transport. No UI imports,
-no independent model engine and no automatic capture or upload on import.
+Uses the shared vision prompt library. A screenshot goes to whichever AI is in
+use in Choose Your AI (codex.md Phase 3; Studio's own chooser folded into it),
+through the shared service: this module reads the text on this computer
+(:func:`inspect_screenshot`) and prepares the one picture that may leave
+(:func:`prepare_inspection`), which asks the capability registry first
+(``require``, GATE-CAPS) and fits the picture with
+:mod:`quill.core.ai.picture_prep`. No UI imports, no model engine of its own and
+no automatic capture or upload on import.
 """
 
 from __future__ import annotations
@@ -9,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import tempfile
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -16,10 +23,10 @@ from quill.core.ai.vision_prompts import enabled_style_choices, resolve_prompt_t
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.studio_capture import INSPECTION_PROMPT, CaptureEvidence
-from quill.core.studio_plan_vision import PLAN_PROVIDER
 
 if TYPE_CHECKING:
-    from quill.core.assistant_ai import AssistantConnectionSettings
+    from quill.core.ai.connection_caps import ConnectionRecord
+    from quill.core.ai.picture_prep import PreparedRequest
 
 
 SCREENSHOT_PROMPTS: dict[str, tuple[str, str]] = {
@@ -106,14 +113,31 @@ def save_capture_ai_preferences(preferences: dict[str, Any]) -> None:
     write_json_atomic(app_data_dir() / "studio-capture-ai.json", preferences)
 
 
-def connection_identity(connection: AssistantConnectionSettings) -> dict[str, str]:
+@dataclass(frozen=True, slots=True)
+class PictureRoute:
+    """The connection a Studio picture would go to: Choose Your AI's choice.
+
+    Shaped like the provider connections automatic analysis was first approved
+    for (``provider``, ``host``, ``model``), so :func:`connection_identity` and
+    :func:`auto_ai_allowed` read either. ``provider`` is the connection id
+    (``chatgpt``), or ``off`` when nothing in use can see.
+    """
+
+    provider: str
+    model: str = ""
+    #: Who receives the picture, in words: "OpenAI on your ChatGPT plan".
+    host: str = ""
+    #: The connection's own name: "My ChatGPT plan".
+    name: str = ""
+
+
+def connection_identity(connection: Any) -> dict[str, str]:
+    """What automatic analysis is approved for: a change of any part pauses it."""
+    provider = connection.provider.strip().lower()
+    if isinstance(connection, PictureRoute):
+        return {"provider": provider, "host": connection.host, "model": connection.model}
     from quill.core.assistant_ai import default_host_for_provider, default_model_for_provider
 
-    provider = connection.provider.strip().lower()
-    if provider == PLAN_PROVIDER:
-        from quill.core.studio_plan_vision import plan_identity
-
-        return plan_identity(connection)  # type: ignore[arg-type]
     return {
         "provider": provider,
         "host": (connection.host.strip() or default_host_for_provider(provider)).rstrip("/"),
@@ -123,7 +147,7 @@ def connection_identity(connection: AssistantConnectionSettings) -> dict[str, st
 
 def auto_ai_allowed(
     preferences: dict[str, Any],
-    connection: AssistantConnectionSettings,
+    connection: Any,
     *,
     ai_enabled: bool,
     safe_mode: bool,
@@ -137,82 +161,88 @@ def auto_ai_allowed(
     )
 
 
-def inspect_screenshot(
+def inspection_prompt(instructions: str = "", question: str = "", history: str = "") -> str:
+    """What goes with the picture: the inspection rules, the chosen instructions,
+    the earlier conversation about this same picture, and the question."""
+    prompt = INSPECTION_PROMPT + "\nSelected instructions:\n" + instructions
+    if history:
+        prompt += (
+            "\nEarlier conversation about this exact artifact (unverified):\n" + history[-18000:]
+        )
+    if question:
+        prompt += "\nUser question:\n" + question
+    return prompt
+
+
+@dataclass(frozen=True, slots=True)
+class InspectionRequest:
+    """One screenshot, ready to send: the fitted copy and what goes with it."""
+
+    path: Path
+    prompt: str
+    prepared: PreparedRequest
+
+
+def _verified_bytes(evidence: CaptureEvidence) -> bytes:
+    raw = Path(evidence.path).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != evidence.sha256:
+        raise ValueError("Screenshot changed. Capture it again before inspection.")
+    return raw
+
+
+def prepare_inspection(
     evidence: CaptureEvidence,
     *,
-    connection: AssistantConnectionSettings | None,
+    record: ConnectionRecord,
+    folder: Path,
     instructions: str = "",
     question: str = "",
     history: str = "",
     cancellation_token: Any = None,
     can_send: Callable[[], bool] | None = None,
-) -> str:
-    """Analyze an immutable copy; cloud receives only the reviewed artifact."""
-    raw = Path(evidence.path).read_bytes()
-    if hashlib.sha256(raw).hexdigest() != evidence.sha256:
-        raise ValueError("Screenshot changed. Capture it again before inspection.")
+) -> InspectionRequest:
+    """Check, fit and stage the reviewed screenshot for the connection in use.
+
+    The capability registry is asked first (``require``): a connection that
+    cannot see gets nothing prepared, let alone sent. The picture is the exact
+    artifact that was verified -- a changed file is refused -- fitted to what
+    the connection accepts and written into *folder*, which the caller removes.
+    """
+    from quill.core.ai.connection_caps import PICTURES, TEXT, require
+    from quill.core.ai.picture_prep import prepare_request
+
+    require(record, TEXT, PICTURES)
+    raw = _verified_bytes(evidence)
+    if cancellation_token is not None:
+        cancellation_token.raise_if_cancelled()
+    if can_send is not None and not can_send():
+        raise RuntimeError("Automatic screenshot AI permission changed before sending.")
+    prepared = prepare_request([raw], record)
+    image = prepared.images[0]
+    target = folder / ("capture.png" if image.mime == "image/png" else "capture.jpg")
+    target.write_bytes(image.data)
+    return InspectionRequest(target, inspection_prompt(instructions, question, history), prepared)
+
+
+def inspect_screenshot(evidence: CaptureEvidence, *, cancellation_token: Any = None) -> str:
+    """Read the screenshot's text on this computer. Nothing is sent."""
+    raw = _verified_bytes(evidence)
     if cancellation_token is not None:
         cancellation_token.raise_if_cancelled()
     with tempfile.TemporaryDirectory(prefix="quill-inspect-") as folder:
         snapshot = Path(folder) / "capture.png"
         snapshot.write_bytes(raw)
-        if connection is None:
-            from quill.io.ocr import ocr_image
+        from quill.io.ocr import ocr_image
 
-            result = ocr_image(snapshot)
-            confidences = [
-                f"Line {i}: "
-                + (f"{line.confidence:g}%" if line.confidence >= 0 else "not reported")
-                for i, line in enumerate(getattr(result, "lines", []), 1)
-            ]
-            return (
-                f"Local OCR ({result.engine}); recognition may be incorrect.\n{result.text}\n"
-                "Confidence by line: "
-                + ("; ".join(confidences) or "not reported")
-                + "\nElement coordinates and keyboard semantics "
-                "are not supplied by this OCR result."
-            )
-        from quill.core.ai.model_manager import load_ai_enabled
-        from quill.core.ai.vision import describe_image
-        from quill.core.assistant_ai import load_keyed_provider_api_key
-
-        if not load_ai_enabled():
-            raise RuntimeError("AI was disabled before the screenshot was sent.")
-        if cancellation_token is not None:
-            cancellation_token.raise_if_cancelled()
-        prompt = INSPECTION_PROMPT + "\nSelected instructions:\n" + instructions
-        if history:
-            prompt += (
-                "\nEarlier conversation about this exact artifact (unverified):\n"
-                + history[-18000:]
-            )
-        if question:
-            prompt += "\nUser question:\n" + question
-        if can_send is not None and not can_send():
-            raise RuntimeError("Automatic screenshot AI permission changed before sending.")
-        text: str | None
-        if connection.provider == PLAN_PROVIDER:
-            text = _ask_plan(connection, snapshot, prompt, cancellation_token)
-        else:
-            key = load_keyed_provider_api_key(connection.provider)
-            text, error = describe_image(connection, key, snapshot, prompt=prompt, max_tokens=3000)
-            if error:
-                raise RuntimeError(error)
-        identity = connection_identity(connection)
+        result = ocr_image(snapshot)
+        confidences = [
+            f"Line {i}: " + (f"{line.confidence:g}%" if line.confidence >= 0 else "not reported")
+            for i, line in enumerate(getattr(result, "lines", []), 1)
+        ]
         return (
-            f"AI ({identity['provider']}, {identity['model']}); uncertain.\n"
-            f"Question: {question or 'Inspect screenshot'}\n{text or 'No response.'}"
+            f"Local OCR ({result.engine}); recognition may be incorrect.\n{result.text}\n"
+            "Confidence by line: "
+            + ("; ".join(confidences) or "not reported")
+            + "\nElement coordinates and keyboard semantics "
+            "are not supplied by this OCR result."
         )
-
-
-def _ask_plan(connection: Any, snapshot: Path, prompt: str, cancellation_token: Any) -> str:
-    from quill.core.ai.chatgpt_errors import ChatGptError
-    from quill.core.studio_plan_vision import describe_on_plan, plan_failure
-
-    stop = None
-    if cancellation_token is not None:
-        stop = getattr(cancellation_token, "is_cancelled", None)
-    try:
-        return describe_on_plan(connection, snapshot, prompt, stop=stop)
-    except ChatGptError as error:
-        raise plan_failure(error) from error

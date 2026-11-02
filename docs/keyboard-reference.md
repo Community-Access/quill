@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 516.
+Editor commands with default bindings: 518.
 
 ## The QUILL editor
 
@@ -299,6 +299,7 @@ Editor commands with default bindings: 516.
 | (unbound by default) | AI Thesaurus... | `tools.ai_thesaurus` |
 | (unbound by default) | Translate Selection... | `tools.ai_translate_selection` |
 | (unbound by default) | Open CSV in Table Studio (Experimental) | `tools.csv_studio` |
+| (unbound by default) | Propose Alt Text... | `tools.hosted_ai_alt_text` |
 | (unbound by default) | Table Studio (Experimental) | `tools.table_studio` |
 | (unbound by default) | Voice Command (Offline) | `tools.voice_command` |
 | (unbound by default) | Voice Conversation Mode | `tools.voice_conversation` |
@@ -322,14 +323,17 @@ Editor commands with default bindings: 516.
 | Alt+Shift+M | App Sounds On or Off | `tools.sound_toggle` |
 | Alt+Shift+Q | Ask Quill by Voice... | `tools.ask_quill_conversation` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
+| Ctrl+3 | Do a Document Task... | `tools.hosted_ai_task` |
+| Ctrl+4 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+6 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
-| Ctrl+7 | Free AI Prompt Library... | `tools.hosted_ai_prompt_library` |
+| Ctrl+7 | Prompt Library... | `tools.hosted_ai_prompt_library` |
+| Ctrl+8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+9 | Web Searches Left | `tools.hosted_ai_web_searches` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
 | Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
 | Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |
 | Ctrl+Alt+F9 | Add Word to Dictionary | `tools.add_word_to_dictionary` |
-| Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
+| Ctrl+Alt+G | Free AI Assistant | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+Shift+' | Define in Context | `tools.word_define` |
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
@@ -337,7 +341,7 @@ Editor commands with default bindings: 516.
 | Ctrl+Alt+Shift+; | Rhymes | `tools.word_rhymes` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
 | Ctrl+Alt+Shift+F | Search in Files... | `tools.search_in_files` |
-| Ctrl+Alt+Shift+F2 | Free AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+F4 | Connect or Sign Out... | `tools.hosted_ai_sign_in` |
 | Ctrl+Alt+Shift+F6 | Spelling Announcements | `tools.spelling_announcements` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
@@ -348,11 +352,11 @@ Editor commands with default bindings: 516.
 | Ctrl+Alt+Shift+[ | Word Summary | `tools.word_summary` |
 | Ctrl+Alt+Shift+] | Find the Word For... | `tools.find_word` |
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
-| Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
+| Ctrl+Alt+Z | Ask Free AI About This Document | `tools.hosted_ai_ask_document` |
 | Ctrl+F10 | Word Explorer... | `tools.word_explorer` |
 | Ctrl+F11 | Windows dictation toggle | `tools.windows_dictation_toggle` |
-| Ctrl+F3 | Tidy Dictated Text... | `tools.dictation_tidy` |
-| Ctrl+F5 | Ask About an Image... | `tools.hosted_ai_image` |
+| Ctrl+F3 | Tidy Dictated Text | `tools.dictation_tidy` |
+| Ctrl+F5 | Ask About an Image | `tools.hosted_ai_image` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+' | More Vivid Word | `tools.word_vivid` |
@@ -443,8 +447,6 @@ Editor commands with default bindings: 516.
 | (unbound by default) | GitHub: Change Repository Visibility... | `github.change_repository_visibility` |
 | (unbound by default) | GitHub: Commit Multiple Files... | `github.commit_multiple_files` |
 | (unbound by default) | GitHub: Configure Branch Protection... | `github.configure_branch_protection` |
-| (unbound by default) | GitHub: Explain a Command... | `github.copilot_explain` |
-| (unbound by default) | GitHub: Ask Copilot for a Command... | `github.copilot_suggest` |
 | (unbound by default) | GitHub: Create Codespace... | `github.create_codespace` |
 | (unbound by default) | GitHub: Create Release... | `github.create_release` |
 | (unbound by default) | GitHub: Create Repository... | `github.create_repository` |
@@ -587,6 +589,9 @@ App keys, not editor keys: these apply inside the app named above and never insi
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| Alt+F5 | Use My ChatGPT Subscription... | `studio.chatgpt_account` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+3 | Recording Pre-flight Check... | `tools.hosted_ai_task` |
 | Ctrl+Alt+Shift+B | Record marker | `studio.record_marker` |
 | Ctrl+Alt+Shift+C | Camera check | `studio.camera_check` |
 | Ctrl+Alt+Shift+Delete | Record discard | `studio.record_discard` |
@@ -612,6 +617,25 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+X | Cancel capture | `studio.cancel_capture` |
 | Ctrl+Alt+Shift+Y | Picture video | `studio.picture_video` |
 | Ctrl+Alt+Shift+Z | Broadcast mute | `studio.broadcast_mute` |
+| Ctrl+F5 | Describe a Picture... | `studio.describe_picture` |
+| Ctrl+F9 | Start Watching for Changes | `studio.ai_watch_start` |
+| Ctrl+Shift+3 | Narrate a Recording... | `studio.ai_narrative` |
+| Ctrl+Shift+F9 | Stop Watching for Changes | `studio.ai_watch_stop` |
+
+## QUILL Transcribe (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+F3 | Speakers, Sections and Summary... | `tools.hosted_ai_task` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 
 ## Quill Radio (app keys)
 
@@ -630,10 +654,12 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+7 | Play favorite 7 | `radio.play_favorite_7` |
 | Alt+8 | Play favorite 8 | `radio.play_favorite_8` |
 | Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `radio.chatgpt_account` |
 | Alt+Shift+B | Background station | `radio.background_station` |
 | Alt+Shift+D | Mirror output | `radio.mirror_output` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Alt+Shift+I | Station details | `radio.station_details` |
 | Alt+Shift+N | Whats new | `radio.whats_new` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
@@ -654,6 +680,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+A | Undo History... | `app.undo_history` |
 | Ctrl+Alt+Shift+D | Internet Radio: Download Preferences... | `radio.download_preferences` |
 | Ctrl+Alt+Shift+F | Upcoming... | `radio.upcoming` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
 | Ctrl+Alt+Shift+G | Internet Radio: Update Station Catalog | `radio.update_catalog` |
 | Ctrl+Alt+Shift+I | Recording Settings... | `radio.recording_settings` |
@@ -674,6 +701,10 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Down | Radio: Volume Down | `radio.volume_down` |
 | Ctrl+E | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
 | Ctrl+F11 | Dictate here | `app.dictate_here` |
+| Ctrl+F3 | Find and Record... | `tools.hosted_ai_task` |
+| Ctrl+F5 | Describe the Video | `radio.describe_video` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+F9 | Start Watching for Changes | `radio.ai_watch_start` |
 | Ctrl+G | Go to | `radio.go_to` |
 | Ctrl+K | Identify This Song | `radio.identify_song` |
 | Ctrl+L | Play Last Station | `radio.play_last` |
@@ -687,12 +718,14 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+0 | Transport.speed reset | `radio.transport.speed_reset` |
 | Ctrl+Shift+6 | Internet Radio: Search YouTube... | `radio.search_youtube` |
 | Ctrl+Shift+7 | Internet Radio: Read YouTube Comments... | `radio.youtube_comments` |
-| Ctrl+Shift+8 | Ask QUILL Radio... | `radio.ask_quill_radio` |
+| Ctrl+Shift+8 | Ask... | `radio.ask_quill_radio` |
 | Ctrl+Shift+9 | Transport.skip silence | `radio.transport.skip_silence` |
 | Ctrl+Shift+B | Volume Boost | `radio.volume_boost` |
 | Ctrl+Shift+C | Transport.chapter list | `radio.transport.chapter_list` |
 | Ctrl+Shift+Down | Transport.speed down | `radio.transport.speed_down` |
 | Ctrl+Shift+F | Toggle playing favorite | `radio.toggle_playing_favorite` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+| Ctrl+Shift+F9 | Stop Watching for Changes | `radio.ai_watch_stop` |
 | Ctrl+Shift+G | Transport.go to player | `radio.transport.go_to_player` |
 | Ctrl+Shift+H | Song History... | `radio.song_history` |
 | Ctrl+Shift+L | Back to Live | `radio.jump_to_live` |
@@ -731,12 +764,12 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
 | Ctrl+Alt+F10 | Carry My Place Between Machines... | `media.sync_places` |
 | Ctrl+Alt+F12 | Restore | `app.restore` |
-| Ctrl+Alt+F5 | Ask About an Image... | `tools.hosted_ai_image` |
-| Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
+| Ctrl+Alt+F5 | Ask About an Image | `tools.hosted_ai_image` |
+| Ctrl+Alt+G | Free AI Assistant | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
 | Ctrl+Alt+Shift+Down | Podcasts: Mark as Played and Next | `podcasts.mark_played_and_next` |
-| Ctrl+Alt+Shift+F2 | Free AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
 | Ctrl+Alt+Shift+F4 | Connect or Sign Out... | `tools.hosted_ai_sign_in` |
 | Ctrl+Alt+Shift+J | Bookmarks... | `app.bookmarks` |
@@ -746,14 +779,18 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+P | Recent Problems... | `app.recent_problems` |
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
-| Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
+| Ctrl+Alt+Z | Ask Free AI About This Document | `tools.hosted_ai_ask_document` |
 | Ctrl+F11 | Dictate here | `app.dictate_here` |
+| Ctrl+F3 | Find and Follow... | `tools.hosted_ai_task` |
 | Ctrl+F5 | Refresh podcasts | `media.refresh_podcasts` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+I | Player Information... | `podcasts.player_information` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+9 | Skip silence | `podcasts.skip_silence` |
 | Ctrl+Shift+D | Bookmark note | `podcasts.bookmark_note` |
 | Ctrl+Shift+E | New folder | `podcasts.new_folder` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+Shift+J | Episode bookmarks | `podcasts.episode_bookmarks` |
 | Ctrl+Shift+T | Podcasts: Time Remaining | `podcasts.time_remaining` |
 | Ctrl+Shift+V | Move to folder | `podcasts.move_to_folder` |
@@ -766,20 +803,93 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | F9 | Repeat Last Result | `app.repeat_last_result` |
 | Shift+F9 | Activity... | `app.activity` |
 
-## Weather (app keys)
+## Quill Weather (app keys)
 
 App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Ctrl+Alt+F1 | Tutorials | `weather.tutorials` |
 | Ctrl+Alt+N | Noaa listen | `weather.noaa_listen` |
 | Ctrl+Alt+Shift+F | Settings | `weather.settings` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+L | Add location | `weather.add_location` |
 | Ctrl+Alt+Shift+M | Monitor toggle | `weather.monitor_toggle` |
 | Ctrl+Alt+Shift+N | Noaa update | `weather.noaa_update` |
 | Ctrl+Alt+Shift+P | Monitor pause | `weather.monitor_pause` |
 | Ctrl+Alt+Shift+T | Test alert | `weather.test_alert` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+Alt+A | Alerts | `weather.alerts` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+| Ctrl+Shift+G | Ai go out | `weather.ai_go_out` |
 | Ctrl+Shift+Q | Quick | `weather.quick` |
 | Ctrl+Shift+W | Now | `weather.now` |
+
+## Quill Converter (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+F3 | Make This Right for My Player... | `tools.hosted_ai_task` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+Shift+D | Ai will play | `converter.ai_will_play` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+
+## Quill Media Player (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+Alt+C | Ai chapter summary | `player.ai_chapter_summary` |
+| Ctrl+Alt+R | Ai recap | `player.ai_recap` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+F3 | Find the Part Where... | `tools.hosted_ai_task` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+
+## Quill Inkwell (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+F3 | Add Abbreviations from a Document... | `tools.hosted_ai_task` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+Shift+A | Ai suggest | `inkwell.ai_suggest` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+
+## QuillBeacon (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+3 | Organize What I Saved... | `tools.hosted_ai_task` |
+| Ctrl+4 | Choose Your AI... | `tools.hosted_ai_choose` |
+| Ctrl+6 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+F5 | Describe picture | `beacon.describe_picture` |

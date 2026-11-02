@@ -223,6 +223,7 @@ class QuillLiteApp(
         # The quiet once-a-day update check; silent unless there is one.
         check_at_launch(self)
         self._start_sr_watchdog()  # a reader dying mid-session saves work first
+        self._start_family_prompt_migration()  # one prompt list for the family
         return True
 
     def next_document_number(self) -> int:

@@ -53,8 +53,6 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "github.view_security_alerts": "core.github_remote",
     "github.list_codespaces": "core.github_remote",
     "github.create_codespace": "core.github_remote",
-    "github.copilot_suggest": "core.github_remote",
-    "github.copilot_explain": "core.github_remote",
     "braille.read_status": "core.braille",
     "braille.read_detailed_status": "core.braille",
     "braille.read_line_and_cell": "core.braille",

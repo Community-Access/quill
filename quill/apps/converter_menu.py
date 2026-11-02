@@ -50,6 +50,8 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     from quill.core.app_version import installed_version
 
     version = installed_version(version, build=_BUILD)
+    # The family's AI rows read their keys from APP_KEYMAPS (codex.md Phase 3).
+    host._apply_app_keymap("converter")
     bar = wx.MenuBar()
     ids: list[Any] = []
 
@@ -122,10 +124,16 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     open_item = wx.NewIdRef()
     convert_menu.AppendCheckItem(open_item, "Open Output Folder &When Done\tCtrl+Shift+W")
     convert_menu.Check(open_item, host._settings.open_folder_when_done)
-    host.frame.Bind(wx.EVT_MENU, lambda e: host.set_open_when_done(e.IsChecked()), id=open_item)
+    from quill.apps.converter_preferences import set_open_when_done
+
+    host.frame.Bind(wx.EVT_MENU, lambda e: set_open_when_done(host, e.IsChecked()), id=open_item)
     ids.append(open_item)
     host._open_when_done_item = open_item
     bar.Append(convert_menu, "&Convert")
+
+    # Ask, Which AI, Choose Your AI, Will This Play on My Device? and the
+    # accounts (codex.md Phase 3). A&I, not &AI: Alt+A is the Add Files button.
+    host._append_app_ai_menu(bar, "A&I")
 
     from quill.ui.quillville_menu import build_quillville_menu
 

@@ -18,6 +18,43 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **Watching the video for changes** [2026-11-01]. Video > Start Watching
+  for Changes (Ctrl+F9) and Stop Watching for Changes (Ctrl+Shift+F9). While a
+  video is showing, Quill Radio compares a picture of it on this computer every
+  4 seconds and says one sentence when it changes. Changed words on screen are
+  read with OCR on this computer and nothing is sent; the AI in use is asked
+  only when the words don't explain the change, with before and after as one
+  picture, at most once a minute and 30 times a watch, and then the watch
+  stops and says so. Start and Stop are spoken. Hiding the video or closing
+  Quill Radio ends it, and it is off in Safe Mode. The first picture asks the
+  usual picture question, and each question counts in AI Usage.
+
+- **Find and Record** [2026-11-01]. Community > AI > Find and Record
+  (Ctrl+F3) takes a request in plain words, such as "find a jazz station from
+  New Orleans and record it tonight from 8 for an hour", and carries it out with
+  Quill Radio's own search, player, recorder and schedule. It searches your
+  favorites, the station list on this computer and Radio Browser, and reads
+  your favorites, recent songs and scheduled recordings without asking.
+  Playing, recording and scheduling each ask first, and the scheduling
+  question names the station, day, time and length. Scheduled recordings are
+  made by Quill Radio itself, never by the AI. It needs My GitHub Copilot or
+  Codex; with another AI the menu item says "(needs Copilot or Codex)" and
+  nothing is sent.
+
+- **Ask QUILL Radio is now Ask, on any AI** [2026-11-01]. Ask (Ctrl+Shift+8)
+  is the family's one conversation window, and it answers on whichever AI you
+  chose in **Choose Your AI** (Ctrl+Shift+F8): QUILL's free AI, your ChatGPT
+  plan, GitHub Copilot or your own key. If you were signed in to ChatGPT here,
+  nothing changes. The station and what is playing are read fresh for every
+  message, and the window says when the song changed. Conversations are saved
+  on this computer. **Which AI Am I Using** (Ctrl+F8, twice for the window),
+  **AI Usage** (Ctrl+Alt+Shift+F2), Use My Own AI Key (Alt+F2) and Privacy
+  Agreement (Alt+Shift+F2) are in Community > AI, and the status bar ends with
+  an AI cell. **Describe the Video** (Ctrl+F5) asks the AI what is on screen,
+  from one picture taken on this computer. The first time on each AI, it says
+  where the picture goes and asks Yes or No first, with No the default
+  (2026-11-01).
+
 - **Victor Stream playlists import, and fifteen more reading services**
   (2026-10-29).
   Import Stations from Playlist (Ctrl+I) reads XSPF lists exported from a

@@ -72,6 +72,9 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # Podcasts mini-player + download activity. Hidden by default;
     # auto-surfaces the first time an episode plays or downloads.
     "podcast_player",
+    # Which AI is in use (codex.md decision 19): short, after every other cell,
+    # before the message for the reason below. QUILL Lite has the same cell.
+    "ai",
     # Last, and deliberately. The message is the one cell whose text has no
     # ceiling, and the one that is a *replay* of something already spoken
     # rather than a fact you cannot otherwise get -- so it goes after the

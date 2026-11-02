@@ -58,12 +58,13 @@ _EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b")
 _TOKEN_RE = re.compile(r"\b[A-Fa-f0-9_\-]{32,}\b")
 
 # Modern API key prefixes that contain non-hex characters and would escape
-# _TOKEN_RE: GitHub PATs (ghp_/gho_/github_pat_), OpenAI (sk-),
+# _TOKEN_RE: GitHub tokens (ghp_/gho_/ghu_/ghs_/ghr_/github_pat_ -- gho_ is
+# the Copilot device-flow token, ghu_ a GitHub App user token), OpenAI (sk-),
 # AWS access keys (AKIA), Slack (xoxb-/xoxp-), generic long alphanumeric keys.
 # 2026-10-16 (D-31): the cloud speech providers' key shapes -- Groq (gsk_),
 # ElevenLabs (sk_), AWS temporary keys (ASIA).
 _PREFIXED_KEY_RE = re.compile(
-    r"(?:ghp_|gho_|github_pat_|sk-|sk_|gsk_|AKIA|ASIA)[A-Za-z0-9_\-]{16,}"
+    r"(?:ghp_|gho_|ghu_|ghs_|ghr_|github_pat_|sk-|sk_|gsk_|AKIA|ASIA)[A-Za-z0-9_\-]{16,}"
     r"|"
     r"xox[bp]-[A-Za-z0-9_\-]{20,}"
     r"|"

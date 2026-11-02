@@ -98,23 +98,36 @@ def connected(monkeypatch):
 # --------------------------------------------------------------------------- #
 
 
-def test_the_chat_key_opens_the_pad_on_a_general_question_ready_to_type(
-    lite_window, frames, monkeypatch, connected
+@pytest.fixture
+def chat_window(monkeypatch):
+    """The AI Conversation, replaced by a recorder where open_for builds it."""
+    import quill.ui.hosted_ai_chat as chat
+
+    cls = type("AiChatFrame", (_Recorder,), {"last": None})
+    monkeypatch.setattr(chat, "AiChatFrame", cls)
+    monkeypatch.setattr(chat, "_talk_to_it", lambda _frame, _host: None)
+    return cls
+
+
+def test_ask_opens_the_conversation_about_this_document(
+    lite_window, chat_window, monkeypatch, connected
 ):
-    win = lite_window("Some text.")
+    """Ask (Ctrl+6) converges on the AI Conversation (codex.md 10C.2), and each
+    turn's facts are the editor's: the passage, the title and the outline."""
+    win = lite_window("# Plan\n\nFirst idea.\n\n# Budget\n\nNumbers here.")
     monkeypatch.setattr(win, "_ai_service", lambda: connected)
+    win.control.SetSelection(8, 19)
 
     (lambda w: w.cmd_ai_chat_key())(win)
 
-    built = frames["AiPadFrame"].last["kwargs"]
-    assert built["initial_action"] == "ask"
-    assert built["focus_prompt"] is True
-    # The editor can remember a delivery choice, so the pad offers it.
-    assert built["delivery"] == "window"
-    assert callable(built["on_delivery"])
+    built = chat_window.last["kwargs"]
+    facts = built["context"]()
+    assert any("Outline:" in block and "Budget" in block for block in facts)
+    assert any(block.startswith("The selected text:") for block in facts)
+    assert "First idea." in facts[-1]
 
 
-def test_the_chat_key_offers_the_way_in_when_not_connected(lite_window, frames, monkeypatch):
+def test_ask_offers_the_way_in_when_not_connected(lite_window, chat_window, monkeypatch):
     from quill.ui.hosted_ai_commands import HostedAiMixin
 
     monkeypatch.setattr(HostedAiMixin, "_ai_privacy_accepted", lambda _self: True)
@@ -122,11 +135,13 @@ def test_the_chat_key_offers_the_way_in_when_not_connected(lite_window, frames, 
     signed_out = _Service()
     signed_out.signed_in = False
     monkeypatch.setattr(win, "_ai_service", lambda: signed_out)
-    monkeypatch.setattr(win, "cmd_ai_sign_in", lambda: None)
+    connects = []
+    monkeypatch.setattr(win, "_ai_open_connect", lambda: connects.append(True))
 
     (lambda w: w.cmd_ai_chat_key())(win)
 
-    assert frames["AiPadFrame"].last is None
+    assert chat_window.last is None
+    assert connects == [True]
     assert any("not connected" in said for said in win.announcements)
 
 

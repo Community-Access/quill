@@ -87,6 +87,33 @@ PURPOSES: dict[str, str] = {
         "stretch, lays them out as one labelled picture with the transcript if there is one, "
         "and opens a conversation about it. Nothing is sent until you approve it there."
     ),
+    "Ask": (
+        "A conversation about your recording setup, on whichever AI is in use: the last "
+        "pre-flight check and what it measured, the last recording check, the recording "
+        "running now and the book open go with every message, never a picture or sound. "
+        "Type in Your message and press Enter; the reply is read aloud and added to the "
+        "conversation above. Quick questions holds Is my setup ready? and a few more."
+    ),
+    "Choose Your AI": (
+        "Choose where QUILL Studio's AI comes from: QUILL's free AI, your ChatGPT plan, "
+        "GitHub Copilot, Codex or your own key. The list says which is in use; Enter uses "
+        "the selected one or signs in to it, and Delete signs a signed-in one out. Every "
+        "picture Studio asks about goes to the one in use. Choosing here changes nothing "
+        "in the other apps."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and whose "
+        "count it is. Manage Usage opens the selected one's own page."
+    ),
+    "Describe a Picture": (
+        "Choose a picture, or a video and then the moment in it. Studio takes that one "
+        "picture on this computer, fits it to the AI in use and reads the description "
+        "aloud. Asking about the same picture again sends nothing."
+    ),
     "Make a picture with AI": (
         "Describe the picture you want, choose its shape and press Make the picture. Then ask "
         "for changes in words and press it again; every version is kept with a description "

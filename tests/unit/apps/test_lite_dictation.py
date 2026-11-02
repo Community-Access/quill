@@ -69,6 +69,7 @@ def focused(monkeypatch):
 
 def _window(lite_window, focused, text: str = "", cursor: int | None = None):
     win = lite_window(text, cursor=len(text) if cursor is None else cursor)
+    win.app.settings.ai_connection = "free"  # migrated already: no first-read save
     win.available_sounds = frozenset(str(event) for event in shared.DICTATION_CUES.values())
     focused["control"] = win.control
     return win

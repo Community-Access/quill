@@ -284,15 +284,13 @@ class AiActionsMixin:
         menu.Destroy()
 
     def open_copilot_onboarding(self) -> None:
-        """Open the guided GitHub Copilot setup (install SDK + device sign-in)."""
+        """Sign QUILL in to GitHub Copilot: the one step left, now the engine is bundled."""
         if not self._require_ai_enabled():
             return
-        from quill.ui.copilot_onboarding_dialog import CopilotOnboardingDialog
+        from quill.ui.copilot_onboarding_dialog import sign_in_copilot_for_app
 
-        dialog = CopilotOnboardingDialog(
-            self.frame, self._show_modal_dialog, announce=self._set_status
-        )
-        dialog.show()
+        if sign_in_copilot_for_app(self.frame, "QUILL", self._set_status):
+            self._set_status("Signed in to GitHub Copilot.")
         self._invalidate_ai_engine_caches()
         self._refresh_statusbar()
         self._request_menu_refresh()

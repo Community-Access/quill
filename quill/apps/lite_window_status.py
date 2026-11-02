@@ -17,12 +17,10 @@ editor, and every cell here is a fact a text editor is actually asked for:
 * **Position** -- line and column, of how many lines.
 * **Words** and **Characters** -- what the document is.
 * **Selection** -- how much is selected, the number wanted while selecting.
-* **Typing Mode** -- insert or overwrite. The whole reason the feature is
-  worth having here: a mode you cannot query is a mode you discover by typing
-  over your own work.
-* **Tab Mode** -- whether the Tab key types a tab character or indents the
-  line. The other invisible mode, and the other one you would otherwise
-  discover by pressing the key and listening to what happened.
+* **Typing Mode** and **Tab Mode** -- insert or overwrite; a tab character or
+  an indent. Two invisible modes you would otherwise discover by typing over
+  your own work, or by pressing Tab and listening to what happened.
+* **AI** -- which AI is in use (decision 19); Enter chooses another.
 * **Format** -- plain text or rich text.
 * **Heading** -- which heading the caret is in, in either kind of document.
 * **Encoding** and **Line endings** -- the two facts that decide whether a file
@@ -104,6 +102,7 @@ from quill.apps.lite_status_cells import (
     StatusCell,
     _clip_message,
     _widen_to_label,
+    ai_cell,
     encoding_name,
     live_status_message,
     native_cell_labels,
@@ -370,6 +369,7 @@ class DocumentStatusMixin:
             "line_endings": self._line_endings_cell(),
             "saved": "Modified" if self.modified else "Saved",
             "notifications": "Notifications",
+            "ai": ai_cell(self),
         }
 
     def _heading_text(self, text: str) -> str:

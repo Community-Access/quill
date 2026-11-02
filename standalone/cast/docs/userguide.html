@@ -4438,6 +4438,26 @@ clipboard.</p>
 </thead>
 <tbody>
 <tr>
+<td>Ask</td>
+<td>Ctrl+Shift+8</td>
+<td>A conversation about the episode you are on</td>
+</tr>
+<tr>
+<td>Which AI Am I Using</td>
+<td>Ctrl+F8</td>
+<td>Say which AI is in use; twice opens Choose Your AI</td>
+</tr>
+<tr>
+<td>Choose Your AI</td>
+<td>Ctrl+Shift+F8</td>
+<td>Choose where Cast’s AI comes from</td>
+</tr>
+<tr>
+<td>Find and Follow</td>
+<td>Ctrl+F3</td>
+<td>Find podcasts, then follow, file or queue them</td>
+</tr>
+<tr>
 <td>Free AI Assistant</td>
 <td>Ctrl+Alt+G</td>
 <td>Sum up, explain or shorten the show notes</td>
@@ -4449,13 +4469,13 @@ clipboard.</p>
 </tr>
 <tr>
 <td>Ask About an Image</td>
-<td>Ctrl+F5</td>
-<td>Describe a picture on your computer</td>
+<td>Ctrl+Alt+F5</td>
+<td>Describe the podcast’s artwork, a show-note picture or a file</td>
 </tr>
 <tr>
-<td>Free AI Usage</td>
+<td>AI Usage</td>
 <td>Ctrl+Alt+Shift+F2</td>
-<td>How much of this month’s free allowance is left</td>
+<td>How much each AI you set up has been used</td>
 </tr>
 <tr>
 <td>Connect or Sign Out</td>
@@ -4479,8 +4499,64 @@ clipboard.</p>
 </tr>
 </tbody>
 </table>
-<p>The free service works for show notes. Ask About an Image needs your
-ChatGPT subscription or your own Gemini key.</p>
+<p>The free service works for show notes. Ask About an Image needs an AI
+that can see pictures: your ChatGPT plan, GitHub Copilot or your own
+Gemini key. With the free AI in use its row says “(needs a connection
+that sees)”.</p>
+<h4 id="choose-your-ai">Choose Your AI</h4>
+<p>Cast uses the same Choose Your AI window as QUILL and QUILL Lite, and
+keeps its own choice, so choosing an AI here changes nothing in the
+other apps. Press <strong>Ctrl+Shift+F8</strong>, or
+<strong>Alt+F5</strong> to land on the ChatGPT row ready to sign in. The
+list has five rows: QUILL’s free AI, My ChatGPT plan, My GitHub Copilot,
+Codex, for tasks, and My own key. Each says its state, such as “in use”
+or “not set up”. Enter uses a row or signs in to it, and Delete signs a
+signed-in one out. If you were already signed in to ChatGPT in Cast,
+nothing changes: it stays in use.</p>
+<p><strong>Which AI Am I Using</strong> (<strong>Ctrl+F8</strong>) says
+which AI is in use, its model and how much is left where the service
+says; press it twice quickly to open Choose Your AI. The last cell of
+the status bar says the same thing in short, for example “AI: ChatGPT
+plan”, and Enter on it opens Choose Your AI.</p>
+<p>Why not QUILL’s Ctrl+4, Ctrl+6 and Ctrl+8? In Cast, Ctrl+1 to Ctrl+9
+move between your open windows, and in an episode list they run its
+Quick Actions, so those keys were taken. Quill Radio uses the same keys
+as Cast.</p>
+<h4 id="ask-about-the-episode-you-are-on">Ask about the episode you are
+on</h4>
+<p><strong>Ask</strong> (<strong>Ctrl+Shift+8</strong>) is a
+conversation about the episode you are on, on whichever AI you chose.
+The show, the episode, where you are in it, the chapter you are in, the
+chapter list and the show notes go with every message, read again each
+time. The audio never does. The first line of the window says which AI
+you are asking, such as “Asking My ChatGPT plan about this episode.”</p>
+<p>Type a question and press Enter; the reply is read aloud and added to
+the conversation. The <strong>Quick questions</strong> list (Alt+Q)
+starts with <strong>What did I miss in this episode?</strong> and
+<strong>Is this episode worth my time?</strong>, then <strong>Explain
+this simply</strong>, <strong>What can I do here?</strong>, which Cast
+answers itself and sends nothing for, and <strong>Summarise what is in
+front of me</strong>. Press Enter on one to put it in the message box.
+Every conversation is saved on this computer, and <strong>Saved
+Conversations</strong> opens Cast’s own.</p>
+<p><strong>What Did I Miss in This Episode?</strong> is also its own row
+on the AI Features menu (D). It sends the show notes, the chapters,
+where you are and, when Cast has the transcript, the transcript up to
+that point, and asks only about what came before. If you have not
+started the episode, it says so and sends nothing.</p>
+<h4 id="ask-about-a-picture">Ask about a picture</h4>
+<p><strong>Ask About an Image</strong> (<strong>Ctrl+Alt+F5</strong>)
+offers the pictures Cast knows about for the episode you are on: the
+podcast’s artwork and any pictures in its show notes, named by their own
+descriptions when the show wrote them, and last, a picture file on your
+computer. Cast fetches the picture you choose then, once, because you
+asked. It never downloads artwork in the background. The picture is made
+smaller to suit the AI before it goes, and the answer starts by saying
+what was looked at and which AI described it. Asking about the same
+picture again answers straight away and sends nothing.</p>
+<p>With an AI that cannot see in use, nothing is fetched or sent. Cast
+offers to switch to one that can, and if the show notes described their
+pictures, it reads those descriptions to you instead.</p>
 <p>Each Quill app signs in to ChatGPT on its own, so signing in here
 does not sign in QUILL or Quill Radio, and signing out of one leaves the
 others signed in. If another Quill app is already signed in, your
@@ -4490,6 +4566,42 @@ OpenAI’s side no longer signs you out.</p>
 <p>The last step of the <strong>Show notes, and what else the podcast
 sent</strong> lesson, in Help &gt; Tutorials, turns AI help on with
 you.</p>
+<h4 id="find-and-follow">Find and Follow</h4>
+<p><strong>Find and Follow…</strong> (<strong>Ctrl+F3</strong>, Help
+&gt; AI Features) lets you say what you want in plain words and have the
+AI do it with Cast’s own tools. For example: “Find two podcasts about
+birds, follow the better one and put it in a Nature folder”, or “Queue
+the newest episode of each podcast in my News folder.”</p>
+<p>Like every row here, it needs AI help turned on in Preferences. It
+also needs an AI that can carry out tasks: My GitHub Copilot, or Codex
+on your ChatGPT plan. With any other AI in use, the row says “(needs
+Copilot or Codex)”, and pressing it sends nothing and offers to
+switch.</p>
+<p>What it can do:</p>
+<ul>
+<li><strong>Find podcasts</strong> in the same directories Add Podcast
+searches, and say which ones you already follow. It can also read the
+podcasts you follow, your folders, and a podcast’s newest episodes.
+Reading never asks you anything.</li>
+<li><strong>Follow a podcast.</strong> It asks first. Then Cast reads
+the feed and shows you what you would be following, as text: the title,
+who makes it, how many episodes, and the newest few.
+<strong>Apply</strong> follows it; <strong>Don’t Apply</strong>, or
+Escape, leaves things as they were.</li>
+<li><strong>Make a folder</strong> and <strong>move a podcast into a
+folder</strong>, or back to the top level. Each asks first and shows the
+change as text, such as “Move: Bird Notes, From: the top level, To:
+Nature”, before anything moves.</li>
+<li><strong>Add an episode to the Play Queue.</strong> It asks
+first.</li>
+</ul>
+<p>Each question has three answers: <strong>Allow once</strong>,
+<strong>Allow for this task</strong>, and <strong>Don’t allow</strong>.
+Enter is Allow once and Escape is Don’t allow. Nothing you allow carries
+over to the next task. It never unfollows, deletes or downloads
+anything; those stay yours to do.</p>
+<p>The podcast and episode you are on go with your first message, so
+“follow more like this one” works.</p>
 <h4 id="letting-ai-help-with-your-podcasts">Letting AI help with your
 podcasts</h4>
 <p>Below the rows above, the AI Features menu has a few more that are
@@ -4525,7 +4637,7 @@ episode, for deciding whether to listen. If Cast has the episode’s
 transcript, it summarises that, and if not it summarises the show notes.
 The answer always starts by saying which it used, because a summary of
 the show notes is not a summary of what was said.</p>
-<p><strong>Build Me a Listening Run</strong> (L). “I have 40 minutes.”
+<p><strong>Build Me a Listening Run</strong> (B). “I have 40 minutes.”
 Type how many minutes you have, and AI help picks unheard episodes from
 your Inbox and New Episodes that fit, in an order worth hearing. Cast
 measures the time itself, so the run really fits. Review the list, then
@@ -6946,6 +7058,22 @@ Chapter 9.</p>
 </thead>
 <tbody>
 <tr>
+<td>Ask</td>
+<td>Ctrl+Shift+8</td>
+</tr>
+<tr>
+<td>Which AI Am I Using (twice: Choose Your AI)</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>Choose Your AI</td>
+<td>Ctrl+Shift+F8</td>
+</tr>
+<tr>
+<td>Find and Follow</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
 <td>Free AI Assistant</td>
 <td>Ctrl+Alt+G</td>
 </tr>
@@ -6955,10 +7083,10 @@ Chapter 9.</p>
 </tr>
 <tr>
 <td>Ask About an Image</td>
-<td>Ctrl+F5</td>
+<td>Ctrl+Alt+F5</td>
 </tr>
 <tr>
-<td>Free AI Usage</td>
+<td>AI Usage</td>
 <td>Ctrl+Alt+Shift+F2</td>
 </tr>
 <tr>

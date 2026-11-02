@@ -253,6 +253,38 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so a fix lands in both at once;
 <code>standalone/player</code> carries only the wrapper, launcher and
 docs.</p>
+<h2 id="unreleased">Unreleased</h2>
+<h3 id="ai">AI</h3>
+<ul>
+<li><strong>Choose Your AI.</strong> The player now has an AI menu
+(Alt+I) and uses the AI you pick for it: QUILL’s free AI, your ChatGPT
+plan, GitHub Copilot, Codex or your own key. It signs in on its own, as
+QUILL Media Player. Which AI Am I Using is Ctrl+F8 and Choose Your AI is
+Ctrl+Shift+F8, because Ctrl+1 to Ctrl+9 belong to the Window menu here.
+A new AI line in the main window says which AI is in use; Enter on it
+opens Choose Your AI.</li>
+<li><strong>Summarize This Chapter (AI) and AI Recap of Where I Am work
+on any AI.</strong> Same place in the Playback menu, same keys
+(Ctrl+Alt+C and Ctrl+Alt+R), but they no longer need a key set up in
+QUILL’s AI Hub. The answer is read aloud and shown in a window you can
+copy from, instead of a message box. The text still comes from the book
+or a transcript made on your computer, audio never leaves, and protected
+BARD content is still refused.</li>
+<li><strong>Ask</strong> (Ctrl+Shift+8) about the book you’re listening
+to: the title, the chapter, your place and the chapter list go with each
+question.</li>
+<li><strong>Find the Part Where…</strong> (Ctrl+F3, AI menu): tell it
+the place you want (“the chapter where the storm starts”, “my bookmark
+about the map”) and the AI works it out from the chapter list, your
+bookmarks and their notes, then asks “Go to 1:02:30 in <book>.” before
+it jumps there the way Go to Position does. There is no transcript to
+search, so it finds places by chapters, bookmarks and times. Needs
+GitHub Copilot or Codex; with another AI the item says “(needs Copilot
+or Codex)” and sends nothing.</li>
+<li><strong>Where am I? lost its Alt letter.</strong> Alt+I now opens
+the AI menu. Tab to the button, or press Shift+F6 to hear the status
+bar.</li>
+</ul>
 <h2 id="100">1.0.0</h2>
 <p>Testing build: <strong>1.0.0 (build 2)</strong>. Quill Media Player
 has not been published yet: the other QuillVille apps do not list it in

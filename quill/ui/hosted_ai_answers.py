@@ -19,9 +19,8 @@ applied as one undo step.
 
 **The commands:**
 
-* :meth:`cmd_ai_chat_key` -- the **Chat Key**: the AI Assistant, opened on Ask a
-  General Question with the caret already in the question box. Type, Enter,
-  and the answer arrives the way you chose.
+* :meth:`cmd_ai_chat_key` -- **Ask** (Ctrl+6): the AI Conversation about this
+  document, its first line naming the connection asked (codex.md 10C.2).
 * :meth:`cmd_ai_prompt_library` -- QUILL's Prompt Library
   (:mod:`quill.ui.prompt_library_dialog`, :mod:`quill.core.prompt_library`), run
   on the free AI: choose a prompt, and it is sent as a general question with
@@ -185,23 +184,38 @@ class AiAnswersMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_ai_chat_key(self) -> None:
-        """The AI Assistant on Ask a General Question, caret in the question box."""
-        self._open_ai_pad(action="ask", focus_prompt=True)
+        """Ask (Ctrl+6): the AI Conversation, about this document (codex.md 10C).
+
+        Its first line names the connection being asked; each turn sends the
+        passage, the title and the outline, read fresh (:meth:`_ai_ask_context`).
+        """
+        app_ask = getattr(self, "_ai_app_ask", None)
+        if callable(app_ask):  # Quill Radio's and QUILL Cast's Ask (hosted_ai_app_ask)
+            app_ask()
+            return
+        if not self._ai_ready() or not self._ai_capable("text"):
+            return
+        from quill.ui.hosted_ai_chat import open_for
+
+        open_for(self, context=self._ai_ask_context)
 
     # ------------------------------------------------------------------ #
     # The Prompt Library, on the free AI
     # ------------------------------------------------------------------ #
 
     def _ai_prompt_library(self) -> Any:
-        """The library this editor keeps: ``prompts.json`` in its data folder.
+        """The family's one prompt list, ``<app data>/prompts.json`` (decision 18).
 
-        QUILL overrides this with its own cached library, which also holds the
-        prompts its Quillins contribute, so both of QUILL's ways in show one list.
+        Every app reads the same file, QUILL Lite included -- its own
+        ``prompts.json`` was brought in once at startup
+        (:mod:`quill.core.ai.family_prompt_migration`) and is no longer written.
+        QUILL overrides this with its own cached library of the same file, which
+        also holds the prompts its Quillins contribute.
         """
-        from quill.core.prompt_fill import PROMPTS_FILE
+        from quill.core.ai.family_prompts import family_store_path
         from quill.core.prompt_library import PromptLibrary
 
-        return PromptLibrary(self._ai_host().data_dir / PROMPTS_FILE)
+        return PromptLibrary(family_store_path())
 
     def _ai_document_title(self) -> str:
         """The document's title for a prompt's ``{title}``, or nothing."""
@@ -213,7 +227,7 @@ class AiAnswersMixin:
 
     def cmd_ai_prompt_library(self) -> None:
         """Choose a saved prompt and run it on the selection, on the free AI."""
-        if not self._ai_ready():
+        if not self._ai_ready() or not self._ai_capable("text"):
             return
         service = self._ai_service()
         if not self._ai_direct() and not service.signed_in:
@@ -273,6 +287,7 @@ class AiAnswersMixin:
                 "ask", answer, _used(quota), start, end, selection, "ask", request
             ),
             on_error=self._announce,
+            requires=("text",),
         )
 
     # ------------------------------------------------------------------ #

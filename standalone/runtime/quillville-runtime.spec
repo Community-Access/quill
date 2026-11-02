@@ -131,6 +131,21 @@ ytdlp_hidden += collect_submodules("pygments.lexers") + [
     "pygments.lexer",
 ]
 
+# The GitHub Copilot SDK (2026-10-31, codex.md 10A.12): My GitHub Copilot's
+# Python side, beside the CLI runtime bundle that build_runtime.ps1 stages in
+# tools\copilot. QUILL imports it lazily (quill/ai_packs/copilot.py, and
+# importlib in quill/core/ai/copilot_chat.py, which the tracer cannot follow),
+# and its generated protocol modules are many, so the package is collected
+# whole, with its dist-info for the notices gate. Its dependencies are already
+# in the runtime or pure Python the tracer follows from the SDK's own imports:
+# pydantic and pydantic_core (inventory), python-dateutil (inventory), httpx
+# with httpcore, h11 and anyio (pure, into the PYZ). Retires the on-demand
+# install (sdk_install.PACK_INSTALLS["copilot"]): nothing downloads at first use.
+copilot_datas, copilot_binaries, copilot_hidden = collect_all("copilot")
+ytdlp_datas += copilot_datas
+ytdlp_binaries += copilot_binaries
+ytdlp_hidden += copilot_hidden + ["httpx", "httpcore", "h11", "anyio", "dateutil"]
+
 a = Analysis(
     ["runtime_launcher.py"],
     pathex=[_CHECKOUT_ROOT],

@@ -14,7 +14,8 @@ from types import SimpleNamespace
 import pytest
 import wx
 
-from quill.ui.hosted_ai_dialogs import AiSignInFrame, AiUsageFrame
+from quill.ui.hosted_ai_dialogs import AiSignInFrame
+from quill.ui.hosted_ai_usage import UsageFrame
 from tests.wx_session import shared_wx_app
 
 
@@ -32,7 +33,17 @@ def _service(signed_in: bool) -> SimpleNamespace:
         start_sign_in=lambda **_k: None,
         fetch_quota=lambda **_k: None,
         sign_out=lambda: None,
+        usage_rows=lambda _quota=None: [
+            SimpleNamespace(
+                connection="free", sentence="QUILL's free AI: 1 of 50.", detail="", manage_url=""
+            )
+        ],
+        connection_in_use="free",
     )
+
+
+def AiUsageFrame(parent, service, announce):  # noqa: N802 - the one Usage view (codex.md 10A.11)
+    return UsageFrame(parent, service, announce)
 
 
 @pytest.mark.parametrize("signed_in", [False, True])
@@ -75,7 +86,7 @@ def test_the_usage_window_puts_focus_on_the_allowance(wx_app) -> None:
     keys nor Tab did anything (reported 2026-09-25)."""
     frame = AiUsageFrame(None, _service(True), lambda _text: None)
     try:
-        assert getattr(frame, "_focus_target", None) is frame._body
+        assert getattr(frame, "_focus_target", None) is frame._list
     finally:
         frame.Destroy()
 
@@ -126,11 +137,12 @@ def test_an_error_is_spoken_when_the_window_is_not_in_front(wx_app) -> None:
     from quill.ui.hosted_ai_dialogs import show_problem
 
     frame = AiUsageFrame(None, _service(True), lambda _text: None)
+    field = wx.TextCtrl(frame)
     said: list[str] = []
     try:
-        show_problem(frame, frame._body, "It did not work.", said.append)
-        assert frame._body.GetValue() == "It did not work."
-        assert frame._focus_target is frame._body
+        show_problem(frame, field, "It did not work.", said.append)
+        assert field.GetValue() == "It did not work."
+        assert frame._focus_target is field
         assert said == ["It did not work."]  # never shown, so never active
     finally:
         frame.Destroy()

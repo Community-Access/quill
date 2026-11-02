@@ -144,6 +144,39 @@ PURPOSES: dict[str, str] = {
         "conflicts waiting for a Local/Remote/Merged decision, and the "
         "pre-sync snapshots you can roll the library back to."
     ),
+    # -- the AI windows (codex.md Phase 3; the shared code builds them) ----------
+    "Ask": (
+        "A conversation about what you have saved, on whichever AI is in use. When a "
+        "search is typed, the search and its results' titles and notes go with every "
+        "message; otherwise the selected beacon's title, note and tags do -- never where "
+        "your library or any file is kept. Type in Your message and press Enter; the "
+        "reply is read aloud and added to the conversation above."
+    ),
+    "Describe a Saved Picture": (
+        "The AI's description of the selected beacon's picture. The words in the "
+        "picture were read on this computer first and sent with it. Copy puts the "
+        "description on the clipboard, and you are asked once whether to add it to "
+        "the beacon's note."
+    ),
+    "Read on This Computer": (
+        "The words read in the selected beacon's picture on this computer, because the "
+        "AI in use cannot see pictures. Nothing was sent. Copy puts the words on the "
+        "clipboard."
+    ),
+    "Choose Your AI": (
+        "Choose where QuillBeacon's AI comes from: QUILL's free AI, your ChatGPT plan, "
+        "GitHub Copilot, Codex or your own key. QuillBeacon signs in on its own, as "
+        "QUILL Beacon. The list says which is in use; Enter uses the selected one or "
+        "signs in to it, and Delete signs a signed-in one out."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and whose "
+        "count it is. Manage Usage opens the selected one's own page."
+    ),
     "External Player": (
         "Which media player handles handoffs: the default player, optional "
         "paths to VLC and mpv for installs not on PATH, and a per-type "

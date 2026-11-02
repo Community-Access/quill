@@ -233,6 +233,14 @@ class RadioStatusBar:
                 activate=self._announce_clock,
                 help="The current time. Press Enter to hear the full date and time.",
             ),
+            CellSpec(
+                key="ai",
+                name="AI",
+                text=lambda: _ai_text(host),
+                activate=lambda: _call(host, "cmd_ai_choose"),
+                help="Which AI is in use, as Which AI Am I Using says it. Press Enter "
+                "to open Choose Your AI.",
+            ),
         ]
 
     # -- action labels --------------------------------------------------------
@@ -614,6 +622,12 @@ class RadioStatusBar:
                 break
         (target or self._panel).PopupMenu(menu)
         menu.Destroy()
+
+
+def _ai_text(host: object) -> str:
+    """The AI cell (codex.md decision 19): "AI: ChatGPT plan"; "" when unknown."""
+    text = getattr(host, "ai_status_text", None)
+    return str(text()) if callable(text) else ""
 
 
 def _call(host: object, name: str, *args: object) -> None:

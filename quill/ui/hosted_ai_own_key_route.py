@@ -17,22 +17,28 @@ class OwnKeyRouteMixin:
     """Mixed into ``AiService``; reads ``self._app.settings``."""
 
     _app: Any
+    route: str
 
     @property
-    def own_key_active(self) -> bool:
-        """Whether requests go to OpenAI with the user's own key instead.
-
-        Then there is no QUILL server, no sign-in and no allowance: the same
-        five commands, billed to the user's OpenAI account
-        (:mod:`quill.core.ai.own_key`).
-        """
+    def own_key_ready(self) -> bool:
+        """Whether a key is saved for the provider the listener chose: the row is set up."""
         from quill.core.ai.own_key import own_key_active
 
         return own_key_active(getattr(self._app, "settings", None))
 
     @property
+    def own_key_active(self) -> bool:
+        """Whether requests go to the provider with the user's own key: it is the
+        connection in use (``ai_connection``) and its key is saved.
+
+        Then there is no QUILL server, no sign-in and no allowance: the same
+        five commands, billed to the user's account (:mod:`quill.core.ai.own_key`).
+        """
+        return self.route == "own_key" and self.own_key_ready
+
+    @property
     def own_key_provider(self) -> str:
-        """``"openai"`` or ``"gemini"``: the provider the listener chose for their key."""
+        """The provider the listener chose for their key (``own_key_providers.PROVIDERS``)."""
         from quill.core.ai.own_key import chosen_provider
 
         return chosen_provider(getattr(self._app, "settings", None))
@@ -47,9 +53,34 @@ class OwnKeyRouteMixin:
 
     @property
     def own_key_can_see(self) -> bool:
-        """Whether the own key's provider reads pictures (Gemini does; OpenAI's own-key
-        route here is text only)."""
-        return self.own_key_active and self.own_key_provider == "gemini"
+        """Whether the own key's provider reads pictures, from the capability registry:
+        Gemini does, an Ollama model does when its ``/api/show`` says so, and the
+        rest are text only on this route (GATE-CAPS)."""
+        if not self.own_key_active:
+            return False
+        from quill.core.ai.connection_caps import OWN_KEY, PICTURES, record_for
+
+        record = record_for(
+            OWN_KEY, own_key_provider=self.own_key_provider, model=self.own_key_model
+        )
+        return record.claim(PICTURES).supported
+
+    def own_key_sign_out(self) -> None:
+        """Sign out of My own key: forget the chosen provider's key. Ollama on this
+        computer has none to forget, so it stops being the choice instead."""
+        from quill.core.ai.own_key_providers import OPENAI, needs_key
+        from quill.core.assistant_ai import clear_provider_api_key
+
+        provider = self.own_key_provider or OPENAI
+        if needs_key(provider):
+            clear_provider_api_key(provider)
+            return
+        settings = getattr(self._app, "settings", None)
+        if settings is not None:
+            settings.ai_own_key_provider = OPENAI
+            save = getattr(self._app, "save_settings", None)
+            if callable(save):
+                save()
 
 
 __all__ = ["OwnKeyRouteMixin"]

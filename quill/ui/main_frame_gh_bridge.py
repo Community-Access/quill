@@ -1,10 +1,10 @@
-"""GitHub Codespaces and Copilot CLI commands for ``MainFrame``
+"""GitHub Codespaces commands for ``MainFrame``
 (`docs/planning/github.md` section 1's Tier 3 -- the narrow `gh`-CLI bridge).
 
 **Needs live-device verification**, same caveat as :mod:`quill.core.github.gh_bridge`
 itself: every command here is wired and unit-tested with a fake `gh` runner,
 but has not been exercised against a real `gh` installation, a real
-Codespaces-enabled repository, or real Copilot CLI access. Ship behind the
+Codespaces-enabled repository. Ship behind the
 same gates as everything else in this file family (Safe Mode, `gh`
 availability), but treat it as needing a real-device pass before it is
 fully promoted.
@@ -23,7 +23,7 @@ from typing import Any
 
 
 class GhBridgeMixin:
-    """Adds GitHub Codespaces and Copilot CLI commands to ``MainFrame``."""
+    """Adds GitHub Codespaces commands to ``MainFrame``."""
 
     # ------------------------------------------------------------------
     # Shared gating
@@ -188,67 +188,13 @@ class GhBridgeMixin:
         self._run_background_task(f"Creating codespace for {full_name}", work, on_done)
 
     # ------------------------------------------------------------------
-    # Copilot CLI: suggest / explain
-
-    def github_copilot_suggest(self) -> None:
-        """Tools > GitHub > Ask Copilot for a Command..."""
-        gh_path = self._gh_bridge_ready()
-        if gh_path is None:
-            return
-        query = self._gh_bridge_prompt_single(
-            "Ask Copilot for a Command",
-            'Describe what you want to do (e.g. "undo my last commit but keep the changes"):',
-        )
-        if not query:
-            return
-
-        def work(_progress: object) -> object:
-            from quill.core.github.gh_bridge import copilot_suggest
-
-            return copilot_suggest(query, gh_path=gh_path, runner=self._gh_bridge_runner())
-
-        def on_done(result: str) -> None:
-            self._show_message_box(
-                result.strip() or "Copilot did not suggest anything.",
-                "Copilot Suggestion",
-                self._wx.ICON_INFORMATION | self._wx.OK,
-            )
-
-        self._run_background_task("Asking Copilot", work, on_done)
-
-    def github_copilot_explain(self) -> None:
-        """Tools > GitHub > Explain a Command..."""
-        gh_path = self._gh_bridge_ready()
-        if gh_path is None:
-            return
-        command = self._gh_bridge_prompt_single(
-            "Explain a Command", "Paste a git or gh command to have explained:"
-        )
-        if not command:
-            return
-
-        def work(_progress: object) -> object:
-            from quill.core.github.gh_bridge import copilot_explain
-
-            return copilot_explain(command, gh_path=gh_path, runner=self._gh_bridge_runner())
-
-        def on_done(result: str) -> None:
-            self._show_message_box(
-                result.strip() or "Copilot did not explain that command.",
-                "Copilot Explanation",
-                self._wx.ICON_INFORMATION | self._wx.OK,
-            )
-
-        self._run_background_task("Asking Copilot", work, on_done)
-
-    # ------------------------------------------------------------------
     # Download Optional Components: the gh fallback for a user with neither
     # a system gh nor QUILL's bundled copy (quill.core.git_binaries prefers
     # a system install first; this is purely the recovery path).
 
     def download_gh(self, *, on_done: Callable[[bool], None] | None = None) -> None:
         """Fetch QUILL's self-hosted, SHA-256-verified copy of the GitHub CLI
-        for Codespaces and Copilot commands. QUILL always prefers a system
+        for Codespaces commands. QUILL always prefers a system
         gh on PATH first; this download exists only for a user who has
         neither. Windows and macOS only -- there is no self-hosted Linux
         asset (a Linux user typically already has gh via their distro)."""
@@ -271,8 +217,8 @@ class GhBridgeMixin:
                 return
         proceed = self._show_message_box(
             "QUILL will download a portable copy of the GitHub CLI (about 14 MB) "
-            "and verify it. It powers Tools > GitHub's Codespaces and Copilot "
-            "suggest/explain commands. Continue?",
+            "and verify it. It powers Tools > GitHub's Codespaces commands. "
+            "Continue?",
             "Download GitHub CLI",
             wx.ICON_INFORMATION | wx.YES_NO,
         )
@@ -295,7 +241,7 @@ class GhBridgeMixin:
         def _finished(result: object) -> None:
             ok = bool(result)
             if ok:
-                self._announce("GitHub CLI installed. Codespaces and Copilot commands are ready.")
+                self._announce("GitHub CLI installed. Codespaces commands are ready.")
             else:
                 self._announce("The GitHub CLI could not be installed.")
             if on_done is not None:
@@ -313,16 +259,6 @@ class GhBridgeMixin:
                 "github.create_codespace",
                 "GitHub: Create Codespace...",
                 self.github_create_codespace,
-            ),
-            (
-                "github.copilot_suggest",
-                "GitHub: Ask Copilot for a Command...",
-                self.github_copilot_suggest,
-            ),
-            (
-                "github.copilot_explain",
-                "GitHub: Explain a Command...",
-                self.github_copilot_explain,
             ),
         )
         for command_id, title, handler in entries:

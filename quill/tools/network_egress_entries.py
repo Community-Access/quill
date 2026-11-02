@@ -12,6 +12,7 @@ what is sent, what comes back, what triggers it, and how it behaves in Safe Mode
 
 from __future__ import annotations
 
+from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
 
@@ -20,6 +21,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     **RADIO_EGRESS,
     # The cloud dictation providers (D-31 to D-37), split out the same way.
     **SPEECH_EGRESS,
+    **CAST_EXTRAS_EGRESS,
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "
@@ -233,15 +235,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "bounded timeout and response size. Disabled in Safe Mode via "
         "feed_reader.refuse_in_safe_mode."
     ),
-    "core/podcasts/transcripts.py::_fetch_transcript_bytes": (
-        "Single egress site for podcast transcripts: fetches one episode's "
-        "Podcasting 2.0 transcript file (VTT/SRT/JSON, parsed locally, no "
-        "further network activity) and caches the parsed text so reopening "
-        "never re-fetches. Reached only when the user opens the transcript "
-        "view for an episode that has a transcript_url. HTTPS-only over a "
-        "verified TLS context with a bounded timeout and response size. "
-        "Disabled in Safe Mode via refuse_in_safe_mode."
-    ),
     "core/podcasts/apple_podcasts.py::_fetch": (
         "Single egress site for browsing Apple Podcasts without a key: the "
         "public store-services genre tree (MZStoreServices .../genres?id=26), "
@@ -440,14 +433,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "only in the Authorization header."
     ),
     "core/assistant_ai.py::_fetch_models_from_endpoint": (
-        "User-initiated model discovery from the AI Connection dialog (Verify "
-        "Connection / List Models). HTTPS uses a verified context."
+        "User-initiated model discovery: Use My Own AI Key's model list (any of its "
+        "seven providers), Choose Your AI and AI Connection. Verified HTTPS context."
     ),
     "core/assistant_ai.py::_post_chat": (
-        "AI generation against the user's explicitly configured provider (AI-13). "
-        "Only runs when the user has set up an AI connection and invokes an "
-        "assistant action; HTTPS uses a verified context and cloud endpoints are "
-        "HTTPS-enforced by _validate_endpoint_security."
+        "AI generation against the user's explicitly chosen provider (AI-13): My own "
+        "key's providers (decision 20: OpenAI, Claude, OpenRouter, Ollama Cloud, custom "
+        "service, Ollama on this computer) and the advanced features, only on an explicit "
+        "AI action. Verified TLS; cloud HTTPS enforced by _validate_endpoint_security."
     ),
     "core/assistant_ai.py::_post_chat_stream": (
         "Streaming variant of AI generation (AI-14). Same gating as _post_chat: "
@@ -665,10 +658,10 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "streams the response body to a temp file with a visible progress callback."
     ),
     "core/ai_chat.py::_post_json": (
-        "AI chat request. Triggered only by an explicit user action in the Ask AI "
-        "dialog (Tools > Ask AI or Alt+Q). The provider, model, and prompt are "
-        "chosen by the user in the dialog before sending. HTTPS enforced for cloud "
-        "providers; local Ollama uses HTTP on localhost only. No silent background calls."
+        "AI chat request from the Ask AI dialog (Alt+Q), on an explicit user action; also "
+        "Ollama /api/show, asked when Use My Own AI Key lists a local Ollama's models, to "
+        "learn which can read pictures (no prompt, no key). HTTPS enforced for cloud; "
+        "local Ollama uses HTTP on localhost only. No silent background calls."
     ),
     "core/ai_chat.py::_get_json": (
         "AI model list fetch. Triggered when the Ask AI dialog opens or when the "
@@ -782,5 +775,84 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Authorization: Bearer header, never in the URL. The injected opener is "
         "test-only; the lazy, lock-guarded token refresh goes through the already "
         "reviewed core/spotify/auth.py::_token_request site."
+    ),
+}
+
+
+# Child-process egress: a bundled agent runtime QUILL starts, whose network
+# calls happen inside that child, not at a urlopen in quill/ source -- so the
+# AST scan above cannot see them, and an entry in _REVIEWED_EGRESS would be
+# reported stale. A new kind of entry, then: keyed "<path>::<function>" at the
+# place QUILL launches (or, before the launcher exists, locates) the binary.
+# tests/unit/tools/test_network_egress_audit.py checks every key still names a
+# real function, so an entry cannot outlive its launcher unnoticed.
+_CHILD_PROCESS_EGRESS: dict[str, str] = {
+    "ai_packs/copilot.py::_make_invoke": (
+        "The GitHub Copilot engine. The Copilot SDK starts the bundled Copilot "
+        "CLI (tools/copilot/copilot.exe, pinned by SHA-256 in "
+        "core/ai/copilot_runtime.py and checked before every launch; "
+        "COPILOT_SKIP_CLI_DOWNLOAD=1 so it never fetches another) and the CLI "
+        "talks to GitHub's Copilot service over HTTPS (api.github.com and the "
+        "Copilot API hosts; gate G5 records the exact list). What is sent: the "
+        "agent's instructions, the person's prompt and the document context "
+        "they chose. Reached only when the person has chosen GitHub Copilot as "
+        "the engine and runs an AI command; never in the background. The "
+        "GitHub token travels as the SDK's explicit github_token argument, "
+        "never in the child's environment (copilot_child_env strips "
+        "GITHUB_TOKEN, GH_TOKEN and COPILOT_GITHUB_TOKEN). No vendor tools are "
+        "offered and every permission request is refused. Safe Mode turns AI "
+        "off, so the engine never starts under it."
+    ),
+    "ai_packs/copilot.py::_tool_client": (
+        "The same bundled, pinned Copilot CLI, started for a multi-step agent "
+        "task (Phase 4a). Same hosts and the same explicit-token rule as the "
+        "entry above. What is sent: the agent's instructions, the person's "
+        "instruction and follow-ups, and the results of the QUILL tools the "
+        "agent calls (document text it reads); the session is offered only "
+        "QUILL's own tools, every other permission kind is refused, and each "
+        "edit is approved and reviewed in QUILL. Its working directory and "
+        "state folder are empty per-app folders deleted after every task. "
+        "Reached only when the person starts an agent task with GitHub "
+        "Copilot chosen; never in the background; refused in Safe Mode."
+    ),
+    "core/ai/copilot_chat.py::_client": (
+        "My GitHub Copilot as a hosted-AI route (codex.md 10A.12): single "
+        "requests, conversations, the model list (models.list) and GitHub's "
+        "quota count (account.getQuota). The client is made by the pack's own "
+        "client_kwargs, so it is the same bundled, SHA-256-pinned Copilot CLI "
+        "over explicit stdio, the same scrubbed child environment and the same "
+        "explicit github_token as the entries above, talking to the same "
+        "GitHub hosts. What is sent: the person's prompt, the instruction text "
+        "for the command (with the family text-only line), any earlier turns "
+        "of the conversation kept in the app's window (resent each turn; "
+        "nothing is kept by GitHub for QUILL), and any picture the person "
+        "chose to ask about, as a base64 attachment. No vendor tools are "
+        "offered and every permission request is refused. Reached only when "
+        "My GitHub Copilot is the AI in use and the person runs an AI command, "
+        "opens the model list or the Usage window; never in the background; "
+        "refused in Safe Mode and on the UI thread."
+    ),
+    "core/ai/codex_app_server.py::start": (
+        "The Codex engine (ChatGPT plan, agent tasks; Phase 4b). "
+        "CodexAppServer.start launches the bundled codex-app-server.exe "
+        "(tools/codex, found only by find_codex_app_server and checked "
+        "against the SHA-256 pin in core/ai/codex_binary.py before every "
+        "launch) through safe_subprocess.spawn_subprocess_safely, as a "
+        "long-lived child over stdio. The child talks to api.openai.com over "
+        "HTTPS with this app's own ChatGPT plan token, passed only as "
+        "ACCESS_TOKEN in a minimal child environment (never this process's "
+        "environment, never the command line). What is sent: the agent's "
+        "instructions, the person's instruction and follow-ups, and the "
+        "results of the QUILL tools the agent calls. Codex's own shell, file "
+        "edit, apply_patch, image generation, view_image, plugins, apps, MCP "
+        "and web search are switched off at launch and in thread/start, the "
+        "sandbox is read-only and every built-in approval is declined. "
+        "Analytics is switched off (analytics.enabled=false); whether the "
+        "child sends other telemetry is checked by gate G5. CODEX_HOME and "
+        "the working directory are this app's per-task folders, deleted "
+        "after the task. Reached only when the person starts an agent task "
+        "with Codex chosen; never in the background; refused in Safe Mode. "
+        "Not on the external-engine allowlist, which guards a different, "
+        "per-request spawn."
     ),
 }

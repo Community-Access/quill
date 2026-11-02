@@ -100,7 +100,7 @@ APPS: tuple[AppConfig, ...] = (
         "Quill Inkwell",
         "quill.core.inkwell_surface_help",
         (),
-        ("quill/apps/inkwell.py",),
+        ("quill/apps/inkwell.py", "quill/apps/inkwell_suggest_dialog.py"),
         "inkwell_help_inventory.json",
     ),
     AppConfig(
@@ -167,6 +167,7 @@ APPS: tuple[AppConfig, ...] = (
             "quill/ui/prompt_library_dialog.py",
             "quill/ui/prompt_edit_dialog.py",
             "quill/ui/autocorrect_entries_dialog.py",
+            "quill/ui/agent_window.py",
         ),
         "lite_help_inventory.json",
     ),

@@ -54,6 +54,33 @@ PURPOSES: dict[str, str] = {
         "full Weather Center, start or stop the watch, and add a place to "
         "watch; closing the window keeps monitoring in the tray by default."
     ),
+    "Ask": (
+        "A conversation about the weather, on whichever AI is in use: your primary "
+        "place's name, never its coordinates, the current conditions, the next hours, "
+        "the forecast and any active alerts by their official names go with every "
+        "message. Type in Your message and press Enter; the reply is read aloud and "
+        "added to the conversation above. Quick questions holds Do I need a coat at 5? "
+        "and a few more."
+    ),
+    "Should I Go Out?": (
+        "The AI's answer to Should I Go Out?, in plain words, from the forecast for "
+        "your primary place. Any active alert comes first, in the Weather Service's own "
+        "words, never reworded by the AI. Copy puts the answer on the clipboard."
+    ),
+    "Choose Your AI": (
+        "Choose where Quill Weather's AI comes from: QUILL's free AI, your ChatGPT plan, "
+        "GitHub Copilot, Codex or your own key. Quill Weather signs in on its own, as "
+        "QUILL Weather. The list says which is in use; Enter uses the selected one or "
+        "signs in to it, and Delete signs a signed-in one out."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and whose "
+        "count it is. Manage Usage opens the selected one's own page."
+    ),
     "Quill Weather Tutorials": (
         "Guided lessons, one step at a time, that can run the step for you and "
         "notice when you have done it. The contents list is grouped by track and "

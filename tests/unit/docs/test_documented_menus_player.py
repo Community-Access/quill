@@ -38,6 +38,7 @@ def test_player_guide_promises_only_what_its_menus_show(
             "&Navigation",
             "&Playback",
             "&View",
+            "A&I",
             "&QuillVille",
             "&Help",
             "&Window",

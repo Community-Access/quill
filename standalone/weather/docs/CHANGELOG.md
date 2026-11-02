@@ -4,6 +4,27 @@ All notable changes to Quill Weather are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### AI, when you ask for it (2026-11-01)
+
+- **Choose Your AI comes to Quill Weather.** A new AI menu (Alt+I) holds Ask
+  (Ctrl+Shift+8), Which AI Am I Using (Ctrl+F8; press it twice to open the
+  window), Choose Your AI (Ctrl+Shift+F8), Use My ChatGPT Subscription
+  (Alt+F5), Use My Own AI Key (Alt+F2), AI Usage (Ctrl+Alt+Shift+F2) and the
+  Privacy Agreement (Ctrl+Alt+Shift+K). Quill Weather signs in on its own, as
+  "QUILL Weather", and keeps its choice in `weather-ai.json`.
+- **Should I Go Out?** (Ctrl+Shift+G) answers in plain words from the forecast
+  for your primary place. Any active alert comes first, in the Weather
+  Service's own words; the AI never rewords one.
+- **Ask** talks about the forecast: your place's name (never its coordinates),
+  the current conditions, the next hours, the forecast and the alert names go
+  with each message.
+- **An AI line** in the main window says which AI is in use; Enter on it opens
+  Choose Your AI.
+- Text only: no radar or maps. The alert watch stays AI-free, nothing runs on a
+  timer, and Safe Mode turns every AI command off.
+
 ## [2.2.1] - 2026-10-08
 
 Current build: **2.2.1 (build 2)**. Build 2 keeps everything in build 1 and

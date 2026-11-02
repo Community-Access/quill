@@ -63,7 +63,7 @@ def test_sleep_and_library_cells_read_the_host() -> None:
 
 def test_expected_cells_are_present_in_order() -> None:
     keys = [spec.key for spec in StudioStatusBar(_host())._specs]
-    assert keys == ["activity", "progress", "sleep_timer", "library", "clock"]
+    assert keys == ["activity", "progress", "sleep_timer", "library", "clock", "ai"]
 
 
 # ---------------------------------------------------------------------------

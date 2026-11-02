@@ -51,6 +51,8 @@ class RouteGuardMixin:
         route = route or self.route
         if route == "chatgpt":
             return "your ChatGPT subscription", "OpenAI"
+        if route == "copilot":
+            return "your GitHub Copilot", "GitHub"
         if route == "own_key":
             from quill.core.ai.own_key import provider_name
 

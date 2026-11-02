@@ -90,7 +90,8 @@ TOKEN_URL = f"{AUTH_BASE}/api/accounts/oauth/token"
 OPENID_CONFIGURATION_URL = f"{AUTH_BASE}/.well-known/openid-configuration"
 API_BASE = "https://api.openai.com/v1"
 #: Where a person's own plan usage is. OpenAI's page is the only true answer;
-#: QUILL keeps a local count of requests but never sees the plan's limits.
+#: QUILL keeps a local count of requests (quill/core/ai/chatgpt_usage.py,
+#: written by chatgpt_ai_help.respond_on_plan) but never sees the plan's limits.
 USAGE_URL = "https://chatgpt.com/settings/usage"
 
 #: The permission that lets an app spend the plan. Without it in the granted
@@ -388,6 +389,7 @@ class ChatGptAccount:
                 email=str(claims.get("email", "") or ""),
                 scope=" ".join(sorted(granted)),
                 connected_at=_now_iso(),
+                ended_by_openai=False,
             )
         )
         return self.state
@@ -443,7 +445,7 @@ class ChatGptAccount:
                 # out for nothing (errors-and-recovery: "Do not erase credentials
                 # for temporary network or infrastructure failures").
                 if str(tokens.get("error", "")) in _TERMINAL_REFRESH_ERRORS:
-                    self._forget_locally()
+                    self._forget_locally(ended_by_openai=True)
                     raise ChatGptSignedOutError(
                         "OpenAI no longer accepts this computer's ChatGPT sign-in."
                     )
@@ -470,7 +472,7 @@ class ChatGptAccount:
 
     # -- signing out ---------------------------------------------------------- #
 
-    def _forget_locally(self) -> None:
+    def _forget_locally(self, *, ended_by_openai: bool = False) -> None:
         self._access_token = ""
         self._access_expires_at = 0.0
         try:
@@ -483,8 +485,19 @@ class ChatGptAccount:
                 client_id=self.state.client_id,
                 model=self.state.model,
                 web_search=self.state.web_search,
+                ended_by_openai=ended_by_openai,
             )
         )
+
+    @property
+    def ended_by_openai(self) -> bool:
+        """Whether OpenAI, not the person, ended the last sign-in (10A.5)."""
+        return self.state.ended_by_openai and not self.state.signed_in
+
+    def mark_ended_by_openai(self) -> None:
+        """OpenAI refused a request with 401: forget the sign-in, and say who ended it."""
+        with self._lock:
+            self._forget_locally(ended_by_openai=True)
 
     def forget(self) -> None:
         """Forget the sign-in on this computer only. Never touches the network.

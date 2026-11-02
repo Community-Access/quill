@@ -18,6 +18,8 @@ import sys
 
 import wx
 
+from quill.apps.weather_ai import WeatherAiMixin
+from quill.apps.weather_options import WeatherOptionsMixin
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.app_version import describe_version, installed_version
@@ -65,7 +67,7 @@ WEATHER_AREAS: tuple[AppArea, ...] = (
 )
 
 
-class WeatherAppFrame(AppShellFrame, WeatherMixin):
+class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherAiMixin):
     """A tray-resident window whose job is to keep the alert watch running."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
@@ -85,6 +87,8 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
 
         self._app_features = load_app_features(app_data_dir(), "weather")
         self._windows = WindowManager(wx)
+        # The family's AI rows read their keys from APP_KEYMAPS (codex.md Phase 3).
+        self._apply_app_keymap("weather")
         self._build_menu_bar()
         self._build_main_panel()
         from quill.apps.weather_commands import register_weather_commands
@@ -190,6 +194,10 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         app_sounds.append_menu_item(self, options_menu)
         self._sounds_chooser_id = app_sounds.append_chooser_item(self, options_menu, "Ctrl+Shift+S")
         menu_bar.Append(options_menu, "&Options")
+
+        # Ask, Which AI, Choose Your AI, Should I Go Out? and the accounts
+        # (codex.md Phase 3). A&I, not &AI: Alt+A is Add Location's button.
+        self._append_app_ai_menu(menu_bar, "A&I")
 
         from quill.ui.quillville_menu import build_quillville_menu
 
@@ -316,6 +324,8 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         self._open_center_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_weather_center())
         self._toggle_monitor_btn.Bind(wx.EVT_BUTTON, lambda _e: self._toggle_and_refresh())
         self._add_location_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_weather_add_location())
+        # Which AI is in use (codex.md decision 19); Enter opens Choose Your AI.
+        self._build_ai_line(panel, root, border=12)
 
         panel.SetSizer(root)
         self._main_panel = panel
@@ -401,32 +411,6 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
             frame.Iconize(False)
         frame.Raise()
         frame.RequestUserAttention()
-
-    # -- options ----------------------------------------------------------------
-
-    def _set_launch_at_startup(self, enabled: bool) -> None:
-        """See ``apps/weather_options``."""
-        from quill.apps import weather_options
-
-        weather_options.set_launch_at_startup(self, enabled)
-
-    def _set_app_pref(self, field: str, value: bool) -> None:
-        """See ``apps/weather_options``."""
-        from quill.apps import weather_options
-
-        weather_options.set_app_pref(self, field, value)
-
-    def _set_background_check(self, enabled: bool) -> None:
-        """See ``apps/weather_options``."""
-        from quill.apps import weather_options
-
-        weather_options.set_background_check(self, enabled)
-
-    def _reflect_background_check_item(self, checked: bool | None = None) -> None:
-        """See ``apps/weather_options``."""
-        from quill.apps import weather_options
-
-        weather_options.reflect_background_check(self, checked)
 
     def _app_area_enabled(self, area_id: str) -> bool:
         features = getattr(self, "_app_features", None)

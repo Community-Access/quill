@@ -1,4 +1,4 @@
-"""Tests for GhBridgeMixin: Codespaces and Copilot CLI command handlers.
+"""Tests for GhBridgeMixin: Codespaces command handlers.
 
 Mirrors test_main_frame_local_git.py's convention: quill.core.git_binaries
 and quill.core.github.gh_bridge are monkeypatched at their defining module,
@@ -215,43 +215,6 @@ def test_create_codespace_confirmed(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Copilot suggest / explain
-# ---------------------------------------------------------------------------
-
-
-def test_copilot_suggest_shows_result(monkeypatch: pytest.MonkeyPatch) -> None:
-    host = _Host()
-    host._gh_bridge_prompt_single = lambda title, label, value="": "undo last commit"
-    monkeypatch.setattr(
-        "quill.core.github.gh_bridge.copilot_suggest",
-        lambda query, gh_path, runner: "git reset --soft HEAD~1",
-    )
-    host.github_copilot_suggest()
-    assert host.message_boxes[0][0] == "git reset --soft HEAD~1"
-    assert host.message_boxes[0][1] == "Copilot Suggestion"
-
-
-def test_copilot_suggest_cancelled_at_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
-    host = _Host()
-    host._gh_bridge_prompt_single = lambda title, label, value="": None
-    host.github_copilot_suggest()
-    assert host.message_boxes == []
-    assert host.background_tasks == []
-
-
-def test_copilot_explain_shows_result(monkeypatch: pytest.MonkeyPatch) -> None:
-    host = _Host()
-    host._gh_bridge_prompt_single = lambda title, label, value="": "git rebase -i HEAD~3"
-    monkeypatch.setattr(
-        "quill.core.github.gh_bridge.copilot_explain",
-        lambda command, gh_path, runner: "This starts an interactive rebase...",
-    )
-    host.github_copilot_explain()
-    assert "interactive rebase" in host.message_boxes[0][0]
-    assert host.message_boxes[0][1] == "Copilot Explanation"
-
-
-# ---------------------------------------------------------------------------
 # Command palette registration
 # ---------------------------------------------------------------------------
 
@@ -263,6 +226,4 @@ def test_register_gh_bridge_commands() -> None:
     assert ids == {
         "github.list_codespaces",
         "github.create_codespace",
-        "github.copilot_suggest",
-        "github.copilot_explain",
     }

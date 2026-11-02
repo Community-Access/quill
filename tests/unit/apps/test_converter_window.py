@@ -248,10 +248,11 @@ def test_the_view_menu_holds_advanced_options(converter) -> None:
     assert item.IsCheckable() and item.GetItemLabel().endswith("\tCtrl+Alt+V")
 
 
-def test_no_ai_in_the_menus_or_the_command_palette(converter) -> None:
-    """Quill Converter has no AI (owner decision, 2026-10-05). Find a Setting or
-    Command lists exactly the menu bar's rows, so one walk covers both; a
-    shared menu that grows an AI row would show up here first."""
+def test_ai_lives_only_in_the_ai_menu(converter) -> None:
+    """Quill Converter had no AI (owner decision, 2026-10-05) until codex.md
+    Phase 3 (2026-11-01) gave it one AI menu. Find a Setting or Command lists
+    exactly the menu bar's rows, so one walk covers both; a shared menu that
+    grows an AI row anywhere else would show up here first."""
     import re
 
     from quill.ui.menu_palette import menu_rows
@@ -260,7 +261,8 @@ def test_no_ai_in_the_menus_or_the_command_palette(converter) -> None:
     assert rows
     ai = re.compile(r"\bAI\b|ChatGPT|OpenAI|Copilot|Claude|Gemini|Assistant|API key", re.I)
     found = [row.spoken() for row in rows if ai.search(f"{row.path} {row.label}")]
-    assert not found, found
+    assert found
+    assert all(row.endswith(" -- AI") for row in found), found
     # Not a release-channel app either: Converter offers Stable only.
     assert not [row.label for row in rows if "Release Channel" in row.label]
 
