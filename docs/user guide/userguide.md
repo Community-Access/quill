@@ -6586,6 +6586,13 @@ hear about it then than to have the event go silent later with no clue why.
 QUILL Lite opens the same window over the same schemes, so a scheme you make
 in one editor is offered in the other.
 
+The **Scheme** list at the top also offers **VS Code Signals**: the sounds
+Visual Studio Code plays for its own accessibility signals, used under the MIT
+licence. They cover errors, warnings, saving, finished and failed tasks, AI
+requests and answers, dictation and recording starting and stopping, and undo
+and redo. Anything they have no sound for stays quiet, or is spoken where QUILL
+speaks instead. Choose it in one app and the rest of the family plays it too.
+
 #### The sounds themselves
 
 The **Ink** pack that comes with QUILL has a sound for every event. That

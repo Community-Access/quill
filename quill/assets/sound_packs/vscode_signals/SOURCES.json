@@ -1,0 +1,204 @@
+{
+  "upstream": "https://github.com/microsoft/vscode",
+  "commit": "891b2ac68d2e245f8f83d91c8a748801a81818fc",
+  "license": "MIT",
+  "license_file": "LICENSE.txt",
+  "license_upstream": "LICENSE.txt",
+  "license_sha256": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9",
+  "copyright": "Copyright (c) Microsoft Corporation",
+  "conversion": "Each MP3 was converted to 16-bit mono 44.1 kHz WAV, with nothing else changed: ffmpeg -i <name>.mp3 -ac 1 -ar 44100 -c:a pcm_s16le -map_metadata -1 -fflags +bitexact -flags:a +bitexact <name>.wav",
+  "files": [
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/break.mp3",
+      "upstream_sha256": "6b46c048860efaaed016d72e28351d54999726de9f6a193e9451c1870e157690",
+      "file": "break.wav",
+      "sha256": "8265e278328d091fbbb47288c47de4e07ff6e9f367b310f0ab7d1ce1d69e19ff"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/chatEditModifiedFile.mp3",
+      "upstream_sha256": "57b9b5bd24229e837e0340ab4e9495dec2b5e529f5d8d47858859cc8af0fbbbd",
+      "file": "chatEditModifiedFile.wav",
+      "sha256": "6c92b2dd9def695b48fe0acbf56bb603c4b2505e6b6d589ae1133568b8c3b740"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/chatUserActionRequired.mp3",
+      "upstream_sha256": "7d8ae66c7ca962634860dcf901a69494dd6c7a425a8f11fd6f2775d3cafd3ed7",
+      "file": "chatUserActionRequired.wav",
+      "sha256": "7e1c048f254a5665a62987f93db9f6283aef626addb8772de309606f5f7ff7a6"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/clear.mp3",
+      "upstream_sha256": "134b49619eb26f6ef902c02253a32b6030d13588eadf9a73b2e61d98872e62b2",
+      "file": "clear.wav",
+      "sha256": "4c90d8b93e13f5594049b76398dbec928c92a1fe8d5f10a067f2916f68c7f8a2"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/codeActionApplied.mp3",
+      "upstream_sha256": "766d5d81d2d9f2705f8c93216d9b3871ee7929df2e30ce08795119ab498d1ff6",
+      "file": "codeActionApplied.wav",
+      "sha256": "39c6ff2e8a75a970a01b45960ca7dd432e0ce45fb9f44144488f3f7bc9bdef77"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/codeActionTriggered.mp3",
+      "upstream_sha256": "fc0da6feba31c9a4b5f5ad53ef3eba2432ee79a8b195218db0ae4d7c93986cd3",
+      "file": "codeActionTriggered.wav",
+      "sha256": "63a38ea2a294fcf49696912c02feba6160209a3c6c29069f0e2643ea39ab73a1"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/confetti.mp3",
+      "upstream_sha256": "698a4cccf8ca6af874615e13ecc4bb0448a65ad678d198890c150b6ae70b9110",
+      "file": "confetti.wav",
+      "sha256": "a0cf98f12863ed2195e2b7ced144e922ec7608fd7fa216037ef56401f0520b3f"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/diffLineDeleted.mp3",
+      "upstream_sha256": "576ba12fc3585b212b0f747cfa53e43926fceb222d68ab5b6b0f64e1ae47305b",
+      "file": "diffLineDeleted.wav",
+      "sha256": "c1f19a1b77bfb97545370b2ee5f23123f6f4ff0b7b82c56e0402405b00a41ce8"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/diffLineInserted.mp3",
+      "upstream_sha256": "a5aae8f03ec4a78cb368c2e8160debccb6aea1a0c670000c031444f26b3a7218",
+      "file": "diffLineInserted.wav",
+      "sha256": "f189f22c2d3d5a2079cd3b88a010ceb861b0672b4d955741ff50a0bfcca6ff0c"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/diffLineModified.mp3",
+      "upstream_sha256": "314716c394a0050ef2f7e73d0231e8e47ef769c9bb5d54823374ff086c3b9551",
+      "file": "diffLineModified.wav",
+      "sha256": "6df4540bda63b414f59b7f11b52d3ec27cd59b87f0434ee765c0d8937df033b5"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/editsKept.mp3",
+      "upstream_sha256": "54c8ba932793c38ab168aee99cb2fd4ac0e4a29020c4f8ea441b200f80f74853",
+      "file": "editsKept.wav",
+      "sha256": "e1ee8fe2857f52aa88dba97d0bafa6bc3f719b02b76f7f85c68416d9c45ee611"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/editsUndone.mp3",
+      "upstream_sha256": "8c5d43a3787cfc93e772a06f6f3b8ca6119f248230a1d9b051c866c1caaa5ee9",
+      "file": "editsUndone.wav",
+      "sha256": "0d313b8ab643130599f92608ba5fd262a7c2cff8feaf510791dee60c998d56d9"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/error.mp3",
+      "upstream_sha256": "b93c2a7618d0838c5e8a633d64d79f516c60bc48d9a0ae0b10cfc1bace9e7103",
+      "file": "error.wav",
+      "sha256": "ae420707f253fd75f19c3db0650ab5362d99cca6a8596ae54462c487dfff7c8c"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/foldedAreas.mp3",
+      "upstream_sha256": "27a6cd7e3362314c2a628bf004e212cd08d9a4996e6067a7a3f2403166f7a9ef",
+      "file": "foldedAreas.wav",
+      "sha256": "1d3f92e1aa009b6f9550d5b69e615313130014045e4156ec6b0981db822f9888"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/format.mp3",
+      "upstream_sha256": "9aa11a9659e85b5402be0b643c3708afed24f1d7a8753836fe459748035c61b2",
+      "file": "format.wav",
+      "sha256": "0d396e89829419636c4a023ac2e616f6d34f2a2e59f763bccf0ba2cabb3c35ad"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/nextEditSuggestion.mp3",
+      "upstream_sha256": "2e44ed96618d89f613502f28401dda4364dd8f22b93d8b71d2a03cb506144498",
+      "file": "nextEditSuggestion.wav",
+      "sha256": "520eef41934abacd501b0e50f3ed9803dfa5eb2a79ac77d50ea520de15c00dac"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/progress.mp3",
+      "upstream_sha256": "82dcf8185fc7449c408d31144a28dd9bc9ca8f6b0f38ac0369f251b761024908",
+      "file": "progress.wav",
+      "sha256": "ec95acffdce7c50aa2d9ec214f696b537fb4b750a3cb77c6ab9d4861da3e6ad3"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/quickFixes.mp3",
+      "upstream_sha256": "2647366e90d16cf6c5d83c05ae734c3674590e8067505c5a4e14fb41dea1412b",
+      "file": "quickFixes.wav",
+      "sha256": "0c6a0e147be4325df316b6c6edf1e1529f9383954c5f5559646f860e075eb174"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/requestSent.mp3",
+      "upstream_sha256": "c2af78e9fddebe58e89944868b93e92f0c4a0382cd91d69dee9f53f2b9311c8b",
+      "file": "requestSent.wav",
+      "sha256": "243780fd9d08740b5b9d5a37e91a18d5cc8d27001271e3cb51b8cd60afd08124"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/responseReceived1.mp3",
+      "upstream_sha256": "d50764960a4c913e8c1f7215e963e4117da7478daff70e7ae3427a99aa4928c7",
+      "file": "responseReceived1.wav",
+      "sha256": "3c147fdc684e4e9c2b3e874c03de4f6f66b661968aa140558d06e347b375ac7d"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/responseReceived2.mp3",
+      "upstream_sha256": "3bbbf1e4aa80004bb96d99b60c6ee079f99997b5ef87b2e7b90f4ba6ef56d4ec",
+      "file": "responseReceived2.wav",
+      "sha256": "775d17a4034217ac6fe75c08338ba5103d26bd70b9b3d217c1d54e2d6ad54a12"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/responseReceived3.mp3",
+      "upstream_sha256": "dae8868f8a8159354c9fa9c39d089aebb5af57d5d5221ce0cee30c81111c16e2",
+      "file": "responseReceived3.wav",
+      "sha256": "b1bab5c24362fc253dbf82ce8419f391e017f06baa55c0ad868078ca4efc68fa"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/responseReceived4.mp3",
+      "upstream_sha256": "2e6b5f5206b679b4d2c11bcaf971d906be24d3ee9b7877bb75d9f28d6fd4acac",
+      "file": "responseReceived4.wav",
+      "sha256": "2bfb0295bbeacfd9ded77b957680e2322360a9bffa1420008015a906aa90a8ba"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/save.mp3",
+      "upstream_sha256": "5b250eb34b3edcd2763e02cd8dd9f76c4328d64a7240ed4a517c4a0e1b78aa80",
+      "file": "save.wav",
+      "sha256": "dad198b2c5706fa39c3cede3729b931a5e7dc8132950794b8ca9eac6c1dbb92b"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/success.mp3",
+      "upstream_sha256": "4f9dcfca6f51aecbc13aa7df71ab324612a21c8365f7fa26e57411dc748ac5c9",
+      "file": "success.wav",
+      "sha256": "3aaece8bf7b5f28907eed4a39fc61e6f2e7520078d14ab7ec930d699ab24bafe"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/taskCompleted.mp3",
+      "upstream_sha256": "f0dd8e180f1cc7ede5605147070ede6b6a9f34abaa691fb5ece9672ab2a664ce",
+      "file": "taskCompleted.wav",
+      "sha256": "7c0883e87980d4e25a8d205d10c9ce8d3fd79ba4e42543e02676881e5e587448"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/taskFailed.mp3",
+      "upstream_sha256": "5494702a01c88491e015a5f3c6d5fbf3002ce80d46ebd64af77a38427d329ec3",
+      "file": "taskFailed.wav",
+      "sha256": "12862709993b3c6128657c005492d5ca89c68b7d9c3bff4acb2aee73711017cc"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/terminalBell.mp3",
+      "upstream_sha256": "19cf9ca5c5ccc752728ebae2071ced94d2d72e4a74d224d232df0f657d70093b",
+      "file": "terminalBell.wav",
+      "sha256": "9b6821083864058a8a08caeb7f0bb2f2804a8c20ef7689ec394af7410ce91e86"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/terminalCommandSucceeded.mp3",
+      "upstream_sha256": "a6419c8cd6576073d35c557655923fbe202ec6488a8c86e468e517b64949cb41",
+      "file": "terminalCommandSucceeded.wav",
+      "sha256": "42cd0d215e83cb2be330a0505c3999bc5036a736fa021cdd8ef28649e72d83f5"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/voiceRecordingStarted.mp3",
+      "upstream_sha256": "f4cf29c4537469dcb5bd28d70dd2b01905755645a35180c546fd1295418bd6d6",
+      "file": "voiceRecordingStarted.wav",
+      "sha256": "4fc6f1219bcfa77f52ca1ccfb4b0088c0629fd0d1ab55c2666175eb4946ba3be"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/voiceRecordingStopped.mp3",
+      "upstream_sha256": "22160219d388759a75ebaa3b24587824d0d14d08f5b47c8b5e160804c5ac6404",
+      "file": "voiceRecordingStopped.wav",
+      "sha256": "928d001904b7e59df9be2c5bd5519625118ca62b563c512384d2cc9d3bd112bb"
+    },
+    {
+      "upstream": "src/vs/platform/accessibilitySignal/browser/media/warning.mp3",
+      "upstream_sha256": "2687e2e7a28d78630f2ce47ae673223118545adb1d759cacc84f3fb8beab1f1a",
+      "file": "warning.wav",
+      "sha256": "e11bb1b5b7bc9fb755bf82716413b1b08e970705348fb2e7290586e0d4553c5e"
+    }
+  ]
+}
