@@ -52,7 +52,6 @@ Items that need review
   PyEnchant
   PyMuPDF (with MuPDF)
   pywin32
-  sound_lib (with the BASS audio libraries)
   libmpv (libmpv-2.dll)
   OptiLab Core
   DECtalk
@@ -1103,12 +1102,11 @@ sound_lib (with the BASS audio libraries)
 What it is: Plays sounds, with several mixed at once.
 Included in: Every product in the family.
 Version: 0.83
-Licence: MIT for sound_lib; BASS is proprietary freeware from Un4seen Developments, free for non-commercial use
+Licence: MIT for sound_lib; BASS is proprietary freeware from Un4seen Developments, used under its free non-commercial licence
 Copyright: sound_lib: Copyright (c) 2010-2022 Christopher Toth; BASS: Copyright (c) 1999-2026 Un4seen Developments Ltd.
 Upstream: https://github.com/accessibleapps/sound_lib
 How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Keep the copyright notice and the permission notice with every copy. Free use is limited to non-commercial entities and products that make no money. Confirm that the QUILL publisher and product qualify before distribution; otherwise obtain a commercial BASS licence. Keep Un4seen attribution and these terms.
-Needs review: BASS terms allow free use only for non-commercial entities and products that make no money. The publisher’s eligibility has not been established. Obtain a commercial licence or confirm the non-commercial grant before release.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy. Free use is limited to non-commercial entities and products that make no money. QUILL uses BASS under that free non-commercial licence: the family is published by Jeff Bishop as an individual, is free, and has no sales, advertising or other commercial use. Keep Un4seen attribution and these terms.
 
 SQLite
 ------
@@ -2666,7 +2664,7 @@ BASS licence (Un4seen Developments, proprietary freeware)
 
 Used by: sound_lib (with the BASS audio libraries).
 
-What it asks of us: Free use is limited to non-commercial entities and products that make no money. Confirm that the QUILL publisher and product qualify before distribution; otherwise obtain a commercial BASS licence. Keep Un4seen attribution and these terms.
+What it asks of us: Free use is limited to non-commercial entities and products that make no money. QUILL uses BASS under that free non-commercial licence: the family is published by Jeff Bishop as an individual, is free, and has no sales, advertising or other commercial use. Keep Un4seen attribution and these terms.
 
 BASS Licensing Terms
 Source: https://www.un4seen.com/bass.html#license

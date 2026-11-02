@@ -130,7 +130,7 @@ spellcheck = ["pyenchant>=3.3.0"]
 mac = ["pyobjc-framework-Cocoa>=12.2.2; sys_platform == 'darwin'"]
 # Cross-platform earcon audio via BASS (Un4seen). Enables true mixing so multiple
 # sounds can play simultaneously. Falls back to winsound (Windows) or silence without
-# this extra. Confirm Un4seen commercial license terms before paid distribution.
+# this extra. Used under Un4seen's free non-commercial licence (free family, no commercial use).
 audio = ["sound_lib>=0.83"]
 # Edit files over SSH/SFTP (issue #139): browse a remote host, download to edit,
 # upload on save with a tilde backup. paramiko handles password and OpenSSH-key

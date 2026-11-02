@@ -8890,14 +8890,16 @@ MIT-licensed <code>accessibleapps/sound_lib</code>, all platforms,
 native mixing); (2) <code>_WinsoundBackend</code> (Windows stdlib,
 serialising queue); (3) <code>_NSSoundBackend</code> (AppKit
 <code>NSSound</code> via <code>pyobjc</code>, macOS fallback); (4)
-<code>_NullBackend</code>. <code>sound_lib</code> is an optional,
-licensed extra (<code>pip install quill[audio]</code>) never bundled by
-default; absent it, QUILL falls back to <code>winsound</code> on Windows
-or <code>NSSound</code> on macOS (both ship with their respective build
-extras already) before going silent. Any object satisfying the
-<code>_WavBackend</code> protocol (<code>play_wav(bytes)</code>,
-<code>shutdown(timeout)</code>) can be injected, which is how tests use
-a synchronous recording backend.</p>
+<code>_NullBackend</code>. <code>sound_lib</code> is the
+<code>audio</code> extra (<code>pip install quill[audio]</code>),
+bundled in the Windows shared runtime and used under Un4seen’s free
+non-commercial BASS licence (the family is free, published by an
+individual, with no commercial use); absent it, QUILL falls back to
+<code>winsound</code> on Windows or <code>NSSound</code> on macOS (both
+ship with their respective build extras already) before going silent.
+Any object satisfying the <code>_WavBackend</code> protocol
+(<code>play_wav(bytes)</code>, <code>shutdown(timeout)</code>) can be
+injected, which is how tests use a synchronous recording backend.</p>
 <h4 id="5705-module-layout-and-posting">5.70.5 Module layout and
 posting</h4>
 <p><code>sound_events.py</code> (enum) → <code>sound_pack.py</code> (QSP

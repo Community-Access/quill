@@ -5,9 +5,9 @@ Backend selection (in priority order)
 1. ``sound_lib`` (BASS from Un4seen via the accessibleapps/sound_lib package).
    Available on Windows, macOS, and Linux.  BASS mixes streams natively, so
    multiple earcons can play simultaneously with no queue or serialisation
-   thread.  Install with ``pip install sound_lib``.  This is a *licensed*
-   third-party engine (see the ``audio`` extra in ``pyproject.toml``), so it
-   is deliberately never bundled by default on any platform's build.
+   thread.  The Windows shared runtime bundles it (the ``audio`` extra), under
+   Un4seen's free non-commercial BASS licence: the family is free, published by
+   an individual, with no commercial use.  The macOS build does not bundle it.
 
 2. ``winsound`` (Windows stdlib).  Falls back to this when sound_lib is
    absent.  Serialises playback via a daemon thread because winsound cannot
