@@ -12,7 +12,20 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
-## Unreleased
+## Planned, not released
+
+- Studio's consolidated plan proposes an accessible project-to-Converter
+  round trip with capability checks, batch outcomes and optional transcription
+  through the shared speech stack. The plan does not add transcription to the
+  standalone Converter or promise support for every file.
+
+## 1.0.0 -- 2026-09-28
+
+The first public release. The app was first built in July 2026 as an audio
+converter; that build was never published as an installer, and everything it
+had is included here.
+
+### AI, if you want it (2026-11-01)
 
 - **AI, if you want it.** A new AI menu (Alt+I) with Ask (Ctrl+Shift+8),
   Which AI Am I Using (Ctrl+F8), Choose Your AI (Ctrl+Shift+F8), Use My
@@ -41,27 +54,14 @@ the launcher, installer, icon and these documents.
 - Broadcast polish in Advanced Options no longer has an access key: Alt+I is
   the AI menu now, and every other letter in its name was already taken.
 
-## Planned, not released
-
-- Studio's consolidated plan proposes an accessible project-to-Converter
-  round trip with capability checks, batch outcomes and optional transcription
-  through the shared speech stack. The plan does not add transcription to the
-  standalone Converter or promise support for every file.
-
-## 1.0.0 -- 2026-09-28
-
-The first public release. The app was first built in July 2026 as an audio
-converter; that build was never published as an installer, and everything it
-had is included here.
-
 ### Since build 2 (2026-10-27 to 2026-10-31)
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
-  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
-  GLOW dependency; Converter does not itself expose GLOW. Release-specific source
-  and legal review are required before the next public release. Portable
-  contents must be checked separately. See Licences and Notices and the
-  PyMuPDF distribution review.
+  which includes PyMuPDF 1.28.2 under AGPL-3.0 through the shared GLOW
+  dependency; Converter does not itself expose GLOW. Its exact source, and
+  that of every other GPL, LGPL or AGPL part, is published with each release.
+  Portable editions leave GLOW, and with it PyMuPDF, out. See Licences and
+  Notices.
 - **Sharp text at any display scaling** (2026-10-31). Quill Converter now handles
   each monitor's scaling itself instead of letting Windows stretch it, so
   text stays sharp at 125, 150 and 200 percent and on monitors with

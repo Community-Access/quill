@@ -28,11 +28,14 @@ release notes.
    archive rather than appear as directories in `_internal`, so verify
    archive contents before concluding that an absent directory means the
    dependency is missing.
-   **PyMuPDF source and license gate.** PyMuPDF is part of the shared runtime
-   through GLOW. Every installed app edition that installs that runtime carries
-   it, even where the app does not expose GLOW. Standalone portable builds use
-   app-specific dependency groups and currently omit the GLOW extra. Before
-   each public release:
+   **PyMuPDF and copyleft source.** PyMuPDF (AGPL-3.0) is part of the shared
+   runtime through GLOW. Every installed app edition that installs that runtime
+   carries it, even where the app does not expose GLOW. Standalone portable
+   builds use app-specific dependency groups and omit the GLOW extra. The
+   family complies with the AGPL by publishing PyMuPDF's exact source, and that
+   of every other GPL, LGPL or AGPL part, with each release; section 13 does
+   not apply to the desktop apps, which offer no network service. Before each
+   public release:
    - Inspect the staged shared runtime, each installer package, and each
      portable artifact. Record which contain PyMuPDF; do not infer portable
      contents from the shared-runtime inventory.
@@ -49,16 +52,11 @@ release notes.
      the corresponding binary release and retain it for the period required
      by the applicable licence. Moving runtime slot tags are not source
      snapshots.
-   - Do not make the next public runtime or app release until counsel or
-     Artifex has reviewed the combined-work/source-scope and section 13
-     questions in `docs/legal/PYMUPDF-AGPL-REVIEW.md`, and the release source
-     offer has been checked against that advice.
    **Other GPL-family components.** Inventory the actual staged libmpv,
    mutagen, pillow-heif, FFmpeg, eSpeak NG, Pandoc and Git artifacts and their
-   versions and build options. Verify applicable licences, notices and
-   corresponding source and build inputs for each shipped artifact. Obtain
-   legal review of combined-work and source-offer obligations where unresolved;
-   a separate process or a repository link alone is not proof of compliance.
+   versions and build options. Each one is kept, and its exact source is
+   published with the release the same way as PyMuPDF's; a repository link
+   alone is not enough.
    - Run `python scripts\collect_copyleft_sources.py --product <app>
      --build-dir standalone\runtime\dist\QuillVilleRuntime --out <folder>`
      for each app. It lists every GPL, AGPL and LGPL component the build
@@ -75,6 +73,10 @@ release notes.
      uploads them with a new release, or adds any an `--existing` release
      lacks. Pass the app's upload folder as `--dist` so the build's manifest
      is the one published; check the release page lists all four.
+   - Fetch the archives the manifest names with `--download` and attach them
+     to the release as its source bundle. Never delete a release's source
+     while its binaries can still be downloaded, and keep it for at least
+     three years after the last download of that version.
 
    **Accessibility.** Before each public release:
    - Add the release's entry to `docs/accessibility-progress.md` (completed,

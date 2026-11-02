@@ -1,9 +1,10 @@
 # QUILL Media Player — Product Requirements Document (PRD)
 
 **Distribution licensing:** Media Player has no separate installer. When its
-host uses the QuillVille Runtime, that runtime currently carries PyMuPDF
-1.28.2 under AGPL-3.0 through GLOW; the player does not expose GLOW.
-Release-specific source and legal review remain open.
+host uses the QuillVille Runtime, that runtime includes PyMuPDF 1.28.2 under
+AGPL-3.0 through GLOW; the player does not expose GLOW. Its exact source, and
+that of every other GPL, LGPL or AGPL part, is published with each release of
+the host.
 
 **Product:** QUILL Media Player (in-QUILL feature **and** the standalone
 `Quill Media Player` app — see Section 9.11)

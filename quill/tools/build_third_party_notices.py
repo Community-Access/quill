@@ -5,7 +5,7 @@ texts beside it in ``licenses/``); :mod:`quill.core.third_party_notices`
 renders it. This tool writes every rendered file and checks them for drift:
 
 * ``docs/legal/THIRD_PARTY_NOTICES.md`` and ``.txt`` -- the family document,
-  including the entries that still need review;
+  including the maintainer notes;
 * ``docs/legal/THIRD-PARTY-NOTICES-QUILL.txt`` -- the file QUILL's own
   installer and portable zip ship beside ``quill.exe``;
 * ``standalone/<app>/THIRD-PARTY-NOTICES.txt`` and ``LICENSE.txt`` -- the files

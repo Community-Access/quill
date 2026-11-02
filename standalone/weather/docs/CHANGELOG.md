@@ -4,7 +4,12 @@ All notable changes to Quill Weather are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.2.1] - 2026-10-08
+
+Current build: **2.2.1 (build 2)**. Build 2 keeps everything in build 1 and
+adds the work marked "build 2" below, together with everything recorded since
+(the Command Palette and Product Requirements doors, What's New, QUILL
+Transcribe on the QuillVille menu, and the user guide corrections).
 
 ### AI, when you ask for it (2026-11-01)
 
@@ -25,21 +30,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Text only: no radar or maps. The alert watch stays AI-free, nothing runs on a
   timer, and Safe Mode turns every AI command off.
 
-## [2.2.1] - 2026-10-08
-
-Current build: **2.2.1 (build 2)**. Build 2 keeps everything in build 1 and
-adds the work marked "build 2" below, together with everything recorded since
-(the Command Palette and Product Requirements doors, What's New, QUILL
-Transcribe on the QuillVille menu, and the user guide corrections).
-
 ### Since build 2 (2026-10-30 and 2026-10-31)
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
-  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
-  GLOW dependency; Weather does not itself expose GLOW. Release-specific
-  source and legal review are required before the next public release.
-  Portable contents must be checked separately. See Licences and Notices and
-  the PyMuPDF distribution review.
+  which includes PyMuPDF 1.28.2 under AGPL-3.0 through the shared GLOW
+  dependency; Weather does not itself expose GLOW. Its exact source, and that
+  of every other GPL, LGPL or AGPL part, is published with each release.
+  Portable editions leave GLOW, and with it PyMuPDF, out. See Licences and
+  Notices.
 - **Controls that had no label now have a spoken name** (2026-10-30).
   JAWS, NVDA and Narrator used to announce them as a bare role, such as
   "edit" or "list". The Weather Center's status line now says "Weather source and freshness status".

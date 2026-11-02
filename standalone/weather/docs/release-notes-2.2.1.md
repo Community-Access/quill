@@ -48,6 +48,21 @@ name empty, Weather continues to use the place name from the search result.
 - **QUILL Transcribe on the QuillVille menu.** The QuillVille menu and the tray
   list QUILL Transcribe, released on 1 November 2026.
 
+## AI, when you ask for it
+
+Quill Weather now has an AI menu (Alt+I), and it does nothing until you use it.
+
+- **Should I Go Out?** (Ctrl+Shift+G) answers in plain words from the forecast
+  for your primary place. Any active alert comes first, in the Weather
+  Service's own words; the AI never rewords one.
+- **Ask** (Ctrl+Shift+8) lets you ask about the forecast. Your place's name
+  goes with the question, never its coordinates.
+- **Choose Your AI** (Ctrl+Shift+F8) picks the free AI, your ChatGPT
+  subscription (Alt+F5) or your own key (Alt+F2). A line in the main window
+  says which AI is in use; press Enter on it to change it.
+- Text only: no radar or maps. The alert watch never uses AI, nothing runs on
+  a timer, and Safe Mode turns every AI command off.
+
 ## Download and install
 
 - `Quill-Weather-Portable-2.2.1.zip`: extract it and run

@@ -17,14 +17,22 @@ The first public release. The app was first built in July 2026 as an audio
 converter (an entry here once dated it 2026-07-31); that build was never
 published as an installer, and everything in it is part of 1.0.0.
 
+AI, if you want it (2026-11-01):
+
+- **An AI menu (Alt+I).** Ask (Ctrl+Shift+8) about the queued files and the
+  last conversion, Will This Play on My Device? (Ctrl+Shift+D), and Make This
+  Right for My Player... (Ctrl+F3), which starts one conversion job after
+  asking first. Choose Your AI (Ctrl+Shift+F8) picks the AI; the AI gets file
+  details, never folders or the sound, and Safe Mode turns the menu off.
+
 Since build 2:
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
-  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
-  GLOW dependency; Converter does not itself expose GLOW. Release-specific source
-  and legal review are required before the next public release. Portable
-  contents must be checked separately. See Licences and Notices and the
-  PyMuPDF distribution review.
+  which includes PyMuPDF 1.28.2 under AGPL-3.0 through the shared GLOW
+  dependency; Converter does not itself expose GLOW. Its exact source, and
+  that of every other GPL, LGPL or AGPL part, is published with each release.
+  Portable editions leave GLOW, and with it PyMuPDF, out. See Licences and
+  Notices.
 - **Sharp text at any display scaling** (2026-10-31). Quill Converter now handles
   each monitor's scaling itself instead of letting Windows stretch it, so
   text stays sharp at 125, 150 and 200 percent and on monitors with

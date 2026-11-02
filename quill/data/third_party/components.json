@@ -6,7 +6,7 @@
     "",
     "Python versions and licences were read from installed package metadata (py -3.14, 2026-10-26). `--versions` compares them with what is installed now; it reports and does not fail, because the release build, not this file, decides what ships.",
     "",
-    "`products` is a list of product keys, or [\"all\"]. Every installed app uses the shared QuillVille Runtime, whose dependency set is the union of the app requirements, so a library in that runtime is included by each installer that carries it. Standalone portable editions use app-specific dependency groups and inventories; do not infer their contents from the shared runtime. `delivery` is bundled, shared-runtime, on-request (downloaded from QUILL's own pinned release when the person asks for it, so we still redistribute it), or build-only (never shipped). `review` marks an entry whose licence or terms could not be confirmed, or which carries an obligation the owner should decide on."
+    "`products` is a list of product keys, or [\"all\"]. Every installed app uses the shared QuillVille Runtime, whose dependency set is the union of the app requirements, so a library in that runtime is included by each installer that carries it. Standalone portable editions use app-specific dependency groups and inventories; do not infer their contents from the shared runtime. `delivery` is bundled, shared-runtime, on-request (downloaded from QUILL's own pinned release when the person asks for it, so we still redistribute it), or build-only (never shipped). `review` is a maintainer note: a condition on how the family may use the component, or a check to repeat when it changes. It appears in the family document only. A settled decision belongs in `obligations`, which every shipped file shows."
   ],
   "products": {
     "quill": {
@@ -108,7 +108,7 @@
     "AGPL-3.0": {
       "name": "GNU Affero General Public License, version 3",
       "text": "AGPL-3.0.txt",
-      "obligations": "Keep the copyright and licence notices and provide Corresponding Source when required for a covered work; sections 4–6 distinguish source and object-code conveyance. Section 13's remote-network offer applies when a modified covered program supports remote network interaction. Whether QUILL packaging creates a covered combined work, and the resulting source scope, require legal review."
+      "obligations": "Ship the licence text and keep the copyright notices. Provide the complete Corresponding Source of the covered work we convey, alongside it or by a written offer. Section 13's network offer applies only to a modified program that users reach over a network; QUILL's desktop apps are not one."
     },
     "Apache-2.0": {
       "name": "Apache License, version 2.0",
@@ -231,9 +231,9 @@
       "obligations": "None."
     },
     "Unknown": {
-      "name": "Not confirmed",
+      "name": "No single licence",
       "text": null,
-      "obligations": "Unknown until the licence is confirmed. See the review note on each entry."
+      "obligations": "These items have no single licence. Each entry says what its terms are and what they ask of us."
     },
     "WordNet": {
       "name": "WordNet 2.1 licence (Princeton University)",
@@ -1102,7 +1102,7 @@
       ],
       "delivery": "bundled",
       "pypi": "mutagen",
-      "review": "GPL-2.0-or-later library imported by QUILL's own code. Distributing it means the combined program must be offered under GPL-compatible terms with its source. QUILL's own MIT source is public, which satisfies this, but it should be a deliberate, written decision."
+      "obligations": "Ship the GPL-2.0 text. mutagen is imported by QUILL's own code, so each app that carries it is distributed as a GPL-compatible combined work; QUILL's own files stay MIT. Its exact source is published with each release, in the copyleft source manifest and the archives it names."
     },
     {
       "id": "numpy",
@@ -1248,7 +1248,7 @@
       ],
       "delivery": "bundled",
       "pypi": "pillow_heif",
-      "review": "The binary wheel bundles x265 (GPL-2.0-or-later), so the wheel as a whole is GPL-2.0, and it ships in every app through the shared runtime. Same source-offer obligation as other GPL items."
+      "obligations": "Ship the GPL-2.0 and LGPL-3.0 texts. The wheel bundles x265 (GPL-2.0-or-later), libheif and libde265 (LGPL-3.0) and the MinGW-w64 runtime; the exact source of each, for the version we ship, is published with each release, in the copyleft source manifest and the archives it names."
     },
     {
       "id": "pip",
@@ -1419,7 +1419,7 @@
       ],
       "delivery": "bundled",
       "pypi": "pyenchant",
-      "review": "The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus the English Hunspell dictionaries (see Hunspell dictionaries: SCOWL licence)."
+      "obligations": "Ship the LGPL text and keep the library a separate, replaceable file. The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus the English Hunspell dictionaries (see Hunspell dictionaries: SCOWL licence). The exact source of each copyleft part is published with each release, in the copyleft source manifest and the archives it names."
     },
     {
       "id": "pymupdf",
@@ -1440,7 +1440,7 @@
       "pypi": "pymupdf",
       "source_url": "https://files.pythonhosted.org/packages/a3/fb/b6761fa2d5266f2cdb24c3b91f4023070ab7848381417678e7a289a1d52a/pymupdf-1.28.2.tar.gz",
       "source_sha256": "5e0be7908a715aa20333caddd73f1d6f01e4cd0c26e869fa2dd0b7f344da2249",
-      "review": "Decision recorded: retain PyMuPDF under AGPL-3.0 and preserve existing PDF behavior. The installed QuillVille Runtime includes PyMuPDF; installed app editions carry it through that runtime. QUILL's GLOW feature uses it; QUILL's ordinary PDF reader uses pdfplumber and pypdf, with pypdfium2 for scanned-page rendering. Current standalone portable dependency groups omit the GLOW extra, and the committed portable inventories omit pymupdf; verify staged portable artifacts independently. The exact 1.28.2 source archive and checksum are listed above. Legal review is required before the next public release to determine whether QUILL's shared runtime and application packages form a covered combined work, the Corresponding Source scope, and whether section 13 applies to any modified network-facing covered work. This entry does not declare all original QUILL code relicensed under AGPL; the MIT boundary and any exceptions need counsel's review."
+      "obligations": "Ship the AGPL-3.0 text and the Artifex copyright. QUILL keeps PyMuPDF and complies with the AGPL: the installed runtime and apps are distributed under it as combined works, and each of QUILL's own files stays MIT. The exact 1.28.2 source archive and checksum are listed above and published with each release, with the source of every other GPL, LGPL or AGPL part. Section 13 does not apply: the desktop apps offer no network service, and QUILL does not patch PyMuPDF. Only QUILL's GLOW feature uses it; QUILL's ordinary PDF reader uses pdfplumber and pypdf, with pypdfium2 for scanned pages. Standalone portable editions leave the GLOW extra out, and the committed portable inventories omit pymupdf."
     },
     {
       "id": "pynacl",
@@ -2200,7 +2200,7 @@
         "runtime"
       ],
       "delivery": "bundled",
-      "review": "libmpv is loaded into the same process as the app. A GPL library loaded in-process makes the combined program subject to the GPL when distributed. QUILL's own source is public under MIT, which is GPL-compatible, so this is satisfiable, but the obligation (offer the complete source of the combined program) should be acknowledged by the owner."
+      "obligations": "Ship the GPL-3.0 text. libmpv is loaded into the same process as the app, so each app that carries it is distributed as a GPL combined work; QUILL's own files stay MIT. The exact mpv source for this build, and the sources it pins, are published with each release."
     },
     {
       "id": "optilab",
@@ -2256,7 +2256,7 @@
         "studio"
       ],
       "delivery": "user-installed",
-      "review": "Not distributed: the engine files carry proprietary notices and no right to redistribute, so they were removed from the repository on 2026-11-01 (git history untouched) and QUILL only drives a copy the user installs. The nine voice preview clips are QUILL's own synthesised samples, kept as a stated low-risk choice (decided 2026-11-02)."
+      "obligations": "Nothing to ship: the engine is not distributed or linked. Its files carry proprietary notices and no right to redistribute, so they were removed from the repository on 2026-11-01, and QUILL only drives a copy the user installs. The nine voice preview clips are QUILL's own synthesised samples, kept by decision on 2026-11-02."
     },
     {
       "id": "dictation-models",
@@ -2315,7 +2315,7 @@
         "studio"
       ],
       "delivery": "bundled",
-      "review": "The locked Kokoro runtime includes GPL-3.0 phonemizer and eSpeak NG components. Confirm the staged engine pack carries their source/licence notices and exact versions before release."
+      "obligations": "Keep the Apache-2.0 and MIT notices. Ship the GPL-3.0 text for phonemizer and eSpeak NG; their exact source is published with each release, in the copyleft source manifest and the archives it names."
     },
     {
       "id": "mathcat",
@@ -2386,7 +2386,7 @@
         "studio"
       ],
       "delivery": "on-request",
-      "review": "Not confirmed voice by voice. QUILL redistributes some voices (from its own release) and ships samples of 39 of them in quill/data/voice-previews/piper. Each voice's MODEL_CARD must be checked and its licence and attribution recorded here."
+      "obligations": "Each voice's MODEL_CARD names its dataset and licence. QUILL keeps all 39 voices and their samples in quill/data/voice-previews/piper; the QUILL Offline Edition's starter voice is en_US-ljspeech-medium. Several datasets allow only non-commercial or research use, which fits because QUILL is Jeff Bishop's free personal project and is never used commercially. Credit each voice's trainer and dataset as its MODEL_CARD asks."
     },
     {
       "id": "vosk-model",
@@ -2587,7 +2587,7 @@
         "all"
       ],
       "delivery": "bundled",
-      "review": "Voice models trained on restricted datasets may limit use of their output. Confirm each remaining voice's terms alongside the Piper voice entries."
+      "obligations": "The samples follow the terms of the voice that made them: Kokoro is Apache-2.0, eSpeak NG output is not covered by its GPL, and each Piper sample follows that voice's MODEL_CARD. They are kept on the same non-commercial basis as the Piper voices."
     },
     {
       "id": "wordnet",

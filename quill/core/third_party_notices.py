@@ -217,10 +217,10 @@ def _fields(cat: Catalogue, item: Component, *, family: bool) -> list[tuple[str,
         ("How it reaches you", _DELIVERY[item.delivery]),
         ("What the licence asks of us", _obligations(cat, item)),
     ]
-    # Review notes are for the people maintaining the family, so they appear in
-    # the family document and not in the file an installer ships to a listener.
+    # Maintainer notes are for the people maintaining the family, so they appear
+    # in the family document and not in the file an installer ships to a listener.
     if item.review and family:
-        rows.append(("Needs review", item.review))
+        rows.append(("Maintainer note", item.review))
     return rows
 
 
@@ -265,15 +265,16 @@ def _intro(cat: Catalogue, product: str | None) -> list[str]:
 def _source_offer() -> list[str]:
     return [
         "Some components are under the GNU GPL, LGPL or AGPL, or the Mozilla Public "
-        "License. Their source requirements depend on the licence and the work being "
-        "conveyed. Each entry identifies the version and, where recorded, a "
-        "version-specific source location. QUILL keeps release-specific source and "
-        "build instructions according to the applicable terms; to request source "
-        f"materials or a written offer, write to {_SUPPORT}.",
-        f"QUILL's own source code is public at {_SOURCE_URL}. For PyMuPDF, the entry "
-        "above names the exact source archive and its SHA-256 checksum. The source "
-        "scope for a QUILL work combined with an AGPL component is subject to legal "
-        "review; this notice does not make a blanket relicensing claim.",
+        "License. The exact source of every one of them, for the version we ship, is "
+        "published with each release, beside LICENSE.txt and this file, in the "
+        "copyleft source manifest (copyleft-sources.txt) and the archives it names. "
+        "It stays available for at least three years after the last download of that "
+        f"version. You can also ask for it, or for a written offer, at {_SUPPORT}.",
+        f"QUILL's own source code is public at {_SOURCE_URL} under the MIT License, "
+        "copyright Jeff Bishop. A program that combines it with a GPL or AGPL "
+        "component is distributed under that component's licence, and each QUILL "
+        "file stays MIT. For PyMuPDF, the entry above names the exact source archive "
+        "and its SHA-256 checksum.",
     ]
 
 
@@ -293,10 +294,11 @@ def render_markdown(cat: Catalogue) -> str:
     for key, count in _license_counts(items):
         noun = "component" if count == 1 else "components"
         out.append(f"- {cat.licenses[key]['name']}: {count} {noun}")
-    out += ["", "## Items that need review", ""]
+    out += ["", "## Items with a maintainer note", ""]
     out += [
-        "These entries carry a licence that could not be confirmed, or an obligation "
-        "the owner should decide on. Each one says why under its own heading.",
+        "These entries carry a condition on how the family may use them, or a check "
+        "to repeat when the component changes. Each one says which under its own "
+        "heading.",
         "",
     ]
     for item in items:
@@ -362,7 +364,7 @@ def render_text(cat: Catalogue, product: str | None = None) -> str:
         out.append(f"  {cat.licenses[key]['name']}: {count} {noun}")
     out.append("")
     if product is None:
-        out += _heading("Items that need review", "-")
+        out += _heading("Items with a maintainer note", "-")
         out += [f"  {item.name}" for item in items if item.review]
         out.append("")
     for group in cat.groups:

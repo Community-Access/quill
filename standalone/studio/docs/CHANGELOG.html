@@ -460,21 +460,20 @@ scaling, named controls, licensing and packaging (2026-10-27 to
 2026-10-31)</h3>
 <ul>
 <li><strong>Shared-runtime licensing.</strong> Installed editions use
-the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
-AGPL-3.0 through the shared GLOW dependency; Studio does not itself
-expose GLOW. Release-specific source and legal review are required
-before the next public release. Portable contents must be checked
-separately. See Licences and Notices and the PyMuPDF distribution
-review.</li>
+the QuillVille Runtime, which includes PyMuPDF 1.28.2 under AGPL-3.0
+through the shared GLOW dependency; Studio does not itself expose GLOW.
+Its exact source, and that of every other GPL, LGPL or AGPL part, is
+published with each release. Portable editions leave GLOW, and with it
+PyMuPDF, out. See Licences and Notices.</li>
 <li><strong>Chapter sound provenance.</strong> The default
 page-turn-like cue is now generated from scratch by QUILL rather than
 using a recording with unconfirmed origin. Custom chapter sounds remain
 available.</li>
 <li><strong>Speech packaging.</strong> Studio portable builds now copy
-only supported speech engine folders, rather than all speech data.
-Distribution of a legacy voice engine has stopped pending licensing
-review. A separately installed copy still works; complete removal and
-previous package review remain open.</li>
+only supported speech engine folders, rather than all speech data. QUILL
+no longer distributes the legacy DECtalk voice engine, and its files
+left the repository on 2026-11-01. A copy you install yourself still
+works.</li>
 <li><strong>Shared Windows runtime.</strong> Windows OCR and Media
 projections move to PyWinRT 4.0.3 and the Windows SDK 10.0.28000.2705
 line. The Windows Media engine releases device references and event

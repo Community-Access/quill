@@ -273,6 +273,17 @@ Quill Converter now appears on the QuillVille menu of the other apps, and QUILL'
 own **Convert with Quill** Explorer entry, which opens Quill Converter, is
 available in public builds.
 
+### AI, if you want it
+
+A new **AI** menu (Alt+I) does nothing until you use it. **Choose Your AI**
+(Ctrl+Shift+F8) picks the free AI, your ChatGPT subscription or your own key.
+**Ask** (Ctrl+Shift+8) knows the queue's file details and the last report.
+**Will This Play on My Device?** (Ctrl+Shift+D) says whether the queued files
+will play on the device you name, and what to convert them to if not. **Make
+This Right for My Player...** (Ctrl+F3) starts one conversion from a sentence,
+after telling you what it will do; it needs GitHub Copilot or Codex. The AI
+gets file details, never folders or the sound, and Safe Mode turns the menu off.
+
 ### New in build 2
 
 - **Process with Auphonic.** If you have an Auphonic account, **Convert >

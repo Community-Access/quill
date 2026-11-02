@@ -238,6 +238,27 @@ section back to 1.0.0). Commit `docs/site/updates/v2` and push.
 - After one full release cycle with every app on channels, remove the old v1
   feed key from CI (RELEASE.md, "The old v1 list and its CI key").
 
+## Quill Converter 1.0.0 and Quill Weather 2.2.1
+
+These two follow the same steps, with their own "What's new" notes. Use the
+build number Help > About shows on the build you publish.
+
+```powershell
+python scripts/publish_release.py --app converter --version 1.0.0 --build <n> --channel beta `
+    --dist standalone/converter/dist --notes-file docs/release/whats-new/whats-new-converter-1.0.0.md --dry-run
+python scripts/publish_release.py --app converter --version 1.0.0 --build <n> --channel beta `
+    --dist standalone/converter/dist --notes-file docs/release/whats-new/whats-new-converter-1.0.0.md
+python scripts/promote_release.py --app converter --version 1.0.0+<n> --to stable `
+    --notes-file docs/release/whats-new/whats-new-converter-1.0.0.md
+
+python scripts/publish_release.py --app weather --version 2.2.1 --build <n> --channel beta `
+    --dist standalone/weather/dist --notes-file docs/release/whats-new/whats-new-weather-2.2.1.md --dry-run
+python scripts/publish_release.py --app weather --version 2.2.1 --build <n> --channel beta `
+    --dist standalone/weather/dist --notes-file docs/release/whats-new/whats-new-weather-2.2.1.md
+python scripts/promote_release.py --app weather --version 2.2.1+<n> --to stable `
+    --notes-file docs/release/whats-new/whats-new-weather-2.2.1.md
+```
+
 ## At a glance
 
 | | QUILL Lite 2.0.0 | Quill Radio 3.2.0 | QUILL Cast 2.0.0 | QUILL Transcribe 1.0.0 |

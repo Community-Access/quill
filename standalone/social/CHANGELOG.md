@@ -14,11 +14,11 @@ comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
 ### Display scaling and licensing (2026-10-31)
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
-  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
-  GLOW dependency; Social does not itself expose GLOW. Release-specific source
-  and legal review are required before the next public release. Portable
-  contents must be checked separately. See Licences and Notices and the
-  PyMuPDF distribution review.
+  which includes PyMuPDF 1.28.2 under AGPL-3.0 through the shared GLOW
+  dependency; Social does not itself expose GLOW. Its exact source, and that
+  of every other GPL, LGPL or AGPL part, is published with each release.
+  Portable editions leave GLOW, and with it PyMuPDF, out. See Licences and
+  Notices.
 - **Sharp text at any display scaling** (2026-10-31). QUILL Social now handles
   each monitor's scaling itself instead of letting Windows stretch it, so
   text stays sharp at 125, 150 and 200 percent and on monitors with
