@@ -80,6 +80,8 @@ param(
     [string[]]$Apps,
     [switch]$SkipRuntime,
     [switch]$KeepGoing,
+    # Build in the order the apps were typed, not the family's order (2026-11-02).
+    [switch]$InOrder,
     [switch]$DryRun,
     [string]$Python = "",
     [string]$Iscc = "",
@@ -120,8 +122,10 @@ foreach ($raw in ($Apps -join ",").Split(",")) {
     }
     if (-not $wanted.Contains($name)) { $wanted.Add($name) }
 }
-# Always in the family's order, whatever order they were typed in.
-$selected = @($catalog.Keys | Where-Object { $wanted.Contains($_) })
+# The family's order, whatever order they were typed in -- unless -InOrder asks
+# for the typed order, when one app is wanted before another.
+if ($InOrder) { $selected = @($wanted) }
+else { $selected = @($catalog.Keys | Where-Object { $wanted.Contains($_) }) }
 if (-not $selected) { throw "No apps chosen." }
 
 # -- logs and output -----------------------------------------------------------
