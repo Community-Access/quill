@@ -13,6 +13,12 @@ reads only what you wrote, Word documents and PDFs, Find in Open Documents and
 folder search, dictation and transcription, Activity and Repeat Last Result,
 and release channels.
 
+### AI menu, own key and silent commands (2026-11-03)
+
+- **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.
+- **Your own key is not only OpenAI** (2026-11-03). Before you have saved a key, Choose Your AI's own-key row now names every service it can use: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud, a service of your own, or Ollama on this computer, which is free and sends nothing. It used to say only OpenAI.
+- **A command is never silent** (2026-11-03). In a new or plain document, keys for commands that need formatting or Markdown, such as Ctrl+B for Bold or a heading key, used to do nothing and say nothing, because their menu rows are dimmed there. Now each one says why it cannot run, such as that the document has no formatting or that the command needs a Markdown or HTML document. Select All in an empty document says the document is empty.
+
 ### Choose Your AI: your plan, GitHub Copilot, Codex or your own key
 - **Choose Your AI** (**Ctrl+4**, Tools > AI) is one window for where your AI
   comes from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex,
