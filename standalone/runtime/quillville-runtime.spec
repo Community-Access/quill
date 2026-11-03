@@ -153,6 +153,23 @@ ytdlp_datas += copilot_datas
 ytdlp_binaries += copilot_binaries
 ytdlp_hidden += copilot_hidden + ["httpx", "httpcore", "h11", "anyio", "dateutil"]
 
+# Phonon 31m (phononprd.md): the ptts extension, imported lazily by
+# quill.core.speech.phonon_tts (the tracer cannot follow it), collected whole
+# with its dist-info for the notices gate; and the model with its 37 English
+# voices at phonon-models/en, which phonon_tts finds under sys._MEIPASS.
+# Staged by scripts/fetch_build_deps.py --only phonon; a release build without
+# it would offer a voice it cannot speak, so its absence fails the build.
+ptts_datas, ptts_binaries, ptts_hidden = collect_all("ptts")
+ytdlp_datas += ptts_datas + copy_metadata("ptts")
+ytdlp_binaries += ptts_binaries
+ytdlp_hidden += ptts_hidden + ["ptts", "ptts._ptts"]
+_PHONON_DIR = os.path.join(_CHECKOUT_ROOT, "build", "deps", "phonon-31m-en")
+if not os.path.isfile(os.path.join(_PHONON_DIR, "model.q8.gguf")):
+    raise SystemExit(
+        "Phonon model not staged: run python scripts/fetch_build_deps.py --only phonon"
+    )
+ytdlp_datas.append((_PHONON_DIR, os.path.join("phonon-models", "en")))
+
 a = Analysis(
     ["runtime_launcher.py"],
     pathex=[_CHECKOUT_ROOT],

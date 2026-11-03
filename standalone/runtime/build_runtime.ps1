@@ -71,6 +71,10 @@ try {
     # pair; a release without it looks broken to listeners (2026-10-03).
     & $Python (Join-Path $quillRepo "tools\generate_podcast_index_key.py") --require
     if ($LASTEXITCODE -ne 0) { throw "The Podcast Index credential is missing; see tools/generate_podcast_index_key.py." }
+    # The Phonon voice model rides in the runtime as data (quillville-runtime.spec
+    # reads it from build\deps), so it must be staged before PyInstaller runs.
+    & $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only phonon
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage the Phonon voices (see scripts/fetch_build_deps.py)." }
     & $Python -m PyInstaller quillville-runtime.spec --noconfirm --distpath dist --workpath build
     if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
 } finally {

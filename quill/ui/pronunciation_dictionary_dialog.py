@@ -474,6 +474,7 @@ def _make_auditioner(frame: Any) -> Any:
         engine = (s.read_aloud_engine or "sapi5").strip().lower()
         voice = {
             "kokoro": s.read_aloud_kokoro_voice,
+            "phonon": s.read_aloud_phonon_voice,
             "dectalk": s.read_aloud_dectalk_voice,
             "espeak": s.read_aloud_espeak_voice,
         }.get(engine, s.read_aloud_voice)
@@ -488,7 +489,11 @@ def _make_auditioner(frame: Any) -> Any:
                     engine=engine,
                     voice=voice or "",
                     rate=int(s.read_aloud_rate),
-                    speed=float(s.read_aloud_kokoro_speed),
+                    speed=float(
+                        s.read_aloud_phonon_speed
+                        if engine == "phonon"
+                        else s.read_aloud_kokoro_speed
+                    ),
                 )
             )
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as fh:

@@ -500,16 +500,16 @@ you browse to a folder or arrive on the page.</li>
 <h3 id="who-should-read-it">Who should read it?</h3>
 <ul>
 <li><strong>Engine</strong> - Windows (SAPI 5), DECtalk, Piper (neural,
-offline), Kokoro (neural, offline), eSpeak-NG (many languages); on a
-Mac, the macOS system voice as well. An engine that is not installed yet
-is labeled “(not installed)” - see “Voices” below. DECtalk must be
-installed separately.</li>
+offline), Kokoro (neural, offline), Phonon (neural, offline), eSpeak-NG
+(many languages); on a Mac, the macOS system voice as well. An engine
+that is not installed yet is labeled “(not installed)” - see “Voices”
+below. DECtalk must be installed separately.</li>
 <li><strong>Voice</strong> and <strong>Preview voice</strong> - hear the
 chosen voice before committing. Previews play a bundled sample when one
 ships, or synthesize live with the real engine when it is
 installed.</li>
 <li><strong>Rate (WPM)</strong> and <strong>Kokoro speed</strong> - pace
-controls.</li>
+controls. Phonon uses the speed control too, from 0.85 to 1.3.</li>
 <li><strong>Round-robin voices</strong> (optional) - build an ordered
 rotation; article 1 gets voice 1, article 2 voice 2, wrapping around.
 <strong>Add voice</strong>, <strong>Move Up</strong>, <strong>Move
@@ -825,6 +825,13 @@ preview samples.</li>
 download individual voices from a catalog.</li>
 <li><strong>Kokoro</strong> - modern neural voices, entirely on your
 machine, in several languages; a one-time model download.</li>
+<li><strong>Phonon</strong> - 37 English neural voices that come with
+Studio, so there is nothing to download. Quick to start, good with
+numbers and email addresses, and its speed runs from 0.85 to 1.3 times
+normal. It needs a processor from about 2015 or later; on an older one
+the voices are marked “needs a newer computer” and Studio suggests Piper
+instead. Phonon 31m is by Gradium, free under Apache 2.0, and builds on
+Pocket TTS and the Mimi codec by Kyutai.</li>
 <li><strong>eSpeak-NG</strong> - compact and fast, speaks a very large
 number of languages.</li>
 <li><strong>macOS (system voice)</strong> - on a Mac, the system

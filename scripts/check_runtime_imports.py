@@ -127,6 +127,11 @@ MUST_IMPORT: tuple[str, ...] = (
     "copilot",
     "copilot.rpc",
     "quill.core.ai.copilot_chat",
+    # Phonon voices (phononprd.md): ptts is one native extension imported
+    # lazily, so a runtime that froze the package without its .pyd would list
+    # the voices and fail at the first sentence.
+    "ptts",
+    "quill.core.speech.phonon_tts",
 )
 
 #: The Word stack and GLOW's audits; part of MUST_IMPORT, and named on their

@@ -51,6 +51,7 @@ class SpeechHubMixin:
             kokoro_onnx_install_supported,
         )
         from quill.core.speech.ffmpeg import ffmpeg_available
+        from quill.core.speech.phonon_tts import phonon_engine_ready
         from quill.core.speech.providers.whispercpp import resolve_whisper_executable
         from quill.core.speech.service import (
             describe_models,
@@ -74,6 +75,7 @@ class SpeechHubMixin:
             ("DECtalk", "dectalk"),
             ("Piper (neural, offline)", "piper"),
             ("Kokoro (neural, offline)", "kokoro"),
+            ("Phonon (neural, offline)", "phonon"),
             ("eSpeak-NG (many languages)", "espeak"),
         ]
         if macos_say_available():
@@ -88,6 +90,7 @@ class SpeechHubMixin:
             is not None,
             "piper": discover_piper_executable() is not None,
             "kokoro": kokoro_engine_ready(),
+            "phonon": phonon_engine_ready(),
             "espeak": discover_espeak_executable(self.settings.read_aloud_espeak_executable)
             is not None,
             "macos": macos_say_available(),
@@ -223,6 +226,8 @@ class SpeechHubMixin:
                             dict_result = None  # skip dictation processing
                     elif eng == "kokoro":
                         self.settings.read_aloud_kokoro_voice = ra_result.voice_id
+                    elif eng == "phonon":
+                        self.settings.read_aloud_phonon_voice = ra_result.voice_id
                     elif eng == "espeak":
                         self.settings.read_aloud_espeak_voice = ra_result.voice_id
                     elif eng == "macos":
@@ -243,6 +248,8 @@ class SpeechHubMixin:
                     self.settings.read_aloud_macos_rate = ra_result.macos_rate
                 elif eng == "kokoro":
                     self.settings.read_aloud_kokoro_speed = ra_result.kokoro_speed
+                elif eng == "phonon":
+                    self.settings.read_aloud_phonon_speed = ra_result.phonon_speed
                 save_settings(self.settings)
                 engine_label = dict(offline_engine_options + online_engine_options).get(eng, eng)
                 self._set_status(f"Read aloud configured: {engine_label}")

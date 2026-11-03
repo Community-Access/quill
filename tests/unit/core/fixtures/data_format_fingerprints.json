@@ -626,6 +626,8 @@
             "read_aloud_piper_model_dir": "str",
             "read_aloud_kokoro_voice": "str",
             "read_aloud_kokoro_speed": "float",
+            "read_aloud_phonon_voice": "str",
+            "read_aloud_phonon_speed": "float",
             "read_aloud_espeak_executable": "str",
             "read_aloud_espeak_voice": "str",
             "read_aloud_espeak_rate": "int",
@@ -1036,6 +1038,8 @@
           "read_aloud_piper_model_dir": "_ungrouped",
           "read_aloud_kokoro_voice": "_ungrouped",
           "read_aloud_kokoro_speed": "_ungrouped",
+          "read_aloud_phonon_voice": "_ungrouped",
+          "read_aloud_phonon_speed": "_ungrouped",
           "read_aloud_espeak_executable": "_ungrouped",
           "read_aloud_espeak_voice": "_ungrouped",
           "read_aloud_espeak_rate": "_ungrouped",
@@ -1323,7 +1327,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": "adds ai_connection, ai_copilot_model and ai_codex_model (Choose Your AI, codex.md 10A.6); older builds drop unknown keys on load"
+      "note": ""
     },
     "radio.favorites": {
       "current": 1,

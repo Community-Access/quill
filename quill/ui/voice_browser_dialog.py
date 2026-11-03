@@ -19,6 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from quill.ui import voice_browser_settings
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import (
     apply_modal_ids,
@@ -45,6 +46,7 @@ class VoiceBrowserResult:
     pitch: int = 50
     dectalk_rate: int = 200
     kokoro_speed: float = 1.0
+    phonon_speed: float = 1.0
     espeak_rate: int = 175
     macos_rate: int = 175
 
@@ -312,32 +314,11 @@ class VoiceBrowserDialog:
         return self._engine_values[0] if self._engine_values else "sapi5"
 
     def _voices_for_engine(self, eng: str) -> list:
-
-        from quill.core.read_aloud import (
-            list_dectalk_voices,
-            list_elevenlabs_voices,
-            list_espeak_voices,
-            list_kokoro_voices,
-            list_macos_voices,
-            list_piper_catalog_voices,
-            list_voices,
+        return voice_browser_settings.engine_voices(
+            eng,
+            piper_model_dir=self._piper_model_dir,
+            elevenlabs_api_key=self._elevenlabs_api_key,
         )
-
-        if eng == "dectalk":
-            return list_dectalk_voices()
-        if eng == "piper":
-            return list_piper_catalog_voices(self._piper_model_dir)
-        if eng == "kokoro":
-            return list_kokoro_voices()
-        if eng == "espeak":
-            return list_espeak_voices()
-        if eng == "macos":
-            return list_macos_voices()
-        if eng == "elevenlabs":
-            return list_elevenlabs_voices(self._elevenlabs_api_key)
-        # sapi5 — every installed system voice, whatever its language, so a
-        # user with (say) an Italian Windows voice can pick it (#813 follow-on).
-        return list_voices()
 
     def _current_voice_id_for(self, eng: str) -> str:
         from pathlib import Path as _Path
@@ -350,6 +331,8 @@ class VoiceBrowserDialog:
             return _Path(model).stem if model else ""
         if eng == "kokoro":
             return str(getattr(s, "read_aloud_kokoro_voice", "") or "af_heart")
+        if eng == "phonon":
+            return str(getattr(s, "read_aloud_phonon_voice", "") or "default")
         if eng == "espeak":
             raw = str(getattr(s, "read_aloud_espeak_voice", "") or "en-gb")
             return raw.split("+")[0]  # strip stored variant for list matching
@@ -393,13 +376,17 @@ class VoiceBrowserDialog:
             self._displayed_voices = list(self._all_voices)
 
         labels = []
+        # Phonon ships with the app: a voice it cannot speak means this computer cannot run it.
+        missing = "  [not downloaded]"
+        if self._current_engine_id() == "phonon":
+            missing = "  [needs a newer computer]"
         for v in self._displayed_voices:
             accent = getattr(v, "accent", "")
             desc = getattr(v, "description", "")
             installed = getattr(v, "installed", True)
             parts = [p for p in [accent, desc] if p]
             meta = " · ".join(parts)
-            tag = "" if installed else "  [not downloaded]"
+            tag = "" if installed else missing
             labels.append(f"{v.name}  —  {meta}{tag}" if meta else f"{v.name}{tag}")
 
         self._voice_lb.Set(labels)
@@ -411,7 +398,7 @@ class VoiceBrowserDialog:
         s = self._settings
         has_rate = eng in {"sapi5", "dectalk", "espeak", "macos"}
         has_vol_pitch = eng == "sapi5"
-        has_kokoro = eng == "kokoro"
+        has_kokoro = eng in voice_browser_settings.SPEED_RANGES  # one shared speed spin
         has_any = has_rate or has_vol_pitch or has_kokoro
 
         if eng == "sapi5":
@@ -431,7 +418,7 @@ class VoiceBrowserDialog:
             self._vol_spin.SetValue(getattr(s, "read_aloud_volume", 100))
             self._pitch_spin.SetValue(getattr(s, "read_aloud_pitch", 50))
         if has_kokoro:
-            self._kok_spin.SetValue(getattr(s, "read_aloud_kokoro_speed", 1.0))
+            voice_browser_settings.configure_speed(self._kok_lbl, self._kok_spin, eng, s)
 
         has_variant = eng == "espeak"
         if has_variant:
@@ -579,7 +566,7 @@ class VoiceBrowserDialog:
         own speed spin; Piper exposes no rate control so nothing is written."""
         s = self._settings
         s.read_aloud_volume = self._vol_spin.GetValue()
-        s.read_aloud_kokoro_speed = self._kok_spin.GetValue()
+        voice_browser_settings.store_speed(eng, s, self._kok_spin.GetValue())
         rate = self._rate_spin.GetValue()
         if eng == "sapi5":
             s.read_aloud_rate = rate
@@ -670,28 +657,14 @@ class VoiceBrowserDialog:
             self.dialog.EndModal(self._wx.ID_OK)  # type: ignore[union-attr]
 
     def _collect_settings(self, eng: str) -> dict:
-        s = self._settings
-        return {
-            "rate": self._rate_spin.GetValue(),
-            "volume": self._vol_spin.GetValue(),
-            "pitch": self._pitch_spin.GetValue(),
-            "dectalk_rate": (
-                self._rate_spin.GetValue()
-                if eng == "dectalk"
-                else getattr(s, "read_aloud_dectalk_rate", 200)
-            ),
-            "kokoro_speed": self._kok_spin.GetValue(),
-            "espeak_rate": (
-                self._rate_spin.GetValue()
-                if eng == "espeak"
-                else getattr(s, "read_aloud_espeak_rate", 175)
-            ),
-            "macos_rate": (
-                self._rate_spin.GetValue()
-                if eng == "macos"
-                else getattr(s, "read_aloud_macos_rate", 175)
-            ),
-        }
+        return voice_browser_settings.collect(
+            eng,
+            self._settings,
+            rate=self._rate_spin.GetValue(),
+            volume=self._vol_spin.GetValue(),
+            pitch=self._pitch_spin.GetValue(),
+            speed=self._kok_spin.GetValue(),
+        )
 
     # ------------------------------------------------------------------
     # Public

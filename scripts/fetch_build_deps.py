@@ -65,6 +65,15 @@ same constant the app checks before every launch. Signed by OpenAI OpCo, LLC
 and never re-signed. Apache-2.0: ``LICENSE`` and ``NOTICE`` from the same tag
 ship beside it as ``CODEX-LICENSE.txt`` and ``CODEX-NOTICE.txt``.
 
+``phonon`` is Gradium's Phonon 31m English text-to-speech model with its 37
+English voices (phononprd.md section 6), shipped once in the shared runtime at
+``phonon-models/en`` so Read Aloud and Studio narration never download it. Both
+Hugging Face repos are pinned to a commit and every file to a SHA-256 in
+``scripts/phonon_model_pins.json``. Apache-2.0, and neither repo carries a
+LICENSE file, so the model card travels beside the weights as
+``MODEL-CARD.md``: it is the licence statement. The voice catalogue is
+filtered to the English voices this model speaks.
+
 Usage::
 
     python scripts/fetch_build_deps.py                 # fetch whatever is missing
@@ -76,6 +85,7 @@ Usage::
     python scripts/fetch_build_deps.py --only deno     # YouTube's JS challenge solver
     python scripts/fetch_build_deps.py --only copilot  # the GitHub Copilot CLI runtime
     python scripts/fetch_build_deps.py --only codex    # the OpenAI Codex app-server
+    python scripts/fetch_build_deps.py --only phonon   # Phonon 31m voices for Read Aloud
 
 The cache lives under ``build/deps/`` (already gitignored) unless
 ``QUILL_BUILD_DEPS_DIR`` overrides it. Re-running is cheap: a component whose
@@ -249,7 +259,16 @@ CODEX_NOTICE_URL = f"https://raw.githubusercontent.com/openai/codex/rust-v{CODEX
 CODEX_NOTICE_SHA256 = "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915"
 CODEX_NOTICE_NAME = "CODEX-NOTICE.txt"
 
-COMPONENTS = ("ffmpeg", "libmpv", "piper", "deno", "copilot", "codex")
+PHONON_DIR_NAME = "phonon-31m-en"
+PHONON_SENTINEL = "model.q8.gguf"
+PHONON_MODEL_REPO = "gradium/phonon-31m-en"
+PHONON_MODEL_REVISION = "8c64b55ec301728e2d1695bfea87a08a267d0c2d"
+PHONON_VOICES_REPO = "gradium/phonon-voices"
+PHONON_VOICES_REVISION = "da6c9ec0d47be8df5c87c730a3aa97187f3229c3"
+PHONON_PINS = Path(__file__).with_name("phonon_model_pins.json")
+PHONON_LICENSE_NAME = "MODEL-CARD.md"
+
+COMPONENTS = ("ffmpeg", "libmpv", "piper", "deno", "copilot", "codex", "phonon")
 
 #: component -> (cache subdirectory, the file that proves it is really staged).
 _LAYOUT: dict[str, tuple[str, str]] = {
@@ -259,6 +278,7 @@ _LAYOUT: dict[str, tuple[str, str]] = {
     "deno": (DENO_DIR_NAME, DENO_SENTINEL),
     "copilot": (COPILOT_DIR_NAME, COPILOT_SENTINEL),
     "codex": (CODEX_DIR_NAME, CODEX_SENTINEL),
+    "phonon": (PHONON_DIR_NAME, PHONON_SENTINEL),
 }
 
 #: component -> the licence/notice files that must sit beside its exe.
@@ -266,6 +286,7 @@ _LICENCE_FILES: dict[str, tuple[str, ...]] = {
     "deno": (DENO_LICENSE_NAME,),
     "copilot": (COPILOT_LICENSE_NAME,),
     "codex": (CODEX_LICENSE_NAME, CODEX_NOTICE_NAME),
+    "phonon": (PHONON_LICENSE_NAME, "voices.jsonl"),
 }
 
 
@@ -655,6 +676,71 @@ def fetch_codex(*, force: bool = False) -> Path:
     )
 
 
+def _hf_url(repo: str, revision: str, name: str) -> str:
+    return f"https://huggingface.co/{repo}/resolve/{revision}/{name}"
+
+
+def fetch_phonon(*, force: bool = False) -> Path:
+    """Stage Phonon 31m English and its English voices; return the directory.
+
+    Plain HTTPS from the pinned commits, every file checked against
+    ``phonon_model_pins.json`` -- no Hugging Face client, no token. The
+    catalogue is rewritten to the English entries only, after its own hash is
+    checked, so ``voices.jsonl`` lists exactly the voice files staged beside it.
+    """
+    import json
+
+    dest = component_dir("phonon")
+    if is_complete("phonon") and not force:
+        print(f"  phonon 31m: already staged at {dest}")
+        return dest
+
+    pins = json.loads(PHONON_PINS.read_text(encoding="utf-8"))
+    print("  phonon 31m: downloading model and English voices (SHA-256 pinned)...")
+    tmp = Path(tempfile.mkdtemp(prefix="quill-build-dep-"))
+    try:
+        stage = tmp / PHONON_DIR_NAME
+        (stage / "voices").mkdir(parents=True)
+        for name, sha in pins["model"].items():
+            target = PHONON_LICENSE_NAME if name == "README.md" else name
+            download_verified(
+                _hf_url(PHONON_MODEL_REPO, PHONON_MODEL_REVISION, name),
+                stage / target,
+                sha256=sha,
+                progress=_progress if name.endswith(".gguf") else None,
+            )
+        catalogue = tmp / "voices-all.jsonl"
+        download_verified(
+            _hf_url(PHONON_VOICES_REPO, PHONON_VOICES_REVISION, "voices.jsonl"),
+            catalogue,
+            sha256=pins["voices.jsonl"],
+        )
+        voices = pins["voices"]
+        kept: list[str] = []
+        for line in catalogue.read_text(encoding="utf-8").splitlines():
+            if line.strip() and json.loads(line).get("filename") in voices:
+                kept.append(line)
+        if len(kept) != len(voices):
+            raise ReleaseAssetError(
+                f"Phonon catalogue lists {len(kept)} of the {len(voices)} pinned voices"
+            )
+        for name, sha in voices.items():
+            download_verified(
+                _hf_url(PHONON_VOICES_REPO, PHONON_VOICES_REVISION, name),
+                stage / name,
+                sha256=sha,
+            )
+        (stage / "voices.jsonl").write_bytes(("\n".join(kept) + "\n").encode("utf-8"))
+        if dest.exists():
+            shutil.rmtree(dest)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(stage), str(dest))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    print(f"  phonon 31m: staged at {dest}")
+    return dest
+
+
 def fetch_all(components: tuple[str, ...], *, force: bool = False) -> dict[str, Path]:
     staged: dict[str, Path] = {}
     for component in components:
@@ -670,6 +756,8 @@ def fetch_all(components: tuple[str, ...], *, force: bool = False) -> dict[str, 
             staged[component] = fetch_copilot(force=force)
         elif component == "codex":
             staged[component] = fetch_codex(force=force)
+        elif component == "phonon":
+            staged[component] = fetch_phonon(force=force)
         else:  # pragma: no cover - argparse constrains the choices
             raise ReleaseAssetError(f"Unknown build dependency: {component!r}")
     return staged

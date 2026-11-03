@@ -32,7 +32,7 @@ PROFILE_FILENAME = "speech-project.json"
 #     to False so older project folders load without an upgrade.
 PROFILE_VERSION = 2
 
-_VALID_ENGINES = {"sapi5", "dectalk", "piper", "kokoro", "espeak", "macos"}
+_VALID_ENGINES = {"sapi5", "dectalk", "piper", "kokoro", "phonon", "espeak", "macos"}
 _VALID_FORMATS = {"wav", "mp3", "m4a", "m4b", "opus", "flac", "ogg"}
 _VALID_EXISTING = {"skip", "overwrite", "rename"}
 _VALID_CHAPTER_MODES = {"none", "single", "separate"}
@@ -610,37 +610,30 @@ def to_batch_options(
             opts.piper_executable = Path(str(extra["piper_executable"]))
         if extra.get("piper_model"):
             opts.piper_model = Path(str(extra["piper_model"]))
-        opts.piper_length_scale = _extra_float(extra.get("piper_length_scale"))
-        opts.piper_noise_scale = _extra_float(extra.get("piper_noise_scale"))
-        opts.piper_noise_w = _extra_float(extra.get("piper_noise_w"))
+        opts.piper_length_scale = _extra_number(extra.get("piper_length_scale"), float)
+        opts.piper_noise_scale = _extra_number(extra.get("piper_noise_scale"), float)
+        opts.piper_noise_w = _extra_number(extra.get("piper_noise_w"), float)
     elif s.engine == "kokoro":
         opts.kokoro_voice = s.voice or "af_heart"
         opts.kokoro_speed = s.speed
+    elif s.engine == "phonon":
+        opts.phonon_voice = s.voice or "default"
+        opts.phonon_speed = s.speed
     elif s.engine == "espeak":
         opts.espeak_voice = s.voice or "en"
         opts.espeak_rate = s.rate
         if extra.get("espeak_executable"):
             opts.espeak_executable = Path(str(extra["espeak_executable"]))
-        opts.espeak_pitch = _extra_int(extra.get("espeak_pitch"))
-        opts.espeak_word_gap_ms = _extra_int(extra.get("espeak_word_gap_ms"))
+        opts.espeak_pitch = _extra_number(extra.get("espeak_pitch"), int)
+        opts.espeak_word_gap_ms = _extra_number(extra.get("espeak_word_gap_ms"), int)
     return opts
 
 
-def _extra_float(value: Any) -> float | None:
-    """Parse an optional float from the synthesizer ``extra`` bag (None when absent)."""
+def _extra_number[N: (int, float)](value: Any, kind: type[N]) -> N | None:
+    """Parse an optional int or float from the synthesizer ``extra`` bag (None when absent)."""
     if value is None or value == "":
         return None
     try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def _extra_int(value: Any) -> int | None:
-    """Parse an optional int from the synthesizer ``extra`` bag (None when absent)."""
-    if value is None or value == "":
-        return None
-    try:
-        return int(value)
+        return kind(value)
     except (TypeError, ValueError):
         return None

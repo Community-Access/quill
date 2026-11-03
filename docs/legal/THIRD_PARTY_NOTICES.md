@@ -26,9 +26,9 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 
 ## Summary by licence
 
-- MIT License: 66 components
+- MIT License: 67 components
 - BSD 3-Clause License: 23 components
-- Apache License, version 2.0: 14 components
+- Apache License, version 2.0: 16 components
 - GNU General Public License, version 2: 7 components
 - GNU General Public License, version 3: 7 components
 - Python Software Foundation License, version 2: 6 components
@@ -1198,6 +1198,17 @@ Python itself and libraries shipped in the shared runtime or an app's own depend
 - **How it reaches you:** Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
 - **What the licence asks of us:** Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 
+### ptts (Phonon text-to-speech runtime)
+
+- **What it is:** The engine that speaks the Phonon voices: a Rust extension with no PyTorch and no system packages. Ships in the shared runtime unmodified.
+- **Included in:** Every product in the family.
+- **Version:** 0.6.0
+- **Licence:** MIT OR Apache-2.0
+- **Copyright:** Copyright Gradium
+- **Upstream:** https://github.com/gradium-ai/xn-ptts
+- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
+- **What the licence asks of us:** Keep the copyright notice and the permission notice with every copy. Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
+
 ## Audio and video
 
 Separate programs and engines for playing, recording and converting media.
@@ -1305,6 +1316,17 @@ Speech engines, voices and recognition models.
 - **Upstream:** https://huggingface.co/hexgrad/Kokoro-82M
 - **How it reaches you:** Bundled: it is inside the installer or the portable zip.
 - **What the licence asks of us:** Keep the Apache-2.0 and MIT notices. Ship the GPL-3.0 text for phonemizer and eSpeak NG; their exact source is published with each release, in the copyleft source manifest and the archives it names.
+
+### Phonon 31m English model and voices
+
+- **What it is:** Offline neural English voices for Read Aloud and Studio narration, in the shared runtime at phonon-models\en. Unmodified; the voice catalogue is filtered to the English voices.
+- **Included in:** Every product in the family.
+- **Version:** phonon-31m-en 8c64b55; phonon-voices da6c9ec (37 English voices)
+- **Licence:** Apache-2.0
+- **Copyright:** Copyright Gradium. Phonon builds on Pocket TTS and the Mimi codec, developed by Kyutai.
+- **Upstream:** https://huggingface.co/gradium/phonon-31m-en
+- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
+- **What the licence asks of us:** Keep the Apache-2.0 text and the model card, which ships beside the weights as MODEL-CARD.md because neither repository carries a LICENSE file. Credit: Phonon 31m by Gradium. Phonon builds on Pocket TTS and the Mimi codec, developed by Kyutai.
 
 ### MathCAT
 
@@ -2316,7 +2338,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 
 ### Apache License, version 2.0
 
-Used by: cryptography, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, sherpa-onnx (with ONNX Runtime), tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe), Kokoro-82M voices and kokoro-onnx, Vosk small English model (vosk-model-small-en-us-0.15), Vosk speech recognition (with Kaldi).
+Used by: cryptography, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, sherpa-onnx (with ONNX Runtime), tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe), Kokoro-82M voices and kokoro-onnx, ptts (Phonon text-to-speech runtime), Phonon 31m English model and voices, Vosk small English model (vosk-model-small-en-us-0.15), Vosk speech recognition (with Kaldi).
 
 What it asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 
@@ -4873,7 +4895,7 @@ Library.
 
 ### MIT License
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, Git for Windows (MinGit) and GitHub CLI, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), TG Drop Deck (adapted code), Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and kokoro-onnx, MathCAT, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest, ruff, mypy and their plugins).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, Git for Windows (MinGit) and GitHub CLI, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), TG Drop Deck (adapted code), Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and kokoro-onnx, ptts (Phonon text-to-speech runtime), MathCAT, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest, ruff, mypy and their plugins).
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 
