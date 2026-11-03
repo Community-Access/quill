@@ -340,6 +340,7 @@ from quill.ui.main_frame_cues import CueMixin
 from quill.ui.main_frame_devtools import DevToolsMixin
 from quill.ui.main_frame_diagnostics import DiagnosticsMixin
 from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
+from quill.ui.main_frame_dimmed_keys import DimmedMarkupKeysMixin
 from quill.ui.main_frame_docconvert import DocConvertMixin
 from quill.ui.main_frame_editor_font import EditorFontMixin
 from quill.ui.main_frame_emoji_picker import EmojiPickerMixin
@@ -738,6 +739,7 @@ class MainFrame(
     FormatCodesMixin,
     GoToMixin,
     HeadingLevelsMixin,
+    DimmedMarkupKeysMixin,  # a dimmed row's key says why (2026-11-02)
     EditorFontMixin,
     NumberedBookmarksMixin,
     SpeechCommandsMixin,
@@ -1739,7 +1741,7 @@ class MainFrame(
         if sys.platform != "darwin":
             entries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL, wx.WXK_F4, self._id_close_document))
 
-        self.frame.SetAcceleratorTable(wx.AcceleratorTable(entries))
+        self._set_accelerator_base(entries)  # dimmed rows' keys still answer
 
     # Global hotkeys (registration, dispatch, dialogs) live in GlobalHotkeysMixin.
 
@@ -4515,6 +4517,7 @@ class MainFrame(
             menu_item = menu_bar.FindItemById(item_id)
             if menu_item is not None:
                 menu_item.Enable(html_only)
+        self._route_dimmed_markup_keys(markdown_ids, structured_markup_ids, html_ids)
         self._refresh_language_menu_radio(menu_bar)
         # A row that was disabled when the pass last ran was skipped on purpose,
         # so a row that has just been *enabled* has no route yet. Re-running the
