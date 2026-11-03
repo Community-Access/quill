@@ -6758,8 +6758,33 @@ including the SAPI 5 system voice, keep working while it downloads. If you
 are upgrading from a version that bundled these, your existing copies are
 kept and keep working, so there is nothing to download.
 
+#### Phonon voices
+
+**Phonon** is a newer neural voice that comes with QUILL, so there is nothing
+to download. It has 37 English voices plus its own default voice, and it runs
+entirely on your computer. It starts talking quickly, which you notice most
+when you press a key and want to hear something now. It reads numbers, dates
+and email addresses well on its own.
+
+Pick it in **Manage Voices** like any other engine, choose a voice, and press
+**Preview** to hear it. The speed control goes from 0.85 to 1.3 times normal.
+That is a narrower range than Kokoro's, because Phonon starts to fall apart
+past it, and QUILL would rather tell you than let you pick a speed that sounds
+broken. QUILL remembers your choices as `read_aloud_phonon_voice` and
+`read_aloud_phonon_speed`.
+
+Phonon needs a processor from about 2015 or later (one with AVX2). On an older
+computer the voices are still listed, marked "needs a newer computer", and
+choosing one tells you so and suggests Piper, which runs almost anywhere.
+Phonon never sends your text anywhere.
+
+Phonon 31m is by Gradium and is free under the Apache 2.0 licence. Phonon
+builds on Pocket TTS and the Mimi codec, developed by Kyutai. QUILL offers no
+voice cloning, and the voices should not be used to pass speech off as a real
+person's.
+
 **Manage Voices** is the **Speech (Offline)** tab of the Speech Settings
-dialog. It lists SAPI 5, DECtalk, Piper, Kokoro, and eSpeak NG. ElevenLabs,
+dialog. It lists SAPI 5, DECtalk, Piper, Kokoro, Phonon, and eSpeak NG. ElevenLabs,
 the only cloud voice, has its own **Speech (Online)** tab, so local and cloud
 voices are never mixed in one list. The **Set as Default** button (also on
 the voice list's right-click menu) applies your engine and voice choice at

@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Phonon voices (2026-11-02)
+
+- **Phonon, a new offline Read Aloud voice.** Gradium's Phonon 31m now comes
+  with QUILL and QUILL Studio: 37 English voices plus its own default, nothing
+  to download, and nothing sent anywhere. Choose **Phonon (neural, offline)**
+  in Manage Voices. It starts speaking quickly and reads numbers, dates and
+  email addresses well. Speed runs from 0.85 to 1.3 times normal. It needs a
+  processor from about 2015 or later; on an older one the voices are marked
+  "needs a newer computer" and QUILL suggests Piper. Apache 2.0; Phonon builds
+  on Pocket TTS and the Mimi codec by Kyutai.
+
 ### VS Code Signals sound pack (2026-11-02)
 
 - **A second sound scheme: VS Code Signals.** The accessibility signal sounds

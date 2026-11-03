@@ -273,9 +273,9 @@ quill/tools/build_third_party_notices.py. Do not edit it by hand.</p>
 </ul>
 <h2 id="summary-by-licence">Summary by licence</h2>
 <ul>
-<li>MIT License: 66 components</li>
+<li>MIT License: 67 components</li>
 <li>BSD 3-Clause License: 23 components</li>
-<li>Apache License, version 2.0: 14 components</li>
+<li>Apache License, version 2.0: 16 components</li>
 <li>GNU General Public License, version 2: 7 components</li>
 <li>GNU General Public License, version 3: 7 components</li>
 <li>Python Software Foundation License, version 2: 6 components</li>
@@ -2155,6 +2155,25 @@ it only when that app’s declared dependencies require it.</li>
 and keep copyright notices. Pass on any NOTICE file the component
 carries. Say so if we changed the component.</li>
 </ul>
+<h3 id="ptts-phonon-text-to-speech-runtime">ptts (Phonon text-to-speech
+runtime)</h3>
+<ul>
+<li><strong>What it is:</strong> The engine that speaks the Phonon
+voices: a Rust extension with no PyTorch and no system packages. Ships
+in the shared runtime unmodified.</li>
+<li><strong>Included in:</strong> Every product in the family.</li>
+<li><strong>Version:</strong> 0.6.0</li>
+<li><strong>Licence:</strong> MIT OR Apache-2.0</li>
+<li><strong>Copyright:</strong> Copyright Gradium</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/gradium-ai/xn-ptts">https://github.com/gradium-ai/xn-ptts</a></li>
+<li><strong>How it reaches you:</strong> Bundled: it is inside the
+installer or the portable zip.</li>
+<li><strong>What the licence asks of us:</strong> Keep the copyright
+notice and the permission notice with every copy. Ship the licence text
+and keep copyright notices. Pass on any NOTICE file the component
+carries. Say so if we changed the component.</li>
+</ul>
 <h2 id="audio-and-video">Audio and video</h2>
 <p>Separate programs and engines for playing, recording and converting
 media.</p>
@@ -2366,6 +2385,28 @@ installer or the portable zip.</li>
 and MIT notices. Ship the GPL-3.0 text for phonemizer and eSpeak NG;
 their exact source is published with each release, in the copyleft
 source manifest and the archives it names.</li>
+</ul>
+<h3 id="phonon-31m-english-model-and-voices">Phonon 31m English model
+and voices</h3>
+<ul>
+<li><strong>What it is:</strong> Offline neural English voices for Read
+Aloud and Studio narration, in the shared runtime at phonon-models\en.
+Unmodified; the voice catalogue is filtered to the English voices.</li>
+<li><strong>Included in:</strong> Every product in the family.</li>
+<li><strong>Version:</strong> phonon-31m-en 8c64b55; phonon-voices
+da6c9ec (37 English voices)</li>
+<li><strong>Licence:</strong> Apache-2.0</li>
+<li><strong>Copyright:</strong> Copyright Gradium. Phonon builds on
+Pocket TTS and the Mimi codec, developed by Kyutai.</li>
+<li><strong>Upstream:</strong> <a
+href="https://huggingface.co/gradium/phonon-31m-en">https://huggingface.co/gradium/phonon-31m-en</a></li>
+<li><strong>How it reaches you:</strong> Bundled: it is inside the
+installer or the portable zip.</li>
+<li><strong>What the licence asks of us:</strong> Keep the Apache-2.0
+text and the model card, which ships beside the weights as MODEL-CARD.md
+because neither repository carries a LICENSE file. Credit: Phonon 31m by
+Gradium. Phonon builds on Pocket TTS and the Mimi codec, developed by
+Kyutai.</li>
 </ul>
 <h3 id="mathcat">MathCAT</h3>
 <ul>
@@ -3614,8 +3655,9 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests,
 sherpa-onnx (with ONNX Runtime), tzdata, websocket-client, OpenAI Codex
 app-server (codex-app-server.exe), Kokoro-82M voices and kokoro-onnx,
-Vosk small English model (vosk-model-small-en-us-0.15), Vosk speech
-recognition (with Kaldi).</p>
+ptts (Phonon text-to-speech runtime), Phonon 31m English model and
+voices, Vosk small English model (vosk-model-small-en-us-0.15), Vosk
+speech recognition (with Kaldi).</p>
 <p>What it asks of us: Ship the licence text and keep copyright notices.
 Pass on any NOTICE file the component carries. Say so if we changed the
 component.</p>
@@ -6153,13 +6195,13 @@ Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm,
 truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), TG
 Drop Deck (adapted code), Dictation models: Moonshine tiny (English),
 Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and
-kokoro-onnx, MathCAT, Piper text-to-speech engine, Whisper models (GGML
-format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR
-annotations, iamcal/emoji-data), Image Description Toolkit (ideas and
-image prompt text), App icons, Page-turn sound
-(quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the
-indent-tone packs), VS Code accessibility signal sounds (the VS Code
-Signals sound pack), Weather alert sound
+kokoro-onnx, ptts (Phonon text-to-speech runtime), MathCAT, Piper
+text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji
+catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data),
+Image Description Toolkit (ideas and image prompt text), App icons,
+Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs
+(Ink and the indent-tone packs), VS Code accessibility signal sounds
+(the VS Code Signals sound pack), Weather alert sound
 (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest,
 ruff, mypy and their plugins).</p>
 <p>What it asks of us: Keep the copyright notice and the permission

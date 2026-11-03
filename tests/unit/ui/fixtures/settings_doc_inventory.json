@@ -232,6 +232,8 @@
   "read_aloud_kokoro_voice": "grandfathered",
   "read_aloud_macos_rate": "grandfathered",
   "read_aloud_macos_voice": "grandfathered",
+  "read_aloud_phonon_speed": "documented",
+  "read_aloud_phonon_voice": "documented",
   "read_aloud_piper_executable": "grandfathered",
   "read_aloud_piper_model": "grandfathered",
   "read_aloud_piper_model_dir": "grandfathered",

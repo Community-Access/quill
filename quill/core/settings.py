@@ -240,6 +240,10 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     read_aloud_piper_model_dir: str = ""
     read_aloud_kokoro_voice: str = "af_heart"
     read_aloud_kokoro_speed: float = 1.0
+    #: Phonon 31m voice name ("default" = the model's own voice) and speed,
+    #: 0.85 to 1.3 -- the range the model's duration condition holds together.
+    read_aloud_phonon_voice: str = "default"
+    read_aloud_phonon_speed: float = 1.0
     read_aloud_espeak_executable: str = ""
     read_aloud_espeak_voice: str = "en"
     read_aloud_espeak_rate: int = 175
@@ -1003,6 +1007,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             "dectalk",
             "piper",
             "kokoro",
+            "phonon",
             "espeak",
             "macos",
             "elevenlabs",
@@ -1036,6 +1041,14 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         except (TypeError, ValueError):
             read_aloud_kokoro_speed = 1.0
         read_aloud_kokoro_speed = max(0.5, min(2.0, read_aloud_kokoro_speed))
+        read_aloud_phonon_voice = (
+            str(data.get("read_aloud_phonon_voice", "default")).strip() or "default"
+        )
+        try:
+            read_aloud_phonon_speed = float(data.get("read_aloud_phonon_speed", 1.0))
+        except (TypeError, ValueError):
+            read_aloud_phonon_speed = 1.0
+        read_aloud_phonon_speed = max(0.85, min(1.3, read_aloud_phonon_speed))
         read_aloud_espeak_executable = str(data.get("read_aloud_espeak_executable", "")).strip()
         read_aloud_espeak_voice = str(data.get("read_aloud_espeak_voice", "en")).strip() or "en"
         read_aloud_espeak_rate = _clamp_int(data.get("read_aloud_espeak_rate", 175), 175, 80, 450)
@@ -1754,6 +1767,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             read_aloud_piper_model_dir=read_aloud_piper_model_dir,
             read_aloud_kokoro_voice=read_aloud_kokoro_voice,
             read_aloud_kokoro_speed=read_aloud_kokoro_speed,
+            read_aloud_phonon_voice=read_aloud_phonon_voice,
+            read_aloud_phonon_speed=read_aloud_phonon_speed,
             read_aloud_espeak_executable=read_aloud_espeak_executable,
             read_aloud_espeak_voice=read_aloud_espeak_voice,
             read_aloud_espeak_rate=read_aloud_espeak_rate,

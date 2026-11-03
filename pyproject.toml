@@ -367,6 +367,12 @@ github = [
 # python-dateutil come with it.
 ai-copilot = ["github-copilot-sdk==1.0.28"]  # PyPI package; imports as `copilot`
 ai-claude = ["claude-agent-sdk>=0.2.160"]
+# Phonon 31m, Gradium's offline neural voice (phononprd.md): a Rust extension,
+# abi3, about 7 MB, with numpy its only dependency. It ships in the shared
+# runtime with its model (scripts/fetch_build_deps.py --only phonon), so Read
+# Aloud and Studio narration never download it. Pinned exactly: the project is
+# young and the model files are pinned against this release's loader.
+tts-phonon = ["ptts==0.6.0"]
 ai-openai = ["openai-agents>=0.22.3"]
 # Build-time only: compile the optional Table Studio native UIA provider
 # (quill/native/table_uia -> _quill_table_uia.pyd). Also needs MSVC + the
@@ -475,6 +481,8 @@ runtime = [
   "quill[pdf-ocr]",
   # My GitHub Copilot (codex.md 10A.12): the SDK beside the CLI in tools/copilot.
   "quill[ai-copilot]",
+  # Phonon voices for Read Aloud and Studio narration (phononprd.md R-43).
+  "quill[tts-phonon]",
   "quill[youtube]",
   "quill[fasterwhisper]",
   "quill[vosk]",

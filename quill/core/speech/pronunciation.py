@@ -31,7 +31,7 @@ from typing import Any
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 
-ENGINES: frozenset[str] = frozenset({"sapi5", "dectalk", "piper", "kokoro", "espeak"})
+ENGINES: frozenset[str] = frozenset({"sapi5", "dectalk", "piper", "kokoro", "phonon", "espeak"})
 _MODES: frozenset[str] = frozenset({"respelling", "phoneme", "ssml"})
 _SCOPES: frozenset[str] = frozenset({"global", "project"})
 

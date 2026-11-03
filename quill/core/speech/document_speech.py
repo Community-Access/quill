@@ -36,7 +36,7 @@ from quill.core.speech.translate_sections import Translator, translate_sections
 
 # Engine ids accepted by :func:`make_synthesizer`. These mirror the
 # ``read_aloud_engine`` setting and the batch options' per-engine blocks.
-SUPPORTED_ENGINES = ("sapi5", "kokoro", "piper", "dectalk", "espeak", "macos")
+SUPPORTED_ENGINES = ("sapi5", "kokoro", "phonon", "piper", "dectalk", "espeak", "macos")
 # Multilingual cloud TTS providers (the premium tier for translated export). Each
 # voice can speak any language, so these are the natural fit for a translated
 # document; they require a configured API key and ffmpeg (to conform the provider's
@@ -52,7 +52,7 @@ CLOUD_ENGINES = ("openai", "gemini", "elevenlabs")
 # per-request caps) takes the large default to avoid needless per-call overhead.
 # This is the single source of truth -- batch, per-document, and translated
 # export all resolve their cap here so no path silently over-feeds an engine.
-_ENGINE_CHUNK_CHARS = {"kokoro": 500, "piper": 4000}
+_ENGINE_CHUNK_CHARS = {"kokoro": 500, "phonon": 600, "piper": 4000}
 DEFAULT_CHUNK_CHARS = 8000
 
 
@@ -119,6 +119,14 @@ def make_synthesizer(spec: SynthesisSpec) -> Synthesizer:
             )
 
         return _kokoro
+
+    if engine == "phonon":
+        from quill.core.speech.phonon_tts import synthesize_with_phonon
+
+        def _phonon(text: str, out: Path) -> None:
+            synthesize_with_phonon(text, out, voice=spec.voice or "default", speed=spec.speed)
+
+        return _phonon
 
     if engine == "piper":
         piper_exe = spec.executable or read_aloud.discover_piper_executable()

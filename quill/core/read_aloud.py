@@ -444,6 +444,12 @@ def list_kokoro_voices() -> list[VoiceOption]:
     return result
 
 
+def list_phonon_voices() -> list[VoiceOption]:
+    from quill.core.speech import phonon_tts
+
+    return phonon_tts.voice_options()
+
+
 def list_piper_voices(model_search_path: str = "") -> list[VoiceOption]:
     """Return ONNX model files found under model_search_path as voice options."""
     if not model_search_path.strip():
@@ -1130,6 +1136,12 @@ class KokoroSynthesisError(ReadAloudUnavailableError):
     code = "QUILL-READALOUD-KOKORO-SYNTH"
 
 
+class PhononUnavailableError(ReadAloudUnavailableError):
+    """Phonon cannot run here: an older processor, or its files are missing."""
+
+    code = "QUILL-READALOUD-PHONON-UNAVAILABLE"
+
+
 class ReadAloudController:
     def __init__(self) -> None:
         self._state = "idle"
@@ -1175,6 +1187,8 @@ class ReadAloudController:
         piper_model: str = "",
         kokoro_voice: str = "af_heart",
         kokoro_speed: float = 1.0,
+        phonon_voice: str = "default",
+        phonon_speed: float = 1.0,
         espeak_executable: str = "",
         espeak_voice: str = "en",
         espeak_rate: int = 175,
@@ -1199,6 +1213,7 @@ class ReadAloudController:
             "dectalk",
             "piper",
             "kokoro",
+            "phonon",
             "espeak",
             "macos",
             "elevenlabs",
@@ -1214,6 +1229,10 @@ class ReadAloudController:
             _mdl = Path(piper_model).expanduser() if piper_model.strip() else None
             if _mdl is None or not _mdl.exists():
                 raise ReadAloudUnavailableError("Piper model (.onnx) file was not found")
+        if normalized_engine == "phonon":
+            from quill.core.speech.phonon_tts import require_ready
+
+            require_ready()
         if normalized_engine == "espeak" and discover_espeak_executable(espeak_executable) is None:
             raise ReadAloudUnavailableError(
                 "eSpeak-NG executable was not found. "
@@ -1295,6 +1314,10 @@ class ReadAloudController:
                         speed=kokoro_speed,
                         on_progress=on_progress,
                     )
+                elif normalized_engine == "phonon":
+                    from quill.core.speech.phonon_tts import run_live
+
+                    run_live(self, spans, text, phonon_voice, phonon_speed, on_progress)
                 elif normalized_engine == "espeak":
                     self._run_espeak_live(
                         spans,

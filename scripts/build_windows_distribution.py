@@ -1202,6 +1202,8 @@ def build_inno_setup_script(
         "AppName={#AppName}",
         "AppVersion={#AppVersion}",
         "AppPublisher={#AppPublisher}",
+        "AppCopyright=Copyright (c) 2026 Jeff Bishop",
+        "VersionInfoCopyright=Copyright (c) 2026 Jeff Bishop",
         "AppPublisherURL={#AppURL}",
         "AppSupportURL={#AppURL}",
         "AppUpdatesURL={#AppURL}",

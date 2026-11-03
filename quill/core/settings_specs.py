@@ -1663,6 +1663,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("dectalk", "DECtalk"),
             ("piper", "Piper"),
             ("kokoro", "Kokoro"),
+            ("phonon", "Phonon"),
             ("espeak", "eSpeak"),
             ("macos", "macOS (system voice)"),
             ("elevenlabs", "ElevenLabs (premium cloud)"),

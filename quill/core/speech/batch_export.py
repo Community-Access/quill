@@ -48,7 +48,7 @@ ExistingPolicy = Literal["skip", "overwrite", "rename"]
 # Engines that are NOT safe to drive from several threads at once: SAPI 5 is a
 # single-apartment COM voice and Kokoro shares one cached in-process model. These
 # are pinned to one worker regardless of ``max_workers`` (§4 concurrency guard).
-_SINGLE_THREAD_ENGINES: frozenset[str] = frozenset({"sapi5", "kokoro", "pyttsx3"})
+_SINGLE_THREAD_ENGINES: frozenset[str] = frozenset({"sapi5", "kokoro", "phonon", "pyttsx3"})
 
 
 @dataclass
@@ -115,6 +115,9 @@ class BatchExportOptions:
     # Kokoro
     kokoro_voice: str = "af_heart"
     kokoro_speed: float = 1.0
+    # Phonon 31m
+    phonon_voice: str = "default"
+    phonon_speed: float = 1.0
     # eSpeak-NG
     espeak_executable: Path | None = None
     espeak_voice: str = "en"
@@ -247,6 +250,15 @@ def _synthesize_one(text: str, output_path: Path, opts: BatchExportOptions) -> N
             output_path,
             voice=opts.kokoro_voice,
             speed=opts.kokoro_speed,
+        )
+    elif engine == "phonon":
+        from quill.core.speech.phonon_tts import synthesize_with_phonon
+
+        synthesize_with_phonon(
+            text,
+            output_path,
+            voice=opts.phonon_voice,
+            speed=opts.phonon_speed,
         )
     elif engine == "espeak":
         if opts.espeak_executable is None:

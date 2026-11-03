@@ -2318,6 +2318,43 @@
       "obligations": "Keep the Apache-2.0 and MIT notices. Ship the GPL-3.0 text for phonemizer and eSpeak NG; their exact source is published with each release, in the copyleft source manifest and the archives it names."
     },
     {
+      "id": "ptts",
+      "name": "ptts (Phonon text-to-speech runtime)",
+      "group": "runtime",
+      "version": "0.6.0",
+      "licenses": [
+        "MIT",
+        "Apache-2.0"
+      ],
+      "license_label": "MIT OR Apache-2.0",
+      "copyright": "Copyright Gradium",
+      "homepage": "https://github.com/gradium-ai/xn-ptts",
+      "what": "The engine that speaks the Phonon voices: a Rust extension with no PyTorch and no system packages. Ships in the shared runtime unmodified.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "ptts"
+    },
+    {
+      "id": "phonon-31m",
+      "name": "Phonon 31m English model and voices",
+      "group": "speech",
+      "version": "phonon-31m-en 8c64b55; phonon-voices da6c9ec (37 English voices)",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0",
+      "copyright": "Copyright Gradium. Phonon builds on Pocket TTS and the Mimi codec, developed by Kyutai.",
+      "homepage": "https://huggingface.co/gradium/phonon-31m-en",
+      "what": "Offline neural English voices for Read Aloud and Studio narration, in the shared runtime at phonon-models\\en. Unmodified; the voice catalogue is filtered to the English voices.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "obligations": "Keep the Apache-2.0 text and the model card, which ships beside the weights as MODEL-CARD.md because neither repository carries a LICENSE file. Credit: Phonon 31m by Gradium. Phonon builds on Pocket TTS and the Mimi codec, developed by Kyutai."
+    },
+    {
       "id": "mathcat",
       "name": "MathCAT",
       "group": "speech",

@@ -129,6 +129,8 @@ class ReadAloudMixin:
                 piper_model=self.settings.read_aloud_piper_model,
                 kokoro_voice=self.settings.read_aloud_kokoro_voice,
                 kokoro_speed=self.settings.read_aloud_kokoro_speed,
+                phonon_voice=self.settings.read_aloud_phonon_voice,
+                phonon_speed=self.settings.read_aloud_phonon_speed,
                 espeak_executable=self.settings.read_aloud_espeak_executable,
                 espeak_voice=self.settings.read_aloud_espeak_voice,
                 espeak_rate=self.settings.read_aloud_espeak_rate,
@@ -369,6 +371,17 @@ class ReadAloudMixin:
                     self._set_status("Speech generation cancelled")
                     return
 
+        elif engine == "phonon":
+            from quill.core.speech import phonon_tts
+
+            status = phonon_tts.phonon_status()
+            if status != "ready":
+                self._show_message_box(
+                    phonon_tts.unavailable_message(status), _TITLE, wx.ICON_ERROR | wx.OK
+                )
+                self._set_status("Speech generation cancelled")
+                return
+
         save_settings(s)
         task_label = f"Generating speech audio ({output_path.name}) via {engine}"
 
@@ -382,6 +395,8 @@ class ReadAloudMixin:
         _kokoro_voice = s.read_aloud_kokoro_voice
         _kokoro_speed = s.read_aloud_kokoro_speed
         _kokoro_install_pkg = kokoro_install_pkg
+        _phonon_voice = s.read_aloud_phonon_voice
+        _phonon_speed = s.read_aloud_phonon_speed
         _espeak_voice = s.read_aloud_espeak_voice
         _espeak_rate = s.read_aloud_espeak_rate
         _out = output_path
@@ -434,6 +449,12 @@ class ReadAloudMixin:
                     )
                 synthesize_with_kokoro(
                     _out_text, wav_target, voice=_kokoro_voice, speed=_kokoro_speed
+                )
+            elif _engine == "phonon":
+                from quill.core.speech.phonon_tts import synthesize_with_phonon
+
+                synthesize_with_phonon(
+                    _out_text, wav_target, voice=_phonon_voice, speed=_phonon_speed
                 )
             elif _engine == "espeak":
                 synthesize_with_espeak(

@@ -139,9 +139,9 @@ Seven steps: Start, What should I read?, Who should read it?, How should chapter
 
 ### Who should read it?
 
-- **Engine** - Windows (SAPI 5), DECtalk, Piper (neural, offline), Kokoro (neural, offline), eSpeak-NG (many languages); on a Mac, the macOS system voice as well. An engine that is not installed yet is labeled "(not installed)" - see "Voices" below. DECtalk must be installed separately.
+- **Engine** - Windows (SAPI 5), DECtalk, Piper (neural, offline), Kokoro (neural, offline), Phonon (neural, offline), eSpeak-NG (many languages); on a Mac, the macOS system voice as well. An engine that is not installed yet is labeled "(not installed)" - see "Voices" below. DECtalk must be installed separately.
 - **Voice** and **Preview voice** - hear the chosen voice before committing. Previews play a bundled sample when one ships, or synthesize live with the real engine when it is installed.
-- **Rate (WPM)** and **Kokoro speed** - pace controls.
+- **Rate (WPM)** and **Kokoro speed** - pace controls. Phonon uses the speed control too, from 0.85 to 1.3.
 - **Round-robin voices** (optional) - build an ordered rotation; article 1 gets voice 1, article 2 voice 2, wrapping around. **Add voice**, **Move Up**, **Move Down**, **Remove**. The rotation uses voices of the selected engine; switching engines clears it.
 - **Voice casting** (optional) - explicit assignment layered over the rotation. Add a rule: a pattern plus the voice that should read every matching chapter. Patterns match the heading title as a glob (`Chapter *`, `*interview*`) or a section number (`#1` for the opener). The first matching rule wins; unmatched chapters fall through to the rotation or the single voice. This is how dialogue-heavy fiction gets cast deliberately.
 - **Also export in other languages (translated)** - add language + voice pairs to produce translated editions alongside the original. Voices are offered local-first (eSpeak, installed system voices), then the premium multilingual cloud voices (OpenAI, Gemini, ElevenLabs), which need the matching provider API key at run time. Choose **Translate with**: your configured AI provider (cloud) or LibreTranslate (local).
@@ -287,6 +287,7 @@ Opens the Publish dialog for this book - save your chapter edits first. See "Pub
 - **DECtalk** - the classic formant synthesizer, usable if you have installed it separately. QUILL does not distribute it or its preview samples.
 - **Piper** - neural voices that run entirely offline; download individual voices from a catalog.
 - **Kokoro** - modern neural voices, entirely on your machine, in several languages; a one-time model download.
+- **Phonon** - 37 English neural voices that come with Studio, so there is nothing to download. Quick to start, good with numbers and email addresses, and its speed runs from 0.85 to 1.3 times normal. It needs a processor from about 2015 or later; on an older one the voices are marked "needs a newer computer" and Studio suggests Piper instead. Phonon 31m is by Gradium, free under Apache 2.0, and builds on Pocket TTS and the Mimi codec by Kyutai.
 - **eSpeak-NG** - compact and fast, speaks a very large number of languages.
 - **macOS (system voice)** - on a Mac, the system `say` voices.
 - **Cloud voices** - ElevenLabs on the Speech Hub's online tab, and OpenAI / Gemini / ElevenLabs multilingual voices as translation-target voices. All require your own API key and are never used without it.

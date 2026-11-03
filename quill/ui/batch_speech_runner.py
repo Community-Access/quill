@@ -36,6 +36,7 @@ _ENGINE_OPTIONS = [
     ("DECtalk", "dectalk"),
     ("Piper (neural, offline)", "piper"),
     ("Kokoro (neural, offline)", "kokoro"),
+    ("Phonon (neural, offline)", "phonon"),
     ("eSpeak-NG (many languages)", "espeak"),
 ]
 if sys.platform == "darwin":
@@ -45,21 +46,10 @@ if sys.platform == "darwin":
 
 def _voices_for(engine: str) -> list[tuple[str, str]]:
     """[(voice_label, voice_id)] for *engine*, mirroring the Speech Hub lists."""
-    from quill.core import read_aloud as ra
+    from quill.ui.voice_browser_settings import engine_voices
 
     try:
-        if engine == "kokoro":
-            voices = ra.list_kokoro_voices()
-        elif engine == "piper":
-            voices = ra.list_piper_catalog_voices()
-        elif engine == "espeak":
-            voices = ra.list_espeak_voices()
-        elif engine == "dectalk":
-            voices = ra.list_dectalk_voices()
-        elif engine == "macos":
-            voices = ra.list_macos_voices()
-        else:  # sapi5
-            voices = ra.list_voices()
+        voices = engine_voices("sapi5" if engine == "elevenlabs" else engine)
     except Exception:  # noqa: BLE001 - a missing engine yields an empty list
         return []
     return [(v.name or v.id, v.id) for v in voices]
@@ -70,6 +60,7 @@ def _defaults(frame: Any) -> BatchSpeechRequest:
     engine = (s.read_aloud_engine or "sapi5").strip().lower()
     voice = {
         "kokoro": s.read_aloud_kokoro_voice,
+        "phonon": s.read_aloud_phonon_voice,
         "dectalk": s.read_aloud_dectalk_voice,
         "espeak": s.read_aloud_espeak_voice,
         "macos": s.read_aloud_macos_voice,
@@ -89,7 +80,7 @@ def _defaults(frame: Any) -> BatchSpeechRequest:
         engine=engine,
         voice=voice or "",
         rate=int(s.read_aloud_rate),
-        speed=float(s.read_aloud_kokoro_speed),
+        speed=float(s.read_aloud_phonon_speed if engine == "phonon" else s.read_aloud_kokoro_speed),
         output_format="mp3",
         sound_enabled=bool(s.batch_speech_chapter_sound_enabled),
         sound_volume=int(s.batch_speech_chapter_sound_volume),
@@ -113,6 +104,7 @@ def _engine_available(frame: Any) -> dict[str, bool]:
         kokoro_engine_ready,
         macos_say_available,
     )
+    from quill.core.speech.phonon_tts import phonon_engine_ready
 
     s = frame.settings
     return {
@@ -129,6 +121,7 @@ def _engine_available(frame: Any) -> dict[str, bool]:
         # true-readiness check the Speech Hub and the editor's own engine map
         # use, so all three surfaces now agree on whether Kokoro is usable.
         "kokoro": kokoro_engine_ready(),
+        "phonon": phonon_engine_ready(),
         "espeak": discover_espeak_executable(getattr(s, "read_aloud_espeak_executable", ""))
         is not None,
         "macos": macos_say_available(),
@@ -500,6 +493,8 @@ def _persist_choices(frame: Any, req: BatchSpeechRequest) -> None:
     if req.voice:
         if req.engine == "kokoro":
             s.read_aloud_kokoro_voice = req.voice
+        elif req.engine == "phonon":
+            s.read_aloud_phonon_voice = req.voice
         elif req.engine == "dectalk":
             s.read_aloud_dectalk_voice = req.voice
         elif req.engine == "espeak":
@@ -509,7 +504,9 @@ def _persist_choices(frame: Any, req: BatchSpeechRequest) -> None:
         elif req.engine == "sapi5":
             s.read_aloud_voice = req.voice
     s.read_aloud_rate = req.rate
-    s.read_aloud_kokoro_speed = req.speed
+    from quill.ui.voice_browser_settings import store_speed
+
+    store_speed(req.engine, s, req.speed)
     s.batch_speech_chapter_sound_enabled = req.sound_enabled
     s.batch_speech_chapter_sound_volume = req.sound_volume
     s.batch_speech_article_gap_ms = req.article_gap_ms

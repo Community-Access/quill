@@ -9873,6 +9873,7 @@ class MainFrame(
             ("DECtalk voice", settings.read_aloud_dectalk_voice),
             ("Piper model", settings.read_aloud_piper_model or "Not configured"),
             ("Kokoro voice", settings.read_aloud_kokoro_voice),
+            ("Phonon voice", settings.read_aloud_phonon_voice),
             ("eSpeak executable", settings.read_aloud_espeak_executable or "PATH lookup"),
             ("eSpeak English voice", settings.read_aloud_espeak_voice),
         ]:

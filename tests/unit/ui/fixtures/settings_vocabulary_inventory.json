@@ -352,6 +352,8 @@
   "quill:read_aloud_kokoro_voice": "one_side",
   "quill:read_aloud_macos_rate": "one_side",
   "quill:read_aloud_macos_voice": "one_side",
+  "quill:read_aloud_phonon_speed": "one_side",
+  "quill:read_aloud_phonon_voice": "one_side",
   "quill:read_aloud_piper_executable": "one_side",
   "quill:read_aloud_piper_model": "one_side",
   "quill:read_aloud_piper_model_dir": "one_side",

@@ -12,6 +12,10 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### Phonon voices (2026-11-02)
+
+- **Phonon, a new offline voice for narration** (2026-11-02). Gradium's Phonon 31m comes with Studio: 37 English voices plus its own default, nothing to download, and nothing sent anywhere. Pick **Phonon (neural, offline)** in the Speech Hub or the narration wizard. It starts speaking quickly and handles numbers, dates and email addresses on its own. Its speed runs from 0.85 to 1.3 times normal, because past that the voice breaks up. It needs a processor from about 2015 or later; on an older one the voices say "needs a newer computer" and Studio suggests Piper. Phonon is free under Apache 2.0 and builds on Pocket TTS and the Mimi codec by Kyutai.
+
 ### VS Code Signals sound scheme (2026-11-02)
 
 - **A second sound scheme: VS Code Signals** (2026-11-02). QUILL Studio plays the QUILL family's sound scheme, and there are now two: Ink, still the default, and VS Code Signals, the accessibility signal sounds from Visual Studio Code, used under the MIT licence. Choose in the Sound Scheme window of QUILL or QUILL Lite, or in QUILL's setup wizard, and QUILL Studio plays it from the next time it starts. Anything it has no sound for stays quiet, or is spoken instead.

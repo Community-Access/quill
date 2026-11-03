@@ -395,6 +395,12 @@ class VoicePreviewMixin:
                         voice=voice_id,
                         speed=s.read_aloud_kokoro_speed,
                     )
+                elif engine == "phonon":
+                    from quill.core.speech.phonon_tts import synthesize_with_phonon
+
+                    synthesize_with_phonon(
+                        sample, wav, voice=voice_id, speed=s.read_aloud_phonon_speed
+                    )
                 elif engine == "espeak":
                     exe = discover_espeak_executable(s.read_aloud_espeak_executable)
                     if exe is None:
