@@ -125,6 +125,7 @@ class _FakeTTS:
 
 @pytest.fixture
 def fake_ptts(model_dir: Path, monkeypatch: pytest.MonkeyPatch) -> types.ModuleType:
+    pytest.importorskip("numpy")  # ptts depends on it; the CI unit image has neither
     module = types.ModuleType("ptts")
     module.TTS = _FakeTTS  # type: ignore[attr-defined]
     module.threads = []  # type: ignore[attr-defined]

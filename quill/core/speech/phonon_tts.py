@@ -346,14 +346,14 @@ def synthesize_with_phonon(
     model_dir: Path | None = None,
 ) -> Path:
     """Speak *text* into a mono 16-bit WAV at *output_path*."""
-    import numpy as np
-
     directory = model_dir or default_phonon_model_dir()
     if directory is None:
         from quill.core.read_aloud import PhononUnavailableError
 
         raise PhononUnavailableError(unavailable_message("model"))
     tts = _get_cached_phonon(directory)
+    import numpy as np  # after the readiness checks: ptts brings numpy
+
     chosen = None if not voice or voice == DEFAULT_VOICE else voice
     parts: list[Any] = []
     with _LOCK:  # one model, one set of conditions: callers take turns

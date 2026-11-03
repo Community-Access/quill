@@ -1007,6 +1007,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             "dectalk",
             "piper",
             "kokoro",
+            "phonon",
             "espeak",
             "macos",
             "elevenlabs",
