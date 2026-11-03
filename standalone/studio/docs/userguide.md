@@ -255,7 +255,7 @@ All by ear:
 Both propose, never impose - proposals land in the list for review, and **Restore original** undoes them.
 
 - **Propose chapters from silences...** - scans the recording with ffmpeg for silences and proposes boundaries at the silence midpoints. A small dialog asks for the noise threshold (dB, default -30) and minimum silence length (seconds, default 0.8). The one-long-recording story is complete: open a single 80-minute file, press one button, review, save.
-- **Propose AI titles...** - names a folder of "track07"-style chapters by listening to them. The opening minute of each chapter is transcribed on your machine by the local speech model (the audio never leaves your computer); only that text goes to your configured AI, which proposes a short title per chapter. Needs a configured AI (AI > Set Up AI...) and is unavailable in Safe Mode. The Studio asks before starting and tells you exactly what will be sent.
+- **Propose AI titles...** - names a folder of "track07"-style chapters by listening to them. The opening minute of each chapter is transcribed on your machine by the local speech model (the audio never leaves your computer); only that text goes to your configured AI, which proposes a short title per chapter. Needs a configured AI (AI > Accounts and Usage > Set Up AI...) and is unavailable in Safe Mode. The Studio asks before starting and tells you exactly what will be sent.
 - **Check against ACX** - measures the book against Audible's ACX submission window (integrated loudness, true peak, noise floor) and shows a verdict dialog with a plain-language recommendation for each failing criterion. The verdict is also announced, so you hear it even if you dismiss the dialog with Escape.
 
 ### Import, export, and split
@@ -452,7 +452,7 @@ It needs an AI that can see. The first time, Studio asks the same picture questi
 
 ### Set Up AI
 
-**AI > Set Up AI...** runs a short, jargon-free wizard: choose how AI should run - a cloud provider with your own key (paste it, test it) or a local model via Ollama (nothing leaves your machine) - and you land ready to go. Nothing is applied until you confirm, and you can cancel at any point with nothing lost.
+**AI > Accounts and Usage > Set Up AI...** runs a short, jargon-free wizard: choose how AI should run - a cloud provider with your own key (paste it, test it) or a local model via Ollama (nothing leaves your machine) - and you land ready to go. Nothing is applied until you confirm, and you can cancel at any point with nothing lost.
 
 Set Up AI is separate from Choose Your AI. The provider it sets up powers three things in this app:
 
@@ -699,7 +699,7 @@ Two Help items are worth knowing before anything else goes wrong. **Help > View 
 - **A Piper voice is selected but will not speak.** The voice model has not been downloaded; the Speech Hub's Download Voice button fetches it.
 - **A book in Your books is marked "(missing)".** The file was moved or renamed. Open it from its new location with Ctrl+O (the list updates), or press Delete to drop the stale entry.
 - **The Save button is disabled in the Workbench.** The book is an M4B; use **Save As...** - M4B chapter data cannot be rewritten in place, so the Workbench re-muxes losslessly to a new file.
-- **"Propose AI titles" says it needs a configured AI provider.** Run **AI > Set Up AI...** first - or you are in Safe Mode, where every AI surface is disabled.
+- **"Propose AI titles" says it needs a configured AI provider.** Run **AI > Accounts and Usage > Set Up AI...** first - or you are in Safe Mode, where every AI surface is disabled.
 - **A translated edition was skipped.** The cloud voice you chose for that language has no API key configured; the run notes the skip and continues rather than stopping.
 - **Closing the window warns about work in progress.** A narration or build run is still going. Choose No to keep the Studio open, or minimize to the tray and let it finish; the "When closing the window" preference sets a fixed answer.
 - **Windows SmartScreen blocks the installer.** The release is not code-signed; choose "More info" then "Run anyway".
@@ -1081,7 +1081,7 @@ The interface's inputs then appear under **Microphone device** in Record a demon
 
 **Capture > New picture with AI...** (Ctrl+Alt+Shift+J) makes a picture from your description, such as a cover for a podcast or the picture for a YouTube video. You describe it in words and change it in words; you never have to see it.
 
-It uses the AI provider you set up in **AI > Set Up AI**, when that provider makes pictures: OpenAI or Google Gemini. Other providers are told plainly that they cannot.
+It uses the AI provider you set up in **AI > Accounts and Usage > Set Up AI**, when that provider makes pictures: OpenAI or Google Gemini. Other providers are told plainly that they cannot.
 
 ### Making the first picture
 

@@ -2413,7 +2413,7 @@ somebody else using the machine is not consent.
 So the agreement is asked for on its own, stored as a **version** rather than a
 yes, so that a material change to what is sent or kept can ask again instead of
 the old answer being taken to cover the new thing. It is reachable by three
-doors -- **Tools > AI > Privacy Agreement**, a check box in **Preferences**, and
+doors -- **Tools > AI > Accounts and Usage > Privacy Agreement**, a check box in **Preferences**, and
 switching the area on in **Customize Features** -- because the place somebody
 looks depends on which part of the app they already know. All three read and
 write the same answer, so none of them can disagree with the others.

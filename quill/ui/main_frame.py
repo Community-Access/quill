@@ -739,7 +739,7 @@ class MainFrame(
     FormatCodesMixin,
     GoToMixin,
     HeadingLevelsMixin,
-    DimmedMarkupKeysMixin,  # a dimmed row's key says why (2026-11-02)
+    DimmedMarkupKeysMixin,  # a dimmed row's key says why, 2026-11-02
     EditorFontMixin,
     NumberedBookmarksMixin,
     SpeechCommandsMixin,

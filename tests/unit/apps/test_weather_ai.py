@@ -111,13 +111,10 @@ def test_the_ai_menu_sits_after_options_on_the_fallback_keys(weather) -> None:
     labels = [i.GetItemLabel() for i in _menu(weather, "AI").GetMenuItems() if not i.IsSeparator()]
     assert labels == [
         "&Ask...\tCtrl+Shift+8",
+        "Should I &Go Out?\tCtrl+Shift+G",
         "&Which AI Am I Using\tCtrl+F8",
         "&Choose Your AI...\tCtrl+Shift+F8",
-        "Should I &Go Out?\tCtrl+Shift+G",
-        "Use My C&hatGPT Subscription...\tAlt+F5",
-        "Use My &Own AI Key...\tAlt+F2",
-        "AI U&sage...\tCtrl+Alt+Shift+F2",
-        "&Privacy Agreement...\tCtrl+Alt+Shift+K",
+        "Accounts and &Usage",
     ]
     assert weather.commands.get("weather.ai_go_out") is not None
 
