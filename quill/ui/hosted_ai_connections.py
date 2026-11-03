@@ -328,7 +328,9 @@ class ChooseAiFrame(wx.Frame):
             self._about.SetValue(self._service.engine_unavailable_about(row.connection))
         else:
             record = self._service.capability_record(row.connection)
-            provider = getattr(self._service, "own_key_provider", "openai") or "openai"
+            provider = ""  # no key saved yet: the row names every provider
+            if row.connection != OWN_KEY or row.state in (IN_USE, SIGNED_IN):
+                provider = getattr(self._service, "own_key_provider", "openai") or "openai"
             self._about.SetValue(words.about_line(record, own_key_provider=provider))
         action = words.row_action(row, free_connected=bool(self._service.signed_in))
         self._action.SetLabel(words.ACTION_LABELS[action])

@@ -130,13 +130,10 @@ def test_the_ai_menu_sits_before_quillville_on_the_fallback_keys(player) -> None
     labels = [i.GetItemLabel() for i in _menu(player, "AI").GetMenuItems() if not i.IsSeparator()]
     assert labels == [
         "&Ask...\tCtrl+Shift+8",
+        "&Find the Part Where (needs Copilot or Codex)...\tCtrl+F3",
         "&Which AI Am I Using\tCtrl+F8",
         "&Choose Your AI...\tCtrl+Shift+F8",
-        "&Find the Part Where (needs Copilot or Codex)...\tCtrl+F3",
-        "Use My C&hatGPT Subscription...\tAlt+F5",
-        "Use My &Own AI Key...\tAlt+F2",
-        "AI U&sage...\tCtrl+Alt+Shift+F2",
-        "&Privacy Agreement...\tCtrl+Alt+Shift+K",
+        "Accounts and &Usage",
     ]
 
 

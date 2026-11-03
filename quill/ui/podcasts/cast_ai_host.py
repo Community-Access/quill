@@ -48,15 +48,17 @@ _FEATURE = "hosted_ai"
 #: other letter of "Find and Follow" is taken in this submenu, so it is Fo&llow
 #: (Build Me a Listening Run moved to the free B to give up the L).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
+    # The family's one AI menu shape (quill/core/ai/ai_menu_layout.py): the
+    # ways to ask, then what Cast's AI does, then Which AI and Choose Your AI,
+    # then Accounts and Usage, whatever order this table lists them in.
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
-    ("tools.hosted_ai_which", "Which AI A&m I Using", "cmd_ai_which"),
-    ("tools.hosted_ai_choose", "Choose You&r AI...", "cmd_ai_choose"),
-    ("tools.hosted_ai_task", "Find and Fo&llow...", "cmd_ai_task"),
-    ("", "", ""),
     ("tools.hosted_ai_assistant", "Fr&ee AI Assistant...", "cmd_ai_assistant"),
     ("tools.hosted_ai_ask_document", "Ask About These Show &Notes...", "cmd_ai_ask_document"),
     ("tools.hosted_ai_image", "As&k About an Image...", "cmd_ai_image"),
     ("", "", ""),
+    ("tools.hosted_ai_task", "Find and Fo&llow...", "cmd_ai_task"),
+    ("tools.hosted_ai_which", "Which AI A&m I Using", "cmd_ai_which"),
+    ("tools.hosted_ai_choose", "Choose You&r AI...", "cmd_ai_choose"),
     ("tools.hosted_ai_usage", "AI Usa&ge...", "cmd_ai_usage"),
     ("tools.hosted_ai_sign_in", "&Connect or Sign Out...", "cmd_ai_sign_in"),
     ("tools.hosted_ai_privacy", "Privac&y Agreement...", "cmd_ai_privacy"),
@@ -189,18 +191,19 @@ class CastAiMixin(HostedAiMixin):
         import wx
 
         ids = self._cast_ai_menu_ids()
-        sub = wx.Menu()
-        for command_id, label, handler_name in AI_ROWS:
-            if not command_id:
-                sub.AppendSeparator()
-                continue
+        from quill.core.ai.ai_menu_layout import fill
+
+        def append(target: Any, row: tuple[str, str, str]) -> None:
+            command_id, label, handler_name = row
             shown = self._ai_gated_label(handler_name, label)  # codex.md 10A.8
-            sub.Append(ids[command_id], self._menu_label(shown, command_id))  # type: ignore[attr-defined]
+            target.Append(ids[command_id], self._menu_label(shown, command_id))  # type: ignore[attr-defined]
+
+        sub = wx.Menu()
         # Cast's own domain verbs (ear.md A2-A9) live in cast_ai_features, not
-        # here: this adapter has no command of its own.
+        # here: this adapter has no command of its own. They join the features,
+        # above Which AI and the accounts (quill/core/ai/ai_menu_layout.py).
         extra = getattr(self, "_append_cast_ai_feature_rows", None)
-        if callable(extra):
-            extra(sub)
+        fill(sub, AI_ROWS, append, wx.Menu, extra=extra if callable(extra) else None)
         parent_menu.AppendSubMenu(sub, "AI &Features")
         if not getattr(self, "_cast_ai_wired", False):
             self._cast_ai_wired = True
