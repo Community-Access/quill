@@ -27,6 +27,7 @@ from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_item_dialogs as idlg
 from quill.ui.wordpress_admin_commands import WordPressAdminCommands
+from quill.ui.wordpress_api_writing_commands import WordPressApiWritingCommands
 from quill.ui.wordpress_block_commands import WordPressBlockCommands
 from quill.ui.wordpress_check_commands import WordPressCheckCommands
 from quill.ui.wordpress_connect import ConnectFlow
@@ -58,6 +59,7 @@ class WordPressCommands(
     WordPressAdminCommands,
     WordPressListenCommands,
     WordPressLinkCommands,
+    WordPressApiWritingCommands,
 ):
     def __init__(self, host: WordPressHost, *, data_dir: Any = None, opener: Any = None) -> None:
         self.host = host
@@ -236,6 +238,7 @@ class WordPressCommands(
                     "Make &Default", "Use the selected site for New and Open.", make_default
                 ),
                 dlg.Action("Re&move...", "Forget the selected site on this computer.", remove),
+                self.which_password_action(),
             ],
         )
         window.Destroy()

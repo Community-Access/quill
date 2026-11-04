@@ -126,10 +126,14 @@ class WordPressAdminCommands(
             status = "approve"
         live = list(comments)
         shown: list[tuple[int, cm.Comment]] = cm.threaded(live)
+        # Mark many, then moderate them together (9.15, wordpress_api_writing_commands).
+        make_marks = getattr(self, "comment_marks", None)
+        marks = make_marks(profile, api, live) if moderator and make_marks else None
 
         def rows() -> list[str]:
             shown[:] = cm.threaded(live)
-            return cm.thread_rows(shown)
+            plain = cm.thread_rows(shown)
+            return marks.label(shown, plain) if marks is not None else plain
 
         def at(index: int | None) -> cm.Comment | None:
             return shown[index][1] if index is not None and index < len(shown) else None
@@ -274,6 +278,8 @@ class WordPressAdminCommands(
                         "Approve A&ll...", "Approve every waiting comment at once.", approve_all
                     )
                 )
+            if marks is not None:
+                actions.extend(marks.actions(rows, shown, _MODERATION[status]))
         if status in ("hold", "approve"):
             actions.append(dlg.Action("Re&ply...", "Reply to the selected comment.", reply))
         if moderator:

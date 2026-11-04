@@ -98,6 +98,22 @@ and release channels.
   WordPress page or post is in front of you.
 - **Alt+F, W opens File > WordPress.** Print Preview moved from W to T
   (Alt+F, T) to make room; its key, Ctrl+Alt+Shift+P, is unchanged.
+- **Block notes, custom fields and picture sizes.** View > Block Notes and
+  Insert > Note on This Block join in the block editor's notes. Properties
+  shows the custom fields your site's plugins register, and File >
+  WordPress > Custom Fields opens them. The picture window offers the
+  library's own sizes, and Tools > WordPress > More Media > Edit a Picture on
+  the Site turns or crops a picture into a new one.
+- **Sites says which password QUILL uses,** and Sign Out This Site takes
+  away exactly that one.
+- **Many comments at once,** and **Alt Text for the Whole Library**.
+- **Seven guided WordPress lessons** in Help > Tutorials: connecting your
+  site, writing and publishing a post, opening a page by its web address to
+  fix a sentence, pictures with alternative text, Check Before Publishing,
+  previous versions, and comments.
+- **Open in Quill Media Player** from the WordPress player now plays the
+  file in the Player, and a single file says "End of file" rather than
+  "End of book".
 - **Open lists your site's own kinds too.** Events, recipes, or whatever
   your theme or plugins add, beside Posts and Pages.
 - **New: Insert > Link to a Page on This Site.** Pick one of the site's

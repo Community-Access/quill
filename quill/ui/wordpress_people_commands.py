@@ -416,19 +416,24 @@ class WordPressPeopleCommands(WordPressAdminBase):
         remove = choice == 0
         api = self.api(profile)  # type: ignore[attr-defined]
 
-        def work() -> bool:
-            uuid = sa.current_password_uuid(api) if profile.kind != "wpcom" else ""
-            if uuid:
-                sa.revoke_app_password(api, uuid)
-            return bool(uuid)
+        def work() -> str | None:
+            # Exactly the password this computer signs with (introspect, 9.15).
+            from quill.core.wordpress.site_features import which_password
 
-        def done(revoked: bool) -> None:
+            found = which_password(api) if profile.kind != "wpcom" else None
+            if found is not None:
+                sa.revoke_app_password(api, found.uuid)
+            return None if found is None else found.name
+
+        def done(name: str | None) -> None:
+            revoked = name is not None
             st.forget_secret(profile.id)
             if remove:
                 fresh = self.sites()  # type: ignore[attr-defined]
                 fresh.remove(profile.id)
                 self.save_sites(fresh)  # type: ignore[attr-defined]
             where = "revoked on the site and " if revoked else ""
+            which = f" {name}" if name else ""
             kept = "removed from QUILL" if remove else "kept in your list"
             note = (
                 ""
@@ -437,8 +442,8 @@ class WordPressPeopleCommands(WordPressAdminBase):
                 "Application Passwords or the dashboard if you want it gone there too."
             )
             self.host.announce(
-                f"Signed out of {profile.name}: the password is {where}forgotten here, and the "
-                f"site is {kept}.{note}"
+                f"Signed out of {profile.name}: the password{which} is {where}forgotten here, "
+                f"and the site is {kept}.{note}"
             )
 
         self.background(f"signing out of {profile.name}", work, done)  # type: ignore[attr-defined]

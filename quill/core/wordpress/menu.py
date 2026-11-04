@@ -63,6 +63,7 @@ WORDPRESS_ROWS: tuple[Entry, ...] = (
     ("wordpress.copy_address", "Cop&y Address", "cmd_copy_address"),
     None,
     ("wordpress.properties", "P&roperties...", "cmd_properties"),
+    ("wordpress.custom_fields", "Custom &Fields...", "cmd_custom_fields"),
     ("wordpress.versions", "Previous &Versions...", "cmd_versions"),
     ("wordpress.compare", "Co&mpare with Site", "cmd_compare"),
     ("wordpress.trash", "Move to &Trash...", "cmd_trash"),
@@ -85,6 +86,7 @@ INSERT_ROWS: tuple[Entry, ...] = (
     ),
     ("wordpress.insert_picture", "Picture from This &Computer...", "cmd_insert_picture"),
     ("wordpress.insert_link", "Li&nk to a Page on This Site...", "cmd_insert_link"),
+    ("wordpress.add_note", "N&ote on This Block...", "cmd_add_note"),
     ("wordpress.picture_maker", "Make a Pictu&re...", "cmd_picture_maker"),
 )
 
@@ -104,6 +106,7 @@ VIEW_ROWS: tuple[Entry, ...] = (
     None,
     ("wordpress.blocks", "WordPress &Blocks...", "cmd_blocks_window"),
     ("wordpress.preview_blocks", "&Preview Blocks", "cmd_preview_blocks"),
+    ("wordpress.notes", "B&lock Notes...", "cmd_notes"),
     ("wordpress.play_media_here", "Play &Media Here", "cmd_play_media_here"),
 )
 
@@ -133,6 +136,11 @@ MORE_MEDIA = Submenu(
         ),
         ("wordpress.paste_image", "&Paste Image", "cmd_paste_image"),
         ("wordpress.smaller_copy", "Make a S&maller Copy...", "cmd_smaller_copy"),
+        (
+            "wordpress.edit_picture_on_site",
+            "Edit a Picture on the S&ite...",
+            "cmd_edit_picture_on_site",
+        ),
         ("wordpress.site_logo", "Site L&ogo...", "cmd_site_logo"),
         ("wordpress.preview_and_review", "Previ&ew and Review...", "cmd_preview_and_review"),
         None,
@@ -189,6 +197,11 @@ TOOLS_ROWS: tuple[Entry, ...] = (
             None,
             ("wordpress.media_library", "Media Li&brary...", "cmd_media_library"),
             ("wordpress.alt_text_review", "Alt Te&xt Review...", "cmd_alt_text_review"),
+            (
+                "wordpress.library_alt_text",
+                "Alt Text for the Whole Lib&rary...",
+                "cmd_library_alt_text",
+            ),
             ("wordpress.visual_review", "&Visual Review...", "cmd_visual_review"),
             MORE_MEDIA,
             None,
@@ -278,6 +291,10 @@ DOCUMENT_ONLY: frozenset[str] = frozenset({
     "cmd_in_short",
     "cmd_name_embeds",
     "cmd_listening_version",
+    "cmd_play_media_here",
+    "cmd_custom_fields",
+    "cmd_add_note",
+    "cmd_notes",
 })
 
 

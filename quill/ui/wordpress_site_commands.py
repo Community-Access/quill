@@ -31,7 +31,10 @@ def picture_markup(
     alt = answer.alt.replace('"', "'")
     if text_format == "markdown":
         caption = f' "{answer.caption}"' if answer.caption else ""
-        extra = f" {{id={media_id}}}" if media_id else ""
+        options = ([f"id={media_id}"] if media_id else []) + (
+            [f"size={answer.size_slug}"] if answer.size_slug else []
+        )
+        extra = f" {{{' '.join(options)}}}" if options else ""
         return f"\n![{alt}]({src}{caption}){extra}\n"
     width = f' width="{answer.width}"' if answer.width > 0 else ""
     decorative = ' role="presentation"' if answer.decorative else ""
@@ -42,7 +45,8 @@ def picture_markup(
     elif answer.link:
         img = f'<a href="{answer.link}">{img}</a>'
     caption = f"<figcaption>{answer.caption}</figcaption>" if answer.caption else ""
-    return f'\n<figure class="wp-block-image">{img}{caption}</figure>\n'
+    size = f" size-{answer.size_slug}" if answer.size_slug else ""
+    return f'\n<figure class="wp-block-image{size}">{img}{caption}</figure>\n'
 
 
 def picture_size_text(path: Path) -> str:

@@ -241,6 +241,6 @@ def locate(
         if note_id and note_id not in where:
             where[note_id] = index
     for thread in found:
-        index = where.get(thread.root.id)
-        thread.span = index
-        thread.place = place_words(spans, index) if index is not None else ""
+        at = where.get(thread.root.id)
+        thread.span = at
+        thread.place = place_words(spans, at) if at is not None else ""

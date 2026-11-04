@@ -351,6 +351,9 @@ class ImageAnswer:
     width: int  # 0 = the theme decides
     featured: bool
     link: str  # "", "file" or an address
+    #: The library size chosen (9.15): its address and slug; "" keeps the original.
+    source: str = ""
+    size_slug: str = ""
 
 
 class ImageDialog(wx.Dialog):
@@ -367,6 +370,7 @@ class ImageDialog(wx.Dialog):
         on_suggest: Callable[[], str | None] | None = None,
         on_describe: Callable[[], None] | None = None,
         on_suggest_async: Callable[[Callable[[str], None]], None] | None = None,
+        sizes: Sequence[tuple[str, str, str]] = (),
     ) -> None:
         super().__init__(
             parent, title=f"Picture: {name}", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -425,6 +429,17 @@ class ImageDialog(wx.Dialog):
         )
         self.width.SetSelection(0)
         labelled_row(sizer, self, f"Display &width ({size_text}):", self.width)
+        #: (spoken, slug, address) for each size the library made (9.15).
+        self._sizes = list(sizes)
+        self.size_file: wx.Choice | None = None
+        if self._sizes:
+            self.size_file = wx.Choice(self, choices=[label for label, _s, _u in self._sizes])
+            self.size_file.SetHelpText(
+                "Which of the files WordPress made of this picture the page uses. A smaller one "
+                "saves visitors' data and loads faster; Full size is the original."
+            )
+            self.size_file.SetSelection(len(self._sizes) - 1)
+            labelled_row(sizer, self, "File si&ze:", self.size_file)
         self.featured = wx.CheckBox(self, label="Use as &featured image")
         self.featured.SetHelpText(
             "The featured image represents the whole page or post. The theme decides where it "
@@ -498,7 +513,17 @@ class ImageDialog(wx.Dialog):
             width=width,
             featured=self.featured.GetValue(),
             link=link,
+            **self._size_answer(),
         )
+
+    def _size_answer(self) -> dict[str, str]:
+        if self.size_file is None:
+            return {}
+        index = self.size_file.GetSelection()
+        if not 0 <= index < len(self._sizes):
+            return {}
+        _label, slug, address = self._sizes[index]
+        return {"source": address, "size_slug": slug}
 
 
 def ask_image(parent: wx.Window, show_modal: ShowModal, **kwargs: Any) -> ImageAnswer | None:

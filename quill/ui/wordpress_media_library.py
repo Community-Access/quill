@@ -17,6 +17,7 @@ from quill.core.wordpress import local as lc
 from quill.core.wordpress import media_alt as ma
 from quill.core.wordpress import media_tools as mt
 from quill.core.wordpress import site_media as wpm
+from quill.core.wordpress.media_edit import dialog_sizes
 from quill.core.wordpress.site import human_size, plain_text
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_item_dialogs as idlg
@@ -170,10 +171,12 @@ class WordPressMediaLibrary:
                 m, api, name, context, fill, fuller.append
             ),
             on_describe=lambda: self._describe(m, api, name),  # type: ignore[attr-defined]
+            sizes=dialog_sizes(m),
         )
         if answer is None:
             return False
-        self.host.insert_text(picture_markup(copy.text_format, m.source_url, answer, media_id=m.id))
+        source = answer.source or m.source_url
+        self.host.insert_text(picture_markup(copy.text_format, source, answer, media_id=m.id))
         if answer.featured:
             fresh = self.local.copy_for_path(self.host.current_path()) or copy
             fresh.properties["featured_media"] = m.id

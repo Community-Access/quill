@@ -9664,7 +9664,7 @@ do inside a page joins the ordinary menus. Looking after the site is in
 | **File > WordPress** | New, Open, the three saves, Properties, versions, Trash, your sites |
 | **Insert** | Blocks, pictures, links to your own pages, Make a Picture |
 | **Format > WordPress** | Block Settings, Image Size, Mark Language |
-| **View** | WordPress Blocks, Preview Blocks |
+| **View** | WordPress Blocks, Preview Blocks, Play Media Here |
 | **Edit > WordPress** | Next Block, Previous Block, Where Am I |
 | **Tools > WordPress** | Checking, the Media Library, comments, menus, settings, and the More Media and Manage submenus |
 
@@ -9926,6 +9926,22 @@ goes back to your site exactly as it came.
 - **View > Preview Blocks** asks your site to show its blocks, without saving
   anything, and reads the result as plain text. Use it to hear what a
   latest-posts list or a plugin's block will really say before you publish.
+- **View > Play Media Here** plays the sound or video block the caret is in,
+  streamed from your site, with the same player keys as the Media Library's
+  Play. Nothing is downloaded.
+- **View > Block Notes...** lists the notes people left on blocks in the
+  block editor, such as "Sam on the second paragraph: tighten this". Go to
+  It takes you to the block; you can Reply or Resolve.
+  **Insert > Note on This Block...** leaves one of your own on the block
+  the caret is in.
+- **File > WordPress > Custom Fields...** shows the extra fields your site's
+  plugins and theme keep for a page, such as an SEO title or an event date.
+  They are in Properties too, and go to the site with your next send.
+- **Tools > WordPress > Alt Text for the Whole Library...** steps through
+  every picture on the site that has no alternative text, with Suggest, and
+  saves them in batches.
+  **Tools > WordPress > More Media > Edit a Picture on the Site...** turns or
+  crops a picture into a new one, and keeps the original.
 
 **Insert > Link to a Page on This Site...** lists your site's published pages
 and posts. Choose one and the link goes in at the caret, using the words you
@@ -10255,14 +10271,58 @@ local drafts stay either way.
 
 ### Keys
 
-The WordPress commands have no keys of their own yet. They are coming, and
-this chapter will teach them when they arrive. Until then:
-- **Alt+F**, then **W**, opens File > WordPress, and every row there has an
-  underlined letter.
-- The other menus show their WordPress rows near the end, so the Alt key
-  and the arrow keys reach them the same way.
-- Every command is in the Command Palette (**Ctrl+Shift+P**). Type
-  "WordPress", or part of the command's name, and press **Enter**.
+The WordPress commands share one key: **Ctrl+Alt+Shift+Grave**. That is the
+key below Escape (Grave, or backtick), with Ctrl, Alt and Shift held down. In
+QUILL the same key without Alt is the QUILL key. Press that, the WordPress
+key, and let go, and QUILL Lite says "WordPress keys". Then press one letter.
+**O** opens a page or post, **P** publishes, **M** opens the Media Library,
+**S** switches site, **W** opens a page by its web address and **D** saves a
+draft to the site. Those six are the ones you will use every day.
+
+The rest of the letters follow the menus: wherever a File > WordPress row's
+underlined letter was free, that is its key. Two rows wanted P, so Publish kept
+it and New Page went to G. Media Library kept M, so Compare with Site is C.
+Switch Site kept S, and Sites, the list you only open now and then, is S with
+Shift.
+
+| Letter | Command | Menu |
+|---|---|---|
+| G | New Page | File > WordPress |
+| N | New Post | File > WordPress |
+| O | Open Page or Post | File > WordPress |
+| W | Open by Web Address | File > WordPress |
+| L | Open Local Draft | File > WordPress |
+| D | Save Draft to Site | File > WordPress |
+| P | Publish or Update | File > WordPress |
+| E | Schedule Publish | File > WordPress |
+| I | Open on Site | File > WordPress |
+| Y | Copy Address | File > WordPress |
+| R | Properties | File > WordPress |
+| V | Previous Versions | File > WordPress |
+| C | Compare with Site | File > WordPress |
+| T | Move to Trash | File > WordPress |
+| S | Switch Site | File > WordPress |
+| Shift+S | Sites | File > WordPress |
+| A | Connect a Site | File > WordPress |
+| M | Media Library | Tools > WordPress |
+| B | WordPress Blocks | View |
+| K | Check Before Publishing | Tools > WordPress |
+| U | Upload Files | Tools > WordPress > More Media |
+| X | Alt Text Review | Tools > WordPress |
+
+A few more things worth knowing:
+- **Escape** after the WordPress key leaves it and says "Left WordPress keys".
+- A letter with no command says so, for example "No WordPress command on Q.",
+  and types nothing.
+- If you wait more than about four seconds, the WordPress key gives up quietly
+  and your next key types as normal.
+- The menus show each key beside its row, in brackets.
+- The rows with no letter, like Play Media Here and the Tools > WordPress >
+  Manage rows, keep their underlined letters, and every command is in the
+  Command Palette (**Ctrl+Shift+P**). Type "WordPress", or part of the
+  command's name, and press **Enter**.
+- QUILL and QUILL Lite use the same letters, so moving between them costs you
+  nothing.
 
 ## Licences and notices
 
@@ -10314,6 +10374,28 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+W** | Close Window |
 | **Ctrl+F4** | Close Window (MDI) |
 | **Ctrl+Q** | Exit QUILL Lite |
+
+#### WordPress (in File)
+
+| Key | Command |
+|---|---|
+| **Ctrl+Alt+Shift+Grave, G** | New Page... |
+| **Ctrl+Alt+Shift+Grave, N** | New Post... |
+| **Ctrl+Alt+Shift+Grave, O** | Open Page or Post... |
+| **Ctrl+Alt+Shift+Grave, W** | Open by Web Address... |
+| **Ctrl+Alt+Shift+Grave, L** | Open Local Draft... |
+| **Ctrl+Alt+Shift+Grave, D** | Save Draft to Site |
+| **Ctrl+Alt+Shift+Grave, P** | Publish or Update... |
+| **Ctrl+Alt+Shift+Grave, E** | Schedule Publish... |
+| **Ctrl+Alt+Shift+Grave, I** | Open on Site |
+| **Ctrl+Alt+Shift+Grave, Y** | Copy Address |
+| **Ctrl+Alt+Shift+Grave, R** | Properties... |
+| **Ctrl+Alt+Shift+Grave, V** | Previous Versions... |
+| **Ctrl+Alt+Shift+Grave, C** | Compare with Site |
+| **Ctrl+Alt+Shift+Grave, T** | Move to Trash... |
+| **Ctrl+Alt+Shift+Grave, S** | Switch Site... |
+| **Ctrl+Alt+Shift+Grave, Shift+S** | Sites... |
+| **Ctrl+Alt+Shift+Grave, A** | Connect a Site... |
 
 ### Edit
 
@@ -10430,6 +10512,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+0** | Reset Text Size |
 | **Ctrl+Shift+G** | Document Statistics |
 | **Ctrl+Alt+W** | Line Statistics |
+| **Ctrl+Alt+Shift+Grave, B** | WordPress Blocks... |
 
 ### Insert
 
@@ -10527,11 +10610,6 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Home** | First Cell |
 | **Ctrl+Alt+End** | Last Cell |
 
-Insert Row Below, Insert Column Right, Delete Row, Delete Column and Tidy
-Table are on the same submenu with no keys, as in Word. In a table, the arrow
-keys also move cell by cell, and **Tab** and **Shift+Tab** move to the next and
-previous cell.
-
 #### Bookmarks (in Navigate)
 
 | Key | Command |
@@ -10606,10 +10684,10 @@ previous cell.
 | **Ctrl+6** | Ask AI a Question... |
 | **Ctrl+7** | Prompt Library... |
 | **Ctrl+3** | Do a Document Task... |
-| **Ctrl+8** | Which AI Am I Using |
-| **Ctrl+4** | Choose Your AI... |
 | **Ctrl+Alt+Shift+F9** | Usage... |
 | **Ctrl+9** | Web Searches Left |
+| **Ctrl+8** | Which AI Am I Using |
+| **Ctrl+4** | Choose Your AI... |
 | **Ctrl+Alt+Shift+F10** | Connect or Sign Out... |
 | **Ctrl+Alt+Shift+K** | Privacy Agreement... |
 | **Alt+F2** | Use My Own AI Key... |
@@ -10681,6 +10759,20 @@ previous cell.
 | **Ctrl+Alt+Shift+V** | Describe Indent Depth |
 | **Alt+F11** | Convert to Spaces |
 | **Alt+F12** | Convert to Tabs |
+
+#### WordPress (in Tools)
+
+| Key | Command |
+|---|---|
+| **Ctrl+Alt+Shift+Grave, K** | Check Before Publishing... |
+| **Ctrl+Alt+Shift+Grave, M** | Media Library... |
+| **Ctrl+Alt+Shift+Grave, X** | Alt Text Review... |
+
+#### WordPress|More Media (in Tools)
+
+| Key | Command |
+|---|---|
+| **Ctrl+Alt+Shift+Grave, U** | Upload Files... |
 
 ### Window
 

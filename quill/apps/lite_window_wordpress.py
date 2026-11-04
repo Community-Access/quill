@@ -489,3 +489,23 @@ class DocumentWordPressMixin:
     def cmd_wp_sign_out(self) -> None:
         """Tools > WordPress > Manage > Sign Out This Site."""
         self._wordpress().cmd_sign_out()
+
+    def cmd_wp_custom_fields(self) -> None:
+        """File > WordPress > Custom Fields."""
+        self._wordpress().cmd_custom_fields()
+
+    def cmd_wp_notes(self) -> None:
+        """View > Block Notes."""
+        self._wordpress().cmd_notes()
+
+    def cmd_wp_add_note(self) -> None:
+        """Insert > Note on This Block."""
+        self._wordpress().cmd_add_note()
+
+    def cmd_wp_library_alt_text(self) -> None:
+        """Tools > WordPress > Alt Text for the Whole Library."""
+        self._wordpress().cmd_library_alt_text()
+
+    def cmd_wp_edit_picture_on_site(self) -> None:
+        """Tools > WordPress > More Media > Edit a Picture on the Site."""
+        self._wordpress().cmd_edit_picture_on_site()

@@ -196,6 +196,7 @@ class WordPressMoreCommands:
             return
         copy, profile = found
         api = self.api(profile)  # type: ignore[attr-defined]
+        extras: list[str] = []  # what the site's plugins add: event, product, SEO (9.15)
 
         def show(terms: tuple[list[wp.Term], list[wp.Term]]) -> None:
             categories, tags = terms
@@ -211,6 +212,7 @@ class WordPressMoreCommands:
                 )
                 + "\n"
                 + reading_level_line(copy.text, is_html=copy.text_format == "html")
+                + "".join(extras)
             )
             answer = idlg.ask_properties(
                 self.host.parent,
@@ -252,14 +254,22 @@ class WordPressMoreCommands:
             if custom is not None:
                 custom(copy, profile)
 
-        if copy.kind == "post":
-            self.background(  # type: ignore[attr-defined]
-                "loading categories and tags",
-                lambda: (wp.list_terms(api, "category"), wp.list_terms(api, "post_tag")),
-                show,
-            )
+        def dispatch(found: str = "") -> None:
+            extras.append(found)
+            if copy.kind == "post":
+                self.background(  # type: ignore[attr-defined]
+                    "loading categories and tags",
+                    lambda: (wp.list_terms(api, "category"), wp.list_terms(api, "post_tag")),
+                    show,
+                )
+            else:
+                show(([], []))
+
+        plugin_facts = getattr(self, "plugin_facts", None)
+        if plugin_facts is not None:
+            plugin_facts(copy, profile, dispatch)
         else:
-            show(([], []))
+            dispatch()
 
     # ------------------------------------------------------------------ #
     # previous versions (5.6)
