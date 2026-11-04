@@ -101,11 +101,21 @@ _WHO_PAYS: dict[str, str] = {
 
 _OWN_KEY_COMPANY = COMPANIES
 
+#: The own-key row before any key is saved: every provider by name, because
+#: naming one company there read as if it were the only one (2026-11-02).
+OWN_KEY_CHOICES = (
+    "Your own key from OpenAI, Google Gemini, Anthropic Claude, OpenRouter or "
+    "Ollama Cloud, a service of your own, or Ollama on this computer, which is "
+    "free and sends nothing. Billed to your own account."
+)
 
-def about_line(record: ConnectionRecord, *, own_key_provider: str = "openai") -> str:
+
+def about_line(record: ConnectionRecord, *, own_key_provider: str = "") -> str:
     """Who receives the text, what it costs and what it can do, from the registry.
 
     "Text and pictures. Agent tasks: yes. Billed to your Copilot plan."
+    An empty *own_key_provider* means no key is saved yet: the own-key row then
+    names every provider it can use.
     """
     pictures = record.claim(PICTURES)
     what = "Text only."
@@ -113,7 +123,9 @@ def about_line(record: ConnectionRecord, *, own_key_provider: str = "openai") ->
         per_model = "per model" in pictures.note
         what = "Text and pictures, per model." if per_model else "Text and pictures."
     tasks = "Agent tasks: yes." if record.claim(AGENT_TOOLS).supported else "Agent tasks: no."
-    if record.connection == OWN_KEY:
+    if record.connection == OWN_KEY and not own_key_provider:
+        who = OWN_KEY_CHOICES
+    elif record.connection == OWN_KEY:
         company = _OWN_KEY_COMPANY.get(own_key_provider, own_key_provider)
         who = f"Goes to {company}, billed per request to your own key."
         if is_local(own_key_provider):

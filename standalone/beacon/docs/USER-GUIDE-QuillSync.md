@@ -356,9 +356,9 @@ press it.
   computer", never by its path. This needs an AI that can run tasks, which
   today means GitHub Copilot or Codex; with any other AI the item says "(needs
   Copilot or Codex)" and offers to switch instead of sending anything.
-- **Assist > Use My ChatGPT Subscription...** (Alt+F5),
-  **Assist > Use My Own AI Key...** (Alt+F2), **Assist > AI Usage...**
-  (Ctrl+Alt+Shift+F2) and **Assist > Privacy Agreement...**
+- **Assist > Accounts and Usage > Use My ChatGPT Subscription...** (Alt+F5),
+  **Assist > Accounts and Usage > Use My Own AI Key...** (Alt+F2), **Assist > Accounts and Usage > AI Usage...**
+  (Ctrl+Alt+Shift+F2) and **Assist > Accounts and Usage > Privacy Agreement...**
   (Ctrl+Alt+Shift+K) work the same way they do in the other apps.
 
 At the bottom of the results pane, after Details, there is a line that says

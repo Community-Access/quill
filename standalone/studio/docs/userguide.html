@@ -777,9 +777,9 @@ press one button, review, save.</li>
 each chapter is transcribed on your machine by the local speech model
 (the audio never leaves your computer); only that text goes to your
 configured AI, which proposes a short title per chapter. Needs a
-configured AI (AI &gt; Set Up AI…) and is unavailable in Safe Mode. The
-Studio asks before starting and tells you exactly what will be
-sent.</li>
+configured AI (AI &gt; Accounts and Usage &gt; Set Up AI…) and is
+unavailable in Safe Mode. The Studio asks before starting and tells you
+exactly what will be sent.</li>
 <li><strong>Check against ACX</strong> - measures the book against
 Audible’s ACX submission window (integrated loudness, true peak, noise
 floor) and shows a verdict dialog with a plain-language recommendation
@@ -1264,11 +1264,12 @@ hear why. It is off in Safe Mode.</p>
 picture question as Describe a Picture, and No starts nothing. Each
 question to the AI counts in AI Usage like any other request.</p>
 <h3 id="set-up-ai">Set Up AI</h3>
-<p><strong>AI &gt; Set Up AI…</strong> runs a short, jargon-free wizard:
-choose how AI should run - a cloud provider with your own key (paste it,
-test it) or a local model via Ollama (nothing leaves your machine) - and
-you land ready to go. Nothing is applied until you confirm, and you can
-cancel at any point with nothing lost.</p>
+<p><strong>AI &gt; Accounts and Usage &gt; Set Up AI…</strong> runs a
+short, jargon-free wizard: choose how AI should run - a cloud provider
+with your own key (paste it, test it) or a local model via Ollama
+(nothing leaves your machine) - and you land ready to go. Nothing is
+applied until you confirm, and you can cancel at any point with nothing
+lost.</p>
 <p>Set Up AI is separate from Choose Your AI. The provider it sets up
 powers three things in this app:</p>
 <ul>
@@ -1840,8 +1841,9 @@ book is an M4B; use <strong>Save As…</strong> - M4B chapter data cannot
 be rewritten in place, so the Workbench re-muxes losslessly to a new
 file.</li>
 <li><strong>“Propose AI titles” says it needs a configured AI
-provider.</strong> Run <strong>AI &gt; Set Up AI…</strong> first - or
-you are in Safe Mode, where every AI surface is disabled.</li>
+provider.</strong> Run <strong>AI &gt; Accounts and Usage &gt; Set Up
+AI…</strong> first - or you are in Safe Mode, where every AI surface is
+disabled.</li>
 <li><strong>A translated edition was skipped.</strong> The cloud voice
 you chose for that language has no API key configured; the run notes the
 skip and continues rather than stopping.</li>
@@ -2747,9 +2749,9 @@ restart Studio.</p>
 makes a picture from your description, such as a cover for a podcast or
 the picture for a YouTube video. You describe it in words and change it
 in words; you never have to see it.</p>
-<p>It uses the AI provider you set up in <strong>AI &gt; Set Up
-AI</strong>, when that provider makes pictures: OpenAI or Google Gemini.
-Other providers are told plainly that they cannot.</p>
+<p>It uses the AI provider you set up in <strong>AI &gt; Accounts and
+Usage &gt; Set Up AI</strong>, when that provider makes pictures: OpenAI
+or Google Gemini. Other providers are told plainly that they cannot.</p>
 <h3 id="making-the-first-picture">Making the first picture</h3>
 <ol type="1">
 <li>In <strong>Describe the picture, or the change you want</strong>,

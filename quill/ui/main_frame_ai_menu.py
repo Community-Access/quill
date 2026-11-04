@@ -6,10 +6,10 @@ QUILL's own free AI the **front door** of the AI menu and put the whole
 provider-and-agent surface behind one remembered checkbox, which turned one long
 block of menu building into two clearly different jobs:
 
-* :meth:`_build_hosted_ai_rows` -- the five rows QUILL's own service is reached
-  through, shown in both modes, identical in words and chords to QUILL Lite's
-  because they run the same shared code
-  (:mod:`quill.ui.hosted_ai_commands`).
+* :meth:`_build_hosted_ai_rows` -- the rows QUILL's own AI is reached through,
+  shown in both modes, identical in words and chords to QUILL Lite's because
+  they run the same shared code (:mod:`quill.ui.hosted_ai_commands`), in the
+  family's one AI menu shape (:mod:`quill.core.ai.ai_menu_layout`).
 * :meth:`_build_advanced_ai_rows` -- provider setup, Ask Quill, the agents, the
   seven task submenus, the Library and the Hub. Everything here assumes a
   decision about which company sees your writing and an API key pasted
@@ -32,21 +32,29 @@ class AiMenuMixin:
     """The AI menu's two halves and the switch between them."""
 
     def _build_hosted_ai_rows(self, ai_menu) -> None:
-        """QUILL's own free AI, the five rows, identical in Basic and Advanced.
+        """QUILL's own AI rows, identical in Basic and Advanced, in the family shape.
 
-        Same five commands, same chords and the same shared code as QUILL Lite
-        (:mod:`quill.ui.hosted_ai_commands`), because it is one capability.
+        Same commands, same chords and the same shared code as QUILL Lite
+        (:mod:`quill.ui.hosted_ai_commands`), because it is one capability, and
+        the same order every QuillVille AI menu has
+        (:mod:`quill.core.ai.ai_menu_layout`): the ways to ask; what the AI does
+        to the document; Which AI Am I Using and Choose Your AI; and Accounts
+        and Usage, a submenu of the account windows, each on its own key.
 
         The labels carry one word QUILL Lite's do not -- **Free** -- and it is
         load-bearing rather than promotional: somebody who has been trained by
         every other editor to expect a subscription prompt behind an AI menu
         needs to be told, on the row, that this one is not that. The mnemonics
-        differ from QUILL Lite's for a duller reason: A, U, S and P are all
-        claimed elsewhere in *this* menu once the advanced rows are showing, and
-        a duplicate mnemonic is a key Windows may silently refuse to press.
+        differ from QUILL Lite's for a duller reason: most letters are claimed
+        elsewhere in *this* menu once the advanced rows are showing, and a
+        duplicate mnemonic is a key Windows may silently refuse to press.
         """
+        from quill.core.ai.ai_menu_layout import ACCOUNTS_TITLE
+
+        wx = self._wx
         # A gated row says what it needs after its name (codex.md 10A.8).
         gated = self._ai_gated_label
+        # -- Ask ------------------------------------------------------------------
         ai_menu.Append(
             self._id_hosted_ai_assistant,
             self._menu_label(
@@ -61,30 +69,42 @@ class AiMenuMixin:
                 "tools.hosted_ai_ask_document",
             ),
         )
-        # The Chat Key, the Prompt Library and Web Searches Left (2026-10-15).
-        self._append_answer_rows(ai_menu)  # quill/ui/main_frame_hosted_ai.py
-        ai_menu.Append(
-            self._id_hosted_ai_usage,
-            self._menu_label(_("AI Usa&ge..."), "tools.hosted_ai_usage"),
+        self._append_hosted_rows(  # quill/ui/main_frame_hosted_ai.py
+            ai_menu,
+            ("tools.hosted_ai_chat_key", "tools.hosted_ai_prompt_library", "tools.hosted_ai_image"),
         )
-        # Which AI Am I Using and Choose Your AI (codex.md 10A.9).
-        self._append_choose_rows(ai_menu)  # quill/ui/main_frame_hosted_ai.py
+        # -- What the AI does to the document --------------------------------------
+        ai_menu.AppendSeparator()
+        self._append_hosted_rows(
+            ai_menu, ("tools.hosted_ai_task", "tools.hosted_ai_alt_text", "tools.dictation_tidy")
+        )
+        self._append_dictionary_rows(ai_menu)  # same module: the AI dictionary submenu
+        # -- Which AI (codex.md 10A.9) -----------------------------------------------
         # Project Tasks, the Developer profile only (code.md 6.4).
         self._append_project_rows(ai_menu)  # quill/ui/main_frame_project_rows.py
-        ai_menu.Append(
+        ai_menu.AppendSeparator()
+        self._append_hosted_rows(ai_menu, ("tools.hosted_ai_which", "tools.hosted_ai_choose"))
+        # -- Accounts and Usage: the once-a-year windows, every one on its own key --
+        ai_menu.AppendSeparator()
+        accounts = wx.Menu()
+        self._append_hosted_rows(accounts, ("tools.hosted_ai_own_key", "tools.hosted_ai_chatgpt"))
+        accounts.Append(
             self._id_hosted_ai_sign_in,
             self._menu_label(_("&Connect or Sign Out..."), "tools.hosted_ai_sign_in"),
         )
+        accounts.Append(
+            self._id_hosted_ai_usage,
+            self._menu_label(_("AI Usa&ge..."), "tools.hosted_ai_usage"),
+        )
+        self._append_hosted_rows(accounts, ("tools.hosted_ai_web_searches",))
         # Reachable with the feature switched off, deliberately: the agreement is
         # how somebody turns it on, and a row that appears only once you have
         # already agreed is a door on the inside of the room.
-        ai_menu.Append(
+        accounts.Append(
             self._id_hosted_ai_privacy,
             self._menu_label(_("Privac&y Agreement..."), "tools.hosted_ai_privacy"),
         )
-        self._append_own_key_row(ai_menu)  # quill/ui/main_frame_hosted_ai.py
-        self._append_chatgpt_rows(ai_menu)  # same module: the subscription, and images
-        self._append_dictionary_rows(ai_menu)  # same module: the AI dictionary submenu
+        ai_menu.AppendSubMenu(accounts, _(ACCOUNTS_TITLE))
 
     def _build_advanced_ai_rows(self, ai_menu) -> None:
         """Everything the AI menu used to open with, now one checkbox away."""

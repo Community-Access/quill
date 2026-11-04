@@ -147,17 +147,22 @@ def test_the_ai_rows_follow_the_three_local_helpers_in_assist(beacon) -> None:
         "Suggest &Relationships\tCtrl+Shift+K",
         "&Summarize Note\tCtrl+Shift+M",
         "&Ask...\tCtrl+6",
-        "&Which AI Am I Using\tCtrl+8",
-        "&Choose Your AI...\tCtrl+4",
         "&Describe a Saved Picture...\tCtrl+F5",
         "Or&ganize What I Saved (needs Copilot or Codex)...\tCtrl+3",
-        "Use My C&hatGPT Subscription...\tAlt+F5",
-        "Use My &Own AI Key...\tAlt+F2",
-        "A&I Usage...\tCtrl+Alt+Shift+F2",
-        "&Privacy Agreement...\tCtrl+Alt+Shift+K",
+        "&Which AI Am I Using\tCtrl+8",
+        "&Choose Your AI...\tCtrl+4",
+        "Accounts and &Usage",
     ]
     letters = [label[label.index("&") + 1].upper() for label in labels]
     assert len(letters) == len(set(letters))
+    # The family's one AI menu shape: the account windows in their submenu.
+    accounts = next(i for i in _assist(beacon).GetMenuItems() if i.IsSubMenu()).GetSubMenu()
+    assert [i.GetItemLabel() for i in accounts.GetMenuItems()] == [
+        "Use My &Own AI Key...\tAlt+F2",
+        "Use My C&hatGPT Subscription...\tAlt+F5",
+        "A&I Usage...\tCtrl+Alt+Shift+F2",
+        "&Privacy Agreement...\tCtrl+Alt+Shift+K",
+    ]
     bar = beacon.GetMenuBar()
     titles = [bar.GetMenuLabel(i) for i in range(bar.GetMenuCount())]
     assert "A&I" not in titles and "&AI" not in titles  # no new top-level menu

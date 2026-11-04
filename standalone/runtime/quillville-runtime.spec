@@ -153,7 +153,7 @@ ytdlp_datas += copilot_datas
 ytdlp_binaries += copilot_binaries
 ytdlp_hidden += copilot_hidden + ["httpx", "httpcore", "h11", "anyio", "dateutil"]
 
-# Phonon 31m (phononprd.md): the ptts extension, imported lazily by
+# Phonon 31m (phonon-voices-prd.md): the ptts extension, imported lazily by
 # quill.core.speech.phonon_tts (the tracer cannot follow it), collected whole
 # with its dist-info for the notices gate; and the model with its 37 English
 # voices at phonon-models/en, which phonon_tts finds under sys._MEIPASS.

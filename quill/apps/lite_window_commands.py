@@ -336,13 +336,13 @@ class DocumentCommandsMixin(
         self._action(SoundEvent.TEXT_DELETED, "Deleted")
 
     def cmd_select_all(self) -> None:
-        """Select the lot. Announced by the reader, so not announced here.
+        """Select the lot. Announced by the reader -- unless there is nothing to select.
 
-        The status touch is not optional though: the bar carries a Selection cell
-        reading "N words, N characters selected", and Ctrl+A was the one way of
-        selecting that never told it to recount -- so the cell went on saying "No
-        selection" over a fully selected document.
+        The status touch keeps the Selection cell from saying "No selection" over a
+        selected document; in an empty one the reader is silent, so this is not.
         """
+        if not self.control.GetLastPosition():
+            self._announce("The document is empty")
         self.control.SelectAll()
         self._touch_status()
 

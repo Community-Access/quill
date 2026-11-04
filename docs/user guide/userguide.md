@@ -11398,27 +11398,49 @@ the **AI** menu (the `&AI` menu, so `Alt` then `A` opens it).
 
 #### What the AI menu offers
 
+The AI menu reads in four groups, and every app in the family uses the same
+order, so once you know one AI menu you know them all. Every command keeps its
+key wherever it sits.
+
+**Ask:**
+
 | Key | Command | What it does |
 |---|---|---|
 | `Ctrl+Alt+G` | Free AI Assistant... | Summarise, rewrite, proofread, shorten or explain the passage you are in |
 | `Ctrl+Alt+Z` | Ask About This Document... | Ask a question about what you are writing |
 | `Ctrl+6` | Ask AI a Question... | Ask: a conversation about this document, with the AI in use |
 | `Ctrl+7` | Prompt Library... | Run one of your saved prompts on the selection, on the AI in use |
-| `Ctrl+9` | Web Searches Left | How many of this month's web searches are left |
-| `Ctrl+Alt+Shift+F2` | AI Usage... | One list: what each AI you have set up has used |
-| `Ctrl+8` | Which AI Am I Using | Says which AI is in use; pressed twice, opens Choose Your AI |
-| `Ctrl+4` | Choose Your AI... | The one window for where your AI comes from |
-| `Ctrl+3` | Do a Document Task... | Tell GitHub Copilot or Codex what to do to this document |
-| `Ctrl+Alt+Shift+F4` | Connect or Sign Out... | Connect this computer, or disconnect it |
-| `Ctrl+Alt+Shift+K` | Privacy Agreement... | Read what is sent, and accept or withdraw |
-| `Alt+F2` | Use My Own AI Key... | Choose Your AI on the own key's row, ready to save a key |
-| `Alt+F5` | Use My ChatGPT Subscription... | Choose Your AI on your plan's row, ready to sign in |
 | `Ctrl+F5` | Ask About an Image... | A picture described, on any AI in use that can see pictures |
+
+**Work on your document:**
+
+| Key | Command | What it does |
+|---|---|---|
+| `Ctrl+3` | Do a Document Task... | Tell GitHub Copilot or Codex what to do to this document |
+| | Propose Alt Text... | Alt text for every picture that has none, one at a time, for you to approve |
 | `Ctrl+F3` | Tidy Dictated Text... | Dictation's misheard words and punctuation corrected, nothing else changed |
 | `Ctrl+F10` | Dictionary > Word Explorer... | Everything about the word you are on, as used in this sentence |
 | `Ctrl+Alt+Shift+'` | Dictionary > Define in Context | What the word means here, and what you might be confusing it with |
 | `Ctrl+Shift+;` | Dictionary > Synonyms That Fit | Replacements that keep the sentence's meaning, already in the right form |
 | `Ctrl+Alt+Shift+]` | Dictionary > Find the Word For... | The reverse dictionary: describe the meaning, get the word |
+
+**Which AI:**
+
+| Key | Command | What it does |
+|---|---|---|
+| `Ctrl+8` | Which AI Am I Using | Says which AI is in use; pressed twice, opens Choose Your AI |
+| `Ctrl+4` | Choose Your AI... | The one window for where your AI comes from |
+
+**Accounts and Usage** (a submenu: windows you open now and then, each still on its own key):
+
+| Key | Command | What it does |
+|---|---|---|
+| `Alt+F2` | Use My Own AI Key... | Your own key from OpenAI, Google Gemini, Anthropic Claude, OpenRouter or Ollama Cloud, a service of your own, or Ollama on this computer, free and private |
+| `Alt+F5` | Use My ChatGPT Subscription... | Choose Your AI on your plan's row, ready to sign in |
+| `Ctrl+Alt+Shift+F4` | Connect or Sign Out... | Connect this computer, or disconnect it |
+| `Ctrl+Alt+Shift+F2` | AI Usage... | One list: what each AI you have set up has used |
+| `Ctrl+9` | Web Searches Left | How many of this month's web searches are left |
+| `Ctrl+Alt+Shift+K` | Privacy Agreement... | Read what is sent, and accept or withdraw |
 
 QUILL Lite has every command in this table, so anything you learn in one editor
 you have learned in both, and all but two of the keys are the same. Usage and
@@ -11561,7 +11583,7 @@ service has search switched on, the pad's list ends with **Search the web**:
 type a question, press **Send**, and the answer comes back with the sites it
 used. Each search also uses one ordinary request.
 
-Press `Ctrl+9` (**AI > Web Searches Left**) to hear how many of this month's
+Press `Ctrl+9` (**AI > Accounts and Usage > Web Searches Left**) to hear how many of this month's
 searches are left and when they start again. If the service is not offering
 web search at the moment, `Ctrl+9` says that instead. The pad's **Search the
 web** choice and its ten searches are part of the free service only. On your
@@ -11683,7 +11705,7 @@ use it, QUILL makes no network call for it at all.
 
 The first time you reach for it, QUILL shows you exactly what is sent and what
 is kept, and nothing leaves your computer until you accept. You can come to that
-same agreement three ways: **AI > Privacy Agreement...** (`Ctrl+Alt+Shift+K`),
+same agreement three ways: **AI > Accounts and Usage > Privacy Agreement...** (`Ctrl+Alt+Shift+K`),
 Preferences, and Customize Features. All three show the same answer, so they
 never disagree.
 
@@ -11802,7 +11824,7 @@ text. Where your keys are kept, later in this chapter, has the details.
 
 #### Setting up an AI provider
 
-Open **AI > Use My Own AI Key...** (`Alt+F2`) to choose a provider, save its
+Open **AI > Accounts and Usage > Use My Own AI Key...** (`Alt+F2`) to choose a provider, save its
 key and pick a model. It used to be the AI Hub's job; the Hub's Provider page
 now just says which provider is in use and opens Use My Own AI Key.
 
@@ -11973,7 +11995,7 @@ monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 
 #### Setting up your key (Alt+F2)
 
-**AI > Use My Own AI Key...** (`Alt+F2`) opens one window. Its parts, in Tab
+**AI > Accounts and Usage > Use My Own AI Key...** (`Alt+F2`) opens one window. Its parts, in Tab
 order:
 
 - **Provider.** **OpenAI**, **Google Gemini**, **Anthropic Claude**,
@@ -12258,7 +12280,7 @@ help is switched off. Press `F6` to reach the status bar, arrow to it, and press
 
 #### AI Usage
 
-**AI > AI Usage...** (`Ctrl+Alt+Shift+F2`) opens one list, with one sentence
+**AI > Accounts and Usage > AI Usage...** (`Ctrl+Alt+Shift+F2`) opens one list, with one sentence
 for each AI you have set up, and each sentence says whose count it is. A count
 QUILL keeps on this computer is always called that; a number from a service is
 named as that service's. For example:
@@ -12416,7 +12438,7 @@ your on-device model, but it never switches for you.
 If you already pay for ChatGPT, QUILL can run its AI commands on your plan.
 There is no key to paste and no bill per request.
 
-1. Press `Alt+F5` (**AI > Use My ChatGPT Subscription...**). **Choose Your AI**
+1. Press `Alt+F5` (**AI > Accounts and Usage > Use My ChatGPT Subscription...**). **Choose Your AI**
    opens on **My ChatGPT plan**, with its sign-in step ready. (Pressing
    **Sign In...** on that row in `Ctrl+4` does the same.)
 2. Press **Open the Page**. Your browser opens on OpenAI's own sign-in page.
@@ -12900,7 +12922,7 @@ boundary. Only run Python code you trust or wrote yourself.
 
 #### Connecting to an AI provider
 
-The quickest way in is **Use My Own AI Key** (**AI > Use My Own AI Key...**,
+The quickest way in is **Use My Own AI Key** (**AI > Accounts and Usage > Use My Own AI Key...**,
 `Alt+F2`). In short:
 
 1. Choose a provider: OpenAI, Google Gemini, Anthropic Claude, OpenRouter,

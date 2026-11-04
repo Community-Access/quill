@@ -273,19 +273,22 @@ class TranscribeAiMixin(TranscribeAiFeaturesMixin, HostedAiMixin):
         """The AI menu, on QUILL Transcribe's keys."""
         import wx
 
+        from quill.core.ai.ai_menu_layout import fill
+
         menu = wx.Menu()
         self._transcribe_ai_items: dict[str, tuple[Any, str]] = {}
-        for command_id, label, handler_name in AI_ROWS:
-            if not command_id:
-                menu.AppendSeparator()
-                continue
+
+        def append(target: Any, row: tuple[str, str, str]) -> None:
+            command_id, label, handler_name = row
             item_id = wx.NewIdRef()
             shown = self._ai_gated_label(handler_name, label)  # codex.md 10A.8
-            menu.Append(item_id, self._menu_label(shown, command_id))  # type: ignore[attr-defined]
+            target.Append(item_id, self._menu_label(shown, command_id))  # type: ignore[attr-defined]
             self._transcribe_ai_items[handler_name] = (item_id, label)
             handler = getattr(self, handler_name)
             self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=item_id)  # type: ignore[attr-defined]
             self._keep_menu_ids(item_id)  # type: ignore[attr-defined]
+
+        fill(menu, AI_ROWS, append, wx.Menu)  # the family's one AI menu shape
         menu_bar.Append(menu, "&AI")
         self._transcribe_ai_menu = menu
         if not getattr(self, "_transcribe_ai_registered", False):
