@@ -77,6 +77,9 @@ piece lands.
 - **F1 in every project window** says what the window is for, then what the
   control you are on does, and the F1 help reference and the keyboard
   reference list them.
+- **A tutorial: Your first project task,** in a Coding track that appears
+  only in the Developer profile. Twelve minutes, from opening a practice
+  folder to undoing the whole turn.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.

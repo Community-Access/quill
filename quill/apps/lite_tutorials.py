@@ -81,5 +81,17 @@ APP = TutorialsApp(
 
 
 def open_tutorials(host: Any, *, slug: str = "") -> None:
-    """Help > Tutorials... (Ctrl+Alt+F1): open, or raise, QUILL Lite's lessons."""
-    _open(host, APP, slug=slug)
+    """Help > Tutorials... (Ctrl+Alt+F1): open, or raise, QUILL Lite's lessons.
+
+    The Coding lesson is the Developer profile's (code.md 6.4): left out unless
+    the Coding area is on.
+    """
+    from dataclasses import replace
+
+    from quill.core.tutorials.coding_lessons import CODING_TRACK_ID
+    from quill.core.tutorials.model import without_track
+
+    app = getattr(host, "_ai_host", lambda: getattr(host, "app", None))()
+    coding = bool(getattr(app, "feature_enabled", lambda _n: False)("coding"))
+    chosen = APP if coding else replace(APP, catalogue=without_track(CATALOGUE, CODING_TRACK_ID))
+    _open(host, chosen, slug=slug)

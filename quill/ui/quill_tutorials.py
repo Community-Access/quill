@@ -139,7 +139,19 @@ def app() -> Any:
 
 
 def open_tutorials(host: Any, *, slug: str = "") -> None:
-    """Help > Tutorials...: open (or raise) QUILL's lessons."""
+    """Help > Tutorials...: open (or raise) QUILL's lessons.
+
+    The Coding lesson is the Developer profile's (code.md 6.4): left out unless
+    ``core.developer`` is on.
+    """
+    from dataclasses import replace
+
+    from quill.core.tutorials.coding_lessons import CODING_TRACK_ID
+    from quill.core.tutorials.model import without_track
     from quill.ui.tutorials_window import open_tutorials as _open
 
-    _open(host, app(), slug=slug)
+    chosen = app()
+    features = getattr(host, "features", None)
+    if not bool(getattr(features, "is_enabled", lambda _f: False)("core.developer")):
+        chosen = replace(chosen, catalogue=without_track(chosen.catalogue, CODING_TRACK_ID))
+    _open(host, chosen, slug=slug)

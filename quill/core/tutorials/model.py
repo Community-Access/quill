@@ -366,3 +366,17 @@ def build(app_id: str, tracks: Sequence[Track], *groups: Sequence[Tutorial]) -> 
         authored.extend(group)
     unordered = TutorialSet(app_id=app_id, tracks=tuple(tracks), tutorials=tuple(authored))
     return TutorialSet(app_id=app_id, tracks=tuple(tracks), tutorials=unordered.ordered())
+
+
+def without_track(catalogue: TutorialSet, track_id: str) -> TutorialSet:
+    """*catalogue* without one track and its lessons.
+
+    How the Developer profile's Coding lessons stay out of everybody else's
+    Tutorials window (code.md 6.4): each editor builds its full set once and
+    leaves the track out when coding is off.
+    """
+    return TutorialSet(
+        app_id=catalogue.app_id,
+        tracks=tuple(t for t in catalogue.tracks if t.id != track_id),
+        tutorials=tuple(t for t in catalogue.tutorials if t.track != track_id),
+    )

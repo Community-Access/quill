@@ -36,6 +36,7 @@ keyboard reference is a keyboard reference with extra words (bad.md P3.2).
 from __future__ import annotations
 
 from quill.core.lite.tutorials import first_documents, working_in_it
+from quill.core.tutorials.coding_lessons import CODING_TRACK, coding_lessons
 from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
 
@@ -56,6 +57,8 @@ TRACKS: tuple[Track, ...] = (
         "a red squiggle, ask a question about the document in front of you, and "
         "write by talking or transcribe a recording.",
     ),
+    # The Developer profile's lesson; shown only while Coding is on.
+    CODING_TRACK,
 )
 
 #: The set the tutorials window and the printed book both read.
@@ -74,6 +77,15 @@ CATALOGUE: TutorialSet = build(
             "transcribe": "cmd_transcribe_audio_file",
         },
         track="working-in-it",
+        surfaces=("QUILL Lite",),
+    ),
+    coding_lessons(
+        {
+            "open_folder": "cmd_open_project_folder",
+            "task": "cmd_ai_task",
+            "undo": "cmd_undo_agent_turn",
+            "stop_label": "Edit, Agent Work, Stop Agent",
+        },
         surfaces=("QUILL Lite",),
     ),
 )

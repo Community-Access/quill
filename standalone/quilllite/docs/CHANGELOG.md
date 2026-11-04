@@ -42,6 +42,7 @@ of these in the same change.
   in QUILL.
 - **A Project cell in the status bar,** shown only while a project is open.
 - **F1 in every project window,** as in QUILL.
+- **A tutorial: Your first project task,** in the Developer profile only.
 - **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
   files) are asked about once per project.
 

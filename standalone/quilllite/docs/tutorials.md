@@ -1,6 +1,6 @@
 # QUILL Lite Tutorials
 
-Welcome. There are 16 short lessons here, about 74 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 17 short lessons here, about 86 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials... (Ctrl+Alt+F1)** in QUILL Lite. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -26,6 +26,8 @@ The keys here are the ones QUILL Lite comes with. If you have changed a key, the
   - Switch to Spanish and back (3 minutes)
   - Make a live transcript (4 minutes)
   - Transcribe a recording (5 minutes)
+- **Coding, in the Developer profile**: Work on a folder of code with an AI: ask for a change, review every edit, allow the commands it runs, hear the test results, and undo a whole turn.
+  - Your first project task (12 minutes)
 
 ## Your first documents
 
@@ -433,3 +435,43 @@ Turn an audio recording into text in the background, then open its saved transcr
    - You should hear: The completed transcript in its own document.
 
 The recording and your current document stay separate, and the result is waiting in Notifications when you are ready for it.
+
+## Coding, in the Developer profile
+
+Work on a folder of code with an AI: ask for a change, review every edit, allow the commands it runs, hear the test results, and undo a whole turn.
+
+### Your first project task
+
+Open a small project, ask for one change, review it, let the agent run the tests, hear the result, and put everything back with one command.
+
+*8 steps, about 12 minutes.*
+
+1. **Make a practice folder.** Make an empty folder and put one small file of code in it, such as a Python file with a function that has a mistake in it. A project is just a folder; nothing in it is changed until you say.
+   - Worth knowing: Use a copy, not your real work, the first time. Undo Last Turn puts files back, but practising on a copy costs nothing.
+
+2. **Open the folder as a project.** Open Project Folder is in the File menu. Choose Browse for a Folder and pick your practice folder. The status bar's Project cell now names it.
+   - You should hear: Project, and the folder's name, is open.
+
+3. **Ask for one small change.** Press the task command. With a project open it starts a project task rather than a document task. Type one plain request, such as fix the add function and run the tests, and press Enter.
+   - Keys: Ctrl+3
+   - You should hear: Nothing at first; then "The plan is ready", with the number of steps.
+   - Worth knowing: The first time, QUILL may ask whether to use the project's notes for AI agents, if it has any. Read Them First shows them.
+
+4. **Read the plan.** Press Alt+P in the task window to put the cursor on the plan, and read it with the arrow keys. Nothing has changed yet.
+   - Keys: Alt+P
+
+5. **Review the change.** When the agent has an edit, Review Changes opens on a list of files. Press Enter on a file, read the change with its line numbers, and Accept or Reject it. Apply Accepted Changes writes what you accepted; Reject All writes nothing.
+   - You should hear: The window's own title and the first file's row.
+
+6. **Allow the test command.** Run This Command? shows the exact command. Arrow through it, then Allow once. A warning line appears only when QUILL sees a risk, such as reaching the internet.
+   - You should hear: The result in one sentence, such as "Tests: 3 passed."
+
+7. **Undo the whole turn.** Undo Last Agent Turn, in Edit under Agent Work, puts every file the turn changed back as it was and removes files it made.
+   - You should hear: "Undid turn 1", and which files are back.
+   - Worth knowing: If you edited one of those files yourself since, undo refuses and offers to show you the file as it was, so nothing of yours is lost.
+
+8. **Try coach mode.** Check Coach mode (Alt+A) in the task window and ask how to fix the mistake yourself. The agent explains and points to a file and line; you make the change in the editor.
+   - Keys: Alt+A
+   - Worth knowing: Stop Agent stops a task from any window: Edit, Agent Work, Stop Agent.
+
+That is the whole loop. Every change is reviewed before it is written, every command asks first, and one command undoes a turn.
