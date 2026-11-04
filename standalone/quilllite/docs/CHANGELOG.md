@@ -38,6 +38,8 @@ of these in the same change.
   Developer profile.
 - **Undo offers a look before you lose anything:** when it refuses because
   you edited a file since, it opens that file as it was before the turn.
+- **Claude and Ollama practice mode for project tasks,** on My own key, as
+  in QUILL.
 - **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
   files) are asked about once per project.
 

@@ -12,7 +12,7 @@ what is sent, what comes back, what triggers it, and how it behaves in Safe Mode
 
 from __future__ import annotations
 
-from quill.tools.network_egress_entries_agents import AGENT_EGRESS
+from quill.tools.network_egress_entries_agents import AGENT_EGRESS, AGENT_HTTP_EGRESS
 from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
@@ -23,6 +23,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     # The cloud dictation providers (D-31 to D-37), split out the same way.
     **SPEECH_EGRESS,
     **CAST_EXTRAS_EGRESS,
+    **AGENT_HTTP_EGRESS,  # Ollama practice mode, loopback only
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "

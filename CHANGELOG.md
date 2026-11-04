@@ -65,6 +65,11 @@ piece lands.
   the file and offers to open the file as it was before the turn, so you can
   compare. Your file is not changed.
 - **Project tasks are off in Safe Mode,** like the AI engines.
+- **More engines for project tasks.** GitHub Copilot and Codex as before,
+  and now on My own key: **Claude** (the Claude Agent SDK on your own
+  Anthropic key, with QUILL's tools and none of Claude Code's own unless you
+  turn them on), and **Ollama practice mode**, a model on this computer:
+  nothing is sent, and it is slower and less capable, which the window says.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.

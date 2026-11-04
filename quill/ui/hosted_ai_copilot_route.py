@@ -26,7 +26,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.ai.connection_caps import CODEX, COPILOT
+from quill.core.ai.connection_caps import CODEX, COPILOT, OWN_KEY
 
 __all__ = ["CopilotRouteMixin"]
 
@@ -290,4 +290,27 @@ class CopilotRouteMixin:
                 agent_name=self.agent_name, token_provider=self.chatgpt.access_token
             )
             return _ModelHarness(harness, model)
+        if chosen == OWN_KEY:
+            return self._own_key_agent_harness()
+        return None
+
+    def _own_key_agent_harness(self) -> Any:
+        """Agent tasks on My own key (code.md 3.3, 3.5): Claude, or Ollama practice.
+
+        Claude runs through the Claude Agent SDK on the person's own Anthropic
+        key (the optional ``quill[ai-claude]`` extra); Ollama on this computer
+        runs QUILL's own loop and sends nothing. Every other provider answers
+        text only, so there is no engine for a task and the gate says so.
+        """
+        provider = str(getattr(self, "own_key_provider", "") or "")
+        model = str(getattr(self, "own_key_model", "") or "")
+        if provider == "ollama":
+            from quill.core.ai.harness.ollama_tools import OllamaToolHarness
+
+            return OllamaToolHarness(model)
+        if provider == "claude":
+            from quill.ai_packs.claude_tool_session import ClaudeToolHarness
+            from quill.core.assistant_ai import load_provider_api_key
+
+            return ClaudeToolHarness(api_key=load_provider_api_key("claude"), model=model)
         return None

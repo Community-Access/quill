@@ -55,3 +55,17 @@ AGENT_EGRESS: dict[str, str] = {
         "Mode, with the rest of the project task."
     ),
 }
+
+
+#: Agent engines that QUILL itself talks to over HTTP (not a child process).
+AGENT_HTTP_EGRESS: dict[str, str] = {
+    "core/ai/harness/ollama_tools.py::_post": (
+        "Ollama practice mode (code.md 3.5): a project or document task on a model "
+        "running on this computer. POSTs the conversation, the tool list and the "
+        "tool results to Ollama's /api/chat on 127.0.0.1, localhost or [::1] only; "
+        "_post refuses any other address, so nothing leaves the machine. Reached "
+        "only when the person has chosen Ollama on this computer in My own key and "
+        "starts an agent task; never in the background; refused in Safe Mode with "
+        "the rest of the agent tasks. No key or token is sent."
+    ),
+}
