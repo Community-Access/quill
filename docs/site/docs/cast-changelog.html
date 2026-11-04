@@ -264,6 +264,19 @@ under “Speed and reliability”.</p>
 heading: the main window, listening, sound and volume, your library,
 feeds, dictation and AI, help and notifications, Preferences and keys,
 updates and installing, and speed and reliability.</p>
+<h3
+id="connecting-to-spotify-works-and-says-why-when-it-cannot-2026-11-04">Connecting
+to Spotify works, and says why when it cannot (2026-11-04)</h3>
+<ul>
+<li><strong>Connect now opens your browser.</strong> The sign-in was
+being handed to the background worker the wrong way, so after “opening
+your browser” nothing happened, and no Spotify sign-in could ever
+finish. Fixed in QUILL Cast and Quill Radio.</li>
+<li><strong>The sign-in window shows the exact redirect
+address</strong>, with Copy Address, says what went wrong in one
+sentence, and has Show Diagnostics and Copy Diagnostics for a report to
+send to support. The report never shows a password or token.</li>
+</ul>
 <h3 id="ai-menu-2026-11-03">AI menu (2026-11-03)</h3>
 <ul>
 <li><strong>One AI menu, the same in every app</strong> (2026-11-03).

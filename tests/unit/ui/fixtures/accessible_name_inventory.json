@@ -1101,6 +1101,8 @@
   "quill/ui/spotify/browse_dialog.py::SpotifyBrowseDialog.__init__::wx.ListBox": "named",
   "quill/ui/spotify/browse_dialog.py::SpotifyBrowseDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/spotify/connect_dialog.py::SpotifyConnectDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/spotify/connect_dialog.py::SpotifyConnectDialog.__init__::wx.TextCtrl#2": "named",
+  "quill/ui/spotify/connect_dialog.py::SpotifyConnectDialog.__init__::wx.TextCtrl#3": "named",
   "quill/ui/ssh_dialogs.py::QuickConnectDialog.__init__::wx.Choice": "modal-hook",
   "quill/ui/ssh_dialogs.py::QuickConnectDialog.__init__::wx.SpinCtrl": "modal-hook",
   "quill/ui/ssh_dialogs.py::QuickConnectDialog.__init__::wx.TextCtrl": "modal-hook",

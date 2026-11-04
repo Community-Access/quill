@@ -19,6 +19,17 @@ the main window, listening, sound and volume, your library, feeds, dictation
 and AI, help and notifications, Preferences and keys, updates and installing,
 and speed and reliability.
 
+### Connecting to Spotify works, and says why when it cannot (2026-11-04)
+
+- **Connect now opens your browser.** The sign-in was being handed to the
+  background worker the wrong way, so after "opening your browser" nothing
+  happened, and no Spotify sign-in could ever finish. Fixed in QUILL Cast and
+  Quill Radio.
+- **The sign-in window shows the exact redirect address**, with Copy Address,
+  says what went wrong in one sentence, and has Show Diagnostics and Copy
+  Diagnostics for a report to send to support. The report never shows a
+  password or token.
+
 ### AI menu (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.

@@ -4454,6 +4454,39 @@ because the sound is copy-protected.
 Your sign-in is kept in the Windows credential store, never in an ordinary
 file or a log.
 
+#### If Connect does not finish
+
+The sign-in window now shows the **Redirect address** your Spotify app must
+list, with a **Copy Address** button, so you can paste it straight into the
+dashboard. If something still goes wrong, the window says what, in a sentence:
+another program using the sign-in port, a Client ID Spotify does not know, or a
+browser that never came back.
+
+For the whole picture, choose **Show Diagnostics** in the same window. It
+checks:
+
+- the redirect address to register;
+- whether a Client ID is saved;
+- whether you are signed in, and with which permissions;
+- whether the sign-in port is free;
+- your account type (Premium is needed to play);
+- whether Windows has the web player Spotify needs;
+- every step of your last sign-in attempt, with the time of each.
+
+**Copy Diagnostics** puts the report on the clipboard, ready to paste into an
+email to support@. It never contains a password or a sign-in token.
+
+The most common causes, in order:
+
+1. The redirect address in your Spotify app is not exactly
+   `http://127.0.0.1:43217/callback`. It must be http, not https, and
+   127.0.0.1, not localhost.
+2. You approved in the browser with a different Spotify account from the one
+   that created the app. Add that account under **User Management** in the
+   dashboard.
+3. Your account is not Premium. You can sign in and browse, but nothing will
+   play.
+
 #### Browse and play, step by step
 
 1. Press **Ctrl+Alt+O** (**Station > Browse Spotify...**). A search box opens
