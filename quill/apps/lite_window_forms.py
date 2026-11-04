@@ -70,4 +70,44 @@ class DocumentFormsMixin:
 
     def cmd_forms_responses(self) -> None:
         """Tools > Forms > Responses."""
-        self._forms().cmd_responses()
+        self._forms().cmd_form_responses()
+
+    def cmd_forms_publish(self) -> None:
+        """Tools > Forms > Publish Form."""
+        self._forms().cmd_publish_form()
+
+    def cmd_forms_insert_into_page(self) -> None:
+        """Tools > Forms > Insert Form Into Page."""
+        self._forms().cmd_insert_into_page()
+
+    def cmd_forms_test_on_site(self) -> None:
+        """Tools > Forms > Test on Site."""
+        self._forms().cmd_test_on_site()
+
+    def cmd_forms_save_web_page(self) -> None:
+        """Tools > Forms > Save As Web Page."""
+        self._forms().cmd_save_web_page()
+
+    def cmd_forms_save_word(self) -> None:
+        """Tools > Forms > Save As Word Document."""
+        self._forms().cmd_save_word()
+
+    def cmd_forms_save_large_print(self) -> None:
+        """Tools > Forms > Save As Large Print."""
+        self._forms().cmd_save_large_print()
+
+    def cmd_forms_save_braille(self) -> None:
+        """Tools > Forms > Save As Braille-Ready Text."""
+        self._forms().cmd_save_braille()
+
+    def cmd_forms_draft(self) -> None:
+        """Tools > Forms > Draft a Form."""
+        self._forms().cmd_draft_form()
+
+    def cmd_forms_plain_language(self) -> None:
+        """Tools > Forms > Plain Language."""
+        self._forms().cmd_plain_language()
+
+    def cmd_forms_suggest_autofill(self) -> None:
+        """Tools > Forms > Suggest Autofill Hints."""
+        self._forms().cmd_suggest_autofill()

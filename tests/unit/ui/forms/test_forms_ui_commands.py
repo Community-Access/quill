@@ -12,7 +12,6 @@ import pytest
 
 from quill.core.forms import model as M
 from quill.ui import forms_doc as fd
-from quill.ui.forms_commands import RESPONSES_WAIT
 
 
 def _model(host):
@@ -284,9 +283,3 @@ def test_properties_writes_the_settings(forms, forms_host, forms_dialogs) -> Non
 
 
 # -- Responses --------------------------------------------------------------- #
-
-
-def test_responses_says_it_waits_for_the_connection(forms, forms_host) -> None:
-    forms.cmd_responses()
-    assert forms_host.announced == [RESPONSES_WAIT]
-    assert "BITS Accessible Forms" in RESPONSES_WAIT

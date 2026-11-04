@@ -28,13 +28,8 @@ from quill.ui import forms_fill_window as ffw
 from quill.ui import wordpress_block_dialogs as wbd
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui.forms_outline_commands import FormsOutlineCommands
+from quill.ui.forms_publish_commands import FormsPublishCommands
 from quill.ui.forms_templates import TEMPLATES
-
-RESPONSES_WAIT = (
-    "Responses will list what people sent to this form on your WordPress site. It needs "
-    "the connection to BITS Accessible Forms, which is still being built, so there is "
-    "nothing to show yet."
-)
 
 
 def not_a_form(command: str) -> str:
@@ -44,7 +39,7 @@ def not_a_form(command: str) -> str:
     )
 
 
-class FormsCommands(FormsOutlineCommands):
+class FormsCommands(FormsPublishCommands, FormsOutlineCommands):
     def __init__(self, host: Any) -> None:
         self.host = host
 
@@ -453,9 +448,6 @@ class FormsCommands(FormsOutlineCommands):
             model["confirmations"] = kept
         else:
             model.pop("confirmations", None)
-
-    def cmd_responses(self) -> None:
-        self.host.announce(RESPONSES_WAIT)
 
 
 def _set(table: dict[str, Any], key: str, value: Any) -> None:

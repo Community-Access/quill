@@ -45,7 +45,17 @@ class _Window(DocumentFormsMixin):
         (lambda w: w.cmd_forms_check(), "cmd_check"),
         (lambda w: w.cmd_forms_fill_in(), "cmd_fill_in"),
         (lambda w: w.cmd_forms_properties(), "cmd_properties"),
-        (lambda w: w.cmd_forms_responses(), "cmd_responses"),
+        (lambda w: w.cmd_forms_responses(), "cmd_form_responses"),
+        (lambda w: w.cmd_forms_publish(), "cmd_publish_form"),
+        (lambda w: w.cmd_forms_insert_into_page(), "cmd_insert_into_page"),
+        (lambda w: w.cmd_forms_test_on_site(), "cmd_test_on_site"),
+        (lambda w: w.cmd_forms_save_web_page(), "cmd_save_web_page"),
+        (lambda w: w.cmd_forms_save_word(), "cmd_save_word"),
+        (lambda w: w.cmd_forms_save_large_print(), "cmd_save_large_print"),
+        (lambda w: w.cmd_forms_save_braille(), "cmd_save_braille"),
+        (lambda w: w.cmd_forms_draft(), "cmd_draft_form"),
+        (lambda w: w.cmd_forms_plain_language(), "cmd_plain_language"),
+        (lambda w: w.cmd_forms_suggest_autofill(), "cmd_suggest_autofill"),
     ],
 )
 def test_each_lite_row_runs_the_shared_command(run, shared) -> None:

@@ -118,6 +118,11 @@
   This Form and Fill It In Yourself, which walks you through the form as a
   visitor would, in each of its languages. One form definition is shared
   with BITS Accessible Forms.
+- **Forms on your site and on paper.** Publish Form, Insert Form Into Page,
+  Test on Site and Responses work with sites running BITS Accessible Forms.
+  Save a form as a web page, a Word document, large print or braille-ready
+  text. Draft a Form, Plain Language and Suggest Autofill Hints help with
+  the wording, and Summarise Responses asks before it sends anything.
 - **Forms: nothing you add is lost.** A question added at the top of a page
   is kept when the form is saved, and choice lists from a library show in
   Fill It In Yourself.

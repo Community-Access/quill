@@ -36,6 +36,7 @@ from quill.tools.persistence_entries_dictation import DICTATION_ENTRIES
 from quill.tools.persistence_entries_family import FAMILY_ENTRIES
 from quill.tools.persistence_entries_radio import RADIO_LISTENER_ENTRIES
 from quill.tools.persistence_entries_studio import STUDIO_ENTRIES
+from quill.tools.persistence_entries_wordpress import WORDPRESS_ENTRIES
 
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 
@@ -52,9 +53,8 @@ _CLASSIFICATIONS: dict[str, str] = {
     "needs-versioning": "Real user config that should adopt the versioned contract (backlog).",
 }
 
-#: Every ``write_json_atomic`` site -> its classification. Keep in sync with the
-#: source (the gate fails otherwise). ``needs-versioning`` entries are the
-#: prioritized backlog to route through ``versioned_store``.
+#: Every ``write_json_atomic`` site -> its classification, kept in sync with the source;
+#: ``needs-versioning`` entries are the backlog to route through ``versioned_store``.
 _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
@@ -176,6 +176,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "ui/media/output_device_apps.py::save_device_pref": "marker",
     **FAMILY_ENTRIES,  # App Sounds and Slider Keys: persistence_entries_family
     **STUDIO_ENTRIES,  # QUILL Studio's capture files: persistence_entries_studio
+    **WORDPRESS_ENTRIES,  # File > WordPress and Forms
     "core/radio/download_prefs.py::save": "content",
     "core/library/catalogs.py::save": "content",
     "core/publish/destinations.py::save_destinations": "content",
@@ -220,8 +221,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # destination added in a later release is pooled rather than inserted --
     # so a saved layout can never renumber what somebody has learned.
     "core/radio/go_to.py::save_layout": "content",
-    # The shared Go To machinery both apps write through; each supplies its
-    # own file name (radio-go-to.json, cast-go-to.json).
+    # Shared Go To machinery; each app names its file (radio-go-to.json, cast-go-to.json).
     "core/go_to_menu.py::save_layout": "content",
     # The user-ordered action list per content type, whose first entry is the
     # default for Enter. Same reasoning as list_columns above.

@@ -18732,6 +18732,61 @@ nothing.
 - Payment details and website passwords never pass through QUILL. They stay
   on your website.
 
+### Putting a form on your site
+
+If your WordPress site has BITS Accessible Forms, QUILL can publish a form to it. Open the form, then choose Publish Form in Tools, Forms. The first time, QUILL asks whether the form is live, so people can fill it in, or a draft. Then it asks you to confirm, naming the site. Publishing again updates the same form. If someone changed it on the site since you last published, QUILL says so first, and keeps the site's copy on your computer before replacing it.
+
+To show the form on a page, open the page from File, WordPress, put the cursor where the form goes, and choose Insert Form Into Page. QUILL lists the site's forms and inserts BAF's form block, or a shortcode if the page is written in Markdown. The form appears once you send the page.
+
+Test on Site opens the page that shows your form in your web browser, so you can try it as a visitor would. If no page shows it yet, QUILL opens the form in BITS Accessible Forms on the site instead.
+
+### Paper, large print and braille
+
+Every form can be saved four other ways, without a site, even in Safe Mode:
+
+- **Save As Web Page:** a form page of its own, with every question properly labelled. QUILL asks where it should send its answers; leave that empty for a form to print or read.
+- **Save As Word Document:** a printable form. Each question is a heading, with lines to write on and boxes to check.
+- **Save As Large Print:** the same Word form at 18 point and up.
+- **Save As Braille-Ready Text:** one question per block, choices lettered a, b, c, 40 cells to a line. With the braille pack installed, QUILL can also translate it to UEB contracted braille and save a BRF file.
+
+All four come from the same form, so the paper version always asks what the web version asks.
+
+### Responses
+
+Responses, in Tools, Forms, lists what people sent, newest first: "Response 41, 3 November, 2:10 PM, Jane Smith, Event registration". With a published form open, it goes straight to that form's responses. Otherwise QUILL asks which site and which form.
+
+- **Read**, or Enter: one response, a question and its answer on each line.
+- **View:** the list, or grouped by date, or grouped by the place people gave.
+- **Find:** shows only responses containing some words.
+- **Export to CSV**, **Open as Table**, **Export to Word:** save responses where you choose. Open as Table opens the file afterwards; Export to Word saves one response or all of those shown.
+- **Mark**, then **Delete:** removes the marked responses, or the selected one, after telling you how many. They go to the Trash in BITS Accessible Forms.
+- **Say New Count:** the first time you use a site in a session, QUILL says how many new responses each form has, for example "Community Radio: 4 new responses to Event registration." This button turns that on or off for the site.
+
+Responses are people's personal details. QUILL reads them only while this window is open, keeps them in memory, never writes them to a log, and saves them only where you choose.
+
+### AI help with forms
+
+If you have chosen an AI, four commands can help. Each one tells you what it sends before it sends it, and nothing changes until you have read the proposal and said yes. Undo takes it all out in one step.
+
+- **Draft a Form:** describe the form in a sentence or two. The AI writes it as a form. QUILL replaces the form in front with it, or saves it as a new form.
+- **Plain Language:** sends your questions and help text, never anybody's answers. You get simpler wording to accept or decline.
+- **Suggest Autofill Hints:** for questions such as name, email, phone and address that have no autofill hint, and for questions with a format rule but no help. It sends their wording and types only.
+- **Summarise Responses**, a button in Responses: this sends people's answers, so QUILL asks every time. It says how many responses would go, and that they may include names and email addresses.
+
+None of these work in Safe Mode, and nor do Publish, Test on Site or Responses. Writing, checking, Fill It In Yourself and the four ways to save still do.
+
+**Where these are:**
+
+- Tools > Forms > Publish Form...
+- Tools > Forms > Insert Form Into Page...
+- Tools > Forms > Save As Web Page...
+- Tools > Forms > Save As Word Document...
+- Tools > Forms > Save As Large Print...
+- Tools > Forms > Save As Braille-Ready Text...
+- Tools > Forms > Draft a Form...
+- Tools > Forms > Plain Language...
+- Tools > Forms > Suggest Autofill Hints...
+
 ## A last word
 
 The best way to get to know QUILL is to use it on something real: a note you
