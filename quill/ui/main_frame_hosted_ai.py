@@ -37,6 +37,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.ui.hosted_ai_commands import HostedAiMixin
+from quill.ui.main_frame_project_rows import ProjectRowsMixin
 
 __all__ = ["HostedAiCommandsMixin", "QuillAiHost"]
 
@@ -46,6 +47,8 @@ __all__ = ["HostedAiCommandsMixin", "QuillAiHost"]
 #: onto it rather than inventing a second switch for people to find and
 #: disagree with.
 _HOSTED_AI_FEATURE = "hosted_ai"
+#: The Developer profile's coding features, by QUILL Lite's area name.
+_CODING_FEATURE = "coding"
 
 
 class QuillAiHost:
@@ -101,6 +104,11 @@ class QuillAiHost:
     def feature_enabled(self, name: str) -> bool:
         from quill.core.ai.model_manager import load_ai_enabled
 
+        if name == _CODING_FEATURE:
+            # QUILL Lite's Coding area is QUILL's core.developer (code.md 6.4).
+            features = getattr(self._frame, "features", None)
+            check = getattr(features, "is_enabled", None)
+            return bool(callable(check) and check("core.developer"))
         if name != _HOSTED_AI_FEATURE:
             return True
         return load_ai_enabled()
@@ -141,7 +149,7 @@ class QuillAiHost:
             pass
 
 
-class HostedAiCommandsMixin(HostedAiMixin):
+class HostedAiCommandsMixin(ProjectRowsMixin, HostedAiMixin):
     """The shared hosted-AI commands, wired to QUILL's frame, editor and settings.
 
     Three overrides and no commands. That is the whole point: QUILL and QUILL Lite
@@ -396,6 +404,7 @@ class HostedAiCommandsMixin(HostedAiMixin):
         mapping.update(self._dictionary_menu_ids())
         mapping.update(self._answer_menu_ids())
         mapping.update(self._choose_menu_ids())
+        mapping.update(self._project_menu_ids())
         if getattr(self, "_look_up_menu_id", None) is not None:
             mapping["tools.look_up"] = self._look_up_menu_id
         chatgpt_id, image_id, tidy_id = self._chatgpt_menu_ids()

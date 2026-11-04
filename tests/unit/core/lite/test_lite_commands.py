@@ -53,6 +53,56 @@ def _items() -> list[tuple[str, str, str, str]]:
 #: reason). The route is the menu's own Alt path, which the access-key checks
 #: below keep unique. Shrink this, never grow it without an argument.
 KEYLESS_WITH_REASON: dict[str, str] = {
+    "cmd_open_project_folder": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Open Project Folder: once a session, then Ctrl+3 does the work. Alt+F, J.",
+    "cmd_project_task": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Do a Project Task: Ctrl+3 already opens it whenever a project is open. Alt+T, A, P.",
+    "cmd_stop_agent": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Stop Agent: the task window's own Stop is Alt+T there; elsewhere Alt+E, W, S.",
+    "cmd_undo_agent_turn": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Undo Last Agent Turn: Alt+U in the task window; elsewhere Alt+E, W, U.",
+    "cmd_explain_agent_turn": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Explain Last Turn: Alt+X in the task window; elsewhere Alt+T, A, R.",
+    "cmd_open_command_output": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Agent Command Output: Alt+O in the task window; elsewhere Alt+V, U.",
+    "cmd_project_transcript": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Agent Task Transcript: Alt+R in the task window; elsewhere Alt+V, P.",
+    "cmd_project_allowed_commands": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Commands Allowed in This Project: a settings list, opened rarely. Alt+T, J.",
+    "cmd_project_engine_tools": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Engine Tools for This Project: a settings list, opened rarely. Alt+T, A, E.",
+    "cmd_close_project": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Close Project: once a session at most. Alt+F, T.",
     "cmd_ai_alt_text": "As in QUILL (rule 2), where Propose Alt Text has no key either: "
     "Do a Document Task (Ctrl+3) takes the same request, and this row only types it in. "
     "Rule 9: an occasional repair pass gets a way in, not a chord -- Alt+T, A, T.",

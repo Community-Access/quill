@@ -245,6 +245,13 @@ CELLS: tuple[StatusCell, ...] = (
     # every editing cell so it cannot push one onto another row. QUILL has the
     # same cell. The message stays last, for the reason given below it.
     StatusCell(
+        "project",
+        "Project",
+        "The open project, its git branch, and whether the project task is waiting "
+        "for you. Shown only while a project is open. Press Enter to open Do a "
+        "Project Task.",
+    ),
+    StatusCell(
         "ai",
         "AI",
         "Which AI is in use: QUILL's free AI, your ChatGPT plan or your own key, the "
@@ -285,6 +292,7 @@ _CELL_ACTIONS: dict[str, str] = {
     "line_endings": "cmd_file_format",
     "saved": "cmd_save",
     "ai": "cmd_ai_choose",
+    "project": "cmd_project_task",
 }
 
 
@@ -305,6 +313,20 @@ def ai_cell(frame: object) -> str:
         return str(text()) if callable(text) else ""
     except Exception:  # noqa: BLE001 - a status cell never takes the bar down
         return ""
+
+
+def project_cell(frame: object) -> str:
+    """The Project cell's text, or "" (and so hidden) when no project is open."""
+    text = getattr(frame, "project_status_text", None)
+    try:
+        return str(text()) if callable(text) else ""
+    except Exception:  # noqa: BLE001 - a status cell never takes the bar down
+        return ""
+
+
+def shared_ai_cells(frame: object) -> dict[str, str]:
+    """The Project and AI cells, which QUILL shows with the same words."""
+    return {"project": project_cell(frame), "ai": ai_cell(frame)}
 
 
 def encoding_name(codec: str) -> str:
@@ -364,7 +386,7 @@ def native_cell_labels(values: Mapping[str, str]) -> list[str]:
 
 #: Cells shown only while they have something to say; hidden, they leave the
 #: row and the arrow keys step over them.
-SHOWN_ONLY_WITH_TEXT = frozenset({"page"})
+SHOWN_ONLY_WITH_TEXT = frozenset({"page", "project"})
 
 
 def page_cell_text(text: str, position: int) -> str:

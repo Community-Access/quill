@@ -2197,3 +2197,55 @@ ChatGPT plan, then on your own OpenAI key, then on your own Claude key.
 
 - [ ] All twelve with NVDA.
 - [ ] All twelve with JAWS.
+
+## Project tasks in the Developer profile (code.md, 2026-11-04)
+
+Run in QUILL and in QUILL Lite, with NVDA, then JAWS, then Narrator for steps
+1 to 6. Keyboard only. Use a practice folder holding `cli.py` with a bug in a
+function and a failing `test_cli.py`. Choose the Developer profile first.
+Sign in to GitHub Copilot in Choose Your AI.
+
+1. In any other profile, no project row is in File, Edit, View, Tools or the
+   AI menu, the palette finds none, and the Tutorials window has no Coding
+   track. Choose Developer: they appear, and leave again when you switch back.
+2. File > Open Project Folder: focus is on Recent projects (or Browse for a
+   Folder when there are none). Enter opens the selected one. QUILL says
+   "Project ... is open." once; the status bar's Project cell names it.
+3. Ctrl+3: the window title is Do a Project Task, focus is in Instruction, and
+   QUILL says nothing on top of the reader. If the folder has an AGENTS.md,
+   Use This Project's Agent Notes? comes first; Read Them First fills the
+   Notes field and moves focus there.
+4. Ask "fix the add function and run the tests". "The plan is ready, N steps"
+   is spoken once and brailled. Alt+P puts the cursor on "Plan:" in the
+   conversation.
+5. Review Changes: each row is one sentence ending "taken" or "not taken".
+   Space changes it and the row is re-read; Enter moves to Change details,
+   which leads with line numbers and says indentation as a count. Accept and
+   Reject say "Change 1 accepted" or "rejected". Apply Accepted Changes is
+   the default; Escape writes nothing.
+6. Run This Command?: focus is on the sentence; Tab reaches the exact command,
+   which arrows character by character. For `pip install x` a Warning field
+   says "This may reach the internet." and there is no Always allow button.
+   Allow once: the result is spoken, such as "Tests: 1 passed."
+7. Alt+O opens the full output as a document; Alt+R opens the transcript with
+   a heading per turn, and H moves between turns.
+8. Switch to the editor while a question is pending: QUILL says once "The
+   project task is waiting for you. Press Ctrl+3 to answer." The Project cell
+   adds "waiting for you". Ctrl+3 brings the window back and the question
+   opens.
+9. Edit > Agent Work > Undo Last Agent Turn: "Undid turn 1" and the files are
+   back. Edit `cli.py` yourself, run a turn, then undo: it refuses, names
+   the file, and Yes opens the file as it was before the turn.
+10. Start a long command (`python -c "import time; time.sleep(60)"`) and use
+    Stop Agent from the editor: the task stops within a second or two and
+    the command is gone from Task Manager.
+11. Coach mode (Alt+A): the agent changes nothing and runs nothing; it points
+    to a file and line in the conversation.
+12. Commands Allowed in This Project: add `pytest`, then check Run commands
+    without asking; a Yes/No confirms it, and the task window's status line
+    says "Commands run without asking".
+13. Live engine runs, on Jeff's accounts: repeat 3 to 6 on Codex, on Claude
+    (own Anthropic key, with the Claude Agent SDK installed) and on Ollama on
+    this computer with a tool-capable model. Note anything an engine did
+    with its own tools that QUILL did not offer (it should be nothing unless
+    Engine Tools was checked).

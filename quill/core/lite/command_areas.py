@@ -202,6 +202,23 @@ COMMAND_AREA: dict[str, str] = {
 # MENU_AREA and be hidden with the rest of the submenu.
 COMMAND_AREA["cmd_ai_privacy"] = ""
 
+# Project tasks, wherever their rows sit: the Developer profile's Coding area.
+COMMAND_AREA.update({
+    handler: "coding"
+    for handler in (
+        "cmd_open_project_folder",
+        "cmd_close_project",
+        "cmd_undo_agent_turn",
+        "cmd_stop_agent",
+        "cmd_project_transcript",
+        "cmd_open_command_output",
+        "cmd_project_allowed_commands",
+        "cmd_project_task",
+        "cmd_explain_agent_turn",
+        "cmd_project_engine_tools",
+    )
+})
+
 COMMAND_AREA.update({f"cmd_set_bookmark_{n}": "bookmarks" for n in range(1, 10)})
 
 

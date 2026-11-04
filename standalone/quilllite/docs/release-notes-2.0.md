@@ -82,6 +82,26 @@ Some keys have moved:
   **Alt+Shift+9** is always **AutoCorrect Entries**. The ninth file is in
   **File > Recent Documents** (**Alt+Shift+0**).
 
+## Project tasks, in the Developer profile
+
+- **A Developer profile**, the fifth: Recommended plus a new **Coding** area,
+  18 of the 22 areas. Coding is off in every other profile.
+- **Do a Project Task.** Open a folder with **File > Open Project Folder...**
+  and **Ctrl+3** works on the whole project. The AI plans, reads, and proposes
+  changes to several files; **Review Changes** shows each one with line
+  numbers, and nothing is written until you accept it.
+- **Commands ask first.** **Run This Command?** shows the exact command, with a
+  warning when QUILL Lite sees a risk. Test results come back as one sentence.
+  **Commands Allowed in This Project** is your own list, kept in QUILL Lite and
+  never in the project.
+- **Undo Last Agent Turn** and **Stop Agent** are in **Edit > Agent Work**.
+  Undo puts every file back, and refuses rather than lose an edit of yours.
+- **Coach mode** has the agent teach while you type. **Explain Last Turn**
+  says what it changed and why.
+- **Engines:** GitHub Copilot, Codex, and on your own key Claude or Ollama on
+  this computer, which is practice mode and sends nothing.
+- A tutorial, *Your first project task*, appears in the Developer profile.
+
 ## Choose Your AI, with GitHub Copilot and Codex
 
 - **Choose Your AI** (**Ctrl+4**, Tools > AI). One window lists where your AI

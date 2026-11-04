@@ -34,6 +34,11 @@ class FeatureDefinition:
     #: companion apps (``app_launcher.RELEASED_APPS``). Use ``locked_off``
     #: instead for a feature that is off in *every* build.
     released: bool = True
+    #: Off in every profile that does not name it, where an unlisted feature
+    #: is otherwise on. Only ``core.developer`` uses it: coding features are
+    #: the Developer profile's to turn on (code.md 6.4), and a new profile
+    #: must not switch them on by forgetting to mention them.
+    default_off: bool = False
 
     @property
     def is_locked_off(self) -> bool:
@@ -140,7 +145,7 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         "Word Prediction",
         aliases=("intellisense", "autocomplete", "word prediction"),
         category="core",
-        dependencies=("core.editor",),
+        dependencies=("core.editor", "core.developer"),
     ),
     "core.read_aloud": FeatureDefinition(
         "core.read_aloud", "Read Aloud", category="accessibility", dependencies=("core.editor",)
@@ -360,7 +365,22 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         ),
         category="core",
         privacy="network after confirmation",
-        dependencies=("core.remote",),
+        dependencies=("core.remote", "core.developer"),
+    ),
+    "core.developer": FeatureDefinition(
+        "core.developer",
+        "Developer Tools",
+        aliases=("developer", "developer tools", "coding", "project task", "git"),
+        description=(
+            "Tools for writing code: Do a Project Task with an AI, reviewing its "
+            "changes, running commands and tests, Undo Last Turn, local Git and "
+            "GitHub, the Developer Console, word prediction and the agent "
+            "validator. On in the Developer profile and Full Quill only; every "
+            "developer feature depends on this one."
+        ),
+        category="developer",
+        dependencies=("core.app",),
+        default_off=True,
     ),
     "core.developer_console": FeatureDefinition(
         "core.developer_console",
@@ -372,7 +392,7 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "Gated by profile; hidden for Essential and Writer profiles."
         ),
         category="developer",
-        dependencies=("core.app",),
+        dependencies=("core.app", "core.developer"),
     ),
     "core.developer_console.typescript": FeatureDefinition(
         "core.developer_console.typescript",

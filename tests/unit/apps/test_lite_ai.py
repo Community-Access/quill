@@ -664,7 +664,9 @@ def test_the_privacy_agreement_is_reachable_with_the_feature_switched_off():
     """
     from quill.core.lite.command_areas import visible_commands
 
-    off = visible_commands(lambda area: area != "hosted_ai")
+    # Coding is off too, as it is by default: its project rows also sit in
+    # Tools > AI, and appear only in the Developer profile.
+    off = visible_commands(lambda area: area not in ("hosted_ai", "coding"))
     from quill.core.ai.ai_menu_layout import ACCOUNTS_TITLE
 
     rows = [row for row in off if row[0] == f"&Tools|&AI|{ACCOUNTS_TITLE}"]

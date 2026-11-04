@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 519.</p>
+<p>Editor commands with default bindings: 529.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -2427,6 +2427,46 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
+<td>Commands Allowed in This Project…</td>
+<td><code>project.allowed_commands</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Close Project</td>
+<td><code>project.close</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Agent Command Output</td>
+<td><code>project.command_output</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Engine Tools for This Project…</td>
+<td><code>project.engine_tools</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Explain Last Turn</td>
+<td><code>project.explain_turn</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open Project Folder…</td>
+<td><code>project.open_folder</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Do a Project Task…</td>
+<td><code>project.task</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Agent Task Transcript</td>
+<td><code>project.transcript</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>Play favorite 1</td>
 <td><code>radio.play_favorite_1</code></td>
 </tr>
@@ -2916,6 +2956,11 @@ your own customised keymap.</p>
 <td><code>radio.mute_toggle</code></td>
 </tr>
 <tr>
+<td>QUILL Key + K</td>
+<td>Stop Agent</td>
+<td><code>project.stop_agent</code></td>
+</tr>
+<tr>
 <td>QUILL Key + M</td>
 <td>Paste html as markdown</td>
 <td><code>power.paste_html_as_markdown</code></td>
@@ -2939,6 +2984,11 @@ your own customised keymap.</p>
 <td>QUILL Key + Shift+Z</td>
 <td>Undo Verbosity Change</td>
 <td><code>verbosity.undo</code></td>
+</tr>
+<tr>
+<td>QUILL Key + U</td>
+<td>Undo Last Agent Turn</td>
+<td><code>project.undo_turn</code></td>
 </tr>
 <tr>
 <td>S</td>

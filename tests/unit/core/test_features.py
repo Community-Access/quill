@@ -140,9 +140,9 @@ def test_casual_writer_is_a_focused_just_write_profile() -> None:
 def test_feature_manager_can_switch_profiles() -> None:
     manager = FeatureManager(active_profile_id=PROFILE_ESSENTIAL)
     preview = manager.change_profile_preview(PROFILE_DEVELOPER_POWER_TEXT)
-    assert "Developer and Power Text" in preview
+    assert "Developer" in preview
     comparison = manager.compare_profiles(PROFILE_ESSENTIAL, PROFILE_DEVELOPER_POWER_TEXT)
-    assert "Comparing Essential to Developer and Power Text" in comparison
+    assert "Comparing Essential to Developer" in comparison
     manager.switch_profile(PROFILE_DEVELOPER_POWER_TEXT)
     assert manager.active_profile_id == PROFILE_DEVELOPER_POWER_TEXT
 

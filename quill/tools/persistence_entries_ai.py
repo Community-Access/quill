@@ -8,7 +8,11 @@ from the refresh token, which goes to the OS credential store.
 
 from __future__ import annotations
 
+from quill.tools.persistence_entries_project import PROJECT_ENTRIES
+
 AI_ENTRIES: dict[str, str] = {
+    # Project tasks' recent list, allow list, checkpoints and choices.
+    **PROJECT_ENTRIES,
     # The ChatGPT sign-in's non-secret state (<data>/ai/chatgpt.json): the
     # issued client id, the host id, the account label, the chosen model, the
     # web-search switch and whether OpenAI ended the sign-in. Same shape and

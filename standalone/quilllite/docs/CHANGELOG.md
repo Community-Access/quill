@@ -13,6 +13,44 @@ reads only what you wrote, Word documents and PDFs, Find in Open Documents and
 folder search, dictation and transcription, Activity and Repeat Last Result,
 and release channels.
 
+### Agentic coding: project tasks in the Developer profile (2026-11-04)
+
+Project tasks with an AI, in the new Developer profile. QUILL gets every one
+of these in the same change.
+
+- **The Claude engine really runs with no tools of its own.** It passes
+  `disallowed_tools=["*"]` rather than `allowed_tools=[]`, which hid nothing.
+- **The shared project-task core is checked and tested,** the same code QUILL
+  uses: the project boundary and hidden secrets, reviewed edits, Undo Last
+  Turn, commands that Stop ends whole, and test results in one sentence.
+
+- **A Developer profile, the fifth.** Recommended plus a new **Coding**
+  area: eighteen of the 22 areas. Coding is off in every other profile,
+  Everything included, and an upgraded install starts with it off.
+- **Do a Project Task, in the Developer profile.** File > Open Project
+  Folder, then Ctrl+3 works on the whole folder: reviewed edits
+  across files, commands that ask first, test results in a sentence, Undo
+  Last Agent Turn, Stop Agent, Coach mode, your own allowed commands with an
+  off-by-default bypass, and engine tools by opt-in. The same windows and
+  the same code as QUILL.
+- **Each project command is where you would look for it:** File, Edit >
+  Agent Work, View, Tools and Tools > AI, as in QUILL, and only in the
+  Developer profile.
+- **Undo offers a look before you lose anything:** when it refuses because
+  you edited a file since, it opens that file as it was before the turn.
+- **Claude and Ollama practice mode for project tasks,** on My own key, as
+  in QUILL.
+- **A Project cell in the status bar,** shown only while a project is open.
+- **F1 in every project window,** as in QUILL.
+- **A tutorial: Your first project task,** in the Developer profile only.
+- **Documented** in a new user guide section, "Coding: project tasks, in the
+  Developer profile", the profiles chapter (now five), the PRD, the release
+  notes and the announcement.
+- **Practice mode's call to Ollama goes through QUILL's one network check,**
+  like every other address QUILL Lite opens.
+- **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
+  files) are asked about once per project.
+
 ### Page breaks with Ctrl+Enter (2026-11-03)
 
 - **Ctrl+Enter inserts a page break, as in Word.** In a Word or Rich Text

@@ -12,6 +12,7 @@ what is sent, what comes back, what triggers it, and how it behaves in Safe Mode
 
 from __future__ import annotations
 
+from quill.tools.network_egress_entries_agents import AGENT_EGRESS, AGENT_HTTP_EGRESS
 from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
@@ -22,6 +23,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     # The cloud dictation providers (D-31 to D-37), split out the same way.
     **SPEECH_EGRESS,
     **CAST_EXTRAS_EGRESS,
+    **AGENT_HTTP_EGRESS,  # Ollama practice mode, loopback only
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "
@@ -793,6 +795,8 @@ _REVIEWED_EGRESS: dict[str, str] = {
 # tests/unit/tools/test_network_egress_audit.py checks every key still names a
 # real function, so an entry cannot outlive its launcher unnoticed.
 _CHILD_PROCESS_EGRESS: dict[str, str] = {
+    # The Codex engine and the commands a person approves for an agent.
+    **AGENT_EGRESS,
     "ai_packs/copilot.py::_make_invoke": (
         "The GitHub Copilot engine. The Copilot SDK starts the bundled Copilot "
         "CLI (tools/copilot/copilot.exe, pinned by SHA-256 in "
@@ -837,28 +841,5 @@ _CHILD_PROCESS_EGRESS: dict[str, str] = {
         "My GitHub Copilot is the AI in use and the person runs an AI command, "
         "opens the model list or the Usage window; never in the background; "
         "refused in Safe Mode and on the UI thread."
-    ),
-    "core/ai/codex_app_server.py::start": (
-        "The Codex engine (ChatGPT plan, agent tasks; Phase 4b). "
-        "CodexAppServer.start launches the bundled codex-app-server.exe "
-        "(tools/codex, found only by find_codex_app_server and checked "
-        "against the SHA-256 pin in core/ai/codex_binary.py before every "
-        "launch) through safe_subprocess.spawn_subprocess_safely, as a "
-        "long-lived child over stdio. The child talks to api.openai.com over "
-        "HTTPS with this app's own ChatGPT plan token, passed only as "
-        "ACCESS_TOKEN in a minimal child environment (never this process's "
-        "environment, never the command line). What is sent: the agent's "
-        "instructions, the person's instruction and follow-ups, and the "
-        "results of the QUILL tools the agent calls. Codex's own shell, file "
-        "edit, apply_patch, image generation, view_image, plugins, apps, MCP "
-        "and web search are switched off at launch and in thread/start, the "
-        "sandbox is read-only and every built-in approval is declined. "
-        "Analytics is switched off (analytics.enabled=false); whether the "
-        "child sends other telemetry is checked by gate G5. CODEX_HOME and "
-        "the working directory are this app's per-task folders, deleted "
-        "after the task. Reached only when the person starts an agent task "
-        "with Codex chosen; never in the background; refused in Safe Mode. "
-        "Not on the external-engine allowlist, which guards a different, "
-        "per-request spawn."
     ),
 }

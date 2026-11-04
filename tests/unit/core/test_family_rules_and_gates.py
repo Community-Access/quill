@@ -102,6 +102,9 @@ NOT_EDITOR_COMMANDS: dict[str, str] = {
     "should not lose a chord to it (rule 7).",
     "localgit.": "As github: version control beside the editor rather than in it, and none of it "
     "edits text (rule 7).",
+    "project.": "Project tasks (code.md 6.4): coding work beside the editor, in the Developer "
+    "profile only, with its own window. Ctrl+3 is the front door, and Stop Agent and Undo "
+    "Last Agent Turn have leader keys; the rest are once-a-task commands (rule 7).",
     "podcasts.": "QUILL Cast's own surface, reached from that app, where these commands have "
     "their own menu bar and their own keys (rule 7).",
     "radio.": "Quill Radio's own surface, reached from that app, which has its own menu bar and "

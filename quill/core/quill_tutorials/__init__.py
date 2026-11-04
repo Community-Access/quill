@@ -20,6 +20,7 @@ from quill.core.quill_tutorials import (
     voice_and_ai,
     writing,
 )
+from quill.core.tutorials.coding_lessons import CODING_TRACK, coding_lessons
 from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
 
@@ -65,6 +66,8 @@ TRACKS: tuple[Track, ...] = (
         "underneath it, formats other people send you, braille files, and the "
         "family of apps QUILL sits in.",
     ),
+    # The Developer profile's lesson; shown only while core.developer is on.
+    CODING_TRACK,
 )
 
 #: Every QUILL lesson, in teaching order.
@@ -88,4 +91,13 @@ CATALOGUE: TutorialSet = build(
         surfaces=("QUILL",),
     ),
     living_with_it.TUTORIALS,
+    coding_lessons(
+        {
+            "open_folder": "project.open_folder",
+            "task": "tools.hosted_ai_task",
+            "undo": "project.undo_turn",
+            "stop_label": "the QUILL key, then K",
+        },
+        surfaces=("QUILL",),
+    ),
 )

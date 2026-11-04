@@ -50,6 +50,10 @@ STATUS_BAR_CELL_HELP: dict[str, str] = {
         "Which AI is in use: QUILL's free AI, your ChatGPT plan or your own key, the "
         "same thing Control 8 says, shortened. Press Enter to choose a different one."
     ),
+    "project": (
+        "The open project, its git branch, and whether the project task is waiting "
+        "for you. Press Enter to open Do a Project Task."
+    ),
     "radio_player": (
         "Internet Radio. Press Enter to play or pause; right-click for "
         "Stop, Mute, and Favorite Stations."
