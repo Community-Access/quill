@@ -1,6 +1,6 @@
 # QUILL Lite Tutorials
 
-Welcome. There are 23 short lessons here, about 111 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 30 short lessons here, about 146 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials... (Ctrl+Alt+F1)** in QUILL Lite. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -34,6 +34,14 @@ The keys here are the ones QUILL Lite comes with. If you have changed a key, the
   - Check Before Publishing (5 minutes)
   - Go back to a previous version (5 minutes)
   - Answer comments (5 minutes)
+- **Forms**: Start a form from a template, add questions and a rule, check it, fill it in yourself, save it in large print or braille, and publish it to your site and read the responses.
+  - Start a form from a template (5 minutes)
+  - Add questions (5 minutes)
+  - Add a rule and hear it as a sentence (5 minutes)
+  - Check This Form (4 minutes)
+  - Fill It In Yourself (5 minutes)
+  - Save it as large print or braille-ready text (4 minutes)
+  - Publish it and read the responses (7 minutes)
 
 ## Your first documents
 
@@ -662,3 +670,210 @@ Hear the comments waiting for you, reply to one, approve it, and deal with the s
    - You should hear: Comments: Spam, and the comments in it.
 
 Waiting Count on First Use, in the same window, has the number of waiting comments said to you the first time you use the site in a session, so they never pile up unnoticed.
+
+## Forms
+
+Start a form from a template, add questions and a rule, check it, fill it in yourself, save it in large print or braille, and publish it to your site and read the responses.
+
+### Start a form from a template
+
+Start a contact form from a template, save it, and read it through, first as text and then as an outline of its questions.
+
+*6 steps, about 5 minutes.*
+
+1. **Know what a form is here.** A form in QUILL Lite is a short plain text document: a title, some questions, their choices and a few rules, written in BITS Accessible Forms' form language. You never have to learn the language, because the Forms commands write it for you.
+   - You should hear: Nothing yet. This step is the idea the rest build on.
+   - Worth knowing: Forms is on in every feature profile except Essential. If there is no New Form in the File menu, switch Forms on in Profiles and Features.
+
+2. **Open New Form.** In the File menu, choose New Form. It sits with the other New commands. Nothing is written anywhere until you have chosen where to save it.
+   - You should hear: The New Form dialog, on Title.
+   - Worth knowing: No Forms command has a shortcut key, because you will not write forms every day. The Command Palette finds every one of them: type form.
+
+3. **Give it a title and a template.** Type Ask us anything in Title. That is the name your visitors will see. Tab to Template and arrow down to Contact form. There are seven templates, and each one is a few questions you can change.
+   - You should hear: Template, and Contact form: Name, email address and a message.
+
+4. **Save the new form.** Press Next. The ordinary Save As window opens with a file name made from your title, Ask us anything.bfl. Choose a folder you will find again and press Save. The new form opens straight away.
+   - You should hear: "Saved Ask us anything.bfl, a contact form with 3 questions."
+   - Worth knowing: A form file ends in .bfl. It is ordinary text, so you can open it in any text editor too.
+
+5. **Read it through as text.** Arrow down through the form from the top. Each question starts on a line of its own: its kind, its id after a number sign, and its label in quotes. The indented lines under it are its settings, such as required.
+   - You should hear: "text #name", then "Your name" in quotes, then "@required".
+   - Worth knowing: Because it is text, Find, spelling, copy and paste all work here, and you can type a question yourself if you would rather.
+
+6. **Hear it as an outline.** In the View menu, choose Form Outline. It lists every page and question in order, each one read like a sentence, so you can hear the shape of the form without the form language.
+   - You should hear: "Page 1, 3 questions", then "Your name, text field, required, with an autofill hint, page 1".
+   - Worth knowing: Enter takes you to the selected question in the document. Escape closes the outline.
+
+You have a real form, saved on this computer, and you have heard it two ways. Next, give it a question of your own.
+
+Next: Add questions.
+
+### Add questions
+
+Add a choose-one question and a phone number question to your form, each from a short window that asks only what that kind needs.
+
+*6 steps, about 5 minutes.*
+
+1. **Put the cursor where it goes.** Move to the line that says Your message. A new question goes in straight after the one your cursor is on, so this one will come last in the form.
+   - You should hear: "textarea #message", then "Your message" in quotes.
+
+2. **Open Form Field.** In the Insert menu, choose Form Field. A list of every kind of question opens, each row saying what a visitor meets. Section and Page break are at the top.
+   - You should hear: The Insert Form Field dialog, and the Kind of question list.
+
+3. **Find the kind you want.** Tab to Search, type choose, and press Enter to narrow the list. Arrow to Choose one and press Enter. A visitor meets it as a group of buttons, and picks only one.
+   - You should hear: Choose one: Choose one from a group of buttons.
+
+4. **Write the question and its choices.** In the next window, type Best way to reply in Label. Tab to Choices, one per line, and type Email, press Enter, then type Phone. Press Insert.
+   - You should hear: "Inserted Best way to reply, choose one."
+   - Worth knowing: Help text is a sentence a screen reader reads with the question. Leave Id empty and the id is made from the label.
+
+5. **Add a phone number question.** With the cursor still on Best way to reply, choose Form Field again. This time pick Phone number, type Phone number in Label, and press Insert. Leave Required unchecked: only some people will want a call.
+   - You should hear: "Inserted Phone number, phone number."
+
+6. **Save your work.** Save as you always do. A form saves like any other document, on this computer, and nothing is sent anywhere. Each insert is also one step that Undo takes back.
+   - Keys: Ctrl+S
+   - You should hear: The usual saved message.
+
+The form now asks five questions. The phone number is asked of everybody, which is not quite right. A rule fixes that.
+
+Next: Add a rule and hear it as a sentence.
+
+### Add a rule and hear it as a sentence
+
+Make the phone number appear only for somebody who asked to be phoned, built from three choices and read back to you as a sentence.
+
+*5 steps, about 5 minutes.*
+
+1. **Open Form Rules.** In the Format menu, choose Form Rules. It lists every rule in the form as a sentence. This form has none yet, so the list is empty.
+   - You should hear: The Form Rules window, and the Rules list.
+
+2. **Say which question it listens to.** Press Add Rule. In When this question, choose Best way to reply. Leave Is on is. In This answer, type Phone, the choice's own words; capitals do not matter.
+   - You should hear: When this question, and Best way to reply.
+   - Worth knowing: A choice is stored as its words in small letters, with a hyphen for each space: Large print is large-print. QUILL turns what you type into that, so the rule matches however you write it.
+
+3. **Say what it does.** Tab to Then and leave it on Show. In To this question or page, choose Phone number. Read that back to yourself: when Best way to reply is Phone, show Phone number.
+   - You should hear: To this question or page, and Phone number.
+   - Worth knowing: Then can also hide, require, make optional, enable, disable, or skip to a page.
+
+4. **Add it, and hear the sentence.** Press Add Rule. The rule is written into the form for you, and QUILL Lite reads it back as the sentence it is, so you can hear whether it says what you meant.
+   - You should hear: "Show Phone number when Best way to reply is Phone."
+   - Worth knowing: If you know the form language, Or write the condition yourself takes a whole condition instead. It is checked before anything is written, and you are told what is wrong if it does not read.
+
+5. **Find it in the form.** The new rule is in the Rules list. Press Go to It to close the window and land on Phone number. The line under it, starting @when, is your rule in the form language.
+   - You should hear: "phone #phone", then "Phone number" in quotes.
+   - Worth knowing: Edit changes a rule's condition, and Remove takes one out after asking. Undo in the document takes back either.
+
+Rules are the part of a form that is hardest to see on a web page. Here every one is a sentence you can read. Next, let the form be checked.
+
+Next: Check This Form.
+
+### Check This Form
+
+Find what would make the form hard to fill in, go straight to it, fix it, and check again.
+
+*5 steps, about 4 minutes.*
+
+1. **Run the check.** In the Tools menu, open Forms and choose Check This Form. It looks for anything that would make the form hard to fill in, such as a question with no label, and lists the most serious first.
+   - You should hear: "Phone number has no autofill hint, so the browser cannot fill it in. The hint is tel."
+   - Worth knowing: An autofill hint lets a visitor's browser fill in their own phone number, which saves typing and mistakes.
+
+2. **Know the On the site today lines.** Arrow down the Findings list. A line that starts On the site today is not a mistake in your form. It says where the forms plugin on a website reads your form differently today, so you know before you publish.
+   - You should hear: Lines starting "On the site today", if there are any.
+
+3. **Go to the finding.** Arrow back to the autofill finding and press Go to It. The window closes and your cursor is on the Phone number question, ready to fix.
+   - You should hear: "phone #phone", then "Phone number" in quotes.
+
+4. **Fix it.** Go to the end of the last indented line under Phone number and press Enter. Type two spaces, then @autocomplete "tel", with the quotes. That is the hint the finding asked for.
+   - You should hear: Your new line read back: "@autocomplete", then "tel" in quotes.
+   - Worth knowing: Suggest Autofill Hints, in Tools, Forms, asks your chosen AI to suggest them all at once. It says what it sends first.
+
+5. **Check again.** Choose Check This Form once more, in Tools, Forms. The autofill finding has gone. When there is nothing to fix at all, there is no list, just one sentence.
+   - You should hear: Only On the site today lines, or, with none of those, "Check This Form found nothing to fix."
+
+Check This Form is worth running every time you change a form, and always before you publish one. Next, fill it in yourself.
+
+Next: Fill It In Yourself.
+
+### Fill It In Yourself
+
+Open your form as a real window and fill it in with your screen reader, the way a visitor will, before anybody else sees it.
+
+*6 steps, about 5 minutes.*
+
+1. **Open the form as a visitor meets it.** In the Tools menu, open Forms and choose Fill It In Yourself. QUILL Lite builds a real window from the same text, with ordinary edit boxes, buttons and lists, so you meet what a visitor meets.
+   - You should hear: Fill It In Yourself: Ask us anything, and the first question.
+
+2. **Tab through the questions.** Press Tab to move from question to question. Listen for each label, and for the word required on the ones that must be answered. Type a name and an email address as you go.
+   - You should hear: Your name (required), edit. Then Email address (required), edit.
+   - Worth knowing: If a question is hard to understand by ear here, it will be hard on the website too. That is the point of this window.
+
+3. **Watch the rule work.** Tab to the Best way to reply group and arrow to Phone. Your rule runs as you answer, and you are told about the question it brings in, because nothing else would say so.
+   - You should hear: "Phone number appears."
+
+4. **Change your mind.** Arrow back to Email. The phone number question goes away again, exactly as it will for a visitor who chooses Email on the site.
+   - You should hear: "Phone number is hidden."
+
+5. **Submit, which sends nothing.** Press Submit. Nothing is sent anywhere. Instead, a window shows what would have been sent, one question and its answer to a line, and anything that still needs an answer.
+   - You should hear: What Would Be Sent: "Nothing was sent. This is what the form would send:", then each question and your answer.
+   - Worth knowing: On a form with more than one page, Next first checks this page and names any required question still empty, then puts you on it.
+
+6. **Close it.** Press Escape to close What Would Be Sent, and Escape again to close the form. Nothing you typed is kept, so you can try it as many times as you like.
+   - You should hear: Your form document again, where you left it.
+
+You have filled in your own form the way your visitors will. Next, make a copy for people who would rather have it on paper or in braille.
+
+Next: Save it as large print or braille-ready text.
+
+### Save it as large print or braille-ready text
+
+Make a large-print copy and a braille-ready copy of your form, from the same text, without a website.
+
+*4 steps, about 4 minutes.*
+
+1. **Know why there are other copies.** Not everybody fills in a form on a website. Some people want it on paper in large print, and some want it in braille. Every copy comes from the same form, so it always asks the same questions.
+   - You should hear: Nothing yet. This step is the reason for the next two.
+   - Worth knowing: These work without a site and even in Safe Mode. If the form has a problem it cannot be read past, you are told to run Check This Form first, and nothing is saved.
+
+2. **Save a large-print copy.** In the Tools menu, open Forms and choose Save As Large Print. The ordinary Save As window opens with a name ending in large print. Choose a folder and press Save.
+   - You should hear: "Saved Ask us anything large print.docx, a large-print Word document, 18 point and up, with 5 questions, lines to write on and boxes to check."
+
+3. **Save a braille-ready copy.** Choose Save As Braille-Ready Text, in Tools, Forms. It writes one question to a block, with the choices lettered a, b, c, 40 cells to a line, ready to emboss or read on a display.
+   - You should hear: "Saved Ask us anything.txt, braille-ready text with 5 questions, one a block."
+   - Worth knowing: With the braille pack installed, you are first asked whether to save it as it is or as a braille file in UEB contracted braille.
+
+4. **Read the braille copy back.** Open the .txt file you just saved, as you open any document. Arrow through it to hear one question to a block, so you know what the person reading it will find.
+   - You should hear: The form's title, then each question, numbered, with its choices lettered.
+   - Worth knowing: Save As Web Page and Save As Word Document, beside these in Tools, Forms, make the other two copies the same way.
+
+One form, and a copy for whoever needs one. The last lesson puts the form on your website.
+
+Next: Publish it and read the responses.
+
+### Publish it and read the responses
+
+Publish your form to a WordPress site running BITS Accessible Forms, put it on a page, try it there, and read what people send.
+
+*6 steps, about 7 minutes.*
+
+1. **Know what the site needs.** Publishing needs a WordPress site you have connected, with the BITS Accessible Forms plugin installed and switched on. The WordPress lessons show how to connect a site.
+   - You should hear: Nothing yet. This step is what the rest need.
+   - Worth knowing: Without the plugin you hear that the command needs BITS Accessible Forms on the site, and to install and activate it there. Publishing and Responses are off in Safe Mode.
+
+2. **Publish the form.** With Ask us anything in front, open Forms in the Tools menu and choose Publish Form. With more than one site, you choose which one first.
+   - You should hear: Publish Form, and Publish as, on Live.
+
+3. **Choose live or draft, then say yes.** Live means people can fill it in wherever it is placed. Draft puts it on the site where nobody can use it yet. Press Enter on Live, and then on Publish when the question asks.
+   - You should hear: "Published Ask us anything on" your site, its form number, "live. Insert Form Into Page puts it on a page."
+   - Worth knowing: Publishing again later updates the same form. If somebody changed it on the site since, you are asked first, and the site's copy is kept on this computer.
+
+4. **Put it on a page.** Open a page with Open Page or Post, in File, WordPress, and put the cursor where the form goes. Choose Insert Form Into Page in Tools, Forms, pick your form, then Publish or Update the page.
+   - You should hear: "Inserted the Ask us anything form", and that it shows on the page once the page is sent.
+
+5. **Try it on the site.** Back in your form, choose Test on Site, in Tools, Forms. It opens the page that shows your form in your web browser, so you can fill it in for real and send yourself a response.
+   - You should hear: "Opened" the page's name "on" your site, "where the form is."
+
+6. **Read what people sent.** Choose Responses, in Tools, Forms. With your published form in front it goes straight to that form's responses, newest first. Press Enter on one to read it, a question and its answer a line.
+   - You should hear: Responses to Ask us anything, and each response: its number, when it was sent, and who sent it.
+   - Worth knowing: Responses are people's personal details. They are read only while this window is open and saved only where you choose, with Export to CSV or Export to Word.
+
+Your form is live, and you can hear every answer it brings in. The first time you use a site in a session, you are also told how many new responses are waiting.

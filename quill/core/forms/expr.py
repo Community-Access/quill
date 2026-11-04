@@ -94,7 +94,7 @@ def scan_string(s: str, i: int) -> tuple[str, int]:
                         if 0xDC00 <= lo <= 0xDFFF:
                             cp = 0x10000 + ((cp - 0xD800) << 10) + (lo - 0xDC00)
                             i += 6
-                    out.append(chr(cp) if not 0xD800 <= cp <= 0xDFFF else "�")
+                    out.append(chr(cp) if not 0xD800 <= cp <= 0xDFFF else chr(0xFFFD))
                 else:
                     out.append("u")
             else:

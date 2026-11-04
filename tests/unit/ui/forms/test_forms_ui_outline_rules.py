@@ -201,3 +201,17 @@ def test_add_rule_in_a_form_with_no_questions_says_so(forms, forms_host, forms_d
     forms.cmd_rules()
     forms_dialogs.press("Add Rule...", None)
     assert forms_host.announced == ["This form has no questions for a rule to use yet."]
+
+
+def test_a_rule_answer_typed_as_its_label_matches_the_stored_choice() -> None:
+    from quill.ui.forms_outline_commands import choice_value
+
+    question = {
+        "id": "contact",
+        "type": "radio",
+        "choices": [{"value": "phone", "label": "Phone"}, {"value": "email", "label": "Email"}],
+    }
+    assert choice_value(question, {}, "Phone") == "phone"
+    assert choice_value(question, {}, "EMAIL") == "email"
+    assert choice_value(question, {}, "17") == "17"
+    assert choice_value(None, {}, "Phone") == "Phone"

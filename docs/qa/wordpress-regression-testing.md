@@ -335,6 +335,83 @@ WordPress older than the route, or a security plugin that hides it.
     again and it says nothing is new.
 55. **QUILL Lite.** Repeat 40, 43, 50 and 54 in QUILL Lite.
 
+### Forms (17a)
+
+Tests 56 to 62 need nothing from the site. Tests 63 to 68 need BITS
+Accessible Forms installed and active on the test site first. It is not there
+yet: installing it from `S:\code\baf` waits on Jeff (wordpress.md 17a.13,
+question 3). Until then, run 63 to 68 only as far as the "needs BITS
+Accessible Forms" sentence in test 63.
+
+Forms is on in every feature profile except Essential. The commands have no
+keys: use the menus, or type "form" in the Command Palette. Where they are
+(the same in both editors, from `quill/core/forms/menu.py`):
+
+- **File:** New Form.
+- **Insert:** Form Field. **View:** Form Outline. **Format:** Form Rules.
+- **Tools > Forms:** Check This Form, Fill It In Yourself, Form Properties,
+  Publish Form, Insert Form Into Page, Test on Site, Responses, Save As Web
+  Page, Save As Word Document, Save As Large Print, Save As Braille-Ready
+  Text, Draft a Form, Plain Language, Suggest Autofill Hints.
+
+The tests build one form, "Ask us anything", as the guided Forms lessons do.
+
+56. **New Form.** File > New Form, title "Ask us anything", template Contact
+    form, Next, and save it. Expect "Saved Ask us anything.bfl, a contact form
+    with 3 questions." and the form open. View > Form Outline starts "Page 1,
+    3 questions".
+57. **Form Field.** With the caret on Your message, Insert > Form Field,
+    search "choose", pick Choose one, label "Best way to reply", choices
+    Email and Phone. Expect "Inserted Best way to reply, choose one." Then
+    add a Phone number question labelled "Phone number": "Inserted Phone
+    number, phone number."
+58. **Form Rules.** Format > Form Rules > Add Rule: when Best way to reply is
+    `phone`, then Show, Phone number. Expect "Show Phone number when Best way
+    to reply is Phone." and an `@when #reply is "phone"` line under the
+    question. Typing `Phone` or `PHONE` gives the same rule: the answer is
+    matched to the choice in any capitals.
+59. **Check This Form.** Expect "Phone number has no autofill hint, so the
+    browser cannot fill it in. The hint is tel." Go to It lands on the
+    question. Add `@autocomplete "tel"` under it; Check Again lists only the
+    "On the site today" lines.
+60. **Fill It In Yourself.** Tab through: each label is read, with
+    "required" where it is. Choosing Phone says "Phone number appears.";
+    choosing Email says "Phone number is hidden." Submit shows What Would Be
+    Sent, starting "Nothing was sent." Escape twice returns to the document.
+61. **Save As Large Print and Braille-Ready Text.** Expect "Saved Ask us
+    anything large print.docx, a large-print Word document, 18 point and up,
+    with 5 questions, lines to write on and boxes to check." and "Saved Ask us
+    anything.txt, braille-ready text with 5 questions, one a block." Open
+    both; with the braille pack installed, also save the UEB contracted .brf.
+    Repeat in Safe Mode: all four Save As commands still work.
+62. **Not a form.** In an ordinary text document, run Check This Form from
+    the Command Palette. Expect "Check This Form works in a form document, a
+    .bfl file. Start one with New Form in the File menu, or open one."
+63. **Publish Form.** With BITS Accessible Forms not installed, expect "Publish
+    Form needs BITS Accessible Forms on QUILL WordPress Test Site, and the site
+    does not offer it." Once it is installed: Publish as Live, then Publish.
+    Expect "Published Ask us anything on QUILL WordPress Test Site, form" a
+    number, "live." Publish again: the question says Update.
+64. **Changed on the site.** Change the form's title in BITS Accessible Forms
+    on the site, then Publish Form. QUILL asks before publishing over it, and
+    keeps the site's copy as a previous version.
+65. **Insert Form Into Page and Test on Site.** Open the Contact page, put the
+    caret after its first paragraph, Insert Form Into Page, choose the form,
+    and Publish or Update. Test on Site in the form opens that page in the
+    browser, where the form can be filled in with NVDA.
+66. **Responses.** Send two responses from the site. Responses, with the form
+    open, goes straight to "Responses to Ask us anything", newest first.
+    Read, View, Find, Export to CSV, Open as Table and Export to Word each do
+    what they say. Mark one, then Delete: it goes to the Trash in BITS
+    Accessible Forms.
+67. **New response count.** Restart, then run any site command for Forms.
+    Expect, once a session, "QUILL WordPress Test Site:" and the number of new
+    responses to Ask us anything. Say New Count turns it off.
+68. **QUILL Lite, and Safe Mode.** Repeat 56 to 61, 63 and 66 in QUILL Lite.
+    Then in Safe Mode, Publish Form and Responses each say they are off in
+    Safe Mode, while writing, checking, Fill It In Yourself and the four Save
+    As commands still work.
+
 ### What the site lets you test that QUILL may not have yet
 
 The site already has what the later parts of wordpress.md need. Add a test here

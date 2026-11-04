@@ -97,6 +97,10 @@ def _known_command_ids(app_id: str) -> set[str]:
         from quill.core.wordpress.menu import all_rows
 
         ids.update(row[0] for _path, row in all_rows())
+        # So do the Forms rows (main_frame_forms.py), from theirs.
+        from quill.core.forms.menu import all_rows as forms_rows
+
+        ids.update(row[0] for _path, row in forms_rows())
     for rel in sources:
         text = (_ROOT / rel).read_text(encoding="utf-8")
         ids.update(re.findall(r'"((?:radio|podcasts|weather|spotify|app|view)\.[a-z_0-9]+)"', text))
@@ -274,6 +278,40 @@ def test_wordpress_lessons_hold_no_password() -> None:
         for step in tutorial.steps:
             for text in (step.body, step.hear, step.note):
                 assert not pattern.search(text), f"{tutorial.slug}: {step.title}"
+
+
+def test_quill_and_quill_lite_teach_the_same_forms_lessons() -> None:
+    """The Forms track is one module too, and each editor's step names the
+    same Forms row in its own command table. The Forms commands have no keys
+    (``forms/menu.py``), so no step may promise one."""
+    from quill.core.forms.menu import lite_handler
+
+    quill = [t for t in _catalogue("quill").tutorials if t.track == "forms"]
+    lite = [t for t in _catalogue("quilllite").tutorials if t.track == "forms"]
+    assert [t.slug for t in quill] == [t.slug for t in lite]
+    assert len(quill) == 7
+    for ours, theirs in zip(quill, lite, strict=True):
+        assert [s.title for s in ours.steps] == [s.title for s in theirs.steps]
+        for mine, other in zip(ours.steps, theirs.steps, strict=True):
+            if mine.command.startswith("forms."):
+                assert other.command == lite_handler(mine.command)
+            assert mine.keys == other.keys == ()
+
+
+def test_forms_lessons_teach_every_menu_path_they_name() -> None:
+    """A Forms step teaches where the command is, because there is no key:
+    each step that names a Forms command says the menu it is in."""
+    from quill.core.forms.menu import all_rows, spoken_path
+
+    menus = {row[0]: spoken_path(path).split(" > ")[0] for path, row in all_rows()}
+    missing = [
+        f"{tutorial.slug}: {step.title}"
+        for tutorial in _catalogue("quill").tutorials
+        if tutorial.track == "forms"
+        for step in tutorial.steps
+        if step.command.startswith("forms.") and menus[step.command] not in step.body
+    ]
+    assert missing == []
 
 
 def test_each_app_keeps_its_own_progress_file() -> None:

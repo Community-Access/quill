@@ -118,6 +118,10 @@
   This Form and Fill It In Yourself, which walks you through the form as a
   visitor would, in each of its languages. One form definition is shared
   with BITS Accessible Forms.
+- **Seven guided Forms lessons** in Help > Tutorials, from starting a form
+  to reading its responses on your site.
+- **A rule's answer matches however you type it.** "Phone", "phone" or
+  "PHONE" all name the Phone choice.
 - **Forms on your site and on paper.** Publish Form, Insert Form Into Page,
   Test on Site and Responses work with sites running BITS Accessible Forms.
   Save a form as a web page, a Word document, large print or braille-ready

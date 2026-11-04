@@ -328,8 +328,8 @@ class FormsOutlineCommands:
                     "value",
                     "This &answer:",
                     "text",
-                    "The answer to compare with: a choice as "
-                    "it is written, or a number. Not needed for filled in or empty.",
+                    "The answer to compare with: one of the question's choices, "
+                    "in any capitals, or a number. Not needed for filled in or empty.",
                 ),
                 Ask(
                     "own",
@@ -363,11 +363,30 @@ class FormsOutlineCommands:
         if answers is None:
             return ""
         own = str(answers.get("own") or "").strip()
-        when = own or fr.condition(
-            str(answers["when"]), int(answers["test"]), str(answers.get("value") or "")
-        )
+        asked = next((q for q in questions if str(q["id"]) == str(answers["when"])), None)
+        typed = choice_value(asked, model, str(answers.get("value") or ""))
+        when = own or fr.condition(str(answers["when"]), int(answers["test"]), typed)
         problem = fr.problem(when)
         if problem:
             self.host.announce(f"That rule cannot be read: {problem}")
             return ""
         return fr.add_rule(model, str(answers["action"]), str(answers["target"]), when)
+
+
+def choice_value(question: Any, model: Any, typed: str) -> str:
+    """The stored value of the choice *typed* names, in any capitals.
+
+    A choice is kept as a value ("phone") and shown as a label ("Phone").
+    Typing either, in any case, gives the value, so the rule really matches
+    when the form is filled in. Anything else (a number, free text) stays
+    as typed.
+    """
+    if not question or not typed.strip():
+        return typed
+    from quill.core.forms import libraries
+
+    wanted = typed.strip().casefold()
+    for value, label in libraries.choices_for(question, model):
+        if wanted in (str(value).casefold(), str(label).casefold()):
+            return str(value)
+    return typed

@@ -32,7 +32,8 @@ A third track, WordPress (2026-11-04), is for somebody who looks after a
 site, and only them. It is the same seven lessons QUILL has, written once in
 :mod:`quill.core.tutorials.wordpress_lessons`, because QUILL Lite reaches the
 same WordPress commands from the same table and may never be ahead of QUILL or
-behind it.
+behind it. A fourth, Forms (2026-11-04), is the same seven Forms lessons QUILL
+has, from :mod:`quill.core.tutorials.forms_lessons`, for the same reason.
 
 What is deliberately not here: a tour of everything. The menus, the command
 palette and the user guide cover the rest, and a lesson that duplicates the
@@ -41,8 +42,10 @@ keyboard reference is a keyboard reference with extra words (bad.md P3.2).
 
 from __future__ import annotations
 
+from quill.core.forms.menu import lite_handler as forms_handler
 from quill.core.lite.tutorials import first_documents, working_in_it
 from quill.core.tutorials.dictation_lessons import dictation_lessons
+from quill.core.tutorials.forms_lessons import forms_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
 from quill.core.tutorials.wordpress_lessons import wordpress_lessons
 from quill.core.wordpress.menu import lite_handler
@@ -71,6 +74,13 @@ TRACKS: tuple[Track, ...] = (
         "post, fix a page you found by its address, pictures with alternative "
         "text, the check before you publish, earlier versions, and comments.",
     ),
+    Track(
+        "forms",
+        "Forms",
+        "Start a form from a template, add questions and a rule, check it, "
+        "fill it in yourself, save it in large print or braille, and publish it "
+        "to your site and read the responses.",
+    ),
 )
 
 #: The set the tutorials window and the printed book both read.
@@ -96,6 +106,14 @@ CATALOGUE: TutorialSet = build(
         lambda name: lite_handler(f"wordpress.{name}"),
         save="cmd_save",
         track="wordpress",
+        surfaces=("QUILL Lite",),
+        app="QUILL Lite",
+    ),
+    # The seven 2026-11-04 Forms lessons, the same as QUILL's.
+    forms_lessons(
+        lambda name: forms_handler(f"forms.{name}"),
+        save="cmd_save",
+        track="forms",
         surfaces=("QUILL Lite",),
         app="QUILL Lite",
     ),
