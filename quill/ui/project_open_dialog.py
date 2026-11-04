@@ -170,7 +170,8 @@ class InstructionFilesDialog(wx.Dialog):
         row.Add(use, 0, wx.RIGHT, _PAD)
         row.Add(skip, 0)
         sizer.Add(row, 0, wx.EXPAND | wx.ALL, _PAD)
-        self.SetEscapeId(wx.ID_NO)
+        # Use Them is the affirmative answer; Escape is Don't Use Them.
+        apply_modal_ids(self, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO)
         use.SetDefault()
         self.SetInitialSize(dip_size(self, 620, 420))
         self.Centre()

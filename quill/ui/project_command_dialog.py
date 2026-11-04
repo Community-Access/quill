@@ -221,7 +221,8 @@ class AllowedCommandsDialog(wx.Dialog):
         bind_close_button(self, close, modeless=False)
         end.Add(close, 0)
         sizer.Add(end, 0, wx.EXPAND | wx.ALL, _PAD)
-        self.SetEscapeId(wx.ID_CANCEL)
+        # Close is the only way out: Escape and the affirmative id both reach it.
+        apply_modal_ids(self, affirmative_id=wx.ID_CANCEL, cancel_id=wx.ID_CANCEL)
         self.SetInitialSize(dip_size(self, 560, 460))
         self.Centre()
         self.entries.SetFocus()
