@@ -74,6 +74,9 @@ piece lands.
   branch, and "waiting for you" when the task has a question you have not
   seen. Enter on it opens the task. It appears the first time you open a
   project.
+- **F1 in every project window** says what the window is for, then what the
+  control you are on does, and the F1 help reference and the keyboard
+  reference list them.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.

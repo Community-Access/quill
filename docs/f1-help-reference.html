@@ -5496,7 +5496,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 252 audited sites (252 helped).</p>
+<p>Control coverage: 278 audited sites (278 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5573,6 +5573,10 @@ Choose one and press Enter to paste it back.</p>
 searchable, with its key beside it. A menu answers ‘what is under
 Format?’; this answers ‘how do I sort lines?’, which is the question you
 actually have.</p>
+<p><strong>Commands Allowed in This Project.</strong> The commands this
+project runs without asking, kept in QUILL and never in the project. Run
+commands without asking is here too, off until you check it and
+confirm.</p>
 <p><strong>Copy Tray.</strong> Twelve numbered clipboard slots that
 outlive a restart. Copy into a slot, and paste from it an hour later –
 the system clipboard holds one thing, and this is what to do when that
@@ -5605,6 +5609,10 @@ Yes throws them away and writes nothing; No keeps the review open.</p>
 <p><strong>Do a Document Task.</strong> Tell GitHub Copilot or Codex
 what to do to this document. Each change asks first and is shown before
 it is applied; the task ends with a summary.</p>
+<p><strong>Do a Project Task.</strong> Tell the AI what to do in your
+project folder. It plans, reads and proposes changes; nothing is written
+until you accept it in Review Changes, and no command runs until you
+allow it. Plan, Changes and Output are one key each.</p>
 <p><strong>Document language.</strong> Which markup this document is
 written in. It decides what Bold writes, what the heading keys write,
 which of the two tag pickers the Insert menu offers, and whether the
@@ -5622,6 +5630,9 @@ was.</p>
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Engine Tools for This Project.</strong> The engine’s own
+tools, beside QUILL’s. All are off until you check them, each use still
+asks you first, and their edits skip Review Changes.</p>
 <p><strong>Explanation.</strong> What the AI sent back. It is read-only
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -5755,6 +5766,9 @@ run it on should go.</p>
 read-only on purpose: nothing goes into your document until you choose
 Replace My Selection or Insert Below, and either of those is a single
 edit that Control Z takes back.</p>
+<p><strong>Open Project Folder.</strong> Choose a folder to work on as a
+project. Your recent projects are listed first; Browse for a Folder
+picks any other.</p>
 <p><strong>Plain Language.</strong> What the AI sent back. It is
 read-only on purpose: nothing goes into your document until you choose
 Replace My Selection or Insert Below, and either of those is a single
@@ -5822,6 +5836,10 @@ there. When one change holds several word edits, Alt+W goes to their
 list, where Space keeps or drops each one on its own. Then apply; it
 goes in as one edit Control Z takes back. Nothing changes until you
 apply.</p>
+<p><strong>Review Changes.</strong> Every file this turn would change,
+then each change in it, with line numbers. Accept or reject each one;
+Apply Accepted Changes writes them all at once, after QUILL has kept a
+copy for Undo Last Turn.</p>
 <p><strong>Review Dictation.</strong> Dictated words wait here before
 they are inserted. Read them, type or keep dictating to change them, ask
 the AI to change them if AI is on, and hear what changed. Control Enter
@@ -5833,6 +5851,10 @@ No is the default and sends nothing.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Run This Command?.</strong> The agent wants to run a command
+in your project folder. The exact command is below the sentence, and a
+warning appears when QUILL sees a risk. QUILL cannot stop an allowed
+command from doing what your account can do.</p>
 <p><strong>Saved AI Conversations.</strong> Your saved AI conversations,
 newest first. Every conversation with the AI is saved on this computer
 as it goes. Press Enter on one to open it and carry on where it left
@@ -5903,6 +5925,10 @@ or a custom service, or on Ollama on this computer, which needs no key
 and sends nothing. Choose the provider, paste the key it gave you, and
 test it; with a saved key there is no daily limit. Remove the Saved Key
 puts you straight back on the free service.</p>
+<p><strong>Use This Project’s Agent Notes?.</strong> This project has
+notes written for AI agents. Use them, leave them out, or read them
+first. QUILL asks once per project, and nothing in them can approve a
+command or a change.</p>
 <p><strong>Use the Shared Word List.</strong> Which of your words will
 be added to the list QUILL, QUILL Transcribe and Quill Inkwell share,
 before QUILL Lite starts using it. Use the Shared List goes ahead;
@@ -6445,6 +6471,106 @@ as the service’s.</li>
 <li><code>manage</code>: Opens the selected connection’s own usage or
 billing page in your web browser, where its limits and bill are
 kept.</li>
+</ul>
+<h4
+id="commandapprovaldialog-quilluiproject_command_dialogpy">CommandApprovalDialog
+(<code>quill/ui/project_command_dialog.py</code>)</h4>
+<ul>
+<li><code>self.once</code>: Runs this command now. The next command asks
+again.</li>
+<li><code>self.deny</code>: Does not run it. The agent is told, and
+carries on without it.</li>
+</ul>
+<h4
+id="allowedcommandsdialog-quilluiproject_command_dialogpy">AllowedCommandsDialog
+(<code>quill/ui/project_command_dialog.py</code>)</h4>
+<ul>
+<li><code>about</code>: What this list does, and what it never
+does.</li>
+<li><code>self.entries</code>: The commands this project runs without
+asking. Delete removes the one selected.</li>
+<li><code>self.new_entry</code>: Type a command or the start of one,
+such as pytest, then press Enter or Add to allow it.</li>
+<li><code>add</code>: Adds what you typed to the list.</li>
+<li><code>remove</code>: Removes the selected command from the
+list.</li>
+<li><code>self.bypass</code>: When checked, the agent runs any command
+it chooses in this project without showing it to you first, except
+pushing, publishing and system changes. Off unless you check it, and
+QUILL asks you to confirm. The task window’s status line says so while
+it is on.</li>
+<li><code>close</code>: Closes this window. Every change here is already
+saved.</li>
+</ul>
+<h4
+id="commandapprovaldialog-quilluiproject_command_dialogpy-1">CommandApprovalDialog
+(<code>quill/ui/project_command_dialog.py</code>)</h4>
+<ul>
+<li><code>self.always</code>: Runs it now and adds it to this project’s
+allowed commands, so it runs without asking next time. The list is
+yours, kept in QUILL, never in the project.</li>
+</ul>
+<h4
+id="openprojectdialog-quilluiproject_open_dialogpy">OpenProjectDialog
+(<code>quill/ui/project_open_dialog.py</code>)</h4>
+<ul>
+<li><code>self.list</code>: Folders you have opened as projects, newest
+first. Enter opens the one selected. A project is just a folder; QUILL
+keeps its own notes about it in its own data folder, never in the
+project.</li>
+<li><code>browse</code>: Opens the Windows folder picker to choose any
+folder as a project.</li>
+<li><code>self.open_button</code>: Opens the selected recent
+project.</li>
+<li><code>cancel</code>: Closes this window without opening a
+project.</li>
+</ul>
+<h4
+id="instructionfilesdialog-quilluiproject_open_dialogpy">InstructionFilesDialog
+(<code>quill/ui/project_open_dialog.py</code>)</h4>
+<ul>
+<li><code>read_button</code>: Shows the notes’ text in this window, so
+you can decide.</li>
+<li><code>use</code>: Sends the notes with every task in this project,
+marked as data.</li>
+<li><code>skip</code>: Leaves the notes out of tasks in this
+project.</li>
+</ul>
+<h4
+id="enginetoolsdialog-quilluiproject_open_dialogpy">EngineToolsDialog
+(<code>quill/ui/project_open_dialog.py</code>)</h4>
+<ul>
+<li><code>ok</code>: Keeps the tools checked here for this project.</li>
+<li><code>cancel</code>: Closes without changing anything.</li>
+</ul>
+<h4
+id="projectreviewdialog-quilluiproject_review_dialogpy">ProjectReviewDialog
+(<code>quill/ui/project_review_dialog.py</code>)</h4>
+<ul>
+<li><code>self.files</code>: Every file this turn would change, each row
+saying whether it is taken. Space takes or leaves the whole file. Enter
+moves to the file’s changes.</li>
+<li><code>self.details</code>: The change shown now: where it is, what
+it does, and each line with its line number first. Indentation is said
+as a count when it changes. Read it with the arrow keys.</li>
+<li><code>self.apply_button</code>: Writes every accepted change at
+once, after QUILL has kept a copy for Undo Last Turn. Rejected changes
+are never written.</li>
+<li><code>self.reject_button</code>: Writes nothing from this turn.
+Escape does the same.</li>
+</ul>
+<h4
+id="projecttaskwindow-quilluiproject_task_windowpy">ProjectTaskWindow
+(<code>quill/ui/project_task_window.py</code>)</h4>
+<ul>
+<li><code>self.instruction</code>: Type what you want done in this
+project, then press Enter: a change, a question about the code, or what
+to test. While a task runs, what you type here goes to it as a
+follow-up.</li>
+<li><code>self.coach</code>: When checked, the agent does not change
+files or run commands. It reads the project, explains, and points you to
+the file and line, and you make the change yourself. Good for
+learning.</li>
 </ul>
 <h4
 id="cloudprovidersmixin-quilluiwindows_dictation_cloudpy">CloudProvidersMixin

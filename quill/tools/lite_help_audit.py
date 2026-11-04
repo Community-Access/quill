@@ -62,6 +62,8 @@ _SCAN_GLOBS: tuple[str, ...] = (
     # see is one that rots -- QUILL's own help audit covers them as well, which
     # is correct: two callers, two gates, one set of sentences.
     "quill/ui/hosted_ai*.py",
+    # Project tasks (code.md 6.4), the same windows in both editors.
+    "quill/ui/project_*.py",
     # The same again for the two shared surfaces QUILL Lite reaches from its
     # Preferences and its dictation commands: the "make QUILL Lite my text
     # editor" group and the Windows dictation settings windows. QUILL opens

@@ -187,7 +187,7 @@ class ProjectTaskWindow(AgentWindow):
         self._marks: dict[str, int] = {}
         self._present_next: list[_Waiting] = []
         self._told_waiting = False
-        self.SetTitle(f"{words.TITLE}: {hooks.project}" if hooks.project else words.TITLE)
+        self.SetTitle(words.TITLE)  # the project is in the status line
         self.instruction.SetHelpText(
             "Type what you want done in this project, then press Enter: a change, a "
             "question about the code, or what to test. While a task runs, what you "

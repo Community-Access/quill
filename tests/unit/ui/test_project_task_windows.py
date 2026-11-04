@@ -94,7 +94,7 @@ def test_the_task_window_reaches_plan_changes_and_output_by_key(wx_session_app: 
     )
     window = ProjectTaskWindow(None, hooks)
     try:
-        assert window.GetTitle() == "Do a Project Task: proj"
+        assert window.GetTitle() == "Do a Project Task"
         assert "Project proj" in window.status.GetValue()
         labels = set(window.project_buttons)
         for name in ("Plan", "Changes", "Output", "Transcript", "Undo Last Turn"):

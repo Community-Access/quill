@@ -41,6 +41,7 @@ of these in the same change.
 - **Claude and Ollama practice mode for project tasks,** on My own key, as
   in QUILL.
 - **A Project cell in the status bar,** shown only while a project is open.
+- **F1 in every project window,** as in QUILL.
 - **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
   files) are asked about once per project.
 
