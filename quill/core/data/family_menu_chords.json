@@ -211,6 +211,7 @@
   ["QUILL Lite", "core/lite/commands.py Open...", "Ctrl+O"],
   ["QUILL Lite", "core/lite/commands.py Outdent", "Ctrl+["],
   ["QUILL Lite", "core/lite/commands.py Overwrite Mode", "Ctrl+Alt+Shift+W"],
+  ["QUILL Lite", "core/lite/commands.py Page Break", "Ctrl+Enter"],
   ["QUILL Lite", "core/lite/commands.py Page Setup...", "Ctrl+Alt+P"],
   ["QUILL Lite", "core/lite/commands.py Paste", "Ctrl+V"],
   ["QUILL Lite", "core/lite/commands.py Paste Everything Collected", "Ctrl+Alt+Shift+G"],

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 518.
+Editor commands with default bindings: 519.
 
 ## The QUILL editor
 
@@ -54,6 +54,7 @@ Editor commands with default bindings: 518.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | Follow Link | `edit.follow_link` |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
@@ -102,7 +103,6 @@ Editor commands with default bindings: 518.
 | Ctrl+Alt+V | Open copy tray | `edit.open_copy_tray` |
 | Ctrl+Alt+X | Exchange Point and Mark | `edit.exchange_point_mark` |
 | Ctrl+Alt+Y | Copy to Next Empty Tray Slot | `edit.copy_to_next_slot` |
-| Ctrl+Enter | Follow Link | `edit.follow_link` |
 | Ctrl+F | Find... | `edit.find` |
 | Ctrl+F8 | Copy All | `edit.copy_all` |
 | Ctrl+H | Replace... | `edit.replace` |
@@ -190,6 +190,7 @@ Editor commands with default bindings: 518.
 | Ctrl+B | Bold | `format.bold` |
 | Ctrl+D | Duplicate Line | `format.duplicate_line` |
 | Ctrl+E | Centre | `format.align_center` |
+| Ctrl+Enter | Insert Page Break | `format.insert_page_break` |
 | Ctrl+I | Italic | `format.italic` |
 | Ctrl+J | Justify | `format.justify` |
 | Ctrl+L | Align Left | `format.align_left` |

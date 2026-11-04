@@ -34,11 +34,11 @@ from quill.core.tagging import (
     build_block_alignment,
     build_block_attributes,
     build_clear_formatting,
-    build_page_break,
     build_span_insertion,
 )
 from quill.io.rtf_model import format_at_markdown_offset
 from quill.platform.sr_announce import announce
+from quill.ui.page_break import insert_page_break
 
 
 class FormatCodesMixin:
@@ -195,7 +195,10 @@ class FormatCodesMixin:
         format_menu.AppendSubMenu(style_menu, _("Paragraph St&yle"))
 
         self._id_page_break = wx.NewIdRef()
-        format_menu.Append(self._id_page_break, _("Insert Page Brea&k"))
+        format_menu.Append(
+            self._id_page_break,
+            self._menu_label(_("Insert Page Brea&k"), "format.insert_page_break"),
+        )
 
         self._id_describe_formatting = wx.NewIdRef()
         format_menu.Append(
@@ -494,21 +497,8 @@ class FormatCodesMixin:
         )
 
     def insert_page_break(self) -> None:
-        """Insert a page break (materialized only at export) on its own line."""
-        if not self._feature_enabled("core.format"):
-            self._set_status("Page break is unavailable in this profile")
-            return
-        if self._active_markup_surface() != "markdown":
-            self._set_status("Page break is only available in Markdown documents")
-            return
-        marker = build_page_break().inserted_text
-        start, end = self.editor.GetSelection()
-        self.editor.Replace(start, end, f"\n{marker}\n")
-        self.editor.SetInsertionPoint(start + len(marker) + 2)
-        self.editor.SetFocus()
-        status = "Page break inserted"
-        self._set_status(status)
-        announce(status)
+        """Ctrl+Enter, Word's key: ``quill.ui.page_break`` decides by document kind."""
+        insert_page_break(self)
 
     def describe_formatting_at_cursor(self) -> None:
         """Speak the formatting in effect at the caret (the interrogation hotkey).

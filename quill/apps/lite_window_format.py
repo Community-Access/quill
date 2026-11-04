@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import wx
 
+from quill.apps.lite_page_break import insert_page_break
 from quill.core.heading_levels import LevelResult, adjust_heading_level
 from quill.core.list_style import LIST_STYLES, cycle_list_style
 from quill.core.lite.filetypes import language_label
@@ -325,6 +326,10 @@ class DocumentFormatCommandsMixin:
 
     def cmd_align_justify(self) -> None:
         self._align("justify", "Justified")
+
+    def cmd_insert_page_break(self) -> None:
+        """Ctrl+Enter, Word's key: ``quill.apps.lite_page_break`` does the work."""
+        insert_page_break(self)
 
     #: What each stop of the ring is called when it announces itself.
     _LIST_STYLE_WORDS = {

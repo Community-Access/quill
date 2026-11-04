@@ -2,6 +2,19 @@
 
 ## 1.0.0
 
+### Page breaks with Ctrl+Enter (2026-11-03)
+
+- **Ctrl+Enter inserts a page break, as in Word.** In a Word or Rich Text
+  document it is a real page break that is kept when you save; in Markdown
+  it is the `::: pagebreak` line, which becomes a page break when you export.
+  It is on the Insert menu in QUILL Lite and the Format menu in QUILL.
+- **Word page breaks are kept.** Opening a Word document used to turn each
+  page break into an empty line, so saving it removed them all. They now
+  open as page breaks and are saved as page breaks.
+- **Follow Link moves off Ctrl+Enter, mostly.** With the cursor on a link,
+  Ctrl+Enter still follows it, so the old habit still works. Follow Link is on
+  the Navigate menu, and you can give it a key of its own in the Keymap Editor.
+
 ### AI menu, own key and silent commands (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.

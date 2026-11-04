@@ -4351,6 +4351,11 @@ code point</td>
 <td>A line break that does not start a new paragraph</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Enter</strong></td>
+<td>Page Break: the rest starts on a new page (Word, Rich Text and
+Markdown documents)</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+T</strong></td>
 <td>Table: the columns and rows you ask for, a real table in rich text
 (see “Making a table”)</td>
@@ -4548,6 +4553,15 @@ QUILL Lite then tells you what it put in, for example “Inserted, U+2014
 Em dash”. Many of these characters are invisible on the page, so hearing
 it is how you know it worked.</p>
 <p>QUILL has the same picker, on the same key.</p>
+<h4 id="starting-a-new-page">Starting a new page</h4>
+<p><strong>Insert &gt; Page Break</strong> (<strong>Ctrl+Enter</strong>,
+the same key as in Word) starts a new page at the cursor. In a Word or
+Rich Text document it is a real page break, the same one Word makes, and
+it is still there when you save the file and open it again. In a
+Markdown document QUILL Lite puts the line <code>::: pagebreak</code> on
+its own line, and the break takes effect when you export to a format
+that has pages, such as Word or PDF. A plain text document has no pages,
+so QUILL Lite tells you that instead of doing nothing.</p>
 <h4 id="ending-a-line-without-starting-a-paragraph">Ending a line
 without starting a paragraph</h4>
 <p><strong>Insert &gt; Line Break</strong>

@@ -521,6 +521,9 @@ COMMANDS: list[CommandRow] = [
     # need this already know it (#1488). A hard break ends the line without
     # starting a paragraph, which is the distinction a blank line cannot make.
     ("&Insert", "&Line Break", "Shift+Enter", "cmd_insert_line_break", ""),
+    # Word's Ctrl+Enter, and QUILL's since 2026-11-03 (rules 1 and 2): a real
+    # page break in Word and Rich Text, the ::: pagebreak line in Markdown.
+    ("&Insert", "&Page Break", "Ctrl+Enter", "cmd_insert_page_break", ""),
     # Word's key, and everybody's. A link is the one tag every person who has
     # ever written anything has inserted, and QUILL Lite had the Markdown and
     # HTML kinds, a tag picker for each, and no way to make it (bad.md 4.2).
