@@ -2,6 +2,27 @@
 
 ## 1.0.0
 
+### Agentic coding: project tasks (2026-11-04)
+
+Work in progress on branch `feat/agentic-coding`; each line is added as the
+piece lands.
+
+- **The Claude engine really runs with no tools of its own.** The Claude Agent
+  SDK pack asked for `allowed_tools=[]`, which only pre-approves nothing: the
+  model could still see Claude Code's file and shell tools. It now passes
+  `disallowed_tools=["*"]` in `default` permission mode, so every built-in tool
+  is removed, and a test with a stand-in SDK checks the options.
+- **The shared project-task core is checked and tested.** A project is a
+  folder; the agent may read inside it, never outside, and never sees secret
+  files. Edits wait in a change set until you review them, every turn has a
+  private checkpoint for Undo Last Turn, commands run in a process tree that
+  Stop ends whole, and test output comes back as one sentence. Over a hundred
+  tests cover it. Fixed on the way: a command with quotes in it (a program under
+  `Program Files`, say) reached `cmd` with its quotes mangled; the program's
+  own path set off the "runs outside the project" warning, which also hid
+  Always Allow; the closing summary left out the commands a turn ran; and test
+  results said "1 errors".
+
 ### Phonon voices (2026-11-02)
 
 - **Phonon, a new offline Read Aloud voice.** Gradium's Phonon 31m now comes

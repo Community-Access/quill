@@ -13,6 +13,17 @@ reads only what you wrote, Word documents and PDFs, Find in Open Documents and
 folder search, dictation and transcription, Activity and Repeat Last Result,
 and release channels.
 
+### Agentic coding: project tasks in the Developer profile (2026-11-04)
+
+Work in progress; each line is added as the piece lands. QUILL gets every one
+of these in the same change.
+
+- **The Claude engine really runs with no tools of its own.** It passes
+  `disallowed_tools=["*"]` rather than `allowed_tools=[]`, which hid nothing.
+- **The shared project-task core is checked and tested,** the same code QUILL
+  uses: the project boundary and hidden secrets, reviewed edits, Undo Last
+  Turn, commands that Stop ends whole, and test results in one sentence.
+
 ### Choose Your AI: your plan, GitHub Copilot, Codex or your own key
 - **Choose Your AI** (**Ctrl+4**, Tools > AI) is one window for where your AI
   comes from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex,

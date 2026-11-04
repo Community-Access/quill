@@ -135,6 +135,10 @@ class FamilyTool:
     mutating: bool = False
     via_gateway: bool = False
     summarize: Callable[[dict[str, Any]], str] | None = None
+    #: The handler asks the person itself, in its own words (a project edit's
+    #: review, a command's approval with its exact text): the registry still
+    #: applies the broker's deny, but never asks the generic question on top.
+    asks_itself: bool = False
 
     @property
     def wire_name(self) -> str:
@@ -264,6 +268,8 @@ class FamilyToolRegistry:
         if verdict.blocked:
             self._log("tool_call_denied", tool, f"Denied {tool.name}: {verdict.reason}")
             return False, verdict.reason
+        if tool.asks_itself:
+            return True, verdict.reason  # its handler asks, in its own words
         if verdict.decision is Decision.ASK and not self.gate.authorize_ahead(
             tool, tool.summary_for(args), call_id
         ):
@@ -302,7 +308,7 @@ class FamilyToolRegistry:
             self._log("tool_call_denied", tool, f"Denied {tool.name}: {verdict.reason}")
             self._emit(AgentEvent(AgentEventKind.TOOL_CALL_DENIED, f"Denied: {tool.name}."))
             return ToolCallResult(text=f"Not permitted: {verdict.reason}", ok=False)
-        if verdict.decision is not Decision.ALLOW:
+        if verdict.decision is not Decision.ALLOW and not tool.asks_itself:
             self._emit(AgentEvent(AgentEventKind.PERMISSION_REQUIRED, tool.summary_for(args)))
             if not self.gate.check(tool, tool.summary_for(args)):
                 self._log("tool_call_denied", tool, f"Declined {tool.name}.")
