@@ -132,18 +132,26 @@ class WordPressCheckCommands(WordPressFindReplaceCommands):
             return
         api = self.api(profile)  # type: ignore[attr-defined]
 
-        def work() -> tuple[pa.PageAudit, str] | BaseException:
+        def work() -> tuple[pa.PageAudit, str, Any] | BaseException:
             try:
                 audit = pa.audit_url(url, browser=browser)
             except (cdp.CdpError, cdp.BrowserMissingError, pa.AxeMissingError) as exc:
                 return exc
-            return audit, active_theme(api)[0]
+            # Dead links, read by the site's url-details route (9.16), when it has one.
+            dead_links = getattr(self, "dead_links_for", None)
+            # A site without the route, or a failure reading it, leaves the
+            # check itself untouched: dead links are an extra, never a gate.
+            try:
+                dead = dead_links(profile, api, copy) if dead_links is not None else None
+            except Exception:  # noqa: BLE001 - the page check must still be heard
+                dead = None
+            return audit, active_theme(api)[0], dead
 
-        def done(result: tuple[pa.PageAudit, str] | BaseException) -> None:
+        def done(result: tuple[pa.PageAudit, str, Any] | BaseException) -> None:
             if isinstance(result, BaseException):
                 self.host.announce(f"Check This Page could not check {label}: {plain(result)}")
                 return
-            self._show_page_audit(label, url, result[0], result[1], copy)
+            self._show_page_audit(label, url, result[0], result[1], copy, dead=result[2])
 
         self.background(f"checking {label}", work, done)  # type: ignore[attr-defined]
 
@@ -154,8 +162,13 @@ class WordPressCheckCommands(WordPressFindReplaceCommands):
         audit: pa.PageAudit,
         theme: str,
         copy: lc.WorkingCopy | None,
+        dead: Any = None,
     ) -> None:
         summary = pa.summary_line(label, audit)
+        if dead is not None:
+            from quill.core.wordpress import link_targets as lt
+
+            summary += ". " + lt.dead_link_sentence(dead[0], dead[1]).rstrip(".")
         self.host.announce(summary)
         findings = list(audit.findings)
         document_path = self.host.current_path()
@@ -261,9 +274,36 @@ class WordPressCheckCommands(WordPressFindReplaceCommands):
                     shape,
                     needs_row=False,
                 ),
+                *self._dead_link_action(dead),
             ],
         )
         window.Destroy()
+
+    def _dead_link_action(self, dead: Any) -> list[dlg.Action]:
+        """Dead &Links..., when the site could check them (9.16)."""
+        if dead is None:
+            return []
+
+        def show(_index: int | None) -> object:
+            gone, checked = dead
+            lines = [t.spoken() for t in gone] or ["Every link reaches its page."]
+            dlg.show_report(
+                self.host.parent,
+                self.host.show_modal,
+                title="Dead Links",
+                text=f"{len(gone)} of {checked} links go nowhere.\n\n" + "\n".join(lines),
+                help_text="Each link in your document whose page the site could not reach.",
+            )
+            return None
+
+        return [
+            dlg.Action(
+                "Dead &Links...",
+                "The links in your document whose pages are gone.",
+                show,
+                needs_row=False,
+            )
+        ]
 
     # ------------------------------------------------------------------ #
     # Write an Accessibility Statement (9.12)

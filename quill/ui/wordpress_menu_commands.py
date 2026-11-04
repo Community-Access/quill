@@ -74,6 +74,10 @@ class WordPressMenuCommands(WordPressAdminBase):
                 "the site's editor; QUILL then lists and changes it here."
             )
             return
+        # Menu History keeps each classic menu as read here, so a change can be undone (9.16).
+        remember = getattr(self, "remember_menus", None)
+        if remember is not None:
+            remember(profile, data.menus)
         menu = next((m for m in data.menus if m.id == menu_id), None)
         if menu is None and len(data.menus) == 1:
             menu = data.menus[0]
