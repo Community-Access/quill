@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import site_library as lib
 from quill.core.wordpress.api import WordPressApiError
+from quill.core.wordpress.pattern_directory import load_categories as pattern_categories
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui.wordpress_admin_base import WordPressAdminBase
 
@@ -147,9 +148,21 @@ class WordPressDesignCommands(WordPressAdminBase):
             profile,
             f"reading patterns on {profile.name}",
             "patterns",
-            lambda api, _account: (lib.list_patterns(api), lib.pattern_uses(api)),
-            lambda api, _account, data: self._show_patterns(profile, api, *data),
+            lambda api, _account: (
+                lib.list_patterns(api),
+                lib.pattern_uses(api),
+                pattern_categories(api),
+            ),
+            # Grouped by pattern category first when the site has them (9.15).
+            lambda api, _account, data: self._patterns_shown(profile, api, *data),
         )
+
+    def _patterns_shown(self, profile: Any, api: Any, patterns: Any, uses: Any, cats: Any) -> None:
+        by_category = getattr(self, "patterns_by_category", None)
+        if by_category is not None:
+            by_category(profile, api, patterns, uses, cats)
+        else:
+            self._show_patterns(profile, api, patterns, uses)
 
     def _show_patterns(
         self,

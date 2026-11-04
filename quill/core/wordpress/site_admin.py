@@ -170,22 +170,12 @@ class CheckLine:
 
 _ORDER = {"critical": 0, "recommended": 1, "info": 2, "good": 3}
 
-#: The site-health tests the REST API runs on request (wp-site-health/v1).
-HEALTH_TESTS = (
-    "background-updates",
-    "loopback-requests",
-    "https-status",
-    "dotorg-communication",
-    "authorization-header",
-)
-
 
 def site_check(api: WordPressApi, *, site_url: str, wp_version: str) -> list[CheckLine]:
     """Everything REST can tell about the site's health, critical first."""
     lines: list[CheckLine] = []
     index = api.get("")
     index = index if isinstance(index, dict) else {}
-    namespaces = [str(n) for n in index.get("namespaces", []) or []]
     lines.append(
         CheckLine("info", f"WordPress version: {wp_version}.")
         if wp_version
@@ -215,16 +205,11 @@ def site_check(api: WordPressApi, *, site_url: str, wp_version: str) -> list[Che
         )
     lines.extend(_permalinks(api))
     lines.extend(_settings_lines(api))
-    if "wp-site-health/v1" in namespaces:
-        lines.extend(_health_tests(api))
-    else:
-        lines.append(
-            CheckLine(
-                "info",
-                "PHP version, updates and loopback: this site does not offer its "
-                "health checks to QUILL.",
-            )
-        )
+    # Every Site Health test the index lists, and the recognised plugins (9.15).
+    from quill.core.wordpress import site_health
+
+    lines.extend(site_health.health_lines(api, index))
+    lines.extend(site_health.recognised_lines(index))
     lines.append(
         CheckLine(
             "info",
@@ -273,23 +258,6 @@ def _settings_lines(api: WordPressApi) -> list[CheckLine]:
                 "language, so it chooses the voice screen readers use.",
             )
         )
-    return out
-
-
-def _health_tests(api: WordPressApi) -> list[CheckLine]:
-    out: list[CheckLine] = []
-    for test in HEALTH_TESTS:
-        try:
-            raw = api.get(f"wp-site-health/v1/tests/{test}")
-        except WordPressApiError as exc:
-            if exc.status in (401, 403):
-                return [CheckLine("info", "Health checks: only an administrator can run them.")]
-            continue
-        if not isinstance(raw, dict):
-            continue
-        label = rendered(raw.get("label")) or test.replace("-", " ")
-        status = str(raw.get("status", "info"))
-        out.append(CheckLine(status if status in _ORDER else "info", f"{label}."))
     return out
 
 

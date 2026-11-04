@@ -79,7 +79,13 @@ class WordPressBlockCommands:
             return
         api = self.api(doc.profile)  # type: ignore[attr-defined]
 
-        def show(choices: list[bc.InsertChoice]) -> None:
+        # The site's index too, so the Pattern Directory is offered only where the
+        # site has it (9.15, wordpress_pattern_commands).
+        index_of = getattr(self, "index_or_none", None)
+        directory = getattr(self, "directory_actions", None)
+
+        def show(found: tuple[list[bc.InsertChoice], Any]) -> None:
+            choices, index = found
             current = list(choices)
 
             def narrow(words: str) -> list[str]:
@@ -107,7 +113,8 @@ class WordPressBlockCommands:
                         "&Insert",
                         "Add the selected block after the block the caret is in.",
                         insert,
-                    )
+                    ),
+                    *(directory(doc.profile, index) if directory else []),
                 ],
                 filter_label="&Find:",
                 filter_help='Type part of a name and press Enter. "but" finds Button.',
@@ -116,7 +123,9 @@ class WordPressBlockCommands:
             window.Destroy()
 
         self.background(
-            "loading the site's blocks and patterns", lambda: bc.fetch_choices(api), show
+            "loading the site's blocks and patterns",
+            lambda: (bc.fetch_choices(api), index_of(doc.profile, api) if index_of else None),
+            show,
         )  # type: ignore[attr-defined]
 
     def _insert_choice(self, choice: bc.InsertChoice) -> bool:
