@@ -5385,6 +5385,38 @@ account it is.</li>
 </ol>
 <p>Your sign-in is kept in the Windows credential store, never in an
 ordinary file or a log.</p>
+<h4 id="if-connect-does-not-finish">If Connect does not finish</h4>
+<p>The sign-in window now shows the <strong>Redirect address</strong>
+your Spotify app must list, with a <strong>Copy Address</strong> button,
+so you can paste it straight into the dashboard. If something still goes
+wrong, the window says what, in a sentence: another program using the
+sign-in port, a Client ID Spotify does not know, or a browser that never
+came back.</p>
+<p>For the whole picture, choose <strong>Show Diagnostics</strong> in
+the same window. It checks:</p>
+<ul>
+<li>the redirect address to register;</li>
+<li>whether a Client ID is saved;</li>
+<li>whether you are signed in, and with which permissions;</li>
+<li>whether the sign-in port is free;</li>
+<li>your account type (Premium is needed to play);</li>
+<li>whether Windows has the web player Spotify needs;</li>
+<li>every step of your last sign-in attempt, with the time of each.</li>
+</ul>
+<p><strong>Copy Diagnostics</strong> puts the report on the clipboard,
+ready to paste into an email to support@. It never contains a password
+or a sign-in token.</p>
+<p>The most common causes, in order:</p>
+<ol type="1">
+<li>The redirect address in your Spotify app is not exactly
+<code>http://127.0.0.1:43217/callback</code>. It must be http, not
+https, and 127.0.0.1, not localhost.</li>
+<li>You approved in the browser with a different Spotify account from
+the one that created the app. Add that account under <strong>User
+Management</strong> in the dashboard.</li>
+<li>Your account is not Premium. You can sign in and browse, but nothing
+will play.</li>
+</ol>
 <h4 id="browse-and-play-step-by-step">Browse and play, step by step</h4>
 <ol type="1">
 <li>Press <strong>Ctrl+Alt+O</strong> (<strong>Station &gt; Browse

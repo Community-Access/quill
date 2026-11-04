@@ -283,6 +283,23 @@ and the Podcast Index says why when it cannot; browsing long lists stays
 smooth; Preferences has Find a setting; Undo History lists the last ten
 things you can take back; and a few choices can be shared with your
 other Quill apps.</p>
+<h3
+id="connecting-to-spotify-works-and-says-why-when-it-cannot-2026-11-04">Connecting
+to Spotify works, and says why when it cannot (2026-11-04)</h3>
+<ul>
+<li><strong>Connect now opens your browser.</strong> After you typed a
+Client ID and chose Connect, Quill Radio said it was opening your
+browser and then did nothing. The sign-in was being handed to the
+background worker the wrong way, and stopped before the browser could
+open. So no sign-in ever finished, and nothing Spotify could play. Fixed
+in Quill Radio and QUILL Cast.</li>
+<li><strong>The sign-in window shows the exact redirect address</strong>
+your Spotify app must list, with a Copy Address button, and every
+failure is one plain sentence saying what to do.</li>
+<li><strong>Show Diagnostics</strong> reports your Spotify setup and
+every step of the last sign-in attempt, with Copy Diagnostics for an
+email to support. It never shows a password or token.</li>
+</ul>
 <h3 id="ai-menu-and-the-station-catalogue-2026-11-03">AI menu and the
 station catalogue (2026-11-03)</h3>
 <ul>
