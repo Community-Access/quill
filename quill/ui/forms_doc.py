@@ -319,18 +319,12 @@ def _descendants(item: Item) -> list[Item]:
 def outline_rows(model: Model) -> list[tuple[str, str | None]]:
     """``(spoken row, item id)`` per page, section and field, in form order.
 
-    "Email address, email field, required, page 1": the core's own summary
-    (:mod:`quill.core.forms.summary`) where it answers, else a plain one.
+    The core's outline (:func:`quill.core.forms.summary.outline_rows`), so both
+    editors and Check This Form read a question the same way.
     """
-    rows: list[tuple[str, str | None]] = []
-    for number, page in enumerate(model.get("pages") or [], 1):
-        count = sum(1 for e in _all(page.get("items") or []) if M.is_field_type(e.get("type")))
-        title = f", {page['title']}" if page.get("title") else ""
-        plural = "question" if count == 1 else "questions"
-        rows.append((f"Page {number}{title}, {count} {plural}", None))
-        for depth, item in _walk(page.get("items") or [], 1):
-            rows.append(("  " * depth + summary_of(model, item, number), str(item.get("id"))))
-    return rows
+    from quill.core.forms import summary
+
+    return summary.outline_rows(model)
 
 
 def _walk(entries: list[Item], depth: int) -> list[tuple[int, Item]]:
@@ -346,31 +340,6 @@ def _walk(entries: list[Item], depth: int) -> list[tuple[int, Item]]:
 
 def _all(entries: list[Item]) -> list[Item]:
     return [item for _depth, item in _walk(entries, 0)]
-
-
-def summary_of(model: Model, item: Item, page_number: int) -> str:
-    kind = str(item.get("type", ""))
-    if kind == "section":
-        count = sum(1 for e in _all(item.get("items") or []) if M.is_field_type(e.get("type")))
-        return f"Section, {name_of(item)}, {count} question" + ("" if count == 1 else "s")
-    if kind == "columns":
-        return f"{len(item.get('columns') or [])} columns side by side"
-    parts = [str(item.get("label") or f"Untitled question ({item.get('id')})")]
-    spoken = M.TYPE_NAMES.get(kind, kind)
-    parts.append(spoken + (" field" if kind in M.INPUT_FAMILY else ""))
-    if item.get("required"):
-        parts.append("required")
-    if item.get("choice_library"):
-        parts.append(f"choices from the {item['choice_library'].replace('_', ' ')} list")
-    elif item.get("choices"):
-        n = len(item["choices"])
-        parts.append(f"{n} choice" + ("" if n == 1 else "s"))
-    if item.get("when"):
-        parts.append("shown when " + sentence(model, str(item["when"])))
-    if item.get("calculation"):
-        parts.append("worked out")
-    parts.append(f"page {page_number}")
-    return ", ".join(parts)
 
 
 def sentence(model: Model, expression: str) -> str:

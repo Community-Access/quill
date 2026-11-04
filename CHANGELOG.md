@@ -112,11 +112,15 @@
   has Next Block, Previous Block and Where Am I. The checks and the site's
   upkeep are in Tools > WordPress. The page commands are dimmed unless a
   WordPress page or post is in front of you.
-- **Forms groundwork.** QUILL reads and writes the form language of BITS
-  Accessible Forms (BFL) without changing a byte it does not edit, on one
-  shared form model with a published schema, a rules engine that reads every
-  rule as a sentence, and imports and exports for SurveyJS, XLSForm and HTML.
-  The Forms commands come next.
+- **Forms.** Write accessible forms in BFL, the language of BITS Accessible
+  Forms: File > New Form, Insert > Form Field, View > Form Outline, Format >
+  Form Rules (each rule read as a sentence), and Tools > Forms with Check
+  This Form and Fill It In Yourself, which walks you through the form as a
+  visitor would, in each of its languages. One form definition is shared
+  with BITS Accessible Forms.
+- **Forms: nothing you add is lost.** A question added at the top of a page
+  is kept when the form is saved, and choice lists from a library show in
+  Fill It In Yourself.
 - **WordPress keys.** Ctrl+Alt+Shift+Grave, then one letter: O Open, P
   Publish or Update, M Media Library, S Switch Site, W Open by Web Address, D
   Save Draft to Site, and the File > WordPress letters for the rest. The

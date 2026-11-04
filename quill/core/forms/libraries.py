@@ -23,7 +23,22 @@ from typing import Any
 
 from quill.core.forms.errors import ChoiceLibraryError
 
-Choice = dict[str, str]
+
+class Choice(dict[str, str]):
+    """A choice as the model holds one (``{"value", "label"}``), readable as attributes too."""
+
+    @property
+    def value(self) -> str:
+        return self["value"]
+
+    @property
+    def label(self) -> str:
+        return self["label"]
+
+
+def _choice(value: Any, label: Any) -> Choice:
+    return Choice(value=str(value), label=str(label))
+
 
 DATA_PATH = Path(__file__).parent / "libraries" / "baf_libraries.json"
 
@@ -91,17 +106,45 @@ def choices(
         year = (today or dt.date.today()).year
         start, stop = year + int(entry["years"]["from"]), year + int(entry["years"]["to"])
         step = 1 if stop >= start else -1
-        return [{"value": str(y), "label": str(y)} for y in range(start, stop + step, step)]
+        return [_choice(y, y) for y in range(start, stop + step, step)]
     cascade = entry.get("cascade")
     if cascade:
         if parent_value is None:
             return []
         rows = cascade["map"].get(parent_value) or cascade["map"].get(parent_value.upper(), [])
-        return [{"value": str(r[0]), "label": str(r[1])} for r in rows]
-    return [{"value": str(row[0]), "label": str(row[1])} for row in entry.get("choices", [])]
+        return [_choice(r[0], r[1]) for r in rows]
+    return [_choice(row[0], row[1]) for row in entry.get("choices", [])]
 
 
 def search(query: str) -> list[LibraryInfo]:
     """Libraries whose name or label contains every word of ``query``."""
     words = query.lower().split()
     return [i for i in all_info() if all(w in (i.id + " " + i.label).lower() for w in words)]
+
+
+def choices_for(
+    item: dict[str, Any], model: dict[str, Any] | None = None, parent_value: str | None = None
+) -> list[tuple[str, str]]:
+    """``(value, label)`` for every answer a field offers.
+
+    Its own choices first; else a library the form defines (``choice_libraries``);
+    else one of BAF's built-in libraries (a cascade's, given the parent's
+    answer); else the fixed scales of ``rating`` (1 to 5) and ``nps`` (0 to 10).
+    A library that does not exist offers nothing: that is Check This Form's finding.
+    """
+    if item.get("choices"):
+        return [(str(c["value"]), str(c.get("label", c["value"]))) for c in item["choices"]]
+    name = item.get("choice_library") or (item.get("cascade") or {}).get("library")
+    if name:
+        own = ((model or {}).get("choice_libraries") or {}).get(name)
+        if own is not None:
+            return [(str(c["value"]), str(c.get("label", c["value"]))) for c in own]
+        try:
+            return [(c["value"], c["label"]) for c in choices(str(name), parent_value)]
+        except ChoiceLibraryError:
+            return []
+    if item.get("type") == "rating":
+        return [(str(n), f"{n} out of 5") for n in range(1, 6)]
+    if item.get("type") == "nps":
+        return [(str(n), str(n)) for n in range(11)]
+    return []

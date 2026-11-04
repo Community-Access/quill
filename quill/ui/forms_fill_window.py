@@ -166,7 +166,7 @@ class FillWindow(wx.Dialog):
             if kind not in ff.NOT_HERE:
                 self.worked[item_id] = shown
             return shown
-        choices = ff.choices_of(item)
+        choices = ff.choices_of(item, self.session.model)
         if kind in ff.MANY or (kind in ff.ONE and kind != "select"):
             return self._group(item_id, kind, name, choices, answer, where)
         if kind in ff.ONE or choices:

@@ -13,7 +13,6 @@ answer pairs, and what the rules worked out.
 
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -38,42 +37,17 @@ YES_NO: frozenset[str] = frozenset({"consent", "toggle"})
 
 
 def localize(model: fd.Model, language: str) -> fd.Model:
-    """A copy of the form in *language*, from its translations; untranslated text stays."""
-    out = copy.deepcopy(model)
-    table = (model.get("translations") or {}).get(language)
-    if not table or language == model.get("language", "en"):
-        return out
-    out["title"] = table.get("title", out.get("title", ""))
-    for page in out.get("pages") or []:
-        page.update((table.get("pages") or {}).get(page.get("id"), {}))
-    named = table.get("fields") or {}
-    for item in M.iter_items(out):
-        words = named.get(item.get("id")) or {}
-        for key in ("label", "help", "placeholder"):
-            if key in words:
-                item[key] = words[key]
-        for choice in item.get("choices") or []:
-            choice["label"] = (words.get("choices") or {}).get(choice["value"], choice["label"])
-    return out
+    """A copy of the form in *language*; the core's translation (forms.translate)."""
+    from quill.core.forms import translate
+
+    return translate.localize(model, language)
 
 
-def choices_of(item: fd.Item) -> list[tuple[str, str]]:
-    """``(value, label)`` for each choice: its own, or its library's."""
-    if item.get("choices"):
-        return [(str(c["value"]), str(c.get("label", c["value"]))) for c in item["choices"]]
-    if item.get("type") == "rating":
-        return [(str(n), f"{n} out of 5") for n in range(1, 6)]
-    if item.get("type") == "nps":
-        return [(str(n), str(n)) for n in range(11)]
-    library = item.get("choice_library")
-    if library:
-        try:
-            from quill.core.forms import libraries
+def choices_of(item: fd.Item, model: fd.Model | None = None) -> list[tuple[str, str]]:
+    """``(value, label)`` for each choice: its own, the form's library, BAF's, or a scale."""
+    from quill.core.forms import libraries
 
-            return [(str(c.value), str(c.label)) for c in libraries.choices(str(library))]
-        except Exception:  # noqa: BLE001 - a missing library is Check This Form's finding
-            return []
-    return []
+    return [(str(v), str(label)) for v, label in libraries.choices_for(item, model)]
 
 
 @dataclass
@@ -237,7 +211,7 @@ class FillSession:
         value = self.answers.get(item_id)
         if value is None or value == "" or value == []:
             return "no answer"
-        labels = dict(choices_of(item))
+        labels = dict(choices_of(item, self.model))
         if isinstance(value, list):
             return ", ".join(labels.get(str(v), str(v)) for v in value)
         if isinstance(value, bool):

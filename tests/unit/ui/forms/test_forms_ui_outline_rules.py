@@ -22,7 +22,7 @@ def test_the_outline_reads_each_question_as_a_sentence(forms, forms_dialogs) -> 
     forms.cmd_outline()
     rows = forms_dialogs.window["rows"]
     assert rows[0] == "Page 1, 4 questions"
-    assert "Email address, email field, required, page 1" in rows[2]
+    assert "Email address, email field, required, with an autofill hint, page 1" in rows[2]
     assert "shown when How did you hear about us? is Somewhere else" in rows[4]
 
 

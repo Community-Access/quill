@@ -155,6 +155,7 @@ class _Splice:
         self.old, self.new = doc.original, doc.model
         self.old_items, self.new_items = _by_id(self.old), _by_id(self.new)
         self.old_tree, self.new_tree = _containers(self.old), _containers(self.new)
+        self.emitted: set[str] = set()
         self.claimed = {i for s in doc.statements if s.kind == "items" for i in (s.key or [])}
         # A flat section's children come from the statements after it.
         self.flat = {
@@ -219,6 +220,20 @@ class _Splice:
             lines = w.lines
         return [indent + line if line else line for line in lines]
 
+    def lead(self, item_id: str, indent: str) -> list[str]:
+        """Lines for items added before ``item_id``, the first kept item of its container."""
+        parent = _parent_of(self.new_tree).get(item_id)
+        if parent is None:
+            return []
+        out: list[str] = []
+        for k in self.new_tree[parent]:
+            if k == item_id or k in self.old_items:
+                break
+            if k not in self.emitted:
+                self.emitted.add(k)
+                out += [*self.item_lines(k, indent), ""]
+        return out
+
     def new_after(self, item_id: str, indent: str) -> list[str]:
         """Lines for items added straight after ``item_id`` (and after those)."""
         out: list[str] = []
@@ -228,7 +243,9 @@ class _Splice:
         kids = self.new_tree[parent]
         i = kids.index(item_id) + 1
         while i < len(kids) and kids[i] not in self.old_items:
-            out += [""] + self.item_lines(kids[i], indent)
+            if kids[i] not in self.emitted:
+                self.emitted.add(kids[i])
+                out += ["", *self.item_lines(kids[i], indent)]
             i += 1
         return out
 
@@ -278,6 +295,10 @@ class _Splice:
                 ids = [i for i in s.key or [] if i in self.new_items]
                 if not ids:
                     continue  # removed, with the blank lines before it
+                before = self.lead(ids[0], s.indent)
+                if before:
+                    out.append(gap + "\n".join(before))
+                    gap = "\n"
                 if all(self.same_item(i) for i in s.key or []):
                     out.append(gap + text)
                 else:
@@ -303,7 +324,9 @@ class _Splice:
         for k in kids:
             if k in self.old_items:
                 break
-            lines += ["\n" + x for x in self.item_lines(k, indent)]
+            if k not in self.emitted:
+                self.emitted.add(k)
+                lines += ["\n" + x for x in self.item_lines(k, indent)]
         return lines
 
     def header_text(self) -> str:
@@ -420,6 +443,11 @@ def write_bfl(doc: BflDocument) -> str:
         text = splice.run()
         if not text.endswith("\n"):
             text += "\n"
+        if not M.same(read(text).model, doc.model):
+            # A splice that does not read back to the model would lose an edit
+            # silently; the canonical text never does.
+            doc.last_write = "canonical"
+            text = to_bfl_with_islands(model_with_islands(doc))
     if "\r\n" in doc.raw:
         text = text.replace("\r\n", "\n").replace("\n", "\r\n")
     if doc.raw.startswith("﻿"):

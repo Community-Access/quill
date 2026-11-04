@@ -141,3 +141,16 @@ def _rows(
                 _rows(col.get("items") or [], level + 1, model, page, rows)
         else:
             _rows(item.get("items") or [], level + 1, model, page, rows)
+
+
+def outline_rows(model: M.Model, islands: list[str] | None = None) -> list[tuple[str, str | None]]:
+    """The outline as ``(spoken row, item id)``: pages carry None, and each level
+    is indented two more spaces, as the Form Outline window lists it.
+    """
+    out: list[tuple[str, str | None]] = []
+    for row in outline(model, islands):
+        if row.level == 0:
+            out.append((row.text, None))
+        else:
+            out.append(("  " * row.level + row.text, str(row.item.get("id"))))
+    return out

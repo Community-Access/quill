@@ -98,6 +98,15 @@ and release channels.
   WordPress page or post is in front of you.
 - **Alt+F, W opens File > WordPress.** Print Preview moved from W to T
   (Alt+F, T) to make room; its key, Ctrl+Alt+Shift+P, is unchanged.
+- **Forms.** Write accessible forms in BFL, the language of BITS Accessible
+  Forms: File > New Form, Insert > Form Field, View > Form Outline, Format >
+  Form Rules (each rule read as a sentence), and Tools > Forms with Check
+  This Form and Fill It In Yourself, which walks you through the form as a
+  visitor would, in each of its languages. One form definition is shared
+  with BITS Accessible Forms.
+- **Forms: nothing you add is lost.** A question added at the top of a page
+  is kept when the form is saved, and choice lists from a library show in
+  Fill It In Yourself.
 - **WordPress keys.** Ctrl+Alt+Shift+Grave, then one letter: O Open, P
   Publish or Update, M Media Library, S Switch Site, W Open by Web Address, D
   Save Draft to Site, and the File > WordPress letters for the rest. The
