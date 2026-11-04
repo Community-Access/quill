@@ -74,6 +74,7 @@ from quill.apps.lite_window_tools import DocumentToolsMixin
 from quill.apps.lite_window_typing import DocumentTypingMixin
 from quill.apps.lite_window_view import DocumentViewCommandsMixin
 from quill.apps.lite_window_watch import DocumentDiskWatchMixin
+from quill.apps.lite_window_wordpress import DocumentWordPressMixin
 from quill.apps.lite_window_words import DocumentWordsMixin
 from quill.core.document_text import DocumentText
 from quill.core.lite import APP_NAME
@@ -117,9 +118,8 @@ class DocumentFrame(
     DocumentDictationMixin,
     DocumentCommandsMixin,
     DocumentFormatCommandsMixin,
-    # The outline commands: Select Section, Move Section Up/Down, Move
-    # Section To. Split from the Format mixin (GATE-11) because a section is
-    # a different idea from a run of bold text.
+    # The outline commands, split from Format (GATE-11): a section is a
+    # different idea from a run of bold text.
     DocumentSectionCommandsMixin,
     DocumentViewCommandsMixin,
     DocumentPrintMixin,
@@ -136,9 +136,9 @@ class DocumentFrame(
     DocumentClipboardMixin,
     DocumentTypingMixin,
     DocumentSpellingMixin,
+    DocumentWordPressMixin,
     DocumentFileMixin,
-    # Open from URL and the clipboard, drops, Reopen with Encoding and the
-    # save-time disk check, shared with QUILL (2026-10-04).
+    # Open from URL/clipboard, drops, Reopen with Encoding, disk check: QUILL's.
     DocumentSourcesMixin,
     # Watching the file for other programs' changes, QUILL's code (2026-10-04).
     DocumentDiskWatchMixin,

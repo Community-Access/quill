@@ -29,6 +29,7 @@ from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
+from quill.core.wordpress.menu import lite_rows as wordpress_lite_rows
 
 __all__ = [
     "COMMANDS",
@@ -132,6 +133,7 @@ COMMANDS: list[CommandRow] = [
     # past F9 are where a once-in-a-while command goes).
     ("&File", "Reopen Last S&ession...", "Alt+Shift+F12", "cmd_reopen_last_session", ""),
     *EXPORT_ROWS,  # Export as HTML, shared with QUILL (commands_review.py)
+    *wordpress_lite_rows(),  # File > WordPress, QUILL's own table (wordpress/menu.py)
     ("&File", "", "", "", "sep"),
     # Ctrl+Alt+P, not the Ctrl+Alt+U it used to hold: that key is Check
     # for Updates in the eight other QuillVille apps, and P suits Page Setup.
@@ -142,7 +144,7 @@ COMMANDS: list[CommandRow] = [
     # what paper, with what margins, and what is at the top of each one.
     # Not &V: Earlier &Versions has it in this menu, and Windows cycles focus between
     # duplicates instead of pressing, so one silently cannot be reached (GATE-14).
-    ("&File", "Print Previe&w...", "Ctrl+Alt+Shift+P", "cmd_print_preview", ""),
+    ("&File", "Prin&t Preview...", "Ctrl+Alt+Shift+P", "cmd_print_preview", ""),
     ("&File", "&Print...", "Ctrl+P", "cmd_print", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Close Window", "Ctrl+W", "cmd_close", ""),
@@ -499,9 +501,6 @@ COMMANDS: list[CommandRow] = [
     # how big it is (bad.md 4.2, Tier 2). On Ctrl+Alt+W, which is the chord its
     # sibling vacated on the same day: one letter, two scopes.
     ("&View", "Li&ne Statistics", "Ctrl+Alt+W", "cmd_line_statistics", ""),
-    # A menu bar answers "what is under Format?"; a palette answers "how do I
-    # sort lines?", which is the question somebody actually has.
-    ("&View", "Command Pa&lette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
     # -- Insert -------------------------------------------------------------
     # Everything that puts something into the document that is not typing. The
     # top three were Edit > Insert and keep their keys exactly; the bottom three
@@ -810,6 +809,10 @@ COMMANDS: list[CommandRow] = [
     # files-and-formats dialog, abbreviations, and the two ways to change what QUILL Lite itself is.
     # Tools > Options is where Windows applications have kept their settings since Word 6, which is
     # why Preferences and Customize Features are here rather than in View.
+    # First in Tools, as in QUILL. No access key: every letter of it is taken in
+    # Tools, and a duplicate is worse than none (GATE-14). Ctrl+Shift+P reaches it.
+    ("&Tools", "Command Palette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
+    ("&Tools", "", "", "", "sep"),
     ("&Tools", "&Spelling", "", "", "sub"),
     *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
     ("&Tools", "&Change Case", "", "", "sub"),
@@ -1087,7 +1090,7 @@ def shortcut_text(keymap: dict[str, str] | None = None) -> str:
             parent, child = split_menu(menu)
             lines.append("")
             lines.append(
-                f"{_plain(parent)} menu, {_plain(child)} submenu"
+                f"{_plain(parent)} menu, {_plain(child).replace(SUBMENU_SEP, ' > ')} submenu"
                 if child
                 else f"{_plain(parent)} menu"
             )

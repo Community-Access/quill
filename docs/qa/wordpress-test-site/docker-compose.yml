@@ -1,0 +1,49 @@
+# QUILL WordPress regression-test site: https://lp.csedesigns.com/wordpress/
+# Served by the web stack's Caddy (route @wordpress_test in ~/app/web/caddy/Caddyfile).
+# Secrets live in .env (chmod 600), never in this file. Guide: ~/app/wordpress-test/README.md
+services:
+  db:
+    image: mariadb:11
+    container_name: wordpress-test-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db:/var/lib/mysql
+    networks: [internal]
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    container_name: wordpress-test
+    restart: unless-stopped
+    depends_on: [db]
+    # The site lives at /wordpress/ on lp.csedesigns.com, so the files live in
+    # a wordpress/ folder under Apache's document root. The image installs into
+    # its working directory on first start.
+    working_dir: /var/www/html/wordpress
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', 'https://lp.csedesigns.com/wordpress');
+        define('WP_SITEURL', 'https://lp.csedesigns.com/wordpress');
+        if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS'] = 'on'; }
+        define('WP_ENVIRONMENT_TYPE', 'staging');
+        define('DISALLOW_FILE_EDIT', true);
+    volumes:
+      - site:/var/www/html/wordpress
+    networks: [internal, web_default]
+
+volumes:
+  db:
+  site:
+
+networks:
+  internal:
+  web_default:
+    external: true

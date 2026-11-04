@@ -6,15 +6,15 @@ update-wiring tests. What must hold:
 
 * The master switch (``experimental_acknowledged``) governs every experimental
   option; each gated feature also has its own checkbox, all default OFF.
-* GLOW is enabled only when the master switch AND its checkbox are on; the
-  read-only publishing tools light up from their checkbox the same way.
+* GLOW is enabled only when the master switch AND its checkbox are on.
 * On the Experimental tab, an unchecked master disables (and removes from the
   tab order) every other control.
 
 The editor-surface options that once lived here retired in 0.9.0-beta3 when
 QuillRichEdit became the one editor surface and the braille fix moved to the
 Braille tab (see test_braille_editor_fix.py); this file pins that they stay
-retired.
+retired. The read-only publishing opt-in retired with the old Publish submenu
+when File > WordPress replaced it (wordpress.md 15).
 """
 
 from __future__ import annotations
@@ -33,7 +33,6 @@ def test_every_experimental_gate_defaults_off() -> None:
     settings = Settings()
     assert settings.experimental_acknowledged is False
     assert settings.glow_experimental_enabled is False
-    assert settings.publishing_experimental_enabled is False
     assert settings.edge_read_aloud_enabled is False
 
 
@@ -42,20 +41,17 @@ def test_experimental_gates_round_trip(tmp_path: Path, monkeypatch) -> None:
     settings = load_settings()
     settings.experimental_acknowledged = True
     settings.glow_experimental_enabled = True
-    settings.publishing_experimental_enabled = True
     save_settings(settings)
     loaded = load_settings()
     assert loaded.experimental_acknowledged is True
     assert loaded.glow_experimental_enabled is True
-    assert loaded.publishing_experimental_enabled is True
 
 
 def test_experimental_tab_specs_present_and_ordered() -> None:
     keys = _experimental_keys()
     # The master switch leads the tab.
     assert keys[0] == "experimental_acknowledged"
-    for expected in ("glow_experimental_enabled", "publishing_experimental_enabled"):
-        assert expected in keys
+    assert "glow_experimental_enabled" in keys
 
 
 def test_editor_surface_settings_stay_retired() -> None:
@@ -72,6 +68,7 @@ def test_editor_surface_settings_stay_retired() -> None:
         "experimental_editor_surfaces_enabled",
         "experimental_richedit_emulate_sysedit",
         "editor_hide_border",
+        "publishing_experimental_enabled",
     }
     assert not (retired & keys)
     fields = set(Settings.__dataclass_fields__)
@@ -100,8 +97,7 @@ def test_feature_enabled_applies_the_experimental_gates() -> None:
     body = source[start:end]
     assert '"core.glow"' in body
     assert '"glow_experimental_enabled"' in body
-    assert '"future.publishing_read"' in body
-    assert '"publishing_experimental_enabled"' in body
+    assert "publishing" not in body
     assert '"experimental_acknowledged"' in body
 
 
@@ -114,7 +110,6 @@ def test_experimental_tab_wires_live_enable_disable_gating() -> None:
     for key in (
         '"experimental_acknowledged"',
         '"glow_experimental_enabled"',
-        '"publishing_experimental_enabled"',
         '"edge_read_aloud_enabled"',
     ):
         assert key in body

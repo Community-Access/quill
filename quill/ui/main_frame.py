@@ -397,7 +397,6 @@ from quill.ui.main_frame_preferences import PreferencesMixin
 from quill.ui.main_frame_preview import PreviewMixin, _BrowserPreviewSession
 from quill.ui.main_frame_print import PrintMixin
 from quill.ui.main_frame_profile_picker import ProfilePickerMixin
-from quill.ui.main_frame_publishing import PublishingCommandsMixin
 from quill.ui.main_frame_quick_insert import QuickInsertMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
@@ -447,6 +446,7 @@ from quill.ui.main_frame_voice_preview import (
 )
 from quill.ui.main_frame_watch_folder import WatchFolderRuntimeMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
+from quill.ui.main_frame_wordpress import WordPressMenuMixin
 from quill.ui.main_frame_work_persona import WorkPersonaMixin
 from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.main_frame_write_safety import WriteSafetyMixin
@@ -713,6 +713,7 @@ class MainFrame(
     SessionRestoreMixin,
     MagicalTierMixin,
     LiteBridgeMixin,
+    WordPressMenuMixin,
     NativeKeyGuardMixin,
     ExternalChangeMixin,
     OpenSourcesMixin,
@@ -827,7 +828,6 @@ class MainFrame(
     SpellVoiceMixin,
     SpellcheckCommandsMixin,
     BwSpeechMixin,
-    PublishingCommandsMixin,
     KeymapIoMixin,
     MenuEditorMixin,
     PreferencesMixin,
@@ -4547,13 +4547,9 @@ class MainFrame(
         enabled = True if feature_manager is None else feature_manager.is_enabled(feature_id)
         # Experimental gates (Settings > Experimental). These features ship dark
         # until the user opts in: the master switch plus the per-feature checkbox.
-        # GLOW is catalog-on, so the experimental gate narrows it; the read-only
-        # publishing tools are profile-off, so the gate is the user's way to
-        # light them (the locked send half is unaffected — it stays locked_off).
+        # GLOW is catalog-on, so the experimental gate narrows it.
         if feature_id == "core.glow":
             return enabled and self._experimental_gate_on("glow_experimental_enabled")
-        if feature_id == "future.publishing_read":
-            return enabled or self._experimental_gate_on("publishing_experimental_enabled")
         return enabled
 
     def _experimental_gate_on(self, setting_name: str) -> bool:
@@ -7431,6 +7427,7 @@ class MainFrame(
         # just before the list is built -- keeps every toggle honest without
         # each handler having to remember to retitle itself.
         self._refresh_palette_toggle_titles()
+        self._register_menu_palette_rows()
         dialog = CommandPaletteDialog(
             self.frame,
             self.commands,

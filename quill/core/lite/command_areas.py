@@ -25,6 +25,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.core.lite.commands import _MENU_ORDER, COMMANDS, SUBMENU_SEP, CommandRow
+from quill.core.wordpress.menu import submenu_paths as wordpress_menu_paths
 
 __all__ = ["COMMAND_AREA", "MENU_AREA", "area_for", "visible_commands"]
 
@@ -49,6 +50,9 @@ __all__ = ["COMMAND_AREA", "MENU_AREA", "area_for", "visible_commands"]
 
 #: Menus and submenus that belong entirely to one area.
 MENU_AREA: dict[str, str] = {
+    # File > WordPress and each of its submenus (Blocks, Media, Checking,
+    # Running the Site), spelled out by the shared table that builds them.
+    **dict.fromkeys(wordpress_menu_paths(), "wordpress"),
     "F&ormat": "rich_text",
     # Spelled out rather than inherited from the parent: a submenu's rows are
     # looked up by their *own* path, so a submenu left out of this map is a
@@ -238,10 +242,16 @@ def visible_commands(is_enabled: Callable[[str], bool]) -> list[CommandRow]:
     # not: the first tidy is what decides whether the submenu has anything left,
     # and only then can a title with nothing behind it be dropped -- which may
     # in turn leave the separator that framed it doubled, hence the second.
+    # Repeated until nothing changes, because submenus nest (File > WordPress >
+    # Blocks): dropping an empty inner title can empty the menu that held it.
     tidied = _tidy(kept)
-    live = {row[0] for row in tidied}
-    pruned = [r for r in tidied if r[4] != "sub" or f"{r[0]}{SUBMENU_SEP}{r[1]}" in live]
-    return _tidy(pruned)
+    while True:
+        live = {row[0] for row in tidied}
+        pruned = [r for r in tidied if r[4] != "sub" or f"{r[0]}{SUBMENU_SEP}{r[1]}" in live]
+        pruned = _tidy(pruned)
+        if pruned == tidied:
+            return pruned
+        tidied = pruned
 
 
 def _tidy(rows: list[CommandRow]) -> list[CommandRow]:

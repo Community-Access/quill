@@ -326,7 +326,7 @@ def command_titles() -> dict[str, str]:
         parent, child = split_menu(menu)
         path = [plain_label(parent)]
         if child:
-            path.append(plain_label(child))
+            path.extend(plain_label(part) for part in child.split("|"))
         path.append(plain_label(label))
         titles[handler] = " > ".join(path)
     return titles

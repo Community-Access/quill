@@ -390,10 +390,6 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     #   repair suite (Tools > GLOW). Gated by experimental_acknowledged; off by
     #   default while GLOW matures; takes effect on settings apply (menu rebuild).
     glow_experimental_enabled: bool = False
-    #   publishing_experimental_enabled: opt-in for the read-only WordPress
-    #   publishing connections tools (File > Publishing). Gated by
-    #   experimental_acknowledged; the send/publish half stays locked regardless.
-    publishing_experimental_enabled: bool = False
     #   table_studio_experimental_enabled: opt-in for the accessible Table
     #   Studio grid surface (Tools menu) — one surface for both a new table and
     #   an opened CSV. Gated by experimental_acknowledged; off by default while
@@ -1159,7 +1155,6 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         braille_editor_hide_border = bool(data.get("braille_editor_hide_border", True))
         experimental_acknowledged = bool(data.get("experimental_acknowledged", False))
         glow_experimental_enabled = bool(data.get("glow_experimental_enabled", False))
-        publishing_experimental_enabled = bool(data.get("publishing_experimental_enabled", False))
         table_studio_experimental_enabled = bool(
             data.get("table_studio_experimental_enabled", False)
         )
@@ -1811,7 +1806,6 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             braille_editor_hide_border=braille_editor_hide_border,
             experimental_acknowledged=experimental_acknowledged,
             glow_experimental_enabled=glow_experimental_enabled,
-            publishing_experimental_enabled=publishing_experimental_enabled,
             table_studio_experimental_enabled=table_studio_experimental_enabled,
             edge_read_aloud_enabled=edge_read_aloud_enabled,
             plain_text_with_formatting=plain_text_with_formatting,

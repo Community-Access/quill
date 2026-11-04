@@ -125,6 +125,19 @@ class CommandRegistry:
             feature_id=feature_id or feature_for_command(command_id),
         )
 
+    def unregister_prefix(self, prefix: str) -> int:
+        """Remove every command whose id starts with *prefix*; return how many.
+
+        For a set of commands that is rebuilt as a whole -- the palette rows a
+        menu bar contributes are regenerated each time the bar is -- so a row
+        whose menu item is gone does not linger and run nothing.
+        """
+        self._require_owner_thread()
+        stale = [command_id for command_id in self._commands if command_id.startswith(prefix)]
+        for command_id in stale:
+            del self._commands[command_id]
+        return len(stale)
+
     def set_title(self, command_id: str, title: str) -> bool:
         """Retitle an existing command in place. False when it is not registered.
 

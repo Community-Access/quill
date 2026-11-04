@@ -384,22 +384,6 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "tools.describe_image": "future.ai",
     "tools.writing_instructions": "future.ai",
     "tools.run_python": "future.ai",
-    # Read-only inbound commands (add account, browse, open into editor) live
-    # under future.publishing_read so they can ship without lighting up any
-    # content-send path. Send commands below stay under future.publishing,
-    # which remains locked off until approved.
-    "publishing.connections": "future.publishing_read",
-    "publishing.verify_connection": "future.publishing_read",
-    "publishing.create_draft": "future.publishing",
-    "publishing.publish_current": "future.publishing",
-    "publishing.create_page_draft": "future.publishing",
-    "publishing.publish_current_page": "future.publishing",
-    "publishing.browse_content": "future.publishing_read",
-    "publishing.open_remote_item": "future.publishing_read",
-    "publishing.update_remote_item": "future.publishing",
-    "publishing.publish_remote_item": "future.publishing",
-    "publishing.schedule_publish": "future.publishing",
-    "publishing.compare_remote_item": "future.publishing",
     "tools.open_python_console": "core.developer_console",
     "tools.open_typescript_console": "core.developer_console.typescript",
     "tools.copy_diagnostic_summary": "core.developer_console",

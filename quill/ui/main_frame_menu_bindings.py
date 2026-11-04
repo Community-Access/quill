@@ -453,61 +453,6 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_menu_editor(), id=self._id_menu_editor)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.exit_app(), id=self._id_exit)
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._open_publishing_connections(),
-            id=self._id_publishing_connections,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._verify_current_publishing_connection(),
-            id=self._id_publishing_verify_connection,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._browse_publishing_content(),
-            id=self._id_publishing_browse_content,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._create_publishing_draft(),
-            id=self._id_publishing_create_draft,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._publish_current_document(),
-            id=self._id_publishing_publish_current,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._create_publishing_page_draft(),
-            id=self._id_publishing_create_page_draft,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._publish_current_page(),
-            id=self._id_publishing_publish_current_page,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._compare_publishing_remote_item(),
-            id=self._id_publishing_compare_remote_item,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._update_publishing_remote_item(),
-            id=self._id_publishing_update_remote_item,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._publish_open_remote_item(),
-            id=self._id_publishing_publish_remote_item,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._schedule_publishing_publish(),
-            id=self._id_publishing_schedule_publish,
-        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.show_about_quill(), id=self._id_about_quill)
         self.frame.Bind(
             wx.EVT_MENU,

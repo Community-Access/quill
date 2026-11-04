@@ -274,7 +274,6 @@ class PreferencesMixin:
             control
             for control in (
                 _control("glow_experimental_enabled"),
-                _control("publishing_experimental_enabled"),
                 _control("edge_read_aloud_enabled"),
                 _control("table_studio_experimental_enabled"),
             )

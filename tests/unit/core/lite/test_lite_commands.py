@@ -30,6 +30,8 @@ import collections
 import pytest
 
 from quill.core.lite.commands import COMMANDS, SUBMENU_SEP, menu_titles, shortcut_text
+from quill.core.wordpress.menu import all_rows as wordpress_rows
+from quill.core.wordpress.menu import lite_handler
 from tests.wx_session import shared_wx_app
 
 
@@ -77,6 +79,15 @@ KEYLESS_WITH_REASON: dict[str, str] = {
             "cmd_table_delete_column",
             "cmd_table_tidy",
         )
+    },
+    # File > WordPress (wordpress.md 12): as in QUILL, where none of these has a
+    # key yet either (rule 2). Only Ctrl+Alt+Shift+Q and R are free in both
+    # editors, so the everyday five wait on Jeff's choice (wordpress.md 19).
+    **{
+        lite_handler(command_id): "Waiting on a key both editors can share: only "
+        "Ctrl+Alt+Shift+Q and R are free in both, and the choice is Jeff's. Until then "
+        "Alt+F, W reaches the submenu, and the Command Palette finds every row by name."
+        for _submenu, (command_id, _title, _handler) in wordpress_rows()
     },
     "cmd_whats_new": "As in QUILL, where What's New has no key either (rule 2): no chord "
     "is free in both editors -- Ctrl+Shift+F1, the standalone apps' key for it, is "

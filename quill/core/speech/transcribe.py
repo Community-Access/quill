@@ -112,12 +112,14 @@ def transcribe_audio_file(
     language: str | None = None,
     registry: SpeechProviderRegistry | None = None,
     provider_id: str | None = None,
+    output_timestamps: bool = False,
 ) -> TranscriptionResult:
     """Transcribe ``source_path`` with the best available offline provider.
 
     ``provider_id`` pins the engine (used by the guided self-test to prove the
     selected engine); ``model_id`` is preferred when installed; otherwise the
-    first installed model is used. Raises :class:`SpeechError` (or a subclass)
+    first installed model is used. ``output_timestamps`` asks for timed segments
+    (captions need them). Raises :class:`SpeechError` (or a subclass)
     when no matching offline provider with an installed model is available, or
     when the provider itself fails.
     """
@@ -127,6 +129,7 @@ def transcribe_audio_file(
         source_path=Path(source_path),
         model_id=resolved_model_id,
         language=language,
+        output_timestamps=output_timestamps,
     )
     return provider.transcribe_file(request)
 

@@ -2,6 +2,109 @@
 
 ## 1.0.0
 
+### WordPress, in QUILL and QUILL Lite (2026-11-04, in progress)
+
+- **File > WordPress.** Write, open and publish the pages and posts of your
+  WordPress sites without leaving QUILL. You can connect as many sites as you
+  like. Connect a Site checks your application password before saving it,
+  or fetches one with your browser. The password is kept in Windows'
+  Credential Manager.
+- **Three kinds of save.** Ctrl+S saves on this computer, Save Draft to Site
+  sends an unpublished draft, and Publish or Update publishes after a
+  confirmation that names the page and the site. Closing a document never
+  publishes it.
+- **Nothing is overwritten.** If someone else changed the page while you
+  worked, nothing is sent; you can compare, open their copy, or send yours
+  anyway. Previous Versions keeps your earlier text and lists the site's own
+  history.
+- **Open what is there:** from a list, by its web address, or from your
+  local drafts, as HTML or as Markdown. Anything Markdown cannot show is kept
+  exactly.
+- **Pictures.** The Media Library and Insert Picture from This Computer, with
+  alternative text, decorative pictures, captions, width and featured image.
+  Check Before Publishing points out missing alternative text, vague links
+  and skipped headings, and never stops you publishing.
+- **Comments, categories and tags,** managed from QUILL.
+- **Tested against a real WordPress 7.1 site.** Two things it taught us:
+  WordPress 7.1 no longer gives its version in the REST index, so QUILL
+  reads it from the site's feed, which is how it knows the password can
+  come back by itself; and several changes at once (merging categories,
+  bulk fixes) are found where 7.1 really lists them.
+- **One WordPress feature replaces the two Publishing features.** It is on in
+  every profile except Essential.
+- **The old Publish submenu is gone.** Publishing Connections, Browse
+  Publishing Content and the rest are replaced by File > WordPress. Your saved
+  connections and their passwords carry over the first time you open it, and
+  the Experimental tab's "WordPress publishing connections" checkbox is gone
+  with them.
+- **Scheduling, autosaves and working offline.** Schedule Publish asks for a
+  date, a time and a time zone (the site's own first), and on a scheduled
+  item offers Change the Schedule or Publish Now. While a WordPress document
+  is open it is autosaved every two minutes, on this computer and as your
+  account's autosave on the site, and Open offers an autosave newer than the
+  site's copy. Restore from Trash is in the Open list. After a new page is
+  published, QUILL offers once to add it to a menu. A send that gets no
+  answer re-reads the site before offering Try Again, so nothing is created
+  twice, and a site that cannot be reached gets your sends queued, retried
+  every two minutes and announced when they go through.
+- **Running the site.** File > WordPress > Running the Site: Comments with
+  every status, replies under the comment they answer, Edit and Approve All,
+  and the number waiting spoken the first time you use a site in a session;
+  Menus and Navigation as a readable tree; Widgets, Site Map and Template
+  Outline; Site Check and Site Settings, including the site icon; Users and
+  Application Passwords; Plugins, Themes, Fonts and Synced Patterns; Bulk
+  Edit with Undo, and Page Order; categories and tags you can convert, tidy
+  when unused, and make the default. Sign Out This Site takes QUILL's
+  password away on the site itself. Every window knows your role first and
+  says what it cannot do, instead of offering a button the site would refuse.
+- **The Media Library, all of it.** File > WordPress > Media and Files:
+  Insert from Media Library, Paste Image (a picture on the clipboard is
+  uploaded and inserted), Upload Files (many at once, with duplicates caught
+  first and progress spoken), Upload from Web Address, Image Size with Back to
+  Earlier Size, Make a Smaller Copy (the original is never replaced), and the
+  Alt Text Review for every picture in the page. The Media Library window
+  gained Used In, Attach to This Page or Post, Set as Featured Image, Suggest
+  Alt Text and Describe Image. A suggestion only fills the field; you decide
+  what is saved.
+- **Blocks, made plain.** File > WordPress > Blocks: Insert Block, with your
+  site's patterns and synced patterns and a short form for each block; Next
+  Block, Previous Block and Where Am I, which say each block's kind, place and
+  first words; a Blocks window that moves, duplicates, removes, changes and
+  groups blocks, one Undo step each, without touching the rest of the page;
+  Block Settings, with the theme's own colours and sizes by name and the
+  contrast of each colour; and Preview Blocks, which reads what your site
+  makes of its blocks without saving anything.
+- **Checking the site the visitor's way.** File > WordPress > Checking: Check
+  This Page runs the published page through axe-core in a hidden Edge or
+  Chrome, with plain explanations and Go to It. Check the Whole Site checks
+  every page and post, groups the problems with counts, and offers Fix in
+  Bulk for the safe fixes, with a preview, one confirmation and Undo Site Fix.
+  Also: Site-wide Find and Replace, Write an Accessibility Statement, Palette
+  Report, Mark Language, In Short, and a reading-level line in Properties.
+- **The Picture Maker, the site logo and Visual Review.** The Picture Maker,
+  shared with QUILL Studio, makes a picture from a description, can suggest
+  one from the page, and inserts it with an upload. Site Logo replaces the
+  logo or icon with a named confirmation and Restore Earlier. Visual Review
+  describes what a sighted visitor sees on the published page, on a desktop
+  and a phone, and says what it will send to the AI before it sends it.
+  Preview and Review tries a picture or logo width on a copy of the page.
+- **The WordPress menu is grouped.** The everyday commands stay in File >
+  WordPress, and the rest sit in four submenus: Blocks, Media and Files,
+  Checking, and Running the Site. Alt+F, W opens it in both editors.
+- **Fixed: a new page lost track of itself when first sent.** The first Save
+  Draft to Site or Publish on a page started in QUILL moved its file out from
+  under the editor, so the next command said it was not a WordPress document.
+  It now stays where it is.
+
+### Everything in the menus is in the Command Palette (2026-11-04)
+
+- **The palette now finds every menu item.** A few dozen items were in the
+  menus and on their keys but had never been added to the palette. Among them
+  were your recent files, your open documents and some of the braille tools,
+  so typing their names found nothing. The palette now reads them from the
+  menus each time it opens, named by the menus they sit in. A test checks that nothing in the menu bar is
+  left out.
+
 ### Phonon voices (2026-11-02)
 
 - **Phonon, a new offline Read Aloud voice.** Gradium's Phonon 31m now comes

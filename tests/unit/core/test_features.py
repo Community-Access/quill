@@ -8,6 +8,7 @@ import pytest
 from quill.core import paths
 from quill.core.commands import CommandRegistry
 from quill.core.features import (
+    FEATURE_DEFINITIONS,
     FEATURE_STATE_OFF,
     FEATURE_STATE_ON,
     FEATURE_STATE_QUIET,
@@ -97,9 +98,6 @@ def test_feature_manager_respects_profile_state() -> None:
     assert manager.state_for("core.file") == FEATURE_STATE_ON
     assert manager.state_for("core.search.regex") == FEATURE_STATE_OFF
     assert manager.state_for("future.ai") == FEATURE_STATE_QUIET
-    # future.publishing is locked_off (publishing-providers-framework branch
-    # under review), which overrides any profile's quiet/on state.
-    assert manager.state_for("future.publishing") == FEATURE_STATE_OFF
 
 
 def test_casual_writer_is_a_focused_just_write_profile() -> None:
@@ -214,8 +212,13 @@ def test_intellisense_feature_is_in_registry() -> None:
     assert "core.intellisense" in PROFILE_DEFINITIONS[PROFILE_FULL_QUILL].states
 
 
-def test_publishing_feature_is_in_registry() -> None:
-    assert "future.publishing" in PROFILE_DEFINITIONS[PROFILE_FULL_QUILL].states
+def test_old_publishing_flags_are_retired_in_favour_of_wordpress() -> None:
+    # core.wordpress replaced future.publishing and future.publishing_read
+    # (wordpress.md 15); neither may come back in a profile.
+    for retired in ("future.publishing", "future.publishing_read"):
+        assert retired not in FEATURE_DEFINITIONS
+        for profile in PROFILE_DEFINITIONS.values():
+            assert retired not in profile.states, profile.id
 
 
 def test_feature_profile_import_and_export_roundtrip() -> None:

@@ -142,7 +142,7 @@ def test_prepare_note_publish_is_gated_off_by_default(tmp_path: Path) -> None:
     from quill.core.vault.publish import prepare_note_publish
 
     vault = _vault(tmp_path)
-    # future.publishing is locked_off -> feature_enabled False -> nothing to send.
+    # core.wordpress off -> feature_enabled False -> nothing to send.
     assert (
         prepare_note_publish(
             vault,

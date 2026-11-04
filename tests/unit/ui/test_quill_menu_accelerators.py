@@ -348,3 +348,32 @@ def test_copy_selection_for_email_copies_the_selection(quill_menu_bar, monkeypat
     frame._set_status = lambda _message: None
     frame.copy_as_email_body()
     assert copied and copied[0].strip() == "Dear Sam"
+
+
+def test_every_menu_item_is_in_the_command_palette(quill_menu_bar) -> None:
+    """Typing a menu item's name in the palette always finds it.
+
+    The palette lists the command registry, and a menu item built with only a
+    wx id and a handler was never in it -- reachable by the menu and its key,
+    invisible to the one surface whose promise is "every command".
+    ``quill.ui.palette_menu_reach`` adds those items under their menu path when
+    the palette opens; this is the check that nothing is left out.
+    """
+    from quill.ui.palette_menu_reach import MENU_COMMAND_PREFIX, walk_menu_items
+
+    frame = quill_menu_bar._quill_main_frame
+    frame._register_menu_palette_rows()
+    covered = set(frame._command_to_menu_id_map().values())
+    registered = {command.id for command in frame.commands.list()}
+    missing = [
+        " > ".join(path)
+        for path, item in walk_menu_items(quill_menu_bar)
+        if item.GetId() not in covered and f"{MENU_COMMAND_PREFIX}{item.GetId()}" not in registered
+    ]
+    assert missing == []
+    menu_rows = [c for c in frame.commands.list() if c.id.startswith(MENU_COMMAND_PREFIX)]
+    assert all(" > " in c.title for c in menu_rows)
+    # Rebuilding replaces rather than piles up.
+    frame._register_menu_palette_rows()
+    again = [c for c in frame.commands.list() if c.id.startswith(MENU_COMMAND_PREFIX)]
+    assert len(again) == len(menu_rows)
