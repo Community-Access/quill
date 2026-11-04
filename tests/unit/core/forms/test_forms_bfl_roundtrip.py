@@ -94,7 +94,7 @@ def test_editing_one_field_keeps_every_other_byte() -> None:
     head, tail = SOURCE.split('select #size "Size" [', 1)
     assert written.startswith(head)
     assert written.endswith('number #qty "Quantity" begin\n  @min 1\nend\n')
-    assert '  + "huge" | "Huge" @price 15' in written  # BAF's writer quotes any choice with extras
+    assert "  + Huge:15" in written  # BAF's short spelling for a price alone
     assert M.same(read(written).model, doc.model)
 
 

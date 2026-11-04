@@ -118,6 +118,9 @@
   This Form and Fill It In Yourself, which walks you through the form as a
   visitor would, in each of its languages. One form definition is shared
   with BITS Accessible Forms.
+- **Forms read back exactly as written.** Very large and very small numbers
+  in rules and calculations are written in plain digits, rounding matches the
+  site to the last digit, and priced choices use the short form.
 - **Seven guided Forms lessons** in Help > Tutorials, from starting a form
   to reading its responses on your site.
 - **A rule's answer matches however you type it.** "Phone", "phone" or

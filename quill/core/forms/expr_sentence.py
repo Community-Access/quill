@@ -39,7 +39,7 @@ _NAMES = {
 
 def _php_json(v: Any) -> str:
     if isinstance(v, float):
-        return str(int(v)) if v.is_integer() and abs(v) < 1e15 else E.number_text(v)
+        return E.number_text(v, False)
     return json.dumps(v, ensure_ascii=False)
 
 

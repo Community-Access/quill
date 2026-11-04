@@ -19,7 +19,6 @@ import datetime as dt
 import math
 import re
 from collections.abc import Mapping
-from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from quill.core.forms import expr as E
@@ -28,12 +27,21 @@ _NUMERIC = re.compile(r"^\s*-?(\d+(\.\d*)?|\.\d+)\s*$")
 _DATE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})(?:$|[T ])")
 
 
+def _arr(v: Any) -> bool:
+    """PHP's ``is_array``: a list, or an object (a composite answer such as a name)."""
+    return isinstance(v, (list, dict))
+
+
+def _vals(v: Any) -> list[Any]:
+    return list(v.values()) if isinstance(v, dict) else list(v)
+
+
 def _is_num(v: Any) -> bool:
     return isinstance(v, (int, float)) and not isinstance(v, bool)
 
 
 def truthy(v: Any) -> bool:
-    if v is None or v is False or v == "" and isinstance(v, str) or (isinstance(v, list) and not v):
+    if v is None or v is False or (isinstance(v, str) and v == "") or (_arr(v) and not v):
         return False
     if _is_num(v):
         return bool(v != 0)
@@ -59,10 +67,10 @@ def to_str(v: Any) -> str:
         return ""
     if isinstance(v, bool):
         return "true" if v else "false"
-    if isinstance(v, list):
-        return ", ".join(to_str(x) for x in v)
+    if _arr(v):
+        return ", ".join(to_str(x) for x in _vals(v))
     if isinstance(v, float):
-        return str(int(v)) if v.is_integer() and abs(v) < 1e15 else E.number_text(v)
+        return E.php_json_float(v)
     return str(v)
 
 
@@ -75,9 +83,9 @@ def num(v: Any) -> int | float:
         return v  # type: ignore[no-any-return]
     if v is True:
         return 1
-    if isinstance(v, list):
+    if _arr(v):
         total: int | float = 0
-        for x in v:
+        for x in _vals(v):
             total += num(x)
         return total
     if isinstance(v, str) and _NUMERIC.match(v):
@@ -105,16 +113,16 @@ def scalar_equals(a: Any, b: Any) -> bool:
 
 
 def contains(a: Any, b: Any) -> bool:
-    if isinstance(a, list):
-        return any(scalar_equals(x, b) for x in a)
+    if _arr(a):
+        return any(scalar_equals(x, b) for x in _vals(a))
     needle = _ascii_lower(to_str(b))
     return needle == "" or needle in _ascii_lower(to_str(a))
 
 
 def equals(a: Any, b: Any) -> bool:
-    if isinstance(a, list) and isinstance(b, list):
-        return len(a) == len(b) and all(contains(a, x) for x in b)
-    if isinstance(a, list):
+    if _arr(a) and _arr(b):
+        return len(a) == len(b) and all(contains(a, x) for x in _vals(b))
+    if _arr(a):
         return contains(a, b)
     return scalar_equals(a, b)
 
@@ -153,7 +161,7 @@ def compare(a: Any, b: Any) -> int | None:
     da, db = day_number(a), day_number(b)
     if da is not None and db is not None:
         return (da > db) - (da < db)
-    if isinstance(a, list) or isinstance(b, list):
+    if _arr(a) or _arr(b):
         x, y = num(a), num(b)
         return (x > y) - (x < y)
     sa, sb = to_str(a).encode("utf-8"), to_str(b).encode("utf-8")
@@ -166,9 +174,37 @@ def today(context: Mapping[str, Any]) -> str:
     return dt.datetime.now(dt.UTC).date().isoformat()
 
 
+def _pow10(power: int) -> float:
+    return float(10**power) if 0 <= power <= 22 else 10.0**power
+
+
+def _half_up(value: float) -> float:
+    return math.floor(value + 0.5) if value >= 0.0 else math.ceil(value - 0.5)
+
+
 def _php_round(x: int | float, places: int) -> float:
-    value = Decimal(repr(float(x))) if isinstance(x, float) else Decimal(x)
-    return float(value.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP))
+    """PHP 8's ``round()``, pre-rounding included: round(0.49999999999999994) is 1."""
+    value = float(x)
+    if not math.isfinite(value) or value == 0.0:
+        return value
+    precision_places = 14 - math.floor(math.log10(abs(value)))
+    f1 = _pow10(abs(places))
+    if precision_places > places and precision_places - 15 < places:
+        use = max(precision_places, -4 * 15)
+        basic = value * _pow10(use) if use >= 0 else value / _pow10(-use)
+        tmp = _half_up(basic)
+        use = max(places - use, -4 * 15)
+        tmp = tmp / _pow10(abs(use))
+    else:
+        tmp = value * f1 if places >= 0 else value / f1
+        if abs(tmp) >= 1e15:
+            return value
+    tmp = _half_up(tmp)
+    if abs(places) < 23:
+        tmp = tmp / f1 if places > 0 else tmp * f1
+    else:
+        tmp = float(f"{tmp:15f}e{-places}")
+    return tmp
 
 
 def evaluate(node: E.Node | str, context: Mapping[str, Any] | None = None) -> Any:  # noqa: C901
@@ -216,8 +252,8 @@ def evaluate(node: E.Node | str, context: Mapping[str, Any] | None = None) -> An
         return {"lt": c < 0, "le": c <= 0, "gt": c > 0, "ge": c >= 0}[name]
     if name in ("one_of", "not_one_of"):
         left, options = ev(0), ev(1)
-        options = options if isinstance(options, list) else [options]
-        lefts = left if isinstance(left, list) else [left]
+        options = _vals(options) if _arr(options) else [options]
+        lefts = _vals(left) if _arr(left) else [left]
         hit = any(scalar_equals(x, y) for x in lefts for y in options)
         return hit if name == "one_of" else not hit
     if name in ("contains", "not_contains"):
@@ -268,7 +304,7 @@ def _call(name: str, args: list[E.Node], ctx: Mapping[str, Any]) -> Any:  # noqa
         out: list[Any] = []
         for n in args:
             v = evaluate(n, ctx)
-            out.extend(v if isinstance(v, list) else [v])
+            out.extend(_vals(v) if _arr(v) else [v])
         return out
 
     if name == "today":
@@ -306,8 +342,8 @@ def _call(name: str, args: list[E.Node], ctx: Mapping[str, Any]) -> Any:  # noqa
         return normalize_number(min(nums) if name == "min" else max(nums))
     if name == "count":
         v = arg(0)
-        if isinstance(v, list):
-            return sum(1 for x in v if not is_empty(x))
+        if _arr(v):
+            return sum(1 for x in _vals(v) if not is_empty(x))
         return 0 if is_empty(v) else 1
     if name == "length":
         return len(to_str(arg(0)))

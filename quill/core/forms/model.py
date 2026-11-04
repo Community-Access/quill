@@ -310,10 +310,40 @@ def same(a: Any, b: Any) -> bool:
 
 
 def encode(v: Any, *, pretty: bool = False) -> str:
-    """JSON as BAF writes it: UTF-8 as itself, slashes unescaped, ``.0`` kept."""
-    if pretty:
-        return json.dumps(v, ensure_ascii=False, indent=4)
-    return json.dumps(v, ensure_ascii=False, separators=(",", ":"))
+    """JSON as BAF's ``BAF_Form_Model::encode`` writes it.
+
+    UTF-8 as itself, slashes unescaped, ``.0`` kept on an integral float, and a
+    float in PHP's own form (``1.0e+17``, ``1.0e-5``), so a list or object
+    written into BFL is the same text BAF writes.
+    """
+    return _encode(v, pretty, 0)
+
+
+def _encode(v: Any, pretty: bool, depth: int) -> str:
+    if isinstance(v, float) and not isinstance(v, bool):
+        return E.php_json_float(v, True)
+    if isinstance(v, dict):
+        if not v:
+            return "{}"
+        parts = [
+            json.dumps(str(k), ensure_ascii=False)
+            + (": " if pretty else ":")
+            + _encode(x, pretty, depth + 1)
+            for k, x in v.items()
+        ]
+        return _join("{", parts, "}", pretty, depth)
+    if isinstance(v, (list, tuple)):
+        if not v:
+            return "[]"
+        return _join("[", [_encode(x, pretty, depth + 1) for x in v], "]", pretty, depth)
+    return json.dumps(v, ensure_ascii=False)
+
+
+def _join(open_: str, parts: list[str], close: str, pretty: bool, depth: int) -> str:
+    if not pretty:
+        return open_ + ",".join(parts) + close
+    inner = "    " * (depth + 1)
+    return open_ + "\n" + ",\n".join(inner + x for x in parts) + "\n" + "    " * depth + close
 
 
 def to_json(model: Model) -> str:

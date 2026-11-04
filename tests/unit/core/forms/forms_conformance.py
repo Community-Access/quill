@@ -127,7 +127,12 @@ class Suite:
             if "sentence" in c and sentence(node, d["labels"], d["choices"]) != c["sentence"]:
                 out.append(f"sentence {c['text']!r}: {sentence(node, d['labels'], d['choices'])!r}")
         for c in d["errors"]:
-            if E.check(c["text"]) is None:
+            try:
+                E.parse(c["text"])
+            except ExpressionError as exc:
+                if "offset" in c and exc.byte_offset != c["offset"]:
+                    out.append(f"error {c['text']!r} at byte {exc.byte_offset}, not {c['offset']}")
+            else:
                 out.append(f"accepted the error case {c['text']!r}")
         for c in d["evaluate"]:
             got = evaluate(c["text"], d["context"])

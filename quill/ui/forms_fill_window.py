@@ -27,6 +27,7 @@ from quill.ui import wordpress_dialogs as dlg
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
+from quill.ui.wordpress_dialogs import labelled_row
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -72,7 +73,7 @@ class FillWindow(wx.Dialog):
                 "stay in the form's own language."
             )
             self.language.Bind(wx.EVT_CHOICE, self._on_language)
-            dlg.labelled_row(sizer, self, "&Language:", self.language)
+            labelled_row(sizer, self, "&Language:", self.language)
         self.heading = wx.StaticText(self, label=session.heading())
         sizer.Add(self.heading, 0, wx.ALL, 8)
         self.panel = wx.ScrolledWindow(self, style=wx.VSCROLL | wx.TAB_TRAVERSAL)

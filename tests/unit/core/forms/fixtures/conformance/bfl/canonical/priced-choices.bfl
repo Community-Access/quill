@@ -1,0 +1,13 @@
+bfl 1
+form "Order"
+
+select #size "Size"
+  + Small:10
+  + Medium:15.5
+  + Large:20.0
+  + Free:0
+  + Credit:-5
+  + "xl" | "Extra large" @price 25
+  + "time-later" | "Time: later" @price 3
+  + "huge" | "Huge" @price 30 @points 1
+  + Plain

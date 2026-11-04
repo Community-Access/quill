@@ -8,17 +8,20 @@
     {
      "id": "field_1",
      "type": "select",
-     "label": "Country"
+     "label": "Country",
+     "choice_library": "countries"
     },
     {
      "id": "field_2",
      "type": "select",
-     "label": "State"
+     "label": "State",
+     "choice_library": "us_states"
     },
     {
      "id": "field_3",
      "type": "select",
-     "label": "Month"
+     "label": "Month",
+     "choice_library": "months"
     }
    ]
   }

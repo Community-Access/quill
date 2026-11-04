@@ -15,6 +15,7 @@ with every untouched byte unchanged.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -30,6 +31,10 @@ from quill.core.forms.bfl_read_parts import (
 )
 
 VERSION = 1
+_NOT_A_LIBRARY = (
+    "form", "page", "library", "rule", "scoring", "confirmation", "notification",
+    "translation", "settings", "if", "else", "end", "begin", "column",
+)  # fmt: skip
 SETTING_ALIASES = {
     "ajax": "ajax_submission",
     "honeypot": "enable_honeypot",
@@ -378,6 +383,17 @@ class Reader(ReaderBase):
         self.header_id_label(header, item)
         if word in ELEMENT_TYPES:
             item.setdefault("props", {})["element"] = word
+        nxt = self.peek()
+        if (
+            item["type"] in (*M.CHOICE_TYPES, "likert")
+            and nxt["t"] == "WORD"
+            and nxt["line"] == header["line"]
+            and re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", str(nxt["v"]))
+            and not self.starts_item(nxt)
+            and str(nxt["v"]).lower() not in _NOT_A_LIBRARY
+        ):
+            # The language guide's spelling of a library: select "Country" countries.
+            item["choice_library"] = self.next()["v"]
         choices: list[dict[str, Any]] = []
         children: list[M.Item] = []
 

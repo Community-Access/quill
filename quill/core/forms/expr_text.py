@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import math
+from decimal import Decimal
 from typing import Any
 
 Node = dict[str, Any]
@@ -32,20 +33,49 @@ def quote(s: str) -> str:
     return json.dumps(str(s), ensure_ascii=False)
 
 
-def number_text(v: int | float) -> str:
-    """A number as PHP's json_encode writes it, keeping ``.0``."""
+def number_text(v: int | float, float_mark: bool = True) -> str:
+    """A number as plain decimal digits, never in exponent form (BAF's ``number_text``).
+
+    Canonical text must read back, and the grammar has no exponents, so 1e17 is
+    ``100000000000000000.0`` and 1e-5 is ``0.00001``. An integral float keeps
+    ``.0`` when ``float_mark`` is set (canonical text) and drops it otherwise
+    (sentences), as PHP's ``json_encode`` with and without
+    ``JSON_PRESERVE_ZERO_FRACTION``. The digits are the shortest that read back,
+    which is what PHP's ``serialize_precision`` of -1 gives.
+    """
     if isinstance(v, int):
         return str(v)
     if not math.isfinite(v):
         return "0"
-    text = repr(v)
-    if "e" in text:
-        mantissa, exp = text.split("e")
-        if "." not in mantissa:
-            mantissa += ".0"
-        sign = exp[0] if exp[0] in "+-" else "+"
-        return f"{mantissa}e{sign}{exp.lstrip('+-')}"
+    text = format(Decimal(repr(v)), "f")
+    if float(v).is_integer():
+        text = text.split(".")[0]
+        return text + ".0" if float_mark else text
     return text
+
+
+def php_json_float(v: float, float_mark: bool = False) -> str:
+    """A float exactly as PHP's ``json_encode`` writes it, exponent form included.
+
+    BAF's evaluator turns numbers into text this way (``str()``), so ``#n contains "e"``
+    can see an exponent: plain digits from 1e-4 up to below 1e17, else ``1.0e+17``.
+    """
+    if not math.isfinite(v):
+        return "0"
+    d = Decimal(repr(v))
+    adjusted = d.adjusted() if v != 0 else 0
+    if -5 < adjusted < 17:
+        return number_text(v, float_mark)
+    sign, digits, _exp = d.as_tuple()
+    figures = "".join(str(x) for x in digits).rstrip("0") or "0"
+    mantissa = figures[0] + "." + (figures[1:] or "0")
+    return (
+        ("-" if sign else "")
+        + mantissa
+        + "e"
+        + ("+" if adjusted >= 0 else "-")
+        + str(abs(adjusted))
+    )
 
 
 def literal_text(v: Any) -> str:

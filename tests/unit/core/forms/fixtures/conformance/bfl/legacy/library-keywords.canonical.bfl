@@ -1,0 +1,20 @@
+bfl 1
+form "Where you live"
+
+select "Country"
+  @library "countries"
+select #state "State"
+  @required
+  @library "us_states"
+radio "Month"
+  @library "months"
+checkbox #langs "Languages"
+  @library "languages"
+select "Size"
+  + Small
+  + Large
+multiselect "Topics"
+  @required
+  + News
+  + Sport
+text "Name"

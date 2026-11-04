@@ -29,6 +29,7 @@ from quill.core.forms.expr_text import (
     PRECEDENCE,
     literal_text,
     number_text,
+    php_json_float,
     quote,
     to_text,
 )
@@ -457,13 +458,18 @@ def flatten(name: str, args: list[Node]) -> Node:
 
 def parse(text: str) -> Node:
     """Expression text to its tree. Raises :class:`ExpressionError` with an ``offset``."""
-    p = _Parser(str(text))
-    if p.peek()["type"] == "eof":
-        raise ExpressionError("The expression is empty.", 0)
-    node = p.parse_or()
-    if p.peek()["type"] != "eof":
-        t = p.peek()
-        raise ExpressionError(f'Unexpected "{t["text"]}".', t["offset"])
+    text = str(text)
+    try:
+        p = _Parser(text)
+        if p.peek()["type"] == "eof":
+            raise ExpressionError("The expression is empty.", 0)
+        node = p.parse_or()
+        if p.peek()["type"] != "eof":
+            t = p.peek()
+            raise ExpressionError(f'Unexpected "{t["text"]}".', t["offset"])
+    except ExpressionError as exc:
+        exc.byte_offset = len(text[: exc.position].encode("utf-8"))
+        raise
     return node
 
 
@@ -511,6 +517,7 @@ __all__ = [
     "flatten",
     "literal_text",
     "number_text",
+    "php_json_float",
     "op",
     "parse",
     "quote",

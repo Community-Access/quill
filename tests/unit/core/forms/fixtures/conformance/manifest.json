@@ -1,5 +1,5 @@
 {
-  "about": "A subset of BAF's conformance manifest (tests/conformance/manifest.json on BAF's feat/json-form-model branch, 728de61), vendored so CI always runs some cases. Same shape as BAF's; the schema is quill/core/forms/schema/form.schema.json.",
+  "about": "A subset of BAF's conformance manifest (tests/conformance/manifest.json on BAF's feat/json-form-model branch, 44f04f1), vendored so CI always runs some cases. Same shape as BAF's; the schema is quill/core/forms/schema/form.schema.json.",
   "model_version": 1,
   "bfl_version": 1,
   "suites": [
@@ -12,11 +12,16 @@
       "file": "expressions/cases.json"
     },
     {
+      "kind": "expressions",
+      "file": "expressions/php-edges.json"
+    },
+    {
       "kind": "valid-models",
       "files": [
         "models/valid/logic-and-layout.json",
         "models/valid/quiz-and-translations.json",
-        "bfl/canonical/edge-cases.json"
+        "bfl/canonical/edge-cases.json",
+        "bfl/canonical/priced-choices.json"
       ]
     },
     {
@@ -41,6 +46,10 @@
         {
           "bfl": "bfl/canonical/edge-cases.bfl",
           "model": "bfl/canonical/edge-cases.json"
+        },
+        {
+          "bfl": "bfl/canonical/priced-choices.bfl",
+          "model": "bfl/canonical/priced-choices.json"
         }
       ]
     },
@@ -61,6 +70,11 @@
           "bfl": "bfl/legacy/modifiers-and-blocks.bfl",
           "model": "bfl/legacy/modifiers-and-blocks.json",
           "canonical": "bfl/legacy/modifiers-and-blocks.canonical.bfl"
+        },
+        {
+          "bfl": "bfl/legacy/library-keywords.bfl",
+          "model": "bfl/legacy/library-keywords.json",
+          "canonical": "bfl/legacy/library-keywords.canonical.bfl"
         }
       ]
     },

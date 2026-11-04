@@ -10,6 +10,7 @@ contract. Writing an *edited* document while keeping its untouched text is
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from quill.core.forms import expr as E
@@ -35,14 +36,25 @@ def choice_line(c: dict[str, Any]) -> str:
     value = c["value"] if isinstance(c["value"], str) else E.literal_text(c["value"])
     label = c["label"] if isinstance(c["label"], str) else E.literal_text(c["label"])
     extras = {k: v for k, v in c.items() if k not in ("value", "label")}
+    bare = (
+        _plain(label)
+        and "|" not in label
+        and ":" not in label
+        and value == M.slug(label)
+        and value != ""
+    )
+    price = c.get("price")
+    if (
+        bare
+        and list(extras) == ["price"]
+        and isinstance(price, (int, float))
+        and not isinstance(price, bool)
+        and (isinstance(price, int) or math.isfinite(price))
+    ):
+        # The short spelling, "+ Small:10", which reads back to the same choice.
+        return "+ " + label + ":" + E.literal_text(price)
     if not extras:
-        if (
-            _plain(label)
-            and "|" not in label
-            and ":" not in label
-            and value == M.slug(label)
-            and value != ""
-        ):
+        if bare:
             return "+ " + label
         if _plain(value) and "|" not in value and _plain(label):
             return f"+ {value}|{label}"

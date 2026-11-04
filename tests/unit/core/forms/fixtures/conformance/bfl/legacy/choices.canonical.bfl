@@ -16,9 +16,9 @@ radio #payment "Payment"
   + PayPal
   + bank|Bank Transfer
 select #size "Size"
-  + "small" | "Small" @price 10
-  + "medium" | "Medium" @price 15.5
-  + "large" | "Large" @price 20
+  + Small:10
+  + Medium:15.5
+  + Large:20
 select #when "Time"
   + time-morning|Time: morning
 select #country "Country"

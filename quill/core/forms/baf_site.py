@@ -80,6 +80,10 @@ class SiteForm:
 def form_from_payload(raw: Any) -> SiteForm:
     data = raw if isinstance(raw, dict) else {}
     config = data.get("config")
+    config = dict(config) if isinstance(config, dict) else {}
+    # BAF's GET forms/{id} also returns the model on its own, beside config.
+    if isinstance(data.get("model"), dict) and not isinstance(config.get("form_model"), dict):
+        config["form_model"] = data["model"]
     return SiteForm(
         id=_int(data.get("id")),
         title=str(data.get("title") or ""),
@@ -87,7 +91,7 @@ def form_from_payload(raw: Any) -> SiteForm:
         entry_count=_int(data.get("entry_count")),
         updated_at=str(data.get("updated_at") or ""),
         slug=str(data.get("slug") or ""),
-        config=config if isinstance(config, dict) else {},
+        config=config,
         bfl_source=str(data.get("bfl_source") or ""),
     )
 

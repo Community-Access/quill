@@ -1,0 +1,14 @@
+form "Where you live"
+
+select "Country" countries
+select #state "State" us_states
+  @required
+radio "Month" months
+checkbox #langs "Languages" languages
+select "Size"
+  + Small
+  + Large
+multiselect "Topics" @required
+  + News
+  + Sport
+text "Name"

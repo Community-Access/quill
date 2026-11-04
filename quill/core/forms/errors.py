@@ -34,7 +34,10 @@ class ExpressionError(FormError):
 
     def __init__(self, message: str, position: int = 0) -> None:
         super().__init__(message)
+        #: Where the problem is, in characters of the text.
         self.position = position
+        #: The same place in UTF-8 bytes, as BAF reports it (set by ``expr.parse``).
+        self.byte_offset = position
 
 
 class ExpressionEvalError(FormError):
