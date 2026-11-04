@@ -329,6 +329,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_indentation_to_spaces": "edit.convert_indentation_to_spaces",
     "cmd_indentation_to_tabs": "edit.convert_indentation_to_tabs",
     "cmd_insert_datetime": "edit.insert_date_time",
+    "cmd_insert_page_break": "format.insert_page_break",
     "cmd_insert_emoji": "edit.insert_emoji",
     "cmd_insert_html_tag": "format.insert_html_tag",
     "cmd_insert_line_break": "power.insert_line_break",

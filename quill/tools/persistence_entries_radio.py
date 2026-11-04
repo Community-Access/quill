@@ -10,6 +10,9 @@ stable key and every one ``content`` for the same reason, which is the review.
 from __future__ import annotations
 
 RADIO_LISTENER_ENTRIES: dict[str, str] = {
+    # The last Spotify sign-in attempt's steps, for Show Diagnostics in Quill
+    # Radio and QUILL Cast: disposable, rewritten on every attempt, no secret.
+    "core/spotify/diagnostics.py::_save": "cache",
     # A line the listener wrote themselves about a station or a podcast. Their
     # own words, so it is content rather than configuration: additive and
     # self-describing (a flat key -> text map), with no defaults that could

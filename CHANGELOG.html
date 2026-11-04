@@ -244,6 +244,23 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="page-breaks-with-ctrlenter-2026-11-03">Page breaks with
+Ctrl+Enter (2026-11-03)</h3>
+<ul>
+<li><strong>Ctrl+Enter inserts a page break, as in Word.</strong> In a
+Word or Rich Text document it is a real page break that is kept when you
+save; in Markdown it is the <code>::: pagebreak</code> line, which
+becomes a page break when you export. It is on the Insert menu in QUILL
+Lite and the Format menu in QUILL.</li>
+<li><strong>Word page breaks are kept.</strong> Opening a Word document
+used to turn each page break into an empty line, so saving it removed
+them all. They now open as page breaks and are saved as page
+breaks.</li>
+<li><strong>Follow Link moves off Ctrl+Enter, mostly.</strong> With the
+cursor on a link, Ctrl+Enter still follows it, so the old habit still
+works. Follow Link is on the Navigate menu, and you can give it a key of
+its own in the Keymap Editor.</li>
+</ul>
 <h3 id="ai-menu-own-key-and-silent-commands-2026-11-03">AI menu, own key
 and silent commands (2026-11-03)</h3>
 <ul>

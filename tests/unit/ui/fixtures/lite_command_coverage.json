@@ -111,6 +111,7 @@
   "cmd_insert_line_break": "covered",
   "cmd_insert_link": "covered",
   "cmd_insert_markdown_tag": "covered",
+  "cmd_insert_page_break": "covered",
   "cmd_insert_special_character": "covered",
   "cmd_insert_table": "covered",
   "cmd_italic": "covered",

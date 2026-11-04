@@ -348,6 +348,10 @@ The same table work as in QUILL, on the same keys.
   equations come through as text, a Word file opened as text appears in about
   a second, and saving twice no longer turns Heading 5s into bold text or adds
   blank paragraphs.
+- **Page breaks, with Word's key.** **Ctrl+Enter** (**Insert > Page Break**)
+  starts a new page in a Word or Rich Text document, and the page breaks
+  already in a Word file stay put when you save it. In Markdown it writes a
+  page-break line that takes effect when you export.
 - **Highlighted passages.** In a Word file opened as text, or a rich text
   document, **Navigate > Highlighted Passages** takes you to the
   highlighter marks. **Alt+PageDown** and **Alt+PageUp** go to the next and

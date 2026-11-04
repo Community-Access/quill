@@ -4,8 +4,8 @@
 
 ### Agentic coding: project tasks (2026-11-04)
 
-Work in progress on branch `feat/agentic-coding`; each line is added as the
-piece lands.
+Project tasks with an AI, in the Developer profile. QUILL Lite gets every one
+of these in the same change.
 
 - **The Claude engine really runs with no tools of its own.** The Claude Agent
   SDK pack asked for `allowed_tools=[]`, which only pre-approves nothing: the
@@ -88,6 +88,19 @@ piece lands.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.
+
+### Page breaks with Ctrl+Enter (2026-11-03)
+
+- **Ctrl+Enter inserts a page break, as in Word.** In a Word or Rich Text
+  document it is a real page break that is kept when you save; in Markdown
+  it is the `::: pagebreak` line, which becomes a page break when you export.
+  It is on the Insert menu in QUILL Lite and the Format menu in QUILL.
+- **Word page breaks are kept.** Opening a Word document used to turn each
+  page break into an empty line, so saving it removed them all. They now
+  open as page breaks and are saved as page breaks.
+- **Follow Link moves off Ctrl+Enter, mostly.** With the cursor on a link,
+  Ctrl+Enter still follows it, so the old habit still works. Follow Link is on
+  the Navigate menu, and you can give it a key of its own in the Keymap Editor.
 
 ### AI menu, own key and silent commands (2026-11-03)
 

@@ -15,7 +15,7 @@ and release channels.
 
 ### Agentic coding: project tasks in the Developer profile (2026-11-04)
 
-Work in progress; each line is added as the piece lands. QUILL gets every one
+Project tasks with an AI, in the new Developer profile. QUILL gets every one
 of these in the same change.
 
 - **The Claude engine really runs with no tools of its own.** It passes
@@ -50,6 +50,16 @@ of these in the same change.
   like every other address QUILL Lite opens.
 - **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
   files) are asked about once per project.
+
+### Page breaks with Ctrl+Enter (2026-11-03)
+
+- **Ctrl+Enter inserts a page break, as in Word.** In a Word or Rich Text
+  document it is a real page break that is kept when you save; in Markdown
+  it is the `::: pagebreak` line, which becomes a page break when you export.
+  It is on the Insert menu in QUILL Lite and the Format menu in QUILL.
+- **Word page breaks are kept.** Opening a Word document used to turn each
+  page break into an empty line, so saving it removed them all. They now
+  open as page breaks and are saved as page breaks.
 
 ### AI menu, own key and silent commands (2026-11-03)
 

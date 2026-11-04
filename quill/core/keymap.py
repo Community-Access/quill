@@ -732,7 +732,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "app.activity": "Shift+F9",
     "app.announcement_self_test": "",
     "app.open_media_player": "",
-    "edit.follow_link": "Ctrl+Enter",
+    # Ctrl+Enter is Word's page break (rule 1), and QUILL Lite's, so the
+    # command both editors have keeps it (rule 2). Follow Link held it until
+    # 2026-11-03 and still answers it: Ctrl+Enter with the caret on a link in
+    # a text document follows the link (insert_page_break checks first), so the
+    # old habit keeps working wherever a link can be. In a Word or RTF document
+    # the key always breaks the page, as it does in Word.
+    "format.insert_page_break": "Ctrl+Enter",
+    "edit.follow_link": "",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for the sentence family (§4.22)
     # Ctrl+Space means SENTENCE in both editors (bad.md 5.3a, P1.2b). It was
     # Select Chunk here and Select Sentence in QUILL Lite, which is one key
