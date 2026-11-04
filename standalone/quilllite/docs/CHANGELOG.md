@@ -24,6 +24,18 @@ of these in the same change.
   uses: the project boundary and hidden secrets, reviewed edits, Undo Last
   Turn, commands that Stop ends whole, and test results in one sentence.
 
+- **A Developer profile, the fifth.** Recommended plus a new **Coding**
+  area: eighteen of the 22 areas. Coding is off in every other profile,
+  Everything included, and an upgraded install starts with it off.
+- **Do a Project Task, in the Developer profile.** Tools > Project > Open
+  Project Folder, then Ctrl+3 works on the whole folder: reviewed edits
+  across files, commands that ask first, test results in a sentence, Undo
+  Last Agent Turn, Stop Agent, Coach mode, your own allowed commands with an
+  off-by-default bypass, and engine tools by opt-in. The same windows and
+  the same code as QUILL.
+- **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
+  files) are asked about once per project.
+
 ### Choose Your AI: your plan, GitHub Copilot, Codex or your own key
 - **Choose Your AI** (**Ctrl+4**, Tools > AI) is one window for where your AI
   comes from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex,

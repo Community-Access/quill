@@ -449,3 +449,9 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "power.preview_abbreviation": "core.emmet",
     "power.explain_abbreviation": "core.emmet",
 }
+
+#: Commands that belong to the Developer profile (code.md 6.4): project tasks,
+#: local Git and the agent validator. They were under ``core.app`` (always on)
+#: by falling through every prefix in ``features.feature_for_command``.
+DEVELOPER_COMMAND_PREFIXES: tuple[str, ...] = ("project.", "localgit.")
+DEVELOPER_COMMANDS: frozenset[str] = frozenset({"tools.validate_agents"})

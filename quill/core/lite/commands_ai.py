@@ -75,3 +75,31 @@ AI_SEARCH_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&Tools|&AI", "&Web Searches Left", "Ctrl+9", "cmd_ai_web_searches", ""),
     *AI_CHOOSE_ROWS,
 )
+
+#: Tools > Project (code.md 6.4): project tasks, the Coding area, which only the
+#: Developer profile turns on. The handlers are the shared mixin's
+#: (quill/ui/project_task_commands.py); QUILL has the same ten under AI >
+#: Project Tasks (quill/ui/main_frame_project_rows.py). No chords: none is free
+#: in both editors (keymap.py says what was measured), Ctrl+3 is the front door
+#: and opens a project task whenever a project is open, and each row's letter is
+#: its key route.
+PROJECT_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    ("&Tools|Pro&ject", "&Open Project Folder...", "", "cmd_open_project_folder", ""),
+    ("&Tools|Pro&ject", "Do a Project &Task...", "", "cmd_project_task", ""),
+    ("&Tools|Pro&ject", "&Stop Agent", "", "cmd_stop_agent", ""),
+    ("&Tools|Pro&ject", "&Undo Last Agent Turn", "", "cmd_undo_agent_turn", ""),
+    ("&Tools|Pro&ject", "E&xplain Last Turn", "", "cmd_explain_agent_turn", ""),
+    ("&Tools|Pro&ject", "", "", "", "sep"),
+    ("&Tools|Pro&ject", "Open Command Out&put", "", "cmd_open_command_output", ""),
+    ("&Tools|Pro&ject", "Open Task T&ranscript", "", "cmd_project_transcript", ""),
+    (
+        "&Tools|Pro&ject",
+        "Commands &Allowed in This Project...",
+        "",
+        "cmd_project_allowed_commands",
+        "",
+    ),
+    ("&Tools|Pro&ject", "&Engine Tools for This Project...", "", "cmd_project_engine_tools", ""),
+    ("&Tools|Pro&ject", "", "", "", "sep"),
+    ("&Tools|Pro&ject", "&Close Project", "", "cmd_close_project", ""),
+)

@@ -84,7 +84,7 @@ class ProjectTaskUi(Protocol):
     def keep_going(self, steps: int) -> bool: ...
     def plan_ready(self, steps: list[str]) -> None: ...
     def note(self, text: str) -> None: ...
-    def command_done(self, sentence: str, output: Path) -> None: ...
+    def command_done(self, sentence: str, output: Path, ok: bool) -> None: ...
     def files_changed(self, paths: list[Path]) -> None: ...
 
 
@@ -183,6 +183,7 @@ class ProjectTaskRunner:
         )
         chosen = tools if tools is not None else project_tools(self, coach=coaching)
         registry.register_app(PROJECT_APP, [self._counted(t) for t in chosen])
+        self._grant_vendor_tools(registry, turn, coaching)
         extra = words.COACH_INSTRUCTIONS if coaching else ""
         spec = replace(
             self.agent,
@@ -316,7 +317,10 @@ class ProjectTaskRunner:
             )
             return KEPT_FOR_PERSON
         reviewed = self._review_pending()
-        if not self.allow_list.allows(assessment):
+        if self.allow_list.bypass:
+            # Decision 7's deliberate bypass: never silent, always in the record.
+            self.ui.note(words.bypass_note(assessment.command))
+        elif not self.allow_list.allows(assessment):
             question = words.command_question(assessment.command, reason, self.project.name)
             choice = self.ui.approve_command(assessment, question)
             if choice == "deny":
@@ -337,13 +341,37 @@ class ProjectTaskRunner:
             sentence = summarize_output(output, result.exit_code, assessment.command)
         if self.current_turn is not None:
             self.current_turn.commands.append(f"{assessment.command}: {sentence}")
-        self.ui.command_done(sentence, result.output_path)
+        ok = result.exit_code == 0 and not result.stopped and not result.could_not_start
+        self.ui.command_done(sentence, result.output_path, ok)
         text = trim_for_model(output, sentence)
         if result.exit_code not in (0, None):
             text += "\nBefore you try a fix, say in one plain sentence what this error means."
         return f"{reviewed}\n{text}".strip()
 
     # -- inside ---------------------------------------------------------------- #
+
+    def _grant_vendor_tools(self, registry: FamilyToolRegistry, turn: TurnLog, coach: bool) -> None:
+        """Decision 4: the engine's own tools this project allows, never in coach mode."""
+        from quill.core.ai.vendor_tools import (
+            VendorToolChoices,
+            engine_for_harness,
+            permission_kinds,
+            vendor_tools_sentence,
+        )
+
+        engine = engine_for_harness(self.harness.id)
+        if coach or not engine:
+            return
+        enabled = VendorToolChoices(self.data_dir, self.project.key).enabled(engine)
+        if not enabled:
+            return
+        registry.vendor_tools = enabled
+        registry.vendor_kinds = permission_kinds(engine, enabled)
+        registry.vendor_cwd = str(self.project.root)
+        turn.engine_tools = vendor_tools_sentence(engine, enabled)
+        self.ui.note(turn.engine_tools)
+        # Their writes skip review, so the checkpoint is taken before the turn.
+        self.checkpoints.ensure_turn()
 
     def _counted(self, tool: FamilyTool) -> FamilyTool:
         inner = tool.handler
@@ -406,6 +434,10 @@ class ProjectTaskRunner:
             text = "\n".join(earlier)
             parts.append("Earlier in this task:\n" + text[-8000:])
         return "\n\n".join(parts)
+
+    def save_history(self) -> None:
+        """Write the headed transcript to the project's task history in app data."""
+        self._save_history()
 
     def _save_history(self) -> None:
         from quill.core.ai.change_set import write_text_atomic

@@ -34,6 +34,8 @@ class TurnLog:
     rejected: int = 0
     result: str = ""
     answer: str = ""
+    #: The engine's own tools on for this turn (decision 4), in words, or "".
+    engine_tools: str = ""
 
     def context_lines(self) -> list[str]:
         """This turn, briefly, for the next turn's engine."""
@@ -63,9 +65,11 @@ def render_markdown(project_name: str, turns: list[TurnLog]) -> str:
     out = [_title(turns), "", f"Project: {project_name}", ""]
     for turn in turns:
         out += [turn_heading(turn.number, turn.coach), "", turn.instruction.strip(), ""]
-        if turn.plan:
+        if turn.plan or turn.engine_tools:
             out += ["### Plan", ""]
             out += [f"{i}. {step}" for i, step in enumerate(turn.plan, 1)]
+            if turn.engine_tools:
+                out += ([""] if turn.plan else []) + [turn.engine_tools]
             out.append("")
         if turn.questions:
             out += ["### Questions for you", ""] + [f"- {q}" for q in turn.questions] + [""]

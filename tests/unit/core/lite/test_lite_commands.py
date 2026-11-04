@@ -53,6 +53,56 @@ def _items() -> list[tuple[str, str, str, str]]:
 #: reason). The route is the menu's own Alt path, which the access-key checks
 #: below keep unique. Shrink this, never grow it without an argument.
 KEYLESS_WITH_REASON: dict[str, str] = {
+    "cmd_open_project_folder": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Open Project Folder: once a session, then Ctrl+3 does the work. Alt+T, J, O.",
+    "cmd_project_task": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Do a Project Task: Ctrl+3 already opens it whenever a project is open. Alt+T, J, T.",
+    "cmd_stop_agent": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Stop Agent: the task window's own Stop is Alt+T there; from elsewhere, Alt+T, J, S.",
+    "cmd_undo_agent_turn": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Undo Last Agent Turn: the task window has Alt+U for it; elsewhere Alt+T, J, U.",
+    "cmd_explain_agent_turn": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Explain Last Turn: Alt+X in the task window; elsewhere Alt+T, J, X.",
+    "cmd_open_command_output": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Open Command Output: Alt+O in the task window; elsewhere Alt+T, J, P.",
+    "cmd_project_transcript": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Open Task Transcript: Alt+R in the task window; elsewhere Alt+T, J, R.",
+    "cmd_project_allowed_commands": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Commands Allowed in This Project: a settings list, opened rarely. Alt+T, J, A.",
+    "cmd_project_engine_tools": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Engine Tools for This Project: a settings list, opened rarely. Alt+T, J, E.",
+    "cmd_close_project": "As in QUILL (rule 2), where it has no plain key either: "
+    "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
+    "took each candidate), and these are the Developer profile's once-a-task "
+    "commands (rule 9). "
+    "Close Project: once a session at most. Alt+T, J, C.",
     "cmd_ai_alt_text": "As in QUILL (rule 2), where Propose Alt Text has no key either: "
     "Do a Document Task (Ctrl+3) takes the same request, and this row only types it in. "
     "Rule 9: an occasional repair pass gets a way in, not a chord -- Alt+T, A, T.",

@@ -71,6 +71,7 @@ MENU_AREA: dict[str, str] = {
     # still fires for a feature somebody has switched off is the feature not
     # being off -- and for this one that would mean a network call they declined.
     "&Tools|&AI": "hosted_ai",
+    "&Tools|Pro&ject": "coding",  # project tasks: the Developer profile only (code.md 6.4)
     # The AI dictionary rides with the AI area: every row is a request on the
     # listener's own key or plan, and a row that still fired with AI switched
     # off would be the feature not being off.

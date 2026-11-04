@@ -83,7 +83,7 @@ def test_publishing_disabled_in_default_build() -> None:
 
 def test_publishing_profile_states_match_writer_tier_and_above() -> None:
     # Publishing is restricted to "writer and above": Casual Writer, Author
-    # or Student, Developer and Power Text, and Full Quill get it by
+    # or Student, Developer, and Full Quill get it by
     # default; every other profile defaults it off. This is the *configured*
     # value in PROFILE_DEFINITIONS, independent of the live locked_off
     # short-circuit asserted by test_publishing_disabled_in_default_build

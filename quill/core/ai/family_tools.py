@@ -189,6 +189,12 @@ class FamilyToolRegistry:
         self._tools: dict[str, FamilyTool] = {}
         self._wire: dict[str, str] = {}
         self.calls: list[ToolCallRecord] = []
+        #: The engine's own tools the person turned on for this project
+        #: (decision 4, :mod:`quill.core.ai.vendor_tools`), their permission
+        #: kinds, and the folder they work in. Empty means QUILL's tools only.
+        self.vendor_tools: frozenset[str] = frozenset()
+        self.vendor_kinds: frozenset[str] = frozenset()
+        self.vendor_cwd: str = ""
 
     @property
     def identity(self) -> AgentIdentity:
@@ -232,6 +238,32 @@ class FamilyToolRegistry:
             return self._tools[name]
         full = self._wire.get(name)
         return self._tools.get(full) if full else None
+
+    def authorize_vendor(self, kind: str, detail: str) -> bool:
+        """An engine asks to use one of its own tools: refused unless turned on, then asked.
+
+        Never allowed without asking: a kind the person did not turn on is a
+        defect, and one they did goes through the same approval question as
+        QUILL's own steps.
+        """
+        if kind not in self.vendor_kinds:
+            self.record_defect(f"The engine asked for its own {kind or 'unknown'} tool; refused.")
+            return False
+        tool = FamilyTool(
+            name=f"vendor.{kind}",
+            description=f"The engine's own {kind} tool.",
+            handler=lambda _args: "",
+            category=PermissionCategory.TERMINAL
+            if kind == "shell"
+            else PermissionCategory.MODIFY_DOCUMENT,
+            risk=RiskLevel.HIGH,
+            app="vendor",
+            mutating=kind in ("shell", "write"),
+        )
+        summary = f"The engine's own {kind} tool: {detail}".strip()
+        allowed = self.gate.check(tool, summary)
+        self._log("tool_call" if allowed else "tool_call_denied", tool, summary)
+        return allowed
 
     def record_defect(self, summary: str) -> None:
         """Log an engine request that should never arrive (5.3): a defect."""

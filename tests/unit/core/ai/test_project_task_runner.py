@@ -116,7 +116,7 @@ class _Ui:
     def note(self, text: str) -> None:
         self.notes.append(text)
 
-    def command_done(self, sentence: str, output: Path) -> None:
+    def command_done(self, sentence: str, output: Path, ok: bool = True) -> None:
         self.done.append(sentence)
 
     def files_changed(self, paths: list[Path]) -> None:

@@ -24,7 +24,7 @@ this without a display.
 from __future__ import annotations
 
 from quill.core.lite import APP_NAME, APP_VERSION
-from quill.core.lite.commands_ai import AI_ASK_ROWS, AI_SEARCH_ROWS
+from quill.core.lite.commands_ai import AI_ASK_ROWS, AI_SEARCH_ROWS, PROJECT_ROWS
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
@@ -980,6 +980,7 @@ COMMANDS: list[CommandRow] = [
     # Dictation's AI: fix what the recogniser misheard, on a plan or an own key.
     # Ctrl+F3 was free in both editors and is nothing in Word QUILL has.
     ("&Tools|&AI", "Tidy Dictated Te&xt...", "Ctrl+F3", "cmd_dictation_tidy", ""),
+    *PROJECT_ROWS,  # Tools > Project, the Developer profile's Coding area (commands_ai.py)
     *DICTIONARY_ROWS,  # Tools > Dictionary, the AI word tools (commands_words.py)
     *NOTE_ROWS,  # QUILL's six inline-note chords (rule 2; commands_review.py)
     # Tools > Dictation, shared with QUILL; each key's reason is in commands_dictation.py.

@@ -69,6 +69,8 @@ class AiMenuMixin:
         )
         # Which AI Am I Using and Choose Your AI (codex.md 10A.9).
         self._append_choose_rows(ai_menu)  # quill/ui/main_frame_hosted_ai.py
+        # Project Tasks, the Developer profile only (code.md 6.4).
+        self._append_project_rows(ai_menu)  # quill/ui/main_frame_project_rows.py
         ai_menu.Append(
             self._id_hosted_ai_sign_in,
             self._menu_label(_("&Connect or Sign Out..."), "tools.hosted_ai_sign_in"),

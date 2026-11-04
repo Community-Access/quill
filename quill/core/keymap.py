@@ -283,6 +283,22 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Propose Alt Text (codex.md 6.4): Do a Document Task with the request
     # filled in. No key in either editor; rule 8 reason in the family gate.
     "tools.hosted_ai_alt_text": "",
+    # Project tasks (code.md 6.4), the Developer profile only. No chord is free
+    # in both editors (measured 2026-11-04: every three-modifier candidate is a
+    # system-wide hotkey, a QuillVille launcher or a recent-file key), so QUILL
+    # Lite reaches them from Tools > Project and Ctrl+3, and rule 6 lets QUILL put
+    # the two a person may need in a hurry on the leader. The rest are a family
+    # under rule 7 (tests/unit/core/test_family_rules_and_gates.py).
+    "project.open_folder": "",
+    "project.task": "",
+    "project.stop_agent": "Ctrl+Shift+Grave, K",
+    "project.undo_turn": "Ctrl+Shift+Grave, U",
+    "project.explain_turn": "",
+    "project.command_output": "",
+    "project.transcript": "",
+    "project.allowed_commands": "",
+    "project.engine_tools": "",
+    "project.close": "",
     "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
     # The dictionary (2026-10-02; quill/ui/word_tools_commands.py, shared).
     # Look Up is the dictionary without AI (DICT-2's window, now reachable and

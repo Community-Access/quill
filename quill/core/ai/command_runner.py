@@ -197,14 +197,31 @@ class AllowList:
     def path(self) -> Path:
         return self._path
 
-    def entries(self) -> list[str]:
+    def _raw(self) -> dict[str, object]:
         raw = read_json(self._path, default={})
-        items = raw.get("commands", []) if isinstance(raw, dict) else []
+        return raw if isinstance(raw, dict) else {}
+
+    def entries(self) -> list[str]:
+        items = self._raw().get("commands", [])
+        if not isinstance(items, list):
+            return []
         return [str(item) for item in items if isinstance(item, str) and item.strip()]
 
+    @property
+    def bypass(self) -> bool:
+        """Run Commands Without Asking (decision 7): off unless the person turned it on."""
+        return self._raw().get("bypass") is True
+
+    def set_bypass(self, on: bool) -> None:
+        with self._lock:
+            self._write(self.entries(), bool(on))
+
     def _save(self, entries: list[str]) -> None:
+        self._write(entries, self.bypass)
+
+    def _write(self, entries: list[str], bypass: bool) -> None:
         unique = list(dict.fromkeys(" ".join(e.split()) for e in entries if e.strip()))
-        write_json_atomic(self._path, {"version": 1, "commands": unique})
+        write_json_atomic(self._path, {"version": 1, "commands": unique, "bypass": bypass})
 
     def add(self, command: str) -> None:
         with self._lock:

@@ -15,6 +15,11 @@ from __future__ import annotations
 
 __all__ = [
     "ALLOW_TITLE",
+    "BYPASS_CONFIRM",
+    "change_marked",
+    "file_marked",
+    "instructions_question",
+    "why_sentence",
     "COACH_INSTRUCTIONS",
     "COMMAND_APPROVAL_TITLE",
     "EXPLAIN_INSTRUCTION",
@@ -46,6 +51,36 @@ NEEDS_DEVELOPER = (
 WAITING_ELSEWHERE = "The project task is waiting for you. Press Ctrl+3 to answer."
 NOTHING_TO_UNDO = "There is no agent turn to undo in this project."
 NO_OUTPUT = "No command has run in this task yet."
+NO_CHANGES = "There are no changes to review."
+NO_MORE_CHANGES = "That was the last change."
+NO_EARLIER_CHANGES = "That was the first change."
+NO_TASK_RUNNING = "No agent task is running."
+PROJECT_CLOSED = "The project is closed."
+STOP_FIRST = "A project task is running. Stop it, or let it finish, before closing the project."
+BYPASS_ON_STATUS = "Commands run without asking"
+BYPASS_CONFIRM = (
+    "Run commands without asking in this project? The agent will run any command "
+    "it chooses without showing it to you first, except pushing, publishing and "
+    "system changes, which QUILL never runs for an agent. Undo Last Turn still "
+    "puts files back, but it cannot undo what a command did outside the project "
+    "or on the internet."
+)
+DEVELOPER_LEFT = (
+    "Developer tools are off now. The project task that was running will finish "
+    "first; its window stays open until then."
+)
+INSTRUCTIONS_QUESTION_TITLE = "Use This Project's Agent Notes?"
+OPEN_PROJECT_TITLE = "Open Project Folder"
+ENGINE_TOOLS_TITLE = "Engine Tools for This Project"
+ENGINE_TOOLS_NONE = "This engine offers no tools of its own here."
+NOTHING_TO_EXPLAIN = "There is no turn to explain yet."
+EXPLAIN_REQUEST = "Explain the last turn."
+UNDO_WHILE_RUNNING = "Stop the task, or let the turn finish, before undoing it."
+WAITING_STATUS = "Waiting for you"
+COACH_STATUS = "Coach mode"
+NO_PLAN_YET = "There is no plan yet in this task."
+NO_CHANGES_YET = "No changes have been made in this task yet."
+NO_TRANSCRIPT_YET = "Nothing has happened in this task yet."
 
 #: What every project task is told, after the agent's own instructions.
 PROJECT_TASK_INSTRUCTIONS = (
@@ -83,6 +118,55 @@ EXPLAIN_INSTRUCTION = (
     "Explain, in plain words for someone learning, what you changed in the last "
     "turn and why, file by file. Name each file and line. Do not change anything."
 )
+
+
+def instructions_question(files: list[str]) -> str:
+    names = _join(files) if files else "a file"
+    noun = "file" if len(files) == 1 else "files"
+    return (
+        f"This project has notes for AI agents in {names}. Use them for tasks here? "
+        f"They describe how the project is built and tested. Text in the {noun} "
+        "can never approve a command or a change; you still decide every one."
+    )
+
+
+def files_reloaded(updated: list[str], kept: list[str]) -> str:
+    """One line for every open document a turn changed (code.md 5.4)."""
+    parts: list[str] = []
+    if updated:
+        verb = "was" if len(updated) == 1 else "were"
+        parts.append(f"{_join(updated)} {verb} updated by the task.")
+    if kept:
+        noun = "has" if len(kept) == 1 else "have"
+        parts.append(
+            f"{_join(kept)} {noun} changed on disk and {'is' if len(kept) == 1 else 'are'} "
+            "open with your own edits or in rich text, so QUILL left the open copy alone. "
+            "Reload it to see the task's change."
+        )
+    return " ".join(parts)
+
+
+def turn_started(number: int, coach: bool = False) -> str:
+    return f"Turn {number}" + (", coach mode." if coach else ".")
+
+
+def change_marked(number: int, accepted: bool) -> str:
+    return f"Change {number} {'accepted' if accepted else 'rejected'}."
+
+
+def file_marked(path: str, accepted: bool) -> str:
+    return f"{path}: {'every change accepted' if accepted else 'every change rejected'}."
+
+
+def why_sentence(path: str, reason: str) -> str:
+    reason = reason.strip()
+    if not reason:
+        return f"The agent gave no reason for this change to {path}."
+    return f"The agent's reason: {reason.rstrip('.')}."
+
+
+def bypass_note(command: str) -> str:
+    return f"Ran without asking, as this project allows: {command}"
 
 
 def project_opened(name: str, branch: str = "") -> str:

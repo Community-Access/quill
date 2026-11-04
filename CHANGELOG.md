@@ -23,6 +23,41 @@ piece lands.
   Always Allow; the closing summary left out the commands a turn ran; and test
   results said "1 errors".
 
+- **A Developer profile, and the only place coding lives.** The profile
+  that was called Developer and Power Text is now **Developer**. It keeps
+  its regular-expression, cleanup and analysis tools, and it is now the only
+  profile, with Full Quill, that turns on developer tools: project tasks,
+  local Git and GitHub, the Developer Console, word prediction and the agent
+  validator. In every other profile they are off, not just quiet. One
+  feature, Developer Tools, sits under all of them; turning it on in Manage
+  Individual Features is the way to get one tool without the whole profile.
+- **Do a Project Task.** Open a folder as a project and Ctrl+3 works on the
+  whole project instead of one document. The agent reads, searches and
+  plans without asking; every change it proposes waits in **Review
+  Changes**, a list of files over one change at a time, with line numbers
+  first and indentation said as a count. Nothing is written until you
+  accept it. Every command it wants to run asks first, in **Run This
+  Command?**, with the exact command to arrow through and a warning when
+  QUILL sees one. Test results come back as one sentence. **Undo Last Agent
+  Turn** puts every file back, and refuses, naming the file, if you have
+  edited it since. **Stop Agent** stops the task and its command from any
+  window. The window also has Plan, Changes, Output, Transcript, Explain
+  Last Turn and **Coach mode**, where the agent teaches and you type.
+- **Commands Allowed in This Project** is your own list of commands that run
+  without asking, kept in QUILL and never in the project, with a deliberate
+  **Run commands without asking** switch that is off until you check it and
+  confirm.
+- **Engine Tools for This Project** shows the engine's own tools (Copilot's
+  shell and editor, say). All are off until you check them, they still ask
+  before each use, and a turn that has any on says so.
+- **Agent notes in a project** are read the way the tools that write them
+  expect: `AGENTS.md` at the root and in folders, Copilot's instruction
+  files, `CLAUDE.md`, `GEMINI.md` and Cursor's rules. QUILL asks once per
+  project whether to use them, and nothing in them can approve anything.
+- **Changed files reload in place.** When a turn changes a document you have
+  open, it reloads with your cursor where it was, and QUILL says so once. A
+  document with unsaved edits is left alone and named.
+
 ### Phonon voices (2026-11-02)
 
 - **Phonon, a new offline Read Aloud voice.** Gradium's Phonon 31m now comes

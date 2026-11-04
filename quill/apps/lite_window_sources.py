@@ -236,3 +236,48 @@ class DocumentSourcesMixin:
         else:
             self._announce("Save cancelled")
         return False
+
+    # ------------------------------------------------------------------ #
+    # A project task changed files on disk (code.md 5.4)
+    # ------------------------------------------------------------------ #
+
+    def _reload_agent_changed(self, paths: Sequence[Path]) -> None:
+        """Reload every open plain-text window a turn changed, cursor kept, in one line.
+
+        Called by the shared project task (quill/ui/project_task_commands.py).
+        A window with unsaved edits, or in rich text, is left alone and named:
+        overwriting someone's typing is worse than a stale view.
+        """
+        from quill.core.ai import project_task_words as words
+        from quill.ui.richedit_editing import RICH
+
+        wanted = {Path(p).resolve() for p in paths}
+        updated: list[str] = []
+        kept: list[str] = []
+        for frame in list(getattr(self.app, "frames", [])):
+            path = getattr(frame, "path", None)
+            if path is None or Path(path).resolve() not in wanted:
+                continue
+            name = Path(path).name
+            if frame.modified or getattr(frame.editor, "mode", None) == RICH:
+                kept.append(name)
+                continue
+            try:
+                text = Path(path).read_text("utf-8").replace("\r\n", "\n")
+            except (OSError, UnicodeDecodeError):
+                kept.append(name)
+                continue
+            caret = frame.control.GetInsertionPoint()
+            frame._loading = True
+            try:
+                frame.control.ChangeValue(text)
+            finally:
+                frame._loading = False
+                frame.doc_text.invalidate()
+            frame.control.SetInsertionPoint(max(0, min(caret, len(text))))
+            frame._set_modified(False)
+            frame._remember_disk_baseline()
+            updated.append(name)
+        said = words.files_reloaded(updated, kept)
+        if said:
+            self._announce(said)
