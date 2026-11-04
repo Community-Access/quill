@@ -76,6 +76,8 @@ class Item:
     menu_order: int = 0
     template: str = ""
     format: str = ""
+    #: Custom fields changed in Properties (9.15); only those go back.
+    meta: dict[str, Any] = field(default_factory=dict)
 
     def to_body(self) -> dict[str, Any]:
         """The fields WordPress takes back on create or update."""
@@ -106,12 +108,47 @@ class Item:
             body["password"] = self.password
         if self.author:
             body["author"] = self.author
+        if self.meta:
+            body["meta"] = dict(self.meta)
         return body
 
 
 def kind_route(kind: str) -> str:
     """``post`` -> ``wp/v2/posts``; a custom type uses its REST base."""
     return {"post": "wp/v2/posts", "page": "wp/v2/pages"}.get(kind, f"wp/v2/{kind}")
+
+
+#: Types WordPress lists that are not pages or posts a person writes.
+_NOT_WRITING_TYPES = frozenset({
+    "attachment",
+    "nav_menu_item",
+    "wp_block",
+    "wp_template",
+    "wp_template_part",
+    "wp_navigation",
+    "wp_global_styles",
+    "wp_font_family",
+    "wp_font_face",
+})
+
+
+def list_content_types(api: WordPressApi) -> list[tuple[str, str]]:
+    """``(kind, plural name)`` for Posts, Pages and the site's own writing types.
+
+    A custom type's kind is its REST base (``events``), which is what
+    :func:`kind_route` expects. Posts and Pages always come first.
+    """
+    raw = api.get("wp/v2/types", context="edit")
+    found: list[tuple[str, str]] = [("post", "Posts"), ("page", "Pages")]
+    if not isinstance(raw, dict):
+        return found
+    for slug, info in raw.items():
+        if slug in {"post", "page"} or slug in _NOT_WRITING_TYPES or not isinstance(info, dict):
+            continue
+        base = str(info.get("rest_base") or "")
+        if base and info.get("viewable", True):
+            found.append((base, str(info.get("name") or base.title())))
+    return found
 
 
 def list_items(

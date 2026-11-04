@@ -19,6 +19,9 @@ from typing import Any
 
 from quill.core.wordpress.menu import DOCUMENT_ONLY, PLACES, Submenu, all_rows
 
+#: wx's code for Escape, which is 27 on every platform wx runs on here.
+_WXK_ESCAPE = 27
+
 
 class QuillWordPressHost:
     """The main frame, as the shared WordPress commands see it."""
@@ -193,6 +196,7 @@ class WordPressMenuMixin:
                 command_id,
                 title.replace("&", "").removesuffix("..."),
                 (lambda h=handler: getattr(self._wordpress(), h)()),
+                self._binding_for(command_id),  # type: ignore[attr-defined]
             )
             menu.Append(ids[command_id], self._menu_label(title, command_id))  # type: ignore[attr-defined]
             self.frame.Bind(  # type: ignore[attr-defined]
@@ -201,6 +205,60 @@ class WordPressMenuMixin:
                 id=ids[command_id],
             )
         return menu
+
+    def _wordpress_key_event(self, event: Any) -> bool:
+        """The WordPress keys: Ctrl+Alt+Shift+Grave, then a letter (wordpress.md 19).
+
+        Called from the char hook ahead of the QUILL key. True when the key was
+        the layer's; the shared :class:`~quill.core.wordpress.keys.WordPressKeyLayer`
+        decides what it means, and the letters come from the live keymap, so a
+        key moved in the Keyboard Manager moves here too.
+        """
+        from quill.core.wordpress import keys
+
+        layer = getattr(self, "_wordpress_key_layer", None)
+        if layer is None:
+            layer = self._wordpress_key_layer = keys.WordPressKeyLayer()
+        if layer.active:
+            code = int(event.GetKeyCode())
+            if self._is_bare_modifier_key(code):  # type: ignore[attr-defined]
+                return True  # Shift going down on the way to Shift+S
+            key = keys.event_key(
+                code,
+                ctrl=bool(event.ControlDown()),
+                alt=bool(event.AltDown()),
+                shift=bool(event.ShiftDown()),
+                escape_code=_WXK_ESCAPE,
+            )
+            if not key:
+                layer.cancel()
+                return False
+            keymap = getattr(self, "keymap", None) or {}
+            outcome = layer.press(key, keys.layer_from_bindings(keymap))
+            if outcome.command:
+                self._run_command(outcome.command)  # type: ignore[attr-defined]
+            elif outcome.message:
+                self._announce(outcome.message)  # type: ignore[attr-defined]
+            return outcome.consumed
+        if not self._wordpress_prefix_matches(event):
+            return False
+        self._announce(layer.start())  # type: ignore[attr-defined]
+        return True
+
+    def _wordpress_prefix_matches(self, event: Any) -> bool:
+        """Ctrl+Alt+Shift+Grave, while WordPress is on and the QUILL key is not on it."""
+        from quill.core.lite.keymap import chord_identity
+        from quill.core.wordpress.keys import LAYER_PREFIX
+
+        if not (event.ControlDown() and event.AltDown() and event.ShiftDown()):
+            return False
+        if not self._feature_enabled("core.wordpress"):  # type: ignore[attr-defined]
+            return False
+        settings = getattr(self, "settings", None)
+        quill_key = str(getattr(settings, "quill_key_binding", "") or "")
+        if quill_key and chord_identity(quill_key) == chord_identity(LAYER_PREFIX):
+            return False  # the user put the QUILL key here; it wins
+        return bool(self._event_matches_grave_key(event))  # type: ignore[attr-defined]
 
     def _command_to_menu_id_map(self) -> dict[str, int]:
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]

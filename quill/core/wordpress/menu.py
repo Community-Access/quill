@@ -19,9 +19,12 @@ both menus are nearly full in QUILL Lite, and a row with no free access letter
 there would have no route at all. Tools > WordPress has no access letter in
 QUILL Lite's Tools for the same reason (Say Word Summary holds the W).
 
-Keys: none yet. Of every Ctrl, Alt and Shift chord with a letter, a digit or
-an F-key, only Ctrl+Alt+Shift+Q and R are free in both editors (2026-11-04
-survey); the proposal is in wordpress.md section 19, waiting on Jeff.
+Keys: one layer, the same in both editors (wordpress.md 19, option 1, Jeff's
+choice). Of every Ctrl, Alt and Shift chord with a letter, a digit or an
+F-key, only Ctrl+Alt+Shift+Q and R were free in both editors, so the commands
+share one prefix instead -- Ctrl+Alt+Shift+Grave, beside the QUILL key -- and
+then one letter from :data:`LAYER_KEYS`. :mod:`quill.core.wordpress.keys` is
+the layer; both editors' keymaps are built from this table.
 """
 
 from __future__ import annotations
@@ -211,6 +214,41 @@ PLACES: dict[str, tuple[str, tuple[Entry, ...]]] = {
     "tools": ("&Tools", TOOLS_ROWS),
 }
 
+#: The prefix that starts the WordPress keys, in both editors. Free in QUILL,
+#: in QUILL Lite and in every family app's system-wide key (2026-11 survey).
+LAYER_PREFIX = "Ctrl+Alt+Shift+Grave"
+
+#: The WordPress keys: the key pressed after :data:`LAYER_PREFIX` -> command id.
+#: A row's own access letter wherever it is free, so the menu teaches the key.
+#: Where two rows want one letter the everyday one keeps it (rule 3): Publish
+#: keeps P, so New Page takes G (paGe); Media Library keeps M, so Compare with
+#: Site takes C; Switch Site keeps S, so Sites (the list, rule 9) takes Shift+S.
+#: B, K, U and X give four Tools and View rows their own access letters.
+LAYER_KEYS: dict[str, str] = {
+    "G": "wordpress.new_page",
+    "N": "wordpress.new_post",
+    "O": "wordpress.open",
+    "W": "wordpress.open_by_address",
+    "L": "wordpress.open_local_draft",
+    "D": "wordpress.save_draft",
+    "P": "wordpress.publish",
+    "E": "wordpress.schedule",
+    "I": "wordpress.open_on_site",
+    "Y": "wordpress.copy_address",
+    "R": "wordpress.properties",
+    "V": "wordpress.versions",
+    "C": "wordpress.compare",
+    "T": "wordpress.trash",
+    "S": "wordpress.switch_site",
+    "Shift+S": "wordpress.sites",
+    "A": "wordpress.connect",
+    "M": "wordpress.media_library",
+    "B": "wordpress.blocks",
+    "K": "wordpress.check",
+    "U": "wordpress.upload_files",
+    "X": "wordpress.alt_text_review",
+}
+
 #: Commands about the page in front of you: enabled only in a WordPress
 #: document (wordpress.md 12). The site-wide ones work from anywhere.
 DOCUMENT_ONLY: frozenset[str] = frozenset({
@@ -262,6 +300,14 @@ def spoken_path(path: str) -> str:
     return " > ".join(part.replace("&", "") for part in path.split("|"))
 
 
+def layer_chord(command_id: str) -> str:
+    """``wordpress.open`` -> ``"Ctrl+Alt+Shift+Grave, O"``, or "" for a row with no key."""
+    for key, owner in LAYER_KEYS.items():
+        if owner == command_id:
+            return f"{LAYER_PREFIX}, {key}"
+    return ""
+
+
 def lite_handler(command_id: str) -> str:
     """QUILL Lite's handler for a row: ``wordpress.open`` -> ``cmd_wp_open``."""
     return "cmd_wp_" + command_id.split(".", 1)[1]
@@ -279,14 +325,15 @@ def _lite(entries: tuple[Entry, ...], path: str) -> list[CommandRow]:
             rows.append((path, entry.title, "", "", "sub"))
             rows.extend(_lite(entry.rows, f"{path}|{entry.title}"))
         else:
-            rows.append((path, entry[1], "", lite_handler(entry[0]), ""))
+            rows.append((path, entry[1], layer_chord(entry[0]), lite_handler(entry[0]), ""))
     return rows
 
 
 def lite_rows(place: str = "file") -> list[CommandRow]:
     """One place's rows in QUILL Lite's command-table shape.
 
-    No keys (see the module docstring). Submenu titles become ``"sub"`` rows
+    A row in :data:`LAYER_KEYS` carries its layer chord as its key
+    (``"Ctrl+Alt+Shift+Grave, O"``); the rest have none. Submenu titles become ``"sub"`` rows
     and their rows sit under ``parent|title``, which is how the Lite menu
     builder nests them.
     """

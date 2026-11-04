@@ -265,6 +265,15 @@ one video block.
     is no audio or video block at the caret."
 37. **QUILL Lite.** Repeat 31, 32 and 36 in QUILL Lite.
 
+### The site's own kinds (5.2)
+
+38. **Events.** File > WordPress > Open Page or Post lists Posts, Pages and
+    Events. Choose Events: "Open Day" is there. Open it, change a word, and
+    Save Draft to Site, then Publish or Update. Check the site shows the
+    change, then Move to Trash and restore it from the Open list.
+39. **A role that cannot list kinds.** As quill-contributor, Open still offers
+    Posts and Pages, and says nothing about the kinds it could not read.
+
 ### What the site lets you test that QUILL may not have yet
 
 The site already has what the later parts of wordpress.md need. Add a test here

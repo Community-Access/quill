@@ -34,6 +34,8 @@ class MediaItem:
     date_gmt: str
     post: int  # attached to; 0 when unattached
     filename: str
+    #: The sizes WordPress made of a picture: (slug, width, height, address) (9.15).
+    sizes: tuple[tuple[str, int, int, str], ...] = ()
 
     def spoken(self) -> str:
         parts = [self.title or self.filename, self.kind_label]
@@ -83,6 +85,21 @@ def media_from_payload(raw: Any) -> MediaItem:
         date_gmt=str(raw.get("date_gmt", "") or ""),
         post=int(raw.get("post", 0) or 0),
         filename=source.rsplit("/", 1)[-1] if source else "",
+        sizes=_sizes(details),
+    )
+
+
+def _sizes(details: dict[str, Any]) -> tuple[tuple[str, int, int, str], ...]:
+    sizes = details.get("sizes")
+    return tuple(
+        (
+            str(slug),
+            int(size.get("width", 0) or 0),
+            int(size.get("height", 0) or 0),
+            str(size["source_url"]),
+        )
+        for slug, size in (sizes.items() if isinstance(sizes, dict) else [])
+        if isinstance(size, dict) and size.get("source_url")
     )
 
 

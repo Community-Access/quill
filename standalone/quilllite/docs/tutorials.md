@@ -1,6 +1,6 @@
 # QUILL Lite Tutorials
 
-Welcome. There are 16 short lessons here, about 74 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 23 short lessons here, about 111 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials... (Ctrl+Alt+F1)** in QUILL Lite. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -26,6 +26,14 @@ The keys here are the ones QUILL Lite comes with. If you have changed a key, the
   - Switch to Spanish and back (3 minutes)
   - Make a live transcript (4 minutes)
   - Transcribe a recording (5 minutes)
+- **WordPress**: If you look after a WordPress site: connect it, write and publish a post, fix a page you found by its address, pictures with alternative text, the check before you publish, earlier versions, and comments.
+  - Connect your WordPress site (5 minutes)
+  - Write a post and publish it (6 minutes)
+  - Open a page by its address and fix a sentence (5 minutes)
+  - Pictures with alternative text (6 minutes)
+  - Check Before Publishing (5 minutes)
+  - Go back to a previous version (5 minutes)
+  - Answer comments (5 minutes)
 
 ## Your first documents
 
@@ -433,3 +441,224 @@ Turn an audio recording into text in the background, then open its saved transcr
    - You should hear: The completed transcript in its own document.
 
 The recording and your current document stay separate, and the result is waiting in Notifications when you are ready for it.
+
+## WordPress
+
+If you look after a WordPress site: connect it, write and publish a post, fix a page you found by its address, pictures with alternative text, the check before you publish, earlier versions, and comments.
+
+### Connect your WordPress site
+
+Connect QUILL Lite to a WordPress site with an application password, hear which role you have there, and learn the WordPress keys.
+
+*7 steps, about 5 minutes.*
+
+1. **Know what you need first.** You need three things: the site's address, your WordPress username, and an application password. An application password is a separate password WordPress makes for one app. It is not the password you sign in with, and you can take it away again at any time.
+   - Worth knowing: These lessons use the QUILL WordPress Test Site, at https://lp.csedesigns.com/wordpress/, as the example. On your own site, use your own pages wherever a lesson names one.
+
+2. **Open Connect a Site.** In the File menu, open WordPress and choose Connect a Site. It is a short form, and nothing is saved until the site has said yes.
+   - Keys: Ctrl+Alt+Shift+Grave, A
+   - You should hear: The Connect a WordPress Site dialog, on Kind of site.
+
+3. **Type the site's address.** Leave Kind of site on My own WordPress site. Tab to Site address and type it, for example https://lp.csedesigns.com/wordpress/. QUILL Lite only connects over HTTPS, so your password never travels in the clear.
+   - You should hear: Site address, edit, and the letters as you type them.
+
+4. **Get the password with your browser.** Press Get Password with My Browser. Your browser opens the site's own approval page. Sign in there if it asks, then choose Approve. On a newer site the password comes back to QUILL Lite by itself.
+   - You should hear: "Connected to QUILL WordPress Test Site as" and your role, such as Editor.
+   - Worth knowing: On an older site, WordPress shows you the password instead. Copy it, come back, and paste it into the box that is waiting for it.
+
+5. **Or paste one from your profile.** If you would rather do it by hand, make an application password in your WordPress profile, under Application Passwords, and copy it. Type your username, paste the password into Application password, and press Connect.
+   - You should hear: "Connected to QUILL WordPress Test Site as" and your role.
+   - Worth knowing: Your password is kept in Windows' own Credential Manager, never in a settings file. Never paste it into an email or a chat.
+
+6. **Choose which site comes first.** With more than one site, Switch Site, in File, WordPress, chooses your default. New and Open start there, and a document always stays with the site it came from.
+   - Keys: Ctrl+Alt+Shift+Grave, S
+   - You should hear: "Default site:" and its name, or that it is your only site.
+
+7. **Learn the WordPress keys.** The WordPress key layer gives the commands one letter each. Press the layer key, let go, then press a letter. The six you will use most are O for Open Page or Post, P for Publish or Update, M for Media Library, S for Switch Site, W for Open by Web Address, or D for Save Draft to Site. Escape leaves the layer without doing anything.
+   - Keys: Ctrl+Alt+Shift+Grave, then a letter
+   - You should hear: Whatever the letter runs. After Escape, nothing at all.
+   - Worth knowing: The whole layer: G New Page, N New Post, O Open Page or Post, W Open by Web Address, L Open Local Draft, D Save Draft to Site, P Publish or Update, E Schedule Publish, I Open on Site, Y Copy Address, R Properties, V Previous Versions, C Compare with Site, T Move to Trash, S Switch Site, Shift+S Sites, A Connect a Site, M Media Library, B WordPress Blocks, K Check Before Publishing, U Upload Files, X Alt Text Review. Every WordPress command is also in the Command Palette: type WordPress, or part of the command's name.
+
+You are connected, and the site has told you what your account may do. Next, write something and send it.
+
+Next: Write a post and publish it.
+
+### Write a post and publish it
+
+Start a new post, write it in the editor you already know, keep it on your computer, send it as a draft, and then publish it.
+
+*6 steps, about 6 minutes.*
+
+1. **Start a new post.** In the File menu, open WordPress and choose New Post. A post is a dated article, the kind that goes in a blog or a news list. A page is the lasting kind, like About or Contact.
+   - Keys: Ctrl+Alt+Shift+Grave, N
+   - You should hear: The New Post dialog, on Site, with your default site chosen.
+
+2. **Give it a title and a format.** Tab to Title and type one. The slug, which is the end of the web address, fills itself in as you type. Choose Markdown or HTML under Write in, check a category or two, and press Create.
+   - You should hear: "New post for" the site, and that nothing is sent until you choose Save Draft to Site or Publish.
+   - Worth knowing: Markdown is the easier one to write by ear. The format cannot change later.
+
+3. **Write, and save on this computer.** Write a few sentences the way you write anything else. Find, spelling and dictation all work here. Save as you always do: it keeps the post on this computer and sends nothing.
+   - Keys: Ctrl+S
+   - You should hear: The usual saved message. The site has not changed.
+
+4. **Send it as a draft.** Save Draft to Site, in File, WordPress, puts your post on the site where only you and your editors can see it. It is the safe way to see how it looks before anybody else does.
+   - Keys: Ctrl+Alt+Shift+Grave, D
+   - You should hear: "Draft saved to QUILL WordPress Test Site. It is not public."
+
+5. **Publish it.** Choose Publish or Update. Before anything goes, a question names the post and the site, and says what Check Before Publishing found. Press Publish if you are happy, or Escape to stop.
+   - Keys: Ctrl+Alt+Shift+Grave, P
+   - You should hear: "Publish on" the site, the title, and "Ready to publish: no problems found", or how many things there are to look at.
+   - Worth knowing: If your role cannot publish, the same command sends the post for review instead, and says so.
+
+6. **Hear where it went.** Once it is published, the post's web address is put on the clipboard, ready to paste into an email. Open on Site, in File, WordPress, opens it in your browser if you want to hear it the way a visitor will.
+   - Keys: Ctrl+Alt+Shift+Grave, I
+   - You should hear: "Published on QUILL WordPress Test Site. The address is on the clipboard."
+
+Saving keeps it here, Save Draft to Site sends it quietly, and Publish asks first. Closing a document never publishes anything.
+
+Next: Open a page by its address and fix a sentence; Check Before Publishing.
+
+### Open a page by its address and fix a sentence
+
+Open a post you found in your browser straight from its web address, change one sentence, and send the change back.
+
+*5 steps, about 5 minutes.*
+
+1. **Copy the address.** In your browser, copy the address of the post you want to change. On the test site, use the welcome post, at https://lp.csedesigns.com/wordpress/welcome/. Copy it from the address bar.
+   - You should hear: Your browser's own word that the address was copied, if it says one.
+
+2. **Open it by its address.** Choose Open by Web Address, in File, WordPress. When there is an address on the clipboard it is used straight away; when there is not, a box asks you for one.
+   - Keys: Ctrl+Alt+Shift+Grave, W
+   - You should hear: Open Welcome to the test site, and the Open as list.
+
+3. **Open it as Markdown.** Choose Markdown. It reads more easily than HTML, and anything Markdown cannot show is kept exactly on a short line of its own, so nothing on the page is lost.
+   - You should hear: "Opened Welcome to the test site from QUILL WordPress Test Site."
+
+4. **Fix one sentence.** Find the sentence that says Open me by web address, and rewrite it in your own words. Arrow over it first if you like; this is an ordinary document now.
+   - You should hear: Your new sentence, read back as you arrow over it.
+
+5. **Send the change.** Choose Publish or Update. A post that is already public is updated rather than published again, and the question says Update. Press Update.
+   - Keys: Ctrl+Alt+Shift+Grave, P
+   - You should hear: "Update on QUILL WordPress Test Site", then "Published on QUILL WordPress Test Site."
+   - Worth knowing: If somebody changed the post on the site after you opened it, nothing is sent. You are told what changed, and offered Compare the two, Open the site's copy, or Send mine anyway.
+
+Any address on one of your sites opens this way. Next time, try Open Page or Post for a page you know by name rather than by address.
+
+Next: Go back to a previous version.
+
+### Pictures with alternative text
+
+Put a picture from the site's Media Library into a post with good alternative text, and fix a picture in the library that has none.
+
+*7 steps, about 6 minutes.*
+
+1. **Open a post to put a picture in.** Choose Open Page or Post and pick Posts. Type part of a title in Find by title or status and press Enter, then Enter again on the one you want. The post you wrote earlier is a good one.
+   - Keys: Ctrl+Alt+Shift+Grave, O
+   - You should hear: Each row's title, its status, and when it last changed.
+
+2. **Choose a picture from the library.** Put the cursor where the picture should go. In the Insert menu, choose Picture from the Media Library, and pick photo-volunteers from the list.
+   - You should hear: Insert from Media Library, and the Files list, newest first.
+
+3. **Listen to the alternative text.** A picture dialog opens on Alternative text. That is what a screen reader says in place of the picture, so it should say what the picture shows and why it is there. This one already has some, from the library.
+   - You should hear: Alternative text, "Volunteers sorting donations at the spring fair".
+   - Worth knowing: Suggest Alternative Text asks your chosen AI for a first try. Check the Decorative box for a picture that adds nothing a visitor needs, like a divider.
+
+4. **Insert it.** Change the text if you can say it better for this post, then press Insert. The text belongs to this placement, so the same picture can say something different in another post.
+   - You should hear: "Picture inserted:" and its alternative text.
+
+5. **Find a picture with none.** Open the Media Library, in Tools, WordPress. Type banner in Find and press Enter. The wide-banner picture has no alternative text, and its row says so.
+   - Keys: Ctrl+Alt+Shift+Grave, M
+   - You should hear: Each file's title, type, size, alternative text and date.
+
+6. **Give it alternative text.** With wide-banner selected, press Edit Alternative Text, write a short description, and press OK. This changes the library's own text, which new placements start from.
+   - You should hear: "Alternative text saved on QUILL WordPress Test Site."
+
+7. **Review every picture in the post.** Back in your post, Alt Text Review, in Tools, WordPress, lists every picture with its text, so the empty ones and the weak ones are easy to find and fix.
+   - Keys: Ctrl+Alt+Shift+Grave, X
+   - You should hear: How many pictures there are, and how many to look at.
+
+Every picture now says something to somebody who cannot see it. Check Before Publishing finds any you missed.
+
+Next: Check Before Publishing.
+
+### Check Before Publishing
+
+Have a post checked for the problems that trip up visitors, go to each one, and fix it before anybody else meets it.
+
+*5 steps, about 5 minutes.*
+
+1. **Open the post with problems.** Choose Open Page or Post and pick Posts. Type draft in Find by title or status and press Enter. On the test site, open Things to check before publishing. It was made with one problem of each kind.
+   - Keys: Ctrl+Alt+Shift+Grave, O
+   - You should hear: Things to check before publishing, Draft, and when it last changed.
+
+2. **Run the check.** In the Tools menu, open WordPress and choose Check Before Publishing. It reads the whole post the way a careful visitor would, and nothing on the site changes.
+   - Keys: Ctrl+Alt+Shift+Grave, K
+   - You should hear: How many things there are to look at, with the problems and the things to check counted separately.
+
+3. **Listen to the list.** Arrow down Things to look at. Each one says what to look at and why: a heading 1 in the body, a skipped heading level, link text that says click here, a picture with no alternative text, a table with no header row, and a few more.
+   - You should hear: One finding a line, each with its reason.
+
+4. **Go to one.** Press Go to It on the finding you want to fix. The list closes and the cursor lands on that place in the post, so you can fix it there and then.
+   - You should hear: The line of the post the finding is about.
+
+5. **Fix it, and check again.** Make the fix, then run Check Before Publishing again. Work down the list until it is empty, or until what is left is something you chose on purpose.
+   - Keys: Ctrl+Alt+Shift+Grave, K
+   - You should hear: One fewer each time, and at the end, "Ready to publish: no problems found".
+   - Worth knowing: None of the findings stops you publishing. Publish runs the same check and reads you the summary in its question.
+
+The check is the second pair of eyes a sighted editor has by default. Run it before every publish; it costs a few seconds.
+
+Next: Go back to a previous version.
+
+### Go back to a previous version
+
+Hear the earlier versions of a post, the ones kept on this computer and the site's own history, read one, and put it back.
+
+*5 steps, about 5 minutes.*
+
+1. **Open a post with a history.** Open the welcome post again with Open by Web Address. The test site changed it three times when it was set up, so it has a history to look through.
+   - Keys: Ctrl+Alt+Shift+Grave, W
+   - You should hear: Opened Welcome to the test site, or your working copy of it.
+
+2. **Open Previous Versions.** In the File menu, open WordPress and choose Previous Versions. It lists the versions QUILL Lite kept, newest first, and then the site's own history.
+   - Keys: Ctrl+Alt+Shift+Grave, V
+   - You should hear: Each row's date, title, and why it was kept, such as On the site.
+
+3. **Read one before choosing.** Select a version and press View. The whole text opens in a window of its own, where you can read it or copy a paragraph out of it. Escape brings you back to the list.
+   - You should hear: The Version window, with the title and then the text.
+
+4. **Put it back.** Press Restore on the version you want. It goes into the editor in place of your text, and nothing is sent to the site until you choose to.
+   - You should hear: "Version put in the editor. Nothing was sent; your text before is in Previous Versions."
+
+5. **Hear what is different.** Compare with Site, in File, WordPress, lists the differences between the site's copy and yours, a line at a time. It is the check worth making before you send a restored version.
+   - Keys: Ctrl+Alt+Shift+Grave, C
+   - You should hear: Lines starting Site: for the site's copy, and Yours: for yours.
+   - Worth knowing: Changed your mind? Your text from before the restore is the newest row in Previous Versions, marked Before restore.
+
+Nothing you send is ever lost: the site's copy is kept before every update. Restore is the way back, and it never publishes.
+
+Next: Answer comments.
+
+### Answer comments
+
+Hear the comments waiting for you, reply to one, approve it, and deal with the spam.
+
+*5 steps, about 5 minutes.*
+
+1. **Open Comments.** In the Tools menu, open WordPress and choose Comments. It starts with the ones waiting for you, because those are the ones nobody else can see yet.
+   - You should hear: Comments: Waiting, and the site's name, then the list. On the test site, Alex asks when the next session starts.
+
+2. **Read the whole comment.** Each row says who wrote it, on which post, when, and its first words. Tab to Details to read the whole comment before you decide what to do.
+   - You should hear: The comment's full text.
+
+3. **Reply to it.** Tab back to the list and press Reply. Write your answer and press OK. It is published under your name, under the comment it answers.
+   - You should hear: "Reply to Alex published on QUILL WordPress Test Site."
+
+4. **Approve it.** Press Approve on the comment. It goes on the site for everybody to read, and leaves this list of waiting ones.
+   - You should hear: "Comment from Alex approved."
+   - Worth knowing: Spam and Trash are beside Approve, for the comments that should never be seen.
+
+5. **Look in the spam.** Press Show and choose Spam. WordPress catches most junk by itself, but now and then a real comment lands here, and Not Spam sends it back to Waiting.
+   - You should hear: Comments: Spam, and the comments in it.
+
+Waiting Count on First Use, in the same window, has the number of waiting comments said to you the first time you use the site in a session, so they never pile up unnoticed.

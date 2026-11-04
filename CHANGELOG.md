@@ -112,6 +112,8 @@
   has Next Block, Previous Block and Where Am I. The checks and the site's
   upkeep are in Tools > WordPress. The page commands are dimmed unless a
   WordPress page or post is in front of you.
+- **Open lists your site's own kinds too.** Events, recipes, or whatever
+  your theme or plugins add, beside Posts and Pages.
 - **New: Insert > Link to a Page on This Site.** Pick one of the site's
   published pages or posts, and the link goes in, named by what you selected
   or by the page's title.

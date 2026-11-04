@@ -46,6 +46,7 @@ from quill.apps.lite_window_typing import overwrite_now
 from quill.core.lite.commands import SUBMENU_SEP, CommandRow, split_menu
 from quill.core.lite.format_kinds import FORMAT_COMMAND_KINDS, applies_to
 from quill.core.lite.keymap import default_aliases, resolved_commands
+from quill.core.wordpress.keys import is_sequence
 from quill.ui.markdown_tag_row import HideableMenuRow, markdown_tag_row_shown
 from quill.ui.richedit_editing import RICH
 
@@ -155,9 +156,12 @@ class DocumentMenuMixin:
             gate = getattr(self, "_ai_gated_label", None)  # codex.md 10A.8
             if callable(gate):
                 label = gate(handler, label)
+            # A two-press key (the WordPress keys: "Ctrl+Alt+Shift+Grave, O") goes
+            # in brackets: after the tab wx would try to parse it and drop it.
+            # The layer, not an accelerator, runs it (lite_window_wordpress.py).
             item = menu.Append(
                 wx.ID_ANY,
-                f"{label}	{key}" if key else label,
+                (f"{label} ({key})" if is_sequence(key) else f"{label}	{key}") if key else label,
                 kind=wx.ITEM_CHECK if kind == "check" else wx.ITEM_NORMAL,
             )
             self.Bind(wx.EVT_MENU, self._dispatch(handler), item)

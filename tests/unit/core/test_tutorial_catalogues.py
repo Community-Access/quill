@@ -92,6 +92,11 @@ def _known_command_ids(app_id: str) -> set[str]:
         # too, which is exactly what the family lesson is about.
         for section in APP_KEYMAPS.values():
             ids.update(section)
+        # The WordPress rows register under their own ids as the menus are
+        # built (main_frame_wordpress.py), from the one shared table.
+        from quill.core.wordpress.menu import all_rows
+
+        ids.update(row[0] for _path, row in all_rows())
     for rel in sources:
         text = (_ROOT / rel).read_text(encoding="utf-8")
         ids.update(re.findall(r'"((?:radio|podcasts|weather|spotify|app|view)\.[a-z_0-9]+)"', text))
@@ -239,6 +244,36 @@ def test_generated_book_matches_the_catalogue(app_id: str) -> None:
     assert book.path.read_text(encoding="utf-8") == render(book), (
         f"{book.path} is out of date. Run: python -m quill.tools.build_tutorials_reference --write"
     )
+
+
+def test_quill_and_quill_lite_teach_the_same_wordpress_lessons() -> None:
+    """QUILL Lite may never be ahead of QUILL, and its lessons may not drift
+    from QUILL's either: the WordPress track is one module, and each editor's
+    step names the same WordPress row in its own command table."""
+    from quill.core.wordpress.menu import lite_handler
+
+    quill = [t for t in _catalogue("quill").tutorials if t.track == "wordpress"]
+    lite = [t for t in _catalogue("quilllite").tutorials if t.track == "wordpress"]
+    assert [t.slug for t in quill] == [t.slug for t in lite]
+    assert len(quill) == 7
+    for ours, theirs in zip(quill, lite, strict=True):
+        assert [s.title for s in ours.steps] == [s.title for s in theirs.steps]
+        for mine, other in zip(ours.steps, theirs.steps, strict=True):
+            if mine.command.startswith("wordpress."):
+                assert other.command == lite_handler(mine.command)
+            assert mine.keys == other.keys
+
+
+def test_wordpress_lessons_hold_no_password() -> None:
+    """A lesson says where an application password comes from, never one."""
+    from quill.core.tutorials.wordpress_lessons import wordpress_lessons
+
+    # WordPress writes one as six groups of four letters and digits.
+    pattern = re.compile(r"\b[A-Za-z0-9]{4}( [A-Za-z0-9]{4}){5}\b")
+    for tutorial in wordpress_lessons(str, save="", track="wordpress", surfaces=(), app="X"):
+        for step in tutorial.steps:
+            for text in (step.body, step.hear, step.note):
+                assert not pattern.search(text), f"{tutorial.slug}: {step.title}"
 
 
 def test_each_app_keeps_its_own_progress_file() -> None:

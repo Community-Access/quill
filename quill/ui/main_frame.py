@@ -2300,7 +2300,7 @@ class MainFrame(
             self._quill_key_mode_started_at = 0.0
             event.Skip()
             return
-        if self._handle_quill_key_mode_event(event):
+        if self._wordpress_key_event(event) or self._handle_quill_key_mode_event(event):
             return
         event.Skip()
 
@@ -4185,7 +4185,7 @@ class MainFrame(
         # itself is unchanged.
         prefix = getattr(self.settings, "quill_key_binding", "Ctrl+Shift+Grave")
         display = format_binding_for_display(binding, prefix=prefix)
-        if display != binding:
+        if display != binding or ", " in display:  # a sequence (WordPress keys)
             # #612: text after a literal tab in a wx menu item label is not
             # just decorative -- wx parses it as a real native accelerator
             # (wxGetAccelFromString). "QUILL Key + S" parses as a clean,

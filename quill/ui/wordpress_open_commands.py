@@ -12,7 +12,7 @@ from urllib.parse import parse_qs, urlparse
 from quill.core.wordpress import local as lc
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import sites as st
-from quill.core.wordpress.api import WordPressApi
+from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.ui import wordpress_dialogs as dlg
 
 
@@ -28,7 +28,23 @@ class WordPressOpenCommands:
         profile = self.pick_site(store, "Open Page or Post")
         if profile is None:
             return
-        kinds = [("post", "Posts"), ("page", "Pages")]
+        api = self.api(profile)
+
+        def kinds_found() -> list[tuple[str, str]]:
+            # A site's own types (events, recipes...) beside Posts and Pages; a
+            # site or role that will not list them still gets the two.
+            try:
+                return wp.list_content_types(api)
+            except WordPressApiError:
+                return [("post", "Posts"), ("page", "Pages")]
+
+        self.background(
+            f"reading what {profile.name} holds",
+            kinds_found,
+            lambda kinds: self._choose_kind(profile, api, kinds),
+        )
+
+    def _choose_kind(self, profile: st.SiteProfile, api: Any, kinds: list[tuple[str, str]]) -> None:
         kind_index = dlg.ask_choice(
             self.host.parent,
             self.host.show_modal,
@@ -37,13 +53,12 @@ class WordPressOpenCommands:
             rows=[label for _k, label in kinds],
             help_text=(
                 "Posts are dated articles in the blog or news. Pages are lasting pages like About"
-                " or Contact."
+                " or Contact. Any other kinds are the site's own, such as events."
             ),
         )
         if kind_index is None:
             return
         kind = kinds[kind_index][0]
-        api = self.api(profile)
         statuses = [s for s, _l in wp.STATUSES]
         self.background(
             f"listing {kinds[kind_index][1].lower()} on {profile.name}",
@@ -88,7 +103,7 @@ class WordPressOpenCommands:
                 f"Every {kind} on {profile.name}, newest change first. "
                 "Enter opens the selected one."
             ),
-            list_label=f"&{kind.title()}s:",
+            list_label=f"&{kind.title()}s:" if kind in ("post", "page") else "&Items:",
             list_help="Each row says the title, its status, and when it last changed.",
             rows=[i.spoken() for i in items],
             on_enter=open_one,

@@ -304,6 +304,17 @@ fi
   printf '%s' '<!-- wp:heading --><h2 class="wp-block-heading">Event name</h2><!-- /wp:heading --><!-- wp:paragraph --><p>Date, time and place.</p><!-- /wp:paragraph -->' | \
   wp post create - --post_type=wp_block --post_status=publish --post_title="Event announcement" --post_name=event-announcement >/dev/null
 
+# --- a custom post type ------------------------------------------------------
+# Events, registered by a must-use plugin, so Open's list of kinds and a custom
+# type's save, publish and Trash can be tested (wordpress.md 5.2). Shown in REST.
+wp eval '$d = WP_CONTENT_DIR . "/mu-plugins"; if (!is_dir($d)) { mkdir($d, 0755, true); }
+file_put_contents($d . "/quill-test-events.php", "<?php
+add_action(\"init\", function () {
+  register_post_type(\"event\", array(\"label\" => \"Events\", \"public\" => true, \"show_in_rest\" => true, \"rest_base\" => \"events\", \"supports\" => array(\"title\", \"editor\", \"revisions\", \"author\")));
+});
+");'
+post open-day event publish "Open Day" "<!-- wp:paragraph --><p>Come and see the studio.</p><!-- /wp:paragraph -->" >/dev/null
+
 # --- comments --------------------------------------------------------------
 if [ "$(wp comment list --post_id="$welcome" --status=all --format=count)" -lt 3 ] && \
    [ "$(wp comment list --post_id="$welcome" --status=spam --format=count)" -lt 1 ]; then

@@ -140,6 +140,67 @@ class DocumentWordPressMixin:
             if handler in DOCUMENT_ONLY and item is not None:
                 item.Enable(is_wordpress)
 
+    def _wordpress_key_down(self, event: Any) -> bool:
+        """The WordPress keys: Ctrl+Alt+Shift+Grave, then a letter (wordpress.md 19).
+
+        Called first from the editor's key-down handler. True when the key was
+        the layer's. The shared :class:`~quill.core.wordpress.keys.WordPressKeyLayer`
+        decides what a key means -- the same object QUILL's char hook asks -- and
+        the letters are the keys the command table resolves to now, so a row the
+        Keyboard Manager moved, or an area switched off, is not a layer letter.
+        """
+        import wx
+
+        from quill.core.wordpress import keys
+
+        layer = getattr(self, "_wordpress_key_layer", None)
+        if layer is None:
+            layer = self._wordpress_key_layer = keys.WordPressKeyLayer()
+        code = int(event.GetKeyCode())
+        if layer.active:
+            if code in {wx.WXK_SHIFT, wx.WXK_CONTROL, wx.WXK_ALT}:
+                return True  # Shift going down on the way to Shift+S
+            key = keys.event_key(
+                code,
+                ctrl=bool(event.ControlDown()),
+                alt=bool(event.AltDown()),
+                shift=bool(event.ShiftDown()),
+                escape_code=wx.WXK_ESCAPE,
+            )
+            if not key:
+                layer.cancel()
+                return False
+            outcome = layer.press(key, keys.layer_from_bindings(self._wordpress_key_bindings()))
+            if outcome.command:
+                self.run_unless_read_only(outcome.command)
+            elif outcome.message:
+                self._announce(outcome.message)
+            return outcome.consumed
+        if not (event.ControlDown() and event.AltDown() and event.ShiftDown()):
+            return False
+        # The grave key: wx reports VK_OEM_3 (192) on Windows, "`" elsewhere.
+        raw = getattr(event, "GetRawKeyCode", None)
+        raw_code = int(raw()) if callable(raw) else 0
+        if code not in {ord("`"), ord("~"), 0xC0} and raw_code != 0xC0:
+            return False
+        if not self._wordpress_key_bindings():
+            return False  # the WordPress area is switched off: not our key
+        self._announce(layer.start())
+        return True
+
+    def _wordpress_key_bindings(self) -> dict[str, str]:
+        """Each WordPress handler's key as the command table resolves it now."""
+        from quill.core.lite.keymap import resolved_commands
+
+        app = self.app
+        return {
+            handler: key
+            for _menu, _label, key, handler, kind in resolved_commands(
+                app.feature_enabled, getattr(app, "keymap", None)
+            )
+            if handler.startswith("cmd_wp_") and kind not in {"sep", "sub"}
+        }
+
     def _wordpress(self) -> Any:
         commands = getattr(self, "_wordpress_commands", None)
         if commands is None:

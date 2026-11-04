@@ -98,6 +98,8 @@ and release channels.
   WordPress page or post is in front of you.
 - **Alt+F, W opens File > WordPress.** Print Preview moved from W to T
   (Alt+F, T) to make room; its key, Ctrl+Alt+Shift+P, is unchanged.
+- **Open lists your site's own kinds too.** Events, recipes, or whatever
+  your theme or plugins add, beside Posts and Pages.
 - **New: Insert > Link to a Page on This Site.** Pick one of the site's
   published pages or posts, and the link goes in, named by what you selected
   or by the page's title.

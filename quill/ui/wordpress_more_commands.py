@@ -247,6 +247,10 @@ class WordPressMoreCommands:
                 f"Kept with your copy: {len(answer.category_ids)} categories, "
                 f"{len(answer.tag_ids)} tags. They go to the site when you next send."
             )
+            # The site's own custom fields, when it registers any (9.15).
+            custom = getattr(self, "custom_fields_after_properties", None)
+            if custom is not None:
+                custom(copy, profile)
 
         if copy.kind == "post":
             self.background(  # type: ignore[attr-defined]
@@ -424,4 +428,5 @@ def item_from_copy(copy: lc.WorkingCopy, html: str, *, status: str) -> wp.Item:
         parent=int(p.get("parent", 0) or 0),
         template=str(p.get("template", "")),
         format=str(p.get("format", "")),
+        meta=dict(p.get("meta") or {}),
     )

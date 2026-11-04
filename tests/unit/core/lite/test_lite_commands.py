@@ -30,8 +30,9 @@ import collections
 import pytest
 
 from quill.core.lite.commands import COMMANDS, SUBMENU_SEP, menu_titles, shortcut_text
+from quill.core.wordpress.keys import is_sequence
+from quill.core.wordpress.menu import LAYER_KEYS, lite_handler
 from quill.core.wordpress.menu import all_rows as wordpress_rows
-from quill.core.wordpress.menu import lite_handler
 from tests.wx_session import shared_wx_app
 
 
@@ -80,14 +81,15 @@ KEYLESS_WITH_REASON: dict[str, str] = {
             "cmd_table_tidy",
         )
     },
-    # File > WordPress (wordpress.md 12): as in QUILL, where none of these has a
-    # key yet either (rule 2). Only Ctrl+Alt+Shift+Q and R are free in both
-    # editors, so the everyday five wait on Jeff's choice (wordpress.md 19).
+    # The WordPress rows with no letter on the WordPress keys (wordpress.md 19):
+    # as in QUILL, where the same rows have none either (rule 2). The rows that
+    # have one carry "Ctrl+Alt+Shift+Grave, <letter>" as their key.
     **{
-        lite_handler(command_id): "Waiting on a key both editors can share: only "
-        "Ctrl+Alt+Shift+Q and R are free in both, and the choice is Jeff's. Until then "
-        "Alt+F, W reaches the submenu, and the Command Palette finds every row by name."
+        lite_handler(command_id): "As in QUILL (rule 2): the WordPress keys give a letter "
+        "to the File > WordPress rows and the everyday Tools rows, and rule 9 leaves the "
+        "rest to their own WordPress submenu's access letters and the Command Palette."
         for _submenu, (command_id, _title, _handler) in wordpress_rows()
+        if command_id not in LAYER_KEYS.values()
     },
     "cmd_whats_new": "As in QUILL, where What's New has no key either (rule 2): no chord "
     "is free in both editors -- Ctrl+Shift+F1, the standalone apps' key for it, is "
@@ -258,6 +260,8 @@ def test_every_key_is_one_wx_can_actually_parse() -> None:
         for menu, label, key, _handler in _items():
             if not key:
                 continue  # a KEYLESS_WITH_REASON row has nothing to parse
+            if is_sequence(key):
+                continue  # two presses, run by the WordPress keys layer, never wx
             entry = wx.AcceleratorEntry()
             if not entry.FromString(f"item\t{key}"):
                 unparsed.append(f"{menu} > {label}: {key!r}")

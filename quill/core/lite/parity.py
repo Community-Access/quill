@@ -32,6 +32,8 @@ are right.
 
 from __future__ import annotations
 
+from quill.core.wordpress.menu import LAYER_KEYS, lite_handler
+
 __all__ = [
     "COMMAND_EQUIVALENTS",
     "DIVERGENCES",
@@ -472,6 +474,9 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_zoom_in": "view.text_size_up",
     "cmd_zoom_out": "view.text_size_down",
     "cmd_zoom_reset": "view.text_size_reset",
+    # The WordPress keys (wordpress.md 19): one table, wordpress/menu.py
+    # LAYER_KEYS, gives both editors the same Ctrl+Alt+Shift+Grave letters.
+    **{lite_handler(command_id): command_id for command_id in LAYER_KEYS.values()},
 }
 
 #: Handlers with no QUILL command id because the *control* answers the key.

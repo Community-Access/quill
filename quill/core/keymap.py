@@ -28,6 +28,7 @@ from quill.core.keymap_query import (
 )
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
+from quill.core.wordpress.keys import default_bindings as wordpress_key_bindings
 
 __all__ = [
     "DEFAULT_ALIASES",
@@ -1265,6 +1266,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.paste_from_tray_10": "Ctrl+Alt+Shift+0",
     "edit.paste_from_tray_11": "Ctrl+Alt+Shift+-",
     "edit.paste_from_tray_12": "Ctrl+Alt+Shift+=",
+    # The WordPress keys (wordpress.md 19): Ctrl+Alt+Shift+Grave, then one letter,
+    # the same letters in QUILL Lite, both read from wordpress/menu.py LAYER_KEYS.
+    **wordpress_key_bindings(),
 }
 
 

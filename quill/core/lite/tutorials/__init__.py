@@ -1,6 +1,6 @@
 """QUILL Lite's guided tutorials: its tracks, and its lessons assembled.
 
-Sixteen lessons in two tracks, and the number is the point. QUILL has
+Sixteen lessons in two tracks for the editor itself, and the number is the point. QUILL has
 twenty-four in six, because QUILL is an environment somebody moves into;
 QUILL Lite is a Notepad replacement, and a Notepad replacement with a
 twenty-one-lesson course attached to it is advertising that it is not one.
@@ -28,6 +28,12 @@ Two tracks, and they answer the two questions this product exists for:
   dictation is the other way in that has no sighted equivalent for somebody
   who would rather speak than type.
 
+A third track, WordPress (2026-11-04), is for somebody who looks after a
+site, and only them. It is the same seven lessons QUILL has, written once in
+:mod:`quill.core.tutorials.wordpress_lessons`, because QUILL Lite reaches the
+same WordPress commands from the same table and may never be ahead of QUILL or
+behind it.
+
 What is deliberately not here: a tour of everything. The menus, the command
 palette and the user guide cover the rest, and a lesson that duplicates the
 keyboard reference is a keyboard reference with extra words (bad.md P3.2).
@@ -38,6 +44,8 @@ from __future__ import annotations
 from quill.core.lite.tutorials import first_documents, working_in_it
 from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
+from quill.core.tutorials.wordpress_lessons import wordpress_lessons
+from quill.core.wordpress.menu import lite_handler
 
 #: QUILL Lite's tracks, in teaching order.
 TRACKS: tuple[Track, ...] = (
@@ -55,6 +63,13 @@ TRACKS: tuple[Track, ...] = (
         "way back to where you were, skim something long, fix spelling without "
         "a red squiggle, ask a question about the document in front of you, and "
         "write by talking or transcribe a recording.",
+    ),
+    Track(
+        "wordpress",
+        "WordPress",
+        "If you look after a WordPress site: connect it, write and publish a "
+        "post, fix a page you found by its address, pictures with alternative "
+        "text, the check before you publish, earlier versions, and comments.",
     ),
 )
 
@@ -75,6 +90,14 @@ CATALOGUE: TutorialSet = build(
         },
         track="working-in-it",
         surfaces=("QUILL Lite",),
+    ),
+    # The seven 2026-11-04 WordPress lessons, the same as QUILL's.
+    wordpress_lessons(
+        lambda name: lite_handler(f"wordpress.{name}"),
+        save="cmd_save",
+        track="wordpress",
+        surfaces=("QUILL Lite",),
+        app="QUILL Lite",
     ),
 )
 

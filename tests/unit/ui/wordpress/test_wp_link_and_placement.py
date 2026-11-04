@@ -110,3 +110,28 @@ def test_enter_in_the_open_list_opens_the_row(wp, wp_site, wp_dialogs) -> None:
     wp.open_item = lambda profile, kind, item_id: opened.append((kind, item_id))
     wp_dialogs.enter(0)
     assert opened == [("page", 3)]
+
+
+def test_open_offers_the_sites_own_types_and_lists_them(wp, wp_site, wp_dialogs) -> None:
+    wp_site.on(
+        "GET",
+        f"{API}/types",
+        {
+            "post": {"rest_base": "posts", "name": "Posts"},
+            "page": {"rest_base": "pages", "name": "Pages"},
+            "attachment": {"rest_base": "media", "name": "Media"},
+            "wp_block": {"rest_base": "blocks", "name": "Patterns"},
+            "event": {"rest_base": "events", "name": "Events", "viewable": True},
+        },
+    )
+    wp_site.on("GET", f"{API}/events", _published("event", [(12, "Open Day")]))
+    wp_dialogs.answer("ask_choice", 2)
+    wp.cmd_open()
+    assert wp_dialogs.asked("ask_choice")[0]["rows"] == ["Posts", "Pages", "Events"]
+    assert wp_dialogs.window["list_label"] == "&Items:"
+    assert wp_dialogs.window["rows"][0].startswith("Open Day")
+
+
+def test_open_falls_back_to_posts_and_pages_when_types_are_refused(wp, wp_dialogs) -> None:
+    wp.cmd_open()
+    assert wp_dialogs.asked("ask_choice")[0]["rows"] == ["Posts", "Pages"]
