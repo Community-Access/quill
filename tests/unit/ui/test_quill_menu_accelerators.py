@@ -309,6 +309,25 @@ def test_the_preferences_hub_has_a_way_in(quill_menu_bar, monkeypatch) -> None:
     assert opened == [True]
 
 
+def test_the_wordpress_keys_show_beside_their_rows(quill_menu_bar) -> None:
+    """A two-press key goes in brackets, never after the tab (wordpress.md 19).
+
+    After the tab wx would try to parse "Ctrl+Alt+Shift+Grave, O" as one
+    accelerator and drop it; in brackets it is text, and the WordPress keys
+    layer (main_frame_wordpress.py) is what runs it. Built straight from the
+    rows, because a fresh test profile has the WordPress feature off.
+    """
+    from quill.core.wordpress.menu import WORDPRESS_ROWS
+
+    frame = quill_menu_bar._quill_main_frame
+    menu = frame._fill_wordpress_menu(wx.Menu(), WORDPRESS_ROWS)
+    labels = [item.GetItemLabel() for item in menu.GetMenuItems()]
+    assert "&Open Page or Post... (Ctrl+Alt+Shift+Grave, O)" in labels
+    assert "Switc&h Site... (Ctrl+Alt+Shift+Grave, S)" in labels
+    assert "&Sites... (Ctrl+Alt+Shift+Grave, Shift+S)" in labels
+    assert not [label for label in labels if chr(9) in label and "Grave" in label]
+
+
 def test_two_keys_that_did_nothing_now_run_their_command(quill_menu_bar) -> None:
     """QUILL key, C had no command behind it; Alt+F1 was registered keyless."""
     commands = quill_menu_bar._quill_main_frame.commands

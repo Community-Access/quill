@@ -495,6 +495,8 @@
   "quill.ui.wordpress_item_dialogs": "reachable",
   "quill.ui.wordpress_media_dialogs": "reachable",
   "quill.ui.wordpress_player_window": "reachable",
+  "quill.ui.wordpress_plugin_dialogs": "reachable",
+  "quill.ui.wordpress_route_dialogs": "reachable",
   "quill.ui.wordpress_schedule_dialog": "reachable",
   "quill.ui.work_persona_dialog": "reachable"
 }

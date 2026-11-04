@@ -8,118 +8,11 @@ object QUILL's ``main_frame_wordpress.py`` reaches. The rows come from
 
 from __future__ import annotations
 
-import webbrowser
-from collections.abc import Callable
-from pathlib import Path
 from typing import Any
 
+from quill.apps.lite_window_wordpress_host import LiteWordPressHost
 
-class LiteWordPressHost:
-    """A QUILL Lite document window, as the shared WordPress commands see it."""
-
-    def __init__(self, window: Any) -> None:
-        self._w = window
-
-    @property
-    def parent(self) -> Any:
-        return self._w
-
-    def show_modal(self, dialog: Any, label: str) -> int:
-        from quill.ui.dialog_contract import show_modal_dialog
-
-        return int(show_modal_dialog(dialog, label))
-
-    def announce(self, text: str) -> None:
-        self._w._announce(text)
-
-    def run_task(
-        self,
-        name: str,
-        func: Callable[[], Any],
-        on_success: Callable[[Any], None],
-        on_failure: Callable[[BaseException], None],
-    ) -> None:
-        from quill.apps.lite_window_open import app_task_manager
-
-        app_task_manager(self._w.app).submit(
-            name,
-            lambda **_kw: func(),
-            on_success=lambda _op, result: on_success(result),
-            on_failure=lambda _op, exc: on_failure(exc),
-        )
-
-    def current_path(self) -> Path | None:
-        path = getattr(self._w, "path", None)
-        return Path(path) if path else None
-
-    def current_text(self) -> str:
-        return str(self._w.control.GetValue())
-
-    def replace_text(self, text: str) -> None:
-        control = self._w.control
-        control.SetSelection(0, control.GetLastPosition())
-        control.WriteText(text)
-
-    def insert_text(self, text: str) -> None:
-        self._w.control.WriteText(text)
-
-    def selected_text(self) -> str:
-        return str(self._w.control.GetStringSelection())
-
-    def caret_offset(self) -> int:
-        return int(self._w.control.GetInsertionPoint())
-
-    def go_to_offset(self, offset: int) -> None:
-        control = self._w.control
-        control.SetInsertionPoint(offset)
-        control.ShowPosition(offset)
-        control.SetFocus()
-
-    def open_path(self, path: Path) -> None:
-        self._w.app.open_path(path)
-
-    def save_current(self) -> bool:
-        self._w.cmd_save()
-        control = self._w.control
-        is_modified = getattr(control, "IsModified", None)
-        return not bool(is_modified()) if callable(is_modified) else True
-
-    def clipboard_text(self) -> str:
-        from quill.ui.main_frame_wordpress import read_clipboard_text
-
-        return read_clipboard_text()
-
-    def set_clipboard_text(self, text: str) -> None:
-        from quill.ui.main_frame_wordpress import write_clipboard_text
-
-        write_clipboard_text(text)
-
-    def open_in_browser(self, url: str) -> None:
-        webbrowser.open(url)
-
-    def clipboard_image_png(self) -> bytes | None:
-        from quill.ui.wordpress_media_host import read_clipboard_png
-
-        return read_clipboard_png()
-
-    def ai_describe_image(
-        self,
-        path: Path,
-        question: str,
-        on_done: Callable[[str], None],
-        on_error: Callable[[str], None],
-    ) -> bool:
-        from quill.ui.wordpress_media_host import ask_editor_ai
-
-        return ask_editor_ai(self._w, path, question, on_done, on_error)
-
-    def ai_editor(self) -> Any:
-        return self._w
-
-    def start_repeating(self, seconds: float, callback: Callable[[], None]) -> Callable[[], None]:
-        from quill.ui.main_frame_wordpress import start_wx_repeating
-
-        return start_wx_repeating(self._w, seconds, callback)
+__all__ = ["DocumentWordPressMixin", "LiteWordPressHost"]
 
 
 class DocumentWordPressMixin:
@@ -509,3 +402,99 @@ class DocumentWordPressMixin:
     def cmd_wp_edit_picture_on_site(self) -> None:
         """Tools > WordPress > More Media > Edit a Picture on the Site."""
         self._wordpress().cmd_edit_picture_on_site()
+
+    def cmd_wp_send_document(self) -> None:
+        """File > WordPress > Send and Copy > Send This Document to WordPress."""
+        self._wordpress().cmd_send_document()
+
+    def cmd_wp_publish_elsewhere(self) -> None:
+        """File > WordPress > Send and Copy > Publish to Another Site."""
+        self._wordpress().cmd_publish_elsewhere()
+
+    def cmd_wp_duplicate(self) -> None:
+        """File > WordPress > Send and Copy > Duplicate."""
+        self._wordpress().cmd_duplicate()
+
+    def cmd_wp_send_folder(self) -> None:
+        """File > WordPress > Send and Copy > Send a Folder as Drafts."""
+        self._wordpress().cmd_send_folder()
+
+    def cmd_wp_download_writing(self) -> None:
+        """File > WordPress > Send and Copy > Download My Writing."""
+        self._wordpress().cmd_download_writing()
+
+    def cmd_wp_hear_link(self) -> None:
+        """Edit > WordPress > Hear Where a Link Goes."""
+        self._wordpress().cmd_hear_link()
+
+    def cmd_wp_fix_link_text(self) -> None:
+        """Edit > WordPress > Fix Link Text."""
+        self._wordpress().cmd_fix_link_text()
+
+    def cmd_wp_insert_icon(self) -> None:
+        """Insert > WordPress Icon."""
+        self._wordpress().cmd_insert_icon()
+
+    def cmd_wp_upload_large_file(self) -> None:
+        """Tools > WordPress > More Media > Upload a Large File."""
+        self._wordpress().cmd_upload_large_file()
+
+    def cmd_wp_regenerate_sizes(self) -> None:
+        """Tools > WordPress > More Media > Regenerate Sizes."""
+        self._wordpress().cmd_regenerate_sizes()
+
+    def cmd_wp_menu_history(self) -> None:
+        """Tools > WordPress > Menu History."""
+        self._wordpress().cmd_menu_history()
+
+    def cmd_wp_previous_looks(self) -> None:
+        """Tools > WordPress > Manage > Previous Looks."""
+        self._wordpress().cmd_previous_looks()
+
+    def cmd_wp_site_space(self) -> None:
+        """Tools > WordPress > Manage > Space Used."""
+        self._wordpress().cmd_site_space()
+
+    def cmd_wp_download_design(self) -> None:
+        """Tools > WordPress > Manage > Download a Copy of the Site's Design."""
+        self._wordpress().cmd_download_design()
+
+    def cmd_wp_coming_up(self) -> None:
+        """Tools > WordPress > Your Sites > Coming Up."""
+        self._wordpress().cmd_coming_up()
+
+    def cmd_wp_what_changed(self) -> None:
+        """Tools > WordPress > Your Sites > What Changed on My Sites."""
+        self._wordpress().cmd_what_changed()
+
+    def cmd_wp_plugin_fields(self) -> None:
+        """File > WordPress > Plugin Fields."""
+        self._wordpress().cmd_plugin_fields()
+
+    def cmd_wp_style_variations(self) -> None:
+        """Tools > WordPress > Design > Style Variations."""
+        self._wordpress().cmd_style_variations()
+
+    def cmd_wp_site_styles(self) -> None:
+        """Tools > WordPress > Design > Site Styles."""
+        self._wordpress().cmd_site_styles()
+
+    def cmd_wp_events_coming_up(self) -> None:
+        """Tools > WordPress > Plugin Extras > Events Coming Up."""
+        self._wordpress().cmd_events_coming_up()
+
+    def cmd_wp_new_event(self) -> None:
+        """Tools > WordPress > Plugin Extras > New Event."""
+        self._wordpress().cmd_new_event()
+
+    def cmd_wp_shop_orders(self) -> None:
+        """Tools > WordPress > Plugin Extras > Shop Orders."""
+        self._wordpress().cmd_shop_orders()
+
+    def cmd_wp_abilities(self) -> None:
+        """Tools > WordPress > Manage > AI Abilities."""
+        self._wordpress().cmd_abilities()
+
+    def cmd_wp_ask_site(self) -> None:
+        """Tools > WordPress > Manage > Ask the Site."""
+        self._wordpress().cmd_ask_site()

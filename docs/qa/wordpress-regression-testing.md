@@ -274,6 +274,67 @@ one video block.
 39. **A role that cannot list kinds.** As quill-contributor, Open still offers
     Posts and Pages, and says nothing about the kinds it could not read.
 
+### Every route (9.16)
+
+Sign in as quill-admin unless a test says otherwise. Each command reads the
+site's list of routes first; where a test says "a site without it", use a
+WordPress older than the route, or a security plugin that hides it.
+
+40. **Hear Where a Link Goes.** In a post, put the caret on a link to one of
+    the site's pages and choose Edit > WordPress > Hear Where a Link Goes. It
+    says the page's title and description. With the caret on no link, type
+    an address with a typo: it says the page could not be reached and offers
+    nothing to insert.
+41. **Fix Link Text.** Add a "click here" link to the About page. Edit >
+    WordPress > Fix Link Text lists it with "About"; Use the Page's Title
+    makes the link say "About".
+42. **Dead links.** Add a link to `/no-such-page/`, publish, and run Tools >
+    WordPress > Check This Page. The summary says one link goes nowhere, and
+    Dead Links names it.
+43. **Insert Icon** (WordPress 7.0 or later). Insert > WordPress Icon lists the
+    site's icons. Insert one with a label and one as decorative; publish and
+    check with NVDA that the first is read by its label and the second is
+    skipped. An empty label inserts nothing.
+44. **Upload a Large File.** Tools > WordPress > More Media > Upload a Large
+    File with a video over 16 MB. Progress is spoken at each quarter, and the
+    library item plays. On a site without the pieces route, QUILL says so and
+    sends nothing.
+45. **Regenerate Sizes.** After Edit a Picture on the Site, Tools > WordPress >
+    More Media > Regenerate Sizes on that picture. The thumbnail in the
+    Media Library shows the edit.
+46. **Previous Looks** (block theme). Change a colour in Site Styles, then
+    Tools > WordPress > Manage > Previous Looks. The earlier look is listed
+    with its date and palette; Go Back to This Look restores it, and the look
+    you left is now in the list.
+47. **Menu History.** Open Tools > WordPress > Menus, remove an item, then
+    Tools > WordPress > Menu History: Bring Back Removed Items puts it back at
+    the end. For a Navigation block, Restore This Version restores it whole.
+48. **Space Used.** Tools > WordPress > Manage > Space Used says the total and
+    lists uploads, themes, plugins, WordPress and the database in words. As
+    quill-editor it says the role cannot see it.
+49. **Download a Copy of the Site's Design** (block theme). Tools > WordPress
+    > Manage > Download a Copy of the Site's Design saves a zip that opens
+    and holds the theme. On a classic theme it says only a block theme can.
+50. **Send This Document to WordPress.** Open a Markdown file with a heading
+    and a picture beside it, and choose File > WordPress > Send, Copy and
+    Download > Send This Document to WordPress. The draft's title is the
+    heading, the picture is in the Media Library, and the draft opens.
+51. **Publish to Another Site and Duplicate.** With two sites connected, copy
+    a post with a category the other site lacks: QUILL asks before creating
+    it, and the copy is a draft there with its pictures. Duplicate a page on
+    the same site: the new draft is titled "(copy)" and opens.
+52. **Download My Writing.** Save the site to an empty folder; check
+    `index.md`, one file per page and post, and the pictures folder. Run it
+    again: it says everything is already up to date.
+53. **Send a Folder as Drafts.** A folder of three Markdown files, one with a
+    "click here" link. The confirmation gives the count and says one has
+    things to look at; three drafts arrive.
+54. **Coming Up and What Changed.** Schedule a post on each site. Tools >
+    WordPress > Your Sites > Coming Up lists both by date. Leave a comment
+    as quill-contributor, then What Changed on My Sites lists it; run it
+    again and it says nothing is new.
+55. **QUILL Lite.** Repeat 40, 43, 50 and 54 in QUILL Lite.
+
 ### What the site lets you test that QUILL may not have yet
 
 The site already has what the later parts of wordpress.md need. Add a test here

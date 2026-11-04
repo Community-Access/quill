@@ -32,7 +32,7 @@ NOTES = [
 
 @pytest.fixture
 def wpx(wp: Any) -> Any:
-    wp.__class__ = type("Wired", (WordPressApiWritingCommands, type(wp)), {})
+    wp.__class__ = type("Wired", (type(wp), WordPressApiWritingCommands), {})
     return wp
 
 

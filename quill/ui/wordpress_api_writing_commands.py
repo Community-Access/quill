@@ -83,7 +83,9 @@ class WordPressApiWritingCommands(WordPressNotesCommands, WordPressPictureEditCo
             try:
                 changed = cf.changes(form, answers)
             except cf.FieldValueError as exc:
-                self.host.announce(f"{exc} needs a number. Nothing was kept; try again.")
+                self.host.announce(
+                    f"{exc.field_label} needs a number. Nothing was kept; try again."
+                )
                 return
             fresh.properties["meta"] = changed
             self.local.save(fresh)  # type: ignore[attr-defined]

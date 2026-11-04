@@ -43,6 +43,10 @@ OUTPUT_PATH = _REPO_ROOT / "docs" / "keyboard-reference.md"
 #: registration is spread across the main-frame mixins by design (GATE-11).
 _TITLE_SOURCE_DIRS = ("quill/ui",)
 
+#: Single files outside those directories that name commands the same way: the
+#: WordPress rows, whose titles both editors' menus read (wordpress/menu.py).
+_TITLE_SOURCE_FILES = ("quill/core/wordpress/menu.py",)
+
 _APP_DISPLAY = {
     "radio": "Quill Radio",
     "cast": "QUILL Cast",
@@ -82,6 +86,7 @@ def harvest_titles() -> dict[str, str]:
         # editor table must still say what the editor's menu says.
         found = (_REPO_ROOT / rel).rglob("*.py")
         paths.extend(sorted(found, key=lambda path: (not path.name.startswith("main_frame"), path)))
+    paths.extend(_REPO_ROOT / rel for rel in _TITLE_SOURCE_FILES)
     for path in paths:
         try:
             tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))

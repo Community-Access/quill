@@ -26,6 +26,7 @@ from quill.core.wordpress import sites as st
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_item_dialogs as idlg
+from quill.ui.wordpress_abilities_commands import WordPressAbilitiesCommands
 from quill.ui.wordpress_admin_commands import WordPressAdminCommands
 from quill.ui.wordpress_api_writing_commands import WordPressApiWritingCommands
 from quill.ui.wordpress_block_commands import WordPressBlockCommands
@@ -34,11 +35,16 @@ from quill.ui.wordpress_connect import ConnectFlow
 from quill.ui.wordpress_host import WordPressHost
 from quill.ui.wordpress_link_commands import WordPressLinkCommands
 from quill.ui.wordpress_listen_commands import WordPressListenCommands
+from quill.ui.wordpress_look_commands import WordPressLookCommands
 from quill.ui.wordpress_media_commands import WordPressMediaCommands
 from quill.ui.wordpress_more_commands import WordPressMoreCommands
 from quill.ui.wordpress_open_commands import WordPressOpenCommands
 from quill.ui.wordpress_page_commands import WordPressPageCommands
+from quill.ui.wordpress_pattern_commands import WordPressPatternCommands
 from quill.ui.wordpress_picture_commands import WordPressPictureCommands
+from quill.ui.wordpress_plugin_commands import WordPressPluginCommands
+from quill.ui.wordpress_route_commands import WordPressRouteCommands
+from quill.ui.wordpress_shop_commands import WordPressShopCommands
 from quill.ui.wordpress_site_commands import WordPressSiteCommands
 
 NOT_WORDPRESS = (
@@ -60,6 +66,12 @@ class WordPressCommands(
     WordPressListenCommands,
     WordPressLinkCommands,
     WordPressApiWritingCommands,
+    WordPressRouteCommands,
+    WordPressLookCommands,
+    WordPressPatternCommands,
+    WordPressPluginCommands,
+    WordPressShopCommands,
+    WordPressAbilitiesCommands,
 ):
     def __init__(self, host: WordPressHost, *, data_dir: Any = None, opener: Any = None) -> None:
         self.host = host

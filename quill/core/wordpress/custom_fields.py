@@ -17,6 +17,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
+from quill.core.error_codes import CodedError
 from quill.core.wordpress.api import WordPressApi
 from quill.core.wordpress.block_catalog import Field, assign_access_keys
 from quill.core.wordpress.site import kind_route
@@ -109,8 +110,14 @@ def build_form(
     return out
 
 
-class FieldValueError(ValueError):
+class FieldValueError(CodedError):
     """A number field that does not hold a number (never raised past the command)."""
+
+    code = "QUILL-WP-FIELDS-NOT-A-NUMBER"
+
+    def __init__(self, field_label: str) -> None:
+        super().__init__(field_label)
+        self.field_label = field_label
 
 
 def changes(form: CustomFields, answers: Mapping[str, Any]) -> dict[str, Any]:

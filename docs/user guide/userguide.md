@@ -18314,6 +18314,145 @@ off the site itself and forgets it on this computer. It asks whether to
 remove the site from QUILL or keep it, so you can connect again later. Your
 local drafts stay either way.
 
+### More from your site
+
+QUILL reads what your site offers before it offers anything. A command your
+site does not have tells you why in one sentence, and nothing is sent.
+
+**Style Variations** (Tools > WordPress > Design > Style Variations). A block
+theme comes with ready-made looks. Each one is listed by name with how many of
+its colour pairings are too faint for body text, and Details reads out the
+whole Palette Report. Choose Apply to make one the site's look. QUILL keeps the
+look you had on this computer first, so Put Back the Previous Look brings it
+back.
+
+**Site Styles** (Tools > WordPress > Design > Site Styles). Your site's colours
+and font sizes, by name. Each colour says how it reads on the page background,
+such as "Accent (dark green), #1a4d2e, 7.2 to 1 on the page background,
+passes". Choose Change, type the new colour or size, and QUILL tells you the
+new contrast before anything is saved. Everything else about the look stays in
+WordPress's Site Editor.
+
+**Patterns from WordPress.org.** In Insert > WordPress Block, choose
+WordPress.org Patterns to search the free Pattern Directory. Before a pattern
+goes in, QUILL tells you what it is for, the blocks it holds in order, and how
+many of its pictures have no alternative text, so you know what you are adding.
+Undo takes it out again.
+
+**Pattern categories.** When your site sorts its patterns into categories,
+Synced Patterns asks which category to show first.
+
+**Plugins QUILL recognises.** Site Check names each one it finds.
+
+- The Events Calendar: Tools > WordPress > Plugin Extras > Events Coming Up lists every
+  event from today, with when and where. New Event makes a draft event and
+  opens it. An event's start, end and venue show in Properties.
+- WooCommerce: a product's price and stock show in Properties. Shop Orders lists
+  the newest orders to read. QUILL never changes an order, and copies one only
+  after asking, because it holds the customer's name and address.
+- Yoast SEO and Rank Math: the SEO title and description show in Properties
+  with their length.
+
+**Plugin Fields** (File > WordPress > Plugin Fields) changes those fields: an
+event's dates and venue, a product's prices and stock, the SEO title and
+description. Under each SEO field a line keeps the count, and QUILL tells you
+when the text goes over what search engines show. A price change asks first.
+
+**Abilities and Ask the Site.** WordPress 6.9 lets a site offer actions to AI.
+Tools > WordPress > Manage > AI Abilities lists each one by name. Every ability
+is off until you turn it on. Ask the Site sends your question to the AI you
+chose in Choose Your AI. If the AI wants to use an ability, QUILL asks you
+first, every time, and says exactly what it will be given. The answer ends by
+saying what ran on your site.
+
+**Site Check** now runs every health test your site offers and reads each as one
+line. If the authorization header test fails, it explains that application
+passwords cannot work on that site until the host fixes it.
+
+### Every route, and more from your site
+
+QUILL checks what each site offers before it tries anything. If a site is
+too old for a command, or your role cannot use it, QUILL says so in one
+sentence and sends nothing.
+
+- **Hear Where a Link Goes** (Edit > WordPress). With the caret on a link,
+  QUILL asks your site to look at the page and reads you its title and
+  description. With no link there, type an address: QUILL tells you what is
+  there, so a typo is caught before the link goes in, and offers to insert
+  it with the page's own title as the words.
+- **Fix Link Text** (Edit > WordPress). Every "click here" or "read more"
+  link in the page, with the title of the page it goes to. Choose Use the
+  Page's Title, or Use All Titles, and the links say where they go.
+- **Dead links.** Check This Page also checks the links in your page and
+  tells you how many go nowhere. Dead Links lists them.
+- **Insert Icon** (Insert > WordPress Icon). Your site's icons, by name.
+  Give an icon a label that says what it means, such as "Phone us", or
+  insert it as decorative so screen readers skip it. An icon is never left
+  unnamed.
+- **Upload a Large File** (Tools > WordPress > More Media). Long recordings
+  and videos go up in pieces, so a slow connection or a strict host does not
+  lose the whole upload. QUILL tells you how far it has got.
+- **Regenerate Sizes** (Tools > WordPress > More Media). After you edit a
+  picture on the site, this remakes its smaller copies, so the theme shows
+  the change everywhere.
+- **Previous Looks** (Tools > WordPress > Manage). Your site's earlier
+  styles, dated, each with its colours. Go Back to This Look restores one,
+  and the look you had is kept, so you can change your mind.
+- **Menu History** (Tools > WordPress). Earlier versions of a menu. Bring
+  Back Removed Items puts back anything taken out since. For a classic menu,
+  QUILL keeps a version each time you open the Menus window.
+- **Space Used** (Tools > WordPress > Manage). How much room your uploads,
+  themes, plugins, WordPress and the database take, in plain words.
+- **Download a Copy of the Site's Design** (Tools > WordPress > Manage). A
+  zip of your block theme with your changes, saved before you try something
+  new.
+- **Send This Document to WordPress** (File > WordPress > Send, Copy and
+  Download). Any document open in QUILL becomes a new draft. Its first
+  heading is the title, its headings stay headings, and its pictures go to
+  the Media Library.
+- **Publish to Another Site.** Copy the page or post you are editing to
+  another of your sites, as a draft there. Pictures are uploaded again.
+  Categories and tags are matched by name, and QUILL asks before creating
+  any that are missing.
+- **Duplicate.** A new draft from any page or post, on the same site or
+  another, with everything but the date and status.
+- **Download My Writing.** Every page and post saved to a folder as
+  Markdown, with the pictures and a contents page. Run it again later and
+  only what changed is fetched.
+- **Send a Folder as Drafts.** A folder of Markdown or text files becomes
+  drafts in one go. Each file is checked first, and one question tells you
+  how many are going and how many have something to look at.
+- **Coming Up** (Tools > WordPress > Your Sites). Everything scheduled on
+  all your sites, soonest first.
+- **What Changed on My Sites** (Tools > WordPress > Your Sites). New
+  comments, posts other people published, and health warnings since you last
+  looked, across every site. It only appears when you ask.
+
+**Where these are:**
+
+- File > WordPress > Send and Copy > Send This Document to WordPress...
+- File > WordPress > Send and Copy > Publish to Another Site...
+- File > WordPress > Send and Copy > Duplicate...
+- File > WordPress > Send and Copy > Send a Folder as Drafts...
+- File > WordPress > Send and Copy > Download My Writing...
+- Edit > WordPress > Fix Link Text...
+- Insert > WordPress Icon...
+- Tools > WordPress > More Media > Upload a Large File...
+- Tools > WordPress > More Media > Regenerate Sizes...
+- Tools > WordPress > Menu History...
+- Tools > WordPress > Manage > Previous Looks...
+- Tools > WordPress > Manage > Download a Copy of the Site's Design...
+- Tools > WordPress > Your Sites > Coming Up...
+- Tools > WordPress > Your Sites > What Changed on My Sites...
+- File > WordPress > Plugin Fields...
+- Tools > WordPress > Design > Style Variations...
+- Tools > WordPress > Design > Site Styles...
+- Tools > WordPress > Plugin Extras > Events Coming Up...
+- Tools > WordPress > Plugin Extras > New Event...
+- Tools > WordPress > Plugin Extras > Shop Orders...
+- Tools > WordPress > Manage > AI Abilities...
+- Tools > WordPress > Manage > Ask the Site...
+
 ### Keys
 
 The WordPress commands share one key: `Ctrl+Alt+Shift+Grave`. That is the

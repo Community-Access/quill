@@ -64,9 +64,20 @@ WORDPRESS_ROWS: tuple[Entry, ...] = (
     None,
     ("wordpress.properties", "P&roperties...", "cmd_properties"),
     ("wordpress.custom_fields", "Custom &Fields...", "cmd_custom_fields"),
+    ("wordpress.plugin_fields", "Plu&gin Fields...", "cmd_plugin_fields"),
     ("wordpress.versions", "Previous &Versions...", "cmd_versions"),
     ("wordpress.compare", "Co&mpare with Site", "cmd_compare"),
     ("wordpress.trash", "Move to &Trash...", "cmd_trash"),
+    Submenu(
+        "Send and &Copy",
+        (
+            ("wordpress.send_document", "Send This &Document to WordPress...", "cmd_send_document"),
+            ("wordpress.publish_elsewhere", "&Publish to Another Site...", "cmd_publish_elsewhere"),
+            ("wordpress.duplicate", "D&uplicate...", "cmd_duplicate"),
+            ("wordpress.send_folder", "Send a &Folder as Drafts...", "cmd_send_folder"),
+            ("wordpress.download_writing", "Download &My Writing...", "cmd_download_writing"),
+        ),
+    ),
     None,
     ("wordpress.switch_site", "Switc&h Site...", "cmd_switch_site"),
     ("wordpress.sites", "&Sites...", "cmd_sites"),
@@ -88,6 +99,7 @@ INSERT_ROWS: tuple[Entry, ...] = (
     ("wordpress.insert_link", "Li&nk to a Page on This Site...", "cmd_insert_link"),
     ("wordpress.add_note", "N&ote on This Block...", "cmd_add_note"),
     ("wordpress.picture_maker", "Make a Pictu&re...", "cmd_picture_maker"),
+    ("wordpress.insert_icon", "WordPress &Icon...", "cmd_insert_icon"),
 )
 
 FORMAT_ROWS: tuple[Entry, ...] = (
@@ -118,6 +130,8 @@ EDIT_ROWS: tuple[Entry, ...] = (
             ("wordpress.next_block", "&Next Block", "cmd_next_block"),
             ("wordpress.previous_block", "&Previous Block", "cmd_previous_block"),
             ("wordpress.where_am_i", "&Where Am I", "cmd_where_am_i"),
+            ("wordpress.hear_link", "&Hear Where a Link Goes", "cmd_hear_link"),
+            ("wordpress.fix_link_text", "Fix &Link Text...", "cmd_fix_link_text"),
         ),
     ),
 )
@@ -135,6 +149,8 @@ MORE_MEDIA = Submenu(
             "cmd_upload_from_address",
         ),
         ("wordpress.paste_image", "&Paste Image", "cmd_paste_image"),
+        ("wordpress.upload_large_file", "Upload a &Large File...", "cmd_upload_large_file"),
+        ("wordpress.regenerate_sizes", "&Regenerate Sizes...", "cmd_regenerate_sizes"),
         ("wordpress.smaller_copy", "Make a S&maller Copy...", "cmd_smaller_copy"),
         (
             "wordpress.edit_picture_on_site",
@@ -168,6 +184,17 @@ MANAGE = Submenu(
         None,
         ("wordpress.bulk_edit", "&Bulk Edit...", "cmd_bulk_edit"),
         ("wordpress.page_order", "Page O&rder...", "cmd_page_order"),
+        None,
+        ("wordpress.previous_looks", "Previous Loo&ks...", "cmd_previous_looks"),
+        ("wordpress.site_space", "&Space Used", "cmd_site_space"),
+        (
+            "wordpress.download_design",
+            "Download a Copy of the Site's &Design...",
+            "cmd_download_design",
+        ),
+        None,
+        ("wordpress.abilities", "AI Abili&ties...", "cmd_abilities"),
+        ("wordpress.ask_site", "Ask th&e Site...", "cmd_ask_site"),
         None,
         ("wordpress.sign_out", "S&ign Out This Site...", "cmd_sign_out"),
     ),
@@ -208,9 +235,32 @@ TOOLS_ROWS: tuple[Entry, ...] = (
             ("wordpress.comments", "&Comments...", "cmd_comments"),
             ("wordpress.manage_terms", "Categories and Ta&gs...", "cmd_manage_terms"),
             ("wordpress.menus", "Me&nus...", "cmd_menus"),
+            ("wordpress.menu_history", "Menu &History...", "cmd_menu_history"),
             ("wordpress.site_check", "Site Chec&k", "cmd_site_check"),
             ("wordpress.site_settings", "Site S&ettings...", "cmd_site_settings"),
+            Submenu(
+                "&Design",
+                (
+                    ("wordpress.style_variations", "Style &Variations...", "cmd_style_variations"),
+                    ("wordpress.site_styles", "Site &Styles...", "cmd_site_styles"),
+                ),
+            ),
+            Submenu(
+                "Plug&in Extras",
+                (
+                    ("wordpress.events_coming_up", "Events &Coming Up...", "cmd_events_coming_up"),
+                    ("wordpress.new_event", "New &Event...", "cmd_new_event"),
+                    ("wordpress.shop_orders", "Shop &Orders...", "cmd_shop_orders"),
+                ),
+            ),
             MANAGE,
+            Submenu(
+                "&Your Sites",
+                (
+                    ("wordpress.coming_up", "Coming &Up...", "cmd_coming_up"),
+                    ("wordpress.what_changed", "&What Changed on My Sites...", "cmd_what_changed"),
+                ),
+            ),
         ),
     ),
 )
@@ -295,6 +345,11 @@ DOCUMENT_ONLY: frozenset[str] = frozenset({
     "cmd_custom_fields",
     "cmd_add_note",
     "cmd_notes",
+    "cmd_hear_link",
+    "cmd_fix_link_text",
+    "cmd_insert_icon",
+    "cmd_publish_elsewhere",
+    "cmd_plugin_fields",
 })
 
 

@@ -112,6 +112,27 @@
   has Next Block, Previous Block and Where Am I. The checks and the site's
   upkeep are in Tools > WordPress. The page commands are dimmed unless a
   WordPress page or post is in front of you.
+- **Forms groundwork.** QUILL reads and writes the form language of BITS
+  Accessible Forms (BFL) without changing a byte it does not edit, on one
+  shared form model with a published schema, a rules engine that reads every
+  rule as a sentence, and imports and exports for SurveyJS, XLSForm and HTML.
+  The Forms commands come next.
+- **WordPress keys.** Ctrl+Alt+Shift+Grave, then one letter: O Open, P
+  Publish or Update, M Media Library, S Switch Site, W Open by Web Address, D
+  Save Draft to Site, and the File > WordPress letters for the rest. The
+  menus show each key.
+- **Your site's look and plugins.** Tools > WordPress > Design has Style
+  Variations, with each look's colour check, and Site Styles. Insert Block
+  searches WordPress.org's free patterns. The Events Calendar, WooCommerce
+  and SEO plugins get small, plain extras, and Site Check runs every Site
+  Health test. AI Abilities are off until you turn each one on.
+- **More from your site.** Hear Where a Link Goes and Fix Link Text (Edit >
+  WordPress), dead links in Check This Page, Insert > WordPress Icon, large
+  uploads in pieces and Regenerate Sizes, Previous Looks and Menu History,
+  Space Used and a copy of the site's design, and Coming Up and What Changed
+  on My Sites across every site. File > WordPress > Send and Copy
+  sends any document to WordPress, publishes to another site, duplicates,
+  downloads your writing, and sends a folder as drafts.
 - **Block notes, custom fields and picture sizes.** View > Block Notes and
   Insert > Note on This Block join in the block editor's notes. Properties
   shows the custom fields your site's plugins register, and File >
