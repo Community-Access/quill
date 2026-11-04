@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 518.
+Editor commands with default bindings: 528.
 
 ## The QUILL editor
 
@@ -473,6 +473,14 @@ Editor commands with default bindings: 518.
 | (unbound by default) | Podcasts: Sound Enhancements... | `podcasts.sound_enhancements` |
 | (unbound by default) | Non ascii jump to report | `power.non_ascii_jump_to_report` |
 | (unbound by default) | Non ascii jump to source | `power.non_ascii_jump_to_source` |
+| (unbound by default) | Commands Allowed in This Project... | `project.allowed_commands` |
+| (unbound by default) | Close Project | `project.close` |
+| (unbound by default) | Agent Command Output | `project.command_output` |
+| (unbound by default) | Engine Tools for This Project... | `project.engine_tools` |
+| (unbound by default) | Explain Last Turn | `project.explain_turn` |
+| (unbound by default) | Open Project Folder... | `project.open_folder` |
+| (unbound by default) | Do a Project Task... | `project.task` |
+| (unbound by default) | Agent Task Transcript | `project.transcript` |
 | (unbound by default) | Play favorite 1 | `radio.play_favorite_1` |
 | (unbound by default) | Play favorite 10 | `radio.play_favorite_10` |
 | (unbound by default) | Play favorite 2 | `radio.play_favorite_2` |
@@ -571,11 +579,13 @@ Editor commands with default bindings: 518.
 | QUILL Key + 7 | Podcasts: Stop | `podcasts.stop` |
 | QUILL Key + 8 | Podcasts: Play/Pause | `podcasts.play_pause` |
 | QUILL Key + 9 | Radio: Mute/Unmute | `radio.mute_toggle` |
+| QUILL Key + K | Stop Agent | `project.stop_agent` |
 | QUILL Key + M | Paste html as markdown | `power.paste_html_as_markdown` |
 | QUILL Key + Shift+G or Ctrl+Alt+Shift+Home | Snippet Gallery... | `power.open_snippet_gallery` |
 | QUILL Key + Shift+M | Toggle Meeting Mode | `verbosity.toggle_meeting` |
 | QUILL Key + Shift+Q | Toggle Quiet Mode | `verbosity.toggle_quiet` |
 | QUILL Key + Shift+Z | Undo Verbosity Change | `verbosity.undo` |
+| QUILL Key + U | Undo Last Agent Turn | `project.undo_turn` |
 | S | QUILL Quick Nav: Sentence | `quill.quick_nav.sentence` |
 | Shift+Enter | Insert line break | `power.insert_line_break` |
 | T | QUILL Quick Nav: Table | `quill.quick_nav.table` |

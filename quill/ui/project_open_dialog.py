@@ -21,8 +21,14 @@ import wx
 
 from quill.core.ai import project_task_words as words
 from quill.ui.accessible_names import set_accessible_name
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
+from quill.ui.dialog_contract import (
+    apply_listbox_activation,
+    apply_modal_ids,
+    bind_close_button,
+    show_modal_dialog,
+)
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = [
     "EngineToolsDialog",
@@ -38,7 +44,7 @@ _PAD = 8
 
 def _text(parent: wx.Window, value: str, name: str, help_text: str, lines: int = 3) -> Any:
     field = wx.TextCtrl(parent, value=value, style=wx.TE_MULTILINE | wx.TE_READONLY)
-    set_accessible_name(field, name)
+    set_spoken_name(field, name)  # no label before it, so the name must be spoken
     field.SetHelpText(help_text)
     field.SetMinSize((-1, field.GetCharHeight() * lines + _PAD))
     return field
@@ -64,7 +70,7 @@ class OpenProjectDialog(wx.Dialog):
             "selected. A project is just a folder; QUILL keeps its own notes about it "
             "in its own data folder, never in the project."
         )
-        self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._open_selected())
+        apply_listbox_activation(self.list, lambda _e: self._open_selected())
         if self._recent:
             self.list.SetSelection(0)
         else:
@@ -158,7 +164,7 @@ class InstructionFilesDialog(wx.Dialog):
         use = wx.Button(self, wx.ID_YES, "&Use Them")
         use.SetHelpText("Sends the notes with every task in this project, marked as data.")
         use.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(wx.ID_YES))
-        skip = wx.Button(self, wx.ID_NO, "Do&n't Use Them")
+        skip = wx.Button(self, wx.ID_NO, "&Don't Use Them")
         skip.SetHelpText("Leaves the notes out of tasks in this project.")
         skip.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(wx.ID_NO))
         row.Add(use, 0, wx.RIGHT, _PAD)

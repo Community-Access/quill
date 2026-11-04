@@ -33,6 +33,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = [
     "AllowedCommandsDialog",
@@ -171,7 +172,7 @@ class AllowedCommandsDialog(wx.Dialog):
             ),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_NO_VSCROLL,
         )
-        set_accessible_name(about, "About this list")
+        set_spoken_name(about, "About this list")  # no label before it
         about.SetHelpText("What this list does, and what it never does.")
         sizer.Add(about, 0, wx.EXPAND | wx.ALL, _PAD)
         sizer.Add(
