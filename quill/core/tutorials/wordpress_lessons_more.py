@@ -161,8 +161,8 @@ def later_wordpress_lessons(
                     body=(
                         "Arrow down Things to look at. Each one says what to look at "
                         "and why: a heading 1 in the body, a skipped heading level, "
-                        "link text that says click here, a picture with no alternative "
-                        "text, a table with no header row, and a few more."
+                        "link text that does not say where it goes, a picture with no "
+                        "alternative text, a table with no header row, and a few more."
                     ),
                     hear="One finding a line, each with its reason.",
                 ),

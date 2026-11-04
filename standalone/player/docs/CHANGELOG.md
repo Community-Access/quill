@@ -8,6 +8,19 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
 
 ## Unreleased
 
+### Opening
+
+- **Play a web address.** Give Quill Media Player an https address, on the
+  command line or from QUILL's WordPress player (Open in Quill Media Player),
+  and it streams it straight away; nothing is downloaded. Plain http
+  addresses are refused with the reason.
+- **A second launch hands over its file.** Opening a file or address while
+  the Player is already running now plays it in the running window. Before,
+  the second launch did nothing.
+- **A single file says "file", not "book".** "End of file" and "in the file"
+  for a file with no chapters; audiobooks keep their book wording. Go to
+  Position also works on a stream now.
+
 ### Sound
 
 - **A second sound scheme: VS Code Signals** (2026-11-02). Quill Media Player

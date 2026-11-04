@@ -1111,7 +1111,7 @@ Have a post checked for the problems that trip up visitors, go to each one, and 
    - Keys: Ctrl+Alt+Shift+Grave, K
    - You should hear: How many things there are to look at, with the problems and the things to check counted separately.
 
-3. **Listen to the list.** Arrow down Things to look at. Each one says what to look at and why: a heading 1 in the body, a skipped heading level, link text that says click here, a picture with no alternative text, a table with no header row, and a few more.
+3. **Listen to the list.** Arrow down Things to look at. Each one says what to look at and why: a heading 1 in the body, a skipped heading level, link text that does not say where it goes, a picture with no alternative text, a table with no header row, and a few more.
    - You should hear: One finding a line, each with its reason.
 
 4. **Go to one.** Press Go to It on the finding you want to fix. The list closes and the cursor lands on that place in the post, so you can fix it there and then.
