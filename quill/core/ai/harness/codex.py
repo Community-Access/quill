@@ -107,6 +107,20 @@ _DECLINE_ANSWERS: dict[str, dict[str, Any]] = {
 }
 
 
+#: Built-in approvals a project may turn on (decision 4), by permission kind.
+_VENDOR_KINDS: dict[str, str] = {
+    "item/commandExecution/requestApproval": "shell",
+    "item/fileChange/requestApproval": "write",
+}
+
+
+def _with_vendor_shell(config: dict[str, Any], tools: Any) -> dict[str, Any]:
+    """Codex's own shell back on for this thread, only when the project allows it."""
+    if "shell" in getattr(tools, "vendor_kinds", frozenset()):
+        config = {**config, "features.shell_tool": True}
+    return config
+
+
 class _RefusedSession:
     """A session that will not start (Safe Mode, no engine, single request)."""
 
@@ -307,11 +321,15 @@ class CodexToolSession:
 
     def _build_thread_params(self) -> dict[str, Any]:
         params: dict[str, Any] = {
-            "cwd": str(self._folders.work),
+            "cwd": getattr(self._tools, "vendor_cwd", "") or str(self._folders.work),
             "approvalPolicy": "untrusted",
-            "sandbox": "read-only",
+            # Read-only unless the person turned on Codex's own file changes for
+            # this project (decision 4); each one still asks first.
+            "sandbox": "workspace-write"
+            if "write" in getattr(self._tools, "vendor_kinds", frozenset())
+            else "read-only",
             "ephemeral": False,  # kept for the task so a renewal can resume (decision 4)
-            "config": thread_config(),
+            "config": _with_vendor_shell(thread_config(), self._tools),
             "dynamicTools": to_codex_dynamic_tools(self._tools),
         }
         if self._agent.system_prompt.strip():
@@ -428,6 +446,13 @@ class CodexToolSession:
     def _on_request(self, method: str, params: dict[str, Any]) -> dict[str, Any]:
         if method == "item/tool/call":
             return self._tool_call(params)
+        kind = _VENDOR_KINDS.get(method, "")
+        if kind and kind in getattr(self._tools, "vendor_kinds", frozenset()):
+            # Decision 4: a built-in the person turned on for this project still asks.
+            detail = str(params.get("command") or params.get("reason") or "")[:300]
+            if self._tools.authorize_vendor(kind, detail):
+                return {"decision": "accept"}
+            return {"decision": "decline"}
         self._tools.record_defect(f"Codex sent {method}, which QUILL never allows; declined.")
         answer = _DECLINE_ANSWERS.get(method)
         if answer is not None:

@@ -284,6 +284,22 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Propose Alt Text (codex.md 6.4): Do a Document Task with the request
     # filled in. No key in either editor; rule 8 reason in the family gate.
     "tools.hosted_ai_alt_text": "",
+    # Project tasks (code.md 6.4), the Developer profile only. No chord is free
+    # in both editors (measured 2026-11-04: every three-modifier candidate is a
+    # system-wide hotkey, a QuillVille launcher or a recent-file key), so QUILL
+    # Lite reaches them from Tools > Project and Ctrl+3, and rule 6 lets QUILL put
+    # the two a person may need in a hurry on the leader. The rest are a family
+    # under rule 7 (tests/unit/core/test_family_rules_and_gates.py).
+    "project.open_folder": "",
+    "project.task": "",
+    "project.stop_agent": "Ctrl+Shift+Grave, K",
+    "project.undo_turn": "Ctrl+Shift+Grave, U",
+    "project.explain_turn": "",
+    "project.command_output": "",
+    "project.transcript": "",
+    "project.allowed_commands": "",
+    "project.engine_tools": "",
+    "project.close": "",
     "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
     # The dictionary (2026-10-02; quill/ui/word_tools_commands.py, shared).
     # Look Up is the dictionary without AI (DICT-2's window, now reachable and
@@ -717,7 +733,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "app.activity": "Shift+F9",
     "app.announcement_self_test": "",
     "app.open_media_player": "",
-    "edit.follow_link": "Ctrl+Enter",
+    # Ctrl+Enter is Word's page break (rule 1), and QUILL Lite's, so the
+    # command both editors have keeps it (rule 2). Follow Link held it until
+    # 2026-11-03 and still answers it: Ctrl+Enter with the caret on a link in
+    # a text document follows the link (insert_page_break checks first), so the
+    # old habit keeps working wherever a link can be. In a Word or RTF document
+    # the key always breaks the page, as it does in Word.
+    "format.insert_page_break": "Ctrl+Enter",
+    "edit.follow_link": "",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for the sentence family (§4.22)
     # Ctrl+Space means SENTENCE in both editors (bad.md 5.3a, P1.2b). It was
     # Select Chunk here and Select Sentence in QUILL Lite, which is one key

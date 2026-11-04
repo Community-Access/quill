@@ -169,6 +169,15 @@ and this computer is signed out in one step.
 
 ---
 
+## And for people who write code
+
+Choose the new **Developer** profile and QUILL Lite can work on a whole folder
+of code with an AI. Ask for a change; hear the plan; read every edit, with
+line numbers, before it is written; allow each command it wants to run; hear
+the test results in one sentence; and put everything back with one command if
+you change your mind. Coach mode has the AI teach you while you type the
+change yourself. None of it appears unless you choose the Developer profile.
+
 ## And the editor underneath it
 
 You already know how to use it. Ctrl+O opens. Ctrl+S saves. Ctrl+F finds. F3

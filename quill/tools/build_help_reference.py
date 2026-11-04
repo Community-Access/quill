@@ -153,6 +153,7 @@ APPS: tuple[AppConfig, ...] = (
             "quill/apps/lite*.py",
             "quill/ui/spelling_voice_dialog.py",
             "quill/ui/hosted_ai*.py",
+            "quill/ui/project_*.py",
             "quill/ui/text_editor_prefs.py",
             "quill/ui/text_editor_commands.py",
             "quill/ui/windows_dictation_*.py",

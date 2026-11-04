@@ -58,6 +58,7 @@ TEXT_CHANGING_HANDLERS: frozenset[str] = frozenset({
     "cmd_insert_special_character",
     "cmd_insert_emoji",
     "cmd_insert_line_break",
+    "cmd_insert_page_break",
     "cmd_insert_link",
     "cmd_insert_table",
     # Navigate > Table's editing rows

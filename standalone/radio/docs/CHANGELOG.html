@@ -283,6 +283,45 @@ and the Podcast Index says why when it cannot; browsing long lists stays
 smooth; Preferences has Find a setting; Undo History lists the last ten
 things you can take back; and a few choices can be shared with your
 other Quill apps.</p>
+<h3
+id="connecting-to-spotify-works-and-says-why-when-it-cannot-2026-11-04">Connecting
+to Spotify works, and says why when it cannot (2026-11-04)</h3>
+<ul>
+<li><strong>Connect now opens your browser.</strong> After you typed a
+Client ID and chose Connect, Quill Radio said it was opening your
+browser and then did nothing. The sign-in was being handed to the
+background worker the wrong way, and stopped before the browser could
+open. So no sign-in ever finished, and nothing Spotify could play. Fixed
+in Quill Radio and QUILL Cast.</li>
+<li><strong>The sign-in window shows the exact redirect address</strong>
+your Spotify app must list, with a Copy Address button, and every
+failure is one plain sentence saying what to do.</li>
+<li><strong>Show Diagnostics</strong> reports your Spotify setup and
+every step of the last sign-in attempt, with Copy Diagnostics for an
+email to support. It never shows a password or token.</li>
+</ul>
+<h3 id="ai-menu-and-the-station-catalogue-2026-11-03">AI menu and the
+station catalogue (2026-11-03)</h3>
+<ul>
+<li><strong>One AI menu, the same in every app</strong> (2026-11-03).
+The AI menu now reads in four groups, in the same order in every
+QuillVille app: the ways to ask; what this app’s AI does; Which AI Am I
+Using and Choose Your AI; and <strong>Accounts and Usage</strong>, a
+submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage
+and the Privacy Agreement (and, where the app has them, Connect or Sign
+Out and Web Searches Left). Every command keeps its key wherever it now
+sits.</li>
+<li><strong>Your own key is not only OpenAI</strong> (2026-11-03).
+Before you have saved a key, Choose Your AI’s own-key row now names
+every service it can use: OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter, Ollama Cloud, a service of your own, or Ollama on this
+computer, which is free and sends nothing. It used to say only
+OpenAI.</li>
+<li><strong>The station catalogue builds again</strong> (2026-11-03). A
+book the Gutenberg list returned twice stopped the catalogue that ships
+with Quill Radio from being built; a repeated book now keeps its first
+listing.</li>
+</ul>
 <h3 id="since-build-5-2026-10-27-to-2026-10-31">Since build 5
 (2026-10-27 to 2026-10-31)</h3>
 <ul>

@@ -580,9 +580,11 @@ If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
 | **Encoding** | How this file stores its letters and accents | change it |
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
+| **Project** | The open project and its git branch, and "waiting for you" when the project task needs an answer. Only there while a project is open, in the Developer profile | opens Do a Project Task |
 | **AI** | Which AI is in use, such as "AI: ChatGPT plan" | opens Choose Your AI |
 
-That is seventeen parts, or sixteen when the document has no pages. Most of
+That is seventeen parts, or sixteen when the document has no pages, and an
+eighteenth, Project, while a project is open. Most of
 them explain themselves. A few are worth a
 closer look.
 
@@ -3457,6 +3459,7 @@ The Insert menu is for anything you put into your document other than typing.
 | **Ctrl+Shift+F2** | Special Character: 357 of them, in 15 groups, searchable by name or code point |
 | **Alt+.** | Emoji: search or browse, with a description of each one |
 | **Shift+Enter** | A line break that does not start a new paragraph |
+| **Ctrl+Enter** | Page Break: the rest starts on a new page (Word, Rich Text and Markdown documents) |
 | **Ctrl+Alt+T** | Table: the columns and rows you ask for, a real table in rich text (see "Making a table") |
 | **Ctrl+Alt+I** | Markdown Tag: everything Markdown can write (Markdown documents only) |
 | **Ctrl+Alt+O** | HTML Tag: 111 tags and 20 whole form fields, searchable by what they do |
@@ -3595,6 +3598,16 @@ what it put in, for example "Inserted, U+2014 Em dash". Many of these
 characters are invisible on the page, so hearing it is how you know it worked.
 
 QUILL has the same picker, on the same key.
+
+#### Starting a new page
+
+**Insert > Page Break** (**Ctrl+Enter**, the same key as in Word) starts a
+new page at the cursor. In a Word or Rich Text document it is a real page
+break, the same one Word makes, and it is still there when you save the
+file and open it again. In a Markdown document QUILL Lite puts the line
+`::: pagebreak` on its own line, and the break takes effect when you export
+to a format that has pages, such as Word or PDF. A plain text document has
+no pages, so QUILL Lite tells you that instead of doing nothing.
 
 #### Ending a line without starting a paragraph
 
@@ -7231,6 +7244,27 @@ seventeen things, and two keys open it:
 There are also twelve questions you can ask about the word you are on, under
 **Tools > Dictionary**. They are explained in *Dictionary*, in Chapter 7.
 
+### How Tools > AI is laid out
+
+**Tools > AI** reads in four groups, in the same order as the AI menu of every
+other app in the family, and every command keeps its key wherever it sits:
+
+1. **Ask:** Ask AI a Question (**Ctrl+6**), Ask About This Document
+   (**Ctrl+Alt+Z**), Ask About an Image (**Ctrl+F5**), AI Assistant
+   (**Ctrl+Alt+G**) and Prompt Library (**Ctrl+7**).
+2. **Work on your document:** Do a Document Task (**Ctrl+3**), Propose Alt Text
+   and Tidy Dictated Text (**Ctrl+F3**).
+3. **Which AI:** Which AI Am I Using (**Ctrl+8**) and Choose Your AI
+   (**Ctrl+4**).
+4. **Accounts and Usage**, a submenu of the windows you open now and then: Use
+   My Own AI Key (**Alt+F2**), Use My ChatGPT Subscription (**Alt+F5**), Connect
+   or Sign Out (**Ctrl+Alt+Shift+F10**), Usage (**Ctrl+Alt+Shift+F9**), Web
+   Searches Left (**Ctrl+9**) and the Privacy Agreement (**Ctrl+Alt+Shift+K**).
+
+Your own key can come from OpenAI, Google Gemini, Anthropic Claude, OpenRouter
+or Ollama Cloud, from a service of your own, or from Ollama running on this
+computer, which is free and sends nothing anywhere.
+
 ### Using the AI pad
 
 #### What the pad looks like, top to bottom
@@ -7716,7 +7750,7 @@ computer once, and then you have a monthly allowance.
 
 #### Connecting this computer
 
-1. Open **Tools > AI > Connect or Sign Out** (**Ctrl+Alt+Shift+F10**). If you
+1. Open **Tools > AI > Accounts and Usage > Connect or Sign Out** (**Ctrl+Alt+Shift+F10**). If you
    have just accepted the agreement and this computer is not connected yet,
    you are brought here automatically.
 2. The window gets an eight-character code from QUILL and reads it out to
@@ -7923,7 +7957,7 @@ monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 
 #### Setting it up
 
-Open **Tools > AI > Use My Own AI Key** (**Alt+F2**). The window has these
+Open **Tools > AI > Accounts and Usage > Use My Own AI Key** (**Alt+F2**). The window has these
 parts, from top to bottom:
 
 1. **Provider.** Choose **OpenAI**, **Google Gemini**, **Anthropic Claude**,
@@ -8285,10 +8319,192 @@ ends with **Search the web**: type a question, press **Send**, and the answer
 comes back with the sites it used, one per line. Each search also uses one
 ordinary request.
 
-Press **Ctrl+9** (**Tools > AI > Web Searches Left**) to hear how many searches
+Press **Ctrl+9** (**Tools > AI > Accounts and Usage > Web Searches Left**) to hear how many searches
 are left this month and when they start again. If the service is not offering
 web search at the moment, Ctrl+9 says that instead. On your ChatGPT plan, use
 **Allow web search** above instead; with your own key there is no web search.
+
+### Coding: project tasks, in the Developer profile
+
+This part is for people who write code. Everybody else can skip it: none of
+it appears unless you choose the **Developer** profile (see [Making QUILL Lite
+smaller (or larger)](#making-quill-lite-smaller-or-larger) in Chapter 11).
+
+A project task is Do a Document Task grown up. Instead of one document, the
+AI works on a whole folder: it reads the files, plans, proposes changes to
+several of them, and runs your tests. You stay in charge of every step.
+Nothing it proposes is written until you accept it, no command runs until you
+allow it, and one command puts every file back.
+
+QUILL has exactly the same thing, from the same code, in the same menus.
+
+#### Turning it on
+
+Choose the **Developer** profile in **Tools > Customize Features**
+(**Ctrl+Alt+F10**), or check **Coding: project tasks with an AI** there on its
+own. Either way the project commands appear in the menus below, and they leave
+again when you choose another profile.
+
+Project tasks need a connection that runs tasks: **My GitHub Copilot** or
+**Codex** on your ChatGPT plan, or, on your own key, **Claude** or **Ollama on
+this computer**. QUILL's free AI does not run tasks. Choose with **Choose Your
+AI** (**Ctrl+4**).
+
+#### Where the commands are
+
+They sit where you would look for that kind of command:
+
+| Menu | Commands |
+|---|---|
+| **File** | **Open Project Folder...**, **Close Project** |
+| **Edit > Agent Work** | **Undo Last Agent Turn**, **Stop Agent** |
+| **View** | **Agent Task Transcript**, **Agent Command Output** |
+| **Tools** | **Commands Allowed in This Project...** |
+| **Tools > AI** | **Do a Project Task...**, **Explain Last Turn**, **Engine Tools for This Project...** |
+
+None of them has a key of its own. There was no key free in both editors, and
+you rarely need one: **Ctrl+3** opens Do a Project Task whenever a project is
+open, and the task window has a key for everything else.
+
+#### Opening a project
+
+A project is just a folder. **File > Open Project Folder...** lists the
+projects you opened before, newest first, so the usual case is Down Arrow and
+Enter. **Browse for a Folder...** picks any other one.
+
+QUILL Lite says "Project", the folder's name, "is open", and the status bar
+gains a **Project** part that names it, with its git branch when it has one.
+That part is only there while a project is open. Enter on it opens the task.
+
+The first time you run a task in a project that has notes written for AI
+agents, such as `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, Copilot's instruction
+files or Cursor's rules, QUILL Lite asks once whether to use them. **Read Them
+First** shows their text in the same window. Nothing in those files can approve
+a command or a change. They are the project's words, not yours.
+
+#### The task window
+
+Press **Ctrl+3**. The window is the one Do a Document Task uses, with more keys:
+
+| Key | What it does |
+|---|---|
+| **Alt+I** | the instruction field, where focus starts |
+| **Alt+C** | the conversation, read with the arrow keys |
+| **Alt+P** | puts the cursor on the latest plan |
+| **Alt+H** | puts the cursor on the latest list of changes |
+| **Alt+O** | opens the last command's full output |
+| **Alt+R** | opens the whole task as a document, one heading per turn |
+| **Alt+U** | Undo Last Turn |
+| **Alt+X** | Explain Last Turn |
+| **Alt+A** | Coach mode |
+| **Alt+W** | Commands Allowed in This Project |
+| **Alt+L** | Engine Tools for This Project |
+| **Alt+T** | Stop |
+
+Type what you want, such as "fix the add function and run the tests", and press
+Enter. The conversation fills in silently. QUILL Lite speaks only when something
+happens that you would want to know: "The plan is ready", with the number of
+steps; a command's result; the turn's closing summary. If you are in another
+window of QUILL Lite when the task needs an answer, it says once "The project
+task is waiting for you. Press Ctrl+3 to answer." and waits.
+
+#### Reviewing changes
+
+When the agent has edits, **Review Changes** opens. The list has one row per
+file, as a whole sentence: "cli.py, changed, 3 changes, taken". The row says
+whether the file is taken, so there is no check box to listen for.
+
+- **Space** on a row takes or leaves the whole file.
+- **Enter** moves to its changes. Each one says where it is ("Change 2 of 3,
+  lines 40 to 44, in function parse_args"), what changed in a line ("changed
+  tokn to token"), and every line with its line number first. Indentation is
+  said as a count when it changes.
+- **Accept** and **Reject** act on the change shown; **Next Change** and
+  **Previous Change** move on and back, into the next file too.
+- **Why This Change?** says the reason the agent gave.
+- **Apply Accepted Changes** writes everything you accepted at once.
+  **Reject All**, or Escape, writes nothing.
+
+When a file you have open is changed, it reloads in place with your cursor
+where it was, and QUILL Lite says so once. A document with unsaved edits, or
+in rich text, is left alone and named, so your typing is never overwritten.
+
+#### Commands and tests
+
+When the agent wants to run something, **Run This Command?** shows one sentence
+on what, where and why, then the exact command, which you can arrow through.
+When QUILL Lite sees a risk it adds a warning: "This may reach the internet.",
+"This deletes files." or "This runs outside the project."
+
+- **Allow once** runs it. Enter does the same.
+- **Always allow this command here** runs it and adds it to this project's
+  list. It is only offered when there is no warning.
+- **Don't allow**, or Escape, does not.
+
+Some things are never run for the agent: pushing, publishing a package,
+forcing a remote, and changing system settings. The agent is told to ask you
+to do those yourself.
+
+Test results come back as one sentence, such as "Tests: 12 passed, 1 failed:
+test_verbose_prints_names." The full output is a document: **Alt+O** in the task
+window, or **View > Agent Command Output**.
+
+Be clear about one thing. QUILL Lite cannot stop a command you allow from
+reaching the internet or doing anything your own account can do. Windows gives
+it no way to without administrator features. That is why every command asks.
+
+**Commands Allowed in This Project** is your list of commands that run without
+asking. A line allows that exact command, or any command that starts with it
+and a space, so `pytest` allows `pytest -q tests`. The list lives in QUILL's
+own data, never in the project, so a project you download cannot approve its
+own commands. The same window has **Run commands without asking**. It is off
+until you check it, it asks you to confirm, and while it is on the task window's
+status line says so.
+
+#### Undo, Stop, and Explain
+
+**Undo Last Agent Turn** (**Edit > Agent Work**) puts back every file the last
+turn changed and removes files it made, then says "Undid turn 3" and which
+files. Before each turn QUILL Lite keeps a private copy of the project in its
+own data, never in your git history. If you have edited one of those files
+since, undo refuses rather than lose your work, names the file, and offers to
+open it as it was before the turn so you can compare.
+
+**Stop Agent** stops the task and the command it is running, from any window.
+
+**Explain Last Turn** asks the agent what it changed and why, in plain words,
+without changing anything. **Coach mode** goes further: the agent does not
+change files or run commands at all. It explains, points you to a file and
+line, and you make the change yourself. It is a good way to learn.
+
+#### Engine tools
+
+By default the AI uses only QUILL's own tools, so every change is reviewed and
+every command approved. **Engine Tools for This Project...** lists the engine's
+own tools, such as Copilot's shell and editor, as check boxes. They are all off
+until you check them, each use still asks you, and their edits go straight to
+disk without Review Changes. A turn that has any on says so in its plan.
+
+#### Engines
+
+- **My GitHub Copilot** and **Codex** run tasks on your account.
+- **Claude**, on your own Anthropic key, runs through the Claude Agent SDK
+  with QUILL's tools and none of Claude Code's own unless you turn them on.
+- **Ollama on this computer** is practice mode: "Practice, on this computer.
+  Nothing is sent. Slower and less capable." Good for a classroom or for
+  learning without signing in to anything.
+
+#### Where things are kept
+
+Everything QUILL Lite remembers about a project lives in its own data folder,
+not in the project: the recent projects, your answer about the agent notes,
+the allowed commands, the engine tools you checked, the checkpoints for undo,
+command output, and the task's transcript. **View > Agent Task Transcript**
+opens the transcript as a Markdown document; use **Save As** to keep a copy
+anywhere. Safe Mode turns project tasks off, like the rest of the AI.
+
+To practise once, slowly, open **Help > Tutorials...** (**Ctrl+Alt+F1**) and
+choose *Your first project task*. It appears only in the Developer profile.
 
 ### What you learned, and where to go next
 
@@ -8542,7 +8758,7 @@ working:
 | Overwrite mode, Tab key behaviour, the status bar | **View** |
 | App sounds on or off | **Tools > App Sounds** (**Alt+Shift+M**) |
 | Which sound each event makes | **Tools > Sound Scheme** (**Ctrl+Alt+Shift+O**) |
-| Which of the 23 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
+| Which of the 24 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
 | What any key does | **Tools > Keyboard Manager** (**Ctrl+Alt+Shift+Space**) |
 | The twelve spelling announcement settings | **Tools > Spelling > Announcements** (**Ctrl+Alt+Shift+F7**) |
 | Whether you are asked about last session | The **Reopen Last Session** window itself (**Alt+Shift+F12**) |
@@ -8581,10 +8797,10 @@ When you switch something off, it leaves the menus and its keys stop working.
 It is really gone, not just hidden. So a smaller QUILL Lite is one with fewer
 things to arrow past and fewer keys to press by accident.
 
-#### Profiles: four ways to say it in one word
+#### Profiles: five ways to say it in one word
 
 You do not have to go through the checkboxes one by one. The **Profile** box at
-the top of the window offers four ready-made choices. **Choosing one sets every
+the top of the window offers five ready-made choices. **Choosing one sets every
 checkbox below it straight away.** There is no second button to press.
 
 Nothing is saved until you press **Save**. So you can try a profile, look at
@@ -8594,13 +8810,13 @@ what it would do, and change your mind.
 
 Under the Profile box is a **read-only description you can read line by line**.
 It tells you two things. First, what the profile is. Then what it would do to
-your copy of QUILL Lite: how many of the 23 areas it keeps and which ones, which
+your copy of QUILL Lite: how many of the 24 areas it keeps and which ones, which
 ones it removes, and anything else it changes. Notepad, for example, also makes
 **Ctrl+N** create a plain text document. Press **F1** on the Profile box to hear
 the same thing.
 
 When you choose a profile, QUILL Lite says a short version, like this: "Notepad
-profile: 3 of 22 features on. New documents will be plain text. Nothing is saved
+profile: 3 of 24 features on. New documents will be plain text. Nothing is saved
 until you press Save." Your screen reader already reads the profile's name, and
 the longer description is there for you to read at your own pace.
 
@@ -8620,34 +8836,35 @@ over, press **Use Profile**.
 
 ##### The same profiles in Preferences
 
-**The same four profiles are in Preferences** too, at the top, with the same
+**The same five profiles are in Preferences** too, at the top, with the same
 description underneath. So if you think of "make this like Notepad" as a
 setting, you will find it where your other settings are. The 22 separate
 checkboxes are only in Customize Features.
 
-##### The four profiles at a glance
+##### The five profiles at a glance
 
 Here is each one at a glance, and then in more detail.
 
 | Profile | Areas on | Ctrl+N makes |
 |---|---|---|
-| **Recommended** | 19 of 23 | plain text (unchanged) |
-| **Everything** | 23 of 23 | plain text (unchanged) |
-| **WordPad** | 6 of 23 | **rich text** |
-| **Notepad** | 3 of 23 | **plain text** |
+| **Recommended** | 19 of 24 | plain text (unchanged) |
+| **Everything** | 23 of 24 | plain text (unchanged) |
+| **Developer** | 20 of 24 | plain text (unchanged) |
+| **WordPad** | 6 of 24 | **rich text** |
+| **Notepad** | 3 of 24 | **plain text** |
 
 ##### Recommended
 
 **This is what you get when you first install QUILL Lite.** It keeps nineteen
-of the 23 areas: rich text, headings, Markdown and HTML, bookmarks, the line
+of the 24 areas: rich text, headings, Markdown and HTML, bookmarks, the line
 tools, the clipboard history, printing, abbreviations, the Selection submenu,
 spell check, the dictionary and thesaurus, Matches, Go Back and Go Forward, the
 Command Palette, Describe Character, text size, dictation, WordPress and
 Forms.
 
-**Off:** autocorrect, timestamped backups, Go To Anything and AI help. These
-four are not switched off because they are poor. They are off because you
-should choose them yourself:
+**Off:** autocorrect, timestamped backups, Go To Anything, AI help and coding.
+The first four are not switched off because they are poor. They are off
+because you should choose them yourself:
 
 - Autocorrect can change the quotes in a settings file and break it.
 - Backups slowly fill a folder on your computer.
@@ -8656,12 +8873,15 @@ should choose them yourself:
 - AI help sends the text you ask about over the internet, and only you should
   decide to do that.
 
+Coding, the fifth, belongs to the Developer profile below.
+
 **Choose this** when you have been experimenting and want to get back to where
 you started.
 
 ##### Everything
 
-**All 23 areas on**, including the four above. That includes **AI help**, which
+**23 of the 24 areas on**: every writing area, including the four above.
+Coding stays off, because coding is what the Developer profile is for. That includes **AI help**, which
 is the one area that sends anything off your computer, so only choose this
 profile if you are happy with that.
 
@@ -8675,15 +8895,33 @@ With Everything on:
 **Choose this** if you would rather have it all and switch things off as they
 get in your way.
 
+##### Developer
+
+**Everything in Recommended, plus Coding.** Twenty of the 24 areas: the
+seventeen Recommended keeps and the Coding area, which no other profile has.
+Coding gives you project tasks with an AI, reviewed changes across files,
+commands and tests that ask first, Undo Last Agent Turn and coach mode. See
+[Coding: project tasks, in the Developer profile](#coding-project-tasks-in-the-developer-profile)
+in Chapter 10.
+
+**Off:** autocorrect, timestamped backups, Go To Anything and AI help, as in
+Recommended. Project tasks need an AI connection, so turn on AI help too when
+you want to use them.
+
+**Ctrl+N** is unchanged.
+
+**Choose this** if you write code and want an AI to help with it, and you want
+every change it makes shown to you first.
+
 ##### WordPad
 
 **Everything WordPad could do.** Rich text you can format, print and spell
 check: bold, italic, underline, headings, alignment, bullets, indenting and line
 spacing, plus Find and Replace, printing and text size, and the Command
-Palette. Six of the 23 areas.
+Palette. Six of the 24 areas.
 
-**Off**, all seventeen of the others. These are the writing tools around the
-formatting:
+**Off**, all eighteen of the others. These are the writing tools around the
+formatting, and coding:
 
 - No line tools (Edit > Lines) and no Change Case.
 - No clipboard history or Copy Tray.
@@ -8695,7 +8933,7 @@ formatting:
 - No autocorrect and no backups.
 - **No Markdown or HTML.** Ctrl+B in a `.md` file goes back to meaning rich text
   bold, and QUILL Lite tells you so.
-- **No AI help.**
+- **No AI help** and no coding.
 - **No WordPress** and **no Forms**.
 
 **Ctrl+N makes a rich text document.** So choosing WordPad changes a setting as
@@ -8709,7 +8947,7 @@ word processor without one would just be a nuisance.
 ##### Notepad
 
 **The smallest QUILL Lite can be.** Many people come to QUILL Lite to replace
-Notepad, and this is the profile for them. It keeps three of the 23 areas:
+Notepad, and this is the profile for them. It keeps three of the 24 areas:
 **printing**, **text size** and the **Command Palette**.
 
 **Off**, all twenty of the others: the Format menu and everything under it,
@@ -8717,8 +8955,8 @@ headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
 clipboard history, abbreviations, the Selection submenu, spell check, the
 dictionary and thesaurus, Matches (and with it Find in Open Documents and
 Search in Files), Back and Forward, Go To Anything,
-Describe Character, dictation, autocorrect, backups, AI help, WordPress
-and Forms.
+Describe Character, dictation, autocorrect, backups, AI help, WordPress,
+Forms and coding.
 Nothing that Notepad does not have, apart from the palette.
 
 **Why every profile keeps the Command Palette:** it is how you find a
@@ -8759,7 +8997,7 @@ find Autocorrect. Type "dictionary" and you find Spell check. The line under the
 box tells you how many are left. Press **Down** from the box to go straight into
 the list.
 
-#### The 23 areas
+#### The 24 areas
 
 | Area | What goes | Starts |
 |---|---|---|
@@ -8816,7 +9054,7 @@ back off for you.
 You can reach the same agreement in **three places**. Use whichever you find
 first:
 
-- **Tools > AI > Privacy Agreement...** (**Ctrl+Alt+Shift+K**). Read it, accept
+- **Tools > AI > Accounts and Usage > Privacy Agreement...** (**Ctrl+Alt+Shift+K**). Read it, accept
   it, or take it back. Taking it back also signs this computer out.
 - **Preferences**, where a check box says *Use QUILL's free AI help*. Checking it
   shows the agreement. Unchecking it takes your agreement back.

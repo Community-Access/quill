@@ -264,6 +264,9 @@ def _row_name(facts: ConnectionFacts, connection: str) -> str:
     if connection == OWN_KEY and facts.own_key_ready:
         provider = _OWN_KEY_PROVIDER_NAMES.get(facts.own_key_provider, facts.own_key_provider)
         return f"{name}, {provider}"
+    if connection == OWN_KEY:
+        # Before a key is saved, say the row is not one company's (2026-11-02).
+        return f"{name} (OpenAI, Claude, Gemini and more)"
     return name
 
 

@@ -2269,7 +2269,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 252 audited sites (252 helped).
+Control coverage: 278 audited sites (278 helped).
 
 ### Every window, and what it is for
 
@@ -2311,6 +2311,8 @@ Control coverage: 252 audited sites (252 helped).
 
 **Command Palette.** Every command QUILL Lite has, searchable, with its key beside it. A menu answers 'what is under Format?'; this answers 'how do I sort lines?', which is the question you actually have.
 
+**Commands Allowed in This Project.** The commands this project runs without asking, kept in QUILL and never in the project. Run commands without asking is here too, off until you check it and confirm.
+
 **Copy Tray.** Twelve numbered clipboard slots that outlive a restart. Copy into a slot, and paste from it an hour later -- the system clipboard holds one thing, and this is what to do when that is one fewer than you need.
 
 **Customize QUILL Lite Features.** Turn whole parts of QUILL Lite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Type in the search box to narrow the list, or choose a profile -- Notepad, WordPad, Recommended, Everything -- to set them all at once. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
@@ -2327,6 +2329,8 @@ Control coverage: 252 audited sites (252 helped).
 
 **Do a Document Task.** Tell GitHub Copilot or Codex what to do to this document. Each change asks first and is shown before it is applied; the task ends with a summary.
 
+**Do a Project Task.** Tell the AI what to do in your project folder. It plans, reads and proposes changes; nothing is written until you accept it in Review Changes, and no command runs until you allow it. Plan, Changes and Output are one key each.
+
 **Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QUILL Lite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
 
 **Edit Inline Note.** Change what this note says, or delete it. The text the note is about is never changed. A note written into the file is changed in the file, so Undo takes the change back.
@@ -2334,6 +2338,8 @@ Control coverage: 252 audited sites (252 helped).
 **Edit Prompt.** Change a prompt's name, category or instruction. Save keeps the change; Cancel leaves the prompt as it was.
 
 **Email Reply.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Engine Tools for This Project.** The engine's own tools, beside QUILL's. All are off until you check them, each use still asks you first, and their edits skip Review Changes.
 
 **Explanation.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -2395,6 +2401,8 @@ Control coverage: 252 audited sites (252 helped).
 
 **Next Paragraph.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
+**Open Project Folder.** Choose a folder to work on as a project. Your recent projects are listed first; Browse for a Folder picks any other.
+
 **Plain Language.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Preferences.** Every setting QUILL Lite has, in one window. Two of them live only here: what Control N creates, and how often unsaved work is copied aside. The rest -- theme, word wrap, and the editor font -- are also on the View menu, where you will reach them faster.
@@ -2419,11 +2427,15 @@ Control coverage: 252 audited sites (252 helped).
 
 **Review AI Changes.** The AI's answer compared with the text it would replace, one change per line, with the words that differ and the sentence they are in. Uncheck a change to keep the original there. When one change holds several word edits, Alt+W goes to their list, where Space keeps or drops each one on its own. Then apply; it goes in as one edit Control Z takes back. Nothing changes until you apply.
 
+**Review Changes.** Every file this turn would change, then each change in it, with line numbers. Accept or reject each one; Apply Accepted Changes writes them all at once, after QUILL has kept a copy for Undo Last Turn.
+
 **Review Dictation.** Dictated words wait here before they are inserted. Read them, type or keep dictating to change them, ask the AI to change them if AI is on, and hear what changed. Control Enter inserts them where they were going; nothing is written before that.
 
 **Review with AI.** Before the first change is asked for, this says who receives the words being reviewed and what is sent. No is the default and sends nothing.
 
 **Rewrite.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Run This Command?.** The agent wants to run a command in your project folder. The exact command is below the sentence, and a warning appears when QUILL sees a risk. QUILL cannot stop an allowed command from doing what your account can do.
 
 **Saved AI Conversations.** Your saved AI conversations, newest first. Every conversation with the AI is saved on this computer as it goes. Press Enter on one to open it and carry on where it left off; Delete removes one after asking.
 
@@ -2456,6 +2468,8 @@ Control coverage: 252 audited sites (252 helped).
 **Use My ChatGPT Subscription.** Use the ChatGPT plan you already pay for instead of QUILL's free AI or an API key. Continue with ChatGPT opens your browser to sign in and allow it; once signed in, choose the model from your plan's own list and whether web search is allowed. Sign Out and Forget on This Computer appear only while you are signed in.
 
 **Use My Own AI Key.** Use AI help on your own account with OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud or a custom service, or on Ollama on this computer, which needs no key and sends nothing. Choose the provider, paste the key it gave you, and test it; with a saved key there is no daily limit. Remove the Saved Key puts you straight back on the free service.
+
+**Use This Project's Agent Notes?.** This project has notes written for AI agents. Use them, leave them out, or read them first. QUILL asks once per project, and nothing in them can approve a command or a change.
 
 **Use the Shared Word List.** Which of your words will be added to the list QUILL, QUILL Transcribe and Quill Inkwell share, before QUILL Lite starts using it. Use the Shared List goes ahead; Cancel keeps QUILL Lite's own list.
 
@@ -2661,6 +2675,47 @@ Control coverage: 252 audited sites (252 helped).
 
 - `self._list`: One sentence for each connection that is set up: how much has been used and whose count it is. A count kept on this computer is called a local count; a service's own number is named as the service's.
 - `manage`: Opens the selected connection's own usage or billing page in your web browser, where its limits and bill are kept.
+#### CommandApprovalDialog (`quill/ui/project_command_dialog.py`)
+
+- `self.once`: Runs this command now. The next command asks again.
+- `self.deny`: Does not run it. The agent is told, and carries on without it.
+#### AllowedCommandsDialog (`quill/ui/project_command_dialog.py`)
+
+- `about`: What this list does, and what it never does.
+- `self.entries`: The commands this project runs without asking. Delete removes the one selected.
+- `self.new_entry`: Type a command or the start of one, such as pytest, then press Enter or Add to allow it.
+- `add`: Adds what you typed to the list.
+- `remove`: Removes the selected command from the list.
+- `self.bypass`: When checked, the agent runs any command it chooses in this project without showing it to you first, except pushing, publishing and system changes. Off unless you check it, and QUILL asks you to confirm. The task window's status line says so while it is on.
+- `close`: Closes this window. Every change here is already saved.
+#### CommandApprovalDialog (`quill/ui/project_command_dialog.py`)
+
+- `self.always`: Runs it now and adds it to this project's allowed commands, so it runs without asking next time. The list is yours, kept in QUILL, never in the project.
+#### OpenProjectDialog (`quill/ui/project_open_dialog.py`)
+
+- `self.list`: Folders you have opened as projects, newest first. Enter opens the one selected. A project is just a folder; QUILL keeps its own notes about it in its own data folder, never in the project.
+- `browse`: Opens the Windows folder picker to choose any folder as a project.
+- `self.open_button`: Opens the selected recent project.
+- `cancel`: Closes this window without opening a project.
+#### InstructionFilesDialog (`quill/ui/project_open_dialog.py`)
+
+- `read_button`: Shows the notes' text in this window, so you can decide.
+- `use`: Sends the notes with every task in this project, marked as data.
+- `skip`: Leaves the notes out of tasks in this project.
+#### EngineToolsDialog (`quill/ui/project_open_dialog.py`)
+
+- `ok`: Keeps the tools checked here for this project.
+- `cancel`: Closes without changing anything.
+#### ProjectReviewDialog (`quill/ui/project_review_dialog.py`)
+
+- `self.files`: Every file this turn would change, each row saying whether it is taken. Space takes or leaves the whole file. Enter moves to the file's changes.
+- `self.details`: The change shown now: where it is, what it does, and each line with its line number first. Indentation is said as a count when it changes. Read it with the arrow keys.
+- `self.apply_button`: Writes every accepted change at once, after QUILL has kept a copy for Undo Last Turn. Rejected changes are never written.
+- `self.reject_button`: Writes nothing from this turn. Escape does the same.
+#### ProjectTaskWindow (`quill/ui/project_task_window.py`)
+
+- `self.instruction`: Type what you want done in this project, then press Enter: a change, a question about the code, or what to test. While a task runs, what you type here goes to it as a follow-up.
+- `self.coach`: When checked, the agent does not change files or run commands. It reads the project, explains, and points you to the file and line, and you make the change yourself. Good for learning.
 #### CloudProvidersMixin (`quill/ui/windows_dictation_cloud.py`)
 
 - `button`: Use a speech service you already have an account with: Microsoft Azure, Google Cloud, Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq, Mistral or IBM Watson. Enter what it needs and test it there, then choose it as the speech engine. Optional: the built-in engines need no account and never send anything anywhere.

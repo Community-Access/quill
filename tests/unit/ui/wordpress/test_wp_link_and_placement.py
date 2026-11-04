@@ -89,7 +89,7 @@ def test_placement_follows_section_12() -> None:
     assert where["cmd_insert_block"] == "&Insert"
     assert where["cmd_block_settings"] == "F&ormat|Word&Press"
     assert where["cmd_blocks_window"] == "&View"
-    assert where["cmd_next_block"] == "&Edit|&WordPress"
+    assert where["cmd_next_block"] == "&Edit|WordPress"
     assert where["cmd_check_page"] == "&Tools|WordPress"
     assert where["cmd_users"] == "&Tools|WordPress|&Manage"
     assert where["cmd_publish"] == "&File|&WordPress"

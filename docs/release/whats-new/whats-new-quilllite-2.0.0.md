@@ -14,7 +14,7 @@ QUILL Lite 2.0 is about words, and about never missing what happened. Your setti
 
 ## Word documents, PDFs and other files
 
-- **Word documents open as rich text, and Ctrl+S saves a real Word document**, with headings, lists, tables and links. If a save would lose something, QUILL Lite names it first.
+- **Word documents open as rich text, and Ctrl+S saves a real Word document**, with headings, lists, tables and links. QUILL Lite names anything a save would lose. Ctrl+Enter is a page break, as in Word.
 - **PDFs open as text**, page by page, in the installed and portable copies. A scanned page is read with Windows OCR on this computer; nothing is uploaded.
 - **Excel, PowerPoint and OpenDocument files open as readable text**, each sheet and slide named.
 
@@ -43,7 +43,7 @@ QUILL Lite 2.0 is about words, and about never missing what happened. Your setti
 
 ## WordPress
 
-- **File > WordPress** writes, checks and publishes your website's pages and posts, and **Tools > WordPress** looks after the site.
+- **File > WordPress** writes and publishes your site's pages and posts; **Tools > WordPress** looks after the site.
 
 ## Dictation and AI
 
@@ -52,4 +52,4 @@ QUILL Lite 2.0 is about words, and about never missing what happened. Your setti
 
 ## More
 
-**Help > What's New** (Alt+H, W) opens the full changelog, and with every document closed the menu bar still has File, Tools and Help. A second sound scheme, VS Code Signals. Faster opening of big files and network drives, and many smaller fixes. The full release notes: https://www.quillforall.org/docs/quilllite-release-notes.html. Stuck? Help > Get Help from Support (Ctrl+Alt+F2).
+**Help > What's New** (Alt+H, W) opens the full changelog. With no document open, the bar keeps File, Tools and Help. A second sound scheme, VS Code Signals. Faster opening of big files and network drives, and many smaller fixes. The full release notes: https://www.quillforall.org/docs/quilllite-release-notes.html. Stuck? Help > Get Help from Support (Ctrl+Alt+F2).

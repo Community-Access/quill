@@ -80,6 +80,15 @@ class SdkParts:
     approve_cls: Any
 
 
+def _permission_detail(request: Any) -> str:
+    """What a built-in permission request is about, for the approval sentence."""
+    for name in ("full_command_text", "command", "path", "file_name", "url", "intention"):
+        value = getattr(request, name, None)
+        if value:
+            return str(value)[:300]
+    return ""
+
+
 def _event_type(event: Any) -> str:
     kind = getattr(event, "type", "")
     return str(getattr(kind, "value", kind))
@@ -262,6 +271,8 @@ class CopilotToolSession:
             binary_cls=self._sdk.binary_cls,
         )
         names = available_tools_for(self._tools.wire_names())
+        # Decision 4: Copilot's own tools only when the person turned them on.
+        names.extend(sorted(getattr(self._tools, "vendor_tools", frozenset())))
         self._recorded_tools = list(names)
         kwargs: dict[str, Any] = dict(self._session_options)
         kwargs.update({
@@ -269,7 +280,7 @@ class CopilotToolSession:
             "available_tools": names,
             "on_permission_request": self._on_permission,
             "streaming": True,
-            "working_directory": str(self._folders.work),
+            "working_directory": getattr(self._tools, "vendor_cwd", "") or str(self._folders.work),
         })
         system_message = system_message_for(self._agent.system_prompt)
         if system_message is not None:
@@ -292,6 +303,11 @@ class CopilotToolSession:
                     return self._sdk.approve_cls()
                 return self._sdk.reject_cls(feedback=reason or REFUSAL_FEEDBACK)
             self._tools.record_defect(f"Copilot asked to run a tool QUILL does not offer: {name}.")
+        elif kind in getattr(self._tools, "vendor_kinds", frozenset()):
+            detail = _permission_detail(request)
+            if await asyncio.to_thread(self._tools.authorize_vendor, kind, detail):
+                return self._sdk.approve_cls()
+            return self._sdk.reject_cls(feedback=REFUSAL_FEEDBACK)
         else:
             self._tools.record_defect(
                 f"Copilot asked for a {kind or 'unknown'} permission; refused."

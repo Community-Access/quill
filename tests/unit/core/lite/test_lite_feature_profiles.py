@@ -111,8 +111,30 @@ def test_recommended_is_what_a_new_install_is() -> None:
     assert recommended.disabled == DEFAULT_OFF
 
 
-def test_everything_turns_nothing_off() -> None:
-    assert next(p for p in PROFILES if p.id == "everything").disabled == frozenset()
+def test_everything_turns_off_only_coding() -> None:
+    """Everything means every writing area; coding is the Developer profile's (code.md 6.4)."""
+    assert next(p for p in PROFILES if p.id == "everything").disabled == frozenset({"coding"})
+
+
+def test_only_the_developer_profile_turns_coding_on() -> None:
+    on = [p.id for p in PROFILES if "coding" not in p.disabled]
+    assert on == ["developer"]
+    developer = next(p for p in PROFILES if p.id == "developer")
+    recommended = next(p for p in PROFILES if p.id == "recommended")
+    assert developer.disabled == recommended.disabled - {"coding"}
+
+
+def test_an_upgraded_store_gets_coding_off_once(tmp_path) -> None:
+    """A store seeded before Coding existed must not wake up with it on."""
+    from quill.core.app_features import AppFeatureSettings, save_app_features
+    from quill.core.lite.features import APP_ID, load_features, save_features
+
+    save_app_features(tmp_path, AppFeatureSettings(APP_ID, {"_seeded", "autoformat"}))
+    assert "coding" in load_features(tmp_path).disabled
+    again = load_features(tmp_path)
+    again.disabled.discard("coding")  # the person turns it back on
+    save_features(tmp_path, again)
+    assert "coding" not in load_features(tmp_path).disabled
 
 
 def test_profiles_get_narrower_in_order() -> None:
@@ -303,7 +325,14 @@ def test_every_profile_has_a_description_worth_the_space() -> None:
 
 def test_a_description_says_how_many_areas_it_leaves_on() -> None:
     """The one number somebody comparing four profiles actually wants."""
-    words = {0: "zero", 3: "Three", 6: "Six", 14: "fourteen", 18: "eighteen", 19: "nineteen"}
+    words = {
+        0: "zero",
+        3: "Three",
+        6: "Six",
+        14: "fourteen",
+        19: "nineteen",
+        20: "Twenty",
+    }
     for profile in PROFILES:
         on = len(AREAS) - len(profile.disabled)
         spelled = words.get(on, str(on))

@@ -66,7 +66,7 @@ and never re-signed. Apache-2.0: ``LICENSE`` and ``NOTICE`` from the same tag
 ship beside it as ``CODEX-LICENSE.txt`` and ``CODEX-NOTICE.txt``.
 
 ``phonon`` is Gradium's Phonon 31m English text-to-speech model with its 37
-English voices (phononprd.md section 6), shipped once in the shared runtime at
+English voices (phonon-voices-prd.md section 6), shipped once in the shared runtime at
 ``phonon-models/en`` so Read Aloud and Studio narration never download it. Both
 Hugging Face repos are pinned to a commit and every file to a SHA-256 in
 ``scripts/phonon_model_pins.json``. Apache-2.0, and neither repo carries a

@@ -324,6 +324,8 @@ beside QUILL.</li>
 into the app, and how to reach a real person at support.</li>
 <li><strong>Chapter 14: WordPress.</strong> Writing, publishing and
 looking after a WordPress website.</li>
+<li><strong>Chapter 15: Forms.</strong> Writing accessible forms,
+checking them, and filling them in yourself first.</li>
 </ol>
 <p>After the chapters comes the <strong>Keyboard reference</strong>:
 every key QUILL Lite comes with, grouped by menu. Keep it handy for the
@@ -901,14 +903,22 @@ transcription</td>
 <td>saves</td>
 </tr>
 <tr>
+<td><strong>Project</strong></td>
+<td>The open project and its git branch, and “waiting for you” when the
+project task needs an answer. Only there while a project is open, in the
+Developer profile</td>
+<td>opens Do a Project Task</td>
+</tr>
+<tr>
 <td><strong>AI</strong></td>
 <td>Which AI is in use, such as “AI: ChatGPT plan”</td>
 <td>opens Choose Your AI</td>
 </tr>
 </tbody>
 </table>
-<p>That is seventeen parts, or sixteen when the document has no pages.
-Most of them explain themselves. A few are worth a closer look.</p>
+<p>That is seventeen parts, or sixteen when the document has no pages,
+and an eighteenth, Project, while a project is open. Most of them
+explain themselves. A few are worth a closer look.</p>
 <h5 id="status-message">Status Message</h5>
 <p>Speech is gone the moment it is spoken. If QUILL Lite said something
 and you missed it, this is where you go to hear it again.</p>
@@ -4355,6 +4365,11 @@ code point</td>
 <td>A line break that does not start a new paragraph</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Enter</strong></td>
+<td>Page Break: the rest starts on a new page (Word, Rich Text and
+Markdown documents)</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+T</strong></td>
 <td>Table: the columns and rows you ask for, a real table in rich text
 (see “Making a table”)</td>
@@ -4552,6 +4567,15 @@ QUILL Lite then tells you what it put in, for example “Inserted, U+2014
 Em dash”. Many of these characters are invisible on the page, so hearing
 it is how you know it worked.</p>
 <p>QUILL has the same picker, on the same key.</p>
+<h4 id="starting-a-new-page">Starting a new page</h4>
+<p><strong>Insert &gt; Page Break</strong> (<strong>Ctrl+Enter</strong>,
+the same key as in Word) starts a new page at the cursor. In a Word or
+Rich Text document it is a real page break, the same one Word makes, and
+it is still there when you save the file and open it again. In a
+Markdown document QUILL Lite puts the line <code>::: pagebreak</code> on
+its own line, and the break takes effect when you export to a format
+that has pages, such as Word or PDF. A plain text document has no pages,
+so QUILL Lite tells you that instead of doing nothing.</p>
 <h4 id="ending-a-line-without-starting-a-paragraph">Ending a line
 without starting a paragraph</h4>
 <p><strong>Insert &gt; Line Break</strong>
@@ -9388,6 +9412,33 @@ below.</li>
 <p>There are also twelve questions you can ask about the word you are
 on, under <strong>Tools &gt; Dictionary</strong>. They are explained in
 <em>Dictionary</em>, in Chapter 7.</p>
+<h3 id="how-tools--ai-is-laid-out">How Tools &gt; AI is laid out</h3>
+<p><strong>Tools &gt; AI</strong> reads in four groups, in the same
+order as the AI menu of every other app in the family, and every command
+keeps its key wherever it sits:</p>
+<ol type="1">
+<li><strong>Ask:</strong> Ask AI a Question (<strong>Ctrl+6</strong>),
+Ask About This Document (<strong>Ctrl+Alt+Z</strong>), Ask About an
+Image (<strong>Ctrl+F5</strong>), AI Assistant
+(<strong>Ctrl+Alt+G</strong>) and Prompt Library
+(<strong>Ctrl+7</strong>).</li>
+<li><strong>Work on your document:</strong> Do a Document Task
+(<strong>Ctrl+3</strong>), Propose Alt Text and Tidy Dictated Text
+(<strong>Ctrl+F3</strong>).</li>
+<li><strong>Which AI:</strong> Which AI Am I Using
+(<strong>Ctrl+8</strong>) and Choose Your AI
+(<strong>Ctrl+4</strong>).</li>
+<li><strong>Accounts and Usage</strong>, a submenu of the windows you
+open now and then: Use My Own AI Key (<strong>Alt+F2</strong>), Use My
+ChatGPT Subscription (<strong>Alt+F5</strong>), Connect or Sign Out
+(<strong>Ctrl+Alt+Shift+F10</strong>), Usage
+(<strong>Ctrl+Alt+Shift+F9</strong>), Web Searches Left
+(<strong>Ctrl+9</strong>) and the Privacy Agreement
+(<strong>Ctrl+Alt+Shift+K</strong>).</li>
+</ol>
+<p>Your own key can come from OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter or Ollama Cloud, from a service of your own, or from Ollama
+running on this computer, which is free and sends nothing anywhere.</p>
 <h3 id="using-the-ai-pad">Using the AI pad</h3>
 <h4 id="what-the-pad-looks-like-top-to-bottom">What the pad looks like,
 top to bottom</h4>
@@ -9952,10 +10003,10 @@ You connect each computer once, and then you have a monthly
 allowance.</p>
 <h4 id="connecting-this-computer">Connecting this computer</h4>
 <ol type="1">
-<li>Open <strong>Tools &gt; AI &gt; Connect or Sign Out</strong>
-(<strong>Ctrl+Alt+Shift+F10</strong>). If you have just accepted the
-agreement and this computer is not connected yet, you are brought here
-automatically.</li>
+<li>Open <strong>Tools &gt; AI &gt; Accounts and Usage &gt; Connect or
+Sign Out</strong> (<strong>Ctrl+Alt+Shift+F10</strong>). If you have
+just accepted the agreement and this computer is not connected yet, you
+are brought here automatically.</li>
 <li>The window gets an eight-character code from QUILL and reads it out
 to you. The code is also in a read-only box, where you can arrow through
 it one character at a time. <strong>Say the Code Again</strong> repeats
@@ -10180,9 +10231,9 @@ free service. Then <strong>every limit goes away</strong>: no monthly,
 daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 48 hours. You pay the provider for what you use.</p>
 <h4 id="setting-it-up">Setting it up</h4>
-<p>Open <strong>Tools &gt; AI &gt; Use My Own AI Key</strong>
-(<strong>Alt+F2</strong>). The window has these parts, from top to
-bottom:</p>
+<p>Open <strong>Tools &gt; AI &gt; Accounts and Usage &gt; Use My Own AI
+Key</strong> (<strong>Alt+F2</strong>). The window has these parts, from
+top to bottom:</p>
 <ol type="1">
 <li><strong>Provider.</strong> Choose <strong>OpenAI</strong>,
 <strong>Google Gemini</strong>, <strong>Anthropic Claude</strong>,
@@ -10565,12 +10616,263 @@ each computer’s account. When the service has search switched on, the
 pad’s list ends with <strong>Search the web</strong>: type a question,
 press <strong>Send</strong>, and the answer comes back with the sites it
 used, one per line. Each search also uses one ordinary request.</p>
-<p>Press <strong>Ctrl+9</strong> (<strong>Tools &gt; AI &gt; Web
-Searches Left</strong>) to hear how many searches are left this month
-and when they start again. If the service is not offering web search at
-the moment, Ctrl+9 says that instead. On your ChatGPT plan, use
-<strong>Allow web search</strong> above instead; with your own key there
-is no web search.</p>
+<p>Press <strong>Ctrl+9</strong> (<strong>Tools &gt; AI &gt; Accounts
+and Usage &gt; Web Searches Left</strong>) to hear how many searches are
+left this month and when they start again. If the service is not
+offering web search at the moment, Ctrl+9 says that instead. On your
+ChatGPT plan, use <strong>Allow web search</strong> above instead; with
+your own key there is no web search.</p>
+<h3 id="coding-project-tasks-in-the-developer-profile">Coding: project
+tasks, in the Developer profile</h3>
+<p>This part is for people who write code. Everybody else can skip it:
+none of it appears unless you choose the <strong>Developer</strong>
+profile (see <a href="#making-quill-lite-smaller-or-larger">Making QUILL
+Lite smaller (or larger)</a> in Chapter 11).</p>
+<p>A project task is Do a Document Task grown up. Instead of one
+document, the AI works on a whole folder: it reads the files, plans,
+proposes changes to several of them, and runs your tests. You stay in
+charge of every step. Nothing it proposes is written until you accept
+it, no command runs until you allow it, and one command puts every file
+back.</p>
+<p>QUILL has exactly the same thing, from the same code, in the same
+menus.</p>
+<h4 id="turning-it-on">Turning it on</h4>
+<p>Choose the <strong>Developer</strong> profile in <strong>Tools &gt;
+Customize Features</strong> (<strong>Ctrl+Alt+F10</strong>), or check
+<strong>Coding: project tasks with an AI</strong> there on its own.
+Either way the project commands appear in the menus below, and they
+leave again when you choose another profile.</p>
+<p>Project tasks need a connection that runs tasks: <strong>My GitHub
+Copilot</strong> or <strong>Codex</strong> on your ChatGPT plan, or, on
+your own key, <strong>Claude</strong> or <strong>Ollama on this
+computer</strong>. QUILL’s free AI does not run tasks. Choose with
+<strong>Choose Your AI</strong> (<strong>Ctrl+4</strong>).</p>
+<h4 id="where-the-commands-are">Where the commands are</h4>
+<p>They sit where you would look for that kind of command:</p>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>Commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>File</strong></td>
+<td><strong>Open Project Folder…</strong>, <strong>Close
+Project</strong></td>
+</tr>
+<tr>
+<td><strong>Edit &gt; Agent Work</strong></td>
+<td><strong>Undo Last Agent Turn</strong>, <strong>Stop
+Agent</strong></td>
+</tr>
+<tr>
+<td><strong>View</strong></td>
+<td><strong>Agent Task Transcript</strong>, <strong>Agent Command
+Output</strong></td>
+</tr>
+<tr>
+<td><strong>Tools</strong></td>
+<td><strong>Commands Allowed in This Project…</strong></td>
+</tr>
+<tr>
+<td><strong>Tools &gt; AI</strong></td>
+<td><strong>Do a Project Task…</strong>, <strong>Explain Last
+Turn</strong>, <strong>Engine Tools for This Project…</strong></td>
+</tr>
+</tbody>
+</table>
+<p>None of them has a key of its own. There was no key free in both
+editors, and you rarely need one: <strong>Ctrl+3</strong> opens Do a
+Project Task whenever a project is open, and the task window has a key
+for everything else.</p>
+<h4 id="opening-a-project">Opening a project</h4>
+<p>A project is just a folder. <strong>File &gt; Open Project
+Folder…</strong> lists the projects you opened before, newest first, so
+the usual case is Down Arrow and Enter. <strong>Browse for a
+Folder…</strong> picks any other one.</p>
+<p>QUILL Lite says “Project”, the folder’s name, “is open”, and the
+status bar gains a <strong>Project</strong> part that names it, with its
+git branch when it has one. That part is only there while a project is
+open. Enter on it opens the task.</p>
+<p>The first time you run a task in a project that has notes written for
+AI agents, such as <code>AGENTS.md</code>, <code>CLAUDE.md</code>,
+<code>GEMINI.md</code>, Copilot’s instruction files or Cursor’s rules,
+QUILL Lite asks once whether to use them. <strong>Read Them
+First</strong> shows their text in the same window. Nothing in those
+files can approve a command or a change. They are the project’s words,
+not yours.</p>
+<h4 id="the-task-window">The task window</h4>
+<p>Press <strong>Ctrl+3</strong>. The window is the one Do a Document
+Task uses, with more keys:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+I</strong></td>
+<td>the instruction field, where focus starts</td>
+</tr>
+<tr>
+<td><strong>Alt+C</strong></td>
+<td>the conversation, read with the arrow keys</td>
+</tr>
+<tr>
+<td><strong>Alt+P</strong></td>
+<td>puts the cursor on the latest plan</td>
+</tr>
+<tr>
+<td><strong>Alt+H</strong></td>
+<td>puts the cursor on the latest list of changes</td>
+</tr>
+<tr>
+<td><strong>Alt+O</strong></td>
+<td>opens the last command’s full output</td>
+</tr>
+<tr>
+<td><strong>Alt+R</strong></td>
+<td>opens the whole task as a document, one heading per turn</td>
+</tr>
+<tr>
+<td><strong>Alt+U</strong></td>
+<td>Undo Last Turn</td>
+</tr>
+<tr>
+<td><strong>Alt+X</strong></td>
+<td>Explain Last Turn</td>
+</tr>
+<tr>
+<td><strong>Alt+A</strong></td>
+<td>Coach mode</td>
+</tr>
+<tr>
+<td><strong>Alt+W</strong></td>
+<td>Commands Allowed in This Project</td>
+</tr>
+<tr>
+<td><strong>Alt+L</strong></td>
+<td>Engine Tools for This Project</td>
+</tr>
+<tr>
+<td><strong>Alt+T</strong></td>
+<td>Stop</td>
+</tr>
+</tbody>
+</table>
+<p>Type what you want, such as “fix the add function and run the tests”,
+and press Enter. The conversation fills in silently. QUILL Lite speaks
+only when something happens that you would want to know: “The plan is
+ready”, with the number of steps; a command’s result; the turn’s closing
+summary. If you are in another window of QUILL Lite when the task needs
+an answer, it says once “The project task is waiting for you. Press
+Ctrl+3 to answer.” and waits.</p>
+<h4 id="reviewing-changes">Reviewing changes</h4>
+<p>When the agent has edits, <strong>Review Changes</strong> opens. The
+list has one row per file, as a whole sentence: “cli.py, changed, 3
+changes, taken”. The row says whether the file is taken, so there is no
+check box to listen for.</p>
+<ul>
+<li><strong>Space</strong> on a row takes or leaves the whole file.</li>
+<li><strong>Enter</strong> moves to its changes. Each one says where it
+is (“Change 2 of 3, lines 40 to 44, in function parse_args”), what
+changed in a line (“changed tokn to token”), and every line with its
+line number first. Indentation is said as a count when it changes.</li>
+<li><strong>Accept</strong> and <strong>Reject</strong> act on the
+change shown; <strong>Next Change</strong> and <strong>Previous
+Change</strong> move on and back, into the next file too.</li>
+<li><strong>Why This Change?</strong> says the reason the agent
+gave.</li>
+<li><strong>Apply Accepted Changes</strong> writes everything you
+accepted at once. <strong>Reject All</strong>, or Escape, writes
+nothing.</li>
+</ul>
+<p>When a file you have open is changed, it reloads in place with your
+cursor where it was, and QUILL Lite says so once. A document with
+unsaved edits, or in rich text, is left alone and named, so your typing
+is never overwritten.</p>
+<h4 id="commands-and-tests">Commands and tests</h4>
+<p>When the agent wants to run something, <strong>Run This
+Command?</strong> shows one sentence on what, where and why, then the
+exact command, which you can arrow through. When QUILL Lite sees a risk
+it adds a warning: “This may reach the internet.”, “This deletes files.”
+or “This runs outside the project.”</p>
+<ul>
+<li><strong>Allow once</strong> runs it. Enter does the same.</li>
+<li><strong>Always allow this command here</strong> runs it and adds it
+to this project’s list. It is only offered when there is no
+warning.</li>
+<li><strong>Don’t allow</strong>, or Escape, does not.</li>
+</ul>
+<p>Some things are never run for the agent: pushing, publishing a
+package, forcing a remote, and changing system settings. The agent is
+told to ask you to do those yourself.</p>
+<p>Test results come back as one sentence, such as “Tests: 12 passed, 1
+failed: test_verbose_prints_names.” The full output is a document:
+<strong>Alt+O</strong> in the task window, or <strong>View &gt; Agent
+Command Output</strong>.</p>
+<p>Be clear about one thing. QUILL Lite cannot stop a command you allow
+from reaching the internet or doing anything your own account can do.
+Windows gives it no way to without administrator features. That is why
+every command asks.</p>
+<p><strong>Commands Allowed in This Project</strong> is your list of
+commands that run without asking. A line allows that exact command, or
+any command that starts with it and a space, so <code>pytest</code>
+allows <code>pytest -q tests</code>. The list lives in QUILL’s own data,
+never in the project, so a project you download cannot approve its own
+commands. The same window has <strong>Run commands without
+asking</strong>. It is off until you check it, it asks you to confirm,
+and while it is on the task window’s status line says so.</p>
+<h4 id="undo-stop-and-explain">Undo, Stop, and Explain</h4>
+<p><strong>Undo Last Agent Turn</strong> (<strong>Edit &gt; Agent
+Work</strong>) puts back every file the last turn changed and removes
+files it made, then says “Undid turn 3” and which files. Before each
+turn QUILL Lite keeps a private copy of the project in its own data,
+never in your git history. If you have edited one of those files since,
+undo refuses rather than lose your work, names the file, and offers to
+open it as it was before the turn so you can compare.</p>
+<p><strong>Stop Agent</strong> stops the task and the command it is
+running, from any window.</p>
+<p><strong>Explain Last Turn</strong> asks the agent what it changed and
+why, in plain words, without changing anything. <strong>Coach
+mode</strong> goes further: the agent does not change files or run
+commands at all. It explains, points you to a file and line, and you
+make the change yourself. It is a good way to learn.</p>
+<h4 id="engine-tools">Engine tools</h4>
+<p>By default the AI uses only QUILL’s own tools, so every change is
+reviewed and every command approved. <strong>Engine Tools for This
+Project…</strong> lists the engine’s own tools, such as Copilot’s shell
+and editor, as check boxes. They are all off until you check them, each
+use still asks you, and their edits go straight to disk without Review
+Changes. A turn that has any on says so in its plan.</p>
+<h4 id="engines">Engines</h4>
+<ul>
+<li><strong>My GitHub Copilot</strong> and <strong>Codex</strong> run
+tasks on your account.</li>
+<li><strong>Claude</strong>, on your own Anthropic key, runs through the
+Claude Agent SDK with QUILL’s tools and none of Claude Code’s own unless
+you turn them on.</li>
+<li><strong>Ollama on this computer</strong> is practice mode:
+“Practice, on this computer. Nothing is sent. Slower and less capable.”
+Good for a classroom or for learning without signing in to
+anything.</li>
+</ul>
+<h4 id="where-things-are-kept">Where things are kept</h4>
+<p>Everything QUILL Lite remembers about a project lives in its own data
+folder, not in the project: the recent projects, your answer about the
+agent notes, the allowed commands, the engine tools you checked, the
+checkpoints for undo, command output, and the task’s transcript.
+<strong>View &gt; Agent Task Transcript</strong> opens the transcript as
+a Markdown document; use <strong>Save As</strong> to keep a copy
+anywhere. Safe Mode turns project tasks off, like the rest of the
+AI.</p>
+<p>To practise once, slowly, open <strong>Help &gt; Tutorials…</strong>
+(<strong>Ctrl+Alt+F1</strong>) and choose <em>Your first project
+task</em>. It appears only in the Developer profile.</p>
 <h3 id="what-you-learned-and-where-to-go-next-9">What you learned, and
 where to go next</h3>
 <p>You now know how to open the AI pad, pick one of its seventeen
@@ -10837,7 +11139,7 @@ are working:</p>
 (<strong>Ctrl+Alt+Shift+O</strong>)</td>
 </tr>
 <tr>
-<td>Which of the 22 areas exist at all</td>
+<td>Which of the 24 areas exist at all</td>
 <td><strong>Tools &gt; Customize Features</strong>
 (<strong>Ctrl+Alt+F10</strong>)</td>
 </tr>
@@ -10891,10 +11193,10 @@ off.</p>
 working. It is really gone, not just hidden. So a smaller QUILL Lite is
 one with fewer things to arrow past and fewer keys to press by
 accident.</p>
-<h4 id="profiles-four-ways-to-say-it-in-one-word">Profiles: four ways to
+<h4 id="profiles-five-ways-to-say-it-in-one-word">Profiles: five ways to
 say it in one word</h4>
 <p>You do not have to go through the checkboxes one by one. The
-<strong>Profile</strong> box at the top of the window offers four
+<strong>Profile</strong> box at the top of the window offers five
 ready-made choices. <strong>Choosing one sets every checkbox below it
 straight away.</strong> There is no second button to press.</p>
 <p>Nothing is saved until you press <strong>Save</strong>. So you can
@@ -10902,13 +11204,13 @@ try a profile, look at what it would do, and change your mind.</p>
 <h5 id="hearing-what-a-profile-does">Hearing what a profile does</h5>
 <p>Under the Profile box is a <strong>read-only description you can read
 line by line</strong>. It tells you two things. First, what the profile
-is. Then what it would do to your copy of QUILL Lite: how many of the 22
+is. Then what it would do to your copy of QUILL Lite: how many of the 24
 areas it keeps and which ones, which ones it removes, and anything else
 it changes. Notepad, for example, also makes <strong>Ctrl+N</strong>
 create a plain text document. Press <strong>F1</strong> on the Profile
 box to hear the same thing.</p>
 <p>When you choose a profile, QUILL Lite says a short version, like
-this: “Notepad profile: 3 of 22 features on. New documents will be plain
+this: “Notepad profile: 3 of 24 features on. New documents will be plain
 text. Nothing is saved until you press Save.” Your screen reader already
 reads the profile’s name, and the longer description is there for you to
 read at your own pace.</p>
@@ -10924,12 +11226,12 @@ checkboxes. You can change any of them. If you have changed a few and
 want to start the profile over, press <strong>Use Profile</strong>.</p>
 <h5 id="the-same-profiles-in-preferences">The same profiles in
 Preferences</h5>
-<p><strong>The same four profiles are in Preferences</strong> too, at
+<p><strong>The same five profiles are in Preferences</strong> too, at
 the top, with the same description underneath. So if you think of “make
 this like Notepad” as a setting, you will find it where your other
 settings are. The 22 separate checkboxes are only in Customize
 Features.</p>
-<h5 id="the-four-profiles-at-a-glance">The four profiles at a
+<h5 id="the-five-profiles-at-a-glance">The five profiles at a
 glance</h5>
 <p>Here is each one at a glance, and then in more detail.</p>
 <table>
@@ -10943,36 +11245,43 @@ glance</h5>
 <tbody>
 <tr>
 <td><strong>Recommended</strong></td>
-<td>18 of 22</td>
+<td>19 of 24</td>
 <td>plain text (unchanged)</td>
 </tr>
 <tr>
 <td><strong>Everything</strong></td>
-<td>22 of 22</td>
+<td>23 of 24</td>
+<td>plain text (unchanged)</td>
+</tr>
+<tr>
+<td><strong>Developer</strong></td>
+<td>20 of 24</td>
 <td>plain text (unchanged)</td>
 </tr>
 <tr>
 <td><strong>WordPad</strong></td>
-<td>6 of 22</td>
+<td>6 of 24</td>
 <td><strong>rich text</strong></td>
 </tr>
 <tr>
 <td><strong>Notepad</strong></td>
-<td>3 of 22</td>
+<td>3 of 24</td>
 <td><strong>plain text</strong></td>
 </tr>
 </tbody>
 </table>
 <h5 id="recommended">Recommended</h5>
 <p><strong>This is what you get when you first install QUILL
-Lite.</strong> It keeps eighteen of the 22 areas: rich text, headings,
+Lite.</strong> It keeps nineteen of the 24 areas: rich text, headings,
 Markdown and HTML, bookmarks, the line tools, the clipboard history,
 printing, abbreviations, the Selection submenu, spell check, the
 dictionary and thesaurus, Matches, Go Back and Go Forward, the Command
-Palette, Describe Character, text size, dictation and WordPress.</p>
+Palette, Describe Character, text size, dictation, WordPress and
+Forms.</p>
 <p><strong>Off:</strong> autocorrect, timestamped backups, Go To
-Anything and AI help. These four are not switched off because they are
-poor. They are off because you should choose them yourself:</p>
+Anything, AI help and coding. The first four are not switched off
+because they are poor. They are off because you should choose them
+yourself:</p>
 <ul>
 <li>Autocorrect can change the quotes in a settings file and break
 it.</li>
@@ -10982,13 +11291,15 @@ palette, the headings list and the bookmark list already do that.</li>
 <li>AI help sends the text you ask about over the internet, and only you
 should decide to do that.</li>
 </ul>
+<p>Coding, the fifth, belongs to the Developer profile below.</p>
 <p><strong>Choose this</strong> when you have been experimenting and
 want to get back to where you started.</p>
 <h5 id="everything">Everything</h5>
-<p><strong>All 22 areas on</strong>, including the four above. That
-includes <strong>AI help</strong>, which is the one area that sends
-anything off your computer, so only choose this profile if you are happy
-with that.</p>
+<p><strong>23 of the 24 areas on</strong>: every writing area, including
+the four above. Coding stays off, because coding is what the Developer
+profile is for. That includes <strong>AI help</strong>, which is the one
+area that sends anything off your computer, so only choose this profile
+if you are happy with that.</p>
 <p>With Everything on:</p>
 <ul>
 <li>Autocorrect can straighten your quotes and turn two hyphens into a
@@ -10998,14 +11309,28 @@ long dash. It does nothing else. It never capitalises sentences.</li>
 </ul>
 <p><strong>Choose this</strong> if you would rather have it all and
 switch things off as they get in your way.</p>
+<h5 id="developer">Developer</h5>
+<p><strong>Everything in Recommended, plus Coding.</strong> Twenty of
+the 24 areas: the seventeen Recommended keeps and the Coding area, which
+no other profile has. Coding gives you project tasks with an AI,
+reviewed changes across files, commands and tests that ask first, Undo
+Last Agent Turn and coach mode. See <a
+href="#coding-project-tasks-in-the-developer-profile">Coding: project
+tasks, in the Developer profile</a> in Chapter 10.</p>
+<p><strong>Off:</strong> autocorrect, timestamped backups, Go To
+Anything and AI help, as in Recommended. Project tasks need an AI
+connection, so turn on AI help too when you want to use them.</p>
+<p><strong>Ctrl+N</strong> is unchanged.</p>
+<p><strong>Choose this</strong> if you write code and want an AI to help
+with it, and you want every change it makes shown to you first.</p>
 <h5 id="wordpad">WordPad</h5>
 <p><strong>Everything WordPad could do.</strong> Rich text you can
 format, print and spell check: bold, italic, underline, headings,
 alignment, bullets, indenting and line spacing, plus Find and Replace,
-printing and text size, and the Command Palette. Six of the 22
+printing and text size, and the Command Palette. Six of the 24
 areas.</p>
-<p><strong>Off</strong>, all sixteen of the others. These are the
-writing tools around the formatting:</p>
+<p><strong>Off</strong>, all eighteen of the others. These are the
+writing tools around the formatting, and coding:</p>
 <ul>
 <li>No line tools (Edit &gt; Lines) and no Change Case.</li>
 <li>No clipboard history or Copy Tray.</li>
@@ -11018,8 +11343,8 @@ Back and Forward, and no Go To Anything.</li>
 <li><strong>No Markdown or HTML.</strong> Ctrl+B in a <code>.md</code>
 file goes back to meaning rich text bold, and QUILL Lite tells you
 so.</li>
-<li><strong>No AI help.</strong></li>
-<li><strong>No WordPress.</strong></li>
+<li><strong>No AI help</strong> and no coding.</li>
+<li><strong>No WordPress</strong> and <strong>no Forms</strong>.</li>
 </ul>
 <p><strong>Ctrl+N makes a rich text document.</strong> So choosing
 WordPad changes a setting as well as the checkboxes: new documents start
@@ -11032,16 +11357,16 @@ to look nice.</p>
 <h5 id="notepad">Notepad</h5>
 <p><strong>The smallest QUILL Lite can be.</strong> Many people come to
 QUILL Lite to replace Notepad, and this is the profile for them. It
-keeps three of the 22 areas: <strong>printing</strong>, <strong>text
+keeps three of the 24 areas: <strong>printing</strong>, <strong>text
 size</strong> and the <strong>Command Palette</strong>.</p>
-<p><strong>Off</strong>, all nineteen of the others: the Format menu and
+<p><strong>Off</strong>, all twenty of the others: the Format menu and
 everything under it, headings, Markdown and HTML, bookmarks, the line
 tools, Change Case, the clipboard history, abbreviations, the Selection
 submenu, spell check, the dictionary and thesaurus, Matches (and with it
 Find in Open Documents and Search in Files), Back and Forward, Go To
-Anything, Describe Character, dictation, autocorrect, backups, AI help
-and WordPress. Nothing that Notepad does not have, apart from the
-palette.</p>
+Anything, Describe Character, dictation, autocorrect, backups, AI help,
+WordPress, Forms and coding. Nothing that Notepad does not have, apart
+from the palette.</p>
 <p><strong>Why every profile keeps the Command Palette:</strong> it is
 how you find a command when you do not know its key or its menu. Press
 <strong>Ctrl+Shift+P</strong> and type part of a name. Every command and
@@ -11068,13 +11393,13 @@ Preferences</strong> and <strong>Customize Features</strong> itself.
 Otherwise you could switch off the very window you need to switch things
 back on.</p>
 <h4 id="searching-the-list">Searching the list</h4>
-<p>There are 22 checkboxes, which is a lot to Tab through. Type in the
+<p>There are 23 checkboxes, which is a lot to Tab through. Type in the
 search box below the Profile box and the list narrows as you type.</p>
 <p>It searches what an area does as well as its name. Type “curly
 quotes” and you find Autocorrect. Type “dictionary” and you find Spell
 check. The line under the box tells you how many are left. Press
 <strong>Down</strong> from the box to go straight into the list.</p>
-<h4 id="the-22-areas">The 22 areas</h4>
+<h4 id="the-24-areas">The 24 areas</h4>
 <table>
 <thead>
 <tr>
@@ -11180,6 +11505,12 @@ categories and tags</td>
 <td>on</td>
 </tr>
 <tr>
+<td><strong>Forms</strong></td>
+<td>File &gt; New Form, and the form rows in Insert, View, Format and
+Tools &gt; Forms</td>
+<td>on</td>
+</tr>
+<tr>
 <td><strong>Autocorrect while typing</strong></td>
 <td>Curly quotes and long dashes (it does not capitalise sentences)</td>
 <td><strong>off</strong></td>
@@ -11227,9 +11558,9 @@ switch the area back off for you.</p>
 <p>You can reach the same agreement in <strong>three places</strong>.
 Use whichever you find first:</p>
 <ul>
-<li><strong>Tools &gt; AI &gt; Privacy Agreement…</strong>
-(<strong>Ctrl+Alt+Shift+K</strong>). Read it, accept it, or take it
-back. Taking it back also signs this computer out.</li>
+<li><strong>Tools &gt; AI &gt; Accounts and Usage &gt; Privacy
+Agreement…</strong> (<strong>Ctrl+Alt+Shift+K</strong>). Read it, accept
+it, or take it back. Taking it back also signs this computer out.</li>
 <li><strong>Preferences</strong>, where a check box says <em>Use QUILL’s
 free AI help</em>. Checking it shows the agreement. Unchecking it takes
 your agreement back.</li>
@@ -12135,8 +12466,8 @@ you are lost</em> teaches the three keys that explain where you are:
 <strong>F1</strong>, <strong>F6</strong> and
 <strong>Ctrl+F1</strong>.</p>
 <p>After this chapter comes Chapter 14, WordPress, for anyone who looks
-after a website. Then the Keyboard reference: every key QUILL Lite has,
-menu by menu.</p>
+after a website, and Chapter 15, Forms, for writing accessible forms.
+Then the Keyboard reference: every key QUILL Lite has, menu by menu.</p>
 <h2 id="chapter-14-wordpress">Chapter 14: WordPress</h2>
 <p>If you look after a WordPress website, QUILL Lite can write its pages
 and posts, open the ones already there, and publish your changes. You
@@ -12178,7 +12509,7 @@ sites</td>
 </tr>
 <tr>
 <td><strong>View</strong></td>
-<td>WordPress Blocks, Preview Blocks</td>
+<td>WordPress Blocks, Preview Blocks, Play Media Here</td>
 </tr>
 <tr>
 <td><strong>Edit &gt; WordPress</strong></td>
@@ -12469,6 +12800,23 @@ protected line, and QUILL Lite asks first.</li>
 blocks, without saving anything, and reads the result as plain text. Use
 it to hear what a latest-posts list or a plugin’s block will really say
 before you publish.</li>
+<li><strong>View &gt; Play Media Here</strong> plays the sound or video
+block the caret is in, streamed from your site, with the same player
+keys as the Media Library’s Play. Nothing is downloaded.</li>
+<li><strong>View &gt; Block Notes…</strong> lists the notes people left
+on blocks in the block editor, such as “Sam on the second paragraph:
+tighten this”. Go to It takes you to the block; you can Reply or
+Resolve. <strong>Insert &gt; Note on This Block…</strong> leaves one of
+your own on the block the caret is in.</li>
+<li><strong>File &gt; WordPress &gt; Custom Fields…</strong> shows the
+extra fields your site’s plugins and theme keep for a page, such as an
+SEO title or an event date. They are in Properties too, and go to the
+site with your next send.</li>
+<li><strong>Tools &gt; WordPress &gt; Alt Text for the Whole
+Library…</strong> steps through every picture on the site that has no
+alternative text, with Suggest, and saves them in batches. <strong>Tools
+&gt; WordPress &gt; More Media &gt; Edit a Picture on the Site…</strong>
+turns or crops a picture into a new one, and keeps the original.</li>
 </ul>
 <p><strong>Insert &gt; Link to a Page on This Site…</strong> lists your
 site’s published pages and posts. Choose one and the link goes in at the
@@ -12797,18 +13145,651 @@ Site…</strong> takes QUILL Lite’s password off the site itself and
 forgets it on this computer. It asks whether to remove the site from
 QUILL Lite or keep it, so you can connect again later. Your local drafts
 stay either way.</p>
-<h3 id="keys">Keys</h3>
-<p>The WordPress commands have no keys of their own yet. They are
-coming, and this chapter will teach them when they arrive. Until
-then:</p>
+<h3 id="more-from-your-site">More from your site</h3>
+<p>QUILL Lite reads what your site offers before it offers anything. A
+command your site does not have tells you why in one sentence, and
+nothing is sent.</p>
+<p><strong>Style Variations</strong> (Tools &gt; WordPress &gt; Design
+&gt; Style Variations). A block theme comes with ready-made looks. Each
+one is listed by name with how many of its colour pairings are too faint
+for body text, and Details reads out the whole Palette Report. Choose
+Apply to make one the site’s look. QUILL Lite keeps the look you had on
+this computer first, so Put Back the Previous Look brings it back.</p>
+<p><strong>Site Styles</strong> (Tools &gt; WordPress &gt; Design &gt;
+Site Styles). Your site’s colours and font sizes, by name. Each colour
+says how it reads on the page background, such as “Accent (dark green),
+#1a4d2e, 7.2 to 1 on the page background, passes”. Choose Change, type
+the new colour or size, and QUILL Lite tells you the new contrast before
+anything is saved. Everything else about the look stays in WordPress’s
+Site Editor.</p>
+<p><strong>Patterns from WordPress.org.</strong> In Insert &gt;
+WordPress Block, choose WordPress.org Patterns to search the free
+Pattern Directory. Before a pattern goes in, QUILL Lite tells you what
+it is for, the blocks it holds in order, and how many of its pictures
+have no alternative text, so you know what you are adding. Undo takes it
+out again.</p>
+<p><strong>Pattern categories.</strong> When your site sorts its
+patterns into categories, Synced Patterns asks which category to show
+first.</p>
+<p><strong>Plugins QUILL Lite recognises.</strong> Site Check names each
+one it finds.</p>
 <ul>
-<li><strong>Alt+F</strong>, then <strong>W</strong>, opens File &gt;
-WordPress, and every row there has an underlined letter.</li>
-<li>The other menus show their WordPress rows near the end, so the Alt
-key and the arrow keys reach them the same way.</li>
-<li>Every command is in the Command Palette
-(<strong>Ctrl+Shift+P</strong>). Type “WordPress”, or part of the
-command’s name, and press <strong>Enter</strong>.</li>
+<li>The Events Calendar: Tools &gt; WordPress &gt; Plugin Extras &gt;
+Events Coming Up lists every event from today, with when and where. New
+Event makes a draft event and opens it. An event’s start, end and venue
+show in Properties.</li>
+<li>WooCommerce: a product’s price and stock show in Properties. Shop
+Orders lists the newest orders to read. QUILL Lite never changes an
+order, and copies one only after asking, because it holds the customer’s
+name and address.</li>
+<li>Yoast SEO and Rank Math: the SEO title and description show in
+Properties with their length.</li>
+</ul>
+<p><strong>Plugin Fields</strong> (File &gt; WordPress &gt; Plugin
+Fields) changes those fields: an event’s dates and venue, a product’s
+prices and stock, the SEO title and description. Under each SEO field a
+line keeps the count, and QUILL Lite tells you when the text goes over
+what search engines show. A price change asks first.</p>
+<p><strong>Abilities and Ask the Site.</strong> WordPress 6.9 lets a
+site offer actions to AI. Tools &gt; WordPress &gt; Manage &gt; AI
+Abilities lists each one by name. Every ability is off until you turn it
+on. Ask the Site sends your question to the AI you chose in Choose Your
+AI. If the AI wants to use an ability, QUILL Lite asks you first, every
+time, and says exactly what it will be given. The answer ends by saying
+what ran on your site.</p>
+<p><strong>Site Check</strong> now runs every health test your site
+offers and reads each as one line. If the authorization header test
+fails, it explains that application passwords cannot work on that site
+until the host fixes it.</p>
+<h3 id="every-route-and-more-from-your-site">Every route, and more from
+your site</h3>
+<p>QUILL Lite checks what each site offers before it tries anything. If
+a site is too old for a command, or your role cannot use it, QUILL Lite
+says so in one sentence and sends nothing.</p>
+<ul>
+<li><strong>Hear Where a Link Goes</strong> (Edit &gt; WordPress). With
+the caret on a link, QUILL Lite asks your site to look at the page and
+reads you its title and description. With no link there, type an
+address: QUILL Lite tells you what is there, so a typo is caught before
+the link goes in, and offers to insert it with the page’s own title as
+the words.</li>
+<li><strong>Fix Link Text</strong> (Edit &gt; WordPress). Every “click
+here” or “read more” link in the page, with the title of the page it
+goes to. Choose Use the Page’s Title, or Use All Titles, and the links
+say where they go.</li>
+<li><strong>Dead links.</strong> Check This Page also checks the links
+in your page and tells you how many go nowhere. Dead Links lists
+them.</li>
+<li><strong>Insert Icon</strong> (Insert &gt; WordPress Icon). Your
+site’s icons, by name. Give an icon a label that says what it means,
+such as “Phone us”, or insert it as decorative so screen readers skip
+it. An icon is never left unnamed.</li>
+<li><strong>Upload a Large File</strong> (Tools &gt; WordPress &gt; More
+Media). Long recordings and videos go up in pieces, so a slow connection
+or a strict host does not lose the whole upload. QUILL Lite tells you
+how far it has got.</li>
+<li><strong>Regenerate Sizes</strong> (Tools &gt; WordPress &gt; More
+Media). After you edit a picture on the site, this remakes its smaller
+copies, so the theme shows the change everywhere.</li>
+<li><strong>Previous Looks</strong> (Tools &gt; WordPress &gt; Manage).
+Your site’s earlier styles, dated, each with its colours. Go Back to
+This Look restores one, and the look you had is kept, so you can change
+your mind.</li>
+<li><strong>Menu History</strong> (Tools &gt; WordPress). Earlier
+versions of a menu. Bring Back Removed Items puts back anything taken
+out since. For a classic menu, QUILL Lite keeps a version each time you
+open the Menus window.</li>
+<li><strong>Space Used</strong> (Tools &gt; WordPress &gt; Manage). How
+much room your uploads, themes, plugins, WordPress and the database
+take, in plain words.</li>
+<li><strong>Download a Copy of the Site’s Design</strong> (Tools &gt;
+WordPress &gt; Manage). A zip of your block theme with your changes,
+saved before you try something new.</li>
+<li><strong>Send This Document to WordPress</strong> (File &gt;
+WordPress &gt; Send, Copy and Download). Any document open in QUILL Lite
+becomes a new draft. Its first heading is the title, its headings stay
+headings, and its pictures go to the Media Library.</li>
+<li><strong>Publish to Another Site.</strong> Copy the page or post you
+are editing to another of your sites, as a draft there. Pictures are
+uploaded again. Categories and tags are matched by name, and QUILL Lite
+asks before creating any that are missing.</li>
+<li><strong>Duplicate.</strong> A new draft from any page or post, on
+the same site or another, with everything but the date and status.</li>
+<li><strong>Download My Writing.</strong> Every page and post saved to a
+folder as Markdown, with the pictures and a contents page. Run it again
+later and only what changed is fetched.</li>
+<li><strong>Send a Folder as Drafts.</strong> A folder of Markdown or
+text files becomes drafts in one go. Each file is checked first, and one
+question tells you how many are going and how many have something to
+look at.</li>
+<li><strong>Coming Up</strong> (Tools &gt; WordPress &gt; Your Sites).
+Everything scheduled on all your sites, soonest first.</li>
+<li><strong>What Changed on My Sites</strong> (Tools &gt; WordPress &gt;
+Your Sites). New comments, posts other people published, and health
+warnings since you last looked, across every site. It only appears when
+you ask.</li>
+</ul>
+<p><strong>Where these are:</strong></p>
+<ul>
+<li>File &gt; WordPress &gt; Send and Copy &gt; Send This Document to
+WordPress…</li>
+<li>File &gt; WordPress &gt; Send and Copy &gt; Publish to Another
+Site…</li>
+<li>File &gt; WordPress &gt; Send and Copy &gt; Duplicate…</li>
+<li>File &gt; WordPress &gt; Send and Copy &gt; Send a Folder as
+Drafts…</li>
+<li>File &gt; WordPress &gt; Send and Copy &gt; Download My
+Writing…</li>
+<li>Edit &gt; WordPress &gt; Fix Link Text…</li>
+<li>Insert &gt; WordPress Icon…</li>
+<li>Tools &gt; WordPress &gt; More Media &gt; Upload a Large File…</li>
+<li>Tools &gt; WordPress &gt; More Media &gt; Regenerate Sizes…</li>
+<li>Tools &gt; WordPress &gt; Menu History…</li>
+<li>Tools &gt; WordPress &gt; Manage &gt; Previous Looks…</li>
+<li>Tools &gt; WordPress &gt; Manage &gt; Download a Copy of the Site’s
+Design…</li>
+<li>Tools &gt; WordPress &gt; Your Sites &gt; Coming Up…</li>
+<li>Tools &gt; WordPress &gt; Your Sites &gt; What Changed on My
+Sites…</li>
+<li>File &gt; WordPress &gt; Plugin Fields…</li>
+<li>Tools &gt; WordPress &gt; Design &gt; Style Variations…</li>
+<li>Tools &gt; WordPress &gt; Design &gt; Site Styles…</li>
+<li>Tools &gt; WordPress &gt; Plugin Extras &gt; Events Coming Up…</li>
+<li>Tools &gt; WordPress &gt; Plugin Extras &gt; New Event…</li>
+<li>Tools &gt; WordPress &gt; Plugin Extras &gt; Shop Orders…</li>
+<li>Tools &gt; WordPress &gt; Manage &gt; AI Abilities…</li>
+<li>Tools &gt; WordPress &gt; Manage &gt; Ask the Site…</li>
+</ul>
+<h3 id="keys">Keys</h3>
+<p>The WordPress commands share one key:
+<strong>Ctrl+Alt+Shift+Grave</strong>. That is the key below Escape
+(Grave, or backtick), with Ctrl, Alt and Shift held down. In QUILL the
+same key without Alt is the QUILL key. Press that, the WordPress key,
+and let go, and QUILL Lite says “WordPress keys”. Then press one letter.
+<strong>O</strong> opens a page or post, <strong>P</strong> publishes,
+<strong>M</strong> opens the Media Library, <strong>S</strong> switches
+site, <strong>W</strong> opens a page by its web address and
+<strong>D</strong> saves a draft to the site. Those six are the ones you
+will use every day.</p>
+<p>The rest of the letters follow the menus: wherever a File &gt;
+WordPress row’s underlined letter was free, that is its key. Two rows
+wanted P, so Publish kept it and New Page went to G. Media Library kept
+M, so Compare with Site is C. Switch Site kept S, and Sites, the list
+you only open now and then, is S with Shift.</p>
+<table>
+<thead>
+<tr>
+<th>Letter</th>
+<th>Command</th>
+<th>Menu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G</td>
+<td>New Page</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>N</td>
+<td>New Post</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>O</td>
+<td>Open Page or Post</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>W</td>
+<td>Open by Web Address</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>L</td>
+<td>Open Local Draft</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>D</td>
+<td>Save Draft to Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>P</td>
+<td>Publish or Update</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>E</td>
+<td>Schedule Publish</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>I</td>
+<td>Open on Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>Y</td>
+<td>Copy Address</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>R</td>
+<td>Properties</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>V</td>
+<td>Previous Versions</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Compare with Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>T</td>
+<td>Move to Trash</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>S</td>
+<td>Switch Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>Shift+S</td>
+<td>Sites</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>A</td>
+<td>Connect a Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>M</td>
+<td>Media Library</td>
+<td>Tools &gt; WordPress</td>
+</tr>
+<tr>
+<td>B</td>
+<td>WordPress Blocks</td>
+<td>View</td>
+</tr>
+<tr>
+<td>K</td>
+<td>Check Before Publishing</td>
+<td>Tools &gt; WordPress</td>
+</tr>
+<tr>
+<td>U</td>
+<td>Upload Files</td>
+<td>Tools &gt; WordPress &gt; More Media</td>
+</tr>
+<tr>
+<td>X</td>
+<td>Alt Text Review</td>
+<td>Tools &gt; WordPress</td>
+</tr>
+</tbody>
+</table>
+<p>A few more things worth knowing:</p>
+<ul>
+<li><strong>Escape</strong> after the WordPress key leaves it and says
+“Left WordPress keys”.</li>
+<li>A letter with no command says so, for example “No WordPress command
+on Q.”, and types nothing.</li>
+<li>If you wait more than about four seconds, the WordPress key gives up
+quietly and your next key types as normal.</li>
+<li>The menus show each key beside its row, in brackets.</li>
+<li>The rows with no letter, like Play Media Here and the Tools &gt;
+WordPress &gt; Manage rows, keep their underlined letters, and every
+command is in the Command Palette (<strong>Ctrl+Shift+P</strong>). Type
+“WordPress”, or part of the command’s name, and press
+<strong>Enter</strong>.</li>
+<li>QUILL and QUILL Lite use the same letters, so moving between them
+costs you nothing.</li>
+</ul>
+<h2 id="chapter-15-forms">Chapter 15: Forms</h2>
+<p>A form is a contact form, an event sign-up, a membership renewal, a
+survey or a feedback page. Making one usually means dragging boxes
+around a web page, which is one of the hardest things on the web to do
+with a screen reader. But a form is really just structured text: a
+title, some questions, their choices, and a few rules. QUILL Lite is
+good at text, so that is how you write one here.</p>
+<p>You write the form as a short plain text document, in BITS Accessible
+Forms’ form language. You check it, and then you fill it in yourself,
+with your screen reader, before anyone else sees it. Everything in this
+chapter happens on your own computer. Nothing is sent anywhere.</p>
+<p><strong>Turning it on.</strong> Forms is on in the Recommended and
+Everything profiles, and off in WordPad and Notepad. If you do not see
+<strong>File &gt; New Form…</strong>, check Forms in <strong>Tools &gt;
+Customize Features</strong>.</p>
+<h3 id="where-everything-is-1">Where everything is</h3>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>What is there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>File</strong></td>
+<td>New Form, beside the other New commands</td>
+</tr>
+<tr>
+<td><strong>Insert</strong></td>
+<td>Form Field</td>
+</tr>
+<tr>
+<td><strong>View</strong></td>
+<td>Form Outline</td>
+</tr>
+<tr>
+<td><strong>Format</strong></td>
+<td>Form Rules</td>
+</tr>
+<tr>
+<td><strong>Tools &gt; Forms</strong></td>
+<td>Check This Form, Fill It In Yourself, Form Properties,
+Responses</td>
+</tr>
+</tbody>
+</table>
+<p>Apart from New Form and Responses, these commands are dimmed unless a
+form is open. A form is a file whose name ends in <code>.bfl</code>. If
+you reach one of them another way, such as from the Command Palette,
+QUILL Lite tells you why it cannot run and how to start a form.</p>
+<p>None of the Forms commands has a shortcut key. Every useful key is
+already taken by something you use more often, and you will not write
+forms every day. Use the menus, or press <strong>Ctrl+Shift+P</strong>,
+type “form”, and pick the command from the list.</p>
+<h3 id="starting-a-form">Starting a form</h3>
+<ol type="1">
+<li>Choose <strong>File &gt; New Form…</strong>.</li>
+<li>Type the form’s <strong>Title</strong>, the name your visitors will
+see.</li>
+<li>Choose a <strong>Template</strong>. There are seven: Blank, Contact
+form, Event registration, Membership renewal, Survey, Accessibility
+feedback and Volunteer sign-up. Each one is a few questions you can
+change.</li>
+<li>Press <strong>Next</strong>. The ordinary Save As window opens, with
+a file name made from your title. Choose a folder and press
+<strong>Save</strong>.</li>
+</ol>
+<p>The new form opens straight away, ready to change.</p>
+<h3 id="what-a-form-looks-like">What a form looks like</h3>
+<p>Here is part of the Event registration template:</p>
+<pre><code>bfl 1
+form &quot;Spring fair&quot;
+
+text #name &quot;Your name&quot;
+  @required
+  @autocomplete &quot;name&quot;
+radio #access &quot;Do you need any access arrangements?&quot;
+  + No
+  + Yes
+textarea #access_details &quot;Tell us what you need&quot;
+  @when #access is &quot;yes&quot;</code></pre>
+<p>Each question starts on a line of its own: the kind of question, its
+id (the word after the <code>#</code>), and its label in quotes. The
+indented lines under it are its settings, such as
+<code>@required</code>, and its choices, which start with
+<code>+</code>. The <code>@when</code> line is a rule: Tell us what you
+need only appears when somebody answers Yes.</p>
+<p>You never have to type any of this. The commands below write it for
+you. But it is ordinary text, so Find, spelling, copy and paste all work
+on it, and if you would rather type a question yourself, you can.</p>
+<h3 id="adding-a-question">Adding a question</h3>
+<p>Put your cursor on the question you want the new one to follow, then
+choose <strong>Insert &gt; Form Field…</strong>.</p>
+<ol type="1">
+<li>A list of every kind of question opens: one line of text, an email
+address, choose one, check boxes, a date, a rating and many more. Each
+row says what a visitor meets. <strong>Section</strong> and <strong>Page
+break</strong> are at the top. Type a word such as “date” in
+<strong>Search</strong> and press <strong>Enter</strong> to narrow the
+list. Choose one with <strong>Enter</strong>.</li>
+<li>A short window asks only what that kind of question needs: the
+<strong>Label</strong>, an <strong>Id</strong> (leave it empty and QUILL
+Lite makes one from the label), whether it is <strong>Required</strong>,
+and <strong>Help text</strong>, a sentence that is read with the
+question. A question with choices also asks for the
+<strong>Choices</strong>, one per line, or a <strong>Choice
+library</strong>, a ready-made list such as countries or time
+zones.</li>
+<li>Press <strong>Insert</strong>. The question goes in after the one
+your cursor was on, and your cursor moves to it.</li>
+</ol>
+<p>A page break starts a new page at your cursor: everything after it
+moves to the new page.</p>
+<h3 id="the-form-outline">The form outline</h3>
+<p><strong>View &gt; Form Outline…</strong> lists every page, section
+and question in order. Each row reads like a sentence, for example
+“Email address, email field, required, page 1”.</p>
+<ul>
+<li><strong>Enter</strong> takes you to that question in the
+document.</li>
+<li><strong>Alt+Shift+Up</strong> and <strong>Alt+Shift+Down</strong>
+move it, and the buttons <strong>Move Up</strong> and <strong>Move
+Down</strong> do the same. Moving past the top or bottom of a page takes
+it on to the next page.</li>
+<li><strong>Alt+Shift+Right</strong> moves it into the section just
+above it, and <strong>Alt+Shift+Left</strong> moves it out again.</li>
+<li><strong>Rename</strong> changes what the question says.</li>
+<li><strong>Change Id</strong> changes its id, and every rule that
+mentions it changes too.</li>
+<li><strong>Change Type</strong> makes it a different kind of question.
+Its label, help and rules stay.</li>
+<li><strong>Duplicate</strong> puts a copy straight after it, and
+<strong>Remove</strong> takes it out after asking you first.</li>
+</ul>
+<p>Every change is one step that <strong>Ctrl+Z</strong> in the document
+takes back.</p>
+<h3 id="rules">Rules</h3>
+<p><strong>Format &gt; Form Rules…</strong> lists every rule in the form
+as a sentence, such as “Show Tell us what you need when Do you need any
+access arrangements? is Yes.” Calculations are there too: “Cost is
+Tickets times 5.”</p>
+<p>To add one, press <strong>Add Rule…</strong> and make three
+choices:</p>
+<ol type="1">
+<li><strong>When this question</strong>, and how its answer is compared
+in <strong>Is</strong>: is, is not, is filled in, is empty, contains, is
+more than or is less than. Type the answer to compare with in
+<strong>This answer</strong>.</li>
+<li><strong>Then</strong>: show, hide, require, make optional, enable,
+disable, or skip to a page.</li>
+<li><strong>To this question or page</strong>: what the rule acts
+on.</li>
+</ol>
+<p>If you know the form language, you can type the whole condition in
+<strong>Or write the condition yourself</strong> instead, for example
+<code>#age &gt; 17 and #consent is filled</code>. QUILL Lite checks that
+it makes sense before it writes anything, and tells you what is wrong if
+it does not.</p>
+<p><strong>Edit</strong> changes a rule’s condition, and an empty
+condition removes it. <strong>Remove</strong> takes a rule out after
+asking, and <strong>Go to It</strong> takes you to the question the rule
+is on.</p>
+<h3 id="form-properties">Form Properties</h3>
+<p><strong>Tools &gt; Forms &gt; Form Properties…</strong> holds
+everything about the form that is not a question: its title, a short
+description, the language it is written in, what the send button says,
+the message visitors read after sending, a web address to go to instead,
+and whether visitors can save a long form and finish it later.</p>
+<p>At the bottom, <strong>On the site</strong> says what the website
+decides: whether the CAPTCHA and the spam trap are on, how many email
+notifications there are, and the form’s number on the site once it is
+published. You read these here; you change them on the site.</p>
+<h3 id="checking-a-form">Checking a form</h3>
+<p><strong>Tools &gt; Forms &gt; Check This Form…</strong> looks for
+anything that would make the form hard to fill in, and lists what to
+fix, most serious first. It looks for:</p>
+<ul>
+<li>a question with no label, or with only a placeholder for one;</li>
+<li>a group of choices with no question for the group;</li>
+<li>a question marked required with only an asterisk;</li>
+<li>a format rule, such as a smallest number, with no help text saying
+what is expected;</li>
+<li>name, email, phone and address questions without an autofill hint,
+so the browser cannot fill them in;</li>
+<li>a rule that names a question that does not exist, or that can never
+show a required question;</li>
+<li>an empty page, or more than 30 questions on one page;</li>
+<li>the same id used twice;</li>
+<li>a list of more than 15 choices, which would be easier as a choice
+library.</li>
+</ul>
+<p>Anything QUILL Lite could not read is listed first, in the form
+language’s own words. Lines that start “On the site today” are
+different: they say where the forms plugin on your website currently
+reads your form differently from how it is written, so you know before
+you publish.</p>
+<p>Press <strong>Enter</strong> or <strong>Go to It</strong> to go to
+the line. After you fix something, <strong>Check Again</strong> reads
+the form afresh.</p>
+<h3 id="fill-it-in-yourself">Fill It In Yourself</h3>
+<p><strong>Tools &gt; Forms &gt; Fill It In Yourself…</strong> opens
+your form as a real window, built from the same text, and you fill it in
+as a visitor would.</p>
+<ul>
+<li><strong>Tab</strong> moves from question to question. Each one is an
+ordinary edit box, check box, list or group of radio buttons, so your
+screen reader says its label, its group, and “required” where it
+is.</li>
+<li>Rules work as you answer. When an answer makes a question appear or
+disappear, QUILL Lite tells you, for example “Membership number
+appears.”</li>
+<li>Answers that are worked out, such as a total, update as you
+type.</li>
+<li><strong>Next</strong> goes to the next page, but first checks this
+page: if a required question has no answer, QUILL Lite tells you which,
+and puts you on it. <strong>Back</strong> goes back.</li>
+<li>If the form is translated, the <strong>Language</strong> box at the
+top lets you try it in each language.</li>
+<li><strong>Submit</strong> sends nothing. It shows <strong>What Would
+Be Sent</strong>: each question and its answer, anything that still
+needs an answer, and what the rules worked out. <strong>Close</strong>
+leaves without keeping anything.</li>
+</ul>
+<h3 id="responses">Responses</h3>
+<p><strong>Tools &gt; Forms &gt; Responses…</strong> will list what
+people send to your form on your website. That needs the connection to
+BITS Accessible Forms on your site, which is still being built, so for
+now QUILL Lite tells you so and lists nothing.</p>
+<h3 id="good-to-know">Good to know</h3>
+<ul>
+<li>A form is an ordinary text file. <strong>Ctrl+S</strong> saves it
+like any other document, and you can open it in any text editor.</li>
+<li>Most commands rewrite only the question they change, and the rest of
+your form stays as you wrote it. Moving a question can rewrite the whole
+form in the standard layout. <strong>Ctrl+Z</strong> takes either
+back.</li>
+<li>Payment details and website passwords never pass through QUILL Lite.
+They stay on your website.</li>
+</ul>
+<h3 id="putting-a-form-on-your-site">Putting a form on your site</h3>
+<p>If your WordPress site has BITS Accessible Forms, QUILL Lite can
+publish a form to it. Open the form, then choose Publish Form in Tools,
+Forms. The first time, QUILL Lite asks whether the form is live, so
+people can fill it in, or a draft. Then it asks you to confirm, naming
+the site. Publishing again updates the same form. If someone changed it
+on the site since you last published, QUILL Lite says so first, and
+keeps the site’s copy on your computer before replacing it.</p>
+<p>To show the form on a page, open the page from File, WordPress, put
+the cursor where the form goes, and choose Insert Form Into Page. QUILL
+Lite lists the site’s forms and inserts BAF’s form block, or a shortcode
+if the page is written in Markdown. The form appears once you send the
+page.</p>
+<p>Test on Site opens the page that shows your form in your web browser,
+so you can try it as a visitor would. If no page shows it yet, QUILL
+Lite opens the form in BITS Accessible Forms on the site instead.</p>
+<h3 id="paper-large-print-and-braille">Paper, large print and
+braille</h3>
+<p>Every form can be saved four other ways, without a site, even in Safe
+Mode:</p>
+<ul>
+<li><strong>Save As Web Page:</strong> a form page of its own, with
+every question properly labelled. QUILL Lite asks where it should send
+its answers; leave that empty for a form to print or read.</li>
+<li><strong>Save As Word Document:</strong> a printable form. Each
+question is a heading, with lines to write on and boxes to check.</li>
+<li><strong>Save As Large Print:</strong> the same Word form at 18 point
+and up.</li>
+<li><strong>Save As Braille-Ready Text:</strong> one question per block,
+choices lettered a, b, c, 40 cells to a line. With the braille pack
+installed, QUILL Lite can also translate it to UEB contracted braille
+and save a BRF file.</li>
+</ul>
+<p>All four come from the same form, so the paper version always asks
+what the web version asks.</p>
+<h3 id="responses-1">Responses</h3>
+<p>Responses, in Tools, Forms, lists what people sent, newest first:
+“Response 41, 3 November, 2:10 PM, Jane Smith, Event registration”. With
+a published form open, it goes straight to that form’s responses.
+Otherwise QUILL Lite asks which site and which form.</p>
+<ul>
+<li><strong>Read</strong>, or Enter: one response, a question and its
+answer on each line.</li>
+<li><strong>View:</strong> the list, or grouped by date, or grouped by
+the place people gave.</li>
+<li><strong>Find:</strong> shows only responses containing some
+words.</li>
+<li><strong>Export to CSV</strong>, <strong>Open as Table</strong>,
+<strong>Export to Word:</strong> save responses where you choose. Open
+as Table opens the file afterwards; Export to Word saves one response or
+all of those shown.</li>
+<li><strong>Mark</strong>, then <strong>Delete:</strong> removes the
+marked responses, or the selected one, after telling you how many. They
+go to the Trash in BITS Accessible Forms.</li>
+<li><strong>Say New Count:</strong> the first time you use a site in a
+session, QUILL Lite says how many new responses each form has, for
+example “Community Radio: 4 new responses to Event registration.” This
+button turns that on or off for the site.</li>
+</ul>
+<p>Responses are people’s personal details. QUILL Lite reads them only
+while this window is open, keeps them in memory, never writes them to a
+log, and saves them only where you choose.</p>
+<h3 id="ai-help-with-forms">AI help with forms</h3>
+<p>If you have chosen an AI, four commands can help. Each one tells you
+what it sends before it sends it, and nothing changes until you have
+read the proposal and said yes. Undo takes it all out in one step.</p>
+<ul>
+<li><strong>Draft a Form:</strong> describe the form in a sentence or
+two. The AI writes it as a form. QUILL Lite replaces the form in front
+with it, or saves it as a new form.</li>
+<li><strong>Plain Language:</strong> sends your questions and help text,
+never anybody’s answers. You get simpler wording to accept or
+decline.</li>
+<li><strong>Suggest Autofill Hints:</strong> for questions such as name,
+email, phone and address that have no autofill hint, and for questions
+with a format rule but no help. It sends their wording and types
+only.</li>
+<li><strong>Summarise Responses</strong>, a button in Responses: this
+sends people’s answers, so QUILL Lite asks every time. It says how many
+responses would go, and that they may include names and email
+addresses.</li>
+</ul>
+<p>None of these work in Safe Mode, and nor do Publish, Test on Site or
+Responses. Writing, checking, Fill It In Yourself and the four ways to
+save still do.</p>
+<p><strong>Where these are:</strong></p>
+<ul>
+<li>Tools &gt; Forms &gt; Publish Form…</li>
+<li>Tools &gt; Forms &gt; Insert Form Into Page…</li>
+<li>Tools &gt; Forms &gt; Save As Web Page…</li>
+<li>Tools &gt; Forms &gt; Save As Word Document…</li>
+<li>Tools &gt; Forms &gt; Save As Large Print…</li>
+<li>Tools &gt; Forms &gt; Save As Braille-Ready Text…</li>
+<li>Tools &gt; Forms &gt; Draft a Form…</li>
+<li>Tools &gt; Forms &gt; Plain Language…</li>
+<li>Tools &gt; Forms &gt; Suggest Autofill Hints…</li>
 </ul>
 <h2 id="licences-and-notices">Licences and notices</h2>
 <p>QUILL Lite is free and released under the MIT License. It also
@@ -12912,6 +13893,85 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Q</strong></td>
 <td>Exit QUILL Lite</td>
+</tr>
+</tbody>
+</table>
+<h4 id="wordpress-in-file">WordPress (in File)</h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, G</strong></td>
+<td>New Page…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, N</strong></td>
+<td>New Post…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, O</strong></td>
+<td>Open Page or Post…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, W</strong></td>
+<td>Open by Web Address…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, L</strong></td>
+<td>Open Local Draft…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, D</strong></td>
+<td>Save Draft to Site</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, P</strong></td>
+<td>Publish or Update…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, E</strong></td>
+<td>Schedule Publish…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, I</strong></td>
+<td>Open on Site</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, Y</strong></td>
+<td>Copy Address</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, R</strong></td>
+<td>Properties…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, V</strong></td>
+<td>Previous Versions…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, C</strong></td>
+<td>Compare with Site</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, T</strong></td>
+<td>Move to Trash…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, S</strong></td>
+<td>Switch Site…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, Shift+S</strong></td>
+<td>Sites…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, A</strong></td>
+<td>Connect a Site…</td>
 </tr>
 </tbody>
 </table>
@@ -13323,6 +14383,10 @@ list inside the app.</p>
 <td><strong>Ctrl+Alt+W</strong></td>
 <td>Line Statistics</td>
 </tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, B</strong></td>
+<td>WordPress Blocks…</td>
+</tr>
 </tbody>
 </table>
 <h3 id="insert">Insert</h3>
@@ -13646,10 +14710,6 @@ list inside the app.</p>
 </tr>
 </tbody>
 </table>
-<p>Insert Row Below, Insert Column Right, Delete Row, Delete Column and
-Tidy Table are on the same submenu with no keys, as in Word. In a table,
-the arrow keys also move cell by cell, and <strong>Tab</strong> and
-<strong>Shift+Tab</strong> move to the next and previous cell.</p>
 <h4 id="bookmarks-in-navigate">Bookmarks (in Navigate)</h4>
 <table>
 <thead>
@@ -13905,20 +14965,20 @@ Navigate)</h4>
 <td>Do a Document Task…</td>
 </tr>
 <tr>
-<td><strong>Ctrl+8</strong></td>
-<td>Which AI Am I Using</td>
-</tr>
-<tr>
-<td><strong>Ctrl+4</strong></td>
-<td>Choose Your AI…</td>
-</tr>
-<tr>
 <td><strong>Ctrl+Alt+Shift+F9</strong></td>
 <td>Usage…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+9</strong></td>
 <td>Web Searches Left</td>
+</tr>
+<tr>
+<td><strong>Ctrl+8</strong></td>
+<td>Which AI Am I Using</td>
+</tr>
+<tr>
+<td><strong>Ctrl+4</strong></td>
+<td>Choose Your AI…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F10</strong></td>
@@ -14158,6 +15218,45 @@ Navigate)</h4>
 <tr>
 <td><strong>Alt+F12</strong></td>
 <td>Convert to Tabs</td>
+</tr>
+</tbody>
+</table>
+<h4 id="wordpress-in-tools">WordPress (in Tools)</h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, K</strong></td>
+<td>Check Before Publishing…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, M</strong></td>
+<td>Media Library…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, X</strong></td>
+<td>Alt Text Review…</td>
+</tr>
+</tbody>
+</table>
+<h4 id="wordpressmore-media-in-tools">WordPress|More Media (in
+Tools)</h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, U</strong></td>
+<td>Upload Files…</td>
 </tr>
 </tbody>
 </table>

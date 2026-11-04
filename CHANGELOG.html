@@ -453,6 +453,147 @@ palette now reads them from the menus each time it opens, named by the
 menus they sit in. A test checks that nothing in the menu bar is left
 out.</li>
 </ul>
+<h3 id="agentic-coding-project-tasks-2026-11-04">Agentic coding: project
+tasks (2026-11-04)</h3>
+<p>Project tasks with an AI, in the Developer profile. QUILL Lite gets
+every one of these in the same change.</p>
+<ul>
+<li><p><strong>The Claude engine really runs with no tools of its
+own.</strong> The Claude Agent SDK pack asked for
+<code>allowed_tools=[]</code>, which only pre-approves nothing: the
+model could still see Claude Code’s file and shell tools. It now passes
+<code>disallowed_tools=["*"]</code> in <code>default</code> permission
+mode, so every built-in tool is removed, and a test with a stand-in SDK
+checks the options.</p></li>
+<li><p><strong>The shared project-task core is checked and
+tested.</strong> A project is a folder; the agent may read inside it,
+never outside, and never sees secret files. Edits wait in a change set
+until you review them, every turn has a private checkpoint for Undo Last
+Turn, commands run in a process tree that Stop ends whole, and test
+output comes back as one sentence. Over a hundred tests cover it. Fixed
+on the way: a command with quotes in it (a program under
+<code>Program Files</code>, say) reached <code>cmd</code> with its
+quotes mangled; the program’s own path set off the “runs outside the
+project” warning, which also hid Always Allow; the closing summary left
+out the commands a turn ran; and test results said “1 errors”.</p></li>
+<li><p><strong>A Developer profile, and the only place coding
+lives.</strong> The profile that was called Developer and Power Text is
+now <strong>Developer</strong>. It keeps its regular-expression, cleanup
+and analysis tools, and it is now the only profile, with Full Quill,
+that turns on developer tools: project tasks, local Git and GitHub, the
+Developer Console, word prediction and the agent validator. In every
+other profile they are off, not just quiet. One feature, Developer
+Tools, sits under all of them; turning it on in Manage Individual
+Features is the way to get one tool without the whole profile.</p></li>
+<li><p><strong>Do a Project Task.</strong> Open a folder as a project
+and Ctrl+3 works on the whole project instead of one document. The agent
+reads, searches and plans without asking; every change it proposes waits
+in <strong>Review Changes</strong>, a list of files over one change at a
+time, with line numbers first and indentation said as a count. Nothing
+is written until you accept it. Every command it wants to run asks
+first, in <strong>Run This Command?</strong>, with the exact command to
+arrow through and a warning when QUILL sees one. Test results come back
+as one sentence. <strong>Undo Last Agent Turn</strong> puts every file
+back, and refuses, naming the file, if you have edited it since.
+<strong>Stop Agent</strong> stops the task and its command from any
+window. The window also has Plan, Changes, Output, Transcript, Explain
+Last Turn and <strong>Coach mode</strong>, where the agent teaches and
+you type.</p></li>
+<li><p><strong>Commands Allowed in This Project</strong> is your own
+list of commands that run without asking, kept in QUILL and never in the
+project, with a deliberate <strong>Run commands without asking</strong>
+switch that is off until you check it and confirm.</p></li>
+<li><p><strong>Engine Tools for This Project</strong> shows the engine’s
+own tools (Copilot’s shell and editor, say). All are off until you check
+them, they still ask before each use, and a turn that has any on says
+so.</p></li>
+<li><p><strong>Agent notes in a project</strong> are read the way the
+tools that write them expect: <code>AGENTS.md</code> at the root and in
+folders, Copilot’s instruction files, <code>CLAUDE.md</code>,
+<code>GEMINI.md</code> and Cursor’s rules. QUILL asks once per project
+whether to use them, and nothing in them can approve anything.</p></li>
+<li><p><strong>Each Developer command is where you would look for
+it,</strong> in both editors: Open Project Folder and Close Project in
+File; Undo Last Agent Turn and Stop Agent in Edit, under Agent Work; the
+task’s transcript and command output in View; Commands Allowed in This
+Project in Tools; and Do a Project Task, Explain Last Turn and Engine
+Tools in the AI menu, after Do a Document Task. None of them appears
+outside the Developer profile.</p></li>
+<li><p><strong>Undo says what it would lose, and offers a look.</strong>
+When Undo Last Agent Turn refuses because you edited a file since the
+agent’s turn, it names the file and offers to open the file as it was
+before the turn, so you can compare. Your file is not changed.</p></li>
+<li><p><strong>Project tasks are off in Safe Mode,</strong> like the AI
+engines.</p></li>
+<li><p><strong>More engines for project tasks.</strong> GitHub Copilot
+and Codex as before, and now on My own key: <strong>Claude</strong> (the
+Claude Agent SDK on your own Anthropic key, with QUILL’s tools and none
+of Claude Code’s own unless you turn them on), and <strong>Ollama
+practice mode</strong>, a model on this computer: nothing is sent, and
+it is slower and less capable, which the window says.</p></li>
+<li><p><strong>A Project cell in the status bar</strong> says the open
+project and its git branch, and “waiting for you” when the task has a
+question you have not seen. Enter on it opens the task. It appears the
+first time you open a project.</p></li>
+<li><p><strong>F1 in every project window</strong> says what the window
+is for, then what the control you are on does, and the F1 help reference
+and the keyboard reference list them.</p></li>
+<li><p><strong>A tutorial: Your first project task,</strong> in a Coding
+track that appears only in the Developer profile. Twelve minutes, from
+opening a practice folder to undoing the whole turn.</p></li>
+<li><p><strong>Documented:</strong> a user guide chapter, “Project
+tasks: coding with an AI”, PRD section 36, the release notes and the
+announcement, and thirteen screen-reader checks for NVDA, JAWS and
+Narrator.</p></li>
+<li><p><strong>Practice mode’s call to Ollama goes through QUILL’s one
+network check,</strong> like every other address QUILL opens.</p></li>
+<li><p><strong>Changed files reload in place.</strong> When a turn
+changes a document you have open, it reloads with your cursor where it
+was, and QUILL says so once. A document with unsaved edits is left alone
+and named.</p></li>
+</ul>
+<h3 id="page-breaks-with-ctrlenter-2026-11-03">Page breaks with
+Ctrl+Enter (2026-11-03)</h3>
+<ul>
+<li><strong>Ctrl+Enter inserts a page break, as in Word.</strong> In a
+Word or Rich Text document it is a real page break that is kept when you
+save; in Markdown it is the <code>::: pagebreak</code> line, which
+becomes a page break when you export. It is on the Insert menu in QUILL
+Lite and the Format menu in QUILL.</li>
+<li><strong>Word page breaks are kept.</strong> Opening a Word document
+used to turn each page break into an empty line, so saving it removed
+them all. They now open as page breaks and are saved as page
+breaks.</li>
+<li><strong>Follow Link moves off Ctrl+Enter, mostly.</strong> With the
+cursor on a link, Ctrl+Enter still follows it, so the old habit still
+works. Follow Link is on the Navigate menu, and you can give it a key of
+its own in the Keymap Editor.</li>
+</ul>
+<h3 id="ai-menu-own-key-and-silent-commands-2026-11-03">AI menu, own key
+and silent commands (2026-11-03)</h3>
+<ul>
+<li><strong>One AI menu, the same in every app</strong> (2026-11-03).
+The AI menu now reads in four groups, in the same order in every
+QuillVille app: the ways to ask; what this app’s AI does; Which AI Am I
+Using and Choose Your AI; and <strong>Accounts and Usage</strong>, a
+submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage
+and the Privacy Agreement (and, where the app has them, Connect or Sign
+Out and Web Searches Left). Every command keeps its key wherever it now
+sits.</li>
+<li><strong>Your own key is not only OpenAI</strong> (2026-11-03).
+Before you have saved a key, Choose Your AI’s own-key row now names
+every service it can use: OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter, Ollama Cloud, a service of your own, or Ollama on this
+computer, which is free and sends nothing. It used to say only
+OpenAI.</li>
+<li><strong>A command is never silent</strong> (2026-11-03). In a new or
+plain document, keys for commands that need formatting or Markdown, such
+as Ctrl+B for Bold or a heading key, used to do nothing and say nothing,
+because their menu rows are dimmed there. Now each one says why it
+cannot run, such as that the document has no formatting or that the
+command needs a Markdown or HTML document. Select All in an empty
+document says the document is empty.</li>
+</ul>
 <h3 id="phonon-voices-2026-11-02">Phonon voices (2026-11-02)</h3>
 <ul>
 <li><strong>Phonon, a new offline Read Aloud voice.</strong> Gradium’s

@@ -37,6 +37,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.ui.hosted_ai_commands import HostedAiMixin
+from quill.ui.main_frame_project_rows import ProjectRowsMixin
 
 __all__ = ["HostedAiCommandsMixin", "QuillAiHost"]
 
@@ -46,6 +47,8 @@ __all__ = ["HostedAiCommandsMixin", "QuillAiHost"]
 #: onto it rather than inventing a second switch for people to find and
 #: disagree with.
 _HOSTED_AI_FEATURE = "hosted_ai"
+#: The Developer profile's coding features, by QUILL Lite's area name.
+_CODING_FEATURE = "coding"
 
 
 class QuillAiHost:
@@ -101,6 +104,11 @@ class QuillAiHost:
     def feature_enabled(self, name: str) -> bool:
         from quill.core.ai.model_manager import load_ai_enabled
 
+        if name == _CODING_FEATURE:
+            # QUILL Lite's Coding area is QUILL's core.developer (code.md 6.4).
+            features = getattr(self._frame, "features", None)
+            check = getattr(features, "is_enabled", None)
+            return bool(callable(check) and check("core.developer"))
         if name != _HOSTED_AI_FEATURE:
             return True
         return load_ai_enabled()
@@ -141,7 +149,7 @@ class QuillAiHost:
             pass
 
 
-class HostedAiCommandsMixin(HostedAiMixin):
+class HostedAiCommandsMixin(ProjectRowsMixin, HostedAiMixin):
     """The shared hosted-AI commands, wired to QUILL's frame, editor and settings.
 
     Three overrides and no commands. That is the whole point: QUILL and QUILL Lite
@@ -177,30 +185,6 @@ class HostedAiCommandsMixin(HostedAiMixin):
             self._hosted_ai_own_key_id = menu_id
         return menu_id
 
-    def _append_own_key_row(self, ai_menu: Any) -> None:
-        """The sixth row: the same shared command QUILL Lite has, on the same key.
-
-        Registered and bound here, once, rather than in main_frame_commands.py
-        and main_frame_menu_bindings.py, which are at their size budgets.
-        """
-        import wx
-
-        from quill.core.i18n import _
-
-        menu_id = self._own_key_menu_id()
-        ai_menu.Append(
-            menu_id, self._menu_label(_("Use My &Own AI Key..."), "tools.hosted_ai_own_key")
-        )
-        if not getattr(self, "_hosted_ai_own_key_wired", False):
-            self._hosted_ai_own_key_wired = True
-            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_ai_own_key(), id=menu_id)
-            self.commands.try_register(
-                "tools.hosted_ai_own_key",
-                "Use My Own AI Key",
-                self.cmd_ai_own_key,
-                self._binding_for("tools.hosted_ai_own_key"),
-            )
-
     def _chatgpt_menu_ids(self) -> tuple[Any, Any, Any]:
         """The ids of the three direct-route rows, made once like the own key's."""
         ids = getattr(self, "_hosted_ai_chatgpt_ids", None)
@@ -211,58 +195,9 @@ class HostedAiCommandsMixin(HostedAiMixin):
             self._hosted_ai_chatgpt_ids = ids
         return ids
 
-    def _append_chatgpt_rows(self, ai_menu: Any) -> None:
-        """Use My ChatGPT Subscription and Ask About an Image: QUILL Lite's two
-        rows, on QUILL Lite's two chords, from the shared module
-        (:mod:`quill.ui.hosted_ai_chatgpt_commands`).
-
-        Registered and bound here like the own-key row, and for the same reason:
-        main_frame_commands.py and main_frame_menu_bindings.py are at their size
-        budgets. The mnemonics -- u and k -- are the two letters no other row in
-        this menu claims in either mode.
-        """
-        import wx
-
-        from quill.core.i18n import _
-
-        chatgpt_id, image_id, tidy_id = self._chatgpt_menu_ids()
-        ai_menu.Append(
-            chatgpt_id,
-            self._menu_label(_("Use My ChatGPT S&ubscription..."), "tools.hosted_ai_chatgpt"),
-        )
-        image = self._ai_gated_label("cmd_ai_image", _("As&k About an Image..."))
-        ai_menu.Append(image_id, self._menu_label(image, "tools.hosted_ai_image"))
-        tidy = self._ai_gated_label("cmd_dictation_tidy", _("Tidy Dictated Te&xt..."))
-        ai_menu.Append(tidy_id, self._menu_label(tidy, "tools.dictation_tidy"))
-        if not getattr(self, "_hosted_ai_chatgpt_wired", False):
-            self._hosted_ai_chatgpt_wired = True
-            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_ai_chatgpt(), id=chatgpt_id)
-            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_ai_image(), id=image_id)
-            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_dictation_tidy(), id=tidy_id)
-            self.commands.try_register(
-                "tools.dictation_tidy",
-                "Tidy Dictated Text",
-                self.cmd_dictation_tidy,
-                self._binding_for("tools.dictation_tidy"),
-            )
-            self.commands.try_register(
-                "tools.hosted_ai_chatgpt",
-                "Use My ChatGPT Subscription",
-                self.cmd_ai_chatgpt,
-                self._binding_for("tools.hosted_ai_chatgpt"),
-            )
-            self.commands.try_register(
-                "tools.hosted_ai_image",
-                "Ask About an Image",
-                self.cmd_ai_image,
-                self._binding_for("tools.hosted_ai_image"),
-            )
-
     #: The Chat Key, the Prompt Library on the free AI and Web Searches Left
     #: (2026-10-15): QUILL Lite's three rows on QUILL Lite's three chords, from
-    #: the shared module (quill/ui/hosted_ai_answers.py). No access keys: every
-    #: letter their names start with is claimed in this menu once the advanced
-    #: rows show, and a duplicate is a key Windows may refuse to press (GATE-14).
+    #: the shared module (quill/ui/hosted_ai_answers.py).
     _ANSWER_ROWS: tuple[tuple[str, str, str], ...] = (
         ("tools.hosted_ai_chat_key", "Ask AI a Question...", "cmd_ai_chat_key"),
         ("tools.hosted_ai_prompt_library", "Prompt Library...", "cmd_ai_prompt_library"),
@@ -278,36 +213,13 @@ class HostedAiCommandsMixin(HostedAiMixin):
             self._hosted_ai_answer_ids = ids
         return ids
 
-    def _append_answer_rows(self, ai_menu: Any) -> None:
-        """The three rows, registered and bound here once, like the own key's."""
-        import wx
-
-        from quill.core.i18n import _
-
-        ids = self._answer_menu_ids()
-        for command_id, label, handler_name in self._ANSWER_ROWS:
-            shown = self._ai_gated_label(handler_name, _(label))  # codex.md 10A.8
-            ai_menu.Append(ids[command_id], self._menu_label(shown, command_id))
-        if getattr(self, "_hosted_ai_answers_wired", False):
-            return
-        self._hosted_ai_answers_wired = True
-        for command_id, label, handler_name in self._ANSWER_ROWS:
-            handler = getattr(self, handler_name)
-            self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=ids[command_id])
-            self.commands.try_register(
-                command_id, label.rstrip("."), handler, self._binding_for(command_id)
-            )
-
-    #: Which AI Am I Using and Choose Your AI (codex.md 10A.9, 2026-10-31):
-    #: QUILL Lite's two rows on QUILL Lite's two chords, from the shared module
-    #: (quill/ui/hosted_ai_choose_commands.py). No access keys, for the reason
-    #: the answer rows above have none: this menu has spent the letters.
+    #: Which AI Am I Using and Choose Your AI (codex.md 10A.9, 2026-10-31), Do a
+    #: Document Task (codex.md 6.2) and Propose Alt Text (codex.md 6.4): QUILL
+    #: Lite's rows on QUILL Lite's chords, from the shared modules.
     _CHOOSE_ROWS: tuple[tuple[str, str, str], ...] = (
         ("tools.hosted_ai_which", "Which AI Am I Using", "cmd_ai_which"),
         ("tools.hosted_ai_choose", "Choose Your AI...", "cmd_ai_choose"),
-        # Do a Document Task (codex.md 6.2): quill/ui/hosted_ai_task_commands.py.
         ("tools.hosted_ai_task", "Do a Document Task...", "cmd_ai_task"),
-        # Propose Alt Text (codex.md 6.4): the same window, the request filled in.
         ("tools.hosted_ai_alt_text", "Propose Alt Text...", "cmd_ai_alt_text"),
     )
 
@@ -320,24 +232,55 @@ class HostedAiCommandsMixin(HostedAiMixin):
             self._hosted_ai_choose_ids = ids
         return ids
 
-    def _append_choose_rows(self, ai_menu: Any) -> None:
-        """The two rows, registered and bound here once, like the answer rows."""
+    #: Every shared row this mixin adds to the AI menu: command id -> (label,
+    #: handler). Most carry no access key, because the advanced rows have spent
+    #: the letters (GATE-14); the three that do -- o, k and x, and u inside
+    #: Accounts and Usage -- are letters no other top-level row claims.
+    _HOSTED_ROWS: dict[str, tuple[str, str]] = {
+        **{cid: (label, handler) for cid, label, handler in _ANSWER_ROWS + _CHOOSE_ROWS},
+        "tools.hosted_ai_own_key": ("Use My &Own AI Key...", "cmd_ai_own_key"),
+        "tools.hosted_ai_chatgpt": ("Use My ChatGPT S&ubscription...", "cmd_ai_chatgpt"),
+        "tools.hosted_ai_image": ("As&k About an Image...", "cmd_ai_image"),
+        "tools.dictation_tidy": ("Tidy Dictated Te&xt...", "cmd_dictation_tidy"),
+    }
+
+    def _hosted_row_id(self, command_id: str) -> Any:
+        """The row's id, made once, so a rebuilt menu reuses what its binding knows."""
+        if command_id == "tools.hosted_ai_own_key":
+            return self._own_key_menu_id()
+        chatgpt = ("tools.hosted_ai_chatgpt", "tools.hosted_ai_image", "tools.dictation_tidy")
+        if command_id in chatgpt:
+            return self._chatgpt_menu_ids()[chatgpt.index(command_id)]
+        return {**self._answer_menu_ids(), **self._choose_menu_ids()}[command_id]
+
+    def _append_hosted_rows(self, menu: Any, command_ids: tuple[str, ...]) -> None:
+        """Append the shared rows *command_ids* to *menu*; bind and register each once.
+
+        Registered and bound here rather than in main_frame_commands.py and
+        main_frame_menu_bindings.py, which are at their size budgets. Where a row
+        sits is the family's one AI menu shape (quill/core/ai/ai_menu_layout.py),
+        laid out by ``_build_hosted_ai_rows``.
+        """
         import wx
 
         from quill.core.i18n import _
 
-        ids = self._choose_menu_ids()
-        for command_id, label, handler_name in self._CHOOSE_ROWS:
+        wired: set[str] = self.__dict__.setdefault("_hosted_rows_wired", set())
+        for command_id in command_ids:
+            label, handler_name = self._HOSTED_ROWS[command_id]
+            menu_id = self._hosted_row_id(command_id)
             shown = self._ai_gated_label(handler_name, _(label))  # codex.md 10A.8
-            ai_menu.Append(ids[command_id], self._menu_label(shown, command_id))
-        if getattr(self, "_hosted_ai_choose_wired", False):
-            return
-        self._hosted_ai_choose_wired = True
-        for command_id, label, handler_name in self._CHOOSE_ROWS:
+            menu.Append(menu_id, self._menu_label(shown, command_id))
+            if command_id in wired:
+                continue
+            wired.add(command_id)
             handler = getattr(self, handler_name)
-            self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=ids[command_id])
+            self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=menu_id)
             self.commands.try_register(
-                command_id, label.rstrip("."), handler, self._binding_for(command_id)
+                command_id,
+                label.replace("&", "").rstrip("."),
+                handler,
+                self._binding_for(command_id),
             )
 
     def _ai_prompt_library(self) -> Any:
@@ -461,6 +404,7 @@ class HostedAiCommandsMixin(HostedAiMixin):
         mapping.update(self._dictionary_menu_ids())
         mapping.update(self._answer_menu_ids())
         mapping.update(self._choose_menu_ids())
+        mapping.update(self._project_menu_ids())
         if getattr(self, "_look_up_menu_id", None) is not None:
             mapping["tools.look_up"] = self._look_up_menu_id
         chatgpt_id, image_id, tidy_id = self._chatgpt_menu_ids()

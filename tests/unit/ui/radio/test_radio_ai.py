@@ -94,8 +94,12 @@ def test_community_opens_on_ask_then_the_ai_submenu_on_radios_own_keys(radio) ->
         "&Find and Record (needs Copilot or Codex)...\tCtrl+F3",
         "&Which AI Am I Using\tCtrl+F8",
         "&Choose Your AI...\tCtrl+Shift+F8",
-        "Use My Chat&GPT Subscription...\tAlt+F5",
+        "Accounts and &Usage",
+    ]
+    accounts = next(i.GetSubMenu() for i in sub.GetMenuItems() if i.GetSubMenu() is not None)
+    assert _labels(accounts) == [
         "Use My &Own AI Key...\tAlt+F2",
+        "Use My Chat&GPT Subscription...\tAlt+F5",
         "AI &Usage...\tCtrl+Alt+Shift+F2",
         "&Privacy Agreement...\tAlt+Shift+F2",
     ]

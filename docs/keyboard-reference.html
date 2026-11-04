@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 540.</p>
+<p>Editor commands with default bindings: 551.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -429,6 +429,11 @@ your own customised keymap.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>(unbound by default)</td>
+<td>Follow Link</td>
+<td><code>edit.follow_link</code></td>
+</tr>
 <tr>
 <td>(unbound by default)</td>
 <td>Jump to Named Mark</td>
@@ -668,11 +673,6 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Y</td>
 <td>Copy to Next Empty Tray Slot</td>
 <td><code>edit.copy_to_next_slot</code></td>
-</tr>
-<tr>
-<td>Ctrl+Enter</td>
-<td>Follow Link</td>
-<td><code>edit.follow_link</code></td>
 </tr>
 <tr>
 <td>Ctrl+F</td>
@@ -1095,6 +1095,11 @@ your own customised keymap.</p>
 <td>Ctrl+E</td>
 <td>Centre</td>
 <td><code>format.align_center</code></td>
+</tr>
+<tr>
+<td>Ctrl+Enter</td>
+<td>Insert Page Break</td>
+<td><code>format.insert_page_break</code></td>
 </tr>
 <tr>
 <td>Ctrl+I</td>
@@ -1884,12 +1889,12 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+F3</td>
-<td>Tidy Dictated Text</td>
+<td>Dictation tidy</td>
 <td><code>tools.dictation_tidy</code></td>
 </tr>
 <tr>
 <td>Ctrl+F5</td>
-<td>Ask About an Image</td>
+<td>Ask About an Image…</td>
 <td><code>tools.hosted_ai_image</code></td>
 </tr>
 <tr>
@@ -2419,6 +2424,46 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Non ascii jump to source</td>
 <td><code>power.non_ascii_jump_to_source</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Commands Allowed in This Project…</td>
+<td><code>project.allowed_commands</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Close Project</td>
+<td><code>project.close</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Agent Command Output</td>
+<td><code>project.command_output</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Engine Tools for This Project…</td>
+<td><code>project.engine_tools</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Explain Last Turn</td>
+<td><code>project.explain_turn</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open Project Folder…</td>
+<td><code>project.open_folder</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Do a Project Task…</td>
+<td><code>project.task</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Agent Task Transcript</td>
+<td><code>project.transcript</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -3021,6 +3066,11 @@ your own customised keymap.</p>
 <td><code>radio.mute_toggle</code></td>
 </tr>
 <tr>
+<td>QUILL Key + K</td>
+<td>Stop Agent</td>
+<td><code>project.stop_agent</code></td>
+</tr>
+<tr>
 <td>QUILL Key + M</td>
 <td>Paste html as markdown</td>
 <td><code>power.paste_html_as_markdown</code></td>
@@ -3044,6 +3094,11 @@ your own customised keymap.</p>
 <td>QUILL Key + Shift+Z</td>
 <td>Undo Verbosity Change</td>
 <td><code>verbosity.undo</code></td>
+</tr>
+<tr>
+<td>QUILL Key + U</td>
+<td>Undo Last Agent Turn</td>
+<td><code>project.undo_turn</code></td>
 </tr>
 <tr>
 <td>S</td>
@@ -3923,7 +3978,7 @@ never inside the QUILL editor.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+F5</td>
-<td>Ask About an Image</td>
+<td>Ask About an Image…</td>
 <td><code>tools.hosted_ai_image</code></td>
 </tr>
 <tr>

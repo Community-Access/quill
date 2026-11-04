@@ -390,6 +390,9 @@ class FakeEditor:
         self.calls.append(("set_line_spacing", spacing))
         return True
 
+    def insert_page_break(self) -> None:
+        self.calls.append(("insert_page_break", None))
+
     def set_list_style(self, style: str) -> bool:
         """The three-stop ring the real surface gained on 2026-09-16.
 

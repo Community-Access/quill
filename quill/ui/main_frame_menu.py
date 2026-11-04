@@ -3254,6 +3254,10 @@ class MenuBuilderMixin:
         # bar here, in one place, in the conventional Windows order. Menu *content*
         # is built above in arbitrary order; wx lets bar order be set independently
         # of construction order. Keep this list in sync with ``_TOP_MENU_DEFS``.
+        # Developer profile rows where people look for them (main_frame_project_rows.py).
+        self._place_project_rows(
+            file_menu=file_menu, edit_menu=edit_menu, view_menu=view_menu, tools_menu=tools_menu
+        )
         menu_bar.Append(file_menu, _("&File"))
         menu_bar.Append(edit_menu, _("&Edit"))
         menu_bar.Append(view_menu, _("&View"))

@@ -44,6 +44,7 @@ from __future__ import annotations
 
 from quill.core.forms.menu import lite_handler as forms_handler
 from quill.core.lite.tutorials import first_documents, working_in_it
+from quill.core.tutorials.coding_lessons import CODING_TRACK, coding_lessons
 from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.forms_lessons import forms_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
@@ -81,6 +82,8 @@ TRACKS: tuple[Track, ...] = (
         "fill it in yourself, save it in large print or braille, and publish it "
         "to your site and read the responses.",
     ),
+    # The Developer profile's lesson; shown only while Coding is on.
+    CODING_TRACK,
 )
 
 #: The set the tutorials window and the printed book both read.
@@ -116,6 +119,15 @@ CATALOGUE: TutorialSet = build(
         track="forms",
         surfaces=("QUILL Lite",),
         app="QUILL Lite",
+    ),
+    coding_lessons(
+        {
+            "open_folder": "cmd_open_project_folder",
+            "task": "cmd_ai_task",
+            "undo": "cmd_undo_agent_turn",
+            "stop_label": "Edit, Agent Work, Stop Agent",
+        },
+        surfaces=("QUILL Lite",),
     ),
 )
 

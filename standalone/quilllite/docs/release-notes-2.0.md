@@ -117,6 +117,25 @@ Recommended and Everything profiles.
 
 QUILL has the same commands in the same places. Chapter 14 of the user guide
 has the whole story.
+## Project tasks, in the Developer profile
+
+- **A Developer profile**, the fifth: Recommended plus a new **Coding** area,
+  18 of the 22 areas. Coding is off in every other profile.
+- **Do a Project Task.** Open a folder with **File > Open Project Folder...**
+  and **Ctrl+3** works on the whole project. The AI plans, reads, and proposes
+  changes to several files; **Review Changes** shows each one with line
+  numbers, and nothing is written until you accept it.
+- **Commands ask first.** **Run This Command?** shows the exact command, with a
+  warning when QUILL Lite sees a risk. Test results come back as one sentence.
+  **Commands Allowed in This Project** is your own list, kept in QUILL Lite and
+  never in the project.
+- **Undo Last Agent Turn** and **Stop Agent** are in **Edit > Agent Work**.
+  Undo puts every file back, and refuses rather than lose an edit of yours.
+- **Coach mode** has the agent teach while you type. **Explain Last Turn**
+  says what it changed and why.
+- **Engines:** GitHub Copilot, Codex, and on your own key Claude or Ollama on
+  this computer, which is practice mode and sends nothing.
+- A tutorial, *Your first project task*, appears in the Developer profile.
 
 ## Choose Your AI, with GitHub Copilot and Codex
 
@@ -364,6 +383,10 @@ The same table work as in QUILL, on the same keys.
   equations come through as text, a Word file opened as text appears in about
   a second, and saving twice no longer turns Heading 5s into bold text or adds
   blank paragraphs.
+- **Page breaks, with Word's key.** **Ctrl+Enter** (**Insert > Page Break**)
+  starts a new page in a Word or Rich Text document, and the page breaks
+  already in a Word file stay put when you save it. In Markdown it writes a
+  page-break line that takes effect when you export.
 - **Highlighted passages.** In a Word file opened as text, or a rich text
   document, **Navigate > Highlighted Passages** takes you to the
   highlighter marks. **Alt+PageDown** and **Alt+PageUp** go to the next and

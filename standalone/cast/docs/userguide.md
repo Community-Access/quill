@@ -2261,6 +2261,18 @@ Spotify.
 Spotify is switched off in Safe Mode, and the first sign-in asks your
 permission before Cast reaches Spotify.
 
+If the sign-in does not finish, the sign-in window says why in one sentence.
+**Copy Address** copies the exact redirect address for the dashboard.
+**Show Diagnostics** checks your whole setup and lists every step of the last
+attempt, and **Copy Diagnostics** puts that report on the clipboard for an
+email to support@. The report never contains a password or token. The usual
+causes:
+
+- a redirect address that is not exactly the one above;
+- approving in the browser with a different Spotify account from the one that
+  created the app (add it under User Management in the dashboard);
+- an account without Premium, which can sign in but not play.
+
 ### What you learned, and where to go next
 
 You now know every way to bring a podcast home: by name, by its address, from

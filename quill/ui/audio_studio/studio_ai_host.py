@@ -209,21 +209,25 @@ class StudioAiMixin(StudioAiFeaturesMixin, StudioPicturesMixin, StudioWatchMixin
         """
         import wx
 
+        from quill.core.ai.ai_menu_layout import fill
+
         menu = wx.Menu()
         bindings: list[tuple[Any, Any]] = []
         self._studio_ai_items: dict[str, tuple[Any, str]] = {}
-        for command_id, label, handler_name in AI_ROWS:
-            if not command_id:
-                menu.AppendSeparator()
-                continue
+
+        def append(target: Any, row: tuple[str, str, str]) -> None:
+            command_id, label, handler_name = row
             item_id = wx.NewIdRef()
             shown = self._ai_gated_label(handler_name, label)  # codex.md 10A.8
-            menu.Append(item_id, self._menu_label(shown, command_id))  # type: ignore[attr-defined]
+            target.Append(item_id, self._menu_label(shown, command_id))  # type: ignore[attr-defined]
             self._studio_ai_items[handler_name] = (item_id, label)
             bindings.append((item_id, getattr(self, handler_name)))
-        menu.AppendSeparator()
+
+        # The family's one AI menu shape (quill/core/ai/ai_menu_layout.py);
+        # Set Up AI joins the account windows in Accounts and Usage.
+        accounts = fill(menu, AI_ROWS, append, wx.Menu) or menu
         setup_id = wx.NewIdRef()
-        menu.Append(
+        accounts.Append(
             setup_id,
             "Set &Up AI...\tCtrl+Alt+Shift+A",
             "Connect an AI provider for cloud voices, chapter titles, and translation",

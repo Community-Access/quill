@@ -479,19 +479,26 @@ def test_the_chatgpt_rows_keep_quilllites_chords(command: str, chord: str) -> No
 
 
 def test_the_chatgpt_rows_are_appended_after_the_free_rows_with_free_mnemonics() -> None:
+    """The family's one AI menu shape (quill/core/ai/ai_menu_layout.py): the
+    account windows go in Accounts and Usage, Ask About an Image with the ways
+    to ask, Tidy Dictated Text with the document work."""
     import re
 
     body = _source(_AI_MENU)
-    assert body.index("self._append_own_key_row(ai_menu)") < body.index(
-        "self._append_chatgpt_rows(ai_menu)"
-    )
+    hosted = body[body.index("def _build_hosted_ai_rows") : body.index("def _build_advanced")]
+    assert hosted.index('"tools.hosted_ai_image"') < hosted.index('"tools.dictation_tidy"')
+    assert hosted.index('"tools.dictation_tidy"') < hosted.index('"tools.hosted_ai_which"')
+    assert hosted.index('"tools.hosted_ai_which"') < hosted.index("accounts = wx.Menu()")
+    assert hosted.index("accounts = wx.Menu()") < hosted.index('"tools.hosted_ai_own_key"')
+    assert "ai_menu.AppendSubMenu(accounts, _(ACCOUNTS_TITLE))" in hosted
     adapter = _source("quill/ui/main_frame_hosted_ai.py")
     assert 'Use My ChatGPT S&ubscription..."' in adapter
     assert 'As&k About an Image..."' in adapter
     assert 'Tidy Dictated Te&xt..."' in adapter
-    # u, k and x are claimed by no other TOP-LEVEL row of the AI menu in either
-    # mode. Submenu rows (Transform's E&xpand, Read Aloud's E&xport) are their
-    # own namespace, which is the same rule the sibling test above applies.
+    # k and x, and the submenu's u, are claimed by no other TOP-LEVEL row of
+    # the AI menu in either mode. Submenu rows (Transform's E&xpand, Read
+    # Aloud's E&xport) are their own namespace, which is the same rule the
+    # sibling test above applies.
     top_level = re.compile(
         # A gated row (codex.md 10A.8) wraps its literal in gated("cmd_...", ...).
         r"ai_menu\.Append(?:CheckItem)?\(\s*[^,]+,\s*(?:self\._menu_label\(\s*)?"
@@ -503,7 +510,7 @@ def test_the_chatgpt_rows_are_appended_after_the_free_rows_with_free_mnemonics()
         found = re.search(r"&([A-Za-z])", label)
         if found:
             letters.add(found.group(1).lower())
-    assert letters >= {"e", "d", "g", "c", "y"}, sorted(letters)
+    assert letters >= {"e", "d"}, sorted(letters)
     assert not ({"u", "k", "x"} & letters), sorted({"u", "k", "x"} & letters)
 
 
@@ -536,8 +543,12 @@ def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
         "tools.hosted_ai_task",
         # Propose Alt Text (codex.md 6.4, 2026-11-01).
         "tools.hosted_ai_alt_text",
+        # The ten project rows of the Developer profile (code.md, 2026-11-04).
+        "project.open_folder",
+        "project.task",
+        "project.stop_agent",
     }
-    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 4
+    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 4 + 10
 
 
 # --------------------------------------------------------------------------- #
@@ -571,9 +582,10 @@ def test_which_ai_and_choose_your_ai_are_shared_on_the_same_chords(handler, comm
     assert _CHORD_COMMAND_TITLES[command]
 
 
-def test_the_choose_rows_are_appended_with_the_usage_row() -> None:
+def test_the_choose_rows_come_after_the_document_work_and_before_the_accounts() -> None:
     body = _source(_AI_MENU)
-    assert body.index('"AI Usa&ge..."') < body.index("self._append_choose_rows(ai_menu)")
+    assert body.index('"tools.hosted_ai_task"') < body.index('"tools.hosted_ai_which"')
+    assert body.index('"tools.hosted_ai_choose"') < body.index('"AI Usa&ge..."')
     adapter = _source("quill/ui/main_frame_hosted_ai.py")
     assert '"Which AI Am I Using"' in adapter
     assert '"Choose Your AI..."' in adapter

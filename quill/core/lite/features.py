@@ -258,6 +258,16 @@ AREAS: tuple[AppArea, ...] = (
         "anyone else sees them, from Insert, View, Format and Tools > Forms. "
         "Everything here runs on this computer.",
     ),
+    AppArea(
+        "coding",
+        "Coding: project tasks with an AI",
+        "Tools for writing code, in the Developer profile: Open Project Folder, "
+        "Do a Project Task with Ctrl+3 on a folder rather than one document, "
+        "Review Changes across several files, commands and tests the agent runs "
+        "only after you allow them, Undo Last Turn, Stop Agent, and coach mode, "
+        "where the agent teaches and you type. Off in every other profile, "
+        "Everything included, because Everything means every writing area.",
+    ),
 )
 
 #: Areas that start disabled. Everything else starts enabled, because
@@ -272,9 +282,17 @@ AREAS: tuple[AppArea, ...] = (
 DEFAULT_OFF: frozenset[str] = frozenset({
     "autoformat",
     "backups",
+    "coding",
     "go_to_anything",
     "hosted_ai",
 })
+
+#: Areas added to :data:`DEFAULT_OFF` after people already had a seeded store,
+#: each with the marker that seeds it once. Without this an upgrade would leave
+#: the new area on, because the first seeding has already happened.
+_LATER_DEFAULT_OFF: tuple[tuple[str, frozenset[str]], ...] = (
+    ("_seeded_coding", frozenset({"coding"})),
+)
 
 #: Named starting points, so somebody can ask for "the small one" without
 #: checking eighteen boxes. Applying one sets every box and then the boxes are
@@ -299,12 +317,13 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "recommended",
         "Recommended",
-        "What a new install is: nineteen of the 23 areas on. The four "
+        "What a new install is: nineteen of the 24 areas on. Four of the five "
         "left off are the ones that would be wrong on by default rather than "
         "merely unused -- autocorrect rewriting a configuration file's quotes, "
         "backups quietly filling a folder, a second 'go to' front door "
         "before anyone asked for one, and AI help, which would send what you "
-        "write to a server before you had agreed to it. Everything else is "
+        "write to a server before you had agreed to it. The fifth is coding, "
+        "which belongs to the Developer profile. Everything else is "
         "here, including rich text, spell check, the line tools and the "
         "clipboard. Choose this to get back to the shipped answer after "
         "experimenting.",
@@ -313,7 +332,8 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "everything",
         "Everything",
-        "All 23 areas on, including the four a new install leaves off. "
+        "23 of the 24 areas on: every writing area, including the four a new "
+        "install leaves off. Coding stays off; that is the Developer profile. "
         # Not "and capitalise your sentences": the area description three
         # hundred lines up was corrected for saying so and this one was
         # missed, which left the same wrong rule in the sentence somebody
@@ -325,7 +345,20 @@ PROFILES: tuple[AppProfile, ...] = (
         "the one area here that does something outside this computer, so choose "
         "this only if that is what you meant. Choose it if you would rather turn "
         "things off as they annoy you than find them one at a time.",
-        frozenset(),
+        # Every *writing* area: coding is the Developer profile's (code.md 6.4).
+        frozenset({"coding"}),
+    ),
+    AppProfile(
+        "developer",
+        "Developer",
+        "Everything in Recommended, plus tools for writing code: project tasks "
+        "with an AI, running commands and tests, and undo for every change an "
+        "AI makes. Open a folder as a project and Ctrl+3 works on the whole "
+        "project instead of one document. Nothing the agent proposes is written "
+        "until you accept it, no command runs until you allow it, and Undo Last "
+        "Turn puts every file back. Twenty of the 24 areas: Recommended's "
+        "nineteen and Coding, which no other profile has.",
+        frozenset(DEFAULT_OFF - {"coding"}),
     ),
     AppProfile(
         "wordpad",
@@ -335,7 +368,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "spacing -- and none of the writing tools behind them. No line "
         "operations, no clipboard history, no bookmarks, no abbreviations. "
         "Ctrl+N makes a rich text document, which is the half of this name a "
-        "list of menus cannot say. Six of the 23 areas, plus a spell checker "
+        "list of menus cannot say. Six of the 24 areas, plus a spell checker "
         "WordPad never had, and the command palette, which every profile "
         "keeps because it is how a command is found.",
         frozenset({
@@ -345,6 +378,7 @@ PROFILES: tuple[AppProfile, ...] = (
             "bookmarks",
             "character_info",
             "clipboard",
+            "coding",
             "dictation",
             # WordPad has never had a dictionary or thesaurus, and the
             # profile's promise is the feature list of the program it is
@@ -373,7 +407,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "notepad",
         "Notepad",
         "The smallest QUILL Lite gets, and the one most people are replacing "
-        "something with. Three of the 23 areas: printing, text size and the "
+        "something with. Three of the 24 areas: printing, text size and the "
         "command palette, which every profile keeps because it is how a "
         "command is found. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
@@ -390,6 +424,7 @@ PROFILES: tuple[AppProfile, ...] = (
             "bookmarks",
             "character_info",
             "clipboard",
+            "coding",
             "dictation",
             "dictionary",
             "go_to_anything",
@@ -440,9 +475,17 @@ def load_features(data_dir: Path) -> AppFeatureSettings:
     object that a person can read.
     """
     settings = load_app_features(data_dir, APP_ID)
+    changed = False
     if _SEEDED_MARKER not in settings.disabled:
         settings.disabled |= set(DEFAULT_OFF)
         settings.disabled.add(_SEEDED_MARKER)
+        changed = True
+    for marker, areas in _LATER_DEFAULT_OFF:
+        if marker not in settings.disabled:
+            settings.disabled |= set(areas)
+            settings.disabled.add(marker)
+            changed = True
+    if changed:
         save_app_features(data_dir, settings)
     return settings
 
@@ -450,4 +493,5 @@ def load_features(data_dir: Path) -> AppFeatureSettings:
 def save_features(data_dir: Path, settings: AppFeatureSettings) -> None:
     """Persist the settings, keeping the seeded marker whatever the dialog did."""
     settings.disabled.add(_SEEDED_MARKER)
+    settings.disabled.update(marker for marker, _areas in _LATER_DEFAULT_OFF)
     save_app_features(data_dir, settings)

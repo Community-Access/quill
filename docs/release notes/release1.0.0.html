@@ -325,6 +325,41 @@ do something, the command stays where it was, its name says what it
 needs, and pressing it offers to switch. QUILL Lite has all of this on
 the same keys, from the same code. See “Choose Your AI” in the user
 guide.</p>
+<h2 id="new-in-this-build-project-tasks-for-people-who-write-code">New
+in this build: project tasks, for people who write code</h2>
+<p>Choose the <strong>Developer</strong> profile (it used to be called
+Developer and Power Text) and QUILL can work on a folder of code with an
+AI. <strong>File &gt; Open Project Folder…</strong> opens a project, and
+with a project open <strong>Ctrl+3</strong> opens <strong>Do a Project
+Task</strong> instead of a document task. Type what you want done. The
+agent writes its plan first, and you hear “The plan is ready.” Focus
+never moves under you, and no streaming text is read at you.</p>
+<p>Nothing is written until you accept it. <strong>Review
+Changes</strong> lists each file as a sentence, then walks its changes
+one at a time with line numbers, and <strong>Apply Accepted
+Changes</strong> writes what you took. Nothing runs until you allow it.
+<strong>Run This Command?</strong> shows the exact command in a field
+you can braille, and QUILL adds a warning when a command may reach the
+internet, deletes files or reaches outside the project. Pushing,
+publishing, forcing a remote and changing system settings are never run
+for an agent. You hear test results in one sentence, such as “Tests: 12
+passed, 1 failed”, and the full output is a document. <strong>Undo Last
+Agent Turn</strong> (the QUILL key, then <code>U</code>) puts back every
+file a turn changed, and <strong>Stop Agent</strong> (the QUILL key,
+then <code>K</code>) stops a task from anywhere.</p>
+<p>Coach mode has the agent explain and point to the line instead of
+editing, so you make the change yourself. The transcript is a document
+with a heading per turn that you can save as Markdown. Allow lists, undo
+copies and transcripts stay in QUILL’s own data, never in your project.
+One thing said plainly: Windows gives QUILL no way to fence in a command
+you allow, so it can reach the internet and do anything your account
+can. Your approval is the safety line.</p>
+<p>It works on GitHub Copilot and Codex, on Claude with your own
+Anthropic key, and on Ollama on your own computer as a slower practice
+mode. QUILL’s free AI does not do project tasks. The tutorial “Your
+first project task” walks you through one in about twelve minutes. QUILL
+Lite has the same feature in its own Developer profile. See “Project
+tasks: coding with an AI” in the user guide.</p>
 <h2 id="new-in-this-build-find-in-open-documents">New in this build:
 Find in Open Documents</h2>
 <p>Press <strong>Ctrl+Shift+F10</strong> to find and replace across

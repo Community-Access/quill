@@ -25,7 +25,13 @@ from __future__ import annotations
 
 from quill.core.forms import menu as forms_menu
 from quill.core.lite import APP_NAME, APP_VERSION
-from quill.core.lite.commands_ai import AI_ASK_ROWS, AI_SEARCH_ROWS
+from quill.core.lite.commands_ai import (
+    AI_MENU_ROWS,
+    PROJECT_EDIT_ROWS,
+    PROJECT_FILE_ROWS,
+    PROJECT_TOOLS_ROWS,
+    PROJECT_VIEW_ROWS,
+)
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
@@ -117,6 +123,7 @@ COMMANDS: list[CommandRow] = [
     ("&File", "Open &from URL...", "", "cmd_open_from_url", ""),  # no key, as in QUILL
     ("&File", "&Import / Convert Document (OCR)...", "", "cmd_import_convert", ""),  # as QUILL
     ("&File", "Recent &Documents...", "Alt+Shift+0", "cmd_recent_documents", ""),
+    *PROJECT_FILE_ROWS,  # Open Project Folder, Close Project: Developer only
     ("&File", "", "", "", "sep"),
     ("&File", "&Save", "Ctrl+S", "cmd_save", ""),
     ("&File", "Save &As...", "Ctrl+Shift+S", "cmd_save_as", ""),
@@ -146,7 +153,7 @@ COMMANDS: list[CommandRow] = [
     # what paper, with what margins, and what is at the top of each one.
     # Not &V: Earlier &Versions has it in this menu, and Windows cycles focus between
     # duplicates instead of pressing, so one silently cannot be reached (GATE-14).
-    ("&File", "Prin&t Preview...", "Ctrl+Alt+Shift+P", "cmd_print_preview", ""),
+    ("&File", "Print Preview...", "Ctrl+Alt+Shift+P", "cmd_print_preview", ""),
     ("&File", "&Print...", "Ctrl+P", "cmd_print", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Close Window", "Ctrl+W", "cmd_close", ""),
@@ -173,6 +180,7 @@ COMMANDS: list[CommandRow] = [
     # which is what lets every row below have a sensible letter.
     ("&Edit", "&Undo", "Ctrl+Z", "cmd_undo", ""),
     ("&Edit", "&Redo", "Ctrl+Y", "cmd_redo", ""),
+    *PROJECT_EDIT_ROWS,  # Edit > Agent Work: Developer only (commands_ai.py)
     ("&Edit", "", "", "", "sep"),
     ("&Edit", "Cu&t", "Ctrl+X", "cmd_cut", ""),
     ("&Edit", "&Copy", "Ctrl+C", "cmd_copy", ""),
@@ -504,6 +512,7 @@ COMMANDS: list[CommandRow] = [
     # how big it is (bad.md 4.2, Tier 2). On Ctrl+Alt+W, which is the chord its
     # sibling vacated on the same day: one letter, two scopes.
     ("&View", "Li&ne Statistics", "Ctrl+Alt+W", "cmd_line_statistics", ""),
+    *PROJECT_VIEW_ROWS,  # the task's transcript and output: Developer only
     # -- Insert -------------------------------------------------------------
     # Everything that puts something into the document that is not typing. The
     # top three were Edit > Insert and keep their keys exactly; the bottom three
@@ -523,6 +532,9 @@ COMMANDS: list[CommandRow] = [
     # need this already know it (#1488). A hard break ends the line without
     # starting a paragraph, which is the distinction a blank line cannot make.
     ("&Insert", "&Line Break", "Shift+Enter", "cmd_insert_line_break", ""),
+    # Word's Ctrl+Enter, and QUILL's since 2026-11-03 (rules 1 and 2): a real
+    # page break in Word and Rich Text, the ::: pagebreak line in Markdown.
+    ("&Insert", "&Page Break", "Ctrl+Enter", "cmd_insert_page_break", ""),
     # Word's key, and everybody's. A link is the one tag every person who has
     # ever written anything has inserted, and QUILL Lite had the Markdown and
     # HTML kinds, a tag picker for each, and no way to make it (bad.md 4.2).
@@ -863,6 +875,7 @@ COMMANDS: list[CommandRow] = [
     # changed at all. Ctrl+comma is where Windows has put preferences for a
     # decade.
     ("&Tools", "&Preferences...", "Ctrl+,", "cmd_preferences", ""),
+    *PROJECT_TOOLS_ROWS,  # Commands Allowed in This Project: Developer only
     # Back up the configuration, and put it back on the next machine (#1501).
     # Beside Preferences because that is what it is a copy of. Neither carries
     # anything that describes *this* computer -- no recent files, no window
@@ -954,38 +967,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "App Sounds", "Alt+Shift+M", "cmd_toggle_quiet_mode", "check"),
     ("&Tools", "S&ound Scheme...", "Ctrl+Alt+Shift+O", "cmd_sound_scheme", ""),
     # -- Tools > Change Case -------------------------------------------------
-    # -- Tools > AI. Five rows, five chords (rule 2 and rule 9 chose them; the
-    # measurement is in hosted_ai_commands.py). QUILL has the same five
-    # commands on the same five chords since 2026-09-23, from the same shared
-    # module -- see quill/ui/main_frame_hosted_ai.py.
-    ("&Tools|&AI", "AI &Assistant...", "Ctrl+Alt+G", "cmd_ai_assistant", ""),
-    ("&Tools|&AI", "As&k About This Document...", "Ctrl+Alt+Z", "cmd_ai_ask_document", ""),
-    *AI_ASK_ROWS,  # the Chat Key and the Prompt Library (commands_ai.py)
-    ("&Tools|&AI", "", "", "", "sep"),
-    ("&Tools|&AI", "&Usage...", "Ctrl+Alt+Shift+F9", "cmd_ai_usage", ""),
-    *AI_SEARCH_ROWS,  # Web Searches Left (commands_ai.py)
-    # "Connect or Sign Out" rather than "Sign In or Out": the window this opens
-    # talks about connecting *this computer*, and the word had to be settled
-    # anyway -- QUILL shows the same five rows now, and every sentence that
-    # names this row ("Choose Connect or Sign Out in the AI menu") is composed
-    # once in the shared module for both editors to speak. A row named two ways
-    # is a sentence that is wrong in one of the two products.
-    ("&Tools|&AI", "&Connect or Sign Out...", "Ctrl+Alt+Shift+F10", "cmd_ai_sign_in", ""),
-    # The chord held back when this family was laid out, spent on the one
-    # command that has to be reachable without agreeing to anything first.
-    ("&Tools|&AI", "&Privacy Agreement...", "Ctrl+Alt+Shift+K", "cmd_ai_privacy", ""),
-    ("&Tools|&AI", "Use My &Own AI Key...", "Alt+F2", "cmd_ai_own_key", ""),
-    # A ChatGPT subscription (2026-09-29): sign in once, no key, no per-request
-    # bill. Alt+F5 sits beside the own-key window on Alt+F2 -- both are
-    # once-a-year account windows (rule 9) and both chords were free in both
-    # editors. Ask About an Image is the one AI help command only the plan can
-    # answer; Ctrl+F5 was the last chord free in both editors that is neither a
-    # Word key for a function QUILL has (rule 1) nor an Alt+F4 neighbour (rule 4).
-    ("&Tools|&AI", "Use My Chat&GPT Subscription...", "Alt+F5", "cmd_ai_chatgpt", ""),
-    ("&Tools|&AI", "Ask About an &Image...", "Ctrl+F5", "cmd_ai_image", ""),
-    # Dictation's AI: fix what the recogniser misheard, on a plan or an own key.
-    # Ctrl+F3 was free in both editors and is nothing in Word QUILL has.
-    ("&Tools|&AI", "Tidy Dictated Te&xt...", "Ctrl+F3", "cmd_dictation_tidy", ""),
+    *AI_MENU_ROWS,  # Tools > AI, the family's one AI menu shape (commands_ai.py)
     *DICTIONARY_ROWS,  # Tools > Dictionary, the AI word tools (commands_words.py)
     *NOTE_ROWS,  # QUILL's six inline-note chords (rule 2; commands_review.py)
     # Tools > Dictation, shared with QUILL; each key's reason is in commands_dictation.py.

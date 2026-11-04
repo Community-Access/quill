@@ -47,6 +47,7 @@ from quill.core.lite.commands import SUBMENU_SEP, CommandRow, split_menu
 from quill.core.lite.format_kinds import FORMAT_COMMAND_KINDS, applies_to
 from quill.core.lite.keymap import default_aliases, resolved_commands
 from quill.core.wordpress.keys import is_sequence
+from quill.ui.dimmed_row_keys import DimmedRowKeys
 from quill.ui.markdown_tag_row import HideableMenuRow, markdown_tag_row_shown
 from quill.ui.richedit_editing import RICH
 
@@ -73,6 +74,34 @@ def _dictation_mark(frame: object) -> bool:
     same reason as :func:`_quiet_mark`, and unchecked when the host cannot say."""
     active = getattr(frame, "dictation_active", None)
     return bool(active()) if callable(active) else False
+
+
+def _dimmed_keys(frame: Any) -> DimmedRowKeys:
+    """The frame's dimmed-row keeper, made on first use (quill.ui.dimmed_row_keys)."""
+    keeper = getattr(frame, "_dimmed_row_keys", None)
+    if keeper is None:
+        keeper = DimmedRowKeys(wx, frame, lambda h: DocumentMenuMixin._dispatch(frame, h))
+        frame._dimmed_row_keys = keeper
+    return keeper
+
+
+def _route_dimmed_keys(frame: Any) -> None:
+    """Keep a dimmed row's key reaching its command, which says why it did nothing.
+
+    Windows never fires the key of a disabled menu row, so in a blank (plain)
+    document Ctrl+B, the headings and the rest of Format were dead keys -- the
+    "no feedback at all" reported on 2026-11-02. A module function for the
+    reason :func:`_quiet_mark` is one: the sweep is called unbound against stub
+    frames, and a stub that is not a wx window has no table to set.
+    """
+    if not hasattr(frame, "SetAcceleratorTable"):
+        return
+    dimmed = {
+        handler: item
+        for handler, item in getattr(frame, "_menu_items", {}).items()
+        if callable(getattr(item, "IsEnabled", None)) and not item.IsEnabled()
+    }
+    _dimmed_keys(frame).apply(dimmed)
 
 
 class DocumentMenuMixin:
@@ -220,7 +249,10 @@ class DocumentMenuMixin:
                         row.accel.GetFlags(), row.accel.GetKeyCode(), row.item.GetId()
                     )
                 )
-        self.SetAcceleratorTable(wx.AcceleratorTable(entries))
+        # The table goes on through the dimmed-row keeper, which moves the key
+        # of every dimmed row onto an id no menu carries (quill.ui.dimmed_row_keys).
+        _dimmed_keys(self).set_base(entries)
+        _route_dimmed_keys(self)
 
     def _dispatch(self, handler: str) -> Any:
         def run(_event: wx.CommandEvent) -> None:
@@ -324,6 +356,7 @@ class DocumentMenuMixin:
             item = self._menu_items.get(handler)
             if item is not None:
                 item.Enable(applies_to(handler, kind))
+        _route_dimmed_keys(self)
 
     def refresh_recent_menu(self) -> None:
         """Rebuild Open Recent: pinned first, then newest, the first nine numbered.

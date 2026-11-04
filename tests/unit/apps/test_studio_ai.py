@@ -116,8 +116,6 @@ def test_the_ai_menu_has_the_family_rows_on_the_editors_keys(studio) -> None:
     studio._ai_connection_refresh()
     assert _ai_menu(studio) == [
         "&Ask...\tCtrl+6",
-        "&Which AI Am I Using\tCtrl+8",
-        "&Choose Your AI...\tCtrl+4",
         # The agent tasks say what they need on the ChatGPT plan (codex.md 10A.8).
         "&Recording Pre-flight Check (needs Copilot or Codex)...\tCtrl+3",
         "&Narrate a Recording (needs Copilot or Codex)...\tCtrl+Shift+3",
@@ -128,8 +126,18 @@ def test_the_ai_menu_has_the_family_rows_on_the_editors_keys(studio) -> None:
         "Sa&ve Described Copies...\tCtrl+Alt+F6",
         "Start Watching for C&hanges\tCtrl+F9",
         "S&top Watching for Changes\tCtrl+Shift+F9",
-        "Use My Chat&GPT Subscription...\tAlt+F5",
+        "&Which AI Am I Using\tCtrl+8",
+        "&Choose Your AI...\tCtrl+4",
+        "Accounts and &Usage",
+    ]
+    # The family's one AI menu shape: the account windows, and Set Up AI, in
+    # Accounts and Usage.
+    bar = studio.frame.GetMenuBar()
+    menu = bar.GetMenu(bar.FindMenu("AI"))
+    accounts = next(i for i in menu.GetMenuItems() if i.IsSubMenu()).GetSubMenu()
+    assert [i.GetItemLabel() for i in accounts.GetMenuItems()] == [
         "Use My &Own AI Key...\tAlt+F2",
+        "Use My Chat&GPT Subscription...\tAlt+F5",
         "AI U&sage...\tCtrl+Alt+Shift+F2",
         "&Privacy Agreement...\tAlt+Shift+F2",
         "Set &Up AI...\tCtrl+Alt+Shift+A",

@@ -7,7 +7,8 @@ Imported lazily only when a session runs.
 
 Integration note: like Copilot, the Claude Agent SDK is itself a tool-using agent
 that can read/write files and run shell commands. QUILL must own every edit, so
-this bridge runs it **text-only** — ``ClaudeAgentOptions(allowed_tools=[])`` — and
+this bridge runs it **text-only** -- ``disallowed_tools=["*"]`` (see
+:data:`TEXT_ONLY_OPTIONS`) -- and
 applies the resulting text through QUILL's reviewed Safe Editor Tool Gateway
 (permission broker + diff preview + one-step undo). Wiring the SDK's own tools to
 the QUILL gateway/broker is a follow-up. Validated when ``quill[ai-claude]`` is
@@ -19,7 +20,18 @@ from __future__ import annotations
 from quill.ai_packs._base import Invoke, SdkHarness
 from quill.core.ai.harness import AgentSpec, AIContext, HarnessCapabilities
 
-__all__ = ["ClaudeAgentHarness"]
+__all__ = ["TEXT_ONLY_OPTIONS", "ClaudeAgentHarness"]
+
+#: How the SDK is told to use no tool of its own (code.md 1.5). ``allowed_tools``
+#: only *pre-approves* tools; it hides nothing, so ``allowed_tools=[]`` alone
+#: left every built-in tool visible to the model. Removing a tool means naming
+#: it in ``disallowed_tools``, and ``"*"`` names them all; ``default`` mode then
+#: refuses anything that slips through rather than running it.
+TEXT_ONLY_OPTIONS: dict[str, object] = {
+    "allowed_tools": [],
+    "disallowed_tools": ["*"],
+    "permission_mode": "default",
+}
 
 
 class ClaudeAgentHarness(SdkHarness):
@@ -42,7 +54,7 @@ class ClaudeAgentHarness(SdkHarness):
             long_context=True,
         )
 
-    def _make_invoke(self) -> Invoke:  # pragma: no cover - requires the SDK installed
+    def _make_invoke(self) -> Invoke:
         """Transport over the Claude Agent SDK's documented ``query`` API.
 
         ``async for message in query(prompt=..., options=...)`` yields
@@ -61,7 +73,7 @@ class ClaudeAgentHarness(SdkHarness):
 
         def invoke(agent: AgentSpec, ctx: AIContext) -> str:
             prompt = f"{agent.system_prompt}\n\n{ctx.prompt}\n\n{ctx.context_text}".strip()
-            options = ClaudeAgentOptions(allowed_tools=[])  # text-only; no file/shell tools
+            options = ClaudeAgentOptions(**TEXT_ONLY_OPTIONS)  # no file or shell tools
 
             async def _run() -> str:
                 chunks: list[str] = []

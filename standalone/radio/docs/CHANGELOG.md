@@ -16,6 +16,26 @@ than by build. A date in brackets says when a change arrived.
 
 **Everything 3.1 was going to be, and the two things that stopped an update from arriving.** Check for Updates now reads the version this computer actually installed instead of the version the shared runtime happens to carry, so it stops offering an update you already have; and Install and restart survives the launcher closing, so a one-click update installs instead of quietly doing nothing. It was prepared as 3.1.1 and never published under that number, so it ships as 3.2.0 (see below). **Five new things, and fourteen fixes.** Quill Radio checks your subscribed podcasts on its own and tells you what arrived, in the way each podcast asks for; there is a list of everything you have been told; you can leave yourself a note on any station or podcast; and Ask QUILL Radio answers questions about what is playing, on the ChatGPT plan you already pay for; and a Website button beside Play and Stop opens the station's own site. Then: the sound card switches, or says why it cannot and puts the setting back; Windows Media gets a route to a device of its own; Preferences names only the engines this copy has; a minimized window comes back when its menu item or key asks for it; a stale "start with Windows" entry is repaired by the installer rather than waiting for a launch; Preferences opens in a blink instead of two seconds; and four smaller things that came in the same week. **Also in 3.2.0:** Apple's podcast categories fill up and the Podcast Index says why when it cannot; browsing long lists stays smooth; Preferences has Find a setting; Undo History lists the last ten things you can take back; and a few choices can be shared with your other Quill apps.
 
+### Connecting to Spotify works, and says why when it cannot (2026-11-04)
+
+- **Connect now opens your browser.** After you typed a Client ID and chose
+  Connect, Quill Radio said it was opening your browser and then did nothing.
+  The sign-in was being handed to the background worker the wrong way, and
+  stopped before the browser could open. So no sign-in ever finished, and
+  nothing Spotify could play. Fixed in Quill Radio and QUILL Cast.
+- **The sign-in window shows the exact redirect address** your Spotify app must
+  list, with a Copy Address button, and every failure is one plain sentence
+  saying what to do.
+- **Show Diagnostics** reports your Spotify setup and every step of the last
+  sign-in attempt, with Copy Diagnostics for an email to support. It never
+  shows a password or token.
+
+### AI menu and the station catalogue (2026-11-03)
+
+- **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.
+- **Your own key is not only OpenAI** (2026-11-03). Before you have saved a key, Choose Your AI's own-key row now names every service it can use: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud, a service of your own, or Ollama on this computer, which is free and sends nothing. It used to say only OpenAI.
+- **The station catalogue builds again** (2026-11-03). A book the Gutenberg list returned twice stopped the catalogue that ships with Quill Radio from being built; a repeated book now keeps its first listing.
+
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
 - **A second sound scheme: VS Code Signals** [2026-11-02]. Quill Radio plays

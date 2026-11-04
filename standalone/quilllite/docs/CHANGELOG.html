@@ -348,8 +348,8 @@ Where Am I. The checks and the site’s upkeep are in Tools &gt;
 WordPress. The page commands are dimmed unless a WordPress page or post
 is in front of you.</li>
 <li><strong>Alt+F, W opens File &gt; WordPress.</strong> Print Preview
-moved from W to T (Alt+F, T) to make room; its key, Ctrl+Alt+Shift+P, is
-unchanged.</li>
+gave up its W and has no access letter now (every letter of its name is
+taken in File); its key, Ctrl+Alt+Shift+P, is unchanged.</li>
 <li><strong>Forms.</strong> Write accessible forms in BFL, the language
 of BITS Accessible Forms: File &gt; New Form, Insert &gt; Form Field,
 View &gt; Form Outline, Format &gt; Form Rules (each rule read as a
@@ -443,6 +443,91 @@ Open Recent, named by the menus it sits in.</li>
 <li><strong>It moved from View to Tools</strong>, first in the menu,
 where QUILL keeps it, so the same command is in the same place in both
 editors. Ctrl+Shift+P is unchanged.</li>
+</ul>
+<h3
+id="agentic-coding-project-tasks-in-the-developer-profile-2026-11-04">Agentic
+coding: project tasks in the Developer profile (2026-11-04)</h3>
+<p>Project tasks with an AI, in the new Developer profile. QUILL gets
+every one of these in the same change.</p>
+<ul>
+<li><p><strong>The Claude engine really runs with no tools of its
+own.</strong> It passes <code>disallowed_tools=["*"]</code> rather than
+<code>allowed_tools=[]</code>, which hid nothing.</p></li>
+<li><p><strong>The shared project-task core is checked and
+tested,</strong> the same code QUILL uses: the project boundary and
+hidden secrets, reviewed edits, Undo Last Turn, commands that Stop ends
+whole, and test results in one sentence.</p></li>
+<li><p><strong>A Developer profile, the fifth.</strong> Recommended plus
+a new <strong>Coding</strong> area: eighteen of the 22 areas. Coding is
+off in every other profile, Everything included, and an upgraded install
+starts with it off.</p></li>
+<li><p><strong>Do a Project Task, in the Developer profile.</strong>
+File &gt; Open Project Folder, then Ctrl+3 works on the whole folder:
+reviewed edits across files, commands that ask first, test results in a
+sentence, Undo Last Agent Turn, Stop Agent, Coach mode, your own allowed
+commands with an off-by-default bypass, and engine tools by opt-in. The
+same windows and the same code as QUILL.</p></li>
+<li><p><strong>Each project command is where you would look for
+it:</strong> File, Edit &gt; Agent Work, View, Tools and Tools &gt; AI,
+as in QUILL, and only in the Developer profile.</p></li>
+<li><p><strong>Undo offers a look before you lose anything:</strong>
+when it refuses because you edited a file since, it opens that file as
+it was before the turn.</p></li>
+<li><p><strong>Claude and Ollama practice mode for project
+tasks,</strong> on My own key, as in QUILL.</p></li>
+<li><p><strong>A Project cell in the status bar,</strong> shown only
+while a project is open.</p></li>
+<li><p><strong>F1 in every project window,</strong> as in
+QUILL.</p></li>
+<li><p><strong>A tutorial: Your first project task,</strong> in the
+Developer profile only.</p></li>
+<li><p><strong>Documented</strong> in a new user guide section, “Coding:
+project tasks, in the Developer profile”, the profiles chapter (now
+five), the PRD, the release notes and the announcement.</p></li>
+<li><p><strong>Practice mode’s call to Ollama goes through QUILL’s one
+network check,</strong> like every other address QUILL Lite
+opens.</p></li>
+<li><p><strong>Agent notes</strong> (<code>AGENTS.md</code>, Copilot’s,
+Claude’s, Gemini’s and Cursor’s files) are asked about once per
+project.</p></li>
+</ul>
+<h3 id="page-breaks-with-ctrlenter-2026-11-03">Page breaks with
+Ctrl+Enter (2026-11-03)</h3>
+<ul>
+<li><strong>Ctrl+Enter inserts a page break, as in Word.</strong> In a
+Word or Rich Text document it is a real page break that is kept when you
+save; in Markdown it is the <code>::: pagebreak</code> line, which
+becomes a page break when you export. It is on the Insert menu in QUILL
+Lite and the Format menu in QUILL.</li>
+<li><strong>Word page breaks are kept.</strong> Opening a Word document
+used to turn each page break into an empty line, so saving it removed
+them all. They now open as page breaks and are saved as page
+breaks.</li>
+</ul>
+<h3 id="ai-menu-own-key-and-silent-commands-2026-11-03">AI menu, own key
+and silent commands (2026-11-03)</h3>
+<ul>
+<li><strong>One AI menu, the same in every app</strong> (2026-11-03).
+The AI menu now reads in four groups, in the same order in every
+QuillVille app: the ways to ask; what this app’s AI does; Which AI Am I
+Using and Choose Your AI; and <strong>Accounts and Usage</strong>, a
+submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage
+and the Privacy Agreement (and, where the app has them, Connect or Sign
+Out and Web Searches Left). Every command keeps its key wherever it now
+sits.</li>
+<li><strong>Your own key is not only OpenAI</strong> (2026-11-03).
+Before you have saved a key, Choose Your AI’s own-key row now names
+every service it can use: OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter, Ollama Cloud, a service of your own, or Ollama on this
+computer, which is free and sends nothing. It used to say only
+OpenAI.</li>
+<li><strong>A command is never silent</strong> (2026-11-03). In a new or
+plain document, keys for commands that need formatting or Markdown, such
+as Ctrl+B for Bold or a heading key, used to do nothing and say nothing,
+because their menu rows are dimmed there. Now each one says why it
+cannot run, such as that the document has no formatting or that the
+command needs a Markdown or HTML document. Select All in an empty
+document says the document is empty.</li>
 </ul>
 <h3
 id="choose-your-ai-your-plan-github-copilot-codex-or-your-own-key">Choose
@@ -3635,8 +3720,8 @@ not consent.</p>
 <strong>version</strong> rather than a yes, so that a material change to
 what is sent or kept can ask again instead of the old answer being taken
 to cover the new thing. It is reachable by three doors – <strong>Tools
-&gt; AI &gt; Privacy Agreement</strong>, a check box in
-<strong>Preferences</strong>, and switching the area on in
+&gt; AI &gt; Accounts and Usage &gt; Privacy Agreement</strong>, a check
+box in <strong>Preferences</strong>, and switching the area on in
 <strong>Customize Features</strong> – because the place somebody looks
 depends on which part of the app they already know. All three read and
 write the same answer, so none of them can disagree with the others.</p>

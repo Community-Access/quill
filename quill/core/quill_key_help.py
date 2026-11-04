@@ -248,6 +248,9 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "tools.hosted_ai_which": "Which AI Am I Using",
     "tools.hosted_ai_choose": "Choose Your AI",
     "tools.hosted_ai_task": "Do a Document Task",
+    # Project tasks (code.md 6.4): the two leader keys, by their menu names.
+    "project.stop_agent": "Stop Agent",
+    "project.undo_turn": "Undo Last Agent Turn",
     # Took the leader G on 2026-09-17 when favourite folders left the
     # three-modifier chords for the leader (bad.md §0.6, rule 7).
     "file.open_from_favorite_folder": "Open From Favourite Folder",

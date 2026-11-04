@@ -92,7 +92,7 @@ INSERT_ROWS: tuple[Entry, ...] = (
     ("wordpress.insert_block", "WordPress &Block...", "cmd_insert_block"),
     (
         "wordpress.insert_from_library",
-        "&Picture from the Media Library...",
+        "Pict&ure from the Media Library...",
         "cmd_insert_from_library",
     ),
     ("wordpress.insert_picture", "Picture from This &Computer...", "cmd_insert_picture"),
@@ -117,7 +117,7 @@ FORMAT_ROWS: tuple[Entry, ...] = (
 VIEW_ROWS: tuple[Entry, ...] = (
     None,
     ("wordpress.blocks", "WordPress &Blocks...", "cmd_blocks_window"),
-    ("wordpress.preview_blocks", "&Preview Blocks", "cmd_preview_blocks"),
+    ("wordpress.preview_blocks", "Pre&view Blocks", "cmd_preview_blocks"),
     ("wordpress.notes", "B&lock Notes...", "cmd_notes"),
     ("wordpress.play_media_here", "Play &Media Here", "cmd_play_media_here"),
 )
@@ -125,7 +125,7 @@ VIEW_ROWS: tuple[Entry, ...] = (
 EDIT_ROWS: tuple[Entry, ...] = (
     None,
     Submenu(
-        "&WordPress",
+        "WordPress",
         (
             ("wordpress.next_block", "&Next Block", "cmd_next_block"),
             ("wordpress.previous_block", "&Previous Block", "cmd_previous_block"),

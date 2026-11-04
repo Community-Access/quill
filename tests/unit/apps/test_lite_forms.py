@@ -100,7 +100,13 @@ def test_the_area_is_on_in_recommended_and_everything_and_off_in_the_small_two()
     from quill.core.lite.features import PROFILES
 
     off = {p.id: "forms" in p.disabled for p in PROFILES}
-    assert off == {"recommended": False, "everything": False, "wordpad": True, "notepad": True}
+    assert off == {
+        "recommended": False,
+        "everything": False,
+        "developer": False,
+        "wordpad": True,
+        "notepad": True,
+    }
 
 
 def test_every_shared_handler_exists() -> None:

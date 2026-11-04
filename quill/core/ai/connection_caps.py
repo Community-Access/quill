@@ -130,6 +130,19 @@ _SRC_OWN_SEE = "AiService.own_key_can_see (hosted_ai_own_key_route.py); own_key_
 _SRC_OWN_STREAM = "own_key_gemini.stream_answer streams; the OpenAI own-key client does not"
 _SRC_OWN_MEDIA = "image_generation.py, cloud_tts.py, gemini_tts.py: own key only (codex.md 7)"
 _SRC_LAYER = "codex.md 10A.7: this layer runs no agent tools on a direct route"
+#: Agent tasks on My own key (code.md 3.3, 3.5): the two providers with an engine.
+_SRC_OWN_AGENT: dict[str, tuple[str, str]] = {
+    "claude": (
+        "Claude Agent SDK, QUILL's tools as an in-process MCP server "
+        "(code.claude.com/docs/en/agent-sdk); quill/ai_packs/claude_tool_session.py",
+        "needs the Claude Agent SDK",
+    ),
+    "ollama": (
+        "Ollama /api/chat tools (docs.ollama.com/api), QUILL's own loop; "
+        "quill/core/ai/harness/ollama_tools.py",
+        "practice, per model",
+    ),
+}
 #: The AI Hub's providers in My own key (decision 20): one text source each.
 _SRC_OWN_TEXT: dict[str, str] = {
     "openai": _SRC_OWN_SEE,
@@ -276,7 +289,9 @@ def _own_key(provider: str) -> ConnectionRecord:
         OWN_KEY,
         text=Claim(True, _SRC_OWN_TEXT.get(provider, "")),
         pictures=_own_key_pictures(provider),
-        agent_tools=Claim(False, _SRC_LAYER),
+        agent_tools=Claim(True, *_SRC_OWN_AGENT[provider])
+        if provider in _SRC_OWN_AGENT
+        else Claim(False, _SRC_LAYER),
         web_search=Claim(False, _SRC_LAYER),
         streaming=Claim(gemini, stream_source, "per provider"),
         image_generation=Claim(True, _SRC_OWN_MEDIA),

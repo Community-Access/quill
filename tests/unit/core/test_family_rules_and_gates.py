@@ -102,6 +102,9 @@ NOT_EDITOR_COMMANDS: dict[str, str] = {
     "should not lose a chord to it (rule 7).",
     "localgit.": "As github: version control beside the editor rather than in it, and none of it "
     "edits text (rule 7).",
+    "project.": "Project tasks (code.md 6.4): coding work beside the editor, in the Developer "
+    "profile only, with its own window. Ctrl+3 is the front door, and Stop Agent and Undo "
+    "Last Agent Turn have leader keys; the rest are once-a-task commands (rule 7).",
     "podcasts.": "QUILL Cast's own surface, reached from that app, where these commands have "
     "their own menu bar and their own keys (rule 7).",
     "radio.": "Quill Radio's own surface, reached from that app, which has its own menu bar and "
@@ -204,6 +207,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "tools.hosted_ai_alt_text": "Reached another way: Do a Document Task (Ctrl+3) takes "
     "the same request, and this row only types it in for you. No chord is free in both "
     "editors, and rule 9 asks an occasional repair pass for a way in, not a chord.",
+    "edit.follow_link": "Reached another way: Ctrl+Enter, its key until 2026-11-03, "
+    "still follows a link when the caret is on one; elsewhere that key is Word's page "
+    "break now (rules 1 and 2). The Navigate menu and the context menu reach it too.",
     "help.whats_new": "Reached another way: Help > What's New, in both editors. No chord "
     "is free in both -- Ctrl+Shift+F1, the standalone apps' What's New, is the User "
     "Guide here -- and rule 9 asks a once-per-update read for a way in, not a chord.",

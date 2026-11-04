@@ -440,10 +440,11 @@ paragraph over the top of that is what GATE-13 exists to stop.
 
 | Profile | Areas on | Ctrl+N | For |
 |---|---|---|---|
-| Recommended | 19 of 23 | unchanged | the shipped answer, and the way back from experimenting |
-| Everything | 23 of 23 | unchanged | turning things off as they annoy you rather than finding them one at a time |
-| WordPad | 6 of 23 | **rich** | letters and notes that should look like something |
-| Notepad | 3 of 23 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+| Recommended | 19 of 24 | unchanged | the shipped answer, and the way back from experimenting |
+| Everything | 23 of 24 | unchanged | turning things off as they annoy you rather than finding them one at a time |
+| WordPad | 6 of 24 | **rich** | letters and notes that should look like something |
+| Notepad | 3 of 24 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+| Developer | 20 of 24 | unchanged | Recommended plus Coding, for project tasks with an AI |
 
 Every profile keeps the Command Palette (2026-11-04): it is how a command is
 found, so a profile that removed it removed the way to find everything else.
@@ -813,7 +814,7 @@ The agreement is therefore:
 - **Asked for on its own**, never as a side effect of enabling something.
 - **Stored as a version, not a boolean.** A material change to what is sent or
   retained asks again, rather than an old yes being read as covering a new thing.
-- **Reachable by three doors** -- `Tools > AI > Privacy Agreement`
+- **Reachable by three doors** -- `Tools > AI > Accounts and Usage > Privacy Agreement`
   (`Ctrl+Alt+Shift+K`), a Preferences check box, and switching the area on in
   Customize Features -- because which door somebody finds depends on which part
   of the app they already know. All three read and write the same value, so they
@@ -2154,3 +2155,51 @@ Recommended and Everything, off in WordPad and Notepad.
 
 **Where it is taught.** The WordPress chapter of each user guide, and the
 regression plan at `docs/qa/wordpress-regression-testing.md`.
+## Project tasks, in the Developer profile (2026-11-04)
+
+QUILL Lite reaches project tasks through the shared code QUILL uses
+(`quill/ui/project_task_commands.py` and the `quill/ui/project_*.py` windows),
+so the two editors cannot do them two ways. The plan of record is `code.md`
+("Agentic coding in QUILL"); QUILL's PRD section 36 has the full requirements.
+
+**Area and profile.**
+
+- A Coding area, "Coding: project tasks with an AI", the 22nd. It is off by
+  default and off in every profile but Developer, Everything included. A
+  store seeded before the area existed gets it off once, through a second
+  seeding marker (`_seeded_coding`).
+- A fifth profile, **Developer**: Recommended plus Coding, 20 of 24 areas.
+  Ctrl+N is unchanged.
+
+**Commands** (handlers on the shared mixin; area Coding, by handler in
+`command_areas.COMMAND_AREA`, so a row is hidden wherever it sits):
+
+| Menu | Row | Handler |
+|---|---|---|
+| File | Open Pro&ject Folder... | `cmd_open_project_folder` |
+| File | Close Projec&t | `cmd_close_project` |
+| Edit > Agent &Work | &Undo Last Agent Turn | `cmd_undo_agent_turn` |
+| Edit > Agent &Work | &Stop Agent | `cmd_stop_agent` |
+| View | Agent Task Transcri&pt | `cmd_project_transcript` |
+| View | Agent Command O&utput | `cmd_open_command_output` |
+| Tools | Commands Allowed in This Pro&ject... | `cmd_project_allowed_commands` |
+| Tools > AI | Do a &Project Task... | `cmd_project_task` |
+| Tools > AI | Explain Last Tu&rn | `cmd_explain_agent_turn` |
+| Tools > AI | &Engine Tools for This Project... | `cmd_project_engine_tools` |
+
+No row has a chord: none is free in both editors, Ctrl+3 (Do a Document Task)
+opens the project task whenever a project is open, and each row's reason is in
+`KEYLESS_WITH_REASON`. QUILL has the same ten in the same menus.
+
+**Requirements.**
+
+- PT-L1. Nothing developer appears outside the Developer profile: menus, keys,
+  the palette, the Project status cell and the Coding tutorial track.
+- PT-L2. Ctrl+3 is one key for both tasks; the status line says which.
+- PT-L3. Nothing an agent proposes is written before the person accepts it in
+  Review Changes; no command runs before it is allowed or on the person's own
+  list; Undo Last Agent Turn reverses a turn across files.
+- PT-L4. The Project status cell is shown only while it has text.
+- PT-L5. A window with unsaved edits or in rich text is never reloaded under
+  the person; it is named instead.
+- PT-L6. Every handler has a behavioural test (`test_lite_project_task.py`).

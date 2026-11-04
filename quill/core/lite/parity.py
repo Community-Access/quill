@@ -197,6 +197,18 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_ai_task": "tools.hosted_ai_task",
     # Propose Alt Text (codex.md 6.4): the same mixin, no key in either editor.
     "cmd_ai_alt_text": "tools.hosted_ai_alt_text",
+    # Project tasks (code.md 6.4): the shared mixin's
+    # (quill/ui/project_task_commands.py), in both editors' Developer profiles.
+    "cmd_open_project_folder": "project.open_folder",
+    "cmd_project_task": "project.task",
+    "cmd_stop_agent": "project.stop_agent",
+    "cmd_undo_agent_turn": "project.undo_turn",
+    "cmd_explain_agent_turn": "project.explain_turn",
+    "cmd_open_command_output": "project.command_output",
+    "cmd_project_transcript": "project.transcript",
+    "cmd_project_allowed_commands": "project.allowed_commands",
+    "cmd_project_engine_tools": "project.engine_tools",
+    "cmd_close_project": "project.close",
     "cmd_dictation_tidy": "tools.dictation_tidy",
     # Inline notes, Toggle Task Done and Export as HTML (2026-10-04, from
     # PlanCake): QUILL's code, shared, on QUILL's chords (rule 2).
@@ -319,6 +331,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_indentation_to_spaces": "edit.convert_indentation_to_spaces",
     "cmd_indentation_to_tabs": "edit.convert_indentation_to_tabs",
     "cmd_insert_datetime": "edit.insert_date_time",
+    "cmd_insert_page_break": "format.insert_page_break",
     "cmd_insert_emoji": "edit.insert_emoji",
     "cmd_insert_html_tag": "format.insert_html_tag",
     "cmd_insert_line_break": "power.insert_line_break",

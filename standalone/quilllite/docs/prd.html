@@ -850,29 +850,35 @@ top of that is what GATE-13 exists to stop.</p>
 <tbody>
 <tr>
 <td>Recommended</td>
-<td>19 of 23</td>
+<td>19 of 24</td>
 <td>unchanged</td>
 <td>the shipped answer, and the way back from experimenting</td>
 </tr>
 <tr>
 <td>Everything</td>
-<td>23 of 23</td>
+<td>23 of 24</td>
 <td>unchanged</td>
 <td>turning things off as they annoy you rather than finding them one at
 a time</td>
 </tr>
 <tr>
 <td>WordPad</td>
-<td>6 of 23</td>
+<td>6 of 24</td>
 <td><strong>rich</strong></td>
 <td>letters and notes that should look like something</td>
 </tr>
 <tr>
 <td>Notepad</td>
-<td>3 of 23</td>
+<td>3 of 24</td>
 <td><strong>plain</strong></td>
 <td>config files, logs, and anything where hidden formatting would be a
 problem</td>
+</tr>
+<tr>
+<td>Developer</td>
+<td>20 of 24</td>
+<td>unchanged</td>
+<td>Recommended plus Coding, for project tasks with an AI</td>
 </tr>
 </tbody>
 </table>
@@ -1258,7 +1264,7 @@ enabling something.</li>
 change to what is sent or retained asks again, rather than an old yes
 being read as covering a new thing.</li>
 <li><strong>Reachable by three doors</strong> –
-<code>Tools &gt; AI &gt; Privacy Agreement</code>
+<code>Tools &gt; AI &gt; Accounts and Usage &gt; Privacy Agreement</code>
 (<code>Ctrl+Alt+Shift+K</code>), a Preferences check box, and switching
 the area on in Customize Features – because which door somebody finds
 depends on which part of the app they already know. All three read and
@@ -3263,6 +3269,107 @@ in Recommended and Everything, off in WordPad and Notepad.</p>
 <p><strong>Where it is taught.</strong> The WordPress chapter of each
 user guide, and the regression plan at
 <code>docs/qa/wordpress-regression-testing.md</code>.</p>
+<h2 id="project-tasks-in-the-developer-profile-2026-11-04">Project
+tasks, in the Developer profile (2026-11-04)</h2>
+<p>QUILL Lite reaches project tasks through the shared code QUILL uses
+(<code>quill/ui/project_task_commands.py</code> and the
+<code>quill/ui/project_*.py</code> windows), so the two editors cannot
+do them two ways. The plan of record is <code>code.md</code> (“Agentic
+coding in QUILL”); QUILL’s PRD section 36 has the full requirements.</p>
+<p><strong>Area and profile.</strong></p>
+<ul>
+<li>A Coding area, “Coding: project tasks with an AI”, the 22nd. It is
+off by default and off in every profile but Developer, Everything
+included. A store seeded before the area existed gets it off once,
+through a second seeding marker (<code>_seeded_coding</code>).</li>
+<li>A fifth profile, <strong>Developer</strong>: Recommended plus
+Coding, 20 of 24 areas. Ctrl+N is unchanged.</li>
+</ul>
+<p><strong>Commands</strong> (handlers on the shared mixin; area Coding,
+by handler in <code>command_areas.COMMAND_AREA</code>, so a row is
+hidden wherever it sits):</p>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>Row</th>
+<th>Handler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File</td>
+<td>Open Pro&amp;ject Folder…</td>
+<td><code>cmd_open_project_folder</code></td>
+</tr>
+<tr>
+<td>File</td>
+<td>Close Projec&amp;t</td>
+<td><code>cmd_close_project</code></td>
+</tr>
+<tr>
+<td>Edit &gt; Agent &amp;Work</td>
+<td>&amp;Undo Last Agent Turn</td>
+<td><code>cmd_undo_agent_turn</code></td>
+</tr>
+<tr>
+<td>Edit &gt; Agent &amp;Work</td>
+<td>&amp;Stop Agent</td>
+<td><code>cmd_stop_agent</code></td>
+</tr>
+<tr>
+<td>View</td>
+<td>Agent Task Transcri&amp;pt</td>
+<td><code>cmd_project_transcript</code></td>
+</tr>
+<tr>
+<td>View</td>
+<td>Agent Command O&amp;utput</td>
+<td><code>cmd_open_command_output</code></td>
+</tr>
+<tr>
+<td>Tools</td>
+<td>Commands Allowed in This Pro&amp;ject…</td>
+<td><code>cmd_project_allowed_commands</code></td>
+</tr>
+<tr>
+<td>Tools &gt; AI</td>
+<td>Do a &amp;Project Task…</td>
+<td><code>cmd_project_task</code></td>
+</tr>
+<tr>
+<td>Tools &gt; AI</td>
+<td>Explain Last Tu&amp;rn</td>
+<td><code>cmd_explain_agent_turn</code></td>
+</tr>
+<tr>
+<td>Tools &gt; AI</td>
+<td>&amp;Engine Tools for This Project…</td>
+<td><code>cmd_project_engine_tools</code></td>
+</tr>
+</tbody>
+</table>
+<p>No row has a chord: none is free in both editors, Ctrl+3 (Do a
+Document Task) opens the project task whenever a project is open, and
+each row’s reason is in <code>KEYLESS_WITH_REASON</code>. QUILL has the
+same ten in the same menus.</p>
+<p><strong>Requirements.</strong></p>
+<ul>
+<li>PT-L1. Nothing developer appears outside the Developer profile:
+menus, keys, the palette, the Project status cell and the Coding
+tutorial track.</li>
+<li>PT-L2. Ctrl+3 is one key for both tasks; the status line says
+which.</li>
+<li>PT-L3. Nothing an agent proposes is written before the person
+accepts it in Review Changes; no command runs before it is allowed or on
+the person’s own list; Undo Last Agent Turn reverses a turn across
+files.</li>
+<li>PT-L4. The Project status cell is shown only while it has text.</li>
+<li>PT-L5. A window with unsaved edits or in rich text is never reloaded
+under the person; it is named instead.</li>
+<li>PT-L6. Every handler has a behavioural test
+(<code>test_lite_project_task.py</code>).</li>
+</ul>
 </main>
 </body>
 </html>

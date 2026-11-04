@@ -136,7 +136,19 @@ class GenerationWriter:
         sections: list[tuple[str, int, str, str]],
     ) -> int:
         """Replace one library source wholesale: (id, title, authors, genres,
-        language) plus (book_id, idx, title, url) sections."""
+        language) plus (book_id, idx, title, url) sections.
+
+        A book listed twice keeps its first listing. A paged source such as
+        Gutendex can hand the same book back on two pages while its own list
+        shifts underneath the walk (2026-11-02, which broke the seed build).
+        """
+        first_books: dict[str, tuple[str, str, str, str, str]] = {}
+        for book in books:
+            first_books.setdefault(book[0], book)
+        first_sections: dict[tuple[str, int], tuple[str, int, str, str]] = {}
+        for section in sections:
+            first_sections.setdefault((section[0], section[1]), section)
+        books, sections = list(first_books.values()), list(first_sections.values())
         self._con.execute("DELETE FROM audiobooks WHERE source=?", (source,))
         self._con.execute("DELETE FROM audiobook_sections WHERE source=?", (source,))
         self._con.executemany(

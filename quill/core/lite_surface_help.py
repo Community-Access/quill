@@ -31,6 +31,8 @@ Wording rules, unchanged from Radio's, so the entries stay worth hearing:
 
 from __future__ import annotations
 
+from quill.core.project_surface_help import PROJECT_PURPOSES
+
 __all__ = [
     "CONTAINS_PURPOSES",
     "GENERIC_PURPOSE",
@@ -535,13 +537,13 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Edit Inline Note",
     *_AI_RESULT_TITLES.values(),
     "AI Result",
-})
+}) | frozenset(PROJECT_PURPOSES)
 
 # Release channels: the shared windows (quill/ui/updates) take their titles and
 # purposes from one place, so a title can never ship without its F1 paragraph.
 from quill.core.updater.wording import window_titles as _channel_windows  # noqa: E402
 
-PURPOSES.update(_channel_windows("QUILL Lite"))
+PURPOSES.update(_channel_windows("QUILL Lite") | PROJECT_PURPOSES)
 
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
     # Titled "Key for <command>". It sat in PURPOSES as an exact "Key for"

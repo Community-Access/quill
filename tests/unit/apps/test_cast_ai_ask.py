@@ -112,12 +112,14 @@ def _ai_submenu(frame):
 
 def test_ai_features_open_on_ask_which_ai_and_choose_your_ai_on_casts_keys(cast) -> None:
     labels = _ai_submenu(cast)
-    assert labels[:3] == [
-        "&Ask...\tCtrl+Shift+8",
+    # The family's one AI menu shape: Ask first, Which AI and Choose Your AI
+    # after Cast's own features, the account windows in Accounts and Usage.
+    assert labels[0] == "&Ask...\tCtrl+Shift+8"
+    assert labels[-3:] == [
         "Which AI A&m I Using\tCtrl+F8",
         "Choose You&r AI...\tCtrl+Shift+F8",
+        "Accounts and &Usage",
     ]
-    assert "AI Usa&ge...\tCtrl+Alt+Shift+F2" in labels
     assert "What &Did I Miss in This Episode?" in labels
 
 

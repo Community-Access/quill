@@ -96,8 +96,9 @@ and release channels.
   has Next Block, Previous Block and Where Am I. The checks and the site's
   upkeep are in Tools > WordPress. The page commands are dimmed unless a
   WordPress page or post is in front of you.
-- **Alt+F, W opens File > WordPress.** Print Preview moved from W to T
-  (Alt+F, T) to make room; its key, Ctrl+Alt+Shift+P, is unchanged.
+- **Alt+F, W opens File > WordPress.** Print Preview gave up its W and has
+  no access letter now (every letter of its name is taken in File); its
+  key, Ctrl+Alt+Shift+P, is unchanged.
 - **Forms.** Write accessible forms in BFL, the language of BITS Accessible
   Forms: File > New Form, Insert > Form Field, View > Form Outline, Format >
   Form Rules (each rule read as a sentence), and Tools > Forms with Check
@@ -182,6 +183,59 @@ and release channels.
 - **It moved from View to Tools**, first in the menu, where QUILL keeps it, so
   the same command is in the same place in both editors. Ctrl+Shift+P is
   unchanged.
+### Agentic coding: project tasks in the Developer profile (2026-11-04)
+
+Project tasks with an AI, in the new Developer profile. QUILL gets every one
+of these in the same change.
+
+- **The Claude engine really runs with no tools of its own.** It passes
+  `disallowed_tools=["*"]` rather than `allowed_tools=[]`, which hid nothing.
+- **The shared project-task core is checked and tested,** the same code QUILL
+  uses: the project boundary and hidden secrets, reviewed edits, Undo Last
+  Turn, commands that Stop ends whole, and test results in one sentence.
+
+- **A Developer profile, the fifth.** Recommended plus a new **Coding**
+  area: eighteen of the 22 areas. Coding is off in every other profile,
+  Everything included, and an upgraded install starts with it off.
+- **Do a Project Task, in the Developer profile.** File > Open Project
+  Folder, then Ctrl+3 works on the whole folder: reviewed edits
+  across files, commands that ask first, test results in a sentence, Undo
+  Last Agent Turn, Stop Agent, Coach mode, your own allowed commands with an
+  off-by-default bypass, and engine tools by opt-in. The same windows and
+  the same code as QUILL.
+- **Each project command is where you would look for it:** File, Edit >
+  Agent Work, View, Tools and Tools > AI, as in QUILL, and only in the
+  Developer profile.
+- **Undo offers a look before you lose anything:** when it refuses because
+  you edited a file since, it opens that file as it was before the turn.
+- **Claude and Ollama practice mode for project tasks,** on My own key, as
+  in QUILL.
+- **A Project cell in the status bar,** shown only while a project is open.
+- **F1 in every project window,** as in QUILL.
+- **A tutorial: Your first project task,** in the Developer profile only.
+- **Documented** in a new user guide section, "Coding: project tasks, in the
+  Developer profile", the profiles chapter (now five), the PRD, the release
+  notes and the announcement.
+- **Practice mode's call to Ollama goes through QUILL's one network check,**
+  like every other address QUILL Lite opens.
+- **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
+  files) are asked about once per project.
+
+### Page breaks with Ctrl+Enter (2026-11-03)
+
+- **Ctrl+Enter inserts a page break, as in Word.** In a Word or Rich Text
+  document it is a real page break that is kept when you save; in Markdown
+  it is the `::: pagebreak` line, which becomes a page break when you export.
+  It is on the Insert menu in QUILL Lite and the Format menu in QUILL.
+- **Word page breaks are kept.** Opening a Word document used to turn each
+  page break into an empty line, so saving it removed them all. They now
+  open as page breaks and are saved as page breaks.
+
+### AI menu, own key and silent commands (2026-11-03)
+
+- **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.
+- **Your own key is not only OpenAI** (2026-11-03). Before you have saved a key, Choose Your AI's own-key row now names every service it can use: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud, a service of your own, or Ollama on this computer, which is free and sends nothing. It used to say only OpenAI.
+- **A command is never silent** (2026-11-03). In a new or plain document, keys for commands that need formatting or Markdown, such as Ctrl+B for Bold or a heading key, used to do nothing and say nothing, because their menu rows are dimmed there. Now each one says why it cannot run, such as that the document has no formatting or that the command needs a Markdown or HTML document. Select All in an empty document says the document is empty.
 
 ### Choose Your AI: your plan, GitHub Copilot, Codex or your own key
 - **Choose Your AI** (**Ctrl+4**, Tools > AI) is one window for where your AI
@@ -2577,7 +2631,7 @@ somebody else using the machine is not consent.
 So the agreement is asked for on its own, stored as a **version** rather than a
 yes, so that a material change to what is sent or kept can ask again instead of
 the old answer being taken to cover the new thing. It is reachable by three
-doors -- **Tools > AI > Privacy Agreement**, a check box in **Preferences**, and
+doors -- **Tools > AI > Accounts and Usage > Privacy Agreement**, a check box in **Preferences**, and
 switching the area on in **Customize Features** -- because the place somebody
 looks depends on which part of the app they already know. All three read and
 write the same answer, so none of them can disagree with the others.

@@ -6,7 +6,11 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.feature_catalog import FEATURE_ALIASES, FEATURE_DEFINITIONS, FeatureDefinition
-from quill.core.feature_command_map import COMMAND_FEATURE_MAP
+from quill.core.feature_command_map import (
+    COMMAND_FEATURE_MAP,
+    DEVELOPER_COMMAND_PREFIXES,
+    DEVELOPER_COMMANDS,
+)
 from quill.core.i18n import LazyStr, lazy_gettext
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
@@ -273,11 +277,18 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
     ),
     PROFILE_DEVELOPER_POWER_TEXT: FeatureProfile(
         id=PROFILE_DEVELOPER_POWER_TEXT,
-        name=lazy_gettext("Developer and Power Text"),
+        # Renamed from "Developer and Power Text" (code.md 6.4); the id stays,
+        # because it is what people's saved settings name.
+        name=lazy_gettext("Developer"),
         description=lazy_gettext(
-            "Regular Expression, cleanup, inspection, and document analysis tools."
+            "Tools for writing code: project tasks with an AI, running commands "
+            "and tests, and undo for every change an AI makes, with local Git, "
+            "GitHub and the Developer Console. Also regular expressions, cleanup, "
+            "inspection and document analysis."
         ),
         states={
+            # The only profile, with Full Quill, that turns coding on.
+            "core.developer": FEATURE_STATE_ON,
             "core.search.regex": FEATURE_STATE_ON,
             "core.format": FEATURE_STATE_ON,
             "core.macros": FEATURE_STATE_ON,
@@ -424,6 +435,8 @@ def feature_for_command(command_id: str) -> str:
     explicit = COMMAND_FEATURE_MAP
     if command_id in explicit:
         return explicit[command_id]
+    if command_id.startswith(DEVELOPER_COMMAND_PREFIXES) or command_id in DEVELOPER_COMMANDS:
+        return "core.developer"
     if command_id.startswith("tools.read_aloud"):
         return "core.read_aloud"
     if command_id.startswith("tools.shell"):
@@ -608,7 +621,8 @@ class FeatureManager:
             return FEATURE_STATE_OFF
         if feature_id in self.overrides:
             return self.overrides[feature_id]
-        return self.active_profile.states.get(feature_id, FEATURE_STATE_ON)
+        fallback = FEATURE_STATE_OFF if definition.default_off else FEATURE_STATE_ON
+        return self.active_profile.states.get(feature_id, fallback)
 
     def state_for_command(self, command_id: str) -> str:
         return self.state_for(feature_for_command(command_id))

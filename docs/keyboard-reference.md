@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 540.
+Editor commands with default bindings: 551.
 
 ## The QUILL editor
 
@@ -54,6 +54,7 @@ Editor commands with default bindings: 540.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | Follow Link | `edit.follow_link` |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
@@ -102,7 +103,6 @@ Editor commands with default bindings: 540.
 | Ctrl+Alt+V | Open copy tray | `edit.open_copy_tray` |
 | Ctrl+Alt+X | Exchange Point and Mark | `edit.exchange_point_mark` |
 | Ctrl+Alt+Y | Copy to Next Empty Tray Slot | `edit.copy_to_next_slot` |
-| Ctrl+Enter | Follow Link | `edit.follow_link` |
 | Ctrl+F | Find... | `edit.find` |
 | Ctrl+F8 | Copy All | `edit.copy_all` |
 | Ctrl+H | Replace... | `edit.replace` |
@@ -190,6 +190,7 @@ Editor commands with default bindings: 540.
 | Ctrl+B | Bold | `format.bold` |
 | Ctrl+D | Duplicate Line | `format.duplicate_line` |
 | Ctrl+E | Centre | `format.align_center` |
+| Ctrl+Enter | Insert Page Break | `format.insert_page_break` |
 | Ctrl+I | Italic | `format.italic` |
 | Ctrl+J | Justify | `format.justify` |
 | Ctrl+L | Align Left | `format.align_left` |
@@ -355,8 +356,8 @@ Editor commands with default bindings: 540.
 | Ctrl+Alt+Z | Ask Free AI About This Document | `tools.hosted_ai_ask_document` |
 | Ctrl+F10 | Word Explorer... | `tools.word_explorer` |
 | Ctrl+F11 | Windows dictation toggle | `tools.windows_dictation_toggle` |
-| Ctrl+F3 | Tidy Dictated Text | `tools.dictation_tidy` |
-| Ctrl+F5 | Ask About an Image | `tools.hosted_ai_image` |
+| Ctrl+F3 | Dictation tidy | `tools.dictation_tidy` |
+| Ctrl+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+' | More Vivid Word | `tools.word_vivid` |
@@ -473,6 +474,14 @@ Editor commands with default bindings: 540.
 | (unbound by default) | Podcasts: Sound Enhancements... | `podcasts.sound_enhancements` |
 | (unbound by default) | Non ascii jump to report | `power.non_ascii_jump_to_report` |
 | (unbound by default) | Non ascii jump to source | `power.non_ascii_jump_to_source` |
+| (unbound by default) | Commands Allowed in This Project... | `project.allowed_commands` |
+| (unbound by default) | Close Project | `project.close` |
+| (unbound by default) | Agent Command Output | `project.command_output` |
+| (unbound by default) | Engine Tools for This Project... | `project.engine_tools` |
+| (unbound by default) | Explain Last Turn | `project.explain_turn` |
+| (unbound by default) | Open Project Folder... | `project.open_folder` |
+| (unbound by default) | Do a Project Task... | `project.task` |
+| (unbound by default) | Agent Task Transcript | `project.transcript` |
 | (unbound by default) | Play favorite 1 | `radio.play_favorite_1` |
 | (unbound by default) | Play favorite 10 | `radio.play_favorite_10` |
 | (unbound by default) | Play favorite 2 | `radio.play_favorite_2` |
@@ -593,11 +602,13 @@ Editor commands with default bindings: 540.
 | QUILL Key + 7 | Podcasts: Stop | `podcasts.stop` |
 | QUILL Key + 8 | Podcasts: Play/Pause | `podcasts.play_pause` |
 | QUILL Key + 9 | Radio: Mute/Unmute | `radio.mute_toggle` |
+| QUILL Key + K | Stop Agent | `project.stop_agent` |
 | QUILL Key + M | Paste html as markdown | `power.paste_html_as_markdown` |
 | QUILL Key + Shift+G or Ctrl+Alt+Shift+Home | Snippet Gallery... | `power.open_snippet_gallery` |
 | QUILL Key + Shift+M | Toggle Meeting Mode | `verbosity.toggle_meeting` |
 | QUILL Key + Shift+Q | Toggle Quiet Mode | `verbosity.toggle_quiet` |
 | QUILL Key + Shift+Z | Undo Verbosity Change | `verbosity.undo` |
+| QUILL Key + U | Undo Last Agent Turn | `project.undo_turn` |
 | S | QUILL Quick Nav: Sentence | `quill.quick_nav.sentence` |
 | Shift+Enter | Insert line break | `power.insert_line_break` |
 | T | QUILL Quick Nav: Table | `quill.quick_nav.table` |
@@ -790,7 +801,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
 | Ctrl+Alt+F10 | Carry My Place Between Machines... | `media.sync_places` |
 | Ctrl+Alt+F12 | Restore | `app.restore` |
-| Ctrl+Alt+F5 | Ask About an Image | `tools.hosted_ai_image` |
+| Ctrl+Alt+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+Alt+G | Free AI Assistant | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
