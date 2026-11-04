@@ -1,13 +1,21 @@
-"""QUILL's half of project tasks: the menu rows and the in-place reload (code.md 5.4, 6.4).
+"""QUILL's half of project tasks: where the rows sit, and the in-place reload (code.md 5.4, 6.4).
 
 No commands of its own. Every handler is the shared
 :class:`~quill.ui.project_task_commands.ProjectTaskMixin`'s, the same ones QUILL
 Lite's command table names, so the two editors cannot do a project task two
 ways (rule 10). What lives here is only what QUILL's frame does differently:
 
-- **The Project Tasks submenu** in the AI menu, built only while the Developer
-  profile's ``core.developer`` is on, so nobody else meets a developer row in a
-  menu. Each row shows its key through ``_menu_label``.
+- **Where the rows are.** Each Developer command sits where people already
+  look for that kind of command (Jeff, 2026-11-04), the same menus as QUILL
+  Lite: Open Project Folder and Close Project in File, above Exit; Undo Last
+  Agent Turn and Stop Agent in Edit > Agent Work; the task's transcript and
+  command output in View; Commands Allowed in This Project in Tools; and Do a
+  Project Task, Explain Last Turn and Engine Tools in the AI menu's second
+  group, what the AI does (``quill/core/ai/ai_menu_layout.py``). The rows are
+  built only while ``core.developer`` is on, so nobody outside the Developer
+  profile meets one. Each shows its key through ``_menu_label``; none takes an
+  access letter, because these menus have spent theirs and a duplicate is
+  worse than none (GATE-14).
 - **Reloading a file a turn changed** in whichever tab it is open in, without
   switching tabs (a tab switch would move focus), with the cursor kept where
   it was, and one spoken line for all of them. A tab with unsaved edits is
@@ -22,38 +30,47 @@ from typing import Any
 
 __all__ = ["PROJECT_ROWS", "ProjectRowsMixin"]
 
-#: ``(command id, label, shared handler)``, in menu order. No access keys: the
-#: AI menu has spent its letters, and a duplicate is worse than none (GATE-14).
-PROJECT_ROWS: tuple[tuple[str, str, str], ...] = (
-    ("project.open_folder", "Open Project Folder...", "cmd_open_project_folder"),
-    ("project.task", "Do a Project Task...", "cmd_project_task"),
-    ("project.stop_agent", "Stop Agent", "cmd_stop_agent"),
-    ("project.undo_turn", "Undo Last Agent Turn", "cmd_undo_agent_turn"),
-    ("project.explain_turn", "Explain Last Turn", "cmd_explain_agent_turn"),
-    ("project.command_output", "Open Command Output", "cmd_open_command_output"),
-    ("project.transcript", "Open Task Transcript", "cmd_project_transcript"),
-    (
-        "project.allowed_commands",
-        "Commands Allowed in This Project...",
-        "cmd_project_allowed_commands",
+#: ``menu -> ((command id, label, shared handler), ...)``, in menu order.
+PROJECT_ROWS: dict[str, tuple[tuple[str, str, str], ...]] = {
+    "file": (
+        ("project.open_folder", "Open Project Folder...", "cmd_open_project_folder"),
+        ("project.close", "Close Project", "cmd_close_project"),
     ),
-    ("project.engine_tools", "Engine Tools for This Project...", "cmd_project_engine_tools"),
-    ("project.close", "Close Project", "cmd_close_project"),
-)
+    "edit": (
+        ("project.undo_turn", "Undo Last Agent Turn", "cmd_undo_agent_turn"),
+        ("project.stop_agent", "Stop Agent", "cmd_stop_agent"),
+    ),
+    "view": (
+        ("project.transcript", "Agent Task Transcript", "cmd_project_transcript"),
+        ("project.command_output", "Agent Command Output", "cmd_open_command_output"),
+    ),
+    "tools": (
+        (
+            "project.allowed_commands",
+            "Commands Allowed in This Project...",
+            "cmd_project_allowed_commands",
+        ),
+    ),
+    "ai": (
+        ("project.task", "Do a Project Task...", "cmd_project_task"),
+        ("project.explain_turn", "Explain Last Turn", "cmd_explain_agent_turn"),
+        ("project.engine_tools", "Engine Tools for This Project...", "cmd_project_engine_tools"),
+    ),
+}
 
 #: Suffixes QUILL edits as plain text, and so can reload by setting the text.
 _PLAIN = frozenset({"", ".txt", ".md", ".py", ".js", ".ts", ".json", ".toml", ".yml", ".yaml"})
 
 
 class ProjectRowsMixin:
-    """Mixed into QUILL's hosted-AI adapter; adds rows and a reload, never a command."""
+    """Mixed into QUILL's hosted-AI adapter; places rows and reloads, never a command."""
 
     def _project_menu_ids(self) -> dict[str, Any]:
         ids = getattr(self, "_project_row_ids", None)
         if ids is None:
             import wx
 
-            ids = {cid: wx.NewIdRef() for cid, _label, _h in PROJECT_ROWS}
+            ids = {cid: wx.NewIdRef() for rows in PROJECT_ROWS.values() for cid, _l, _h in rows}
             self._project_row_ids = ids
         return ids
 
@@ -62,31 +79,69 @@ class ProjectRowsMixin:
         check = getattr(features, "is_enabled", None)
         return bool(callable(check) and check("core.developer"))
 
+    def _project_row(self, menu: Any, row: tuple[str, str, str], *, position: int = -1) -> None:
+        import wx
+
+        from quill.core.i18n import _
+
+        command_id, label, handler_name = row
+        menu_id = self._project_menu_ids()[command_id]
+        text = self._menu_label(_(label), command_id)  # type: ignore[attr-defined]
+        if position >= 0:
+            menu.Insert(position, menu_id, text)
+        else:
+            menu.Append(menu_id, text)
+        wired: set[str] = self.__dict__.setdefault("_project_rows_wired", set())
+        if command_id in wired:
+            return
+        wired.add(command_id)
+        handler = getattr(self, handler_name)
+        self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=menu_id)  # type: ignore[attr-defined]
+        self.commands.try_register(  # type: ignore[attr-defined]
+            command_id,
+            label.rstrip("."),
+            handler,
+            self._binding_for(command_id),  # type: ignore[attr-defined]
+        )
+
     def _append_project_rows(self, ai_menu: Any) -> None:
-        """The Project Tasks submenu, only in the Developer profile (code.md 6.4)."""
+        """The AI menu's project rows, in its second group (ai_menu_layout.py)."""
+        if not self._project_rows_visible():
+            return
+        for row in PROJECT_ROWS["ai"]:
+            self._project_row(ai_menu, row)
+
+    def _place_project_rows(
+        self, *, file_menu: Any, edit_menu: Any, view_menu: Any, tools_menu: Any
+    ) -> None:
+        """File, Edit, View and Tools rows, the Developer profile only (code.md 6.4)."""
         import wx
 
         from quill.core.i18n import _
 
         if not self._project_rows_visible():
             return
-        ids = self._project_menu_ids()
-        submenu = wx.Menu()
-        for command_id, label, _handler in PROJECT_ROWS:
-            submenu.Append(ids[command_id], self._menu_label(_(label), command_id))  # type: ignore[attr-defined]
-        ai_menu.AppendSubMenu(submenu, _("Project Tasks"))
-        if getattr(self, "_project_rows_wired", False):
-            return
-        self._project_rows_wired = True
-        for command_id, label, handler_name in PROJECT_ROWS:
-            handler = getattr(self, handler_name)
-            self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=ids[command_id])  # type: ignore[attr-defined]
-            self.commands.try_register(  # type: ignore[attr-defined]
-                command_id,
-                label.rstrip("."),
-                handler,
-                self._binding_for(command_id),  # type: ignore[attr-defined]
-            )
+        # File: above Exit and the separator before it, which stays last.
+        exit_at = next(
+            (i for i, item in enumerate(file_menu.GetMenuItems()) if item.GetId() == wx.ID_EXIT),
+            file_menu.GetMenuItemCount(),
+        )
+        items = file_menu.GetMenuItems()
+        if exit_at > 0 and items[exit_at - 1].IsSeparator():
+            exit_at -= 1
+        file_menu.InsertSeparator(exit_at)
+        for offset, row in enumerate(PROJECT_ROWS["file"]):
+            self._project_row(file_menu, row, position=exit_at + offset)
+        agent = wx.Menu()
+        for row in PROJECT_ROWS["edit"]:
+            self._project_row(agent, row)
+        edit_menu.AppendSeparator()
+        edit_menu.AppendSubMenu(agent, _("Agent Work"))
+        view_menu.AppendSeparator()
+        for row in PROJECT_ROWS["view"]:
+            self._project_row(view_menu, row)
+        for row in PROJECT_ROWS["tools"]:
+            self._project_row(tools_menu, row)
 
     def _refresh_project_cell(self) -> None:
         """The title names the project; the status line says so once (no extra speech)."""

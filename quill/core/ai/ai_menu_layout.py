@@ -35,6 +35,7 @@ __all__ = [
     "ACCOUNTS_TITLE",
     "ACCOUNT_HANDLERS",
     "CHOOSE_HANDLERS",
+    "DEVELOPER_TASK_HANDLERS",
     "Row",
     "arrange",
     "fill",
@@ -58,7 +59,15 @@ ACCOUNT_HANDLERS: tuple[str, ...] = (
 #: Which AI Am I Using and Choose Your AI, in that order, after the features.
 CHOOSE_HANDLERS: tuple[str, ...] = ("cmd_ai_which", "cmd_ai_choose")
 
-_SEPARATOR: Row = ("", "", "")
+#: The Developer profile's rows in group 2, what the AI does (code.md 6.4):
+#: in both editors they follow the document task, and exist only while the
+#: Developer profile is on. Their other commands sit in File, Edit, View and
+#: Tools, where people look for those kinds of command.
+DEVELOPER_TASK_HANDLERS: tuple[str, ...] = (
+    "cmd_project_task",
+    "cmd_explain_agent_turn",
+    "cmd_project_engine_tools",
+)
 
 
 def _tidy(rows: list[Row]) -> list[Row]:

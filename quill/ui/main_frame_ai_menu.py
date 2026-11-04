@@ -79,9 +79,9 @@ class AiMenuMixin:
             ai_menu, ("tools.hosted_ai_task", "tools.hosted_ai_alt_text", "tools.dictation_tidy")
         )
         self._append_dictionary_rows(ai_menu)  # same module: the AI dictionary submenu
-        # -- Which AI (codex.md 10A.9) -----------------------------------------------
-        # Project Tasks, the Developer profile only (code.md 6.4).
+        # Do a Project Task and its two companions: the Developer profile only.
         self._append_project_rows(ai_menu)  # quill/ui/main_frame_project_rows.py
+        # -- Which AI (codex.md 10A.9) -----------------------------------------------
         ai_menu.AppendSeparator()
         self._append_hosted_rows(ai_menu, ("tools.hosted_ai_which", "tools.hosted_ai_choose"))
         # -- Accounts and Usage: the once-a-year windows, every one on its own key --

@@ -38,6 +38,48 @@ _AI = "&Tools|&AI"
 _ACCOUNTS = f"{_AI}|{ACCOUNTS_TITLE}"
 _SEP = (_AI, "", "", "", "sep")
 
+#: Project tasks (code.md 6.4): the Developer profile's Coding area, every row
+#: where people already look for that kind of command (Jeff, 2026-11-04), not in
+#: one submenu. The handlers are the shared mixin's
+#: (quill/ui/project_task_commands.py); QUILL has the same ten in the same menus
+#: (quill/ui/main_frame_project_rows.py). command_areas.py maps each handler to
+#: Coding, so a row exists only in the Developer profile. No chords: none is free
+#: in both editors (keymap.py says what was measured); Ctrl+3 is the front door
+#: and opens a project task whenever a project is open; each row's letter is a
+#: free one in its menu.
+PROJECT_FILE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    ("&File", "Open Pro&ject Folder...", "", "cmd_open_project_folder", ""),
+    ("&File", "Close Projec&t", "", "cmd_close_project", ""),
+)
+
+#: Edit > Agent Work: undoing and stopping are Edit's verbs. A submenu because
+#: Edit has five letters left (J, K, Q, W, Z) and a row with no key needs one.
+PROJECT_EDIT_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    ("&Edit", "Agent &Work", "", "", "sub"),
+    ("&Edit|Agent &Work", "&Undo Last Agent Turn", "", "cmd_undo_agent_turn", ""),
+    ("&Edit|Agent &Work", "&Stop Agent", "", "cmd_stop_agent", ""),
+)
+
+#: View: the two records a task leaves, opened as documents.
+PROJECT_VIEW_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    ("&View", "Agent Task Transcri&pt", "", "cmd_project_transcript", ""),
+    ("&View", "Agent Command O&utput", "", "cmd_open_command_output", ""),
+)
+
+#: Tools: the project's own settings list.
+PROJECT_TOOLS_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    ("&Tools", "Commands Allowed in This Pro&ject...", "", "cmd_project_allowed_commands", ""),
+)
+
+#: The AI menu's second group, what the AI does (ai_menu_layout.py): the task,
+#: its explanation, and the engine's own tools.
+PROJECT_AI_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    (_AI, "Do a &Project Task...", "", "cmd_project_task", ""),
+    (_AI, "Explain Last Tu&rn", "", "cmd_explain_agent_turn", ""),
+    (_AI, "&Engine Tools for This Project...", "", "cmd_project_engine_tools", ""),
+)
+
+
 #: The whole of Tools > AI, spliced into ``COMMANDS``.
 AI_MENU_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     # -- Ask ---------------------------------------------------------------------
@@ -51,6 +93,7 @@ AI_MENU_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     (_AI, "&Do a Document Task...", "Ctrl+3", "cmd_ai_task", ""),
     (_AI, "Propose Alt &Text...", "", "cmd_ai_alt_text", ""),
     (_AI, "Tidy Dictated Te&xt...", "Ctrl+F3", "cmd_dictation_tidy", ""),
+    *PROJECT_AI_ROWS,  # Developer profile only (Coding area)
     _SEP,
     # -- Which AI ----------------------------------------------------------------
     (_AI, "W&hich AI Am I Using", "Ctrl+8", "cmd_ai_which", ""),
@@ -70,32 +113,4 @@ AI_MENU_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     # how somebody turns it on. Its chord is the one held back when this family
     # was laid out.
     (_ACCOUNTS, "&Privacy Agreement...", "Ctrl+Alt+Shift+K", "cmd_ai_privacy", ""),
-)
-
-#: Tools > Project (code.md 6.4): project tasks, the Coding area, which only the
-#: Developer profile turns on. The handlers are the shared mixin's
-#: (quill/ui/project_task_commands.py); QUILL has the same ten under AI >
-#: Project Tasks (quill/ui/main_frame_project_rows.py). No chords: none is free
-#: in both editors (keymap.py says what was measured), Ctrl+3 is the front door
-#: and opens a project task whenever a project is open, and each row's letter is
-#: its key route.
-PROJECT_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
-    ("&Tools|Pro&ject", "&Open Project Folder...", "", "cmd_open_project_folder", ""),
-    ("&Tools|Pro&ject", "Do a Project &Task...", "", "cmd_project_task", ""),
-    ("&Tools|Pro&ject", "&Stop Agent", "", "cmd_stop_agent", ""),
-    ("&Tools|Pro&ject", "&Undo Last Agent Turn", "", "cmd_undo_agent_turn", ""),
-    ("&Tools|Pro&ject", "E&xplain Last Turn", "", "cmd_explain_agent_turn", ""),
-    ("&Tools|Pro&ject", "", "", "", "sep"),
-    ("&Tools|Pro&ject", "Open Command Out&put", "", "cmd_open_command_output", ""),
-    ("&Tools|Pro&ject", "Open Task T&ranscript", "", "cmd_project_transcript", ""),
-    (
-        "&Tools|Pro&ject",
-        "Commands &Allowed in This Project...",
-        "",
-        "cmd_project_allowed_commands",
-        "",
-    ),
-    ("&Tools|Pro&ject", "&Engine Tools for This Project...", "", "cmd_project_engine_tools", ""),
-    ("&Tools|Pro&ject", "", "", "", "sep"),
-    ("&Tools|Pro&ject", "&Close Project", "", "cmd_close_project", ""),
 )

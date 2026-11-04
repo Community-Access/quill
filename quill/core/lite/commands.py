@@ -24,7 +24,13 @@ this without a display.
 from __future__ import annotations
 
 from quill.core.lite import APP_NAME, APP_VERSION
-from quill.core.lite.commands_ai import AI_MENU_ROWS, PROJECT_ROWS
+from quill.core.lite.commands_ai import (
+    AI_MENU_ROWS,
+    PROJECT_EDIT_ROWS,
+    PROJECT_FILE_ROWS,
+    PROJECT_TOOLS_ROWS,
+    PROJECT_VIEW_ROWS,
+)
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
@@ -114,6 +120,7 @@ COMMANDS: list[CommandRow] = [
     ("&File", "Open &from URL...", "", "cmd_open_from_url", ""),  # no key, as in QUILL
     ("&File", "&Import / Convert Document (OCR)...", "", "cmd_import_convert", ""),  # as QUILL
     ("&File", "Recent &Documents...", "Alt+Shift+0", "cmd_recent_documents", ""),
+    *PROJECT_FILE_ROWS,  # Open Project Folder, Close Project: Developer only
     ("&File", "", "", "", "sep"),
     ("&File", "&Save", "Ctrl+S", "cmd_save", ""),
     ("&File", "Save &As...", "Ctrl+Shift+S", "cmd_save_as", ""),
@@ -168,6 +175,7 @@ COMMANDS: list[CommandRow] = [
     # which is what lets every row below have a sensible letter.
     ("&Edit", "&Undo", "Ctrl+Z", "cmd_undo", ""),
     ("&Edit", "&Redo", "Ctrl+Y", "cmd_redo", ""),
+    *PROJECT_EDIT_ROWS,  # Edit > Agent Work: Developer only (commands_ai.py)
     ("&Edit", "", "", "", "sep"),
     ("&Edit", "Cu&t", "Ctrl+X", "cmd_cut", ""),
     ("&Edit", "&Copy", "Ctrl+C", "cmd_copy", ""),
@@ -502,6 +510,7 @@ COMMANDS: list[CommandRow] = [
     # A menu bar answers "what is under Format?"; a palette answers "how do I
     # sort lines?", which is the question somebody actually has.
     ("&View", "Command Pa&lette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
+    *PROJECT_VIEW_ROWS,  # the task's transcript and output: Developer only
     # -- Insert -------------------------------------------------------------
     # Everything that puts something into the document that is not typing. The
     # top three were Edit > Insert and keep their keys exactly; the bottom three
@@ -857,6 +866,7 @@ COMMANDS: list[CommandRow] = [
     # changed at all. Ctrl+comma is where Windows has put preferences for a
     # decade.
     ("&Tools", "&Preferences...", "Ctrl+,", "cmd_preferences", ""),
+    *PROJECT_TOOLS_ROWS,  # Commands Allowed in This Project: Developer only
     # Back up the configuration, and put it back on the next machine (#1501).
     # Beside Preferences because that is what it is a copy of. Neither carries
     # anything that describes *this* computer -- no recent files, no window
@@ -949,7 +959,6 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "S&ound Scheme...", "Ctrl+Alt+Shift+O", "cmd_sound_scheme", ""),
     # -- Tools > Change Case -------------------------------------------------
     *AI_MENU_ROWS,  # Tools > AI, the family's one AI menu shape (commands_ai.py)
-    *PROJECT_ROWS,  # Tools > Project, the Developer profile's Coding area
     *DICTIONARY_ROWS,  # Tools > Dictionary, the AI word tools (commands_words.py)
     *NOTE_ROWS,  # QUILL's six inline-note chords (rule 2; commands_review.py)
     # Tools > Dictation, shared with QUILL; each key's reason is in commands_dictation.py.

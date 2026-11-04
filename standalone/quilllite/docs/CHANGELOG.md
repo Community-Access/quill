@@ -33,6 +33,9 @@ of these in the same change.
   Last Agent Turn, Stop Agent, Coach mode, your own allowed commands with an
   off-by-default bypass, and engine tools by opt-in. The same windows and
   the same code as QUILL.
+- **Each project command is where you would look for it:** File, Edit >
+  Agent Work, View, Tools and Tools > AI, as in QUILL, and only in the
+  Developer profile.
 - **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
   files) are asked about once per project.
 

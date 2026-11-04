@@ -54,6 +54,12 @@ piece lands.
   expect: `AGENTS.md` at the root and in folders, Copilot's instruction
   files, `CLAUDE.md`, `GEMINI.md` and Cursor's rules. QUILL asks once per
   project whether to use them, and nothing in them can approve anything.
+- **Each Developer command is where you would look for it,** in both editors:
+  Open Project Folder and Close Project in File; Undo Last Agent Turn and
+  Stop Agent in Edit, under Agent Work; the task's transcript and command
+  output in View; Commands Allowed in This Project in Tools; and Do a
+  Project Task, Explain Last Turn and Engine Tools in the AI menu, after Do
+  a Document Task. None of them appears outside the Developer profile.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.

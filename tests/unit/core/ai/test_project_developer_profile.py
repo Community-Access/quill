@@ -72,3 +72,29 @@ def test_both_editors_developer_profiles_turn_on_the_same_shared_commands() -> N
     for profile in PROFILES:
         if profile.id != "developer":
             assert "coding" in profile.disabled, profile.id
+
+
+def test_each_developer_command_sits_where_people_look_in_both_editors() -> None:
+    """Jeff, 2026-11-04: not one submenu; the same menus in QUILL and QUILL Lite."""
+    from quill.core.ai.ai_menu_layout import DEVELOPER_TASK_HANDLERS
+    from quill.core.lite.commands_ai import AI_MENU_ROWS
+    from quill.ui.main_frame_project_rows import PROJECT_ROWS
+
+    lite_menu = {row[3]: row[0].split("|")[0].replace("&", "") for row in COMMANDS if row[3]}
+    quill_menu = {
+        COMMAND_EQUIVALENTS_BY_ID[cid]: menu
+        for menu, rows in PROJECT_ROWS.items()
+        for cid, _l, _h in rows
+    }
+    expected = {"file": "File", "edit": "Edit", "view": "View", "tools": "Tools", "ai": "Tools"}
+    for handler, menu in quill_menu.items():
+        assert lite_menu[handler] == expected[menu], (handler, menu, lite_menu[handler])
+    handlers = [row[3] for row in AI_MENU_ROWS]
+    task = handlers.index("cmd_ai_task")
+    which = handlers.index("cmd_ai_which")
+    for handler in DEVELOPER_TASK_HANDLERS:
+        assert task < handlers.index(handler) < which, handler
+    assert {h for _c, _l, h in PROJECT_ROWS["ai"]} == set(DEVELOPER_TASK_HANDLERS)
+
+
+COMMAND_EQUIVALENTS_BY_ID = {quill_id: handler for handler, quill_id in COMMAND_EQUIVALENTS.items()}

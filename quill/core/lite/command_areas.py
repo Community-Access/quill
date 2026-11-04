@@ -71,7 +71,6 @@ MENU_AREA: dict[str, str] = {
     # still fires for a feature somebody has switched off is the feature not
     # being off -- and for this one that would mean a network call they declined.
     "&Tools|&AI": "hosted_ai",
-    "&Tools|Pro&ject": "coding",  # project tasks: the Developer profile only (code.md 6.4)
     "&Tools|&AI|Accounts and &Usage": "hosted_ai",
     # The AI dictionary rides with the AI area: every row is a request on the
     # listener's own key or plan, and a row that still fired with AI switched
@@ -202,6 +201,23 @@ COMMAND_AREA: dict[str, str] = {
 # Membership with "" rather than absence: absence would fall through to
 # MENU_AREA and be hidden with the rest of the submenu.
 COMMAND_AREA["cmd_ai_privacy"] = ""
+
+# Project tasks, wherever their rows sit: the Developer profile's Coding area.
+COMMAND_AREA.update({
+    handler: "coding"
+    for handler in (
+        "cmd_open_project_folder",
+        "cmd_close_project",
+        "cmd_undo_agent_turn",
+        "cmd_stop_agent",
+        "cmd_project_transcript",
+        "cmd_open_command_output",
+        "cmd_project_allowed_commands",
+        "cmd_project_task",
+        "cmd_explain_agent_turn",
+        "cmd_project_engine_tools",
+    )
+})
 
 COMMAND_AREA.update({f"cmd_set_bookmark_{n}": "bookmarks" for n in range(1, 10)})
 
