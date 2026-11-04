@@ -144,10 +144,22 @@ class ProjectRowsMixin:
             self._project_row(tools_menu, row)
 
     def _refresh_project_cell(self) -> None:
-        """The title names the project; the status line says so once (no extra speech)."""
-        refresh = getattr(self, "_refresh_title", None)
-        if callable(refresh):
-            refresh()
+        """Show the Project cell the first time a project opens, then refresh it."""
+        settings = getattr(self, "settings", None)
+        hidden = list(getattr(settings, "status_bar_hidden", []) or [])
+        if "project" in hidden and getattr(self._ai_host(), "ai_project", None) is not None:  # type: ignore[attr-defined]
+            hidden.remove("project")
+            settings.status_bar_hidden = hidden
+            from quill.core.settings import save_settings
+
+            try:
+                save_settings(settings)
+            except Exception:  # noqa: BLE001 - a settings write is never worth a crash
+                pass
+        for name in ("_refresh_statusbar", "_refresh_title"):
+            refresh = getattr(self, name, None)
+            if callable(refresh):
+                refresh()
 
     def _reload_agent_changed(self, paths: list[Path]) -> None:
         from quill.core.ai import project_task_words as words

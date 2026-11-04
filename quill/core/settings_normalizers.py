@@ -72,6 +72,10 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # Podcasts mini-player + download activity. Hidden by default;
     # auto-surfaces the first time an episode plays or downloads.
     "podcast_player",
+    # The open project (code.md 2.1): its name, its git branch, and "waiting"
+    # when the task needs you. Hidden by default; Open Project Folder shows it,
+    # and only the Developer profile can open a project. QUILL Lite has it too.
+    "project",
     # Which AI is in use (codex.md decision 19): short, after every other cell,
     # before the message for the reason below. QUILL Lite has the same cell.
     "ai",
@@ -115,6 +119,7 @@ def _default_status_bar_hidden() -> list[str]:
         "braille",
         "section_heading",
         "ai_engine",
+        "project",
         "radio_player",
         "podcast_player",
     ]

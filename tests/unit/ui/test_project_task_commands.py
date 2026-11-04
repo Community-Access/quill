@@ -157,3 +157,18 @@ def test_a_refused_undo_offers_the_file_as_it_was(
     assert "Undo would lose your edits" in asked[0] and "compare" in asked[0]
     assert opened and opened[0].read_text(encoding="utf-8") == "one\n"
     assert project.root not in opened[0].parents
+
+
+def test_the_project_cell_is_empty_without_a_project_and_names_it_with_one(
+    tmp_path: Path, project: Project
+) -> None:
+    from quill.apps.lite_status_cells import SHOWN_ONLY_WITH_TEXT, project_cell
+
+    editor = _Editor(tmp_path)
+    assert editor.project_status_text() == "" and project_cell(editor) == ""
+    assert "project" in SHOWN_ONLY_WITH_TEXT
+    editor.host.ai_project = project
+    editor.host.ai_project_branch = "main"
+    assert editor.project_status_text() == "Project proj, main"
+    editor.host.ai_project_window = SimpleNamespace(_present_next=[object()], _running=True)
+    assert editor.project_status_text() == "Project proj, main, waiting for you"

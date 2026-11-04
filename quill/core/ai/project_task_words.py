@@ -177,6 +177,11 @@ def bypass_note(command: str) -> str:
     return f"Ran without asking, as this project allows: {command}"
 
 
+def project_cell(name: str, branch: str = "", waiting: bool = False) -> str:
+    text = f"Project {name}" + (f", {branch}" if branch else "")
+    return text + (", waiting for you" if waiting else "")
+
+
 def project_opened(name: str, branch: str = "") -> str:
     return f"Project {name} is open, on branch {branch}." if branch else f"Project {name} is open."
 

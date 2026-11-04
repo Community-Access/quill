@@ -105,6 +105,7 @@ class ProjectTaskMixin(AgentTaskMixin):
         recent.add(project.root)
         branch = git_status_text(project.root).split("\n", 1)[0]
         branch = branch.removeprefix("Branch ").rstrip(".")
+        host.ai_project_branch = branch
         self._ai_project_changed()
         self._announce(words.project_opened(project.name, branch))  # type: ignore[attr-defined]
 
@@ -365,13 +366,25 @@ class ProjectTaskMixin(AgentTaskMixin):
         set_instruction_choice(data_dir, project, answer)
         return True
 
+    def project_status_text(self) -> str:
+        """The Project cell: "Project cli-tool, main", and "waiting" when it needs you."""
+        project = self._ai_project()
+        if project is None:
+            return ""
+        branch = str(getattr(self._ai_host(), "ai_project_branch", "") or "")  # type: ignore[attr-defined]
+        window = self._ai_project_window()
+        waiting = bool(window is not None and getattr(window, "_present_next", None))
+        return words.project_cell(project.name, branch, waiting)
+
     # -- the editor half; each editor may override ------------------------------- #
 
     def _ai_project_changed(self) -> None:
         """The project was opened or closed: titles and status cells may show it."""
-        refresh = getattr(self, "_refresh_project_cell", None)
-        if callable(refresh):
-            refresh()
+        for name in ("_refresh_project_cell", "_touch_status"):
+            refresh = getattr(self, name, None)
+            if callable(refresh):
+                refresh()
+                return
 
     def _ai_cue(self, event: str) -> None:
         play = getattr(self, "cue", None) or getattr(self, "_cue", None)

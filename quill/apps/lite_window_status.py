@@ -102,12 +102,12 @@ from quill.apps.lite_status_cells import (
     StatusCell,
     _clip_message,
     _widen_to_label,
-    ai_cell,
     encoding_name,
     live_status_message,
     native_cell_labels,
     newline_name,
     page_cell_text,
+    shared_ai_cells,
 )
 from quill.apps.lite_window_dictation import dictation_cell
 
@@ -369,7 +369,7 @@ class DocumentStatusMixin:
             "line_endings": self._line_endings_cell(),
             "saved": "Modified" if self.modified else "Saved",
             "notifications": "Notifications",
-            "ai": ai_cell(self),
+            **shared_ai_cells(self),  # Project and AI, worded once for both editors
         }
 
     def _heading_text(self, text: str) -> str:

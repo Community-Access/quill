@@ -70,6 +70,10 @@ piece lands.
   Anthropic key, with QUILL's tools and none of Claude Code's own unless you
   turn them on), and **Ollama practice mode**, a model on this computer:
   nothing is sent, and it is slower and less capable, which the window says.
+- **A Project cell in the status bar** says the open project and its git
+  branch, and "waiting for you" when the task has a question you have not
+  seen. Enter on it opens the task. It appears the first time you open a
+  project.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.
