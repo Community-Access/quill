@@ -100,3 +100,42 @@ def test_two_turns_undo_newest_first(setup) -> None:
     assert (project.root / "a.py").read_text(encoding="utf-8") == "a = 2\n"
     assert store.undo_last().ok
     assert (project.root / "a.py").read_text(encoding="utf-8") == "a = 1\n"
+
+
+@pytest.mark.parametrize("seed", range(12))
+def test_any_mix_of_accepted_changes_undoes_byte_for_byte(tmp_path: Path, seed: int) -> None:
+    """The property behind Undo Last Turn: whatever was taken, the tree comes back exactly."""
+    import random
+
+    rng = random.Random(seed)
+    root = tmp_path / "proj"
+    root.mkdir()
+    for n in range(4):
+        newline = "\r\n" if rng.random() < 0.3 else "\n"
+        lines = [f"line {n}.{i} = {rng.randint(0, 99)}" for i in range(rng.randint(3, 12))]
+        (root / f"f{n}.py").write_bytes((newline.join(lines) + newline).encode("utf-8"))
+    project = Project(root)
+    store = CheckpointStore(project, tmp_path / "data")
+    before = _tree(root)
+    changes = ChangeSet()
+    for n in range(4):
+        if rng.random() < 0.7:
+            original = project.read_text(f"f{n}.py")
+            lines = original.replace("\r\n", "\n").split("\n")
+            for i in rng.sample(range(len(lines) - 1), k=min(3, len(lines) - 1)):
+                lines[i] = lines[i] + " # changed"
+            change = changes.propose_edit(f"f{n}.py", original, "\n".join(lines))
+            for hunk in change.hunks:
+                hunk.accepted = rng.random() < 0.6
+    if rng.random() < 0.5:
+        changes.propose_create("new/made.py", "print('new')\n")
+    if rng.random() < 0.3 and changes.get("f3.py") is None:
+        changes.propose_delete("f3.py", project.read_text("f3.py"))
+    store.ensure_turn()
+    report = changes.apply(project.resolve)
+    assert report.ok, report.error
+    store.close_turn()
+    undo = store.undo_last()
+    if not undo.ok:
+        assert undo.sentence == "There is no agent turn to undo in this project."
+    assert _tree(root) == before

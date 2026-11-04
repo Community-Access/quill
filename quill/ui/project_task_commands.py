@@ -165,7 +165,45 @@ class ProjectTaskMixin(AgentTaskMixin):
         report = CheckpointStore(project, self._project_data_dir()).undo_last()
         if report.ok:
             self._ai_reload_changed([project.root / p for p in (*report.restored, *report.removed)])
+        if report.edited_since:
+            self._offer_undo_comparison(project, report)
+            return
         self._announce(report.sentence)  # type: ignore[attr-defined]
+
+    def _offer_undo_comparison(self, project: Any, report: Any) -> None:
+        """Undo was refused to keep the person's edits: offer the file as it was (4.5).
+
+        Yes opens the first edited file's text from before the agent's turn, as
+        a document beside the person's own, so they can compare and decide.
+        """
+        import wx
+
+        from quill.core.ai.change_set import write_text_atomic
+        from quill.core.ai.checkpoints import CheckpointStore
+        from quill.core.ai.project_store import project_data_dir
+        from quill.ui.dialog_contract import show_message_box
+
+        answer = show_message_box(
+            words.undo_compare_question(report.sentence),
+            words.UNDO_REFUSED_TITLE,
+            wx.YES_NO | wx.ICON_QUESTION,
+            self._ai_parent(),  # type: ignore[attr-defined]
+        )
+        if answer != wx.YES:
+            return
+        store = CheckpointStore(project, self._project_data_dir())
+        turn = store.last_turn()
+        rel = report.edited_since[0]
+        if turn is None:
+            return
+        name = Path(rel).name
+        copy = (
+            project_data_dir(self._project_data_dir(), project)
+            / "before"
+            / (f"{name} before turn {turn.number}{Path(rel).suffix or '.txt'}")
+        )
+        write_text_atomic(copy, store.before_text(turn, rel))
+        self._ai_open_file(copy)
 
     def cmd_open_command_output(self) -> None:
         window = self._ai_project_window()
@@ -271,6 +309,7 @@ class ProjectTaskMixin(AgentTaskMixin):
             explain_first=explain,
             edit_allowed=lambda _runner: self.cmd_project_allowed_commands(),
             edit_engine_tools=lambda _runner: self.cmd_project_engine_tools(),
+            undo_refused=lambda report: self._offer_undo_comparison(project, report),
         )
         window = ProjectTaskWindow(self._ai_parent(), hooks)  # type: ignore[attr-defined]
         host = self._ai_host()  # type: ignore[attr-defined]

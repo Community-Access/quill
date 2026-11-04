@@ -60,6 +60,11 @@ piece lands.
   output in View; Commands Allowed in This Project in Tools; and Do a
   Project Task, Explain Last Turn and Engine Tools in the AI menu, after Do
   a Document Task. None of them appears outside the Developer profile.
+- **Undo says what it would lose, and offers a look.** When Undo Last Agent
+  Turn refuses because you edited a file since the agent's turn, it names
+  the file and offers to open the file as it was before the turn, so you can
+  compare. Your file is not changed.
+- **Project tasks are off in Safe Mode,** like the AI engines.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.

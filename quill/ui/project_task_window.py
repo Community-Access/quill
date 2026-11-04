@@ -72,6 +72,9 @@ class ProjectTaskHooks(AgentTaskHooks):
     edit_allowed: Callable[[Any], None] = field(default=lambda _r: None)
     #: ``(runner) -> None``: decision 4's per-engine opt-in for the vendor's tools.
     edit_engine_tools: Callable[[Any], None] = field(default=lambda _r: None)
+    #: ``(report) -> None``: Undo refused because the person edited a file since;
+    #: offer the comparison (code.md 4.5).
+    undo_refused: Callable[[Any], None] = field(default=lambda _r: None)
 
 
 class _Waiting:
@@ -341,6 +344,9 @@ class ProjectTaskWindow(AgentWindow):
             return
         report = self._runner.undo_last_turn()
         self._write(report.sentence)
+        if report.edited_since:
+            self._project_hooks.undo_refused(report)  # the question says the sentence
+            return
         self._hooks.announce(report.sentence)
 
     # -- what the runner sends ------------------------------------------------------ #

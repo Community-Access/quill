@@ -36,6 +36,8 @@ of these in the same change.
 - **Each project command is where you would look for it:** File, Edit >
   Agent Work, View, Tools and Tools > AI, as in QUILL, and only in the
   Developer profile.
+- **Undo offers a look before you lose anything:** when it refuses because
+  you edited a file since, it opens that file as it was before the turn.
 - **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
   files) are asked about once per project.
 

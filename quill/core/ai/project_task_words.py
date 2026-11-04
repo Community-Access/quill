@@ -81,6 +81,7 @@ COACH_STATUS = "Coach mode"
 NO_PLAN_YET = "There is no plan yet in this task."
 NO_CHANGES_YET = "No changes have been made in this task yet."
 NO_TRANSCRIPT_YET = "Nothing has happened in this task yet."
+UNDO_REFUSED_TITLE = "Undo Last Agent Turn"
 
 #: What every project task is told, after the agent's own instructions.
 PROJECT_TASK_INSTRUCTIONS = (
@@ -144,6 +145,13 @@ def files_reloaded(updated: list[str], kept: list[str]) -> str:
             "Reload it to see the task's change."
         )
     return " ".join(parts)
+
+
+def undo_compare_question(refusal: str) -> str:
+    return (
+        f"{refusal} Open the file as it was before the agent's turn, to compare? "
+        "Your file is not changed either way."
+    )
 
 
 def turn_started(number: int, coach: bool = False) -> str:
