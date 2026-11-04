@@ -83,6 +83,8 @@ piece lands.
 - **Documented:** a user guide chapter, "Project tasks: coding with an AI",
   PRD section 36, the release notes and the announcement, and thirteen
   screen-reader checks for NVDA, JAWS and Narrator.
+- **Practice mode's call to Ollama goes through QUILL's one network check,**
+  like every other address QUILL opens.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.

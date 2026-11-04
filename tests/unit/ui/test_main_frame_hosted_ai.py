@@ -543,8 +543,12 @@ def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
         "tools.hosted_ai_task",
         # Propose Alt Text (codex.md 6.4, 2026-11-01).
         "tools.hosted_ai_alt_text",
+        # The ten project rows of the Developer profile (code.md, 2026-11-04).
+        "project.open_folder",
+        "project.task",
+        "project.stop_agent",
     }
-    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 4
+    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 4 + 10
 
 
 # --------------------------------------------------------------------------- #

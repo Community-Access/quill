@@ -40,10 +40,15 @@ def _post(url: str, payload: dict[str, Any]) -> dict[str, Any]:
     """POST to Ollama on this computer only; long timeout, because local models are slow."""
     if not url.startswith(("http://127.0.0.1", "http://localhost", "http://[::1]")):
         raise ValueError("Practice mode talks only to Ollama on this computer.")
+    from quill.core.net import context_for
+
     request = urllib.request.Request(
         url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"}
     )
-    with urllib.request.urlopen(request, timeout=600) as reply:  # noqa: S310 - loopback only
+    # Loopback is plain HTTP, so the context is None; it goes through net all the same.
+    with urllib.request.urlopen(  # noqa: S310 - loopback only
+        request, timeout=600, context=context_for(url)
+    ) as reply:
         data = json.loads(reply.read())
     return data if isinstance(data, dict) else {}
 

@@ -46,6 +46,8 @@ of these in the same change.
 - **Documented** in a new user guide section, "Coding: project tasks, in the
   Developer profile", the profiles chapter (now five), the PRD, the release
   notes and the announcement.
+- **Practice mode's call to Ollama goes through QUILL's one network check,**
+  like every other address QUILL Lite opens.
 - **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
   files) are asked about once per project.
 

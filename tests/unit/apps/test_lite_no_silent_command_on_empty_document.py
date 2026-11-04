@@ -108,6 +108,28 @@ def _snapshot(window: Any) -> dict[str, Any]:
     }
 
 
+@pytest.fixture(autouse=True)
+def _fresh_dictation(monkeypatch):
+    """Each case starts with no dictation session, and leaves none behind.
+
+    The controller is module state. Where a speech engine is installed,
+    Speak a Command really starts one, and the next case (Switch Dictation
+    Language) then talks to that session instead of saying the language.
+    """
+    from quill.ui import windows_dictation_commands as shared
+
+    monkeypatch.setattr(shared, "_controller", None)
+    monkeypatch.setattr(shared, "_host", None)
+    monkeypatch.setattr(shared, "_watched_tops", set())
+    yield
+    controller = shared._controller
+    if controller is not None and (controller.active or controller.standing_by):
+        try:
+            controller.stop()
+        except Exception:  # noqa: BLE001 - teardown only; the case already ran
+            pass
+
+
 @pytest.fixture
 def opened_windows(monkeypatch, wx_session_app, wx_call_after) -> list[str]:
     """Every wx window a command tried to show, by class name."""
