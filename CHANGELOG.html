@@ -244,6 +244,74 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="ai-menu-own-key-and-silent-commands-2026-11-03">AI menu, own key
+and silent commands (2026-11-03)</h3>
+<ul>
+<li><strong>One AI menu, the same in every app</strong> (2026-11-03).
+The AI menu now reads in four groups, in the same order in every
+QuillVille app: the ways to ask; what this app’s AI does; Which AI Am I
+Using and Choose Your AI; and <strong>Accounts and Usage</strong>, a
+submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage
+and the Privacy Agreement (and, where the app has them, Connect or Sign
+Out and Web Searches Left). Every command keeps its key wherever it now
+sits.</li>
+<li><strong>Your own key is not only OpenAI</strong> (2026-11-03).
+Before you have saved a key, Choose Your AI’s own-key row now names
+every service it can use: OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter, Ollama Cloud, a service of your own, or Ollama on this
+computer, which is free and sends nothing. It used to say only
+OpenAI.</li>
+<li><strong>A command is never silent</strong> (2026-11-03). In a new or
+plain document, keys for commands that need formatting or Markdown, such
+as Ctrl+B for Bold or a heading key, used to do nothing and say nothing,
+because their menu rows are dimmed there. Now each one says why it
+cannot run, such as that the document has no formatting or that the
+command needs a Markdown or HTML document. Select All in an empty
+document says the document is empty.</li>
+</ul>
+<h3 id="phonon-voices-2026-11-02">Phonon voices (2026-11-02)</h3>
+<ul>
+<li><strong>Phonon, a new offline Read Aloud voice.</strong> Gradium’s
+Phonon 31m now comes with QUILL and QUILL Studio: 37 English voices plus
+its own default, nothing to download, and nothing sent anywhere. Choose
+<strong>Phonon (neural, offline)</strong> in Manage Voices. It starts
+speaking quickly and reads numbers, dates and email addresses well.
+Speed runs from 0.85 to 1.3 times normal. It needs a processor from
+about 2015 or later; on an older one the voices are marked “needs a
+newer computer” and QUILL suggests Piper. Apache 2.0; Phonon builds on
+Pocket TTS and the Mimi codec by Kyutai.</li>
+</ul>
+<h3 id="vs-code-signals-sound-pack-2026-11-02">VS Code Signals sound
+pack (2026-11-02)</h3>
+<ul>
+<li><strong>A second sound scheme: VS Code Signals.</strong> The
+accessibility signal sounds from Visual Studio Code, used under the MIT
+licence, are in the Scheme list of the Sound Scheme window
+(Ctrl+Alt+Shift+O) in QUILL and QUILL Lite, and in the setup wizard.
+They play for errors, warnings, saving, finished and failed tasks, AI
+requests and answers, questions, dictation and recording starting and
+stopping, progress, compare differences, corrected words, and undo and
+redo. Anything they have no sound for stays quiet, or is spoken where
+the app speaks instead. Ink stays the default. The sounds come from
+microsoft/vscode at one pinned commit, converted to WAV and otherwise
+unchanged, with each file’s SHA-256 and Microsoft’s licence alongside
+them.</li>
+</ul>
+<h3 id="licensing-settled-2026-11-02">Licensing settled
+(2026-11-02)</h3>
+<ul>
+<li><strong>Every shipped document now states the licensing position as
+decided.</strong> QUILL is Jeff Bishop’s free personal project and is
+not used commercially; its own code is MIT. PyMuPDF (AGPL-3.0), libmpv,
+mutagen and pillow-heif are kept, and the exact source of every GPL,
+LGPL or AGPL part is published with each release beside LICENSE.txt and
+THIRD-PARTY-NOTICES.txt. AGPL section 13 does not apply to the desktop
+apps. BASS is used under Un4seen’s free non-commercial licence, DECtalk
+is not distributed or linked, and all 39 Piper voices stay. The family
+notices call their remaining entries maintainer notes rather than items
+that need review, and the release checklist attaches the copyleft source
+bundle instead of waiting on a legal review.</li>
+</ul>
 <h3
 id="agent-tasks-across-the-family-and-tell-me-when-this-changes-2026-11-01">Agent
 tasks across the family, and Tell Me When This Changes (2026-11-01)</h3>
@@ -454,7 +522,10 @@ row, ready to sign in.</li>
 which AI is in use; Enter on it opens Choose Your AI.</li>
 <li><strong>AI Usage</strong> is one list, a sentence for each AI you
 have set up, with Manage Usage. It replaces the free AI’s allowance
-window and the own key’s usage window. Everything is text.</li>
+window and the own key’s usage window. Everything is text. Disconnecting
+this computer from the free AI is now Delete (or Sign Out) on its row in
+Choose Your AI, and the support ID is in Help &gt; About and in the
+Connect window when you connect.</li>
 <li>An AI command the AI in use cannot do keeps its key, says what it
 needs in its menu name, sends nothing, and offers to switch with Yes as
 the default.</li>
@@ -751,9 +822,9 @@ Windows Media engine now resolves a selected endpoint from a fresh
 filtered query and removes its event handlers at termination. This fixes
 the <code>0xC0000005</code> process-exit crash after audio-device
 enumeration or switching.</li>
-<li>Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive,
-generated notices, Corresponding Source review and pre-release legal
-gate are documented; PDF behavior is unchanged.</li>
+<li>Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive and
+generated notices are documented, and its source is published with each
+release; PDF behavior is unchanged.</li>
 <li>Verify and document which family apps check for updates
 automatically at launch in the published privacy statement.</li>
 </ul>

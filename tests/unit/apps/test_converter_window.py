@@ -262,7 +262,8 @@ def test_ai_lives_only_in_the_ai_menu(converter) -> None:
     ai = re.compile(r"\bAI\b|ChatGPT|OpenAI|Copilot|Claude|Gemini|Assistant|API key", re.I)
     found = [row.spoken() for row in rows if ai.search(f"{row.path} {row.label}")]
     assert found
-    assert all(row.endswith(" -- AI") for row in found), found
+    # The AI menu, or its Accounts and Usage submenu (quill/core/ai/ai_menu_layout.py).
+    assert all(re.search(r" -- AI\b", row) for row in found), found
     # Not a release-channel app either: Converter offers Stable only.
     assert not [row.label for row in rows if "Release Channel" in row.label]
 

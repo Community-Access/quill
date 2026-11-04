@@ -69,14 +69,20 @@ def test_the_ai_menu_sits_before_quillville_on_the_fallback_keys(transcribe) -> 
         i.GetItemLabel() for i in _menu(transcribe, "AI").GetMenuItems() if not i.IsSeparator()
     ]
     # The agent task's label says what it needs on a connection without agent tools.
-    task = labels.pop(3)
+    task = labels.pop(1)
     assert task.startswith("Sp&eakers, Sections and Summary") and task.endswith("...\tCtrl+F3")
+    # The family's one AI menu shape (quill/core/ai/ai_menu_layout.py).
     assert labels == [
         "&Ask...\tCtrl+Shift+8",
         "&Which AI Am I Using\tCtrl+F8",
         "&Choose Your AI...\tCtrl+Shift+F8",
-        "Use My Chat&GPT Subscription...\tAlt+F5",
+        "Accounts and &Usage",
+    ]
+    menu = _menu(transcribe, "AI")
+    accounts = next(i for i in menu.GetMenuItems() if i.IsSubMenu()).GetSubMenu()
+    assert [i.GetItemLabel() for i in accounts.GetMenuItems()] == [
         "Use My &Own AI Key...\tAlt+F2",
+        "Use My Chat&GPT Subscription...\tAlt+F5",
         "AI U&sage...\tCtrl+Alt+Shift+F2",
         "&Privacy Agreement...\tAlt+Shift+F2",
     ]

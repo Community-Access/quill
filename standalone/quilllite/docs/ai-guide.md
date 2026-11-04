@@ -624,7 +624,7 @@ monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 
 ### Setting it up
 
-Choose **Tools > AI > Use My Own AI Key** (**Alt+F2**). One window opens. Here
+Choose **Tools > AI > Accounts and Usage > Use My Own AI Key** (**Alt+F2**). One window opens. Here
 is what is in it:
 
 1. **Provider.** Choose **OpenAI**, **Google Gemini**, **Anthropic Claude**,
@@ -759,7 +759,7 @@ document tasks.
 
 ### Signing in, step by step
 
-1. Press **Alt+F5** (**Tools > AI > Use My ChatGPT Subscription**). **Choose
+1. Press **Alt+F5** (**Tools > AI > Accounts and Usage > Use My ChatGPT Subscription**). **Choose
    Your AI** opens on **My ChatGPT plan**, with its sign-in step ready.
 2. The step says "To use My ChatGPT plan, approve QUILL Lite on OpenAI's
    page." Press **Open the Page**. Your browser opens on OpenAI's own sign-in

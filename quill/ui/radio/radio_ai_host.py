@@ -194,10 +194,15 @@ class RadioAiMixin(RadioAiFeaturesMixin, RadioWatchMixin, HostedAiMixin):
         ids = self._radio_ai_ids()
         ask_id, label, _handler = ASK_ROW
         menu.Append(ids[ask_id], self._menu_label(label, ask_id))  # type: ignore[attr-defined]
-        sub = wx.Menu()
-        for command_id, row_label, handler_name in AI_ROWS:
+        from quill.core.ai.ai_menu_layout import fill
+
+        def append(target: Any, row: tuple[str, str, str]) -> None:
+            command_id, row_label, handler_name = row
             shown = self._ai_gated_label(handler_name, row_label)  # codex.md 10A.8
-            sub.Append(ids[command_id], self._menu_label(shown, command_id))  # type: ignore[attr-defined]
+            target.Append(ids[command_id], self._menu_label(shown, command_id))  # type: ignore[attr-defined]
+
+        sub = wx.Menu()
+        fill(sub, AI_ROWS, append, wx.Menu)  # the family's one AI menu shape
         menu.AppendSubMenu(sub, "A&I")
         if getattr(self, "_radio_ai_wired", False):
             return

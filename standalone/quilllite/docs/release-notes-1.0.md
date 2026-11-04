@@ -482,7 +482,7 @@ under it, so nothing changes until you choose.
 
 ### Starting from nothing: four steps, once
 
-1. **Open the agreement.** Choose **Tools > AI > Privacy Agreement**
+1. **Open the agreement.** Choose **Tools > AI > Accounts and Usage > Privacy Agreement**
    (**Ctrl+Alt+Shift+K**). It is there even while AI help is off.
 2. **Read it and choose I Agree.** That switches AI help on.
 3. **Connect this computer.** The **Connect or Sign Out** window

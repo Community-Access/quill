@@ -15,10 +15,10 @@
   QuillVille app now shares: **Assist > Ask...** (Ctrl+6) about the selected
   beacon, or about your search and its results when one is typed;
   **Assist > Which AI Am I Using** (Ctrl+8, twice opens Choose Your AI);
-  **Assist > Choose Your AI...** (Ctrl+4); **Assist > Use My ChatGPT
-  Subscription...** (Alt+F5); **Assist > Use My Own AI Key...** (Alt+F2);
-  **Assist > AI Usage...** (Ctrl+Alt+Shift+F2); and
-  **Assist > Privacy Agreement...** (Ctrl+Alt+Shift+K). QuillBeacon signs in on
+  **Assist > Choose Your AI...** (Ctrl+4); **Assist > Accounts and Usage > Use My ChatGPT
+  Subscription...** (Alt+F5); **Assist > Accounts and Usage > Use My Own AI Key...** (Alt+F2);
+  **Assist > Accounts and Usage > AI Usage...** (Ctrl+Alt+Shift+F2); and
+  **Assist > Accounts and Usage > Privacy Agreement...** (Ctrl+Alt+Shift+K). QuillBeacon signs in on
   its own, as QUILL Beacon, and never sends where your library lives or the path
   of any file.
 - **Describe a Saved Picture** (Ctrl+F5, in the Assist menu). Select a beacon

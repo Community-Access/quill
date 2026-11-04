@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Phonon as an offline voice in QUILL</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="phonon-as-an-offline-voice-in-quill">Phonon as an offline voice
+in QUILL</h1>
+<p>Research note, 2026-11-02, kept here since 2026-11-03 (it was
+<code>phonon.md</code> at the repository root). The plan it led to is
+<code>docs/Product Requirement Documents and Specifications/phonon-voices-prd.md</code>,
+and phases 1 and 2 of that plan shipped in PR #1747. The sections up to
+5 were written before anything was installed or run; section 6 has the
+measurements from this computer. Every external claim has a link. “Fact”
+means a source says it; “Inference” means it is my reading and should be
+checked.</p>
+<h2 id="summary-one-screen">Summary (one screen)</h2>
+<ul>
+<li><strong>Verdict: promising with limits.</strong> Phonon 31m is small
+(64.5 MB), Apache 2.0, ships a Windows x64 build and a Windows x64
+Python wheel, needs no phonemizer and no eSpeak, and its vendor figures
+beat Kokoro by a wide margin. The limit that matters for a low-end
+standard: the Windows x64 builds are compiled for <strong>x86-64-v3
+(AVX2, FMA, F16C)</strong>, so a Celeron or Pentium older than 2020, or
+an AMD chip older than 2015, cannot run the shipped binaries at all.
+Nobody has published an x86 speed figure. Until we measure, it is an
+extra voice for machines that pass a CPU check, not a replacement for
+Piper.</li>
+<li><strong>Low computer standard (proposed):</strong> Windows 10 or 11,
+64-bit; 4 GB RAM; two cores; no GPU; for Phonon also AVX2 (Intel Core
+4th generation, 2013, or later; AMD 2015 or later; Celeron/Pentium 2020
+or later). Windows on ARM: Windows 11 24H2 or later, running QUILL’s x64
+build under Prism. This matches the baseline QUILL’s dictation work
+already uses: “a 4 GB dual-core Windows 10 computer”.</li>
+<li><strong>Licensing, per model:</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Licence</th>
+<th>Bundle</th>
+<th>Mirror</th>
+<th>Point upstream only</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phonon 31m (English)</td>
+<td>Apache 2.0</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Not needed</td>
+</tr>
+<tr>
+<td>phonon-voices (102 voice files)</td>
+<td>Apache 2.0 (tag only)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Not needed</td>
+</tr>
+<tr>
+<td>Phonon 40m per language (en, fr, de, es, pt)</td>
+<td>CC BY-NC 4.0, gated</td>
+<td>Licence allows it; ask Gradium first</td>
+<td>Licence allows it; ask Gradium first</td>
+<td>Yes, today</td>
+</tr>
+<tr>
+<td>Phonon 40m multilingual</td>
+<td>CC BY-NC 4.0, gated</td>
+<td>Licence allows it; ask Gradium first</td>
+<td>Licence allows it; ask Gradium first</td>
+<td>Yes, today</td>
+</tr>
+<tr>
+<td>Runtime code (ptts)</td>
+<td>MIT OR Apache 2.0</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Not needed</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Windows status:</strong> release v0.6.0 (2026-10-30) has
+<code>ptts-0.6.0-x86_64-pc-windows-msvc.zip</code> (7.42 MB, static CRT)
+and PyPI wheels for <code>win_amd64</code> (6.9 MB) and
+<code>win_arm64</code> (6.6 MB). Both x64 builds need AVX2. No Windows
+speed figures exist anywhere.</li>
+<li><strong>Next steps:</strong>
+<ol type="1">
+<li>Jeff approves the measurement run below (one evening, two
+machines).</li>
+<li>If 31m meets the budgets on the low machine: build the 31m provider
+in QUILL (Read Aloud, Studio, previews). Adds about 7 MB to the shared
+runtime, a 64.5 MB model plus about 9.5 MB of English voices on the
+assets-v1 mirror, and about 4 to 5 MB of preview samples in the
+repo.</li>
+<li>Write to Gradium asking permission to mirror the 40m models on
+QUILL’s release (the iOS precedent below suggests they say yes to free,
+non-commercial accessibility work). Until then, 40m is “sign in to
+Hugging Face and download it yourself”, or left out.</li>
+</ol></li>
+</ul>
+<h2 id="1-licensing">1. Licensing</h2>
+<h3 id="what-the-sources-say-facts">What the sources say (facts)</h3>
+<ul>
+<li>Code: “The code is MIT OR Apache-2.0, at your option.” The repo has
+<code>LICENSE-APACHE</code> and <code>LICENSE-MIT</code> and no
+<code>NOTICE</code> file. <a
+href="https://github.com/gradium-ai/xn-ptts">https://github.com/gradium-ai/xn-ptts</a></li>
+<li>The README: “Phonon 31m is under Apache 2.0, and Phonon 40m and
+Phonon 40m multilingual are under CC BY-NC 4.0”, and “Check each model’s
+page on Hugging Face before redistribution.” <a
+href="https://github.com/gradium-ai/xn-ptts">https://github.com/gradium-ai/xn-ptts</a></li>
+<li>Phonon 31m model card: licence tag <code>apache-2.0</code>; “The
+weights, tokenizer and voices in this repository are released under
+Apache 2.0.” Attribution line: “Phonon builds on Pocket TTS and the Mimi
+codec, developed by Kyutai.” There is no LICENSE file in the repo; the
+licence is the tag and the card. <a
+href="https://huggingface.co/gradium/phonon-31m-en">https://huggingface.co/gradium/phonon-31m-en</a>
+and <a
+href="https://huggingface.co/gradium/phonon-31m-en/tree/main">https://huggingface.co/gradium/phonon-31m-en/tree/main</a></li>
+<li>Phonon 40m (English) and 40m multilingual: tag
+<code>cc-by-nc-4.0</code>; “released under CC BY-NC 4.0, which does not
+allow commercial use”; gated: “You need to agree to share your Hugging
+Face information to access this model.” No other gate conditions are
+shown. <a
+href="https://huggingface.co/gradium/phonon-40m-en">https://huggingface.co/gradium/phonon-40m-en</a>
+and <a
+href="https://huggingface.co/gradium/phonon-40m-multilingual">https://huggingface.co/gradium/phonon-40m-multilingual</a></li>
+<li>The per-language 40m models for fr, de, es and pt are listed in the
+README with the same licence; I read only the English and multilingual
+cards. <a
+href="https://github.com/gradium-ai/xn-ptts">https://github.com/gradium-ai/xn-ptts</a></li>
+<li>Voices: <code>gradium/phonon-voices</code> is tagged
+<code>apache-2.0</code>, 102 voices (37 English, including 12 character
+voices “made with Gradium Voice Design”), each a
+<code>.safetensors</code> embedding made “with no cloning”. No LICENSE
+file in the repo. Repo size 69.3 MB including Ogg Opus samples. <a
+href="https://huggingface.co/gradium/phonon-voices">https://huggingface.co/gradium/phonon-voices</a></li>
+<li>The product page says of the 40m models: “For commercial use, talk
+to sales.” <a
+href="https://gradium.ai/phonon">https://gradium.ai/phonon</a></li>
+<li>Responsible-use text on the model cards: “Do not use Phonon to
+impersonate a real person”. <a
+href="https://huggingface.co/gradium/phonon-31m-en">https://huggingface.co/gradium/phonon-31m-en</a></li>
+<li>Training data: none of the cards say what the models were trained
+on. The blog says they were distilled from a larger Phonon teacher. <a
+href="https://gradium.ai/blog/release-phonon-open-weight">https://gradium.ai/blog/release-phonon-open-weight</a></li>
+<li>CC BY-NC 4.0 defines NonCommercial as “not primarily intended for or
+directed towards commercial advantage or monetary compensation”, forbids
+adding terms that restrict recipients (2(a)(5)(B)), and asks for
+creator, copyright notice, licence notice, warranty-disclaimer notice
+and a link (3(a)(1)). <a
+href="https://creativecommons.org/licenses/by-nc/4.0/legalcode.en">https://creativecommons.org/licenses/by-nc/4.0/legalcode.en</a></li>
+<li>The iOS app “Phonon” (id6828988617) is by Andre Louis, free,
+described as “free, non-commercial”, and includes the multilingual model
+“with Gradium’s permission”. <a
+href="https://apps.apple.com/us/app/id6828988617">https://apps.apple.com/us/app/id6828988617</a></li>
+</ul>
+<h3 id="what-quill-may-do-inference-not-legal-advice">What QUILL may do
+(inference, not legal advice)</h3>
+<p>QUILL’s position, settled in commit 596a67639 (#1740): QUILL is Jeff
+Bishop’s free personal project with no commercial use; its own code is
+MIT. The Piper voices whose datasets are non-commercial are already kept
+on that basis (<code>quill/data/third_party/components.json</code>,
+entry <code>piper-voices</code>).</p>
+<ul>
+<li><strong>Phonon 31m and the voices: bundle, mirror, or point - all
+fine.</strong> Apache 2.0 asks us to ship the licence text and keep
+notices. Required wording, in the notices: “Phonon 31m by Gradium,
+Apache License 2.0. Phonon builds on Pocket TTS and the Mimi codec,
+developed by Kyutai.” Because there is no LICENSE file upstream, save
+the model card from the pinned commit into the mirror zip so the licence
+statement travels with the bytes.</li>
+<li><strong>Phonon 40m (all six): the licence itself permits
+non-commercial bundling and mirroring with attribution</strong>, and
+QUILL fits the non-commercial definition on the same basis as the Piper
+voices. Two reasons to ask Gradium in writing anyway:
+<ul>
+<li>The gate. Gradium chose to collect contact details before download.
+A mirror skips that. The CC licence says no extra terms can bind
+recipients, so this is probably not a licence breach, but it works
+against the vendor’s stated choice, and the relationship matters more
+than the mirror.</li>
+<li>Downstream reuse. QUILL is MIT, so anyone may sell a fork. A bundled
+NC model must be labelled clearly as not covered by MIT. Also,
+<code>.github/FUNDING.yml</code> links to communityaccess.org; that is a
+link to an organisation, not a sale, but it is worth naming in the
+request so nothing is a surprise.</li>
+</ul></li>
+<li><strong>Needs Gradium’s written permission (recommended, not
+strictly required):</strong> mirroring or bundling any 40m model. Not
+needed for 31m or the voices.</li>
+<li><strong>How they handle requests:</strong> the App Store listing
+shows they have already granted a blind developer permission to ship the
+40m multilingual model in a free, non-commercial VoiceOver app. That is
+the closest precedent to QUILL I could find.</li>
+</ul>
+<p>Attribution text for a 40m model, if permitted: “Phonon 40m
+multilingual by Gradium (<a
+href="https://huggingface.co/gradium/phonon-40m-multilingual">https://huggingface.co/gradium/phonon-40m-multilingual</a>),
+licensed CC BY-NC 4.0 (<a
+href="https://creativecommons.org/licenses/by-nc/4.0/">https://creativecommons.org/licenses/by-nc/4.0/</a>).
+Not modified. Provided without warranty. Builds on Pocket TTS and the
+Mimi codec by Kyutai.”</p>
+<h2 id="2-the-low-computer-standard">2. The low computer standard</h2>
+<h3 id="what-quill-already-says-facts-from-the-tree">What QUILL already
+says (facts from the tree)</h3>
+<ul>
+<li>Every installer: <code>ArchitecturesAllowed=x64compatible</code>,
+<code>MinVersion=10.0</code> (<code>installer/quill.iss</code> lines 45
+to 49, and each <code>standalone/*/installer/*.iss</code>).</li>
+<li>The dictation plan names the baseline: “A 4 GB dual-core Windows 10
+computer” and “4 GB, two cores (the baseline)”
+(<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>).</li>
+<li>RAM budgets for speech models: 600 MB on a 4 GB computer, 1.6 GB on
+8 GB, 4 GB above (<code>model_types.RAM_TIERS</code>,
+CHANGELOG.md).</li>
+<li>Low-resource mode turns on automatically by RAM
+(<code>quill/core/model_lifecycle.py</code>,
+<code>should_auto_low_resource</code>).</li>
+<li>No user-facing “System requirements” page exists; nothing in the
+tree states a CPU instruction-set floor. The only AVX2 mention is the
+llama.cpp backend’s fallback message
+(<code>quill/core/ai/llama_cpp_backend.py</code>).</li>
+</ul>
+<h3 id="proposed-standard">Proposed standard</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Low standard</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS</td>
+<td>Windows 10 or 11, 64-bit</td>
+<td>matches <code>MinVersion=10.0</code></td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>two cores, x86-64, about 2015</td>
+<td>the dictation baseline</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>4 GB</td>
+<td>Phonon must stay inside the 600 MB speech budget</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>none</td>
+<td>Phonon’s GPU paths are build-time options we would not ship</td>
+</tr>
+<tr>
+<td>Phonon extra</td>
+<td>AVX2, FMA, F16C</td>
+<td>see below</td>
+</tr>
+<tr>
+<td>Windows on ARM</td>
+<td>Windows 11 24H2+, x64 QUILL under Prism</td>
+<td>AVX2 is exposed to x64 apps there</td>
+</tr>
+</tbody>
+</table>
+<p>The AVX2 line is the whole problem. Facts: Intel Haswell (2013) and
+later have AVX2 “except models branded as Celeron and Pentium”; Celeron
+and Pentium gain it from Tiger Lake (2020); AMD from Excavator (2015).
+<a
+href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">https://en.wikipedia.org/wiki/Advanced_Vector_Extensions</a>.
+So the proposed “about 2015, two cores” machine passes if it is a Core
+i3 or an AMD A-series, and fails if it is a 2015 to 2019 Celeron or
+Pentium laptop - which is exactly the cheap machine many of our readers
+own. Inference: Phonon can be a voice for most of the standard, not all
+of it. Piper stays the voice that works everywhere.</p>
+<p>Windows on ARM facts: Prism exposes AVX, AVX2, BMI, FMA and F16C to
+x64 apps on Windows 11 24H2 and later, 64-bit apps only. <a
+href="https://www.neowin.net/forum/topic/1461792-prism-update-unlocks-avx-avx2-support-for-windows-on-arm/">https://www.neowin.net/forum/topic/1461792-prism-update-unlocks-avx-avx2-support-for-windows-on-arm/</a>
+and <a
+href="https://techcommunity.microsoft.com/blog/windowsosplatform/-/4475631">https://techcommunity.microsoft.com/blog/windowsosplatform/-/4475631</a>.
+A native <code>win_arm64</code> wheel also exists (no AVX2 flag on that
+build, per the workflow below), but QUILL’s runtime is x64, so it would
+not be used today.</p>
+<h2 id="3-windows-feasibility-documents-and-source-only">3. Windows
+feasibility (documents and source only)</h2>
+<h3 id="facts">Facts</h3>
+<ul>
+<li>Release v0.6.0, 2026-10-30, assets include
+<code>ptts-0.6.0-x86_64-pc-windows-msvc.zip</code> (7.42 MB). No Windows
+ARM CLI archive is visible. <a
+href="https://github.com/gradium-ai/xn-ptts/releases">https://github.com/gradium-ai/xn-ptts/releases</a></li>
+<li><code>cli-release.yml</code> builds Windows on
+<code>windows-2022</code> with
+<code>-C target-cpu=x86-64-v3 -C target-feature=+crt-static</code>. <a
+href="https://raw.githubusercontent.com/gradium-ai/xn-ptts/main/.github/workflows/cli-release.yml">https://raw.githubusercontent.com/gradium-ai/xn-ptts/main/.github/workflows/cli-release.yml</a></li>
+<li><code>maturin-pub.yml</code> builds wheels for Windows x64
+(<code>target-cpu=x86-64-v3</code>) and Windows aarch64 (no flag); the
+comments say v3 lets xn use its AVX quantized kernels. <a
+href="https://raw.githubusercontent.com/gradium-ai/xn-ptts/main/.github/workflows/maturin-pub.yml">https://raw.githubusercontent.com/gradium-ai/xn-ptts/main/.github/workflows/maturin-pub.yml</a></li>
+<li>PyPI <code>ptts</code> 0.6.0: <code>cp39-abi3</code> wheels incl.
+<code>win_amd64</code> (6.9 MB) and <code>win_arm64</code> (6.6 MB).
+“Linux and Windows x86_64 wheels target x86-64-v3 (AVX2, FMA and F16C);
+older x86 CPUs need a source build.” <a
+href="https://pypi.org/project/ptts/">https://pypi.org/project/ptts/</a></li>
+<li>The repo’s own <code>.cargo/config.toml</code> says
+<code>target-cpu=native</code> for local builds. <a
+href="https://raw.githubusercontent.com/gradium-ai/xn-ptts/main/.cargo/config.toml">https://raw.githubusercontent.com/gradium-ai/xn-ptts/main/.cargo/config.toml</a></li>
+<li>Runtime: the xn Rust tensor runtime, “needs no PyTorch”. Weights are
+<code>model.q8.gguf</code> (64.5 MB) or <code>model.q4k.gguf</code>
+(55.1 MB), but GGUF here is only the file format; nothing says llama.cpp
+or ggml is used. <a
+href="https://github.com/gradium-ai/xn-ptts">https://github.com/gradium-ai/xn-ptts</a>
+and <a
+href="https://huggingface.co/gradium/phonon-31m-en/tree/main">https://huggingface.co/gradium/phonon-31m-en/tree/main</a></li>
+<li>Text goes in raw through a SentencePiece tokenizer: no phonemizer,
+no eSpeak. Output is 24 kHz mono; one 80 ms frame per step. <a
+href="https://gradium.ai/blog/release-phonon-open-weight">https://gradium.ai/blog/release-phonon-open-weight</a></li>
+<li>Python API: <code>ptts.TTS(model)</code>, with <code>synth</code>,
+<code>save</code> and <code>stream</code>. “Local paths download
+nothing.” But without a model argument it downloads the default, and the
+CLI and Python “fetch a voice from [the catalogue] when the checkpoint
+lacks it”. <a
+href="https://pypi.org/project/ptts/">https://pypi.org/project/ptts/</a>
+and <a
+href="https://github.com/gradium-ai/xn-ptts">https://github.com/gradium-ai/xn-ptts</a></li>
+<li>The C library “never downloads”. <a
+href="https://raw.githubusercontent.com/gradium-ai/xn-ptts/main/README.md">https://raw.githubusercontent.com/gradium-ai/xn-ptts/main/README.md</a></li>
+<li>Rate control: “Set the speaking rate with the
+<code>duration_delta</code> condition.” No SSML or pronunciation
+controls are documented. Same README.</li>
+</ul>
+<h3
+id="speed-figures-all-vendor-reported-x--seconds-of-audio-per-second">Speed
+figures (all vendor-reported; “x” = seconds of audio per second)</h3>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Phonon 31m</th>
+<th>Phonon 40m</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raspberry Pi 5, 1 core</td>
+<td>2.3x, 68 ms first audio</td>
+<td>2.2x, 88 ms</td>
+<td>README</td>
+</tr>
+<tr>
+<td>Raspberry Pi 5 (cores not stated)</td>
+<td>3.7x, 38 ms</td>
+<td>-</td>
+<td>blog</td>
+</tr>
+<tr>
+<td>Apple M5, 1 core, plain CPU</td>
+<td>11.6x, 13.6 ms</td>
+<td>11.3x, 17.3 ms</td>
+<td>blog</td>
+</tr>
+<tr>
+<td>Apple M5, 1 core, KleidiAI + Accelerate</td>
+<td>26x, 5 ms</td>
+<td>20x, 7 ms</td>
+<td>README</td>
+</tr>
+<tr>
+<td>Kokoro on Apple M5, 1 core (PyTorch)</td>
+<td>7.3x, 776 ms</td>
+<td>-</td>
+<td>README, blog</td>
+</tr>
+<tr>
+<td>Kokoro on Raspberry Pi 5</td>
+<td>below real time, about 7 s to start</td>
+<td>-</td>
+<td>blog</td>
+</tr>
+</tbody>
+</table>
+<p>README: <a
+href="https://github.com/gradium-ai/xn-ptts">https://github.com/gradium-ai/xn-ptts</a>
+; blog: <a
+href="https://gradium.ai/blog/release-phonon-open-weight">https://gradium.ai/blog/release-phonon-open-weight</a></p>
+<p>Piper on a Pi 5: the only figure I found is about 0.19 real-time
+factor (about 5x) from an unnamed benchmark quoted in a guide - treat as
+unverified. <a
+href="https://aivideosensei.com/guides/piper-tts-offline-voice-guide">https://aivideosensei.com/guides/piper-tts-offline-voice-guide</a>.
+I found no sourced Kokoro int8 figure on a Pi 5 or a weak x86 CPU. QUILL
+has no measured Kokoro or Piper speed figures in its own docs
+either.</p>
+<h3 id="inference">Inference</h3>
+<ul>
+<li>No x86 number exists. A Pi 5 core (Cortex-A76, 2.4 GHz) is roughly
+comparable to one core of a 2015 to 2017 mobile Core i3/i5, so 2x real
+time on one core is a plausible expectation for the low machine.
+Plausible is not measured.</li>
+<li>Vendor headline numbers on Apple use KleidiAI and Accelerate, which
+are Arm/Apple paths. The Windows x64 build has neither, so expect the
+“plain CPU” column, not the headline one.</li>
+<li>Raw-text input means numbers, abbreviations and odd punctuation are
+the model’s problem; Gradium reports 1.70 percent word error on hard
+sentences (phone numbers, emails) for 31m against 3.50 for Kokoro (<a
+href="https://gradium.ai/phonon">https://gradium.ai/phonon</a>). QUILL’s
+pronunciation dictionaries still work because they rewrite text.</li>
+<li>An AVX2-built library on a CPU without AVX2 dies with an
+illegal-instruction exception that Python cannot catch. Loading it
+inside QUILL’s process on the wrong CPU would crash QUILL. The CPU check
+must come first, ideally in a child process.</li>
+</ul>
+<h2 id="4-integration-sketch">4. Integration sketch</h2>
+<h3 id="where-it-would-sit-facts-from-the-tree">Where it would sit
+(facts from the tree)</h3>
+<p>There is no TTS provider class. Read Aloud engines are a string set
+(<code>sapi5</code>, <code>dectalk</code>, <code>piper</code>,
+<code>kokoro</code>, <code>espeak</code>, <code>macos</code>,
+<code>elevenlabs</code>) dispatched in
+<code>quill/core/read_aloud.py</code> (validation and
+<code>_run_*_live</code> methods). The <code>SpeechToTextProvider</code>
+in <code>quill/core/speech/provider.py</code> is speech-to-text only.
+Kokoro is the closest model to copy: a cached in-process model
+(<code>_get_cached_kokoro_onnx</code>),
+<code>lifecycle_service.reserve/note_loaded</code> for low-resource
+eviction, thread count from <code>quill/core/onnx_threads.py</code>, a
+download through <code>quill/core/release_assets.py</code> (assets-v1,
+SHA-256 pinned), and UI in
+<code>quill/ui/main_frame_speech_downloads.py</code> and
+<code>main_frame_speech_hub.py</code>.</p>
+<p>Places a new engine id <code>phonon</code> must be added (each lists
+engines today):</p>
+<ul>
+<li><code>quill/core/read_aloud.py</code> (valid engines, dispatch, live
+run)</li>
+<li><code>quill/core/settings.py</code>,
+<code>quill/core/settings_specs.py</code> (voice, rate)</li>
+<li><code>quill/core/speech/document_speech.py</code>,
+<code>batch_export.py</code>, <code>project_profile.py</code>,
+<code>pronunciation.py</code></li>
+<li><code>quill/apps/studio.py</code> (engine list, readiness,
+narration)</li>
+<li><code>quill/ui/batch_speech_runner.py</code>,
+<code>main_frame_speech_hub.py</code>,
+<code>main_frame_speech_downloads.py</code>,
+<code>main_frame_voice_preview.py</code></li>
+<li><code>quill/core/voice_catalog.py</code> (voice list and
+accents)</li>
+<li><code>quill/core/optional_components.py</code>,
+<code>quill/core/release_assets.py</code></li>
+<li><code>quill/data/third_party/components.json</code> (three entries:
+runtime, 31m, voices)</li>
+</ul>
+<p><code>model_mirrors.py</code> lives at
+<code>quill/core/speech/model_mirrors.py</code> and is for the
+speech-to-text models; the TTS precedent is
+<code>release_assets.py</code>’s <code>kokoro</code> entry, so Phonon
+belongs there.</p>
+<h3 id="shape">Shape</h3>
+<ul>
+<li><strong>In-process wheel</strong>, like Kokoro: <code>ptts</code>
+<code>win_amd64</code> wheel in the shared runtime, about 7 MB
+compressed (installed size to measure). One cached model, synthesis per
+sentence span to a WAV, then QUILL’s existing player. Streaming can come
+later for faster first audio.</li>
+<li><strong>CPU gate before import:</strong> a tiny child process
+imports <code>ptts</code> and synthesises one word; QUILL caches the
+answer per machine. On failure the engine is hidden with a sentence
+saying why and suggesting Piper.</li>
+<li><strong>No runtime network:</strong> always pass a local model
+folder and local voice files; never call <code>TTS()</code> without a
+path. Downloads go only through <code>release_assets</code> (already in
+the egress inventory), so <code>network_egress_audit.py</code> should
+need no new call site - but the audit must be told that
+<code>ptts</code> itself has a Hugging Face fetch path we never reach,
+and a test should run synthesis with the network blocked.</li>
+<li><strong>Mirror:</strong> one assets-v1 zip
+<code>phonon-31m-en.zip</code>: <code>model.q8.gguf</code> (64.5 MB),
+<code>config.json</code>, <code>tokenizer.json</code>,
+<code>default-voice.safetensors</code> (256 KB), 37 English voices (256
+KB each, about 9.5 MB) and the saved model card. About 75 MB unpacked;
+compresses little.</li>
+<li><strong>Voice previews:</strong> reuse Gradium’s own Ogg Opus
+samples (Apache 2.0) or generate them on the build machine; 37 voices at
+Kokoro’s per-sample size is about 4 to 5 MB in
+<code>quill/data/voice-previews/phonon</code>.</li>
+<li><strong>Studio narration:</strong> same engine id through
+<code>document_speech</code> and <code>batch_export</code>; mark it
+single-threaded like Kokoro until measured.</li>
+<li><strong>QUILL Lite:</strong> nothing. Lite has no self-voicing by
+design (<code>quill/apps/lite_voice.py</code>), so Lite cannot get ahead
+(rule 10). No new chords: Phonon is a choice inside the existing Read
+Aloud settings, so rule 8 is satisfied by the existing commands.</li>
+<li><strong>Shared runtime:</strong> today 335.2 MB
+(<code>docs/build-machine-sync.md</code>). Phonon adds about 7 MB
+compressed. No eSpeak or phonemizer needed for it.</li>
+</ul>
+<h2 id="5-measurement-plan-needs-jeffs-approval-to-run">5. Measurement
+plan (needs Jeff’s approval to run)</h2>
+<p>What: Phonon 31m q8 and q4k, CLI <code>ptts.exe</code> and the Python
+wheel, against Piper (en_US-ljspeech-medium) and Kokoro int8 as QUILL
+ships them.</p>
+<p>Machines: (a) the low machine - 4 GB, two cores, Windows 10, AVX2 (a
+2015 to 2017 Core i3 laptop is ideal); (b) one Celeron or Pentium
+without AVX2, to confirm the failure is clean when checked in a child
+process; (c) optional Windows on ARM on 24H2.</p>
+<p>Text: three fixed passages - a 12-word sentence, a 150-word paragraph
+with numbers, dates and an email address, and a 2,000-word chapter.</p>
+<p>Measure, five runs each, report the median:</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>How</th>
+<th>Budget on the low machine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-time factor</td>
+<td>audio seconds / wall seconds, whole passage</td>
+<td>1.5x or better on 1 core, 2x on 2</td>
+</tr>
+<tr>
+<td>Time to first audio</td>
+<td>first WAV chunk (stream) or first sentence written</td>
+<td>under 300 ms after load</td>
+</tr>
+<tr>
+<td>Load time</td>
+<td>process start or <code>TTS()</code> to ready</td>
+<td>under 2 s warm disk</td>
+</tr>
+<tr>
+<td>Peak memory</td>
+<td>peak working set (<code>psutil</code> in a wrapper process)</td>
+<td>under 300 MB, inside the 600 MB budget</td>
+</tr>
+<tr>
+<td>Screen reader lag</td>
+<td>NVDA running, time keys during synthesis</td>
+<td>no audible stutter</td>
+</tr>
+</tbody>
+</table>
+<p>Pinning: run each case with one core and two cores using
+<code>start /affinity 1</code> and <code>start /affinity 3</code> for
+the CLI, and the same affinity on the Python wrapper process. Check
+whether <code>ptts --help</code> exposes a thread count and record what
+it used.</p>
+<p>Also record: CPU model and flags, Windows build, whether the q4k file
+is slower or faster than q8 on x86, a listening check of the numbers
+passage, and the network-blocked run (no outbound connection while
+synthesising from a local folder).</p>
+<p>Pass rule: if 31m q8 makes 1.5x real time on one pinned core of the
+low machine with under 300 MB peak, build it. If it only passes on two
+cores, ship it labelled “needs a newer computer” and keep Piper the
+default. If it fails, stop.</p>
+<h2 id="6-prototype-results-on-this-machine-2026-11-02">6. Prototype
+results on this machine (2026-11-02)</h2>
+<p>Run after the signed QUILL Lite build, with no build running.
+Machine: AMD Ryzen 5 Microsoft Surface Edition, 12 threads, AVX2, 7.5 GB
+RAM, Windows 11. Phonon 31m English (ptts 0.6.0 wheel,
+<code>win_amd64</code>) and Piper en_US-ljspeech-medium (piper-tts with
+onnxruntime), each in its own process pinned to 1, 2 or 4 cores, with
+the engine’s thread count set to match. Three passages: an 8-word
+sentence, a 70-word paragraph full of numbers, dates and an email
+address, and a passage of about 570 words. Single runs, not medians.</p>
+<table>
+<thead>
+<tr>
+<th>Engine and cores</th>
+<th>Load</th>
+<th>Peak memory</th>
+<th>Short: speed / first audio</th>
+<th>Numbers: speed</th>
+<th>Long: speed / first audio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phonon q8, 1 core</td>
+<td>0.4 s</td>
+<td>276 MB</td>
+<td>2.6x / 315 ms</td>
+<td>3.5x</td>
+<td>3.7x / 65 ms</td>
+</tr>
+<tr>
+<td>Phonon q4k, 1 core</td>
+<td>0.5 s (warm)</td>
+<td>269 MB</td>
+<td>2.9x / 190 ms</td>
+<td>3.7x</td>
+<td>3.8x / 63 ms</td>
+</tr>
+<tr>
+<td>Phonon q8, 2 cores</td>
+<td>0.4 s</td>
+<td>310 MB</td>
+<td>3.2x / 175 ms</td>
+<td>3.7x</td>
+<td>3.8x / 58 ms</td>
+</tr>
+<tr>
+<td>Phonon q8, 4 cores</td>
+<td>0.4 s</td>
+<td>376 MB</td>
+<td>4.9x / 108 ms</td>
+<td>5.4x</td>
+<td>5.5x / 49 ms</td>
+</tr>
+<tr>
+<td>Piper medium, 1 core</td>
+<td>about 10 s*</td>
+<td>502 MB</td>
+<td>1.1x / 2,825 ms**</td>
+<td>8.1x</td>
+<td>8.6x / 785 ms</td>
+</tr>
+<tr>
+<td>Piper medium, 2 cores</td>
+<td>about 10 s*</td>
+<td>599 MB</td>
+<td>5.4x / 648 ms</td>
+<td>6.5x</td>
+<td>8.5x / 818 ms</td>
+</tr>
+<tr>
+<td>Piper medium, 4 cores</td>
+<td>about 10 s*</td>
+<td>501 MB</td>
+<td>9.7x / 350 ms</td>
+<td>10.7x</td>
+<td>12.7x / 599 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Speed is audio seconds per wall-clock second (higher is faster; 1x is
+just keeping up). * The Piper loader was run twice to apply the thread
+limit, so its load time is overstated. ** Piper’s very first sentence
+includes its one-time warm-up.</p>
+<p>What this shows:</p>
+<ul>
+<li>Phonon passes the PRD’s bar on this machine: 3.5x real time on one
+core, well above the 1.5x target, with 276 MB peak, under the 300 MB
+budget.</li>
+<li>Phonon starts speaking far sooner than Piper: about 60 ms into a
+long passage against about 800 ms, and it loads in under half a second.
+For a screen-reader user that is the number that matters most: the gap
+between pressing the key and hearing speech.</li>
+<li>Piper produces audio faster overall once it is going (about 8x on
+one core), and both are comfortably faster than real time.</li>
+<li>Phonon used less memory than Piper here (about 280 to 380 MB against
+500 to 600 MB).</li>
+<li>q4k is slightly faster than q8 and slightly smaller; quality to be
+judged by ear.</li>
+<li>Caveat: one core of a 2021 Ryzen is two to three times faster than
+one core of a 2015 dual-core laptop. Scaled down that far, Phonon would
+still keep up on one core (roughly 1.2x to 1.8x) and more comfortably on
+two. A machine without AVX2 cannot run these wheels at all; that needs a
+separate check on such a machine.</li>
+</ul>
+<p>Listening samples (2 cores, q8) are in
+<code>S:\QUILL\dist\phonon-samples</code>: the short sentence, the
+numbers paragraph and the long passage for Phonon and for Piper, named
+by engine.</p>
+</main>
+</body>
+</html>

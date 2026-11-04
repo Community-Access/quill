@@ -220,17 +220,19 @@ class AppAiMixin(HostedAiMixin):
         if refs is None:
             refs = []
             self._app_ai_refs = refs
-        for command_id, label, handler_name in self._AI_ROWS:
-            if not command_id:
-                menu.AppendSeparator()
-                continue
+        from quill.core.ai.ai_menu_layout import fill
+
+        def append(target: Any, row: tuple[str, str, str]) -> None:
+            command_id, label, handler_name = row
             item_id = wx.NewIdRef()
             refs.append(item_id)
             shown = self._ai_gated_label(handler_name, label)  # codex.md 10A.8
-            menu.Append(item_id, self._ai_menu_label(shown, command_id))
+            target.Append(item_id, self._ai_menu_label(shown, command_id))
             self._app_ai_items[handler_name] = (int(item_id), label, command_id)
             handler = getattr(self, handler_name)
             frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=item_id)
+
+        fill(menu, self._AI_ROWS, append, wx.Menu)  # the family's one AI menu shape
         keep = getattr(self, "_keep_menu_ids", None)
         if callable(keep):
             keep(*refs)

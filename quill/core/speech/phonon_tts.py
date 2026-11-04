@@ -5,7 +5,7 @@ which ships in the shared runtime; the model and its 37 English voices ship
 beside it at ``phonon-models/en`` (``scripts/fetch_build_deps.py --only
 phonon``). Nothing here downloads: the model is always constructed from a
 local folder and the voice catalogue is always the local ``voices.jsonl``, so
-the library's Hugging Face fetch path is never reached (phononprd.md R-9,
+the library's Hugging Face fetch path is never reached (phonon-voices-prd.md R-9,
 R-40).
 
 Two guards come before the import, because the wheel is built for AVX2 and a
@@ -315,7 +315,7 @@ def clear_phonon_cache() -> None:
 
 
 # Phonon reads one passage per call; very long passages are split here so a
-# single failure costs a sentence, not a chapter (phononprd.md R-33).
+# single failure costs a sentence, not a chapter (phonon-voices-prd.md R-33).
 _MAX_CHARS = 600
 
 
