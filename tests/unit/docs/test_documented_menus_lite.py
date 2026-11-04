@@ -51,8 +51,6 @@ ALLOW: dict[str, str] = {
     "path:tools > writing": "history: QUILL's Tools menu as it was named in that release",
     # Keys of the Review Dictation window, not of the menu bar: they work only
     # while that window has focus, and the guide's table says so.
-    "key:insert": "Review Dictation window key (Ctrl+Enter), not a menu command",
-    "key:insert the words": "Review Dictation window key (Ctrl+Enter), not a menu command",
     "key:back to the words exactly as you said them": (
         "Review Dictation window key (Ctrl+Shift+Z), not a menu command"
     ),

@@ -572,9 +572,7 @@
     "id": "edit.follow_link",
     "title": "Follow Link",
     "body": "Open the link under the cursor — a web address, a wiki-style note link, or a file path — using the appropriate application. Ctrl+Enter does this when the cursor is on a link; elsewhere that key inserts a page break.",
-    "keystrokes": [
-      "Ctrl+Enter"
-    ],
+    "keystrokes": [],
     "user_guide_section": "writing-and-editing"
   },
   {

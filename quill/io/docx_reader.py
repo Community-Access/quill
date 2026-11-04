@@ -186,7 +186,7 @@ _W_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
 
 def _is_page_break(element: Any) -> bool:
-    return element.tag == f"{_W_NS}br" and element.get(f"{_W_NS}type") == "page"
+    return bool(element.tag == f"{_W_NS}br" and element.get(f"{_W_NS}type") == "page")
 
 
 def _has_page_break_before(paragraph: Any) -> bool:
