@@ -27,8 +27,8 @@ of these in the same change.
 - **A Developer profile, the fifth.** Recommended plus a new **Coding**
   area: eighteen of the 22 areas. Coding is off in every other profile,
   Everything included, and an upgraded install starts with it off.
-- **Do a Project Task, in the Developer profile.** Tools > Project > Open
-  Project Folder, then Ctrl+3 works on the whole folder: reviewed edits
+- **Do a Project Task, in the Developer profile.** File > Open Project
+  Folder, then Ctrl+3 works on the whole folder: reviewed edits
   across files, commands that ask first, test results in a sentence, Undo
   Last Agent Turn, Stop Agent, Coach mode, your own allowed commands with an
   off-by-default bypass, and engine tools by opt-in. The same windows and
@@ -43,6 +43,9 @@ of these in the same change.
 - **A Project cell in the status bar,** shown only while a project is open.
 - **F1 in every project window,** as in QUILL.
 - **A tutorial: Your first project task,** in the Developer profile only.
+- **Documented** in a new user guide section, "Coding: project tasks, in the
+  Developer profile", the profiles chapter (now five), the PRD, the release
+  notes and the announcement.
 - **Agent notes** (`AGENTS.md`, Copilot's, Claude's, Gemini's and Cursor's
   files) are asked about once per project.
 

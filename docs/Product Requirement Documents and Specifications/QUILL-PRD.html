@@ -1224,8 +1224,8 @@ profiles, shipped profiles, default registry state, and locked safety
 rules.</li>
 <li><strong>Shipped profiles</strong>: Essential, Casual Writer, Author
 or Student, Reader and Student, Office and Admin, Accessibility
-Professional, Developer and Power Text, Low Vision, Braille and Screen
-Reader Power User, Full Quill, QUILL Lite, and Custom.</li>
+Professional, Developer, Low Vision, Braille and Screen Reader Power
+User, Full Quill, QUILL Lite, and Custom.</li>
 <li><strong>Settings UI</strong>: Profiles and Features page with
 search, feature table, explain/related commands, compare profiles, and
 profile management actions.</li>
@@ -1339,8 +1339,8 @@ extraction review, character tools, compare/diff helpers, diagnostics,
 plugin surfaces.</li>
 <li><strong>Profiles</strong>: Essential, Casual Writer, Author or
 Student, Reader and Student, Office and Admin, Accessibility
-Professional, Developer and Power Text, Low Vision, Braille and Screen
-Reader Power User, Full Quill, QUILL Lite, Custom.</li>
+Professional, Developer, Low Vision, Braille and Screen Reader Power
+User, Full Quill, QUILL Lite, Custom.</li>
 <li><strong>Settings</strong>: a Profiles and Features page lets the
 user switch profiles, compare them, and expose quiet features when
 desired.</li>
@@ -9141,8 +9141,8 @@ and repaired text compare against Quill’s extracted text representation,
 with a warning that extraction quality may affect results.</li>
 <li><strong>Feature profiles</strong>: interactive compare is on in
 Casual Writer, Author or Student, Reader and Student, Office and Admin,
-Accessibility Professional, Developer and Power Text, and Full Quill; it
-is quiet in Essential.</li>
+Accessibility Professional, Developer, and Full Quill; it is quiet in
+Essential.</li>
 </ul>
 <h3 id="558-ask-quill--on-device-ai-chat-webview">5.58 Ask Quill —
 on-device AI chat (WebView)</h3>
@@ -18421,8 +18421,8 @@ registry module with metadata and dependency graphs.</label></li>
 feature-profile loading and merging.</label></li>
 <li><label><input type="checkbox" checked="" />Add shipped profile
 definitions for Essential, Casual Writer, Author or Student, Reader and
-Student, Office and Admin, Accessibility Professional, Developer and
-Power Text, Low Vision, Braille and Screen Reader Power User, and Full
+Student, Office and Admin, Accessibility Professional, Developer, Low
+Vision, Braille and Screen Reader Power User, and Full
 Quill.</label></li>
 <li><label><input type="checkbox" checked="" />Add a Profiles and
 Features settings page.</label></li>
@@ -21544,6 +21544,396 @@ update module</strong> (Ed25519) with per-app repo slugs, adopted as
 each app moves onto the pinned-tag model, and one shared accessible
 <strong>feedback path</strong> (the bundled issues-token flow) used by
 all apps.</p>
+<h2 id="36-project-tasks-agentic-coding-with-an-ai-2026-11-04">§36.
+Project tasks: agentic coding with an AI (2026-11-04)</h2>
+<p>A project task is Do a Document Task for a folder of code. The person
+names a change; an AI engine plans, reads the project and proposes edits
+and commands, and QUILL owns every tool the engine uses, so nothing is
+written without review and nothing runs without approval. The working
+plan and its progress log are in <code>code.md</code>; this section is
+the contract. QUILL and QUILL Lite share one implementation (rule 10),
+reached in QUILL through the adapter
+<code>quill/ui/main_frame_project_rows.py</code>, which has no commands
+of its own.</p>
+<h3 id="361-who-gets-it-the-developer-profile">§36.1 Who gets it: the
+Developer profile</h3>
+<ul>
+<li><strong>R1.</strong> The profile formerly named “Developer and Power
+Text” is <strong>Developer</strong>. Its id stays
+<code>developer_power_text</code>, because saved settings name it.</li>
+<li><strong>R2.</strong> One feature, <code>core.developer</code>
+(“Developer Tools”), groups the coding features. It uses the catalogue
+field <code>default_off</code>: it is off in every profile that does not
+name it, so a new profile cannot switch coding on by omission. Developer
+and Full Quill turn it on.</li>
+<li><strong>R3.</strong> <code>core.github_remote</code>,
+<code>core.developer_console</code> (and so the TypeScript console) and
+<code>core.intellisense</code> depend on <code>core.developer</code>;
+<code>project.*</code>, <code>localgit.*</code> and
+<code>tools.validate_agents</code> belong to it. Outside the Developer
+profile they are off, not quiet.</li>
+<li><strong>R4.</strong> Checking Developer Tools in Manage Individual
+Features is the escape hatch for one tool without the whole
+profile.</li>
+<li><strong>R5.</strong> No project command is visible in a menu, the
+palette or the Tutorials window in any non-Developer profile. A project
+command reached any other way says <code>NEEDS_DEVELOPER</code>. Leaving
+the profile lets a running task finish and says
+<code>DEVELOPER_LEFT</code>.</li>
+<li><strong>R6.</strong> Safe Mode refuses Open Project Folder and Do a
+Project Task with the Safe Mode sentence.</li>
+<li><strong>R7.</strong> QUILL Lite has the same commands in a Coding
+area, on in its Developer profile only (§6.4 of <code>code.md</code>).
+Both editors’ Developer profiles turn on the same shared commands; a
+test asserts it.</li>
+</ul>
+<h3 id="362-commands-and-placement">§36.2 Commands and placement</h3>
+<p>Each command sits where people already look for that kind of command,
+the same in both editors (<code>PROJECT_ROWS</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>Command</th>
+<th>Command id</th>
+<th>Default key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File (above Exit)</td>
+<td>Open Project Folder…</td>
+<td><code>project.open_folder</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>File (above Exit)</td>
+<td>Close Project</td>
+<td><code>project.close</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>Edit &gt; Agent Work</td>
+<td>Undo Last Agent Turn</td>
+<td><code>project.undo_turn</code></td>
+<td>QUILL key, then U</td>
+</tr>
+<tr>
+<td>Edit &gt; Agent Work</td>
+<td>Stop Agent</td>
+<td><code>project.stop_agent</code></td>
+<td>QUILL key, then K</td>
+</tr>
+<tr>
+<td>View</td>
+<td>Agent Task Transcript</td>
+<td><code>project.transcript</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>View</td>
+<td>Agent Command Output</td>
+<td><code>project.command_output</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>Tools</td>
+<td>Commands Allowed in This Project…</td>
+<td><code>project.allowed_commands</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>AI, after Do a Document Task</td>
+<td>Do a Project Task…</td>
+<td><code>project.task</code></td>
+<td>Ctrl+3 with a project open</td>
+</tr>
+<tr>
+<td>AI</td>
+<td>Explain Last Turn</td>
+<td><code>project.explain_turn</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>AI</td>
+<td>Engine Tools for This Project…</td>
+<td><code>project.engine_tools</code></td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>R8.</strong> Ctrl+3 opens Do a Project Task when a project
+is open and the Developer profile is on, and Do a Document Task
+otherwise (rule 2: the command both products have keeps the chord).</li>
+<li><strong>R9.</strong> <code>project.</code> is a rule-7 family in the
+bound-command gate. No plain chord was free in both editors, so Stop
+Agent and Undo Last Agent Turn take the QUILL key (K and U) with Key
+Describer titles; the rest have no default key and are reachable from
+their menus and the palette.</li>
+<li><strong>R10.</strong> There is no Review Changes command. The review
+opens by itself when a turn has changes.</li>
+<li><strong>R11.</strong> The status bar has a <code>project</code>
+cell, before <code>ai</code>, hidden until a project is first opened. It
+reads <code>project_cell</code>: “Project cli-tool, main”, plus “,
+waiting for you” while a question is unseen. Enter on it opens the
+task.</li>
+</ul>
+<h3 id="363-the-project-boundary">§36.3 The project boundary</h3>
+<ul>
+<li><strong>R12.</strong> A project is a folder
+(<code>quill/core/ai/project.py</code>). Every path is resolved, links
+followed, and must stay under the root. <code>..</code>, absolute, UNC
+and device paths and alternate data streams are refused before any disk
+access.</li>
+<li><strong>R13.</strong> Secret files (<code>.env</code>, keys,
+certificates, credential and token files, <code>.ssh</code>,
+<code>.aws</code>, git internals) are never listed, read or sent; a
+listing says how many it hid. Excerpts go through
+<code>stability.redaction</code>. Reads are capped; binary files are
+described, never sent.</li>
+<li><strong>R14.</strong> Reads inside the project need no
+approval.</li>
+</ul>
+<h3 id="364-engines">§36.4 Engines</h3>
+<ul>
+<li><strong>R15.</strong> GitHub Copilot and Codex run project tasks, on
+QUILL’s project tools. Codex’s <code>dynamicTools</code> come from the
+same registry, and <code>project_edit</code> accepts a unified
+diff.</li>
+<li><strong>R16.</strong> On My own key, two providers run project
+tasks:
+<ul>
+<li><strong>Claude</strong>, through the Claude Agent SDK on the
+person’s Anthropic key
+(<code>quill/ai_packs/claude_tool_session.py</code>). QUILL’s tools are
+an in-process MCP server named <code>quill</code>; every built-in is
+denied by name; <code>permission_mode="default"</code>; the key goes
+only into the SDK child’s environment. It is named “Claude” or “Claude
+Agent”, never “Claude Code”.</li>
+<li><strong>Ollama on this computer</strong>, practice mode, on QUILL’s
+own loop (<code>quill/core/ai/harness/loop_session.py</code>,
+<code>ollama_tools.py</code>), loopback only. Its label is “Practice, on
+this computer. Nothing is sent. Slower and less capable.”</li>
+</ul></li>
+<li><strong>R17.</strong> QUILL’s free AI and other own-key providers do
+not run tasks; the command names what it needs and offers to switch, as
+Do a Document Task does.</li>
+<li><strong>R18.</strong> Engine tools (decision 4,
+<code>quill/core/ai/vendor_tools.py</code>): each engine’s own tools are
+listed in Engine Tools for This Project, one check box each. All are off
+until checked, per engine and per project, stored in app data. Each use
+still asks the person. A turn with any on says
+<code>vendor_tools_sentence</code> in the conversation and under the
+transcript’s Plan heading, and takes its checkpoint first.
+<code>FamilyToolRegistry.authorize_vendor</code> refuses a kind that is
+not on.</li>
+</ul>
+<h3 id="365-the-task-window">§36.5 The task window</h3>
+<p><code>quill/ui/project_task_window.py</code>, titled “Do a Project
+Task”.</p>
+<ul>
+<li><strong>R19.</strong> Controls and access keys: Conversation
+(Alt+C), Status, Instruction (Alt+I, focus starts here; Enter sends;
+text sent while a task runs is a follow-up), Coach mode (Alt+A), Plan
+(Alt+P), Changes (Alt+H), Output (Alt+O), Transcript (Alt+R), Undo Last
+Turn (Alt+U), Explain Last Turn (Alt+X), Allowed Commands (Alt+W),
+Engine Tools (Alt+L), Send (Alt+S), Stop (Alt+T), Close. No letter is
+claimed twice (GATE-14).</li>
+<li><strong>R20.</strong> One runner lasts the whole task, so the task’s
+history and undo survive across turns.</li>
+<li><strong>R21.</strong> The agent is told to call
+<code>project_plan</code> before changing anything. The plan is written
+into the conversation and <code>plan_ready</code> is spoken (“The plan
+is ready. 4 steps.”). Focus does not move.</li>
+<li><strong>R22.</strong> Spoken lines are only those in
+<code>project_task_words.py</code>: plan ready, needs you, a command’s
+result, a turn applied, undone, stopped or done, could not start
+(GATE-13). Every spoken line goes through the announcement service, so
+it is brailled (GATE-BRAILLE). No streaming text is spoken.</li>
+<li><strong>R23.</strong> Focus (code.md 5.3): a question opens only
+while the task window is active. Elsewhere in QUILL,
+<code>WAITING_ELSEWHERE</code> is said once (“The project task is
+waiting for you. Press Ctrl+3 to answer.”) and the Project cell says
+waiting. With QUILL in the background nothing is said.</li>
+<li><strong>R24.</strong> The closing summary is
+<code>turn_summary</code>, built from what happened, not from the
+model’s claims, including how many commands ran and the last
+result.</li>
+</ul>
+<h3 id="366-review-changes">§36.6 Review Changes</h3>
+<p><code>quill/ui/project_review_dialog.py</code>.</p>
+<ul>
+<li><strong>R25.</strong> No project tool writes to disk except through
+the change set; a rejected change never reaches disk
+(GATE-PROJECT-REVIEW).</li>
+<li><strong>R26.</strong> Files list (Alt+F): one row per file,
+<code>FileChange.row_text</code>, which ends “taken”, “not taken” or “N
+of M taken”. Space takes or leaves the whole file; Enter moves to its
+changes. No <code>wx.CheckListBox</code> (A11Y-SR-1).</li>
+<li><strong>R27.</strong> Change details (Alt+D): one change at a time
+in code mode, headed “Change 2 of 3, lines 40 to 44, in parse_args.
+Accepted.”, with a token-level word diff for one-line changes and line
+numbers for new files.</li>
+<li><strong>R28.</strong> Buttons: Accept (Alt+A), Reject (Alt+R), Next
+Change (Alt+N), Previous Change (Alt+P), Accept All in File (Alt+I),
+Reject All in File (Alt+L), Why This Change? (Alt+W). The default button
+is Apply Accepted Changes (Enter); Escape is Reject All.</li>
+<li><strong>R29.</strong> Apply writes every accepted change together,
+only after the turn’s checkpoint is safe. A write failing part way rolls
+the turn back.</li>
+<li><strong>R30.</strong> An open plain-text document a turn changed
+reloads in place, without a tab switch, with the cursor kept, and
+<code>files_reloaded</code> is said once. A document with unsaved edits,
+or in rich text, is left alone and named.</li>
+</ul>
+<h3 id="367-commands">§36.7 Commands</h3>
+<p><code>quill/core/ai/command_runner.py</code>,
+<code>quill/ui/project_command_dialog.py</code>.</p>
+<ul>
+<li><strong>R31.</strong> Run This Command? shows
+<code>command_question</code>, the exact command in a read-only Command
+field, and a Warning field when QUILL (never the model) finds one: “This
+may reach the internet.”, “This deletes files.”, “This runs outside the
+project.” The program’s own path does not count as outside.</li>
+<li><strong>R32.</strong> Buttons: Allow once (default, Enter), Always
+allow this command here (offered only with no warning), Don’t allow
+(Escape).</li>
+<li><strong>R33.</strong> Never run for an agent, whatever is allowed:
+pushing to a remote, publishing a package, <code>--force</code> against
+a remote, changing a remote repository, and changing system settings.
+The agent receives <code>KEPT_FOR_PERSON</code> and tells the person the
+command.</li>
+<li><strong>R34.</strong> A command runs in the project folder, in a
+process tree Stop kills whole (<code>stability/process_tree.py</code>),
+with <code>child_environment</code>: no API keys, tokens or
+<code>QUILL_*</code> variables. Output goes to a file in app data; the
+result sentence (<code>test_summary.py</code>) is spoken and the full
+output opens as a read-only document. After five minutes, and every five
+after, <code>keep_waiting_question</code> asks whether to keep
+waiting.</li>
+<li><strong>R35.</strong> The allow list is per project, in app data
+keyed by the project path, never in the repository. It matches exact
+text or a prefix the person typed, never a model’s pattern, and never a
+command with a warning.</li>
+<li><strong>R36.</strong> Run commands without asking (decision 7) is
+stored with the allow list, off by default, confirmed with
+<code>BYPASS_CONFIRM</code> when turned on, shown in the status line as
+“Commands run without asking”, and each command it runs is noted in the
+conversation (<code>bypass_note</code>). The never-list still
+applies.</li>
+<li><strong>R37.</strong> QUILL does not sandbox an approved command. It
+can reach the network, read outside the project, and do whatever the
+person’s account can. The approval is the boundary, and the help, the
+guide and the egress entry say so. Network egress:
+<code>start_tree_process</code> is a reviewed “person-approved command”
+entry in <code>network_egress_entries_agents.py</code>.</li>
+</ul>
+<h3 id="368-checkpoints-and-undo">§36.8 Checkpoints and undo</h3>
+<p><code>quill/core/ai/checkpoints.py</code>.</p>
+<ul>
+<li><strong>R38.</strong> Before a turn first changes anything (an
+accepted review or a command), QUILL records every visible file in the
+project as content-addressed copies in app data. It never touches
+<code>.git</code>, and secret files are never copied. The last 10 turns
+per project are kept.</li>
+<li><strong>R39.</strong> Undo Last Turn restores every file the turn
+changed and removes every file it created, across the project, and says
+what it did. It works after the task window has closed, from the
+checkpoints on disk.</li>
+<li><strong>R40.</strong> When the person has edited one of those files
+since, undo refuses and names the file, then asks
+<code>undo_compare_question</code>; Yes opens the file as it was before
+the turn as a separate document from app data. The person’s file is not
+changed.</li>
+<li><strong>R41.</strong> After undo the tree is byte for byte what it
+was before the turn, including line endings (a randomized property
+test).</li>
+</ul>
+<h3 id="369-stop">§36.9 Stop</h3>
+<ul>
+<li><strong>R42.</strong> Stop (Alt+T in the window) and Stop Agent
+(anywhere) cancel the session, release an open question as Don’t allow,
+and kill the running command’s process tree. Stop Agent also stops a
+running document task. With nothing running it says “No agent task is
+running.”</li>
+</ul>
+<h3 id="3610-coach-mode-and-explanations">§36.10 Coach mode and
+explanations</h3>
+<ul>
+<li><strong>R43.</strong> Coach mode (a check box) sends
+<code>COACH_INSTRUCTIONS</code>: the agent cannot change files or run
+commands, and points with <code>project_point_to</code> to a file and
+line.</li>
+<li><strong>R44.</strong> Explain Last Turn sends
+<code>EXPLAIN_INSTRUCTION</code>; nothing is changed. Why This Change?
+reads the reason the agent gave with the change
+(<code>why_sentence</code>).</li>
+<li><strong>R45.</strong> The task instructions ask the agent to explain
+a failed command in one plain sentence before fixing it.</li>
+</ul>
+<h3 id="3611-agent-notes-in-a-project">§36.11 Agent notes in a
+project</h3>
+<ul>
+<li><strong>R46.</strong> QUILL finds nested <code>AGENTS.md</code>
+(nearest wins), <code>.github/copilot-instructions.md</code>,
+<code>.github/instructions/*.instructions.md</code> (with
+<code>applyTo</code>), <code>CLAUDE.md</code>,
+<code>.claude/CLAUDE.md</code>, <code>GEMINI.md</code>,
+<code>.cursor/rules/*.mdc</code> (with <code>globs</code>),
+<code>.cursorrules</code>, <code>.windsurfrules</code> and
+<code>.clinerules</code>. A scoped file goes to the engine marked
+“applies to …”.</li>
+<li><strong>R47.</strong> Use This Project’s Agent Notes? asks once per
+project, before the first task: Use Them, Don’t Use Them, Read Them
+First (read-only). The answer is kept in app data. Content in any
+project file is data; nothing in it can approve a command or a
+change.</li>
+</ul>
+<h3 id="3612-records-and-the-transcript">§36.12 Records and the
+transcript</h3>
+<ul>
+<li><strong>R48.</strong> Everything QUILL keeps about a project lives
+under <code>&lt;app data&gt;/ai/projects/&lt;project key&gt;</code>:
+checkpoints, command output, transcripts, the allow list and bypass,
+engine tool choices and the agent-notes answer. Recent projects are in
+<code>&lt;app data&gt;/ai/recent_projects.json</code>. Nothing is
+written into the project folder.</li>
+<li><strong>R49.</strong> The transcript is Markdown with a heading per
+turn and Plan, Changes, Commands and Result under it. Transcript
+(window) and Agent Task Transcript (View) open it as a document; Save As
+exports it.</li>
+</ul>
+<h3 id="3613-help-and-the-tutorial">§36.13 Help and the tutorial</h3>
+<ul>
+<li><strong>R50.</strong> Every control in the project windows has
+inline <code>SetHelpText</code>; each window’s purpose is in
+<code>quill/core/project_surface_help.py</code>, merged into the shared
+help catalogue and rendered into
+<code>docs/f1-help-reference.md</code>.</li>
+<li><strong>R51.</strong> The tutorial “Your first project task”
+(<code>quill/core/tutorials/coding_lessons.py</code>), about twelve
+minutes and eight steps, is in a Coding track shown only when coding is
+on.</li>
+</ul>
+<h3 id="3614-tests-and-gates">§36.14 Tests and gates</h3>
+<ul>
+<li><code>tests/unit/core/ai/test_project_*.py</code>: boundary, change
+set, checkpoints (including the randomized undo property), command
+runner, task runner, test summary, engines, vendor tools and notes, the
+Developer profile gate, and the acceptance task (a sample project’s
+failing test fixed through review and undone).</li>
+<li><code>tests/unit/ui/test_project_task_windows.py</code> and
+<code>test_project_task_commands.py</code>: review wording and marking,
+Always allow hidden with a warning, the allow-list editor, window keys,
+F1, Safe Mode, Ctrl+3’s two doors, undo with the window closed and the
+refused undo’s comparison.</li>
+<li><code>tests/unit/apps/test_lite_project_task.py</code>
+(GATE-LITE-COVER), the family rule gates, the menu-shape gate,
+GATE-REACH, GATE-KEYREF and the egress audit.</li>
+<li>Live runs on Copilot, Codex and Claude, and the screen-reader
+acceptance in a sample project, are manual checks.</li>
+</ul>
 <hr />
 <h2 id="appendix-engineering-documentation">Appendix: Engineering
 documentation</h2>

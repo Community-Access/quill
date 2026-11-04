@@ -2062,3 +2062,52 @@ is spoken.
 
 QUILL has all of this on the same chords from the same code; QUILL Lite is not
 ahead (section 2.2).
+
+## Project tasks, in the Developer profile (2026-11-04)
+
+QUILL Lite reaches project tasks through the shared code QUILL uses
+(`quill/ui/project_task_commands.py` and the `quill/ui/project_*.py` windows),
+so the two editors cannot do them two ways. The plan of record is `code.md`
+("Agentic coding in QUILL"); QUILL's PRD section 36 has the full requirements.
+
+**Area and profile.**
+
+- A Coding area, "Coding: project tasks with an AI", the 22nd. It is off by
+  default and off in every profile but Developer, Everything included. A
+  store seeded before the area existed gets it off once, through a second
+  seeding marker (`_seeded_coding`).
+- A fifth profile, **Developer**: Recommended plus Coding, 18 of 22 areas.
+  Ctrl+N is unchanged.
+
+**Commands** (handlers on the shared mixin; area Coding, by handler in
+`command_areas.COMMAND_AREA`, so a row is hidden wherever it sits):
+
+| Menu | Row | Handler |
+|---|---|---|
+| File | Open Pro&ject Folder... | `cmd_open_project_folder` |
+| File | Close Projec&t | `cmd_close_project` |
+| Edit > Agent &Work | &Undo Last Agent Turn | `cmd_undo_agent_turn` |
+| Edit > Agent &Work | &Stop Agent | `cmd_stop_agent` |
+| View | Agent Task Transcri&pt | `cmd_project_transcript` |
+| View | Agent Command O&utput | `cmd_open_command_output` |
+| Tools | Commands Allowed in This Pro&ject... | `cmd_project_allowed_commands` |
+| Tools > AI | Do a &Project Task... | `cmd_project_task` |
+| Tools > AI | Explain Last Tu&rn | `cmd_explain_agent_turn` |
+| Tools > AI | &Engine Tools for This Project... | `cmd_project_engine_tools` |
+
+No row has a chord: none is free in both editors, Ctrl+3 (Do a Document Task)
+opens the project task whenever a project is open, and each row's reason is in
+`KEYLESS_WITH_REASON`. QUILL has the same ten in the same menus.
+
+**Requirements.**
+
+- PT-L1. Nothing developer appears outside the Developer profile: menus, keys,
+  the palette, the Project status cell and the Coding tutorial track.
+- PT-L2. Ctrl+3 is one key for both tasks; the status line says which.
+- PT-L3. Nothing an agent proposes is written before the person accepts it in
+  Review Changes; no command runs before it is allowed or on the person's own
+  list; Undo Last Agent Turn reverses a turn across files.
+- PT-L4. The Project status cell is shown only while it has text.
+- PT-L5. A window with unsaved edits or in rich text is never reloaded under
+  the person; it is named instead.
+- PT-L6. Every handler has a behavioural test (`test_lite_project_task.py`).

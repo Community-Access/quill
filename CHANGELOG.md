@@ -80,6 +80,9 @@ piece lands.
 - **A tutorial: Your first project task,** in a Coding track that appears
   only in the Developer profile. Twelve minutes, from opening a practice
   folder to undoing the whole turn.
+- **Documented:** a user guide chapter, "Project tasks: coding with an AI",
+  PRD section 36, the release notes and the announcement, and thirteen
+  screen-reader checks for NVDA, JAWS and Narrator.
 - **Changed files reload in place.** When a turn changes a document you have
   open, it reloads with your cursor where it was, and QUILL says so once. A
   document with unsaved edits is left alone and named.

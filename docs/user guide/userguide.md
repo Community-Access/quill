@@ -11418,6 +11418,7 @@ key wherever it sits.
 |---|---|---|
 | `Ctrl+3` | Do a Document Task... | Tell GitHub Copilot or Codex what to do to this document |
 | | Propose Alt Text... | Alt text for every picture that has none, one at a time, for you to approve |
+| | Do a Project Task... | In the Developer profile, with a project folder open, `Ctrl+3` opens this instead: a task in a folder of code |
 | `Ctrl+F3` | Tidy Dictated Text... | Dictation's misheard words and punctuation corrected, nothing else changed |
 | `Ctrl+F10` | Dictionary > Word Explorer... | Everything about the word you are on, as used in this sentence |
 | `Ctrl+Alt+Shift+'` | Dictionary > Define in Context | What the word means here, and what you might be confusing it with |
@@ -12391,6 +12392,353 @@ words around the picture, and the summary says so.
 A Word or EPUB file you opened through Import / Convert keeps its pictures
 inside the original file, so the task can propose alt text for them from the
 words only.
+
+### Project tasks: coding with an AI
+
+A project task is Do a Document Task for a folder of code. You tell the AI what
+you want done in your project, and it plans, reads your files and proposes
+changes, but nothing is written until you accept it and no command runs until
+you allow it.
+
+This section is for people who write code. Everything in it is part of the
+Developer feature profile, and nobody else meets any of it: not in the menus,
+not in the command palette and not in the tutorials.
+
+#### Turning it on: the Developer profile
+
+Choose the **Developer** profile in **Profiles and Features...**, or press
+`Alt+Shift+P` and pick it from the list. It used to be called Developer and
+Power Text, and it keeps the regular-expression, cleanup and analysis tools it
+always had. It is the only profile, apart from Full Quill, that turns on the
+coding features: project tasks, commands and tests, undo for every change an
+AI makes, coach mode, and the git extras.
+
+The other developer tools in QUILL live behind the same profile now: the shell,
+Git and GitHub, Codespaces, IntelliSense, the Developer Console and the agent
+standards check. In every other profile they are off, not just quiet.
+
+If you want these tools without the rest of the Developer profile, open **Help
+> Feature Profiles > Manage Individual Features** and check **Developer Tools**.
+That one feature carries all of them.
+
+If you leave the Developer profile while a project task is running, the task
+finishes first and its window stays open until then. You hear "Developer tools
+are off now. The project task that was running will finish first; its window
+stays open until then."
+
+If you press a project command without the Developer profile, you hear "Project
+tasks are part of the Developer profile. Choose the Developer profile, or turn
+on Developer Tools in Customize Features." In Safe Mode, project tasks are off
+with the rest of AI.
+
+#### Which AI can do a project task
+
+A project task needs an AI that can use tools. These can:
+
+- **GitHub Copilot**, on your own Copilot plan.
+- **Codex**, on your ChatGPT plan.
+- **Claude**, on My own key with the Anthropic Claude provider. QUILL drives it
+  through the Claude Agent SDK, with your own Anthropic key, and only QUILL's
+  project tools are open to it.
+- **Ollama on this computer**, on My own key, as practice mode. QUILL labels it
+  "Practice, on this computer. Nothing is sent. Slower and less capable." It
+  is a good way to learn how a task goes without an account, but it needs a
+  model that can use tools, and it makes more mistakes.
+
+QUILL's free AI does not run project tasks. Choose the one you want in **Choose
+Your AI** (`Ctrl+4`).
+
+Every engine gets the same tools, the same review and the same questions. What
+you hear does not change with the engine.
+
+#### Opening a project
+
+A project is a folder. Choose **File > Open Project Folder...**. The window
+lists your recent projects first; press `Enter` on one to open it, or choose
+**Browse for a Folder...** to pick any other folder. You hear "Project
+cli-tool is open, on branch main." (or just "Project cli-tool is open." when
+the folder is not a git repository).
+
+The status bar gains a **Project** cell, the first time you open a project. It
+says "Project cli-tool, main", and adds ", waiting for you" when the task has a
+question you have not seen. `Enter` on the cell opens the task.
+
+**File > Close Project** closes it. If a task is still running, QUILL asks you
+to stop it or let it finish first.
+
+#### The task window
+
+With a project open, `Ctrl+3` opens **Do a Project Task** instead of Do a
+Document Task. With no project open, `Ctrl+3` is the document task, as before.
+You can also choose **AI > Do a Project Task...**.
+
+Focus starts in **Instruction**. Type what you want, for example "Add a
+--verbose flag to cli.py that prints each file as it is processed, and add a
+test", and press `Enter`. While a task runs, what you type goes to it as a
+follow-up.
+
+The window's keys:
+
+- `Alt+I` Instruction, where you type.
+- `Alt+S` Send, the same as `Enter`.
+- `Alt+C` Conversation, the read-only record of the task.
+- `Alt+P` Plan puts the cursor on the latest plan in the conversation.
+- `Alt+H` Changes puts the cursor on the latest list of changes.
+- `Alt+O` Output opens the last command's full output as a document.
+- `Alt+R` Transcript opens the whole task as a document.
+- `Alt+U` Undo Last Turn.
+- `Alt+X` Explain Last Turn.
+- `Alt+A` Coach mode, a check box.
+- `Alt+W` Allowed Commands.
+- `Alt+L` Engine Tools.
+- `Alt+T` Stop.
+
+The status line says which AI is working, the project, and what is happening:
+working, waiting for you, coach mode, or "Commands run without asking" when you
+have turned that on.
+
+QUILL speaks only what your screen reader cannot know: the plan is ready, the
+task needs you, a command's result, a turn applied, undone, stopped or done.
+The conversation fills in quietly. No streaming text is read at you.
+
+If you are working in another document when the task needs you, nothing pops
+up over your typing. You hear "The project task is waiting for you. Press
+Ctrl+3 to answer." once, and `Ctrl+3` brings the window back with the question
+open. If QUILL is not the window in front, it says nothing at all; the Project
+cell tells you when you come back.
+
+#### The plan
+
+Before it changes anything, the agent writes its plan as numbered steps in
+plain words, under a Plan heading in the conversation. You hear "The plan is
+ready. 4 steps." Focus does not move. Press `Alt+P` to land on the plan and
+read it. If you want something different, type it as a follow-up, such as
+"don't touch the README", and press `Enter`.
+
+The agent reads your files without asking, but only inside the project folder.
+Secret files, such as `.env` files, keys, certificates and credential files,
+are never listed, read or sent.
+
+#### Review Changes
+
+When a turn has changes, **Review Changes** opens by itself. Nothing reaches
+your disk until you accept it here.
+
+The first list, **Files** (`Alt+F`), has one row per file, as a sentence:
+"cli.py, changed, 3 changes, taken", or "tests/test_cli.py, new file, 24
+lines, not taken". The last word says what you have chosen: taken, not taken,
+or how many of the changes are taken. `Space` on a row takes or leaves the
+whole file. `Enter` on a row moves you to its changes.
+
+**Change details** (`Alt+D`) shows one change at a time, with line numbers and
+where it is, and whether it is accepted, for example "Change 2 of 3, lines 40
+to 44, in parse_args. Accepted." The buttons:
+
+- `Alt+A` Accept takes the change shown.
+- `Alt+R` Reject leaves it out.
+- `Alt+N` Next Change, then the next file's.
+- `Alt+P` Previous Change.
+- `Alt+I` Accept All in File.
+- `Alt+L` Reject All in File.
+- `Alt+W` Why This Change? reads you the agent's reason for it.
+
+`Enter` on the default button, **Apply Accepted Changes**, writes everything
+you accepted at once, after QUILL has kept a copy of the project for Undo Last
+Turn. `Escape` is **Reject All**, and nothing is written.
+
+#### Files you have open
+
+When a turn changes a file you have open in QUILL, the open copy is reloaded in
+place, with your cursor where it was, and you hear one line, such as "cli.py
+was updated by the task." Focus stays where it was.
+
+If the open copy has edits you have not saved, or is in rich text, QUILL leaves
+it alone and tells you, so your typing is never overwritten. Reload it yourself
+when you are ready to see the task's change.
+
+#### Run This Command?
+
+When the agent wants to run a command, such as the tests, **Run This
+Command?** opens. One sentence says what will run and why, for example "Run
+pytest -q tests/test_cli.py in your project folder cli-tool, to check the new
+test." The exact command is in a read-only **Command** field below it, so you
+can arrow through it and read it on a braille display character by character.
+
+QUILL, not the AI, looks at the command and adds a **Warning** line when one of
+these applies:
+
+- "This may reach the internet." for installers and network tools, such as
+  `pip install`, `npm install` and `curl`.
+- "This deletes files." for `del`, `rm`, `Remove-Item` and the like.
+- "This runs outside the project." for a path that leaves the project folder.
+
+The buttons are **Allow once** (`Enter`), **Always allow this command here**,
+and **Don't allow** (`Escape`). Always allow is only offered when there is no
+warning.
+
+Some things QUILL never runs for an agent, whatever you have allowed:
+
+- pushing to a remote, such as `git push`;
+- publishing a package, such as `npm publish` or `twine upload`;
+- forcing anything against a remote;
+- changing system settings.
+
+The agent is told "The person keeps this step for themselves", and tells you
+the exact command so you can run it yourself if you want to.
+
+When the command finishes, you hear its result in one sentence, such as "Tests:
+12 passed, 1 failed: test_verbose_prints_names." The full output is a read-only
+document: press `Alt+O` in the task window, or choose **View > Agent Command
+Output**. A command that runs a long time asks "The command has run for 5
+minutes. Keep waiting? Choose No to stop it."
+
+Commands run in your project folder, with your API keys, tokens and QUILL's own
+settings taken out of their environment.
+
+#### What QUILL cannot stop on Windows
+
+Windows gives QUILL no simple way to fence a command in. Once you allow a
+command, it can reach the internet, read files outside the project, and do
+anything your own Windows account can do. QUILL cannot prevent that. Your
+approval is the safety line, which is why QUILL shows you the exact command and
+asks every time unless you choose otherwise.
+
+#### Commands Allowed in This Project
+
+**Tools > Commands Allowed in This Project...**, or `Alt+W` in the task window,
+lists the commands this project may run without asking. Always allow this
+command here adds to it, and you can add your own: a command, or the start of
+one, such as `pytest`, which then allows `pytest -q tests` as well. Only what
+you typed or chose counts, never a pattern the AI suggests, and never a command
+with a warning.
+
+**Run commands without asking** is a check box in the same window. It is off
+by default. When you check it, QUILL asks you to confirm, and says plainly that
+the agent will then run any command it chooses without showing it to you, that
+pushing, publishing and system changes are still never run, and that Undo Last
+Turn cannot undo what a command did outside the project or on the internet.
+While it is on, the status line says "Commands run without asking", and every
+command it runs is noted in the conversation.
+
+The list and this setting are kept in QUILL, for this project only. A project
+folder cannot carry its own allow list, so a project you clone can never
+approve its own commands.
+
+#### Undo Last Agent Turn
+
+A turn can change many files, so one `Ctrl+Z` is not enough. **Undo Last
+Turn** (`Alt+U` in the task window) puts back every file the last turn changed,
+across the whole project, removes the files it made, and says what it did, starting
+"Undid turn 2."
+
+It works after you close the task window too: choose **Edit > Agent Work >
+Undo Last Agent Turn**, or press `Ctrl+Shift+Grave, U` (press the QUILL key,
+then U). QUILL keeps the last 10 turns of each project.
+
+If you have edited one of those files since the turn, undo refuses rather than
+lose your work. It says which file, for example "cli.py has changed since the
+agent's turn. Undo would lose your edits.", and offers to open the file as it
+was before the agent's turn, to compare. **Yes** opens that copy as a separate
+document. Your own file is not changed either way.
+
+Undo puts files back. It cannot take back what a command did outside the
+project or on the internet.
+
+#### Stop Agent
+
+**Stop** (`Alt+T`) in the task window stops the task straight away, and the
+command it is running stops with it. From anywhere else in QUILL, choose **Edit
+> Agent Work > Stop Agent**, or press `Ctrl+Shift+Grave, K` (press the QUILL
+key, then K). It stops a document task too. If nothing is running, you hear
+"No agent task is running."
+
+#### Coach mode and Explain Last Turn
+
+**Coach mode** (`Alt+A`) is a check box in the task window. When it is checked,
+the agent does not change files or run commands. It reads the project,
+explains, and points you to a file and line, such as "Look at cli.py line 40",
+and tells you what you could type there and why. You make the change yourself
+in QUILL. It is meant for people learning to code.
+
+**Explain Last Turn** (`Alt+X` in the window, or **AI > Explain Last Turn**)
+asks the agent to explain what it changed in the last turn and why, file by
+file, in plain words. Nothing is changed.
+
+In Review Changes, **Why This Change?** (`Alt+W`) does the same for one change.
+
+When a command fails, the agent is asked to say what the error means in one
+plain sentence before it tries a fix.
+
+#### Agent notes in a project
+
+Many projects carry notes for AI agents: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`,
+`.github/copilot-instructions.md` and the files in `.github/instructions`,
+Cursor's rules in `.cursor/rules`, and the older `.cursorrules`,
+`.windsurfrules` and `.clinerules`. QUILL finds all of them, including an
+`AGENTS.md` in a subfolder.
+
+The first time you start a task in a project that has them, **Use This
+Project's Agent Notes?** asks once. You hear which files it found, for example
+"This project has notes for AI agents in AGENTS.md. Use them for tasks here?"
+Choose **Use Them**, **Don't Use Them**, or **Read Them First**, which opens
+them read-only. QUILL remembers your answer for that project.
+
+Text in those files is never an instruction QUILL obeys. Nothing in them can
+approve a command or a change; you still decide every one.
+
+#### Engine tools, only if you choose
+
+By default the AI uses only QUILL's own project tools, which is what makes
+review and approval work the same on every engine. **AI > Engine Tools for
+This Project...**, or `Alt+L` in the task window, lists the engine's own tools
+as check boxes: for GitHub Copilot, its file reader, search, file finder,
+editor, shell and web tools; for Codex, its command runner and patch tool; for
+Claude, its own reader, search, editor, shell and web fetch.
+
+All of them are off until you check them, for that engine and that project
+only. Each use still asks you first. Know what you are turning on: an engine's
+own edit tool writes straight to disk without Review Changes, and its shell can
+do anything your account can. Undo Last Turn still puts the project's files
+back, because QUILL keeps its copy before the turn starts. A turn that has any
+of them on says so in the conversation and under the plan.
+
+#### The transcript
+
+The whole task is a document, with a heading for each turn and subheadings for
+Plan, Changes, Commands and Result, so your heading keys move through it. Press
+`Alt+R` in the task window, or choose **View > Agent Task Transcript**. It
+opens in QUILL like any other document, so you can find, bookmark, read aloud
+and braille it. It is Markdown already: **Save As** puts a copy wherever you
+want one.
+
+#### Where QUILL keeps its records
+
+Everything QUILL keeps about a project lives in QUILL's own app data, in your
+user profile, never in the project folder: the recent projects, the
+transcripts, command output, the copies for Undo Last Turn, the allow list,
+your answer about agent notes and your engine tool choices. Nothing is added to
+your repository unless you save something there yourself.
+
+#### The tutorial: Your first project task
+
+The Tutorials window has a Coding track, "Coding, in the Developer profile",
+with one lesson, **Your first project task**. It takes about twelve minutes. It
+has you make a practice folder, open it as a project, ask for one change, read
+the plan, review the change, allow the test command and hear the result, undo
+the whole turn, and try coach mode. Each step tells you what you should hear.
+The track only shows in the Developer profile.
+
+#### The menus at a glance
+
+- **File:** Open Project Folder... and Close Project.
+- **Edit > Agent Work:** Undo Last Agent Turn (`Ctrl+Shift+Grave, U`) and Stop
+  Agent (`Ctrl+Shift+Grave, K`).
+- **View:** Agent Task Transcript and Agent Command Output.
+- **Tools:** Commands Allowed in This Project...
+- **AI:** Do a Project Task... (`Ctrl+3` with a project open), Explain Last
+  Turn, and Engine Tools for This Project...
+
+The commands without a key can be given one in the Keymap Editor.
 
 ### If the AI you chose is not available
 
@@ -14719,8 +15067,11 @@ Office and Admin, and Low Vision.
   for working through someone else's material more than producing your own.
 - **Office and Admin.** Reliable file work, sessions, cleanup and printing for
   everyday office documents.
-- **Developer and Power Text.** Regular expressions, cleanup, inspection and
-  document-analysis tools, right up front.
+- **Developer.** Regular expressions, cleanup, inspection and
+  document-analysis tools, right up front, and the only profile apart from
+  Full Quill with the coding tools: project tasks with an AI, commands and
+  tests, the Developer Console, and Git and GitHub. See "Project tasks: coding
+  with an AI" in Chapter 10.
 - **Low Vision.** Higher contrast, larger reading aids and friendly inspection
   tools.
 - **Braille and Screen Reader Power User.** Navigation that suits a screen
@@ -22840,12 +23191,12 @@ Default visibility:
 | Profile                              | Python console | TypeScript console | Macro recording | Remote console |
 | ------------------------------------ | -------------- | ------------------ | --------------- | -------------- |
 | Essential                            | Off            | Off                | Off             | Locked off     |
-| Casual Writer                        | Quiet          | Off                | Quiet           | Locked off     |
+| Casual Writer                        | Off            | Off                | Quiet           | Locked off     |
 | Reader and Student                   | Off            | Off                | Off             | Locked off     |
-| Office and Admin                     | Quiet          | Off                | Quiet           | Locked off     |
-| Accessibility Professional           | On             | Quiet              | On              | Locked off     |
-| Developer and Power Text             | On             | On                 | On              | Locked off     |
-| Braille and Screen Reader Power User | Quiet          | Quiet              | On              | Locked off     |
+| Office and Admin                     | Off            | Off                | Quiet           | Locked off     |
+| Accessibility Professional           | Off            | Off                | On              | Locked off     |
+| Developer                            | On             | On                 | On              | Locked off     |
+| Braille and Screen Reader Power User | Off            | Off                | On              | Locked off     |
 | Full Quill                           | On             | On                 | On              | Locked off     |
 
 Remote execution remains unavailable unless an experimental developer build explicitly enables it.
@@ -23363,7 +23714,7 @@ Suggestion: Run q.commands.search("heading") to find matching commands.
 Details: CommandNotFoundError: quill.markdown.fixHeading
 ```
 
-Python tracebacks are available but collapsed behind "Show technical details" unless the active profile is Developer and Power Text.
+Python tracebacks are available but collapsed behind "Show technical details" unless the active profile is Developer.
 
 TypeScript stack traces are captured and mapped to the user's submitted code when possible.
 
@@ -23412,7 +23763,7 @@ Settings:
 * Output verbosity: concise, normal, verbose
 * Unsafe developer mode
 
-Dangerous settings are available only in Developer and Power Text or Full Quill profiles.
+Dangerous settings are available only in Developer or Full Quill profiles.
 
 #### 18. Data storage
 
@@ -23689,7 +24040,7 @@ Output:
 ```text
 QUILL diagnostic summary
 Version: 1.1.0-dev
-Profile: Developer and Power Text
+Profile: Developer
 Active document: chapter-7.md
 Modified: yes
 Documents open: 3
