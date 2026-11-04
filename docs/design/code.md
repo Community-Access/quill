@@ -416,7 +416,7 @@ Saved to the project's task history in app data, never into the repository unles
 
 - **Speech only for what the reader does not say (GATE-13).** Never: the window opening, a focus move, a list selection, a dialog's own text. Only: plan ready, needs you, a command's result sentence, a turn applied, undone, stopped, done, could not start.
 - **Braille parity (GATE-BRAILLE).** Every spoken line goes through the announcement service, so it is brailled on the same path.
-- **Sound cues** through the existing sound scheme and `action_feedback`: task started, needs you, command finished (a different cue for pass and fail), task done, error. No ticking while it thinks; silence means working, and the status line says "Working" for anyone who checks. Failures and counts are always spoken, as `action_feedback.py` already rules: no tone carries "2 failed".
+- **Sound cues** through the existing sound scheme and `action_feedback`: task started, needs you, command finished (a different cue for pass and fail), task done, error. No repeating sound while it thinks; silence means working, and the status line says "Working" for anyone who checks. Failures and counts are always spoken, as `action_feedback.py` already rules: no tone carries "2 failed".
 - **Reduced motion and visuals** do not apply much here, because nothing animates; the progress state is text.
 
 ### 5.7 F1 everywhere
@@ -1116,7 +1116,7 @@ Committed and pushed as `b32520d06`.
 - **Rendered:** HTML and EPUB for every changed Markdown file.
 - **How checked:** the QUILL Lite docs tests (profiles, counts, every
   command and status cell named), the documented-menus, documentation-chord
-  and chord-ownership gates, the no-"tick" gate, and the tutorial catalogue
+  and chord-ownership gates, the check-box wording gate, and the tutorial catalogue
   tests.
 
 ### 2026-11-04: final gates, first pass; three red results fixed
