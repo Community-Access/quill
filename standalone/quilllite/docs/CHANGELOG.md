@@ -13,6 +13,16 @@ reads only what you wrote, Word documents and PDFs, Find in Open Documents and
 folder search, dictation and transcription, Activity and Repeat Last Result,
 and release channels.
 
+### Page breaks with Ctrl+Enter (2026-11-03)
+
+- **Ctrl+Enter inserts a page break, as in Word.** In a Word or Rich Text
+  document it is a real page break that is kept when you save; in Markdown
+  it is the `::: pagebreak` line, which becomes a page break when you export.
+  It is on the Insert menu in QUILL Lite and the Format menu in QUILL.
+- **Word page breaks are kept.** Opening a Word document used to turn each
+  page break into an empty line, so saving it removed them all. They now
+  open as page breaks and are saved as page breaks.
+
 ### Choose Your AI: your plan, GitHub Copilot, Codex or your own key
 - **Choose Your AI** (**Ctrl+4**, Tools > AI) is one window for where your AI
   comes from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex,

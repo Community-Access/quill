@@ -21,6 +21,7 @@ gates; absent, callers stay on the classic read-extract path.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -181,6 +182,86 @@ def _paragraph_to_rich(paragraph: Any) -> RichParagraph:
     )
 
 
+_W_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+
+
+def _is_page_break(element: Any) -> bool:
+    return element.tag == f"{_W_NS}br" and element.get(f"{_W_NS}type") == "page"
+
+
+def _has_page_break_before(paragraph: Any) -> bool:
+    """``w:pageBreakBefore`` on the paragraph itself (not inherited from a style)."""
+    p_pr = paragraph._p.pPr
+    if p_pr is None:
+        return False
+    flag = p_pr.find(f"{_W_NS}pageBreakBefore")
+    if flag is None:
+        return False
+    return flag.get(f"{_W_NS}val") not in ("0", "false", "off")
+
+
+def _split_at_page_breaks(paragraph: Any) -> list[RichParagraph]:
+    """One Word paragraph as rich paragraphs, a hard page break between pieces.
+
+    Word stores Ctrl+Enter as ``<w:br w:type="page"/>`` inside a run, and
+    python-docx gives that run no text at all -- so every page break used to
+    open as an empty line and the next save erased it. A break splits the
+    paragraph; an empty piece on either side of it is dropped, because a break
+    standing alone (which is what Word and our own writer make) is not a blank
+    paragraph plus a break.
+    """
+    from docx.text.hyperlink import Hyperlink
+    from docx.text.run import Run
+
+    shape = _paragraph_to_rich(paragraph)
+    pieces: list[list[InlineSpan]] = [[]]
+
+    def add_run(run: Any, href: str | None) -> None:
+        template = _span_from_run(run, href=href)
+        text: list[str] = []
+
+        def flush() -> None:
+            if text:
+                template_text = "".join(text)
+                pieces[-1].append(replace(template, text=template_text))
+                text.clear()
+
+        for child in run._r.iterchildren():
+            if _is_page_break(child):
+                flush()
+                pieces.append([])
+            elif child.tag == f"{_W_NS}t":
+                text.append(child.text or "")
+            elif child.tag == f"{_W_NS}tab":
+                text.append("\t")
+            elif child.tag in (f"{_W_NS}br", f"{_W_NS}cr"):
+                text.append("\n")
+        flush()
+
+    for item in paragraph.iter_inner_content():
+        if isinstance(item, Hyperlink):
+            for run in item.runs:
+                add_run(run, item.address or None)
+        elif isinstance(item, Run):
+            add_run(item, None)
+
+    out: list[RichParagraph] = []
+    for index, spans in enumerate(pieces):
+        if index:
+            out.append(RichParagraph(style="pagebreak"))
+        if spans or len(pieces) == 1:
+            out.append(replace(shape, spans=spans))
+    return out
+
+
+def _paragraph_parts(paragraph: Any) -> list[RichParagraph]:
+    """A Word paragraph as rich paragraphs, page breaks made explicit."""
+    before = [RichParagraph(style="pagebreak")] if _has_page_break_before(paragraph) else []
+    if not any(_is_page_break(el) for el in paragraph._p.iter(f"{_W_NS}br")):
+        return [*before, _paragraph_to_rich(paragraph)]
+    return [*before, *_split_at_page_breaks(paragraph)]
+
+
 def read_docx_rich(path: Path) -> RichDocument:
     """Read ``path`` into a :class:`RichDocument` (the writer's vocabulary only).
 
@@ -205,13 +286,13 @@ def read_docx_rich(path: Path) -> RichDocument:
             rich.paragraphs.extend(_table_to_rich_paragraphs(block))
             numbered_counter = 0
             continue
-        para = _paragraph_to_rich(block)
-        if para.style == "numbered":
-            numbered_counter += 1
-            para.list_number = numbered_counter
-        else:
-            numbered_counter = 0
-        rich.paragraphs.append(para)
+        for para in _paragraph_parts(block):
+            if para.style == "numbered":
+                numbered_counter += 1
+                para.list_number = numbered_counter
+            elif para.style != "pagebreak":
+                numbered_counter = 0
+            rich.paragraphs.append(para)
     return rich
 
 

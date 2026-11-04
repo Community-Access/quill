@@ -233,7 +233,8 @@ If you want a small set of keys to learn first, start with these.
   Codes on and off, so you can hear the formatting that is normally hidden.
 - `Ctrl+G` go to a line. `Ctrl+Shift+G` Document Statistics, the word count and
   more.
-- `Ctrl+K` insert a link, `Ctrl+Enter` follow the link at the cursor.
+- `Ctrl+K` insert a link. `Ctrl+Enter` inserts a page break, as in Word; with
+  the cursor on a link, it follows the link instead.
 - `Ctrl+Shift+Grave, L` (press the QUILL key, then L) for the List Manager,
   `Ctrl+Alt+Shift+L` for the Structured List Studio, and `Ctrl+Shift+F2` for
   Insert Special Character.
@@ -2778,8 +2779,9 @@ After those come the commands that know about selection and position:
   clipboard into a clean piece of HTML, using the same renderer as the live
   preview and HTML export, and inserts it at the cursor. It has no key at
   first; give it one in the Keymap Editor.
-- **Follow Link** (`Ctrl+Enter`), on the **Navigate** menu, opens the link
-  under the caret. Adding a link is on the **Insert** menu.
+- **Follow Link**, on the **Navigate** menu, opens the link under the caret.
+  `Ctrl+Enter` still does it when the caret is on a link; anywhere else that
+  key now inserts a page break. Adding a link is on the **Insert** menu.
 - The delete group, on **Format > Line**: **Delete to Line Start**, **Delete
   to Line End**, **Delete to Document Start**, **Delete to Document End** and
   **Delete Paragraph** remove text measured from the cursor. Edit > Restore
@@ -3121,7 +3123,7 @@ programs still get the plain text.
 ### Links
 
 `Ctrl+K` adds a link written the right way for the document's format.
-`Ctrl+Enter` follows the link under the caret. In Markdown and HTML this makes
+`Ctrl+Enter` with the caret on a link follows it. In Markdown and HTML this makes
 citations and cross-references much less work.
 
 ### The Insert menu
@@ -4186,10 +4188,15 @@ Here is what each one offers:
   or 54 points, or indents just its first line by 18 or 36 points.
 - **Format > Paragraph Style** makes the paragraph a **Quote**, a **Title**, a
   **Subtitle** or a **Caption**.
-- **Format > Insert Page Break** puts a page break on its own line in a
-  Markdown document. You do not see a new page while you write; the break
-  takes effect when you save or export to a format that has pages, such as
-  Word or PDF.
+- **Format > Insert Page Break** (`Ctrl+Enter`, Word's key) starts a new page
+  at the cursor. In a Word or Rich Text document it is a real page break,
+  the same one Word makes, and it is still there when you save and open the
+  file again. In a Markdown document it goes on its own line and takes effect
+  when you save or export to a format that has pages, such as Word or PDF. In
+  a braille file it is a braille page break. With the cursor on a link,
+  `Ctrl+Enter` follows the link instead, which is what it did before; in a
+  plain text document QUILL tells you a page break needs another kind of
+  document.
 - **Format > Clear Formatting** (`Ctrl+Shift+N`) is Word's "back to normal
   text". In a rich text document it turns bold, italic, underline and
   strikethrough off, puts the size, colour, highlight, alignment and spacing

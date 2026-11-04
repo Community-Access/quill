@@ -558,8 +558,9 @@ Codes on and off, so you can hear the formatting that is normally
 hidden.</li>
 <li><code>Ctrl+G</code> go to a line. <code>Ctrl+Shift+G</code> Document
 Statistics, the word count and more.</li>
-<li><code>Ctrl+K</code> insert a link, <code>Ctrl+Enter</code> follow
-the link at the cursor.</li>
+<li><code>Ctrl+K</code> insert a link. <code>Ctrl+Enter</code> inserts a
+page break, as in Word; with the cursor on a link, it follows the link
+instead.</li>
 <li><code>Ctrl+Shift+Grave, L</code> (press the QUILL key, then L) for
 the List Manager, <code>Ctrl+Alt+Shift+L</code> for the Structured List
 Studio, and <code>Ctrl+Shift+F2</code> for Insert Special
@@ -3493,9 +3494,10 @@ clipboard into Markdown as it pastes.</li>
 Markdown on the clipboard into a clean piece of HTML, using the same
 renderer as the live preview and HTML export, and inserts it at the
 cursor. It has no key at first; give it one in the Keymap Editor.</li>
-<li><strong>Follow Link</strong> (<code>Ctrl+Enter</code>), on the
-<strong>Navigate</strong> menu, opens the link under the caret. Adding a
-link is on the <strong>Insert</strong> menu.</li>
+<li><strong>Follow Link</strong>, on the <strong>Navigate</strong> menu,
+opens the link under the caret. <code>Ctrl+Enter</code> still does it
+when the caret is on a link; anywhere else that key now inserts a page
+break. Adding a link is on the <strong>Insert</strong> menu.</li>
 <li>The delete group, on <strong>Format &gt; Line</strong>:
 <strong>Delete to Line Start</strong>, <strong>Delete to Line
 End</strong>, <strong>Delete to Document Start</strong>, <strong>Delete
@@ -4006,9 +4008,9 @@ or an email the headings, bold and links arrive formatted. Notepad and
 other plain-text programs still get the plain text.</p>
 <h3 id="links">Links</h3>
 <p><code>Ctrl+K</code> adds a link written the right way for the
-document’s format. <code>Ctrl+Enter</code> follows the link under the
-caret. In Markdown and HTML this makes citations and cross-references
-much less work.</p>
+document’s format. <code>Ctrl+Enter</code> with the caret on a link
+follows it. In Markdown and HTML this makes citations and
+cross-references much less work.</p>
 <h3 id="the-insert-menu">The Insert menu</h3>
 <p>The <strong>Insert</strong> menu puts structured content at the
 cursor. QUILL treats Markdown and HTML as everyday writing formats, so
@@ -5309,10 +5311,16 @@ line by 18 or 36 points.</li>
 <li><strong>Format &gt; Paragraph Style</strong> makes the paragraph a
 <strong>Quote</strong>, a <strong>Title</strong>, a
 <strong>Subtitle</strong> or a <strong>Caption</strong>.</li>
-<li><strong>Format &gt; Insert Page Break</strong> puts a page break on
-its own line in a Markdown document. You do not see a new page while you
-write; the break takes effect when you save or export to a format that
-has pages, such as Word or PDF.</li>
+<li><strong>Format &gt; Insert Page Break</strong>
+(<code>Ctrl+Enter</code>, Word’s key) starts a new page at the cursor.
+In a Word or Rich Text document it is a real page break, the same one
+Word makes, and it is still there when you save and open the file again.
+In a Markdown document it goes on its own line and takes effect when you
+save or export to a format that has pages, such as Word or PDF. In a
+braille file it is a braille page break. With the cursor on a link,
+<code>Ctrl+Enter</code> follows the link instead, which is what it did
+before; in a plain text document QUILL tells you a page break needs
+another kind of document.</li>
 <li><strong>Format &gt; Clear Formatting</strong>
 (<code>Ctrl+Shift+N</code>) is Word’s “back to normal text”. In a rich
 text document it turns bold, italic, underline and strikethrough off,

@@ -242,7 +242,7 @@
   {
     "id": "braille.go_to_longest_page",
     "title": "Go to Longest Braille Page",
-    "body": "Moves the cursor to the first line of the deepest page in the file and announces how many lines it has. When a braille file will not emboss because a page has too many lines (page depth exceeded), this jumps straight to it so you can insert a page break where one is missing (Insert Braille Page Break, Ctrl+Enter).",
+    "body": "Moves the cursor to the first line of the deepest page in the file and announces how many lines it has. When a braille file will not emboss because a page has too many lines (page depth exceeded), this jumps straight to it so you can insert a page break where one is missing (Insert Page Break, Ctrl+Enter).",
     "user_guide_section": "braille-mode"
   },
   {
@@ -571,7 +571,7 @@
   {
     "id": "edit.follow_link",
     "title": "Follow Link",
-    "body": "Open the link under the cursor — a web address, a wiki-style note link, or a file path — using the appropriate application.",
+    "body": "Open the link under the cursor — a web address, a wiki-style note link, or a file path — using the appropriate application. Ctrl+Enter does this when the cursor is on a link; elsewhere that key inserts a page break.",
     "keystrokes": [
       "Ctrl+Enter"
     ],
@@ -1508,7 +1508,10 @@
   {
     "id": "format.insert_page_break",
     "title": "Insert Page Break",
-    "body": "Insert a page break so the following content starts on a new page when printed or exported.",
+    "body": "Start a new page at the cursor, with Word's key. In a Word or Rich Text document this is a real page break that is kept when you save; in Markdown it is a page-break line that takes effect when you export; in a braille file it is a braille page. With the cursor on a link, Ctrl+Enter follows the link instead.",
+    "keystrokes": [
+      "Ctrl+Enter"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {

@@ -30,12 +30,36 @@ from quill.ui.richedit_rtf_surface import (
 
 #: ``tomStory`` from tom.h: the whole of the document, for finding its end.
 _TOM_UNIT_STORY = 6
+#: ``tomEnd``: ``Collapse`` to the end of the range.
+_TOM_END = 0
 
 __all__ = ["RichEditStructureMixin"]
 
 
 class RichEditStructureMixin:
-    """Formatted-range moves, in-place text replacement, and heading levels."""
+    """Formatted-range moves, in-place text replacement, heading levels and page breaks."""
+
+    def insert_page_break(self) -> None:
+        """Replace the selection with a hard page break, Word's Ctrl+Enter.
+
+        The control holds a page break as U+000C and writes it to RTF as
+        ``\\page``, which the RTF reader turns into a page-break paragraph and
+        the Word writer into ``<w:br w:type="page"/>``. It has to go in through
+        ``ITextRange.Text``: wx's ``WriteText`` and TOM's ``TypeText`` both turn
+        a form feed into a plain paragraph mark (probed 2026-11-03), which
+        would look right on screen and print on one page.
+
+        The caret lands after the break, at the top of the new page, as in Word.
+        """
+        try:
+            with _one_undo_step(self.hwnd()):
+                selection = self._selection()
+                selection.Text = "\x0c"
+                selection.Collapse(_TOM_END)
+        except RichEditRtfError:
+            raise
+        except Exception as exc:  # noqa: BLE001 - map COM failure to our error
+            raise RichEditRtfError(f"Could not insert a page break: {exc}") from exc
 
     def reorder_ranges(self, spans: Sequence[tuple[int, int]]) -> None:
         """Rewrite the document as *spans*, in that order, keeping all formatting.

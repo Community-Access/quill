@@ -2,6 +2,19 @@
 
 ## 1.0.0
 
+### Page breaks with Ctrl+Enter (2026-11-03)
+
+- **Ctrl+Enter inserts a page break, as in Word.** In a Word or Rich Text
+  document it is a real page break that is kept when you save; in Markdown
+  it is the `::: pagebreak` line, which becomes a page break when you export.
+  It is on the Insert menu in QUILL Lite and the Format menu in QUILL.
+- **Word page breaks are kept.** Opening a Word document used to turn each
+  page break into an empty line, so saving it removed them all. They now
+  open as page breaks and are saved as page breaks.
+- **Follow Link moves off Ctrl+Enter, mostly.** With the cursor on a link,
+  Ctrl+Enter still follows it, so the old habit still works. Follow Link is on
+  the Navigate menu, and you can give it a key of its own in the Keymap Editor.
+
 ### Phonon voices (2026-11-02)
 
 - **Phonon, a new offline Read Aloud voice.** Gradium's Phonon 31m now comes

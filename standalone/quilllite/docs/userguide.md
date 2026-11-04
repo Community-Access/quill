@@ -3452,6 +3452,7 @@ The Insert menu is for anything you put into your document other than typing.
 | **Ctrl+Shift+F2** | Special Character: 357 of them, in 15 groups, searchable by name or code point |
 | **Alt+.** | Emoji: search or browse, with a description of each one |
 | **Shift+Enter** | A line break that does not start a new paragraph |
+| **Ctrl+Enter** | Page Break: the rest starts on a new page (Word, Rich Text and Markdown documents) |
 | **Ctrl+Alt+T** | Table: the columns and rows you ask for, a real table in rich text (see "Making a table") |
 | **Ctrl+Alt+I** | Markdown Tag: everything Markdown can write (Markdown documents only) |
 | **Ctrl+Alt+O** | HTML Tag: 111 tags and 20 whole form fields, searchable by what they do |
@@ -3590,6 +3591,16 @@ what it put in, for example "Inserted, U+2014 Em dash". Many of these
 characters are invisible on the page, so hearing it is how you know it worked.
 
 QUILL has the same picker, on the same key.
+
+#### Starting a new page
+
+**Insert > Page Break** (**Ctrl+Enter**, the same key as in Word) starts a
+new page at the cursor. In a Word or Rich Text document it is a real page
+break, the same one Word makes, and it is still there when you save the
+file and open it again. In a Markdown document QUILL Lite puts the line
+`::: pagebreak` on its own line, and the break takes effect when you export
+to a format that has pages, such as Word or PDF. A plain text document has
+no pages, so QUILL Lite tells you that instead of doing nothing.
 
 #### Ending a line without starting a paragraph
 

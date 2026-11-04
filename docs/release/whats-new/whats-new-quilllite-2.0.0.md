@@ -14,7 +14,7 @@ QUILL Lite 2.0 is about words, and about never missing what happened. Your setti
 
 ## Word documents, PDFs and other files
 
-- **Word documents open as rich text, and Ctrl+S saves a real Word document**, with headings, lists, tables and links. If a save would lose something, QUILL Lite names it first.
+- **Word documents open as rich text, and Ctrl+S saves a real Word document**, with headings, lists, tables and links. QUILL Lite names anything a save would lose. Ctrl+Enter is a page break, as in Word.
 - **PDFs open as text**, page by page, in the installed and portable copies. A scanned page is read with Windows OCR on this computer; nothing is uploaded.
 - **Excel, PowerPoint and OpenDocument files open as readable text**, each sheet and slide named.
 
