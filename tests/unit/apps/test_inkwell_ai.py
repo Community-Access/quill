@@ -133,14 +133,11 @@ def test_the_ai_menu_sits_before_quillville_on_the_fallback_keys(inkwell) -> Non
     labels = [i.GetItemLabel() for i in _menu(inkwell, "AI").GetMenuItems() if not i.IsSeparator()]
     assert labels == [
         "&Ask...\tCtrl+Shift+8",
-        "&Which AI Am I Using\tCtrl+F8",
-        "&Choose Your AI...\tCtrl+Shift+F8",
         "Suggest Abbreviations from a &Document...\tCtrl+Shift+A",
         "Add A&bbreviations from a Document (needs Copilot or Codex)...\tCtrl+F3",
-        "Use My C&hatGPT Subscription...\tAlt+F5",
-        "Use My &Own AI Key...\tAlt+F2",
-        "AI U&sage...\tCtrl+Alt+Shift+F2",
-        "&Privacy Agreement...\tAlt+Shift+F2",
+        "&Which AI Am I Using\tCtrl+F8",
+        "&Choose Your AI...\tCtrl+Shift+F8",
+        "Accounts and &Usage",
     ]
     assert inkwell.commands.get("inkwell.ai_suggest") is not None
 

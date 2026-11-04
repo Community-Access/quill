@@ -7237,6 +7237,27 @@ seventeen things, and two keys open it:
 There are also twelve questions you can ask about the word you are on, under
 **Tools > Dictionary**. They are explained in *Dictionary*, in Chapter 7.
 
+### How Tools > AI is laid out
+
+**Tools > AI** reads in four groups, in the same order as the AI menu of every
+other app in the family, and every command keeps its key wherever it sits:
+
+1. **Ask:** Ask AI a Question (**Ctrl+6**), Ask About This Document
+   (**Ctrl+Alt+Z**), Ask About an Image (**Ctrl+F5**), AI Assistant
+   (**Ctrl+Alt+G**) and Prompt Library (**Ctrl+7**).
+2. **Work on your document:** Do a Document Task (**Ctrl+3**), Propose Alt Text
+   and Tidy Dictated Text (**Ctrl+F3**).
+3. **Which AI:** Which AI Am I Using (**Ctrl+8**) and Choose Your AI
+   (**Ctrl+4**).
+4. **Accounts and Usage**, a submenu of the windows you open now and then: Use
+   My Own AI Key (**Alt+F2**), Use My ChatGPT Subscription (**Alt+F5**), Connect
+   or Sign Out (**Ctrl+Alt+Shift+F10**), Usage (**Ctrl+Alt+Shift+F9**), Web
+   Searches Left (**Ctrl+9**) and the Privacy Agreement (**Ctrl+Alt+Shift+K**).
+
+Your own key can come from OpenAI, Google Gemini, Anthropic Claude, OpenRouter
+or Ollama Cloud, from a service of your own, or from Ollama running on this
+computer, which is free and sends nothing anywhere.
+
 ### Using the AI pad
 
 #### What the pad looks like, top to bottom
@@ -7722,7 +7743,7 @@ computer once, and then you have a monthly allowance.
 
 #### Connecting this computer
 
-1. Open **Tools > AI > Connect or Sign Out** (**Ctrl+Alt+Shift+F10**). If you
+1. Open **Tools > AI > Accounts and Usage > Connect or Sign Out** (**Ctrl+Alt+Shift+F10**). If you
    have just accepted the agreement and this computer is not connected yet,
    you are brought here automatically.
 2. The window gets an eight-character code from QUILL and reads it out to
@@ -7929,7 +7950,7 @@ monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 
 #### Setting it up
 
-Open **Tools > AI > Use My Own AI Key** (**Alt+F2**). The window has these
+Open **Tools > AI > Accounts and Usage > Use My Own AI Key** (**Alt+F2**). The window has these
 parts, from top to bottom:
 
 1. **Provider.** Choose **OpenAI**, **Google Gemini**, **Anthropic Claude**,
@@ -8291,7 +8312,7 @@ ends with **Search the web**: type a question, press **Send**, and the answer
 comes back with the sites it used, one per line. Each search also uses one
 ordinary request.
 
-Press **Ctrl+9** (**Tools > AI > Web Searches Left**) to hear how many searches
+Press **Ctrl+9** (**Tools > AI > Accounts and Usage > Web Searches Left**) to hear how many searches
 are left this month and when they start again. If the service is not offering
 web search at the moment, Ctrl+9 says that instead. On your ChatGPT plan, use
 **Allow web search** above instead; with your own key there is no web search.
@@ -8811,7 +8832,7 @@ back off for you.
 You can reach the same agreement in **three places**. Use whichever you find
 first:
 
-- **Tools > AI > Privacy Agreement...** (**Ctrl+Alt+Shift+K**). Read it, accept
+- **Tools > AI > Accounts and Usage > Privacy Agreement...** (**Ctrl+Alt+Shift+K**). Read it, accept
   it, or take it back. Taking it back also signs this computer out.
 - **Preferences**, where a check box says *Use QUILL's free AI help*. Checking it
   shows the agreement. Unchecking it takes your agreement back.

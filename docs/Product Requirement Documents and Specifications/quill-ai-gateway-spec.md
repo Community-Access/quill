@@ -1212,7 +1212,7 @@ charging for an empty answer.
 
 ### 12.10 Usage, and signing out
 
-**Tools > AI > Usage** opens a small modeless frame:
+**Tools > AI > Accounts and Usage > Usage** opens a small modeless frame:
 
 > **This month**
 > 94 of 100 requests left. Starts again 1 October.

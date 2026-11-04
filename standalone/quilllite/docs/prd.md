@@ -808,7 +808,7 @@ The agreement is therefore:
 - **Asked for on its own**, never as a side effect of enabling something.
 - **Stored as a version, not a boolean.** A material change to what is sent or
   retained asks again, rather than an old yes being read as covering a new thing.
-- **Reachable by three doors** -- `Tools > AI > Privacy Agreement`
+- **Reachable by three doors** -- `Tools > AI > Accounts and Usage > Privacy Agreement`
   (`Ctrl+Alt+Shift+K`), a Preferences check box, and switching the area on in
   Customize Features -- because which door somebody finds depends on which part
   of the app they already know. All three read and write the same value, so they

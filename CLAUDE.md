@@ -124,7 +124,14 @@ not on disk. The same holds for `qc.md` (the 2026-09/10 family QC plan) and
 `ear.md` (Earshot parity), both retired on 2026-10-03: `qc.md <id>` citations
 resolve in git history, `ear.md` was never committed and is summarised in the
 Cast PRD (section 23.25), and the open screen-reader checks moved to
-`docs/qa/screen-reader-checks-2026-10.md`. Five
+`docs/qa/screen-reader-checks-2026-10.md`. Unlike those, `codex.md <section>`
+citations (the AI plan of record: Choose Your AI, Ask, the agents) resolve on
+disk, in `docs/design/codex.md`, and `phonon-voices-prd.md R-<n>` citations in
+`docs/Product Requirement Documents and Specifications/phonon-voices-prd.md`.
+Every AI menu in the family is laid out by `quill/core/ai/ai_menu_layout.py`:
+Ask, the app's own AI features, Which AI Am I Using and Choose Your AI, then an
+Accounts and Usage submenu -- add a row to an app's `AI_ROWS` and the layout
+puts it in its place. Of the six parity gates, five
 are pytest gates and one is a tool in `platform_report`:
 
 - **Bound-command and Quillin-hotkey** (`tests/unit/core/test_family_rules_and_gates.py`):

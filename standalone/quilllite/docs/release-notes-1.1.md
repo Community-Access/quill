@@ -166,7 +166,7 @@ Open **Tools > Dictation > Dictation Settings** (**Alt+Shift+F6**).
 
 If you pay for ChatGPT, QUILL Lite no longer needs anything else from you.
 
-1. Press **Alt+F5** (**Tools > AI > Use My ChatGPT Subscription**).
+1. Press **Alt+F5** (**Tools > AI > Accounts and Usage > Use My ChatGPT Subscription**).
 2. Choose **Continue with ChatGPT**.
 3. Sign in the way you sign in to ChatGPT on the web.
 4. Allow "QUILL Lite" to use your plan, and come back.

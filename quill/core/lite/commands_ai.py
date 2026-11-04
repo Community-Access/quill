@@ -1,77 +1,73 @@
-"""Tools > AI rows added 2026-10-15 -- Ask (the Chat Key), the Prompt Library and
-Web Searches Left -- and 2026-10-31, Which AI Am I Using and Choose Your AI.
+"""Tools > AI, the whole submenu, in the family's one AI menu shape.
 
 Split out of :mod:`quill.core.lite.commands` under GATE-11 and spliced into
 ``COMMANDS`` where the table marks; the row shape is that table's (``menu,
-label, key, handler, kind``). The handlers are the shared hosted-AI mixin's
-(:mod:`quill.ui.hosted_ai_answers`), so QUILL has the same three commands on
-the same three chords (``tools.hosted_ai_chat_key``,
-``tools.hosted_ai_prompt_library``, ``tools.hosted_ai_web_searches``; rule 2).
+label, key, handler, kind``). The handlers are the shared hosted-AI mixins'
+(:mod:`quill.ui.hosted_ai_commands` and its siblings), so QUILL has the same
+commands on the same chords (rule 2).
 
-**The chords.** Measured on 2026-10-15, the chords free in both editors that are
-neither AltGr (a bare Ctrl+Alt), nor a menu's Alt+letter, nor an Alt+F4
+**The shape** (2026-11-03, :mod:`quill.core.ai.ai_menu_layout`): the ways to
+ask; then what the AI does to the document; then Which AI Am I Using and Choose
+Your AI; then **Accounts and Usage**, a submenu holding the six account windows
+a person opens a few times a year. Until then this was sixteen rows with one
+separator, Ask About an Image and Tidy Dictated Text among the account rows and
+Choose Your AI tenth. No chord moved: a row's key works wherever the row sits.
+
+**The chords.** Measured on 2026-10-15, the chords free in both editors that
+are neither AltGr (a bare Ctrl+Alt), nor a menu's Alt+letter, nor an Alt+F4
 neighbour (rule 4), nor a key Word gives a function both editors have (rule 1),
 nor a family show-and-hide key, were Ctrl+3, Ctrl+4 and Ctrl+6 to Ctrl+9 --
 Ctrl+1, Ctrl+2 and Ctrl+5 being line spacing in both. The Chat Key is the one
-pressed most (rule 3), so it gets the first of the run, Ctrl+6; the Prompt
-Library the next, Ctrl+7. Web Searches Left is a once-a-month reading that rule
-9 would give a long key, but no long key was free in both editors, so it takes
-Ctrl+9 and leaves Ctrl+8 beside the other two for whatever comes next.
+pressed most (rule 3), so it gets Ctrl+6; the Prompt Library Ctrl+7; Web
+Searches Left, a once-a-month reading, Ctrl+9. Which AI Am I Using is a quick
+question (rule 3) on Ctrl+8, and Choose Your AI took Ctrl+4 (codex.md 10A.9);
+rule 6 outranks rule 7 here, because QUILL Lite reaches its AI on plain chords
+and QUILL cannot bury them on the leader. Do a Document Task (codex.md 6.2) took
+Ctrl+3, the last of the three. Propose Alt Text has no key: no chord is free in
+both editors, and Ctrl+3 is the front door (rule 8 reason in the family gate).
+Use My ChatGPT Subscription sits on Alt+F5 beside the own-key window's Alt+F2,
+both once-a-year windows (rule 9); Ask About an Image took Ctrl+F5 and Tidy
+Dictated Text Ctrl+F3, both free in both editors and nothing in Word.
 """
 
 from __future__ import annotations
 
-#: Do a Document Task (codex.md 6.2, 2026-11-01): the agent window, on My GitHub
-#: Copilot or Codex. Ctrl+3 was the one plain chord left of the three 10A.9
-#: found free in both editors and in every APP_KEYMAPS app (Ctrl+4 and Ctrl+8
-#: went to Choose Your AI). Rule 6 keeps it off QUILL's leader, because QUILL
-#: Lite reaches its AI on plain chords; rule 3 gives a command people will use
-#: daily a short key rather than the long one rule 9 keeps for rare ones; and
-#: rule 5 does not apply, since nothing moves. QUILL has it on the same chord
-#: (tools.hosted_ai_task).
-AI_TASK_ROW: tuple[str, str, str, str, str] = (
-    "&Tools|&AI",
-    "&Do a Document Task...",
-    "Ctrl+3",
-    "cmd_ai_task",
-    "",
-)
+from quill.core.ai.ai_menu_layout import ACCOUNTS_TITLE
 
-#: Propose Alt Text (codex.md 6.4, 10B.5): Do a Document Task with the
-#: alt-text request filled in, for the document's own images. No key: no chord
-#: is free in both editors, and Ctrl+3 is the front door (rule 8 reason in the
-#: family gate). T is free in this submenu. QUILL has it (tools.hosted_ai_alt_text).
-AI_ALT_TEXT_ROW: tuple[str, str, str, str, str] = (
-    "&Tools|&AI",
-    "Propose Alt &Text...",
-    "",
-    "cmd_ai_alt_text",
-    "",
-)
+_AI = "&Tools|&AI"
+_ACCOUNTS = f"{_AI}|{ACCOUNTS_TITLE}"
+_SEP = (_AI, "", "", "", "sep")
 
-#: Spliced in after Ask About This Document: the ways to ask, then the task.
-AI_ASK_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
-    ("&Tools|&AI", "Ask AI a &Question...", "Ctrl+6", "cmd_ai_chat_key", ""),
-    ("&Tools|&AI", "Prompt &Library...", "Ctrl+7", "cmd_ai_prompt_library", ""),
-    AI_TASK_ROW,
-    AI_ALT_TEXT_ROW,
-)
-
-#: Choose Your AI (codex.md 10A.9, 2026-10-31). Which AI Am I Using is a quick
-#: question, so a short key (rule 3) in the AI row beside Ctrl+6, 7 and 9; and
-#: Ctrl+4 was one of the three plain chords free in both editors and in every
-#: APP_KEYMAPS app. Rule 7 would keep editor chords for the editor, but rule 6
-#: outranks it: QUILL Lite reaches its AI on plain chords, so QUILL cannot bury
-#: this on the leader. Ctrl+8 pressed twice also opens the window. QUILL has
-#: both on the same chords (tools.hosted_ai_which, tools.hosted_ai_choose).
-AI_CHOOSE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
-    ("&Tools|&AI", "W&hich AI Am I Using", "Ctrl+8", "cmd_ai_which", ""),
-    ("&Tools|&AI", "Choose &Your AI...", "Ctrl+4", "cmd_ai_choose", ""),
-)
-
-#: Spliced in after Usage: the other number the free service keeps, then
-#: Choose Your AI's two rows, which sit with the account rows below them.
-AI_SEARCH_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
-    ("&Tools|&AI", "&Web Searches Left", "Ctrl+9", "cmd_ai_web_searches", ""),
-    *AI_CHOOSE_ROWS,
+#: The whole of Tools > AI, spliced into ``COMMANDS``.
+AI_MENU_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    # -- Ask ---------------------------------------------------------------------
+    (_AI, "Ask AI a &Question...", "Ctrl+6", "cmd_ai_chat_key", ""),
+    (_AI, "As&k About This Document...", "Ctrl+Alt+Z", "cmd_ai_ask_document", ""),
+    (_AI, "Ask About an &Image...", "Ctrl+F5", "cmd_ai_image", ""),
+    (_AI, "AI &Assistant...", "Ctrl+Alt+G", "cmd_ai_assistant", ""),
+    (_AI, "Prompt &Library...", "Ctrl+7", "cmd_ai_prompt_library", ""),
+    _SEP,
+    # -- What the AI does to the document --------------------------------------
+    (_AI, "&Do a Document Task...", "Ctrl+3", "cmd_ai_task", ""),
+    (_AI, "Propose Alt &Text...", "", "cmd_ai_alt_text", ""),
+    (_AI, "Tidy Dictated Te&xt...", "Ctrl+F3", "cmd_dictation_tidy", ""),
+    _SEP,
+    # -- Which AI ----------------------------------------------------------------
+    (_AI, "W&hich AI Am I Using", "Ctrl+8", "cmd_ai_which", ""),
+    (_AI, "Choose &Your AI...", "Ctrl+4", "cmd_ai_choose", ""),
+    _SEP,
+    # -- Accounts and Usage: the once-a-year windows, every one on its own key --
+    (_AI, ACCOUNTS_TITLE, "", "", "sub"),
+    (_ACCOUNTS, "Use My &Own AI Key...", "Alt+F2", "cmd_ai_own_key", ""),
+    (_ACCOUNTS, "Use My Chat&GPT Subscription...", "Alt+F5", "cmd_ai_chatgpt", ""),
+    # "Connect or Sign Out" rather than "Sign In or Out": the window talks about
+    # connecting *this computer*, and both editors speak the one sentence that
+    # names this row, composed once in the shared module.
+    (_ACCOUNTS, "&Connect or Sign Out...", "Ctrl+Alt+Shift+F10", "cmd_ai_sign_in", ""),
+    (_ACCOUNTS, "&Usage...", "Ctrl+Alt+Shift+F9", "cmd_ai_usage", ""),
+    (_ACCOUNTS, "&Web Searches Left", "Ctrl+9", "cmd_ai_web_searches", ""),
+    # Reachable with the feature switched off, deliberately: the agreement is
+    # how somebody turns it on. Its chord is the one held back when this family
+    # was laid out.
+    (_ACCOUNTS, "&Privacy Agreement...", "Ctrl+Alt+Shift+K", "cmd_ai_privacy", ""),
 )

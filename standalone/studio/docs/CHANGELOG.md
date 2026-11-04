@@ -12,6 +12,11 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### AI menu (2026-11-03)
+
+- **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.
+- **Your own key is not only OpenAI** (2026-11-03). Before you have saved a key, Choose Your AI's own-key row now names every service it can use: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud, a service of your own, or Ollama on this computer, which is free and sends nothing. It used to say only OpenAI.
+
 ### Phonon voices (2026-11-02)
 
 - **Phonon, a new offline voice for narration** (2026-11-02). Gradium's Phonon 31m comes with Studio: 37 English voices plus its own default, nothing to download, and nothing sent anywhere. Pick **Phonon (neural, offline)** in the Speech Hub or the narration wizard. It starts speaking quickly and handles numbers, dates and email addresses on its own. Its speed runs from 0.85 to 1.3 times normal, because past that the voice breaks up. It needs a processor from about 2015 or later; on an older one the voices say "needs a newer computer" and Studio suggests Piper. Phonon is free under Apache 2.0 and builds on Pocket TTS and the Mimi codec by Kyutai.

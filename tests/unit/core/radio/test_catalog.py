@@ -286,3 +286,21 @@ def test_ages_are_words_never_timecodes() -> None:
     assert spoken_age(3 * 86400) == "3 days ago"
     assert spoken_age(None) == "never"
     assert ":" not in spoken_age(7200)
+
+
+def test_a_book_listed_twice_keeps_its_first_listing(tmp_path: Path) -> None:
+    """Gutendex can return one book on two pages; the seed build must not fail."""
+    store = CatalogStore(tmp_path)
+    writer = store.begin_generation()
+    count = writer.replace_audiobooks(
+        "gutenberg",
+        [("b1", "First", "", "", ""), ("b2", "Other", "", "", ""), ("b1", "Again", "", "", "")],
+        [("b1", 0, "First", "u1"), ("b2", 0, "Other", "u2"), ("b1", 0, "Again", "u3")],
+    )
+    rows = writer.connection.execute(
+        "SELECT book_id, title FROM audiobooks ORDER BY rowid"
+    ).fetchall()
+    writer.commit()
+    store.close()
+    assert count == 2
+    assert rows == [("b1", "First"), ("b2", "Other")]
