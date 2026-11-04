@@ -4458,10 +4458,9 @@ class MainFrame(
         # HTML row's rule, which had always been html_only. Worse by ear than by
         # eye: an enabled row promises the command will work, and a document
         # that quietly became half-Markdown is not something you can see you
-        # did. Set Document Language turns the rows back on in one keystroke.
+        # did; Set Document Language turns the rows back on in one keystroke.
         markdown_ready = context == "markdown"
-        # Insert Markdown Tag is not dimmed but absent outside Markdown, in both
-        # editors (quill/ui/markdown_tag_row.py); its key still says why.
+        # Insert Markdown Tag is absent, not dimmed, outside Markdown (markdown_tag_row.py).
         shown = self._markdown_tags_apply()
         sync_menu_row(self, "_markdown_tag_row", menu_bar, self._id_insert_markdown_tag, shown)
         active_surface = self._active_markup_surface()
@@ -4516,6 +4515,7 @@ class MainFrame(
             if menu_item is not None:
                 menu_item.Enable(html_only)
         self._refresh_language_menu_radio(menu_bar)
+        self._refresh_wordpress_menu_items(menu_bar)  # main_frame_wordpress.py
         # A row that was disabled when the pass last ran was skipped on purpose,
         # so a row that has just been *enabled* has no route yet. Re-running the
         # pass here is what keeps "every enabled item advertises a route" true

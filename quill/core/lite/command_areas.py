@@ -25,7 +25,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.core.lite.commands import _MENU_ORDER, COMMANDS, SUBMENU_SEP, CommandRow
-from quill.core.wordpress.menu import submenu_paths as wordpress_menu_paths
+from quill.core.wordpress import menu as wordpress_menu
 
 __all__ = ["COMMAND_AREA", "MENU_AREA", "area_for", "visible_commands"]
 
@@ -50,9 +50,9 @@ __all__ = ["COMMAND_AREA", "MENU_AREA", "area_for", "visible_commands"]
 
 #: Menus and submenus that belong entirely to one area.
 MENU_AREA: dict[str, str] = {
-    # File > WordPress and each of its submenus (Blocks, Media, Checking,
-    # Running the Site), spelled out by the shared table that builds them.
-    **dict.fromkeys(wordpress_menu_paths(), "wordpress"),
+    # Every WordPress submenu (File, Format, Edit and Tools > WordPress and the
+    # ones inside them), spelled out by the shared table that builds them.
+    **dict.fromkeys(wordpress_menu.submenu_paths(), "wordpress"),
     "F&ormat": "rich_text",
     # Spelled out rather than inherited from the parent: a submenu's rows are
     # looked up by their *own* path, so a submenu left out of this map is a
@@ -91,6 +91,8 @@ MENU_AREA: dict[str, str] = {
 
 #: Individual handlers whose area is not their menu's.
 COMMAND_AREA: dict[str, str] = {
+    # WordPress rows straight in Insert and View, not in a submenu of their own.
+    **dict.fromkeys(wordpress_menu.direct_handlers(), "wordpress"),
     "cmd_page_setup": "printing",
     "cmd_print": "printing",
     # With the rest of the spelling submenu, which is one switchable area.

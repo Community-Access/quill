@@ -47,7 +47,7 @@
   answer re-reads the site before offering Try Again, so nothing is created
   twice, and a site that cannot be reached gets your sends queued, retried
   every two minutes and announced when they go through.
-- **Running the site.** File > WordPress > Running the Site: Comments with
+- **Running the site.** Tools > WordPress, with its Manage submenu: Comments with
   every status, replies under the comment they answer, Edit and Approve All,
   and the number waiting spoken the first time you use a site in a session;
   Menus and Navigation as a readable tree; Widgets, Site Map and Template
@@ -57,7 +57,23 @@
   when unused, and make the default. Sign Out This Site takes QUILL's
   password away on the site itself. Every window knows your role first and
   says what it cannot do, instead of offering a button the site would refuse.
-- **The Media Library, all of it.** File > WordPress > Media and Files:
+- **Check This Page works out of the box.** axe-core 4.14.0 ships with
+  QUILL, so the visitor's-eye check runs without downloading anything.
+- **Media for listening.** Tools > WordPress > More Media: Captions for
+  Video, Transcript for Audio, Make a Listening Version, Name Embeds, and
+  Publish a Document as a Page for a PDF or Word file.
+- **Post This Episode, from QUILL Cast and Audio Studio, and Upload to
+  WordPress, in Quill Converter.** Each writes a WordPress draft with the
+  audio, its transcript and show notes, and opens it in QUILL to finish and
+  publish.
+- **Listen and watch.** Play a sound or video file straight from the Media
+  Library, streamed from the site, with the same player keys as Quill Media
+  Player, and captions read on request. View > Play Media Here plays the one
+  at the caret.
+- **Enter works in the WordPress lists.** In Open, Enter opens the selected
+  page or post; in the Media Library it plays a sound or video file and
+  inserts anything else.
+- **The Media Library, all of it.** Insert, and Tools > WordPress with its More Media submenu:
   Insert from Media Library, Paste Image (a picture on the clipboard is
   uploaded and inserted), Upload Files (many at once, with duplicates caught
   first and progress spoken), Upload from Web Address, Image Size with Back to
@@ -66,7 +82,7 @@
   gained Used In, Attach to This Page or Post, Set as Featured Image, Suggest
   Alt Text and Describe Image. A suggestion only fills the field; you decide
   what is saved.
-- **Blocks, made plain.** File > WordPress > Blocks: Insert Block, with your
+- **Blocks, made plain.** Insert, Format, View and Edit: Insert Block, with your
   site's patterns and synced patterns and a short form for each block; Next
   Block, Previous Block and Where Am I, which say each block's kind, place and
   first words; a Blocks window that moves, duplicates, removes, changes and
@@ -74,7 +90,7 @@
   Block Settings, with the theme's own colours and sizes by name and the
   contrast of each colour; and Preview Blocks, which reads what your site
   makes of its blocks without saving anything.
-- **Checking the site the visitor's way.** File > WordPress > Checking: Check
+- **Checking the site the visitor's way.** Tools > WordPress: Check
   This Page runs the published page through axe-core in a hidden Edge or
   Chrome, with plain explanations and Go to It. Check the Whole Site checks
   every page and post, groups the problems with counts, and offers Fix in
@@ -88,9 +104,20 @@
   describes what a sighted visitor sees on the published page, on a desktop
   and a phone, and says what it will send to the AI before it sends it.
   Preview and Review tries a picture or logo width on a copy of the page.
-- **The WordPress menu is grouped.** The everyday commands stay in File >
-  WordPress, and the rest sit in four submenus: Blocks, Media and Files,
-  Checking, and Running the Site. Alt+F, W opens it in both editors.
+- **WordPress commands are where Word keeps them.** File > WordPress holds
+  what is about the whole page or the site. Inside a page, Insert has
+  WordPress Block, the two Picture rows, Link to a Page on This Site and Make
+  a Picture; Format > WordPress has Block Settings, Image Size and Mark
+  Language; View has WordPress Blocks and Preview Blocks; Edit > WordPress
+  has Next Block, Previous Block and Where Am I. The checks and the site's
+  upkeep are in Tools > WordPress. The page commands are dimmed unless a
+  WordPress page or post is in front of you.
+- **New: Insert > Link to a Page on This Site.** Pick one of the site's
+  published pages or posts, and the link goes in, named by what you selected
+  or by the page's title.
+- **Category and tag lists say whether each one is checked.** They are
+  separate check boxes now, so your screen reader announces the state as you
+  move.
 - **Fixed: a new page lost track of itself when first sent.** The first Save
   Draft to Site or Publish on a page started in QUILL moved its file out from
   under the editor, so the next command said it was not a WordPress document.

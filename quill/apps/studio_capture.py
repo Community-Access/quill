@@ -42,7 +42,12 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioAiMix
             bindings.append((item_id, handler))
         bindings += self._append_demo_menu(capture)
         menu_bar.Append(capture, "&Capture")
-        return bindings
+        # Post an Episode, through the shared WordPress code (wordpress.md 15 item 9).
+        from quill.apps.studio_wordpress import build_wordpress_menu
+
+        wordpress, wordpress_bindings = build_wordpress_menu(self, wx)
+        menu_bar.Append(wordpress, "&WordPress")
+        return bindings + wordpress_bindings
 
     def _register_capture_commands(self):
         for command_id, label, handler in self._capture_command_specs():

@@ -274,6 +274,11 @@ class WordPressMediaLibrary:
             assert copy is not None
             return dlg.CLOSE if self._insert_media(copy, shown[index], api) else None
 
+        def play(index: int | None) -> object:
+            if index is not None:  # 6.1a: wordpress_player_commands
+                self._play_library_item(profile, api, shown[index], items)  # type: ignore[attr-defined]
+            return None
+
         def used_in(index: int | None) -> object:
             if index is None:
                 return None
@@ -447,11 +452,23 @@ class WordPressMediaLibrary:
             on_filter=on_filter,
             filter_label="&Find:",
             filter_help="Type part of a title, file name or alternative text, and press Enter.",
+            # Enter plays a sound or video file and inserts anything else.
+            on_enter=lambda i: (
+                play(i)
+                if i is not None and shown[i].mime_type.split("/")[0] in {"audio", "video"}
+                else insert(i)
+            ),
             actions=[
                 dlg.Action(
                     "&Insert...",
                     "Insert the selected file at the caret; a picture opens the picture dialog.",
                     insert,
+                ),
+                dlg.Action(
+                    "&Play...",
+                    "Play the selected sound or video file in a small player, streamed from "
+                    "the site; nothing is saved.",
+                    play,
                 ),
                 dlg.Action(
                     "&Used In",

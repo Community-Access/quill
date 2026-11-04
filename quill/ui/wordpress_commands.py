@@ -31,6 +31,7 @@ from quill.ui.wordpress_block_commands import WordPressBlockCommands
 from quill.ui.wordpress_check_commands import WordPressCheckCommands
 from quill.ui.wordpress_connect import ConnectFlow
 from quill.ui.wordpress_host import WordPressHost
+from quill.ui.wordpress_link_commands import WordPressLinkCommands
 from quill.ui.wordpress_listen_commands import WordPressListenCommands
 from quill.ui.wordpress_media_commands import WordPressMediaCommands
 from quill.ui.wordpress_more_commands import WordPressMoreCommands
@@ -56,6 +57,7 @@ class WordPressCommands(
     WordPressCheckCommands,
     WordPressAdminCommands,
     WordPressListenCommands,
+    WordPressLinkCommands,
 ):
     def __init__(self, host: WordPressHost, *, data_dir: Any = None, opener: Any = None) -> None:
         self.host = host
@@ -86,10 +88,19 @@ class WordPressCommands(
 
         self.host.run_task(f"WordPress: {name}", work, done, failed)
 
-    def current(self) -> tuple[lc.WorkingCopy, st.SiteProfile] | None:
+    def current(self, command: str = "") -> tuple[lc.WorkingCopy, st.SiteProfile] | None:
+        """The WordPress document in front, or say why there is none.
+
+        *command* names the command for the sentence (wordpress.md 12): "Insert
+        Block works in a WordPress page or post. Open one with File, WordPress."
+        """
         copy = self.local.copy_for_path(self.host.current_path())
         if copy is None:
-            self.host.announce(NOT_WORDPRESS)
+            self.host.announce(
+                f"{command} works in a WordPress page or post. Open one with File, WordPress."
+                if command
+                else NOT_WORDPRESS
+            )
             return None
         profile = self.sites().get(copy.site_id)
         if profile is None:

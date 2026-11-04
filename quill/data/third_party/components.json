@@ -2500,6 +2500,24 @@
       "delivery": "bundled"
     },
     {
+      "id": "axe-core",
+      "name": "axe-core",
+      "group": "data",
+      "version": "4.14.0",
+      "licenses": [
+        "MPL-2.0"
+      ],
+      "license_label": "Mozilla Public License 2.0; its bundled helpers are MIT and similar (quill/data/axe/LICENSE-3RD-PARTY.txt)",
+      "copyright": "Copyright (c) 2015 - 2026 Deque Systems, Inc.",
+      "homepage": "https://github.com/dequelabs/axe-core",
+      "what": "The accessibility rules Check This Page runs inside a hidden Edge or Chrome, on this computer.",
+      "products": [
+        "quill",
+        "quilllite"
+      ],
+      "delivery": "bundled"
+    },
+    {
       "id": "emoji-data",
       "name": "Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data)",
       "group": "data",

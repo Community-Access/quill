@@ -1126,7 +1126,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 302 audited sites (11 help-elsewhere, 291 helped).
+Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 ### Every window, and what it is for
 
@@ -1601,6 +1601,8 @@ Control coverage: 302 audited sites (11 help-elsewhere, 291 helped).
 - `self.video`: Use the chosen version as the picture of a YouTube video.
 - `self.folder`: Open the folder where the pictures are saved.
 - `close`: Close. The pictures stay saved.
+- `self.background`: Normal lets the picture have its own background. Solid colour uses the colour you name. Transparent is offered only when your provider can make one: OpenAI image models can, Google Imagen cannot.
+- `button`: Your chosen AI reads the page, or the selection, and proposes a description, a shape and a background. They land in these fields for you to change; nothing is made until you press Make the Picture.
 #### GoLiveDialog (`quill/ui/studio_go_live.py`)
 
 - `self.kind`: Which kind of server your stream host runs. Your host's settings page says.

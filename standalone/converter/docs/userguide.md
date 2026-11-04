@@ -764,6 +764,21 @@ file's own -- so showing the section to look around changes nothing.
   folder is in the queue, its subfolders are converted too, and the same folder
   layout is rebuilt in the output folder.
 
+### Sending files to WordPress
+
+If you look after a WordPress website, Quill Converter can put what it made
+straight into your site's Media Library. Choose
+**File > Upload to WordPress...** (**Ctrl+Alt+W**). The file window opens in
+your last output folder; choose one file or several.
+
+Each file is checked first: if the same file is already on the site, you are
+asked whether to use the one there. As each file goes you hear how far along
+it is, such as "Uploading 2 of 5". When they are done, their web addresses
+are on the clipboard, one per line, ready to paste into a page.
+
+You connect your site once, in QUILL or QUILL Lite, with Connect a Site in
+the WordPress submenu of their File menu.
+
 ### What you learned, and where to go next
 
 You can add, reorder and remove files, see what is inside one with

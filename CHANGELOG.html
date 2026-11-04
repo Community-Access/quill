@@ -245,6 +245,196 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="wordpress-in-quill-and-quill-lite-2026-11-04-in-progress">WordPress,
+in QUILL and QUILL Lite (2026-11-04, in progress)</h3>
+<ul>
+<li><strong>File &gt; WordPress.</strong> Write, open and publish the
+pages and posts of your WordPress sites without leaving QUILL. You can
+connect as many sites as you like. Connect a Site checks your
+application password before saving it, or fetches one with your browser.
+The password is kept in Windows’ Credential Manager.</li>
+<li><strong>Three kinds of save.</strong> Ctrl+S saves on this computer,
+Save Draft to Site sends an unpublished draft, and Publish or Update
+publishes after a confirmation that names the page and the site. Closing
+a document never publishes it.</li>
+<li><strong>Nothing is overwritten.</strong> If someone else changed the
+page while you worked, nothing is sent; you can compare, open their
+copy, or send yours anyway. Previous Versions keeps your earlier text
+and lists the site’s own history.</li>
+<li><strong>Open what is there:</strong> from a list, by its web
+address, or from your local drafts, as HTML or as Markdown. Anything
+Markdown cannot show is kept exactly.</li>
+<li><strong>Pictures.</strong> The Media Library and Insert Picture from
+This Computer, with alternative text, decorative pictures, captions,
+width and featured image. Check Before Publishing points out missing
+alternative text, vague links and skipped headings, and never stops you
+publishing.</li>
+<li><strong>Comments, categories and tags,</strong> managed from
+QUILL.</li>
+<li><strong>Tested against a real WordPress 7.1 site.</strong> Two
+things it taught us: WordPress 7.1 no longer gives its version in the
+REST index, so QUILL reads it from the site’s feed, which is how it
+knows the password can come back by itself; and several changes at once
+(merging categories, bulk fixes) are found where 7.1 really lists
+them.</li>
+<li><strong>One WordPress feature replaces the two Publishing
+features.</strong> It is on in every profile except Essential.</li>
+<li><strong>The old Publish submenu is gone.</strong> Publishing
+Connections, Browse Publishing Content and the rest are replaced by File
+&gt; WordPress. Your saved connections and their passwords carry over
+the first time you open it, and the Experimental tab’s “WordPress
+publishing connections” checkbox is gone with them.</li>
+<li><strong>Scheduling, autosaves and working offline.</strong> Schedule
+Publish asks for a date, a time and a time zone (the site’s own first),
+and on a scheduled item offers Change the Schedule or Publish Now. While
+a WordPress document is open it is autosaved every two minutes, on this
+computer and as your account’s autosave on the site, and Open offers an
+autosave newer than the site’s copy. Restore from Trash is in the Open
+list. After a new page is published, QUILL offers once to add it to a
+menu. A send that gets no answer re-reads the site before offering Try
+Again, so nothing is created twice, and a site that cannot be reached
+gets your sends queued, retried every two minutes and announced when
+they go through.</li>
+<li><strong>Running the site.</strong> Tools &gt; WordPress, with its
+Manage submenu: Comments with every status, replies under the comment
+they answer, Edit and Approve All, and the number waiting spoken the
+first time you use a site in a session; Menus and Navigation as a
+readable tree; Widgets, Site Map and Template Outline; Site Check and
+Site Settings, including the site icon; Users and Application Passwords;
+Plugins, Themes, Fonts and Synced Patterns; Bulk Edit with Undo, and
+Page Order; categories and tags you can convert, tidy when unused, and
+make the default. Sign Out This Site takes QUILL’s password away on the
+site itself. Every window knows your role first and says what it cannot
+do, instead of offering a button the site would refuse.</li>
+<li><strong>Check This Page works out of the box.</strong> axe-core
+4.14.0 ships with QUILL, so the visitor’s-eye check runs without
+downloading anything.</li>
+<li><strong>Media for listening.</strong> Tools &gt; WordPress &gt; More
+Media: Captions for Video, Transcript for Audio, Make a Listening
+Version, Name Embeds, and Publish a Document as a Page for a PDF or Word
+file.</li>
+<li><strong>Post This Episode, from QUILL Cast and Audio Studio, and
+Upload to WordPress, in Quill Converter.</strong> Each writes a
+WordPress draft with the audio, its transcript and show notes, and opens
+it in QUILL to finish and publish.</li>
+<li><strong>Listen and watch.</strong> Play a sound or video file
+straight from the Media Library, streamed from the site, with the same
+player keys as Quill Media Player, and captions read on request. View
+&gt; Play Media Here plays the one at the caret.</li>
+<li><strong>Enter works in the WordPress lists.</strong> In Open, Enter
+opens the selected page or post; in the Media Library it plays a sound
+or video file and inserts anything else.</li>
+<li><strong>The Media Library, all of it.</strong> Insert, and Tools
+&gt; WordPress with its More Media submenu: Insert from Media Library,
+Paste Image (a picture on the clipboard is uploaded and inserted),
+Upload Files (many at once, with duplicates caught first and progress
+spoken), Upload from Web Address, Image Size with Back to Earlier Size,
+Make a Smaller Copy (the original is never replaced), and the Alt Text
+Review for every picture in the page. The Media Library window gained
+Used In, Attach to This Page or Post, Set as Featured Image, Suggest Alt
+Text and Describe Image. A suggestion only fills the field; you decide
+what is saved.</li>
+<li><strong>Blocks, made plain.</strong> Insert, Format, View and Edit:
+Insert Block, with your site’s patterns and synced patterns and a short
+form for each block; Next Block, Previous Block and Where Am I, which
+say each block’s kind, place and first words; a Blocks window that
+moves, duplicates, removes, changes and groups blocks, one Undo step
+each, without touching the rest of the page; Block Settings, with the
+theme’s own colours and sizes by name and the contrast of each colour;
+and Preview Blocks, which reads what your site makes of its blocks
+without saving anything.</li>
+<li><strong>Checking the site the visitor’s way.</strong> Tools &gt;
+WordPress: Check This Page runs the published page through axe-core in a
+hidden Edge or Chrome, with plain explanations and Go to It. Check the
+Whole Site checks every page and post, groups the problems with counts,
+and offers Fix in Bulk for the safe fixes, with a preview, one
+confirmation and Undo Site Fix. Also: Site-wide Find and Replace, Write
+an Accessibility Statement, Palette Report, Mark Language, In Short, and
+a reading-level line in Properties.</li>
+<li><strong>The Picture Maker, the site logo and Visual Review.</strong>
+The Picture Maker, shared with QUILL Studio, makes a picture from a
+description, can suggest one from the page, and inserts it with an
+upload. Site Logo replaces the logo or icon with a named confirmation
+and Restore Earlier. Visual Review describes what a sighted visitor sees
+on the published page, on a desktop and a phone, and says what it will
+send to the AI before it sends it. Preview and Review tries a picture or
+logo width on a copy of the page.</li>
+<li><strong>WordPress commands are where Word keeps them.</strong> File
+&gt; WordPress holds what is about the whole page or the site. Inside a
+page, Insert has WordPress Block, the two Picture rows, Link to a Page
+on This Site and Make a Picture; Format &gt; WordPress has Block
+Settings, Image Size and Mark Language; View has WordPress Blocks and
+Preview Blocks; Edit &gt; WordPress has Next Block, Previous Block and
+Where Am I. The checks and the site’s upkeep are in Tools &gt;
+WordPress. The page commands are dimmed unless a WordPress page or post
+is in front of you.</li>
+<li><strong>New: Insert &gt; Link to a Page on This Site.</strong> Pick
+one of the site’s published pages or posts, and the link goes in, named
+by what you selected or by the page’s title.</li>
+<li><strong>Category and tag lists say whether each one is
+checked.</strong> They are separate check boxes now, so your screen
+reader announces the state as you move.</li>
+<li><strong>Fixed: a new page lost track of itself when first
+sent.</strong> The first Save Draft to Site or Publish on a page started
+in QUILL moved its file out from under the editor, so the next command
+said it was not a WordPress document. It now stays where it is.</li>
+</ul>
+<h3
+id="everything-in-the-menus-is-in-the-command-palette-2026-11-04">Everything
+in the menus is in the Command Palette (2026-11-04)</h3>
+<ul>
+<li><strong>The palette now finds every menu item.</strong> A few dozen
+items were in the menus and on their keys but had never been added to
+the palette. Among them were your recent files, your open documents and
+some of the braille tools, so typing their names found nothing. The
+palette now reads them from the menus each time it opens, named by the
+menus they sit in. A test checks that nothing in the menu bar is left
+out.</li>
+</ul>
+<h3 id="phonon-voices-2026-11-02">Phonon voices (2026-11-02)</h3>
+<ul>
+<li><strong>Phonon, a new offline Read Aloud voice.</strong> Gradium’s
+Phonon 31m now comes with QUILL and QUILL Studio: 37 English voices plus
+its own default, nothing to download, and nothing sent anywhere. Choose
+<strong>Phonon (neural, offline)</strong> in Manage Voices. It starts
+speaking quickly and reads numbers, dates and email addresses well.
+Speed runs from 0.85 to 1.3 times normal. It needs a processor from
+about 2015 or later; on an older one the voices are marked “needs a
+newer computer” and QUILL suggests Piper. Apache 2.0; Phonon builds on
+Pocket TTS and the Mimi codec by Kyutai.</li>
+</ul>
+<h3 id="vs-code-signals-sound-pack-2026-11-02">VS Code Signals sound
+pack (2026-11-02)</h3>
+<ul>
+<li><strong>A second sound scheme: VS Code Signals.</strong> The
+accessibility signal sounds from Visual Studio Code, used under the MIT
+licence, are in the Scheme list of the Sound Scheme window
+(Ctrl+Alt+Shift+O) in QUILL and QUILL Lite, and in the setup wizard.
+They play for errors, warnings, saving, finished and failed tasks, AI
+requests and answers, questions, dictation and recording starting and
+stopping, progress, compare differences, corrected words, and undo and
+redo. Anything they have no sound for stays quiet, or is spoken where
+the app speaks instead. Ink stays the default. The sounds come from
+microsoft/vscode at one pinned commit, converted to WAV and otherwise
+unchanged, with each file’s SHA-256 and Microsoft’s licence alongside
+them.</li>
+</ul>
+<h3 id="licensing-settled-2026-11-02">Licensing settled
+(2026-11-02)</h3>
+<ul>
+<li><strong>Every shipped document now states the licensing position as
+decided.</strong> QUILL is Jeff Bishop’s free personal project and is
+not used commercially; its own code is MIT. PyMuPDF (AGPL-3.0), libmpv,
+mutagen and pillow-heif are kept, and the exact source of every GPL,
+LGPL or AGPL part is published with each release beside LICENSE.txt and
+THIRD-PARTY-NOTICES.txt. AGPL section 13 does not apply to the desktop
+apps. BASS is used under Un4seen’s free non-commercial licence, DECtalk
+is not distributed or linked, and all 39 Piper voices stay. The family
+notices call their remaining entries maintainer notes rather than items
+that need review, and the release checklist attaches the copyleft source
+bundle instead of waiting on a legal review.</li>
+</ul>
+<h3
 id="agent-tasks-across-the-family-and-tell-me-when-this-changes-2026-11-01">Agent
 tasks across the family, and Tell Me When This Changes (2026-11-01)</h3>
 <ul>
@@ -454,7 +644,10 @@ row, ready to sign in.</li>
 which AI is in use; Enter on it opens Choose Your AI.</li>
 <li><strong>AI Usage</strong> is one list, a sentence for each AI you
 have set up, with Manage Usage. It replaces the free AI’s allowance
-window and the own key’s usage window. Everything is text.</li>
+window and the own key’s usage window. Everything is text. Disconnecting
+this computer from the free AI is now Delete (or Sign Out) on its row in
+Choose Your AI, and the support ID is in Help &gt; About and in the
+Connect window when you connect.</li>
 <li>An AI command the AI in use cannot do keeps its key, says what it
 needs in its menu name, sends nothing, and offers to switch with Yes as
 the default.</li>
@@ -751,9 +944,9 @@ Windows Media engine now resolves a selected endpoint from a fresh
 filtered query and removes its event handlers at termination. This fixes
 the <code>0xC0000005</code> process-exit crash after audio-device
 enumeration or switching.</li>
-<li>Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive,
-generated notices, Corresponding Source review and pre-release legal
-gate are documented; PDF behavior is unchanged.</li>
+<li>Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive and
+generated notices are documented, and its source is published with each
+release; PDF behavior is unchanged.</li>
 <li>Verify and document which family apps check for updates
 automatically at launch in the published privacy statement.</li>
 </ul>

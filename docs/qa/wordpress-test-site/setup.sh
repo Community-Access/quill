@@ -100,6 +100,40 @@ for f in wide-banner.png square-logo.png photo-volunteers.png decorative-divider
     docker exec -u 33 wordpress-test rm -f "/var/www/html/wordpress/$f"
   fi
 done
+# --- media for listening (wordpress.md 6.1a): made on the server, no downloads
+# A three-second 440 Hz tone (WAV, written by PHP in the WordPress container),
+# a five-second silent test-pattern video (MP4, made by ffmpeg in a throwaway
+# container, with a silent sound track so players treat it as playable), and
+# English captions named the way Add Captions names them (clip.en.vtt).
+docker exec -u 33 wordpress-test php -r '
+$rate = 8000; $n = $rate * 3; $data = "";
+for ($i = 0; $i < $n; $i++) { $data .= pack("v", (int) (8000 * sin(2 * M_PI * 440 * $i / $rate))); }
+$head = "RIFF" . pack("V", 36 + strlen($data)) . "WAVEfmt " . pack("VvvVVvv", 16, 1, 1, $rate, $rate * 2, 2, 16) . "data" . pack("V", strlen($data));
+file_put_contents("/tmp/quill-test-tone.wav", $head . $data);'
+if [ -z "$(wp post list --post_type=attachment --name=quill-test-clip --field=ID)" ]; then
+  docker run --rm -v "$(pwd)/seed:/out" jrottenberg/ffmpeg:6.1-alpine -loglevel error -y \
+    -f lavfi -i "testsrc=size=640x360:rate=25:duration=5" \
+    -f lavfi -i "anullsrc=channel_layout=mono:sample_rate=44100" \
+    -shortest -c:v libx264 -pix_fmt yuv420p -c:a aac -b:a 32k /out/quill-test-clip.mp4
+  printf 'WEBVTT\n\n00:00:00.500 --> 00:00:02.500\nThis is the QUILL test clip.\n\n00:00:02.500 --> 00:00:04.800\nCaptions read on request.\n' > seed/quill-test-clip.en.vtt
+fi
+for f in quill-test-tone.wav quill-test-clip.mp4 quill-test-clip.en.vtt; do
+  name="${f%.*}"; name="${name//./-}"
+  if [ -z "$(wp post list --post_type=attachment --name="$name" --field=ID)" ]; then
+    [ -f "seed/$f" ] || docker cp "wordpress-test:/tmp/$f" "seed/$f"
+    docker cp "seed/$f" "wordpress-test:/var/www/html/wordpress/$f"
+    # The title is the name, so the slug checked above is the one WordPress makes.
+    # A site that refuses .vtt uploads still gets the tone and the clip.
+    wp media import "/var/www/html/wordpress/$f" --title="${f%.*}" >/dev/null || \
+      echo "WordPress would not take $f; the captions test will say there are no captions."
+    docker exec -u 33 wordpress-test rm -f "/var/www/html/wordpress/$f"
+  fi
+done
+tone_url=$(wp post list --post_type=attachment --name=quill-test-tone --field=guid)
+tone_id=$(wp post list --post_type=attachment --name=quill-test-tone --field=ID)
+clip_url=$(wp post list --post_type=attachment --name=quill-test-clip --field=guid)
+clip_id=$(wp post list --post_type=attachment --name=quill-test-clip --field=ID)
+
 logo=$(wp post list --post_type=attachment --name=square-logo --field=ID)
 wp option update site_logo "$logo"
 wp option update site_icon "$logo"
@@ -232,6 +266,15 @@ about=$(post about page publish "About Us" "<!-- wp:paragraph --><p>A lasting pa
 post contact page publish "Contact" "<!-- wp:paragraph --><p>Write to us.</p><!-- /wp:paragraph -->" >/dev/null
 post team page publish "Meet the Team" "<!-- wp:paragraph --><p>Our presenters.</p><!-- /wp:paragraph -->" --post_parent="$about" >/dev/null
 post every-block page publish "Every Block" "$blocks" >/dev/null
+post listen-and-watch page publish "Listen and Watch" "<!-- wp:paragraph --><p>Play Media Here on each block below.</p><!-- /wp:paragraph -->
+
+<!-- wp:audio {\"id\":$tone_id} -->
+<figure class=\"wp-block-audio\"><audio controls src=\"$tone_url\"></audio><figcaption class=\"wp-element-caption\">A three-second test tone</figcaption></figure>
+<!-- /wp:audio -->
+
+<!-- wp:video {\"id\":$clip_id} -->
+<figure class=\"wp-block-video\"><video controls src=\"$clip_url\"></video></figure>
+<!-- /wp:video -->" >/dev/null
 post page-draft page draft "A Draft Page" "<!-- wp:paragraph --><p>Not public yet.</p><!-- /wp:paragraph -->" >/dev/null
 
 news=$(wp term get category news --by=slug --field=term_id)

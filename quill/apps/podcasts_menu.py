@@ -262,6 +262,13 @@ class CastMenuBarMixin:
         self._area_row(episode_menu, "notes", about_ep_id, "Ab&out This Episode...\tCtrl+Shift+A")
         note_id = wx.NewIdRef()
         self._area_row(episode_menu, "notes", note_id, "Add Ep&isode Note...\tCtrl+Alt+N")
+        # The shared WordPress code (wordpress.md 15 item 9); no access key, this
+        # menu has spent its letters. Ctrl+Alt+P is free on Cast's bar.
+        from quill.apps.podcasts_wordpress import post_selected_episode
+
+        wp_post_id = wx.NewIdRef()
+        episode_menu.Append(wp_post_id, "Post This Episode to WordPress...\tCtrl+Alt+P")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: post_selected_episode(self), id=wp_post_id)
         self._append_queue_run_submenu(episode_menu)
         mark_all_id = wx.NewIdRef()
         episode_menu.Append(

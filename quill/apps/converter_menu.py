@@ -69,6 +69,10 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     add(file_menu, "Convert from &URL...\tCtrl+U", host.convert_from_url)
     file_menu.AppendSeparator()
     add(file_menu, "Open Output &Folder\tCtrl+Shift+F", host.open_output_folder)
+    # WordPress as a destination (wordpress.md 15 item 9), through the shared code.
+    from quill.apps.converter_wordpress import upload_outputs
+
+    add(file_menu, "Upload to &WordPress...\tCtrl+Alt+W", lambda: upload_outputs(host))
     # Ctrl+, is Preferences in every app in the family (qc.md X-01). P is
     # Paste Files, so the access key is E.
     from quill.apps.converter_preferences import open_preferences

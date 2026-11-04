@@ -29,7 +29,7 @@ from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
-from quill.core.wordpress.menu import lite_rows as wordpress_lite_rows
+from quill.core.wordpress import menu as wordpress_menu
 
 __all__ = [
     "COMMANDS",
@@ -133,7 +133,7 @@ COMMANDS: list[CommandRow] = [
     # past F9 are where a once-in-a-while command goes).
     ("&File", "Reopen Last S&ession...", "Alt+Shift+F12", "cmd_reopen_last_session", ""),
     *EXPORT_ROWS,  # Export as HTML, shared with QUILL (commands_review.py)
-    *wordpress_lite_rows(),  # File > WordPress, QUILL's own table (wordpress/menu.py)
+    *wordpress_menu.lite_rows(),  # File > WordPress, QUILL's own table (wordpress/menu.py)
     ("&File", "", "", "", "sep"),
     # Ctrl+Alt+P, not the Ctrl+Alt+U it used to hold: that key is Check
     # for Updates in the eight other QuillVille apps, and P suits Page Setup.
@@ -809,8 +809,7 @@ COMMANDS: list[CommandRow] = [
     # files-and-formats dialog, abbreviations, and the two ways to change what QUILL Lite itself is.
     # Tools > Options is where Windows applications have kept their settings since Word 6, which is
     # why Preferences and Customize Features are here rather than in View.
-    # First in Tools, as in QUILL. No access key: every letter of it is taken in
-    # Tools, and a duplicate is worse than none (GATE-14). Ctrl+Shift+P reaches it.
+    # First in Tools, as in QUILL. No access key: all its letters are taken (GATE-14).
     ("&Tools", "Command Palette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
     ("&Tools", "", "", "", "sep"),
     ("&Tools", "&Spelling", "", "", "sub"),
@@ -1034,6 +1033,7 @@ COMMANDS: list[CommandRow] = [
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
     *HELP_ROWS,  # the Help menu (commands_help.py)
+    *wordpress_menu.lite_placed_rows(),  # WordPress, at the foot of Edit to Tools
 ]
 
 #: Menu-bar labels, in bar order, deduplicated by first appearance.

@@ -91,6 +91,7 @@ class WordPressOpenCommands:
             list_label=f"&{kind.title()}s:",
             list_help="Each row says the title, its status, and when it last changed.",
             rows=[i.spoken() for i in items],
+            on_enter=open_one,
             actions=[
                 dlg.Action("&Open", "Open the selected item in the editor.", open_one),
                 dlg.Action(

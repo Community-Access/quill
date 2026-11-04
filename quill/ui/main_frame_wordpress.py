@@ -17,7 +17,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from quill.core.wordpress.menu import WORDPRESS_ROWS, Submenu, all_rows
+from quill.core.wordpress.menu import DOCUMENT_ONLY, PLACES, Submenu, all_rows
 
 
 class QuillWordPressHost:
@@ -131,19 +131,50 @@ class WordPressMenuMixin:
         if ids is None:
             import wx
 
-            ids = {row[0]: int(wx.NewIdRef()) for _sub, row in all_rows()}
+            # Keep the refs: wx releases an id when its WindowIDRef is collected,
+            # and Append then refuses it ("id should first be reserved").
+            refs = {row[0]: wx.NewIdRef() for _sub, row in all_rows()}
+            self._wordpress_id_refs = refs
+            ids = {command_id: int(ref) for command_id, ref in refs.items()}
             self._wordpress_ids = ids
         return ids
 
     def _append_wordpress_file_menu(self, file_menu: Any) -> None:
         """File > WordPress, when the WordPress feature is on (wordpress.md 12)."""
-        import wx
+        if self._feature_enabled("core.wordpress"):  # type: ignore[attr-defined]
+            self._fill_wordpress_menu(file_menu, PLACES["file"][1])
 
+    def _place_wordpress_rows(self, menus: dict[str, Any]) -> None:
+        """The rows that live in Edit, View, Insert, Format and Tools (wordpress.md 12).
+
+        *menus* maps a place in :data:`PLACES` to the built ``wx.Menu``; each
+        place's rows go at its foot, after a separator.
+        """
         if not self._feature_enabled("core.wordpress"):  # type: ignore[attr-defined]
             return
-        submenu = self._fill_wordpress_menu(wx.Menu(), WORDPRESS_ROWS)
-        file_menu.AppendSeparator()
-        file_menu.AppendSubMenu(submenu, "&WordPress")
+        for place, menu in menus.items():
+            if place != "file" and menu is not None:
+                self._fill_wordpress_menu(menu, PLACES[place][1])
+
+    def _refresh_wordpress_menu_items(self, menu_bar: Any) -> None:
+        """Enable the page commands only while a WordPress document is in front.
+
+        Elsewhere they are dimmed; reached another way (the Command Palette),
+        the command itself says why.
+        """
+        ids = getattr(self, "_wordpress_ids", None)
+        if not ids or menu_bar is None:
+            return
+        host = QuillWordPressHost(self)
+        try:
+            is_wordpress = self._wordpress().local.copy_for_path(host.current_path()) is not None
+        except Exception:  # noqa: BLE001 - a menu refresh must never raise
+            is_wordpress = False
+        for _path, (command_id, _title, handler) in all_rows():
+            if handler in DOCUMENT_ONLY and command_id in ids:
+                item = menu_bar.FindItemById(ids[command_id])
+                if item is not None:
+                    item.Enable(is_wordpress)
 
     def _fill_wordpress_menu(self, menu: Any, rows: tuple[Any, ...]) -> Any:
         """Put *rows* in *menu*, nesting each :class:`Submenu` as it comes."""

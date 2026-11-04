@@ -79,6 +79,8 @@ of you.
     live alongside QUILL.
 15. [Chapter 15: Help, updates and support](#chapter-15-help-updates-and-support).
     F1, tutorials, updates, release channels and getting help from a person.
+16. [Chapter 16: WordPress](#chapter-16-wordpress).
+    Writing, publishing and looking after a WordPress website.
 
 After the chapters come the appendices: the Developer Console, writing your
 own AI skills, the full list of emoji QUILL can insert, notes from earlier
@@ -337,6 +339,14 @@ Your search can be looser than the exact name:
 
 As you arrow through the results, QUILL says each command's shortcut along with
 its name. Before long you will find you reach for the key and not the palette.
+
+**Everything in the menus is in the palette.** That includes the rows that
+change as you work: your recent files, your open documents, and the lists of
+templates, sound packs and voices. Each one is named by the menus it sits in,
+so a recent file is listed under File and Open Recent, with its number and
+name. Typing the name of
+anything you can see in a menu finds it. If it is dimmed in the menu right now,
+the palette tells you so rather than doing nothing.
 
 Every on/off command in the palette says which way it is set right now, for
 example **Toggle Soft Wrap (currently On)** and
@@ -17663,8 +17673,641 @@ website,
 [Your first hour with QUILL](https://www.quillforall.org/tutorials/01-your-first-hour.html)
 covers the same ground at a gentler pace.
 
-That is the last chapter. The appendices follow, including the Glossary of
-QUILL Terms and Getting help, for whenever you need them.
+The last chapter, WordPress, is for anyone who looks after a website. After
+it come the appendices, including the Glossary of QUILL Terms and Getting
+help, for whenever you need them.
+
+## Chapter 16: WordPress
+
+If you look after a WordPress website, QUILL can write its pages and posts,
+open the ones already there, and publish your changes. You work in the same
+editor you use for everything else, with Find, spelling, dictation and all
+your usual keys. Your site keeps its theme and its look. QUILL works on the
+words and pictures inside it, and can help you look after the site itself.
+
+Nothing reaches your site until you choose to send it. Saving with **Ctrl+S**
+only ever saves on your computer.
+
+**Turning it on.** WordPress is on in every feature profile except Essential.
+If you do not see **File > WordPress**, choose another profile, or switch on
+WordPress by itself, in **Profiles and Features...**.
+
+### Where everything is
+
+The commands sit where you would look for them in Word. Anything about a
+whole page or post, or about your sites, is in **File > WordPress**. What you
+do inside a page joins the ordinary menus. Looking after the site is in
+**Tools > WordPress**.
+
+| Menu | What is there |
+|---|---|
+| **File > WordPress** | New, Open, the three saves, Properties, versions, Trash, your sites |
+| **Insert** | Blocks, pictures, links to your own pages, Make a Picture |
+| **Format > WordPress** | Block Settings, Image Size, Mark Language |
+| **View** | WordPress Blocks, Preview Blocks |
+| **Edit > WordPress** | Next Block, Previous Block, Where Am I |
+| **Tools > WordPress** | Checking, the Media Library, comments, menus, settings, and the More Media and Manage submenus |
+
+The commands about the page in front of you are dimmed unless a WordPress
+page or post is open. If you reach one another way, such as from the Command
+Palette, QUILL tells you why it cannot run and how to open one. The site-wide
+commands work from anywhere, and ask which site when you have more than one.
+
+Every command is also in the Command Palette (**Ctrl+Shift+P**). Type
+"WordPress", or part of a command's name.
+
+### Connecting your site
+
+You need three things: your site's address, your WordPress username, and an
+**application password**. An application password is a separate password
+WordPress makes for one app. It is not the password you sign in with, and you
+can take it away again at any time from your WordPress profile.
+
+1. Choose **File > WordPress > Connect a Site...**.
+2. Type your site's address, for example `https://example.org`.
+3. Now get the password. There are two ways:
+   - **The easy way:** press **Get Password with My Browser**. Your browser
+     opens your site's own approval page. Sign in if it asks, then choose
+     Approve. On a newer site, the password comes straight back to QUILL, and
+     you hear "Connected to" and your site's name. On an older site,
+     WordPress shows you the password with a Copy button. Copy it, come back
+     to QUILL, and paste it into the box that is waiting for it. If it is
+     already on your clipboard, QUILL offers it for you.
+   - **By hand:** in your WordPress profile, under Application Passwords,
+     make a new one called QUILL, copy it, and paste it into **Application
+     password**. Type your username too, then press **Connect**.
+
+QUILL checks the connection before it saves anything. If something is wrong,
+it tells you what in plain words: a password that does not belong to that
+account, a site that is not using HTTPS, or a security plugin that is
+blocking the connection. Your password is kept in Windows' own Credential
+Manager, never in a settings file.
+
+**More than one site?** Connect each one the same way.
+**File > WordPress > Sites...** lists them all, with your role on each. From
+there you can rename a site, check it still works, make it your default, or
+remove it. Removing a site only forgets it on this computer. Nothing on the
+site changes.
+
+**File > WordPress > Switch Site...** changes your default site, which is
+where New and Open start. A document always stays with the site it came
+from, so switching never moves anything.
+
+**What you may do depends on your role.** QUILL asks the site what your
+account can do before it opens a window. If your role cannot use a window at
+all, you hear one sentence, such as "Your account on Community Radio is an
+Author, which cannot manage users", and nothing opens. If it can use part of
+a window, you only get the buttons that will work.
+
+> **WordPress.com.** Signing in to WordPress.com is coming in a later build.
+> If your WordPress.com plan allows plugins, you can connect now with an
+> application password at your site's own address.
+
+**If you used Publish before.** The old Publish submenu of the File menu is
+gone, and File > WordPress does everything it did. Your saved connections
+are not lost: QUILL brings them in the first time WordPress loads, with the
+same saved passwords, and documents you opened from a site stay linked to
+it.
+
+### Writing something new
+
+Choose **File > WordPress > New Post...** for a dated article in your blog or
+news, or **File > WordPress > New Page...** for something that stays put,
+like About or Contact.
+
+The window asks for:
+- the site;
+- the title;
+- the slug, which is the last part of the address. It fills itself in from
+  the title as you type; leave it alone to keep it.
+- Markdown or HTML.
+
+For a post, it also lists your site's categories and tags to check.
+
+**Markdown or HTML?** Markdown is the easy one: two number signs and a space
+start a heading, and a dash and a space start a bullet. QUILL turns it into
+what WordPress needs when you send it. HTML gives you exact control. You
+cannot switch a document between the two later, so nothing is ever read the
+wrong way.
+
+**Do not repeat the title as a heading.** Your theme already shows the title
+at the top of the page, so start straight in with your first paragraph.
+
+### Opening what is already there
+
+**File > WordPress > Open Page or Post...** asks which site, then Posts or
+Pages, and lists them with the newest changes first. Each row says the title,
+whether it is published, a draft, scheduled, private or in the Trash, and
+when it last changed. Type in **Find** and press **Enter** to narrow the
+list. Press **Enter** on a row to open it.
+
+QUILL then asks how you want to see it:
+- **HTML** shows it exactly as the site has it.
+- **Markdown** is easier to read. Anything Markdown cannot show, such as a
+  contact form, sits on its own short protected line, and is kept exactly as
+  it was.
+
+**An unsaved version.** If the page has an autosave newer than the copy on
+the site, from a browser or from QUILL, you hear when it is from, such as
+"There is an unsaved version from yesterday, 4:12 PM. Open that instead?".
+Choose which one to open.
+
+**File > WordPress > Open by Web Address...** is the quick way when someone
+sends you a link to the page that needs fixing. Copy the link first, and
+QUILL picks it up from the clipboard. It works out which of your sites the
+link belongs to, even if it is not your default.
+
+**File > WordPress > Open Local Draft...** lists everything you have written
+for any of your sites that is saved on this computer.
+
+### Saving and publishing
+
+There are three kinds of save, and they are deliberately separate:
+
+| Command | What happens |
+|---|---|
+| **Ctrl+S** | Saves on this computer. Nothing is sent. |
+| **Save Draft to Site** | Sends an unpublished draft to the site. Visitors cannot see it. |
+| **Publish or Update...** | Publishes it, or updates the published page, after you confirm. |
+
+Both of the last two are in **File > WordPress**. Closing a WordPress
+document never publishes it.
+
+**Before it publishes, QUILL checks the page for you.** The confirmation
+names the title and the site, and says either "Ready to publish: no problems
+found" or how many things are worth a look. For example: a picture with no
+alternative text, a link that just says "click here", or a heading that
+skips a level. None of these stop you. Read them, then choose **Publish** or
+**Publish Anyway**. You can run the same check at any time with
+**Tools > WordPress > Check Before Publishing...**, and **Go to It** takes
+you to each one.
+
+After publishing, the page's address is on your clipboard.
+**File > WordPress > Open on Site** opens it in your browser, and
+**File > WordPress > Copy Address** copies it again later. A draft's address
+only opens for someone signed in to WordPress, and QUILL says so when it
+copies one.
+
+**A new page is not in your menus yet.** The first time a page is published,
+QUILL asks "Add it to a menu?". **Yes** opens Menus with the page added at
+the end. Choose "No, and stop asking" to turn the question off for that
+site.
+
+**If you are a Contributor** on a site, you cannot publish there yourself.
+QUILL knows this from your account, and your publish sends the post for
+review instead.
+
+**If someone else changed the page while you were working,** QUILL will not
+overwrite their work. Nothing is sent. Instead it tells you who changed it
+and when, and offers three choices: **Compare the two**, **Open the site's
+copy**, or **Send mine anyway**, which asks once more.
+
+### Scheduling
+
+To publish later, open the page or post and choose
+**File > WordPress > Schedule Publish...**. Type the date, such as
+2026-11-20, and the time, such as 16:15 or 4:15 PM, and pick the time zone.
+Your site's own time zone is at the top of the list. QUILL reads the date and
+time back to you with the site's name before anything is sent. If the time
+is in the past, or is not one QUILL can read, the window opens again with the
+problem at the top.
+
+The page then shows as Scheduled in Open. To move it, or publish it straight
+away, open it and choose Schedule Publish again. You get two choices:
+**Change the schedule** or **Publish now**.
+
+### Autosaves and working offline
+
+**Autosaves.** While a WordPress document is open, QUILL keeps an autosave
+every two minutes whenever the text has changed: on this computer, and, once
+the page is on the site, as your account's autosave there too. It is the
+same autosave the WordPress editor keeps, so if your computer dies, the
+words are safe on the site. You hear nothing when it works. If it stops
+working, QUILL tells you once.
+
+**When the connection drops.** If a send gets no answer, your copy stays on
+this computer and QUILL checks the site before doing anything else, so
+nothing is ever created twice. If the page did arrive, you hear the usual
+result. If it did not, QUILL offers **Try Again**.
+
+If the site cannot be reached at all, the send waits in a queue. You hear,
+for example, "Community Radio cannot be reached, so 'Hours' is queued".
+QUILL tries again every two minutes and tells you when it goes through:
+"Back online: 2 drafts sent to Community Radio". A queued publish is never
+sent over somebody else's newer change. QUILL checks first, and if the site's
+copy changed, it tells you and sends nothing.
+
+A schedule is never queued. It is a time you chose, and sending it late could
+be worse than not sending it, so QUILL tells you it failed instead.
+
+### Properties, versions and the Trash
+
+**File > WordPress > Properties...** holds everything about the page apart
+from its words:
+- the title, slug and status;
+- a short excerpt;
+- categories and tags, for a post;
+- whether comments are allowed;
+- whether a post stays at the top of the blog;
+- an optional password for reading it;
+- the reading level, such as "about 9th grade, 14 words per sentence",
+  worked out on this computer.
+
+Changes are kept with your copy and go to the site when you next send.
+
+**File > WordPress > Previous Versions...** lists earlier versions, newest
+first. Each one says when it was kept and why: when you opened it, when you
+published it, just before the site's copy was replaced, and so on. It also
+lists the site's own history. **View...** shows the whole version, so you can
+copy one paragraph. **Restore** puts that version in the editor. It never
+publishes by itself.
+
+**File > WordPress > Compare with Site** shows the lines that differ between
+your copy and the site's.
+
+**File > WordPress > Move to Trash...** moves the page to WordPress's Trash,
+after naming it and the site. It is not deleted.
+
+**Restore from Trash.** In **File > WordPress > Open Page or Post...**, type
+"trash" in Find to list only the Trash, then press **Restore from Trash**.
+You hear "'Hours' is back on Community Radio as a draft". Open it and publish
+it again when you are ready.
+
+### Blocks
+
+WordPress keeps most page layout in blocks: buttons, columns, embeds and the
+patterns your site's designer made. In QUILL a block is just a piece of your
+document with a name. Nothing floats and nothing is dragged.
+
+Ordinary writing stays ordinary. In a Markdown document a paragraph, heading,
+list, quote, picture or table is plain Markdown. The other blocks are short
+lines starting with three colons, such as
+`::: button "Book a session" https://example.org/book`. A block QUILL cannot
+write in Markdown, such as a plugin's form, shows as one protected line and
+goes back to your site exactly as it came.
+
+- **Insert > WordPress Block...** lists every block you can add: the
+  everyday ones first, then your site's other blocks, its patterns and its
+  synced patterns. Type part of a name in Find and press **Enter** to narrow
+  the list. Choose **Insert**, fill in the short form (a button asks for its
+  text and link, columns ask how many), and the block goes in after the
+  block you are in.
+- **Edit > WordPress > Next Block** and **Previous Block** move from block to
+  block and say what each one is, where it is and how it starts, for example
+  "Image block, 4 of 12: Volunteers at the spring fair".
+- **Edit > WordPress > Where Am I** says the block you are in and what it sits
+  inside, for example "Paragraph block, inside column 2 of Columns".
+- **View > WordPress Blocks...** opens a list of every block in the document.
+  From it you can go to a block, move it up or down, duplicate it, remove it,
+  change it (a paragraph into a heading, a list into paragraphs), or put it
+  in a group and take it out again. Each change is one step, so Undo takes it
+  back, and nothing else in your document moves.
+- **Format > WordPress > Block Settings...** opens a form for the block you
+  are in: alignment, width, colours, font size and any other setting it has.
+  Colours and sizes come from your site's theme by name, and every colour
+  says how well it reads against what it sits on, for example "Accent (dark
+  green), 7.4 to 1, passes". You can still choose a faint one; QUILL tells
+  you it is hard to read. In a Markdown document, settings Markdown cannot
+  write turn the block into a protected line, and QUILL asks first.
+- **View > Preview Blocks** asks your site to show its blocks, without saving
+  anything, and reads the result as plain text. Use it to hear what a
+  latest-posts list or a plugin's block will really say before you publish.
+
+**Insert > Link to a Page on This Site...** lists your site's published pages
+and posts. Choose one and the link goes in at the caret, using the words you
+selected, or the page's title when nothing is selected.
+
+### Pictures and the Media Library
+
+**Inserting a picture.** **Insert > Picture from the Media Library...** puts
+something already on your site at the caret. **Insert > Picture from This Computer...**
+uses a file of yours and uploads it when you next send the
+page. Either way the picture window opens, and that is where you say
+everything about it:
+- **Alternative text:** what the picture tells someone who cannot see it.
+  Describe its purpose in a sentence or two, read out any words it shows,
+  and leave out "image of".
+- **Decorative:** check this for a divider or a texture, so screen readers
+  skip it.
+- **Caption:** visible text under the picture, for names or credits.
+- **Display width:** how wide it shows. The proportions are always kept.
+- **Use as featured image:** the picture that stands for the whole page.
+- **Link to:** where the picture links to, if anywhere.
+
+Sound and video from the library go in as players, and documents as a link.
+
+**Suggest Alternative Text** and **Describe Image** use the AI you chose in
+Choose Your AI, the same way Ask About an Image does. QUILL tells you what it
+sends before it sends anything. Suggest sends the picture and the text
+around it, and puts the suggestion in the field for you to read and change.
+Nothing is saved until you choose OK or Insert. If the AI thinks the picture
+is decorative, QUILL says so instead of inventing words. For a chart it may
+also write a fuller description, and QUILL offers to add it as a paragraph
+after the picture. Describe Image gives you a longer description in a window
+you can read and copy. If AI is switched off, QUILL says so and sends
+nothing.
+
+**Tools > WordPress > Media Library...** lists every file on your site,
+newest first: its title, type, size, alternative text and when it was
+uploaded. Type in Find and press **Enter** to narrow the list. The details
+under the list say more about the file you are on, including where it is
+used. On a site with 500 files or fewer, QUILL works this out while the
+window is open and tells you when it is ready. On a bigger site, choose
+**Used In** to search for the one you are on.
+
+From the Media Library you can insert the file, attach it to the page or
+post you have open, make it the featured image, suggest or describe a
+picture, edit its alternative text, copy its address, or remove it.
+WordPress has no Trash for media, so before removing a file, QUILL tells you
+how many pages use it and saves a copy in your Documents folder, under
+"Removed from WordPress".
+
+**Tools > WordPress > Alt Text Review...** lists every picture in the page
+with its alternative text. It points out the ones with none, the ones that
+are just a file name, the very long ones and the ones that start "image of".
+You can edit each one, mark it decorative, ask your AI for a suggestion, or
+go straight to it.
+
+**Format > WordPress > Image Size...** changes how wide a picture shows. Put
+the caret on the picture and choose from the sizes WordPress made of it.
+Nothing is cropped, and only the page changes, not the file. Next time, Back
+to Earlier Size is at the top of the list, even after you have saved and
+closed the page.
+
+The rest is in **Tools > WordPress > More Media**:
+- **Upload Files...** sends one or many files at once. For each one QUILL
+  asks for a title and caption, and for a picture its alternative text
+  first. Cancel skips that file and the rest carry on. If the same file is
+  already on the site, QUILL asks whether to use the one already there. You
+  hear how far along it is, such as "Uploading 2 of 5", and at the end what
+  was uploaded and what was not, and why.
+- **Upload from Web Address...** fetches a picture, sound, video or document
+  from an address starting https, then uploads it to your site. It will not
+  fetch an ordinary web page, an address that is not secure, or a file over
+  64 MB.
+- **Paste Image** takes a picture you have copied, asks for its alternative
+  text, uploads it and puts it at the caret.
+- **Make a Smaller Copy...** is for a picture whose file is too big. Choose
+  the largest width and a format: JPEG for photographs, WebP for smaller
+  still, PNG for sharp edges. The copy is made on your computer, QUILL tells
+  you the size before and after, and only then asks whether to upload it as
+  a new file. Your original stays in the library.
+
+### Picture Maker, site logo and Visual Review
+
+These use the AI you chose in Choose Your AI. QUILL always tells you what it
+is about to send, and to whom, before it sends anything.
+
+**Insert > Make a Picture...** opens the Picture Maker, the same one QUILL
+Studio uses. Describe the picture you want: the subject, the style, the
+colours, and anything to avoid. Choose a shape (wide, square or tall) and a
+background: Normal, Solid colour, or Transparent when your provider can make
+one. Press **Make the Picture**. QUILL names the provider and model and asks
+first. The picture is saved on your computer only, and a description of what
+was actually drawn opens straight away.
+
+Not sure what to draw? **Suggest from Page Content** reads the page, or just
+the selection, and fills in a description for you to change. Every version is
+kept. To change one, type only the change, such as "make the sky darker", and
+press **Make the Change**. **Insert into Document** opens the usual picture
+window, and the picture is uploaded to your Media Library when you press
+Insert. A made picture is an illustration, never a screenshot. If you ask for
+an app's screen or dialog, QUILL says so once.
+
+**Tools > WordPress > More Media > Site Logo...** shows your site's logo and
+its small site icon: the file, its real size and its alternative text.
+Replace either one from the library, from a file, or from the Picture Maker.
+QUILL names the site and the new picture and asks before it changes
+anything. The old image stays in your Media Library, and **Restore Earlier**
+puts back anything QUILL replaced. Changing the logo needs the Administrator
+role.
+
+**Tools > WordPress > Visual Review...** tells you what a sighted visitor sees
+on a published page. QUILL opens the public page in Microsoft Edge, or Chrome
+if Edge is missing, hidden in the background, at a desktop width and a phone
+width. It measures every picture: its size, whether it spills out of the
+page, whether it loaded, and its alternative text. Then it tells you what it
+would send to your AI, and sends it only if you say yes. The report starts
+with anything you should know, such as unpublished changes not being in it,
+then the review, then the measurements. Each finding is labelled likely a
+problem, a design choice, or worth checking. QUILL never downloads a browser.
+
+**Tools > WordPress > More Media > Preview and Review...** does the same with
+a change you have not made yet. Choose a picture on the page, or the site
+logo, and type a width. QUILL shows that width in its captured copy only, so
+nothing on your site changes. It works on published pages. A draft can only
+be opened by someone signed in to WordPress in a browser, so QUILL explains
+that instead.
+
+### Captions, transcripts and listening versions
+
+These are in **Tools > WordPress > More Media**. The heavy work happens on
+this computer, and nothing reaches your site until you have reviewed it.
+
+**Captions for Video...** Choose a video from the site's Media Library. QUILL
+makes captions on this computer, with the same transcription it uses
+everywhere else, so the video is never sent anywhere to be transcribed. When
+they are ready, Review Captions opens. Each caption is one line: its time,
+then its words. Correct anything misheard, change "Speaker 1" to a name, and
+add sounds like [applause]. When you choose OK, QUILL uploads the captions
+and connects them to the video in your page, so the player's CC button
+works. If the video is not in the page yet, QUILL puts it at the caret with
+its captions.
+
+**Transcript for Audio...** does the same for a sound file. After you review
+the transcript, choose whether it goes under the player, folded away as
+"Read the transcript", or in full.
+
+**Make a Listening Version...** reads your page aloud with your Read Aloud
+voice, saves it as an MP3, uploads it, and puts a player at the top labelled,
+for example, "Listen to this post (6 minutes)". Run it again after you change
+the page, and QUILL tells you the recording is out of date and offers to make
+it again. The new recording replaces the old one.
+
+**Name Embeds** asks your site what every embedded YouTube, Vimeo or podcast
+link is, and gives each one without a caption its title, so nobody meets an
+unnamed frame. A report says what each one turned out to be.
+
+**Publish a Document as a Page...** Choose a PDF or Word file. QUILL converts
+it on this computer, uploads the original to the Media Library, and opens the
+text as a new page draft with a link to the original at the top. Many people
+find a page easier to read than a PDF. A scanned PDF is only read with OCR
+after you say yes.
+
+Your page changes go to the site only with your next Save Draft to Site or
+Publish.
+
+**From the other family apps.** QUILL Cast can post an episode you have
+downloaded, with its player, show notes, chapters and transcript. QUILL
+Studio can post a finished recording the same way. Quill Converter can
+upload the files it made straight to your Media Library. Each app's own user
+guide says where the command is. Cast and QUILL Studio write a local
+WordPress draft and open QUILL with it. If QUILL cannot start, the draft
+waits for you under **File > WordPress > Open Local Draft...**.
+
+### Checking your site
+
+**Tools > WordPress > Check Before Publishing...** is the check Publish runs
+for you, on the page in front of you.
+
+**Tools > WordPress > Check This Page** looks at a page the way a visitor gets
+it: your words plus the theme, menus and footer around them. QUILL opens the
+published page in a hidden copy of Edge or Chrome and checks it with
+axe-core, the same checker web developers use. No AI is involved. If you have
+no WordPress page open, it checks your site's home page. For a draft, use
+Check Before Publishing instead.
+
+You hear one line first, such as "Community Radio, Schedule: 3 problems, 1 to
+check". Then a list opens with one row for each kind of problem. Each row
+says how many places have it, whether it is in your content or in the
+theme, and who it affects.
+- **Explain** gives the WCAG rule by number and name, and why it matters.
+- **Go to It** takes you to that place in your document, when the problem is
+  in your own writing.
+- **Write a Note for the Theme Author** makes a plain report of a theme
+  problem, ready to paste into a support forum or an email.
+- **Page Shape** tells you how a screen reader meets the page: its
+  landmarks, every heading including the theme's own, and how many links and
+  buttons there are.
+
+**Tools > WordPress > Check the Whole Site...** checks every published page
+and post. It asks whether to check just your content, which is fast, or the
+visitor's view as well, which is slower and tells you how far it has got.
+The report groups problems, most common first, such as "Images with no alt
+text: 41, on 17 pages". **Pages** lists the pages with that problem so you
+can open one. QUILL remembers each run, so next time it tells you how the
+count compares.
+
+**Fix in Bulk**, in that report, is offered for problems QUILL can fix
+without your words:
+- links that open a new tab get "(opens in a new tab)";
+- videos stop playing by themselves;
+- alternative text loses a leading "Image of";
+- a Heading 1 in the body becomes a Heading 2.
+
+You see every change first. Then one confirmation names your site and the
+number of pages. QUILL keeps a copy of each page as it was, on your computer.
+**Tools > WordPress > Undo Site Fix...** lists those fixes and puts the pages
+back. A page someone has changed since is left alone, and QUILL tells you
+which.
+
+**Tools > WordPress > Site-wide Find and Replace...** changes words across
+every page and post, such as a phone number that changed. You see every
+match in its sentence and choose which to include. Then one confirmation,
+and Undo Site Fix can put it all back. Block settings are left alone unless
+you choose Include Block Settings.
+
+**Tools > WordPress > Write an Accessibility Statement...** opens a new page
+draft saying you aim for WCAG 2.2 AA, when you last checked the site and what
+it found, and how to reach you. It is yours to edit, and nothing goes to the
+site until you send it.
+
+**Tools > WordPress > Palette Report** lists every colour in your theme
+against every background, with its contrast and whether it is strong enough
+for text.
+
+**Format > WordPress > Mark Language...** marks the selected words as another
+language, such as a French quotation in an English post, so a visitor's
+screen reader switches voice. Type a name such as French, or a code such as
+fr. With nothing selected, it marks the whole page.
+
+**Tools > WordPress > In Short...** asks your AI for a two- or
+three-sentence summary and puts it at the top of the page as an "In short"
+paragraph for you to edit. Undo takes it out.
+
+### Comments, categories and tags
+
+**Tools > WordPress > Comments...** lists the comments waiting for you.
+Replies sit under the comment they answer, one level deeper, so you read a
+conversation in order. **Show** switches between Waiting, Approved, Spam and
+Trash. Each list has the buttons that make sense for it: Approve, Unapprove,
+Spam, Not Spam, Trash and Restore, plus Reply, Edit and Open on Site.
+**Approve All** approves every waiting comment after one question.
+
+The first time you use a site in a session, you hear how many comments are
+waiting, such as "Community Radio: 3 comments waiting". The **Waiting Count
+on First Use** button turns that off or on for that site.
+
+**Tools > WordPress > Categories and Tags...** lists every category or tag
+with how many posts use it. You can add, rename, delete, or merge one into
+another; merging moves every post across first. You can also convert a
+category to a tag or back, use **Find Unused** to tidy away the ones no post
+uses, and, as an administrator, choose the default category.
+
+### Running your site
+
+These are all in **Tools > WordPress**, and work on the site of the document
+you have open, or ask which site.
+
+**Menus...** shows a menu as a tree, such as "Sessions, page, level 1, 3 of
+7". Add a page, post, category or any link; rename an item; move it up,
+down, in under the item above, or out a level; or remove it. **Locations**
+chooses where the theme shows the menu. **Check Menu** finds items with no
+name and links to pages that are drafts or gone. Block themes keep their
+menus in Navigation blocks; those open in the same window.
+
+**Site Check** lists what the site says about its own health, critical things
+first: the WordPress version, HTTPS, the time zone, readable addresses, and
+the site's own health tests.
+
+**Site Settings...** shows the site's title, tagline, language, time zone,
+date format, front page, posts page, site icon and more. Choose one and
+Change. QUILL tells you the old and new value and asks before it saves. The
+site language matters: it decides which voice a visitor's screen reader
+uses.
+
+The rest is in **Tools > WordPress > Manage**:
+- **Users...** lists everyone with an account and their role. Administrators
+  can add a user, edit, change a role and delete. QUILL makes a strong
+  password for a new user and never shows it; they choose their own with
+  "Lost your password?". Deleting asks who gets the person's posts first.
+  **My Profile** changes your own name, biography and website.
+- **Application Passwords...** lists every app and computer signed in to the
+  site, and marks this computer's. **Revoke** shuts off an old laptop or app.
+- **Plugins...** lists what is installed, says what the well-known
+  accessibility plugins do, and activates, deactivates, installs and deletes
+  them. A new plugin is installed by its WordPress.org name, switched off at
+  first.
+- **Themes...** lists the themes and what the active one supports.
+  WordPress does not let apps switch themes, so **Open in Dashboard** takes
+  you to the right page.
+- **Fonts...** describes each font in words, such as "serif, suits body
+  text", and installs more from the site's collections.
+- **Synced Patterns...** lists reusable patterns and where each is used. You
+  can edit, rename, unsync (each use becomes ordinary blocks), delete an
+  unused one, or make a new one from your selection.
+- **Widgets...** lists every widget by the area the theme shows it in. Add
+  Text, Edit, Move to Area, or Remove, which sends it to Inactive Widgets.
+- **Site Map...** answers "where does this page live?": every page under its
+  parent, then every post under its categories, with the menus that link to
+  each.
+- **Template Outline** lists a block theme's templates and their blocks,
+  starting with the one your open page uses. It explains things on a page
+  that are not in the page.
+- **Bulk Edit...** lists your posts or pages. Select the ones you want, then
+  change their status, author, comments setting or parent page, or add a
+  category or tag. QUILL asks once, naming how many and which site, and
+  **Undo Bulk Edit** puts them back.
+- **Page Order...** shows your pages as a tree. Moving one sets its parent
+  and its place.
+
+### Signing out of a site
+
+**Tools > WordPress > Manage > Sign Out This Site...** takes QUILL's password
+off the site itself and forgets it on this computer. It asks whether to
+remove the site from QUILL or keep it, so you can connect again later. Your
+local drafts stay either way.
+
+### Keys
+
+The WordPress commands have no keys of their own yet. They are coming, and
+this chapter will teach them when they arrive. Until then:
+- **Alt+F**, then **W**, opens File > WordPress, and every row there has an
+  underlined letter.
+- The other menus show their WordPress rows near the end, so the Alt key
+  and the arrow keys reach them the same way.
+- Every command is in the Command Palette (**Ctrl+Shift+P**). Type
+  "WordPress", or part of the command's name, and press **Enter**.
 
 ## A last word
 

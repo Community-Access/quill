@@ -949,6 +949,7 @@
   "quill/ui/wordpress_media_dialogs.py::choose_picture::wx.FileDialog": "native",
   "quill/ui/wordpress_picture_commands.py::ask_open_picture::wx.FileDialog": "native",
   "quill/ui/wordpress_picture_commands.py::ask_save_picture::wx.FileDialog": "native",
+  "quill/ui/wordpress_player_window.py::MediaPlayerWindow::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/wordpress_schedule_dialog.py::ScheduleDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_add_file::wx.FileDialog": "native",

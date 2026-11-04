@@ -293,6 +293,7 @@ class DocumentMenuMixin:
         down with it -- an app with no menus, over a row that was only ever
         going to be dimmed.
         """
+        getattr(self, "_sync_wordpress_items", lambda: None)()  # lite_window_wordpress.py
         language = getattr(self, "document_language", None)
         current = language() if callable(language) else "plain"
         rich = self.editor.mode == RICH if hasattr(self, "editor") else False

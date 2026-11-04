@@ -251,6 +251,12 @@ class DialogScript:
         assert self.list_windows, "no list window was shown"
         return self.list_windows[-1]
 
+    def enter(self, index: int | None = 0) -> object:
+        """Press Enter on row *index* of the last list window."""
+        on_enter = self.window.get("on_enter")
+        assert on_enter is not None, "this window has no Enter action"
+        return on_enter(index)
+
     def press(self, label: str, index: int | None = 0) -> object:
         """Press the button whose label (access key and all) is *label*."""
         for action in self.window.get("actions", []):

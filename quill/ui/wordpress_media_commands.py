@@ -25,6 +25,7 @@ from quill.ui.wordpress_image_commands import WordPressImageCommands
 from quill.ui.wordpress_media_ai import WordPressMediaAi
 from quill.ui.wordpress_media_library import WordPressMediaLibrary
 from quill.ui.wordpress_media_upload import WordPressMediaUpload
+from quill.ui.wordpress_player_commands import WordPressPlayerCommands
 
 
 class WordPressMediaCommands(
@@ -32,5 +33,6 @@ class WordPressMediaCommands(
     WordPressMediaUpload,
     WordPressImageCommands,
     WordPressMediaAi,
+    WordPressPlayerCommands,
 ):
     pass

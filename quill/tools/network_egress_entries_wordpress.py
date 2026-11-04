@@ -29,7 +29,11 @@ WORDPRESS_EGRESS: dict[str, str] = {
         "carries Media and Files > Upload from Web Address: one GET to the HTTPS "
         "address the person typed (any host, by design), capped at 64 MB, content "
         "type checked, no redirect to plain HTTP, and no WordPress credential sent "
-        "to that host."
+        "to that host. Caption tracks for the Media Library player (WebVTT, "
+        "only from the connected site's own host) also come through here. The "
+        "player itself streams an audio or video file's HTTPS address through the "
+        "shared playback engine, with no credential, only when the person "
+        "chooses Play or Play Media Here; nothing is saved."
     ),
     "core/wordpress/cdp.py::__init__": (
         "Check This Page and Visual Review: QUILL starts Edge or Chrome hidden, from "

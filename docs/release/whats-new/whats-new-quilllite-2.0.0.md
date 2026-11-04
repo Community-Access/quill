@@ -33,13 +33,17 @@ QUILL Lite 2.0 is about words, and about never missing what happened. Your setti
 
 ## Spell check and display
 
-- **Spell check reads only what you wrote.** Web addresses, email addresses, file paths and file names are skipped everywhere; Markdown skips code and link addresses; web pages are read for their text; and in code only strings and comments are checked.
-- **Recovery quotes how each document begins**, and text stays sharp at 150 and 200 percent display scaling.
+- **Spell check reads only what you wrote.** Web addresses, file names and code are skipped, and in a program only its strings and comments are checked.
+- **Recovery quotes how each document begins**, and text stays sharp at high display scaling.
 
 ## Knowing what happened
 
 - **Activity (Shift+F9)** lists everything QUILL Lite has told you, and **F9** says the last important thing again.
 - **If NVDA or JAWS stops, your unsaved work is saved first.** Braille no longer flickers during a burst of messages.
+
+## WordPress
+
+- **File > WordPress** writes, checks and publishes your website's pages and posts, and **Tools > WordPress** looks after the site.
 
 ## Dictation and AI
 

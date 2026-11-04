@@ -320,8 +320,12 @@ class ListWindow(wx.Dialog):
         filter_label: str = "",
         filter_help: str = "",
         on_filter: Callable[[str], Sequence[str] | None] | None = None,
+        on_enter: Callable[[int | None], object] | None = None,
     ) -> None:
         super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        # Enter or a double-click on a row runs the window's main action (Open,
+        # Play...), as Enter does in Explorer; the buttons stay for the rest.
+        self._enter = Action("", "", on_enter) if on_enter is not None else None
         self.SetHelpText(purpose)
         self._details = details
         self._on_filter = on_filter
@@ -337,6 +341,8 @@ class ListWindow(wx.Dialog):
         self.rows.SetHelpText(list_help)
         self.rows.SetMinSize(dip_size(self, 520, 260))
         self.rows.Bind(wx.EVT_LISTBOX, lambda _e: self._show_details())
+        self.rows.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._run_enter())
+        self.rows.Bind(wx.EVT_KEY_DOWN, self._on_row_key)
         _row(sizer, self, list_label, self.rows)
         self.info: wx.TextCtrl | None = None
         if details is not None:
@@ -389,6 +395,16 @@ class ListWindow(wx.Dialog):
         if isinstance(result, (list, tuple)):
             self.set_rows([str(r) for r in result], keep=index)
         self.rows.SetFocus()
+
+    def _run_enter(self) -> None:
+        if self._enter is not None and self.selected() is not None:
+            self._run(self._enter)
+
+    def _on_row_key(self, event: wx.KeyEvent) -> None:
+        if self._enter is not None and event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            self._run_enter()
+            return
+        event.Skip()
 
     def _on_search(self, _event: object) -> None:
         if self._on_filter is None or self.search is None:

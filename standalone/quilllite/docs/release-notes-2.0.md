@@ -23,6 +23,8 @@ yet. Here is what is new.
   names or code.
 - **Word documents** that open and save as Word, and PDFs opened as text.
 - **Find in Open Documents** and folder search, across everything at once.
+- **WordPress.** Write, check and publish your website's pages and posts, and
+  look after the site, from the editor you already use.
 
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
@@ -81,6 +83,40 @@ Some keys have moved:
 - **Alt+Shift+1** to **Alt+Shift+8** reopen your first eight recent files, and
   **Alt+Shift+9** is always **AutoCorrect Entries**. The ninth file is in
   **File > Recent Documents** (**Alt+Shift+0**).
+
+## WordPress
+
+If you look after a WordPress website, QUILL Lite now writes, opens, checks
+and publishes its pages and posts. It is the WordPress area, on in the
+Recommended and Everything profiles.
+
+- **Connect a site** with **File > WordPress > Connect a Site...** and an
+  application password. Your browser can fetch the password for you, and you
+  can connect as many sites as you look after.
+- **Three saves, kept apart.** Ctrl+S saves on this computer. **Save Draft to
+  Site** sends a draft nobody else can see. **Publish or Update...** checks
+  the page first, for missing alternative text, vague links and skipped
+  heading levels, then asks.
+- **Nobody's work is overwritten.** If someone changed the page while you
+  worked, nothing is sent until you have compared the two.
+- **Schedule a post, go back to an earlier version, restore from the Trash,
+  and keep working offline.** A send that cannot reach the site waits, and
+  QUILL Lite tells you when it goes through.
+- **Inside a page, the commands join the menus you know.** Insert has blocks,
+  pictures and links to your own pages; Edit > WordPress moves from block to
+  block and says where you are; Format > WordPress has Block Settings, Image
+  Size and Mark Language.
+- **Tools > WordPress** checks a page the way a visitor meets it, checks the
+  whole site and fixes the safe things in bulk, and runs the site: the Media
+  Library, comments, menus, settings, users, plugins and more.
+- **Captions, transcripts and a listening version** of a page are made on
+  this computer. QUILL Cast, QUILL Studio and Quill Converter can send
+  episodes and files to your site too.
+- **No keys yet.** Alt+F, then W, opens File > WordPress, and every command
+  is in the Command Palette (Ctrl+Shift+P).
+
+QUILL has the same commands in the same places. Chapter 14 of the user guide
+has the whole story.
 
 ## Choose Your AI, with GitHub Copilot and Codex
 

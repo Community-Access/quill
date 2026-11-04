@@ -3313,6 +3313,14 @@ class MenuBuilderMixin:
                 # construction if the wx build rejects the call.
                 pass
 
+        # WordPress rows inside a page's menus (wordpress.md 12, main_frame_wordpress.py).
+        self._place_wordpress_rows({
+            "edit": edit_menu,
+            "view": view_menu,
+            "insert": insert_menu,
+            "format": format_menu,
+            "tools": tools_menu,
+        })
         self._apply_menu_customization(menu_bar)
         self.frame.SetMenuBar(menu_bar)
         self._refresh_contextual_menu_items()
