@@ -1,0 +1,49 @@
+{
+ "origin": "guide:53",
+ "parse": {
+  "form": {
+   "title": "Registration",
+   "description": "",
+   "fields": [
+    {
+     "id": "zip",
+     "type": "text",
+     "label": "ZIP Code",
+     "pattern": "[0-9]{5}(-[0-9]{4})?",
+     "placeholder": "12345 or 12345-6789",
+     "description": "Enter a valid US ZIP code",
+     "page": "page_1"
+    },
+    {
+     "id": "product_code",
+     "type": "text",
+     "label": "Product Code",
+     "pattern": "[A-Z]{3}-[0-9]{4}",
+     "placeholder": "ABC-1234",
+     "description": "Format: 3 letters, dash, 4 numbers",
+     "page": "page_1"
+    },
+    {
+     "id": "username",
+     "type": "text",
+     "label": "Username",
+     "pattern": "[a-zA-Z0-9_]{3,20}",
+     "min_length": "3",
+     "max_length": "20",
+     "description": "Letters, numbers, and underscores only",
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"Registration\"\n\n  text #zip \"ZIP Code\"\n    @placeholder \"12345 or 12345-6789\"\n    @description \"Enter a valid US ZIP code\"\n  text #product_code \"Product Code\"\n    @placeholder \"ABC-1234\"\n    @description \"Format: 3 letters, dash, 4 numbers\"\n  text #username \"Username\"\n    @description \"Letters, numbers, and underscores only\"\n    @minlength 3\n    @maxlength 20"
+}

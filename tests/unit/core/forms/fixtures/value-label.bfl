@@ -1,0 +1,3 @@
+radio "Payment Method"
+  + card|Credit Card
+  + paypal|PayPal

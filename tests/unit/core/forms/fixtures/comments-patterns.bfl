@@ -1,0 +1,20 @@
+form "Registration"
+
+// US ZIP code (5 digits or 5+4)
+text #zip "ZIP Code"
+  @pattern "[0-9]{5}(-[0-9]{4})?"
+  @placeholder "12345 or 12345-6789"
+  @description "Enter a valid US ZIP code"
+
+// Product code format
+text #product_code "Product Code"
+  @pattern "[A-Z]{3}-[0-9]{4}"
+  @placeholder "ABC-1234"
+  @description "Format: 3 letters, dash, 4 numbers"
+
+// Username (alphanumeric, 3-20 chars)
+text #username "Username"
+  @pattern "[a-zA-Z0-9_]{3,20}"
+  @minlength 3
+  @maxlength 20
+  @description "Letters, numbers, and underscores only"

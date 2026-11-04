@@ -1,0 +1,45 @@
+{
+ "origin": "guide:45",
+ "parse": {
+  "form": {
+   "title": "",
+   "description": "",
+   "fields": [
+    {
+     "id": "field_1",
+     "type": "columns",
+     "columns": [
+      [
+       {
+        "id": "first",
+        "type": "text",
+        "label": "First name",
+        "required": true
+       }
+      ],
+      [
+       {
+        "id": "last",
+        "type": "text",
+        "label": "Last name",
+        "required": true
+       }
+      ]
+     ],
+     "column_count": 2,
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"\"\n\n  columns"
+}

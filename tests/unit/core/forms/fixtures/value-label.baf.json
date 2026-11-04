@@ -1,0 +1,33 @@
+{
+ "origin": "guide:25",
+ "parse": {
+  "form": {
+   "title": "",
+   "description": "",
+   "fields": [
+    {
+     "id": "field_1",
+     "type": "radio",
+     "label": "Payment Method",
+     "choices": [
+      {
+       "value": "paypal",
+       "label": "PayPal"
+      }
+     ],
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"\"\n\n  radio \"Payment Method\"\n    + PayPal"
+}

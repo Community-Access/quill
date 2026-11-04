@@ -1,0 +1,7 @@
+form "Test"
+radio #contact "Contact Method"
+  + Email
+  + Phone
+
+if #contact is "Email"
+  email #email "Email Address" @required

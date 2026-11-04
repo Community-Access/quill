@@ -1,0 +1,5 @@
+page "Step 1: About You"
+text "Name" @required
+
+page "Step 2: Details"
+textarea "Details"

@@ -1,0 +1,34 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "field",
+     "id": "company",
+     "type": "text",
+     "label": "Company"
+    },
+    {
+     "kind": "field",
+     "id": "field_2",
+     "type": "text",
+     "label": "Company website",
+     "placeholder": "https://...",
+     "visible_when": "#company is filled"
+    },
+    {
+     "kind": "field",
+     "id": "field_3",
+     "type": "text",
+     "label": "No company? That's okay—tell us what you do",
+     "help": "Student, freelancer, etc.",
+     "visible_when": "#company is empty"
+    }
+   ]
+  }
+ ]
+}

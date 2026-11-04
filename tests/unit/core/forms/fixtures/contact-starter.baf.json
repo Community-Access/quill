@@ -1,0 +1,51 @@
+{
+ "origin": "guide:1",
+ "parse": {
+  "form": {
+   "title": "Contact Us",
+   "description": "A simple starter form",
+   "fields": [
+    {
+     "id": "field_1",
+     "type": "text",
+     "label": "Your Name",
+     "required": true,
+     "placeholder": "Jane Doe",
+     "page": "page_1"
+    },
+    {
+     "id": "field_2",
+     "type": "email",
+     "label": "Email Address",
+     "required": true,
+     "placeholder": "jane@example.com",
+     "page": "page_1"
+    },
+    {
+     "id": "field_3",
+     "type": "textarea",
+     "label": "Message",
+     "required": true,
+     "rows": "6",
+     "page": "page_1"
+    },
+    {
+     "id": "field_4",
+     "type": "submit",
+     "label": "Send",
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"Contact Us\"\n  @description \"A simple starter form\"\n\n  text \"Your Name\"\n    @required\n    @placeholder \"Jane Doe\"\n  email \"Email Address\"\n    @required\n    @placeholder \"jane@example.com\"\n  textarea \"Message\"\n    @required\n    @rows 6\n  submit \"Send\""
+}

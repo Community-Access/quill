@@ -1,0 +1,27 @@
+{
+ "origin": "ParserTest.php:test_parse_escaped_quotes_in_strings",
+ "parse": {
+  "form": {
+   "title": "Test",
+   "description": "",
+   "fields": [
+    {
+     "id": "name",
+     "type": "text",
+     "label": "Say \"Hello\"",
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"Test\"\n\n  text #name \"Say \\\"Hello\\\"\""
+}

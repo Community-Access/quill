@@ -1,0 +1,51 @@
+{
+ "origin": "guide:20",
+ "parse": {
+  "form": {
+   "title": "",
+   "description": "",
+   "fields": [
+    {
+     "id": "age",
+     "type": "number",
+     "label": "Age",
+     "min": "0",
+     "max": "120",
+     "step": "1",
+     "description": "Must be 18 or older",
+     "page": "page_1"
+    },
+    {
+     "id": "price",
+     "type": "number",
+     "label": "Price per unit",
+     "min": "0.01",
+     "step": "0.01",
+     "prefix": "$",
+     "default_value": "9.99",
+     "page": "page_1"
+    },
+    {
+     "id": "quantity",
+     "type": "number",
+     "label": "Quantity",
+     "min": "1",
+     "max": "1000",
+     "step": "5",
+     "description": "Order in increments of 5",
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"\"\n\n  number #age \"Age\"\n    @description \"Must be 18 or older\"\n    @min 0\n    @max 120\n  number #price \"Price per unit\"\n    @default \"9.99\"\n    @min 0.01\n  number #quantity \"Quantity\"\n    @description \"Order in increments of 5\"\n    @min 1\n    @max 1000"
+}

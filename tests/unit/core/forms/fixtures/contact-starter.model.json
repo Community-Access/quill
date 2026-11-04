@@ -1,0 +1,46 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "title": "Contact Us",
+ "description": "A simple starter form",
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "field",
+     "id": "field_1",
+     "type": "text",
+     "label": "Your Name",
+     "required": true,
+     "placeholder": "Jane Doe"
+    },
+    {
+     "kind": "field",
+     "id": "field_2",
+     "type": "email",
+     "label": "Email Address",
+     "required": true,
+     "placeholder": "jane@example.com"
+    },
+    {
+     "kind": "field",
+     "id": "field_3",
+     "type": "textarea",
+     "label": "Message",
+     "required": true,
+     "settings": {
+      "rows": "6"
+     }
+    },
+    {
+     "kind": "field",
+     "id": "field_4",
+     "type": "submit",
+     "label": "Send"
+    }
+   ]
+  }
+ ]
+}

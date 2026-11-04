@@ -1,0 +1,37 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "columns",
+     "id": "field_1",
+     "count": 2,
+     "columns": [
+      [
+       {
+        "kind": "field",
+        "id": "first",
+        "type": "text",
+        "label": "First name",
+        "required": true
+       }
+      ],
+      [
+       {
+        "kind": "field",
+        "id": "last",
+        "type": "text",
+        "label": "Last name",
+        "required": true
+       }
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

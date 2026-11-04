@@ -1,0 +1,37 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "title": "Test",
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "field",
+     "id": "contact",
+     "type": "radio",
+     "label": "Contact Method",
+     "choices": [
+      {
+       "value": "email",
+       "label": "Email"
+      },
+      {
+       "value": "phone",
+       "label": "Phone"
+      }
+     ]
+    },
+    {
+     "kind": "field",
+     "id": "email",
+     "type": "email",
+     "label": "Email Address",
+     "required": true,
+     "visible_when": "#contact is \"Email\""
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,32 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "title": "My Form",
+ "description": "A comprehensive form with validation",
+ "language": "en",
+ "settings": {
+  "ajax": true,
+  "honeypot": true,
+  "captcha": true,
+  "captcha_type": "recaptcha3"
+ },
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "island",
+     "text": "form \"Another Form\" @description \"A simple form\" @ajax",
+     "reason": "A form has one form line; this is a second.",
+     "notation": "bfl"
+    },
+    {
+     "kind": "island",
+     "text": "form \"Third Form\" @description \"Multi-step form with anti-spam\" @honeypot @captcha",
+     "reason": "A form has one form line; this is a second.",
+     "notation": "bfl"
+    }
+   ]
+  }
+ ]
+}

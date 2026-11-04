@@ -1,0 +1,34 @@
+{
+ "origin": "guide:26",
+ "parse": {
+  "form": {
+   "title": "",
+   "description": "",
+   "fields": [
+    {
+     "id": "field_1",
+     "type": "select",
+     "label": "T-Shirt",
+     "choices": [
+      {
+       "value": "large",
+       "label": "Large",
+       "price": "12"
+      }
+     ],
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"\"\n\n  select \"T-Shirt\"\n    + Large:12"
+}

@@ -1,0 +1,48 @@
+{
+ "origin": "guide:32",
+ "parse": {
+  "form": {
+   "title": "",
+   "description": "",
+   "fields": [
+    {
+     "id": "field_1",
+     "type": "select",
+     "label": "Country",
+     "choices": {
+      "library": "countries"
+     },
+     "page": "page_1"
+    },
+    {
+     "id": "field_2",
+     "type": "select",
+     "label": "State",
+     "choices": {
+      "library": "us_states"
+     },
+     "page": "page_1"
+    },
+    {
+     "id": "field_3",
+     "type": "select",
+     "label": "Month",
+     "choices": {
+      "library": "months"
+     },
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"\"\n\n  select \"Country\"\n    @library countries\n  select \"State\"\n    @library us_states\n  select \"Month\"\n    @library months"
+}

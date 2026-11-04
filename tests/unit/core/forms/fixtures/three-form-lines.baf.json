@@ -1,0 +1,25 @@
+{
+ "origin": "guide:22",
+ "parse": {
+  "form": {
+   "title": "Third Form",
+   "description": "Multi-step form with anti-spam",
+   "fields": [],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": {
+    "ajax_submission": true,
+    "enable_honeypot": true,
+    "enable_captcha": true,
+    "captcha_type": "recaptcha3"
+   },
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"Third Form\"\n  @description \"Multi-step form with anti-spam\"\n\n  settings\n    honeypot    true\n    captcha     true\n    ajax        true\n    captchaType \"recaptcha3\"\n\n"
+}

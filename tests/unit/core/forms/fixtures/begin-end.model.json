@@ -1,0 +1,20 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "field",
+     "id": "field_1",
+     "type": "text",
+     "label": "Your Name",
+     "required": true,
+     "placeholder": "Jane Doe"
+    }
+   ]
+  }
+ ]
+}

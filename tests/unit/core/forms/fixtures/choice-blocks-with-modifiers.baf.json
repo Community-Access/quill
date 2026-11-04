@@ -1,0 +1,81 @@
+{
+ "origin": "guide:31",
+ "parse": {
+  "form": {
+   "title": "",
+   "description": "",
+   "fields": [
+    {
+     "id": "dept",
+     "type": "select",
+     "label": "Department",
+     "choices": [
+      {
+       "value": "sales",
+       "label": "Sales"
+      },
+      {
+       "value": "support",
+       "label": "Support"
+      },
+      {
+       "value": "billing",
+       "label": "Billing"
+      }
+     ],
+     "page": "page_1"
+    },
+    {
+     "id": "preferred",
+     "type": "radio",
+     "label": "Preferred Contact",
+     "choices": [
+      {
+       "value": "email",
+       "label": "Email me"
+      },
+      {
+       "value": "phone",
+       "label": "Call me"
+      },
+      {
+       "value": "sms",
+       "label": "Text me"
+      }
+     ],
+     "page": "page_1"
+    },
+    {
+     "id": "interests",
+     "type": "checkbox",
+     "label": "Interests",
+     "choices": [
+      {
+       "value": "tech",
+       "label": "Technology"
+      },
+      {
+       "value": "sports",
+       "label": "Sports"
+      },
+      {
+       "value": "art",
+       "label": "Art"
+      }
+     ],
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"\"\n\n  select #dept \"Department\"\n    + Sales\n    + Support\n    + Billing\n  radio #preferred \"Preferred Contact\"\n    + email|Email me\n    + phone|Call me\n    + sms|Text me\n  checkbox #interests \"Interests\"\n    + tech|Technology\n    + Sports\n    + Art"
+}

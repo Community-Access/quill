@@ -1,0 +1,65 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "title": "Registration",
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "island",
+     "text": "// US ZIP code (5 digits or 5+4)",
+     "reason": "comment",
+     "notation": "bfl"
+    },
+    {
+     "kind": "field",
+     "id": "zip",
+     "type": "text",
+     "label": "ZIP Code",
+     "help": "Enter a valid US ZIP code",
+     "placeholder": "12345 or 12345-6789",
+     "settings": {
+      "pattern": "[0-9]{5}(-[0-9]{4})?"
+     }
+    },
+    {
+     "kind": "island",
+     "text": "// Product code format",
+     "reason": "comment",
+     "notation": "bfl"
+    },
+    {
+     "kind": "field",
+     "id": "product_code",
+     "type": "text",
+     "label": "Product Code",
+     "help": "Format: 3 letters, dash, 4 numbers",
+     "placeholder": "ABC-1234",
+     "settings": {
+      "pattern": "[A-Z]{3}-[0-9]{4}"
+     }
+    },
+    {
+     "kind": "island",
+     "text": "// Username (alphanumeric, 3-20 chars)",
+     "reason": "comment",
+     "notation": "bfl"
+    },
+    {
+     "kind": "field",
+     "id": "username",
+     "type": "text",
+     "label": "Username",
+     "help": "Letters, numbers, and underscores only",
+     "settings": {
+      "pattern": "[a-zA-Z0-9_]{3,20}",
+      "min_length": "3",
+      "max_length": "20"
+     }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+text #username "Username" begin
+  @required
+  @placeholder "jane_doe"
+  @default "user_"
+  @description "Choose a unique username (3-20 characters)"
+end
+
+email #email "Email" [
+  @required
+  @placeholder "jane@example.com"
+  @default "noreply@company.com"
+]

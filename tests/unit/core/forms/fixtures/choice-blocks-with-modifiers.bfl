@@ -1,0 +1,22 @@
+select #dept "Department" {
+  @required
+  @placeholder "Select one..."
+  + Sales
+  + Support
+  + Billing
+}
+
+radio #preferred "Preferred Contact" [
+  @required
+  + email|Email me
+  + phone|Call me
+  + sms|Text me
+]
+
+checkbox #interests "Interests" begin
+  @multiple
+  @allow-other
+  + tech|Technology
+  + sports|Sports
+  + art|Art
+end

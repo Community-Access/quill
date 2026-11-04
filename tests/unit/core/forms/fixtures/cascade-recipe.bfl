@@ -1,0 +1,13 @@
+form "Shipping Address"
+
+select #country "Country"
+  @library countries
+  @required
+  @placeholder "Select your country"
+
+select #state "State/Province"
+  @cascade_from #country
+  @cascade_library states
+  @empty_message "Please select a country first"
+  @loading_message "Loading states..."
+  @required

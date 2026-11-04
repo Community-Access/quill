@@ -1,0 +1,79 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "field",
+     "id": "dept",
+     "type": "select",
+     "label": "Department",
+     "required": true,
+     "placeholder": "Select one...",
+     "choices": [
+      {
+       "value": "sales",
+       "label": "Sales"
+      },
+      {
+       "value": "support",
+       "label": "Support"
+      },
+      {
+       "value": "billing",
+       "label": "Billing"
+      }
+     ]
+    },
+    {
+     "kind": "field",
+     "id": "preferred",
+     "type": "radio",
+     "label": "Preferred Contact",
+     "required": true,
+     "choices": [
+      {
+       "value": "email",
+       "label": "Email me"
+      },
+      {
+       "value": "phone",
+       "label": "Call me"
+      },
+      {
+       "value": "sms",
+       "label": "Text me"
+      }
+     ]
+    },
+    {
+     "kind": "field",
+     "id": "interests",
+     "type": "checkbox",
+     "label": "Interests",
+     "choices": [
+      {
+       "value": "tech",
+       "label": "Technology"
+      },
+      {
+       "value": "sports",
+       "label": "Sports"
+      },
+      {
+       "value": "art",
+       "label": "Art"
+      }
+     ],
+     "settings": {
+      "multiple": true,
+      "allow_other": true
+     }
+    }
+   ]
+  }
+ ]
+}

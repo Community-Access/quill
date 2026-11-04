@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:baf:form-model:1",
+  "title": "BAF form model, version 1",
+  "description": "The single definition of a form shared by BITS Accessible Forms (BAF) and QUILL (wordpress.md 17a.15). BFL, BAF's visual builder, SurveyJS, XLSForm and HTML are notations of this model. Every rule, calculation, score and smart default is an expression in the form expression language (see quill/core/forms/expr.py); fields marked x-expression must parse as one. Values that equal their default are left out when a form is written.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["model", "version", "pages"],
+  "properties": {
+    "model": { "const": "baf-form", "description": "Discriminator: always \"baf-form\"." },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The model version the form was written for. Older versions are upgraded by documented migrations (model_json.MIGRATIONS); newer ones are refused."
+    },
+    "id": { "type": "string", "description": "BAF's form id once published, or empty." },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "language": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+      "description": "The BCP 47 language the labels are written in. Default \"en\"."
+    },
+    "settings": { "$ref": "#/$defs/settings" },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/page" }
+    },
+    "translations": {
+      "type": "object",
+      "description": "Language code -> translation key -> text. Keys: title, description, settings.submit_label, settings.success_message, page.<id>.title|description, section.<id>.title|description, field.<id>.label|help|placeholder, field.<id>.choice.<value>, outcome.<n>.message.",
+      "propertyNames": { "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$" },
+      "additionalProperties": {
+        "type": "object",
+        "propertyNames": {
+          "pattern": "^(title|description|settings\\.(submit_label|success_message)|(page|section)\\.[A-Za-z0-9_]+\\.(title|description)|field\\.[A-Za-z0-9_]+\\.(label|help|placeholder|choice\\..+)|outcome\\.[0-9]+\\.message)$"
+        },
+        "additionalProperties": { "type": "string" }
+      }
+    },
+    "outcomes": {
+      "type": "array",
+      "description": "Quiz or survey outcomes: the first whose condition holds is shown. quiz.score is the total score.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["when", "message"],
+        "properties": {
+          "when": { "type": "string", "x-expression": true },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9_]+$" },
+    "expression": { "type": "string", "x-expression": true },
+    "settings": {
+      "type": "object",
+      "description": "Form settings. Anything BAF stores beyond these (notifications, limits, schedule) sits beside them under BAF's own name.",
+      "properties": {
+        "submit_label": { "type": "string" },
+        "success_message": { "type": "string" },
+        "redirect_url": { "type": "string" },
+        "ajax": { "type": "boolean" },
+        "honeypot": { "type": "boolean" },
+        "captcha": { "type": "boolean" },
+        "captcha_type": { "type": "string" },
+        "save_and_continue": { "type": "boolean" },
+        "rate_limit": { "type": "boolean" },
+        "unknown_modifiers": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "items"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "visible_when": { "$ref": "#/$defs/expression" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } }
+      }
+    },
+    "item": {
+      "oneOf": [
+        { "$ref": "#/$defs/field" },
+        { "$ref": "#/$defs/section" },
+        { "$ref": "#/$defs/columns" },
+        { "$ref": "#/$defs/island" }
+      ]
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "items"],
+      "properties": {
+        "kind": { "const": "section" },
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "visible_when": { "$ref": "#/$defs/expression" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } }
+      }
+    },
+    "columns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "columns"],
+      "properties": {
+        "kind": { "const": "columns" },
+        "id": { "$ref": "#/$defs/id" },
+        "count": { "type": "integer", "minimum": 1 },
+        "visible_when": { "$ref": "#/$defs/expression" },
+        "columns": {
+          "type": "array",
+          "items": { "type": "array", "items": { "$ref": "#/$defs/item" } }
+        }
+      }
+    },
+    "island": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "text"],
+      "description": "Text from a notation that could not be read, kept exactly and written back unchanged.",
+      "properties": {
+        "kind": { "const": "island" },
+        "text": { "type": "string" },
+        "reason": { "type": "string" },
+        "notation": { "enum": ["bfl", "surveyjs", "xlsform", "html"] }
+      }
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "label"],
+      "properties": {
+        "value": { "type": "string" },
+        "label": { "type": "string" },
+        "price": { "type": "string" },
+        "score": { "type": "number" }
+      }
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "type"],
+      "properties": {
+        "kind": { "const": "field" },
+        "id": { "$ref": "#/$defs/id" },
+        "type": {
+          "enum": [
+            "text", "textarea", "number", "password", "hidden", "color", "range", "slider",
+            "toggle", "otp", "rich_text", "currency", "email", "phone", "website", "name",
+            "address", "map", "select", "multiselect", "radio", "checkbox", "consent", "likert",
+            "ranking", "rating", "nps", "matrix", "image_choice", "quiz", "date", "time",
+            "datetime", "daterange", "appointment", "fileupload", "signature", "typed_signature",
+            "captcha", "repeater", "calculation", "submit", "save", "progress", "summary",
+            "social", "table", "html", "divider", "spacer", "product", "quantity", "price",
+            "total", "coupon", "payment", "post_title", "post_content", "post_excerpt",
+            "post_category", "post_tags", "post_image", "post_custom", "user_login",
+            "user_email", "user_password"
+          ]
+        },
+        "label": { "type": "string" },
+        "help": { "type": "string" },
+        "required": { "type": "boolean" },
+        "placeholder": { "type": "string" },
+        "default": { "type": "string" },
+        "default_expr": { "$ref": "#/$defs/expression", "description": "A smart default: today + 7, user.email, geo.country." },
+        "visible_when": { "$ref": "#/$defs/expression" },
+        "calculate": { "$ref": "#/$defs/expression" },
+        "score": { "$ref": "#/$defs/expression", "description": "Points: a number, or true for one point." },
+        "choices": { "type": "array", "items": { "$ref": "#/$defs/choice" } },
+        "choice_library": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "cascade": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source"],
+          "properties": {
+            "source": { "type": "string" },
+            "library": { "type": "string" },
+            "empty_message": { "type": "string" },
+            "loading_message": { "type": "string" }
+          }
+        },
+        "settings": {
+          "type": "object",
+          "description": "Per-type options under BAF's configuration names: min, max, min_length, max_length, step, rows, cols, size, css_class, read_only, disabled, admin_only, visibility, confirm_email, input_mask, format, pattern, autocomplete, autocomplete_provider, autocomplete_countries, autocomplete_types, unique, unique_scope, unique_message, multiple, allow_other, searchable, prefix, suffix, autofocus, spellcheck, accept, capture, inputmode, enterkeyhint, min_rows, max_rows, custom_attributes, smart_default. unknown_modifiers holds BFL modifiers QUILL does not know, as written.",
+          "properties": {
+            "unknown_modifiers": { "type": "array", "items": { "type": "string" } },
+            "custom_attributes": { "type": "object", "additionalProperties": { "type": ["string", "boolean", "number"] } },
+            "autocomplete_countries": { "type": "array", "items": { "type": "string" } },
+            "autocomplete_types": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": { "type": ["string", "number", "boolean", "array", "object"] }
+        },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "A repeater's own fields." }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+columns 2 {
+  column {
+    text #first "First name" @required
+  }
+
+  column {
+    text #last "Last name" @required
+  }
+}

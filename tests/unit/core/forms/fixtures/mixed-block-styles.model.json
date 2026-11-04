@@ -1,0 +1,45 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "title": "Test",
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "field",
+     "id": "field1",
+     "type": "text",
+     "label": "Field 1",
+     "required": true
+    },
+    {
+     "kind": "field",
+     "id": "field2",
+     "type": "text",
+     "label": "Field 2",
+     "required": true,
+     "placeholder": "Test"
+    },
+    {
+     "kind": "field",
+     "id": "field3",
+     "type": "text",
+     "label": "Field 3",
+     "required": true,
+     "settings": {
+      "max_length": "50"
+     }
+    },
+    {
+     "kind": "field",
+     "id": "field4",
+     "type": "text",
+     "label": "Field 4",
+     "required": true
+    }
+   ]
+  }
+ ]
+}

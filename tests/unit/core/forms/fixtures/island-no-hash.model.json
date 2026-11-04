@@ -1,0 +1,18 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "island",
+     "text": "text full_name \"Full Name\"   // ❌ no leading #, so it's not an ID",
+     "reason": "I did not expect 'Full Name' here.",
+     "notation": "bfl"
+    }
+   ]
+  }
+ ]
+}

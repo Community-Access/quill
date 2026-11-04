@@ -1,0 +1,25 @@
+Where these fixtures come from
+==============================
+
+Each NAME.bfl is one BFL example copied unchanged from BITS Accessible Forms
+(BAF), at S:\code\baf, commit 461375e (2026-11-04):
+
+- docs/user-guide/bfl-language-guide.md (the fenced bfl blocks), and
+- tests/unit/BFL/ParserTest.php (the $bfl literals).
+
+NAME.baf.json records the example's origin and what BAF's own PHP made of
+it: BAF_BFL_Parser::parse and BAF_BFL_Formatter::format, produced by
+tests/unit/core/forms/baf_php_harness.php running BAF's files read-only
+under PHP 8.1.
+
+NAME.model.json is the form model QUILL reads from the example, in the
+shared JSON shape checked by quill/core/forms/schema/form.schema.json. It is
+the expected answer for the shared conformance suite (wordpress.md 17a.15,
+point 7): both BAF's PHP and QUILL's Python read NAME.bfl and must produce
+NAME.model.json.
+
+Licence: BAF is copyright BITS (Blind Information Technology Solutions) and
+Community Access, released under GPL-2.0-or-later. These examples are
+copied from it for testing; QUILL itself is MIT-licensed, so their reuse
+here rests on the same owners' permission. The choice-library data in
+quill/core/forms/libraries/baf_libraries.json has the same origin.

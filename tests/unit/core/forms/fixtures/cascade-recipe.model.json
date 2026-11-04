@@ -1,0 +1,35 @@
+{
+ "model": "baf-form",
+ "version": 1,
+ "title": "Shipping Address",
+ "language": "en",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "kind": "field",
+     "id": "country",
+     "type": "select",
+     "label": "Country",
+     "required": true,
+     "placeholder": "Select your country",
+     "choice_library": "countries"
+    },
+    {
+     "kind": "field",
+     "id": "state",
+     "type": "select",
+     "label": "State/Province",
+     "required": true,
+     "cascade": {
+      "source": "country",
+      "library": "states",
+      "empty_message": "Please select a country first",
+      "loading_message": "Loading states..."
+     }
+    }
+   ]
+  }
+ ]
+}

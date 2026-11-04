@@ -1,0 +1,41 @@
+{
+ "origin": "guide:52",
+ "parse": {
+  "form": {
+   "title": "Shipping Address",
+   "description": "",
+   "fields": [
+    {
+     "id": "country",
+     "type": "select",
+     "label": "Country",
+     "choices": [],
+     "required": true,
+     "placeholder": "Select your country",
+     "page": "page_1"
+    },
+    {
+     "id": "state",
+     "type": "select",
+     "label": "State/Province",
+     "choices": [],
+     "cascade_library": "states",
+     "empty_message": "Please select a country first",
+     "loading_message": "Loading states...",
+     "required": true,
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"Shipping Address\"\n\n  select #country \"Country\"\n    @required\n    @placeholder \"Select your country\"\n  select #state \"State/Province\"\n    @required"
+}
