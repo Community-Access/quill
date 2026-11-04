@@ -2,109 +2,96 @@
 
 from __future__ import annotations
 
-from quill.core.forms.bfl_read import read_form
-from quill.core.forms.model import Field, Section
-from quill.core.forms.summary import field_summary, item_summary, outline
-from quill.core.forms.translate import languages, localize, missing, translatable_strings
+from quill.core.forms import model as M
+from quill.core.forms.bfl_document import read_bfl
+from quill.core.forms.bfl_read import read
+from quill.core.forms.summary import item_summary, outline
+from quill.core.forms.translate import (
+    languages,
+    localize,
+    lookup,
+    missing,
+    set_translation,
+    translatable_strings,
+)
 
-FORM = """form "Contact" @description "Get in touch"
+FORM = """bfl 1
+form "Contact"
+  @language "en"
   @submit_label "Send"
-  @translate fr title "Contact"
-  @translate fr submit_label "Envoyer"
 
-section "About you"
-  @translate fr title "Vous"
-
-text #name "Your name"
-  @required
-  @autocomplete "name"
-  @translate fr label "Votre nom"
-
-email #email "Email address"
-  @required
-  @autocomplete "email"
-  @description "We only use this to reply."
-
-radio #how "How should we reply?"
-  + email|By email
-  + phone|By phone
-  @translate fr choice email "Par courriel"
-
-if #how is "phone"
+section #about "About you"
+  text #name "Your name"
+    @required
+    @autocomplete "name"
+  email #email "Email address"
+    @required
+    @description "We only use this to reply."
+    @autocomplete "email"
+  radio #how "How should we reply?"
+    + email|By email
+    + phone|By phone
   phone #phone "Phone number"
     @mask "(999) 999-9999"
+    @when #how is "phone"
+  select #country "Country"
+    @library "countries"
 
-select #country "Country"
-  @library countries
-
-toggle #x "Unknown"
+translation "fr"
+  @title "Contact"
+  field #name
+    @label "Votre nom"
+  field #how
+    + email|Par courriel
 """
 
 
-def test_translation_keys_in_form_order() -> None:
-    keys = [k for k, _ in translatable_strings(read_form(FORM))]
-    assert keys[:4] == ["title", "description", "settings.submit_label", "section.field_1.title"]
-    assert "field.how.choice.phone" in keys
+def test_the_form_reads_cleanly() -> None:
+    result = read(FORM)
+    assert result.errors == [] and result.warnings == []
+    assert M.validate(result.model) == []
 
 
-def test_missing_and_languages() -> None:
-    form = read_form(FORM)
-    assert languages(form) == ["en", "fr"]
-    gaps = missing(form, "fr")
-    assert "field.name.label" not in gaps
-    assert "field.email.label" in gaps
-    assert "description" in gaps
+def test_translations() -> None:
+    model = read(FORM).model
+    assert languages(model) == ["en", "fr"]
+    places = [p for p, _ in translatable_strings(model)]
+    assert ("fields", "how", "choices/phone") in places
+    assert ("fields", "email", "label") in missing(model, "fr")
+    fr = localize(model, "fr")
+    name = M.find(fr, "name")
+    how = M.find(fr, "how")
+    assert name is not None and name["label"] == "Votre nom"
+    assert how is not None and [c["label"] for c in how["choices"]] == ["Par courriel", "By phone"]
+    assert M.find(model, "name")["label"] == "Your name"  # type: ignore[index]
+    set_translation(model, "es", ("fields", "name", "label"), "Su nombre")
+    assert lookup(model, "es", ("fields", "name", "label")) == "Su nombre"
+    assert M.validate(model) == []
 
 
-def test_localize_uses_translations_and_falls_back() -> None:
-    form = read_form(FORM)
-    fr = localize(form, "fr")
-    assert fr.language == "fr"
-    assert fr.settings.submit_label == "Envoyer"
-    section = fr.pages[0].items[0]
-    assert isinstance(section, Section) and section.title == "Vous"
-    fields = {i.id: i for i in section.items if isinstance(i, Field)}
-    assert fields["name"].label == "Votre nom"
-    assert fields["email"].label == "Email address"  # no translation yet
-    assert [c.label for c in fields["how"].choices] == ["Par courriel", "By phone"]
-    # The original is untouched.
-    assert form.settings.submit_label == "Send"
-
-
-def test_field_summaries() -> None:
-    form = read_form(FORM)
-    section = form.pages[0].items[0]
-    assert isinstance(section, Section)
-    fields = {i.id: i for i in section.items if isinstance(i, Field)}
-    assert field_summary(fields["name"]) == "Your name, text field, required, with an autofill hint"
+def test_summaries() -> None:
+    model = read(FORM).model
     assert (
-        field_summary(fields["email"], page_number=1)
+        item_summary(M.find(model, "name"), model)
+        == "Your name, text field, required, with an autofill hint"
+    )  # type: ignore[arg-type]
+    assert (
+        item_summary(M.find(model, "email"), model, page_number=1)  # type: ignore[arg-type]
         == "Email address, email field, required, with an autofill hint, with help text, page 1"
     )
-    assert field_summary(fields["how"]) == "How should we reply?, choose one, 2 choices"
     assert (
-        field_summary(fields["country"])
+        item_summary(M.find(model, "phone"), model)  # type: ignore[arg-type]
+        == "Phone number, phone number field, with a format rule, shown when How should we reply? is By phone"  # noqa: E501
+    )
+    assert (
+        item_summary(M.find(model, "country"), model)
         == "Country, drop-down list, choices from the Countries list"
-    )
-    assert field_summary(fields["x"]).startswith("Unknown, on or off field")
+    )  # type: ignore[arg-type]
 
 
-def test_outline_reads_rules_as_sentences() -> None:
-    rows = outline(read_form(FORM))
-    texts = [r.text for r in rows]
-    assert texts[0] == "Page 1, 6 questions"
-    assert texts[1] == "Section, About you, 6 questions"
-    phone = next(t for t in texts if t.startswith("Phone number"))
-    assert (
-        phone
-        == "Phone number, phone number field, with a format rule, shown when How should we reply? is By phone, page 1"  # noqa: E501
-    )
-    assert [r.level for r in rows][:3] == [0, 1, 2]
-
-
-def test_island_and_comment_summaries() -> None:
-    form = read_form("// keep me\n[columns 1/2 | 1/2]\n")
-    rows = [r.text for r in outline(form)]
-    assert rows[1] == "Comment: keep me"
-    assert rows[2] == "Kept as written, not read by QUILL: [columns 1/2 | 1/2]"
-    assert item_summary(form.pages[0].items[1]).startswith("Kept as written")
+def test_outline_with_islands() -> None:
+    doc = read_bfl('text #a "A"\n\n=== Old export line ===\n')
+    rows = [r.text for r in outline(doc.model, doc.islands)]
+    assert rows[0] == "Page 1, 1 question"
+    assert rows[1] == "A, text field, page 1"
+    assert rows[-1] == "Kept as written, not read by BAF: === Old export line ==="

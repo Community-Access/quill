@@ -1,15 +1,15 @@
 """XLSForm in and out (https://xlsform.org): the spreadsheet form standard.
 
-The ``survey`` sheet's rows become fields (``begin group`` / ``end group``
-become sections, ``begin repeat`` a repeater), the ``choices`` sheet their
-choices, and ``settings`` the title and language. ``relevant`` becomes
-``visible_when`` and ``calculation`` becomes ``calculate``, converted from
-XLSForm's XPath style (``${age} > 17``, ``selected(${q}, 'a')``). Columns
-such as ``label::French (fr)`` become translations.
+The ``survey`` sheet's rows become fields (``begin group``/``end group`` a
+section, ``begin repeat`` a repeater), the ``choices`` sheet their choices and
+``settings`` the title and language. ``relevant`` becomes ``when`` and
+``calculation`` stays a calculation, converted from XLSForm's XPath style
+(``${age} > 17``, ``selected(${q}, 'a')``). ``label::French (fr)`` columns
+become translations. A constraint is kept under ``extensions.xlsform``.
 
-The workbook is read and written with ``openpyxl``, which QUILL already
-depends on for spreadsheets; it is imported only when an XLSForm is used.
-Rows are also accepted as plain lists of dicts, which is what the tests use.
+Workbooks are read and written with ``openpyxl``, which QUILL already depends
+on, imported only when an XLSForm is used. Rows can also be passed as lists of
+dicts.
 """
 
 from __future__ import annotations
@@ -19,9 +19,9 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.forms import expr as E
+from quill.core.forms import model as M
 from quill.core.forms.errors import FormImportError
-from quill.core.forms.interop_common import ImportResult, convert_expression, safe_id
-from quill.core.forms.model import Choice, Columns, Field, Form, Island, Item, Section
+from quill.core.forms.interop_common import ImportResult, clean, convert_expression, safe_id
 
 _TYPES = {
     "text": "text", "integer": "number", "decimal": "number", "date": "date", "time": "time",
@@ -39,9 +39,8 @@ _BACK = {
     "website": "text",
 }  # fmt: skip
 _REWRITES = [
-    (r"selected\(\s*\$\{([A-Za-z0-9_]+)\}\s*,\s*('[^']*'|\"[^\"]*\")\s*\)", r"#\1 is \2"),
+    (r"selected\(\s*\$\{([A-Za-z0-9_]+)\}\s*,\s*('[^']*'|\"[^\"]*\")\s*\)", r"#\1 contains \2"),
     (r"\$\{([A-Za-z0-9_]+)\}", r"#\1"),
-    (r"\btoday\(\)", "today"),
     (r"\bdiv\b", "/"),
     (r"\bmod\b", "%"),
     (r"\bnot\(", "not ("),
@@ -49,35 +48,62 @@ _REWRITES = [
 _LANG = re.compile(r"^(label|hint)::(.+?)(?:\s*\(([A-Za-z-]+)\))?$")
 
 
-def _lang_code(name: str, code: str | None) -> str:
-    return (code or name).strip().lower()[:8] or "und"
+_LANGUAGE_NAMES = {
+    "english": "en", "french": "fr", "spanish": "es", "portuguese": "pt", "german": "de",
+    "italian": "it", "arabic": "ar", "swahili": "sw", "hindi": "hi", "chinese": "zh",
+}  # fmt: skip
 
 
-def import_rows(
+def _lang(name: str, code: str | None) -> str:
+    """A BCP 47 tag from XLSForm's ``French (fr)``, or from a common language name."""
+    if code:
+        return code.strip()
+    word = name.strip().lower()
+    return _LANGUAGE_NAMES.get(word, word if re.fullmatch(r"[a-z]{2,3}", word) else "und")
+
+
+def import_rows(  # noqa: C901
     survey: list[dict[str, Any]],
     choices: list[dict[str, Any]],
     settings: dict[str, Any] | None = None,
 ) -> ImportResult:
     report: list[str] = []
-    form = Form()
     settings = settings or {}
-    form.title = str(settings.get("form_title", ""))
-    form.id = str(settings.get("form_id", ""))
+    model: M.Model = {"version": M.MODEL_VERSION, "title": str(settings.get("form_title") or "")}
+    if settings.get("form_id"):
+        model["id"] = safe_id(settings["form_id"], set())
+    if settings.get("default_language"):
+        m = _LANG.match("label::" + str(settings["default_language"]))
+        language = _lang(m.group(2), m.group(3)) if m else "und"
+        if language == "und":
+            report.append(
+                f"The default language {settings['default_language']!r} has no language code; it was left out."  # noqa: E501
+            )
+        else:
+            model["language"] = language
     lists: dict[str, list[dict[str, Any]]] = {}
     for row in choices:
         if row.get("list_name"):
             lists.setdefault(str(row["list_name"]).strip(), []).append(row)
     taken: set[str] = set()
-    page = form.pages[0]
-    stack: list[list[Item]] = [page.items]
-    repeat: list[Field] = []
+    top: list[M.Item] = []
+    stack: list[list[M.Item]] = [top]
+    translations: dict[str, dict[str, Any]] = {}
+    constraints: dict[str, str] = {}
+
+    def tr(lang: str, ident: str, key: str, text: str) -> None:
+        entry = translations.setdefault(lang, {}).setdefault("fields", {}).setdefault(ident, {})
+        if key.startswith("choices/"):
+            entry.setdefault("choices", {})[key[8:]] = text
+        else:
+            entry[key] = text
 
     def convert(raw: Any, where: str) -> str | None:
         if raw in (None, ""):
             return None
         out = convert_expression(str(raw), _REWRITES)
         if out is None:
-            report.append(f"The rule on {where} could not be converted: {raw}")
+            report.append(f"The rule on {where} could not be converted and was left out: {raw}")
         return out
 
     for number, row in enumerate(survey, 2):
@@ -88,72 +114,76 @@ def import_rows(
         name = str(row.get("name") or f"row_{number}")
         if head in ("begin", "end"):
             what = list_name.strip().replace("_", " ")
-            if head == "begin" and what == "group":
-                section = Section(id=safe_id(name, taken), title=str(row.get("label") or ""))
-                section.visible_when = convert(row.get("relevant"), section.title or name)
-                stack[-1].append(section)
-                stack.append(section.items)
-            elif head == "begin" and what == "repeat":
-                rep = Field(
-                    id=safe_id(name, taken), type="repeater", label=str(row.get("label") or "")
-                )
-                stack[-1].append(rep)
-                repeat.append(rep)
-                stack.append(rep.fields)  # type: ignore[arg-type]
+            if head == "begin" and what in ("group", "repeat"):
+                kind = "section" if what == "group" else "repeater"
+                item: dict[str, Any] = {
+                    "id": safe_id(name, taken),
+                    "type": kind,
+                    "label": str(row.get("label") or ""),
+                }
+                item["when"] = convert(row.get("relevant"), item["label"] or name)
+                item["items"] = []
+                stack[-1].append(clean(item) | {"items": item["items"]})
+                stack.append(item["items"])
             elif len(stack) > 1:
                 stack.pop()
-                if what == "repeat" and repeat:
-                    repeat.pop()
             continue
-        model_type = _TYPES.get(head)
-        if model_type is None:
+        mapped = _TYPES.get(head)
+        if mapped is None:
             report.append(
                 f"Row {number}: the type {raw_type!r} has no field type in the model; kept as text."
             )
-            model_type = "text"
-        item = Field(id=safe_id(name, taken), type=model_type, label=str(row.get("label") or ""))
-        if head == "text" and "multiline" in str(row.get("appearance") or ""):
-            item.type = "textarea"
-        if head == "select_one" and "minimal" in str(row.get("appearance") or ""):
-            item.type = "select"
-        item.help = str(row.get("hint") or "")
-        item.required = str(row.get("required") or "").strip().lower() in (
-            "yes",
-            "true",
-            "true()",
-            "1",
-        )
+            mapped = "text"
+        appearance = str(row.get("appearance") or "")
+        if head == "text" and "multiline" in appearance:
+            mapped = "textarea"
+        if head == "select_one" and "minimal" in appearance:
+            mapped = "select"
+        ident = safe_id(name, taken)
+        item = {
+            "id": ident,
+            "type": mapped,
+            "label": str(row.get("label") or ""),
+            "help": str(row.get("hint") or ""),
+        }
+        if str(row.get("required") or "").strip().lower() in ("yes", "true", "true()", "1"):
+            item["required"] = True
         if row.get("default") not in (None, ""):
-            item.default = str(row["default"])
-        item.visible_when = convert(row.get("relevant"), item.label or name)
-        item.calculate = convert(row.get("calculation"), item.label or name)
+            item["default"] = str(row["default"])
+        item["when"] = convert(row.get("relevant"), item["label"] or name)
+        item["calculation"] = convert(row.get("calculation"), item["label"] or name)
+        if mapped == "calculation" and not item["calculation"]:
+            item["calculation"] = "0"
         if row.get("constraint"):
-            item.settings["xlsform_constraint"] = str(row["constraint"])
+            constraints[ident] = str(row["constraint"])
             report.append(
-                f"{item.label or name}: the constraint is kept as written; "
-                "the model has no constraints yet."
+                f"{item['label'] or name}: the constraint is kept as written; the model has no constraints yet."  # noqa: E501
             )
         if list_name:
+            item["choices"] = []
             for c in lists.get(list_name.strip(), []):
                 value = str(c.get("name", ""))
-                item.choices.append(Choice(value, str(c.get("label") or value)))
+                item["choices"].append({"value": value, "label": str(c.get("label") or value)})
                 for key, text in c.items():
                     m = _LANG.match(str(key))
                     if m and m.group(1) == "label" and text:
-                        lang = _lang_code(m.group(2), m.group(3))
-                        form.translations.setdefault(lang, {})[
-                            f"field.{item.id}.choice.{value}"
-                        ] = str(text)
+                        tr(_lang(m.group(2), m.group(3)), ident, "choices/" + value, str(text))
         for key, text in row.items():
             m = _LANG.match(str(key))
             if m and text:
-                lang = _lang_code(m.group(2), m.group(3))
-                what = "label" if m.group(1) == "label" else "help"
-                form.translations.setdefault(lang, {})[f"field.{item.id}.{what}"] = str(text)
-        stack[-1].append(item)
-    if settings.get("default_language"):
-        form.language = _lang_code(str(settings["default_language"]), None)
-    return ImportResult(form, report)
+                tr(
+                    _lang(m.group(2), m.group(3)),
+                    ident,
+                    "label" if m.group(1) == "label" else "help",
+                    str(text),
+                )
+        stack[-1].append(clean(item))
+    model["pages"] = [{"id": "page_1", "items": top}]
+    if translations:
+        model["translations"] = translations
+    if constraints:
+        model["extensions"] = {"xlsform": {"constraints": constraints}}
+    return ImportResult(model, report)
 
 
 def import_xlsform(path: str | Path) -> ImportResult:
@@ -163,7 +193,7 @@ def import_xlsform(path: str | Path) -> ImportResult:
         raise FormImportError("Reading XLSForm needs openpyxl, which is missing.") from exc
     try:
         book = openpyxl.load_workbook(str(path), read_only=True, data_only=True)
-    except Exception as exc:  # openpyxl raises many kinds
+    except Exception as exc:  # openpyxl raises many kinds  # noqa: BLE001
         raise FormImportError(f"This workbook could not be read: {exc}") from exc
 
     def rows(name: str) -> list[dict[str, Any]]:
@@ -181,111 +211,125 @@ def import_xlsform(path: str | Path) -> ImportResult:
     return import_rows(rows("survey"), rows("choices"), settings[0] if settings else None)
 
 
-# -- export -------------------------------------------------------------------------
+# -- export -------------------------------------------------------------------------------
+
+_XOPS = {"is": "=", "is_not": "!=", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "before": "<", "after": ">",  # noqa: E501
+         "add": "+", "sub": "-", "mul": "*", "div": "div", "mod": "mod"}  # fmt: skip
 
 
-def xpath(node: E.Node) -> str:
-    if isinstance(node, E.Ref):
-        return "${" + node.field + "}"
-    if isinstance(node, E.Str):
-        return "'" + node.value + "'"
-    if isinstance(node, E.Today):
-        return "today()"
-    if isinstance(node, E.Compare) and node.op in ("=", "!=", "<", "<=", ">", ">="):
-        return f"{xpath(node.left)} {node.op} {xpath(node.right)}"
-    if isinstance(node, E.Compare) and node.op in ("before", "after"):
-        return f"{xpath(node.left)} {'<' if node.op == 'before' else '>'} {xpath(node.right)}"
-    if isinstance(node, E.Compare) and node.op == "contains":
-        return f"contains({xpath(node.left)}, {xpath(node.right)})"
-    if isinstance(node, E.Empty):
-        return f"{xpath(node.value)} {'!=' if node.negate else '='} ''"
-    if isinstance(node, E.OneOf):
-        text = " or ".join(f"selected({xpath(node.value)}, {xpath(o)})" for o in node.options)
-        return f"not({text})" if node.negate else f"({text})"
-    if isinstance(node, E.Logic):
-        return f" {node.op} ".join(
-            f"({xpath(i)})" if isinstance(i, E.Logic) else xpath(i) for i in node.items
+def xpath(node: E.Node) -> str:  # noqa: C901
+    kind = node["type"]
+    if kind == "ref":
+        return "${" + str(node["field"]) + "}"
+    if kind == "literal":
+        v = node["value"]
+        return "'" + v + "'" if isinstance(v, str) else E.literal_text(v)
+    if kind == "call":
+        return str(node["name"]) + "(" + ", ".join(xpath(a) for a in node["args"]) + ")"
+    if kind == "list":
+        return " ".join(xpath(i) for i in node["items"])
+    if kind == "var":
+        return "${score}"
+    a, name = node["args"], node["op"]
+    if name in ("and", "or"):
+        return f" {name} ".join(
+            f"({xpath(x)})" if x.get("op") in ("and", "or") else xpath(x) for x in a
         )
-    if isinstance(node, E.Not):
-        return f"not({xpath(node.operand)})"
-    if isinstance(node, E.Arith):
-        op = {"/": "div", "%": "mod"}.get(node.op, node.op)
-        return f"({xpath(node.left)} {op} {xpath(node.right)})"
-    return E.to_text(node)
+    if name == "not":
+        return f"not({xpath(a[0])})"
+    if name == "neg":
+        return "-" + xpath(a[0])
+    if name in ("empty", "not_empty"):
+        return f"{xpath(a[0])} {'=' if name == 'empty' else '!='} ''"
+    if name in ("one_of", "not_one_of"):
+        options = a[1]["items"] if a[1]["type"] == "list" else [a[1]]
+        text = " or ".join(f"selected({xpath(a[0])}, {xpath(o)})" for o in options)
+        return f"not({text})" if name == "not_one_of" else f"({text})"
+    if name in ("contains", "not_contains"):
+        text = f"selected({xpath(a[0])}, {xpath(a[1])})"
+        return text if name == "contains" else f"not({text})"
+    if name in ("starts_with", "ends_with"):
+        return f"{name.replace('_with', '-with')}({xpath(a[0])}, {xpath(a[1])})"
+    if name == "within":
+        base = xpath(a[2]) if len(a) > 2 else "today()"
+        return f"abs(decimal-date-time({xpath(a[0])}) - decimal-date-time({base})) <= {xpath(a[1])}"
+    text = f"{xpath(a[0])} {_XOPS[name]} {xpath(a[1])}"
+    return f"({text})" if name in ("add", "sub") else text
 
 
-def export_rows(form: Form) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+def export_rows(
+    model: M.Model,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     """(survey rows, choices rows, settings row) for an XLSForm."""
     survey: list[dict[str, Any]] = []
-    choices: list[dict[str, Any]] = []
+    choice_rows: list[dict[str, Any]] = []
+    constraints = ((model.get("extensions") or {}).get("xlsform") or {}).get("constraints") or {}
 
-    def walk(items: list[Item]) -> None:
-        for item in items:
-            if isinstance(item, Columns):
-                for column in item.columns:
-                    walk(column)
-            elif isinstance(item, Section):
-                row = {"type": "begin group", "name": item.id, "label": item.title}
-                if item.visible_when:
-                    row["relevant"] = xpath(E.parse(item.visible_when))
-                survey.append(row)
-                walk(item.items)
-                survey.append({"type": "end group", "name": item.id})
-            elif isinstance(item, Field):
-                field_row(item)
-            elif isinstance(item, Island):
+    def walk(entries: list[M.Item]) -> None:
+        for item in entries:
+            kind = item["type"]
+            if kind == "columns":
+                for col in item.get("columns") or []:
+                    walk(col.get("items") or [])
                 continue
+            if kind in ("section", "repeater"):
+                word = "group" if kind == "section" else "repeat"
+                row = {"type": f"begin {word}", "name": item["id"], "label": item.get("label", "")}
+                if "when" in item:
+                    row["relevant"] = xpath(E.parse(item["when"]))
+                survey.append(row)
+                walk(item.get("items") or [])
+                survey.append({"type": f"end {word}", "name": item["id"]})
+                continue
+            row = {
+                "type": _BACK.get(kind, "text"),
+                "name": item["id"],
+                "label": item.get("label", ""),
+            }
+            if item.get("choices"):
+                row["type"] += " " + item["id"]
+                choice_rows.extend(
+                    {"list_name": item["id"], "name": c["value"], "label": c["label"]}
+                    for c in item["choices"]
+                )
+            if kind == "textarea":
+                row["appearance"] = "multiline"
+            if kind == "select":
+                row["appearance"] = "minimal"
+            if item.get("help"):
+                row["hint"] = item["help"]
+            if item.get("required"):
+                row["required"] = "yes"
+            if "default" in item:
+                row["default"] = item["default"]
+            if "when" in item:
+                row["relevant"] = xpath(E.parse(item["when"]))
+            if "calculation" in item:
+                row["calculation"] = xpath(E.parse(item["calculation"]))
+            if item["id"] in constraints:
+                row["constraint"] = constraints[item["id"]]
+            survey.append(row)
 
-    def field_row(item: Field) -> None:
-        if item.type == "repeater":
-            survey.append({"type": "begin repeat", "name": item.id, "label": item.label})
-            walk(list(item.fields))
-            survey.append({"type": "end repeat", "name": item.id})
-            return
-        kind = _BACK.get(item.type, "text")
-        if item.choices:
-            kind += f" {item.id}"
-            choices.extend(
-                {"list_name": item.id, "name": c.value, "label": c.label} for c in item.choices
-            )
-        row: dict[str, Any] = {"type": kind, "name": item.id, "label": item.label}
-        if item.type == "textarea":
-            row["appearance"] = "multiline"
-        if item.type == "select":
-            row["appearance"] = "minimal"
-        if item.help:
-            row["hint"] = item.help
-        if item.required:
-            row["required"] = "yes"
-        if item.default is not None:
-            row["default"] = item.default
-        if item.visible_when:
-            row["relevant"] = xpath(E.parse(item.visible_when))
-        if item.calculate:
-            row["calculation"] = xpath(E.parse(item.calculate))
-        if "xlsform_constraint" in item.settings:
-            row["constraint"] = item.settings["xlsform_constraint"]
-        survey.append(row)
-
-    for page in form.pages:
-        walk(page.items)
+    for page in model["pages"]:
+        walk(page.get("items") or [])
     settings = {
-        "form_title": form.title,
-        "form_id": form.id or safe_id(form.title.lower(), set()),
-        "default_language": form.language,
+        "form_title": model.get("title", ""),
+        "form_id": model.get("id") or safe_id(model.get("title", "form").lower(), set()),
     }
-    return survey, choices, settings
+    if "language" in model:
+        settings["default_language"] = model["language"]
+    return survey, choice_rows, settings
 
 
-def export_xlsform(form: Form, path: str | Path) -> None:
+def export_xlsform(model: M.Model, path: str | Path) -> None:
     import openpyxl  # noqa: PLC0415
 
-    survey, choices, settings = export_rows(form)
+    survey, choice_rows, settings = export_rows(model)
     book = openpyxl.Workbook()
-    sheet = book.active
-    sheet.title = "survey"
-    for name, rows in (("survey", survey), ("choices", choices), ("settings", [settings])):
-        ws = sheet if name == "survey" else book.create_sheet(name)
+    first = book.active
+    for name, rows in (("survey", survey), ("choices", choice_rows), ("settings", [settings])):
+        ws = first if name == "survey" else book.create_sheet(name)
+        ws.title = name
         header: list[str] = []
         for r in rows:
             header.extend(k for k in r if k not in header)

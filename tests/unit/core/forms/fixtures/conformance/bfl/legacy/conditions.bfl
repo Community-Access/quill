@@ -1,0 +1,37 @@
+form "Logic"
+radio #contact "Contact Method"
+  + Email
+  + Phone
+if #contact is "Email"
+  email #email "Email Address" @required
+  text #email_confirm "Confirm email" @required
+if #contact is "Phone" {
+  phone #phone "Phone Number" @required @mask "(999) 999-9999"
+}
+if #contact is Post begin
+  address #addr "Address"
+end
+text #company "Company"
+if #company filled
+  text "Company website" @placeholder "https://..."
+if #company empty
+  text "Tell us what you do" @description "Student, freelancer, etc."
+number #age "Age"
+if #age greater 17
+  text "Which university?"
+if #age less 13
+  consent "A parent agrees"
+text #code "Code"
+if #code starts "A"
+  text #a_detail "About A codes"
+if #code ends "Z"
+  text #z_detail "About Z codes"
+if #code contains "-"
+  text #dash_detail "About dashed codes"
+checkbox #show_address "Show Address"
+if #show_address is "yes"
+  columns 2
+    column
+      text #street "Street"
+    column
+      text #city "City"

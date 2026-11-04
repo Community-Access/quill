@@ -1,0 +1,121 @@
+bfl 1
+form "Membership"
+  @description "Every rule shape, condition shape and layout container."
+  @language "en"
+  @submit_label "Join"
+  @ajax_submission
+  @enable_honeypot
+  @save_continue_enabled
+  @validation_mode "on_blur"
+  @extensions {"quill":{"last_opened_on":"page_2"}}
+
+library #member_types
+  + person|An individual
+  + business|A business
+  + charity|A charity
+
+page #about "About you"
+  radio #type "Joining as"
+    @required
+    @library "member_types"
+  text #company "Company name"
+    @when #type is "business" or #type is "charity"
+  number #staff "Staff"
+    @when #type is one of ["business", "charity"] and #company is not empty
+  columns #names 2
+    column
+      @width "1/2"
+      text #first "First name"
+        @smart_default user("first_name")
+    column
+      @width "1/2"
+      text #last "Last name"
+  section #contact "How to reach you"
+    @description "We only use this to send your card."
+    select #contact_by "Contact me by"
+      + Email
+      + Phone
+      + Post
+    phone #phone "Phone"
+      @mask "(999) 999-9999"
+    section #postal "Postal address"
+      @when #contact_by is "post"
+      select #country "Country"
+        @library "countries"
+      select #region "State or province"
+        @cascade_from #country
+        @cascade_library "states"
+        @empty_message "Choose a country first."
+        @loading_message "Loading..."
+  html #after_section
+    @content "<p>Almost there.</p>"
+
+page #family "Your family"
+  @description "Only for household memberships."
+  @when #type is "person"
+  @next_button_text "Continue"
+  repeater #children "Children"
+    @max_rows 6
+    text #child_name "Name"
+    date #child_born "Date of birth"
+    section #child_school "School"
+      @when age(#child_born) >= 5
+      text #school "School name"
+  date #start "Start date"
+    @smart_default today() + 1
+    @when #type is "person" and not #children is empty
+  date #renewal "Renewal"
+    @when #start is within 30 days or #start is before "2027-01-01" or #start is after today()
+
+page #pay "Payment"
+  quantity #members "Members"
+    @default 1
+  price #fee "Fee each"
+    @base_price 20
+  calculation #discount "Discount"
+    @calculate if(#members > 10, #members * #fee * 0.1, 0)
+  total #total "Total"
+    @calculate round(#members * #fee - #discount, 2)
+  consent #agree "I agree"
+    @required
+
+rule show #company
+  @when #type is not "person"
+
+rule hide #staff
+  @when #staff is empty and #type is "charity"
+
+rule require #phone
+  @when #contact_by is "phone"
+
+rule optional #last
+  @when #first contains " "
+
+rule enable #total
+  @when #members >= 1
+
+rule disable #fee #discount
+  @when #members < 1
+
+rule set #fee
+  @value 10
+  @when #type is "charity"
+
+rule skip_to #pay
+  @when #type is not "person"
+
+confirmation #charity_thanks
+  @message "Thank you. Charity membership is free for the first year."
+  @when #type is "charity"
+
+confirmation #thanks
+  @type "redirect"
+  @url "https://example.org/welcome"
+  @pass_field_data
+
+notification #office
+  @enabled
+  @to "office@example.org"
+  @subject "New member: {first} {last}"
+  @message "{all_fields}"
+  @when #total > 0

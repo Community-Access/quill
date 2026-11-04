@@ -1,14 +1,12 @@
 {
- "model": "baf-form",
  "version": 1,
- "language": "en",
+ "title": "",
  "pages": [
   {
    "id": "page_1",
    "title": "Step 1: About You",
    "items": [
     {
-     "kind": "field",
      "id": "field_1",
      "type": "text",
      "label": "Name",
@@ -21,7 +19,6 @@
    "title": "Step 2: Details",
    "items": [
     {
-     "kind": "field",
      "id": "field_2",
      "type": "textarea",
      "label": "Details"

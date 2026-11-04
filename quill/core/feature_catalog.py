@@ -478,6 +478,20 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         privacy="network after confirmation",
         category="writing",
     ),
+    "core.forms": FeatureDefinition(
+        "core.forms",
+        "Forms",
+        aliases=("forms", "form", "survey", "questionnaire", "bfl", "accessible forms"),
+        description=(
+            "Write accessible forms -- contact forms, sign-ups, surveys -- as plain text "
+            "in BITS Accessible Forms' language, check them, and fill them in yourself "
+            "with your screen reader before anyone else sees them: File > New Form, "
+            "Insert > Form Field, View > Form Outline, Format > Form Rules and "
+            "Tools > Forms. Runs on this computer. On by default in every profile "
+            "except Essential."
+        ),
+        category="writing",
+    ),
     "future.youtube_oauth": FeatureDefinition(
         "future.youtube_oauth",
         "Connect YouTube Account",

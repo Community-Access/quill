@@ -1,28 +1,25 @@
 {
- "model": "baf-form",
  "version": 1,
- "language": "en",
+ "title": "",
  "pages": [
   {
    "id": "page_1",
    "items": [
     {
-     "kind": "field",
      "id": "username",
      "type": "text",
      "label": "Username",
      "help": "Choose a unique username (3-20 characters)",
-     "required": true,
      "placeholder": "jane_doe",
+     "required": true,
      "default": "user_"
     },
     {
-     "kind": "field",
      "id": "email",
      "type": "email",
      "label": "Email",
-     "required": true,
      "placeholder": "jane@example.com",
+     "required": true,
      "default": "noreply@company.com"
     }
    ]

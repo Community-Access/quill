@@ -331,6 +331,7 @@ def wp(
         # Off here, so a test's request list is only the command's own; the
         # waiting-comments count has its own tests, which turn it on.
         announce_waiting_comments=False,
+        announce_new_responses=False,
     )
     st.save_sites(st.SiteStore([profile], "radio"), tmp_path)
     commands = WordPressCommands(wp_host, data_dir=tmp_path, opener=wp_site)

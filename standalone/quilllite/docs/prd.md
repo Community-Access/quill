@@ -440,10 +440,10 @@ paragraph over the top of that is what GATE-13 exists to stop.
 
 | Profile | Areas on | Ctrl+N | For |
 |---|---|---|---|
-| Recommended | 18 of 22 | unchanged | the shipped answer, and the way back from experimenting |
-| Everything | 22 of 22 | unchanged | turning things off as they annoy you rather than finding them one at a time |
-| WordPad | 6 of 22 | **rich** | letters and notes that should look like something |
-| Notepad | 3 of 22 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+| Recommended | 19 of 23 | unchanged | the shipped answer, and the way back from experimenting |
+| Everything | 23 of 23 | unchanged | turning things off as they annoy you rather than finding them one at a time |
+| WordPad | 6 of 23 | **rich** | letters and notes that should look like something |
+| Notepad | 3 of 23 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
 
 Every profile keeps the Command Palette (2026-11-04): it is how a command is
 found, so a profile that removed it removed the way to find everything else.

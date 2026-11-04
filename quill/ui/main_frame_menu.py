@@ -198,6 +198,7 @@ class MenuBuilderMixin:
             self._id_new_plain_text_document,
             self._menu_label(_("New P&lain Text Document"), "file.new_plain_text_document"),
         )
+        self._append_forms_new_row(file_menu)  # New Form (main_frame_forms.py, 17a.10)
         file_menu.Append(self._id_open, self._menu_label(_("&Open..."), "file.open"))
         file_menu.Append(
             self._id_open_from_clipboard,
@@ -3313,14 +3314,17 @@ class MenuBuilderMixin:
                 # construction if the wx build rejects the call.
                 pass
 
-        # WordPress rows inside a page's menus (wordpress.md 12, main_frame_wordpress.py).
-        self._place_wordpress_rows({
+        # WordPress rows inside a page's menus (wordpress.md 12, main_frame_wordpress.py),
+        # then the Forms rows (17a.10, main_frame_forms.py), each at a menu's foot.
+        placed = {
             "edit": edit_menu,
             "view": view_menu,
             "insert": insert_menu,
             "format": format_menu,
             "tools": tools_menu,
-        })
+        }
+        self._place_wordpress_rows(placed)
+        self._place_forms_rows(placed)
         self._apply_menu_customization(menu_bar)
         self.frame.SetMenuBar(menu_bar)
         self._refresh_contextual_menu_items()

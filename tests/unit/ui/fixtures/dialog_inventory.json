@@ -263,6 +263,8 @@
   "quill/ui/fill_in_dialog.py::FillInDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/find_dialog.py::QuillFindDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/find_dialog.py::QuillFindDialog.insert_special_character::wx.SingleChoiceDialog": "native",
+  "quill/ui/forms_dialogs.py::ask_save_path::wx.FileDialog": "native",
+  "quill/ui/forms_fill_window.py::FillWindow::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/git_worktree_dialogs.py::NewWorktreeDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/git_worktree_dialogs.py::NewWorktreeDialog._browse::wx.DirDialog": "native",
   "quill/ui/git_worktree_dialogs.py::WorktreesDialog.__init__::wx.Dialog": "hardened_custom",

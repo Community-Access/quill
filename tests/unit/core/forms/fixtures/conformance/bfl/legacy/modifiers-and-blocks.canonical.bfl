@@ -1,0 +1,35 @@
+bfl 1
+form "Contact Us"
+  @description "Write to us"
+  @ajax_submission
+  @enable_honeypot
+  @enable_captcha
+  @captcha_type "hcaptcha"
+  @submit_label "Send Message"
+  @success_message "Thank you for contacting us!"
+
+text #name "Your Name"
+  @required
+  @placeholder "Enter your name"
+  @maxlength 100
+text #last "Last Name"
+  @required
+  @placeholder "Last name"
+text #b1 "Brace"
+  @required
+  @placeholder "Enter name"
+text #b2 "Multiline brace"
+  @required
+  @minlength 2
+text #b3 "Bracket"
+  @required
+  @placeholder "Enter name"
+text #b4 "Begin"
+  @required
+  @description "Shown under the box"
+textarea #message "Your Message"
+  @required
+  @min 20
+  @max 1000
+  @rows 6
+submit "Send Message"

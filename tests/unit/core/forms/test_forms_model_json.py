@@ -1,4 +1,4 @@
-"""The form model's JSON: compact, versioned, upgradable, and checked by its schema."""
+"""The stored model: one schema with BAF, versions, migrations, and the rules beyond the schema."""
 
 from __future__ import annotations
 
@@ -7,201 +7,100 @@ from typing import Any
 
 import pytest
 
+from quill.core.forms import model as M
 from quill.core.forms import model_json, schema_check
 from quill.core.forms.errors import FormModelError, FormVersionError
-from quill.core.forms.model import (
-    MODEL_VERSION,
-    Cascade,
-    Choice,
-    Columns,
-    Field,
-    Form,
-    Island,
-    Outcome,
-    Page,
-    Section,
-    all_fields,
-    find_field,
-)
-from quill.core.forms.model_json import dumps, from_dict, loads, to_dict
+from quill.core.forms.model_json import dumps, loads
 
 
-def _sample() -> Form:
-    form = Form(title="Fair", description="Spring fair", language="en-GB")
-    form.settings.submit_label = "Sign me up"
-    form.settings.honeypot = True
-    form.settings.extra["notifications"] = [{"to": "a@example.org"}]
-    form.pages = [
-        Page(
-            id="page_1",
-            title="You",
-            items=[
-                Field(
-                    id="name",
-                    type="text",
-                    label="Name",
-                    required=True,
-                    settings={"autocomplete": "name"},
-                ),
-                Section(
-                    id="s1",
-                    title="Contact",
-                    visible_when="#name is filled",
-                    items=[
-                        Field(
-                            id="how",
-                            type="radio",
-                            label="How",
-                            choices=[Choice("email", "Email", score=1.0), Choice("phone", "Phone")],
-                        ),
-                        Columns(
-                            id="c1",
-                            count=2,
-                            columns=[[Field(id="a", type="text")], [Island("x y z", "test")]],
-                        ),
-                    ],
-                ),
-            ],
-        ),
-        Page(
-            id="page_2",
-            visible_when='#how is "email"',
-            items=[
-                Field(id="country", type="select", choice_library="countries"),
-                Field(
-                    id="state",
-                    type="select",
-                    cascade=Cascade("country", "states", "Pick a country"),
-                ),
-                Field(
-                    id="kids", type="repeater", fields=[Field(id="kid", type="text", label="Kid")]
-                ),
-                Field(id="total", type="calculation", calculate="#a * 2", default_expr="today + 1"),
-            ],
-        ),
-    ]
-    form.translations = {"fr": {"title": "Fête", "field.name.label": "Nom"}}
-    form.outcomes = [Outcome("quiz.score >= 1", "Thanks")]
-    return form
+def _form() -> M.Model:
+    return {
+        "version": 1,
+        "title": "Join",
+        "pages": [
+            {
+                "id": "page_1",
+                "items": [
+                    {"id": "type", "type": "radio", "label": "Joining as",
+                     "choices": [{"value": "person", "label": "An individual"}, {"value": "business", "label": "A business"}]},  # noqa: E501
+                    {"id": "company", "type": "text", "label": "Company", "when": '#type is "business"'},  # noqa: E501
+                ],
+            }
+        ],
+    }  # fmt: skip
 
 
-def test_round_trip_through_json() -> None:
-    form = _sample()
-    assert loads(dumps(form)) == form
-    assert from_dict(json.loads(json.dumps(to_dict(form)))) == form
+def test_round_trip_and_valid() -> None:
+    form = _form()
+    assert M.same(loads(dumps(form)), form)
+    assert M.validate(form) == []
+    assert dumps(form).endswith("\n")
 
 
-def test_written_json_leaves_out_defaults() -> None:
-    data = to_dict(Form(pages=[Page(id="page_1", items=[Field(id="a", type="text")])]))
-    assert data == {
-        "model": "baf-form",
-        "version": MODEL_VERSION,
-        "language": "en",
-        "pages": [{"id": "page_1", "items": [{"kind": "field", "id": "a", "type": "text"}]}],
-    }
-
-
-def test_sample_fits_the_schema() -> None:
-    assert schema_check.problems(to_dict(_sample())) == []
-
-
-def test_helpers_find_fields_everywhere() -> None:
-    form = _sample()
-    assert [f.id for f in all_fields(form)] == [
-        "name",
-        "how",
-        "a",
-        "country",
-        "state",
-        "kids",
-        "kid",
-        "total",
-    ]
-    found = find_field(form, "kid")
-    assert found is not None and found.label == "Kid"
-    assert find_field(form, "nope") is None
+def test_the_schema_is_bafs() -> None:
+    schema = schema_check.load_schema()
+    assert schema["$id"].startswith("https://bits-acb.org/baf/schema/")
+    assert set(schema["$defs"]["field_type"]["enum"]) == set(M.FIELD_TYPES)
 
 
 @pytest.mark.parametrize(
-    ("change", "fragment"),
+    ("change", "path"),
     [
-        (lambda d: d.pop("pages"), "missing 'pages'"),
-        (lambda d: d.__setitem__("colour", "red"), "'colour'"),
-        (lambda d: d["pages"][0]["items"][0].__setitem__("type", "hologram"), "allowed values"),
-        (lambda d: d["pages"][0]["items"][0].__setitem__("visible_when", "#a is"), "does not read"),
-        (lambda d: d["pages"][0]["items"][0].__setitem__("id", "has space"), "expected form"),
-        (lambda d: d["pages"][0]["items"][0].__setitem__("required", "yes"), "boolean"),
-        (lambda d: d.__setitem__("translations", {"fr": {"field.a.colour": "x"}}), "expected form"),
-        (lambda d: d["pages"][0]["items"].append({"kind": "widget"}), "kind"),
+        (lambda d: d.pop("version"), "/"),
+        (lambda d: d.__setitem__("colour", "red"), "/colour"),
+        (
+            lambda d: d["pages"][0]["items"][1].__setitem__("when", "#nobody is 1"),
+            "/pages/0/items/1/when",
+        ),
+        (lambda d: d["pages"][0]["items"][1].__setitem__("id", "type"), "/pages/0/items/1/id"),
+        (
+            lambda d: d["pages"][0]["items"][0]["choices"].append({
+                "value": "person",
+                "label": "Again",
+            }),
+            "/pages/0/items/0/choices/2/value",
+        ),
     ],
 )
-def test_schema_finds_problems(change: Any, fragment: str) -> None:
-    data = to_dict(Form(pages=[Page(id="page_1", items=[Field(id="a", type="text")])]))
-    change(data)
-    found = schema_check.problems(data)
-    assert any(fragment in p for p in found), found
-    with pytest.raises(FormModelError) as caught:
-        schema_check.check(data)
-    assert caught.value.problems == found
+def test_problems_are_reported_at_their_path(change: Any, path: str) -> None:
+    form = _form()
+    change(form)
+    found = M.validate(form)
+    assert any(p["path"] == path for p in found), found
+    with pytest.raises(FormModelError):
+        schema_check.check(form)
 
 
-def test_schema_file_is_a_2020_12_schema() -> None:
-    schema = schema_check.load_schema()
-    assert schema["$schema"].endswith("2020-12/schema")
-    assert schema["$id"] == "urn:baf:form-model:1"
-    assert schema["properties"]["model"]["const"] == model_json.MODEL_NAME
-    field_types = schema["$defs"]["field"]["properties"]["type"]["enum"]
-    from quill.core.forms.model import FIELD_TYPES
-
-    assert sorted(field_types) == sorted(FIELD_TYPES)
+def test_same_keeps_true_apart_from_one() -> None:
+    assert M.same({"a": 1, "b": [2.0]}, {"b": [2], "a": 1})
+    assert not M.same({"a": True}, {"a": 1})
 
 
-def test_newer_versions_are_refused_in_a_sentence() -> None:
-    data = to_dict(Form())
-    data["version"] = MODEL_VERSION + 1
+def test_newer_versions_are_refused() -> None:
     with pytest.raises(FormVersionError, match="Update QUILL"):
-        from_dict(data)
+        loads(json.dumps({**_form(), "version": 2}))
 
 
-def test_migration_hook_upgrades_one_step_at_a_time(monkeypatch: pytest.MonkeyPatch) -> None:
-    calls: list[int] = []
-
-    def one_to_two(data: dict[str, Any]) -> dict[str, Any]:
-        calls.append(1)
-        return {**data, "version": 2, "title": data["title"].upper()}
-
-    def two_to_three(data: dict[str, Any]) -> dict[str, Any]:
-        calls.append(2)
-        return {**data, "version": 3}
-
+def test_migrations_run_one_step_at_a_time(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(model_json, "MIGRATIONS", {})
-    model_json.migration(1)(one_to_two)
-    model_json.migration(2)(two_to_three)
-    out = model_json.upgrade({"version": 1, "title": "old"}, target=3)
-    assert out == {"version": 3, "title": "OLD"}
-    assert calls == [1, 2]
-
-
-def test_missing_or_broken_migration_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
+    model_json.migration(1)(lambda d: {**d, "version": 2, "title": d["title"].upper()})
+    model_json.migration(2)(lambda d: {**d, "version": 3})
+    assert model_json.upgrade({"version": 1, "title": "old"}, target=3) == {
+        "version": 3,
+        "title": "OLD",
+    }
     monkeypatch.setattr(model_json, "MIGRATIONS", {})
     with pytest.raises(FormVersionError, match="no way"):
         model_json.upgrade({"version": 1}, target=2)
-    model_json.migration(1)(lambda d: d)
-    with pytest.raises(FormVersionError, match="did not reach"):
-        model_json.upgrade({"version": 1}, target=2)
 
 
-def test_bad_json_and_wrong_models_are_refused() -> None:
+def test_bad_json_is_refused() -> None:
     with pytest.raises(FormModelError, match="not valid JSON"):
         loads("{")
     with pytest.raises(FormModelError, match="object"):
         loads("[]")
-    with pytest.raises(FormModelError, match="not a form model"):
-        from_dict({"model": "something-else"})
-    with pytest.raises(FormModelError, match="kind"):
-        from_dict({"pages": [{"id": "p", "items": [{"kind": "widget"}]}]})
 
 
-def test_error_codes() -> None:
-    assert FormModelError.code.startswith("QUILL-FORMS-")
-    assert FormVersionError.code == "QUILL-FORMS-MODEL-VERSION"
+def test_slug_matches_baf() -> None:
+    assert M.slug("Credit Card!") == "credit-card"
+    assert M.slug("  T-Shirt (large) ") == "t-shirt-large"

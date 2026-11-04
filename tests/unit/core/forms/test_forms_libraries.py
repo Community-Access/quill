@@ -26,7 +26,7 @@ def test_all_124_libraries_are_there() -> None:
 
 def test_countries_are_baf_values_and_labels() -> None:
     countries = libraries.choices("countries")
-    by_value = {c.value: c.label for c in countries}
+    by_value = {c["value"]: c["label"] for c in countries}
     assert by_value["US"] == "United States"
     assert by_value["AX"] == "Åland Islands"
     assert len(countries) > 240
@@ -34,21 +34,21 @@ def test_countries_are_baf_values_and_labels() -> None:
 
 def test_cascading_states_follow_the_country() -> None:
     assert libraries.choices("states") == []
-    canada = [c.label for c in libraries.choices("states", "CA")]
+    canada = [c["label"] for c in libraries.choices("states", "CA")]
     assert "Ontario" in canada and "Alabama" not in canada
-    assert [c.label for c in libraries.choices("states", "us")][:2] == ["Alabama", "Alaska"]
+    assert [c["label"] for c in libraries.choices("states", "us")][:2] == ["Alabama", "Alaska"]
     assert libraries.info("states").cascade_parent == "countries"
-    europe = {c.value for c in libraries.choices("countries_by_continent", "EU")}
+    europe = {c["value"] for c in libraries.choices("countries_by_continent", "EU")}
     assert {"FR", "DE"} <= europe and "US" not in europe
 
 
 def test_year_lists_follow_the_calendar() -> None:
     today = dt.date(2026, 11, 4)
     years = libraries.choices("years", today=today)
-    assert years[0].value == "2026" and years[-1].value == "1926"
-    assert libraries.choices("years_future", today=today)[-1].value == "2046"
+    assert years[0]["value"] == "2026" and years[-1]["value"] == "1926"
+    assert libraries.choices("years_future", today=today)[-1]["value"] == "2046"
     birth = libraries.choices("birth_years", today=today)
-    assert birth[0].value == "2013" and birth[-1].value == "1906"
+    assert birth[0]["value"] == "2013" and birth[-1]["value"] == "1906"
     assert libraries.info("years").count == 101
 
 

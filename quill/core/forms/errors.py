@@ -53,3 +53,13 @@ class FormImportError(FormError):
     """A file from another form tool that cannot be read at all."""
 
     code = "QUILL-FORMS-IMPORT-UNREADABLE"
+
+
+class BflError(FormError):
+    """BFL with an error in it; ``line`` says where."""
+
+    code = "QUILL-FORMS-BFL-ERROR"
+
+    def __init__(self, message: str, line: int = 0) -> None:
+        super().__init__(message)
+        self.line = line

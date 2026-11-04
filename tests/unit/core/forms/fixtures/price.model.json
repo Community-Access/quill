@@ -1,13 +1,11 @@
 {
- "model": "baf-form",
  "version": 1,
- "language": "en",
+ "title": "",
  "pages": [
   {
    "id": "page_1",
    "items": [
     {
-     "kind": "field",
      "id": "field_1",
      "type": "select",
      "label": "T-Shirt",
@@ -15,12 +13,12 @@
       {
        "value": "small",
        "label": "Small",
-       "price": "10"
+       "price": 10
       },
       {
        "value": "large",
        "label": "Large",
-       "price": "12"
+       "price": 12
       }
      ]
     }

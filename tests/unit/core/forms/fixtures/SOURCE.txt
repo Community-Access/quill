@@ -1,25 +1,29 @@
 Where these fixtures come from
 ==============================
 
-Each NAME.bfl is one BFL example copied unchanged from BITS Accessible Forms
-(BAF), at S:\code\baf, commit 461375e (2026-11-04):
+All of them come from BITS Accessible Forms (BAF), S:\code\baf on Jeff's
+machine. BAF is copyright BITS (Blind Information Technology Solutions) and
+Community Access, released under GPL-2.0-or-later. They are copied here for
+testing; QUILL itself is MIT-licensed, so reusing them here rests on the same
+owners' permission. The choice-library data in
+quill/core/forms/libraries/baf_libraries.json and the schema in
+quill/core/forms/schema/form.schema.json have the same origin.
 
-- docs/user-guide/bfl-language-guide.md (the fenced bfl blocks), and
-- tests/unit/BFL/ParserTest.php (the $bfl literals).
+conformance/
+  A subset of BAF's form model conformance suite, copied unchanged from
+  tests/conformance on BAF's feat/json-form-model branch (commit 8ec970d,
+  2026-11-04): the expression cases, two valid models, the invalid-model and
+  behaviour cases, three canonical and three legacy BFL pairs, and the BFL
+  error cases. manifest.json here lists only those, in BAF's manifest shape.
+  test_forms_conformance.py runs it on every machine, and runs BAF's whole
+  manifest too when BAF is on the machine.
 
-NAME.baf.json records the example's origin and what BAF's own PHP made of
-it: BAF_BFL_Parser::parse and BAF_BFL_Formatter::format, produced by
-tests/unit/core/forms/baf_php_harness.php running BAF's files read-only
-under PHP 8.1.
-
-NAME.model.json is the form model QUILL reads from the example, in the
-shared JSON shape checked by quill/core/forms/schema/form.schema.json. It is
-the expected answer for the shared conformance suite (wordpress.md 17a.15,
-point 7): both BAF's PHP and QUILL's Python read NAME.bfl and must produce
-NAME.model.json.
-
-Licence: BAF is copyright BITS (Blind Information Technology Solutions) and
-Community Access, released under GPL-2.0-or-later. These examples are
-copied from it for testing; QUILL itself is MIT-licensed, so their reuse
-here rests on the same owners' permission. The choice-library data in
-quill/core/forms/libraries/baf_libraries.json has the same origin.
+NAME.bfl, NAME.baf.json, NAME.model.json
+  Twenty BFL examples copied unchanged from BAF's main branch (commit
+  461375e): the fenced blocks of docs/user-guide/bfl-language-guide.md and
+  the $bfl literals of tests/unit/BFL/ParserTest.php.
+  - NAME.baf.json: what BAF's OLDER parser and formatter (includes/bfl, still
+    used by Structure Mode) make of it, produced by baf_php_harness.php
+    running BAF's own PHP read-only.
+  - NAME.model.json: the form model BFL 1 reads from it (BAF's new reader,
+    ported in quill/core/forms/bfl_read.py).

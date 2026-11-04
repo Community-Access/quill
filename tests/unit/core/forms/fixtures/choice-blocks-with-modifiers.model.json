@@ -1,18 +1,16 @@
 {
- "model": "baf-form",
  "version": 1,
- "language": "en",
+ "title": "",
  "pages": [
   {
    "id": "page_1",
    "items": [
     {
-     "kind": "field",
      "id": "dept",
      "type": "select",
      "label": "Department",
-     "required": true,
      "placeholder": "Select one...",
+     "required": true,
      "choices": [
       {
        "value": "sales",
@@ -29,7 +27,6 @@
      ]
     },
     {
-     "kind": "field",
      "id": "preferred",
      "type": "radio",
      "label": "Preferred Contact",
@@ -50,7 +47,6 @@
      ]
     },
     {
-     "kind": "field",
      "id": "interests",
      "type": "checkbox",
      "label": "Interests",
@@ -68,7 +64,7 @@
        "label": "Art"
       }
      ],
-     "settings": {
+     "props": {
       "multiple": true,
       "allow_other": true
      }

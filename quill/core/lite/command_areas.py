@@ -24,6 +24,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.forms import menu as forms_menu
 from quill.core.lite.commands import _MENU_ORDER, COMMANDS, SUBMENU_SEP, CommandRow
 from quill.core.wordpress import menu as wordpress_menu
 
@@ -53,6 +54,7 @@ MENU_AREA: dict[str, str] = {
     # Every WordPress submenu (File, Format, Edit and Tools > WordPress and the
     # ones inside them), spelled out by the shared table that builds them.
     **dict.fromkeys(wordpress_menu.submenu_paths(), "wordpress"),
+    **dict.fromkeys(forms_menu.submenu_paths(), "forms"),  # Tools > Forms (forms/menu.py)
     "F&ormat": "rich_text",
     # Spelled out rather than inherited from the parent: a submenu's rows are
     # looked up by their *own* path, so a submenu left out of this map is a
@@ -93,6 +95,8 @@ MENU_AREA: dict[str, str] = {
 COMMAND_AREA: dict[str, str] = {
     # WordPress rows straight in Insert and View, not in a submenu of their own.
     **dict.fromkeys(wordpress_menu.direct_handlers(), "wordpress"),
+    # Forms rows straight in File, Insert, View and Format (wordpress.md 17a.10).
+    **dict.fromkeys(forms_menu.direct_handlers(), "forms"),
     "cmd_page_setup": "printing",
     "cmd_print": "printing",
     # With the rest of the spelling submenu, which is one switchable area.

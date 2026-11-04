@@ -1,0 +1,30 @@
+form "Choices"
+select #dept "Department"
+  + Sales
+  + Support
+  + Engineering
+select #dept2 "Department (braces)" {
+  + Sales
+  + Customer Support
+}
+select #dept3 "Department (brackets)" [
+  + Sales
+  + Support
+]
+radio #payment "Payment"
+  + card|Credit Card
+  + paypal|PayPal
+  + bank|Bank Transfer
+select #size "Size"
+  + Small:10
+  + Medium:15.5
+  + Large:20
+select #when "Time"
+  + Time: morning
+dropdown #country "Country" @library countries
+select #state "State"
+  @cascade_from #country
+  @cascade_library us_states
+  @empty_message "Please select a country first"
+checkboxes #newsletter "Subscribe to newsletter"
+multiselect #langs "Languages" @library languages @searchable

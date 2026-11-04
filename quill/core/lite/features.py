@@ -250,6 +250,14 @@ AREAS: tuple[AppArea, ...] = (
         "tags. Nothing reaches a site until you choose Save Draft to Site or "
         "Publish, and it only connects to sites you add yourself.",
     ),
+    AppArea(
+        "forms",
+        "Forms",
+        "File > New Form: write accessible forms -- contact forms, sign-ups, "
+        "surveys -- as plain text, check them, and fill them in yourself before "
+        "anyone else sees them, from Insert, View, Format and Tools > Forms. "
+        "Everything here runs on this computer.",
+    ),
 )
 
 #: Areas that start disabled. Everything else starts enabled, because
@@ -291,7 +299,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "recommended",
         "Recommended",
-        "What a new install is: eighteen of the 22 areas on. The four "
+        "What a new install is: nineteen of the 23 areas on. The four "
         "left off are the ones that would be wrong on by default rather than "
         "merely unused -- autocorrect rewriting a configuration file's quotes, "
         "backups quietly filling a folder, a second 'go to' front door "
@@ -305,7 +313,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "everything",
         "Everything",
-        "All 22 areas on, including the four a new install leaves off. "
+        "All 23 areas on, including the four a new install leaves off. "
         # Not "and capitalise your sentences": the area description three
         # hundred lines up was corrected for saying so and this one was
         # missed, which left the same wrong rule in the sentence somebody
@@ -327,7 +335,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "spacing -- and none of the writing tools behind them. No line "
         "operations, no clipboard history, no bookmarks, no abbreviations. "
         "Ctrl+N makes a rich text document, which is the half of this name a "
-        "list of menus cannot say. Six of the 22 areas, plus a spell checker "
+        "list of menus cannot say. Six of the 23 areas, plus a spell checker "
         "WordPad never had, and the command palette, which every profile "
         "keeps because it is how a command is found.",
         frozenset({
@@ -351,6 +359,8 @@ PROFILES: tuple[AppProfile, ...] = (
             "hosted_ai",
             # Neither program had a way to publish to a website.
             "wordpress",
+            # Neither program ever made a form.
+            "forms",
             "markup",
             "matches",
             "selection",
@@ -363,7 +373,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "notepad",
         "Notepad",
         "The smallest QUILL Lite gets, and the one most people are replacing "
-        "something with. Three of the 22 areas: printing, text size and the "
+        "something with. Three of the 23 areas: printing, text size and the "
         "command palette, which every profile keeps because it is how a "
         "command is found. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
@@ -388,6 +398,8 @@ PROFILES: tuple[AppProfile, ...] = (
             "hosted_ai",
             # Neither program had a way to publish to a website.
             "wordpress",
+            # Neither program ever made a form.
+            "forms",
             # Markdown bold in a .md would be a genuine improvement on Notepad,
             # which is exactly why it is off here: this profile's promise is
             # "nothing Notepad does not have", and a profile that quietly keeps

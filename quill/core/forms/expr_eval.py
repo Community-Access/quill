@@ -1,298 +1,328 @@
-"""Working out an expression against a set of answers.
+"""Working an expression out: a port of ``BAF_Expression::evaluate``.
 
-The meaning follows BAF's site (``public/js/baf-public.js``) wherever the site
-has one, so Fill It In Yourself is honest about what a visitor will see:
+The context is BAF's, all keys optional:
 
-- ``is`` compares the stored *value* as text, exactly as the site does, and a
-  check-box group "is" a value when that value is one of those checked. Two
-  numbers compare as numbers, so ``5`` is ``5.0``.
-- ``<`` and ``>`` compare numbers, or dates; anything else is false, as
-  ``parseFloat`` makes it on the site.
-- ``is empty`` is true for no answer, empty text and nothing checked.
+- ``values``: field ID to answer (text, number, true or false, a list, or None);
+- ``today``: ``"YYYY-MM-DD"`` (today in UTC when absent);
+- ``user`` and ``query``: key to value, for ``user("key")`` and ``query("key")``;
+- ``geo``: the value of ``geo()``;
+- ``scores``: field ID to points, for ``score(#field)``; ``score``: the total.
 
-Arithmetic treats an unanswered field as 0. A date plus a number is that many
-days later; a date minus a date is a number of days. Text plus text joins.
+The rules (empty, truth, ``is``, dates, arithmetic) are written down in BAF's
+``docs/expression-language.md``; Fill It In Yourself relies on them matching
+the site exactly.
 """
 
 from __future__ import annotations
 
 import datetime as dt
+import math
 import re
 from collections.abc import Mapping
-from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from quill.core.forms import expr as E
-from quill.core.forms.errors import ExpressionEvalError
 
-Value = None | str | Decimal | bool | dt.date | list[str]
-
-_ISO = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
+_NUMERIC = re.compile(r"^\s*-?(\d+(\.\d*)?|\.\d+)\s*$")
+_DATE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})(?:$|[T ])")
 
 
-def to_number(value: Any) -> Decimal | None:
-    if value is None or isinstance(value, (list, dt.date)):
-        return None
-    if isinstance(value, bool):
-        return Decimal(int(value))
-    if isinstance(value, Decimal):
-        return value
-    if isinstance(value, (int, float)):
-        return Decimal(str(value))
-    text = str(value).strip()
-    if not re.fullmatch(r"[+-]?(\d+(\.\d*)?|\.\d+)", text):
-        return None
-    try:
-        return Decimal(text)
-    except InvalidOperation:  # pragma: no cover - the pattern prevents it
-        return None
+def _is_num(v: Any) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
 
 
-def to_date(value: Any) -> dt.date | None:
-    if isinstance(value, dt.datetime):
-        return value.date()
-    if isinstance(value, dt.date):
-        return value
-    if isinstance(value, str):
-        m = _ISO.match(value.strip())
-        if m:
-            try:
-                return dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
-            except ValueError:
-                return None
-    return None
-
-
-def as_text(value: Any) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, Decimal):
-        return E.to_text(E.Num(value))
-    if isinstance(value, dt.date):
-        return value.isoformat()
-    if isinstance(value, list):
-        return ", ".join(as_text(v) for v in value)
-    return str(value)
-
-
-def truthy(value: Any) -> bool:
-    if value is None or value is False:
+def truthy(v: Any) -> bool:
+    if v is None or v is False or v == "" and isinstance(v, str) or (isinstance(v, list) and not v):
         return False
-    if isinstance(value, (str, list)):
-        return len(value) > 0
-    if isinstance(value, Decimal):
-        return value != 0
+    if _is_num(v):
+        return bool(v != 0)
     return True
 
 
-def normal(value: Any) -> Value:
-    if isinstance(value, (list, tuple)):
-        return [as_text(v) for v in value]
-    if isinstance(value, bool) or value is None or isinstance(value, (str, Decimal, dt.date)):
-        return value
-    if isinstance(value, (int, float)):
-        return Decimal(str(value))
-    return str(value)
+def is_empty(v: Any) -> bool:
+    if v is None:
+        return True
+    if v is False:
+        return False
+    if isinstance(v, list):
+        return all(is_empty(x) for x in v)
+    if isinstance(v, dict):
+        return all(is_empty(x) for x in v.values())
+    if isinstance(v, str):
+        return v.strip(" \t\n\r\0\x0b") == ""
+    return False
 
 
-def _equal(left: Value, right: Value) -> bool:
-    if isinstance(left, list):
-        if isinstance(right, list):
-            return sorted(left) == sorted(right)
-        return as_text(right) in left
-    a, b = to_number(left), to_number(right)
-    if (
-        a is not None
-        and b is not None
-        and not isinstance(left, bool)
-        and not isinstance(right, bool)
-    ):
-        return a == b
-    da, db = to_date(left), to_date(right)
+def to_str(v: Any) -> str:
+    if v is None:
+        return ""
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    if isinstance(v, list):
+        return ", ".join(to_str(x) for x in v)
+    if isinstance(v, float):
+        return str(int(v)) if v.is_integer() and abs(v) < 1e15 else E.number_text(v)
+    return str(v)
+
+
+def is_numeric_value(v: Any) -> bool:
+    return _is_num(v) or (isinstance(v, str) and _NUMERIC.match(v) is not None)
+
+
+def num(v: Any) -> int | float:
+    if _is_num(v):
+        return v  # type: ignore[no-any-return]
+    if v is True:
+        return 1
+    if isinstance(v, list):
+        total: int | float = 0
+        for x in v:
+            total += num(x)
+        return total
+    if isinstance(v, str) and _NUMERIC.match(v):
+        text = v.strip()
+        return float(text) if "." in text else int(text)
+    return 0
+
+
+def normalize_number(n: Any) -> Any:
+    if isinstance(n, float) and math.isfinite(n) and n.is_integer() and abs(n) < 1e15:
+        return int(n)
+    return n
+
+
+def _ascii_lower(s: str) -> str:
+    return "".join(chr(ord(c) + 32) if "A" <= c <= "Z" else c for c in s)
+
+
+def scalar_equals(a: Any, b: Any) -> bool:
+    a = "" if a is None else a
+    b = "" if b is None else b
+    if is_numeric_value(a) and is_numeric_value(b):
+        return bool(num(a) == num(b))
+    return to_str(a) == to_str(b)
+
+
+def contains(a: Any, b: Any) -> bool:
+    if isinstance(a, list):
+        return any(scalar_equals(x, b) for x in a)
+    needle = _ascii_lower(to_str(b))
+    return needle == "" or needle in _ascii_lower(to_str(a))
+
+
+def equals(a: Any, b: Any) -> bool:
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(contains(a, x) for x in b)
+    if isinstance(a, list):
+        return contains(a, b)
+    return scalar_equals(a, b)
+
+
+def parse_date(v: Any) -> tuple[int, int, int] | None:
+    if not isinstance(v, str):
+        return None
+    m = _DATE.match(v)
+    if not m:
+        return None
+    y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    try:
+        dt.date(y, mo, d)
+    except ValueError:
+        return None
+    return y, mo, d
+
+
+def day_number(v: Any) -> int | None:
+    p = parse_date(v)
+    if p is None:
+        return None
+    return (dt.date(*p) - dt.date(1970, 1, 1)).days
+
+
+def day_to_date(z: int) -> str:
+    return (dt.date(1970, 1, 1) + dt.timedelta(days=z)).isoformat()
+
+
+def compare(a: Any, b: Any) -> int | None:
+    if is_empty(a) or is_empty(b):
+        return None
+    if is_numeric_value(a) and is_numeric_value(b):
+        x, y = num(a), num(b)
+        return (x > y) - (x < y)
+    da, db = day_number(a), day_number(b)
     if da is not None and db is not None:
-        return da == db
-    return as_text(left) == as_text(right)
+        return (da > db) - (da < db)
+    if isinstance(a, list) or isinstance(b, list):
+        x, y = num(a), num(b)
+        return (x > y) - (x < y)
+    sa, sb = to_str(a).encode("utf-8"), to_str(b).encode("utf-8")
+    return (sa > sb) - (sa < sb)
 
 
-class Evaluator:
-    def __init__(
-        self,
-        answers: Mapping[str, Any],
-        *,
-        today: dt.date | None = None,
-        context: Mapping[str, Any] | None = None,
-    ) -> None:
-        self.answers = answers
-        self.today = today or dt.date.today()
-        self.context = context or {}
+def today(context: Mapping[str, Any]) -> str:
+    if "today" in context and context["today"] is not None:
+        return str(context["today"])
+    return dt.datetime.now(dt.UTC).date().isoformat()
 
-    def run(self, node: E.Node) -> Value:  # noqa: C901 - one case per node kind
-        if isinstance(node, E.Num):
-            return node.value
-        if isinstance(node, E.Str):
-            return node.value
-        if isinstance(node, E.Bool):
-            return node.value
-        if isinstance(node, E.Today):
-            return self.today
-        if isinstance(node, E.Ref):
-            return normal(self.answers.get(node.field))
-        if isinstance(node, E.Ctx):
-            current: Any = self.context
-            for part in node.path:
-                current = current.get(part) if isinstance(current, Mapping) else None
-            return normal(current)
-        if isinstance(node, E.Call):
-            return self.call(node)
-        if isinstance(node, E.Neg):
-            n = to_number(self.run(node.operand))
-            return None if n is None else -n
-        if isinstance(node, E.Arith):
-            return self.arith(node.op, self.run(node.left), self.run(node.right))
-        if isinstance(node, E.Compare):
-            return self.compare(node.op, self.run(node.left), self.run(node.right))
-        if isinstance(node, E.OneOf):
-            value = self.run(node.value)
-            options = [self.run(o) for o in node.options]
-            if isinstance(value, list):
-                hit = any(as_text(o) in value for o in options)
-            else:
-                hit = any(_equal(value, o) for o in options)
-            return hit != node.negate
-        if isinstance(node, E.Empty):
-            return truthy(self.run(node.value)) == node.negate
-        if isinstance(node, E.Within):
-            return self.within(node)
-        if isinstance(node, E.Logic):
-            if node.op == "and":
-                return all(truthy(self.run(i)) for i in node.items)
-            return any(truthy(self.run(i)) for i in node.items)
-        return not truthy(self.run(node.operand))
 
-    def arith(self, op: str, left: Value, right: Value) -> Value:
-        dl, dr = to_date(left), to_date(right)
-        nl, nr = to_number(left), to_number(right)
-        if dl is not None and op in "+-" and (nr is not None or right is None):
-            days = int(nr or 0)
-            return dl + dt.timedelta(days=days if op == "+" else -days)
-        if dl is not None and dr is not None and op == "-":
-            return Decimal((dl - dr).days)
-        if op == "+" and (
-            (isinstance(left, str) and nl is None and left != "")
-            or (isinstance(right, str) and nr is None and right != "")
-        ):
-            return as_text(left) + as_text(right)
-        a = nl if nl is not None else (Decimal(0) if left in (None, "", []) else None)
-        b = nr if nr is not None else (Decimal(0) if right in (None, "", []) else None)
-        if a is None or b is None:
-            raise ExpressionEvalError(
-                f"I cannot work out {as_text(left)!r} {op} {as_text(right)!r}."
-            )
-        if op == "+":
-            return a + b
-        if op == "-":
-            return a - b
-        if op == "*":
-            return a * b
-        if b == 0:
-            raise ExpressionEvalError("A calculation divides by zero.")
-        return a / b if op == "/" else a % b
+def _php_round(x: int | float, places: int) -> float:
+    value = Decimal(repr(float(x))) if isinstance(x, float) else Decimal(x)
+    return float(value.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP))
 
-    def compare(self, op: str, left: Value, right: Value) -> bool:
-        if op == "=":
-            return _equal(left, right)
-        if op == "!=":
-            return not _equal(left, right)
-        if op in ("contains", "not_contains"):
-            hit = (
-                as_text(right) in left
-                if isinstance(left, list)
-                else as_text(right) in as_text(left)
-            )
-            return hit == (op == "contains")
-        if op == "starts":
-            return as_text(left).startswith(as_text(right))
-        if op == "ends":
-            return as_text(left).endswith(as_text(right))
-        if op in ("before", "after"):
-            dl, dr = to_date(left), to_date(right)
-            if dl is None or dr is None:
-                return False
-            return dl < dr if op == "before" else dl > dr
-        a, b = to_number(left), to_number(right)
-        if a is None or b is None:
-            da, db = to_date(left), to_date(right)
-            if da is None or db is None:
-                return False
-            a, b = Decimal(da.toordinal()), Decimal(db.toordinal())
-        return {"<": a < b, "<=": a <= b, ">": a > b, ">=": a >= b}[op]
 
-    def within(self, node: E.Within) -> bool:
-        value = to_date(self.run(node.value))
-        days = to_number(self.run(node.days))
-        base = to_date(self.run(node.of)) if node.of is not None else self.today
-        if value is None or days is None or base is None:
+def evaluate(node: E.Node | str, context: Mapping[str, Any] | None = None) -> Any:  # noqa: C901
+    """Work an expression (a tree or text) out in ``context``."""
+    ctx: Mapping[str, Any] = context or {}
+    if isinstance(node, str):
+        node = E.parse(node)
+    kind = node["type"]
+    if kind == "literal":
+        return node["value"]
+    if kind == "ref":
+        return (ctx.get("values") or {}).get(node["field"])
+    if kind == "var":
+        return ctx.get("score", 0)
+    if kind == "list":
+        return [evaluate(n, ctx) for n in node["items"]]
+    if kind == "call":
+        return _call(node["name"], node["args"], ctx)
+    a = node["args"]
+    name = node["op"]
+
+    def ev(i: int) -> Any:
+        return evaluate(a[i], ctx)
+
+    if name == "or":
+        return any(truthy(evaluate(x, ctx)) for x in a)
+    if name == "and":
+        return all(truthy(evaluate(x, ctx)) for x in a)
+    if name == "not":
+        return not truthy(ev(0))
+    if name == "neg":
+        return normalize_number(-num(ev(0)))
+    if name == "empty":
+        return is_empty(ev(0))
+    if name == "not_empty":
+        return not is_empty(ev(0))
+    if name == "is":
+        return equals(ev(0), ev(1))
+    if name == "is_not":
+        return not equals(ev(0), ev(1))
+    if name in ("lt", "le", "gt", "ge"):
+        c = compare(ev(0), ev(1))
+        if c is None:
             return False
-        return (abs((value - base).days) <= days) != node.negate
+        return {"lt": c < 0, "le": c <= 0, "gt": c > 0, "ge": c >= 0}[name]
+    if name in ("one_of", "not_one_of"):
+        left, options = ev(0), ev(1)
+        options = options if isinstance(options, list) else [options]
+        lefts = left if isinstance(left, list) else [left]
+        hit = any(scalar_equals(x, y) for x in lefts for y in options)
+        return hit if name == "one_of" else not hit
+    if name in ("contains", "not_contains"):
+        hit = contains(ev(0), ev(1))
+        return hit if name == "contains" else not hit
+    if name in ("starts_with", "ends_with"):
+        left_s, right_s = _ascii_lower(to_str(ev(0))), _ascii_lower(to_str(ev(1)))
+        if right_s == "":
+            return True
+        return left_s.startswith(right_s) if name == "starts_with" else left_s.endswith(right_s)
+    if name in ("before", "after"):
+        x, y = day_number(ev(0)), day_number(ev(1))
+        if x is None or y is None:
+            return False
+        return x < y if name == "before" else x > y
+    if name == "within":
+        x = day_number(ev(0))
+        n = num(ev(1))
+        y = day_number(ev(2) if len(a) > 2 else today(ctx))
+        if x is None or y is None:
+            return False
+        return abs(x - y) <= n
+    if name in ("add", "sub"):
+        left, right = ev(0), ev(1)
+        ld, rd = day_number(left), day_number(right)
+        if ld is not None and rd is None:
+            days = int(_php_round(num(right), 0))
+            return day_to_date(ld + days if name == "add" else ld - days)
+        if name == "sub" and ld is not None and rd is not None:
+            return ld - rd
+        return normalize_number(num(left) + num(right) if name == "add" else num(left) - num(right))
+    if name == "mul":
+        return normalize_number(num(ev(0)) * num(ev(1)))
+    if name in ("div", "mod"):
+        d = num(ev(1))
+        if d == 0:
+            return None
+        left_n = num(ev(0))
+        return normalize_number(left_n / d if name == "div" else math.fmod(left_n, d))
+    return None
 
-    def call(self, node: E.Call) -> Value:
-        args = [self.run(a) for a in node.args]
-        name = node.name
-        if name == "if":
-            if len(args) != 3:
-                raise ExpressionEvalError(
-                    "if() needs a test, a value when true, and a value when false."
-                )
-            return args[1] if truthy(args[0]) else args[2]
-        flat: list[Any] = []
-        for a in args:
-            flat.extend(a if isinstance(a, list) else [a])
-        if name == "count":
-            return Decimal(sum(1 for v in flat if truthy(v)))
-        if name in ("days_between", "age"):
-            first = to_date(args[0]) if args else None
-            second = to_date(args[1]) if len(args) > 1 else self.today
-            if first is None or second is None:
-                return None
-            if name == "days_between":
-                return Decimal((second - first).days)
-            years = (
-                second.year - first.year - ((second.month, second.day) < (first.month, first.day))
-            )
-            return Decimal(years)
-        numbers = [n for n in (to_number(v) for v in flat) if n is not None]
+
+def _call(name: str, args: list[E.Node], ctx: Mapping[str, Any]) -> Any:  # noqa: C901
+    def arg(i: int) -> Any:
+        return evaluate(args[i], ctx)
+
+    def values() -> list[Any]:
+        out: list[Any] = []
+        for n in args:
+            v = evaluate(n, ctx)
+            out.extend(v if isinstance(v, list) else [v])
+        return out
+
+    if name == "today":
+        return today(ctx)
+    if name == "date":
+        d = day_number(arg(0))
+        return None if d is None else day_to_date(d)
+    if name == "days_between":
+        x, y = day_number(arg(0)), day_number(arg(1))
+        return None if x is None or y is None else y - x
+    if name == "age":
+        born, now = parse_date(arg(0)), parse_date(today(ctx))
+        if not born or not now:
+            return None
+        years = now[0] - born[0]
+        if now[1] < born[1] or (now[1] == born[1] and now[2] < born[2]):
+            years -= 1
+        return years
+    if name == "abs":
+        return normalize_number(abs(num(arg(0))))
+    if name == "round":
+        places = int(num(arg(1))) if len(args) > 1 else 0
+        return normalize_number(_php_round(num(arg(0)), places))
+    if name in ("floor", "ceil"):
+        f = math.floor if name == "floor" else math.ceil
+        return normalize_number(float(f(num(arg(0)))))
+    if name in ("min", "max", "sum", "avg"):
+        nums = [num(v) for v in values() if not is_empty(v)]
         if name == "sum":
-            return sum(numbers, Decimal(0))
-        if name in ("min", "max"):
-            return (min if name == "min" else max)(numbers) if numbers else None
-        if name == "abs":
-            return abs(numbers[0]) if numbers else None
-        if name == "round":
-            if not numbers:
-                return None
-            places = int(to_number(args[1]) or 0) if len(args) > 1 else 0
-            return numbers[0].quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
-        raise ExpressionEvalError(f"{name}() is not a function rules know.")  # pragma: no cover
+            return normalize_number(sum(nums))
+        if not nums:
+            return None
+        if name == "avg":
+            return normalize_number(sum(nums) / len(nums))
+        return normalize_number(min(nums) if name == "min" else max(nums))
+    if name == "count":
+        v = arg(0)
+        if isinstance(v, list):
+            return sum(1 for x in v if not is_empty(x))
+        return 0 if is_empty(v) else 1
+    if name == "length":
+        return len(to_str(arg(0)))
+    if name == "if":
+        return arg(1) if truthy(arg(0)) else arg(2)
+    if name == "score":
+        ref = args[0]
+        key = ref["field"] if ref["type"] == "ref" else to_str(arg(0))
+        return (ctx.get("scores") or {}).get(key, 0)
+    if name in ("user", "query"):
+        return (ctx.get(name) or {}).get(to_str(arg(0)))
+    if name == "geo":
+        return ctx.get("geo")
+    return None
 
 
-def evaluate(
-    expression: str | E.Node,
-    answers: Mapping[str, Any],
-    *,
-    today: dt.date | None = None,
-    context: Mapping[str, Any] | None = None,
-) -> Value:
-    node = E.parse(expression) if isinstance(expression, str) else expression
-    return Evaluator(answers, today=today, context=context).run(node)
-
-
-def holds(
-    expression: str | E.Node,
-    answers: Mapping[str, Any],
-    *,
-    today: dt.date | None = None,
-    context: Mapping[str, Any] | None = None,
-) -> bool:
-    return truthy(evaluate(expression, answers, today=today, context=context))
+def holds(node: E.Node | str, context: Mapping[str, Any] | None = None) -> bool:
+    return truthy(evaluate(node, context))

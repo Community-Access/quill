@@ -23,9 +23,7 @@ if TYPE_CHECKING:  # imports kept out of cold-start path
 from quill import __version__, build_info
 from quill.branding import APP_SHORT_NAME
 from quill.core import thesaurus as thesaurus_engine
-from quill.core.a11y_regions import (
-    RegionTracker,
-)
+from quill.core.a11y_regions import RegionTracker
 from quill.core.ai import Assistant
 from quill.core.ai.agent import allowed_tools
 from quill.core.announce import Channel as AnnounceChannel
@@ -346,6 +344,7 @@ from quill.ui.main_frame_emoji_picker import EmojiPickerMixin
 from quill.ui.main_frame_equations import EquationsMixin
 from quill.ui.main_frame_external_change import ExternalChangeMixin
 from quill.ui.main_frame_format_codes import FormatCodesMixin
+from quill.ui.main_frame_forms import FormsMenuMixin
 from quill.ui.main_frame_gh_bridge import GhBridgeMixin
 from quill.ui.main_frame_git_sync import GitSyncMixin
 from quill.ui.main_frame_github import GitHubRemoteMixin
@@ -441,9 +440,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_updates import UpdatesMixin
 from quill.ui.main_frame_vault import VaultMixin
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
-from quill.ui.main_frame_voice_preview import (
-    VoicePreviewMixin,
-)
+from quill.ui.main_frame_voice_preview import VoicePreviewMixin
 from quill.ui.main_frame_watch_folder import WatchFolderRuntimeMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
 from quill.ui.main_frame_wordpress import WordPressMenuMixin
@@ -714,6 +711,7 @@ class MainFrame(
     MagicalTierMixin,
     LiteBridgeMixin,
     WordPressMenuMixin,
+    FormsMenuMixin,
     NativeKeyGuardMixin,
     ExternalChangeMixin,
     OpenSourcesMixin,
@@ -4516,6 +4514,7 @@ class MainFrame(
                 menu_item.Enable(html_only)
         self._refresh_language_menu_radio(menu_bar)
         self._refresh_wordpress_menu_items(menu_bar)  # main_frame_wordpress.py
+        self._refresh_forms_menu_items(menu_bar)  # main_frame_forms.py
         # A row that was disabled when the pass last ran was skipped on purpose,
         # so a row that has just been *enabled* has no route yet. Re-running the
         # pass here is what keeps "every enabled item advertises a route" true

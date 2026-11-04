@@ -1,34 +1,34 @@
 {
- "model": "baf-form",
  "version": 1,
- "language": "en",
+ "title": "",
  "pages": [
   {
    "id": "page_1",
    "items": [
     {
-     "kind": "columns",
      "id": "field_1",
-     "count": 2,
+     "type": "columns",
      "columns": [
-      [
-       {
-        "kind": "field",
-        "id": "first",
-        "type": "text",
-        "label": "First name",
-        "required": true
-       }
-      ],
-      [
-       {
-        "kind": "field",
-        "id": "last",
-        "type": "text",
-        "label": "Last name",
-        "required": true
-       }
-      ]
+      {
+       "items": [
+        {
+         "id": "first",
+         "type": "text",
+         "label": "First name",
+         "required": true
+        }
+       ]
+      },
+      {
+       "items": [
+        {
+         "id": "last",
+         "type": "text",
+         "label": "Last name",
+         "required": true
+        }
+       ]
+      }
      ]
     }
    ]

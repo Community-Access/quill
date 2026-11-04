@@ -22,7 +22,8 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.forms.errors import ChoiceLibraryError
-from quill.core.forms.model import Choice
+
+Choice = dict[str, str]
 
 DATA_PATH = Path(__file__).parent / "libraries" / "baf_libraries.json"
 
@@ -90,14 +91,14 @@ def choices(
         year = (today or dt.date.today()).year
         start, stop = year + int(entry["years"]["from"]), year + int(entry["years"]["to"])
         step = 1 if stop >= start else -1
-        return [Choice(str(y), str(y)) for y in range(start, stop + step, step)]
+        return [{"value": str(y), "label": str(y)} for y in range(start, stop + step, step)]
     cascade = entry.get("cascade")
     if cascade:
         if parent_value is None:
             return []
         rows = cascade["map"].get(parent_value) or cascade["map"].get(parent_value.upper(), [])
-        return [Choice(str(r[0]), str(r[1])) for r in rows]
-    return [Choice(str(row[0]), str(row[1])) for row in entry.get("choices", [])]
+        return [{"value": str(r[0]), "label": str(r[1])} for r in rows]
+    return [{"value": str(row[0]), "label": str(row[1])} for row in entry.get("choices", [])]
 
 
 def search(query: str) -> list[LibraryInfo]:

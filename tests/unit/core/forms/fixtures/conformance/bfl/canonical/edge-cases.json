@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "title": "Edge \"cases\"",
+  "settings": { "ajax_submission": false, "rate_limit_count": 10, "notes": null, "list_setting": ["a", "b"] },
+  "pages": [
+    {
+      "id": "page_1",
+      "title": "",
+      "items": [
+        { "id": "field_1", "type": "text", "label": "Auto ID, written without #" },
+        { "id": "custom", "type": "text" },
+        { "id": "field_2", "type": "text", "label": "ID out of step, so it is written" },
+        { "id": "quotes", "type": "text", "label": "She said \"hi\" \\ then left", "help": "Line one\nLine two\ttabbed", "placeholder": "Café – 日本" },
+        { "id": "empty_label", "type": "text", "label": "" },
+        { "id": "flags", "type": "text", "required": false, "validation": { "unique": false, "min_length": 0 }, "props": { "searchable": false, "autofocus": true, "spellcheck": null, "step": 2.0, "ratio": 0.25, "count": 0 } },
+        { "id": "values", "type": "checkbox", "label": "Values",
+          "default": ["a", "b"],
+          "choices": [
+            { "value": "a", "label": "A" },
+            { "value": "b", "label": "Plain|with pipe" },
+            { "value": "c", "label": "Time: noon" },
+            { "value": "d", "label": "  padded  " },
+            { "value": "", "label": "Empty value" },
+            { "value": "e", "label": "Has extras", "price": 2.5, "points": -1, "image": "https://example.org/e.png", "description": "Extra words", "selected": false },
+            { "value": "x|y", "label": "Pipe in value" },
+            { "value": "\"quoted\"", "label": "\"Quoted label\"" }
+          ],
+          "attributes": { "data-n": 3, "data-flag": true, "aria-label": "Values list" } },
+        { "id": "objects", "type": "table", "label": "Objects", "props": { "columns": [ { "label": "Name", "type": "text", "options": { "max": 3 } } ], "matrix": [[1, 2], [3, 4]] } },
+        { "id": "toggle_off", "type": "toggle", "label": "Off by default", "default": false },
+        { "id": "zero", "type": "number", "label": "Zero", "default": 0, "validation": { "min": -5, "max": 5.5 } }
+      ]
+    },
+    {
+      "id": "second",
+      "items": [
+        { "type": "section", "id": "empty_section", "items": [] },
+        { "type": "section", "id": "empty_with_help", "label": "Empty", "help": "Nothing here yet", "items": [] },
+        { "id": "after_empty", "type": "text", "label": "Not inside the empty sections" },
+        { "type": "section", "id": "outer", "label": "Outer", "items": [
+          { "type": "section", "id": "inner", "label": "Inner", "when": "#after_empty is not empty", "items": [
+            { "id": "deep", "type": "text", "label": "Deep" }
+          ] },
+          { "id": "after_inner", "type": "text", "label": "In outer, after inner" }
+        ] },
+        { "id": "after_outer", "type": "text", "label": "After outer" },
+        { "type": "columns", "id": "cols", "when": "#deep is empty", "props": { "gap": "large" }, "columns": [
+          { "items": [] },
+          { "width": "2/3", "items": [ { "id": "in_col", "type": "text", "label": "In a column" } ] }
+        ] },
+        { "id": "rep", "type": "repeater", "label": "Rows", "items": [] }
+      ]
+    },
+    {
+      "id": "page_3",
+      "items": []
+    }
+  ],
+  "confirmations": [
+    { "id": "confirmation_1", "type": "message", "message": "Auto-numbered." },
+    { "id": "confirmation_7", "type": "page", "page_id": 42 }
+  ],
+  "scoring": { "outcomes": [ { "id": "outcome_1", "when": "score > 0", "message": "Some." }, { "id": "none", "when": "score is 0", "message": "None." } ] },
+  "translations": {
+    "pt-BR": {
+      "fields": { "values": { "choices": { "a": "Um", "b": "Dois | com barra", "": "Vazio" } } },
+      "messages": { "required": "Obrigatório" }
+    }
+  }
+}

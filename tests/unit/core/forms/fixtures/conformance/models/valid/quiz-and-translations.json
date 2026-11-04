@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "title": "Braille basics quiz",
+  "language": "en",
+  "pages": [
+    {
+      "id": "page_1",
+      "title": "Questions",
+      "items": [
+        { "id": "q1", "type": "quiz", "label": "How many dots are in a braille cell?", "choices": [ { "value": "4", "label": "Four" }, { "value": "6", "label": "Six" }, { "value": "8", "label": "Eight" } ], "scoring": { "correct": ["6"], "points": 2, "explanation": "Literary braille uses a six-dot cell; computer braille adds two." } },
+        { "id": "q2", "type": "quiz", "label": "Which are braille codes?", "props": { "question_type": "multiple_answer" }, "choices": [ { "value": "ueb", "label": "UEB" }, { "value": "nemeth", "label": "Nemeth" }, { "value": "morse", "label": "Morse" } ], "scoring": { "correct": ["ueb", "nemeth"], "points": 2, "partial": true, "feedback_partial": "Partly right." } },
+        { "id": "q3", "type": "text", "label": "Who invented braille? (surname)", "scoring": { "correct": ["Braille"], "points": 1, "case_sensitive": false } },
+        { "id": "feel", "type": "radio", "label": "How confident do you feel?", "choices": [ { "value": "low", "label": "Not very", "points": 0 }, { "value": "mid", "label": "Fairly", "points": 1 }, { "value": "high", "label": "Very", "points": 2 } ] }
+      ]
+    }
+  ],
+  "scoring": {
+    "show_score": true,
+    "pass_mark": 5,
+    "outcomes": [
+      { "id": "top", "when": "score >= 7", "message": "Top marks." },
+      { "id": "pass", "when": "score >= 5", "message": "You passed." },
+      { "id": "retry", "when": "score < 5", "message": "Have another go." }
+    ]
+  },
+  "confirmations": [ { "id": "done", "type": "message", "message": "Thanks for taking the quiz." } ],
+  "translations": {
+    "es": {
+      "title": "Cuestionario de braille",
+      "pages": { "page_1": { "title": "Preguntas" } },
+      "fields": {
+        "q1": { "label": "¿Cuántos puntos tiene una celda braille?", "choices": { "4": "Cuatro", "6": "Seis", "8": "Ocho" } },
+        "q3": { "label": "¿Quién inventó el braille? (apellido)", "help": "Una sola palabra.", "placeholder": "Apellido" }
+      },
+      "confirmations": { "done": { "message": "Gracias por hacer el cuestionario." } },
+      "outcomes": { "pass": { "message": "Aprobó." }, "retry": { "message": "Inténtelo de nuevo." } },
+      "messages": { "required": "Este campo es obligatorio." }
+    },
+    "fr": {
+      "title": "Quiz sur le braille",
+      "fields": { "q1": { "label": "Combien de points dans une cellule braille ?" } }
+    }
+  }
+}

@@ -298,6 +298,7 @@ class DocumentMenuMixin:
         going to be dimmed.
         """
         getattr(self, "_sync_wordpress_items", lambda: None)()  # lite_window_wordpress.py
+        getattr(self, "_sync_forms_items", lambda: None)()  # lite_window_forms.py
         language = getattr(self, "document_language", None)
         current = language() if callable(language) else "plain"
         rich = self.editor.mode == RICH if hasattr(self, "editor") else False

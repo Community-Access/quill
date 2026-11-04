@@ -42,6 +42,8 @@ class SiteProfile:
     wp_version: str = ""
     announce_waiting_comments: bool = True
     ask_add_to_menu: bool = True
+    #: Say "4 new responses to Event registration" on first use (wordpress.md 17a.8).
+    announce_new_responses: bool = True
 
     @property
     def address(self) -> SiteAddress:
@@ -70,6 +72,7 @@ class SiteProfile:
             wp_version=str(data.get("wp_version", "")),
             announce_waiting_comments=bool(data.get("announce_waiting_comments", True)),
             ask_add_to_menu=bool(data.get("ask_add_to_menu", True)),
+            announce_new_responses=bool(data.get("announce_new_responses", True)),
         )
 
 

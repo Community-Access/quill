@@ -23,6 +23,7 @@ this without a display.
 
 from __future__ import annotations
 
+from quill.core.forms import menu as forms_menu
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands_ai import AI_ASK_ROWS, AI_SEARCH_ROWS
 from quill.core.lite.commands_dictation import DICTATION_ROWS
@@ -110,6 +111,7 @@ COMMANDS: list[CommandRow] = [
     # it would have left that row with no keyboard route at all.
     ("&File", "New &Rich Text Document", "Alt+Shift+T", "cmd_new_rich", ""),
     ("&File", "New P&lain Text Document", "Ctrl+Alt+N", "cmd_new_plain", ""),
+    *forms_menu.lite_rows("file"),  # New Form, QUILL's own table (forms/menu.py)
     ("&File", "&Open...", "Ctrl+O", "cmd_open", ""),
     ("&File", "Open from Clip&board", "Ctrl+Alt+Shift+Enter", "cmd_open_from_clipboard", ""),
     ("&File", "Open &from URL...", "", "cmd_open_from_url", ""),  # no key, as in QUILL
@@ -156,7 +158,8 @@ COMMANDS: list[CommandRow] = [
     # ours to rebind; Ctrl+F4 closes this document, and now says so. Bound as
     # its own row rather than an alias because the table gives one key to one
     # handler -- the same arrangement Ctrl+Tab and Ctrl+F6 already have.
-    ("&File", "Close Window (&MDI)", "Ctrl+F4", "cmd_close_mdi", ""),
+    # No letter since 2026-11-04: New For&m needed the M, and Ctrl+F4 is this row's route.
+    ("&File", "Close Window (MDI)", "Ctrl+F4", "cmd_close_mdi", ""),
     ("&File", "E&xit QUILL Lite", "Ctrl+Q", "cmd_exit", ""),
     # -- Edit ---------------------------------------------------------------
     # Notepad's Edit menu is the top of this one, in Notepad's order, and then
@@ -600,7 +603,8 @@ COMMANDS: list[CommandRow] = [
     # QUILL's chord for that and an editing-loop verb besides (bad.md 3.3).
     # Alt+Shift+F is free in both editors and F is for Format, which is the menu
     # this row lives in.
-    ("F&ormat", "Switch Document &Mode", "Alt+Shift+F", "cmd_switch_document_kind", ""),
+    # No letter since 2026-11-04: For&m Rules needed the M; Alt+Shift+F is its route.
+    ("F&ormat", "Switch Document Mode", "Alt+Shift+F", "cmd_switch_document_kind", ""),
     # Which markup a *plain* document is written in -- Markdown, HTML, or none.
     # Next to Switch Document Mode because they are the same kind of decision one
     # size down: that one chooses between plain and rich, this one chooses what
@@ -1034,6 +1038,7 @@ COMMANDS: list[CommandRow] = [
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
     *HELP_ROWS,  # the Help menu (commands_help.py)
     *wordpress_menu.lite_placed_rows(),  # WordPress, at the foot of Edit to Tools
+    *forms_menu.lite_placed_rows(),  # Forms, at the foot of Insert to Tools
 ]
 
 #: Menu-bar labels, in bar order, deduplicated by first appearance.

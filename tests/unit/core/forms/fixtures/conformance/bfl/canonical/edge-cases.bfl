@@ -1,0 +1,92 @@
+bfl 1
+form "Edge \"cases\""
+  @ajax_submission false
+  @rate_limit_count 10
+  @notes null
+  @list_setting ["a","b"]
+
+page ""
+  text "Auto ID, written without #"
+  text #custom
+  text #field_2 "ID out of step, so it is written"
+  text #quotes "She said \"hi\" \\ then left"
+    @placeholder "Café – 日本"
+    @description "Line one\nLine two\ttabbed"
+  text #empty_label ""
+  text #flags
+    @required false
+    @minlength 0
+    @unique false
+    @searchable false
+    @autofocus
+    @spellcheck null
+    @step 2.0
+    @ratio 0.25
+    @count 0
+  checkbox #values "Values"
+    @default ["a","b"]
+    @attr "data-n" 3
+    @attr "data-flag" true
+    @attr "aria-label" "Values list"
+    + A
+    + b|Plain|with pipe
+    + c|Time: noon
+    + "d" | "  padded  "
+    + "" | "Empty value"
+    + "e" | "Has extras" @price 2.5 @image "https://example.org/e.png" @points -1 @description "Extra words" @selected false
+    + "x|y" | "Pipe in value"
+    + "\"quoted\"" | "\"Quoted label\""
+  table #objects "Objects"
+    @columns [{"label":"Name","type":"text","options":{"max":3}}]
+    @matrix [[1,2],[3,4]]
+  toggle #toggle_off "Off by default"
+    @default false
+  number #zero "Zero"
+    @default 0
+    @min -5
+    @max 5.5
+
+page #second
+  section #empty_section {}
+  section #empty_with_help "Empty" {
+    @description "Nothing here yet"
+  }
+  text #after_empty "Not inside the empty sections"
+  section #outer "Outer"
+    section #inner "Inner"
+      @when #after_empty is not empty
+      text #deep "Deep"
+    text #after_inner "In outer, after inner"
+  text #after_outer "After outer"
+  columns #cols 2
+    @when #deep is empty
+    @gap "large"
+    column
+    column
+      @width "2/3"
+      text #in_col "In a column"
+  repeater #rep "Rows"
+
+page
+
+scoring
+  outcome
+    @when score > 0
+    @message "Some."
+  outcome #none
+    @when score is 0
+    @message "None."
+
+confirmation
+  @message "Auto-numbered."
+
+confirmation #confirmation_7
+  @type "page"
+  @page_id 42
+
+translation "pt-BR"
+  field #values
+    + a|Um
+    + b|Dois | com barra
+    + "" | "Vazio"
+  message #required "Obrigatório"

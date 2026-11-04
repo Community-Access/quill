@@ -1,18 +1,16 @@
 {
- "model": "baf-form",
  "version": 1,
- "language": "en",
+ "title": "",
  "pages": [
   {
    "id": "page_1",
    "items": [
     {
-     "kind": "field",
      "id": "field_1",
      "type": "text",
      "label": "Your Name",
-     "required": true,
-     "placeholder": "Jane Doe"
+     "placeholder": "Jane Doe",
+     "required": true
     }
    ]
   }

@@ -33,7 +33,16 @@ WORDPRESS_EGRESS: dict[str, str] = {
         "only from the connected site's own host) also come through here. The "
         "player itself streams an audio or video file's HTTPS address through the "
         "shared playback engine, with no credential, only when the person "
-        "chooses Play or Play Media Here; nothing is saved."
+        "chooses Play or Play Media Here; nothing is saved. Forms (wordpress.md "
+        "17a.7, 17a.8), only on a site whose REST index lists baf/v1 (BITS "
+        "Accessible Forms): baf/v1/forms (list, read, create and update -- "
+        "Publish Form, after a confirmation naming the site, and the per-form "
+        "response count spoken once a session, which can be turned off per site), "
+        "baf/v1/entries (the responses, read only while Responses is open; "
+        "deleting one moves it to BAF's Trash, after a confirmation with the "
+        "count), and a search of wp/v2/pages and wp/v2/posts for the page that "
+        "shows a form (Test on Site). Responses are never logged and leave only to "
+        "a file the person chooses. Off in Safe Mode."
     ),
     "core/wordpress/cdp.py::__init__": (
         "Check This Page and Visual Review: QUILL starts Edge or Chrome hidden, from "

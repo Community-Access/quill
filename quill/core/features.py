@@ -149,6 +149,8 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "future.ai": FEATURE_STATE_QUIET,
             # WordPress is on in every profile but this one (wordpress.md 15).
             "core.wordpress": FEATURE_STATE_OFF,
+            # Forms too, as QUILL Lite's smallest profiles leave them out (17a.10).
+            "core.forms": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_WRITER: FeatureProfile(
@@ -430,6 +432,8 @@ def feature_for_command(command_id: str) -> str:
         return "core.help"
     if command_id.startswith("wordpress."):
         return "core.wordpress"
+    if command_id.startswith("forms."):
+        return "core.forms"
     if command_id.startswith("format.") or command_id.startswith("edit.sort_"):
         return "core.format"
     if command_id.startswith("edit."):

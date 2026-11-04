@@ -81,6 +81,8 @@ of you.
     F1, tutorials, updates, release channels and getting help from a person.
 16. [Chapter 16: WordPress](#chapter-16-wordpress).
     Writing, publishing and looking after a WordPress website.
+17. [Chapter 17: Forms](#chapter-17-forms). Writing accessible forms,
+    checking them, and filling them in yourself first.
 
 After the chapters come the appendices: the Developer Console, writing your
 own AI skills, the full list of emoji QUILL can insert, notes from earlier
@@ -17673,8 +17675,8 @@ website,
 [Your first hour with QUILL](https://www.quillforall.org/tutorials/01-your-first-hour.html)
 covers the same ground at a gentler pace.
 
-The last chapter, WordPress, is for anyone who looks after a website. After
-it come the appendices, including the Glossary of QUILL Terms and Getting
+The last two chapters are for anyone who looks after a website: WordPress,
+and Forms, for writing accessible forms. After them come the appendices, including the Glossary of QUILL Terms and Getting
 help, for whenever you need them.
 
 ## Chapter 16: WordPress
@@ -18507,6 +18509,228 @@ A few more things worth knowing:
   command's name, and press **Enter**.
 - QUILL and QUILL Lite use the same letters, so moving between them costs you
   nothing.
+
+## Chapter 17: Forms
+
+A form is a contact form, an event sign-up, a membership renewal, a survey or
+a feedback page. Making one usually means dragging boxes around a web page,
+which is one of the hardest things on the web to do with a screen reader. But
+a form is really just structured text: a title, some questions, their
+choices, and a few rules. QUILL is good at text, so that is how you write one
+here.
+
+You write the form as a short plain text document, in BITS Accessible Forms'
+form language. You check it, and then you fill it in yourself, with your
+screen reader, before anyone else sees it. Everything in this chapter
+happens on your own computer. Nothing is sent anywhere.
+
+**Turning it on.** Forms is on in every feature profile except Essential. If you do not
+see **File > New Form...**, choose another profile, or switch on Forms by
+itself, in **Profiles and Features...**.
+
+### Where everything is
+
+| Menu | What is there |
+|---|---|
+| **File** | New Form, beside the other New commands |
+| **Insert** | Form Field |
+| **View** | Form Outline |
+| **Format** | Form Rules |
+| **Tools > Forms** | Check This Form, Fill It In Yourself, Form Properties, Responses |
+
+Apart from New Form and Responses, these commands are dimmed unless a form
+is open. A form is a file whose name ends in `.bfl`. If you reach one of them
+another way, such as from the Command Palette, QUILL tells you why it cannot
+run and how to start a form.
+
+None of the Forms commands has a shortcut key. Every useful key is already
+taken by something you use more often, and you will not write forms every
+day. Use the menus, or press **Ctrl+Shift+P**, type "form", and pick the
+command from the list.
+
+### Starting a form
+
+1. Choose **File > New Form...**.
+2. Type the form's **Title**, the name your visitors will see.
+3. Choose a **Template**. There are seven: Blank, Contact form, Event
+   registration, Membership renewal, Survey, Accessibility feedback and
+   Volunteer sign-up. Each one is a few questions you can change.
+4. Press **Next**. The ordinary Save As window opens, with a file name made
+   from your title. Choose a folder and press **Save**.
+
+The new form opens straight away, ready to change.
+
+### What a form looks like
+
+Here is part of the Event registration template:
+
+```
+bfl 1
+form "Spring fair"
+
+text #name "Your name"
+  @required
+  @autocomplete "name"
+radio #access "Do you need any access arrangements?"
+  + No
+  + Yes
+textarea #access_details "Tell us what you need"
+  @when #access is "yes"
+```
+
+Each question starts on a line of its own: the kind of question, its id
+(the word after the `#`), and its label in quotes. The indented lines under
+it are its settings, such as `@required`, and its choices, which start with
+`+`. The `@when` line is a rule: Tell us what you need only appears when
+somebody answers Yes.
+
+You never have to type any of this. The commands below write it for you.
+But it is ordinary text, so Find, spelling, copy and paste all work on it,
+and if you would rather type a question yourself, you can.
+
+### Adding a question
+
+Put your cursor on the question you want the new one to follow, then choose
+**Insert > Form Field...**.
+
+1. A list of every kind of question opens: one line of text, an email
+   address, choose one, check boxes, a date, a rating and many more. Each row
+   says what a visitor meets. **Section** and **Page break** are at the top.
+   Type a word such as "date" in **Search** and press **Enter** to narrow the
+   list. Choose one with **Enter**.
+2. A short window asks only what that kind of question needs: the **Label**,
+   an **Id** (leave it empty and QUILL makes one from the label), whether it
+   is **Required**, and **Help text**, a sentence that is read with the
+   question. A question with choices also asks for the **Choices**, one per
+   line, or a **Choice library**, a ready-made list such as countries or time
+   zones.
+3. Press **Insert**. The question goes in after the one your cursor was on,
+   and your cursor moves to it.
+
+A page break starts a new page at your cursor: everything after it moves to
+the new page.
+
+### The form outline
+
+**View > Form Outline...** lists every page, section and question in order.
+Each row reads like a sentence, for example "Email address, email field,
+required, page 1".
+
+- **Enter** takes you to that question in the document.
+- **Alt+Shift+Up** and **Alt+Shift+Down** move it, and the buttons
+  **Move Up** and **Move Down** do the same. Moving past the top or bottom of
+  a page takes it on to the next page.
+- **Alt+Shift+Right** moves it into the section just above it, and
+  **Alt+Shift+Left** moves it out again.
+- **Rename** changes what the question says.
+- **Change Id** changes its id, and every rule that mentions it changes too.
+- **Change Type** makes it a different kind of question. Its label, help and
+  rules stay.
+- **Duplicate** puts a copy straight after it, and **Remove** takes it out
+  after asking you first.
+
+Every change is one step that **Ctrl+Z** in the document takes back.
+
+### Rules
+
+**Format > Form Rules...** lists every rule in the form as a sentence, such
+as "Show Tell us what you need when Do you need any access arrangements? is
+Yes." Calculations are there too: "Cost is Tickets times 5."
+
+To add one, press **Add Rule...** and make three choices:
+
+1. **When this question**, and how its answer is compared in **Is**: is, is
+   not, is filled in, is empty, contains, is more than or is less than. Type
+   the answer to compare with in **This answer**.
+2. **Then**: show, hide, require, make optional, enable, disable, or skip to
+   a page.
+3. **To this question or page**: what the rule acts on.
+
+If you know the form language, you can type the whole condition in **Or
+write the condition yourself** instead, for example `#age > 17 and #consent
+is filled`. QUILL checks that it makes sense before it writes anything, and
+tells you what is wrong if it does not.
+
+**Edit** changes a rule's condition, and an empty condition removes it.
+**Remove** takes a rule out after asking, and **Go to It** takes you to the
+question the rule is on.
+
+### Form Properties
+
+**Tools > Forms > Form Properties...** holds everything about the form that
+is not a question: its title, a short description, the language it is
+written in, what the send button says, the message visitors read after
+sending, a web address to go to instead, and whether visitors can save a
+long form and finish it later.
+
+At the bottom, **On the site** says what the website decides: whether the
+CAPTCHA and the spam trap are on, how many email notifications there are,
+and the form's number on the site once it is published. You read these
+here; you change them on the site.
+
+### Checking a form
+
+**Tools > Forms > Check This Form...** looks for anything that would make
+the form hard to fill in, and lists what to fix, most serious first. It
+looks for:
+
+- a question with no label, or with only a placeholder for one;
+- a group of choices with no question for the group;
+- a question marked required with only an asterisk;
+- a format rule, such as a smallest number, with no help text saying what is
+  expected;
+- name, email, phone and address questions without an autofill hint, so the
+  browser cannot fill them in;
+- a rule that names a question that does not exist, or that can never show a
+  required question;
+- an empty page, or more than 30 questions on one page;
+- the same id used twice;
+- a list of more than 15 choices, which would be easier as a choice library.
+
+Anything QUILL could not read is listed first, in the form language's own
+words. Lines that start "On the site today" are different: they say where
+the forms plugin on your website currently reads your form differently from
+how it is written, so you know before you publish.
+
+Press **Enter** or **Go to It** to go to the line. After you fix something,
+**Check Again** reads the form afresh.
+
+### Fill It In Yourself
+
+**Tools > Forms > Fill It In Yourself...** opens your form as a real window,
+built from the same text, and you fill it in as a visitor would.
+
+- **Tab** moves from question to question. Each one is an ordinary edit box,
+  check box, list or group of radio buttons, so your screen reader says its
+  label, its group, and "required" where it is.
+- Rules work as you answer. When an answer makes a question appear or
+  disappear, QUILL tells you, for example "Membership number appears."
+- Answers that are worked out, such as a total, update as you type.
+- **Next** goes to the next page, but first checks this page: if a required
+  question has no answer, QUILL tells you which, and puts you on it.
+  **Back** goes back.
+- If the form is translated, the **Language** box at the top lets you try it
+  in each language.
+- **Submit** sends nothing. It shows **What Would Be Sent**: each question and
+  its answer, anything that still needs an answer, and what the rules worked
+  out. **Close** leaves without keeping anything.
+
+### Responses
+
+**Tools > Forms > Responses...** will list what people send to your form on
+your website. That needs the connection to BITS Accessible Forms on your
+site, which is still being built, so for now QUILL tells you so and lists
+nothing.
+
+### Good to know
+
+- A form is an ordinary text file. **Ctrl+S** saves it like any other
+  document, and you can open it in any text editor.
+- Most commands rewrite only the question they change, and the rest of your
+  form stays as you wrote it. Moving a question can rewrite the whole form
+  in the standard layout. **Ctrl+Z** takes either back.
+- Payment details and website passwords never pass through QUILL. They stay
+  on your website.
 
 ## A last word
 

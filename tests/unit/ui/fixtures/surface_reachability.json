@@ -94,6 +94,8 @@
   "quill.ui.fill_in_dialog": "reachable",
   "quill.ui.find_dialog": "reachable",
   "quill.ui.font_format_dialog": "reachable",
+  "quill.ui.forms_dialogs": "reachable",
+  "quill.ui.forms_fill_window": "reachable",
   "quill.ui.git_worktree_dialogs": "reachable",
   "quill.ui.github_artifacts_dialog": "reachable",
   "quill.ui.github_compare_branches_dialog": "reachable",

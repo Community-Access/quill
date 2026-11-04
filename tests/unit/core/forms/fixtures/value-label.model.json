@@ -1,13 +1,11 @@
 {
- "model": "baf-form",
  "version": 1,
- "language": "en",
+ "title": "",
  "pages": [
   {
    "id": "page_1",
    "items": [
     {
-     "kind": "field",
      "id": "field_1",
      "type": "radio",
      "label": "Payment Method",

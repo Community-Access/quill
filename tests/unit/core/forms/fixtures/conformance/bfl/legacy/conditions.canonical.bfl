@@ -1,0 +1,45 @@
+bfl 1
+form "Logic"
+
+radio #contact "Contact Method"
+  + Email
+  + Phone
+email #email "Email Address"
+  @required
+  @when #contact is "Email"
+text #email_confirm "Confirm email"
+  @required
+  @when #contact is "Email"
+phone #phone "Phone Number"
+  @required
+  @mask "(999) 999-9999"
+  @when #contact is "Phone"
+address #addr "Address"
+  @when #contact is "Post"
+text #company "Company"
+text "Company website"
+  @placeholder "https://..."
+  @when #company is not empty
+text "Tell us what you do"
+  @description "Student, freelancer, etc."
+  @when #company is empty
+number #age "Age"
+text "Which university?"
+  @when #age > 17
+consent "A parent agrees"
+  @when #age < 13
+text #code "Code"
+text #a_detail "About A codes"
+  @when #code starts with "A"
+text #z_detail "About Z codes"
+  @when #code ends with "Z"
+text #dash_detail "About dashed codes"
+  @when #code contains "-"
+checkbox #show_address "Show Address"
+  + Yes
+columns 2
+  @when #show_address is "yes"
+  column
+    text #street "Street"
+  column
+    text #city "City"

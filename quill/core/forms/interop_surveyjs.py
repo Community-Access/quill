@@ -1,10 +1,9 @@
 """SurveyJS JSON in and out (https://surveyjs.io/form-library/documentation).
 
-Questions map to fields by type, panels to sections, ``visibleIf`` and
-``expression`` to the expression language, and localised strings
-(``{"default": "Name", "fr": "Nom"}``) to translations. A property with no
-place in the model is kept in ``settings["surveyjs"]`` and named in the
-import report.
+Questions become fields by type, panels sections, ``visibleIf`` and
+``expression`` the model's expressions, and localised strings
+(``{"default": "Name", "fr": "Nom"}``) translations. A property with no place
+in the model is kept under ``extensions.surveyjs`` and named in the report.
 """
 
 from __future__ import annotations
@@ -13,9 +12,9 @@ import json
 from typing import Any
 
 from quill.core.forms import expr as E
+from quill.core.forms import model as M
 from quill.core.forms.errors import FormImportError
-from quill.core.forms.interop_common import ImportResult, convert_expression, safe_id
-from quill.core.forms.model import Choice, Columns, Field, Form, Island, Item, Page, Section
+from quill.core.forms.interop_common import ImportResult, clean, convert_expression, safe_id
 
 _TYPES = {
     "text": "text", "comment": "textarea", "dropdown": "select", "tagbox": "multiselect",
@@ -24,33 +23,33 @@ _TYPES = {
     "imagepicker": "image_choice", "html": "html", "expression": "calculation",
     "paneldynamic": "repeater",
 }  # fmt: skip
-_INPUT_TYPES = {
+_INPUT = {
     "email": "email", "number": "number", "date": "date", "time": "time", "tel": "phone",
     "url": "website", "color": "color", "range": "range", "password": "password",
     "datetime-local": "datetime",
 }  # fmt: skip
-_BACK = {v: k for k, v in _TYPES.items()} | {"multiselect": "tagbox", "textarea": "comment"}
-_KNOWN = {"type", "name", "title", "description", "isRequired", "placeholder", "defaultValue",
-          "choices", "visibleIf", "inputType", "expression", "elements", "templateElements",
-          "html", "min", "max", "step", "maxLength", "autocomplete"}  # fmt: skip
+_BACK = {v: k for k, v in _TYPES.items()}
+_KNOWN = {
+    "type", "name", "title", "description", "isRequired", "placeholder", "defaultValue",
+    "choices", "visibleIf", "inputType", "expression", "elements", "templateElements", "html",
+    "min", "max", "maxLength", "autocomplete",
+}  # fmt: skip
 _REWRITES = [
     (r"\{([A-Za-z0-9_]+)\}", r"#\1"),
     (r"\bnotempty\b", " is filled"),
-    (r"\bempty\b", " is empty"),
-    (r"<>", "!="),
+    (r"(?<![A-Za-z_])empty\b", " is empty"),
     (r"\bnotcontains\b", "does not contain"),
-    (r"\banyof\s*\[([^\]]*)\]", r"is one of (\1)"),
-    (r"\btoday\(\)", "today"),
+    (r"\banyof\b", "is one of"),
     (r"\biif\(", "if("),
 ]
 
 
-def _text(value: Any, key: str, base: str, translations: dict[str, dict[str, str]]) -> str:
+def _text(value: Any, put: Any) -> str:
     """A SurveyJS string, which may be localised: keep the default, file the rest."""
     if isinstance(value, dict):
         for lang, text in value.items():
             if lang != "default":
-                translations.setdefault(lang, {})[f"{base}{key}"] = str(text)
+                put(lang, str(text))
         return str(value.get("default", next(iter(value.values()), "")))
     return "" if value is None else str(value)
 
@@ -59,92 +58,106 @@ class _Importer:
     def __init__(self) -> None:
         self.report: list[str] = []
         self.taken: set[str] = set()
-        self.form = Form()
+        self.translations: dict[str, dict[str, Any]] = {}
+
+    def tr(self, part: str, ident: str, key: str) -> Any:
+        def put(lang: str, text: str) -> None:
+            t = self.translations.setdefault(lang, {})
+            if not part:
+                t[key] = text
+            elif key.startswith("choices/"):
+                t.setdefault(part, {}).setdefault(ident, {}).setdefault("choices", {})[key[8:]] = (
+                    text
+                )
+            else:
+                t.setdefault(part, {}).setdefault(ident, {})[key] = text
+
+        return put
 
     def expression(self, raw: str, where: str) -> str | None:
         converted = convert_expression(raw, _REWRITES)
         if converted is None:
             self.report.append(
-                f"The rule on {where} could not be converted and is kept as written: {raw}"
+                f"The rule on {where} could not be converted and was left out: {raw}"
             )
         return converted
 
-    def question(self, q: dict[str, Any]) -> Item:
+    def question(self, q: dict[str, Any]) -> M.Item:
         kind = str(q.get("type", "text"))
         if kind == "panel":
-            section = Section(id=safe_id(str(q.get("name", "panel")), self.taken))
-            section.title = _text(
-                q.get("title", ""), "title", f"section.{section.id}.", self.form.translations
-            )
-            section.description = _text(
-                q.get("description", ""),
-                "description",
-                f"section.{section.id}.",
-                self.form.translations,
-            )
+            ident = safe_id(q.get("name", "panel"), self.taken)
+            section: dict[str, Any] = {"id": ident, "type": "section"}
+            section["label"] = _text(q.get("title", ""), self.tr("fields", ident, "label"))
+            section["help"] = _text(q.get("description", ""), self.tr("fields", ident, "help"))
             if q.get("visibleIf"):
-                section.visible_when = self.expression(
-                    str(q["visibleIf"]), section.title or section.id
-                )
-            section.items = [self.question(e) for e in q.get("elements", [])]
-            return section
-        model_type = (
-            _INPUT_TYPES.get(str(q.get("inputType", "")), _TYPES.get(kind))
-            if kind == "text"
-            else _TYPES.get(kind)
+                section["when"] = self.expression(str(q["visibleIf"]), section["label"] or ident)
+            section["items"] = [self.question(e) for e in q.get("elements", [])]
+            return clean(section)
+        mapped = (
+            _INPUT.get(str(q.get("inputType", "")), "text") if kind == "text" else _TYPES.get(kind)
         )
-        if model_type is None:
+        if mapped is None:
             self.report.append(
-                f"The {kind} question {q.get('name')!r} has no field type in the model; "
-                "it is kept as text."
+                f"The {kind} question {q.get('name')!r} has no field type in the model; it is kept as text."  # noqa: E501
             )
-            model_type = "text"
-        item = Field(id=safe_id(str(q.get("name", "question")), self.taken), type=model_type)
-        base = f"field.{item.id}."
-        tr = self.form.translations
-        item.label = _text(q.get("title", q.get("name", "")), "label", base, tr)
-        item.help = _text(q.get("description", ""), "help", base, tr)
-        item.placeholder = _text(q.get("placeholder", ""), "placeholder", base, tr)
-        item.required = bool(q.get("isRequired", False))
+            mapped = "text"
+        ident = safe_id(q.get("name", "question"), self.taken)
+        item: dict[str, Any] = {"id": ident, "type": mapped}
+        item["label"] = _text(q.get("title", q.get("name", "")), self.tr("fields", ident, "label"))
+        item["help"] = _text(q.get("description", ""), self.tr("fields", ident, "help"))
+        item["placeholder"] = _text(
+            q.get("placeholder", ""), self.tr("fields", ident, "placeholder")
+        )
+        if q.get("isRequired"):
+            item["required"] = True
         if "defaultValue" in q:
-            item.default = str(q["defaultValue"])
+            item["default"] = q["defaultValue"]
+        choices = []
         for raw in q.get("choices", []):
             if isinstance(raw, dict):
                 value = str(raw.get("value", ""))
-                item.choices.append(
-                    Choice(value, _text(raw.get("text", value), f"choice.{value}", base, tr))
-                )
+                label = _text(raw.get("text", value), self.tr("fields", ident, "choices/" + value))
             else:
-                item.choices.append(Choice(str(raw), str(raw)))
+                value = label = str(raw)
+            choices.append({"value": value, "label": label})
+        if choices:
+            item["choices"] = choices
         if q.get("visibleIf"):
-            item.visible_when = self.expression(str(q["visibleIf"]), item.label or item.id)
+            item["when"] = self.expression(str(q["visibleIf"]), item["label"] or ident)
         if kind == "expression" and q.get("expression"):
-            item.calculate = self.expression(str(q["expression"]), item.label or item.id)
+            item["calculation"] = self.expression(str(q["expression"]), item["label"] or ident)
+        validation: dict[str, Any] = {k: q[k] for k in ("min", "max") if k in q}
+        if "maxLength" in q:
+            validation["max_length"] = int(q["maxLength"])
+        if validation:
+            item["validation"] = validation
+        props: dict[str, Any] = {}
+        if "autocomplete" in q:
+            props["autocomplete"] = q["autocomplete"]
         if kind == "html":
-            item.settings["html"] = str(q.get("html", ""))
-        for key, setting in (
-            ("min", "min"),
-            ("max", "max"),
-            ("step", "step"),
-            ("maxLength", "max_length"),
-            ("autocomplete", "autocomplete"),
-        ):
-            if key in q:
-                item.settings[setting] = str(q[key])
+            props["html"] = str(q.get("html", ""))
+        if props:
+            item["props"] = props
         if kind == "paneldynamic":
-            item.fields = [
-                f
-                for f in (self.question(e) for e in q.get("templateElements", []))
-                if isinstance(f, Field)
-            ]
+            item["items"] = [self.question(e) for e in q.get("templateElements", [])]
         extra = {k: v for k, v in q.items() if k not in _KNOWN}
         if extra:
-            item.settings["surveyjs"] = extra
+            item["__surveyjs"] = extra
             self.report.append(
-                f"{item.label or item.id}: kept SurveyJS settings the model has no place "
-                f"for: {', '.join(sorted(extra))}."
+                f"{item['label'] or ident}: kept SurveyJS settings the model has no place for: {', '.join(sorted(extra))}."  # noqa: E501
             )
-        return item
+        out = clean(item)
+        if "__surveyjs" in item:
+            out["__surveyjs"] = item["__surveyjs"]
+        return out
+
+
+def _lift_extras(entries: list[M.Item], store: dict[str, Any]) -> None:
+    for item in entries:
+        extra = item.pop("__surveyjs", None)
+        if extra:
+            store[item["id"]] = extra
+        _lift_extras(item.get("items") or [], store)
 
 
 def import_surveyjs(data: dict[str, Any] | str) -> ImportResult:
@@ -156,180 +169,205 @@ def import_surveyjs(data: dict[str, Any] | str) -> ImportResult:
     if not isinstance(data, dict):
         raise FormImportError("SurveyJS JSON must be an object with pages or elements.")
     imp = _Importer()
-    form = imp.form
-    form.title = _text(data.get("title", ""), "title", "", form.translations)
-    form.description = _text(data.get("description", ""), "description", "", form.translations)
-    form.language = str(data.get("locale") or "en")
-    form.settings.submit_label = _text(
-        data.get("completeText", ""), "submit_label", "settings.", form.translations
-    )
-    form.settings.success_message = _text(
-        data.get("completedHtml", ""), "success_message", "settings.", form.translations
-    )
+    model: M.Model = {"version": M.MODEL_VERSION}
+    model["title"] = _text(data.get("title", ""), imp.tr("", "", "title"))
+    description = _text(data.get("description", ""), imp.tr("", "", "description"))
+    if description:
+        model["description"] = description
+    if data.get("locale"):
+        model["language"] = str(data["locale"])
+    if data.get("completeText"):
+        model["settings"] = {"submit_label": _text(data["completeText"], lambda *_: None)}
+    pages = []
     raw_pages = data.get("pages") or [{"name": "page1", "elements": data.get("elements", [])}]
-    form.pages = []
     for n, raw in enumerate(raw_pages, 1):
-        page = Page(id=f"page_{n}")
-        page.title = _text(raw.get("title", ""), "title", f"page.{page.id}.", form.translations)
-        page.description = _text(
-            raw.get("description", ""), "description", f"page.{page.id}.", form.translations
-        )
+        page: dict[str, Any] = {"id": safe_id(raw.get("name") or f"page_{n}", imp.taken)}
+        title = _text(raw.get("title", ""), imp.tr("pages", page["id"], "title"))
+        if title:
+            page["title"] = title
         if raw.get("visibleIf"):
-            page.visible_when = imp.expression(str(raw["visibleIf"]), page.title or page.id)
-        page.items = [imp.question(q) for q in raw.get("elements", [])]
-        form.pages.append(page)
-    form.pages = form.pages or [Page(id="page_1")]
+            when = imp.expression(str(raw["visibleIf"]), title or page["id"])
+            if when:
+                page["when"] = when
+        page["items"] = [imp.question(q) for q in raw.get("elements", [])]
+        pages.append(page)
+    model["pages"] = pages or [{"id": "page_1", "items": []}]
+    if data.get("completedHtml"):
+        model["confirmations"] = [
+            {
+                "id": "confirmation_1",
+                "type": "message",
+                "message": _text(data["completedHtml"], lambda *_: None),
+            }
+        ]
+    if imp.translations:
+        model["translations"] = imp.translations
+    extras: dict[str, Any] = {}
+    for page in model["pages"]:
+        _lift_extras(page["items"], extras)
     leftover = sorted(
         set(data)
         - {"title", "description", "locale", "completeText", "completedHtml", "pages", "elements"}
     )
     if leftover:
-        form.settings.extra["surveyjs"] = {k: data[k] for k in leftover}
+        extras["__survey__"] = {k: data[k] for k in leftover}
         imp.report.append(
             f"Kept survey settings the model has no place for: {', '.join(leftover)}."
         )
-    return ImportResult(form, imp.report)
+    if extras:
+        model["extensions"] = {"surveyjs": extras}
+    return ImportResult(model, imp.report)
 
 
-# -- export ------------------------------------------------------------------------
+# -- export ------------------------------------------------------------------------------------
+
+_OPS = {"is": "=", "is_not": "<>", "lt": "<", "le": "<=", "gt": ">", "ge": ">=", "contains": "contains",  # noqa: E501
+        "not_contains": "notcontains", "before": "<", "after": ">", "add": "+", "sub": "-", "mul": "*",  # noqa: E501
+        "div": "/", "mod": "%", "starts_with": "contains", "ends_with": "contains"}  # fmt: skip
 
 
 def surveyjs_expression(node: E.Node) -> str:  # noqa: C901
-    if isinstance(node, E.Ref):
-        return "{" + node.field + "}"
-    if isinstance(node, E.Str):
-        return "'" + node.value.replace("'", "\\'") + "'"
-    if isinstance(node, E.Today):
-        return "today()"
-    if isinstance(node, E.Compare):
-        op = {"=": "=", "!=": "<>", "contains": "contains", "not_contains": "notcontains"}.get(
-            node.op, node.op
+    kind = node["type"]
+    if kind == "ref":
+        return "{" + str(node["field"]) + "}"
+    if kind == "literal":
+        v = node["value"]
+        return "'" + v.replace("'", "\\'") + "'" if isinstance(v, str) else E.literal_text(v)
+    if kind == "list":
+        return "[" + ", ".join(surveyjs_expression(i) for i in node["items"]) + "]"
+    if kind == "call":
+        name = "iif" if node["name"] == "if" else node["name"]
+        return name + "(" + ", ".join(surveyjs_expression(a) for a in node["args"]) + ")"
+    if kind == "var":
+        return "{score}"
+    a, name = node["args"], node["op"]
+    if name in ("and", "or"):
+        return f" {name} ".join(
+            f"({surveyjs_expression(x)})"
+            if x.get("op") in ("and", "or")
+            else surveyjs_expression(x)
+            for x in a
         )
-        if node.op in ("before", "after"):
-            op = "<" if node.op == "before" else ">"
-        if node.op in ("starts", "ends"):
-            op = "contains"
-        return f"{surveyjs_expression(node.left)} {op} {surveyjs_expression(node.right)}"
-    if isinstance(node, E.Empty):
-        return f"{surveyjs_expression(node.value)} {'notempty' if node.negate else 'empty'}"
-    if isinstance(node, E.OneOf):
-        inner = ", ".join(surveyjs_expression(o) for o in node.options)
-        text = f"{surveyjs_expression(node.value)} anyof [{inner}]"
-        return f"!({text})" if node.negate else text
-    if isinstance(node, E.Logic):
-        return f" {node.op} ".join(
-            f"({surveyjs_expression(i)})" if isinstance(i, E.Logic) else surveyjs_expression(i)
-            for i in node.items
-        )
-    if isinstance(node, E.Not):
-        return f"!({surveyjs_expression(node.operand)})"
-    if isinstance(node, E.Arith):
-        return f"({surveyjs_expression(node.left)} {node.op} {surveyjs_expression(node.right)})"
-    if isinstance(node, E.Call):
-        name = "iif" if node.name == "if" else node.name
-        return f"{name}(" + ", ".join(surveyjs_expression(a) for a in node.args) + ")"
-    if isinstance(node, E.Neg):
-        return "-" + surveyjs_expression(node.operand)
-    return E.to_text(node)
+    if name == "not":
+        return "!(" + surveyjs_expression(a[0]) + ")"
+    if name == "neg":
+        return "-" + surveyjs_expression(a[0])
+    if name in ("empty", "not_empty"):
+        return surveyjs_expression(a[0]) + (" empty" if name == "empty" else " notempty")
+    if name in ("one_of", "not_one_of"):
+        text = surveyjs_expression(a[0]) + " anyof " + surveyjs_expression(a[1])
+        return text if name == "one_of" else "!(" + text + ")"
+    if name == "within":
+        base = surveyjs_expression(a[2]) if len(a) > 2 else "today()"
+        return f"abs(diffDays({surveyjs_expression(a[0])}, {base})) <= {surveyjs_expression(a[1])}"
+    text = f"{surveyjs_expression(a[0])} {_OPS[name]} {surveyjs_expression(a[1])}"
+    return f"({text})" if name in ("add", "sub") else text
 
 
-def _localised(text: str, key: str, form: Form) -> Any:
-    others = {lang: t[key] for lang, t in form.translations.items() if key in t}
+def _localised(text: str, model: M.Model, part: str, ident: str, key: str) -> Any:
+    from quill.core.forms.translate import lookup
+
+    others = {}
+    for lang in model.get("translations") or {}:
+        found = lookup(model, lang, (part, ident, key))
+        if found is not None:
+            others[lang] = found
     return {"default": text, **others} if others else text
 
 
-def _flat(items: list[Item]) -> list[Item]:
-    """Columns laid out one after another; islands left out (SurveyJS has no place for BFL text)."""
-    out: list[Item] = []
-    for item in items:
-        if isinstance(item, Columns):
-            for column in item.columns:
-                out.extend(_flat(column))
-        elif not isinstance(item, Island):
-            out.append(item)
-    return out
-
-
-def _question(item: Item, form: Form) -> dict[str, Any]:
-    if isinstance(item, Section):
-        out: dict[str, Any] = {
-            "type": "panel",
-            "name": item.id,
-            "title": _localised(item.title, f"section.{item.id}.title", form),
-        }
-        if item.visible_when:
-            out["visibleIf"] = surveyjs_expression(E.parse(item.visible_when))
-        out["elements"] = [_question(i, form) for i in _flat(item.items)]
-        return out
-    assert isinstance(item, Field)
-    raw = item.settings.get("surveyjs")
-    sjs: dict[str, Any] = dict(raw) if isinstance(raw, dict) else {}
-    base = f"field.{item.id}."
-    out = {"type": _BACK.get(item.type, "text"), "name": item.id}
-    inv = {v: k for k, v in _INPUT_TYPES.items()}
-    if item.type in inv:
-        out["type"], out["inputType"] = "text", inv[item.type]
-    if item.label:
-        out["title"] = _localised(item.label, base + "label", form)
-    if item.help:
-        out["description"] = _localised(item.help, base + "help", form)
-    if item.placeholder:
-        out["placeholder"] = _localised(item.placeholder, base + "placeholder", form)
-    if item.required:
-        out["isRequired"] = True
-    if item.default is not None:
-        out["defaultValue"] = item.default
-    if item.choices:
-        out["choices"] = [
-            {"value": c.value, "text": _localised(c.label, f"{base}choice.{c.value}", form)}
-            for c in item.choices
+def _question(item: M.Item, model: M.Model, extras: dict[str, Any]) -> list[dict[str, Any]]:
+    kind = item["type"]
+    if kind == "columns":
+        return [
+            q
+            for col in item.get("columns") or []
+            for i in col.get("items") or []
+            for q in _question(i, model, extras)
         ]
-    if item.visible_when:
-        out["visibleIf"] = surveyjs_expression(E.parse(item.visible_when))
-    if item.calculate:
-        out["type"], out["expression"] = "expression", surveyjs_expression(E.parse(item.calculate))
-    if item.fields:
-        out["templateElements"] = [_question(f, form) for f in item.fields]
-    for setting, key in (
-        ("min", "min"),
-        ("max", "max"),
-        ("step", "step"),
-        ("max_length", "maxLength"),
-        ("autocomplete", "autocomplete"),
-    ):
-        if setting in item.settings:
-            out[key] = item.settings[setting]
-    if item.type == "html":
-        out["html"] = item.settings.get("html", "")
-    out.update(sjs)
-    return out
-
-
-def export_surveyjs(form: Form) -> dict[str, Any]:
-    out: dict[str, Any] = {}
-    if form.title:
-        out["title"] = _localised(form.title, "title", form)
-    if form.description:
-        out["description"] = _localised(form.description, "description", form)
-    if form.language != "en":
-        out["locale"] = form.language
-    if form.settings.submit_label:
-        out["completeText"] = _localised(form.settings.submit_label, "settings.submit_label", form)
-    if form.settings.success_message:
-        out["completedHtml"] = _localised(
-            form.settings.success_message, "settings.success_message", form
+    out: dict[str, Any] = {
+        "type": "panel" if kind == "section" else _BACK.get(kind, "text"),
+        "name": item["id"],
+    }
+    inverse = {v: k for k, v in _INPUT.items()}
+    if kind in inverse:
+        out["type"], out["inputType"] = "text", inverse[kind]
+    if "label" in item:
+        out["title"] = _localised(item["label"], model, "fields", item["id"], "label")
+    if "help" in item:
+        out["description"] = _localised(item["help"], model, "fields", item["id"], "help")
+    if "placeholder" in item:
+        out["placeholder"] = _localised(
+            item["placeholder"], model, "fields", item["id"], "placeholder"
         )
+    if item.get("required"):
+        out["isRequired"] = True
+    if "default" in item:
+        out["defaultValue"] = item["default"]
+    if "choices" in item:
+        out["choices"] = [
+            {
+                "value": c["value"],
+                "text": _localised(
+                    c["label"], model, "fields", item["id"], "choices/" + c["value"]
+                ),
+            }
+            for c in item["choices"]
+        ]
+    if "when" in item:
+        out["visibleIf"] = surveyjs_expression(E.parse(item["when"]))
+    if "calculation" in item:
+        out["type"], out["expression"] = (
+            "expression",
+            surveyjs_expression(E.parse(item["calculation"])),
+        )
+    validation = item.get("validation") or {}
+    for k in ("min", "max"):
+        if k in validation:
+            out[k] = validation[k]
+    if "max_length" in validation:
+        out["maxLength"] = validation["max_length"]
+    props = item.get("props") or {}
+    if "autocomplete" in props:
+        out["autocomplete"] = props["autocomplete"]
+    if kind == "html":
+        out["html"] = props.get("html", "")
+    if kind == "section":
+        out["elements"] = [q for i in item.get("items") or [] for q in _question(i, model, extras)]
+    elif kind == "repeater":
+        out["templateElements"] = [
+            q for i in item.get("items") or [] for q in _question(i, model, extras)
+        ]
+    out.update(extras.get(item["id"], {}))
+    return [out]
+
+
+def export_surveyjs(model: M.Model) -> dict[str, Any]:
+    extras = dict((model.get("extensions") or {}).get("surveyjs") or {})
+    out: dict[str, Any] = {}
+    if model.get("title"):
+        out["title"] = _localised(model["title"], model, "", "", "title")
+    if model.get("description"):
+        out["description"] = _localised(model["description"], model, "", "", "description")
+    if "language" in model:
+        out["locale"] = model["language"]
+    submit = (model.get("settings") or {}).get("submit_label")
+    if submit:
+        out["completeText"] = submit
+    message = next(
+        (c.get("message") for c in model.get("confirmations") or [] if c.get("type") == "message"),
+        None,
+    )
+    if message:
+        out["completedHtml"] = message
     pages = []
-    for page in form.pages:
-        p: dict[str, Any] = {"name": page.id}
-        if page.title:
-            p["title"] = _localised(page.title, f"page.{page.id}.title", form)
-        if page.visible_when:
-            p["visibleIf"] = surveyjs_expression(E.parse(page.visible_when))
-        p["elements"] = [_question(i, form) for i in _flat(page.items)]
+    for page in model["pages"]:
+        p: dict[str, Any] = {"name": page["id"]}
+        if "title" in page:
+            p["title"] = _localised(page["title"], model, "pages", page["id"], "title")
+        if "when" in page:
+            p["visibleIf"] = surveyjs_expression(E.parse(page["when"]))
+        p["elements"] = [q for i in page.get("items") or [] for q in _question(i, model, extras)]
         pages.append(p)
     out["pages"] = pages
-    extra = form.settings.extra.get("surveyjs")
-    if isinstance(extra, dict):
-        out.update(extra)
+    out.update(extras.get("__survey__", {}))
     return out

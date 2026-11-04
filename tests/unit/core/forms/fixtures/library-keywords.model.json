@@ -1,31 +1,24 @@
 {
- "model": "baf-form",
  "version": 1,
- "language": "en",
+ "title": "",
  "pages": [
   {
    "id": "page_1",
    "items": [
     {
-     "kind": "field",
      "id": "field_1",
      "type": "select",
-     "label": "Country",
-     "choice_library": "countries"
+     "label": "Country"
     },
     {
-     "kind": "field",
      "id": "field_2",
      "type": "select",
-     "label": "State",
-     "choice_library": "us_states"
+     "label": "State"
     },
     {
-     "kind": "field",
      "id": "field_3",
      "type": "select",
-     "label": "Month",
-     "choice_library": "months"
+     "label": "Month"
     }
    ]
   }

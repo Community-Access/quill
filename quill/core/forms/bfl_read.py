@@ -1,566 +1,434 @@
-"""Reading BFL into the form model, keeping every byte.
+"""Reading BFL into the form model: a port of BAF's ``BAF_BFL_Reader``.
 
-This reads BFL as BAF's language guide documents it (all four block styles,
-choices in any position, ``if`` and ``columns`` bodies), plus the spellings
-the model needs that BAF's guide does not have yet (``@when``, ``@calculate``,
-``@score``, ``@choice_score``, ``@translate``, ``outcome``, conditions in the
-full expression language, every model field type, and repeater children).
-:mod:`bfl_spelling` lists them.
+BFL 1 is a readable notation of the model (BAF's ``docs/bfl-and-the-model.md``).
+This reads it exactly as BAF does, statement for statement and key for key,
+including every older spelling: the four block styles, inline and indented
+modifiers, flat sections, the older type names and modifier spellings, the
+older compiler's ``settings`` block, and the eight single-test conditions.
+BAF's ``tests/conformance/bfl`` cases are the contract.
 
-It is deliberately not a copy of BAF's PHP parser, which today drops the first
-choice of an indented list and the first field of an indented ``if`` (see
-:mod:`baf_parser` and the conformance report). Where the two disagree,
-:func:`quill.core.forms.baf_compare.divergences` says so in a sentence.
-
-**Islands.** A line QUILL cannot read — an unknown keyword, a stray word, a
-condition that does not parse, BAF's export dialect — becomes an
-:class:`~quill.core.forms.model.Island` holding the line and any lines
-indented under it, exactly. A modifier QUILL does not know is kept, as
-written, in the field's ``settings["unknown_modifiers"]``. Comments are
-islands too, so a round trip through the JSON model keeps them.
-
-The result is a :class:`BflDocument`: the model plus where each statement came
-from, which :mod:`bfl_write` uses to write unchanged statements back byte for
-byte and regenerate only what was edited.
+QUILL adds one thing BAF does not keep: **where each top-level statement
+came from**, and the lines BAF skipped at the top level, which QUILL calls
+*islands*. :mod:`bfl_document` uses both to write an edited document back
+with every untouched byte unchanged.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from typing import Any
 
-from quill.core.forms import bfl_lexer as L
 from quill.core.forms import expr as E
-from quill.core.forms.baf_parser import (
-    split_choice,
-)
-from quill.core.forms.bfl_lexer import Token
-from quill.core.forms.bfl_parts import (
-    _EXPR_MODIFIERS,
-    _VERSION,
-    ALIASES,
-    CHOICE_KEYWORD_TYPES,
-    BflDocument,
-    Cursor,
-    FormHeader,
-    Stmt,
-    VersionLine,
-    _and,
-    _apply,
-    _known,
-    _Malformed,
-)
-from quill.core.forms.errors import ExpressionError, FormVersionError
-from quill.core.forms.model import (
-    FIELD_TYPES,
-    MODEL_VERSION,
-    Choice,
-    Columns,
-    Field,
-    Form,
-    Island,
-    Item,
-    Outcome,
-    Page,
-    Section,
+from quill.core.forms import model as M
+from quill.core.forms.bfl_lex import ELEMENT_TYPES, Token, _php_string, field_type, php_numeric
+from quill.core.forms.bfl_read_parts import (
+    ITEM_ORDER,
+    ReaderBase,
+    legacy_smart_default,
+    order,
 )
 
+VERSION = 1
+SETTING_ALIASES = {
+    "ajax": "ajax_submission",
+    "honeypot": "enable_honeypot",
+    "captcha": "enable_captcha",
+}
+TOP_ORDER = (
+    "version", "id", "title", "description", "language", "settings", "choice_libraries", "pages",
+    "rules", "scoring", "confirmations", "notifications", "translations", "extensions",
+)  # fmt: skip
 
-class _Reader(Cursor):
-    def __init__(self, text: str) -> None:
-        super().__init__(text)
-        self.form = Form()
-        self.page = self.form.pages[0]
-        self.section: Section | None = None
-        self.page_count = 1
-        self.saw_form = False
-        self.first_page_used = False
 
-    # -- statements -----------------------------------------------------------
-    def statements(
-        self, parent: int, explicit: bool, cond: str | None, sink: list[Item] | None
-    ) -> list[Stmt]:
-        """Read statements whose lines are indented deeper than ``parent``.
+@dataclass
+class Statement:
+    """One top-level statement: its text span and what it made."""
 
-        ``explicit`` blocks end at a closer instead. ``cond`` is the condition
-        of the enclosing ``if`` blocks; ``sink`` the column list items go to
-        (None for the page).
-        """
-        out: list[Stmt] = []
-        while True:
-            save = self.i
-            self.skip_blank()
-            if explicit and self.is_close():
-                return out
-            if self.eof() or (not explicit and self.indent_of(self.tok().pos) <= parent):
-                self.i = save
-                return out
-            first = self.tok()
-            mark = self.mark(sink)
-            try:
-                objs = self.statement(cond, sink)
-            except _Malformed as bad:
-                self.rollback(mark, sink)
-                objs = [self.island(bad.reason, sink)]
-            out.append(Stmt(self.start_of(first), self.span_end(), objs))
+    kind: str  # bfl, form, page, items, library, rule, scoring, confirmation, notification, translation, settings, mod, island  # noqa: E501
+    start: int
+    end: int
+    #: page index (page), item ids (items), name (library), index (rule...), lang (translation)
+    key: Any = None
+    page: int | None = None
+    indent: str = ""
 
-    def mark(self, sink: list[Item] | None) -> tuple[Any, ...]:
-        section = self.section
-        return (
-            self.i, self.page, len(self.page.items), section,
-            len(section.items) if section else 0, len(sink) if sink is not None else 0,
-            len(self.form.pages), len(self.form.outcomes),
-            {k: dict(v) for k, v in self.form.translations.items()},
-            self.counter, self.page_count, self.saw_form, self.first_page_used,
-        )  # fmt: skip
 
-    def rollback(self, mark: tuple[Any, ...], sink: list[Item] | None) -> None:
-        """Undo a statement that turned out to be an island."""
-        (self.i, self.page, n_page, self.section, n_section, n_sink, n_pages, n_out,
-         translations, self.counter, self.page_count, self.saw_form,
-         self.first_page_used) = mark  # fmt: skip
-        del self.page.items[n_page:]
-        if self.section is not None:
-            del self.section.items[n_section:]
-        if sink is not None:
-            del sink[n_sink:]
-        del self.form.pages[n_pages:]
-        del self.form.outcomes[n_out:]
-        self.form.translations = translations
+@dataclass
+class ReadResult:
+    model: M.Model
+    errors: list[dict[str, Any]]
+    warnings: list[dict[str, Any]]
+    source: str = ""
+    statements: list[Statement] = field(default_factory=list)
 
-    def island(self, reason: str, sink: list[Item] | None) -> Island:
-        first = self.tok()
-        level = self.indent_of(first.pos)
-        line = self.line_of(first.pos)
-        depth = 0  # blocks the island opened and has not closed yet
-        while not self.eof():
-            t = self.tok()
-            if t.type in (L.NEWLINE, L.INDENT):
-                self.i += 1
+
+def both(a: str, b: str) -> str:
+    return E.canonical(E.to_text(E.op("and", [E.parse(a), E.parse(b)])))
+
+
+class Reader(ReaderBase):
+    def __init__(self) -> None:
+        super().__init__()
+        self.counter = 0
+        self.model: M.Model = {}
+        self.page: int | None = None
+        self.page_declared = False
+        self.owner = "form"
+        self.statements: list[Statement] = []
+
+    # -- whole document -----------------------------------------------------------
+    def run(self, source: str) -> ReadResult:
+        src = source.replace("\r\n", "\n").replace("\r", "\n")
+        if src.startswith("﻿"):
+            src = src[1:]
+        self.src = src
+        self.toks = self.lex(src)
+        self.p = 0
+        self.model = {"version": M.MODEL_VERSION, "title": "", "pages": []}
+        self.parse_top()
+        if not self.model["pages"]:
+            self.model["pages"].append({"id": "page_1", "items": []})
+        for page in self.model["pages"]:
+            page["items"] = self.finish_items(page["items"])
+        model = order(self.model, TOP_ORDER)
+        return ReadResult(model, self.errors, self.warnings, src, self.statements)
+
+    def current_page(self) -> int:
+        if self.page is None:
+            pages = self.model["pages"]
+            pages.append({"id": f"page_{len(pages) + 1}", "items": []})
+            self.page = len(pages) - 1
+            self.page_declared = False
+        return self.page
+
+    def _record(self, kind: str, first: Token, key: Any = None, page: int | None = None) -> None:
+        prev = self.toks[self.p - 1] if self.p > 0 else first
+        line_start = self.src.rfind("\n", 0, first["start"]) + 1
+        start = line_start if not self.src[line_start : first["start"]].strip() else first["start"]
+        eol = self.src.find("\n", max(prev["end"] - 1, prev["start"]))
+        end = len(self.src) if eol < 0 else eol
+        if prev["t"] == "EOF" or end < start:
+            end = max(start, prev["start"])
+        indent = self.src[line_start : first["start"]] if start == line_start else ""
+        self.statements.append(Statement(kind, start, end, key, page, indent))
+
+    def parse_top(self) -> None:  # noqa: C901
+        first = True
+        while not self.at_end():
+            t = self.peek()
+            if first and self.is_word(t, "bfl") and t["first"]:
+                self.next()
+                v = self.peek()
+                if v["t"] == "NUMBER" and v["line"] == t["line"]:
+                    self.next()
+                    if v["v"] > VERSION:
+                        self.error(
+                            t["line"],
+                            f"This form is written in BFL {v['v']}; this copy of QUILL reads BFL "
+                            f"{VERSION} and older. Update QUILL to open it.",
+                        )
+                        return
+                else:
+                    self.error(t["line"], 'The bfl line needs a version number, such as "bfl 1".')
+                self._record("bfl", t)
+                first = False
                 continue
-            same = self.line_of(t.pos) == line
-            if not (same or depth > 0 or self.indent_of(t.pos) > level):
-                break
-            if self.is_open():
-                depth += 1
-            elif self.is_close():
-                if depth == 0 and not same:
-                    break
-                depth = max(0, depth - 1)
-            line = self.line_of(t.pos)
-            self.i += 1
-        while self.i > 0 and self.toks[self.i - 1].type in (L.NEWLINE, L.INDENT):
-            self.i -= 1
-        isl = Island(self.text[self.start_of(first) : self.span_end()], reason)
-        self.place(isl, sink)
-        return isl
-
-    def place(self, item: Item, sink: list[Item] | None) -> None:
-        if sink is not None:
-            sink.append(item)
-        elif self.section is not None and not isinstance(item, Section):
-            self.section.items.append(item)
-        else:
-            self.page.items.append(item)
-
-    def statement(self, cond: str | None, sink: list[Item] | None) -> list[Any]:
-        t = self.tok()
-        if t.type == L.COMMENT and self.i == self.first_content() and _VERSION.fullmatch(t.value):
-            self.i += 1
-            if not self.end_of_line_or_comment():
-                raise _Malformed("Something follows the version on its line.")
-            found = _VERSION.fullmatch(t.value)
-            self.form.version = int(found.group(1)) if found else MODEL_VERSION
-            if self.form.version > MODEL_VERSION:
-                raise FormVersionError(
-                    f"This form was written for BFL version {self.form.version}; this copy of "
-                    f"QUILL reads up to version {MODEL_VERSION}. Update QUILL to open it."
-                )
-            return [VersionLine()]
-        if t.type == L.COMMENT:
-            self.i += 1
-            if not self.end_of_line_or_comment():
-                raise _Malformed("Something follows this comment on its line.")
-            isl = Island(self.text[self.start_of(t) : self.span_end()], "comment")
-            self.place(isl, sink)
-            return [isl]
-        word = t.value.lower() if t.type in (L.KEYWORD, L.STRING) and self.bare(t) else ""
-        if word == "form" and t.type == L.KEYWORD and sink is None and cond is None:
-            return self.form_line()
-        if word == "page" and sink is None and cond is None:
-            return [self.page_line()]
-        if word == "section":
-            return [self.section_line(cond, sink)]
-        if word == "columns":
-            return [self.columns(cond, sink)]
-        if word in ("if", "conditional"):
-            return self.conditional(cond, sink)
-        if word == "outcome" and sink is None and cond is None:
-            return [self.outcome()]
-        kind = ALIASES.get(word, word)
-        if kind in FIELD_TYPES and kind != "section":
-            item = self.field_statement(cond)
-            self.place(item, sink)
-            return [item]
-        raise _Malformed(f"QUILL does not know {t.value!r} as the start of a line in a form.")
-
-    def form_line(self) -> list[Any]:
-        line_tok = self.tok()
-        if self.saw_form:
-            raise _Malformed("A form has one form line; this is a second.")
-        self.saw_form = True
-        self.i += 1
-        title = ""
-        if self.at(L.STRING):
-            title = self.tok().value
-            self.i += 1
-        target: dict[str, Any] = {}
-        self.modifier_run(line_tok, target, allow_body=True)
-        known = {"description", "ajax", "honeypot", "captcha", "save_and_continue", "rate_limit",
-                 "captcha_type", "submit_label", "success_message", "redirect_url",
-                 "unknown_modifiers", "translations"}  # fmt: skip
-        if set(target) - known:
-            raise _Malformed("This form line has settings a form cannot hold.")
-        self.form.title = title
-        s = self.form.settings
-        for key in ("description",):
-            if key in target:
-                self.form.description = str(target.pop(key))
-        for key in ("ajax", "honeypot", "captcha", "save_and_continue", "rate_limit"):
-            if target.pop(key, False):
-                setattr(s, key, True)
-        for key in ("captcha_type", "submit_label", "success_message", "redirect_url"):
-            if key in target:
-                setattr(s, key, str(target.pop(key)))
-        self.take_translations(target, "")
-        unknown = target.pop("unknown_modifiers", None)
-        if unknown:
-            s.extra["unknown_modifiers"] = unknown
-        return [FormHeader()]
-
-    def page_line(self) -> Page:
-        line_tok = self.tok()
-        self.i += 1
-        first = self.form.pages[0]
-        reuse = (
-            not self.first_page_used
-            and not first.items
-            and len(self.form.pages) == 1
-            and not first.title
-        )
-        page = first if reuse else Page(id=f"page_{self.page_count + 1}")
-        title = ""
-        if self.at(L.STRING):
-            title = self.tok().value
-            self.i += 1
-        target: dict[str, Any] = {}
-        self.modifier_run(line_tok, target, allow_body=True)
-        if set(target) - {"description", "visible_when", "translations"}:
-            raise _Malformed("A page line takes only @description and @when.")
-        if not reuse:
-            self.page_count += 1
-            self.form.pages.append(page)
-        self.first_page_used = True
-        self.take_translations(target, f"page.{page.id}.")
-        page.title = title
-        page.description = str(target.pop("description", ""))
-        page.visible_when = target.pop("visible_when", None)
-        self.page, self.section = page, None
-        return page
-
-    def section_line(self, cond: str | None, sink: list[Item] | None) -> Section:
-        line_tok = self.tok()
-        self.i += 1
-        section = Section(id=self.new_id())
-        if self.at(L.STRING):
-            section.title = self.tok().value
-            self.i += 1
-        target: dict[str, Any] = {}
-        self.modifier_run(line_tok, target, allow_body=True)
-        self.take_translations(target, f"section.{section.id}.")
-        section.description = str(target.pop("description", ""))
-        section.visible_when = _and(cond, target.pop("visible_when", None))
-        if target:
-            raise _Malformed("A section line takes only @description and @when.")
-        self.place(section, sink)
-        if sink is None:
-            self.section = section
-        return section
-
-    def outcome(self) -> Outcome:
-        line_tok = self.tok()
-        self.i += 1
-        if not self.at(L.STRING):
-            raise _Malformed("An outcome needs its message in quotes.")
-        message = self.tok().value
-        self.i += 1
-        target: dict[str, Any] = {}
-        self.modifier_run(line_tok, target, allow_body=True)
-        self.take_translations(target, f"outcome.{len(self.form.outcomes) + 1}.")
-        when = target.pop("visible_when", None)
-        if when is None or target:
-            raise _Malformed("An outcome needs @when and nothing else.")
-        result = Outcome(when=when, message=message)
-        self.form.outcomes.append(result)
-        return result
-
-    # -- if and columns -----------------------------------------------------------
-    def conditional(self, cond: str | None, sink: list[Item] | None) -> list[Any]:
-        head = self.tok()
-        self.i += 1
-        text = self.expression(head)
-        block_cond = _and(cond, text)
-        saved = self.section
-        objs: list[Any] = []
-        for stmt in self.body(head, block_cond, sink):
-            objs.extend(stmt.objs)
-        if sink is not None:
-            self.section = saved
-        return objs
-
-    def body(self, head: Token, cond: str | None, sink: list[Item] | None) -> list[Stmt]:
-        while self.at(L.COMMENT):
-            self.i += 1
-        if self.is_open() and self.same_line(head.pos, self.tok().pos):
-            self.i += 1
-            stmts = self.statements(-1, True, cond, sink)
-            if not self.is_close():
-                raise _Malformed("This block is never closed.")
-            self.i += 1
-            return stmts
-        if self.tok().type not in (L.NEWLINE, L.EOF):
-            raise _Malformed(f"I did not expect {self.tok().value!r} here.")
-        return self.statements(self.indent_of(head.pos), False, cond, sink)
-
-    def columns(self, cond: str | None, sink: list[Item] | None) -> Columns:
-        head = self.tok()
-        self.i += 1
-        item = Columns(id=self.new_id(), visible_when=cond)
-        if self.at(L.NUMBER):
-            item.count = int(float(self.tok().value))
-            self.i += 1
-        saved = self.section
-        explicit = self.is_open() and self.same_line(head.pos, self.tok().pos)
-        if explicit:
-            self.i += 1
-        elif self.tok().type not in (L.NEWLINE, L.EOF, L.COMMENT):
-            raise _Malformed("A columns line takes only a number.")
-        level = self.indent_of(head.pos)
-        closed = not explicit
-        while True:
-            save = self.i
-            self.skip_blank()
-            if explicit and self.is_close():
-                self.i += 1
-                closed = True
-                break
-            if self.eof() or (not explicit and self.indent_of(self.tok().pos) <= level):
-                self.i = save
-                break
-            if not self.at(L.KEYWORD, "column"):
-                raise _Malformed("A columns layout holds only column blocks.")
-            col_tok = self.tok()
-            self.i += 1
-            column: list[Item] = []
-            self.body(col_tok, None, column)
-            item.columns.append(column)
-        if not closed:
-            raise _Malformed("This columns block is never closed.")
-        self.section = saved
-        self.place(item, sink)
-        return item
-
-    def expression(self, head: Token) -> str:
-        start = self.tok().pos
-        if self.tok().type in (L.NEWLINE, L.EOF):
-            raise _Malformed("This needs a condition after it.")
-        try:
-            node, end = E.parse_embedded(self.text, start)
-        except ExpressionError as exc:
-            raise _Malformed(f"I cannot read this condition: {exc}") from exc
-        while not self.eof() and self.tok().pos < end and self.tok().type != L.NEWLINE:
-            if self.tok().end > end:
-                raise _Malformed("Put anything after this rule on its own line.")
-            self.i += 1
-        return E.to_text(node)
-
-    # -- fields -------------------------------------------------------------------
-    def field_statement(self, cond: str | None) -> Field:
-        head = self.tok()
-        kind = ALIASES.get(head.value.lower(), head.value.lower())
-        self.i += 1
-        item = Field(id=self.new_id(), type=kind)
-        if self.at(L.IDENTIFIER):
-            item.id = self.tok().value
-            self.i += 1
-        t = self.tok()
-        if t.type == L.STRING and not self.is_library(t):
-            item.label = t.value
-            self.i += 1
-        elif (
-            t.type == L.KEYWORD
-            and t.value not in ("begin", "end")
-            and t.value not in L.LIBRARY_KEYWORDS
-            and self.same_line(head.pos, t.pos)
-        ):
-            item.label = self.text[t.pos : t.end]
-            self.i += 1
-        if (self.at(L.KEYWORD) or self.at(L.STRING)) and self.is_library(self.tok()):
-            item.choice_library = self.tok().value
-            self.i += 1
-        target: dict[str, Any] = {}
-        self.modifier_run(head, target, allow_body=True, owner=item)
-        self.take_translations(target, f"field.{item.id}.")
-        _apply(item, target)
-        item.visible_when = _and(cond, item.visible_when)
-        return item
-
-    def take_translations(self, target: dict[str, Any], prefix: str) -> None:
-        """``@translate fr label "Courriel"`` into ``form.translations``."""
-        for values in target.pop("translations", []):
-            key = prefix + ".".join(values[1:-1])
-            if prefix == "" and key in ("submit_label", "success_message"):
-                key = "settings." + key
-            self.form.translations.setdefault(values[0], {})[key] = values[-1]
-
-    def is_library(self, t: Token) -> bool:
-        return self.bare(t) and t.value in L.LIBRARY_KEYWORDS
-
-    def modifier_run(
-        self, head: Token, target: dict[str, Any], *, allow_body: bool, owner: Field | None = None
-    ) -> None:
-        """Modifiers and choices after a head token: same line, a block, then indented lines."""
-        level = self.indent_of(head.pos)
-        self.items_on_line(target, owner, head_line=True)
-        if self.is_open() and self.same_line(head.pos, self.tok().pos):
-            self.i += 1
-            while True:
-                self.skip_blank()
-                if self.eof():
-                    raise _Malformed("This block is never closed.")
-                if self.is_close():
-                    self.i += 1
-                    break
-                if owner is not None and owner.type == "repeater" and self.child_field_here():
-                    owner.fields.append(self.field_statement(None))
-                    continue
-                if not self.one_item(target, owner):
-                    raise _Malformed(f"I did not expect {self.tok().value!r} in this block.")
-            self.items_on_line(target, owner)
-        if self.tok().type not in (L.NEWLINE, L.EOF):
-            raise _Malformed(f"I did not expect {self.tok().value!r} here.")
-        if not allow_body:
-            return
-        while True:
-            save = self.i
-            self.skip_blank()
-            if self.eof() or self.indent_of(self.tok().pos) <= level:
-                self.i = save
-                return
-            if owner is not None and owner.type == "repeater" and self.child_field_here():
-                owner.fields.append(self.field_statement(None))
+            first = False
+            if self.is_close(t):
+                self.next()
+                self._record("close", t)
                 continue
-            if not (self.at(L.MODIFIER) or self.at(L.CHOICE)):
-                self.i = save
-                return
-            self.items_on_line(target, owner)
-            if self.tok().type not in (L.NEWLINE, L.EOF):
-                raise _Malformed(f"I did not expect {self.tok().value!r} here.")
+            if t["t"] == "MOD":
+                self.next()
+                if self.owner == "page" and self.page is not None:
+                    self.page_mod(self.model["pages"][self.page], t)
+                    self._record("page", t, self.page)
+                else:
+                    self.form_mod(t)
+                    self._record("form", t)
+                continue
+            if t["t"] != "WORD":
+                self.warn(t["line"], f'Skipped "{t["v"]}", which BFL does not expect here.')
+                self.next()
+                self._record("island", t)
+                continue
+            w = str(t["v"]).lower()
+            simple: dict[str, Callable[[], Any]] = {
+                "form": self.parse_form, "page": self.parse_page, "library": self.parse_library,
+                "rule": self.parse_rule, "scoring": self.parse_scoring,
+                "translation": self.parse_translation, "settings": self.parse_settings_block,
+            }  # fmt: skip
+            if w in simple:
+                key = simple[w]()
+                self._record(w, t, key, self.page if w == "page" else None)
+                continue
+            if w in ("confirmation", "notification"):
+                key = self.parse_message_object(w)
+                self._record(w, t, key)
+                continue
+            if self.starts_item(t):
+                found = self.parse_item_statement(None)
+                pi = self.current_page()
+                self.model["pages"][pi]["items"].extend(found)
+                self._record("items", t, [i["id"] for i in found], pi)
+                continue
+            self.warn(t["line"], f'Skipped "{t["v"]}", which BFL does not know.')
+            self.next()
+            self._record("island", t)
 
-    def child_field_here(self) -> bool:
-        t = self.tok()
-        word = t.value.lower() if t.type in (L.KEYWORD, L.STRING) and self.bare(t) else ""
-        return ALIASES.get(word, word) in FIELD_TYPES and word != "section"
+    # -- form and pages --------------------------------------------------------------
+    def parse_form(self) -> None:
+        header = self.next()
+        if self.peek()["t"] == "ID" and self.peek()["line"] == header["line"]:
+            self.model["id"] = self.next()["v"]
+        if self.peek()["t"] == "STRING" and self.peek()["line"] == header["line"]:
+            self.model["title"] = self.next()["v"]
+        self.owner = "form"
+        self.header_with_open_block(header, self.form_mod)
 
-    def items_on_line(
-        self, target: dict[str, Any], owner: Field | None, *, head_line: bool = False
-    ) -> None:
-        while True:
-            if head_line and self.at(L.CHOICE):
-                raise _Malformed("Choices go on their own lines, under the question.")
-            if not self.one_item(target, owner):
-                break
-        while self.at(L.COMMENT):
-            self.i += 1
-
-    def one_item(self, target: dict[str, Any], owner: Field | None) -> bool:
-        if self.at(L.CHOICE):
-            if owner is None or (owner.type not in CHOICE_KEYWORD_TYPES):
-                raise _Malformed("Only a choice question takes + choices.")
-            c = split_choice(self.tok().value)
-            owner.choices.append(Choice(c["value"], c["label"], c.get("price")))
-            self.i += 1
-            return True
-        if self.at(L.COMMENT):
-            self.i += 1
-            return True
-        if not self.at(L.MODIFIER):
-            return False
-        self.modifier(target)
-        return True
-
-    def args(self) -> list[Token]:
-        out: list[Token] = []
-        while True:
-            t = self.tok()
-            if t.type in (L.STRING, L.NUMBER, L.IDENTIFIER) or (
-                t.type == L.KEYWORD and t.value not in ("end", "begin")
+    def header_with_open_block(self, header: Token, mod: Callable[[Token], None]) -> None:
+        while not self.at_end():
+            t = self.peek()
+            if t["t"] == "MOD" and (
+                t["line"] == header["line"]
+                or (t["first"] and t["indent"] > header["indent"])
+                or not t["first"]
             ):
-                out.append(t)
-                self.i += 1
-            elif t.type == L.BRACKET_OPEN and not out:
-                self.i += 1
-                while not self.at(L.BRACKET_CLOSE):
-                    if self.tok().type in (L.NEWLINE, L.EOF):
-                        raise _Malformed("This list is never closed with ].")
-                    if self.tok().type in (L.STRING, L.KEYWORD):
-                        out.append(self.tok())
-                    self.i += 1
-                self.i += 1
-                return out
-            else:
-                return out
-
-    def modifier(self, target: dict[str, Any]) -> None:
-        mod = self.tok()
-        name = mod.value
-        self.i += 1
-        quoted = self.at(L.STRING) and not self.bare(self.tok())
-        if name in _EXPR_MODIFIERS or (name == "smart_default" and not quoted):
-            text = self.expression(mod)
-            key = {"when": "visible_when", "smart_default": "default_expr"}.get(name, name)
-            target[key] = _and(target.get(key), text) if key == "visible_when" else text
+                self.next()
+                mod(t)
+                continue
+            if self.is_open(t) and (t["line"] == header["line"] or t["first"]):
+                self.next()
             return
-        args = self.args()
-        values = [a.value for a in args]
-        raw = self.text[mod.pos : self.toks[self.i - 1].end]
-        if not _known(name, args, target, values):
-            target.setdefault("unknown_modifiers", []).append(raw)
+
+    def form_mod(self, mod: Token) -> None:
+        name = str(mod["v"])
+        has, value = self.mod_value(mod)
+        if name in ("description", "desc"):
+            self.model["description"] = _php_string(value)
+            return
+        if name == "language":
+            self.model["language"] = _php_string(value)
+            return
+        if name == "extensions":
+            if isinstance(value, (dict, list)):
+                self.model["extensions"] = value
+            else:
+                self.error(mod["line"], "@extensions needs a JSON object.")
+            return
+        settings = self.model.setdefault("settings", {})
+        if name in SETTING_ALIASES:
+            settings[SETTING_ALIASES[name]] = True
+            if name == "captcha" and has and isinstance(value, str):
+                settings["captcha_type"] = value
+            return
+        settings[name.replace("-", "_")] = value if has else True
+
+    def parse_page(self) -> int:
+        header = self.next()
+        pages = self.model["pages"]
+        reuse = (
+            self.page is not None
+            and not self.page_declared
+            and not pages[self.page]["items"]
+            and len(pages) == 1
+        )
+        if not reuse:
+            pages.append({"id": f"page_{len(pages) + 1}", "items": []})
+            self.page = len(pages) - 1
+        self.page_declared = True
+        assert self.page is not None
+        page = pages[self.page]
+        if self.peek()["t"] == "ID" and self.peek()["line"] == header["line"]:
+            page["id"] = self.next()["v"]
+        if self.peek()["t"] == "STRING" and self.peek()["line"] == header["line"]:
+            page["title"] = self.next()["v"]
+        self.owner = "page"
+        self.header_with_open_block(header, lambda m: self.page_mod(page, m))
+        page["items"] = page.pop("items")
+        return self.page
+
+    def page_mod(self, page: dict[str, Any], mod: Token) -> None:
+        name = str(mod["v"])
+        if name == "when":
+            expr = self.expression(self.raw_to_eol(mod), mod["line"])
+            if expr is not None:
+                page["when"] = expr
+            return
+        has, value = self.mod_value(mod)
+        if name in ("description", "desc"):
+            page["description"] = _php_string(value)
+        elif name == "title":
+            page["title"] = _php_string(value)
+        else:
+            page.setdefault("props", {})[name.replace("-", "_")] = value if has else True
+
+    # -- items -------------------------------------------------------------------------
+    def parse_item_statement(self, condition: str | None) -> list[M.Item]:
+        w = str(self.peek()["v"]).lower()
+        if w in ("if", "conditional"):
+            return self.parse_if(condition)
+        item = (
+            self.parse_section()
+            if w == "section"
+            else self.parse_columns()
+            if w == "columns"
+            else self.parse_field()
+        )
+        if condition is not None:
+            item["when"] = both(condition, item["when"]) if "when" in item else condition
+            item = order(item, ITEM_ORDER)
+        return [item]
+
+    def parse_if(self, outer: str | None) -> list[M.Item]:
+        header = self.next()
+        text = self.raw_to_eol(header, True)
+        cond = self.expression(text, header["line"]) or "false"
+        full = cond if outer is None else both(outer, cond)
+
+        def skip_mod(t: Token) -> None:
+            self.warn(t["line"], f"An if block holds items, not modifiers; @{t['v']} was skipped.")
+            self.mod_value(t)
+
+        found, _ = self.container(header, full, skip_mod)
+        t = self.peek()
+        if self.is_word(t, "else") and (not t["first"] or t["indent"] == header["indent"]):
+            self.next()
+            negated = E.canonical(E.to_text(E.op("not", [E.parse(cond)])))
+            other = negated if outer is None else both(outer, negated)
+            more, _ = self.container(t, other, lambda m: self.mod_value(m) and None)
+            found.extend(more)
+        return found
+
+    def auto_id(self) -> str:
+        self.counter += 1
+        return f"field_{self.counter}"
+
+    def header_id_label(
+        self, header: Token, item: dict[str, Any], label_key: str = "label"
+    ) -> None:
+        auto = self.auto_id()
+        if self.peek()["t"] == "ID" and self.peek()["line"] == header["line"]:
+            item["id"] = self.next()["v"]
+        else:
+            item["id"] = auto
+        if self.peek()["t"] == "STRING" and self.peek()["line"] == header["line"]:
+            item[label_key] = self.next()["v"]
+
+    def parse_section(self) -> M.Item:
+        header = self.next()
+        section: dict[str, Any] = {"type": "section"}
+        self.header_id_label(header, section)
+        found, mode = self.container(header, None, lambda m: self.item_mod(section, m))
+        section["items"] = found
+        if mode != "explicit" and not found:
+            section["__flat"] = True
+        return order(section, ITEM_ORDER)
+
+    def parse_columns(self) -> M.Item:
+        header = self.next()
+        item: dict[str, Any] = {"type": "columns"}
+        self.header_id_label(header, item)
+        item.pop("label", None)
+        count = None
+        if self.peek()["t"] == "NUMBER" and self.peek()["line"] == header["line"]:
+            count = self.next()["v"]
+        columns: list[dict[str, Any]] = []
+
+        def column(t: Token) -> bool:
+            self.next()
+            col: dict[str, Any] = {}
+
+            def col_mod(m: Token) -> None:
+                _has, value = self.mod_value(m)
+                if m["v"] == "width":
+                    col["width"] = _php_string(value)
+                else:
+                    self.warn(m["line"], f"A column has only a width; @{m['v']} was skipped.")
+
+            col["items"], _ = self.container(t, None, col_mod)
+            columns.append(col)
+            return True
+
+        stray, _ = self.container(
+            header, None, lambda m: self.item_mod(item, m), {"column": column}
+        )
+        if stray:
+            self.warn(
+                header["line"],
+                "Fields directly inside columns belong in a column; they were put in the last column.",  # noqa: E501
+            )
+            if not columns:
+                columns.append({"items": []})
+            columns[-1]["items"].extend(stray)
+        if not columns:
+            columns.append({"items": []})
+        if count is not None and count != len(columns):
+            self.warn(
+                header["line"], f"This columns layout says {count} columns and has {len(columns)}."
+            )
+        item["columns"] = columns
+        return order(item, ITEM_ORDER)
+
+    def parse_field(self) -> M.Item:
+        header = self.next()
+        word = str(header["v"]).lower()
+        item: dict[str, Any] = {"type": field_type(word)}
+        self.header_id_label(header, item)
+        if word in ELEMENT_TYPES:
+            item.setdefault("props", {})["element"] = word
+        choices: list[dict[str, Any]] = []
+        children: list[M.Item] = []
+
+        def on(kind: str, t: Token) -> bool:
+            if kind == "mod":
+                self.item_mod(item, t)
+                return True
+            if kind == "choice":
+                c = self.choice(t)
+                if c:
+                    choices.append(c)
+                return True
+            if item["type"] == "repeater" and self.starts_item(t):
+                children.extend(self.parse_item_statement(None))
+                return True
+            return False
+
+        self.body(header, on)
+        if choices:
+            item["choices"] = choices
+        if item["type"] == "repeater":
+            item["items"] = children
+        if item["type"] == "checkbox" and not any(
+            k in item for k in ("choices", "choice_library", "cascade")
+        ):
+            item["choices"] = [{"value": "yes", "label": "Yes"}]
+        return order(item, ITEM_ORDER)
 
 
-def read_bfl(text: str) -> BflDocument:
-    """BFL text to a :class:`BflDocument` (the model plus its sources)."""
-    reader = _Reader(text)
-    stmts = reader.statements(-1, False, None, None)
-    form = reader.form
-    doc = BflDocument(text=text, form=form, statements=stmts)
-    previous = 0
-    for stmt in stmts:
-        stmt.gap = text[previous : stmt.start]
-        previous = stmt.end
-    doc.tail = text[previous:]
-    from quill.core.forms.bfl_write import snapshot
-
-    for stmt in stmts:
-        stmt.objs = [doc.header if isinstance(o, FormHeader) else o for o in stmt.objs]
-        for obj in stmt.objs:
-            if isinstance(obj, VersionLine):
-                doc.version = obj
-        for obj in stmt.objs:
-            doc.snapshots[id(obj)] = snapshot(obj, form)
-    doc.snapshots[id(doc.header)] = snapshot(doc.header, form)
-    return doc
+def read(source: str) -> ReadResult:
+    """BFL text to ``ReadResult(model, errors, warnings, ...)``; never raises."""
+    return Reader().run(str(source))
 
 
-def read_form(text: str) -> Form:
-    """BFL text to the form model."""
-    return read_bfl(text).form
+def to_model(source: str) -> M.Model:
+    """BFL text to the model; raises :class:`FormError` on the first error."""
+    from quill.core.forms.errors import BflError
+
+    result = read(source)
+    if result.errors:
+        first = result.errors[0]
+        raise BflError(f"Line {first['line']}: {first['message']}", first["line"])
+    return result.model
+
+
+__all__ = [
+    "Reader",
+    "ReadResult",
+    "Statement",
+    "legacy_smart_default",
+    "php_numeric",
+    "read",
+    "to_model",
+]

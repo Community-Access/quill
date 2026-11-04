@@ -50,6 +50,7 @@ from quill.apps.lite_window_dictation import DocumentDictationMixin
 from quill.apps.lite_window_file import DocumentFileMixin
 from quill.apps.lite_window_folding import DocumentFoldingMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
+from quill.apps.lite_window_forms import DocumentFormsMixin
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_history import DocumentHistoryMixin
 from quill.apps.lite_window_import import DocumentImportMixin
@@ -137,6 +138,7 @@ class DocumentFrame(
     DocumentTypingMixin,
     DocumentSpellingMixin,
     DocumentWordPressMixin,
+    DocumentFormsMixin,
     DocumentFileMixin,
     # Open from URL/clipboard, drops, Reopen with Encoding, disk check: QUILL's.
     DocumentSourcesMixin,
@@ -152,10 +154,8 @@ class DocumentFrame(
     DocumentMenuMixin,
     DocumentAppearanceMixin,
     DocumentModeMixin,
-    # Folding over Markdown sections, 2026-09-17 (bad.md P3.6, Tier 3).
-    # QUILL Lite already parsed heading blocks for its outline; collapsing
-    # to headings is how a listener skims a long document without the
-    # scroll-and-glance a sighted reader gets for free.
+    # Folding over Markdown sections, 2026-09-17 (bad.md P3.6, Tier 3): collapsing
+    # to headings is how a listener skims, without a sighted reader's glance.
     DocumentFoldingMixin,
     # Extend Selection Mode, 2026-09-17 (bad.md P2.13, Tier 2).
     # QUILL Lite deleted its own attempt at this in d20fabe and has had

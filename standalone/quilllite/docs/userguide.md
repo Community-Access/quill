@@ -81,6 +81,8 @@ The chapters follow the order you are likely to want things.
     how to reach a real person at support.
 14. **Chapter 14: WordPress.** Writing, publishing and looking after a
     WordPress website.
+15. **Chapter 15: Forms.** Writing accessible forms, checking them, and
+    filling them in yourself first.
 
 After the chapters comes the **Keyboard reference**: every key QUILL Lite
 comes with, grouped by menu. Keep it handy for the first few weeks.
@@ -8540,7 +8542,7 @@ working:
 | Overwrite mode, Tab key behaviour, the status bar | **View** |
 | App sounds on or off | **Tools > App Sounds** (**Alt+Shift+M**) |
 | Which sound each event makes | **Tools > Sound Scheme** (**Ctrl+Alt+Shift+O**) |
-| Which of the 22 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
+| Which of the 23 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
 | What any key does | **Tools > Keyboard Manager** (**Ctrl+Alt+Shift+Space**) |
 | The twelve spelling announcement settings | **Tools > Spelling > Announcements** (**Ctrl+Alt+Shift+F7**) |
 | Whether you are asked about last session | The **Reopen Last Session** window itself (**Alt+Shift+F12**) |
@@ -8592,7 +8594,7 @@ what it would do, and change your mind.
 
 Under the Profile box is a **read-only description you can read line by line**.
 It tells you two things. First, what the profile is. Then what it would do to
-your copy of QUILL Lite: how many of the 22 areas it keeps and which ones, which
+your copy of QUILL Lite: how many of the 23 areas it keeps and which ones, which
 ones it removes, and anything else it changes. Notepad, for example, also makes
 **Ctrl+N** create a plain text document. Press **F1** on the Profile box to hear
 the same thing.
@@ -8629,18 +8631,19 @@ Here is each one at a glance, and then in more detail.
 
 | Profile | Areas on | Ctrl+N makes |
 |---|---|---|
-| **Recommended** | 18 of 22 | plain text (unchanged) |
-| **Everything** | 22 of 22 | plain text (unchanged) |
-| **WordPad** | 6 of 22 | **rich text** |
-| **Notepad** | 3 of 22 | **plain text** |
+| **Recommended** | 19 of 23 | plain text (unchanged) |
+| **Everything** | 23 of 23 | plain text (unchanged) |
+| **WordPad** | 6 of 23 | **rich text** |
+| **Notepad** | 3 of 23 | **plain text** |
 
 ##### Recommended
 
-**This is what you get when you first install QUILL Lite.** It keeps eighteen
-of the 22 areas: rich text, headings, Markdown and HTML, bookmarks, the line
+**This is what you get when you first install QUILL Lite.** It keeps nineteen
+of the 23 areas: rich text, headings, Markdown and HTML, bookmarks, the line
 tools, the clipboard history, printing, abbreviations, the Selection submenu,
 spell check, the dictionary and thesaurus, Matches, Go Back and Go Forward, the
-Command Palette, Describe Character, text size, dictation and WordPress.
+Command Palette, Describe Character, text size, dictation, WordPress and
+Forms.
 
 **Off:** autocorrect, timestamped backups, Go To Anything and AI help. These
 four are not switched off because they are poor. They are off because you
@@ -8658,7 +8661,7 @@ you started.
 
 ##### Everything
 
-**All 22 areas on**, including the four above. That includes **AI help**, which
+**All 23 areas on**, including the four above. That includes **AI help**, which
 is the one area that sends anything off your computer, so only choose this
 profile if you are happy with that.
 
@@ -8677,9 +8680,9 @@ get in your way.
 **Everything WordPad could do.** Rich text you can format, print and spell
 check: bold, italic, underline, headings, alignment, bullets, indenting and line
 spacing, plus Find and Replace, printing and text size, and the Command
-Palette. Six of the 22 areas.
+Palette. Six of the 23 areas.
 
-**Off**, all sixteen of the others. These are the writing tools around the
+**Off**, all seventeen of the others. These are the writing tools around the
 formatting:
 
 - No line tools (Edit > Lines) and no Change Case.
@@ -8693,7 +8696,7 @@ formatting:
 - **No Markdown or HTML.** Ctrl+B in a `.md` file goes back to meaning rich text
   bold, and QUILL Lite tells you so.
 - **No AI help.**
-- **No WordPress.**
+- **No WordPress** and **no Forms**.
 
 **Ctrl+N makes a rich text document.** So choosing WordPad changes a setting as
 well as the checkboxes: new documents start as rich text.
@@ -8706,15 +8709,16 @@ word processor without one would just be a nuisance.
 ##### Notepad
 
 **The smallest QUILL Lite can be.** Many people come to QUILL Lite to replace
-Notepad, and this is the profile for them. It keeps three of the 22 areas:
+Notepad, and this is the profile for them. It keeps three of the 23 areas:
 **printing**, **text size** and the **Command Palette**.
 
-**Off**, all nineteen of the others: the Format menu and everything under it,
+**Off**, all twenty of the others: the Format menu and everything under it,
 headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
 clipboard history, abbreviations, the Selection submenu, spell check, the
 dictionary and thesaurus, Matches (and with it Find in Open Documents and
 Search in Files), Back and Forward, Go To Anything,
-Describe Character, dictation, autocorrect, backups, AI help and WordPress.
+Describe Character, dictation, autocorrect, backups, AI help, WordPress
+and Forms.
 Nothing that Notepad does not have, apart from the palette.
 
 **Why every profile keeps the Command Palette:** it is how you find a
@@ -8747,7 +8751,7 @@ you need to switch things back on.
 
 #### Searching the list
 
-There are 22 checkboxes, which is a lot to Tab through. Type in the search box
+There are 23 checkboxes, which is a lot to Tab through. Type in the search box
 below the Profile box and the list narrows as you type.
 
 It searches what an area does as well as its name. Type "curly quotes" and you
@@ -8755,7 +8759,7 @@ find Autocorrect. Type "dictionary" and you find Spell check. The line under the
 box tells you how many are left. Press **Down** from the box to go straight into
 the list.
 
-#### The 22 areas
+#### The 23 areas
 
 | Area | What goes | Starts |
 |---|---|---|
@@ -8777,6 +8781,7 @@ the list.
 | **Text size** | Bigger, smaller, and reset | on |
 | **Dictation** | Tools > Dictation: speaking into the document, and choosing the microphone | on |
 | **WordPress** | File > WordPress: your sites' pages, posts, pictures, comments, categories and tags | on |
+| **Forms** | File > New Form, and the form rows in Insert, View, Format and Tools > Forms | on |
 | **Autocorrect while typing** | Curly quotes and long dashes (it does not capitalise sentences) | **off** |
 | **Timestamped backups** | A dated copy kept every time you save | **off** |
 | **Go To Anything** | One box that searches everything at once | **off** |
@@ -9635,7 +9640,8 @@ inside the app any time, *What to press when you are lost* teaches the three
 keys that explain where you are: **F1**, **F6** and **Ctrl+F1**.
 
 After this chapter comes Chapter 14, WordPress, for anyone who looks after a
-website. Then the Keyboard reference: every key QUILL Lite has, menu by menu.
+website, and Chapter 15, Forms, for writing accessible forms. Then the
+Keyboard reference: every key QUILL Lite has, menu by menu.
 
 ## Chapter 14: WordPress
 
@@ -10462,6 +10468,228 @@ A few more things worth knowing:
   command's name, and press **Enter**.
 - QUILL and QUILL Lite use the same letters, so moving between them costs you
   nothing.
+
+## Chapter 15: Forms
+
+A form is a contact form, an event sign-up, a membership renewal, a survey or
+a feedback page. Making one usually means dragging boxes around a web page,
+which is one of the hardest things on the web to do with a screen reader. But
+a form is really just structured text: a title, some questions, their
+choices, and a few rules. QUILL Lite is good at text, so that is how you write one
+here.
+
+You write the form as a short plain text document, in BITS Accessible Forms'
+form language. You check it, and then you fill it in yourself, with your
+screen reader, before anyone else sees it. Everything in this chapter
+happens on your own computer. Nothing is sent anywhere.
+
+**Turning it on.** Forms is on in the Recommended and Everything profiles, and off in
+WordPad and Notepad. If you do not see **File > New Form...**, check Forms
+in **Tools > Customize Features**.
+
+### Where everything is
+
+| Menu | What is there |
+|---|---|
+| **File** | New Form, beside the other New commands |
+| **Insert** | Form Field |
+| **View** | Form Outline |
+| **Format** | Form Rules |
+| **Tools > Forms** | Check This Form, Fill It In Yourself, Form Properties, Responses |
+
+Apart from New Form and Responses, these commands are dimmed unless a form
+is open. A form is a file whose name ends in `.bfl`. If you reach one of them
+another way, such as from the Command Palette, QUILL Lite tells you why it cannot
+run and how to start a form.
+
+None of the Forms commands has a shortcut key. Every useful key is already
+taken by something you use more often, and you will not write forms every
+day. Use the menus, or press **Ctrl+Shift+P**, type "form", and pick the
+command from the list.
+
+### Starting a form
+
+1. Choose **File > New Form...**.
+2. Type the form's **Title**, the name your visitors will see.
+3. Choose a **Template**. There are seven: Blank, Contact form, Event
+   registration, Membership renewal, Survey, Accessibility feedback and
+   Volunteer sign-up. Each one is a few questions you can change.
+4. Press **Next**. The ordinary Save As window opens, with a file name made
+   from your title. Choose a folder and press **Save**.
+
+The new form opens straight away, ready to change.
+
+### What a form looks like
+
+Here is part of the Event registration template:
+
+```
+bfl 1
+form "Spring fair"
+
+text #name "Your name"
+  @required
+  @autocomplete "name"
+radio #access "Do you need any access arrangements?"
+  + No
+  + Yes
+textarea #access_details "Tell us what you need"
+  @when #access is "yes"
+```
+
+Each question starts on a line of its own: the kind of question, its id
+(the word after the `#`), and its label in quotes. The indented lines under
+it are its settings, such as `@required`, and its choices, which start with
+`+`. The `@when` line is a rule: Tell us what you need only appears when
+somebody answers Yes.
+
+You never have to type any of this. The commands below write it for you.
+But it is ordinary text, so Find, spelling, copy and paste all work on it,
+and if you would rather type a question yourself, you can.
+
+### Adding a question
+
+Put your cursor on the question you want the new one to follow, then choose
+**Insert > Form Field...**.
+
+1. A list of every kind of question opens: one line of text, an email
+   address, choose one, check boxes, a date, a rating and many more. Each row
+   says what a visitor meets. **Section** and **Page break** are at the top.
+   Type a word such as "date" in **Search** and press **Enter** to narrow the
+   list. Choose one with **Enter**.
+2. A short window asks only what that kind of question needs: the **Label**,
+   an **Id** (leave it empty and QUILL Lite makes one from the label), whether it
+   is **Required**, and **Help text**, a sentence that is read with the
+   question. A question with choices also asks for the **Choices**, one per
+   line, or a **Choice library**, a ready-made list such as countries or time
+   zones.
+3. Press **Insert**. The question goes in after the one your cursor was on,
+   and your cursor moves to it.
+
+A page break starts a new page at your cursor: everything after it moves to
+the new page.
+
+### The form outline
+
+**View > Form Outline...** lists every page, section and question in order.
+Each row reads like a sentence, for example "Email address, email field,
+required, page 1".
+
+- **Enter** takes you to that question in the document.
+- **Alt+Shift+Up** and **Alt+Shift+Down** move it, and the buttons
+  **Move Up** and **Move Down** do the same. Moving past the top or bottom of
+  a page takes it on to the next page.
+- **Alt+Shift+Right** moves it into the section just above it, and
+  **Alt+Shift+Left** moves it out again.
+- **Rename** changes what the question says.
+- **Change Id** changes its id, and every rule that mentions it changes too.
+- **Change Type** makes it a different kind of question. Its label, help and
+  rules stay.
+- **Duplicate** puts a copy straight after it, and **Remove** takes it out
+  after asking you first.
+
+Every change is one step that **Ctrl+Z** in the document takes back.
+
+### Rules
+
+**Format > Form Rules...** lists every rule in the form as a sentence, such
+as "Show Tell us what you need when Do you need any access arrangements? is
+Yes." Calculations are there too: "Cost is Tickets times 5."
+
+To add one, press **Add Rule...** and make three choices:
+
+1. **When this question**, and how its answer is compared in **Is**: is, is
+   not, is filled in, is empty, contains, is more than or is less than. Type
+   the answer to compare with in **This answer**.
+2. **Then**: show, hide, require, make optional, enable, disable, or skip to
+   a page.
+3. **To this question or page**: what the rule acts on.
+
+If you know the form language, you can type the whole condition in **Or
+write the condition yourself** instead, for example `#age > 17 and #consent
+is filled`. QUILL Lite checks that it makes sense before it writes anything, and
+tells you what is wrong if it does not.
+
+**Edit** changes a rule's condition, and an empty condition removes it.
+**Remove** takes a rule out after asking, and **Go to It** takes you to the
+question the rule is on.
+
+### Form Properties
+
+**Tools > Forms > Form Properties...** holds everything about the form that
+is not a question: its title, a short description, the language it is
+written in, what the send button says, the message visitors read after
+sending, a web address to go to instead, and whether visitors can save a
+long form and finish it later.
+
+At the bottom, **On the site** says what the website decides: whether the
+CAPTCHA and the spam trap are on, how many email notifications there are,
+and the form's number on the site once it is published. You read these
+here; you change them on the site.
+
+### Checking a form
+
+**Tools > Forms > Check This Form...** looks for anything that would make
+the form hard to fill in, and lists what to fix, most serious first. It
+looks for:
+
+- a question with no label, or with only a placeholder for one;
+- a group of choices with no question for the group;
+- a question marked required with only an asterisk;
+- a format rule, such as a smallest number, with no help text saying what is
+  expected;
+- name, email, phone and address questions without an autofill hint, so the
+  browser cannot fill them in;
+- a rule that names a question that does not exist, or that can never show a
+  required question;
+- an empty page, or more than 30 questions on one page;
+- the same id used twice;
+- a list of more than 15 choices, which would be easier as a choice library.
+
+Anything QUILL Lite could not read is listed first, in the form language's own
+words. Lines that start "On the site today" are different: they say where
+the forms plugin on your website currently reads your form differently from
+how it is written, so you know before you publish.
+
+Press **Enter** or **Go to It** to go to the line. After you fix something,
+**Check Again** reads the form afresh.
+
+### Fill It In Yourself
+
+**Tools > Forms > Fill It In Yourself...** opens your form as a real window,
+built from the same text, and you fill it in as a visitor would.
+
+- **Tab** moves from question to question. Each one is an ordinary edit box,
+  check box, list or group of radio buttons, so your screen reader says its
+  label, its group, and "required" where it is.
+- Rules work as you answer. When an answer makes a question appear or
+  disappear, QUILL Lite tells you, for example "Membership number appears."
+- Answers that are worked out, such as a total, update as you type.
+- **Next** goes to the next page, but first checks this page: if a required
+  question has no answer, QUILL Lite tells you which, and puts you on it.
+  **Back** goes back.
+- If the form is translated, the **Language** box at the top lets you try it
+  in each language.
+- **Submit** sends nothing. It shows **What Would Be Sent**: each question and
+  its answer, anything that still needs an answer, and what the rules worked
+  out. **Close** leaves without keeping anything.
+
+### Responses
+
+**Tools > Forms > Responses...** will list what people send to your form on
+your website. That needs the connection to BITS Accessible Forms on your
+site, which is still being built, so for now QUILL Lite tells you so and lists
+nothing.
+
+### Good to know
+
+- A form is an ordinary text file. **Ctrl+S** saves it like any other
+  document, and you can open it in any text editor.
+- Most commands rewrite only the question they change, and the rest of your
+  form stays as you wrote it. Moving a question can rewrite the whole form
+  in the standard layout. **Ctrl+Z** takes either back.
+- Payment details and website passwords never pass through QUILL Lite. They stay
+  on your website.
 
 ## Licences and notices
 
