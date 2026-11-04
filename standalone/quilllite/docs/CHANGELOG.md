@@ -101,6 +101,9 @@ and release channels.
 - **New: Insert > Link to a Page on This Site.** Pick one of the site's
   published pages or posts, and the link goes in, named by what you selected
   or by the page's title.
+- **Every WordPress field is read by its own label.** The label used to
+  come after its field, so a screen reader could read a field with the
+  label meant for the next one.
 - **Category and tag lists say whether each one is checked.** They are
   separate check boxes now, so your screen reader announces the state as you
   move.

@@ -19,6 +19,7 @@ from quill.core.wordpress.block_catalog import Field
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.wordpress_dialogs import labelled_row
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -53,16 +54,17 @@ class BlockFormDialog(wx.Dialog):
                 index = f.values.index(f.value) if f.value in f.values else 0
                 if f.choices:
                     combo.SetSelection(index)
-                control: wx.Window = combo
+                labelled_row(sizer, self, f.label, combo)
+                self.controls.append(combo)
+                continue
             else:
                 style = wx.TE_MULTILINE if f.kind == "multiline" else 0
                 edit = wx.TextCtrl(self, value=str(f.value or ""), style=style)
                 edit.SetHelpText(f.help)
                 if f.kind == "multiline":
                     edit.SetMinSize(dip_size(self, 420, 100))
-                control = edit
-            dlg._row(sizer, self, f.label, control)
-            self.controls.append(control)
+                labelled_row(sizer, self, f.label, edit)
+                self.controls.append(edit)
         sizer.Add(dlg._buttons(self, ok_label), 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
         apply_modal_ids(self)

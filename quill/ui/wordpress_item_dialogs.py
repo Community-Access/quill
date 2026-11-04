@@ -15,7 +15,7 @@ import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
-from quill.ui.wordpress_dialogs import ShowModal, _buttons, _row
+from quill.ui.wordpress_dialogs import ShowModal, _buttons, labelled_row
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -102,7 +102,7 @@ class NewItemDialog(wx.Dialog):
             "Which of your sites this belongs to. It stays with that site for good."
         )
         self.site.SetSelection(max(0, site_index))
-        _row(sizer, self, "&Site:", self.site)
+        labelled_row(sizer, self, "&Site:", self.site)
         self.title = wx.TextCtrl(self)
         self.title.SetHelpText(
             "The title. Your theme shows it at the top of the page, so the body does not need it "
@@ -110,7 +110,7 @@ class NewItemDialog(wx.Dialog):
             "a heading."
         )
         self.title.Bind(wx.EVT_TEXT, self._on_title)
-        _row(sizer, self, "&Title:", self.title)
+        labelled_row(sizer, self, "&Title:", self.title)
         self.slug = wx.TextCtrl(self)
         self.slug.SetHelpText(
             "The last part of the web address. It is filled in from the title as you type; leave "
@@ -118,7 +118,7 @@ class NewItemDialog(wx.Dialog):
             "the suggestion."
         )
         self.slug.Bind(wx.EVT_TEXT, self._on_slug)
-        _row(sizer, self, "S&lug:", self.slug)
+        labelled_row(sizer, self, "S&lug:", self.slug)
         self.text_format = wx.RadioBox(
             self,
             label="Write in",
@@ -247,13 +247,13 @@ class PropertiesDialog(wx.Dialog):
             "Which site this belongs to, its address, its author and when it last changed."
         )
         self.facts.SetMinSize(dip_size(self, 460, 80))
-        _row(sizer, self, "&About:", self.facts)
+        labelled_row(sizer, self, "&About:", self.facts)
         self.title = wx.TextCtrl(self, value=title)
         self.title.SetHelpText("The title the theme shows at the top.")
-        _row(sizer, self, "&Title:", self.title)
+        labelled_row(sizer, self, "&Title:", self.title)
         self.slug = wx.TextCtrl(self, value=slug)
         self.slug.SetHelpText("The last part of the web address.")
-        _row(sizer, self, "S&lug:", self.slug)
+        labelled_row(sizer, self, "S&lug:", self.slug)
         labels = [label for _v, label in self.STATUS_CHOICES]
         self.status = wx.Choice(self, choices=labels)
         self.status.SetHelpText(
@@ -263,12 +263,12 @@ class PropertiesDialog(wx.Dialog):
         )
         values = [v for v, _l in self.STATUS_CHOICES]
         self.status.SetSelection(values.index(status) if status in values else 0)
-        _row(sizer, self, "&Status:", self.status)
+        labelled_row(sizer, self, "&Status:", self.status)
         self.excerpt = wx.TextCtrl(self, value=excerpt, style=wx.TE_MULTILINE)
         self.excerpt.SetHelpText(
             "A short summary some themes show in lists and search results. Optional."
         )
-        _row(sizer, self, "&Excerpt:", self.excerpt)
+        labelled_row(sizer, self, "&Excerpt:", self.excerpt)
         self.category_list: CheckGroup | None = None
         self.tag_list: CheckGroup | None = None
         if kind == "post":
@@ -305,7 +305,7 @@ class PropertiesDialog(wx.Dialog):
         self.password.SetHelpText(
             "Visitors must type this password to read it. Leave empty for no password."
         )
-        _row(sizer, self, "Pass&word to read it (optional):", self.password)
+        labelled_row(sizer, self, "Pass&word to read it (optional):", self.password)
         sizer.Add(_buttons(self), 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
         apply_modal_ids(self)
@@ -389,7 +389,7 @@ class ImageDialog(wx.Dialog):
             "This is for this place only; the same picture elsewhere keeps its own."
         )
         self.alt.SetMinSize(dip_size(self, 460, 60))
-        _row(sizer, self, "&Alternative text:", self.alt)
+        labelled_row(sizer, self, "&Alternative text:", self.alt)
         self.suggest = wx.Button(self, label="&Suggest Alternative Text")
         self.suggest.SetHelpText(
             "Asks your chosen AI to propose alternative text from the picture and the paragraphs "
@@ -414,7 +414,7 @@ class ImageDialog(wx.Dialog):
         self.caption.SetHelpText(
             "Visible text under the picture: names, credits or context. Optional."
         )
-        _row(sizer, self, "&Caption:", self.caption)
+        labelled_row(sizer, self, "&Caption:", self.caption)
         self.width = wx.ComboBox(
             self, choices=[label for label, _w in self.WIDTHS], style=wx.CB_DROPDOWN
         )
@@ -424,7 +424,7 @@ class ImageDialog(wx.Dialog):
             "are always kept and nothing is cropped. " + size_text
         )
         self.width.SetSelection(0)
-        _row(sizer, self, f"Display &width ({size_text}):", self.width)
+        labelled_row(sizer, self, f"Display &width ({size_text}):", self.width)
         self.featured = wx.CheckBox(self, label="Use as &featured image")
         self.featured.SetHelpText(
             "The featured image represents the whole page or post. The theme decides where it "
@@ -439,7 +439,7 @@ class ImageDialog(wx.Dialog):
             "alternative text should say where the link goes."
         )
         self.link.SetSelection(0)
-        _row(sizer, self, "&Link to:", self.link)
+        labelled_row(sizer, self, "&Link to:", self.link)
         self.describe = wx.Button(self, label="Describe &Image...")
         self.describe.SetHelpText(
             "A longer description and appraisal of what is actually in the picture, for you: "

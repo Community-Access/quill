@@ -27,6 +27,7 @@ import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 ShowModal = Callable[[Any, str], int]
 
@@ -34,8 +35,19 @@ ShowModal = Callable[[Any, str], int]
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
 
 
-def _row(sizer: wx.Sizer, parent: wx.Window, label: str, control: wx.Window) -> None:
-    sizer.Add(wx.StaticText(parent, label=label), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+def labelled_row(sizer: wx.Sizer, parent: wx.Window, label: str, control: wx.Window) -> None:
+    """Lay out *label* above *control*, and make *label* the control's spoken name.
+
+    The control is built before its label here, so on its own the label would
+    sit after it in z-order, where Windows would read it as the *next*
+    control's name (GATE-CTLLABEL). Moving the label in front of the control
+    puts the z-order right, and ``set_spoken_name`` names it outright, so the
+    name is right even where a screen reader ignores z-order.
+    """
+    text = wx.StaticText(parent, label=label)
+    text.MoveBeforeInTabOrder(control)
+    set_spoken_name(control, label)
+    sizer.Add(text, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
     sizer.Add(control, 0, wx.EXPAND | wx.ALL, 8)
 
 
@@ -92,7 +104,7 @@ class ConnectSiteDialog(wx.Dialog):
                 self, value=error, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_NO_VSCROLL
             )
             self.error.SetHelpText("Why the last attempt to connect did not work, and what to try.")
-            _row(sizer, self, "&Problem:", self.error)
+            labelled_row(sizer, self, "&Problem:", self.error)
         self.kind = wx.Choice(
             self, choices=["My own WordPress site (self-hosted)", "A WordPress.com site"]
         )
@@ -102,17 +114,17 @@ class ConnectSiteDialog(wx.Dialog):
             "for a site hosted by WordPress.com; you will sign in with your browser."
         )
         self.kind.SetSelection(1 if answer and answer.kind == "wpcom" else 0)
-        _row(sizer, self, "&Kind of site:", self.kind)
+        labelled_row(sizer, self, "&Kind of site:", self.kind)
         self.site_url = wx.TextCtrl(self, value=answer.site_url if answer else "")
         self.site_url.SetHelpText(
             "The site's web address, for example https://example.org. QUILL only connects over "
             "HTTPS, "
             "so your password is never sent in the clear."
         )
-        _row(sizer, self, "Site &address:", self.site_url)
+        labelled_row(sizer, self, "Site &address:", self.site_url)
         self.username = wx.TextCtrl(self, value=answer.username if answer else "")
         self.username.SetHelpText("The username or email you sign in to WordPress with.")
-        _row(sizer, self, "&Username:", self.username)
+        labelled_row(sizer, self, "&Username:", self.username)
         self.password = wx.TextCtrl(self, style=wx.TE_PASSWORD)
         self.password.SetHelpText(
             "An application password: a separate password WordPress makes for one app. It is not "
@@ -120,13 +132,13 @@ class ConnectSiteDialog(wx.Dialog):
             "password you sign in to the site with. Press Get Password with My Browser and QUILL "
             "fetches one for you; or make one in your WordPress profile and paste it here."
         )
-        _row(sizer, self, "Application &password:", self.password)
+        labelled_row(sizer, self, "Application &password:", self.password)
         self.name = wx.TextCtrl(self, value=answer.name if answer else "")
         self.name.SetHelpText(
             "What QUILL calls this site in lists and confirmations. Leave it empty to use the "
             "site's own title."
         )
-        _row(sizer, self, "&Name for this site (optional):", self.name)
+        labelled_row(sizer, self, "&Name for this site (optional):", self.name)
         self.browser = wx.Button(self, label="Get Password with My &Browser")
         self.browser.SetHelpText(
             "Opens the site's own Authorize Application page in your browser. Approve QUILL there"
@@ -212,7 +224,7 @@ class PastePasswordDialog(wx.Dialog):
             "often in "
             "groups of four."
         )
-        _row(sizer, self, "Application &password:", self.password)
+        labelled_row(sizer, self, "Application &password:", self.password)
         sizer.Add(_buttons(self, "Connect"), 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
         apply_modal_ids(self)
@@ -254,7 +266,7 @@ class ChooseDialog(wx.Dialog):
         if rows:
             self.rows.SetSelection(max(0, min(initial, len(rows) - 1)))
         self.rows.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self.EndModal(wx.ID_OK))
-        _row(sizer, self, prompt, self.rows)
+        labelled_row(sizer, self, prompt, self.rows)
         sizer.Add(_buttons(self), 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
         apply_modal_ids(self)
@@ -336,14 +348,14 @@ class ListWindow(wx.Dialog):
             self.search = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
             self.search.SetHelpText(filter_help or "Type words and press Enter to narrow the list.")
             self.search.Bind(wx.EVT_TEXT_ENTER, self._on_search)
-            _row(sizer, self, filter_label or "&Search:", self.search)
+            labelled_row(sizer, self, filter_label or "&Search:", self.search)
         self.rows = wx.ListBox(self, choices=list(rows), style=wx.LB_SINGLE)
         self.rows.SetHelpText(list_help)
         self.rows.SetMinSize(dip_size(self, 520, 260))
         self.rows.Bind(wx.EVT_LISTBOX, lambda _e: self._show_details())
         self.rows.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._run_enter())
         self.rows.Bind(wx.EVT_KEY_DOWN, self._on_row_key)
-        _row(sizer, self, list_label, self.rows)
+        labelled_row(sizer, self, list_label, self.rows)
         self.info: wx.TextCtrl | None = None
         if details is not None:
             self.info = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -351,7 +363,7 @@ class ListWindow(wx.Dialog):
                 "More about the selected row. Read it line by line; it never changes anything."
             )
             self.info.SetMinSize(dip_size(self, 520, 100))
-            _row(sizer, self, "&Details:", self.info)
+            labelled_row(sizer, self, "&Details:", self.info)
         bar = wx.WrapSizer(wx.HORIZONTAL)
         self.buttons: list[wx.Button] = []
         for action in self._actions:
@@ -446,7 +458,7 @@ class ReportDialog(wx.Dialog):
         )
         self.text.SetHelpText(help_text + " Read it line by line; copy any part with Ctrl+C.")
         self.text.SetMinSize(dip_size(self, 560, 320))
-        _row(sizer, self, "&Report:", self.text)
+        labelled_row(sizer, self, "&Report:", self.text)
         bar = wx.BoxSizer(wx.HORIZONTAL)
         copy = wx.Button(self, label="Copy &All")
         copy.SetHelpText("Copy the whole report to the clipboard.")
@@ -495,7 +507,7 @@ class TextQuestionDialog(wx.Dialog):
         self.value.SetHelpText(help_text)
         if multiline:
             self.value.SetMinSize(dip_size(self, 460, 140))
-        _row(sizer, self, prompt, self.value)
+        labelled_row(sizer, self, prompt, self.value)
         sizer.Add(_buttons(self), 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
         apply_modal_ids(self)

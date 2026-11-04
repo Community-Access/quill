@@ -31,7 +31,8 @@ class FakeService:
             "Shape: landscape\nBackground: solid navy\nWhy: The page is about the station."
         )
 
-    def converse(self, prompt, chunks, history, *, on_done, on_error):
+    def converse(self, prompt, chunks, history, *, on_done, on_error, requires=("text",)):
+        self.requires = requires
         self.conversed.append(prompt)
         on_done(self.answer, None, 0)
 

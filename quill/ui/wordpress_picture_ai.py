@@ -75,5 +75,6 @@ def ask_text(
         [],
         on_done=lambda text, _quota, _dropped: on_done(str(text)),
         on_error=on_error,
+        requires=("text",),
     )
     return True

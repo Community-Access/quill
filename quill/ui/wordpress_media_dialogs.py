@@ -16,7 +16,7 @@ import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
-from quill.ui.wordpress_dialogs import ShowModal, _buttons, _row
+from quill.ui.wordpress_dialogs import ShowModal, _buttons, labelled_row
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -96,7 +96,7 @@ class UploadDetailsDialog(wx.Dialog):
                 "the library's default; each place it is used can still have its own."
             )
             self.alt.SetMinSize(dip_size(self, 440, 60))
-            _row(sizer, self, "&Alternative text:", self.alt)
+            labelled_row(sizer, self, "&Alternative text:", self.alt)
             self.suggest = wx.Button(self, label="&Suggest Alternative Text")
             self.suggest.SetHelpText(
                 "Asks your chosen AI to propose alternative text from the picture. The "
@@ -121,13 +121,13 @@ class UploadDetailsDialog(wx.Dialog):
         self.title_field.SetHelpText(
             "The file's title in the Media Library. Only people who manage the site see it."
         )
-        _row(sizer, self, "&Title:", self.title_field)
+        labelled_row(sizer, self, "&Title:", self.title_field)
         self.caption = wx.TextCtrl(self, value=caption)
         self.caption.SetHelpText(
             "Visible text shown under the file where it is used: names, credits or context. "
             "Optional."
         )
-        _row(sizer, self, "&Caption:", self.caption)
+        labelled_row(sizer, self, "&Caption:", self.caption)
         if is_image:
             self.describe = wx.Button(self, label="Describe &Image...")
             self.describe.SetHelpText(

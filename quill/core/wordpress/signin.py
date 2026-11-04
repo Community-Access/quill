@@ -470,7 +470,9 @@ def _post(request: TokenRequest, opener: Opener, timeout: float, now: float | No
 
 def _token_urlopen(request: urllib.request.Request, timeout: float | None = None) -> Any:
     """WordPress.com's token endpoint, the one network call in sign-in (egress marker)."""
-    return urllib.request.urlopen(request, timeout=timeout)
+    from quill.core.net import verified_ssl_context
+
+    return urllib.request.urlopen(request, timeout=timeout, context=verified_ssl_context())
 
 
 def exchange_code(

@@ -15,7 +15,7 @@ import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
-from quill.ui.wordpress_dialogs import ShowModal, _buttons, _row
+from quill.ui.wordpress_dialogs import ShowModal, _buttons, labelled_row
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -51,17 +51,17 @@ class ScheduleDialog(wx.Dialog):
             self.error.SetHelpText(
                 "Why the last date and time could not be used, and what to type."
             )
-            _row(sizer, self, "&Problem:", self.error)
+            labelled_row(sizer, self, "&Problem:", self.error)
         self.date = wx.TextCtrl(self, value=date_text)
         self.date.SetHelpText(
             "The day to publish, as year, month and day with hyphens, for example 2026-11-20."
         )
-        _row(sizer, self, "&Date (year-month-day):", self.date)
+        labelled_row(sizer, self, "&Date (year-month-day):", self.date)
         self.time = wx.TextCtrl(self, value=time_text)
         self.time.SetHelpText(
             "The time to publish, in 24-hour hours and minutes such as 16:15, or like 4:15 PM."
         )
-        _row(sizer, self, "&Time:", self.time)
+        labelled_row(sizer, self, "&Time:", self.time)
         self.zone = wx.Choice(self, choices=list(zones))
         self.zone.SetHelpText(
             "The time zone the date and time are in. The site's own time zone is first when the "
@@ -69,7 +69,7 @@ class ScheduleDialog(wx.Dialog):
         )
         if zones:
             self.zone.SetSelection(max(0, min(zone_index, len(zones) - 1)))
-        _row(sizer, self, "Time &zone:", self.zone)
+        labelled_row(sizer, self, "Time &zone:", self.zone)
         sizer.Add(_buttons(self, "Schedule"), 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
         self.SetMinSize(dip_size(self, 420, -1))
