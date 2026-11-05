@@ -19120,6 +19120,8 @@ To show the form on a page, open the page from File, WordPress, put the cursor w
 
 Test on Site opens the page that shows your form in your web browser, so you can try it as a visitor would. If no page shows it yet, QUILL opens the form in BITS Accessible Forms on the site instead.
 
+**Forms on a site use BITS Accessible Forms.** It is the plugin QUILL publishes to. If your site does not have it, you can still put a form on the web: Save As Web Page gives you one accessible page with the form in it, to upload anywhere. Forms from other form plugins can be brought in to QUILL, but QUILL does not publish to them.
+
 ### Paper, large print and braille
 
 Every form can be saved four other ways, without a site, even in Safe Mode:
