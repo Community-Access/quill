@@ -259,21 +259,31 @@ class WordPressOpenCommands:
 
 
 def find_by_address(api: WordPressApi, url: str) -> tuple[str, int] | None:
-    """The page or post a web address points at: ``?p=``, ``?page_id=`` or its slug."""
+    """The item a web address points at: ``?p=``, ``?page_id=``, ``?<type>=`` or its slug.
+
+    Posts and pages are asked first; the site's own types (an Event at
+    ``/event/open-day/`` or ``?event=open-day``) only when neither has it, so
+    an ordinary address costs no extra request.
+    """
     parsed = urlparse(url)
     query = parse_qs(parsed.query)
     for key, kind in (("p", "post"), ("page_id", "page"), ("post", "post")):
         if key in query and query[key][0].isdigit():
             return kind, int(query[key][0])
     slug = [part for part in parsed.path.split("/") if part]
-    if not slug:
-        return None
-    last = slug[-1]
     for kind in ("post", "page"):
-        rows = api.get(wp.kind_route(kind), slug=last, status="any", context="edit", _fields="id")
-        if isinstance(rows, list) and rows:
-            return kind, int(rows[0]["id"])
+        if slug and (found := _by_slug(api, kind, slug[-1])) is not None:
+            return kind, found
+    for type_slug, base, _name in wp.writing_types(api):
+        last = query[type_slug][0] if type_slug in query else (slug[-1] if slug else "")
+        if last and (found := _by_slug(api, base, last)) is not None:
+            return base, found
     return None
+
+
+def _by_slug(api: WordPressApi, kind: str, slug: str) -> int | None:
+    rows = api.get(wp.kind_route(kind), slug=slug, status="any", context="edit", _fields="id")
+    return int(rows[0]["id"]) if isinstance(rows, list) and rows else None
 
 
 def item_properties(item: wp.Item) -> dict[str, Any]:

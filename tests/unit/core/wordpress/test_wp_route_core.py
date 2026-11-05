@@ -7,7 +7,6 @@ import pytest
 from quill.core.wordpress import cross_site as xs
 from quill.core.wordpress import icons as ic
 from quill.core.wordpress import link_targets as lt
-from quill.core.wordpress import media_pieces as mp
 from quill.core.wordpress import routes as rt
 from quill.core.wordpress import site_space as ss
 from quill.core.wordpress.site import Account, Term
@@ -36,13 +35,12 @@ def test_route_patterns_match_the_real_index_keys() -> None:
     index = SiteIndex(
         (),
         {
-            "/wp/v2/media/(?P<id>[\\d]+)/sideload": {},
             "/wp/v2/media/(?P<id>[\\d]+)/post-process": {},
             "/wp/v2/global-styles/(?P<parent>[\\d]+)/revisions": {},
         },
     )
     me = account("upload_files", "edit_theme_options")
-    for feature in ("pieces", "post_process", "style_revisions"):
+    for feature in ("post_process", "style_revisions"):
         assert rt.unavailable(feature, index, me, "Radio") == "", feature
 
 
@@ -95,8 +93,6 @@ def test_an_icon_is_named_or_decorative_never_neither() -> None:
 def test_sizes_in_words() -> None:
     assert ss.size_words(1288490189) == "1.2 GB"
     assert ss.size_words(512) == "512 bytes"
-    assert mp.piece_count(0) == 1
-    assert mp.piece_count(9, 4) == 3
 
 
 def test_title_and_body_from_the_first_heading() -> None:

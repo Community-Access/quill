@@ -4,8 +4,9 @@ A mixin of :class:`~quill.ui.wordpress_commands.WordPressCommands` (through
 :class:`~quill.ui.wordpress_route_commands.WordPressRouteCommands`), shared by
 QUILL and QUILL Lite.
 
-* **Upload a Large File:** a long video or big audio file goes up in pieces,
-  one background task a piece, with the progress spoken at each quarter.
+* **Upload a Large File:** a long video or big audio file goes up in one
+  request on a background task, with a word first that it can take a while.
+  WordPress has no upload in pieces (see :mod:`quill.core.wordpress.media_pieces`).
 * **Regenerate Sizes:** remake a picture's thumbnail and medium copies.
 * **Space Used:** uploads, themes, plugins, WordPress and the database, in words.
 * **Download a Copy of the Site's Design:** a block theme's zip, with the
@@ -49,45 +50,17 @@ class WordPressRouteMedia:
             return
         content = path.read_bytes()
         kind = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
-        if len(content) < mp.PIECES_FROM:
-            self.with_route(  # type: ignore[attr-defined]
-                profile,
-                "media",
-                f"uploading {path.name} to {profile.name}",
-                lambda api: wpm.upload_media(api, path.name, content, kind),
-                lambda media: self._uploaded(profile, path, media),
+        if len(content) >= mp.LARGE_FROM:
+            self.host.announce(
+                f"Uploading {path.name}, {ss.size_words(len(content))}, to {profile.name}. A file "
+                "this size can take a while; QUILL says when it is there."
             )
-            return
-        upload = mp.PieceUpload(path.name, content, kind, title=path.stem, piece_size=mp.PIECE_SIZE)
-        self.host.announce(
-            f"Uploading {path.name} to {profile.name} in {upload.count} pieces. QUILL says how "
-            "far it has got as it goes."
-        )
         self.with_route(  # type: ignore[attr-defined]
             profile,
-            ("media", "pieces"),
-            f"uploading {path.name} to {profile.name}, piece 1",
-            lambda api: (api, upload.send_next(api)),
-            lambda got: self._next_piece(profile, path, got[0], upload),
-        )
-
-    def _next_piece(
-        self, profile: st.SiteProfile, path: Path, api: Any, upload: mp.PieceUpload
-    ) -> None:
-        if upload.finished:
-            self.background(  # type: ignore[attr-defined]
-                f"finishing {path.name} on {profile.name}",
-                lambda: upload.finish(api),
-                lambda media: self._uploaded(profile, path, media),
-            )
-            return
-        quarter = upload.sent * 4 // upload.count
-        if quarter > (upload.sent - 1) * 4 // upload.count:
-            self.host.announce(f"{path.name}: {upload.sent} of {upload.count} pieces sent.")
-        self.background(  # type: ignore[attr-defined]
-            f"uploading {path.name} to {profile.name}, piece {upload.sent + 1}",
-            lambda: upload.send_next(api),
-            lambda _r: self._next_piece(profile, path, api, upload),
+            "media",
+            f"uploading {path.name} to {profile.name}",
+            lambda api: wpm.upload_media(api, path.name, content, kind),
+            lambda media: self._uploaded(profile, path, media),
         )
 
     def _uploaded(self, profile: st.SiteProfile, path: Path, media: wpm.MediaItem) -> None:

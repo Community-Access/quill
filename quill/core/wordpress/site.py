@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
+from quill.core.wordpress.site_types import writing_types
 
 # --------------------------------------------------------------------------- #
 # Content items
@@ -118,18 +119,18 @@ def kind_route(kind: str) -> str:
     return {"post": "wp/v2/posts", "page": "wp/v2/pages"}.get(kind, f"wp/v2/{kind}")
 
 
-#: Types WordPress lists that are not pages or posts a person writes.
-_NOT_WRITING_TYPES = frozenset({
-    "attachment",
-    "nav_menu_item",
-    "wp_block",
-    "wp_template",
-    "wp_template_part",
-    "wp_navigation",
-    "wp_global_styles",
-    "wp_font_family",
-    "wp_font_face",
-})
+def kind_from_payload(raw: Any, kind: str) -> str:
+    """The kind to keep for an item the site sent back.
+
+    WordPress's ``type`` is the post type (``event``), but a custom type's kind
+    here is its REST base (``events``), which is the route it is sent back to.
+    So the site's word is taken only for a post or a page, and the kind QUILL
+    asked with is kept for everything else.
+    """
+    found = str(raw.get("type", "") or "") if isinstance(raw, dict) else ""
+    if found in {"post", "page"} or not kind:
+        return found or kind
+    return kind
 
 
 def list_content_types(api: WordPressApi) -> list[tuple[str, str]]:
@@ -138,16 +139,8 @@ def list_content_types(api: WordPressApi) -> list[tuple[str, str]]:
     A custom type's kind is its REST base (``events``), which is what
     :func:`kind_route` expects. Posts and Pages always come first.
     """
-    raw = api.get("wp/v2/types", context="edit")
     found: list[tuple[str, str]] = [("post", "Posts"), ("page", "Pages")]
-    if not isinstance(raw, dict):
-        return found
-    for slug, info in raw.items():
-        if slug in {"post", "page"} or slug in _NOT_WRITING_TYPES or not isinstance(info, dict):
-            continue
-        base = str(info.get("rest_base") or "")
-        if base and info.get("viewable", True):
-            found.append((base, str(info.get("name") or base.title())))
+    found.extend((base, name) for _slug, base, name in writing_types(api))
     return found
 
 
@@ -170,7 +163,7 @@ def list_items(
     for raw in api.iter_collection(kind_route(kind), params):
         yield ItemSummary(
             id=int(raw.get("id", 0)),
-            kind=str(raw.get("type", kind) or kind),
+            kind=kind_from_payload(raw, kind),
             title=rendered(raw.get("title")) or "(untitled)",
             status=str(raw.get("status", "")),
             modified_gmt=str(raw.get("modified_gmt", "")),
@@ -188,7 +181,7 @@ def item_from_payload(raw: Any, kind: str) -> Item:
         raise WordPressApiError("The site sent back an item QUILL could not read.")
     return Item(
         id=int(raw.get("id", 0)),
-        kind=str(raw.get("type", kind) or kind),
+        kind=kind_from_payload(raw, kind),
         title=raw_text(raw.get("title")),
         content=raw_text(raw.get("content")),
         status=str(raw.get("status", "draft")),

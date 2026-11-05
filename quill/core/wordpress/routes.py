@@ -43,13 +43,6 @@ FEATURES: dict[str, RouteNeed] = {
         "edit_posts",
         "insert icons",
     ),
-    "pieces": RouteNeed(
-        r"^/wp/v2/media/\(\?P<id>[^)]*\)[^/]*/sideload$",
-        "uploads in pieces",
-        "cannot take an upload in pieces. Upload Files sends it in one go instead.",
-        "upload_files",
-        "upload files",
-    ),
     "post_process": RouteNeed(
         r"^/wp/v2/media/\(\?P<id>[^)]*\)[^/]*/post-process$",
         "regenerating sizes",

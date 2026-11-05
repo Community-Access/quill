@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import io
+from urllib.error import HTTPError
+
 import pytest
 
 from quill.core.wordpress import media_pieces as mp
@@ -84,39 +87,40 @@ def test_a_small_file_goes_in_one_upload(wpr, wp_site, monkeypatch, tmp_path) ->
     assert "is in Community Radio's Media Library" in wpr.host.announced[-1]
 
 
-def test_a_big_file_goes_in_pieces_with_progress(wpr, wp_site, monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr(mp, "PIECES_FROM", 10)
-    monkeypatch.setattr(mp, "PIECE_SIZE", 4)
+def test_a_big_file_goes_whole_and_never_to_sideload(wpr, wp_site, monkeypatch, tmp_path) -> None:
+    # WordPress 7.1's media/{id}/sideload takes a picture's sub-size, not a piece
+    # of a file, so a big upload is one request to wp/v2/media (the live run found
+    # the earlier piece upload, which no site could accept).
+    monkeypatch.setattr(mp, "LARGE_FROM", 10)
     show = tmp_path / "show.mp4"
-    show.write_bytes(b"0123456789abcdef")  # 16 bytes: 4 pieces
+    show.write_bytes(b"0123456789abcdef")
     monkeypatch.setattr(rdlg, "pick_file", lambda *_a, **_k: show)
     site(wp_site).on("POST", f"{API}/media", media())
-    wp_site.on("POST", f"{API}/media/9/sideload", media())
-    wp_site.on("POST", f"{API}/media/9/finalize", media())
-    wp_site.on("POST", f"{API}/media/9", media())
     wpr.cmd_upload_large_file()
-    first = wp_site.sent("POST", f"{API}/media")[0]
-    assert first.headers["Content-range"] == "bytes 0-3/16"
-    pieces = wp_site.sent("POST", f"{API}/media/9/sideload")
-    assert [p.data for p in pieces] == [b"4567", b"89ab", b"cdef"]
-    assert wp_site.body(wp_site.sent("POST", f"{API}/media/9/finalize")[0]) == {
-        "total": 16,
-        "pieces": 4,
-    }
-    assert "in 4 pieces" in wpr.host.said
-    assert "show.mp4: 2 of 4 pieces sent." in wpr.host.said
+    sent = wp_site.sent("POST", f"{API}/media")
+    assert [p.data for p in sent] == [b"0123456789abcdef"]
+    assert "Content-range" not in sent[0].headers
+    assert wp_site.sent("POST", f"{API}/media/9/sideload") == []
+    assert "can take a while" in wpr.host.said
     assert "Media Library" in wpr.host.announced[-1]
 
 
-def test_a_big_file_on_a_site_without_pieces(wpr, wp_site, monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr(mp, "PIECES_FROM", 10)
+def test_a_file_too_big_for_the_host_says_so(wpr, wp_site, monkeypatch, tmp_path) -> None:
     show = tmp_path / "show.mp4"
     show.write_bytes(b"x" * 20)
     monkeypatch.setattr(rdlg, "pick_file", lambda *_a, **_k: show)
-    site(wp_site, routes={"/wp/v2/media": {}})
+    refused = HTTPError(
+        f"https://radio.example{API}/media",
+        400,
+        "Bad Request",
+        {},
+        io.BytesIO(
+            b'{"code":"rest_upload_file_too_big","message":"Too big","data":{"status":400}}'
+        ),
+    )
+    site(wp_site).on("POST", f"{API}/media", refused)
     wpr.cmd_upload_large_file()
-    assert "cannot take an upload in pieces" in wpr.host.announced[-1]
-    assert wp_site.sent("POST", f"{API}/media") == []
+    assert "bigger than" in wpr.host.said
 
 
 # --------------------------------------------------------------------------- #
