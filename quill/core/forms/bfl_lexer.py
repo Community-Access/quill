@@ -1,15 +1,16 @@
-"""BFL tokens: a faithful port of BAF's ``class-baf-bfl-lexer.php``.
+"""BFL tokens: a faithful port of QAF's ``class-qaf-bfl-lexer.php``.
 
-BITS Accessible Forms (BAF) is the WordPress plugin whose form language, BFL
-(BITS Form Language), QUILL reads and writes. This module turns BFL text into
-exactly the tokens BAF's PHP lexer makes, in the same order, with the same
-values, so that the parser ports built on it agree with BAF byte for byte.
+QUILL Accessible Forms (QAF) is the WordPress plugin whose form language
+(BFL inside the code, "the QAF form language" to a person) QUILL reads and
+writes. This module turns BFL text into exactly the tokens QAF's PHP lexer
+makes, in the same order, with the same values, so that the parser ports built
+on it agree with QAF byte for byte.
 
-Two things are added and change nothing BAF sees: every token records ``pos``
+Two things are added and change nothing QAF sees: every token records ``pos``
 and ``end``, its offsets in the source, which is what lets QUILL's reader keep
 every byte of a document; and the keyword tables are exposed as constants.
 
-BAF works on bytes and QUILL on characters. The only visible difference is the
+QAF works on bytes and QUILL on characters. The only visible difference is the
 ``column`` of a token after a non-ASCII character, which nothing in the forms
 core uses.
 """
@@ -40,7 +41,7 @@ EQUALS = "EQUALS"
 ARROW = "ARROW"
 EOF = "EOF"
 
-#: The choice-library names BAF's lexer treats as keywords (and its parser
+#: The choice-library names QAF's lexer treats as keywords (and its parser
 #: accepts straight after a choice field's label).
 LIBRARY_KEYWORDS: tuple[str, ...] = (
     "countries", "states", "provinces", "us_states", "ca_provinces",
@@ -50,8 +51,8 @@ LIBRARY_KEYWORDS: tuple[str, ...] = (
     "industries", "company_sizes",
 )  # fmt: skip
 
-#: Field types BAF's parser reads (``is_field_type``), in its order.
-BAF_FIELD_TYPES: tuple[str, ...] = (
+#: Field types QAF's parser reads (``is_field_type``), in its order.
+QAF_FIELD_TYPES: tuple[str, ...] = (
     "text", "textarea", "paragraph", "number", "email", "phone", "website", "url",
     "hidden", "password", "select", "dropdown", "multiselect", "radio", "checkbox",
     "checkboxes", "consent", "likert", "ranking", "rating", "date", "time",
@@ -65,7 +66,7 @@ BAF_FIELD_TYPES: tuple[str, ...] = (
 
 KEYWORDS: frozenset[str] = frozenset(
     ("form", "page", "section", "columns", "column", "group", "conditional")
-    + tuple(t for t in BAF_FIELD_TYPES if t != "section")
+    + tuple(t for t in QAF_FIELD_TYPES if t != "section")
     + LIBRARY_KEYWORDS
     + ("if", "else", "then", "and", "or", "not", "is", "contains",
        "starts", "ends", "greater", "less", "between", "empty", "filled",
@@ -123,7 +124,7 @@ class _Lexer:
         self.col += 1
 
     def emit(self, kind: str, value: str, start: int, level: int = 0) -> None:
-        # BAF stamps line/column when the token is created, after scanning.
+        # QAF stamps line/column when the token is created, after scanning.
         self.out.append(Token(kind, value, self.line, self.col, start, self.i, level))
 
     def run(self) -> list[Token]:
@@ -206,7 +207,7 @@ class _Lexer:
             else:
                 self.emit(STRING, value, start)
             return
-        self.adv()  # unknown character: skipped, as in BAF
+        self.adv()  # unknown character: skipped, as in QAF
 
     def indentation(self) -> None:
         start = self.i
@@ -272,5 +273,5 @@ class _Lexer:
 
 
 def tokenize(source: str) -> list[Token]:
-    """BFL source to BAF's tokens, ending with one EOF token."""
+    """BFL source to QAF's tokens, ending with one EOF token."""
     return _Lexer(source).run()

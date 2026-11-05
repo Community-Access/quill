@@ -1,5 +1,5 @@
 {
-  "about": "A subset of BAF's conformance manifest (tests/conformance/manifest.json on BAF's feat/json-form-model branch, 44f04f1), vendored so CI always runs some cases. Same shape as BAF's; the schema is quill/core/forms/schema/form.schema.json.",
+  "about": "A subset of QAF's conformance manifest (tests/conformance/manifest.json on QAF's chore/rename-qaf branch, beb3e2c), vendored so CI always runs some cases. Same shape as QAF's; the schema is quill/core/forms/schema/form.schema.json.",
   "model_version": 1,
   "bfl_version": 1,
   "suites": [
@@ -20,8 +20,8 @@
       "files": [
         "models/valid/logic-and-layout.json",
         "models/valid/quiz-and-translations.json",
-        "bfl/canonical/edge-cases.json",
-        "bfl/canonical/priced-choices.json"
+        "qaf/canonical/edge-cases.json",
+        "qaf/canonical/priced-choices.json"
       ]
     },
     {
@@ -33,54 +33,54 @@
       "file": "models/behaviour.json"
     },
     {
-      "kind": "bfl-canonical",
+      "kind": "qaf-canonical",
       "cases": [
         {
-          "bfl": "bfl/canonical/logic-and-layout.bfl",
+          "qaf": "qaf/canonical/logic-and-layout.qaf",
           "model": "models/valid/logic-and-layout.json"
         },
         {
-          "bfl": "bfl/canonical/quiz-and-translations.bfl",
+          "qaf": "qaf/canonical/quiz-and-translations.qaf",
           "model": "models/valid/quiz-and-translations.json"
         },
         {
-          "bfl": "bfl/canonical/edge-cases.bfl",
-          "model": "bfl/canonical/edge-cases.json"
+          "qaf": "qaf/canonical/edge-cases.qaf",
+          "model": "qaf/canonical/edge-cases.json"
         },
         {
-          "bfl": "bfl/canonical/priced-choices.bfl",
-          "model": "bfl/canonical/priced-choices.json"
+          "qaf": "qaf/canonical/priced-choices.qaf",
+          "model": "qaf/canonical/priced-choices.json"
         }
       ]
     },
     {
-      "kind": "bfl-legacy",
+      "kind": "qaf-legacy",
       "cases": [
         {
-          "bfl": "bfl/legacy/choices.bfl",
-          "model": "bfl/legacy/choices.json",
-          "canonical": "bfl/legacy/choices.canonical.bfl"
+          "qaf": "qaf/legacy/choices.qaf",
+          "model": "qaf/legacy/choices.json",
+          "canonical": "qaf/legacy/choices.canonical.qaf"
         },
         {
-          "bfl": "bfl/legacy/conditions.bfl",
-          "model": "bfl/legacy/conditions.json",
-          "canonical": "bfl/legacy/conditions.canonical.bfl"
+          "qaf": "qaf/legacy/conditions.qaf",
+          "model": "qaf/legacy/conditions.json",
+          "canonical": "qaf/legacy/conditions.canonical.qaf"
         },
         {
-          "bfl": "bfl/legacy/modifiers-and-blocks.bfl",
-          "model": "bfl/legacy/modifiers-and-blocks.json",
-          "canonical": "bfl/legacy/modifiers-and-blocks.canonical.bfl"
+          "qaf": "qaf/legacy/modifiers-and-blocks.qaf",
+          "model": "qaf/legacy/modifiers-and-blocks.json",
+          "canonical": "qaf/legacy/modifiers-and-blocks.canonical.qaf"
         },
         {
-          "bfl": "bfl/legacy/library-keywords.bfl",
-          "model": "bfl/legacy/library-keywords.json",
-          "canonical": "bfl/legacy/library-keywords.canonical.bfl"
+          "qaf": "qaf/legacy/library-keywords.qaf",
+          "model": "qaf/legacy/library-keywords.json",
+          "canonical": "qaf/legacy/library-keywords.canonical.qaf"
         }
       ]
     },
     {
-      "kind": "bfl-errors",
-      "file": "bfl/errors.json"
+      "kind": "qaf-errors",
+      "file": "qaf/errors.json"
     }
   ]
 }

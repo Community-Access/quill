@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-BAF = "/wp-json/baf/v1"
+QAF = "/wp-json/qaf/v1"
 
 
 def _created(make_form: Any, **changes: Any) -> Any:
@@ -24,13 +24,13 @@ def _created(make_form: Any, **changes: Any) -> Any:
 def test_publish_creates_the_form_after_naming_the_site(
     fp, pub_site, pub_dialogs, pub_host, make_form
 ):
-    pub_site.on("POST", f"{BAF}/forms", _created(make_form))
+    pub_site.on("POST", f"{QAF}/forms", _created(make_form))
     pub_dialogs.answer("ask_choice", 0).answer("confirm", True)
 
     fp.cmd_publish_form()
 
     assert "Community Radio" in pub_dialogs.asked("confirm")[0]["message"]
-    body = pub_site.body(pub_site.sent("POST", f"{BAF}/forms")[0])
+    body = pub_site.body(pub_site.sent("POST", f"{QAF}/forms")[0])
     assert body["status"] == "active"
     assert body["model"]["title"] == "Spring fair"
     assert body["config"]["form_model"] == body["model"]
@@ -40,20 +40,56 @@ def test_publish_creates_the_form_after_naming_the_site(
     assert (link.site_id, link.form_id) == ("radio", 12)
 
 
+def test_publish_prefers_qaf_v1_when_the_site_still_lists_baf_v1(
+    fp, pub_site, pub_dialogs, make_form
+):
+    """QAF keeps baf/v1 for reading only (17a.17): every write goes to qaf/v1."""
+    pub_site.on("GET", "/wp-json/", {"namespaces": ["wp/v2", "baf/v1", "qaf/v1"], "routes": {}})
+    pub_site.on("POST", f"{QAF}/forms", _created(make_form))
+    pub_dialogs.answer("ask_choice", 0).answer("confirm", True)
+
+    fp.cmd_publish_form()
+
+    assert len(pub_site.sent("POST", f"{QAF}/forms")) == 1
+    assert not [r for r in pub_site.requests if "/baf/v1/" in r.full_url]
+
+
+def test_a_site_still_running_baf_is_published_to_on_baf_v1(
+    fp, pub_site, pub_dialogs, pub_host, make_form, tmp_path
+):
+    baf = "/wp-json/baf/v1"
+    pub_site.on("GET", "/wp-json/", {"namespaces": ["wp/v2", "baf/v1"], "routes": {}})
+    pub_site.on("POST", f"{baf}/forms", _created(make_form))
+    pub_dialogs.answer("ask_choice", 0).answer("confirm", True)
+
+    fp.cmd_publish_form()
+
+    assert len(pub_site.sent("POST", f"{baf}/forms")) == 1
+    assert "Published Spring fair on Community Radio, form 12, live." in pub_host.said
+
+    _wordpress_page(tmp_path, pub_host, "markdown")
+    pub_site.on("GET", f"{baf}/forms", [make_form(12)])
+    pub_dialogs.answer("ask_choice", 0)
+
+    fp.cmd_insert_into_page()
+
+    assert '[baf_form id="12"]' in pub_host.text
+
+
 def test_publish_cancelled_at_the_confirmation_sends_nothing(fp, pub_site, pub_dialogs):
     pub_dialogs.answer("ask_choice", 1)
 
     fp.cmd_publish_form()
 
-    assert not pub_site.sent("POST", f"{BAF}/forms")
+    assert not pub_site.sent("POST", f"{QAF}/forms")
 
 
-def test_publish_on_a_site_without_baf_says_so(fp, pub_site, pub_host, pub_dialogs):
+def test_publish_on_a_site_without_qaf_says_so(fp, pub_site, pub_host, pub_dialogs):
     pub_site.on("GET", "/wp-json/", {"namespaces": ["wp/v2"], "routes": {}})
 
     fp.cmd_publish_form()
 
-    assert "needs BITS Accessible Forms on Community Radio" in pub_host.said
+    assert "needs QUILL Accessible Forms on Community Radio" in pub_host.said
     assert not pub_dialogs.asked("confirm")
 
 
@@ -101,14 +137,14 @@ def test_update_keeps_the_sites_config_and_its_previous_version(
     fp.published().set_link(
         pub_host.path, pub.Link("radio", 12, "Spring fair", "2026-11-03 14:10:00")
     )
-    pub_site.on("GET", f"{BAF}/forms/12", make_form(12))
-    pub_site.on("POST", f"{BAF}/forms/12", _created(make_form, updated_at="2026-11-04 09:00:00"))
+    pub_site.on("GET", f"{QAF}/forms/12", make_form(12))
+    pub_site.on("POST", f"{QAF}/forms/12", _created(make_form, updated_at="2026-11-04 09:00:00"))
     pub_dialogs.answer("confirm", True)
 
     fp.cmd_publish_form()
 
     assert pub_dialogs.asked("confirm")[0]["yes_label"] == "Update"
-    body = pub_site.body(pub_site.sent("POST", f"{BAF}/forms/12")[0])
+    body = pub_site.body(pub_site.sent("POST", f"{QAF}/forms/12")[0])
     assert body["config"]["fields"] == [{"id": "old", "label": "Old"}]
     assert body["status"] == "active"
     assert "Updated Spring fair on Community Radio" in pub_host.said
@@ -124,20 +160,20 @@ def test_update_over_a_change_on_the_site_warns_first(
     fp.published().set_link(
         pub_host.path, pub.Link("radio", 12, "Spring fair", "2026-11-01 08:00:00")
     )
-    pub_site.on("GET", f"{BAF}/forms/12", make_form(12))
+    pub_site.on("GET", f"{QAF}/forms/12", make_form(12))
 
     fp.cmd_publish_form()
 
     asked = pub_dialogs.asked("confirm")[0]
     assert "after you last published it" in asked["message"]
     assert asked["yes_label"] == "Publish Over It"
-    assert not pub_site.sent("POST", f"{BAF}/forms/12")
+    assert not pub_site.sent("POST", f"{QAF}/forms/12")
 
 
 def test_publish_failure_is_one_plain_sentence(fp, pub_site, pub_dialogs, pub_host):
     from urllib.error import URLError
 
-    pub_site.on("POST", f"{BAF}/forms", URLError("down"))
+    pub_site.on("POST", f"{QAF}/forms", URLError("down"))
     pub_dialogs.answer("ask_choice", 0).answer("confirm", True)
 
     fp.cmd_publish_form()
@@ -165,12 +201,12 @@ def test_insert_puts_the_block_in_a_block_page(
     fp, pub_site, pub_dialogs, pub_host, make_form, tmp_path
 ):
     _wordpress_page(tmp_path, pub_host, "html")
-    pub_site.on("GET", f"{BAF}/forms", [make_form(12), make_form(14, title="Survey")])
+    pub_site.on("GET", f"{QAF}/forms", [make_form(12), make_form(14, title="Survey")])
     pub_dialogs.answer("ask_choice", 1)
 
     fp.cmd_insert_into_page()
 
-    assert '<!-- wp:baf/form {"formId":14} /-->' in pub_host.text
+    assert '<!-- wp:qaf/form {"formId":14} /-->' in pub_host.text
     assert "Inserted the Survey form, as a block." in pub_host.said
 
 
@@ -178,12 +214,12 @@ def test_insert_puts_a_shortcode_in_a_markdown_page(
     fp, pub_site, pub_dialogs, pub_host, make_form, tmp_path
 ):
     _wordpress_page(tmp_path, pub_host, "markdown")
-    pub_site.on("GET", f"{BAF}/forms", [make_form(12, status="draft")])
+    pub_site.on("GET", f"{QAF}/forms", [make_form(12, status="draft")])
     pub_dialogs.answer("ask_choice", 0)
 
     fp.cmd_insert_into_page()
 
-    assert '[baf_form id="12"]' in pub_host.text
+    assert '[qaf_form id="12"]' in pub_host.text
     assert "It is a draft" in pub_host.said
 
 
@@ -195,7 +231,7 @@ def test_insert_outside_a_wordpress_page_says_where_it_works(fp, pub_host):
 
 def test_insert_cancelled_changes_nothing(fp, pub_site, pub_host, make_form, tmp_path):
     _wordpress_page(tmp_path, pub_host, "html")
-    pub_site.on("GET", f"{BAF}/forms", [make_form(12)])
+    pub_site.on("GET", f"{QAF}/forms", [make_form(12)])
 
     fp.cmd_insert_into_page()
 
@@ -210,7 +246,7 @@ def test_test_on_site_opens_the_page_that_shows_the_form(fp, pub_site, pub_host,
     from quill.core.forms import published as pub
 
     fp.published().set_link(pub_host.path, pub.Link("radio", 12, "Spring fair"))
-    pub_site.on("GET", f"{BAF}/forms/12", make_form(12))
+    pub_site.on("GET", f"{QAF}/forms/12", make_form(12))
     page = {
         "id": 5,
         "link": "https://radio.example/fair/",
@@ -227,11 +263,11 @@ def test_test_on_site_opens_the_page_that_shows_the_form(fp, pub_site, pub_host,
     assert "Opened Fair on Community Radio" in pub_host.said
 
 
-def test_test_on_site_with_no_page_opens_baf_itself(fp, pub_site, pub_host, make_form):
+def test_test_on_site_with_no_page_opens_qaf_itself(fp, pub_site, pub_host, make_form):
     from quill.core.forms import published as pub
 
     fp.published().set_link(pub_host.path, pub.Link("radio", 12, "Spring fair"))
-    pub_site.on("GET", f"{BAF}/forms/12", make_form(12))
+    pub_site.on("GET", f"{QAF}/forms/12", make_form(12))
     pub_site.on("GET", "/wp-json/wp/v2/pages", [])
     pub_site.on("GET", "/wp-json/wp/v2/posts", [])
 
@@ -258,7 +294,7 @@ def test_new_responses_are_said_once_a_session(fp, pub_site, pub_host, make_form
     fp.published().mark_seen("radio", 12, 1)
     pub_site.on(
         "GET",
-        f"{BAF}/forms",
+        f"{QAF}/forms",
         [make_form(12, entry_count=5), make_form(14, title="Survey", entry_count=0)],
     )
 
@@ -270,14 +306,14 @@ def test_new_responses_are_said_once_a_session(fp, pub_site, pub_host, make_form
 
 
 def test_new_responses_count_respects_the_site_setting(fp, pub_site, pub_host, make_form):
-    pub_site.on("GET", f"{BAF}/forms", [make_form(12, entry_count=5)])
+    pub_site.on("GET", f"{QAF}/forms", [make_form(12, entry_count=5)])
 
     fp.site_api(fp.profile)
 
-    assert not pub_site.sent("GET", f"{BAF}/forms")
+    assert not pub_site.sent("GET", f"{QAF}/forms")
 
 
-def test_new_responses_count_is_silent_on_a_site_without_baf(
+def test_new_responses_count_is_silent_on_a_site_without_qaf(
     fp, pub_site, pub_host, profile_factory
 ):
     fp.profile = profile_factory(announce_new_responses=True)
@@ -286,7 +322,7 @@ def test_new_responses_count_is_silent_on_a_site_without_baf(
     fp.site_api(fp.profile)
 
     assert not pub_host.announced
-    assert not pub_site.sent("GET", f"{BAF}/forms")
+    assert not pub_site.sent("GET", f"{QAF}/forms")
 
 
 def test_wordpress_commands_say_the_count_too(
@@ -297,7 +333,7 @@ def test_wordpress_commands_say_the_count_too(
 
     base.forget_told()
     profile = profile_factory(announce_new_responses=True)
-    pub_site.on("GET", f"{BAF}/forms", [make_form(12, entry_count=1)])
+    pub_site.on("GET", f"{QAF}/forms", [make_form(12, entry_count=1)])
     commands = WordPressCommands(pub_host, data_dir=tmp_path, opener=pub_site)
 
     commands.api(profile)

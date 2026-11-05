@@ -1,8 +1,8 @@
-"""Expressions as sentences: a port of ``BAF_Expression::to_sentence``.
+"""Expressions as sentences: a port of ``QAF_Expression::to_sentence``.
 
 ``#type is "business" or #type is "charity"`` reads "Type is Business or Type
 is Charity": each ``#id`` becomes the field's label, and a value compared with
-a choice field becomes that choice's label. BAF and QUILL say the same words.
+a choice field becomes that choice's label. QAF and QUILL say the same words.
 Nothing here announces anything; callers route the text through the
 announcement service.
 """

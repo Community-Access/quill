@@ -1,6 +1,6 @@
-"""Canonical expression text: how BAF and QUILL both write an expression tree.
+"""Canonical expression text: how QAF and QUILL both write an expression tree.
 
-Split from :mod:`expr` for GATE-11. The rules are BAF's
+Split from :mod:`expr` for GATE-11. The rules are QAF's
 (``docs/expression-language.md``, "Canonical text"): ``#id`` references,
 text as JSON with non-ASCII and ``/`` as themselves, numbers as JSON writes
 them (keeping ``.0``), flat ``and``/``or`` chains, and parentheses only where
@@ -34,7 +34,7 @@ def quote(s: str) -> str:
 
 
 def number_text(v: int | float, float_mark: bool = True) -> str:
-    """A number as plain decimal digits, never in exponent form (BAF's ``number_text``).
+    """A number as plain decimal digits, never in exponent form (QAF's ``number_text``).
 
     Canonical text must read back, and the grammar has no exponents, so 1e17 is
     ``100000000000000000.0`` and 1e-5 is ``0.00001``. An integral float keeps
@@ -57,7 +57,7 @@ def number_text(v: int | float, float_mark: bool = True) -> str:
 def php_json_float(v: float, float_mark: bool = False) -> str:
     """A float exactly as PHP's ``json_encode`` writes it, exponent form included.
 
-    BAF's evaluator turns numbers into text this way (``str()``), so ``#n contains "e"``
+    QAF's evaluator turns numbers into text this way (``str()``), so ``#n contains "e"``
     can see an exponent: plain digits from 1e-4 up to below 1e17, else ``1.0e+17``.
     """
     if not math.isfinite(v):

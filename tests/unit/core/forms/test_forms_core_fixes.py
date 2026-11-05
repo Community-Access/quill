@@ -111,7 +111,7 @@ def test_outline_rows_match_the_outline_window() -> None:
 def test_outline_rows_list_islands_last() -> None:
     doc = read_bfl('text #a "A"\n\n=== Old line ===\n')
     rows = outline_rows(doc.model, doc.islands)
-    assert rows[-1] == ("Kept as written, not read by BAF: === Old line ===", None)
+    assert rows[-1] == ("Kept as written, not read by QAF: === Old line ===", None)
 
 
 def test_choices_for_every_source() -> None:

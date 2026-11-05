@@ -19,7 +19,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
 
-from quill.core.forms.baf_site import Response
+from quill.core.forms.qaf_site import Response
 
 _MONTHS = (
     "January February March April May June July August September October November December"
@@ -37,7 +37,7 @@ class Row:
 
 
 def parse_time(stamp: str) -> dt.datetime | None:
-    """BAF's ``created_at`` (``2026-11-03 14:10:00``, the site's own time)."""
+    """QAF's ``created_at`` (``2026-11-03 14:10:00``, the site's own time)."""
     text = (stamp or "").strip().replace("T", " ")[:19]
     for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
         try:

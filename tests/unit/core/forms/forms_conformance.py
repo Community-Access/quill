@@ -1,10 +1,16 @@
-"""Run BAF's form model conformance suite (``tests/conformance/manifest.json``).
+"""Run QAF's form model conformance suite (``tests/conformance/manifest.json``).
 
-The comparison rules are BAF's (``tests/conformance/README.md``): models are
+The comparison rules are QAF's (``tests/conformance/README.md``): models are
 equal when keys and values match, key order aside, numbers compare as numbers
-and true is never 1; BFL is compared byte for byte; errors are compared by
-JSON pointer or line, never by wording. The ``builder`` and ``imports`` suites
-are BAF's own and are skipped here, as the README says.
+and true is never 1; form-language text is compared byte for byte; errors are
+compared by JSON pointer or line, never by wording. The ``builder`` and
+``imports`` suites are QAF's own and are skipped here, as the README says.
+
+**Two layouts (wordpress.md 17a.17).** QAF's ``chore/rename-qaf`` keeps the
+form-language cases in ``tests/conformance/qaf/``, as ``.qaf`` files, under the
+kinds ``qaf-canonical``, ``qaf-legacy`` and ``qaf-errors`` with the case key
+``"qaf"``. ``feat/json-form-model``, from before the rename, used ``bfl/``,
+``.bfl``, ``bfl-*`` and ``"bfl"``. Both are read: the new layout first.
 
 Each check returns a list of failures (empty when it passed), so a test can
 report every failing case at once.
@@ -32,27 +38,48 @@ from quill.core.forms.expr_eval import evaluate
 from quill.core.forms.expr_sentence import sentence
 from quill.core.forms.schema_check import SCHEMA_PATH
 
-BAF_BRANCH = "feat/json-form-model"
+#: The renamed layout first, then the one from before the rename.
+QAF_BRANCHES = ("chore/rename-qaf", "feat/json-form-model")
 SUITE_KINDS = (
     "schema",
     "expressions",
     "valid-models",
     "invalid-models",
     "behaviour",
-    "bfl-canonical",
-    "bfl-legacy",
-    "bfl-errors",
+    "qaf-canonical",
+    "qaf-legacy",
+    "qaf-errors",
 )
+#: A kind's name in the layout from before the rename.
+OLD_KINDS = {
+    "qaf-canonical": "bfl-canonical",
+    "qaf-legacy": "bfl-legacy",
+    "qaf-errors": "bfl-errors",
+}
+
+
+def _has_suite(root: Path, *, renamed: bool) -> bool:
+    folder = root / "tests" / "conformance"
+    return (folder / "manifest.json").is_file() and (folder / "qaf").is_dir() == renamed
 
 
 def materialize(baf_root: Path) -> Path | None:
-    """BAF's suite and schema, read without touching BAF, in a temporary folder.
+    """QAF's suite and schema, read without touching QAF, in a temporary folder.
 
-    Uses the working tree when it already has the suite (once the branch is
-    merged), else ``git archive`` of :data:`BAF_BRANCH`. None when neither works.
+    In order: the working tree when it has the renamed suite; ``git archive`` of
+    each of :data:`QAF_BRANCHES`; then the working tree's older suite. None when
+    none of them works.
     """
-    if (baf_root / "tests" / "conformance" / "manifest.json").is_file():
+    if _has_suite(baf_root, renamed=True):
         return baf_root
+    for branch in QAF_BRANCHES:
+        found = _archive(baf_root, branch)
+        if found is not None:
+            return found
+    return baf_root if _has_suite(baf_root, renamed=False) else None
+
+
+def _archive(baf_root: Path, branch: str) -> Path | None:
     git = shutil.which("git")
     if git is None:
         return None
@@ -64,7 +91,7 @@ def materialize(baf_root: Path) -> Path | None:
                 str(baf_root),
                 "archive",
                 "--format=tar",
-                BAF_BRANCH,
+                branch,
                 "schema",
                 "tests/conformance",
                 "docs",
@@ -75,11 +102,16 @@ def materialize(baf_root: Path) -> Path | None:
         )
     except (OSError, subprocess.SubprocessError):
         return None
-    target = Path(tempfile.mkdtemp(prefix="quill-baf-suite-"))
+    target = Path(tempfile.mkdtemp(prefix="quill-qaf-suite-"))
     atexit.register(shutil.rmtree, target, True)
     with tarfile.open(fileobj=io.BytesIO(done.stdout)) as tar:
         tar.extractall(target, filter="data")
     return target
+
+
+def _source(case: dict[str, Any]) -> str:
+    """A case's form-language file or text: ``"qaf"``, or ``"bfl"`` before the rename."""
+    return str(case["qaf"] if "qaf" in case else case["bfl"])
 
 
 class Suite:
@@ -94,7 +126,8 @@ class Suite:
         return (self.root / rel).read_bytes().decode("utf-8")
 
     def suites(self, kind: str) -> list[dict[str, Any]]:
-        return [s for s in self.manifest["suites"] if s["kind"] == kind]
+        names = {kind, OLD_KINDS.get(kind, kind)}
+        return [s for s in self.manifest["suites"] if s["kind"] in names]
 
     def check(self, kind: str) -> list[str]:
         method = getattr(self, "check_" + kind.replace("-", "_"))
@@ -108,7 +141,7 @@ class Suite:
         if not theirs.is_file() or theirs == SCHEMA_PATH.resolve():
             return []
         if theirs.read_bytes() != SCHEMA_PATH.read_bytes():
-            return ["QUILL's schema file differs from BAF's"]
+            return ["QUILL's schema file differs from QAF's"]
         return []
 
     def check_expressions(self, suite: dict[str, Any]) -> list[str]:
@@ -178,39 +211,41 @@ class Suite:
                     out.append(f"{c['name']}: {i} shown")
         return out
 
-    def check_bfl_canonical(self, suite: dict[str, Any]) -> list[str]:
+    def check_qaf_canonical(self, suite: dict[str, Any]) -> list[str]:
         out = []
         for c in suite["cases"]:
-            model, bfl = self.load(c["model"]), self.text(c["bfl"])
+            name = _source(c)
+            model, bfl = self.load(c["model"]), self.text(name)
             if to_bfl(model) != bfl:
-                out.append(f"{c['bfl']}: the model does not write as the file")
+                out.append(f"{name}: the model does not write as the file")
             result = read(bfl)
             if result.errors or result.warnings or not M.same(result.model, model):
                 out.append(
-                    f"{c['bfl']}: does not read back to the model ({result.errors[:1]}{result.warnings[:1]})"  # noqa: E501
+                    f"{name}: does not read back to the model ({result.errors[:1]}{result.warnings[:1]})"  # noqa: E501
                 )
             if M.validate(model):
                 out.append(f"{c['model']}: not valid")
         return out
 
-    def check_bfl_legacy(self, suite: dict[str, Any]) -> list[str]:
+    def check_qaf_legacy(self, suite: dict[str, Any]) -> list[str]:
         out = []
         for c in suite["cases"]:
-            result = read(self.text(c["bfl"]))
+            name = _source(c)
+            result = read(self.text(name))
             model = self.load(c["model"])
             if result.errors or not M.same(result.model, model):
-                out.append(f"{c['bfl']}: does not read to the model ({result.errors[:1]})")
+                out.append(f"{name}: does not read to the model ({result.errors[:1]})")
             if to_bfl(model) != self.text(c["canonical"]):
                 out.append(f"{c['canonical']}: the model does not write as the file")
-            for crlf in (self.text(c["bfl"]).replace("\n", "\r\n"), "﻿" + self.text(c["bfl"])):
+            for crlf in (self.text(name).replace("\n", "\r\n"), "﻿" + self.text(name)):
                 if not M.same(read(crlf).model, model):
-                    out.append(f"{c['bfl']}: CRLF or a byte order mark changes what it reads to")
+                    out.append(f"{name}: CRLF or a byte order mark changes what it reads to")
         return out
 
-    def check_bfl_errors(self, suite: dict[str, Any]) -> list[str]:
+    def check_qaf_errors(self, suite: dict[str, Any]) -> list[str]:
         out = []
         for c in self.load(suite["file"])["cases"]:
-            lines = [e["line"] for e in read(c["bfl"]).errors]
+            lines = [e["line"] for e in read(_source(c)).errors]
             if c["line"] not in lines:
                 out.append(f"{c['name']}: errors on lines {lines}, not {c['line']}")
         return out

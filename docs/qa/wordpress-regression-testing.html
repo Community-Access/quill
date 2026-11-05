@@ -388,6 +388,51 @@ first four accounts:
 <code>ssh lp.csedesigns.com cat app/wordpress-test/test-accounts.txt</code>.
 Paste an application password into QUILL’s Connect a Site; never into a
 chat, an issue or a test file.</p>
+<h2 id="where-the-test-passwords-live">Where the test passwords
+live</h2>
+<p>No password is ever in this repository. There are two copies, both
+private.</p>
+<p><strong>On this computer, in Windows Credential Manager.</strong>
+Each password is a generic credential under the service
+<code>QUILL WordPress test site (lp.csedesigns.com)</code>, with the
+user name <code>&lt;login&gt; &lt;kind&gt;</code>, where kind is
+<code>sign-in</code> or <code>application</code>. There are nine:</p>
+<ul>
+<li><code>quilladmin sign-in</code> and
+<code>quilladmin application</code>;</li>
+<li><code>quill-editor sign-in</code> and
+<code>quill-editor application</code>;</li>
+<li><code>quill-author sign-in</code> and
+<code>quill-author application</code>;</li>
+<li><code>quill-contributor sign-in</code> and
+<code>quill-contributor application</code>;</li>
+<li><code>quill-subscriber sign-in</code> (the subscriber has no
+application password).</li>
+</ul>
+<p>The live run (<code>docs/qa/wordpress-live-run.py</code>) reads the
+application passwords from there. If one is missing it looks next in the
+file named by <code>QUILL_LIVE_ACCOUNTS</code>, then in
+<code>QUILL_LIVE_APP_PASSWORD_&lt;LOGIN&gt;</code> (for example
+<code>QUILL_LIVE_APP_PASSWORD_QUILL_EDITOR</code>), and says which login
+it could not find. It never prints a password.</p>
+<p><strong>On the server.</strong>
+<code>~/app/wordpress-test/test-accounts.txt</code> (mode 600) holds the
+sign-in passwords of the four test accounts and the application
+passwords of the first four logins, one per line, as
+<code>&lt;login&gt; sign-in password: ...</code> and
+<code>&lt;login&gt; application password: ...</code>. The
+administrator’s sign-in password is <code>ADMIN_PASSWORD</code> in
+<code>~/app/wordpress-test/.env</code>.</p>
+<p><strong>Refreshing the local copy.</strong> Whenever the server’s
+copy changes, after <code>setup.sh</code> builds a fresh site or a reset
+makes new passwords, copy them across again:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>qa<span class="op">/</span>wordpress-test-site<span class="op">/</span>store-passwords<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>admin-sign-in</span></code></pre></div>
+<p>It reads the server’s file over ssh, stores each entry in Credential
+Manager, and prints only the names it stored. Without
+<code>--admin-sign-in</code> it leaves the administrator’s sign-in
+password alone. <code>reset.sh</code> as it is written keeps the
+accounts and their passwords, so an ordinary reset needs no refresh.</p>
 <h2 id="what-is-on-the-site">What is on the site</h2>
 <p>The content is seeded by <code>~/app/wordpress-test/setup.sh</code>.
 Each seeded item exists for a reason:</p>
@@ -510,13 +555,13 @@ spam.</p>
 </ul>
 <h2 id="before-each-test-run">Before each test run</h2>
 <p>Put the content back to its starting state:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp.csedesigns.com app/wordpress-test/reset.sh</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp.csedesigns.com app/wordpress-test/reset.sh</span></code></pre></div>
 <p>It keeps the accounts, application passwords, settings and media, and
 reseeds every page, post and pattern. Then confirm the site is as
 expected:</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp.csedesigns.com app/wordpress-test/verify.sh</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp.csedesigns.com app/wordpress-test/verify.sh</span></code></pre></div>
 <p><code>verify.sh</code> signs in as each role with its application
 password, and prints what each can do and what content exists. It never
 prints a password.</p>
@@ -743,9 +788,11 @@ WordPress Icon lists the site’s icons. Insert one with a label and one
 as decorative; publish and check with NVDA that the first is read by its
 label and the second is skipped. An empty label inserts nothing.</li>
 <li><strong>Upload a Large File.</strong> Tools &gt; WordPress &gt; More
-Media &gt; Upload a Large File with a video over 16 MB. Progress is
-spoken at each quarter, and the library item plays. On a site without
-the pieces route, QUILL says so and sends nothing.</li>
+Media &gt; Upload a Large File with a video over 16 MB. QUILL says its
+size and that it can take a while, then that it is in the Media Library,
+and the library item plays. A file bigger than the host accepts is
+refused in the site’s own words. WordPress has no upload in pieces, so
+nothing goes to the sideload route.</li>
 <li><strong>Regenerate Sizes.</strong> After Edit a Picture on the Site,
 Tools &gt; WordPress &gt; More Media &gt; Regenerate Sizes on that
 picture. The thumbnail in the Media Library shows the edit.</li>
@@ -793,11 +840,11 @@ Sites lists it; run it again and it says nothing is new.</li>
 Lite.</li>
 </ol>
 <h3 id="forms-17a">Forms (17a)</h3>
-<p>Tests 56 to 62 need nothing from the site. Tests 63 to 68 need BITS
+<p>Tests 56 to 62 need nothing from the site. Tests 63 to 68 need QUILL
 Accessible Forms installed and active on the test site first. It is not
 there yet: installing it from <code>S:\code\baf</code> waits on Jeff
 (wordpress.md 17a.13, question 3). Until then, run 63 to 68 only as far
-as the “needs BITS Accessible Forms” sentence in test 63.</p>
+as the “needs QUILL Accessible Forms” sentence in test 63.</p>
 <p>Forms is on in every feature profile except Essential. The commands
 have no keys: use the menus, or type “form” in the Command Palette.
 Where they are (the same in both editors, from
@@ -817,7 +864,7 @@ lessons do.</p>
 <ol start="56" type="1">
 <li><strong>New Form.</strong> File &gt; New Form, title “Ask us
 anything”, template Contact form, Next, and save it. Expect “Saved Ask
-us anything.bfl, a contact form with 3 questions.” and the form open.
+us anything.qaf, a contact form with 3 questions.” and the form open.
 View &gt; Form Outline starts “Page 1, 3 questions”.</li>
 <li><strong>Form Field.</strong> With the caret on Your message, Insert
 &gt; Form Field, search “choose”, pick Choose one, label “Best way to
@@ -848,16 +895,18 @@ contracted .brf. Repeat in Safe Mode: all four Save As commands still
 work.</li>
 <li><strong>Not a form.</strong> In an ordinary text document, run Check
 This Form from the Command Palette. Expect “Check This Form works in a
-form document, a .bfl file. Start one with New Form in the File menu, or
+form document, a .qaf file. Start one with New Form in the File menu, or
 open one.”</li>
-<li><strong>Publish Form.</strong> With BITS Accessible Forms not
-installed, expect “Publish Form needs BITS Accessible Forms on QUILL
+<li><strong>Publish Form.</strong> With QUILL Accessible Forms not
+installed, expect “Publish Form needs QUILL Accessible Forms on QUILL
 WordPress Test Site, and the site does not offer it.” Once it is
 installed: Publish as Live, then Publish. Expect “Published Ask us
 anything on QUILL WordPress Test Site, form” a number, “live.” Publish
-again: the question says Update.</li>
+again: the question says Update. While the site lists both
+<code>qaf/v1</code> and the older <code>baf/v1</code>, every request
+goes to <code>qaf/v1</code> (the alias answers reads only).</li>
 <li><strong>Changed on the site.</strong> Change the form’s title in
-BITS Accessible Forms on the site, then Publish Form. QUILL asks before
+QUILL Accessible Forms on the site, then Publish Form. QUILL asks before
 publishing over it, and keeps the site’s copy as a previous
 version.</li>
 <li><strong>Insert Form Into Page and Test on Site.</strong> Open the
@@ -875,9 +924,15 @@ command for Forms. Expect, once a session, “QUILL WordPress Test Site:”
 and the number of new responses to Ask us anything. Say New Count turns
 it off.</li>
 <li><strong>QUILL Lite, and Safe Mode.</strong> Repeat 56 to 61, 63 and
-66 in QUILL Lite. Then in Safe Mode, Publish Form and Responses each say
-they are off in Safe Mode, while writing, checking, Fill It In Yourself
-and the four Save As commands still work.</li>
+66 in QUILL Lite.</li>
+<li><strong>Form files.</strong> In Explorer, Open with on
+<code>Ask us anything.qaf</code> lists QUILL and QUILL Lite. File &gt;
+Open in each editor shows it under All supported files and under Forms,
+and the Forms commands are available once it is open. Rename a copy to
+<code>.bfl</code> and open it: it is still a form, and nothing is said
+about the older extension. Then in Safe Mode, Publish Form and Responses
+each say they are off in Safe Mode, while writing, checking, Fill It In
+Yourself and the four Save As commands still work.</li>
 </ol>
 <h3 id="what-the-site-lets-you-test-that-quill-may-not-have-yet">What
 the site lets you test that QUILL may not have yet</h3>
@@ -897,6 +952,1145 @@ test here when each feature lands:</p>
 <p>Known detail: WordPress lists the batch endpoint as the route
 <code>/batch/v1</code> in the REST index, not as a namespace. A
 capability check must look at <code>routes</code>.</p>
+<h2 id="live-run">Live run</h2>
+<p>Written by <code>docs/qa/wordpress-live-run.py</code>; run it again
+rather than editing this section by hand. A result marked “no sign-in”
+was checked without signing in.</p>
+<ul>
+<li><strong>Date:</strong> 2026-11-05 04:16 UTC</li>
+<li><strong>Build:</strong> 7efdc39da (feat/wordpress)</li>
+<li><strong>Mode:</strong> dry run, signed in as quilladmin,
+quill-editor, quill-author, quill-contributor</li>
+<li><strong>Site:</strong> QUILL WordPress Test Site (<a
+href="https://lp.csedesigns.com/wordpress">https://lp.csedesigns.com/wordpress</a>),
+WordPress 7.1.4</li>
+<li><strong>Plugins:</strong> WooCommerce 11.2.2 (<code>wc/v3</code>);
+Yoast SEO 28.8 (<code>yoast/v1</code>); The Events Calendar 6.18.3
+(<code>tribe/events/v1</code>); BITS Accessible Forms 1.0.0
+(<code>baf/v1</code>); Abilities (version not shown)
+(<code>wp-abilities/v1</code>)</li>
+<li><strong>Results:</strong> 60 pass, 4 fail, 27 needs Jeff, 31 not
+run</li>
+</ul>
+<h3 id="site-and-routes">Site and routes</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>index</td>
+<td>REST index answers and names the site</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>802 routes in 27 namespaces</td>
+</tr>
+<tr>
+<td>index</td>
+<td>Site version and application passwords (load_site_info)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>WordPress 7.1.4; application passwords offered</td>
+</tr>
+<tr>
+<td>9.15</td>
+<td>Plugins QUILL recognises (site_health.recognised)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>The Events Calendar, WooCommerce, Yoast SEO, Abilities for AI</td>
+</tr>
+<tr>
+<td>17a</td>
+<td>Forms plugin namespace (site_namespace)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>baf/v1, 12 routes; QUILL module qaf_site</td>
+</tr>
+<tr>
+<td>17a</td>
+<td>Forms route takes the model QUILL sends</td>
+<td>needs Jeff</td>
+<td>no sign-in</td>
+<td>POST /baf/v1/forms lists bfl_source, config, description, settings,
+status, title but not model; the plugin on the site may predate
+set_model (BAF 045c682). Test 65 shows whether a published form has its
+fields</td>
+</tr>
+<tr>
+<td>9.16</td>
+<td>Every 9.16 route QUILL needs (routes.unavailable)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>all 11 offered: url_details, icons, pieces, post_process,
+style_revisions, navigation_revisions, menus, directory_sizes, export,
+media, writing</td>
+</tr>
+<tr>
+<td>9.15</td>
+<td>Every 9.15 route QUILL needs (site_features.unavailable)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>all offered: notes, edit_picture, which_password, library_alt,
+bulk_moderation</td>
+</tr>
+<tr>
+<td>9.15</td>
+<td>Picture edits the site takes (edit_modifiers)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>crop, flip, rotate</td>
+</tr>
+<tr>
+<td>44</td>
+<td>Upload in pieces matches the site’s sideload route</td>
+<td>fail</td>
+<td>no sign-in</td>
+<td>sideload requires image_size: it takes a generated sub-size of a
+picture, not a piece of a file, and QUILL’s PieceUpload sends no
+image_size; finalize takes id, sub_sizes, not the total and pieces QUILL
+sends</td>
+</tr>
+<tr>
+<td>45</td>
+<td>Regenerate Sizes action is the site’s (post-process)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>action create-image-subsizes</td>
+</tr>
+<tr>
+<td>9.15</td>
+<td>Every Site Health test listed (health_test_names)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>6 tests: background-updates, loopback-requests, https-status,
+dotorg-communication, authorization-header, page-cache; signed out it
+says only an administrator can</td>
+</tr>
+<tr>
+<td>9.16</td>
+<td>Batch route found and sized (SiteInfo.supports)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>in routes, not namespaces; 25 per batch; methods POST, PUT, PATCH,
+DELETE</td>
+</tr>
+</tbody>
+</table>
+<h3 id="public-content">Public content</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>seed</td>
+<td>Published posts are public, the rest are not</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>6 public posts; Pinned news sticky; no draft, pending, private or
+trash</td>
+</tr>
+<tr>
+<td>seed</td>
+<td>Pages and the page parent</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>10 public pages; Meet the Team is a child of About Us</td>
+</tr>
+<tr>
+<td>38</td>
+<td>Events type and Open Day are public</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>Open Day, id 136, <a
+href="https://lp.csedesigns.com/wordpress/event/open-day/">https://lp.csedesigns.com/wordpress/event/open-day/</a></td>
+</tr>
+<tr>
+<td>9.15</td>
+<td>Properties’ custom fields for an ordinary post</td>
+<td>needs Jeff</td>
+<td>no sign-in</td>
+<td>Properties would show 35 fields on every post, 32 of them The Events
+Calendar’s event, venue and organizer fields; Yoast’s title and
+description are among the rest. Decide whether to hide another plugin’s
+fields</td>
+</tr>
+<tr>
+<td>38</td>
+<td>Open Day’s own address answers</td>
+<td>fail</td>
+<td>no sign-in</td>
+<td><a
+href="https://lp.csedesigns.com/wordpress/event/open-day/">https://lp.csedesigns.com/wordpress/event/open-day/</a>
+answers 404 while ?event=open-day answers 200: the site’s rewrite rules
+were not flushed after the Events type was registered (setup.sh needs
+‘wp rewrite flush’); a…</td>
+</tr>
+<tr>
+<td>9.6</td>
+<td>oEmbed for /welcome/, and the proxy needs a sign-in</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>embed: rich, ‘Welcome to the test site - QUILL WordPress Test Site’;
+proxy 401 signed out</td>
+</tr>
+</tbody>
+</table>
+<h3 id="connecting-4-1">Connecting (4)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>HTTP address is refused, explaining HTTPS</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>QUILL only connects to WordPress sites over HTTPS, so your password
+is never sent in the clear. Check that the address starts with
+https://.</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Connect by hand as quilladmin</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>Connected to QUILL WordPress Test Site as Administrator.</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Connect by hand as quill-editor</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>Connected to QUILL WordPress Test Site as Editor.</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Connect by hand as quill-author</td>
+<td>pass</td>
+<td>quill-author</td>
+<td>Connected to QUILL WordPress Test Site as Author.</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Connect by hand as quill-contributor</td>
+<td>pass</td>
+<td>quill-contributor</td>
+<td>Connected to QUILL WordPress Test Site as Contributor.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Wrong password: a plain sentence naming the site</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>401 incorrect_password: QUILL WordPress Test Site did not accept the
+application password. Check it belongs to this account, then
+reconnect.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Connect with the browser</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>approving in a browser</td>
+</tr>
+<tr>
+<td>5, 6</td>
+<td>Many sites, Remove</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the Sites window</td>
+</tr>
+</tbody>
+</table>
+<h3 id="writing-and-opening-51-52-1">Writing and opening (5.1, 5.2)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>11</td>
+<td>Open by Web Address finds each address</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>welcome/ (page 200) -&gt; (‘post’, 118); about/ (page 200) -&gt;
+(‘page’, 113); about/team/ (page 200) -&gt; (‘page’, 115); ?p=118 (page
+200) -&gt; (‘post’, 118)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Categories and tags are listed</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>6 categories, 5 tags</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Open lists drafts and the Trash</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>1 drafts, 1 in Trash; row: Things to check before publishing, Draft,
+last changed 4 November 2026, 8:49 AM</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Every Block round trip, Markdown and HTML</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>25 blocks; byte for byte apart from blank lines</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Open by Web Address, signed in</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>welcome/ (page 200) -&gt; (‘post’, 118); about/ (page 200) -&gt;
+(‘page’, 113); about/team/ (page 200) -&gt; (‘page’, 115); ?p=118 (page
+200) -&gt; (‘post’, 118)</td>
+</tr>
+<tr>
+<td>7, 8, 12</td>
+<td>New Post, New Page, Open Local Draft</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>local documents in the editor</td>
+</tr>
+</tbody>
+</table>
+<h3 id="saving-and-publishing-53-54-92-1">Saving and publishing (5.3,
+5.4, 9.2)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>13</td>
+<td>Save Draft to Site: a draft, not public</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Publish or Update makes it public</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Contributor: Submit for Review, Pending</td>
+<td>not run</td>
+<td>quill-contributor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Author cannot publish a page</td>
+<td>not run</td>
+<td>quill-author</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Private and Scheduled keep their status</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Conflict: a change on the site is found</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Publish confirmation and clipboard</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>hearing the confirmation</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Compare, Open the Site’s Copy, Send Mine Anyway</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the conflict dialog</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Closing never publishes</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>closing a window</td>
+</tr>
+</tbody>
+</table>
+<h3 id="properties-versions-trash-55-56-1">Properties, versions, Trash
+(5.5, 5.6)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20</td>
+<td>Properties on Pinned news go to the site</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Welcome has its 3 site revisions</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>3 revisions, newest 2026-11-04T08:50:18</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Move to Trash, listed, restored</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>21, 22</td>
+<td>View, Restore, Compare with Site</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the versions window</td>
+</tr>
+</tbody>
+</table>
+<h3 id="checks-7-1">Checks (7)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>24</td>
+<td>Check Before Publishing finds every seeded problem</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>9 findings: 9 things to look at: 6 problems, 3 to check</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Go to It reaches each finding</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the caret and a screen reader</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pictures-6-1">Pictures (6)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25</td>
+<td>Media Library rows and Find: banner</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>9 items; banner: wide-banner, image, 2400 by 800, 8 KB, no alt text,
+uploaded 4 November 2026, 7:42 AM</td>
+</tr>
+<tr>
+<td>25</td>
+<td>Edit Alternative Text on wide-banner</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>27</td>
+<td>Upload a picture</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Remove from Library</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>26, 27</td>
+<td>Insert Picture from the library or this computer</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the image dialog</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Remove from Library keeps a backup</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the Documents folder</td>
+</tr>
+</tbody>
+</table>
+<h3 id="comments-categories-and-tags-98-913-1">Comments, categories and
+tags (9.8, 9.13)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>29</td>
+<td>Approve, reply, spam, many at once</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Add, rename and delete a tag; merge</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+</tbody>
+</table>
+<h3 id="listen-and-watch-61a-1">Listen and watch (6.1a)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>31-32</td>
+<td>Tone, clip and captions: public address and type</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>quill-test-tone 200 audio/x-wav 48044 bytes; quill-test-clip 200
+video/mp4 38176 bytes; quill-test-clip-en 200 text/vtt 124 bytes</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Captions found and read (from_library, fetch_captions)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>2 cues (English); 1 s: ‘This is the QUILL test clip.’; 5.5 s:
+none</td>
+</tr>
+<tr>
+<td>34</td>
+<td>A picture is not playable (from_library)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>photo-volunteers: not playable; the tone: audio</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Play Media Here on the rendered Listen and Watch page</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>audio: A three-second test tone; video: quill-test-clip.mp4;
+paragraph: none (rendered HTML)</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Play Media Here on the page’s blocks</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>audio: A three-second test tone; video: quill-test-clip.mp4;
+paragraph: none (raw blocks)</td>
+</tr>
+<tr>
+<td>31</td>
+<td>Play on the tone</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>an ear: the tone, the keys, Close</td>
+</tr>
+<tr>
+<td>32</td>
+<td>The clip’s picture with NVDA and JAWS</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>eyes and a screen reader</td>
+</tr>
+<tr>
+<td>33</td>
+<td>Nothing is saved</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the Downloads and Documents folders</td>
+</tr>
+<tr>
+<td>35</td>
+<td>Open in Browser, Open in Quill Media Player</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>a browser</td>
+</tr>
+<tr>
+<td>37</td>
+<td>QUILL Lite repeats 31, 32, 36</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>QUILL Lite</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-sites-own-kinds-52-1">The site’s own kinds (5.2)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>38</td>
+<td>An opened Event goes back to its own route</td>
+<td>fail</td>
+<td>no sign-in</td>
+<td>load_item keeps the post type (‘event’) as the kind, so Save Draft
+to Site would send to /wp/v2/event, which the site does not have (the
+route is /wp/v2/events)</td>
+</tr>
+<tr>
+<td>11, 38</td>
+<td>Open by Web Address finds an Event</td>
+<td>fail</td>
+<td>no sign-in</td>
+<td>not found as expected: event/open-day/ (page 404) -&gt; None.
+find_by_address looks only in posts and pages</td>
+</tr>
+<tr>
+<td>38</td>
+<td>Open lists Events with Open Day</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>kinds: Posts, Pages, Products, Events, Events, Calendar Embeds; Open
+Day listed</td>
+</tr>
+<tr>
+<td>38</td>
+<td>Open Day: change, send, Trash and restore</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>39</td>
+<td>Contributor still gets Posts and Pages</td>
+<td>pass</td>
+<td>quill-contributor</td>
+<td>Posts, Pages, Events, Events, Calendar Embeds</td>
+</tr>
+</tbody>
+</table>
+<h3 id="more-from-the-api-915">More from the API (9.15)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TEC</td>
+<td>Events Coming Up, signed out (plugin_events.coming_up)</td>
+<td>pass</td>
+<td>no sign-in</td>
+<td>0 upcoming events listed</td>
+</tr>
+<tr>
+<td>sizes</td>
+<td>Picture sizes offered by name and width</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>Thumbnail, 150 wide; Medium, 300 wide; Medium large, 768 wide;
+Large, 1024 wide; 1536X1536, 1536 wide; Full size, 1600 wide</td>
+</tr>
+<tr>
+<td>library alt</td>
+<td>Pictures with no alt text, library-wide</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>4 pictures: animated-ish.gif, decorative-divider.png,
+wide-banner.png, woocommerce-placeholder.webp</td>
+</tr>
+<tr>
+<td>media edit</td>
+<td>Edit a Picture on the Site: rotate</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>notes</td>
+<td>Notes on blocks: add, reply, resolve</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>introspect</td>
+<td>Which application password, quilladmin</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>On QUILL WordPress Test Site, QUILL is using the application
+password named QUILL regression tests, made 4 November 2026, 7:40 AM,
+last used 4 November 2026, 7:52 AM.</td>
+</tr>
+<tr>
+<td>introspect</td>
+<td>Which application password, quill-editor</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>On QUILL WordPress Test Site, QUILL is using the application
+password named QUILL regression tests, made 4 November 2026, 7:40 AM,
+last used 4 November 2026, 7:52 AM.</td>
+</tr>
+<tr>
+<td>introspect</td>
+<td>Which application password, quill-author</td>
+<td>pass</td>
+<td>quill-author</td>
+<td>On QUILL WordPress Test Site, QUILL is using the application
+password named QUILL regression tests, made 4 November 2026, 7:41 AM,
+last used 4 November 2026, 7:52 AM.</td>
+</tr>
+<tr>
+<td>introspect</td>
+<td>Which application password, quill-contributor</td>
+<td>pass</td>
+<td>quill-contributor</td>
+<td>On QUILL WordPress Test Site, QUILL is using the application
+password named QUILL regression tests, made 4 November 2026, 7:41 AM,
+last used 4 November 2026, 7:52 AM.</td>
+</tr>
+<tr>
+<td>custom fields</td>
+<td>Custom fields on Welcome</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>35 fields, 2 left alone</td>
+</tr>
+<tr>
+<td>styles</td>
+<td>Style variations, each with its Palette Report</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>Twenty Twenty-Five: 23 variations; first: Evening, 56 pairings, 32
+below the minimum for body text</td>
+</tr>
+<tr>
+<td>Site Styles</td>
+<td>Site Styles: colours and sizes by name</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>8 colours, 5 sizes; Colour: Base (white), #FFFFFF, the page
+background; the text on it is 18.8 to 1, passes</td>
+</tr>
+<tr>
+<td>patterns</td>
+<td>Pattern Directory search, described in words</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>5 patterns; Contact Details, from WordPress.org’s Pattern Directory.
+Contact Section. Blocks, in order: Columns, Column, Group, I…</td>
+</tr>
+<tr>
+<td>pattern categories</td>
+<td>Pattern categories for synced patterns</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>0 categories, 1 synced patterns read</td>
+</tr>
+<tr>
+<td>TEC</td>
+<td>The Events Calendar: venues and Coming Up</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>0 upcoming, 0 venues</td>
+</tr>
+<tr>
+<td>TEC</td>
+<td>New Event as a draft, then changed</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>WooCommerce</td>
+<td>Products in Properties, orders read only</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>no products on the site; 0 orders read</td>
+</tr>
+<tr>
+<td>WooCommerce</td>
+<td>Light edit: price, then put back</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>Yoast</td>
+<td>SEO title and description with lengths</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>Abilities</td>
+<td>Abilities listed; a read-only one run</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>17 abilities; ran core/get-environment-info: {“environment”:
+“staging”, “php_version”: “8.3.36”, “db_server_info”: “11.8.9…</td>
+</tr>
+<tr>
+<td>Site Health</td>
+<td>Every Site Health test, one line each</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>7 lines; good: Background updates are working.; good: Your site can
+perform loopback requests.; good: Your website is using an active HTTPS
+connection.; good: Can communicate with WordPress.org.; recommended: The
+auth…</td>
+</tr>
+<tr>
+<td>Site Health</td>
+<td>An editor hears it is for administrators</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>Health checks: only an administrator can run them.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="every-route-916-1">Every route (9.16)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>45</td>
+<td>Regenerate Sizes after the edit</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>40</td>
+<td>Hear Where a Link Goes, and a typo</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>Goes to ‘About Us - QUILL WordPress Test Site’. Typo: <a
+href="https://lp.csedesigns.com/wordpress/abuot-us-typo/">https://lp.csedesigns.com/wordpress/abuot-us-typo/</a>
+could not be reached: the page is not there.</td>
+</tr>
+<tr>
+<td>41</td>
+<td>Fix Link Text uses the page’s title</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>‘click here’ became ‘About Us - QUILL WordPress Test Site’</td>
+</tr>
+<tr>
+<td>42</td>
+<td>Dead links named</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>1 of 2 link goes nowhere.</td>
+</tr>
+<tr>
+<td>43</td>
+<td>Insert Icon: labelled, decorative, never unnamed</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>88 icons, first Arrow Down, WordPress; an empty label inserts
+nothing</td>
+</tr>
+<tr>
+<td>44</td>
+<td>Upload a Large File in pieces</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>46</td>
+<td>Previous Looks: change a colour, go back</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>47</td>
+<td>Menu History: menus and Navigation revisions read</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>1 menus (1 Navigation blocks), 0 revisions</td>
+</tr>
+<tr>
+<td>48</td>
+<td>Space Used in words; an editor cannot</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>Uploads: 200 KB. Themes: 13.8 MB. Plugins: 122.7 MB. WordPress
+itself: 90.8 MB. Database: 6.2 MB. Altogether: 233.7 MB. Editor: Your
+account on QUILL WordPress Test Site is an Editor, which cannot see how
+much space t…</td>
+</tr>
+<tr>
+<td>49</td>
+<td>Download a Copy of the Site’s Design</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>twentytwentyfive.zip, 8190968 bytes, 254 files (kept in memory, not
+saved)</td>
+</tr>
+<tr>
+<td>50</td>
+<td>Send This Document to WordPress</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>51</td>
+<td>Duplicate makes a ‘(copy)’ draft</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>52</td>
+<td>Download My Writing, then up to date</td>
+<td>pass</td>
+<td>quill-editor</td>
+<td>22 files, 3 pictures; again: Your writing on QUILL WordPress Test
+Site is in archive: 0 saved, 22 already up to date.</td>
+</tr>
+<tr>
+<td>53</td>
+<td>Send a Folder as Drafts</td>
+<td>not run</td>
+<td>quill-editor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>54</td>
+<td>Coming Up lists the scheduled post</td>
+<td>pass</td>
+<td>quilladmin</td>
+<td>1 item is scheduled on your site. The next is Scheduled for next
+month on QUILL WordPress Test Site, 4 December 2026, 5:00 PM.</td>
+</tr>
+<tr>
+<td>54</td>
+<td>What Changed lists a new comment once</td>
+<td>not run</td>
+<td>quill-contributor</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>43</td>
+<td>Icons read by label, decorative skipped</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>NVDA on the page</td>
+</tr>
+<tr>
+<td>44</td>
+<td>Progress spoken at each quarter</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>an ear</td>
+</tr>
+<tr>
+<td>45</td>
+<td>The thumbnail shows the edit</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>eyes</td>
+</tr>
+<tr>
+<td>47</td>
+<td>Bring Back Removed Items, Restore This Version</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the Menus window (the run reads the history only)</td>
+</tr>
+<tr>
+<td>55</td>
+<td>QUILL Lite repeats 40, 43, 50, 54</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>QUILL Lite</td>
+</tr>
+</tbody>
+</table>
+<h3 id="forms-17a-1">Forms (17a)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Check</th>
+<th>Result</th>
+<th>As</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>63</td>
+<td>Publish Form as Live, then Update</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>64</td>
+<td>A change on the site is seen before publishing</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>65</td>
+<td>Insert Form Into Page: the page shows the form</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>66</td>
+<td>Responses: two sent, listed newest first, exported, deleted</td>
+<td>not run</td>
+<td>quilladmin</td>
+<td>dry run: this one writes to the site</td>
+</tr>
+<tr>
+<td>56-62</td>
+<td>New Form to Not a form</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>local; the editors and a screen reader</td>
+</tr>
+<tr>
+<td>64</td>
+<td>QUILL asks before publishing over the site’s change</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>the question</td>
+</tr>
+<tr>
+<td>65</td>
+<td>The form filled in with NVDA on the page</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>NVDA in a browser</td>
+</tr>
+<tr>
+<td>67</td>
+<td>New response count after a restart</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>restarting QUILL</td>
+</tr>
+<tr>
+<td>68</td>
+<td>QUILL Lite, and Safe Mode</td>
+<td>needs Jeff</td>
+<td>-</td>
+<td>QUILL Lite and Safe Mode</td>
+</tr>
+</tbody>
+</table>
 <h2 id="looking-after-the-site">Looking after the site</h2>
 <ul>
 <li><strong>Where it runs:</strong> on lp.csedesigns.com, in two Docker

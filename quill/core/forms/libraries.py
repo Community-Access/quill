@@ -1,12 +1,12 @@
-"""Choice libraries: the ready-made lists BAF ships (countries, states, months...).
+"""Choice libraries: the ready-made lists QAF ships (countries, states, months...).
 
 A field points at one by name (``choice_library``; ``@library countries`` or
 ``select "Country" countries`` in BFL), and the list is filled in when the
 form is shown, so a form stays short and the lists stay current.
 
-The data (``libraries/baf_libraries.json``) was taken from BAF's
-``includes/class-baf-choice-libraries.php`` by running its own registration
-code, so names, values and labels are BAF's exactly: 124 libraries, three of
+The data (``libraries/qaf_libraries.json``) was taken from QAF's
+``includes/class-qaf-choice-libraries.php`` by running its own registration
+code, so names, values and labels are QAF's exactly: 124 libraries, three of
 them cascading (countries to states, continents to countries, time-zone
 regions to time zones). Three are worked out from the year instead of stored:
 ``years``, ``years_future`` and ``birth_years``.
@@ -40,7 +40,7 @@ def _choice(value: Any, label: Any) -> Choice:
     return Choice(value=str(value), label=str(label))
 
 
-DATA_PATH = Path(__file__).parent / "libraries" / "baf_libraries.json"
+DATA_PATH = Path(__file__).parent / "libraries" / "qaf_libraries.json"
 
 
 @dataclass(frozen=True)
@@ -128,7 +128,7 @@ def choices_for(
     """``(value, label)`` for every answer a field offers.
 
     Its own choices first; else a library the form defines (``choice_libraries``);
-    else one of BAF's built-in libraries (a cascade's, given the parent's
+    else one of QAF's built-in libraries (a cascade's, given the parent's
     answer); else the fixed scales of ``rating`` (1 to 5) and ``nps`` (0 to 10).
     A library that does not exist offers nothing: that is Check This Form's finding.
     """

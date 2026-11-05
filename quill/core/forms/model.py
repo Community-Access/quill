@@ -1,10 +1,10 @@
-"""The form model: BAF's one JSON definition of a form (wordpress.md 17a.15).
+"""The form model: QAF's one JSON definition of a form (wordpress.md 17a.15).
 
-A form is a JSON document, described by ``schema/form.schema.json`` and BAF's
-``docs/form-model.md``; this module is a port of ``BAF_Form_Model``. QUILL
+A form is a JSON document, described by ``schema/form.schema.json`` and QAF's
+``docs/form-model.md``; this module is a port of ``QAF_Form_Model``. QUILL
 holds a form exactly as that JSON (plain dicts and lists), so nothing can be
 lost or renamed between the two programs: the model QUILL reads is the model
-BAF stores, key for key.
+QAF stores, key for key.
 
 This module holds the facts code needs about the model (the 64 field types,
 which take choices, the names a prop may not use), walks a form's items, and
@@ -28,7 +28,7 @@ MODEL_VERSION = 1
 Model = dict[str, Any]
 Item = dict[str, Any]
 
-#: Every field type, in the order BAF's builder lists them.
+#: Every field type, in the order QAF's builder lists them.
 FIELD_TYPES: tuple[str, ...] = (
     "text", "textarea", "number", "email", "phone", "website", "hidden", "password",
     "color", "range", "slider", "currency", "otp", "toggle",
@@ -98,7 +98,7 @@ def is_field_type(kind: Any) -> bool:
 
 
 def slug(text: str) -> str:
-    """BAF's choice value for a label: lower case, other runs to one hyphen, trimmed."""
+    """QAF's choice value for a label: lower case, other runs to one hyphen, trimmed."""
     s = "".join(chr(ord(c) + 32) if "A" <= c <= "Z" else c for c in str(text))
     return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
 
@@ -310,11 +310,11 @@ def same(a: Any, b: Any) -> bool:
 
 
 def encode(v: Any, *, pretty: bool = False) -> str:
-    """JSON as BAF's ``BAF_Form_Model::encode`` writes it.
+    """JSON as QAF's ``QAF_Form_Model::encode`` writes it.
 
     UTF-8 as itself, slashes unescaped, ``.0`` kept on an integral float, and a
     float in PHP's own form (``1.0e+17``, ``1.0e-5``), so a list or object
-    written into BFL is the same text BAF writes.
+    written into BFL is the same text QAF writes.
     """
     return _encode(v, pretty, 0)
 

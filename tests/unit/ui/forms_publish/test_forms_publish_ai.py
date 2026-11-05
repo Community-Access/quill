@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-BAF = "/wp-json/baf/v1"
+QAF = "/wp-json/qaf/v1"
 
 DRAFT = """Here is your form:
 ```
@@ -47,7 +47,7 @@ def test_draft_declined_changes_nothing(fp, pub_dialogs, pub_host):
 def test_draft_outside_a_form_saves_a_new_one(fp, pub_dialogs, pub_host, tmp_path):
     pub_host.path = tmp_path / "notes.txt"
     pub_host.ai.service.answers.append(DRAFT)
-    target = tmp_path / "club.bfl"
+    target = tmp_path / "club.qaf"
     pub_dialogs.answer("ask_text", "club").answer("confirm", True).answer("ask_save_path", target)
 
     fp.cmd_draft_form()
@@ -115,7 +115,7 @@ def test_plain_language_answer_arriving_after_the_form_left_changes_nothing(
     pub_dialogs.answer("confirm", True)
 
     def leave(*_a: Any, **kw: Any) -> None:
-        pub_host.path = tmp_path / "other.bfl"
+        pub_host.path = tmp_path / "other.qaf"
         kw["on_done"](json.dumps({"heard": {"label": "Where from?"}}), None)
 
     pub_host.ai.service.ask = leave  # type: ignore[method-assign]
@@ -159,11 +159,11 @@ def test_suggest_autofill_with_nothing_flagged_sends_nothing(fp, pub_host):
 def _responses_window(
     fp: Any, pub_dialogs: Any, pub_site: Any, make_form: Any, make_entry: Any
 ) -> None:
-    pub_site.on("GET", f"{BAF}/forms", [make_form(12)])
-    pub_site.on("GET", f"{BAF}/forms/12", make_form(12))
+    pub_site.on("GET", f"{QAF}/forms", [make_form(12)])
+    pub_site.on("GET", f"{QAF}/forms/12", make_form(12))
     pub_site.on(
         "GET",
-        f"{BAF}/entries",
+        f"{QAF}/entries",
         [
             make_entry(2, "2026-11-03 10:00:00", name="Ann", city="Leeds"),
             make_entry(1, "2026-11-02 10:00:00", name="Bo"),

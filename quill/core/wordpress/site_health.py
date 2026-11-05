@@ -117,7 +117,7 @@ def _words(test: str) -> str:
 # --------------------------------------------------------------------------- #
 # Plugins QUILL recognises
 
-#: namespace -> (plugin, what QUILL turns on for it). BITS Accessible Forms is
+#: namespace -> (plugin, what QUILL turns on for it). QUILL Accessible Forms is
 #: section 17a's, and recognised there.
 RECOGNISED: tuple[tuple[str, str, str], ...] = (
     (

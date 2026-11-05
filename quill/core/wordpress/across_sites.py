@@ -68,7 +68,7 @@ def scheduled_on(api: WordPressApi, site_name: str) -> list[Scheduled]:
             found.append(
                 Scheduled(
                     site=site_name,
-                    kind=str(raw.get("type", kind) or kind),
+                    kind=wp.kind_from_payload(raw, kind),
                     id=int(raw.get("id", 0)),
                     title=wp.rendered(raw.get("title")) or "(untitled)",
                     date_gmt=str(raw.get("date_gmt", "") or ""),

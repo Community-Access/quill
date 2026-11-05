@@ -1,14 +1,14 @@
-"""Reading BFL into the form model: a port of BAF's ``BAF_BFL_Reader``.
+"""Reading BFL into the form model: a port of QAF's ``QAF_BFL_Reader``.
 
-BFL 1 is a readable notation of the model (BAF's ``docs/bfl-and-the-model.md``).
-This reads it exactly as BAF does, statement for statement and key for key,
+BFL 1 is a readable notation of the model (QAF's ``docs/bfl-and-the-model.md``).
+This reads it exactly as QAF does, statement for statement and key for key,
 including every older spelling: the four block styles, inline and indented
 modifiers, flat sections, the older type names and modifier spellings, the
 older compiler's ``settings`` block, and the eight single-test conditions.
-BAF's ``tests/conformance/bfl`` cases are the contract.
+QAF's ``tests/conformance/qaf`` cases are the contract.
 
-QUILL adds one thing BAF does not keep: **where each top-level statement
-came from**, and the lines BAF skipped at the top level, which QUILL calls
+QUILL adds one thing QAF does not keep: **where each top-level statement
+came from**, and the lines QAF skipped at the top level, which QUILL calls
 *islands*. :mod:`bfl_document` uses both to write an edited document back
 with every untouched byte unchanged.
 """
@@ -130,8 +130,9 @@ class Reader(ReaderBase):
                     if v["v"] > VERSION:
                         self.error(
                             t["line"],
-                            f"This form is written in BFL {v['v']}; this copy of QUILL reads BFL "
-                            f"{VERSION} and older. Update QUILL to open it.",
+                            f"This form is written in version {v['v']} of the QAF form language; "
+                            f"this copy of QUILL reads version {VERSION} and older. Update QUILL "
+                            "to open it.",
                         )
                         return
                 else:
@@ -154,7 +155,10 @@ class Reader(ReaderBase):
                     self._record("form", t)
                 continue
             if t["t"] != "WORD":
-                self.warn(t["line"], f'Skipped "{t["v"]}", which BFL does not expect here.')
+                self.warn(
+                    t["line"],
+                    f'Skipped "{t["v"]}", which the QAF form language does not expect here.',
+                )
                 self.next()
                 self._record("island", t)
                 continue
@@ -178,7 +182,7 @@ class Reader(ReaderBase):
                 self.model["pages"][pi]["items"].extend(found)
                 self._record("items", t, [i["id"] for i in found], pi)
                 continue
-            self.warn(t["line"], f'Skipped "{t["v"]}", which BFL does not know.')
+            self.warn(t["line"], f'Skipped "{t["v"]}", which the QAF form language does not know.')
             self.next()
             self._record("island", t)
 

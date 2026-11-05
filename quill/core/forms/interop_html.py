@@ -1,6 +1,6 @@
 """Plain HTML forms in and out, with nothing but the standard library.
 
-Export writes the accessible patterns BAF's renderer uses: every control has a
+Export writes the accessible patterns QAF's renderer uses: every control has a
 ``<label for>``; a choice group is a ``<fieldset>`` whose ``<legend>`` is the
 question; help is tied to its control with ``aria-describedby``; required is
 the ``required`` attribute and the word "(required)" in the label, never a

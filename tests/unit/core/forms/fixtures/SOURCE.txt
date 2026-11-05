@@ -1,22 +1,27 @@
 Where these fixtures come from
 ==============================
 
-All of them come from BITS Accessible Forms (BAF), S:\code\baf on Jeff's
-machine. BAF is copyright BITS (Blind Information Technology Solutions) and
-Community Access, released under the MIT License (relicensed from
+All of them come from QUILL Accessible Forms (QAF), S:\code\baf on Jeff's
+machine, which was named BITS Accessible Forms (BAF) until November 2026; the
+older examples were copied before the rename, so they and their notes below use
+BAF's names. QAF is Copyright
+(c) 2024-2026 Jeff Bishop, released under the MIT License (relicensed from
 GPL-2.0-or-later in November 2026), the same licence as QUILL. They are
 copied here for testing. The choice-library data in
-quill/core/forms/libraries/baf_libraries.json and the schema in
+quill/core/forms/libraries/qaf_libraries.json and the schema in
 quill/core/forms/schema/form.schema.json have the same origin.
 
 conformance/
-  A subset of BAF's form model conformance suite, copied unchanged from
-  tests/conformance on BAF's feat/json-form-model branch (commit 44f04f1,
-  2026-11-04): both expression files, three valid models, the invalid-model and
-  behaviour cases, four canonical and four legacy BFL pairs, and the BFL
-  error cases. manifest.json here lists only those, in BAF's manifest shape.
-  test_forms_conformance.py runs it on every machine, and runs BAF's whole
-  manifest too when BAF is on the machine.
+  A subset of QAF's form model conformance suite, copied unchanged from
+  tests/conformance on QAF's chore/rename-qaf branch (commit beb3e2c,
+  2026-11-05), in its renamed layout (qaf/, .qaf files, the qaf-* kinds and
+  the "qaf" case key): both expression files, two valid models, the
+  invalid-model and behaviour cases, four canonical and four legacy pairs, and
+  the error cases. The schema in quill/core/forms/schema/form.schema.json was
+  refreshed from the same commit. manifest.json here lists only those, in
+  QAF's manifest shape. test_forms_conformance.py runs it on every machine,
+  and runs QAF's whole manifest too when QAF is on the machine (falling back
+  to feat/json-form-model's older bfl/ layout).
 
 NAME.bfl, NAME.baf.json, NAME.model.json
   Twenty BFL examples copied unchanged from BAF's main branch (commit

@@ -12,7 +12,7 @@ learned one has learned these. What is new here:
   the kind chosen;
 - **Form Properties** is the generated form with a read-only box under it
   for what the site decides (17a.4.5);
-- **Save the New Form** is the standard Save As window, opened on a ``.bfl``
+- **Save the New Form** is the standard Save As window, opened on a ``.qaf``
   name.
 
 *show_modal* is the host's own modal runner, so the dialog contract and the
@@ -27,7 +27,7 @@ from typing import Any
 
 import wx
 
-from quill.core.forms.menu import FORM_EXTENSION
+from quill.core.forms.menu import FORM_EXTENSION, is_form_path
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
@@ -82,11 +82,7 @@ def ask_save_path(
         path = Path(dialog.GetPath())
     finally:
         dialog.Destroy()
-    return (
-        path
-        if str(path).lower().endswith(FORM_EXTENSION)
-        else path.with_name(path.name + FORM_EXTENSION)
-    )
+    return path if is_form_path(path) else path.with_name(path.name + FORM_EXTENSION)
 
 
 def ask_properties(

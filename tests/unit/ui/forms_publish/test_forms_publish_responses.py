@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-BAF = "/wp-json/baf/v1"
+QAF = "/wp-json/qaf/v1"
 
 
 @pytest.fixture
@@ -20,9 +20,9 @@ def three(pub_site: Any, make_form: Any, make_entry: Any) -> Any:
         ),
         make_entry(41, "2026-11-03 08:00:00", name="", email="raj@example.org", city="Leeds"),
     ]
-    pub_site.on("GET", f"{BAF}/forms", [make_form(12, entry_count=3)])
-    pub_site.on("GET", f"{BAF}/forms/12", make_form(12, entry_count=3))
-    pub_site.on("GET", f"{BAF}/entries", entries)
+    pub_site.on("GET", f"{QAF}/forms", [make_form(12, entry_count=3)])
+    pub_site.on("GET", f"{QAF}/forms/12", make_form(12, entry_count=3))
+    pub_site.on("GET", f"{QAF}/entries", entries)
     return entries
 
 
@@ -38,7 +38,7 @@ def test_responses_list_newest_first_with_who_and_when(fp, pub_dialogs, pub_site
     assert rows[0] == "Response 43, 4 November, 9:05 AM, Ann Lee, Spring fair"
     assert rows[1] == "Response 42, 3 November, 2:10 PM, Jane Smith, Spring fair"
     assert rows[2] == "Response 41, 3 November, 8:00 AM, raj@example.org, Spring fair"
-    query = pub_site.query(pub_site.sent("GET", f"{BAF}/entries")[0])
+    query = pub_site.query(pub_site.sent("GET", f"{QAF}/entries")[0])
     assert query["form_id"] == ["12"]
     assert fp.published().seen("radio", 12) == 3
 
@@ -127,8 +127,8 @@ def test_export_word_one_response(fp, pub_dialogs, pub_host, three, tmp_path):
 def test_delete_marked_after_a_confirmation_with_the_count(
     fp, pub_dialogs, pub_site, pub_host, three
 ):
-    pub_site.on("DELETE", f"{BAF}/entries/43", {"deleted": True})
-    pub_site.on("DELETE", f"{BAF}/entries/41", {"deleted": True})
+    pub_site.on("DELETE", f"{QAF}/entries/43", {"deleted": True})
+    pub_site.on("DELETE", f"{QAF}/entries/41", {"deleted": True})
     _open(fp, pub_dialogs)
     pub_dialogs.press("Mark", 0)
     pub_dialogs.press("Mark", 2)
@@ -137,8 +137,8 @@ def test_delete_marked_after_a_confirmation_with_the_count(
     rows = pub_dialogs.press("Delete...", 1)
 
     assert pub_dialogs.asked("confirm")[0]["yes_label"] == "Delete 2"
-    assert len(pub_site.sent("DELETE", f"{BAF}/entries/43")) == 1
-    assert "force" not in pub_site.sent("DELETE", f"{BAF}/entries/43")[0].full_url
+    assert len(pub_site.sent("DELETE", f"{QAF}/entries/43")) == 1
+    assert "force" not in pub_site.sent("DELETE", f"{QAF}/entries/43")[0].full_url
     assert rows == ["Response 42, 3 November, 2:10 PM, Jane Smith, Spring fair"]
     assert "2 responses moved to the Trash on Community Radio." in pub_host.said
 
@@ -180,9 +180,9 @@ def test_responses_of_the_form_in_front_need_no_choosing(fp, pub_dialogs, pub_ho
 
 
 def test_no_responses_yet_says_so(fp, pub_dialogs, pub_site, pub_host, make_form):
-    pub_site.on("GET", f"{BAF}/forms", [make_form(12, entry_count=0)])
-    pub_site.on("GET", f"{BAF}/forms/12", make_form(12, entry_count=0))
-    pub_site.on("GET", f"{BAF}/entries", [])
+    pub_site.on("GET", f"{QAF}/forms", [make_form(12, entry_count=0)])
+    pub_site.on("GET", f"{QAF}/forms/12", make_form(12, entry_count=0))
+    pub_site.on("GET", f"{QAF}/entries", [])
 
     _open(fp, pub_dialogs)
 
@@ -202,4 +202,4 @@ def test_responses_are_off_in_safe_mode(fp, pub_host, pub_site):
 def test_responses_cancelled_at_the_form_reads_no_answers(fp, pub_site, three):
     fp.cmd_form_responses()
 
-    assert not pub_site.sent("GET", f"{BAF}/entries")
+    assert not pub_site.sent("GET", f"{QAF}/entries")

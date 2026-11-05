@@ -94,7 +94,7 @@ class WordPressCommands(
         # The first time a site is used in a session, say how many comments
         # wait for it (9.8). Once per site, silent on failure, and off per site.
         self.announce_waiting_once(profile)
-        # And how many new form responses wait, on a site with BITS Accessible Forms (17a.8).
+        # And how many new form responses wait, on a site with QUILL Accessible Forms (17a.8).
         from quill.ui.forms_site_base import announce_new_responses_once
 
         announce_new_responses_once(

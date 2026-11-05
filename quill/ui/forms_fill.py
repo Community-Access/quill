@@ -44,7 +44,7 @@ def localize(model: fd.Model, language: str) -> fd.Model:
 
 
 def choices_of(item: fd.Item, model: fd.Model | None = None) -> list[tuple[str, str]]:
-    """``(value, label)`` for each choice: its own, the form's library, BAF's, or a scale."""
+    """``(value, label)`` for each choice: its own, the form's library, QAF's, or a scale."""
     from quill.core.forms import libraries
 
     return [(str(v), str(label)) for v, label in libraries.choices_for(item, model)]

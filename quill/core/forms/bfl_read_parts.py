@@ -1,6 +1,6 @@
 """The rest of the BFL reader: blocks, item modifiers, choices and the other statements.
 
-Part of the port of BAF's ``BAF_BFL_Reader`` (see :mod:`bfl_read`), split out
+Part of the port of QAF's ``QAF_BFL_Reader`` (see :mod:`bfl_read`), split out
 for GATE-11. :class:`ReaderBase` holds what does not depend on the item
 grammar: reading a block, a field's modifiers and choice lines, folding flat
 sections, and the library, rule, scoring, confirmation, notification,
@@ -153,7 +153,9 @@ class ReaderBase(Lexed):
                     break
                 self.warn(t["line"], f"A block opened on line {line} was not closed.")
                 return "explicit"
-            self.warn(t["line"], f'Skipped "{t["v"]}", which BFL does not expect here.')
+            self.warn(
+                t["line"], f'Skipped "{t["v"]}", which the QAF form language does not expect here.'
+            )
             self.next()
         return "explicit" if explicit else ("indent" if took else "none")
 

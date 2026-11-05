@@ -23,8 +23,8 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from quill.core.forms import baf_site as bs
 from quill.core.forms import published as pub
+from quill.core.forms import qaf_site as bs
 from quill.core.forms.menu import FORM_EXTENSION, is_form_path
 from quill.core.wordpress import sites as st
 from quill.ui import wordpress_dialogs as dlg
@@ -55,7 +55,7 @@ def announce_new_responses_once(
 ) -> None:
     """Say "Community Radio: 4 new responses to Event registration." once a session.
 
-    Only when the site's setting allows it, only on a site with BITS
+    Only when the site's setting allows it, only on a site with QUILL
     Accessible Forms, and only when there are some. It reads the forms list --
     a count per form, never anybody's answers. A failure is silent: this is a
     courtesy, and the command the person asked for reports its own problems.
@@ -69,7 +69,7 @@ def announce_new_responses_once(
 
     def work() -> str:
         api = st.api_for(profile, opener=opener)
-        if not bs.supports_baf(api):
+        if not bs.supports_qaf(api):
             return ""
         counts = {f.id: (f.title, f.entry_count) for f in bs.list_forms(api)}
         return pub.waiting_sentence(profile.name, pub.new_responses(store, profile.id, counts))
@@ -87,9 +87,9 @@ def failure_sentence(exc: BaseException) -> str:
     return wp_failure(exc)
 
 
-def no_baf_sentence(command: str, site_name: str) -> str:
+def no_qaf_sentence(command: str, site_name: str) -> str:
     return (
-        f"{command} needs BITS Accessible Forms on {site_name}, and the site does not offer it. "
+        f"{command} needs QUILL Accessible Forms on {site_name}, and the site does not offer it. "
         "Install and activate the plugin there, then try again."
     )
 
@@ -173,7 +173,7 @@ class FormsSiteBase:
             prompt="&Site:",
             rows=[s.spoken() for s in store.sites],
             initial=store.sites.index(default) if default in store.sites else 0,
-            help_text="Which of your WordPress sites has BITS Accessible Forms. Your default "
+            help_text="Which of your WordPress sites has QUILL Accessible Forms. Your default "
             "site is selected.",
         )
         return None if index is None else store.sites[index]
@@ -192,7 +192,7 @@ class FormsSiteBase:
             f"Forms: {name}", work, done, lambda exc: self.host.announce(failure_sentence(exc))
         )
 
-    def with_baf(
+    def with_qaf(
         self,
         command: str,
         profile: st.SiteProfile,
@@ -200,16 +200,16 @@ class FormsSiteBase:
         work: Callable[[Any], Any],
         done: Callable[[Any], None],
     ) -> None:
-        """*work(api)* only on a site whose REST index lists ``baf/v1``."""
+        """*work(api)* only on a site whose REST index lists ``qaf/v1`` (or ``baf/v1``)."""
         api = self.site_api(profile)
         missing = object()
 
         def guarded() -> Any:
-            return work(api) if bs.supports_baf(api) else missing
+            return work(api) if bs.supports_qaf(api) else missing
 
         def finished(result: Any) -> None:
             if result is missing:
-                self.host.announce(no_baf_sentence(command, profile.name))
+                self.host.announce(no_qaf_sentence(command, profile.name))
                 return
             done(result)
 
@@ -221,6 +221,6 @@ __all__ = [
     "announce_new_responses_once",
     "failure_sentence",
     "forget_told",
-    "no_baf_sentence",
+    "no_qaf_sentence",
     "safe_mode_on",
 ]

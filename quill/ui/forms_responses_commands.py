@@ -2,7 +2,7 @@
 
 A mixin of :class:`~quill.ui.forms_publish_commands.FormsPublishCommands`.
 Responses are personal data. They are read from the site only when this
-window opens (``GET /baf/v1/entries``), held in memory while it is open, never
+window opens (``GET /qaf/v1/entries``), held in memory while it is open, never
 written to a log, and written to a file only where the person chooses. Nothing
 in this window sends them anywhere else; Summarise asks first, every time.
 
@@ -17,7 +17,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-from quill.core.forms import baf_site as bs
+from quill.core.forms import qaf_site as bs
 from quill.core.forms import responses as rs
 from quill.core.storage import write_text_atomic
 from quill.ui import wordpress_dialogs as dlg
@@ -49,7 +49,7 @@ class FormsResponsesCommands:
         if link is not None and link.site_id == profile.id:
             self._load_responses(profile, link.form_id)
             return
-        self.with_baf(  # type: ignore[attr-defined]
+        self.with_qaf(  # type: ignore[attr-defined]
             command,
             profile,
             f"listing the forms on {profile.name}",
@@ -77,7 +77,7 @@ class FormsResponsesCommands:
         def work(api: Any) -> tuple[Any, bs.SiteForm, list[bs.Response]]:
             return api, bs.get_form(api, form_id), bs.list_responses(api, form_id)
 
-        self.with_baf(  # type: ignore[attr-defined]
+        self.with_qaf(  # type: ignore[attr-defined]
             "Responses",
             profile,
             f"reading responses on {profile.name}",
@@ -200,7 +200,7 @@ class FormsResponsesCommands:
                 self.host.show_modal,
                 title="Delete Responses",
                 message=f"Delete {_noun(count)} to {title} on {profile.name}? They go to the "
-                "Trash in BITS Accessible Forms.",
+                "Trash in QUILL Accessible Forms.",
                 yes_label=f"Delete {count}",
             ):
                 return None

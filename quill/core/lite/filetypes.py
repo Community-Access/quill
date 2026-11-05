@@ -73,7 +73,9 @@ RICH_SUFFIXES = frozenset({".rtf"})
 #: and the rest are still opened as text.
 _OFFICE = "*.docx;*.docm;*.doc;*.odt;*.xlsx;*.xls;*.pptx;*.ppt"
 _OFFICE_AS_TEXT = "*.docm;*.doc;*.odt;*.xlsx;*.xls;*.pptx;*.ppt"
-_TEXT_LIKE = f"*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm;*.pdf;{_OFFICE}"
+#: ``.qaf`` joined on 2026-11-05: a form document (QUILL Accessible Forms,
+#: wordpress.md 17a.17), plain text that the Forms commands work in.
+_TEXT_LIKE = f"*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm;*.pdf;*.qaf;{_OFFICE}"
 
 OPEN_WILDCARD = (
     f"All supported files ({_TEXT_LIKE})|{_TEXT_LIKE}|"
@@ -84,6 +86,7 @@ OPEN_WILDCARD = (
     "HTML (*.html;*.htm)|*.html;*.htm|"
     "PDF documents, opened as text (*.pdf)|*.pdf|"
     f"Older Word, Excel and PowerPoint, opened as text ({_OFFICE_AS_TEXT})|{_OFFICE_AS_TEXT}|"
+    "Forms (*.qaf)|*.qaf|"
     "All files (*.*)|*.*"
 )
 

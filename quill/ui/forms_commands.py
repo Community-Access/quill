@@ -74,8 +74,8 @@ class FormsCommands(FormsPublishCommands, FormsOutlineCommands):
             self.host.show_modal,
             title="New Form",
             purpose=(
-                "Start a form from a template. QUILL writes it as plain text in BITS Accessible "
-                "Forms' language, saves it, and opens it; change anything afterwards."
+                "Start a form from a template. QUILL writes it as plain text in the QAF form "
+                "language, saves it, and opens it; change anything afterwards."
             ),
             fields=[
                 Ask("title", "&Title:", "text", "The form's name, as visitors will see it."),

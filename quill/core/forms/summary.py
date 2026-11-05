@@ -2,7 +2,7 @@
 
 "Email address, email field, required, with an autofill hint, page 1". The
 order is fixed (name, kind, what it needs, how it behaves, where it is), so a
-listener learns where to stop listening. Rules are read as BAF's sentences.
+listener learns where to stop listening. Rules are read as QAF's sentences.
 Nothing here announces anything.
 """
 
@@ -127,7 +127,7 @@ def outline(model: M.Model, islands: list[str] | None = None) -> list[OutlineRow
         _rows(page.get("items") or [], 1, model, number, rows)
     for text in islands or []:
         first = text.strip().splitlines()[0] if text.strip() else ""
-        rows.append(OutlineRow(0, f"Kept as written, not read by BAF: {first[:80]}", text))
+        rows.append(OutlineRow(0, f"Kept as written, not read by QAF: {first[:80]}", text))
     return rows
 
 

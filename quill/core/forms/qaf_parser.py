@@ -1,13 +1,13 @@
-"""What BAF makes of BFL: a faithful port of ``class-baf-bfl-parser.php``.
+"""What QAF makes of BFL: a faithful port of ``class-qaf-bfl-parser.php``.
 
 This is not QUILL's reader (that is :mod:`quill.core.forms.bfl_read`, which
 keeps every byte and builds the form model). It is an oracle: given BFL, it
-returns the same nested ``dict`` BAF's PHP parser returns on the site, key for
-key, including BAF's quirks (numbers kept as strings, ``field_N`` ids counted
+returns the same nested ``dict`` QAF's PHP parser returns on the site, key for
+key, including QAF's quirks (numbers kept as strings, ``field_N`` ids counted
 across fields, sections and columns, unknown tokens skipped silently).
 
-Two uses: the conformance tests compare it with BAF's own PHP, and Check This
-Form can compare QUILL's reading of a document with BAF's, to say "the site
+Two uses: the conformance tests compare it with QAF's own PHP, and Check This
+Form can compare QUILL's reading of a document with QAF's, to say "the site
 will ignore this line" before anyone publishes.
 """
 
@@ -155,7 +155,7 @@ def sanitize_title(title: str) -> str:
 
 
 def split_choice(text: str) -> dict[str, str]:
-    """One ``+`` line's value, label and price, as BAF reads them."""
+    """One ``+`` line's value, label and price, as QAF reads them."""
     if "|" in text:
         value, label = text.split("|", 1)
         return {"value": value.strip(), "label": label.strip()}
@@ -177,7 +177,7 @@ def is_safe_custom_attribute(name: str) -> bool:
 
 
 class BafParser:
-    """BFL to BAF's form configuration, exactly as the PHP does it."""
+    """BFL to QAF's form configuration, exactly as the PHP does it."""
 
     def __init__(self) -> None:
         self.toks: list[Token] = []
@@ -235,7 +235,7 @@ class BafParser:
             self.advance()
 
     def field_start(self) -> bool:
-        return self.check(L.KEYWORD) and self.peek().value in L.BAF_FIELD_TYPES
+        return self.check(L.KEYWORD) and self.peek().value in L.QAF_FIELD_TYPES
 
     def next_id(self) -> str:
         self.counter += 1
@@ -536,7 +536,7 @@ class BafParser:
         if self.check(L.STRING) or self.check(L.NUMBER):
             attr_value = self.advance().value
         elif self.check(L.KEYWORD) and self.peek().value.lower() in ("true", "false"):
-            attr_value = self.advance().value.lower() == "true"  # unreachable in BAF
+            attr_value = self.advance().value.lower() == "true"  # unreachable in QAF
         if attr_name is not None and attr_value is not None and is_safe_custom_attribute(attr_name):
             field.setdefault("custom_attributes", {})[attr_name] = attr_value
 
@@ -570,6 +570,6 @@ def _php_int(text: str) -> int:
     return int(match.group(0)) if match else 0
 
 
-def baf_parse(source: str) -> dict[str, Any]:
-    """BAF's ``BAF_BFL_Parser::parse``: ``{"form": {...}, "errors": []}``."""
+def qaf_parse(source: str) -> dict[str, Any]:
+    """QAF's ``QAF_BFL_Parser::parse``: ``{"form": {...}, "errors": []}``."""
     return BafParser().parse(source)

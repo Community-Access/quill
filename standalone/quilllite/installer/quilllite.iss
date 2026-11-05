@@ -238,6 +238,7 @@ Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes";
 Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".html"; ValueData: ""; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".htm"; ValueData: ""; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".csv"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".qaf"; ValueData: ""; Flags: uninsdeletekey
 ; One value in each type's own list, removed on uninstall; the type's key is
 ; shared with every other app and is never deleted.
 Root: HKA; Subkey: "Software\Classes\.txt\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
@@ -249,6 +250,7 @@ Root: HKA; Subkey: "Software\Classes\.rtf\OpenWithProgids"; ValueType: string; V
 Root: HKA; Subkey: "Software\Classes\.html\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\.htm\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\.csv\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.qaf\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
 ; Capabilities + RegisteredApplications: what Default apps lists QUILL Lite by.
 Root: HKA; Subkey: "Software\QuillLite"; Flags: uninsdeletekeyifempty
 Root: HKA; Subkey: "Software\QuillLite\Capabilities"; ValueType: string; ValueName: "ApplicationName"; ValueData: "{#AppName}"; Flags: uninsdeletekey
@@ -263,6 +265,7 @@ Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType
 Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".html"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".htm"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".csv"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".qaf"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\RegisteredApplications"; ValueType: string; ValueName: "{#AppName}"; ValueData: "Software\QuillLite\Capabilities"; Flags: uninsdeletevalue
 
 [UninstallDelete]

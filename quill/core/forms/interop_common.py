@@ -2,7 +2,7 @@
 
 Anything a source has that the model cannot hold is named in the import
 report, never silently dropped (17a.15, point 4). Each importer also keeps
-those properties under ``extensions.<tool>`` (BAF passes extensions back
+those properties under ``extensions.<tool>`` (QAF passes extensions back
 unchanged), so exporting to the same tool gives them back.
 """
 

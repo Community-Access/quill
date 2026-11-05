@@ -1,7 +1,7 @@
-"""BFL tokens and the low-level reading helpers of BAF's BFL reader.
+"""BFL tokens and the low-level reading helpers of QAF's BFL reader.
 
-A port of the lexer and token helpers of BAF's
-``includes/model/class-baf-bfl-reader.php`` (BFL 1). The grammar is in
+A port of the lexer and token helpers of QAF's
+``includes/model/class-qaf-bfl-reader.php`` (BFL 1). The grammar is in
 :mod:`bfl_read`; it was split here for GATE-11. The lexer never fails:
 problems become errors and it carries on, so a reader always has a model.
 

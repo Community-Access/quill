@@ -1,7 +1,7 @@
 """A BFL document that writes back what nobody touched, byte for byte.
 
-BAF's writer turns any model into canonical BFL, and its reader drops
-comments. That is right for BAF, which stores the model. QUILL edits the
+QAF's writer turns any model into canonical BFL, and its reader drops
+comments. That is right for QAF, which stores the model. QUILL edits the
 person's own text, so it keeps more:
 
 - **Unchanged:** reading a document and writing it back gives the original
@@ -10,10 +10,10 @@ person's own text, so it keeps more:
   is copied byte for byte; only edited statements are rewritten, in canonical
   spelling at their own indentation, and new items go in after the statement
   of the item before them. Comments and blank lines between statements stay.
-- **Islands:** lines BAF's reader skips at the top level (an unknown word,
-  BAF's old export dialect) are kept as written. They are not part of BAF's
+- **Islands:** lines QAF's reader skips at the top level (an unknown word,
+  QAF's old export dialect) are kept as written. They are not part of QAF's
   model; :func:`model_with_islands` keeps them in ``extensions.quill`` so a
-  round trip through JSON keeps them too, and BAF passes extensions back
+  round trip through JSON keeps them too, and QAF passes extensions back
   unchanged.
 
 When an edit moves items between containers or reorders pages, splicing

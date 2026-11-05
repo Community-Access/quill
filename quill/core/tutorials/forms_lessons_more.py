@@ -194,7 +194,7 @@ def later_forms_lessons(
             minutes=7,
             surfaces=surfaces,
             summary=(
-                "Publish your form to a WordPress site running BITS Accessible Forms, "
+                "Publish your form to a WordPress site running QUILL Accessible Forms, "
                 "put it on a page, try it there, and read what people send."
             ),
             steps=(
@@ -202,12 +202,12 @@ def later_forms_lessons(
                     title="Know what the site needs",
                     body=(
                         "Publishing needs a WordPress site you have connected, with the "
-                        "BITS Accessible Forms plugin installed and switched on. The "
+                        "QUILL Accessible Forms plugin installed and switched on. The "
                         "WordPress lessons show how to connect a site."
                     ),
                     hear="Nothing yet. This step is what the rest need.",
                     note=(
-                        "Without the plugin you hear that the command needs BITS "
+                        "Without the plugin you hear that the command needs QUILL "
                         "Accessible Forms on the site, and to install and activate it "
                         "there. Publishing and Responses are off in Safe Mode."
                     ),
