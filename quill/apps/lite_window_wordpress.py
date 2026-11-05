@@ -50,14 +50,21 @@ class DocumentWordPressMixin:
         if layer is None:
             layer = self._wordpress_key_layer = keys.WordPressKeyLayer()
         code = int(event.GetKeyCode())
+
+        def held(name: str) -> bool:
+            # A key event from a test or another control may lack a modifier
+            # query; treat that as "not held" rather than failing the key.
+            query = getattr(event, name, None)
+            return bool(query()) if callable(query) else False
+
         if layer.active:
             if code in {wx.WXK_SHIFT, wx.WXK_CONTROL, wx.WXK_ALT}:
                 return True  # Shift going down on the way to Shift+S
             key = keys.event_key(
                 code,
-                ctrl=bool(event.ControlDown()),
-                alt=bool(event.AltDown()),
-                shift=bool(event.ShiftDown()),
+                ctrl=held("ControlDown"),
+                alt=held("AltDown"),
+                shift=held("ShiftDown"),
                 escape_code=wx.WXK_ESCAPE,
             )
             if not key:
@@ -69,7 +76,7 @@ class DocumentWordPressMixin:
             elif outcome.message:
                 self._announce(outcome.message)
             return outcome.consumed
-        if not (event.ControlDown() and event.AltDown() and event.ShiftDown()):
+        if not (held("ControlDown") and held("AltDown") and held("ShiftDown")):
             return False
         # The grave key: wx reports VK_OEM_3 (192) on Windows, "`" elsewhere.
         raw = getattr(event, "GetRawKeyCode", None)

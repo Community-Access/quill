@@ -127,6 +127,7 @@ def test_xlsform_rows_import() -> None:
 
 
 def test_xlsform_workbook_round_trip(tmp_path: Path) -> None:
+    pytest.importorskip("openpyxl")  # an optional dependency, absent in some CI images
     model = import_rows(SURVEY_ROWS, CHOICE_ROWS, {"form_title": "Survey"}).model
     path = tmp_path / "survey.xlsx"
     export_xlsform(model, path)
