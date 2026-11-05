@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Appendix D: Notes from earlier versions</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="appendix-d-notes-from-earlier-versions">Appendix D: Notes from
+earlier versions</h1>
+<p>This appendix keeps a record of how some parts of QUILL used to work.
+You do not need any of it to use QUILL today. The chapters describe
+QUILL as it is now, and where a note here disagrees with a chapter, the
+chapter is right.</p>
+<h2 id="fixed-in-070-beta-2">Fixed in 0.7.0 Beta 2</h2>
+<p>The Beta 2 release brought a sweep of accessibility, macOS and crash
+fixes. Where a fix changes nothing you can see, the note says so; where
+it does, the note gives the detail. The full list is in the <a
+href="../release%20notes/release0.8.0-beta1.md">release notes</a>.</p>
+<ul>
+<li><strong>Closing the last document no longer crashes.</strong>
+Nothing to change. The crash showed up as “QUILL encountered an
+unexpected error and needs to close” when you pressed
+<code>Ctrl+W</code> on a document with unsaved changes, chose “Don’t
+Save”, and the editor was asked about the caret after it had already
+closed. QUILL now checks first, and you will not see that error any
+more.</li>
+<li><strong>Help &gt; Check for Updates opens cleanly.</strong> It used
+to fail with “QUILL encountered an unexpected error.” Open <strong>Help
+&gt; Check for Updates</strong> and the update channel selector appears
+as before.</li>
+<li><strong>The Setup Wizard opens on a clean window, not on top of an
+“Untitled” tab.</strong> If you have already run the wizard, you see the
+normal “Untitled” tab when QUILL starts. On a first run you see the
+wizard on its own, and an untitled document is created for you when the
+wizard finishes.</li>
+<li><strong><code>Cmd+Q</code> now quits QUILL on macOS.</strong> The
+new default is <code>Ctrl+Q</code> (which is <code>Cmd+Q</code> on
+macOS). Quote Lines moved from <code>Ctrl+Q</code> to
+<code>Ctrl+Shift+Q</code> to make room, and Unquote Lines moved off
+<code>Ctrl+Shift+Q</code> (today it is on <code>Alt+Shift+.</code>). A
+saved <code>keymap.json</code> that still has the old keys is corrected
+the first time QUILL starts, and the correction is saved so the next
+start is clean.</li>
+<li><strong><code>Option+Left</code> and <code>Option+Right</code> are
+no longer taken by Back and Forward Location on macOS.</strong> On
+macOS, Back and Forward Location are now <code>Cmd+[</code> and
+<code>Cmd+]</code>, the usual Mac back and forward keys used by Safari,
+Finder and most other Mac apps. On Windows they stay on
+<code>Alt+Left</code> and <code>Alt+Right</code>. If your saved
+<code>keymap.json</code> on a Mac still has the Windows keys, it is
+changed to the new Mac keys the first time QUILL starts, and the change
+is saved so the next start is clean.</li>
+<li><strong>The Setup Wizard’s page heading is the first thing that
+takes focus, and VoiceOver no longer calls the preview “edit
+text”.</strong> On every wizard page a screen reader now lands on the
+heading, not on the read-only preview. The preview is shown as a
+read-only document, so VoiceOver reads it as a document or plain text,
+not as an editable field. Sighted users see the same styled preview as
+before.</li>
+<li><strong>The wizard’s Back and Next buttons are simply “Back” and
+“Next”.</strong> VoiceOver on macOS used to read the old labels (“&lt;
+Back” and “Next &gt;”) as “less than Back” and “Next greater than”. The
+buttons now read “Back” and “Next”, which is what every screen reader
+says and what is printed on the button.</li>
+<li><strong>Read Aloud and Insert Snippet no longer fire when you type a
+plain <code>R</code> or <code>S</code>.</strong> The key shown beside
+those items in the Tools and Insert menus was being treated as a real
+shortcut, so the plain letters R and S were caught everywhere. The key
+is now shown as ordinary text after the item name, and the letters
+belong to your writing again.</li>
+<li><strong>The Help menu is now the macOS system Help menu.</strong>
+The usual <code>Cmd+?</code> Help shortcut now works on the Mac. Windows
+and Linux are unchanged.</li>
+<li><strong>AI Hub opens cleanly from the wizard, and the editor no
+longer trips over the caret before a document is loaded.</strong> The AI
+Hub’s tab labels and the wizard’s AI Hub button had the same fault, and
+the editor failed silently on every keystroke before you had even opened
+a document.</li>
+<li><strong>JAWS, NVDA, Narrator and VoiceOver now say the QUILL
+version.</strong> The window title now includes the full version (for
+example, “QUILL for All 0.7.0 Beta 2”), so any screen reader that reads
+the window title (JAWS <code>Insert+T</code>, NVDA <code>+T</code>,
+Narrator <code>Caps+H</code>, VoiceOver) says the version along with the
+document name. JAWS’s <code>Ctrl+JAWSKey+V</code> still says only
+“Version” until a launcher that carries the version ships; the window
+title is the change you can hear today.</li>
+<li><strong>VoiceOver now reads the editor as a normal text area on
+macOS.</strong> The editor now tells macOS it is a standard text view
+(<code>NSTextView</code>), so VoiceOver treats it as an ordinary
+editable text area with all its usual reading commands. Windows is
+unchanged.</li>
+<li><strong>The Report a Bug dialog now speaks field names on macOS,
+opens in its own window so you can Alt+Tab to the editor, and no longer
+opens a browser by itself after you submit.</strong> Every field is tied
+to its label, so VoiceOver reads “Summary, edit text”, “What happened,
+edit text” and so on as you tab in. The dialog opens in its own window
+that does not block the editor. The report is always on your clipboard
+after you submit. Opening the browser afterwards is now something you
+turn on in Settings: “After you submit a bug report, automatically open
+the support form in your default browser”.</li>
+<li><strong><code>Ctrl+F4</code> on a document with unsaved changes no
+longer crashes when you choose “Don’t Save”.</strong> The close prompt
+was trying to put focus back in the editor after the editor had already
+closed. Save and Cancel work as before, and Save still returns focus to
+the editor.</li>
+<li><strong>The print-page detector now treats a right-margin
+continuation as certain, and keeps the trailing letter.</strong> In a
+braille document with print-page numbers in the right margin of line 1,
+the next braille page can carry the same number with a continuation
+letter (for example <code>7</code> on braille page 1 and <code>7a</code>
+on braille page 2). The print page has not changed; the letter is the
+braille continuation marker. The detector used to rate this as
+<code>medium</code> confidence and drop the letter, so the detailed
+status read <code>Print 7</code> instead of <code>Print 7a</code>. It
+now matches the previous page’s right-margin number, rates the boundary
+<code>high</code> confidence, and keeps the letter. In practice: open a
+braille document with right-margin print-page numbers, move the caret
+across a continuation, and the status bar (and “Read Detailed Braille
+Status”) reads the full <code>7a</code>, not just <code>7</code>.</li>
+</ul>
+<h2 id="the-original-copy-tray-guide">The original Copy Tray guide</h2>
+<p>This is the first guide to the Copy Tray, from when it had nine
+slots. The Copy Tray now has twelve slots and opens with
+<code>Ctrl+Alt+V</code>. Chapter 4, Writing and editing, describes it as
+it is today.</p>
+<h3 id="overview">Overview</h3>
+<p>Copy Tray gives you nine independently addressable clipboard slots.
+Each slot holds a piece of text that you copy there explicitly. Slots
+survive application restarts – their contents are written to disk
+automatically so nothing is lost when you close and reopen QUILL.</p>
+<p>Unlike the system clipboard, which is shared with every other
+application and holds only the most recently copied item, Copy Tray
+slots are exclusive to QUILL and hold their contents until you
+explicitly replace or clear them. This makes Copy Tray well suited for
+accumulating related fragments across a long editing session: quotes
+from multiple sources, code snippets, address blocks, standard
+disclaimers, or any text you paste repeatedly.</p>
+<h3 id="keyboard-access">Keyboard Access</h3>
+<h4 id="paste-from-a-slot">Paste from a slot</h4>
+<p>Hold <code>Ctrl+Shift</code> and press a number key. That is all.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Alt+Shift+1</code></td>
+<td>Paste from slot 1 at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+2</code></td>
+<td>Paste from slot 2 at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+3</code></td>
+<td>Paste from slot 3 at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+4</code></td>
+<td>Paste from slot 4 at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+5</code></td>
+<td>Paste from slot 5 at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+6</code></td>
+<td>Paste from slot 6 at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+7</code></td>
+<td>Paste from slot 7 at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+8</code></td>
+<td>Paste from slot 8 at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+9</code></td>
+<td>Paste from slot 9 at cursor</td>
+</tr>
+</tbody>
+</table>
+<p>If a selection is active when you paste, the pasted text replaces it.
+If the slot is empty, QUILL announces “Slot N is empty”.</p>
+<h4 id="copy-to-a-slot">Copy to a slot</h4>
+<p>Hold the QUILL key (<code>Ctrl+Shift+Grave</code>), release, then
+press <code>Shift+digit</code>. The QUILL-key bare digits 1-6 are
+heading shortcuts; adding Shift is a distinct binding with no
+conflict.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+1</code></td>
+<td>Copy selection to slot 1</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+2</code></td>
+<td>Copy selection to slot 2</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+3</code></td>
+<td>Copy selection to slot 3</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+4</code></td>
+<td>Copy selection to slot 4</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+5</code></td>
+<td>Copy selection to slot 5</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+6</code></td>
+<td>Copy selection to slot 6</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+7</code></td>
+<td>Copy selection to slot 7</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+8</code></td>
+<td>Copy selection to slot 8</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+9</code></td>
+<td>Copy selection to slot 9</td>
+</tr>
+</tbody>
+</table>
+<p>You must have text selected. QUILL announces the slot number and a
+text preview: “Copied to slot 2”.</p>
+<h4 id="management">Management</h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Alt+V</code></td>
+<td>Open Copy Tray dialog</td>
+</tr>
+</tbody>
+</table>
+<p>All bindings are reassignable in
+<code>Tools &gt; Customize &amp; Support &gt; Keymap Editor</code> or
+the Command Palette.</p>
+<h3 id="using-the-edit-menu">Using the Edit Menu</h3>
+<p>All commands are available in <code>Edit &gt; Copy Tray</code>. The
+submenu contains:</p>
+<ul>
+<li><code>Copy to Slot 1</code> through <code>Copy to Slot 9</code> –
+copy the current selection</li>
+<li><code>Paste from Slot 1</code> through
+<code>Paste from Slot 9</code> – paste at the cursor</li>
+<li><code>Open Copy Tray...</code> – open the management dialog</li>
+<li><code>Clear All Tray Slots</code> – clear all slots after
+confirmation</li>
+</ul>
+<h3 id="using-the-system-tray-icon">Using the System Tray Icon</h3>
+<p>Right-click the QUILL icon in the system notification area
+(bottom-right taskbar area). The context menu includes a <strong>Copy
+Tray</strong> submenu that lists every occupied slot with its label (if
+any) and a text preview. Clicking a slot pastes its content into the
+currently active QUILL document. This lets you paste from the tray
+without bringing the main window to the front.</p>
+<h3 id="using-the-dialog">Using the Dialog</h3>
+<p>Open the dialog with <code>Ctrl+Alt+V</code>,
+<code>Edit &gt; Copy Tray &gt; Open Copy Tray</code>, or the Command
+Palette (<code>edit.open_copy_tray</code>). The dialog shows all nine
+slots in a list. Each row displays:</p>
+<ul>
+<li>The slot number</li>
+<li>An optional label</li>
+<li>A preview of the stored text (empty slots show
+<code>(empty)</code>)</li>
+</ul>
+<p>Navigate the list with the arrow keys. The following buttons appear
+below the list:</p>
+<ul>
+<li><strong>Paste</strong> (Enter or double-click) – paste the selected
+slot’s text at the cursor position and close the dialog. Disabled when
+the selected slot is empty.</li>
+<li><strong>Copy Selection Here</strong> – copy the current editor
+selection into the selected slot and refresh the list. Disabled when no
+text is selected in the editor.</li>
+<li><strong>Set Label…</strong> – open a text-entry prompt to name the
+selected slot. Labels appear in all slot listings and in screen-reader
+announcements.</li>
+<li><strong>Clear Slot</strong> – empty the selected slot. Disabled when
+already empty.</li>
+<li><strong>Close</strong> (Escape) – close the dialog without
+pasting.</li>
+</ul>
+<h3 id="labelling-slots">Labelling Slots</h3>
+<p>Slot labels are optional but recommended for any slot you use
+regularly. A label makes the slot identifiable in the dialog and in
+every spoken announcement. Labelling slot 1 “signature” means you will
+hear “Pasted from slot 1 (signature)” instead of “Pasted from slot
+1”.</p>
+<p>To set a label:</p>
+<ol type="1">
+<li>Open the Copy Tray dialog.</li>
+<li>Select the slot you want to label.</li>
+<li>Press <code>Set Label...</code>.</li>
+<li>Type the label and press Enter.</li>
+</ol>
+<p>Labels are persisted alongside slot text and survive restarts.</p>
+<h3 id="accessibility-notes">Accessibility Notes</h3>
+<ul>
+<li>Every Copy Tray operation announces its result through QUILL’s
+screen-reader interface. Copy, paste, clear, and label operations all
+produce spoken feedback.</li>
+<li>The slot list in the dialog receives initial focus when the dialog
+opens.</li>
+<li>Slot labels, when set, are included in every announcement.</li>
+<li>Empty slots are clearly identified as <code>(empty)</code> in all
+contexts.</li>
+<li>The <code>Clear All Tray Slots</code> confirmation dialog defaults
+to No to prevent accidental data loss.</li>
+<li>The <code>Ctrl+Shift+N</code> paste scheme is designed for screen
+reader users: one familiar chord activates slot N instantly, no menu
+navigation required.</li>
+</ul>
+<h3 id="tips">Tips</h3>
+<ul>
+<li><strong>Research accumulator.</strong> Assign each tray slot to a
+document section. Copy a relevant excerpt to each slot as you read
+through a source, then paste them in order when drafting.</li>
+<li><strong>Code boilerplate.</strong> Keep import blocks, standard
+headers, and closing patterns in labelled slots for one-chord
+insertion.</li>
+<li><strong>Cross-document paste.</strong> Copy a phrase to a tray slot,
+switch documents, paste from the tray – the system clipboard is
+untouched.</li>
+<li><strong>Persistent library.</strong> Slots survive restarts. Build a
+set of standard fragments you reach for daily.</li>
+<li><strong>System tray access.</strong> Paste into any QUILL document
+directly from the notification-area icon without bringing the window to
+the front.</li>
+</ul>
+<hr />
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-appendix-c-every-emoji-quill-can-insert.html">Appendix
+C: Every emoji QUILL can insert</a></li>
+<li>Next: <a
+href="quill-guide-appendix-e-design-notes-for-developers.html">Appendix
+E: Design notes for developers</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

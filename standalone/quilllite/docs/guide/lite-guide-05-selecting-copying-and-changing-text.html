@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 5: Selecting, copying and changing text</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-5-selecting-copying-and-changing-text">Chapter 5:
+Selecting, copying and changing text</h1>
+<p>Holding Shift and pressing an arrow is fine for two letters, and slow
+for four paragraphs. This chapter gives you better ways. You will select
+from here to there without holding anything down, take a whole word,
+line or paragraph in one key, and read a selection without risking it.
+Then you will keep more than one thing on the clipboard, move, sort and
+tidy whole lines, and get back text you deleted. Everything here tells
+you how much it took or changed, so you always know what you have.</p>
+<h2 id="selecting">Selecting</h2>
+<p>Holding Shift and pressing an arrow selects one character at a time.
+That is fine for two letters. For four paragraphs it is slow, and it is
+easy to lose track of how far you have got.</p>
+<p><strong>Edit &gt; Selection</strong> gives you better ways. Each one
+tells you how much it took, for example “Selected paragraph, 41 words”.
+That way you know what you have before you press anything that might
+replace it.</p>
+<p>If you would like to try this with the app guiding you, the tutorial
+<em>Selecting more than a few words</em> walks through each of these
+ways.</p>
+<h3 id="start-a-selection-and-walk-to-the-end-of-it">Start a selection
+and walk to the end of it</h3>
+<p>This is the one to learn first.</p>
+<ol type="1">
+<li>Put the cursor where you want the selection to start.</li>
+<li>Press <strong>F8</strong>.</li>
+<li>Move any way you like: arrows, Home, End, Page Down, or Ctrl with an
+arrow.</li>
+<li>When you reach the end, press <strong>Shift+F8</strong>. QUILL Lite
+tells you how much you selected.</li>
+</ol>
+<p>You do not have to hold anything down, and you do not have to count.
+Use it whenever what you want does not start and end neatly on a word or
+a paragraph.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F8</strong></td>
+<td>Start selecting from here</td>
+</tr>
+<tr>
+<td><strong>Shift+F8</strong></td>
+<td>Finish, and say how much was taken</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F8</strong></td>
+<td><strong>Toggle Selection Marker</strong>: drop the starting point or
+pick it up, without moving the cursor</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F8</strong></td>
+<td>Put back the selection you just had</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F8</strong></td>
+<td>Go to the beginning of what is selected</td>
+</tr>
+</tbody>
+</table>
+<h4 id="a-shift-that-stays-down-altshiftf9">A Shift that stays down
+(Alt+Shift+F9)</h4>
+<p><strong>Extend Selection Mode</strong> is another way to do the same
+job. Try both and use the one you like.</p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+F9</strong>. QUILL Lite says “Extend
+selection mode on” and tells you where you are.</li>
+<li>Move with the arrows, Home, End, Page Down or Ctrl with an arrow.
+Each move makes the selection bigger, as if you were holding Shift. Your
+screen reader does not say “selected” on every key press, so it stays
+quiet while you work.</li>
+<li>Press <strong>Alt+Shift+F9</strong> again, or
+<strong>Escape</strong>, to stop.</li>
+</ol>
+<p>If you type something that is not a movement key, it replaces the
+selection, just as it would if you had been holding Shift.</p>
+<p>How is this different from <strong>F8</strong>? With F8, nothing is
+selected until you press <strong>Shift+F8</strong>, so in between you
+can use anything to get there: Find, Go To, a bookmark. Extend Selection
+Mode selects as you go, so what you hear is always what you have.</p>
+<p><strong>Ctrl+Shift+F8</strong> is worth remembering. If an arrow key
+has just thrown away a selection that took you a while to build, press
+it to get the selection back, however you made it.</p>
+<h4 id="what-you-hear-when-something-is-selected">What you hear when
+something is selected</h4>
+<p>Every selection tells you two things, in the same order: what it
+took, and how many words. For example, “Selected paragraph, 41
+words”.</p>
+<p>When you finish an <strong>F8</strong> selection, you also hear where
+it reaches, for example “Selected 120 words, lines 14 to 31”. It could
+start and end anywhere, so this tells you how far it went.</p>
+<p>QUILL says exactly the same things, so you hear the same sentences in
+both editors.</p>
+<h3 id="take-a-whole-word-line-or-paragraph-at-once">Take a whole word,
+line or paragraph at once</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+W</strong></td>
+<td>Select the word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+E</strong></td>
+<td>Select the line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+H</strong></td>
+<td>Select the paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Space</strong></td>
+<td>Select the sentence</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+B</strong></td>
+<td>Select the block: the run of lines between blank lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+X</strong></td>
+<td>Grow the selection outwards a step</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+X</strong></td>
+<td>Shrink it back in a step</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+A</strong></td>
+<td>Clear the selection, staying where you are</td>
+</tr>
+<tr>
+<td><strong>Ctrl+A</strong></td>
+<td>Select everything</td>
+</tr>
+</tbody>
+</table>
+<p>You do not need to find where any of these start. Just put the cursor
+somewhere inside.</p>
+<p>Growing goes word, line, sentence, paragraph, block, then the whole
+document, and tells you which one it took each time. Shrinking goes back
+the other way. So if you press <strong>Ctrl+Shift+X</strong> once too
+often, <strong>Ctrl+Alt+Shift+X</strong> puts it right.</p>
+<h3 id="marks-where-you-were-a-moment-ago">Marks: where you were a
+moment ago</h3>
+<p>A mark is lighter than a bookmark. A bookmark is a place you mean to
+keep. A mark is where you were standing before you went off to check
+something.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+M</strong></td>
+<td>Set a mark here</td>
+</tr>
+<tr>
+<td><strong>Ctrl+M</strong></td>
+<td>Go back to the last mark</td>
+</tr>
+<tr>
+<td><strong>Alt+M</strong></td>
+<td>List your marks and pick one</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+X</strong></td>
+<td>Swap between the cursor and the mark, selecting what is between</td>
+</tr>
+</tbody>
+</table>
+<p>QUILL Lite keeps your last twenty marks. Marking the same place twice
+only uses one.</p>
+<p>A mark moves with your text. Drop one on a paragraph, add three
+paragraphs above it, and <strong>Ctrl+M</strong> still takes you to that
+paragraph.</p>
+<p>Every way of reaching a mark counts as a jump, so
+<strong>Alt+Left</strong> can take you back again, the same as after a
+bookmark or a Go To.</p>
+<h3 id="two-more">Two more</h3>
+<p><strong>Ctrl+Shift+Y</strong> reads back what is selected. Use it to
+check you took what you meant to before your next key replaces it. A
+long selection is summarised instead of read out in full.</p>
+<p><strong>Ctrl+Alt+Q</strong> puts a second copy of the selection right
+after it. If nothing is selected, it copies the line you are on.</p>
+<h3 id="the-ones-windows-gives-you-anyway">The ones Windows gives you
+anyway</h3>
+<p>These work in QUILL Lite the same way they do everywhere else, so
+they have no place on the menu:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Shift+Home</strong> / <strong>Shift+End</strong></td>
+<td>Select to the start / end of the line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Home</strong> /
+<strong>Ctrl+Shift+End</strong></td>
+<td>Select to the start / end of the document</td>
+</tr>
+<tr>
+<td><strong>Shift</strong> and an arrow</td>
+<td>Select one character, or one line, at a time</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift</strong> and Left or Right</td>
+<td>Select a word at a time</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reading-a-selection-without-risking-it">Reading a selection
+without risking it</h2>
+<p>When you have a long selection and want to read it through, there is
+a small danger. If you arrow around your document while text is
+selected, the next key you type replaces all of it.</p>
+<p><strong>Alt+Shift+U</strong> opens the <strong>Review
+Buffer</strong>. It is a copy of what you selected, in its own window,
+and you cannot change it. Read it as slowly as you like. When you are
+done, press <strong>Escape</strong>. You are back where you were, and
+your selection is still there.</p>
+<p>You will also find it at <strong>Edit &gt; Selection &gt; Review
+Buffer…</strong>.</p>
+<h2 id="copying-and-pasting-more-than-one-thing">Copying and pasting
+more than one thing</h2>
+<p>The Windows clipboard holds one thing at a time. QUILL Lite gives you
+three more places to keep things, all in <strong>Edit &gt;
+Clipboard</strong>.</p>
+<h3 id="the-copy-tray-twelve-numbered-slots">The copy tray: twelve
+numbered slots</h3>
+<p>The copy tray holds twelve things, each in its own numbered slot.
+They stay there even after you close QUILL Lite.</p>
+<ul>
+<li><strong>Ctrl+Alt+Y</strong> copies what you selected into the next
+free slot.</li>
+<li><strong>Alt+Shift+Y</strong> lets you choose the slot yourself. Each
+slot in the list says what is in it now, so you never overwrite
+something without hearing it first. Picking your own number makes it
+easier to remember later.</li>
+<li><strong>Ctrl+Alt+V</strong> pastes from any slot, even an hour
+later.</li>
+<li><strong>Ctrl+Alt+Shift+Y</strong> empties the tray.</li>
+</ul>
+<h3 id="the-collector-gather-now-paste-once">The collector: gather now,
+paste once</h3>
+<p>The copy tray has twelve numbered slots for things you want to keep.
+The <strong>collector</strong> is for something different: you are
+reading along and want to pick up several pieces as you go, without
+deciding where each one goes.</p>
+<ol type="1">
+<li>Select a piece of text and press <strong>Alt+Shift+C</strong>
+(<strong>Edit &gt; Clipboard &gt; Collect Selection</strong>). It is
+added to the pile. Do this as often as you like. Each piece goes on the
+end, and nothing is replaced.</li>
+<li>When you are ready, move to where you want it all and use
+<strong>Paste Everything Collected</strong>
+(<strong>Ctrl+Alt+Shift+G</strong>). The whole pile goes in, in the
+order you collected it.</li>
+<li>When you are done, press <strong>Ctrl+Alt+Shift+C</strong>
+(<strong>Clear the Collector</strong>) to empty it.</li>
+</ol>
+<p>If you used an older version, Collect Selection used to be on
+Alt+Shift+S, and before that on Ctrl+Alt+G. Alt+Shift+S is now the
+clipboard collector, below, the same key as in QUILL. Ctrl+Alt+G moved
+because Google Drive for desktop takes that key for itself. If you find
+a key that does nothing, the Keyboard Manager can tell you when another
+program has taken it.</p>
+<h3 id="the-clipboard-collector-copy-anywhere-it-lands-here">The
+clipboard collector: copy anywhere, it lands here</h3>
+<p>Sometimes the pieces you want are not in QUILL Lite at all. They are
+in a web page, an email, a PDF or a terminal. The <strong>clipboard
+collector</strong> turns a QUILL Lite window into a place where
+everything you copy ends up, whichever program you copy it in. It is the
+same collector QUILL has, and it works the same way.</p>
+<ol type="1">
+<li>Open the window you want to collect into. A new, empty one is a good
+choice.</li>
+<li>Press <strong>Alt+Shift+S</strong> (<strong>Edit &gt; Clipboard &gt;
+Clipboard Collector</strong>). You hear “Clipboard collector on;
+anything you copy, in any program, appends to this document.”</li>
+<li>Go and work wherever you like. Each time you copy text, in any
+program, it is added to the end of that window, with a short line of
+dashes between pieces. If the window already has a file name, it is
+saved straight away and you hear “Collected and saved.” If it has never
+been saved, you hear “Collected clipboard text.” Copying the same thing
+twice in a row adds it only once.</li>
+<li>Press <strong>Alt+Shift+S</strong> again in that window to stop. You
+hear “Clipboard collector off.”</li>
+</ol>
+<p>A few things worth knowing:</p>
+<ul>
+<li><strong>It saves a named window for you.</strong> After each new
+piece, a window that already has a file name is saved quietly. An
+untitled window is never saved and no Save As window ever opens: it is
+marked as changed, and it reaches the disk when you save it. If a save
+cannot happen, for example the disk is full, another program has changed
+the file, or the file’s encoding cannot hold a character you copied, you
+hear “Collected, but not saved” and the reason, and collecting carries
+on; save it yourself to decide. To have collected text wait for you to
+save, clear <strong>Save after every clip the clipboard collector
+adds</strong> (<strong>Alt+Y</strong>) in <strong>Preferences</strong>.
+QUILL has the same setting.</li>
+<li><strong>One window at a time.</strong> Turn the collector on in a
+second window and it moves there, and tells you so. <strong>Edit &gt;
+Clipboard &gt; Clipboard Collector</strong> has a check mark in the
+window that is collecting.</li>
+<li><strong>It stops when that window closes.</strong></li>
+<li><strong>It only takes text.</strong> Pictures and files on the
+clipboard are left alone. A read-only window never collects.</li>
+<li><strong>Each piece can be undone.</strong> <strong>Ctrl+Z</strong>
+takes back the last piece collected.</li>
+</ul>
+<h3 id="the-clip-library-things-you-want-to-keep">The clip library:
+things you want to keep</h3>
+<p>Select something and press <strong>Ctrl+Alt+M</strong> to keep it in
+your clip library. <strong>Ctrl+Alt+Shift+M</strong> opens the list so
+you can paste one back.</p>
+<p>The library can also fill itself. In Preferences, check <strong>Keep
+everything I copy in the clip library</strong>. From then on, every copy
+and every cut you make in a QUILL Lite document is saved there, up to
+the last two hundred. It only sees what you copy in QUILL Lite, never in
+other programs.</p>
+<p>It starts switched off, and here is why you might leave it that way:
+the library is a file on your computer. If you ever copy a password, it
+will be in there too.</p>
+<h3 id="two-more-handy-keys">Two more handy keys</h3>
+<ul>
+<li><strong>Ctrl+Shift+V</strong> pastes text without its formatting.
+Use it when something copied from a web page arrives with its own fonts
+and colours.</li>
+<li><strong>Ctrl+F8</strong> copies the whole document. You could press
+Select All and then Copy, but that leaves everything selected, and the
+next key you type would replace it all. Ctrl+F8 copies without selecting
+anything.</li>
+</ul>
+<h2 id="working-on-lines">Working on lines</h2>
+<p><strong>Edit &gt; Lines</strong> holds everything you can do to whole
+lines. Most of these work on the line your cursor is on, so you do not
+need to select anything first.</p>
+<h3 id="moving-copying-and-joining-lines">Moving, copying and joining
+lines</h3>
+<ul>
+<li><strong>Move Line Up</strong> (<strong>Ctrl+Shift+Up</strong>) and
+<strong>Move Line Down</strong> (<strong>Ctrl+Shift+Down</strong>) move
+the current line past the one next to it. It is much quicker than
+cutting and pasting, and your cursor goes with the line.</li>
+<li><strong>Duplicate Line</strong> (<strong>Ctrl+D</strong>) makes a
+copy of the line just below it.</li>
+<li><strong>Join Lines</strong> (<strong>Ctrl+Alt+Shift+J</strong>)
+pulls the next line up onto the end of this one.</li>
+</ul>
+<h3 id="deleting-lines">Deleting lines</h3>
+<ul>
+<li><strong>Delete Line</strong> (<strong>Ctrl+Shift+Delete</strong>)
+removes the whole line.</li>
+<li><strong>Delete to Start of Line</strong>
+(<strong>Ctrl+Shift+Backspace</strong>) removes everything before the
+cursor on this line.</li>
+<li><strong>Delete to End of Line</strong>
+(<strong>Ctrl+Alt+Shift+Delete</strong>) removes everything after the
+cursor on this line.</li>
+<li><strong>Delete Paragraph</strong>
+(<strong>Ctrl+Alt+Shift+Backspace</strong>) removes the whole
+paragraph.</li>
+</ul>
+<p>Each one tells you what it did. If there was nothing to do, it says
+that too, for example “Already the first line”, so you are never left
+wondering.</p>
+<h3 id="putting-lines-in-order-and-tidying-them-up">Putting lines in
+order, and tidying them up</h3>
+<p>These work on what you have selected. If nothing is selected, they
+work on the whole document.</p>
+<p>To change the order:</p>
+<ul>
+<li><strong>Sort Lines A to Z</strong> (<strong>Ctrl+Alt+S</strong>), or
+<strong>Sort Lines Z to A</strong>
+(<strong>Ctrl+Alt+Shift+S</strong>).</li>
+<li><strong>Reverse Lines</strong> (<strong>Alt+Shift+Z</strong>) turns
+the list upside down.</li>
+<li><strong>Number Lines</strong> (<strong>Alt+Shift+N</strong>) puts a
+number in front of each line.</li>
+</ul>
+<p>To clean up:</p>
+<ul>
+<li><strong>Remove Every Blank Line</strong>
+(<strong>Ctrl+Alt+K</strong>) removes every empty line, including the
+ones between your paragraphs. A line with only spaces on it counts as
+empty. This is great for text from a web page that arrives
+double-spaced, but you probably do not want it on a letter.</li>
+<li><strong>Remove Duplicate Lines</strong>
+(<strong>Ctrl+Alt+D</strong>) keeps one copy of each line.</li>
+<li><strong>Trim Trailing Spaces</strong> (<strong>Ctrl+Alt+R</strong>)
+removes spaces at the ends of lines. It was Ctrl+Alt+T until version
+2.0.0; that key is now Insert Table, as it is in QUILL.</li>
+<li><strong>Tidy Whitespace</strong> (<strong>Ctrl+Alt+Shift+T</strong>)
+shrinks runs of spaces and tabs, the kind that often come along with
+pasted text.</li>
+</ul>
+<p>If you also use QUILL, it has these same commands, plus one more
+called <strong>Trim Blank Lines at the Ends</strong>. QUILL Lite has
+just the one blank line command.</p>
+<p>Each of these is a single undo. One press of <strong>Ctrl+Z</strong>
+puts the whole sort back, not one line at a time.</p>
+<h3 id="quoting-wrapping-and-throwing-lines-away">Quoting, wrapping, and
+throwing lines away</h3>
+<p>These also work on what you have selected, or on the whole document
+if nothing is selected.</p>
+<ul>
+<li><strong>Quote Lines</strong> (<strong>Ctrl+Shift+Q</strong>) puts
+<code>&gt; </code> in front of each line, the way an email reply does.
+<strong>Remove Quote Marks</strong> (<strong>Alt+Shift+.</strong>, Alt,
+Shift and the period) takes them off again.</li>
+<li><strong>Hard Wrap Lines…</strong> (<strong>Alt+Shift+W</strong>)
+asks for a width, then rearranges the lines so none is longer than that.
+It keeps your paragraphs apart and never breaks a word. This really
+changes your file. <strong>View &gt; Word Wrap</strong> is different: it
+only changes how the lines are shown.</li>
+<li><strong>Delete Lines Containing</strong>
+(<strong>Alt+Shift+X</strong>) asks for some text, then removes every
+line that has it. The text is matched exactly as you type it. You hear
+how many lines went, and one <strong>Ctrl+Z</strong> brings them all
+back. This is a big help when you are trimming a long log file by
+ear.</li>
+</ul>
+<h3 id="commenting-lines-out">Commenting lines out</h3>
+<p><strong>Toggle Line Comment</strong> (<strong>Ctrl+/</strong>) turns
+the selected lines into comments. Press it again to turn them back. It
+says how many lines it changed.</p>
+<p>QUILL Lite picks the comment mark from the file’s name:</p>
+<ul>
+<li><code># </code> in a <code>.py</code>, <code>.yml</code>,
+<code>.ini</code> or <code>.conf</code> file</li>
+<li><code>-- </code> in a <code>.sql</code> file</li>
+<li><code>&lt;!-- --&gt;</code> in HTML and Markdown</li>
+<li><code>// </code> in anything else</li>
+</ul>
+<p>QUILL uses the same marks, so a file commented in one can be
+uncommented in the other. A document you have not saved yet gets
+<code>// </code>. Once you save it with its proper name, the right mark
+is used from then on.</p>
+<h3 id="tabs-or-spaces">Tabs or spaces</h3>
+<p><strong>Tools &gt; Indenting</strong> has <strong>Convert to
+Spaces</strong> (<strong>Alt+F11</strong>) and <strong>Convert to
+Tabs</strong> (<strong>Alt+F12</strong>). They change only the
+indentation at the start of each line, and count four spaces to a tab.
+This is a common change to make to a file somebody else wrote.</p>
+<h3 id="changing-case">Changing case</h3>
+<p><strong>Tools &gt; Change Case</strong> has five choices:</p>
+<ul>
+<li><strong>UPPERCASE</strong> (<strong>Ctrl+Shift+U</strong>)</li>
+<li><strong>lowercase</strong> (<strong>Ctrl+Shift+K</strong>)</li>
+<li><strong>Title Case</strong> (<strong>Ctrl+Shift+T</strong>)</li>
+<li><strong>Sentence case</strong> (<strong>Ctrl+Alt+Shift+U</strong>)
+puts a capital at the start and makes the rest small. Good for a heading
+that was typed in capitals.</li>
+<li><strong>Invert Case</strong> (<strong>Ctrl+Alt+Shift+N</strong>)
+swaps every letter. Good for a sentence typed with Caps Lock on by
+mistake.</li>
+</ul>
+<p>They work on what you have selected. <strong>If nothing is selected,
+they change the word your cursor is in</strong>, the same as Shift+F3 in
+Word. That keeps a slip of the finger small: a whole document in the
+wrong case sounds just the same when it is read aloud, so you might not
+notice.</p>
+<h3 id="getting-deleted-text-back-somewhere-else">Getting deleted text
+back somewhere else</h3>
+<p><strong>Restore Deleted Text</strong>
+(<strong>Ctrl+Alt+Shift+Z</strong>) puts something you deleted back
+<strong>where your cursor is now</strong>. QUILL Lite remembers your
+last three deletions. If the one you want is not the most recent, you
+get a short list with a preview of each.</p>
+<p>This is different from undo. <strong>Ctrl+Z</strong> puts text back
+where it came from. This puts it where you are. So you can delete a
+paragraph, move down, and restore it there. That is a way to move text
+without using the clipboard, so whatever you had copied is still waiting
+for you.</p>
+<p>It only remembers deletions made with the delete commands above, not
+every letter you backspaced over.</p>
+<h3 id="indenting">Indenting</h3>
+<p><strong>Tools &gt; Indenting</strong> has <strong>Indent</strong>
+(<strong>Ctrl+]</strong>) and <strong>Outdent</strong>
+(<strong>Ctrl+[</strong>). They move every line your selection touches,
+or just the line you are on if nothing is selected. You hear how many
+lines moved. If you edit code or settings files, you will use these a
+lot.</p>
+<h4 id="asking-how-deep-a-line-is">Asking how deep a line is</h4>
+<p><strong>Describe Indent Depth</strong>
+(<strong>Ctrl+Alt+Shift+V</strong>) tells you how far the current line
+is indented: “4 spaces”, “1 tab”, “1 tab, 3 spaces”, or “No
+indentation”.</p>
+<p>Your screen reader reads the words on a line, but not the spaces and
+tabs in front of them. In a Python file, a YAML file or a nested list,
+that indentation matters a lot. This command lets you hear it.</p>
+<p>It also tells you when a line uses a different kind of space from the
+lines around it, for example a tab where the others use spaces. You
+cannot hear that difference any other way, and in a Python file it stops
+the program running.</p>
+<h4 id="making-tab-indent-instead">Making Tab indent instead</h4>
+<p>When you start, the <strong>Tab</strong> key types a tab character,
+the way it does in Notepad. You can see this in <strong>View &gt; Tab
+Key Inserts a Tab Character</strong>, which is checked. Press
+<strong>Ctrl+Alt+Shift+I</strong> to clear the check mark, and Tab
+indents the whole line instead, telling you the new depth as it goes.
+That is usually what you want for code.</p>
+<p><strong>Shift+Tab</strong> outdents in either mode, so one key always
+takes back a tab you typed by accident. The <strong>Tab Mode</strong>
+part of the status bar tells you which mode is on.</p>
+<h3 id="snippets-ctrlaltshifthome">Snippets (Ctrl+Alt+Shift+Home)</h3>
+<p><strong>Ctrl+Alt+Shift+Home</strong> opens
+<strong>Snippets…</strong>. (It was <strong>Alt+Shift+I</strong> before
+version 2.0, which is now Add Inline Note, the same as in QUILL.) It
+lists every abbreviation you have, the ones you use most at the top,
+with a preview of what each one writes. Pick one and press
+<strong>Enter</strong>, and it goes in at your cursor.</p>
+<p>This is the easy way in when you cannot remember a short form. The
+six you use every day you will type from memory. The one you set up
+months ago, you can find here. Anything you add in <strong>Manage
+Abbreviations…</strong> shows up in this list too.</p>
+<h3 id="abbreviations">Abbreviations</h3>
+<p>An abbreviation is a short form that grows into a longer one. Type
+the short form, press <strong>Space</strong>, and the long text appears.
+It is great for your address, how you sign off, or anything else you
+type often.</p>
+<ul>
+<li><strong>Ctrl+Alt+A</strong> opens <strong>Manage
+Abbreviations…</strong>, where you add and change them.</li>
+<li><strong>Alt+Shift+A</strong> turns expanding on and off.
+<strong>Tools &gt; Expand Abbreviations</strong> shows a check mark when
+it is on.</li>
+</ul>
+<p>That on and off key is there for the moment an abbreviation has just
+grown into something you did not want. You can turn it off right away,
+without looking for a setting. It is the same switch as the
+Abbreviations box in Customize Features.</p>
+<p>If you also use QUILL or Quill Inkwell, there is a switch in
+Preferences that lets all three share one list of abbreviations.</p>
+<p>Your own AutoCorrect corrections (Chapter 11, Correcting misspellings
+as you type) are kept in this same list, under the category
+<strong>AutoCorrect</strong>. You will see them in Manage Abbreviations
+if you choose that category. They are not abbreviations, though: they
+never expand just because <strong>Expand Abbreviations</strong> is on,
+and they are not in <strong>Snippets</strong>.</p>
+<h2 id="undo-and-getting-text-back">Undo, and getting text back</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Z</strong></td>
+<td>Undo</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Y</strong></td>
+<td>Redo</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Z</strong></td>
+<td><strong>Restore Deleted Text</strong>: put a recent deletion back
+<strong>where the cursor is now</strong></td>
+</tr>
+</tbody>
+</table>
+<p>You already know the first two. The third one is worth learning.
+<strong>Ctrl+Z puts deleted text back where it came from, and Restore
+Deleted Text puts it where you are standing.</strong> So a deletion is
+never final, even after you have typed more.</p>
+<h3 id="big-changes-are-one-undo">Big changes are one undo</h3>
+<p>When a command changes a lot at once, one <strong>Ctrl+Z</strong>
+takes the whole change back. That includes sorting nine hundred lines,
+applying a heading, moving a whole section, going back to an earlier
+version of the file, or tidying all the spaces. One key did it, so one
+key undoes it.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can start a selection with <strong>F8</strong> and walk to the
+end of it, use Extend Selection Mode, take a whole word, line or
+paragraph in one key, and grow or shrink what you have. Marks take you
+back to where you were a moment ago, and the Review Buffer on
+<strong>Alt+Shift+U</strong> lets you read a selection safely.</p>
+<p>The copy tray holds twelve numbered things, the collector gathers
+several pieces to paste together, and the clip library keeps what you
+want to keep. <strong>Ctrl+Shift+V</strong> pastes plain text, and
+<strong>Ctrl+F8</strong> copies the whole document without selecting it.
+Edit &gt; Lines moves, sorts, tidies, quotes, wraps and deletes lines,
+Tools &gt; Indenting and Tools &gt; Change Case look after spacing and
+capitals, and snippets and abbreviations save you typing. Every big
+change is one <strong>Ctrl+Z</strong>, and Restore Deleted Text puts a
+deletion back wherever you are now.</p>
+<p>The tutorial <em>Selecting more than a few words</em> walks you
+through the selecting keys, and finishes with the Review Buffer.</p>
+<p>Next, Chapter 6, Formatting, headings and the Insert menu, shows you
+what to do with text once it is in.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-guide-04-moving-around-a-document.html">Chapter 4: Moving
+around a document</a></li>
+<li>Next: <a
+href="lite-guide-06-formatting-headings-and-the-insert-menu.html">Chapter
+6: Formatting, headings and the Insert menu</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

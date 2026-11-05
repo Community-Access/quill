@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 4: Moving around a document</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-4-moving-around-a-document">Chapter 4: Moving around a
+document</h1>
+<p>A long document is easy to get lost in when you cannot glance down a
+page. This chapter gives you the keys that take you straight to what you
+want. You will search for words and hear how many there are, look for
+characters you cannot type, jump to a line, a bookmark or a heading, and
+leave bookmarks that are still there tomorrow. And whenever you jump
+somewhere, there is a key that takes you back.</p>
+<h2 id="finding-things">Finding things</h2>
+<p>These are the keys you will use most when you are looking for
+something:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+F</strong></td>
+<td>Find</td>
+</tr>
+<tr>
+<td><strong>F3</strong> / <strong>Shift+F3</strong></td>
+<td>Find next / previous</td>
+</tr>
+<tr>
+<td><strong>Ctrl+H</strong></td>
+<td>Replace</td>
+</tr>
+<tr>
+<td><strong>Ctrl+G</strong></td>
+<td>Go To: a line, a page, a bookmark, a heading or a PDF’s outline</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F8</strong></td>
+<td>Find in Open Documents: every open window at once</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F</strong></td>
+<td>Search in Files: a whole folder</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+R</strong></td>
+<td>Replace Across Files</td>
+</tr>
+</tbody>
+</table>
+<p>All seven are rows of the <strong>Edit</strong> menu itself, so if
+you forget a key, press <strong>Alt+E</strong> and arrow down: after
+Replace you hear <strong>Find in Open Documents…</strong>,
+<strong>Search in Files…</strong> and <strong>Replace Across
+Files…</strong>, each with its key. The two that answer “how many” and
+“where in this document”, <strong>All Matches…</strong> and
+<strong>Count Occurrences</strong>, are one step further in, on
+<strong>Edit &gt; Matches</strong>.</p>
+<p>When a search reaches the end of the document, it goes back to the
+top and keeps looking, and it tells you it has done so. That little
+message is worth listening for. It is how you know a document has only
+one match, and not none.</p>
+<h3 id="what-is-in-the-find-and-replace-windows">What is in the Find and
+Replace windows</h3>
+<p>The <strong>Find</strong> window (<strong>Ctrl+F</strong>) opens with
+your cursor in the box where you type what to look for. If you had
+something selected, it is already there; if not, your last search is.
+Tab past the box and you meet two checkboxes:</p>
+<ul>
+<li><strong>Match case</strong>: when it is checked, <em>Cat</em> and
+<em>cat</em> count as different words.</li>
+<li><strong>Whole word only</strong>: when it is checked, <em>cat</em>
+finds the word on its own and not the start of <em>catalogue</em>.</li>
+</ul>
+<p>After those come the <strong>Search mode</strong> (more about that
+below) and the buttons. <strong>Find next</strong> is the one
+<strong>Enter</strong> presses, and <strong>Shift+Enter</strong> in the
+box finds the previous match, just like the <strong>Find
+previous</strong> button. <strong>Close</strong>, or
+<strong>Escape</strong>, puts the window away, and <strong>F3</strong>
+still remembers what you were looking for.</p>
+<p>The <strong>Replace</strong> window (<strong>Ctrl+H</strong>) has the
+same box and checkboxes, plus a <strong>Replace with</strong> box for
+what each match should become. Leave it empty to delete the matches. Its
+buttons are:</p>
+<ul>
+<li><strong>Find next</strong>, which moves to the next match without
+changing anything.</li>
+<li><strong>Replace</strong>, which changes the match you are on and
+moves on to the next one, so you can decide one at a time.</li>
+<li><strong>Replace all</strong>, which changes every match in the
+document at once and tells you how many it changed.</li>
+<li><strong>Close</strong>. Anything you have already replaced stays
+replaced, and <strong>Ctrl+Z</strong> takes it back if you change your
+mind.</li>
+</ul>
+<p>Both windows stay open while you work, so you can go back to your
+document and return to them.</p>
+<h3 id="how-many-are-there">How many are there?</h3>
+<p>The Find window counts as you type. Type three letters and it tells
+you how many matches there are. Type a fourth and the number changes.
+Your screen reader picks up the new count on its own, so you do not have
+to ask.</p>
+<p><strong>Ctrl+Down</strong> and <strong>Ctrl+Up</strong> step through
+the matches while you stay in the search box. You can hear each one and
+still change what you typed. When you have the one you want, press
+<strong>Enter</strong> and you are back in your document, right on
+it.</p>
+<p>You do not have to open the window to count. <strong>Count
+Occurrences</strong> (<strong>Ctrl+Alt+Shift+F3</strong>) counts your
+current search from anywhere in the document.</p>
+<p><strong>All Matches</strong> (<strong>Ctrl+Shift+F3</strong>) shows
+every match in one list, in order, each with its line, its column and
+the words around it. Open it before you press Replace All. It lets you
+see everything you are about to change before you change it.</p>
+<h3 id="find-and-replace-in-all-your-open-documents">Find and replace in
+all your open documents</h3>
+<p>Sometimes the thing you are looking for is in one of a dozen
+documents you have open, or you need to change a name in all of them.
+<strong>Find in Open Documents…</strong>
+(<strong>Ctrl+Alt+Shift+F8</strong>, on the <strong>Edit</strong> menu
+under Replace) searches every document QUILL Lite has open, not just the
+one in front of you.</p>
+<p>It searches the text exactly as it is in each window, so it
+finds:</p>
+<ul>
+<li>changes you have not saved yet,</li>
+<li>new documents you have never saved,</li>
+<li>formatted documents, such as Word and RTF files, searched as you see
+them.</li>
+</ul>
+<p>Anything that is not open is left alone, and it never writes to a
+file on disk. If you want to search files that are saved in a folder
+instead, that is <strong>Search in Files</strong>, described next.</p>
+<p>The window has the same choices as Find and Replace:</p>
+<ul>
+<li><strong>Find what</strong> and <strong>Replace with</strong>.</li>
+<li><strong>Search mode</strong>: Normal, Extended or Regular
+expression, just as in Find.</li>
+<li><strong>Match case</strong>, <strong>Whole word only</strong>, and
+<strong>Wrap around</strong>, which is checked when it opens. With it
+checked, the search goes on from the first document after the last one,
+and comes back to where you started.</li>
+</ul>
+<p>Its buttons:</p>
+<ul>
+<li><strong>Find Next</strong> (<strong>Enter</strong>) and <strong>Find
+Previous</strong> go to the next or previous match. When one document
+has no more, they move on to the next document and bring it to the
+front, and you hear its name and the line: “Chapter 3.txt, line 12: She
+opened the door.” While you stay in one document you only hear the line,
+the way Find works. If the search goes past the last document and starts
+again from the first, you hear “Back to the start” first.</li>
+<li><strong>Find All</strong> lists every match in every open document,
+in order, each with the document’s name, the line number and the line.
+Arrow through it and press <strong>Enter</strong> to go straight to that
+match. It is the quickest way to check what Replace All is about to
+change.</li>
+<li><strong>Replace All</strong> does nothing until you have heard what
+it found, for example: “312 matches in 87 of 104 open documents. Replace
+them all?” Press <strong>Yes</strong> to go ahead.
+<ul>
+<li>Each document is changed on its own, so <strong>Ctrl+Z</strong> in
+any one window takes back just that document’s replacements. In a
+formatted document each replacement is its own undo step, which keeps
+the formatting around it exactly as it was.</li>
+<li>Nothing is saved for you. Every changed document is marked as
+changed, and you save them when you are ready, one at a time or with
+<strong>Save All</strong>.</li>
+<li>Documents that cannot be changed, such as a read-only file or a
+report QUILL wrote for you, are still searched, but Replace All leaves
+them alone and tells you how many it skipped.</li>
+</ul></li>
+<li><strong>Close</strong> (<strong>Escape</strong>) puts the window
+away.</li>
+</ul>
+<p>After you close it, <strong>F3</strong> and <strong>Shift+F3</strong>
+keep searching across all your open documents, so you can work through
+them one match at a time without opening the window again. As soon as
+you start an ordinary Find (<strong>Ctrl+F</strong>) or Replace
+(<strong>Ctrl+H</strong>), F3 goes back to searching just the document
+you are in.</p>
+<p>QUILL and QUILL Lite share this window and work the same way, and it
+is in the same place in both: the <strong>Edit</strong> menu, under
+Replace. The key differs by one chord: QUILL uses
+<strong>Ctrl+Shift+F10</strong>, because in QUILL Ctrl+Alt+Shift+F8
+opens Quill Weather.</p>
+<h3 id="searching-a-whole-folder-of-files">Searching a whole folder of
+files</h3>
+<p>Find in Open Documents works on what you have open. When the files
+you want are saved in a folder and you would rather not open them all,
+use the folder search, the same one QUILL has:</p>
+<ul>
+<li><strong>Search in Files…</strong>
+(<strong>Ctrl+Alt+Shift+F</strong>, on the <strong>Edit</strong> menu,
+just below Find in Open Documents; <strong>Alt+E</strong>, then
+<strong>S</strong>) looks through every file in a folder, and every
+folder inside it.</li>
+<li><strong>Replace Across Files…</strong>
+(<strong>Ctrl+Shift+R</strong>, the row below it) changes every match in
+those files, on disk.</li>
+</ul>
+<p>Both are on the same keys and in the same place in QUILL. In a new
+install they are there from the start. If you chose the Notepad or
+WordPad profile in <strong>Tools &gt; Customize Features…</strong>
+(<strong>Ctrl+Alt+F10</strong>), they are switched off with the rest of
+the <strong>Matches and wider searches</strong> area, because neither
+program had them; check that box there to bring all five back.</p>
+<p>An example. You remember writing to somebody called Priya about a
+deadline, but not which of the forty letters in your Letters folder it
+was in. Open any document from that folder, press
+<strong>Ctrl+Alt+Shift+F</strong>, leave <strong>Starting
+folder</strong> as it is, type <code>*.txt</code> in <strong>File
+pattern</strong> and <code>Priya</code> in <strong>Search text</strong>,
+and press <strong>Enter</strong>. When the search finishes QUILL Lite
+tells you, for example, “3 matches in 2 of 40 files”, and a new window
+lists each file with the matching lines. Press <strong>Ctrl+O</strong>
+and type the file name it gave you to open the one you want.</p>
+<p>Both open the same window, which asks for:</p>
+<ul>
+<li><strong>Starting folder</strong>: where to look. It starts at the
+folder of the document you are in.</li>
+<li><strong>File pattern</strong>: which files, such as
+<code>*.txt</code> or <code>*.md</code>. A star on its own means every
+file.</li>
+<li><strong>Search text</strong>, and for Replace Across Files,
+<strong>Replacement</strong>.</li>
+<li><strong>Match mode</strong>: Plain text, Wildcard (<code>*</code>
+and <code>?</code>) or Regular expression.</li>
+<li><strong>Output format</strong>: how the results are written out,
+from just the file names to every matching line.</li>
+<li><strong>Case sensitive</strong> and <strong>Whole
+word</strong>.</li>
+</ul>
+<p>The search runs in the background, so QUILL Lite stays usable while
+it works, even on a big folder. When it finishes you hear how many
+matches it found in how many files, and the results open in a new
+untitled window. Read it with your usual keys, and save it if you want
+to keep it.</p>
+<p>Replace Across Files changes the files on disk, so it is careful:</p>
+<ul>
+<li><strong>Preview before replacing</strong> is checked when the window
+opens. With it checked, every change it would make opens in a new window
+first, and you are asked “Replace 312 matches in 87 files?” before
+anything is written. Answer <strong>No</strong> and nothing
+changes.</li>
+<li>When it has finished, a report of what it changed opens in a new
+window.</li>
+<li>Files you have open in QUILL Lite are changed on disk, not in the
+window. If one of them is open, QUILL Lite notices the file changed and
+offers to reload it.</li>
+</ul>
+<p>The first time you use Replace Across Files, try it on a copy of the
+folder.</p>
+<h3 id="searching-for-things-you-cannot-type">Searching for things you
+cannot type</h3>
+<p>The Find and Replace windows have a <strong>Search mode</strong> with
+three choices.</p>
+<h4 id="normal-text">Normal text</h4>
+<p>This is the everyday one. What you type is what it looks for,
+punctuation and all.</p>
+<h4 id="special-characters">Special characters</h4>
+<p>This lets you search for characters that have no key. <code>\t</code>
+is a tab, <code>\n</code> is a line break, <code>\u2014</code> is an em
+dash, and <code>\N{NO-BREAK SPACE}</code> is exactly what it says.</p>
+<p>It pairs well with <strong>Describe Character</strong>. Say Describe
+Character tells you that you are standing on a no-break space. Special
+characters mode then lets you find every other one, or replace them all
+with an ordinary space.</p>
+<h4 id="regular-expression">Regular expression</h4>
+<p>This treats what you type as a search pattern. A <code>.</code>
+matches any character, <code>*</code> repeats the thing before it,
+<code>[abc]</code> matches any one of those letters, and <code>^</code>
+and <code>$</code> are the start and end of a line.</p>
+<p>If your pattern has a mistake in it, QUILL Lite tells you which
+character is wrong. That way you know the difference between “my pattern
+is broken” and “there really is nothing to find”.</p>
+<h4 id="whole-word-in-every-mode">Whole word, in every mode</h4>
+<p><strong>Whole word</strong> works with all three modes. In regular
+expression mode it applies to the whole pattern, so <code>cat|dog</code>
+finds the word cat or the word dog, and does not find “dog” in the
+middle of “hotdogs”.</p>
+<h2 id="going-somewhere">Going somewhere</h2>
+<p>Press <strong>Ctrl+G</strong> to open <strong>Go To</strong>. It
+works like Word’s Go To: one window, and you choose what to go to.</p>
+<ol type="1">
+<li>Press <strong>Ctrl+G</strong>.</li>
+<li>At the top, arrow to <strong>Line</strong>,
+<strong>Bookmark</strong> or <strong>Heading</strong>. A PDF adds
+<strong>Page</strong>, and <strong>Outline</strong> too if the PDF has
+one.</li>
+<li>The rest of the window changes to match. For a line you get a number
+box. For everything else you get a list. Bookmarks start with their
+number, headings with their level, and outline entries with their title,
+so you can pick one out by its first word.</li>
+<li>Press <strong>Enter</strong> to go there.</li>
+</ol>
+<p>If you already know which kind you want, there are quicker keys.
+<strong>Alt+Shift+G</strong> goes straight to the bookmark list, and
+<strong>Ctrl+Alt+L</strong> goes straight to the heading list.
+<strong>Ctrl+G</strong> is the one to press when you are not sure.</p>
+<h2 id="making-a-table">Making a table</h2>
+<p><strong>Insert &gt; Table…</strong> (<strong>Ctrl+Alt+T</strong>, the
+same key as in QUILL) asks three questions: how many columns (1 to 12),
+how many rows (1 to 50), and whether the first row is a header row. Then
+it puts the table on lines of its own and leaves the cursor in the first
+cell, ready to type.</p>
+<p>What you get depends on the kind of document:</p>
+<ul>
+<li>In a <strong>rich text</strong> document
+(<strong>Alt+Shift+F</strong> switches to it), the table is a
+<strong>real table</strong>: a grid on screen, with no <code>|</code>
+characters anywhere, which your screen reader, Word and WordPad all see
+as a table. Its first row is the header row when you asked for one. Save
+the document as <code>.rtf</code> or as a Word document and it stays a
+real table, the header row marked so a screen reader in Word announces
+the column headers.</li>
+<li>In a <strong>Markdown</strong> or <strong>plain text</strong>
+document, the table is rows of cells divided by <code>|</code>, the
+shape described below.</li>
+<li>In an <strong>HTML</strong> document, the table is a real
+<code>&lt;table&gt;</code>, with its header cells marked so a screen
+reader in a browser announces each cell’s column.</li>
+</ul>
+<p>Either way the table keys work on it at once.</p>
+<h2 id="moving-through-a-table">Moving through a table</h2>
+<p><strong>Navigate &gt; Table</strong> works on every table QUILL Lite
+shows: a real table in rich text (every table you make there, and every
+table in a Word or RTF document you open as rich text), and rows of
+cells divided by <code>|</code> in Markdown and plain text. It reads one
+cell at a time and tells you where you are, on the same keys as
+QUILL:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Right</strong></td>
+<td>Next Cell</td>
+<td>The next cell in the row</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Left</strong></td>
+<td>Previous Cell</td>
+<td>The previous cell in the row</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Down</strong></td>
+<td>Cell Below</td>
+<td>The cell below, in the same column</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Up</strong></td>
+<td>Cell Above</td>
+<td>The cell above, in the same column</td>
+</tr>
+<tr>
+<td><strong>Alt+Home</strong></td>
+<td>First Cell in Row</td>
+<td>The first cell of this row</td>
+</tr>
+<tr>
+<td><strong>Alt+End</strong></td>
+<td>Last Cell in Row</td>
+<td>The last cell of this row</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Home</strong></td>
+<td>First Cell</td>
+<td>The first cell of the table</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+End</strong></td>
+<td>Last Cell</td>
+<td>The last cell of the table</td>
+</tr>
+</tbody>
+</table>
+<p>Each move puts the cursor at the start of the cell’s text and says
+the cell’s place, then its text – but only the part that changed. Moving
+along a row says the column, “Column 3: Lead”; moving down a column says
+the row, “Row 4: Lead”; a jump to another row and column says both. The
+table’s size is said once, when you arrive in it. An empty cell is
+“blank”. The row of dashes under the header row is skipped; it is not a
+row you read.</p>
+<p>At an edge the cursor stays where it is and you hear why: “No more
+cells” at the end of a row, “No more rows” at the bottom of a column,
+and “No more cells, end of table” on the very last cell. Outside a
+table, every one of these keys says “Not in a table” and does nothing
+else. <strong>Alt+Left</strong> (Go Back) returns from a cell move like
+any other jump.</p>
+<p>For example, in this table:</p>
+<pre><code>| Name | Role |
+| --- | --- |
+| Ann | Lead |
+| Bo | Tester |</code></pre>
+<p>put the cursor on “Name” and press <strong>Ctrl+Alt+Down</strong>:
+you hear “Row 2: Ann”. Press <strong>Alt+End</strong>: “Column 2, Role:
+Lead” – a new column says its header, because this table has a header
+row. Press <strong>Ctrl+Alt+End</strong>: “Row 3: Tester” (the same
+column, so neither the column nor its header is repeated). Press
+<strong>Ctrl+Alt+Right</strong>: “No more cells, end of table”.</p>
+<p><strong>The arrow keys read a table cell by cell.</strong> Inside a
+table, <strong>Up</strong> and <strong>Down</strong> go to the cell
+above and below in the same column and say it, “Row 3: Ann”, instead of
+the screen reader reading the whole row as one line.
+<strong>Right</strong> at the end of a cell’s text goes to the next
+cell, and <strong>Left</strong> at its start to the end of the cell
+before, “Column 2, Role: Lead”; inside a cell’s text they move letter by
+letter as always. <strong>Down</strong> from the line above a table
+lands in its first cell and says its shape once, “Table, 3 rows, 2
+columns. Name”; <strong>Up</strong> past the first row or
+<strong>Down</strong> past the last leaves the table, and you hear “Out
+of table”. Shift with the arrows still selects. This works the same with
+JAWS, NVDA and Narrator, in rich text and in <code>|</code> tables, with
+nothing to install. JAWS keeps <strong>Ctrl+Alt</strong> with the arrows
+for its own table commands, so with JAWS use the arrows,
+<strong>Tab</strong> and the <strong>Navigate &gt; Table</strong>
+menu.</p>
+<p>The shape and “Out of table” go with <strong>Announce
+Headings</strong> in the View menu.</p>
+<p>A cell whose own text contains a <code>|</code> is written
+<code>\|</code> and read as the <code>|</code> it stands for, so it
+never makes an extra column. If your screen reader uses
+<strong>Ctrl+Alt</strong> with the arrow keys for its own table
+commands, it may answer these keys first in some modes; the menu rows
+always work.</p>
+<h2 id="editing-a-table">Editing a table</h2>
+<ul>
+<li><strong>Tab</strong> and <strong>Shift+Tab</strong> move to the next
+and previous cell, on to the next row at the end of one, as in Word.
+<strong>Tab</strong> in the very last cell adds a row and puts you in
+its first cell. Outside a table, Tab works as it always has.</li>
+<li><strong>Navigate &gt; Table</strong> also has <strong>Insert Row
+Below</strong>, <strong>Insert Column Right</strong>, <strong>Delete
+Row</strong>, <strong>Delete Column</strong> and <strong>Tidy
+Table</strong>, the same as in QUILL. Each is one Undo and says what it
+did, such as “Added row 3” or “Deleted column 2, Role. 1 columns left”.
+Tidy Table pads every cell to its column’s widest, so the columns of a
+<code>|</code> table line up on screen; a real table already lines up,
+and says so.</li>
+<li>In a real table, adding or deleting a row or a column rebuilds the
+table with its text in place. Bold, italic or a font <em>inside</em> its
+cells does not survive that rebuild; type the formatting after the table
+has its shape.</li>
+</ul>
+<p>A real table in rich text is saved as a real table: in an
+<code>.rtf</code> file with its first row marked as the header row, and
+in a Word document the same way. A <code>|</code> table in a Markdown
+document you switch to rich text becomes a real table, and switching
+back to Markdown or plain text turns a real table into <code>|</code>
+rows.</p>
+<h2 id="reading-without-changing-anything-the-read-only-guard">Reading
+without changing anything: the Read-Only Guard</h2>
+<p>When you open a long reference document only to read it, such as a
+manual, a book or minutes you must not alter, one stray key can change
+it, and a Ctrl+S an hour later saves the change. The <strong>Read-Only
+Guard</strong> locks the document against edits while you read.</p>
+<p><strong>Ctrl+Alt+Backspace</strong>, or <strong>Tools &gt; Read-Only
+Guard</strong>, turns it on and off. The menu row shows a check mark
+while it is on. You hear:</p>
+<ul>
+<li>“Document is read-only” when you turn it on;</li>
+<li>“Document is editable” when you turn it off.</li>
+</ul>
+<p>While it is on:</p>
+<ul>
+<li>Typing, <strong>Backspace</strong>, <strong>Delete</strong>,
+<strong>Enter</strong> and pasting do nothing.</li>
+<li>Commands that would change the text say “Document is read-only” and
+change nothing. That covers cutting, pasting, undo and redo, everything
+in <strong>Edit &gt; Lines</strong>, the <strong>Insert</strong> menu
+(Insert Table too), the row and column commands on <strong>Navigate &gt;
+Table</strong>, the formatting commands, changing case and indenting,
+Snippets, and a word tool’s <strong>Replace</strong>. The table keys and
+the arrows still move through a table.</li>
+<li>Everything you use to read still works: the arrow keys and every way
+of moving, <strong>Find</strong> (<strong>Ctrl+F</strong>), <strong>Go
+To</strong> (<strong>Ctrl+G</strong>), the headings list, selecting and
+copying, Say Selection, the dictionary and the thesaurus (looking up,
+not replacing).</li>
+<li><strong>Bookmarks</strong> work as usual. Set one with
+<strong>Ctrl+Shift+B</strong> and come back to it with
+<strong>F2</strong>; a bookmark is kept beside the file, not inside
+it.</li>
+<li><strong>Inline notes</strong> work too. A note you add while the
+guard is on is kept beside the file rather than written into it, so the
+document stays exactly as it was.</li>
+</ul>
+<p>QUILL Lite <strong>remembers</strong> the guard for that file. Close
+QUILL Lite, open the same file tomorrow from File Explorer, from Recent
+Documents or from Ctrl+O, and it opens locked again. It is the same file
+however it was reached, even if File Explorer spells the folder with
+different capitals.</p>
+<p>If QUILL Lite cannot write down that you locked the file, for example
+because its settings folder is on a full disk, the document is still
+locked for now and you hear so, with the reason:</p>
+<blockquote>
+<p>Document is read-only for now, but it could not be remembered for
+next time (There is not enough space on the disk).</p>
+</blockquote>
+<p>A document that has never been saved cannot be remembered either,
+because it has no file name yet; save it first if you want the guard to
+stay.</p>
+<p>A file that Windows itself marks read-only, or one on a share you
+cannot write to, opens locked as well, and QUILL Lite says so as it
+opens. Turn the guard off if you want to type anyway; you can then save
+under a new name.</p>
+<p>The guard is the same command QUILL has, on the same key, so you only
+learn it once.</p>
+<h2 id="bookmarks">Bookmarks</h2>
+<p>A bookmark is a place you want to come back to.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+B</strong></td>
+<td>Drop a bookmark in the next free slot</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+1</strong> to <strong>Ctrl+Shift+9</strong></td>
+<td>Set that numbered bookmark</td>
+</tr>
+<tr>
+<td><strong>F2</strong> / <strong>Shift+F2</strong></td>
+<td>Next / previous bookmark</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+G</strong></td>
+<td>The bookmark list: go to one, or remove one</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+B</strong></td>
+<td>Clear them all</td>
+</tr>
+</tbody>
+</table>
+<p>Bookmarks move with your text as you edit around them, so they stay
+on the right words.</p>
+<p>If you would like to try bookmarks with the app guiding you, the
+tutorial <em>Finding your way back</em> walks you through them, along
+with the temporary bookmark and Go Back.</p>
+<h3 id="they-are-still-there-tomorrow">They are still there
+tomorrow</h3>
+<p>Close a document, open it again, and your bookmarks are right where
+you left them. So is the cursor. You do not have to do anything to keep
+them.</p>
+<p>This is a real help in a long file. You cannot glance at a scrollbar
+to see where you are, so marking a few places and finding them again
+next time saves a lot of hunting.</p>
+<p>A few things worth knowing:</p>
+<ul>
+<li><strong>A document you have never saved is not remembered.</strong>
+It has no file name yet. Save it once and its bookmarks are kept from
+then on.</li>
+<li><strong>Nothing extra is saved next to your file.</strong> No extra
+files appear in your folder. QUILL Lite keeps the list in its own
+settings folder.</li>
+<li><strong>If the file got shorter while it was closed,</strong> for
+example because another program edited it, any bookmark past the new end
+is moved to the end.</li>
+</ul>
+<p>If you switch bookmarks off in <strong>Tools &gt; Customize
+Features</strong>, none of this is saved at all.</p>
+<h3 id="the-one-with-no-number">The one with no number</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+J</strong></td>
+<td>Set Temporary Bookmark: drop a pin where the cursor is</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+J</strong></td>
+<td>Go to Temporary Bookmark: go back to it</td>
+</tr>
+</tbody>
+</table>
+<p>There is one more bookmark, and it works differently. Use it when you
+are about to look something up and want to come straight back:</p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+J</strong> where you are.</li>
+<li>Go and look at whatever you need.</li>
+<li>Press <strong>Ctrl+Shift+J</strong> to come back.</li>
+</ol>
+<p>It has no number, no name and no place in the list. Setting it again
+just moves it, without asking. It is forgotten when you close the
+document. It is meant for a quick trip, so it stays out of your way.</p>
+<p>These are the same two keys QUILL uses.</p>
+<h3 id="going-back-where-you-came-from">Going back where you came
+from</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Left</strong></td>
+<td>Go back to where you were before the last jump</td>
+</tr>
+<tr>
+<td><strong>Alt+Right</strong></td>
+<td>Go forward again</td>
+</tr>
+</tbody>
+</table>
+<p>These are <strong>Go Back</strong> and <strong>Go Forward</strong>,
+at the top of the <strong>Navigate</strong> menu. They are the same keys
+a web browser uses.</p>
+<p>QUILL Lite remembers every jump you make: going to a line, following
+a heading, choosing something from the heading list or the bookmark
+list, and landing on a search result. <strong>Alt+Left</strong> takes
+you back to where you were before the jump. Think of it as undo for
+moving around. Press <strong>F3</strong> to check a word somewhere else,
+then <strong>Alt+Left</strong> to come home.</p>
+<p>They are always there, even if you switch headings and bookmarks
+off.</p>
+<p>Unlike bookmarks, this history is only kept while the window is
+open.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can find text with <strong>Ctrl+F</strong>, narrow it with Match
+case and Whole word only, replace one match at a time or all at once
+with <strong>Ctrl+H</strong>, hear how many matches there are, see them
+all in one list, and search for characters you cannot type.
+<strong>Ctrl+G</strong> takes you to a line, a bookmark or a heading
+from one window. Numbered bookmarks are still there after you close the
+document, the temporary bookmark is there for a quick trip, and
+<strong>Alt+Left</strong> takes you back after any jump.</p>
+<p>The tutorial <em>Finding your way back</em> lets you practise
+bookmarks, the temporary bookmark and Go Back with the app guiding
+you.</p>
+<p>Next, Chapter 5, Selecting, copying and changing text, shows you how
+to take more than a few words at once, and what you can do with them. It
+also covers marks, a lighter kind of bookmark.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-guide-03-opening-saving-and-printing.html">Chapter 3:
+Opening, saving and printing</a></li>
+<li>Next: <a
+href="lite-guide-05-selecting-copying-and-changing-text.html">Chapter 5:
+Selecting, copying and changing text</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

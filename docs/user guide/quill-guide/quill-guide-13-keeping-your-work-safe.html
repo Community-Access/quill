@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 13: Keeping your work safe</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-13-keeping-your-work-safe">Chapter 13: Keeping your work
+safe</h1>
+<p>This chapter is about the things QUILL does so you do not lose work:
+saving snapshots as you type, keeping every earlier save, offering your
+text back after a crash, and asking before anything is thrown away. Most
+of it runs on its own, and you never have to think about it. Read it
+once so you know the safety net is there, and come back when something
+has gone wrong and you want to know what your choices are.</p>
+<h2 id="trust-recovery-sessions-and-safety">Trust, Recovery, Sessions,
+and Safety</h2>
+<p>QUILL takes recovery and your control over your own work seriously.
+Here is the short version before the details:</p>
+<ul>
+<li>Autosave snapshots your documents on a timer, and a backup copy is
+taken just before each save.</li>
+<li>Every save also keeps a restore point, so you can bring back any
+earlier version, days or weeks later.</li>
+<li>If QUILL closes unexpectedly, the next launch offers your unsaved
+work back.</li>
+<li>If your screen reader stops, QUILL saves everything at once and
+keeps running.</li>
+<li>A question that would destroy something always has
+<strong>No</strong> as its default.</li>
+<li>Safe mode, safety advisories and update notices are there for the
+rare day something is not right.</li>
+</ul>
+<p>The rest of this chapter takes these one at a time, everyday things
+first.</p>
+<h2 id="autosave-and-backups">Autosave and backups</h2>
+<p>QUILL autosaves at a timed interval and keeps backup snapshots. It
+skips a write when nothing has changed since the last one. The autosave
+is written in the background, so even a large document is snapshotted
+without a pause in your typing.</p>
+<h3 id="when-the-disk-is-full">When the disk is full</h3>
+<p>This needs its own explanation, because getting it wrong once cost
+somebody a document.</p>
+<p>QUILL writes your text in three places: the <strong>file
+itself</strong> when you save, a <strong>backup copy</strong> taken just
+before that save, and an <strong>autosave snapshot</strong> on a timer.
+Only the first of those is your document, so QUILL follows four simple
+rules:</p>
+<ul>
+<li><strong>A backup can never stop a save.</strong> The backup is there
+to protect you from a bad save, so a failed backup must not cancel the
+save. If the backup cannot be written, QUILL says “Could not write a
+backup; saving anyway” and saves your file.</li>
+<li><strong>A failed save is explained in words you can act on.</strong>
+You will not hear “[Errno 28] No space left on device”. You will hear
+“The disk is full. QUILL could not save notes.md. Free some space and
+try again; your text is still open and unsaved.” A file or folder that
+is read-only, or held open by another program, gets its own message
+pointing you at <strong>File &gt; Save As</strong>.</li>
+<li><strong>A failed save never closes the window.</strong> If you
+choose <strong>Save</strong> on the closing prompt and the save fails,
+the close is cancelled and QUILL tells you why, so you can free some
+space or save somewhere else. Closing a second time goes ahead, so the
+window can never be trapped open, but you will have been told
+first.</li>
+<li><strong>Autosave says when it has stopped.</strong> If autosave
+failed quietly, your crash-recovery net would be gone and nothing would
+tell you. After two failures in a row, QUILL says once: “Autosave
+paused: the disk is full. Your work is not being snapshotted.” It goes
+quiet again as soon as autosave works.</li>
+</ul>
+<p>Backups are written the same way autosave snapshots are: completely
+or not at all, so a half-written backup can never be the thing you
+restore. They are always written as UTF-8, so a document QUILL opened in
+a narrower encoding still backs up after you type an accented character.
+Backups made by earlier versions still restore normally.</p>
+<h2 id="restore-points-bring-back-any-earlier-save">Restore points,
+bring back any earlier save</h2>
+<p>Every time you save, QUILL quietly keeps a snapshot of the document.
+To get one back, choose <strong>File &gt; Restore Previous
+Version…</strong> (<code>Ctrl+Alt+Shift+E</code>). The list reads in
+plain language, newest first, for example “Today at 4:12 PM</p>
+<ul>
+<li>2,341 words“.</li>
+</ul>
+<ol type="1">
+<li>Open <strong>File &gt; Restore Previous Version…</strong>.</li>
+<li>Arrow to the version you want.</li>
+<li>Choose one of the two buttons:
+<ul>
+<li><strong>Restore</strong> puts that version in the editor in place of
+your current text. Your current text is saved as a restore point first,
+so you can undo a restore the same way. The document is marked modified,
+so nothing touches the disk until you save.</li>
+<li><strong>Open as Copy</strong> opens the earlier version as a new
+untitled document and leaves your current one exactly as it is. This is
+the one to use for comparing, or for rescuing a single paragraph.</li>
+</ul></li>
+</ol>
+<p>A few details worth knowing:</p>
+<ul>
+<li>Saving unchanged text stores nothing extra. Snapshots are based on
+content, so identical saves cost nothing.</li>
+<li>Keeping a snapshot can never be the reason a save fails. If the disk
+is full, your save still completes; QUILL just logs that the snapshot
+was skipped.</li>
+<li>History thins as it ages: everything from the last week is kept,
+then one version per day for a month, then one per week. The newest five
+versions are never removed.</li>
+<li><strong>Restore point disk limit (MB)</strong> in Preferences caps
+how much space one document’s history can use: 200 MB by default.</li>
+<li><strong>Keep restore points when saving</strong> turns the feature
+off entirely.</li>
+<li>You can change the key in the Keymap Editor, where the command is
+listed as Restore Previous Version
+(<code>file.restore_previous_version</code>).</li>
+</ul>
+<p>How the safety nets fit together: <strong>undo</strong> (and
+persistent undo) covers the current editing session,
+<strong>backups</strong> keep a copy of what was on disk just before
+each save, and <strong>restore points</strong> are the long-term
+history, any earlier save, across restarts. You never have to choose
+between them. They all run at once.</p>
+<h2 id="persistent-undo">Persistent undo</h2>
+<p>When persistent undo is turned on (<strong>Enable persistent
+undo</strong>, on the <strong>Editing</strong> page of Settings), QUILL
+keeps the undo history of saved files from one session to the next, so
+you can still undo yesterday’s change after reopening the file. QUILL
+spaces out those writes so the feature stays practical on large
+documents.</p>
+<h2 id="recovery">Recovery</h2>
+<p>If QUILL closes unexpectedly, it can offer your work back as a
+recovery snapshot the next time you start it.</p>
+<p>Two settings shape what it offers. Both are shared with QUILL Lite,
+so the answer is the same in either editor.</p>
+<ul>
+<li><strong>Offer untitled unsaved work</strong>
+(<code>recover_untitled_documents</code>) is on by default. A window
+that never had a file is where a lot of real work starts, so it is
+offered back like any other. Turn it off and only documents that had a
+file are offered; the copies of untitled ones are deleted, not kept,
+since nothing would ever offer them to you. The setting’s own
+description says so.</li>
+<li><strong>Days of unsaved work to keep</strong>
+(<code>recovery_keep_days</code>) is 30 by default. Only the previous
+session’s work can ever be offered back, so an older copy can never be
+reached and just takes up space. One real install had eighty-six days of
+them. Set it to 0 to keep everything for ever.</li>
+</ul>
+<p>Identical copies are folded into one before you are asked anything.
+That is how “unsaved work from 69 documents”, sixty-seven of which were
+the same few characters left behind by repeated crashes, becomes a list
+of three you can actually read.</p>
+<p>Two windows can appear at startup: one about unsaved work and one
+about last session’s documents. Both have a read-only <strong>What this
+would do</strong> field. Tab to it and read it with the arrow keys. It
+names every row, says how much text it holds and when it was written,
+and then says exactly what each button would do with the boxes checked
+as they are right now, including which rows would be left alone. It is
+rewritten every time you check or uncheck a row, so it always describes
+the window as it is.</p>
+<h3 id="after-an-unclean-exit-crash-recovery-and-email-support">After an
+unclean exit, Crash Recovery and Email Support</h3>
+<p>If QUILL closed without an error report, after a freeze, a power cut
+or a forced close, the next launch shows <strong>Crash
+Recovery</strong>, which offers your unsaved work back. Its
+<strong>Email Support</strong> button (it used to say “Send Bug Report”)
+writes a message to support for this kind of exit too. The first
+sentence also quotes how the document begins, so you know which work it
+is before you read the preview:</p>
+<ol type="1">
+<li>Press <strong>Email Support</strong> in Crash Recovery.</li>
+<li>Your mail program opens with a message to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>.
+It contains QUILL’s version, platform and screen reader, your last
+commands, any “the UI stopped answering” lines from the log (listed
+first), the saved crash traceback when there is one, and a short,
+redacted tail of the newest log.</li>
+<li>Read it, add a sentence about what you were doing, and send it from
+your mail program.</li>
+</ol>
+<p>Crash Recovery closes once the mail program has opened. If no mail
+program answers, the report is on your clipboard and Crash Recovery
+stays open so you can still restore your work.</p>
+<h3 id="when-quill-crashes-emailing-a-crash-report">When QUILL crashes,
+emailing a crash report</h3>
+<p>When an error stops QUILL, it first saves a local crash file, then
+offers to email a redacted report to support.</p>
+<ol type="1">
+<li>A dialog titled <strong>Report Crash</strong> appears. Focus starts
+in the first text field.</li>
+<li>The <strong>Report preview</strong> is a read-only panel showing
+exactly what the report says: QUILL’s version, whether it is portable,
+your screen reader, the active document’s name and encoding (never its
+text or folder), the last ten commands you ran, and the last frames of
+the error. Personal data, file paths and anything shaped like a password
+or key are removed before the preview is built.</li>
+<li>Fill in any of the three optional fields: <strong>What were you
+doing when this happened?</strong>, <strong>What command do you think
+triggered it?</strong> and <strong>Expected behaviour</strong>. Each is
+cleaned the same way before it is added, so something you paste by
+accident does not leave your machine.</li>
+<li>Choose one of the three buttons:
+<ul>
+<li><strong>Email support</strong> (<code>Alt+E</code>) opens your own
+mail program with the report written and addressed to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>,
+the subject starting “Crash report”. Nothing is sent until you press
+Send there. With no mail program, the report goes to your clipboard and
+QUILL tells you the address to write to.</li>
+<li><strong>Copy to clipboard</strong> (<code>Alt+C</code>) puts the
+same redacted report on the clipboard so you can paste it into an email
+yourself.</li>
+<li><strong>Don’t send</strong> (<code>Alt+D</code>, or Escape) closes
+the dialog and sends nothing.</li>
+</ul></li>
+</ol>
+<p>Whichever button you choose, the local crash file is kept in the
+<code>crash-reports</code> folder of QUILL’s data folder. **Tools &gt;
+Customize and Support</p>
+<blockquote>
+<p>Open Diagnostics Folder** takes you near it.</p>
+</blockquote>
+<p>If you do not want the dialog at all, turn off <strong>Settings &gt;
+General &gt; Offer to email crash reports to support</strong>. The local
+crash file is still saved.</p>
+<h2 id="if-your-screen-reader-stops-your-work-is-already-safe">If your
+screen reader stops, your work is already safe</h2>
+<p>QUILL keeps an eye on the screen reader it found at startup and
+notices if it disappears while you work. One missed check is ignored, so
+restarting JAWS or NVDA never sets off an alarm. When the reader is
+confirmed gone, QUILL straight away saves a snapshot of every open
+document to autosave, then explains what happened through whatever can
+still speak: another running screen reader, or QUILL’s own built-in
+voice. The event is also recorded in Notifications, so if you heard
+nothing at the time, the explanation is waiting for you.</p>
+<p>QUILL does not shut down when this happens. Your documents, your
+unsaved work and the application itself all keep running. Restart your
+screen reader whenever you are ready, and QUILL announces when it hears
+from it again.</p>
+<p>The same rule holds everywhere in QUILL: anything that closes QUILL
+or cuts back what it can do, without you asking, must save your work
+first.</p>
+<p>QUILL Lite has the same protection, through the same code: the same
+two missed checks, the same snapshot first, and the same sentence,
+ending “QUILL Lite keeps running”. Its user guide explains the parts
+that differ, since QUILL Lite has no voice of its own.</p>
+<h2 id="the-default-answer-to-a-destructive-question-is-no">The default
+answer to a destructive question is No</h2>
+<p>Every question in QUILL that would destroy something (delete a
+recording, clear all copy tray slots, remove a component, reset
+settings) has <strong>No</strong> as its default button. Pressing Enter
+out of habit can never cost you data. Choosing Yes is always something
+you do on purpose, with Tab or <code>Alt+Y</code>. QUILL’s build checks
+every new dialog for this, so it stays that way.</p>
+<h2 id="closing-every-tab-but-this-one">Closing every tab but this
+one</h2>
+<p><strong>Window &gt; Close Other Documents</strong>
+(<code>Ctrl+Shift+F4</code>) keeps the tab you are in and closes the
+rest. QUILL Lite has the same command on the same key.</p>
+<p>When one of those tabs has unsaved changes, you are asked about it.
+The question has five answers:</p>
+<ul>
+<li><strong>Save</strong> and <strong>Don’t Save</strong> apply only to
+the tab in front of you.</li>
+<li><strong>Save All</strong> and <strong>Don’t Save Any</strong> settle
+every remaining tab at once.</li>
+<li><strong>Cancel</strong> stops the whole thing and tells you how many
+tabs closed before you stopped it.</li>
+</ul>
+<p>The question also says how many more tabs are waiting, so you know at
+the first prompt whether this is one more keystroke or sixty-seven.</p>
+<p>Enter answers Save, never one of the two that lose work. If a save
+fails, the closing stops there; a failed save is never taken as
+permission to throw the document away. After that, “Save All” no longer
+applies until you choose it again.</p>
+<h2 id="errors-that-tell-you-what-to-do">Errors that tell you what to
+do</h2>
+<p>A sighted person can glance at the failing file or dialog and see the
+problem. Without sight, the error message has to carry the whole story,
+and the next step too. QUILL’s messages are being written to that
+standard. Messages that carry a support code (the
+<code>[QUILL-...]</code> prefix) increasingly end with what to do, for
+example:</p>
+<ul>
+<li>“Install Pandoc from Help &gt; Download Optional Components to
+convert this format.”</li>
+<li>“Check the address, credentials, and connection under File &gt; Open
+from Remote &gt; Manage Remote Sites.”</li>
+<li>“Check your AI provider and key in the AI Hub, or switch to a local
+model.”</li>
+</ul>
+<p>When you report a problem, include the code. It tells us exactly
+which failure you hit, with no back-and-forth.</p>
+<p>The same goes for things QUILL declines or trims:</p>
+<ul>
+<li>The command palette says why a command is unavailable, and a menu
+item turned off by a safety advisory carries the same reason in its help
+text.</li>
+<li>AI features tell you when they worked from less than you gave them.
+If your document had to be trimmed to fit the model, Ask Quill and
+Document Q&amp;A say exactly how much of it the answer used.</li>
+<li>QUILL never quietly changes which AI engine answers you. If your
+provider could not be reached and the chat started on the on-device
+model instead, it says so the moment the chat opens. If a call fails and
+the other kind of engine could take it, QUILL offers the switch. It
+never makes the switch for you, and it always says when a switch would
+send your text to the cloud.</li>
+</ul>
+<h2 id="sessions">Sessions</h2>
+<p>Sessions are best thought of as workspace snapshots. A session
+remembers the documents you have open and which tab is active, so you
+can reopen that exact set later. If you know VS Code workspaces, a QUILL
+session is a simpler, document-focused version of the same idea. You
+can:</p>
+<ul>
+<li>save your current workspace,</li>
+<li>reopen it from Recent Snapshots,</li>
+<li>switch quickly among the open documents in the current workspace
+group.</li>
+</ul>
+<p>Sessions help when one writing job spans notes, references, drafts
+and generated reports.</p>
+<h2 id="marks-vs-bookmarks-and-the-ring">Marks vs bookmarks (and the
+ring)</h2>
+<p>QUILL has two ways to jump back to a place, and each has its job:</p>
+<ul>
+<li><strong>Bookmarks</strong> are named jump points. They are easy to
+list, and best for places you will come back to by name, again and
+again.</li>
+<li><strong>Marks</strong> are temporary jump points kept in a
+<strong>ring</strong>: a rolling stack of your recent mark locations,
+for fast back-and-forth while you edit.</li>
+</ul>
+<p>Use bookmarks for places you want to keep. Use marks while you are
+moving around and reshaping text. Chapter 6, Moving around and finding
+things, has the keys for both.</p>
+<h2 id="trusted-locations">Trusted locations</h2>
+<p>Trusted locations cut down on repeated prompts when you often work
+from the same folders. They help most in document review and in
+workplaces where many files come from the same shared places.</p>
+<h2 id="safe-mode">Safe mode</h2>
+<p>Safe mode opens QUILL with optional extras turned off: AI, the watch
+folder and Quillin contributions. If a session has gone wrong or QUILL
+is behaving strangely at startup, safe mode is a good first step. To use
+it, start QUILL with the <code>--safe-mode</code> flag, or set the
+environment variable <code>QUILL_SAFE_MODE=1</code> before
+launching.</p>
+<h2 id="the-experimental-tab">The Experimental tab</h2>
+<p><strong>Settings &gt; Experimental</strong> holds features that work
+but are still growing up. Each one has its own switch, and they all sit
+behind one master switch. Controls that are turned off leave the Tab
+order completely, so until you change anything the tab is a single
+checkbox and nothing else.</p>
+<ul>
+<li><strong>Enable experimental features (the master switch for
+everything on this tab)</strong> is the first control on the tab. It
+governs everything below it. Until it is checked, QUILL ignores every
+experimental option and its control is disabled (Tab skips it), so an
+accidental change can never affect the editor.</li>
+<li><strong>GLOW accessibility review and repair (experimental)</strong>
+turns on the GLOW rows of <strong>Tools &gt; Writing and
+Language</strong> (see “<a
+href="quill-guide-11-accessibility-speech-and-braille.html#glow-workflows-inside-quill">GLOW
+Workflows Inside QUILL</a>”). It takes effect when you press Apply, with
+no restart.</li>
+<li><strong>WordPress publishing connections (experimental)</strong>
+turns on the read-only publishing tools in the <strong>File</strong>
+menu: save a WordPress connection, verify it, browse your site’s posts
+and pages, and open a remote item in the editor. It only brings things
+in. The send and publish half stays locked while it is reviewed, so
+nothing can be published from QUILL whatever this switch says.</li>
+<li><strong>Read the document aloud in your browser
+(experimental)</strong> turns on the browser reader page described under
+<a
+href="quill-guide-08-reading-reviewing-and-listening.html#read-aloud">Read
+Aloud</a>.</li>
+<li><strong>Table Studio, accessible table and CSV editing
+(experimental)</strong> turns on <strong>Table Studio</strong> and
+<strong>Open CSV in Table Studio</strong> in the <strong>Tools</strong>
+menu. It takes effect when you press Apply, with no restart.</li>
+</ul>
+<p>The pattern to remember: one master switch for the tab, and one
+switch for each experiment, so nothing changes by accident.</p>
+<p>The editor experiments that used to live on this tab have graduated.
+QuillRichEdit is now QUILL’s one editor, and the braille fix it carried
+moved to <strong>Settings &gt; Braille Mode</strong>, where it is on by
+default. See “One Editor, Every Format” in <a
+href="quill-guide-03-opening-saving-and-converting-files.html#working-with-different-document-types">Working
+with different document types</a>.</p>
+<h2 id="notifications-and-updates">Notifications and updates</h2>
+<p>QUILL keeps a notification center for update and workflow events, so
+a message you missed is still there later. Before offering a download,
+an update check verifies that the update information is signed.</p>
+<h3 id="safety-advisories-temporarily-turning-off-a-feature">Safety
+advisories, temporarily turning off a feature</h3>
+<p>Very rarely, if a serious problem is found in a feature after
+release, QUILL can temporarily disable just that feature, without
+waiting for a new version.</p>
+<ul>
+<li>The advisory travels inside the same signed update information that
+Check for Updates already verifies. Nothing new is sent from your
+computer.</li>
+<li>It can only ever turn a feature off. It can never turn anything on
+or run anything.</li>
+<li>The affected command is dimmed everywhere it appears. The menu, the
+command palette and its keyboard shortcut all stop it, and a plain
+notice tells you it was turned off by a safety update and why.</li>
+<li>If other features build on the one that was turned off, they are
+turned off too, so you never get a half-working tool.</li>
+<li>Everything comes back on its own once a fix is published.</li>
+<li>The lock is remembered on your computer, so it still applies when
+you are offline, and it reaches portable copies as well.</li>
+</ul>
+<p>If you are an administrator who must use a feature an advisory turned
+off, you can override all such locks for one session: set the
+environment variable <code>QUILL_IGNORE_FEATURE_LOCKS=1</code> before
+launching QUILL.</p>
+<h3 id="your-settings-across-updates">Your settings across updates</h3>
+<p>QUILL remembers only the choices you have actually changed. When you
+update, your customizations are kept, brand-new options start at a
+sensible default, and an improved default reaches you automatically
+unless you had changed that option yourself. The first launch after an
+update tidies your old settings file once, and writes a backup to a
+<code>migration-backups</code> folder first, so the change can always be
+undone. Your documents, autosaves and recovery data are never
+touched.</p>
+<p>The <strong>Upgrade notice</strong> setting (in Administration)
+chooses how QUILL tells you this happened:</p>
+<ul>
+<li><strong>Brief announcement</strong>, the default: a short spoken and
+status-bar message.</li>
+<li><strong>Summary with Undo</strong>: a small dialog listing what
+changed, with a one-click Undo for any shortcut correction.</li>
+<li><strong>Silent</strong>.</li>
+</ul>
+<p>A backup is saved whichever you choose. You can also undo a recent
+shortcut change at any time during the session with the <strong>Undo
+Recent Shortcut Change</strong> command.</p>
+<h3 id="a-clean-start-after-an-update">A clean start after an
+update</h3>
+<p>The first time you launch a freshly updated QUILL, it clears out old
+log files and crash reports from earlier runs, so you start with a clean
+slate. This happens once, on its own, and never removes your documents
+or settings.</p>
+<h2 id="application-status-page">Application Status page</h2>
+<p><strong>Help &gt; Status Page</strong> opens a window you can leave
+open in the background while you keep working. It has four tabs:</p>
+<ul>
+<li><strong>Status</strong>: an Overview (version, active profile, how
+many background tasks are running, queued notifications), plus detail
+rows for QUILL Whisperer and the Read Aloud engine and voice settings
+when those features are turned on.</li>
+<li><strong>Tasks &amp; Downloads</strong>: one live row per background
+job, with its name, status, progress, start time and finish time. Batch
+conversions, model downloads and other long jobs report their progress
+here.</li>
+<li><strong>Features</strong>: every feature ID QUILL knows about, its
+display name, its category, and whether it is on right now.</li>
+<li><strong>Actions</strong>: a plain-text log of recent actions QUILL
+has taken.</li>
+</ul>
+<p>The three list tabs are ordinary lists. Arrow up and down between
+rows, use Left and Right to move between columns, and Tab to reach the
+<strong>Refresh</strong> and <strong>Close</strong> buttons. The page
+refreshes itself every two seconds, so downloads and tasks stay current
+without you pressing Refresh, and the automatic refresh leaves your
+place alone: the row you arrowed to stays focused.</p>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Something running and you want to
+know how far along it is? Leave <strong>Help &gt; Status Page</strong>
+open and switch to it with <code>Alt+Tab</code> whenever you like.</p>
+</blockquote>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You now know that autosave, backups and restore points run together,
+that <strong>File &gt; Restore Previous Version…</strong> brings back
+any earlier save, and that QUILL offers your unsaved work back after a
+crash or a lost screen reader. You know that a destructive question
+defaults to No, how to close every tab but one, where safe mode and the
+Experimental tab fit, and what a safety advisory does. The Status Page
+shows what QUILL is doing in the background.</p>
+<p>For a guided version, open <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>) and take “The safety net” in the Living with
+it track.</p>
+<p>Next, Chapter 14, Projects, notes and the QuillVille family, covers
+the bigger places your writing can live.</p>
+<hr />
+<ul>
+<li>Previous: <a href="quill-guide-12-making-quill-yours.html">Chapter
+12: Making QUILL yours</a></li>
+<li>Next: <a
+href="quill-guide-14-projects-notes-and-the-quillville-family.html">Chapter
+14: Projects, notes and the QuillVille family</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

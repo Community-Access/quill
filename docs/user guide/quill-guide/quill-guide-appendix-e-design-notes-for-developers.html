@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Appendix E: Design notes for developers</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="appendix-e-design-notes-for-developers">Appendix E: Design notes
+for developers</h1>
+<p>The last appendix is for people who build on QUILL or are curious
+about how parts of it were designed. It is written for developers, so it
+talks about code, files and plans in a way the rest of this guide does
+not. Some of what it describes was planned rather than built; the
+chapters and Appendix A describe what QUILL does today.</p>
+<h2 id="the-developer-console-design-document">The Developer Console
+design document</h2>
+<h3 id="feature-name">Feature name</h3>
+<p><strong>QUILL Developer Console and Automation API</strong></p>
+<h3 id="status">Status</h3>
+<p>Proposed for <strong>QUILL 1.1</strong>, with the Python console
+eligible for a 1.0 experimental/dev-preview flag if the command registry
+and announcement infrastructure are stable enough.</p>
+<h3 id="owner">Owner</h3>
+<p>Community Access</p>
+<h3 id="target-platform">Target platform</h3>
+<p>Windows 10 and Windows 11</p>
+<h3 id="target-users">Target users</h3>
+<ul>
+<li>QUILL developers</li>
+<li>QUILL power users</li>
+<li>Accessibility professionals</li>
+<li>Blind programmers and technical writers</li>
+<li>Macro authors</li>
+<li>Support/debugging users working with Community Access staff</li>
+<li>Future Quillins/plugin developers</li>
+</ul>
+<h3 id="1-vision">1. Vision</h3>
+<p>QUILL should provide a screen-reader-first developer console that
+lets trusted users inspect and manipulate the running editor through a
+stable automation API.</p>
+<p>The console is not an afterthought, a hidden debug hack, or a generic
+unsafe scripting surface. It is a first-class, accessible automation
+layer that exposes QUILL’s command system, document model, editor state,
+diagnostics, and accessibility announcement pipeline in a predictable
+way.</p>
+<p>The goal is to let a developer or power user type commands such
+as:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">42</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)</span></code></pre></div>
+<p>or, in TypeScript:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(stats<span class="op">.</span><span class="at">words</span>)<span class="op">;</span></span></code></pre></div>
+<p>Every editor-changing action must go through the QUILL command
+registry or official scripting API so undo, dirty-state tracking,
+accessibility announcements, status bar updates, telemetry, and tests
+remain consistent.</p>
+<h3 id="2-problem-statement">2. Problem statement</h3>
+<p>QUILL is becoming a rich writing and document environment with
+commands, macros, Quillins, profiles, diagnostics, document intake,
+spell checking, format conversion, and accessibility-aware UI
+behavior.</p>
+<p>Without a developer console and automation API:</p>
+<ul>
+<li>Developers must debug by adding temporary logging or
+breakpoints.</li>
+<li>Support staff cannot easily inspect user state during
+troubleshooting.</li>
+<li>Power users cannot automate repetitive editor actions.</li>
+<li>Macro support risks becoming a separate one-off system instead of
+using the same command architecture as the rest of QUILL.</li>
+<li>Future Quillins may lack a simple interactive testing surface.</li>
+<li>Accessibility professionals cannot quickly inspect document state,
+selection state, command availability, profile gating, or announcement
+behavior.</li>
+</ul>
+<p>QUILL needs an embedded, accessible command line for trusted local
+development and automation.</p>
+<h3 id="3-goals">3. Goals</h3>
+<ol type="1">
+<li>Provide an accessible Python console inside the running QUILL
+app.</li>
+<li>Provide a TypeScript automation console through a controlled Node
+subprocess bridge.</li>
+<li>Expose a stable <code>q</code> / <code>quill</code> scripting object
+instead of raw internal objects.</li>
+<li>Route all mutations through the command registry or official
+scripting API.</li>
+<li>Preserve undo/redo, dirty-state tracking, backups, status bar
+updates, and screen-reader announcements.</li>
+<li>Make console results easy to review with NVDA, JAWS, Narrator,
+braille displays, and keyboard-only workflows.</li>
+<li>Support command history, multi-line input, copy/paste, saved
+snippets, and transcript export.</li>
+<li>Gate the feature behind profiles and explicit settings so it does
+not surprise ordinary users.</li>
+<li>Make the console useful for macro development, plugin development,
+support diagnostics, and test automation.</li>
+<li>Never enable remote execution by default.</li>
+</ol>
+<h3 id="4-non-goals">4. Non-goals</h3>
+<ol type="1">
+<li>QUILL will not provide a public remote execution service in v1.</li>
+<li>QUILL will not allow untrusted scripts to run silently.</li>
+<li>QUILL will not expose arbitrary internal object mutation as the
+recommended workflow.</li>
+<li>QUILL will not make Python or TypeScript scripting required for
+normal use.</li>
+<li>QUILL will not replace a full IDE, debugger, or terminal.</li>
+<li>QUILL will not guarantee sandbox security for arbitrary malicious
+code in the local Python console.</li>
+<li>QUILL will not let scripts bypass document protection, source-file
+safety, cloud-consent prompts, or profile safety rules.</li>
+</ol>
+<h3 id="5-user-stories">5. User stories</h3>
+<h4 id="51-developer">5.1 Developer</h4>
+<p>As a QUILL developer, I want to open a console, inspect the active
+document, run commands, and test editor behavior without rebuilding or
+adding temporary menu items.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>q.doc.name</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>q.selection.text</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">100</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.find.next&quot;</span>)</span></code></pre></div>
+<h4 id="52-accessibility-tester">5.2 Accessibility tester</h4>
+<p>As an accessibility tester, I want to inspect the focused region,
+active command, current screen-reader announcement backend, and the last
+announcements so I can diagnose what a user experienced.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>q.a11y.last_announcements()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>q.a11y.announce(<span class="st">&quot;Testing announcement path.&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>q.focus.describe()</span></code></pre></div>
+<h4 id="53-macro-author">5.3 Macro author</h4>
+<p>As a power user, I want to experiment with commands interactively and
+save successful sequences as a macro.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>q.begin_macro(<span class="st">&quot;Clean OCR text&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.normalizeUnicode&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.dehyphenateLines&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.reflowParagraphs&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>q.end_macro()</span></code></pre></div>
+<h4 id="54-support-technician">5.4 Support technician</h4>
+<p>As a support technician, I want a user to run a safe diagnostic
+command and copy the output into an email or support ticket.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>q.support.diagnostic_summary()</span></code></pre></div>
+<h4 id="55-typescript-user">5.5 TypeScript user</h4>
+<p>As a developer more comfortable with TypeScript, I want to run async
+commands against QUILL using a typed API and receive clear errors.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> doc <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">activeDocument</span>()<span class="op">;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">25</span>)<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(doc<span class="op">.</span><span class="at">name</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="6-feature-placement">6. Feature placement</h3>
+<p>The feature appears in the following command surfaces:</p>
+<h4 id="tools-menu">Tools menu</h4>
+<p><code>Tools &gt; Advanced &gt; Developer Console</code></p>
+<p>Submenu items:</p>
+<ul>
+<li>Open Python Console</li>
+<li>Open TypeScript Console</li>
+<li>Open Console Transcript</li>
+<li>Save Current Console as Macro</li>
+<li>Manage Console Snippets</li>
+<li>Console Safety Settings</li>
+<li>Copy Diagnostic Summary</li>
+</ul>
+<h4 id="command-palette">Command palette</h4>
+<p>Commands:</p>
+<ul>
+<li><code>quill.console.openPython</code></li>
+<li><code>quill.console.openTypeScript</code></li>
+<li><code>quill.console.clear</code></li>
+<li><code>quill.console.copyTranscript</code></li>
+<li><code>quill.console.saveTranscript</code></li>
+<li><code>quill.console.saveInputAsSnippet</code></li>
+<li><code>quill.console.insertSnippet</code></li>
+<li><code>quill.console.runSelection</code></li>
+<li><code>quill.console.runCurrentDocument</code></li>
+<li><code>quill.console.showContext</code></li>
+<li><code>quill.console.resetNamespace</code></li>
+<li><code>quill.console.restartTypeScriptWorker</code></li>
+<li><code>quill.console.openSafetySettings</code></li>
+</ul>
+<h4 id="feature-profiles">Feature profiles</h4>
+<p>Default visibility:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Python console</th>
+<th>TypeScript console</th>
+<th>Macro recording</th>
+<th>Remote console</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Essential</td>
+<td>Off</td>
+<td>Off</td>
+<td>Off</td>
+<td>Locked off</td>
+</tr>
+<tr>
+<td>Casual Writer</td>
+<td>Off</td>
+<td>Off</td>
+<td>Quiet</td>
+<td>Locked off</td>
+</tr>
+<tr>
+<td>Reader and Student</td>
+<td>Off</td>
+<td>Off</td>
+<td>Off</td>
+<td>Locked off</td>
+</tr>
+<tr>
+<td>Office and Admin</td>
+<td>Off</td>
+<td>Off</td>
+<td>Quiet</td>
+<td>Locked off</td>
+</tr>
+<tr>
+<td>Accessibility Professional</td>
+<td>Off</td>
+<td>Off</td>
+<td>On</td>
+<td>Locked off</td>
+</tr>
+<tr>
+<td>Developer</td>
+<td>On</td>
+<td>On</td>
+<td>On</td>
+<td>Locked off</td>
+</tr>
+<tr>
+<td>Braille and Screen Reader Power User</td>
+<td>Off</td>
+<td>Off</td>
+<td>On</td>
+<td>Locked off</td>
+</tr>
+<tr>
+<td>Full Quill</td>
+<td>On</td>
+<td>On</td>
+<td>On</td>
+<td>Locked off</td>
+</tr>
+</tbody>
+</table>
+<p>Remote execution remains unavailable unless an experimental developer
+build explicitly enables it.</p>
+<h3 id="7-ux-requirements">7. UX requirements</h3>
+<h4 id="71-console-window-layout">7.1 Console window layout</h4>
+<p>The console is a standard wx dialog or frame using stock
+controls.</p>
+<p>Required controls:</p>
+<ol type="1">
+<li><p><strong>Transcript output</strong></p>
+<ul>
+<li>Read-only multi-line <code>wx.TextCtrl</code></li>
+<li>Receives command output, errors, return values, announcements, and
+command prompts</li>
+<li>Supports select all, copy, find, and save transcript</li>
+</ul></li>
+<li><p><strong>Command input</strong></p>
+<ul>
+<li>Editable <code>wx.TextCtrl</code></li>
+<li>Single-line by default</li>
+<li>Multi-line mode available with a toggle or
+<code>Shift+Enter</code></li>
+<li>Enter runs the current command when the command is complete</li>
+</ul></li>
+<li><p><strong>Language selector</strong></p>
+<ul>
+<li>Python</li>
+<li>TypeScript</li>
+<li>Future: command-only mode</li>
+</ul></li>
+<li><p><strong>Status line</strong></p>
+<ul>
+<li>Shows current language, prompt state, active document, and worker
+status</li>
+</ul></li>
+<li><p><strong>Buttons</strong></p>
+<ul>
+<li>Run</li>
+<li>Clear</li>
+<li>Copy transcript</li>
+<li>Save transcript</li>
+<li>Insert snippet</li>
+<li>Help</li>
+<li>Close</li>
+</ul></li>
+</ol>
+<h4 id="72-keyboard-behavior">7.2 Keyboard behavior</h4>
+<p>Required shortcuts:</p>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enter</td>
+<td>Execute current command</td>
+</tr>
+<tr>
+<td>Shift+Enter</td>
+<td>Insert newline in multi-line input</td>
+</tr>
+<tr>
+<td>Ctrl+Enter</td>
+<td>Force execute multi-line command</td>
+</tr>
+<tr>
+<td>Up/Down</td>
+<td>Previous/next command history when input cursor is at boundary</td>
+</tr>
+<tr>
+<td>Ctrl+L</td>
+<td>Clear transcript</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+C</td>
+<td>Copy transcript</td>
+</tr>
+<tr>
+<td>Ctrl+S</td>
+<td>Save transcript</td>
+</tr>
+<tr>
+<td>Ctrl+F</td>
+<td>Find in transcript</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Move between transcript, input, status, and buttons</td>
+</tr>
+<tr>
+<td>Esc</td>
+<td>Return focus to editor if console is non-modal; close if modal
+confirmation is not needed</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Open console help</td>
+</tr>
+<tr>
+<td>Ctrl+Space</td>
+<td>Trigger completion if available</td>
+</tr>
+<tr>
+<td>Tab</td>
+<td>Insert indentation in multi-line mode or move focus depending on
+setting</td>
+</tr>
+</tbody>
+</table>
+<h4 id="73-screen-reader-behavior">7.3 Screen-reader behavior</h4>
+<p>The console must be fully usable with NVDA, JAWS, and Narrator.</p>
+<p>Requirements:</p>
+<ul>
+<li>Every control has a clear accessible name.</li>
+<li>The transcript announces new output without stealing focus.</li>
+<li>Errors are announced with the prefix “Error”.</li>
+<li>Return values are announced with the prefix “Result”.</li>
+<li>Long output is not automatically spoken in full; the console
+announces a summary and lets the user review the transcript.</li>
+<li>The console supports a “copy last result” command.</li>
+<li>The console supports a “speak last result” command.</li>
+<li>The console uses QUILL’s central announcement path.</li>
+<li>Braille users can review the transcript as plain text.</li>
+<li>No custom drawn controls are allowed in the primary console
+workflow.</li>
+</ul>
+<h4 id="74-prompt-behavior">7.4 Prompt behavior</h4>
+<p>Python prompt:</p>
+<pre class="text"><code>&gt;&gt;&gt;</code></pre>
+<p>Continuation prompt:</p>
+<pre class="text"><code>...</code></pre>
+<p>TypeScript prompt:</p>
+<pre class="text"><code>ts&gt;</code></pre>
+<p>Async TypeScript pending prompt:</p>
+<pre class="text"><code>ts*&gt;</code></pre>
+<p>The prompt itself is included in the transcript but not required in
+copied code unless the user chooses “Copy with prompts”.</p>
+<h3 id="8-python-console-requirements">8. Python console
+requirements</h3>
+<h4 id="81-execution-model">8.1 Execution model</h4>
+<p>The Python console runs in-process and uses Python’s embedded
+interpreter facilities.</p>
+<p>The console maintains a persistent namespace for the session. Hiding
+the console does not destroy the namespace unless the user explicitly
+resets it.</p>
+<h4 id="82-default-namespace">8.2 Default namespace</h4>
+<p>The following names are available by default:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>q              <span class="co"># Primary QUILL scripting API</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>app            <span class="co"># Application-level read-mostly object</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>frame          <span class="co"># Main frame, available for debugging</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>commands       <span class="co"># Command registry read/execute facade</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>doc            <span class="co"># Active document snapshot</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>editor         <span class="co"># Active editor snapshot</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>sel            <span class="co"># Current selection snapshot</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>caret          <span class="co"># Current caret snapshot</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>profile        <span class="co"># Active feature profile snapshot</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>settings       <span class="co"># Safe settings facade</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>diagnostics    <span class="co"># Diagnostics facade</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>a11y           <span class="co"># Announcement/testing facade</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>log            <span class="co"># Console-safe logger</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>wx             <span class="co"># wx module, developer profile only</span></span></code></pre></div>
+<h4 id="83-snapshot-refresh">8.3 Snapshot refresh</h4>
+<p>The console updates snapshot variables when:</p>
+<ul>
+<li>The console opens.</li>
+<li>The active document changes.</li>
+<li>The user runs <code>q.refresh_context()</code>.</li>
+<li>A command changes editor state.</li>
+<li>The user chooses “Refresh Console Context”.</li>
+</ul>
+<p>Snapshot variables such as <code>doc</code>, <code>sel</code>, and
+<code>caret</code> are safe read-only snapshots unless explicitly
+documented otherwise.</p>
+<h4 id="84-python-examples">8.4 Python examples</h4>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>q.replace_selection(<span class="st">&quot;Replacement text&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">42</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>q.a11y.announce(<span class="st">&quot;This is a test announcement.&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>q.diagnostics.document_summary()</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>q.commands.search(<span class="st">&quot;spell&quot;</span>)</span></code></pre></div>
+<h3 id="9-typescript-console-requirements">9. TypeScript console
+requirements</h3>
+<h4 id="91-execution-model">9.1 Execution model</h4>
+<p>The TypeScript console runs out-of-process through a Node worker.</p>
+<p>Python QUILL process:</p>
+<ul>
+<li>Owns the editor, document model, command registry, and UI
+thread.</li>
+<li>Sends TypeScript code to the Node worker.</li>
+<li>Receives JSON-RPC-style command requests from the worker.</li>
+<li>Executes approved commands on the wx main thread.</li>
+<li>Returns structured results or errors.</li>
+</ul>
+<p>Node TypeScript worker:</p>
+<ul>
+<li>Receives TypeScript code.</li>
+<li>Transpiles it to JavaScript.</li>
+<li>Executes it with a limited <code>quill</code> proxy object.</li>
+<li>Sends editor actions back to Python as structured requests.</li>
+<li>Captures <code>console.log</code>, warnings, errors, and return
+values.</li>
+</ul>
+<h4 id="92-typescript-global-api">9.2 TypeScript global API</h4>
+<p>The TypeScript console exposes:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>quill</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>setTimeout</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>clearTimeout</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>AbortController</span></code></pre></div>
+<p>The TypeScript worker must not expose unrestricted filesystem,
+network, process, or shell access through the default console
+environment.</p>
+<h4 id="93-typescript-examples">9.3 TypeScript examples</h4>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">replaceSelection</span>(<span class="st">&quot;Replacement text&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`</span><span class="sc">${</span>stats<span class="op">.</span><span class="at">words</span><span class="sc">}</span><span class="vs"> words`</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<h4 id="94-type-definitions">9.4 Type definitions</h4>
+<p>QUILL ships a <code>quill-console.d.ts</code> type definition file so
+TypeScript users get completion and documentation.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillConsoleApi {</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentSnapshot<span class="op">&gt;;</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentStats<span class="op">&gt;;</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">announce</span>(text<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> options<span class="op">?:</span> AnnouncementOptions)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h4 id="95-worker-lifecycle">9.5 Worker lifecycle</h4>
+<p>The TypeScript worker starts only when the TypeScript console is
+opened.</p>
+<p>The worker stops when:</p>
+<ul>
+<li>QUILL exits.</li>
+<li>The user closes the console and worker idle timeout expires.</li>
+<li>The user chooses “Restart TypeScript Worker”.</li>
+<li>The worker exceeds memory or time limits.</li>
+<li>The worker crashes.</li>
+</ul>
+<p>Worker crashes must not crash QUILL.</p>
+<h3 id="10-quill-scripting-api">10. QUILL scripting API</h3>
+<h4 id="101-api-principles">10.1 API principles</h4>
+<p>The scripting API is the official automation surface.</p>
+<p>Rules:</p>
+<ol type="1">
+<li>Mutations go through the command registry.</li>
+<li>Undo/redo must work.</li>
+<li>Dirty state must update.</li>
+<li>Status bar must update.</li>
+<li>Screen-reader announcements must happen.</li>
+<li>Profile and feature gates must be respected.</li>
+<li>Cloud/network actions must still ask for consent.</li>
+<li>Protected originals must stay protected.</li>
+<li>Commands must return structured results.</li>
+<li>Errors must be plain-language first, traceback second.</li>
+</ol>
+<h4 id="102-python-api-shape">10.2 Python API shape</h4>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> QuillScriptAPI:</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> insert_text(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> replace_selection(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> selected_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>: ...</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> document_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>: ...</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_document_text(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> goto_line(<span class="va">self</span>, line: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> goto_offset(<span class="va">self</span>, offset: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> run_command(<span class="va">self</span>, command_id: <span class="bu">str</span>, <span class="op">**</span>kwargs): ...</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> command_exists(<span class="va">self</span>, command_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">bool</span>: ...</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> list_commands(<span class="va">self</span>, query: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[CommandInfo]: ...</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> active_document(<span class="va">self</span>) <span class="op">-&gt;</span> DocumentSnapshot: ...</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> document_stats(<span class="va">self</span>) <span class="op">-&gt;</span> DocumentStats: ...</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> refresh_context(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span></code></pre></div>
+<h4 id="103-typescript-api-shape">10.3 TypeScript API shape</h4>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillApi {</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">selectedText</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentText</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setDocumentText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoOffset</span>(offset<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">commandExists</span>(commandId<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">boolean</span><span class="op">&gt;;</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">listCommands</span>(query<span class="op">?:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>CommandInfo[]<span class="op">&gt;;</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>DocumentSnapshot<span class="op">&gt;;</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>DocumentStats<span class="op">&gt;;</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">refreshContext</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h4 id="104-safe-facades">10.4 Safe facades</h4>
+<p>The console exposes safe facades instead of raw internals wherever
+possible.</p>
+<p>Required facades:</p>
+<ul>
+<li><code>q.documents</code></li>
+<li><code>q.editor</code></li>
+<li><code>q.selection</code></li>
+<li><code>q.commands</code></li>
+<li><code>q.bookmarks</code></li>
+<li><code>q.search</code></li>
+<li><code>q.spell</code></li>
+<li><code>q.markdown</code></li>
+<li><code>q.text</code></li>
+<li><code>q.a11y</code></li>
+<li><code>q.diagnostics</code></li>
+<li><code>q.profile</code></li>
+<li><code>q.settings</code></li>
+<li><code>q.support</code></li>
+<li><code>q.macros</code></li>
+<li><code>q.quillins</code></li>
+</ul>
+<h3 id="11-command-registry-integration">11. Command registry
+integration</h3>
+<p>Every console-callable command must declare metadata:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>Command(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">id</span><span class="op">=</span><span class="st">&quot;quill.editor.insertText&quot;</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">&quot;Insert Text&quot;</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">&quot;Insert text at the current caret position.&quot;</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    handler<span class="op">=</span>insert_text_handler,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    default_key<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    when<span class="op">=</span><span class="st">&quot;editorFocus&quot;</span>,</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    scriptable<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    mutates_document<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    undo_group<span class="op">=</span><span class="st">&quot;typing&quot;</span>,</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    requires_consent<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    profile_feature<span class="op">=</span><span class="st">&quot;developer.console&quot;</span>,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Required metadata fields for scriptable commands:</p>
+<ul>
+<li><code>id</code></li>
+<li><code>title</code></li>
+<li><code>description</code></li>
+<li><code>scriptable</code></li>
+<li><code>mutates_document</code></li>
+<li><code>undo_group</code></li>
+<li><code>requires_consent</code></li>
+<li><code>profile_feature</code></li>
+<li><code>privacy_label</code></li>
+<li><code>network_label</code></li>
+<li><code>return_schema</code></li>
+<li><code>argument_schema</code></li>
+</ul>
+<p>The console refuses to run commands marked
+<code>scriptable=False</code> unless developer unsafe mode is
+enabled.</p>
+<h3 id="12-macro-integration">12. Macro integration</h3>
+<p>The console is the fastest path to creating and testing macros.</p>
+<p>Requirements:</p>
+<ul>
+<li>Users can save selected console history as a macro.</li>
+<li>Macros are stored as command sequences by default, not arbitrary
+Python code.</li>
+<li>Python macros are developer-profile-only.</li>
+<li>TypeScript macros are developer-profile-only.</li>
+<li>Command-sequence macros are allowed in more profiles.</li>
+<li>Macro execution shows a preview when it will modify the
+document.</li>
+<li>Macro execution is one undo group unless the macro author explicitly
+splits undo groups.</li>
+<li>Macro failures stop execution and announce the failed step.</li>
+</ul>
+<p>Example command-sequence macro:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Clean OCR text&quot;</span><span class="fu">,</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;steps&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.normalizeUnicode&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.dehyphenateLines&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.reflowParagraphs&quot;</span><span class="fu">}</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="13-security-and-safety">13. Security and safety</h3>
+<h4 id="131-local-trust-model">13.1 Local trust model</h4>
+<p>The Python console is trusted local code execution.</p>
+<p>QUILL must clearly warn users:</p>
+<pre class="text"><code>The Developer Console can run code inside QUILL.
+Only run commands you understand or received from a trusted source.</code></pre>
+<p>This warning appears:</p>
+<ul>
+<li>The first time the console opens.</li>
+<li>When enabling the feature from Settings.</li>
+<li>When pasting multi-line code from the clipboard.</li>
+<li>When attempting to enable unsafe developer mode.</li>
+</ul>
+<h4 id="132-remote-execution">13.2 Remote execution</h4>
+<p>Remote execution is locked off by default.</p>
+<p>Requirements:</p>
+<ul>
+<li>No listening socket in stable builds.</li>
+<li>No hidden remote console.</li>
+<li>No command-line flag that silently enables remote execution.</li>
+<li>Experimental remote console, if ever added, must bind to localhost
+only by default.</li>
+<li>Remote console must require an explicit one-time token.</li>
+<li>Remote console must show a persistent status bar warning.</li>
+<li>Remote console must auto-disable on restart unless the user
+explicitly chooses otherwise.</li>
+</ul>
+<h4 id="133-dangerous-operations">13.3 Dangerous operations</h4>
+<p>The console must prompt or block for:</p>
+<ul>
+<li>Running shell commands</li>
+<li>Reading arbitrary files outside allowed locations</li>
+<li>Writing arbitrary files outside QUILL-controlled flows</li>
+<li>Sending document content to network services</li>
+<li>Installing Quillins</li>
+<li>Changing profile safety rules</li>
+<li>Disabling backups or crash recovery</li>
+<li>Accessing protected source documents</li>
+<li>Running pasted multi-line code</li>
+</ul>
+<h4 id="134-typescript-worker-limits">13.4 TypeScript worker limits</h4>
+<p>Default limits:</p>
+<table>
+<thead>
+<tr>
+<th>Limit</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Execution timeout</td>
+<td>30 seconds</td>
+</tr>
+<tr>
+<td>Idle timeout</td>
+<td>10 minutes</td>
+</tr>
+<tr>
+<td>Memory warning</td>
+<td>256 MB</td>
+</tr>
+<tr>
+<td>Memory hard limit</td>
+<td>512 MB</td>
+</tr>
+<tr>
+<td>Output flood threshold</td>
+<td>100 KB</td>
+</tr>
+<tr>
+<td>Max transcript size</td>
+<td>5 MB before rotation prompt</td>
+</tr>
+</tbody>
+</table>
+<p>Long-running TypeScript scripts must support cancellation.</p>
+<h3 id="14-accessibility-requirements">14. Accessibility
+requirements</h3>
+<p>The console must pass QUILL’s normal accessibility gates.</p>
+<p>Required tests:</p>
+<ul>
+<li>NVDA reads console controls correctly.</li>
+<li>JAWS reads console controls correctly.</li>
+<li>Narrator reads console controls correctly.</li>
+<li>F6 cycles through console regions.</li>
+<li>Escape behavior is predictable.</li>
+<li>New output does not steal focus.</li>
+<li>Long output is summarized.</li>
+<li>Errors are reviewable character-by-character.</li>
+<li>Braille display review works through the transcript control.</li>
+<li>High contrast mode remains readable.</li>
+<li>Large font mode does not clip prompts or buttons.</li>
+<li>Keyboard-only users can run, copy, save, clear, and close.</li>
+<li>No console action traps focus.</li>
+</ul>
+<h3 id="15-error-handling">15. Error handling</h3>
+<p>Errors appear in three layers:</p>
+<ol type="1">
+<li>Plain-language summary</li>
+<li>Actionable suggestion</li>
+<li>Technical details, expandable or copyable</li>
+</ol>
+<p>Example:</p>
+<pre class="text"><code>Error: Unknown command &quot;quill.markdown.fixHeading&quot;.
+Suggestion: Run q.commands.search(&quot;heading&quot;) to find matching commands.
+Details: CommandNotFoundError: quill.markdown.fixHeading</code></pre>
+<p>Python tracebacks are available but collapsed behind “Show technical
+details” unless the active profile is Developer.</p>
+<p>TypeScript stack traces are captured and mapped to the user’s
+submitted code when possible.</p>
+<h3 id="16-logging-and-transcripts">16. Logging and transcripts</h3>
+<p>The console keeps a local transcript of:</p>
+<ul>
+<li>Commands entered</li>
+<li>Results</li>
+<li>Errors</li>
+<li>Warnings</li>
+<li>Announcements triggered by console commands</li>
+<li>Worker lifecycle events</li>
+<li>Macro recording markers</li>
+</ul>
+<p>Privacy requirements:</p>
+<ul>
+<li>Transcripts are not sent anywhere automatically.</li>
+<li>Document text is included only when commands print or return
+it.</li>
+<li>“Copy diagnostic summary” redacts document content by default.</li>
+<li>Users can save transcripts manually.</li>
+<li>Support packages ask before including transcript content.</li>
+</ul>
+<h3 id="17-settings">17. Settings</h3>
+<p>Settings page:
+<code>Settings &gt; Developer Console and Automation</code></p>
+<p>Settings:</p>
+<ul>
+<li>Enable Developer Console</li>
+<li>Enable Python Console</li>
+<li>Enable TypeScript Console</li>
+<li>Show first-run safety warning again</li>
+<li>Require confirmation before pasted multi-line execution</li>
+<li>Require confirmation before document-wide mutation</li>
+<li>Allow script access to raw wx objects</li>
+<li>Allow shell commands</li>
+<li>Allow filesystem access</li>
+<li>TypeScript worker path</li>
+<li>TypeScript worker timeout</li>
+<li>Transcript retention</li>
+<li>History retention</li>
+<li>Clear history on exit</li>
+<li>Enable completions</li>
+<li>Enable result announcements</li>
+<li>Output verbosity: concise, normal, verbose</li>
+<li>Unsafe developer mode</li>
+</ul>
+<p>Dangerous settings are available only in Developer or Full Quill
+profiles.</p>
+<h3 id="18-data-storage">18. Data storage</h3>
+<p>Suggested files:</p>
+<pre class="text"><code>%APPDATA%\Quill\console\
+  history.jsonl
+  snippets.json
+  transcripts\
+  types\
+    quill-console.d.ts
+  ts-worker\
+    worker.js</code></pre>
+<p>Portable mode stores the same structure next to the portable QUILL
+configuration directory.</p>
+<p>History entries contain:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;timestamp&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-06-10T00:00:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;python&quot;</span><span class="fu">,</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;input&quot;</span><span class="fu">:</span> <span class="st">&quot;q.document_stats()&quot;</span><span class="fu">,</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;success&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>History must not store command output by default.</p>
+<h3 id="19-technical-architecture">19. Technical architecture</h3>
+<h4 id="191-new-modules">19.1 New modules</h4>
+<pre class="text"><code>quill/
+  core/
+    scripting.py              Official QuillScriptAPI facade
+    script_context.py         Active console context snapshots
+    script_permissions.py     Console permission checks
+    script_results.py         Structured result and error models
+  devtools/
+    console_window.py         wx console UI
+    python_console.py         Embedded Python console
+    ts_console.py             Python-side TypeScript bridge
+    ts_worker_protocol.py     JSON-RPC message schema
+    completions.py            Completion provider
+    history.py                Console history manager
+    snippets.py               Snippet manager
+    transcripts.py            Transcript manager
+  tools/
+    ts_worker/
+      worker.ts               TypeScript worker source
+      worker.js               Built worker
+      quill-console.d.ts      Type definitions</code></pre>
+<h4 id="192-threading-model">19.2 Threading model</h4>
+<p>Rules:</p>
+<ul>
+<li>UI mutations must run on the wx main thread.</li>
+<li>Console input handling may occur in the UI thread only for quick
+commands.</li>
+<li>Long commands must run as background tasks.</li>
+<li>TypeScript worker communication runs asynchronously.</li>
+<li>Results are marshaled back to the UI through QUILL’s event queue or
+<code>wx.CallAfter</code>.</li>
+<li>Command cancellation must be supported for long-running tasks.</li>
+</ul>
+<h4 id="193-command-execution-flow">19.3 Command execution flow</h4>
+<pre class="text"><code>User enters command
+    ↓
+Console parser receives input
+    ↓
+Python console or TypeScript worker executes code
+    ↓
+Code calls q / quill API
+    ↓
+API validates permission, profile, and command metadata
+    ↓
+Command registry executes command
+    ↓
+Document/editor/status/a11y systems update
+    ↓
+Structured result returns to console
+    ↓
+Transcript updates and concise result is announced</code></pre>
+<h3 id="20-completion-and-help">20. Completion and help</h3>
+<p>The console should provide discoverability without requiring users to
+memorize APIs.</p>
+<p>Completion sources:</p>
+<ul>
+<li><code>q</code> methods</li>
+<li>command ids</li>
+<li>active document properties</li>
+<li>macro names</li>
+<li>snippet names</li>
+<li>settings keys</li>
+<li>feature ids</li>
+</ul>
+<p>Help commands:</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>q.<span class="bu">help</span>()</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>q.<span class="bu">help</span>(<span class="st">&quot;insert_text&quot;</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>q.commands.search(<span class="st">&quot;bookmark&quot;</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>q.describe_command(<span class="st">&quot;quill.editor.gotoLine&quot;</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>q.examples(<span class="st">&quot;markdown&quot;</span>)</span></code></pre></div>
+<p>TypeScript equivalents:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">help</span>()<span class="op">;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="at">commands</span><span class="op">.</span><span class="fu">search</span>(<span class="st">&quot;bookmark&quot;</span>)<span class="op">;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">describeCommand</span>(<span class="st">&quot;quill.editor.gotoLine&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="21-testing-strategy">21. Testing strategy</h3>
+<h4 id="211-unit-tests">21.1 Unit tests</h4>
+<ul>
+<li><code>QuillScriptAPI.insert_text</code> routes through command
+registry.</li>
+<li><code>replace_selection</code> creates one undoable operation.</li>
+<li><code>goto_line</code> rejects invalid line numbers with
+plain-language errors.</li>
+<li><code>run_command</code> refuses non-scriptable commands.</li>
+<li>Profile gates hide or reject console commands properly.</li>
+<li>Permission checks block dangerous operations.</li>
+<li>Snapshot refresh updates document, selection, and caret state.</li>
+<li>TypeScript protocol serializes and deserializes results
+correctly.</li>
+<li>Worker crash returns a structured error.</li>
+</ul>
+<h4 id="212-integration-tests">21.2 Integration tests</h4>
+<ul>
+<li>Open Python console, run <code>q.insert_text</code>, verify document
+changes.</li>
+<li>Run document-wide command, verify undo restores prior state.</li>
+<li>Run command that announces result, verify announcement
+transcript.</li>
+<li>Open TypeScript console, run
+<code>await quill.insertText(...)</code>.</li>
+<li>Restart TypeScript worker and verify QUILL stays alive.</li>
+<li>Save console history as macro and run macro.</li>
+<li>Copy diagnostic summary and verify redaction.</li>
+<li>Paste multi-line code and verify confirmation prompt.</li>
+</ul>
+<h4 id="213-accessibility-tests">21.3 Accessibility tests</h4>
+<ul>
+<li>NVDA reads transcript and input controls.</li>
+<li>JAWS reads transcript and input controls.</li>
+<li>Narrator reads transcript and input controls.</li>
+<li>F6 region cycling works.</li>
+<li>Escape returns focus predictably.</li>
+<li>High contrast and large fonts work.</li>
+<li>Long output does not cause speech flood.</li>
+<li>Error details are reachable and copyable.</li>
+</ul>
+<h4 id="214-security-tests">21.4 Security tests</h4>
+<ul>
+<li>Remote execution is not listening in stable builds.</li>
+<li>TypeScript worker cannot directly access unrestricted shell by
+default.</li>
+<li>Console cannot bypass network consent.</li>
+<li>Console cannot silently overwrite protected source documents.</li>
+<li>Pasted multi-line execution triggers confirmation.</li>
+<li>Unsafe developer mode cannot be enabled by imported profile
+alone.</li>
+</ul>
+<h3 id="22-success-criteria">22. Success criteria</h3>
+<p>The feature is successful when:</p>
+<ol type="1">
+<li>A developer can open the Python console and inspect/manipulate the
+active document through <code>q</code>.</li>
+<li>A TypeScript user can run async editor commands through
+<code>quill</code>.</li>
+<li>All document mutations are undoable.</li>
+<li>Screen-reader users can operate the console without custom
+scripts.</li>
+<li>Console commands respect profile, permission, and consent
+rules.</li>
+<li>Long or failed commands do not crash QUILL.</li>
+<li>TypeScript worker crashes do not crash QUILL.</li>
+<li>Support diagnostics can be copied without leaking document content
+by default.</li>
+<li>Macro creation can reuse console command history.</li>
+<li>CI covers unit, integration, accessibility, and safety
+behavior.</li>
+</ol>
+<h3 id="23-mvp-scope">23. MVP scope</h3>
+<h4 id="mvp-python-developer-console">MVP: Python Developer Console</h4>
+<p>Included:</p>
+<ul>
+<li>Python console window</li>
+<li><code>q</code> scripting API</li>
+<li>Command registry execution</li>
+<li>Transcript output</li>
+<li>History</li>
+<li>Clear/copy/save transcript</li>
+<li>Basic completions</li>
+<li>Plain-language errors</li>
+<li>First-run safety warning</li>
+<li>Profile gating</li>
+<li>Undo-aware document mutations</li>
+<li>Accessibility tests with NVDA</li>
+</ul>
+<p>Not included in MVP:</p>
+<ul>
+<li>TypeScript console</li>
+<li>Macro recording from history</li>
+<li>Advanced snippets</li>
+<li>Remote execution</li>
+<li>Raw wx unsafe mode</li>
+<li>Plugin authoring APIs</li>
+</ul>
+<h4 id="mvp1-typescript-console">MVP+1: TypeScript Console</h4>
+<p>Included:</p>
+<ul>
+<li>Node worker bridge</li>
+<li>TypeScript transpilation</li>
+<li><code>quill</code> async proxy</li>
+<li>Type definitions</li>
+<li>Worker restart</li>
+<li>Worker timeout and memory limits</li>
+<li>Console output capture</li>
+<li>TypeScript examples</li>
+</ul>
+<h4 id="mvp2-macro-and-quillin-authoring">MVP+2: Macro and Quillin
+authoring</h4>
+<p>Included:</p>
+<ul>
+<li>Save console history as macro</li>
+<li>Snippet manager</li>
+<li>Quillin test harness</li>
+<li>Command-sequence macro editor</li>
+<li>Console-based plugin diagnostics</li>
+</ul>
+<h3 id="24-open-questions">24. Open questions</h3>
+<ol type="1">
+<li>Should Python console be included in QUILL 1.0 as hidden
+experimental functionality?</li>
+<li>Should the console be modal, non-modal, or dockable?</li>
+<li>Should command history persist by default or require opt-in?</li>
+<li>Should TypeScript support be bundled or require Node detection?</li>
+<li>Should a minimal embedded JS engine be considered later for users
+who do not have Node?</li>
+<li>Should console snippets sync with macros, or remain separate?</li>
+<li>Should support technicians have a restricted “diagnostics-only
+console” mode?</li>
+<li>Should unsafe developer mode require a launch flag in addition to a
+setting?</li>
+<li>Should QUILL ship sample scripts for OCR cleanup, Markdown repair,
+and diagnostics?</li>
+<li>Should console transcript export support Markdown, plain text, and
+JSON?</li>
+</ol>
+<h3 id="25-example-first-run-warning">25. Example first-run warning</h3>
+<pre class="text"><code>Developer Console
+
+This console can run commands inside QUILL and may change the current document.
+Only run commands you understand or received from a trusted source.
+
+Recommended:
+- Use q.run_command(...) or documented q methods.
+- Do not paste code from unknown sources.
+- Save your document before running document-wide commands.
+
+[Open Console] [Cancel] [Learn More]</code></pre>
+<h3 id="26-example-diagnostic-summary-command">26. Example diagnostic
+summary command</h3>
+<p>Python:</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>q.support.diagnostic_summary()</span></code></pre></div>
+<p>Output:</p>
+<pre class="text"><code>QUILL diagnostic summary
+Version: 1.1.0-dev
+Profile: Developer
+Active document: chapter-7.md
+Modified: yes
+Documents open: 3
+Screen reader detected: NVDA
+Announcement backend: auto
+Python console: enabled
+TypeScript console: available
+Last command: quill.editor.gotoLine
+Last error: none
+Document content included: no</code></pre>
+<h3 id="27-definition-of-done">27. Definition of done</h3>
+<p>This feature is done when:</p>
+<ul>
+<li>The Python console is fully keyboard accessible.</li>
+<li>The Python console exposes the official <code>q</code> scripting
+API.</li>
+<li>TypeScript console runs through a subprocess bridge and cannot crash
+QUILL.</li>
+<li>All editor mutations go through the command registry or scripting
+API.</li>
+<li>Undo/redo, dirty-state, status bar, and accessibility announcements
+remain correct after console-driven changes.</li>
+<li>Profile gating and safety settings work.</li>
+<li>First-run safety warnings are present.</li>
+<li>Console history, transcript copy, and transcript save work.</li>
+<li>Dangerous actions require confirmation or are blocked.</li>
+<li>Automated tests cover command execution, accessibility, worker
+failure, permissions, and undo behavior.</li>
+<li>User documentation explains examples, risks, and safe patterns.</li>
+</ul>
+<hr />
+<h2 id="how-the-copy-tray-was-built">How the Copy Tray was built</h2>
+<h3 id="what-was-built">What Was Built</h3>
+<p>Copy Tray is a nine-slot persistent clipboard integrated across
+QUILL’s menu bar, keyboard layer, dialog system, and system tray icon.
+Every slot holds text that survives application restarts.</p>
+<h4 id="core-model-quillcorecopy_traypy">Core model
+(<code>quill/core/copy_tray.py</code>)</h4>
+<p>A pure Python model with no wx dependency. <code>CopyTray</code> owns
+nine <code>TraySlot</code> instances. Each slot has <code>text</code>,
+<code>label</code>, and <code>copied_at</code>. The model reads and
+writes <code>copy_tray.json</code> in the QUILL data directory using
+<code>write_json_atomic</code> (temp file + <code>os.replace</code>). A
+corrupt file causes a silent fresh start; it never raises to the UI.</p>
+<h4 id="ui-mixin-quilluimain_frame_copy_traypy">UI mixin
+(<code>quill/ui/main_frame_copy_tray.py</code>)</h4>
+<p><code>CopyTrayMixin</code> is mixed into <code>MainFrame</code>.
+Methods:</p>
+<ul>
+<li><code>copy_to_tray_slot(n)</code> – copies the editor selection to
+slot n; announces slot number and text preview.</li>
+<li><code>paste_from_tray_slot(n)</code> – inserts slot n text at cursor
+(or replaces selection); announces slot number and label.</li>
+<li><code>open_copy_tray()</code> – opens the management dialog; pastes
+if the user chooses Paste and returns to the editor.</li>
+<li><code>clear_all_tray_slots()</code> – Yes/No confirmation (default
+No); clears all nine slots on Yes.</li>
+</ul>
+<h4 id="dialog-quilluicopy_tray_dialogpy">Dialog
+(<code>quill/ui/copy_tray_dialog.py</code>)</h4>
+<p>A resizable wx.Dialog with a ListBox and five action buttons. Each
+list row shows slot number, optional label, and a 60-character preview.
+The list receives focus on open. Buttons: Paste (Enter), Copy Selection
+Here, Set Label…, Clear Slot, Close (Escape). Double-click pastes.
+Button states update on every selection change: Paste and Clear Slot are
+disabled on empty slots; Copy Selection Here is disabled when no editor
+text is selected.</p>
+<h4 id="keyboard-bindings-quillcorekeymappy">Keyboard bindings
+(<code>quill/core/keymap.py</code>)</h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Alt+Shift+1</code> through
+<code>Ctrl+Alt+Shift+9</code></td>
+<td>Paste from slot 1-9</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+1</code> through
+<code>Ctrl+Shift+Grave, Shift+9</code></td>
+<td>Copy selection to slot 1-9</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+V</code></td>
+<td>Open Copy Tray dialog</td>
+</tr>
+</tbody>
+</table>
+<p>The paste bindings use the number row with <code>Ctrl+Shift</code>.
+These keys were confirmed free across the entire QUILL keymap. QUILL-key
+bare digits 1-6 are heading shortcuts; adding Shift produces a distinct
+chord with no conflict.</p>
+<p>All 20 commands (<code>edit.open_copy_tray</code>,
+<code>edit.clear_all_tray_slots</code>,
+<code>edit.copy_to_tray_1..9</code>,
+<code>edit.paste_from_tray_1..9</code>) are registered in the keymap and
+appear in the Command Palette. All are reassignable in the Keymap
+Editor.</p>
+<h4 id="menu-integration-quilluimain_frame_menupy">Menu integration
+(<code>quill/ui/main_frame_menu.py</code>)</h4>
+<p><code>Edit &gt; Copy Tray</code> submenu with:</p>
+<ul>
+<li>Copy to Slot 1-9</li>
+<li>Paste from Slot 1-9</li>
+<li>Open Copy Tray…</li>
+<li>Clear All Tray Slots</li>
+</ul>
+<p>The 18 per-slot items use dedicated <code>wx.NewIdRef()</code> IDs
+(<code>_id_copy_tray_slots</code> and <code>_id_paste_tray_slots</code>
+arrays). Management commands are recirculated from the power tools
+manifest via <code>_append_power_tools_copy_tray_items</code>.</p>
+<h4 id="power-tools-manifest-quilluimain_frame_power_tools_menupy">Power
+tools manifest
+(<code>quill/ui/main_frame_power_tools_menu.py</code>)</h4>
+<p>New <code>"copy_tray"</code> group with
+<code>edit.open_copy_tray</code> and
+<code>edit.clear_all_tray_slots</code>. New recirculation helper
+<code>_append_power_tools_copy_tray_items</code>. The 18 individual slot
+commands are also registered in the manifest for Command Palette
+discoverability.</p>
+<h4 id="system-tray-integration-quilluimain_framepy">System tray
+integration (<code>quill/ui/main_frame.py</code>)</h4>
+<p>The <code>_on_tray_right_click</code> method now builds a
+<strong>Copy Tray</strong> submenu listing every occupied slot with its
+label (if any) and a 50-character text preview. Clicking a slot calls
+<code>_tray_paste_slot(n)</code>, which restores the main window if it
+is hidden, then pastes the slot content. If all slots are empty, the
+submenu shows “(all slots empty)” as a disabled item. “Open Copy Tray…”
+is always present at the bottom of the submenu.</p>
+<h4 id="documentation">Documentation</h4>
+<ul>
+<li><code>docs/userguide.md</code> – complete feature reference with
+keyboard tables, dialog walkthrough, accessibility notes, and workflow
+tips.</li>
+<li><code>docs/QUILL-PRD.md</code> – section 5.77 added with motivation,
+operations table, keyboard defaults, storage spec, accessibility
+guarantees, and implementation map.</li>
+<li><code>docs/userguide.md</code> – “Copy Tray” section added in
+Writing and Editing, before “Copy With Source”, with full keyboard
+tables and a tips block.</li>
+</ul>
+<hr />
+<h3 id="the-user-experience">The User Experience</h3>
+<h4 id="first-encounter">First encounter</h4>
+<p>You open QUILL to write a long document while researching from
+several other sources. You read a quote you want to use, select it, and
+press <code>Ctrl+Shift+Grave, Shift+1</code>. QUILL says “Copied to slot
+1”. You read another fragment. <code>Ctrl+Shift+Grave, Shift+2</code>.
+“Copied to slot 2”. A third. Slot 3.</p>
+<p>You switch to your draft. Where you want the first quote, press
+<code>Ctrl+Alt+Shift+1</code>. QUILL says “Pasted from slot 1” and the
+text is there. The system clipboard was never disturbed. The other two
+quotes are still in their slots.</p>
+<p>You close QUILL. Come back tomorrow. Slots 1, 2, and 3 still hold
+their contents.</p>
+<h4 id="using-labels">Using labels</h4>
+<p>After a few days you decide to give slot 1 a permanent home: your
+email signature. You open <code>Ctrl+Alt+V</code>, navigate to slot 1,
+press Set Label…, type “signature”, press Enter. Now when you paste,
+QUILL says “Pasted from slot 1 (signature)”. The slot is identifiable
+without looking at a screen.</p>
+<h4 id="from-the-system-tray">From the system tray</h4>
+<p>QUILL is minimized to the system tray while you read in another
+browser. You right-click the QUILL icon. The menu shows:</p>
+<pre><code>Show Quill
+Copy Tray  &gt;
+  1.  signature — Hi, I wanted to follow up...
+  2.  Hello world...
+  3.  import sys, os, pathlib...
+  ...
+  Open Copy Tray...
+Sticky Notes...
+Exit Quill</code></pre>
+<p>You click slot 3. QUILL restores its window and pastes the import
+block at your cursor. You minimize again.</p>
+<h4 id="screen-reader-workflow">Screen reader workflow</h4>
+<p>Press <code>Ctrl+Alt+Shift+5</code>. QUILL says “Slot 5 is empty.”
+You know immediately without opening a dialog or reading the screen.
+Select some text, press <code>Ctrl+Shift+Grave, Shift+5</code>. “Copied
+to slot 5.” Move elsewhere. Press <code>Ctrl+Alt+Shift+5</code>. “Pasted
+from slot 5.” Everything happened through voice, at typing speed, with
+standard modifier+number chords.</p>
+<hr />
+<h2 id="ideas-for-later-double-tap-keys">Ideas for later: double-tap
+keys</h2>
+<p>The user asked whether pressing a key twice quickly could trigger an
+alternative action. For Copy Tray, the natural double-tap behaviour
+would be:</p>
+<ul>
+<li><strong>Single <code>Ctrl+Shift+N</code></strong> – paste from slot
+N immediately.</li>
+<li><strong>Double <code>Ctrl+Shift+N</code></strong> (two presses
+within ~300ms) – peek: QUILL speaks what is in slot N <em>without
+pasting</em> (“Slot 3: Hello world…”). This lets a screen-reader user
+verify a slot’s content before committing to paste.</li>
+</ul>
+<p>Implementing double-tap detection requires a timer in the QUILL-key
+prefix state machine, a 300ms debounce, and a clear screen-reader
+announcement pattern. It is architecturally clean and would make the
+Copy Tray even more efficient for screen-reader-only workflows. This is
+noted here as a planned enhancement, not yet implemented.</p>
+<p>Other places in QUILL where double-tap patterns could add value:</p>
+<ul>
+<li><strong>Double QUILL key</strong> (two presses of
+<code>Ctrl+Shift+Grave</code>) = open Copy Tray dialog, similar to how
+Windows <code>Win+V</code> opens clipboard history.</li>
+<li><strong>Double <code>F3</code></strong> = repeat the last Find All
+and jump to the next cluster of matches.</li>
+<li><strong>Double <code>Ctrl+Z</code></strong> = undo back to the last
+explicit save point.</li>
+<li><strong>Double <code>Ctrl+G</code></strong> = return to the previous
+location (ping-pong navigation).</li>
+<li><strong>Double <code>Escape</code></strong> = collapse all side
+panels and return focus to the editor.</li>
+</ul>
+<p>These should be evaluated selectively – double-tap timing is
+sensitive and can interfere with rapid typists. The patterns with the
+clearest benefit and the lowest collision risk are: Copy Tray peek and
+QUILL-key-double-press for the tray dialog.</p>
+<hr />
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-appendix-d-notes-from-earlier-versions.html">Appendix
+D: Notes from earlier versions</a></li>
+<li>Next: <a href="quill-guide-glossary.html">Glossary of QUILL
+Terms</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

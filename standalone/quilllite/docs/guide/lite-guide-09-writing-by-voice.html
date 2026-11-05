@@ -1,0 +1,4024 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 9: Writing by voice</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-9-writing-by-voice">Chapter 9: Writing by voice</h1>
+<p>Dictation lets you write by talking. Press <strong>Ctrl+F11</strong>,
+say a sentence, and pause. When you pause, your words appear in the
+document at the cursor. You hear a short, soft tone, and QUILL Lite
+reads the words back so you know they came out right. Then it keeps
+listening, so you can go straight on to the next sentence. To stop,
+press <strong>Ctrl+F11</strong> again or say “stop dictation”. If you
+would rather hold <strong>Ctrl+F11</strong> down while you talk and let
+go to stop, you can turn that on; see Holding Ctrl+F11 to talk,
+below.</p>
+<p>You do not have to say punctuation. The speech engines that come with
+QUILL Lite put in full stops, commas, question marks and capital letters
+for you. When you want a particular mark, just say it, like “comma” or
+“new paragraph”. What you say always wins.</p>
+<p>It all happens on your own computer. Nothing is downloaded, nothing
+you say is sent anywhere, and no recording is kept. Your words are
+recognised, written into your document, and then forgotten. (If you have
+your own OpenAI key, or your own account with one of twelve speech
+companies, you can choose to have that company recognise your speech
+instead. That is off unless you turn it on, and “OpenAI dictation, with
+your own key” and “Speech providers: dictation with your own account”
+explain exactly what is sent. Larger speech models you can download stay
+on your computer too; “Which engine should I choose?” helps you
+decide.)</p>
+<p>This chapter starts with your first dictation. Then it covers what
+you can say, starting and stopping with your voice, making dictation fit
+you, talking to the AI, writing down a whole meeting as it happens,
+dictating into other programs, turning a recording into text, and what
+to do when something goes wrong. Near the end, “Dictating well” gathers
+the habits that make the biggest difference, with two short paragraphs
+to practise on.</p>
+<h2 id="getting-started">Getting started</h2>
+<h3 id="your-first-dictation-step-by-step">Your first dictation, step by
+step</h3>
+<ol type="1">
+<li>Put the cursor where you want the words to go. If you select some
+text first, the first thing you say replaces it.</li>
+<li>Press <strong>Ctrl+F11</strong>. The first time after you open QUILL
+Lite, it takes a second or two to get ready. Then you hear two rising
+tones and “Dictation on”.</li>
+<li>Say a sentence the way you would say it to a friend, and pause.</li>
+<li>A moment later the sentence is in your document. You hear the soft
+tone, and the words are read back to you.</li>
+<li>Keep going. You do not need to press anything between
+sentences.</li>
+<li>When you are finished, press <strong>Ctrl+F11</strong> or say “stop
+dictation”. You hear two falling tones and “Dictation off”.</li>
+</ol>
+<p>Your words are written once you have been quiet for a little under a
+second. That means taking a breath in the middle of a sentence will not
+cut it in two. If a pause does split a sentence, and the next part
+starts with a word like <em>and</em>, <em>but</em>, <em>which</em> or
+<em>to</em>, QUILL Lite takes out the full stop the pause put in, and
+the sentence carries on. The same happens when the first part
+<em>ends</em> on a word no sentence ends on, like <em>the</em> or
+<em>very</em>. If you often stop to think, you can make the pause longer
+too; see “Longer pauses, and sentences you finish later” below.</p>
+<h3 id="holding-ctrlf11-to-talk">Holding Ctrl+F11 to talk</h3>
+<p>Press <strong>Ctrl+F11</strong> to start dictating and press it again
+to stop. That is all most people ever need, and it is how dictation
+starts out.</p>
+<p>If you prefer to hold the key while you talk, like the button on a
+walkie-talkie, turn on <strong>Hold the dictation key to talk; a quick
+press still turns it on and off</strong> in <strong>More Dictation
+Settings</strong>. Then:</p>
+<ol type="1">
+<li>Put the cursor where you want the words.</li>
+<li>Press and hold <strong>Ctrl+F11</strong>. You hear the two rising
+tones and “Dictation on” straight away.</li>
+<li>Keep holding the keys, and say what you want to say.</li>
+<li>Let go. Dictation writes your last phrase, then you hear the two
+falling tones and “Dictation off”.</li>
+</ol>
+<p>With that turned on, a quick press still works just the same:
+dictation turns on and stays on until you press Ctrl+F11 again. QUILL
+Lite tells the two apart by how long you hold the keys. Half a second or
+more is a hold.</p>
+<p>Stopping never cuts you off. If you press or let go of Ctrl+F11 while
+you are still finishing a sentence, dictation waits for that phrase,
+writes it, and then stops.</p>
+<h3 id="what-you-hear">What you hear</h3>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>Tones</th>
+<th>Words</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dictation starts</td>
+<td>two rising tones</td>
+<td>“Dictation on”</td>
+</tr>
+<tr>
+<td>A phrase is written</td>
+<td>one short, soft tone</td>
+<td>the words that were written</td>
+</tr>
+<tr>
+<td>Dictation stops</td>
+<td>two falling tones</td>
+<td>“Dictation off”</td>
+</tr>
+<tr>
+<td>Something goes wrong</td>
+<td>a low double tone</td>
+<td>what happened, and what to do</td>
+</tr>
+<tr>
+<td>A phrase takes more than a second (only if you turn it on)</td>
+<td>a soft tick once a second</td>
+<td>“Still working on that phrase”, once a session, after four
+seconds</td>
+</tr>
+</tbody>
+</table>
+<p>You can change any of these in <strong>Dictation Settings</strong>,
+and you can change or silence any tone in <strong>Tools &gt; Sound
+Scheme</strong>. Two things always speak, though: a problem, and the
+answer to a command you gave.</p>
+<p><strong>The tick while a phrase is worked on.</strong> With a large
+model there can be a few seconds between your pause and the text. Check
+<strong>Tick while a phrase is being worked on</strong>
+(<strong>Alt+R</strong>) in <strong>More Dictation Settings</strong> and
+a soft tick plays once a second while you wait, from the first second
+until the text arrives or recognition fails. The first time in a session
+that a phrase takes four seconds, you also hear “Still working on that
+phrase.” While a tick plays, the microphone is not listened to for a
+moment, as with every QUILL Lite sound, so the tick is never written as
+speech. If your sound scheme has no tick sound, you hear the sentence at
+four seconds instead, each time. “After each phrase is written, give me”
+decides it too: set to nothing, there is no tick and no sentence; set to
+words only, there is no tick, and the sentence is said each time a
+phrase takes four seconds. It starts unchecked in QUILL Lite and QUILL,
+and checked in QUILL Transcribe.</p>
+<p>The soft tone plays only once your words are really in the document,
+so when you hear it, you know they arrived. If you have the words read
+back, they come a quarter of a second after they are written, so your
+screen reader does not talk over them.</p>
+<h4 id="hearing-the-punctuation-that-went-in">Hearing the punctuation
+that went in</h4>
+<p>When your words are read back, the punctuation is read too, by the
+same names you would use to dictate it. If you say “hello comma world
+period”, you hear “Hello comma world period” back, and you know the
+comma really went in. A sentence that ends in a question mark ends with
+“question mark”, a quotation starts with “open quote”, and a new
+paragraph is read as “new paragraph”. This happens whatever punctuation
+level your screen reader is set to, so a full stop the engine put in for
+you is never silently missing or silently there.</p>
+<p>A few things stay quiet because they are part of a word or a number.
+The apostrophe in <em>don’t</em>, the hyphen in <em>well-known</em>, and
+the full stop or comma inside <em>3.5</em> or <em>1,000</em> are not
+read out. A web address is read the way you would say it:
+<em>example.com</em> is “example dot com”. When you dictate in Spanish,
+the marks are read with their Spanish names, like “coma” and
+“punto”.</p>
+<p>Only the read-back says the names. The status bar and a braille
+display show the real characters, for example “Dictated: Hello, world.”
+If you would rather hear the words alone, open <strong>More Dictation
+Settings</strong> and uncheck <strong>Say punctuation marks in the
+read-back</strong> (<strong>Alt+S</strong>). It starts checked.</p>
+<p><strong>Use headphones if you have the read-back on.</strong> Through
+speakers, the microphone can hear the read-back and write it down a
+second time. If you use speakers, set “After each phrase is written,
+give me” to a sound only.</p>
+<h3 id="choosing-a-speech-engine">Choosing a speech engine</h3>
+<p>You choose the engine in <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>), in the <strong>Speech engine</strong>
+list, which has the focus when the window opens. Arrow to one and press
+Enter. The first two come with QUILL Lite, inside the program itself, so
+dictation works the moment you install, with nothing to download.</p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>What it is like</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Moonshine</strong> (the one it starts with)</td>
+<td>Built in. Quick even on a modest computer, and puts in punctuation
+for you. For most voices it is the most accurate of the built-in
+engines. English only: when the dictation language is Spanish, the
+built-in Whisper does the listening instead.</td>
+</tr>
+<tr>
+<td><strong>Whisper</strong></td>
+<td>Built in. Also puts in punctuation for you, and is a little slower.
+Try it if Moonshine often mishears your voice or your microphone.
+English and Spanish.</td>
+</tr>
+<tr>
+<td><strong>Windows speech recognition</strong></td>
+<td>Windows’ own recogniser. It does not add punctuation, so you say
+every mark, and it often mishears a voice it has not been trained on. It
+can use any speech language you have installed in Windows.</td>
+</tr>
+<tr>
+<td><strong>Windows voice typing (Windows+H)</strong></td>
+<td>Hands you over to Windows’ own voice typing panel. Windows does the
+listening and the typing, so the commands, tones, read-back and wake
+phrase in this chapter do not apply.</td>
+</tr>
+<tr>
+<td><strong>A model you downloaded</strong></td>
+<td>Listed with “(downloaded)” and its tier after the name, once you
+download it in <strong>Better Accuracy: Speech Models…</strong>
+(<strong>Alt+B</strong>). Stays on your computer. See “Better accuracy:
+optional speech models”.</td>
+</tr>
+<tr>
+<td><strong>OpenAI</strong> (only with your own key)</td>
+<td>OpenAI recognises your speech, so it is sent over the internet.
+Listed only when an OpenAI key is saved, and off unless you choose it;
+see “OpenAI dictation, with your own key”.</td>
+</tr>
+<tr>
+<td><strong>A speech provider</strong> (only with your own account)</td>
+<td>One of twelve speech companies you already have an account with,
+once you set it up in <strong>Speech Providers…</strong>
+(<strong>Alt+V</strong>). Your speech is sent to that company. See
+“Speech providers: dictation with your own account”.</td>
+</tr>
+</tbody>
+</table>
+<p>Every engine puts in punctuation for you except Windows speech
+recognition. Each model in the list also says its tier, for example
+“Moonshine (fast, punctuates for you), Lightweight”. The tiers are
+explained in the next section.</p>
+<h3 id="which-engine-should-i-choose">Which engine should I choose?</h3>
+<p>The short answer: <strong>start with Moonshine, and change only if
+you have a reason.</strong> It needs nothing downloaded, it is the
+quickest, it is kind to your screen reader, and your voice never leaves
+the computer. Here is how to think about the rest.</p>
+<p><strong>What matters to you?</strong></p>
+<ul>
+<li><strong>Privacy and working offline.</strong> Moonshine, Whisper,
+Windows speech recognition and every downloaded model work with no
+internet connection, and nothing you say leaves your computer. OpenAI
+and the speech providers send your speech to a company over the
+internet, so they need a connection, and they ask before the first word
+is sent.</li>
+<li><strong>Speed.</strong> Moonshine writes your words about a fifth of
+a second after you pause, using very little of the processor. Whisper
+takes a little longer. The large downloads can take a second or more
+after each pause.</li>
+<li><strong>Accuracy.</strong> In our tests with real recordings, the
+built-in Moonshine got 6.5 percent of words wrong on audiobooks no model
+had been trained on, and NVIDIA Parakeet Unified 0.6B, a free download,
+got 3.2 percent: about half the mistakes. A downloaded model also copes
+better with accents, fast speech, a noisy room, names and long
+sentences. OpenAI and most speech providers are very accurate too, but
+cost money and send your speech away.</li>
+<li><strong>Memory and an older computer.</strong> In the same tests,
+Moonshine used at most 584 MB of memory, Parakeet Unified 1.2 GB and
+Nemotron 1.5 GB. On a computer with 8 GB, dictation may take up to 1.6
+GB beside your screen reader; on 4 GB, only the built-in engines and
+Moonshine base fit.</li>
+<li><strong>Spanish.</strong> Moonshine only knows English. In Spanish,
+the built-in Whisper is used, and it got about one word in four wrong on
+real Spanish speech. NVIDIA Parakeet TDT 0.6B v3 got 4.4 percent wrong
+on the same recordings, so if you dictate a lot of Spanish and have 8 GB
+of memory, it is well worth the download.</li>
+</ul>
+<p><strong>What the tiers mean.</strong> Every model is labelled with
+one of three tiers, wherever you choose one:</p>
+<ul>
+<li><strong>Lightweight</strong>: keeps up comfortably even on a modest
+computer. The built-in Moonshine and Whisper, Moonshine base, both
+Parakeet models and Whisper base.en.</li>
+<li><strong>Balanced</strong>: more work than the built-in engines;
+keeps up on a computer with four or more cores. Nemotron and Whisper
+base.</li>
+<li><strong>High accuracy</strong>: the fewest mistakes, for the most
+work; needs a capable computer, or patience.</li>
+</ul>
+<p><strong>Let QUILL Lite recommend one.</strong> Dictation Settings has
+a read-only line, <strong>Recommended for this computer</strong>, at the
+top of the right-hand column. Tab to it to hear which model suits this
+computer and your dictation language, and why. For more, press
+<strong>Better Accuracy: Speech Models…</strong>
+(<strong>Alt+B</strong>): the <strong>Recommendation</strong> box
+(<strong>Alt+C</strong>) explains the choice, <strong>What matters
+most</strong> (<strong>Alt+W</strong>) changes it to a balance of speed
+and accuracy, the quickest response, or the fewest mistakes,
+<strong>Show Recommended Model</strong> (<strong>Alt+S</strong>) moves
+to that model in the list so you can download it, and <strong>Switch to
+Recommended Model</strong> (<strong>Alt+H</strong>) chooses it once it
+is downloaded; press <strong>OK</strong> in Dictation Settings to keep
+it. The recommendation is only advice: QUILL Lite never changes your
+engine for you, and it never recommends OpenAI or a speech provider. Its
+figures come from our tests with real recordings, on one computer; yours
+may differ. “How we chose: tested on real speech”, in “Better accuracy:
+optional speech models”, has the numbers.</p>
+<p>What it suggests depends on the computer, and on how much memory is
+free when you ask: it never suggests more than is free, less half a
+gigabyte kept back for your screen reader. If little memory is free, it
+names the built-in engine. Some examples, for a balance and for the
+quickest response:</p>
+<table>
+<thead>
+<tr>
+<th>This computer</th>
+<th>A balance</th>
+<th>The quickest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4 GB of memory, 2 cores</td>
+<td>Moonshine</td>
+<td>Moonshine</td>
+</tr>
+<tr>
+<td>8 GB, 2 cores</td>
+<td>Parakeet TDT 0.6B v3</td>
+<td>Moonshine</td>
+</tr>
+<tr>
+<td>8 GB or more, 4 cores</td>
+<td>Parakeet Unified 0.6B</td>
+<td>Moonshine</td>
+</tr>
+<tr>
+<td>4 GB, dictating in Spanish</td>
+<td>Whisper</td>
+<td>Whisper</td>
+</tr>
+<tr>
+<td>8 GB, dictating in Spanish</td>
+<td>Parakeet TDT 0.6B v3</td>
+<td>Whisper</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A worked example.</strong> Maria has a laptop with 16 GB of
+memory and 8 cores. She dictates long emails, and Moonshine keeps
+writing “Siobhan” and “Dún Laoghaire” wrong.</p>
+<ol type="1">
+<li>She adds both names to <strong>My Words and Phrases</strong>
+(<strong>Alt+Shift+F10</strong>). That alone fixes many names, with any
+engine.</li>
+<li>She opens <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>) and Tabs to <strong>Recommended for this
+computer</strong>. It says something like “NVIDIA Parakeet Unified 0.6B,
+Lightweight: keeps up on this computer’s 16 GB and 8 cores, about 1.2
+seconds after you pause; stays on this computer; a 663 MB
+download.”</li>
+<li>She presses <strong>Better Accuracy: Speech Models…</strong>
+(<strong>Alt+B</strong>), then <strong>Show Recommended Model</strong>
+(<strong>Alt+S</strong>), then <strong>Download…</strong>
+(<strong>Alt+D</strong>), and answers Yes to the question that names the
+size and the licence.</li>
+<li>When she hears that it is downloaded, she presses <strong>Use for
+Dictation</strong> (<strong>Alt+U</strong>), then <strong>OK</strong> in
+Dictation Settings.</li>
+<li>She dictates for a day. Each phrase is written when she pauses, with
+about half the mistakes Moonshine made. If her screen reader feels slow,
+she goes back to Moonshine in the Speech engine list; the download
+stays, ready for next time. If she would rather follow her words on
+braille while she talks, she can try Nemotron instead (see “Nemotron or
+Parakeet: which should I try?”).</li>
+</ol>
+<p>If Maria had a two-core laptop with 4 GB of memory, the advice would
+have been to stay with Moonshine, and perhaps try Moonshine base, a 141
+MB download.</p>
+<p><strong>To switch engine at any time,</strong> open Dictation
+Settings, choose another in <strong>Speech engine</strong>, and press
+<strong>OK</strong>. Dictation Status (<strong>Alt+F9</strong>) tells
+you which engine and language you are using.</p>
+<h3 id="speech-providers-dictation-with-your-own-account">Speech
+providers: dictation with your own account</h3>
+<p>If you already have an account with a speech company, QUILL Lite’s
+dictation can use it. There are twelve: Microsoft Azure AI Speech,
+Google Cloud Speech-to-Text (Chirp 3), Amazon Transcribe, Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia, Rev.ai, Groq,
+Mistral Voxtral and IBM Watson Speech to Text. The built-in engines stay
+the default and the recommendation, and never send anything anywhere.
+None of this is needed, and none of it is on until you choose it.</p>
+<p><strong>What is sent.</strong> With one of these chosen as the speech
+engine, each phrase dictation hears is sent over an encrypted connection
+to that company, with your account, and the words come back. Nothing is
+sent while nobody is speaking. Where the company can take a list of
+words to expect, the newest names and terms from <strong>My Words and
+Phrases</strong> go with it, up to that company’s limit, so it spells
+them your way. Nothing goes through QUILL’s servers, and QUILL Lite
+keeps no copy of your voice. The company’s own policies apply to what it
+receives. The company bills you, not QUILL; QUILL Lite shows no prices
+and counts nothing, so look at your provider’s own usage page. None of
+it works in Safe Mode.</p>
+<p><strong>Setting one up, step by step:</strong></p>
+<ol type="1">
+<li>Open <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>) and press <strong>Speech
+Providers…</strong> (<strong>Alt+V</strong>). The focus is on the
+<strong>Providers</strong> list.</li>
+<li>Arrow to the company. <strong>About this provider</strong> says
+whether it shows your words while you speak, whether it learns your
+words from My Words and Phrases (and how many), where your speech goes,
+and its usage page.</li>
+<li>Tab to its fields and fill them in: usually a key, sometimes a
+region, a project or an address. Press <strong>F1</strong> on a field to
+hear where that company’s console shows it. A key is never shown again
+once saved; leaving a key field empty keeps the one already saved.</li>
+<li>Press <strong>Test Connection</strong> (<strong>Alt+T</strong>).
+QUILL Lite asks the company about your account, never with your speech,
+and says what it answered, such as “Azure answered: ready, region
+westeurope.” If something is wrong it says which field, such as “The key
+was refused. Check Key.”, and puts you there. <strong>Last
+result</strong> keeps what it said, so you can read it again.</li>
+<li>Press the Save button (Alt+S). Keys go to <strong>Windows Credential
+Manager</strong> at once, and are never written in QUILL Lite’s settings
+or logs. The other details, such as a region, are kept when you press OK
+in Dictation Settings.</li>
+<li>Close the page. The company is now in the <strong>Speech
+engine</strong> list, as, for example, “Deepgram (your own account;
+sends your speech to Deepgram)”. Choose it, and a question says exactly
+what will be sent and to whom. <strong>No</strong> is the default: if
+you just press Enter, nothing is sent and you keep the engine you had.
+Choose <strong>Yes</strong> to agree.</li>
+<li>Press <strong>OK</strong> in Dictation Settings, then
+<strong>Ctrl+F11</strong>, and talk.</li>
+</ol>
+<p><strong>Remove</strong> (<strong>Alt+M</strong>) forgets everything
+saved for that company, keys included. To stop sending your speech,
+choose another engine in Dictation Settings.</p>
+<p><strong>Which ones show words while you speak.</strong> Azure,
+Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai
+and IBM Watson show the words heard so far in the status bar and on
+braille. Google, Groq and Mistral send each phrase when you pause, so
+with them nothing appears until you stop.</p>
+<p><strong>If the connection goes.</strong> A lost phrase is said in one
+sentence, for example “Groq could not be reached. Check the internet
+connection.”, and dictation keeps listening. A refused key or an account
+with no credit left stops dictation and says so. QUILL Lite never
+switches to another engine by itself.</p>
+<p><strong>Limits for now.</strong> The providers are for dictating as
+you talk: Transcribe a Recording offers your computer’s models and
+OpenAI, not these. They have not yet been tried against every company’s
+live accounts, so if one does not behave, tell us with <strong>Help &gt;
+Get Help from Support</strong>. Your agreement to each company is kept
+by QUILL Lite alone, even when you share dictation settings with the
+family.</p>
+<h3 id="the-dictation-keys">The dictation keys</h3>
+<p>Everything here is also on <strong>Tools &gt; Dictation</strong>, so
+you can find it by walking the menu too.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+F11</strong></td>
+<td>Dictation On (press again to stop)</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F6</strong></td>
+<td>Dictation Settings…</td>
+</tr>
+<tr>
+<td><strong>Shift+F11</strong></td>
+<td>Recent Phrases…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F10</strong></td>
+<td>My Words and Phrases…</td>
+</tr>
+<tr>
+<td><strong>Shift+F5</strong></td>
+<td>Transcribe a Recording…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F11</strong></td>
+<td>Switch Dictation Language</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+PageDown</strong></td>
+<td>Start or Stop Live Transcript</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+PageUp</strong></td>
+<td>Dictation Context for This Document…</td>
+</tr>
+<tr>
+<td><strong>Alt+F9</strong></td>
+<td>Dictation Status</td>
+</tr>
+<tr>
+<td><strong>F11</strong></td>
+<td>Speak a Command (the next thing you say is a command; twice, command
+mode)</td>
+</tr>
+<tr>
+<td><strong>Shift+F4</strong></td>
+<td>Review Dictation… (read, change and insert the last phrase
+once)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F3</strong></td>
+<td>Tidy Dictated Text… (in Tools &gt; AI)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="saying-things">Saying things</h2>
+<h3 id="punctuation-and-layout">Punctuation and layout</h3>
+<p>You can say these anywhere in a sentence:</p>
+<ul>
+<li><strong>Punctuation:</strong> “period” or “full stop”, “comma”,
+“question mark”, “exclamation point”, “colon”, “semicolon”, “ellipsis”,
+“apostrophe”, “open quote” and “close quote”, “open single quote” and
+“close single quote”.</li>
+<li><strong>Brackets:</strong> “open parenthesis” and “close
+parenthesis”, “open bracket” and “close bracket”, “open brace” and
+“close brace”.</li>
+<li><strong>Joining:</strong> “hyphen”, “dash”, “slash”, “backslash”,
+“underscore”.</li>
+<li><strong>Symbols:</strong> “at sign”, “hash sign”, “dollar sign”,
+“percent sign”, “ampersand”, “asterisk”, “plus sign”, “minus sign”,
+“equals sign”.</li>
+<li><strong>Layout:</strong> “new line” ends the line, “new paragraph”
+leaves a blank line, and “tab” or “tab key” types a tab.</li>
+</ul>
+<p>QUILL Lite puts the spaces where they belong. There is no space
+before a comma, one after a full stop, and none at the start of a line.
+The first word of each sentence gets its capital letter. You decide what
+“dash” writes in Dictation Settings: an em dash, a spaced en dash, or
+two hyphens.</p>
+<p>Sometimes you want the word itself. Say <strong>“literal”</strong>
+first: “literal new line” writes <em>new line</em>, and “literal comma”
+writes <em>comma</em>.</p>
+<p>There are more marks for Markdown and code, like “backtick”, “tilde”
+and “vertical bar”, and words that start a heading or a list item. They
+are in “Letters, numbers and symbols”, a little further on.</p>
+<h3 id="commands">Commands</h3>
+<p>A command works only when it is <strong>the whole phrase</strong>,
+said on its own after a pause. If you say “delete that line of text” in
+the middle of a longer sentence, it is just written as words.</p>
+<p><strong>Fixing what you just said:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“scratch that” or “delete that”</td>
+<td>Removes the phrase you dictated last. Say it again to remove the one
+before.</td>
+</tr>
+<tr>
+<td>“undo that” or “undo”</td>
+<td>The same as Ctrl+Z.</td>
+</tr>
+<tr>
+<td>“select that”</td>
+<td>Selects the last phrase, so you can fix it with the keyboard. The
+next phrase you say replaces it.</td>
+</tr>
+<tr>
+<td>“capitalize that”</td>
+<td>Gives every word of the last phrase a capital.</td>
+</tr>
+<tr>
+<td>“all caps that”</td>
+<td>Puts the last phrase in capitals.</td>
+</tr>
+<tr>
+<td>“no caps that”</td>
+<td>Puts the last phrase in small letters.</td>
+</tr>
+<tr>
+<td>“delete word”</td>
+<td>Deletes the word before the cursor.</td>
+</tr>
+<tr>
+<td>“delete sentence”</td>
+<td>Deletes the sentence the cursor is at the end of.</td>
+</tr>
+<tr>
+<td>“delete previous paragraph”</td>
+<td>Deletes the paragraph just before the cursor.</td>
+</tr>
+<tr>
+<td>“replace” the words “with” the new words</td>
+<td>Puts the new words in place of the nearest old ones: “replace
+Tuesday with Wednesday”.</td>
+</tr>
+<tr>
+<td>“change that to” and the new words</td>
+<td>Puts the new words in place of the phrase you dictated last.</td>
+</tr>
+<tr>
+<td>“read that” or “repeat that”</td>
+<td>Reads aloud again all of what last went in: a phrase, a whole
+snippet or clip, or reviewed words.</td>
+</tr>
+<tr>
+<td>“read last sentence”</td>
+<td>Reads the sentence just before the cursor, with its punctuation
+said.</td>
+</tr>
+<tr>
+<td>“read last paragraph” or “read this paragraph”</td>
+<td>Reads the paragraph the cursor is in.</td>
+</tr>
+<tr>
+<td>“read selection”</td>
+<td>Reads what is selected.</td>
+</tr>
+<tr>
+<td>“spell that”</td>
+<td>Selects the last phrase, and the next thing you say is spelled out
+letter by letter to replace it.</td>
+</tr>
+<tr>
+<td>“copy that”</td>
+<td>Copies the last phrase to the clipboard.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Checking your work by ear.</strong> Say “read last sentence”,
+“read last paragraph” or “read selection” as a phrase on its own, and
+QUILL Lite reads that part of your document aloud with every mark named
+when <strong>Say punctuation marks in the read-back</strong> (More
+Dictation Settings) is on, whatever your screen reader’s punctuation
+level. For example, after you dictate “First idea. Can you send it,
+please?” and pause:</p>
+<ul>
+<li>“read last sentence” says “Can you send it comma please question
+mark”.</li>
+<li>“read last paragraph” says “First idea period Can you send it comma
+please question mark”.</li>
+<li>Select “send it” with Shift and the arrow keys, then say “read
+selection”: you hear “send it”.</li>
+</ul>
+<p>Nothing in your document changes and the cursor stays where it was,
+so a read-only document can be read back too. If there is nothing to
+read you hear “There is no sentence here.” (or paragraph), or “Nothing
+is selected.” In Spanish, say “lee la última frase”, “lee el último
+párrafo” or “lee la selección”; “leer” works as well as “lee”. In
+another program only “read that” works, because dictation reads only the
+words it typed there.</p>
+<p><strong>Moving the cursor:</strong> “go to beginning of line”, “go to
+end of line”, “go to top”, “go to end of document”, “go to start of
+paragraph” and “go to end of paragraph”. You can also go to, select or
+correct any words you can see in your document; see “Moving and
+selecting by voice”.</p>
+<p><strong>Capitals and spaces:</strong> “caps on” and “caps off”, “all
+caps on” and “all caps off”, “no space on” and “no space off”. See
+“Letters, numbers and symbols”.</p>
+<p><strong>Copying, clips and snippets:</strong> “copy all”, “show
+clips”, “show snippets”, “paste clip three”, “insert snippet” and a
+name. See “Snippets and clips by voice”.</p>
+<p><strong>Dictation itself:</strong> “start spelling” and “stop
+spelling” (see “Spelling a word”), “switch to Spanish” (see “Switching
+between English and Spanish”), “dictation context” and a name (see
+“Dictation Context for This Document”), “what can I say” (opens the full
+list), and “stop dictation”.</p>
+<p>The commands that change your last phrase only work while it is still
+exactly as it was written. If you have typed into it since, QUILL Lite
+leaves it alone and tells you, so your own typing is never changed by
+mistake.</p>
+<h3 id="correct-that-choosing-another-guess">Correct that: choosing
+another guess</h3>
+<p>Sometimes the engine was not sure what you said, and had a second
+idea. Say <strong>“correct that”</strong> straight after the phrase, and
+you hear up to three other guesses, numbered, for example: “1: right to
+Ann. 2: write two Ann. Say choose and the number.” Then say
+<strong>“choose one”</strong>, <strong>“choose two”</strong> or
+<strong>“choose three”</strong>, and that guess takes the place of what
+was written. You hear “Changed to:” and the new words.</p>
+<p><strong>Windows speech recognition</strong> keeps its own other
+guesses. Moonshine, Whisper and the optional models give one answer
+each, so with them “correct that” asks for a <strong>second
+opinion</strong> instead: the other built-in engine listens to your last
+phrase again. You hear “Listening again with Whisper.” (or Moonshine),
+and a moment later both answers: “1: the whether is nice. 2: the weather
+is nice. Say choose and the number.” Say <strong>“choose two”</strong>
+to take the second. If both engines heard the same words, you are told
+so, and nothing changes. Whisper listens again after Moonshine, and
+Moonshine after Whisper or a downloaded model.</p>
+<p>The second opinion uses only the sound of your last phrase, kept in
+memory until you say the next one: nothing is saved to disk and nothing
+goes over the internet. It is not offered in Spanish, where only Whisper
+understands you, or with OpenAI or a speech company. Then “correct that”
+tells you there is nothing to choose from: say “scratch that” and say it
+again, or add a correction in <strong>My Words and Phrases</strong> so
+it comes out right next time.</p>
+<p>Whatever a correction replaced is not lost. It goes into
+<strong>Recent Phrases</strong> (<strong>Shift+F11</strong>,
+<strong>Tools &gt; Dictation &gt; Recent Phrases…</strong>) marked
+“(before correction)”, just after the corrected words, so you can put it
+back with Insert Again or copy it.</p>
+<p>To fix a word further back, say <strong>“correct”</strong> and the
+word itself, like “correct Ann”. The word is selected, and what you say
+next takes its place. “Moving and selecting by voice” explains how.</p>
+<h3
+id="replace-and-change-that-fixing-words-without-retyping-them">Replace
+and change that: fixing words without retyping them</h3>
+<p>Two commands put new words in place of old ones, so you do not have
+to select anything first. Say each one at the start of a phrase.</p>
+<p><strong>“replace” the words “with” the new words.</strong> Say
+“replace Tuesday with Wednesday” and the nearest “Tuesday” before the
+cursor becomes “Wednesday”; if there is none before the cursor, QUILL
+Lite looks after it. The new words take the capital and the closing full
+stop of the old ones, and the cursor stays where it was, so you can
+carry on dictating. You hear “Replaced Tuesday with Wednesday.” If the
+words are not there, what you said is written as ordinary text, as with
+“select” (you hear “Not found, written as text.”; say “scratch that” to
+take it away). After the command word, “QUILL replace Tuesday with
+Wednesday”, nothing is written when the words are not found.</p>
+<p><strong>“change that to” and the new words</strong> replaces the
+whole phrase you dictated last. You said “see you Thursday.” and meant
+Friday: say “change that to see you Friday”, and you hear “Changed to:
+See you Friday.” The leading space, the capital and the closing full
+stop stay as they were.</p>
+<p><strong>“delete previous paragraph”</strong> (or “delete last
+paragraph”) deletes the paragraph just before the cursor, from its start
+up to the cursor, with the blank line in front of it. Say it again to
+delete the one before. If text is selected, the selection is deleted
+instead.</p>
+<p>Replace and change that keep what they replaced in Recent Phrases,
+marked “(before correction)”. “Scratch that” straight after a replace
+inside your last phrase takes away the whole corrected phrase.</p>
+<h3 id="spelling-a-word">Spelling a word</h3>
+<p>Some names the engine will never get right. For those, say
+<strong>“start spelling”</strong>. Until you say <strong>“stop
+spelling”</strong>, everything you say is written as letters:</p>
+<ul>
+<li>Say letters by name, like “bee” or “see”. The phonetic alphabet
+works much better, though: alpha, bravo, charlie, delta, echo, foxtrot,
+golf, hotel, india, juliet, kilo, lima, mike, november, oscar, papa,
+quebec, romeo, sierra, tango, uniform, victor, whiskey, x-ray, yankee,
+zulu.</li>
+<li>Say “capital” before a letter for a capital, and “space” for a
+space.</li>
+<li>Numbers are written as digits: “one”, “two” and so on.</li>
+</ul>
+<p>For example, say “start spelling”, then “capital bravo alpha delta”,
+then “stop spelling”, and you get <em>Bad</em>. Each letter is read back
+as it is written, so you hear a wrong one straight away. Say “scratch
+that” to take back the last run of letters.</p>
+<h3 id="letters-numbers-and-symbols">Letters, numbers and symbols</h3>
+<p>Some things are not words at all: an email address, a file name, a
+heading mark, a shout in capitals. This section is about writing exactly
+the characters you want.</p>
+<h4 id="spelling-an-email-address-or-a-web-address">Spelling an email
+address or a web address</h4>
+<p>While you are spelling, punctuation goes in with no spaces around it,
+so an address comes out whole. Say “start spelling”, then “juliet alpha
+yankee dot sierra mike india tango hotel at sign echo x-ray alpha mike
+papa lima echo dot charlie oscar mike”, then “stop spelling”, and you
+get <em><a
+href="mailto:jay.smith@example.com">jay.smith@example.com</a></em>.
+Plain letter names work too (“jay”, “bee”, “see”), but every part must
+be letters: a whole word such as “smith” is not a letter and is left
+out, so “jay dot smith” writes only <em>j.</em>. Spell the word
+instead.</p>
+<p>You do not have to say the address in one breath. While spelling,
+each phrase joins the letters you spelled just before it, with no space:
+“juliet oscar”, a pause, “at sign echo x-ray”, a pause, “dot charlie
+oscar” writes <em><a href="mailto:jo@ex.co">jo@ex.co</a></em>. Say
+“space” when you want a space. If you move the cursor between phrases,
+the next letters start fresh, with a space in front as usual.</p>
+<p>While you are spelling, “dot” and “point” both mean a full stop.
+Outside spelling they are just words, so “the main point” stays as you
+said it.</p>
+<p>Say <strong>“all caps”</strong> while spelling, and the letters after
+it are capitals until you say <strong>“no caps”</strong> or the phrase
+ends. “All caps november alpha sierra alpha” writes <em>NASA</em>.</p>
+<h4 id="spelling-one-word-without-spelling-mode">Spelling one word,
+without spelling mode</h4>
+<p>For a single word, you do not need to start and stop spelling mode.
+Say <strong>“spell”</strong> and the letters, all in one breath: “spell
+bravo alpha delta” writes <em>bad</em>, and dictation carries straight
+on in words. This only happens when “spell” is the first word of the
+phrase and the rest is letters. A sentence like “spell it out for me” is
+written as words.</p>
+<h4 id="spelling-over-what-was-just-written">Spelling over what was just
+written</h4>
+<p>When the engine has just written a name wrong, say <strong>“spell
+that”</strong>. The last phrase is selected, and the next thing you say
+is spelled out letter by letter and put in its place. It works for that
+one next phrase only, then dictation goes back to words. For example,
+you say “my friend Siobhan”, it comes out <em>my friend Shivon</em>, you
+say “spell that”, and then “capital sierra india oscar bravo hotel alpha
+november”.</p>
+<h4 id="capitals-and-spaces-that-stay-on">Capitals and spaces that stay
+on</h4>
+<p>These last until you turn them off, or until dictation stops. The
+Dictation part of the status bar shows which are on, and Dictation
+Status (<strong>Alt+F9</strong>) tells you too.</p>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“caps on” (or “capitals on”)</td>
+<td>Every word starts with a capital: handy for a title or a name. “Caps
+off” stops it.</td>
+</tr>
+<tr>
+<td>“all caps on”</td>
+<td>Everything is written in capitals. “All caps off” stops it.</td>
+</tr>
+<tr>
+<td>“no space on”</td>
+<td>Words are joined with no spaces, and no automatic capitals: handy
+for a web address or a file name. “No space off” stops it.</td>
+</tr>
+</tbody>
+</table>
+<p>For example: say “no space on”, then “my summer notes”, then “no
+space off”, and you get <em>mysummernotes</em>. Outside spelling, “dot”
+is a word, so for the full stop in a file name or an address, spell that
+part: “spell dot tango x-ray tango” writes <em>.txt</em>. For a whole
+address, spelling mode is usually quickest.</p>
+<h4 id="marks-for-markdown-and-code">Marks for Markdown and code</h4>
+<p>You can say these anywhere in a phrase:</p>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“backtick” or “back quote”</td>
+<td>a backtick. The first on a line opens, the next one closes, so the
+spaces come out right.</td>
+</tr>
+<tr>
+<td>“triple backtick” or “code fence”</td>
+<td>three backticks on a line of their own, to start or end a block of
+code</td>
+</tr>
+<tr>
+<td>“tilde”</td>
+<td><code>~</code></td>
+</tr>
+<tr>
+<td>“vertical bar” or “pipe symbol”</td>
+<td>the vertical bar, used between table columns</td>
+</tr>
+<tr>
+<td>“caret”</td>
+<td><code>^</code></td>
+</tr>
+<tr>
+<td>“greater than sign”</td>
+<td><code>&gt;</code></td>
+</tr>
+<tr>
+<td>“less than sign”</td>
+<td><code>&lt;</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="starting-a-heading-or-a-list-item">Starting a heading or a list
+item</h4>
+<p>These count only as the <strong>first words</strong> of a phrase. If
+the cursor is not at the start of a line, a new line comes first.</p>
+<table>
+<thead>
+<tr>
+<th>Say first</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“bullet” or “list item”</td>
+<td>a dash and a space, starting a bulleted item</td>
+</tr>
+<tr>
+<td>“numbered item”</td>
+<td>1, a full stop and a space</td>
+</tr>
+<tr>
+<td>“block quote”</td>
+<td><code>&gt;</code> and a space</td>
+</tr>
+<tr>
+<td>“heading one” to “heading six” (or “heading 1” to “heading 6”)</td>
+<td>one to six # marks and a space</td>
+</tr>
+</tbody>
+</table>
+<p>So “heading two Our plans for spring” starts a level two heading, and
+“bullet buy more coffee” starts a list item. In the middle of a sentence
+they are ordinary words: “the heading two lines down” is written just as
+you said it.</p>
+<h3 id="moving-and-selecting-by-voice">Moving and selecting by
+voice</h3>
+<p>You can move around your document by saying the words you want to get
+to. These work with every engine, and they are said at the
+<strong>start</strong> of a phrase, followed by words that are already
+in your document.</p>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“select” and some words</td>
+<td>Those words are selected. What you say next replaces them.</td>
+</tr>
+<tr>
+<td>“select” some words “through” some more words</td>
+<td>Everything from the first words to the last is selected.</td>
+</tr>
+<tr>
+<td>“go to” (or “go before”) and some words</td>
+<td>The cursor goes just before those words.</td>
+</tr>
+<tr>
+<td>“go after” and some words</td>
+<td>The cursor goes just after them.</td>
+</tr>
+<tr>
+<td>“correct” and some words</td>
+<td>The words are selected, and you hear “Correcting” and the words,
+then “Say the new words”. What you say next takes their place.</td>
+</tr>
+<tr>
+<td>“select again” or “select next”</td>
+<td>The next place the same words appear.</td>
+</tr>
+<tr>
+<td>“select previous”</td>
+<td>The place before.</td>
+</tr>
+</tbody>
+</table>
+<p>And these, said on their own: “select sentence” (or “select this
+sentence”), “select line”, “select paragraph”, “go to start of
+paragraph” and “go to end of paragraph”.</p>
+<p><strong>Where it looks.</strong> QUILL Lite looks first in the text
+before the cursor, nearest first, because that is usually what you have
+just said and want to change. If the words are not there, it looks after
+the cursor.</p>
+<p><strong>How it matches.</strong> Capitals, punctuation and accents do
+not matter, and numbers match both ways, so “select two cats” finds
+<em>2 cats</em>. Your corrections in My Words and Phrases are applied
+first, so a word the engine always mishears is still found.</p>
+<p><strong>What you hear.</strong> One short sentence: “Selected: the
+cat”, “Before the cat” or “After the cat”. If the place is three lines
+or more from where you were, the line is added, like “Selected: the cat,
+line 40”, so you know you have travelled.</p>
+<p><strong>If the words are not there.</strong> What you said is written
+as ordinary text, and you hear “Not found, written as text.” Say
+“scratch that” to take it away. That way a sentence that happens to
+start with “select” or “correct” is never lost.</p>
+<p>The exact commands still come first: “select that” selects your last
+phrase, and “go to top” goes to the top, as before.</p>
+<p><strong>A small example.</strong> You dictate “The meeting is on
+Tuesday at ten.” Then you remember it moved. Say “correct Tuesday”, hear
+“Correcting Tuesday. Say the new words”, and say “Thursday”. The
+sentence now reads <em>The meeting is on Thursday at ten.</em></p>
+<h3 id="snippets-and-clips-by-voice">Snippets and clips by voice</h3>
+<p>The things you keep for reuse can be reached by voice too: the twelve
+Copy Tray slots, your snippets (the abbreviations in the
+<strong>Snippets</strong> gallery,
+<strong>Ctrl+Alt+Shift+Home</strong>), and copying.</p>
+<p>Said on their own:</p>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“copy all”, “copy everything” or “copy document”</td>
+<td>Copies the whole document, the same as Copy All on the Edit
+menu.</td>
+</tr>
+<tr>
+<td>“copy that”</td>
+<td>Copies the phrase you dictated last.</td>
+</tr>
+<tr>
+<td>“show clips”, “open copy tray” or “show copy tray”</td>
+<td>Opens <strong>Paste from Tray</strong>
+(<strong>Ctrl+Alt+V</strong>), so you can choose a slot.</td>
+</tr>
+<tr>
+<td>“show snippets”</td>
+<td>Opens <strong>Snippets</strong>
+(<strong>Ctrl+Alt+Shift+Home</strong>).</td>
+</tr>
+</tbody>
+</table>
+<p>Said at the start of a phrase, with words after:</p>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“paste clip three” or “paste slot three”</td>
+<td>Writes Copy Tray slot 3. Any slot from one to twelve. If the slot is
+empty you are told, and nothing is written.</td>
+</tr>
+<tr>
+<td>“insert snippet” and a name</td>
+<td>Writes that snippet.</td>
+</tr>
+<tr>
+<td>“insert abbreviation” or “expand abbreviation” and an
+abbreviation</td>
+<td>Writes what that abbreviation expands to.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding the snippet you mean.</strong> You do not need the
+name exactly. Capitals, punctuation and spaces do not matter. An exact
+name wins first, then a name that starts with what you said, then a name
+containing your words. If several match, you hear how many and the
+Snippets gallery opens so you can choose. If none match, you hear “No
+snippet called” and what you said, and nothing is written. In QUILL
+Lite, “insert snippet” and “insert abbreviation” both reach the same
+library, so use whichever comes to mind.</p>
+<p><strong>One phrase, one undo.</strong> A snippet or a slot goes in as
+one dictated phrase. <strong>Ctrl+Z</strong> or “scratch that” takes the
+whole thing back. The read-back keeps it short: you hear “Snippet sign
+off” or “Pasted slot 3”, not the whole text read out.</p>
+<p>These are commands, so they do not work while <strong>Just write what
+I say</strong> is on.</p>
+<h3 id="the-full-list-of-what-you-can-say">The full list of what you can
+say</h3>
+<p>While you are dictating, say <strong>“what can I say”</strong>. You
+can also press <strong>Dictation Commands…</strong> in Dictation
+Settings. A window opens with every phrase dictation understands,
+including your own phrases and your wake phrase. Read it with the arrow
+keys, and press Escape to close it.</p>
+<p>The same list is also its own document, the <strong>Dictation
+commands</strong> file (dictation-commands.md), next to this guide. It
+is made from the very table dictation reads, so it always matches what
+QUILL Lite understands. It has every way of saying each thing, the
+Spanish punctuation words, and the spelling alphabet in one place, and
+it is a good page to keep open beside you for the first week or two.</p>
+<p>Near its end are <strong>Worked examples</strong>: what you have,
+what you say, and what you get. They show going before and after words
+(“go to Friday”, then “next”), picking the second of three matches
+(“select the cat”, then “select previous”), Copy All, scratch that, all
+twelve clips, snippets with spaces in their names, every capitals
+command, an email address spelled with pauses, and a Markdown link
+(“open bracket the guide close bracket open paren page close paren”
+writes <code>[the guide](page)</code> with no space in the middle).
+After them come the <strong>Limits</strong>, including what cannot work
+when you dictate into another program. Every example is checked by
+automated tests in both QUILL Lite and QUILL. How accurately and how
+quickly each engine hears you has not been measured yet; that waits on
+the dictation benchmarks.</p>
+<h3 id="the-command-word-quill-scratch-that">The command word: “QUILL
+scratch that”</h3>
+<p>Commands work when you say them on their own, after a pause. To be
+sure a command is taken as a command and never written, say the command
+word first: <strong>“QUILL scratch that”</strong>, <strong>“QUILL select
+the cat”</strong>, <strong>“QUILL caps on”</strong>. Every command in
+the list works this way.</p>
+<ul>
+<li>QUILL counts only as the first word after a pause, so “I told Quill
+about it” is written as words.</li>
+<li>If what follows is not a command, nothing is written. You hear the
+error sound and “Not a command. Say it again, or say QUILL type that to
+write it.” <strong>“QUILL type that”</strong> writes those words after
+all, once.</li>
+<li>To write the word itself, say <strong>“literal QUILL”</strong>.</li>
+<li>Say <strong>“QUILL”</strong> on its own and pause, and the next
+thing you say is a command. A short rising tone tells you it was
+heard.</li>
+<li><strong>“QUILL command mode”</strong> takes commands without the
+word: you hear the tone and “Command mode”, and the Dictation cell in
+the status bar says Command mode. Say <strong>“dictation mode”</strong>
+to go back. If you give no command for eight seconds, it ends by itself
+with a falling tone, and what you say next is written.</li>
+<li><strong>Speak a Command</strong> (<strong>F11</strong>) does the
+same from the keyboard: press it, then say the command. Press it twice
+for command mode, and once more to leave. If dictation is off, it starts
+dictation first.</li>
+</ul>
+<p>More Dictation Settings has three choices for it: the <strong>Command
+word</strong> (<strong>Alt+C</strong>; leave it empty to give commands
+with F11 only), <strong>Commands only after the command word (strict
+mode)</strong> (<strong>Alt+E</strong>), and <strong>Seconds command
+mode waits for a command</strong> (<strong>Alt+D</strong>, 5 to 30).
+With strict mode on, “scratch that” on its own is written as words, and
+only the stop phrase works without the word. Strict mode is off in QUILL
+Lite, so the commands you know keep working. A common word, or one of
+your own words in My Words and Phrases, cannot be the command word; you
+are told why.</p>
+<h3 id="dictation-profiles-the-kind-of-writing-you-are-doing">Dictation
+profiles: the kind of writing you are doing</h3>
+<p>A dictation profile changes dictation for one kind of writing in one
+step, instead of changing several settings each time. There are
+seven:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>What it changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard</td>
+<td>Nothing: your Dictation Settings as they are. Headings are written
+as Markdown marks, as before. Everybody starts here.</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Removes filler words and adds punctuation. Headings, bold and italic
+use QUILL Lite’s own formatting.</td>
+</tr>
+<tr>
+<td>Document</td>
+<td>Headings, bold and italic use QUILL Lite’s own formatting.</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>Headings, bold and italic are written as Markdown marks.</td>
+</tr>
+<tr>
+<td>Chat</td>
+<td>Removes filler words; plain text, with no heading marks.</td>
+</tr>
+<tr>
+<td>Coding</td>
+<td>Removes filler words, adds no punctuation of its own (you say every
+mark), and waits longer for a pause. Markdown marks.</td>
+</tr>
+<tr>
+<td>Verbatim</td>
+<td>Keeps every word you say, fillers too; plain text.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Choosing one.</strong> Open Dictation Settings
+(<strong>Alt+Shift+F6</strong>), press <strong>More Dictation
+Settings…</strong>, and choose in <strong>Dictation profile, for the
+kind of writing</strong> (<strong>Alt+A</strong>). Or, while dictating,
+say the profile’s name after the command word: “QUILL email mode”,
+“QUILL markdown mode”, “QUILL standard mode” (“email profile” works
+too). You hear “Email profile.” and the choice is kept for next time.
+The status bar shows a profile other than Standard beside the dictation
+modes, so a braille display shows it too.</p>
+<p><strong>Lock the profile so it cannot be switched by voice</strong>
+(<strong>Alt+B</strong>, in More Dictation Settings) stops a spoken
+profile name from switching: you hear “Lock Profile is on, so the
+profile stays Email.” Nothing ever switches profiles on its own.</p>
+<p><strong>Profiles and the Dictation style.</strong> While a profile
+other than Standard is on, its own choice about filler words wins over
+the <strong>Dictation style</strong> in Dictation Settings: Verbatim
+keeps fillers even if the style is Clean, and Email, Chat and Coding
+remove them even if the style is Verbatim. A profile never changes
+<strong>Fix it when I correct myself</strong> or polishing. Standard
+leaves your style exactly as it is.</p>
+<p><strong>Headings, bold and italic by voice.</strong> “heading one” to
+“heading six” at the start of a phrase, and “QUILL bold that” and “QUILL
+italic that” (or “italicize that”), act on the selection, or on the
+phrase you dictated last. What happens depends on the profile:</p>
+<ul>
+<li><strong>Markdown</strong> and <strong>Coding</strong>, and
+<strong>Standard</strong> for headings: the marks are written. “bold
+that” puts two asterisks either side, “italic that” one; one Ctrl+Z
+takes it back.</li>
+<li><strong>Document</strong> and <strong>Email</strong>: In a rich text
+document, QUILL Lite’s own Heading, Bold and Italic commands apply the
+style, as if you had pressed their keys. In a plain text document
+nothing is typed for the heading, and you hear “Headings work in QUILL
+documents or the Markdown profile.” Bold and italic say the same about
+themselves.</li>
+<li><strong>Chat</strong> and <strong>Verbatim</strong>: “heading two”
+starts a new line with your words and nothing else, and bold and italic
+say “This profile writes plain text, so nothing was formatted.”</li>
+</ul>
+<p><strong>Example.</strong> In a letter written as a rich text
+document, choose the Document profile, then say “heading two dear Sam”
+and pause. “Dear Sam” goes on a line of its own with the Heading 2
+style. Select a word, say “QUILL bold that”, and it is bold.</p>
+<p>The settings are <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code>, under the same names in
+QUILL, QUILL Lite and QUILL Transcribe.</p>
+<h3 id="review-before-inserting">Review before inserting</h3>
+<p>When you want to check what you said before it goes into the
+document, review it first. Your words wait in the <strong>Review
+Dictation</strong> window, and nothing goes into the document until you
+insert them.</p>
+<ul>
+<li><strong>Say “QUILL review that”</strong>, or press <strong>Review
+Dictation</strong> (<strong>Shift+F4</strong>, in <strong>Tools &gt;
+Dictation</strong>), while dictating. The last phrase is taken back out
+of the document and opened in the window. Press Shift+F4 with dictation
+off and the window opens empty.</li>
+<li><strong>Read the words</strong> with the arrow keys. They are in an
+ordinary text box, so your screen reader reads them by line, word and
+character, and a braille display shows them. Type to change them, or
+keep talking: while the window is open, what you dictate is written into
+it, not into the document.</li>
+<li><strong>Ask the AI to change them.</strong> Type an instruction such
+as “make it shorter” in <strong>Ask the AI to change it</strong>
+(<strong>Alt+K</strong>) and press Enter, or say it after the command
+word: <strong>“QUILL make it shorter”</strong>, <strong>“QUILL more
+formal”</strong>, <strong>“QUILL fix the grammar only”</strong>. You
+hear “Working”, then what changed, in two sentences at most, such as
+“Changed next Thursday to Friday. Removed um, so.” QUILL Lite works that
+out by comparing the words itself, never from the AI’s own account, and
+says “Large change” when more than half the words changed. <strong>Talk
+about it</strong> (<strong>Alt+A</strong>) makes everything you say an
+instruction, without the command word.</li>
+<li><strong>Insert</strong> (<strong>Ctrl+Enter</strong>, or say
+<strong>“QUILL insert it”</strong>) puts the words where they came from,
+as one step that Ctrl+Z takes back. The words as you said them and as
+they went in both go into Recent Phrases.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+<th>Say, after the command word</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Enter</strong></td>
+<td>Insert the words</td>
+<td>“insert it”</td>
+</tr>
+<tr>
+<td><strong>Ctrl+R</strong></td>
+<td>Read all the words aloud</td>
+<td>“read it back”</td>
+</tr>
+<tr>
+<td><strong>Ctrl+D</strong></td>
+<td>Say again what the last change did</td>
+<td>“what changed”</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Z</strong></td>
+<td>Undo the AI’s last change; with none, undo your typing</td>
+<td>“undo that change”</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Z</strong></td>
+<td>Back to the words exactly as you said them</td>
+<td>“back to what I said”</td>
+</tr>
+<tr>
+<td><strong>Escape</strong></td>
+<td>Stop a request on its way; otherwise discard the words, asking first
+if the AI changed them</td>
+<td>“discard it”</td>
+</tr>
+</tbody>
+</table>
+<p>Changing words with AI needs AI help switched on in Customize
+Features and an AI other than the free one, as Tidy Dictated Text does;
+it never uses the free service’s allowance, and each change you ask for
+is one request. The first time, QUILL Lite asks before anything is sent
+and names who receives it; No is the default and sends nothing. Only the
+words in the window and your instruction are sent, with My Dictation
+Instructions if you wrote any; this document’s dictation context goes
+too only if you check <strong>Include this document’s dictation context
+with requests</strong> (<strong>Alt+O</strong>). With AI off, “QUILL
+review that” says “AI is off. Your words were written as you said them.”
+and leaves them where they were, and Shift+F4 still opens the window to
+edit and insert by hand.</p>
+<p>If you close the window with Close, or QUILL Lite closes or stops
+unexpectedly, your words are kept: the next time it starts it says so,
+and Review Dictation brings them back. Discard throws them away. To send
+everything you dictate to the window first, turn on <strong>Send
+dictation to review first</strong> (<strong>Alt+V</strong>) in More
+Dictation Settings.</p>
+<h3 id="polishing-your-dictation-with-ai-only-when-you-ask">Polishing
+your dictation with AI, only when you ask</h3>
+<p><strong>Polish</strong> tidies punctuation, capitals and small slips
+without rewording anything. It is one request you ask for each time, it
+is off until you turn it on, and it never runs by itself.</p>
+<ol type="1">
+<li>Open <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>), press <strong>More Dictation
+Settings…</strong> (<strong>Alt+A</strong>), and check <strong>Allow
+polishing my dictation with AI when I ask</strong>
+(<strong>Alt+G</strong>). Press OK in both windows.</li>
+<li>Dictate as usual. When you want a phrase polished, say
+<strong>“QUILL polish that”</strong> or “QUILL polish it”. The last
+phrase is taken back out and opened in Review Dictation, and the polish
+request is made there. If Review Dictation is already open, the words in
+it are polished.</li>
+<li>In the Review Dictation window you can also press
+<strong>Polish</strong> (<strong>Ctrl+P</strong>). The button is there
+only while polishing is allowed.</li>
+<li>You hear “Polishing”, then what changed. Read the words, then press
+<strong>Insert</strong> (<strong>Ctrl+Enter</strong>), or take the
+change back with <strong>Undo Change</strong>
+(<strong>Ctrl+Z</strong>).</li>
+</ol>
+<p>The AI is asked to fix punctuation, capital letters, spelling and
+obvious grammar slips only, and to keep your words, meaning, order and
+tone. Polish uses the same AI, account and first-time question as the
+rest of Review Dictation: nothing is sent until you say yes, and only
+the words in the window are sent. With AI off the Polish button is
+greyed out, and with polishing not allowed “QUILL polish that” says
+“Polish my dictation is off” and sends nothing.</p>
+<h3 id="correcting-yourself-as-you-talk">Correcting yourself as you
+talk</h3>
+<p>With <strong>Fix it when I correct myself, like Thursday, no,
+Friday</strong> (<strong>Alt+X</strong>) checked in Dictation Settings,
+QUILL Lite writes only what you meant when you correct yourself
+mid-sentence:</p>
+<table>
+<thead>
+<tr>
+<th>You say</th>
+<th>QUILL Lite writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>meet on Thursday, no, Friday at noon</td>
+<td>meet on Friday at noon</td>
+</tr>
+<tr>
+<td>in June, no I mean July</td>
+<td>in July</td>
+</tr>
+<tr>
+<td>I have two no three cats</td>
+<td>I have three cats</td>
+</tr>
+<tr>
+<td>call me at 5, sorry, 6</td>
+<td>call me at 6</td>
+</tr>
+<tr>
+<td>send it to Ana, sorry, Maria (both names in My Words)</td>
+<td>send it to Maria</td>
+</tr>
+</tbody>
+</table>
+<p>The marking words are “no”, “I mean”, “no I mean”, “sorry” and
+“scratch that word”, and a correction is made only between two days, two
+months, two numbers or two names from the Vocabulary list in My Words
+and Phrases. Anything else is written as you said it: “no, I don’t think
+so” and “Is it Thursday? No, Friday.” stay exactly as they are. It works
+on this computer with no AI, it is off until you turn it on, and live
+transcripts never use it.</p>
+<p><strong>Dictation style</strong> (<strong>Alt+Y</strong>) sets these
+choices together: <strong>Verbatim</strong> (every word as you say it),
+<strong>Clean</strong> (no filler words, and your corrections fixed) or,
+only when AI help is on, <strong>Polished</strong> (Clean, plus Send
+dictation to review first and Allow polishing my dictation with AI).
+Choosing Polished sends nothing by itself. Change a check box yourself
+and the style shows <strong>Your own mix of the settings
+below</strong>.</p>
+<h3 id="learning-from-your-corrections">Learning from your
+corrections</h3>
+<p>When you correct the same word the same way twice, by “correct that”
+and then “choose two”, or by “correct Ann” and then the new words, a
+window called <strong>Add a Correction</strong> asks, for example, “Add
+a correction: Ann becomes Anne?” <strong>No</strong> is the default.
+<strong>Yes</strong> adds it to the Corrections list in My Words and
+Phrases (<strong>Alt+Shift+F10</strong>), where you can change or remove
+it, and the next phrase uses it. Each pair is asked about once each time
+QUILL Lite runs, only words and short phrases of up to four words are
+offered, and nothing is saved unless you say yes.</p>
+<h2 id="starting-and-stopping-with-your-voice">Starting and stopping
+with your voice</h2>
+<h3 id="the-wake-phrase">The wake phrase</h3>
+<p>If you would rather not reach for the keyboard, you can start
+dictation by voice. In Dictation Settings, turn on <strong>Listen for
+the wake phrase while dictation is off</strong>. Then say the wake
+phrase to start. It is <strong>“Quill dictate”</strong> unless you
+choose something else.</p>
+<ul>
+<li>Say the wake phrase, pause, and start talking. Or say it and carry
+straight on: “Quill dictate, dear Sam, thank you for your letter” starts
+dictation and writes <em>Dear Sam, thank you for your letter.</em></li>
+<li>“Stop dictation” (or Ctrl+F11) stops writing and goes back to
+waiting for the wake phrase.</li>
+<li>The wake phrase only counts at the start of what you say. If you say
+“I told Quill to dictate this” while chatting, nothing starts.</li>
+<li>It forgives a near miss. “Quil dictate” still works.</li>
+</ul>
+<p><strong>Choosing your own wake phrase.</strong> Type any phrase in
+the <strong>Wake phrase</strong> box. It needs at least two words. Pick
+something you would not say in passing; a name and a verb works well.
+QUILL Lite will not accept a single word, so dictation does not start by
+accident.</p>
+<p><strong>What happens with your microphone.</strong> While the wake
+phrase is on, the microphone is open whenever QUILL Lite is the window
+in front. Anything it hears that does not start with the wake phrase is
+dropped straight away. It is never written, kept or sent anywhere. When
+you switch to another program, the microphone closes, and dictation
+stops if it was running. When you come back to QUILL Lite, it listens
+for the wake phrase again. It never listens while QUILL Lite is in the
+background, so it will not pull you away from whatever else you are
+doing. The wake phrase is off until you turn it on.</p>
+<p>The wake phrase works with Moonshine, Whisper and Windows speech
+recognition. It does not work with Windows voice typing, because Windows
+runs that itself.</p>
+<h3 id="the-stop-phrase">The stop phrase</h3>
+<p>Say <strong>“stop dictation”</strong> on its own, after a pause, and
+dictation stops. You can add your own words too. Type them in the
+<strong>Stop phrase</strong> box in Dictation Settings, and saying them
+stops dictation just the same. “Stop dictation” keeps working either
+way.</p>
+<ul>
+<li>The stop phrase counts only when it is <strong>everything you
+said</strong> in that breath. If you say “I will stop dictation for
+today” in the middle of a paragraph, it is written down, not
+obeyed.</li>
+<li>Like the wake phrase, it forgives a near miss, and it needs at least
+two words so ordinary talk does not stop you by accident.</li>
+<li>With the wake phrase on, stopping takes you back to listening for
+the wake phrase. That way you can start and stop without touching the
+keyboard at all.</li>
+</ul>
+<h2 id="making-dictation-fit-you">Making dictation fit you</h2>
+<h3 id="your-own-words-and-phrases">Your own words and phrases</h3>
+<p>You can teach dictation the words you use. Press
+<strong>Alt+Shift+F10</strong> (<strong>Tools &gt; Dictation &gt; My
+Words and Phrases…</strong>), or press the <strong>My Words and
+Phrases…</strong> button in Dictation Settings. A window lists
+everything you have taught it, one line each. Whatever you change is
+used from your very next phrase. There are three kinds:</p>
+<ul>
+<li><strong>Words.</strong> Names, jargon and acronyms, spelled the way
+you want them. When the engine writes something that sounds or looks
+close, it is fixed to your spelling. Add <em>Tucson</em>, and “tuxon”
+becomes <em>Tucson</em>. <strong>Add Word…</strong> asks for the
+word.</li>
+<li><strong>Phrases.</strong> Something short you say that writes
+something longer. <strong>Add Phrase…</strong> asks what you will say
+(<em>my email address</em>) and what it should write (your address).
+Press Enter in the second box for a new line, so a signature can be two
+lines.</li>
+<li><strong>Corrections.</strong> Something the engine keeps getting
+wrong, and what to write instead. <strong>Add Correction…</strong> asks
+what it writes now (<em>quill light</em>) and what it should write
+(<em>QUILL Lite</em>). Corrections work on every phrase, with any
+capitals, on every engine.</li>
+</ul>
+<p><strong>Edit…</strong> (or Enter on a line) changes the one you are
+on, and <strong>Remove</strong> takes it out. Each change is saved
+straight away and read back to you. If you like working in a file,
+<strong>Open the File…</strong> opens the same list as a plain text file
+called <code>dictation.md</code>.</p>
+<h3 id="moving-and-sharing-your-word-list">Moving and sharing your word
+list</h3>
+<p><strong>Export…</strong> in My Words and Phrases saves your whole
+list to a file you name. Choose <strong>Word list in Markdown</strong>
+for the same kind of file as <code>dictation.md</code>, or
+<strong>Spreadsheet, say and write columns</strong> for a CSV file with
+three columns: <code>say</code>, <code>write</code> and
+<code>kind</code> (word, phrase or correction). You hear how many were
+saved, such as “Exported 15 entries to my-dictation-words.md.”</p>
+<p><strong>Import…</strong> reads a Markdown word list or a CSV file and
+adds what is new. A CSV file needs a <code>say</code> column;
+<code>write</code> and <code>kind</code> are optional. Before anything
+changes, a window shows how many entries will be added and how many are
+already in your list, with the new ones listed. Press <strong>Add
+Them</strong> to add them, or <strong>Cancel</strong> to change nothing.
+Then you hear, for example, “Imported 12 words, 3 already there.” Import
+never replaces anything: where the file has a word or phrase you already
+have, written differently, yours is kept. Your list as it was is saved
+first, as <code>dictation-before-import.md</code> beside
+<code>dictation.md</code>. To undo an import, copy that file over
+<code>dictation.md</code>.</p>
+<p><strong>Use the shared word list</strong> is the check box at the top
+of the window. QUILL, QUILL Transcribe and Quill Inkwell share one list
+on this computer. QUILL Lite keeps its own until you check this box.
+When you check it, a window first shows which of your words will be
+added to the shared list; press <strong>Use the Shared List</strong> to
+go ahead. From then on, a word you add here is used by all of them from
+their next phrase. Uncheck the box to go back to QUILL Lite’s own list,
+which is just as you left it. The box is not shown in a portable copy,
+which always keeps its own list. Your dictation instructions and
+dictation contexts are kept beside the list, so they come with whichever
+list you use.</p>
+<p><strong>Where the shared list lives.</strong> Since this version the
+shared list is in the family’s own dictation folder:
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code> (press Windows+R, type
+that and press Enter to open it). The first time a QuillVille program
+needs it after the update, it is copied there from QUILL’s data folder,
+with the instructions and contexts beside it. It is copied, never moved:
+the old files stay as they were, as a backup, and a list already in the
+new folder is never replaced. If the copy cannot be made, the old file
+is read instead, and the copy is tried again next time. QUILL Lite’s own
+list, the one you use while the box is unchecked, stays in QUILL Lite’s
+own data folder and is not touched.</p>
+<p>Your own phrases show up in the “what can I say” list along with
+everything else.</p>
+<h3 id="choosing-the-microphone">Choosing the microphone</h3>
+<p><strong>Dictation Settings</strong> lists every microphone by name.
+The first choice uses whatever Windows is using as the default recording
+device. Choose a named microphone if you always want that one, whatever
+the default becomes. If the microphone you chose is unplugged, QUILL
+Lite tells you when you start dictation. It never quietly listens on a
+different one.</p>
+<h3 id="talking-in-one-long-run-just-write-what-i-say">Talking in one
+long run: Just write what I say</h3>
+<p>Some people think out loud in one long run and pause wherever the
+thought pauses. Normally, each pause ends a phrase: it gets a full stop,
+a tone plays, and the words are read back. If that gets in your way,
+turn on <strong>Just write what I say: nothing happens at a
+pause</strong> in Dictation Settings. Then a pause does nothing at
+all:</p>
+<ul>
+<li><strong>No full stop just because you paused.</strong> Your words
+carry on as one sentence until you say “period”, “question mark” or
+another mark. Moonshine and Whisper still put in marks inside what you
+say.</li>
+<li><strong>No tone and no read-back</strong> after each phrase, so
+nothing talks over you.</li>
+<li><strong>No voice commands.</strong> “Scratch that” or “select that”
+said on its own is written as words. Punctuation and layout you say,
+like “comma” or “new paragraph”, still work. So does the <strong>stop
+phrase</strong>, so you can always stop by voice.</li>
+</ul>
+<p>Your words are still written as you go, and <strong>Ctrl+Z</strong>
+still takes back one phrase at a time. Turn it off again when you want
+the commands back.</p>
+<h3 id="the-finer-choices">The finer choices</h3>
+<ul>
+<li><strong>Automatic punctuation (Moonshine and Whisper).</strong> When
+it is on, the engine puts in full stops, commas and question marks for
+you. When it is off, it adds none, and you say every mark, just as with
+Windows speech recognition.</li>
+<li><strong>Pause before a phrase is written.</strong> Short (half a
+second), Normal (under a second), Long (about a second and a half),
+Longer (2 seconds) or Longest (3 seconds). If dictation cuts you off
+while you are still thinking, choose Long, and go further if you need
+to; see “Longer pauses, and sentences you finish later” just below.
+Windows speech recognition uses the same length.</li>
+<li><strong>Remove filler words like um and uh.</strong> Hesitations
+like um, uh, erm and hmm are left out. Real words are never
+removed.</li>
+<li><strong>Dictation style</strong> (<strong>Alt+Y</strong>). Verbatim,
+Clean or, with AI on, Polished: a quick way to set the next two choices
+together. See “Correcting yourself as you talk”.</li>
+<li><strong>Fix it when I correct myself, like Thursday, no,
+Friday</strong> (<strong>Alt+X</strong>). “Thursday, no, Friday” writes
+Friday. Off at first.</li>
+<li><strong>Stop dictation after silence.</strong> Never, or after 1, 5
+or 10 minutes of hearing nothing, so dictation is not left writing in an
+empty room. With the wake phrase on, it goes back to waiting for the
+wake phrase instead. You hear why it stopped, for example “Dictation off
+after 5 minutes of silence.”</li>
+<li><strong>Test Microphone.</strong> This button is beside the
+microphone list. Press it, wait for “Speak now”, and talk for four
+seconds. You hear how loud the microphone was (almost nothing, quiet,
+working, or very loud). With Moonshine or Whisper, you also hear exactly
+what the engine understood. Nothing is kept. The result stays in the box
+beside the button, so you can read it again.</li>
+</ul>
+<h3 id="longer-pauses-and-sentences-you-finish-later">Longer pauses, and
+sentences you finish later</h3>
+<p>Everybody stops to think sometimes. If dictation keeps writing half a
+sentence while you are still looking for the next word, give yourself
+more time. In Dictation Settings (<strong>Alt+Shift+F6</strong>), set
+<strong>Pause before a phrase is written</strong> to one of the two
+longest choices:</p>
+<ul>
+<li><strong>Longer (2 seconds; words appear later)</strong></li>
+<li><strong>Longest (3 seconds; words appear later still)</strong></li>
+</ul>
+<p>Every phrase then waits that long after you stop talking before it is
+written. That is the trade: more room to think, and a little longer to
+wait before you hear your words back. Start with Longer. Move to Longest
+only if Longer still cuts you off.</p>
+<p>Even on the usual setting, QUILL Lite tries not to break a sentence
+you have not finished. If a phrase ends on a word that no sentence ends
+on, the full stop the engine put there is taken back, and your next
+phrase joins on. These are words like <em>a</em>, <em>an</em>,
+<em>the</em>, <em>of</em>, <em>to</em>, <em>in</em>, <em>on</em>,
+<em>at</em>, <em>by</em>, <em>for</em>, <em>with</em>, <em>from</em>,
+<em>into</em>, <em>about</em>, <em>and</em>, <em>but</em>, <em>or</em>,
+<em>my</em>, <em>your</em>, <em>his</em>, <em>her</em>, <em>its</em>,
+<em>our</em>, <em>their</em>, <em>very</em>, <em>really</em> and
+<em>so</em>. Say “this is a very”, stop to think, then say “good test”,
+and you get one sentence: <em>This is a very good test.</em></p>
+<p>A full stop you <strong>said</strong> is never taken back. If you say
+“period”, you meant it.</p>
+<h3 id="dictation-context-for-this-document">Dictation Context for This
+Document</h3>
+<p>Some engines do better when they know what you are writing. A letter
+to your bank, a note to a friend and a page of computer instructions use
+very different words. <strong>Dictation Context for This
+Document…</strong> (<strong>Ctrl+Alt+Shift+PageUp</strong>, in
+<strong>Tools &gt; Dictation</strong>) lets you tell it, in a
+sentence.</p>
+<p>The window has:</p>
+<ul>
+<li><strong>This document is:</strong> a box where you describe it in
+your own words, like “A letter to my landlord about the boiler” or
+“Notes from the Tuesday book club”.</li>
+<li><strong>Start from a saved context:</strong> a list of contexts to
+start from. Yours come first, then five starters: Formal letter, Note to
+a friend, Technical writing, Meeting notes and Story.</li>
+<li><strong>Also save it as a context named:</strong> type a name here
+to keep this one for other documents.</li>
+<li><strong>Who uses it:</strong> a read-only line that tells you which
+parts of QUILL Lite will use what you wrote.</li>
+</ul>
+<p>The context is remembered for this document, so next time you open
+it, it is already there. An untitled document keeps its context until
+you close QUILL Lite.</p>
+<p><strong>Who uses it.</strong> OpenAI dictation, with your own key,
+uses it to understand you better. <strong>Tidy Dictated Text</strong>
+(<strong>Ctrl+F3</strong>) uses it too, alongside your My Dictation
+Instructions, so a tidied letter sounds like a letter. The engines on
+your own computer cannot use a context, and the window tells you so when
+one of them is chosen. It costs nothing to write one anyway, ready for
+when you tidy.</p>
+<p><strong>By voice.</strong> Say <strong>“dictation context”</strong>
+and the name of a saved one, like “dictation context meeting notes”, and
+that context is used for this document.</p>
+<p><strong>Privacy.</strong> The context only goes where your speech or
+your text is already going: to OpenAI when you use OpenAI dictation, and
+to the AI when you use Tidy Dictated Text. It never goes anywhere on its
+own.</p>
+<h3 id="dictation-settings-every-option">Dictation Settings, every
+option</h3>
+<p>Open <strong>Tools &gt; Dictation &gt; Dictation Settings…</strong>
+(<strong>Alt+Shift+F6</strong>). The window has two columns. The left
+side is about what is heard and written. The right side is about
+starting and stopping.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it does</th>
+<th>Starts as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Speech engine</td>
+<td>Moonshine, Whisper, Windows speech recognition, Windows voice
+typing, any model you downloaded, OpenAI with your own key, or a speech
+provider you set up; see “Which engine should I choose?”</td>
+<td>Moonshine</td>
+</tr>
+<tr>
+<td>Dictation language</td>
+<td>English, or Spanish (see “Dictating in Spanish”). Ctrl+Shift+F11
+switches it without opening this window.</td>
+<td>English</td>
+</tr>
+<tr>
+<td>Automatic punctuation (Moonshine and Whisper)</td>
+<td>The engine puts in the marks you do not say</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Language for Windows speech recognition</td>
+<td>Which installed Windows speech language to use; the other engines
+follow the dictation language</td>
+<td>Windows default</td>
+</tr>
+<tr>
+<td>Microphone</td>
+<td>Which microphone to listen on</td>
+<td>Windows default</td>
+</tr>
+<tr>
+<td>Test Microphone (button)</td>
+<td>Four seconds of listening: how loud, and what was heard</td>
+<td>(a button)</td>
+</tr>
+<tr>
+<td>After each phrase is written, give me</td>
+<td>A sound, speech (the words read back), both, or neither</td>
+<td>Both</td>
+</tr>
+<tr>
+<td>Saying “dash” writes</td>
+<td>Em dash, spaced en dash, or two hyphens</td>
+<td>Em dash</td>
+</tr>
+<tr>
+<td>Pause before a phrase is written</td>
+<td>Short, Normal, Long, Longer (2 seconds) or Longest (3 seconds)</td>
+<td>Normal</td>
+</tr>
+<tr>
+<td>Remove filler words like um and uh</td>
+<td>Leave hesitations out</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Dictation style (Alt+Y)</td>
+<td>Verbatim, Clean, or Polished when AI is on; sets the choices
+below</td>
+<td>Verbatim</td>
+</tr>
+<tr>
+<td>Fix it when I correct myself, like Thursday, no, Friday (Alt+X)</td>
+<td>Writes only the second of two days, months, numbers or names from My
+Words</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Just write what I say: nothing happens at a pause</td>
+<td>No full stop, sound, read-back or command at a pause</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Play sounds when dictation starts, stops or fails</td>
+<td>The start, stop and error tones</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Say “Dictation on” and “Dictation off”</td>
+<td>The words that go with those tones</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Listen for the wake phrase while dictation is off</td>
+<td>Start dictation by voice</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Wake phrase</td>
+<td>The words that start it</td>
+<td>Quill dictate</td>
+</tr>
+<tr>
+<td>Stop phrase</td>
+<td>The words that stop it, said on their own</td>
+<td>stop dictation</td>
+</tr>
+<tr>
+<td>Stop dictation after silence</td>
+<td>Never, or after 1, 5 or 10 minutes</td>
+<td>Never</td>
+</tr>
+<tr>
+<td>Better Accuracy: Speech Models (button, Alt+B)</td>
+<td>Optional larger models to download, remove or choose (see “Better
+accuracy: optional speech models”)</td>
+<td>(a button)</td>
+</tr>
+<tr>
+<td>Speech Providers (button, Alt+V)</td>
+<td>Set up a speech company you have your own account with (see “Speech
+providers: dictation with your own account”)</td>
+<td>(a button)</td>
+</tr>
+<tr>
+<td>Recommended for this computer</td>
+<td>The model that suits this computer and why, in one line to read;
+only advice</td>
+<td>(read-only)</td>
+</tr>
+</tbody>
+</table>
+<p>Three buttons sit below the options. <strong>Dictation
+Commands…</strong> opens the full list of what you can say. <strong>My
+Words and Phrases…</strong> saves your settings and opens the window
+described in “Your own words and phrases” above. <strong>More Dictation
+Settings…</strong> (<strong>Alt+A</strong>) opens the window below.</p>
+<h3 id="more-dictation-settings-every-option">More Dictation Settings,
+every option</h3>
+<p>Press <strong>More Dictation Settings…</strong>
+(<strong>Alt+A</strong>) in Dictation Settings. What you change here is
+saved when you press OK in Dictation Settings.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it does</th>
+<th>Starts as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hold the dictation key to talk; a quick press still turns it on and
+off</td>
+<td>Also lets you hold Ctrl+F11 while you talk and let go to stop</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>While you speak, the words heard so far</td>
+<td>Show them in the status bar and on braille, also say new words
+quietly, or do not show them</td>
+<td>Show them</td>
+</tr>
+<tr>
+<td>Say punctuation marks in the read-back (Alt+S)</td>
+<td>The read-back says “comma”, “period” and the rest by name, so you
+hear what went in</td>
+<td>Checked</td>
+</tr>
+<tr>
+<td>Tick while a phrase is being worked on (Alt+R)</td>
+<td>A soft tick once a second while a phrase takes more than a second to
+turn into text</td>
+<td>Unchecked (checked in QUILL Transcribe)</td>
+</tr>
+<tr>
+<td>Time stamps in live transcripts (Alt+T)</td>
+<td>Each new paragraph of a live transcript starts with the time, like
+[10:42]</td>
+<td>Unchecked</td>
+</tr>
+<tr>
+<td>Send a dictated message to the AI</td>
+<td>When I pause, or When I press Enter</td>
+<td>When I pause</td>
+</tr>
+<tr>
+<td>Pause before the message is written</td>
+<td>Short, Normal or Long, when talking to the AI</td>
+<td>Long</td>
+</tr>
+<tr>
+<td>Remove filler words when talking to the AI</td>
+<td>Leave um and uh out of what you say to the AI</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Automatic punctuation when talking to the AI</td>
+<td>Let the engine punctuate what you say to the AI</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Let OpenAI dictation send my speech to OpenAI</td>
+<td>Your agreement, which you can take back here</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>OpenAI speech model</td>
+<td>The model OpenAI dictation uses, from OpenAI’s own list</td>
+<td>The newest</td>
+</tr>
+<tr>
+<td>Add or Change OpenAI Key (button, Alt+K)</td>
+<td>Saves your settings and opens Use My Own AI Key</td>
+<td>(a button)</td>
+</tr>
+<tr>
+<td>My Dictation Instructions (button, Alt+I)</td>
+<td>Opens the file Tidy Dictated Text follows</td>
+<td>(a button)</td>
+</tr>
+<tr>
+<td>Dictate in Other Programs (button, Alt+O)</td>
+<td>Saves your settings and hands them to QUILL Transcribe if it is
+installed, otherwise to Quill Inkwell, and starts it; see “Dictating
+into other programs”</td>
+<td>(a button)</td>
+</tr>
+<tr>
+<td>Programs Dictation Never Types Into (button, Alt+N)</td>
+<td>The programs dictation never types into from Quill Inkwell or QUILL
+Transcribe, such as your password manager; see “Programs dictation never
+types into”</td>
+<td>The common password managers and the Windows sign-in prompts</td>
+</tr>
+<tr>
+<td>Command word (Alt+C)</td>
+<td>The word you say before a command, like QUILL scratch that; empty
+for none; see “The command word”</td>
+<td>QUILL</td>
+</tr>
+<tr>
+<td>Commands only after the command word (strict mode) (Alt+E)</td>
+<td>A command said on its own is written as words; the stop phrase
+always works</td>
+<td>Unchecked (checked in QUILL Transcribe)</td>
+</tr>
+<tr>
+<td>Seconds command mode waits for a command (Alt+D)</td>
+<td>How long command mode lasts with no command, from 5 to 30</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Send dictation to review first (Alt+V)</td>
+<td>What you dictate goes into Review Dictation instead, to insert once;
+see “Review before inserting”</td>
+<td>Unchecked</td>
+</tr>
+<tr>
+<td>Allow polishing my dictation with AI when I ask (Alt+G)</td>
+<td>“QUILL polish that” and the Polish button in Review Dictation ask
+the AI to fix punctuation and small slips, keeping your words</td>
+<td>Unchecked</td>
+</tr>
+<tr>
+<td>Keep a dictation history (Alt+Y)</td>
+<td>Off, One day, Seven days or Thirty days of the text you dictate,
+never the sound, listed in Recent Phrases; turning it off deletes it;
+see “Recent phrases”</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Dictation profile, for the kind of writing (Alt+A)</td>
+<td>Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see
+“Dictation profiles”</td>
+<td>Standard</td>
+</tr>
+<tr>
+<td>Lock the profile so it cannot be switched by voice (Alt+B)</td>
+<td>A spoken profile name does not switch profiles</td>
+<td>Unchecked</td>
+</tr>
+<tr>
+<td>Share dictation settings with every QuillVille program (Alt+Q)</td>
+<td>Your dictation settings are the same in QUILL Lite, QUILL, QUILL
+Transcribe and Quill Inkwell; see “Sharing dictation settings with the
+family”</td>
+<td>Checked for a new install; unchecked if you had changed your
+settings before</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sharing-dictation-settings-with-the-family">Sharing dictation
+settings with the family</h3>
+<p><strong>Share dictation settings with every QuillVille
+program</strong> (Alt+Q) is a check box in More Dictation Settings. When
+it is on, the dictation settings you save are the same in QUILL, QUILL
+Lite, QUILL Transcribe and Quill Inkwell on this computer.</p>
+<ul>
+<li><strong>What is shared:</strong> the engine and model, the language,
+the microphone, automatic punctuation, the pause that ends a phrase,
+filler words, the wake phrase, the command word, review first, the
+never-type list and the other dictation choices.</li>
+<li><strong>What QUILL Lite keeps to itself:</strong> its keys, the
+working tick, strict mode, what you hear after each phrase, and every
+permission to send your speech to a company.</li>
+<li><strong>When it arrives:</strong> what you save with OK in Dictation
+Settings is there for the others at once. When you come back to QUILL
+Lite after saving something in another program, the status bar says
+“Dictation settings updated from the family.”</li>
+<li><strong>To begin with</strong> it is checked for a new install. If
+you had changed your dictation settings before this update, it starts
+unchecked, so nothing you chose is replaced; check it when you want to
+join in.</li>
+<li><strong>Nothing is lost:</strong> the first time QUILL Lite takes
+settings from the family, its own are saved first as
+<code>before-sharing-lite.json</code> in
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code>.</li>
+<li>If two programs save at once, the last one saved wins; the file is
+never half written. If the shared copy cannot be saved, you hear why,
+for example “Saved here, but the other QuillVille programs will not see
+this change: the shared dictation settings could not be written (Access
+is denied).” QUILL Lite’s own copy is saved either way.</li>
+<li>A portable copy shares only with the programs in its own
+folder.</li>
+</ul>
+<p>For example: choose Spanish in QUILL Transcribe with Ctrl+Shift+F11,
+switch to QUILL Lite, and Ctrl+F11 dictates in Spanish.</p>
+<h3 id="dictating-in-spanish">Dictating in Spanish</h3>
+<p>You can dictate in Spanish. It’s new, so think of it as something to
+try, and let us know how it goes.</p>
+<p><strong>To switch it on</strong>, open Dictation Settings
+(<strong>Alt+Shift+F6</strong>), move to <strong>Dictation
+language</strong>, choose <strong>Spanish</strong>, and press Enter. To
+go back, choose English the same way. There is a quicker way too,
+described next.</p>
+<h4 id="switching-between-english-and-spanish">Switching between English
+and Spanish</h4>
+<p>If you write in both languages, you do not need the settings window
+at all.</p>
+<ul>
+<li><strong>By key:</strong> press <strong>Ctrl+Shift+F11</strong>
+(<strong>Switch Dictation Language</strong>, in <strong>Tools &gt;
+Dictation</strong>). Each press switches between English and Spanish,
+and you hear “Español.” or “English.”</li>
+<li><strong>By voice, in English:</strong> say “switch to Spanish” or
+“Spanish dictation”.</li>
+<li><strong>By voice, in Spanish:</strong> say “cambiar a inglés” or
+“dictado en inglés”. You can leave the accent off; “cambiar a ingles”
+works just as well.</li>
+</ul>
+<p>You can switch while dictation is running. The engine starts again in
+the new language, which can take a moment the first time. The very first
+switch to Spanish while you are using Moonshine takes a little longer,
+because Whisper has to get ready. After that, both stay ready until you
+close QUILL Lite, so switching back and forth is quick.</p>
+<p>The language you choose is saved, so the next time you dictate, you
+start in the language you used last. QUILL Lite never guesses the
+language from what you say; it is always your choice. Dictation Status
+(<strong>Alt+F9</strong>) tells you which language you are in.</p>
+<h4 id="what-works-in-spanish">What works in Spanish</h4>
+<p><strong>What works now:</strong></p>
+<ul>
+<li><strong>Your words come out in Spanish</strong>, accents and all.
+QUILL Lite uses Whisper’s multilingual speech model for this. It comes
+with QUILL Lite, so there is nothing to download. Moonshine only knows
+English, so in Spanish you get Whisper whichever of the two you
+chose.</li>
+<li><strong>A better Spanish model, said once.</strong> The built-in
+Whisper gets about one word in four wrong in Spanish. If your computer
+can run NVIDIA Parakeet TDT 0.6B v3 (in practice, 8 GB of memory and
+four cores), the first time you dictate in Spanish you hear one sentence
+saying so, for example: “For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets
+about 6 percent of words wrong, against 29 for the built-in model. It is
+a 670 MB download in the model list.” Nothing is downloaded or changed;
+the choice is yours. You hear it once, in whichever QuillVille program
+you dictate in first. A computer with 4 GB hears nothing, because the
+built-in model is the right one there.</li>
+<li><strong>Windows speech recognition</strong> needs Spanish installed
+in Windows: add Spanish (Spain or Mexico) in Windows Settings, Time and
+language, Speech. If it isn’t there, dictation tells you when you
+start.</li>
+<li><strong>The wake and stop phrases</strong> become “Quill dicta” and
+“deja de dictar”. If you typed your own, yours stay.</li>
+</ul>
+<p><strong>Commands stay in English for now.</strong> “Scratch that”,
+“select that”, “new paragraph” and the others work just as they do in
+English. The one exception is switching back: “cambiar a inglés” and
+“dictado en inglés” work in Spanish. More Spanish commands will come
+once a native speaker has checked them.</p>
+<p><strong>Punctuation.</strong> With automatic punctuation on (the
+usual setting), Whisper adds the commas, full stops and question marks
+for you, so just talk. The Spanish punctuation words only work when
+automatic punctuation is off, or with Windows speech recognition. That’s
+because “coma” and “punto” are everyday words too, and nobody wants “que
+coma” turned into a comma. When they are on, you can say:</p>
+<ul>
+<li>“coma” for a comma, “punto” (or “punto y seguido”) for a full stop,
+and “punto y aparte” for a full stop and a new paragraph</li>
+<li>“punto y coma”, “dos puntos” and “puntos suspensivos”</li>
+<li>“abrir interrogación” and “cerrar interrogación” for the question
+marks at each end, and “abrir exclamación” and “cerrar exclamación” the
+same way</li>
+<li>“abrir paréntesis”, “cerrar paréntesis”, “abrir comillas”, “cerrar
+comillas”</li>
+<li>“guion”, “guion largo” and “arroba”</li>
+<li>“nueva línea”, “nuevo párrafo” and “tabulador”</li>
+</ul>
+<p>Say “literal” first to write the word itself: “literal coma” writes
+<em>coma</em>. Say “what can I say” while dictating to see the full
+list.</p>
+<p><strong>It’s new, and your feedback helps.</strong> If a word keeps
+coming out wrong, or something doesn’t work the way you expect, use
+<strong>Help &gt; Get Help from Support</strong> and tell us what you
+said and what was written.</p>
+<h3 id="better-accuracy-optional-speech-models">Better accuracy:
+optional speech models</h3>
+<p>Dictation works the moment you install. If you want more accuracy,
+you can download a larger model. In our tests with real recordings, the
+best English download, NVIDIA Parakeet Unified 0.6B, made about half the
+mistakes of the built-in Moonshine (3.2 percent of words wrong against
+6.5), and the best Spanish one, NVIDIA Parakeet TDT 0.6B v3, got 4.4
+percent wrong on Google’s FLEURS Spanish where the built-in Whisper got
+30.5.</p>
+<p>These are the same local models VS Code offers for its own dictation,
+plus the rest of the Whisper family. They are free, they are optional,
+and they run on your computer’s processor; no graphics card needed. Your
+voice never leaves the computer: the only thing that comes over the
+internet is the model itself, once, when you ask for it. Nothing
+downloads on its own, and the built-in Moonshine stays your engine until
+you choose another.</p>
+<p><strong>To download one:</strong></p>
+<ol type="1">
+<li>Open <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>) and press <strong>Better Accuracy:
+Speech Models…</strong> (<strong>Alt+B</strong>).</li>
+<li>Arrow through the list. Each row says what the model is good for,
+how big it is, and whether it is already here. <strong>Details</strong>
+(<strong>Alt+T</strong>) says more: what it is better at, its languages,
+its download and disk size, which computers suit it, whether this
+computer should keep up, its published accuracy, its licence, and the
+folder it will be saved in.</li>
+<li>Press <strong>Download…</strong> (<strong>Alt+D</strong>). A
+question tells you where the model comes from, how big it is, its
+licence and where it will be saved. Answer Yes to start. On a metered
+connection you are asked about that first.</li>
+<li>You hear “Downloading”, then every quarter of the way.
+<strong>Cancel Download</strong> (<strong>Alt+L</strong>) stops it. What
+has arrived is kept, so pressing Download again carries on from there,
+even after you close QUILL Lite.</li>
+<li>When it says the model is downloaded, press <strong>Use for
+Dictation</strong> (<strong>Alt+U</strong>), then <strong>OK</strong> in
+Dictation Settings. Or choose the model in the <strong>Speech
+engine</strong> list yourself: downloaded models are listed there with
+“(downloaded)” and the model’s tier after the name.</li>
+</ol>
+<p>Every file is checked against a fingerprint (a checksum) we recorded
+when we added the model. If a file does not match, it is deleted and you
+are told, so a damaged or changed download can never be used.</p>
+<p><strong>Which model should I use?</strong> Speech Models recommends
+one. Near the top of the window, the read-only
+<strong>Recommendation</strong> box (<strong>Alt+C</strong>) names the
+model that suits this computer and your dictation language, and says
+why: whether it keeps up here, about how soon your words appear after
+you pause, whether your speech stays on this computer (it always does),
+and how big the download is, or that it is already installed. The lines
+after it say more, for example a model that makes fewer mistakes but
+would slow your screen reader here. <strong>What matters most</strong>
+(<strong>Alt+W</strong>) changes the advice: a balance of speed and
+accuracy (the usual choice), the quickest response, or the fewest
+mistakes this computer can keep up with. <strong>Show Recommended
+Model</strong> (<strong>Alt+S</strong>) moves to that model in the list,
+so you can read its details and download it. Dictation Settings shows
+the same advice in one line, in the <strong>Recommended for this
+computer</strong> box at the top of its right-hand column.</p>
+<p><strong>Switch to Recommended Model</strong>
+(<strong>Alt+H</strong>), beside it, chooses the recommended model as
+your speech engine and changes nothing else: your words, instructions,
+pauses and punctuation stay as they are. Speech Models closes, and
+Dictation Settings says “Speech engine:” and the model’s name, then
+“Press OK to keep it.” Press <strong>OK</strong> there to keep it, or
+Cancel to keep the engine you had. It never downloads anything. If the
+model is not on this computer yet, you hear that it is not here yet
+(“Download it, then switch.”), and you are taken to its row in the list,
+so you can press <strong>Download…</strong> (<strong>Alt+D</strong>).
+While a model is downloading, it asks you to wait for the download or
+press <strong>Cancel Download</strong> first.</p>
+<p>What it names, in short:</p>
+<ul>
+<li><strong>English, 8 GB of memory and four cores or more:</strong>
+NVIDIA Parakeet Unified 0.6B.</li>
+<li><strong>English, 8 GB and two cores:</strong> NVIDIA Parakeet TDT
+0.6B v3.</li>
+<li><strong>Spanish, 8 GB:</strong> NVIDIA Parakeet TDT 0.6B v3.</li>
+<li><strong>4 GB, or little memory free:</strong> the built-in Moonshine
+for English and the built-in Whisper for Spanish. A computer with 4 GB
+has room for only about 600 MB of dictation beside a screen reader, and
+the larger models need twice that or more.</li>
+<li><strong>The quickest response:</strong> the built-in Moonshine.</li>
+</ul>
+<p>On a computer with 8 GB, dictation may take up to 1.6 GB of memory
+beside your screen reader, and never more than is free when you ask,
+less half a gigabyte.</p>
+<p>The recommendation is only advice. QUILL Lite never changes your
+engine by itself; you choose. Its figures come from our tests with real
+recordings, on one computer; yours may differ. A graphics card makes no
+difference: every dictation model runs on the processor.</p>
+<p><strong>Tiers.</strong> Every model is labelled with one of three
+tiers, wherever you choose one: the Speech engine list, Speech Models
+and Transcribe a Recording. What each tier means is in “Which engine
+should I choose?” above. The tiers follow the speeds we measured on real
+speech. Which models are in which:</p>
+<ul>
+<li><strong>Lightweight</strong>: the built-in Moonshine and Whisper,
+Moonshine base, NVIDIA Parakeet TDT 0.6B v3, NVIDIA Parakeet Unified
+0.6B and Whisper base.en.</li>
+<li><strong>Balanced</strong>: NVIDIA Nemotron and Whisper base.</li>
+<li><strong>High accuracy</strong>: Whisper small, medium,
+large-v3-turbo and large-v3.</li>
+</ul>
+<p><strong>Five models were removed in this release.</strong>
+Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,
+Whisper medium.en and Distil-Whisper large-v3 are no longer in the list.
+They were all English only. On the held-out audiobooks, NVIDIA Parakeet
+Unified 0.6B got 3.2 percent of words wrong, against 3.6 to 6.3 for
+these five. It was also faster on one thread, in the same or a smaller
+memory tier. Whisper base.en and every many-language Whisper size
+stay.</p>
+<p>If you were using one, dictation switches to Parakeet Unified when
+you update, if you have already downloaded it. Otherwise dictation uses
+the built-in model. Nothing is downloaded for you. The next time
+dictation starts, you hear one sentence saying so, once across every
+QuillVille program, not once in each. For example: “Whisper small.en was
+removed in this release. Dictation now uses Parakeet Unified, which you
+already have.” Or: “Whisper small.en was removed in this release, so
+dictation uses the built-in model. Parakeet Unified, in the model list,
+is more accurate.” To use Parakeet Unified, choose it in Speech Models,
+press <strong>Download…</strong> (<strong>Alt+D</strong>), then
+<strong>Use for Dictation</strong> (<strong>Alt+U</strong>).</p>
+<p>Your downloaded files are not deleted. They stay in the models folder
+(see “Where the models go” below), in folders named
+whisper-small.en-int8, whisper-distil-small.en-int8,
+whisper-medium.en-int8, whisper-distil-medium.en-int8 and
+whisper-distil-large-v3-int8. Delete a folder to free its space.</p>
+<p><strong>Where the models go.</strong> One folder for QUILL, QUILL
+Lite, QUILL Transcribe and Quill Inkwell on the same computer, so a
+model downloaded in one is there for the others and is never downloaded
+twice: <code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>. In a
+portable copy, models are saved inside the portable folder, so
+everything travels together (<code>data\dictation\models</code> in the
+portable folder). Before a download starts, QUILL Lite checks there is
+room on that drive and tells you if there is not. The built-in Moonshine
+and Whisper are not in that folder: they come inside QUILL Lite
+itself.</p>
+<p><strong>To remove one</strong>, choose it in Speech Models and press
+<strong>Remove</strong> (<strong>Alt+R</strong>). It frees the space for
+every program that shares the folder. If dictation is using it, choose
+another engine first. The <strong>Progress</strong> box then says how
+much space was freed, and focus goes back to the list of models.</p>
+<p><strong>When you switch away from a downloaded model</strong>, QUILL
+Lite offers to delete it. After you choose another engine and press a
+plain <strong>OK</strong> in Dictation Settings, a question titled
+<strong>Delete Old Speech Model</strong> says, for example: “Now using
+NVIDIA Parakeet Unified 0.6B. Delete Whisper medium to free 946 MB?” It
+adds that QUILL, QUILL Lite and QUILL Transcribe share the model’s
+files, so any of them still set to it will need it downloaded again. No
+is the default, so pressing Enter keeps the files. Yes deletes them, and
+you hear the model’s name, “deleted”, and the space freed. If it cannot
+be deleted, you are told that something may still be using it, and to
+remove it in Speech Models later.</p>
+<p>The question is not asked while dictation is running or waiting for
+the wake phrase (remove the old model later in Speech Models), when the
+old engine was a built-in one with nothing to delete, or when you left
+Dictation Settings with <strong>My Words and Phrases…</strong> or
+another button that opens a window.</p>
+<p><strong>Will my computer keep up?</strong> When Speech Models opens,
+it spends about two seconds timing the built-in Moonshine on this
+computer, then works out how each model should do here. The details then
+say one of three things: it should keep up comfortably; it should keep
+up but uses more of the processor, so your screen reader may answer a
+little more slowly while you dictate; or it “may lag behind your speech
+on this computer”. You can still download any of them. Large models on a
+dual-core computer with 8 GB of memory are only for when you can
+wait.</p>
+<p><strong>If a downloaded model goes missing</strong> (you removed it,
+or the drive with a portable copy is not there), dictation does not stop
+and does not change engine silently. It says, in one sentence, that it
+is using the built-in engine instead, and carries on.</p>
+<p><strong>Nemotron shows your words as you speak.</strong> It
+recognises while you talk, so the words heard so far appear in the
+status bar and on a braille display, and each phrase goes into the
+document when you pause. See “Seeing the words while you speak”. The
+other models write each phrase when you pause.</p>
+<h4 id="the-list-in-our-suggested-order">The list, in our suggested
+order</h4>
+<p>The order is our suggestion, not a measurement: VS Code’s own models
+first, then the rest of Whisper, smallest first. For what we measured,
+see “How we chose: tested on real speech” below; the Recommendation box
+follows those measurements, not this order.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Good for</th>
+<th>Download</th>
+<th>Languages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA Nemotron 3.5 ASR Streaming 0.6B</td>
+<td>Suggested download. Excellent for live dictation; VS Code’s
+default</td>
+<td>682 MB</td>
+<td>English, Spanish</td>
+</tr>
+<tr>
+<td>NVIDIA Parakeet Unified 0.6B</td>
+<td>May give slightly better final text in some conditions</td>
+<td>663 MB</td>
+<td>English</td>
+</tr>
+<tr>
+<td>NVIDIA Parakeet TDT 0.6B v3</td>
+<td>Excellent recognition of each finished phrase</td>
+<td>670 MB</td>
+<td>English, Spanish</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>A VS Code alternative: good</td>
+<td>375 MB</td>
+<td>English, Spanish</td>
+</tr>
+<tr>
+<td>Whisper base</td>
+<td>A VS Code alternative: moderate</td>
+<td>161 MB</td>
+<td>English, Spanish</td>
+</tr>
+<tr>
+<td>Whisper tiny</td>
+<td>Built in already. Fastest and lightest, weakest accuracy</td>
+<td>(built in)</td>
+<td>English, Spanish</td>
+</tr>
+<tr>
+<td>Whisper base.en</td>
+<td>Light and quick, a little better in English than base</td>
+<td>161 MB</td>
+<td>English</td>
+</tr>
+<tr>
+<td>Whisper medium</td>
+<td>Best for accuracy when you can wait</td>
+<td>946 MB</td>
+<td>English, Spanish</td>
+</tr>
+<tr>
+<td>Whisper large-v3-turbo</td>
+<td>Large-v3 quality, much faster than large-v3</td>
+<td>1.0 GB</td>
+<td>English, Spanish</td>
+</tr>
+<tr>
+<td>Whisper large-v3</td>
+<td>The most accurate Whisper; very slow on most computers</td>
+<td>1.8 GB</td>
+<td>English, Spanish</td>
+</tr>
+<tr>
+<td>Moonshine base</td>
+<td>A light step up from the built-in Moonshine</td>
+<td>141 MB</td>
+<td>English</td>
+</tr>
+</tbody>
+</table>
+<p><strong>English only, or many languages?</strong> Whisper base.en
+only knows English, and is a little more accurate in English than the
+many-language base. The many-language ones also dictate Spanish. If you
+only dictate English, NVIDIA Parakeet Unified 0.6B made the fewest
+mistakes of any model we tested that keeps up; of the Whisper models,
+base.en is the English-only one that stays.</p>
+<h4 id="how-we-chose-tested-on-real-speech">How we chose: tested on real
+speech</h4>
+<p>On 22 October 2026 we tested every dictation model on recordings of
+real people, never a computer voice: public-domain audiobooks catalogued
+after every model was trained, so no model can have learned them, plus
+Google’s FLEURS read sentences and the LibriSpeech audiobook test sets.
+Each model heard one phrase at a time on one processor thread, the way
+dictation hears you. The advice in Speech Models and Dictation Settings
+comes from these results. QUILL, QUILL Lite and QUILL Transcribe share
+these models and this advice.</p>
+<p><strong>English.</strong> Percent of words wrong (lower is better),
+speed per thread (0.25 is dictation’s budget, leaving the rest of the
+processor for your screen reader) and the most memory used.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Held-out audiobooks</th>
+<th>FLEURS</th>
+<th>Speed per thread</th>
+<th>Peak memory</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA Parakeet Unified 0.6B</td>
+<td>3.2%</td>
+<td>6.3%</td>
+<td>0.21</td>
+<td>1.2 GB</td>
+<td>Recommended on 8 GB with four cores</td>
+</tr>
+<tr>
+<td>Whisper medium.en</td>
+<td>3.6%</td>
+<td>-</td>
+<td>1.55</td>
+<td>3.0 GB</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>NVIDIA Parakeet TDT 0.6B v3</td>
+<td>3.8%</td>
+<td>9.0%</td>
+<td>0.11</td>
+<td>1.1 GB</td>
+<td>Kept; recommended on 8 GB with two cores</td>
+</tr>
+<tr>
+<td>Whisper small.en</td>
+<td>4.3%</td>
+<td>6.3%</td>
+<td>0.43</td>
+<td>1.4 GB</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Distil-Whisper large-v3</td>
+<td>4.5%</td>
+<td>-</td>
+<td>0.82</td>
+<td>2.0 GB</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>4.7%</td>
+<td>-</td>
+<td>0.55</td>
+<td>1.4 GB</td>
+<td>Kept; many languages, needs two threads</td>
+</tr>
+<tr>
+<td>NVIDIA Nemotron 3.5 Streaming 0.6B</td>
+<td>5.3%</td>
+<td>13.7%</td>
+<td>0.37</td>
+<td>1.5 GB</td>
+<td>Kept; streams words while you speak</td>
+</tr>
+<tr>
+<td>Moonshine base</td>
+<td>5.9%</td>
+<td>15.1%</td>
+<td>0.05</td>
+<td>378 MB</td>
+<td>Kept; fixed for long phrases</td>
+</tr>
+<tr>
+<td>Whisper base.en</td>
+<td>5.9%</td>
+<td>7.4%</td>
+<td>0.13</td>
+<td>820 MB</td>
+<td>Kept; light, good on varied voices</td>
+</tr>
+<tr>
+<td>Distil-Whisper small.en</td>
+<td>5.9%</td>
+<td>7.6%</td>
+<td>0.22</td>
+<td>1.0 GB</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Distil-Whisper medium.en</td>
+<td>6.3%</td>
+<td>-</td>
+<td>0.47</td>
+<td>1.6 GB</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Moonshine tiny (built in)</td>
+<td>6.5%</td>
+<td>13.2%</td>
+<td>0.06</td>
+<td>584 MB</td>
+<td>Kept; the default, and the pick on 4 GB</td>
+</tr>
+<tr>
+<td>Whisper base</td>
+<td>7.4%</td>
+<td>10.8%</td>
+<td>0.22</td>
+<td>821 MB</td>
+<td>Kept; many languages</td>
+</tr>
+<tr>
+<td>Whisper tiny (built in)</td>
+<td>8.3%</td>
+<td>11.7%</td>
+<td>0.07</td>
+<td>521 MB</td>
+<td>Kept; built in</td>
+</tr>
+</tbody>
+</table>
+<p>A dash means that model was not run on that set.</p>
+<p><strong>Spanish.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>FLEURS Spanish</th>
+<th>Held-out Spanish audiobooks</th>
+<th>Speed per thread</th>
+<th>Peak memory</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA Parakeet TDT 0.6B v3</td>
+<td>4.4%</td>
+<td>7.3%</td>
+<td>0.12</td>
+<td>1.1 GB</td>
+<td>Recommended on 8 GB</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>6.0%</td>
+<td>7.8%</td>
+<td>0.57</td>
+<td>1.4 GB</td>
+<td>Kept; needs two threads</td>
+</tr>
+<tr>
+<td>NVIDIA Nemotron 3.5 Streaming 0.6B</td>
+<td>6.4%</td>
+<td>8.0%</td>
+<td>0.50</td>
+<td>1.5 GB</td>
+<td>Kept</td>
+</tr>
+<tr>
+<td>Whisper base</td>
+<td>12.6%</td>
+<td>16.1%</td>
+<td>0.18</td>
+<td>821 MB</td>
+<td>Kept; lighter</td>
+</tr>
+<tr>
+<td>Whisper tiny (built in)</td>
+<td>30.5%</td>
+<td>27.0%</td>
+<td>0.10</td>
+<td>521 MB</td>
+<td>Kept; built in, the pick on 4 GB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What we found along the way.</strong> Moonshine base wrote
+nothing at all for any phrase longer than about eight and a half
+seconds. That is fixed: it now hears a long phrase in pieces and joins
+them, and scored 5.9 percent on the audiobooks. The pieces overlap by
+half a second, so a word that falls where two pieces meet is not
+lost.</p>
+<p><strong>The limits.</strong> This was one fast computer on one day,
+so speeds are judged against the built-in Moonshine’s, which Speech
+Models times on your own computer in its two-second check. A real 4 GB
+computer with a screen reader running has not been measured yet. Whisper
+medium and large-v3-turbo were too slow to re-run and keep their earlier
+figures. The full record, with every set and every number, is the page
+“Dictation speech models tested on real speech, 2026-10-22” in QUILL’s
+documentation.</p>
+<h4 id="how-accurate-are-they">How accurate are they?</h4>
+<p>These are the figures each model’s makers publish, on their own test
+sets. Our own results on real speech are in the section above. A word
+error rate is the share of words a model gets wrong on a recorded test
+set; lower is better. Test sets differ, so compare numbers only within
+one line.</p>
+<ul>
+<li><strong>Nemotron 3.5 ASR Streaming:</strong> 7.91 percent on FLEURS
+English and 4.11 percent on FLEURS Spanish, at the chunk size this
+download uses (NVIDIA’s model card,
+huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b).</li>
+<li><strong>Parakeet Unified:</strong> 1.63 percent on LibriSpeech
+test-clean and 3.11 percent on test-other
+(huggingface.co/nvidia/parakeet-unified-en-0.6b).</li>
+<li><strong>Parakeet TDT v3:</strong> 4.85 percent on FLEURS English,
+3.45 percent on FLEURS Spanish
+(huggingface.co/nvidia/parakeet-tdt-0.6b-v3).</li>
+<li><strong>Whisper</strong>, on LibriSpeech test-clean (OpenAI’s
+Whisper paper, Appendix D, arxiv.org/abs/2212.04356): tiny 7.6, base
+5.0, small 3.4, medium 2.9 percent; English-only tiny.en 5.6, base.en
+4.2, small.en 3.1, medium.en 3.1. On Spanish (Common Voice 9): tiny
+30.3, base 19.6, small 10.3, medium 6.9 percent. That Spanish column is
+the biggest reason to choose a larger Whisper if you dictate
+Spanish.</li>
+<li><strong>Distil-Whisper and large-v3</strong>, average over short
+recordings the models were not trained on (the Distil-Whisper model
+card, huggingface.co/distil-whisper/distil-small.en): large-v3 8.4,
+distil-large-v3 9.7, distil-medium.en 11.1, distil-small.en 12.1
+percent. OpenAI publishes no figure for large-v3-turbo; it describes it
+as much faster than large-v3 with a small drop in quality.</li>
+<li><strong>Moonshine:</strong> base 10.07 percent against tiny’s 12.66,
+averaged over the Open ASR Leaderboard’s English test sets (Moonshine
+AI, github.com/moonshine-ai/moonshine).</li>
+</ul>
+<p><strong>What each is better at</strong>, in plain words: the bigger
+models cope better with accents, fast speech, a noisy room, names and
+long sentences; all of them put in punctuation and capitals for you. For
+Spanish, any of the many-language models beats the built-in tiny by a
+wide margin.</p>
+<p><strong>When the built-in model is still the better choice:</strong>
+on a computer with 4 GB of memory, when little memory is free, on
+battery, or when your screen reader must never slow down. In our tests
+Moonshine tiny used 0.06 seconds of computing per second of speech and
+at most 584 MB of memory; Parakeet Unified used about four times the
+computing and twice the memory.</p>
+<h4 id="nemotron-or-parakeet-which-should-i-try">Nemotron or Parakeet:
+which should I try?</h4>
+<p><strong>For the fewest mistakes, try Parakeet.</strong> On real
+speech it made fewer mistakes than Nemotron, ran faster and used less
+memory, in English and in Spanish. Nemotron is still the one to choose
+if you want to follow your words while you speak.</p>
+<p>Both are NVIDIA models of about 0.6 billion parameters, both are
+free, and both run here on the processor alone, with your voice staying
+on your computer. The difference is when they listen.</p>
+<ul>
+<li><strong>Parakeet</strong> recognises each finished phrase after you
+pause. Nothing appears until you stop, and then the whole phrase is
+written at once. It writes punctuation and capitals itself, including
+question marks.
+<ul>
+<li><strong>Parakeet Unified 0.6B</strong> is English only, and the
+model QUILL Lite recommends for English on a computer with 8 GB of
+memory and four cores. About 663 MB to download.</li>
+<li><strong>Parakeet TDT 0.6B v3</strong> knows English, Spanish and 23
+other European languages. It is the recommendation for Spanish on 8 GB,
+and for English on 8 GB with two cores. About 670 MB.</li>
+</ul></li>
+<li><strong>Nemotron 3.5 ASR Streaming</strong> recognises while you
+speak, in short slices. Its words appear in the status bar and on
+braille while you talk, and each phrase is written when you pause. It
+writes punctuation and capitals itself, and knows English and Spanish.
+It decides whether a sentence was a question once it hears the next one,
+so a full stop it wrote can turn into a question mark a moment later.
+About 682 MB.</li>
+</ul>
+<p>What we measured on real speech (lower is better for every
+number):</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Words wrong, English audiobooks</th>
+<th>Words wrong, FLEURS English</th>
+<th>Words wrong, FLEURS Spanish</th>
+<th>Speed per thread</th>
+<th>Peak memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA Parakeet Unified 0.6B</td>
+<td>3.2%</td>
+<td>6.3%</td>
+<td>-</td>
+<td>0.21</td>
+<td>1.2 GB</td>
+</tr>
+<tr>
+<td>NVIDIA Parakeet TDT 0.6B v3</td>
+<td>3.8%</td>
+<td>9.0%</td>
+<td>4.4%</td>
+<td>0.11</td>
+<td>1.1 GB</td>
+</tr>
+<tr>
+<td>NVIDIA Nemotron 3.5 Streaming 0.6B</td>
+<td>5.3%</td>
+<td>13.7%</td>
+<td>6.4%</td>
+<td>0.37</td>
+<td>1.5 GB</td>
+</tr>
+</tbody>
+</table>
+<p>Parakeet Unified is English only, so it has no Spanish figure.
+Nemotron’s 0.37 is over dictation’s budget of 0.25 on one thread, which
+is why it is Balanced and needs a computer with four or more cores.</p>
+<p><strong>Rule of thumb:</strong> for the fewest mistakes, try
+Parakeet; to follow your words on braille or in the status bar while you
+talk, try Nemotron.</p>
+<h4 id="how-to-tell-which-is-more-accurate-for-you">How to tell which is
+more accurate for you</h4>
+<p>The published figures come from other people’s voices. Yours is the
+one that matters.</p>
+<ol type="1">
+<li>Download one model, choose it, and dictate the way you normally do
+for a day.</li>
+<li>Each time a phrase comes out wrong, note it. <strong>Recent
+Phrases</strong> (<strong>Shift+F11</strong>) shows what was written, so
+you can compare.</li>
+<li>Switch to another model in the Speech engine list and do the
+same.</li>
+<li>Keep the one that made fewer mistakes, and remove the other to free
+the space.</li>
+</ol>
+<p>If you like a more exact answer, QUILL’s benchmark measures any model
+on your own recordings. Record ten sentences as 16 kHz mono WAV files,
+write what you said in a <code>transcripts.txt</code> beside them (one
+line per file: the name, a tab, the words), and run
+<code>python scripts/dictbench.py &lt;folder&gt; --model nemotron</code>
+in a copy of QUILL’s source. It prints the share of words wrong, which
+marks were written, the speed, the memory and how long the model took to
+load.</p>
+<h3 id="openai-dictation-with-your-own-key">OpenAI dictation, with your
+own key</h3>
+<p>If you have your own OpenAI key, you can have OpenAI recognise your
+speech instead of your computer. It is very accurate, punctuates well,
+gets names right that it has never met, and can show your words while
+you speak. It is off unless you choose it, and your computer’s own
+engines stay the default.</p>
+<p><strong>Before you choose it, please know this: what you say is sent
+to OpenAI.</strong> While dictation is on with this engine, each phrase
+you speak goes over an encrypted connection to OpenAI, with your own
+key, and the words come back. OpenAI bills your account for it. Nothing
+goes through QUILL’s servers, and QUILL keeps no copy of your voice.
+OpenAI’s own policies apply to what it receives; read them at
+openai.com/policies. Silence is never sent, only the speech dictation
+heard. The built-in engines never send anything anywhere.</p>
+<p><strong>What you need:</strong> your own OpenAI key, saved in
+<strong>Use My Own AI Key</strong> (see the AI help chapter). QUILL’s
+free AI is never used for dictation. OpenAI dictation does not work in
+Safe Mode.</p>
+<p><strong>Adding your key from here.</strong> You don’t have to go
+looking for it: in Dictation Settings (Alt+Shift+F6), choose
+<strong>More Dictation Settings…</strong>, and under “OpenAI, with your
+own key” press <strong>Add or Change OpenAI Key…</strong> (Alt+K). Your
+settings are saved, Use My Own AI Key opens, and once you paste your
+key, OpenAI appears in the speech engine list. You can also open Use My
+Own AI Key any time with Alt+F2.</p>
+<p><strong>Setting it up, step by step:</strong></p>
+<ol type="1">
+<li>Open <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>).</li>
+<li>In <strong>Speech engine</strong>, choose <strong>OpenAI (your own
+key; sends your speech to OpenAI)</strong>. It is only in the list on a
+computer where an OpenAI key is saved.</li>
+<li>A question says exactly what is sent. Read it, then choose
+<strong>Yes</strong> to agree, or <strong>No</strong> to keep the engine
+you had. If you just press Enter, the answer is No, and nothing is
+sent.</li>
+<li><strong>More Dictation Settings</strong> opens with the cursor on
+<strong>OpenAI speech model</strong>. QUILL Lite asks OpenAI which
+speech models your key can use and lists them, newest first. The newest
+is already chosen.</li>
+<li>Press <strong>Enter</strong> to close More Dictation Settings, and
+<strong>Enter</strong> again to save Dictation Settings.</li>
+<li>Press <strong>Ctrl+F11</strong> and talk, just as before.</li>
+</ol>
+<p><strong>Which model?</strong> The list comes from OpenAI, so it is
+always current, and models OpenAI is retiring are left out. On the day
+this was written it held two:</p>
+<ul>
+<li><strong>gpt-live-transcribe</strong> writes as you speak. The words
+heard so far appear in the status bar and on braille, and each phrase
+arrives very soon after you pause.</li>
+<li><strong>gpt-transcribe</strong> sends each phrase when you pause,
+and the words arrive a moment later.</li>
+</ul>
+<p><strong>If your model goes away.</strong> If OpenAI stops offering
+the model you chose, More Dictation Settings tells you once, and leaves
+the choice empty so you can pick another. If you are dictating when it
+happens, dictation stops and tells you. It never moves to a different
+model on its own.</p>
+<p><strong>Your words help.</strong> The names and terms in <strong>My
+Words and Phrases</strong> are sent with your speech as words to expect,
+so they come out spelled your way.</p>
+<p><strong>To stop sending your speech,</strong> choose another engine
+in Dictation Settings, or turn off <strong>Let OpenAI dictation send my
+speech to OpenAI</strong> in More Dictation Settings.</p>
+<p><strong>What it costs.</strong> OpenAI charges your account by the
+minute of speech. QUILL keeps no count; your OpenAI account’s usage page
+has the real figures.</p>
+<p><strong>What you might hear:</strong></p>
+<ul>
+<li>“OpenAI dictation needs your own OpenAI key. Save one in Use My Own
+AI Key, in the AI menu, first.”</li>
+<li>“OpenAI dictation is not switched on.” Choose OpenAI in Dictation
+Settings and agree to the question.</li>
+<li>“OpenAI could not be reached. Check the internet connection.” That
+phrase is lost, and dictation keeps listening.</li>
+<li>“OpenAI did not accept the saved key.” Check your key in Use My Own
+AI Key.</li>
+<li>“The OpenAI model … is no longer available to your key.” Choose
+another in More Dictation Settings.</li>
+</ul>
+<h2 id="while-you-dictate">While you dictate</h2>
+<h3 id="knowing-what-dictation-is-doing">Knowing what dictation is
+doing</h3>
+<ul>
+<li><strong>The status bar</strong> has a <strong>Dictation</strong>
+part. It says Off, Listening, Hearing you, Writing, Spelling, or Waiting
+for wake phrase. With Nemotron or OpenAI it says Hearing and the words
+so far. Press F6 to reach the status bar and arrow to it. Press Enter
+there to start or stop dictation.</li>
+<li><strong>Tools &gt; Dictation &gt; Dictation On</strong> is checked
+while dictation is writing.</li>
+<li><strong>The tones and the words</strong> tell you when it starts and
+stops.</li>
+<li><strong>Dictation Status</strong> (<strong>Alt+F9</strong>) tells
+you everything at once, in one sentence. See the next section.</li>
+</ul>
+<h3 id="dictation-status">Dictation Status</h3>
+<p>Press <strong>Alt+F9</strong> (<strong>Tools &gt; Dictation &gt;
+Dictation Status</strong>) any time, whether dictation is on or off, and
+QUILL Lite tells you in one sentence what dictation is doing. Nothing
+changes; it only answers. For example:</p>
+<ul>
+<li>“Dictation is off. Moonshine, in English.” when it is off, so you
+know what you will get when you press Ctrl+F11.</li>
+<li>“Dictation on, Whisper, in Spanish.” while you are dictating. If
+capitals or no-space are switched on, or you are spelling, that is
+added, so you always know why your words are coming out the way they
+are. In command mode, it ends “Command mode.”, so a braille display can
+show it too.</li>
+<li>“Waiting for the wake phrase, Quill dictate.” when the wake phrase
+is listening.</li>
+<li>“Live transcript: 12 minutes, 1,840 words.” while a live transcript
+is running.</li>
+</ul>
+<p>It is the quickest answer to “is it still listening?” and “which
+language am I in?”, and it never moves your cursor.</p>
+<h3 id="seeing-the-words-while-you-speak">Seeing the words while you
+speak</h3>
+<p>With most engines, your words appear when you pause. With
+<strong>Nemotron</strong> (an optional download, see “Better accuracy:
+optional speech models”) or <strong>OpenAI dictation</strong>, QUILL
+Lite knows the words while you are still saying them, and shows them to
+you:</p>
+<ul>
+<li>The status bar shows the words so far after the word
+<strong>Hearing</strong>, for example “Hearing: Can you send me
+the”.</li>
+<li>If you use a braille display, the same words appear on it as they
+arrive.</li>
+<li>They are not in your document yet, because the engine may still
+change its mind as it hears more. When you pause, the final words go
+into the document, and the preview goes away.</li>
+</ul>
+<p>You do not hear these words spoken, so nothing talks over you while
+you talk. If you would like to hear them, open <strong>More Dictation
+Settings</strong> and set <strong>While you speak, the words heard so
+far</strong> to <strong>Show it, and say new words quietly</strong>. You
+then hear new words every couple of seconds, each one once, and only
+once the engine has settled on it: a word it is still changing its mind
+about is not spoken until it stops changing, and a word you have already
+heard is not said again if the engine corrects it later (the words that
+go into your document are always the final ones). Choose <strong>Do not
+show it</strong> to turn the preview off.</p>
+<p>Nemotron also gets its punctuation right at the end of a sentence
+now. It decides whether a sentence was a question once it hears the next
+one, so a full stop it wrote at your pause can turn into a question mark
+a moment later, when you carry on talking.</p>
+<h3 id="where-the-words-go">Where the words go</h3>
+<p>Your words go into the document you started dictation in, at the
+cursor. Each phrase, with its punctuation and capitals, is one step for
+<strong>Ctrl+Z</strong>. So “scratch that” and Ctrl+Z always take back
+the same thing, even when the phrase replaced a selection. With the wake
+phrase, the words go into whichever document is in front when you say
+it.</p>
+<p>Your words go where you were when you started speaking. If you move
+the cursor, or even switch to another window, while a phrase is still
+being recognised, it is still written where you were speaking. Your
+cursor is put back where you moved it, and you hear “Written where you
+started”, with the document’s name if you were somewhere else by then.
+If that spot has changed in the meantime, the words go at the cursor in
+that document instead, and you are told.</p>
+<p>After that, dictation stops by itself if you close that document,
+switch it between plain and rich text, or speak while another program or
+a dialog is in front. QUILL Lite tells you why it stopped.</p>
+<p>There is only one microphone. So if dictation is running in one
+document and you press <strong>Ctrl+F11</strong> in a second document,
+dictation moves there and tells you: “Dictation moved to
+Letter.txt”.</p>
+<p>Dictation will not start in a document you cannot change, such as the
+read-only copy Compare opens. You hear “This document is read-only, so
+dictation cannot write here.” and the microphone stays closed.</p>
+<h3 id="cancelling-a-phrase-with-escape">Cancelling a phrase with
+Escape</h3>
+<p>While a phrase is being heard (the Dictation part of the status bar
+says “hearing you”), press <strong>Escape</strong> to throw it away.
+Nothing is written, the words heard so far go too, and you hear
+“Cancelled”. Ctrl+F11 still stops dictation and keeps what you said.
+When nothing is being heard, Escape does what it always does.</p>
+<h3 id="dictating-into-find-replace-and-the-ai-question-box">Dictating
+into Find, Replace and the AI question box</h3>
+<p>You can dictate into more than your document. Press
+<strong>Ctrl+F11</strong> in the Find box, either Replace box, the
+question box of the AI pad, or the message box of the AI Conversation
+window, and you dictate into that box. It uses the same engine and the
+same words, and Escape still cancels a phrase. “New line” and “new
+paragraph” become a space in a one-line box, and commands that move
+around a document do nothing there. Press Ctrl+F11 again to stop.</p>
+<h3 id="recent-phrases">Recent phrases</h3>
+<p>Press <strong>Shift+F11</strong> (<strong>Tools &gt; Dictation &gt;
+Recent Phrases…</strong>) to see the last twenty phrases you dictated,
+newest first. Arrow to one and press <strong>Enter</strong> (Insert
+Again) to write it at the cursor as one undo step, or press
+<strong>Copy</strong> to put it on the clipboard. This is your rescue if
+“scratch that” took away one phrase too many. When “choose”, “replace”
+or “change that to” changed a phrase, the words it had before are in the
+list too, marked “(before correction)”; Insert Again and Copy leave that
+label out. This session’s phrases last only until you close QUILL
+Lite.</p>
+<p>After them come words kept from before, so nothing you said is
+lost:</p>
+<ul>
+<li><strong>Not written</strong>: a phrase that could not be written, or
+words held while dictation was paused. They stay on this computer, even
+through a crash, until you write or discard them, and QUILL Lite says
+once at start how many are waiting.</li>
+<li><strong>Review not finished</strong>: the words of a review you
+closed without inserting.</li>
+<li><strong>Earlier</strong>: with <strong>Keep a dictation
+history</strong> on in More Dictation Settings, the phrases from earlier
+days, newest first.</li>
+</ul>
+<p><strong>Insert Again</strong> writes one at the cursor and deletes it
+from the computer; <strong>Discard</strong> (<strong>Alt+D</strong>)
+deletes it without writing it; <strong>Clear History</strong>
+(<strong>Alt+H</strong>) deletes the whole history after asking, with No
+as the answer unless you choose Yes. Kept words and the history are
+sealed for your Windows account, never kept as sound, and never written
+to the log.</p>
+<p>For example: you are dictating into a document, step away, and
+dictation pauses with two phrases held because the window lost focus.
+Then the computer restarts for an update. The next time QUILL Lite
+starts it says “2 dictated phrases were not written last time and are
+kept. Recent Phrases, Shift+F11, brings them back.” Press
+<strong>Shift+F11</strong>, arrow past this session’s phrases to the
+first “Not written” entry, and press <strong>Enter</strong>: it is
+written at the cursor and deleted from the computer. Do the same for the
+second, or press <strong>Alt+D</strong> to discard it.</p>
+<p>Limits: only text is kept, never sound; the history keeps at most
+2000 phrases; and a kept entry is deleted only when it is written,
+discarded or cleared, never by copying it.</p>
+<h2 id="talking-to-the-ai">Talking to the AI</h2>
+<p>You can have a spoken conversation with AI help. Open the <strong>AI
+Conversation</strong> window (see “Having a conversation” in the AI help
+chapter). The cursor is already in <strong>Your message</strong>.</p>
+<ol type="1">
+<li>Press <strong>Ctrl+F11</strong> and ask your question.</li>
+<li>Pause. Your message is sent, and you hear “Working.”</li>
+<li>The reply is read aloud. While it is being read, the microphone does
+not listen, so the reply is never taken as your next message.</li>
+<li>When the reply has been read, just carry on talking. If you want to
+speak before it has finished, press <strong>Escape</strong>: you hear
+“Listening.” and you can talk straight away.</li>
+<li>Press <strong>Ctrl+F11</strong> again when you are done.</li>
+</ol>
+<p>While you are in that box, dictation uses its <strong>Talking to
+AI</strong> settings, and it goes back to your usual ones by itself when
+you leave:</p>
+<ul>
+<li><strong>A longer pause</strong> (about a second and a half), so a
+breath does not send half a question.</li>
+<li><strong>Filler words removed</strong>, because the AI does not need
+them.</li>
+<li><strong>Automatic punctuation on.</strong></li>
+<li>“Just write what I say” does not apply here, because the pause is
+what sends your message.</li>
+</ul>
+<p>All four are in <strong>More Dictation Settings</strong>, under
+<strong>Talking to the AI</strong>. If you would rather check each
+message before it goes, set <strong>Send a dictated message to the
+AI</strong> to <strong>When I press Enter</strong>. Then pause as often
+as you like, and press Enter when the message is right.</p>
+<p>Each message costs the same as a typed one: one request on QUILL’s
+free AI, or nothing extra beyond your own key or plan.</p>
+<h2 id="live-transcripts">Live transcripts</h2>
+<p>Ordinary dictation is for writing: you speak, pause, hear your words,
+and carry on. A live transcript is for <strong>listening</strong>: a
+lecture, a meeting, a talk, a long voice memo you are speaking out loud.
+You start it, and QUILL Lite writes down everything it hears until you
+stop it.</p>
+<h3 id="starting-and-stopping-a-live-transcript">Starting and stopping a
+live transcript</h3>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+PageDown</strong> (<strong>Tools &gt;
+Dictation &gt; Start or Stop Live Transcript</strong>).</li>
+<li>A new, untitled document opens, and the transcript is written into
+it. It never writes into the document you were working on.</li>
+<li>Let it run. You can go back to your own document, or to another
+program altogether, and the transcript carries on.</li>
+<li>To stop, press <strong>Ctrl+Alt+Shift+PageDown</strong> again, or
+<strong>Ctrl+F11</strong>. You hear how much was written, for example
+“Live transcript stopped, 1,840 words.”</li>
+</ol>
+<p>The very first time, you hear one sentence: “Please record other
+people only when they have agreed.” It is said once, and never
+again.</p>
+<h3 id="how-a-transcript-differs-from-dictation">How a transcript
+differs from dictation</h3>
+<p>A transcript is built to stay out of your way for an hour or
+more:</p>
+<ul>
+<li><p><strong>No commands.</strong> Everything heard is written down as
+words. If the speaker says “scratch that”, that is what goes in the
+transcript. The one thing that still works is your stop phrase.</p></li>
+<li><p><strong>No tone and no read-back</strong> for each phrase, so
+nothing talks over the speaker or over you.</p></li>
+<li><p><strong>No wake phrase</strong>, and it <strong>never stops on
+silence</strong>, so a quiet stretch in a meeting does not end
+it.</p></li>
+<li><p><strong>Filler words are left out</strong>, and <strong>automatic
+punctuation is on</strong>, whatever you chose for dictation.</p></li>
+<li><p><strong>Paragraphs come from pauses.</strong> When the speaker
+stops for four seconds or more, the next words start a new
+paragraph.</p></li>
+<li><p><strong>Time stamps, if you like.</strong> Check <strong>Time
+stamps in live transcripts</strong> in More Dictation Settings, and each
+paragraph starts with the time in square brackets, like this:</p>
+<pre><code>[10:42] Thank you all for coming. The first thing on the list is the budget.</code></pre></li>
+</ul>
+<h3 id="working-while-it-runs">Working while it runs</h3>
+<p>The new words always go at the <strong>end</strong> of the
+transcript, wherever you are. So you can go back into the transcript,
+read what was said a few minutes ago, even add a note of your own in the
+middle, and your cursor stays where you put it while the new words keep
+arriving at the bottom.</p>
+<p>To check on it, look at the Dictation part of the status bar, which
+says something like “Live transcript: 12 minutes, 1,840 words”, or press
+<strong>Alt+F9</strong> for Dictation Status, which says the same thing
+aloud.</p>
+<h3 id="keeping-it">Keeping it</h3>
+<p>When you stop, the transcript stays open, untitled and not yet saved.
+Press <strong>Ctrl+S</strong> to save it wherever you like. Until you
+do, QUILL Lite’s usual recovery protects it the same way it protects any
+document you have not saved yet, so a power cut does not lose the
+meeting.</p>
+<p>A live transcript listens to your microphone only. It cannot yet hear
+sound your computer is playing, such as the other side of a video call
+coming through your speakers; for a recording you already have, use
+“Transcribing an audio file”, below.</p>
+<h2 id="dictating-into-other-programs">Dictating into other
+programs</h2>
+<p>You can dictate into almost any program on your computer: an email, a
+web form, a chat window, another word processor. This is called
+<strong>Dictate Anywhere</strong>. It is done by another QuillVille
+program: <strong>QUILL Transcribe</strong>, the family app made for
+exactly this, released on 1 November 2026, or <strong>Quill
+Inkwell</strong>, the small program that also expands your abbreviations
+everywhere.</p>
+<h3 id="what-you-need-first">What you need first</h3>
+<p><strong>QUILL Transcribe or Quill Inkwell must be installed.</strong>
+Both are separate, free members of the QuillVille family. When you press
+<strong>Dictate in Other Programs…</strong>, QUILL Lite hands your
+settings to QUILL Transcribe if it is running, or starts it if it is
+installed. Otherwise it hands them to Quill Inkwell. If neither is on
+your computer, QUILL Lite tells you so: “Quill Inkwell is not installed
+with this copy.” Install one, then come back to these steps.</p>
+<p><strong>With QUILL Transcribe,</strong> you hear “QUILL Transcribe
+has your dictation settings. Use its start and stop key, or its tray
+menu, in the program you want to dictate into.” From then on, QUILL
+Transcribe’s own user guide is the one to read: it has its own keys,
+models and settings. The steps below are for Quill Inkwell.</p>
+<h3 id="setting-it-up-step-by-step">Setting it up, step by step</h3>
+<ol type="1">
+<li>In QUILL Lite, open <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>) and set it up the way you like it:
+engine, microphone, language, pause and so on.</li>
+<li>Press <strong>More Dictation Settings…</strong>
+(<strong>Alt+A</strong>).</li>
+<li>Press <strong>Dictate in Other Programs…</strong>
+(<strong>Alt+O</strong>). Your settings are saved and handed over. If
+QUILL Transcribe is running or installed, it gets them and starts, and
+you hear “QUILL Transcribe has your dictation settings. Use its start
+and stop key, or its tray menu, in the program you want to dictate
+into.” Otherwise Quill Inkwell gets them and starts, and you hear “Quill
+Inkwell is starting with your dictation settings. Choose the Dictate
+Anywhere key in its File menu.”</li>
+<li>If you have not chosen a key yet, Inkwell opens its key chooser for
+you. Choose a key you will remember and that no other program uses. You
+can change it later in Inkwell with <strong>File &gt; Dictate Anywhere
+Key…</strong>.</li>
+</ol>
+<p>Until you choose a key, there is none. Inkwell never takes a key on
+your computer without asking.</p>
+<h3 id="using-it">Using it</h3>
+<ol type="1">
+<li>Go to the other program and put the cursor where you want the
+words.</li>
+<li>Press your Dictate Anywhere key, speak, and pause. Each phrase is
+typed where the cursor is, just as if you had typed it.</li>
+<li>Press the key again, or say “stop dictation”, to stop.</li>
+</ol>
+<p>You can also turn it on and off from Inkwell’s own
+<strong>Dictation</strong> menu, with <strong>Dictate
+Anywhere</strong>.</p>
+<h3 id="what-works-there-and-what-does-not">What works there, and what
+does not</h3>
+<p>The engines, your own words and phrases, and most of what you can say
+all work the same way they do in QUILL Lite:</p>
+<ul>
+<li><p>Punctuation and layout, like “comma” and “new
+paragraph”.</p></li>
+<li><p>Spelling, “spell” and a word, capitals and no-space.</p></li>
+<li><p>Switching between English and Spanish.</p></li>
+<li><p>“Scratch that”, which takes your last phrase back with Backspace,
+as long as you are still in the same window.</p></li>
+<li><p>Snippets, abbreviations and clips, from the lists QUILL and
+Inkwell share (QUILL’s snippets, the shared abbreviation library, and
+QUILL’s clips): “insert snippet” and its name, “insert abbreviation” and
+its name, and “paste clip” and a number. They are typed as one phrase,
+so “scratch that” takes all of it back. A snippet’s blanks are asked for
+by voice first: you hear each blank’s name, like “Title?”, and say the
+answer; for a choice, say an option or “choose two”. Say skip, scratch
+that to go back one, or cancel to type nothing. The cursor stays at the
+end.</p></li>
+</ul>
+<p>Some commands need to read the text of the document, and Inkwell
+cannot read another program’s text. So “select”, “go to”, “correct”,
+“select sentence”, “copy all” and “show clips” are answered with a
+sentence that starts “That works in QUILL’s own documents”, and nothing
+is typed.</p>
+<p>For your safety, Dictate Anywhere will not type into a password box.
+It also will not type into a program running as administrator when
+Inkwell is not, into QUILL Lite’s or QUILL’s own windows (use
+<strong>Ctrl+F11</strong> there, which does much more), or into
+Inkwell’s own window. Each time, you hear a sentence saying why.</p>
+<h3 id="it-stays-in-the-field-you-started-in">It stays in the field you
+started in</h3>
+<p>Dictate Anywhere writes only into the field where you started. If the
+focus moves to another field or another program while you are dictating,
+Inkwell pauses and holds what you said, rather than typing it in the
+wrong place. You then have three choices, in Inkwell’s
+<strong>Dictation</strong> menu and, while dictation is paused, in
+Inkwell’s tray menu:</p>
+<ul>
+<li><strong>Resume</strong> goes back to the field you started in.</li>
+<li><strong>Resume in This Field</strong> writes the held words where
+you are now.</li>
+<li><strong>Discard Held Words</strong> throws the held words away.</li>
+</ul>
+<p>If you choose Resume in This Field from Inkwell’s own window or tray
+menu, Inkwell waits for you to switch to another program and resumes
+there. Choose it again to cancel.</p>
+<h3 id="programs-dictation-never-types-into">Programs dictation never
+types into</h3>
+<p>Some programs should never receive dictation at all, such as your
+password manager. Press <strong>Programs Dictation Never Types
+Into…</strong> (<strong>Alt+N</strong>) in More Dictation Settings to
+see and change that list. It starts with the common password managers
+and the Windows sign-in, lock and administrator prompts. If you dictate
+into one of them, you hear something like “Dictation does not type into
+KeePass. Move to another program.” and nothing is typed. Programs are
+matched by their file name, like keepass.exe, never by the title of a
+window.</p>
+<ul>
+<li>To remove a program, choose it in the list and press
+<strong>Delete</strong>, or press <strong>Remove</strong>.</li>
+<li>To add the program you were just using, go to it, come back to QUILL
+Lite, open the settings again, and press <strong>Add Front
+Program</strong>. The button says which program it will add.</li>
+<li>To add a program by name, type its file name in <strong>Program file
+name</strong> and press <strong>Enter</strong>, or <strong>Add by
+Name</strong>. You can leave off .exe: “KeePass” adds keepass.exe. A
+name you typed but did not add is kept when you press OK.</li>
+</ul>
+<p>The list is saved when you press OK in Dictation Settings.</p>
+<h3 id="what-you-hear-1">What you hear</h3>
+<p>In other programs, your screen reader already says each character as
+it is typed, so Inkwell starts with a <strong>tone only</strong> after
+each phrase, rather than reading the words back as well. You can change
+that.</p>
+<p>Inkwell keeps its own copy of your dictation settings. To change
+them, open Inkwell’s <strong>Dictation</strong> menu and choose
+<strong>Dictation Settings…</strong>. It is the same window you know
+from QUILL Lite. Or set things up in QUILL Lite and press
+<strong>Dictate in Other Programs…</strong> again to hand them over once
+more.</p>
+<p>Inkwell uses the <strong>My Words and Phrases</strong> list that the
+full QUILL editor keeps, so if you also use QUILL, a name you taught it
+there comes out right in your email too. Check <strong>Use the shared
+word list</strong> in My Words and Phrases, and the words you teach
+QUILL Lite are used there as well. Dictate Anywhere is off in Safe
+Mode.</p>
+<h3 id="one-microphone-at-a-time">One microphone at a time</h3>
+<p>QUILL Lite, QUILL, QUILL Transcribe and Quill Inkwell never listen at
+once, so the same words are never written twice. The microphone belongs
+to whichever started dictating first, until it stops.</p>
+<ul>
+<li>If QUILL Transcribe is listening when you press
+<strong>Ctrl+F11</strong>, QUILL Lite does not open a second microphone.
+You hear its key, for example “QUILL Transcribe is listening. Press
+Alt+Shift+Backslash to stop it, then try again.”</li>
+<li>If QUILL is dictating, you hear “QUILL is dictating. Press Ctrl+F11
+in QUILL to stop it, then try again.”</li>
+<li>If you press QUILL Transcribe’s key while QUILL Lite is dictating,
+QUILL Transcribe says “QUILL Lite is dictating. Press Ctrl+F11 in QUILL
+Lite to stop it, then try again.”</li>
+</ul>
+<p>QUILL Transcribe waiting in the tray does not hold the microphone, so
+<strong>Ctrl+F11</strong> works as usual. The microphone is let go when
+dictation stops, when it stops because something went wrong, when you
+close QUILL Lite, and if QUILL Lite ever closes unexpectedly.</p>
+<p>QUILL Transcribe and Quill Inkwell do not type into QUILL Lite’s
+window. If you press their key there, you hear “This is a QUILL window:
+press Ctrl+F11 to dictate here.”</p>
+<h2 id="transcribing-an-audio-file">Transcribing an audio file</h2>
+<p>Sometimes the words you want are already in a recording: a voice note
+from your phone, an interview, a lecture, a meeting somebody recorded
+for you. QUILL Lite can listen to the recording and write down what was
+said, using the same speech engines you dictate with. It works in the
+background, so you can keep writing while it listens, and it tells you
+when it is done.</p>
+<h3 id="your-first-transcription-step-by-step">Your first transcription,
+step by step</h3>
+<ol type="1">
+<li>Press <strong>Shift+F5</strong>, or choose <strong>Tools &gt;
+Dictation &gt; Transcribe a Recording…</strong>. The Transcribe a
+Recording window opens with the cursor in
+<strong>Recording</strong>.</li>
+<li>Type the full path of the file, or press <strong>Browse…</strong>
+(Alt+B) and choose it. You can also drag a file from File Explorer and
+drop it on the window.</li>
+<li>Check <strong>Language spoken in the recording</strong> (Alt+L):
+English or Spanish.</li>
+<li>Check <strong>Speech model</strong> (Alt+M). The most accurate model
+on your computer is already chosen for you. Just below it, <strong>About
+this model and this recording</strong> says what the model is good for,
+how long the recording is, and about how long it should take on your
+computer, for example “The recording is 12 minutes long. With NVIDIA
+Parakeet TDT 0.6B v3, transcribing it should take about 6 minutes on
+this computer.”</li>
+<li>There is no output-location choice. QUILL Lite saves the finished
+transcript privately. Activate its completion notice in
+<strong>Notifications</strong> to open it in a new document; it does not
+insert text into the document you were editing.</li>
+<li>Press <strong>Enter</strong>. You hear “Transcribing meeting.mp3 in
+the background.”</li>
+<li>Carry on with whatever you were doing. The status bar shows how far
+it has got, and every quarter of the way you hear it quietly:
+“meeting.mp3: 25 percent”. When it is done you hear one sentence, such
+as “Transcribed meeting.mp3: 12 minutes, 1,804 words, in 6 minutes, in a
+new document.”</li>
+</ol>
+<p>That is all there is to it. The rest of this section explains the
+choices.</p>
+<h3 id="what-the-text-looks-like">What the text looks like</h3>
+<p>The text is written the way dictation writes it: full stops, commas,
+question marks and capital letters put in by the speech engine, with the
+spacing tidied between sentences. A few more things happen on the
+way:</p>
+<ul>
+<li><p><strong>Paragraphs.</strong> A new paragraph starts wherever the
+recording goes quiet for two seconds or more. If somebody talks for more
+than two minutes without a long pause, the next pause of any length
+starts a new paragraph, so you never get one enormous block.</p></li>
+<li><p><strong>Timestamps, if you want them.</strong> Timestamps are off
+unless you turn them on. Check <strong>Add timestamps</strong> (Alt+T)
+and every paragraph begins with the hours, minutes and seconds where it
+was said, like this:</p>
+<pre><code>[00:01:23] The budget for the spring term is nearly final.</code></pre>
+<p>It makes it easy to find a passage again in the recording.</p></li>
+<li><p><strong>Your own words.</strong> The corrections in <strong>My
+Words and Phrases</strong> are used, so a name the engine always
+mishears comes out your way.</p></li>
+<li><p><strong>Filler words.</strong> If you have <strong>Remove filler
+words</strong> turned on in Dictation Settings, the ums and ahs are left
+out here too.</p></li>
+<li><p><strong>Spoken punctuation.</strong> In a recording, somebody who
+says “new paragraph” or “comma” usually means the words, so they are
+written as words. If you recorded yourself dictating on purpose, check
+<strong>Obey spoken punctuation and commands</strong> (Alt+O): then
+“comma”, “period”, “new line”, “new paragraph” and “scratch that” work
+just as they do when you dictate. Commands that move the cursor are
+ignored, because there is no cursor in a recording.</p></li>
+<li><p><strong>Translation into English.</strong> For a recording in
+Spanish, check <strong>Translate into English</strong> (Alt+E) and the
+transcript is written in English instead of Spanish. It needs a model
+that translates: the built-in Whisper, or a multilingual Whisper you
+downloaded (not the ones marked English). With any other model, or for
+an English recording, the box is unavailable. Off unless you check
+it.</p></li>
+</ul>
+<h3 id="which-model-for-which-recording">Which model for which
+recording</h3>
+<p>The <strong>Speech model</strong> list shows every model on your
+computer, most accurate first: the two that come with QUILL Lite, and
+any you downloaded in Dictation Settings, Speech Models (see “Better
+accuracy: optional speech models” earlier in this chapter). Here is how
+to choose:</p>
+<ul>
+<li><strong>Voice notes and dictated letters.</strong> One clear voice,
+close to the microphone. <strong>Moonshine tiny</strong> is built in, is
+the fastest by far, and does this well. Whisper tiny is the one to try
+if Moonshine mishears an accent.</li>
+<li><strong>Interviews and meetings.</strong> Several voices, people
+interrupting, someone further from the microphone. A downloaded model is
+worth it here. In English, <strong>NVIDIA Parakeet Unified 0.6B</strong>
+is our first choice: in our tests on real recordings it made the fewest
+mistakes of any model that keeps up, 3.2 percent of words wrong where
+the built-in Moonshine got 6.5. <strong>Parakeet TDT 0.6B v3</strong> is
+close behind and quicker still. Whisper small is good too, just
+slower.</li>
+<li><strong>Lectures and talks.</strong> One voice, a long time, and
+plenty of special words. Parakeet again. Before you start, add the
+speaker’s names and terms to My Words and Phrases, and you will spend
+less time correcting.</li>
+<li><strong>Noisy rooms and harder voices.</strong> A café, a car, a
+hall with an echo. On the harder LibriSpeech recordings, Parakeet
+Unified got 3.2 percent of words wrong, Parakeet TDT 0.6B v3 5.2, and
+the two built-in tiny models over 13. OpenAI is very good with noise
+too, if you use your own key (see below).</li>
+<li><strong>Spanish.</strong> Choose Spanish as the language first.
+<strong>Parakeet TDT 0.6B v3</strong> made the fewest mistakes in
+Spanish, 4.4 percent of words on FLEURS Spanish where the built-in
+Whisper tiny got 30.5. Whisper small and Nemotron were next. The list
+shows only the models that know the language you chose.</li>
+<li><strong>Models removed in this release.</strong> Distil-Whisper
+small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en
+and Distil-Whisper large-v3 are no longer in the list. Parakeet Unified
+did better than each of them.</li>
+</ul>
+<p>A model that is too slow for live dictation is fine for a recording:
+nobody is waiting at the end of each sentence. The estimate tells you
+the wait before you start.</p>
+<h3 id="how-long-it-takes">How long it takes</h3>
+<p>How long depends on the model and on your computer. These are our
+estimates for a one-hour recording, worked out from the speeds we
+measured for each model on real recordings in October 2026, on a modest
+computer (two processor cores, 4 GB of memory) and on a more capable one
+(four or more cores, 8 GB or more):</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Modest computer</th>
+<th>Capable computer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Moonshine tiny (built in)</td>
+<td>6 minutes</td>
+<td>3 minutes</td>
+</tr>
+<tr>
+<td>Whisper tiny (built in)</td>
+<td>12 minutes</td>
+<td>6 minutes</td>
+</tr>
+<tr>
+<td>Parakeet TDT 0.6B v3</td>
+<td>15 minutes</td>
+<td>7 minutes</td>
+</tr>
+<tr>
+<td>Parakeet Unified 0.6B</td>
+<td>18 minutes</td>
+<td>8 minutes</td>
+</tr>
+<tr>
+<td>Nemotron</td>
+<td>27 minutes</td>
+<td>12 minutes</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>1 hour 49 minutes</td>
+<td>46 minutes</td>
+</tr>
+<tr>
+<td>Whisper large-v3-turbo</td>
+<td>about 6 hours</td>
+<td>about 2 and a half hours</td>
+</tr>
+</tbody>
+</table>
+<p>For a real example: a three-minute recording took 10 seconds with
+Moonshine tiny, 20 seconds with Whisper tiny and 25 seconds with
+Parakeet on the computer QUILL Lite is developed on, plus a few seconds
+the first time while the model loads.</p>
+<p>Transcribing uses two of your processor’s cores, the same as
+dictation, so your screen reader stays quick. The model is put away a
+few minutes after the last transcription finishes, which gives its
+memory back.</p>
+<h3 id="where-the-text-goes">Where the text goes</h3>
+<ul>
+<li><strong>Saved privately until you open it.</strong> When
+transcription finishes, the transcript is saved without changing the
+document you were editing. Activate the completion notice in
+<strong>Notifications</strong> to open it in a new document; the
+Transcribe a Recording window has no destination picker.</li>
+</ul>
+<h3 id="several-recordings-checking-on-it-and-stopping">Several
+recordings, checking on it, and stopping</h3>
+<ul>
+<li><strong>Several at once.</strong> In Browse, hold
+<strong>Ctrl</strong> and choose more than one file. They are
+transcribed one after another with the same choices, and each one is
+saved with its own completion notice in <strong>Notifications</strong>
+when it finishes. If one is already running when you start another, you
+hear “Added to the queue”.</li>
+<li><strong>How far has it got?</strong> Press <strong>Shift+F5</strong>
+again. At the top of the window, <strong>Transcribing now</strong> says
+which recording it is on, how far it has got, and how many are waiting.
+Press <strong>Escape</strong> to close the window and let it carry
+on.</li>
+<li><strong>Stopping.</strong> In that same window, press <strong>Stop
+Transcribing</strong> (Alt+S). The recording being transcribed stops,
+any waiting ones are forgotten, and nothing is written into a
+document.</li>
+<li><strong>If you missed the result sentence.</strong>
+<strong>Shift+F9</strong> opens Activity, which keeps the transcription
+outcome and any failure reason for this session. To open the saved
+transcript, activate its completion notice in
+<strong>Notifications</strong>.</li>
+</ul>
+<h3 id="which-files-it-can-read">Which files it can read</h3>
+<p>MP3, M4A, AAC, WAV, Ogg, Opus, FLAC and WMA, and also the sound in an
+MP4 file and AIFF. QUILL Lite reads all of them itself, using parts of
+Windows that are already on your computer, so there is nothing extra to
+download and no other program to install. Files with copy protection,
+such as some bought audiobooks, cannot be read.</p>
+<h3 id="privacy-and-openai-with-your-own-key">Privacy, and OpenAI with
+your own key</h3>
+<p>With the models on your computer, <strong>nothing leaves your
+computer</strong>. The recording is read, not copied, and nothing is
+kept afterwards except the text.</p>
+<p>If you have your own OpenAI key saved in Use My Own AI Key, OpenAI’s
+speech models appear at the bottom of the list a moment after the window
+opens. OpenAI is very accurate, especially with several voices, accents
+and noise, but <strong>it sends your recording to OpenAI</strong>, so it
+is never chosen for you, and it is never offered in Safe Mode. When you
+choose it and press Enter, a question says exactly what will be sent.
+The answer is No unless you choose Yes, every time. If you agree:</p>
+<ul>
+<li>the speech in the recording is sent over an encrypted connection to
+OpenAI, about a minute at a time, with your own key, and the words come
+back;</li>
+<li>OpenAI bills your account by the minute of audio;</li>
+<li>the names in My Words and Phrases are sent as words to expect;</li>
+<li>nothing goes through QUILL’s servers, and QUILL keeps no copy;</li>
+<li>OpenAI’s own policies apply to what it receives; you can read them
+at openai.com/policies.</li>
+</ul>
+<p>Please only send recordings you have the right to share, and that the
+people speaking in them have agreed to. The live model,
+gpt-live-transcribe, is not in this list: it is made for a microphone,
+not a file.</p>
+<h3 id="messages-you-might-hear">Messages you might hear</h3>
+<ul>
+<li><strong>“meeting.mp3 was not found.”</strong> The file was moved or
+renamed. Choose it again with Browse.</li>
+<li><strong>“meeting.mp3 could not be read as a recording.”</strong> It
+is not one of the formats above, or it is damaged or protected.</li>
+<li><strong>“meeting.mp3 was read to the end, but no speech was found in
+it.”</strong> The recording is silent, or very quiet. Nothing is
+written.</li>
+<li><strong>“… could not be loaded, so this used the built-in
+engine.”</strong> A downloaded model would not load, so Moonshine did
+the work instead. Removing and downloading the model again in Speech
+Models may help.</li>
+<li><strong>“Stopped transcribing meeting.mp3.”</strong> You pressed
+Stop Transcribing.</li>
+<li><strong>“Could not transcribe meeting.mp3”</strong>, followed by the
+reason, for anything else. You hear the error tone, and the reason stays
+in Activity.</li>
+</ul>
+<h2 id="when-something-goes-wrong">When something goes wrong</h2>
+<h3 id="if-the-microphone-drops">If the microphone drops</h3>
+<p>If the microphone is unplugged, a Bluetooth headset drops out, or the
+sound goes completely silent for a few seconds, you hear “The microphone
+stopped. Dictation is paused and will resume when it comes back.”
+Dictation stays on, writes nothing, and waits for the microphone. When
+it comes back you hear “Microphone back. Listening.” and you carry on.
+Meanwhile, the Dictation part of the status bar says “paused, microphone
+lost”.</p>
+<p>If the speech engine itself stops answering, QUILL Lite quietly
+restarts it once, and you will not notice. If it fails again, dictation
+stops and tells you, for example “Moonshine stopped working. Try Whisper
+in Dictation Settings.”</p>
+<h3 id="on-a-modest-computer">On a modest computer</h3>
+<p>Dictation is built to be kind to an older computer, so your screen
+reader stays quick:</p>
+<ul>
+<li><strong>Nothing runs while dictation is off.</strong> The speech
+model is loaded the first time you start dictation, kept ready while you
+use it, and put away a few minutes after you stop, which gives its
+memory back.</li>
+<li><strong>If the computer cannot keep up.</strong> If an optional
+model you downloaded falls behind your voice, because the computer is
+busy or on battery saver, you hear “This computer is busy, so dictation
+switched to the faster built-in engine for now. Your choice in Dictation
+Settings is unchanged.” Dictation carries on with Moonshine. Next time
+you start, it tries your model again.</li>
+</ul>
+<h3 id="messages-you-might-hear-1">Messages you might hear</h3>
+<p>Dictation always tells you what happened and what to do. These are
+the usual ones:</p>
+<ul>
+<li><strong>No microphone was found.</strong> Connect one and press
+Ctrl+F11 again.</li>
+<li><strong>The microphone you chose is not connected.</strong> Plug it
+in, or choose another one in Dictation Settings.</li>
+<li><strong>The microphone could not be opened.</strong> In Windows
+Settings, go to Privacy and security, then Microphone, and make sure
+desktop apps are allowed to use it.</li>
+<li><strong>A speech engine is not included in this copy.</strong>
+Choose another engine in Dictation Settings. Reinstalling QUILL Lite
+puts the missing one back.</li>
+<li><strong>With Windows speech recognition: no speech recogniser is
+installed.</strong> Add a speech language in Windows Settings, under
+Time and language, then Speech.</li>
+<li><strong>“This document is read-only, so dictation cannot write
+here.”</strong> Dictate into a document you can type in.</li>
+<li><strong>“Moonshine stopped working. Try Whisper in Dictation
+Settings.”</strong> The engine failed twice in one session. The first
+time, QUILL Lite restarted it for you without a word. Choose the other
+engine, and if it keeps happening, write to support.</li>
+<li><strong>“Written where you started.”</strong> You moved while a
+phrase was being recognised, and it went where you were speaking.
+Nothing is wrong.</li>
+<li><strong>“This computer is busy, so dictation switched to the faster
+built-in engine for now.”</strong> See “On a modest computer”
+above.</li>
+<li><strong>OpenAI’s messages</strong> are listed in “OpenAI dictation,
+with your own key”.</li>
+</ul>
+<h3 id="if-it-keeps-mishearing-you">If it keeps mishearing you</h3>
+<ul>
+<li>Try Whisper instead of Moonshine, or the other way round.</li>
+<li>Try a downloaded model; see “Which engine should I choose?”.</li>
+<li>Use a headset microphone instead of a laptop’s built-in one.</li>
+<li>If you are using speakers, set the read-back to a sound only.</li>
+<li>Add names you use often to <strong>My Words and
+Phrases</strong>.</li>
+</ul>
+<h3 id="turning-dictation-off-completely">Turning dictation off
+completely</h3>
+<p>Dictation is on in every profile except WordPad and Notepad. You can
+switch it off in <strong>Customize Features</strong> like any other
+area. That removes the menu, the keys and the wake phrase.</p>
+<h2 id="dictating-well">Dictating well</h2>
+<p>Dictation gets much better with a few good habits. None of this is
+hard, and most of it you only set up once.</p>
+<h3 id="your-microphone-and-your-room">Your microphone and your
+room</h3>
+<ul>
+<li><strong>A headset microphone beats anything else.</strong> A
+microphone that sits a finger’s width from the corner of your mouth
+hears you clearly and hears the room hardly at all. A laptop’s built-in
+microphone hears the fan, the keyboard and the television.</li>
+<li><strong>Keep it in the same place.</strong> Too close and your
+breath pops; too far and you sound thin. Find a spot and leave it
+there.</li>
+<li><strong>Use Test Microphone</strong> in Dictation Settings once,
+when you first set up. If it says “quiet”, move the microphone closer or
+turn up its level in Windows. If it says “very loud”, the other
+way.</li>
+<li><strong>Too quiet, and it may not hear you at all.</strong> With the
+level set very low, or speaking very softly or far away, dictation can
+miss a whole sentence, especially just after something louder. In our
+tests with very quiet recordings it missed some entirely.</li>
+<li><strong>Quieten the room if you can.</strong> Close a window, turn
+off music, move away from a humming fridge. Bigger models cope better
+with noise, but nothing copes as well as quiet.</li>
+</ul>
+<h3 id="how-to-speak">How to speak</h3>
+<ul>
+<li><strong>Speak the way you would to a friend across the
+table</strong>: a normal pace and a normal voice. Shouting and slowing
+right down both make recognition worse, not better.</li>
+<li><strong>Say a whole thought, then pause.</strong> A sentence or two
+at a time works best. The engine uses the words around a word to work
+out what you meant, so a full sentence comes out better than one word at
+a time.</li>
+<li><strong>Think first, then speak.</strong> If you need to stop and
+think in the middle, that is fine, but it helps to know roughly what you
+will say before you start.</li>
+</ul>
+<h3 id="choosing-the-pause">Choosing the pause</h3>
+<p>The pause is how long you have to be quiet before a phrase is
+written.</p>
+<ul>
+<li><strong>Normal</strong> suits most people.</li>
+<li>If dictation keeps writing half your sentence while you are still
+thinking, choose <strong>Long</strong>.</li>
+<li>If you take long breaks in the middle of a sentence, or you are
+still getting used to dictating, try <strong>Longer (2
+seconds)</strong>.</li>
+<li>Choose <strong>Longest (3 seconds)</strong> only if Longer still
+cuts you off. Your words arrive a little later, but you have plenty of
+room.</li>
+<li>If you are quick and fluent and the wait feels slow, try
+<strong>Short</strong>.</li>
+</ul>
+<p>Remember that a phrase ending on a word like <em>the</em> or
+<em>very</em> waits for the rest of the sentence anyway; see “Longer
+pauses, and sentences you finish later”.</p>
+<h3 id="punctuation-habits">Punctuation habits</h3>
+<ul>
+<li><strong>Let the engine do the ordinary marks.</strong> Moonshine,
+Whisper and the optional models put in full stops, commas and question
+marks for you. Talk naturally, and pause at the end of a sentence.</li>
+<li><strong>Say a mark when it matters.</strong> A comma in a list, a
+colon before a list, a question mark on a question that does not sound
+like one. What you say always wins.</li>
+<li><strong>Say “new paragraph” between paragraphs.</strong> A pause
+alone never starts one.</li>
+<li><strong>Listen to the read-back.</strong> With <strong>Say
+punctuation marks in the read-back</strong> checked, you hear “comma”
+and “period” where they went in, so you know straight away whether your
+sentence is punctuated the way you wanted.</li>
+</ul>
+<h3 id="fixing-mistakes-the-correction-loop">Fixing mistakes: the
+correction loop</h3>
+<p>You do not have to reach for the keyboard to fix most mistakes. Work
+through these from the top, and stop at the first one that does the
+job:</p>
+<ol type="1">
+<li><strong>“Scratch that”</strong> takes back the phrase you just said.
+Then say it again, a little more clearly. This is the quickest fix of
+all.</li>
+<li><strong>“Correct” and the wrong word</strong> fixes something
+further back: “correct Tuesday”, then “Thursday”. Or
+<strong>“select”</strong> and the words, then say what should be there
+instead. See “Moving and selecting by voice”.</li>
+<li><strong>“Spell that”</strong> is for a name the engine will never
+get: the last phrase is selected and you spell it out. See “Letters,
+numbers and symbols”.</li>
+<li><strong>Recent Phrases</strong> (<strong>Shift+F11</strong>) is your
+rescue if you scratched one phrase too many. Arrow to the phrase and
+press Enter to put it back.</li>
+<li><strong>Tidy Dictated Text</strong> (<strong>Ctrl+F3</strong>) is
+for the end, not the middle. When you have dictated a long passage,
+select it and let the AI tidy the small slips all at once. Your My
+Dictation Instructions, and your Dictation Context for This Document,
+tell it how you like your writing.</li>
+</ol>
+<p>And when the same word goes wrong again and again, stop fixing it and
+teach it: add it in <strong>My Words and Phrases</strong>
+(<strong>Alt+Shift+F10</strong>), and it comes out right from then
+on.</p>
+<h3 id="with-your-screen-reader-running">With your screen reader
+running</h3>
+<p>Two voices can tell you about your words: QUILL Lite’s read-back, and
+your screen reader.</p>
+<ul>
+<li><strong>QUILL Lite’s read-back</strong> says the whole phrase once
+it is written, with its punctuation. It waits a quarter of a second so
+your screen reader can finish first. This is usually the most
+useful.</li>
+<li><strong>Your screen reader</strong> may also say the words as they
+appear, if it is set to echo typed text or to read new text in the
+document. If you hear everything twice, turn one off. Many people keep
+QUILL Lite’s read-back and turn the screen reader’s typing echo down
+while dictating; others set “After each phrase is written, give me” to a
+sound only and listen to the screen reader instead.</li>
+</ul>
+<p><strong>Use headphones.</strong> Through speakers, the microphone can
+hear the read-back, or your screen reader, and write it down a second
+time. If you must use speakers, set the read-back to a sound only, and
+keep the screen reader’s voice down while you dictate.</p>
+<h3 id="choosing-a-model">Choosing a model</h3>
+<ul>
+<li><strong>Start with Moonshine</strong>, the one QUILL Lite comes
+with. For most voices it is quick and accurate.</li>
+<li><strong>If it mishears your accent or your microphone</strong>, try
+<strong>Whisper</strong>, which also comes with QUILL Lite.</li>
+<li><strong>For more accuracy</strong>, download one of the optional
+models (see “Better accuracy: optional speech models”). The
+<strong>Recommended for this computer</strong> line in Dictation
+Settings names the one that suits your computer. On real speech,
+Parakeet made the fewest mistakes; try Nemotron if you want to follow
+your words on braille while you talk.</li>
+<li><strong>If your model was removed in this release</strong>,
+dictation now uses Parakeet Unified if you had already downloaded it, or
+the built-in model if not. To choose Parakeet Unified, see “Better
+accuracy: optional speech models”.</li>
+<li><strong>Judge with your own voice.</strong> Use one model for a day,
+then another, and keep the one that needed fewer fixes.</li>
+</ul>
+<h3 id="dictating-in-spanish-1">Dictating in Spanish</h3>
+<ul>
+<li>In Spanish, the built-in choice is Whisper, and a larger model makes
+a big difference: on real Spanish speech the built-in Whisper got 30.5
+percent of words wrong and Parakeet TDT 0.6B v3 got 4.4. If you dictate
+a lot of Spanish and have 8 GB of memory, Parakeet TDT 0.6B v3 is well
+worth the download.</li>
+<li>Let automatic punctuation do the marks. The Spanish punctuation
+words only work when it is off, or with Windows speech recognition.</li>
+<li>Switch with <strong>Ctrl+Shift+F11</strong>, or say “switch to
+Spanish” and “cambiar a inglés”. Dictation Status
+(<strong>Alt+F9</strong>) tells you which you are in.</li>
+</ul>
+<h3 id="on-a-modest-computer-1">On a modest computer</h3>
+<ul>
+<li><strong>Moonshine is the kindest</strong> to an older computer, and
+it is what you start with. It uses very little of the processor, so your
+screen reader stays quick. On 4 GB of memory, the built-in Moonshine and
+Whisper are the ones QUILL Lite recommends, because the larger downloads
+do not fit beside a screen reader there.</li>
+<li><strong>Close what you are not using</strong> while you dictate,
+especially a web browser with many pages open.</li>
+<li><strong>Leave the big models for recordings.</strong> A model too
+slow for live dictation is fine for Transcribe a Recording
+(<strong>Shift+F5</strong>), where nobody is waiting at the end of each
+sentence.</li>
+<li>If an optional model falls behind, QUILL Lite moves to Moonshine for
+now and tells you. Nothing is lost.</li>
+</ul>
+<h3 id="two-short-paragraphs-to-practise-on">Two short paragraphs to
+practise on</h3>
+<p>Put the cursor in a new, empty document, press
+<strong>Ctrl+F11</strong>, and try these. Pause where you see a full
+stop. Say the marks in quotation marks as words.</p>
+<p><strong>Practice one: punctuation.</strong> Say:</p>
+<blockquote>
+<p>The book club meets on Thursday “comma” in the library “period”
+Please bring your copy “comma” your questions “comma” and a friend
+“period” “new paragraph”</p>
+</blockquote>
+<p>What should come out:</p>
+<blockquote>
+<p>The book club meets on Thursday, in the library. Please bring your
+copy, your questions, and a friend.</p>
+</blockquote>
+<p>You should hear the read-back say the commas and full stops, and the
+new paragraph. If a comma is missing, say “scratch that” and say that
+phrase again.</p>
+<p><strong>Practice two: fixing a name.</strong> Say:</p>
+<blockquote>
+<p>My neighbour Siobhan grows tomatoes and beans “period”</p>
+</blockquote>
+<p>Listen to the read-back. The engine may well write the name some
+other way, say <em>Shivon</em>. If it does, say “correct Shivon”
+(whatever you heard), then “spell capital sierra india oscar bravo hotel
+alpha november”. What should come out:</p>
+<blockquote>
+<p>My neighbour Siobhan grows tomatoes and beans.</p>
+</blockquote>
+<p>Now add Siobhan in <strong>My Words and Phrases</strong>, scratch the
+sentence, and say it again. This time the name should come out right
+first time.</p>
+<h3 id="more-practice-the-tutorials">More practice: the tutorials</h3>
+<p>Help &gt; Tutorials (<strong>Ctrl+Alt+F1</strong>) has five short
+dictation lessons in the <em>Working in a document</em> track, beside
+<em>Write by talking</em>. Each takes a few minutes and tells you what
+you should hear when you got it right:</p>
+<ul>
+<li><em>Punctuation and symbols by voice</em>: saying marks, starting a
+heading and a list, and spelling a web address.</li>
+<li><em>Fix a word by voice</em>: selecting and correcting a word you
+said, and spelling a name.</li>
+<li><em>Snippets and clips by voice</em>: copying, pasting a Copy Tray
+slot, and putting in a snippet.</li>
+<li><em>Switch to Spanish and back</em>: the language key and the voice
+commands.</li>
+<li><em>Make a live transcript</em>: starting one, asking how it is
+going, and stopping and saving it.</li>
+</ul>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now dictate with <strong>Ctrl+F11</strong>, pressing it to
+start and again to stop, or holding it while you talk once you turn that
+on. You can fix what you said with “scratch that” or “correct that”,
+spell a hard name, and start and stop by voice with the wake and stop
+phrases. You know that your words go where you started speaking, how to
+see them while you talk with Nemotron or OpenAI, and how to talk to the
+AI out loud. You also know where to teach dictation your own words, what
+OpenAI dictation sends and how to turn it on or off, and what to do when
+the microphone or the engine has trouble. And with
+<strong>Shift+F5</strong> you can turn a recording into text in the
+background, with whichever model suits it.</p>
+<p>You can also hear the punctuation that went in, spell an address and
+type Markdown marks by voice, select, go to and correct any words you
+can see, and reach your clips and snippets without the keyboard. You can
+switch between English and Spanish with <strong>Ctrl+Shift+F11</strong>,
+give yourself a longer pause, tell dictation what a document is with
+<strong>Ctrl+Alt+Shift+PageUp</strong>, and ask what it is doing with
+<strong>Alt+F9</strong>. A live transcript
+(<strong>Ctrl+Alt+Shift+PageDown</strong>) writes down a whole meeting,
+and Quill Inkwell lets you dictate into other programs.</p>
+<p>To practise with QUILL Lite beside you, open <strong>Help &gt;
+Tutorials…</strong> (<strong>Ctrl+Alt+F1</strong>) and choose “Write by
+talking”, and then the five newer dictation lessons listed in “More
+practice: the tutorials”. Keep the <strong>Dictation commands</strong>
+file (dictation-commands.md) document handy too, or say “what can I say”
+while you dictate. To change the tones you hear, see <em>Sounds</em> in
+Chapter 8.</p>
+<p>Next, Chapter 10, AI help, covers the AI pad, including Tidy Dictated
+Text, which cleans up a long dictated passage, and My Dictation
+Instructions, which tell it how you like your writing.</p>
+<hr />
+<ul>
+<li>Previous: <a href="lite-guide-08-what-you-hear.html">Chapter 8: What
+you hear</a></li>
+<li>Next: <a href="lite-guide-10-ai-help.html">Chapter 10: AI
+help</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

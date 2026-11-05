@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 14: Projects, notes and the QuillVille family</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-14-projects-notes-and-the-quillville-family">Chapter 14:
+Projects, notes and the QuillVille family</h1>
+<p>This chapter is about the work that is bigger than one document. It
+starts small, with sticky notes you can jot from anywhere in Windows,
+and grows from there: notebooks of related files, a binder for a whole
+book, a vault of linked notes, keeping your work in step between
+computers, posting to Mastodon and working with git. It ends with the
+other apps in the QuillVille family. Dip in when you need a piece of it;
+none of it changes how ordinary editing works.</p>
+<h2 id="sticky-notes">Sticky Notes</h2>
+<p>Sticky notes are the quickest way to catch a thought before it gets
+away. <strong>Navigate &gt; Sticky Notes &gt; New Sticky Note…</strong>
+(or its system-wide hotkey) opens a small editor with a title and a
+body, from anywhere. <strong>Navigate &gt; Sticky Notes &gt; Sticky
+Notes…</strong> manages the whole collection.</p>
+<h3 id="the-sticky-notes-browser">The Sticky Notes Browser</h3>
+<p><strong>Navigate &gt; Sticky Notes &gt; Sticky Notes
+Browser…</strong> is the fast way back to a note you wrote last
+week.</p>
+<ol type="1">
+<li>Open the browser. Focus starts in a <strong>search
+field</strong>.</li>
+<li>Type anything. The list below filters as you type, matching titles
+and bodies (upper or lower case does not matter), newest note
+first.</li>
+<li>Press <code>Down</code> to move into the results and arrow through
+them.</li>
+<li>Press <code>Tab</code> to reach a <strong>read-only multi-line
+preview</strong> of the selected note, so you can read the whole thing
+without opening it.</li>
+<li>Press <strong>Edit</strong> (or Enter on a note, or double-click) to
+open the full editor. <strong>Close</strong> (or Escape) dismisses the
+browser.</li>
+</ol>
+<p>Every control announces itself by name.</p>
+<p>Give the browser a global hotkey (next topic) and it opens from
+anywhere in Windows. QUILL restores its own window first, so the browser
+always appears, even when QUILL was minimized to the tray.</p>
+<h2 id="global-hotkeys">Global Hotkeys</h2>
+<p>Global hotkeys let a key combination work system-wide: in your
+browser, your mail client, anywhere, without switching to QUILL
+first.</p>
+<h3 id="assigning-a-global-hotkey">Assigning a global hotkey</h3>
+<ol type="1">
+<li>Open <strong>Tools &gt; Global Hotkeys…</strong>.</li>
+<li>Arrow to a command and press <strong>Assign…</strong>.</li>
+<li>Press the combination you want. It must include <strong>Ctrl or
+Alt</strong>, because a bare key would swallow your normal typing
+everywhere.</li>
+</ol>
+<p><strong>Clear</strong> removes an assignment. If you assign a key
+that another QUILL command already holds, it moves over cleanly. If
+another <em>application</em> owns the key, Windows refuses it. QUILL
+tells you which binding failed, and that binding simply stays inactive
+until you pick something else.</p>
+<h3 id="show-or-hide-quill-ctrlaltshiftq">Show or hide QUILL
+(Ctrl+Alt+Shift+Q)</h3>
+<p>QUILL comes with one global hotkey already set.
+<code>Ctrl+Alt+Shift+Q</code> tucks the window into the system tray when
+it is showing, and brings it back, focused, when it is hidden, from
+wherever you happen to be. You hear “hidden to the tray” or “shown”.
+Hiding never stops anything QUILL is doing.</p>
+<p>It is an ordinary entry in the Global Hotkeys list, so you can change
+it or clear it like any other. If some other program already owns
+<code>Ctrl+Alt+Shift+Q</code>, that combination stays theirs and QUILL
+leaves it alone; pick a different one in this dialog.</p>
+<p>Quill Radio and Quill Cast have the same convenience on keys of their
+own, so they never clash: <strong>Quill Radio uses
+Ctrl+Alt+Shift+R</strong> and <strong>Quill Cast uses
+Ctrl+Alt+Shift+F12</strong>. Quill Weather, Quill Converter, Quill Media
+Player and Quill Inkwell have no key until you choose one, in that app’s
+File menu, under <strong>Show and Hide Key…</strong>, and they will not
+let you choose a key another QuillVille app already uses. That is handy
+for apps that live in the tray (Quill Weather watching for alerts, Quill
+Radio playing in the background), because each is then one keystroke
+away and you never have to hunt for the tray icon.</p>
+<h3 id="what-can-be-a-global-hotkey">What can be a global hotkey</h3>
+<p>Only these commands can be bound:</p>
+<ul>
+<li>Radio: Play/Pause, Stop, Mute/Unmute, Volume Up, Volume Down</li>
+<li>New Sticky Note</li>
+<li>Sticky Notes Browser</li>
+<li>Post to Mastodon. This opens the compose window; nothing is ever
+sent by the hotkey itself.</li>
+<li>Show/Hide QUILL to the tray. This hides the window to the system
+tray, or brings it back and focuses it.</li>
+</ul>
+<p>Nothing that edits a document, deletes anything, or acts out of sight
+can ever be a global hotkey, no matter what a settings file says.
+Commands that open a window restore QUILL first. Media commands act
+right where you are. Every press speaks its result (“Radio paused”,
+“Note saved”), so you know what happened even when QUILL isn’t
+visible.</p>
+<p>If you already had a system-wide sticky-note hotkey, it keeps working
+as it always has unless you reassign it here.</p>
+<p>Global hotkeys are Windows-only, because macOS has no equivalent.
+Every one of these commands is still on the menus and in the command
+palette on every platform.</p>
+<h2 id="notebooks">Notebooks</h2>
+<p>A <strong>Notebook</strong> is a named collection of documents that
+belong together: a novel’s chapters, a research project’s notes, a
+software project’s specs. A notebook lives in a single
+<code>.quillnotebook</code> file. It remembers which files are entries,
+where you left the caret in each, any goals you have set, and saved
+snapshots of which entries were open.</p>
+<h3 id="creating-a-notebook">Creating a Notebook</h3>
+<ul>
+<li><strong>File &gt; Notebook &gt; New Notebook</strong> creates an
+empty notebook and asks for a name.</li>
+<li><strong>File &gt; Notebook &gt; New from Folder</strong> imports a
+whole folder at once. QUILL walks the folder and every folder inside it,
+and creates one entry per supported file. You can filter by extension;
+the default set covers Markdown, plain text, HTML, and source code.</li>
+</ul>
+<h3 id="moving-between-entries">Moving between entries</h3>
+<p>With a notebook open, <strong>Navigate &gt; Notebook &gt; Go to
+Entry…</strong> opens a tree of entries, grouped by subfolder. Select an
+entry and press Enter (or the “Open Entry” button) to open that
+file.</p>
+<p><strong>Navigate &gt; Notebook &gt; Go to Heading…</strong> reads
+every entry file and gives you a two-level tree of their headings.</p>
+<h3 id="the-entries-panel">The Entries panel</h3>
+<p>Turn on <strong>View &gt; Show Entries Panel</strong> to dock a panel
+on the left side of the window. It shows the notebook name, today’s goal
+progress, a filter field, and the full list of entries. Type in the
+filter field to narrow the list by title.</p>
+<h3 id="goals">Goals</h3>
+<p>Each notebook can carry a daily word-count goal, stored in its
+<code>.quillnotebook</code> file. When the goal is on, the
+<strong>Notebook Goal</strong> cell in the status bar shows your
+progress, for example “1,234 / 500 words”. When you reach the target it
+changes to “Goal reached.”</p>
+<h3 id="versions">Versions</h3>
+<p>A version is a named record of which entries were open at one moment.
+Choose <strong>File &gt; Notebook &gt; Save Version…</strong>, type a
+name (QUILL suggests “Version 1”, “Version 2” and so on) and press
+Enter. <strong>File &gt; Notebook &gt; Manage Versions…</strong> lists
+every version you have saved, with the date, and has
+<strong>Rename</strong> and <strong>Delete</strong> buttons.
+<strong>Restore Version…</strong> opens the same list. Versions are not
+autosave recovery. They are saves you make yourself, like checkpoints
+for a writing session.</p>
+<p>Don’t confuse them with the <strong>File &gt; Snapshots</strong>
+menu, which used to be called “Workspace Snapshots”. That one saves and
+restores the set of documents open in the editor: a lightweight
+workspace for any files, not tied to a notebook. Notebook versions keep
+the open entries of one notebook.</p>
+<h3 id="a-notebook-in-wsl-or-on-a-network-share">A notebook in WSL or on
+a network share</h3>
+<p>The Open Notebook dialog is the standard Windows file dialog, so it
+reaches anywhere Windows can, including the WSL file system and UNC
+network shares. There is no “WSL” button, because Windows shows those
+places itself.</p>
+<p>To open a notebook stored in WSL, type or paste the UNC path into the
+dialog’s address bar, for example
+<code>\\wsl.localhost\Ubuntu\home\you\writing\my.quillnotebook</code>
+(the older <code>\\wsl$\Ubuntu\...</code> form also works). QUILL keeps
+whatever path you give it, so the notebook and all its documents can
+live in WSL. You do not need SSH to reach your own WSL files; SSH is
+only for files on a <em>separate</em> Linux machine you want to edit
+remotely.</p>
+<p>Two things to expect: reading and writing across the WSL bridge is
+slower than on a Windows drive, and live refresh when a file changes may
+behave differently there. For a notebook you edit heavily, a Windows
+path is snappier.</p>
+<h2 id="story-studio">Story Studio</h2>
+<p>Story Studio organizes a whole book. <strong>Tools &gt; Story
+Studio…</strong> (also in the command palette as <em>Story Studio</em>)
+opens a <strong>binder</strong> for a project folder: a tree of your
+whole project that you move through with the arrow keys.</p>
+<ul>
+<li><strong>Manuscript</strong> holds your chapters and scenes, taken
+from the Markdown headings in your manuscript files. Press Enter on a
+chapter to open its file at that heading.</li>
+<li><strong>Characters, Places, Plot threads, Research,
+Brainstorm</strong> have one entry per element file. Press Enter to open
+it.</li>
+</ul>
+<p>Two buttons act on the binder:</p>
+<ul>
+<li><strong>Edit details…</strong> works on a selected element. It opens
+a form for that element’s fields: a character’s Role, Goal, Motivation
+and Arc, a plot thread’s Status, and tags. The values are saved as front
+matter at the top of the element’s file. Blank fields are left out, and
+any keys you added by hand are kept.</li>
+<li><strong>Compile manuscript…</strong> joins every manuscript file, in
+order, into a new document, with the front matter taken out. Use
+<strong>File &gt; Export</strong> on that document to save it as
+Markdown, HTML, Word, DAISY, and more.</li>
+</ul>
+<p>A Story project is just a folder of plain-text files plus a small
+<code>project.quillstory.json</code> file that records the binder order
+and the element groups. If you delete that file, none of your writing is
+lost. Story Studio is optional and changes nothing about ordinary
+editing.</p>
+<h2 id="vault">Vault</h2>
+<p><strong>Tools &gt; Vault</strong> turns a folder of notes into a
+linked-notes workspace: links and backlinks, search, tags, embeds,
+templates, daily notes, and a website export. It is built for the
+keyboard and the ear, with lists you arrow through instead of a visual
+graph. Until you open a vault, nothing about ordinary editing
+changes.</p>
+<p>A vault is just a folder of Markdown files plus a small
+<code>.quill</code> cache. Delete the cache and nothing is lost. Every
+command here is in the command palette, and you can give any of them a
+key in the Keymap Editor.</p>
+<h3 id="getting-around-your-notes">Getting around your notes</h3>
+<ul>
+<li><strong>Open Vault…</strong> Choose a folder of notes. QUILL scans
+and indexes it, remembers it, and says “Vault <em>name</em>: N notes, M
+links.” You do this once per notes folder.</li>
+<li><strong>Follow Wikilink</strong> Put the cursor on a
+<code>[[Note]]</code> link and run this to open that note. A
+<code>[[Note#Heading]]</code> link opens at the heading, and
+<code>[[Note#^block]]</code> at the block. If the note does not exist
+yet, QUILL offers to <strong>create</strong> it. If several notes share
+the name, QUILL asks which one; it never guesses.</li>
+<li><strong>Show Backlinks</strong> lists every note that links to the
+one you are in, each read with the sentence the link sits in. QUILL
+tells you how many notes link here. Press Enter on one to open it at
+that mention.</li>
+<li><strong>Note Neighborhood</strong> gives you both directions in one
+list: the notes this one links out to (marked with a right arrow) and
+the notes that link back to it (marked with a left arrow), so you can
+step through everything connected to where you are. Enter opens the one
+you land on.</li>
+<li><strong>Unlinked Mentions</strong> finds places in your other notes
+that mention this note by name but don’t link to it yet. Each is read
+with its sentence, and Enter opens that note at the mention so you can
+turn it into a link.</li>
+<li><strong>Insert Link to Note…</strong> lets you pick a note by title
+from a list, and inserts <code>[[Title]]</code> at the cursor.</li>
+<li><strong>Rename Note…</strong> gives the current note a new name.
+First QUILL tells you how many links in how many other notes point to
+it, and asks you to confirm. Then it updates all of those
+<code>[[links]]</code>, renames the file, and fixes the note’s own top
+heading, so nothing breaks. Nothing changes until you say yes, and QUILL
+stops if a note with the new name already exists.</li>
+<li><strong>Vault Explorer…</strong> is a tree of every note, grouped by
+folder. Arrow through it and press Enter on a note to open it.</li>
+<li><strong>Complete Link or Tag…</strong> Start typing <code>[[</code>
+(for a note) or <code>#</code> (for a tag), run this, and pick from a
+list that narrows as you type. QUILL inserts your choice and, for a
+link, adds the closing <code>]]</code>. It does the job of a pop-up that
+appears as you type, but it speaks and holds focus.</li>
+<li><strong>Go to Note…</strong> jumps to a note. Start typing part of a
+title and the list narrows as you go, with QUILL speaking the count.
+Press Down to move into the list, or press Enter to open the closest
+match.</li>
+<li><strong>Search Vault…</strong> searches every note. Type a word or
+phrase and hear the number of results. Each result reads as its note
+title, line number, and the matching text. Turn on
+<strong>Regex</strong> for pattern searches, or <strong>Whole
+word</strong> to skip partial matches. Enter opens a result at its exact
+line.</li>
+</ul>
+<h3 id="tags-embeds-and-templates">Tags, embeds and templates</h3>
+<ul>
+<li><strong>Show Tags…</strong> opens the tag pane. Filter your
+<code>#tags</code> (each shows a note count), open a tag, and get the
+list of notes that carry it. Nested tags roll up, so <code>#area</code>
+also finds notes tagged <code>#area/sub</code>.</li>
+<li><strong>Speak Embed at Cursor</strong> With the cursor on an
+<code>![[Other Note]]</code> embed, hear the note (or the heading or
+block) it pulls in, without changing your text.</li>
+<li><strong>Resolve Embed Inline</strong> replaces that
+<code>![[embed]]</code> with the actual content, as one change you can
+undo with <code>Ctrl+Z</code>.</li>
+<li><strong>Insert Template…</strong> Pick a template from a
+<code>Templates</code> folder inside your vault. QUILL fills in
+<code>{{date}}</code>, <code>{{time}}</code> and <code>{{title}}</code>,
+asks you out loud any <code>{{prompt:Question}}</code> it finds, inserts
+the result, and puts the cursor where you marked
+<code>{{cursor}}</code>.</li>
+<li><strong>Open Today’s Note</strong>, <strong>Previous Daily
+Note</strong>, <strong>Next Daily Note</strong> open today’s dated note
+(creating it if needed) and step back and forward through the days.
+Daily notes live at <code>Journal/YYYY-MM-DD.md</code> by default.</li>
+</ul>
+<h3 id="sharing-your-vault">Sharing your vault</h3>
+<ul>
+<li><strong>Export Vault as Website…</strong> Choose an output folder
+and QUILL writes a small website that needs nothing else: one accessible
+page per note, your <code>[[links]]</code> turned into real links
+between pages, your <code>![[embeds]]</code> filled in, and an index
+page listing everything. It runs in the background and tells you how
+many pages it wrote.</li>
+<li><strong>Sync Vault</strong> If your vault folder is a Git repository
+with a remote you control, this commits your changes, pulls anyone
+else’s, and pushes, all in the background. If the same note changed in
+both places, QUILL lists the conflicts and stops instead of overwriting
+anything. It is disabled in Safe Mode. The same sync works on any
+folder, not just a vault; see <a href="#quill-sync">QUILL Sync</a>
+below.</li>
+<li><strong>Vault Settings…</strong> sets the folder your templates live
+in (default <code>Templates</code>) and the pattern for daily-note file
+names (default <code>Journal/{{date:YYYY-MM-DD}}.md</code>). Leave a box
+empty to keep the default.</li>
+</ul>
+<h3 id="how-links-work">How links work</h3>
+<p>Write a link by typing <code>[[Note Title]]</code> yourself, or use
+<strong>Insert Link to Note…</strong>. Links are plain text in your
+file, with nothing hidden, and they are resolved when you follow them,
+export, or build the website.</p>
+<p>When you <strong>preview</strong> a note that lives in your vault,
+QUILL shows it resolved: <code>[[links]]</code> read as their titles,
+and <code>![[embeds]]</code> filled in. Every time you
+<strong>save</strong> a note in the vault, its links, backlinks, tags
+and search results update straight away, with no need to reopen
+anything.</p>
+<h2 id="one-editor-every-format">One Editor, Every Format</h2>
+<p>Every document opens in the same QUILL editor, and it has a real rich
+text mode. The thing to hold onto: <strong>bold means bold, and QUILL
+speaks your document’s language.</strong> The braille fix is on by
+default in every format; the braille troubleshooting entry in Chapter
+11, Accessibility, speech and braille, has the details.</p>
+<ul>
+<li><p><strong>Writing Markdown (.md):</strong> <code>Ctrl+B</code>
+wraps your selection in <code>**</code>, and Insert Heading 2 puts
+<code>## </code> at the start of the line.</p></li>
+<li><p><strong>Writing HTML (.html):</strong> <code>Ctrl+B</code> wraps
+in <code>&lt;strong&gt;</code>, and headings become real HTML
+headings.</p></li>
+<li><p><strong>Writing Rich Text (.rtf):</strong> the document opens
+<em>formatted</em>. <code>Ctrl+B</code> applies real bold, and Insert
+Heading 2 applies a real sized heading. The Format menu’s font, size,
+color, highlight and alignment commands change the actual formatting,
+and <strong>Describe Formatting at Cursor</strong> answers from the live
+document (“Arial, 14 point, bold, centered”). Search, spell check, read
+aloud, bookmarks, notes and braille all work as in any other
+document.</p></li>
+<li><p><strong>Writing plain text (.txt):</strong> text stays plain,
+because that is what a .txt file promises. The first time you press a
+formatting key, QUILL asks once: treat this document as Markdown,
+convert it to Rich Text, or stay plain. Your answer is remembered for
+that document.</p></li>
+<li><p><strong>Editing Word documents (.docx):</strong> a .docx can open
+for real rich editing and save back as a genuine Word file, in an
+installed copy and a portable copy alike (<em>Office files at a
+glance</em> in Chapter 3 lists what every other Office file does). If
+the file holds things QUILL’s editor cannot keep (images, comments,
+tracked changes, headers and footers), QUILL asks first. You can open it
+for reading and plain editing (the safe default), edit it as Rich Text
+with those losses named one by one, or edit a copy. The first rich save
+over such a file writes a timestamped backup next to it automatically.
+<strong>Tables are preserved</strong> when you open a Word document for
+rich editing: they appear inline as accessible tables, so you can read
+them and jump to them with single-key table navigation
+(<code>T</code>).</p>
+<p>What the three choices look like: a window titled <strong>Open Word
+document</strong> says, for example, “team.docx contains features
+QUILL’s rich editor cannot carry: tables (1), comments. How should it
+open?” The first row, <strong>Open for reading and plain editing
+(recommended)</strong>, is selected, and <strong>Escape</strong> gives
+the same answer. The backup is named after the original with the date
+and time added, for example
+<code>team.backup-20261017-143005.docx</code>, sits beside it, and is
+made once each time you open the file, before your first save; QUILL
+says “Backed up the original to …” on the status bar. Inside the
+document, <strong>Ctrl+Alt+Right</strong>,
+<strong>Ctrl+Alt+Left</strong>, <strong>Ctrl+Alt+Down</strong> and
+<strong>Ctrl+Alt+Up</strong> move cell by cell through a table and say
+where you are (“Row 2: Ann”); <strong>Alt+Home</strong> and
+<strong>Alt+End</strong> go to the ends of the row,
+<strong>Ctrl+Alt+Home</strong> and <strong>Ctrl+Alt+End</strong> to the
+ends of the table.</p>
+<p>QUILL Lite edits Word documents too, since October 2026, with this
+same code: the same question in the same words, the same backup, the
+same table keys. A document saved in one opens the same way in the
+other.</p>
+<p>Fixed on 2026-10-17, in both: saving a Word document a second time no
+longer turns its Heading 5 and Heading 6 paragraphs into bold ordinary
+text, and saving no longer adds a blank paragraph at the end each
+time.</p></li>
+</ul>
+<h3 id="the-document-format-switcher">The Document Format switcher</h3>
+<p><strong>Format &gt; Document Format…</strong> moves the current
+document between Plain text, Markdown, HTML, Rich Text (RTF) and Word
+(.docx) while you work. You can also press <code>Alt+Shift+F</code>, use
+the command palette, or press Enter on the <strong>Format</strong> cell
+in the status bar, which always shows your current format.</p>
+<p>Switching to a rich format turns your Markdown headings into real
+ones. Leaving a rich format warns you first, with a list of exactly what
+will not survive. A switched document never quietly overwrites its old
+file: the next save suggests the matching new name.</p>
+<p><strong>Every switch is a real conversion.</strong> Switching to HTML
+writes real HTML (<code>&lt;h1&gt;</code> and
+<code>&lt;strong&gt;</code>, not hashes and asterisks under an HTML
+label), and switching back reads it in again. Your formatting comes with
+you in every direction: headings, bold, italic, underline,
+strikethrough, superscript and subscript, font family and size, text
+colour and highlight, bullet and numbered lists, links, code spans and
+fences, block quotes, alignment, line spacing, indents, spacing before
+and after, named styles, page breaks, tables, images and horizontal
+rules. Switch out and back as often as you like; you end up with the
+document you started with.</p>
+<p><strong>Converting to Plain text asks you first.</strong> Plain text
+has no formatting, so there are two fair ways to handle Markdown already
+in your document, and QUILL won’t guess:</p>
+<ul>
+<li><strong>Remove the markers.</strong> <code># Heading</code> becomes
+<code>Heading</code>, <code>**bold**</code> becomes <code>bold</code>,
+and the file is strictly plain.</li>
+<li><strong>Keep them as text.</strong> The <code>#</code> and
+<code>**</code> stay as ordinary characters. A .txt file is allowed to
+contain them, and plenty of people keep their notes that way.</li>
+</ul>
+<p>Escape (or Cancel) leaves the document alone. You are only asked when
+there is something to ask about; ordinary prose converts without a
+question.</p>
+<h3 id="if-rich-mode-is-unavailable">If rich mode is unavailable</h3>
+<p>On a system where the bundled macOS bridge or the Windows COM bridge
+cannot load, .rtf and .docx documents open converted to editable text,
+the classic way, and save back through the same converters. Nothing is
+lost, and QUILL says so in the status bar. The Mac app includes
+everything rich mode needs; only source installs add it themselves
+(<code>pip install "quill[mac]"</code>). If you ever see the converted
+fallback on a normal install, please tell us through <strong>Help &gt;
+Get Help from Support</strong>.</p>
+<h2 id="table-studio-experimental">Table Studio (experimental)</h2>
+<p>Turn Table Studio on in the Experimental tab, and <strong>Tools &gt;
+Writing and Language &gt; Table Studio…</strong> opens a table in a
+spreadsheet-style grid made for screen-reader users, instead of a wall
+of pipe characters. One grid does two jobs:</p>
+<ul>
+<li><strong>Table Studio</strong> starts a new table you build up cell
+by cell.</li>
+<li><strong>Open CSV in Table Studio</strong> opens a <code>.csv</code>
+or <code>.tsv</code> file straight into the grid. The delimiter is
+detected for you.</li>
+</ul>
+<p>With Table Studio on, opening a <code>.csv</code> from <strong>File
+&gt; Open</strong> and choosing the grid view brings it up in the same
+grid.</p>
+<h3 id="moving-and-editing-in-the-grid">Moving and editing in the
+grid</h3>
+<p>The <strong>arrow keys move by cell</strong>. Up and Down change
+rows, and <strong>Left and Right move across columns and speak the
+column heading</strong> as you go, so you always know where you are.</p>
+<ul>
+<li><strong>Home</strong> and <strong>End</strong> jump to the first and
+last column.</li>
+<li><strong>Ctrl+Home</strong> and <strong>Ctrl+End</strong> jump to the
+corners.</li>
+<li><strong>Page Up/Down</strong> move by ten rows.</li>
+<li><strong>F2</strong> or <strong>Enter</strong> edits the active
+cell.</li>
+<li><strong>Alt+arrows</strong> move a whole row or column.</li>
+<li><strong>Ctrl+Insert</strong> adds a row.</li>
+<li><strong>Delete</strong> clears a cell.</li>
+</ul>
+<p>The same actions are on buttons if you prefer them.</p>
+<h3 id="the-table-menu">The table menu</h3>
+<p><strong>Shift+F10</strong> (or the Applications key, or right-click)
+opens a context menu with every table action in one place: <strong>Sort
+Ascending / Descending</strong> by the current column, <strong>Insert /
+Delete / Move</strong> rows, <strong>Insert / Delete</strong> columns,
+<strong>Rename Column Header</strong>, <strong>Promote First Row to
+Header</strong> (for a CSV whose header row was read as data), and
+<strong>Use First Column as Row Headers</strong>.</p>
+<p>Headers are stored the standard way:
+<code>&lt;th scope="col"&gt;</code> and
+<code>&lt;th scope="row"&gt;</code> in HTML, and a proper header row in
+Markdown. That way screen readers and other tools understand your
+table’s structure.</p>
+<h3 id="finishing-a-table">Finishing a table</h3>
+<p><strong>Insert as Markdown</strong> or <strong>Insert as
+HTML</strong> drops the finished table, with its headers, into your
+document. <strong>Save to CSV</strong> writes the grid back to a file,
+so a CSV you opened makes the full round trip.</p>
+<p>NVDA and JAWS announce the column as you cross a row. Builds that
+include the optional native provider give richer cell announcements;
+without it QUILL uses a built-in fallback, and the feature works either
+way.</p>
+<h2 id="quill-sync">QUILL Sync</h2>
+<p>QUILL has no sync service of its own: no QUILL cloud account and no
+QUILL-hosted storage. To carry your work between devices it uses two
+things that already do the job well, a folder your cloud provider
+mirrors, and git. Both are optional.</p>
+<h3 id="sync-your-settings-through-a-folder">Sync your settings through
+a folder</h3>
+<ol type="1">
+<li>Open <strong>Help &gt; Personalise QUILL</strong> (or
+<strong>Preferences</strong>) and find “Where should QUILL store your
+data?”. It is the same page the first-run wizard shows.</li>
+<li>Choose <strong>“Choose a folder:”</strong>.</li>
+<li>Pick a folder that OneDrive, Dropbox, Google Drive or iCloud already
+keeps in step across your devices, or a folder on a USB drive you carry
+between computers.</li>
+</ol>
+<p>QUILL writes its settings, snippets, dictionaries and keymap there,
+and your cloud provider or drive carries them to your other computers
+like everything else in that folder. This is the Data Location setting;
+there is nothing new to learn.</p>
+<p>One important limit: QUILL cannot merge changes made on two devices
+at once. Don’t run QUILL on two machines pointed at the same synced
+folder at the same time. Treat it like any shared file, one writer at a
+time.</p>
+<h3 id="sync-a-folder-with-github">Sync a folder with GitHub</h3>
+<p><strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Sync Folder with
+GitHub…</strong> works on any folder, such as a writing project or a
+research folder, not just a vault. Point it at a folder:</p>
+<ul>
+<li>If the folder is already a git repository with a remote set up,
+QUILL commits your changes, pulls anyone else’s and pushes, all in the
+background, and tells you when it’s done.</li>
+<li>If it isn’t set up yet, QUILL says so plainly and asks first, for
+example: <em>“This folder is not a git repository yet. QUILL can set it
+up: this runs ‘git init’ in the folder, then adds the remote repository
+you provide as ‘origin’. Continue?”</em> Say yes, paste your
+repository’s address (for example
+<code>https://github.com/you/your-repo.git</code>), and QUILL sets it up
+and syncs.</li>
+<li>If the same file changed in both places, QUILL lists the conflicts
+and stops instead of guessing. Resolve them yourself (the conflict
+walker under Local Git helps), then run Sync Folder with GitHub
+again.</li>
+</ul>
+<p>If you already use <strong>Sync Vault</strong>, this works exactly
+the same way, for any folder. Both use your own git installation and the
+credentials it already remembers (an SSH key, or a login your system’s
+git credential manager keeps). QUILL never asks for or stores a separate
+GitHub password or token for this. Disabled in Safe Mode.</p>
+<h2 id="publishing">Publishing</h2>
+<p>You can share what you write without leaving QUILL. This topic covers
+posting to Mastodon.</p>
+<h3 id="posting-to-mastodon">Posting to Mastodon</h3>
+<ol type="1">
+<li>Press the QUILL key (<code>Ctrl+Shift+Grave</code>) then
+<code>Shift+P</code>, or choose <strong>Tools &gt; Share &gt; Post to
+Mastodon…</strong>. QUILL takes your selection, or the whole document if
+nothing is selected, and opens a compose window.</li>
+<li>Edit the text if you like, pick the account to post from, and choose
+the visibility: Public, Unlisted, Followers only, or Direct. A live
+character count keeps track as you type.</li>
+<li>Press <strong>Post</strong>. Your post appears with “via QUILL” as
+its source.</li>
+</ol>
+<p>The compose window also has a <strong>Post language</strong> picker
+beside the visibility choice. The default, “Default (instance)”, sends
+no language, so your server files the post under your account’s default
+language. Pick a language such as English or Italian to send its ISO
+639-1 code, which keeps a post in one language from being filed under
+another.</p>
+<p>The character count uses your account’s real limit on its own server,
+not the classic limit. QUILL asks the server once per session and
+remembers the answer, so a server that allows more (for example one with
+a 9999-character limit) shows the right count and does not block a
+longer post.</p>
+<h3 id="adding-a-mastodon-account">Adding a Mastodon account</h3>
+<p>The first time you post, QUILL offers to add an account. You can also
+open <strong>Tools &gt; Share &gt; Mastodon Accounts…</strong> at any
+time.</p>
+<ol type="1">
+<li>Choose <strong>Add Account…</strong>, then enter your server (for
+example <code>mastodon.social</code>) and a <strong>friendly
+nickname</strong>. The nickname is what shows in the account
+picker.</li>
+<li>QUILL registers itself with your server and opens your browser. Sign
+in if needed, approve QUILL, and copy the authorization code your server
+shows.</li>
+<li>Paste that code back into QUILL. Your account is saved.</li>
+</ol>
+<p>You can add several accounts, each with its own nickname, <strong>set
+a default</strong>, or <strong>remove</strong> one (which deletes its
+saved sign-in from this computer). Your sign-in is kept in the Windows
+Credential Manager, never in a plain file.</p>
+<p><strong>Proofread posts before sending.</strong> In <strong>Mastodon
+Accounts…</strong>, select an account and check <strong>Spell-check
+posts before sending</strong>. It is off by default and set per account,
+so you can turn it on for some accounts and not others. When it is on,
+pressing <strong>Post</strong> for that account first opens the Spelling
+Review (<code>F7</code>) on the post, and the post is sent only after
+you finish or skip the review.</p>
+<h3 id="adding-someone-to-a-mastodon-list">Adding someone to a Mastodon
+list</h3>
+<p>Mastodon lists let you follow a group of accounts in a timeline of
+their own. To put someone on one of your lists:</p>
+<ol type="1">
+<li>Choose <strong>Tools &gt; Share &gt; Add a User to a Mastodon
+List…</strong>.</li>
+<li>Type their handle, such as <code>@name@server</code>, and press
+Enter. QUILL looks them up and fetches your lists.</li>
+<li>Choose the list from the list QUILL shows you, and press Enter.</li>
+</ol>
+<p>QUILL says “Added”, the person and the list. Mastodon only lets you
+add someone you already follow, so if they are not on the list
+afterwards, follow them first (View Mastodon Profile, below, has a
+Follow button) and try again. If you have no lists yet, QUILL tells you;
+make one on your Mastodon server first.</p>
+<h3 id="reading-a-mastodon-profile-aloud">Reading a Mastodon profile
+aloud</h3>
+<p>Open <strong>Tools &gt; Share &gt; View Mastodon Profile…</strong>
+and type a handle such as <code>@name@server</code>. QUILL shows the
+account’s name, whether each of you follows the other, a Follow or
+Unfollow button, the account’s <strong>Bio</strong>, and its
+<strong>Recent posts</strong>.</p>
+<p>Everything there is tidied for listening. Mastodon sends bios and
+posts as web markup, which a screen reader would otherwise read aloud
+tags and all. QUILL turns them into plain text first, so you hear the
+words. In a link, you hear the part your server chose to show, not the
+long hidden tail.</p>
+<p>Three more changes make the profile easier on the ear:</p>
+<ul>
+<li><strong>A pile of mentions is counted, not recited.</strong> A reply
+that starts by addressing several people reads as
+<code>@alice and 2 more</code>, then the message. You still learn who
+was addressed and how many, and you reach the first real word straight
+away. A reply that names one person is left as written.</li>
+<li><strong>Decorative characters are removed from names and
+posts.</strong> A screen reader says an emoji’s full name (“grinning
+face with smiling eyes”) every time it appears, in every row. QUILL
+strips emoji and similar decoration, and keeps accented letters, other
+alphabets, quotation marks, dashes and currency signs, which are part of
+real words. If a display name was nothing but decoration, QUILL uses the
+plain handle.</li>
+<li><strong>Each post is one line: when, then its first
+sentence.</strong> For example
+<code>3 minutes ago: Actually, that is wrong.</code> The time is in
+plain words, so there is no timestamp to work out in your head, and the
+summary stops at the first sentence, so each arrow press gives you one
+post. A post with a content warning shows the warning instead of the
+text.</li>
+</ul>
+<p>If the account is private, or your server does not share its posts,
+the profile still opens; the Recent posts list is simply not there.</p>
+<h2 id="local-git">Local Git</h2>
+<p><strong>Tools &gt; Git and GitHub &gt; Local Git</strong> brings the
+two hardest parts of everyday git into QUILL as guided steps you can
+follow by ear: resolving a merge conflict, and reordering commits with
+an interactive rebase. None of it needs a GitHub account or the network;
+it works on any git repository on your computer.</p>
+<h3 id="uncommitted-changes">Uncommitted changes</h3>
+<p><strong>Uncommitted Changes…</strong> shows every file you have
+changed since your last commit, split into staged and unstaged. Select a
+file to read its changes in the same style as Compare Documents, instead
+of a raw diff. Press <strong>Stage</strong> or <strong>Unstage</strong>
+for the selected file, or <strong>Stage All</strong> to stage
+everything.</p>
+<h3 id="resolving-a-merge-conflict">Resolving a merge conflict</h3>
+<p>Git marks a conflict with lines of
+<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> and
+<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>, which sound like line noise
+through a screen reader. <strong>Resolve Conflicts…</strong> walks you
+through every conflict in every affected file, one at a time: “Conflict
+1 of 3: your version says X, their version says Y.” For each one you
+choose:</p>
+<ul>
+<li>keep your version,</li>
+<li>keep their version,</li>
+<li>keep both, or</li>
+<li>type your own replacement.</li>
+</ul>
+<p>Move to the next or previous conflict as you go. When you’re done,
+QUILL writes the resolved file and stages it for you.</p>
+<p>The same walker opens on its own if an <strong>Interactive
+Rebase…</strong> or a <strong>Sync Folder with GitHub</strong> stops
+because of a conflict, so you finish in one place.</p>
+<h3 id="interactive-rebase">Interactive rebase</h3>
+<p><strong>Interactive Rebase…</strong> does the job of
+<code>git rebase -i</code>, which normally drops you in a text editor to
+reorder and mark up commits by eye. QUILL shows a real list instead, one
+commit per row:</p>
+<ol type="1">
+<li>For each commit, choose an action from the dropdown: pick, squash,
+reword, or drop.</li>
+<li>Use <strong>Move Up</strong> and <strong>Move Down</strong> to
+change the order.</li>
+<li>Press <strong>Start Rebase</strong> when the plan is right.</li>
+</ol>
+<p>If a step conflicts, the conflict walker opens; resolve it and the
+rebase carries on by itself. <strong>Abort Rebase</strong> puts your
+branch back exactly where it started if you change your mind
+partway.</p>
+<h3 id="more-local-git-commands">More Local Git commands</h3>
+<ul>
+<li><strong>Switch Branch…</strong> lists your local branches and
+switches to the one you choose. If you have uncommitted changes, QUILL
+warns you and offers to switch anyway and bring them along. It never
+quietly throws them away, and it doesn’t just refuse.</li>
+<li><strong>Stash Changes… / Manage Stashes…</strong> put your
+uncommitted work aside under a name you’ll recognize, then list, apply
+or drop any stash later, with no <code>stash@{2}</code> references to
+remember.</li>
+<li><strong>Who Wrote This Line…</strong> runs <code>git blame</code> on
+the line your cursor is on and tells you who last changed it, when, and
+the commit’s summary.</li>
+<li><strong>Start Bisect… / End Bisect</strong> runs a
+<code>git bisect</code> session as plain questions and answers. QUILL
+checks out a commit and asks “Is this version good or bad?” Answer, and
+it narrows the search until it tells you exactly which commit brought in
+the problem.</li>
+</ul>
+<p>None of these commands has a default key, because every letter after
+the QUILL key is already taken. All twelve are in the command palette
+and on the <strong>Tools &gt; Git and GitHub &gt; Local Git</strong>
+menu, and you can give any of them your own key in the Keymap
+Editor.</p>
+<h3 id="worktrees">Worktrees</h3>
+<p>A git repository is normally one folder holding one branch at a time.
+Switching branches rewrites every file in that folder to match the new
+branch, keeping the same names and paths.</p>
+<p>A <strong>worktree</strong> is a second folder attached to the same
+repository, with a different branch checked out in it. The folders share
+one history, one set of branches and one set of stashes, but each has
+its own copy of the files. You might have <code>quill</code> on
+<code>main</code> and <code>quill-feature-x</code> on
+<code>feature/x</code>, side by side.</p>
+<p>This matters more when you use a screen reader. Switch branches in
+place and the document you have open in QUILL is replaced by a different
+document with the same name. Someone looking at the screen sees the text
+change. With a screen reader nothing tells you: the paragraph under your
+review cursor now comes from another branch, in a file that still has
+the name of the one you opened. With a worktree, nothing under your
+cursor changes. Moving to other work means opening a different file,
+which you do and hear, instead of a file quietly becoming a different
+file.</p>
+<h4 id="seeing-what-you-have">Seeing what you have</h4>
+<p><strong>Tools &gt; Git and GitHub &gt; Local Git &gt;
+Worktrees…</strong> opens the list. QUILL says how many worktrees the
+repository has as the dialog opens, and each row reads as a whole
+sentence, so there are no columns to arrow across:</p>
+<ul>
+<li><em>“Main worktree at S:\code\quill, on branch main”</em></li>
+<li><em>“Linked worktree at S:\code\quill-feature-x, on branch
+feature/x”</em></li>
+<li><em>“Linked worktree at D:\usb\quill-spike, on branch spike, locked:
+on a USB drive”</em></li>
+<li><em>“Linked worktree at S:\code\quill-old, on branch old, missing
+from disk, ready to prune”</em></li>
+</ul>
+<p>A worktree that is not on a branch reads as <em>“not on a branch, at
+commit 3f9a21c”</em>. After any action, QUILL speaks the result, rereads
+the list and puts focus back on it, so you never have to hunt for your
+place.</p>
+<h4 id="creating-one">Creating one</h4>
+<p>Press <strong>New Worktree…</strong> in the list, or run
+<strong>Local Git: New Worktree…</strong> from the command palette to
+skip the list. The form asks for:</p>
+<ul>
+<li><strong>Folder for the new worktree</strong>: where the new folder
+should go. Type or paste it, or press <strong>Browse…</strong>. The
+field accepts whatever you paste: a path copied from File Explorer with
+the quotes still on, an <code>%APPDATA%</code>-style path, a
+<code>file://</code> link, or a leading <code>~</code>.</li>
+<li><strong>Branch to check out</strong>: a list of your local branches.
+Branches already checked out in another worktree are left out, because
+git won’t allow the same branch twice.</li>
+<li><strong>Create a new branch instead</strong>: check this to make a
+brand-new branch here instead of checking out an existing one.</li>
+<li><strong>New branch name</strong> and <strong>Start the new branch
+from</strong>: used only when the checkbox is checked. Leave the
+starting point blank to branch from where you are now, or name a branch,
+tag or commit to start from.</li>
+</ul>
+<p>QUILL checks everything before it runs git, and tells you what is
+wrong if something is: a folder that already has files in it, a folder
+inside the repository itself (git won’t allow that), no branch chosen,
+or no new branch name typed.</p>
+<h4 id="opening-one">Opening one</h4>
+<p>Select a worktree and press <strong>Open in QUILL</strong>, or just
+press Enter on the row. QUILL opens documents, not folders, so this
+means “open the same file from over there”. QUILL works out where your
+current document sits in its own worktree and opens the matching file in
+the one you chose. If that file doesn’t exist there (it is new on your
+branch, or nothing was open), QUILL says so and gives you a file picker
+already in the worktree’s folder.</p>
+<h4 id="removing-locking-and-tidying-up">Removing, locking and tidying
+up</h4>
+<ul>
+<li><strong>Remove…</strong> deletes a worktree’s folder from your disk.
+The branch stays in the repository; you are removing the folder, not the
+work. QUILL always confirms first, with <strong>No</strong> as the
+default button, so pressing Enter out of habit never destroys
+anything.</li>
+<li><strong>If the worktree still has uncommitted changes, git
+refuses</strong>, and QUILL tells you so in plain language instead of
+forcing it. Only then does it ask a second, separate question: discard
+those changes and remove it anyway? That is two confirmations, never
+one.</li>
+<li><strong>Lock</strong> marks a worktree as “leave this alone”, with
+an optional reason you’ll hear later in the list. Do this for a worktree
+on a USB drive or a network share, which git would otherwise treat as a
+folder that vanished. The button reads <strong>Unlock</strong> when the
+selected worktree is already locked.</li>
+<li><strong>Prune</strong> forgets any worktree whose folder is really
+gone from disk and tells you which ones it tidied up. When there is
+nothing to do, it says <em>“Nothing to tidy up: every worktree is still
+on disk.”</em></li>
+<li>The <strong>main</strong> worktree (the repository folder itself)
+can never be removed or locked here; those buttons are unavailable while
+it is selected.</li>
+</ul>
+<h4 id="good-to-know-about-worktrees">Good to know about worktrees</h4>
+<ul>
+<li><strong>A branch can only be checked out in one worktree at a
+time.</strong> That is git’s rule. If you pick a branch that is open
+somewhere else, QUILL tells you which folder has it so you can open that
+folder instead.</li>
+<li><strong>A worktree cannot live inside the repository it belongs
+to.</strong> Put it beside the repository folder.</li>
+<li><strong>Removing a worktree with uncommitted changes is
+refused</strong> unless you confirm twice, as above.</li>
+<li><strong>Worktrees need <code>git</code></strong>, like everything
+under Tools &gt; Git and GitHub &gt; Local Git, and they are disabled in
+Safe Mode.</li>
+</ul>
+<h4 id="worktree-keys">Worktree keys</h4>
+<p>Neither worktree command has a default key, for the same reason as
+the other Local Git commands. Both are on <strong>Tools &gt; Git and
+GitHub &gt; Local Git</strong> and in the command palette (<strong>Local
+Git: Worktrees…</strong> and <strong>Local Git: New Worktree…</strong>),
+and you can give either a key in the Keymap Editor.</p>
+<p>In the Worktrees dialog:</p>
+<ul>
+<li><strong>Tab</strong> and <strong>Shift+Tab</strong> move between the
+list and the buttons.</li>
+<li><strong>Up</strong> and <strong>Down</strong> arrow move through the
+worktrees.</li>
+<li><strong>Enter</strong> or <strong>Space</strong> on a row is the
+same as <strong>Open in QUILL</strong>.</li>
+<li>Access keys: <strong>Alt+N</strong> New Worktree,
+<strong>Alt+O</strong> Open in QUILL, <strong>Alt+R</strong> Remove,
+<strong>Alt+L</strong> Lock or Unlock, <strong>Alt+P</strong>
+Prune.</li>
+<li><strong>Escape</strong> closes the dialog.</li>
+</ul>
+<p>In <strong>New Worktree</strong>:</p>
+<ul>
+<li><strong>Alt+F</strong> the folder field, <strong>Alt+B</strong>
+Browse, <strong>Alt+C</strong> the branch chooser.</li>
+<li><strong>Alt+N</strong> the “create a new branch” checkbox,
+<strong>Alt+A</strong> the new branch name, <strong>Alt+R</strong> the
+starting point.</li>
+<li><strong>Enter</strong> creates the worktree, and
+<strong>Escape</strong> cancels.</li>
+</ul>
+<h3 id="downloading-git-and-the-github-cli">Downloading git and the
+GitHub CLI</h3>
+<p>The Local Git commands, and the Codespaces commands under
+<strong>Tools &gt; Git and GitHub &gt; GitHub</strong>, need
+<code>git</code> and <code>gh</code> (the GitHub CLI) on your computer.
+QUILL looks for copies you already have first: if <code>git</code> or
+<code>gh</code> is already on your system PATH, QUILL uses it and you
+need nothing more.</p>
+<p>If you don’t have them, <strong>Help &gt; Download Optional
+Components</strong> has a row for each:</p>
+<ul>
+<li><strong>Git</strong>: Windows only, a portable copy of Git for
+Windows, about 40 MB.</li>
+<li><strong>GitHub CLI</strong>: Windows and macOS, about 14 MB.</li>
+</ul>
+<p>Both are exact copies of the official releases, checksum-verified
+like every other optional component. Download either one and its
+commands work straight away, with no separate install, no PATH changes
+and no restart. You can remove either one later from the same dialog;
+removing one never affects the other, even though they are stored in the
+same place.</p>
+<h2 id="quill-radio-and-the-quillville-family">Quill Radio and the
+QuillVille family</h2>
+<p>Internet radio is not part of QUILL. It is <strong>Quill
+Radio</strong>, a free app of its own in the QuillVille family, with its
+own window, its own keyboard-first design, and its own complete User
+Guide (open it from the app’s Help menu). The other companions are the
+same: <strong>Quill Weather</strong>, <strong>QUILL Audio
+Studio</strong>, <strong>Quill Inkwell</strong>, <strong>Quill
+Converter</strong>, <strong>QUILL Transcribe</strong> (released on 1
+November 2026, it types what you say into any program, not only into
+QUILL), and the rest.</p>
+<p>They share QUILL’s code, settings and data where that helps you. A
+station you favorite in Quill Radio, or an abbreviation you add in Quill
+Inkwell, is the same on both sides. Each app is documented in its own
+guide, not here.</p>
+<p><strong>The QuillVille menu</strong> sits just before Help in QUILL’s
+menu bar, and in every QuillVille app. It is where they all meet: it
+lists every app in the family, launches the ones you have, and offers to
+download the ones you don’t. That menu, and this short note, are all
+QUILL’s guide has to say about them.</p>
+<blockquote>
+<p><strong>QUILLBert found something:</strong> he opened the QuillVille
+menu looking for the way back to his document, and launched a radio
+station instead. He stayed for three songs. If that happens to you,
+<code>Ctrl+Alt+Shift+R</code> tucks Quill Radio into the tray and the
+music keeps playing.</p>
+</blockquote>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now catch a thought in a sticky note from anywhere, find it
+again in the Sticky Notes Browser, and set up global hotkeys, including
+<code>Ctrl+Alt+Shift+Q</code> to show or hide QUILL. You know how to
+gather files in a notebook, organize a book in Story Studio, link your
+notes in a vault, move between formats, build tables in Table Studio,
+sync with a folder or GitHub, post to Mastodon, and handle conflicts,
+rebases and worktrees in Local Git.</p>
+<p>To practise, open <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>) and try “QUILL and the apps around it”. On
+the website, read <a
+href="https://www.quillforall.org/tutorials/05-start-a-vault.html">Start
+an Accessible Vault</a>, <a
+href="https://www.quillforall.org/tutorials/08-github-inside-quill.html">GitHub
+inside QUILL</a>, <a
+href="https://www.quillforall.org/tutorials/09-internet-radio.html">Internet
+Radio with Quill Radio</a> and <a
+href="https://www.quillforall.org/tutorials/10-podcasts.html">Podcasts
+with QUILL Cast</a>.</p>
+<p>Next, Chapter 15, Help, updates and support, shows where to turn when
+you are stuck and how to keep QUILL up to date.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-13-keeping-your-work-safe.html">Chapter 13: Keeping
+your work safe</a></li>
+<li>Next: <a href="quill-guide-15-help-updates-and-support.html">Chapter
+15: Help, updates and support</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Appendix A: The QUILL Developer Console</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="appendix-a-the-quill-developer-console">Appendix A: The QUILL
+Developer Console</h1>
+<p>This appendix is for people who like to script and automate. Nobody
+needs it to write, and if you never open the console you are missing
+nothing you use every day. If you are a developer, a power user, an
+accessibility tester or someone building a Quillin, read on. The QUILL
+Developer Console (QDC for short) lets you look inside the running
+editor and drive it from code.</p>
+<h2 id="what-the-qdc-is">What the QDC is</h2>
+<p>The Developer Console is a scripting window built into QUILL. You can
+inspect and automate the editor while it runs, without rebuilding
+anything or adding temporary menu items.</p>
+<p>It is switched off by default for the Essential, Casual Writer and
+Reader and Student profiles. You will find it under the Developer, Power
+Text and Full QUILL profiles.</p>
+<p>There are two consoles:</p>
+<ul>
+<li><strong>Python console.</strong> Runs inside QUILL, with full access
+to the scripting API through the name <code>q</code>. Its prompt is
+<code>&gt;&gt;&gt;</code>, and <code>...</code> while you are in the
+middle of a block.</li>
+<li><strong>TypeScript console.</strong> Runs through a Node subprocess.
+Its API is asynchronous and is called <code>quill</code>. Its prompt is
+<code>ts&gt;</code>, and <code>ts*&gt;</code> while an async operation
+is still running.</li>
+</ul>
+<p>Both share the same transcript window, and both speak through QUILL’s
+usual announcements.</p>
+<h2 id="opening-the-console">Opening the console</h2>
+<p>Choose <strong>Tools &gt; Advanced &gt; Developer Console &gt; Open
+Python Console</strong> or <strong>Tools &gt; Advanced &gt; Developer
+Console &gt; Open TypeScript Console</strong>.</p>
+<p>From the Command Palette, the commands are
+<code>quill.console.openPython</code> and
+<code>quill.console.openTypeScript</code>.</p>
+<p>The console opens as its own dialog. Press <code>Esc</code> to send
+focus back to the editor. The dialog stays open, and keeps everything
+you defined, until you close it yourself.</p>
+<h2 id="console-layout">Console layout</h2>
+<p>Press <code>F6</code> to move between the five areas of the
+console:</p>
+<ol type="1">
+<li><strong>Transcript.</strong> Read-only. Shows prompts, output,
+errors and return values.</li>
+<li><strong>Input.</strong> One line by default.
+<code>Shift+Enter</code> adds a new line, so you can type a block of
+several lines.</li>
+<li><strong>Language selector.</strong> Switches between Python and
+TypeScript.</li>
+<li><strong>Status line.</strong> The current language, prompt state,
+active document and worker status.</li>
+<li><strong>Buttons.</strong> Run, Clear, Copy transcript, Save
+transcript, Insert snippet, Help and Close.</li>
+</ol>
+<h2 id="keyboard-reference">Keyboard reference</h2>
+<p>These keys work inside the console window.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enter</td>
+<td>Execute current command</td>
+</tr>
+<tr>
+<td>Shift+Enter</td>
+<td>Insert newline (multi-line input)</td>
+</tr>
+<tr>
+<td>Ctrl+Enter</td>
+<td>Force execute multi-line block</td>
+</tr>
+<tr>
+<td>Up / Down</td>
+<td>Previous / next history (when cursor is at line boundary)</td>
+</tr>
+<tr>
+<td>Ctrl+L</td>
+<td>Clear transcript</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+C</td>
+<td>Copy transcript</td>
+</tr>
+<tr>
+<td>Ctrl+S</td>
+<td>Save transcript</td>
+</tr>
+<tr>
+<td>Ctrl+F</td>
+<td>Find in transcript</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Move between transcript, input, status, and buttons</td>
+</tr>
+<tr>
+<td>Esc</td>
+<td>Return focus to editor</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Console help</td>
+</tr>
+<tr>
+<td>Ctrl+Space</td>
+<td>Trigger completion</td>
+</tr>
+</tbody>
+</table>
+<h2 id="python-console">Python console</h2>
+<h3 id="available-names">Available names</h3>
+<p>These names are ready for you as soon as the console opens:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>q</code></td>
+<td>Primary QUILL scripting API, start here</td>
+</tr>
+<tr>
+<td><code>app</code></td>
+<td>Application-level read-mostly object</td>
+</tr>
+<tr>
+<td><code>commands</code></td>
+<td>Command registry facade</td>
+</tr>
+<tr>
+<td><code>doc</code></td>
+<td>Active document snapshot</td>
+</tr>
+<tr>
+<td><code>editor</code></td>
+<td>Active editor snapshot</td>
+</tr>
+<tr>
+<td><code>sel</code></td>
+<td>Current selection snapshot</td>
+</tr>
+<tr>
+<td><code>caret</code></td>
+<td>Current caret snapshot</td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td>Active feature profile snapshot</td>
+</tr>
+<tr>
+<td><code>settings</code></td>
+<td>Safe settings facade</td>
+</tr>
+<tr>
+<td><code>diagnostics</code></td>
+<td>Diagnostics facade</td>
+</tr>
+<tr>
+<td><code>a11y</code></td>
+<td>Announcement / testing facade</td>
+</tr>
+<tr>
+<td><code>log</code></td>
+<td>Console-safe logger</td>
+</tr>
+<tr>
+<td><code>wx</code></td>
+<td>wx module (Developer profile only)</td>
+</tr>
+</tbody>
+</table>
+<p><code>doc</code>, <code>sel</code> and <code>caret</code> are
+read-only snapshots, taken at the moment they were captured. They
+refresh when the active document changes. Otherwise, call
+<code>q.refresh_context()</code> to pull in the current state.</p>
+<p>The <code>q</code> API also has these facades:
+<code>q.selection</code>, <code>q.doc</code>, <code>q.editor</code>,
+<code>q.settings</code>, <code>q.profile</code>,
+<code>q.bookmarks</code>, <code>q.quillins</code>, <code>q.macros</code>
+(with <code>q.begin_macro</code> and <code>q.end_macro</code>),
+<code>q.spell</code>, <code>q.diagnostics</code>, <code>q.a11y</code>,
+<code>q.commands</code>, <code>q.focus</code> and
+<code>q.support</code>, plus <code>q.describe_command</code>.</p>
+<h3 id="basic-operations">Basic operations</h3>
+<p>Insert text at the cursor:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span></code></pre></div>
+<p>Replace the current selection:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.replace_selection(<span class="st">&quot;Replacement text&quot;</span>)</span></code></pre></div>
+<p>Jump to a line:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.goto_line(<span class="dv">42</span>)</span></code></pre></div>
+<p>Run a built-in command by its ID:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span></code></pre></div>
+<p>Send a screen-reader announcement:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.announce(<span class="st">&quot;Test announcement.&quot;</span>)</span></code></pre></div>
+<h3 id="inspecting-state">Inspecting state</h3>
+<p>Read the name of the active document:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> doc.name</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;notes.txt&#39;</span></span></code></pre></div>
+<p>Read the current selection:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> sel.text</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;selected words here&#39;</span></span></code></pre></div>
+<p>Read where the caret is (line and column both start at 1):</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> caret.line, caret.column</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>(<span class="dv">12</span>, <span class="dv">5</span>)</span></code></pre></div>
+<p>Search for commands by keyword:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> commands.search(<span class="st">&quot;spell&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;quill.spell.check&#39;</span>, <span class="st">&#39;quill.spell.addWord&#39;</span>, <span class="st">&#39;quill.spell.nextError&#39;</span>]</span></code></pre></div>
+<p>Get a diagnostic summary, which is handy when you are asking for
+support:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.support.diagnostic_summary()</span></code></pre></div>
+<h3 id="accessibility-diagnostics">Accessibility diagnostics</h3>
+<p>Hear again what QUILL last announced:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.last_announcements()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;Title Case applied&#39;</span>, <span class="st">&#39;5 words selected&#39;</span>]</span></code></pre></div>
+<p>Describe where focus is right now:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.focus.describe()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;Editor: notes.txt, line 12, col 5, no selection&#39;</span></span></code></pre></div>
+<h3 id="multi-line-blocks">Multi-line blocks</h3>
+<p>Press <code>Shift+Enter</code> to add new lines, then
+<code>Enter</code> or <code>Ctrl+Enter</code> to run the block:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> count_words(text):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>...     <span class="cf">return</span> <span class="bu">len</span>(text.split())</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> count_words(doc.text)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="dv">487</span></span></code></pre></div>
+<h3 id="when-a-command-runs-too-long">When a command runs too long</h3>
+<p>If something you type into the Python console runs away, a loop that
+never ends say, QUILL stops it after <strong>Python console execution
+timeout</strong> seconds (Settings &gt; Administration) and tells you
+“Stopped after 30 seconds.” It is 30 to begin with, and you can set
+anything from 5 to 300. A command that is waiting on the system, such as
+a long sleep, stops as soon as that wait is over.</p>
+<h3 id="macro-recording">Macro recording</h3>
+<p>You can record a run of commands as a macro and use it again
+later:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.begin_macro(<span class="st">&quot;Clean OCR text&quot;</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.normalizeUnicode&quot;</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.dehyphenateLines&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.reflowParagraphs&quot;</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.end_macro()</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>Macro saved: <span class="st">&quot;Clean OCR text&quot;</span></span></code></pre></div>
+<h2 id="typescript-console">TypeScript console</h2>
+<p>The TypeScript console needs Node.js on your PATH. If QUILL cannot
+find it, it tells you so and offers to help you install it.</p>
+<h3 id="typescript-prompt-behavior">TypeScript prompt behavior</h3>
+<pre class="text"><code>ts&gt; await quill.insertText(&quot;Hello.&quot;);
+ts*&gt;
+Result: undefined</code></pre>
+<p><code>ts&gt;</code> means the console is ready. <code>ts*&gt;</code>
+means an async operation is still in flight. Results and errors land in
+the transcript by themselves.</p>
+<h3 id="available-globals">Available globals</h3>
+<table>
+<thead>
+<tr>
+<th>Global</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill</code></td>
+<td>Async QUILL scripting proxy</td>
+</tr>
+<tr>
+<td><code>console</code></td>
+<td>Captured: <code>.log()</code>, <code>.warn()</code>,
+<code>.error()</code> appear in transcript</td>
+</tr>
+<tr>
+<td><code>setTimeout</code> / <code>clearTimeout</code></td>
+<td>Standard timer</td>
+</tr>
+<tr>
+<td><code>AbortController</code></td>
+<td>For cancellable operations</td>
+</tr>
+</tbody>
+</table>
+<h3 id="basic-typescript-operations">Basic TypeScript operations</h3>
+<p>Insert text:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Replace the selection:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">replaceSelection</span>(<span class="st">&quot;Replacement text&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Jump to a line:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span></code></pre></div>
+<p>Run a built-in command:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="inspecting-state-from-typescript">Inspecting state from
+TypeScript</h3>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> doc <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">activeDocument</span>()<span class="op">;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(doc<span class="op">.</span><span class="at">name</span>)<span class="op">;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>notes<span class="op">.</span><span class="at">txt</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`</span><span class="sc">${</span>stats<span class="op">.</span><span class="at">words</span><span class="sc">}</span><span class="vs"> words, </span><span class="sc">${</span>stats<span class="op">.</span><span class="at">lines</span><span class="sc">}</span><span class="vs"> lines`</span>)<span class="op">;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="dv">487</span> words<span class="op">,</span> <span class="dv">38</span> lines</span></code></pre></div>
+<h3 id="multi-line-typescript">Multi-line TypeScript</h3>
+<p>Press <code>Shift+Enter</code> to build a block over several lines,
+then <code>Ctrl+Enter</code> to run it:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> text <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">getText</span>()<span class="op">;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> words <span class="op">=</span> text<span class="op">.</span><span class="fu">trim</span>()<span class="op">.</span><span class="fu">split</span>(<span class="ss">/</span><span class="sc">\s+</span><span class="ss">/</span>)<span class="op">.</span><span class="fu">filter</span>(<span class="bu">Boolean</span>)<span class="op">;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">announce</span>(<span class="vs">`</span><span class="sc">${</span>words<span class="op">.</span><span class="at">length</span><span class="sc">}</span><span class="vs"> words`</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="typescript-type-definitions">TypeScript type definitions</h3>
+<p>QUILL comes with a file called <code>quill-console.d.ts</code>. If
+you have Node.js and a code editor that understands TypeScript, copy the
+file into your project and you get completion:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// quill is typed as:</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillConsoleApi {</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentSnapshot<span class="op">&gt;;</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentStats<span class="op">&gt;;</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">announce</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="screen-reader-notes">Screen-reader notes</h2>
+<ul>
+<li>New output in the transcript is announced, and focus stays where it
+is.</li>
+<li>Errors are announced starting with the word “Error”.</li>
+<li>Return values are announced starting with the word “Result”.</li>
+<li>Long output is summed up in the announcement. Read the transcript
+with your screen reader for the full text.</li>
+<li><code>Ctrl+Shift+C</code> copies the transcript at any time.</li>
+<li>The console speaks through Prism, the same announcement path every
+other part of QUILL uses.</li>
+<li>Every control is a standard Windows control. Nothing is
+custom-drawn.</li>
+</ul>
+<h2 id="console-safety-settings">Console safety settings</h2>
+<p>There is no menu row for them: open the Command Palette
+(<code>Ctrl+Shift+P</code>) and run the command
+<code>quill.console.openSafetySettings</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python console enabled</td>
+<td>Profile-dependent</td>
+<td>Off for Essential / Casual Writer</td>
+</tr>
+<tr>
+<td>TypeScript console enabled</td>
+<td>Profile-dependent</td>
+<td>Off except Developer profile</td>
+</tr>
+<tr>
+<td>Require developer profile</td>
+<td>On</td>
+<td>Prevents accidental access in the Casual Writer profile</td>
+</tr>
+<tr>
+<td>Max execution time (Python)</td>
+<td>30 s</td>
+<td>Hard kill after timeout</td>
+</tr>
+<tr>
+<td>Max execution time (TypeScript)</td>
+<td>30 s</td>
+<td>Worker restart after timeout</td>
+</tr>
+<tr>
+<td>Allow <code>wx</code> module access</td>
+<td>Developer profile only</td>
+<td>Not available in any other profile</td>
+</tr>
+<tr>
+<td>Remote console</td>
+<td>Locked off</td>
+<td>Not available in QUILL 1.x</td>
+</tr>
+</tbody>
+</table>
+<h2 id="transcript-commands">Transcript commands</h2>
+<p>You can run these from the Command Palette while the console is
+open.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill.console.copyTranscript</code></td>
+<td>Copy entire transcript to clipboard</td>
+</tr>
+<tr>
+<td><code>quill.console.saveTranscript</code></td>
+<td>Save transcript to a file</td>
+</tr>
+<tr>
+<td><code>quill.console.clear</code></td>
+<td>Clear the transcript</td>
+</tr>
+<tr>
+<td><code>quill.console.saveInputAsSnippet</code></td>
+<td>Save the current input as a named snippet</td>
+</tr>
+<tr>
+<td><code>quill.console.insertSnippet</code></td>
+<td>Insert a saved snippet into input</td>
+</tr>
+<tr>
+<td><code>quill.console.runSelection</code></td>
+<td>Run selected text in the transcript as a command</td>
+</tr>
+<tr>
+<td><code>quill.console.runCurrentDocument</code></td>
+<td>Run the active QUILL document as a script</td>
+</tr>
+<tr>
+<td><code>quill.console.showContext</code></td>
+<td>Print current snapshot values to transcript</td>
+</tr>
+<tr>
+<td><code>quill.console.resetNamespace</code></td>
+<td>Reset the Python namespace (clears all variables)</td>
+</tr>
+<tr>
+<td><code>quill.console.restartTypeScriptWorker</code></td>
+<td>Kill and restart the Node worker</td>
+</tr>
+</tbody>
+</table>
+<h2 id="for-quillin-authors">For Quillin authors</h2>
+<p>The console is a good place to try out a Quillin while you build it.
+Load your Quillin, open the Python console, and look at its manifest and
+the commands it adds:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> quill.core.quillins.loader <span class="im">import</span> get_loader</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> loader <span class="op">=</span> get_loader()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext <span class="op">=</span> loader.get_extension(<span class="st">&quot;com.example.myextension&quot;</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext.manifest</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>ExtensionManifest(<span class="bu">id</span><span class="op">=</span><span class="st">&#39;com.example.myextension&#39;</span>, runtime<span class="op">=</span><span class="st">&#39;python&#39;</span>, ...)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext.manifest.contributes.commands</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>(ExtensionCommand(<span class="bu">id</span><span class="op">=</span><span class="st">&#39;ext.myext.run&#39;</span>, title<span class="op">=</span><span class="st">&#39;My Command&#39;</span>, ...),)</span></code></pre></div>
+<p>Run one of its commands straight through the command registry:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;ext.myext.run&quot;</span>)</span></code></pre></div>
+<p>Then check what it announced:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.last_announcements()</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;My command completed: 3 items processed&#39;</span>]</span></code></pre></div>
+<p>For a Node.js Quillin, the TypeScript console is the natural place to
+test:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;ext.myext.nodeHandler&quot;</span>)<span class="op">;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="co">// Check the last announcement</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> ann <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">lastAnnouncement</span>()<span class="op">;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(ann)<span class="op">;</span></span></code></pre></div>
+<h2 id="what-the-console-can-and-cannot-do-yet">What the console can and
+cannot do yet</h2>
+<p>The console is built and working under the Developer, Power Text and
+Full QUILL profiles, at <strong>Tools &gt; Advanced &gt; Developer
+Console</strong>. Here is what you get today:</p>
+<ul>
+<li>The Python console and its console window.</li>
+<li>The TypeScript console, running through a Node subprocess.</li>
+<li>The <code>q</code> scripting API: the text, navigation and command
+methods, plus the facades <code>q.selection</code>, <code>q.doc</code>,
+<code>q.editor</code>, <code>q.settings</code>, <code>q.profile</code>,
+<code>q.bookmarks</code>, <code>q.quillins</code>, <code>q.macros</code>
+(with <code>q.begin_macro</code> and <code>q.end_macro</code>),
+<code>q.spell</code>, <code>q.diagnostics</code>, <code>q.a11y</code>,
+<code>q.commands</code>, <code>q.focus</code> and
+<code>q.support</code>, plus <code>q.describe_command</code>.</li>
+</ul>
+<p>Some examples in this appendix were written for a fuller API than the
+console has today. If a call shown here does not work, the list above is
+the one to trust. The full scripting contract, with its own map of what
+is implemented, is in <code>docs/quillins.md</code>.</p>
+<h2 id="where-to-go-next">Where to go next</h2>
+<p>The thinking behind the console, and the plans for it, are in
+Appendix E, Developer Console design document. If you build Quillins,
+<code>docs/quillins.md</code> is your reference.</p>
+<hr />
+<ul>
+<li>Previous: <a href="quill-guide-a-last-word.html">A last
+word</a></li>
+<li>Next: <a
+href="quill-guide-appendix-b-writing-skills-for-quill.html">Appendix B:
+Writing skills for QUILL</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

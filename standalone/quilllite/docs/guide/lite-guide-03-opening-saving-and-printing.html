@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 3: Opening, saving and printing</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-3-opening-saving-and-printing">Chapter 3: Opening,
+saving and printing</h1>
+<p>QUILL Lite makes you one promise: open a file, change nothing, save
+it, and you get exactly the file you started with. This chapter is about
+that promise and everything around it. You will meet the four kinds of
+document and learn how to tell QUILL Lite which one you mean. Then you
+will see what happens when you save, how your work is kept safe if the
+computer stops, and how to get an earlier version back. Last come the
+documents QUILL Lite offers you when it starts, and printing.</p>
+<h2 id="four-kinds-of-document">Four kinds of document</h2>
+<p>Every document is one of four kinds. The title bar names the first
+two, and the status bar’s <strong>Format</strong> cell names all
+four.</p>
+<p><strong>Plain text</strong> is like Notepad. One font, no formatting,
+no markup. Anything you paste in arrives as plain text. Program files,
+settings files and logs are plain text, and plain text is what you want
+when another program is going to read the file.</p>
+<p><strong>Markdown</strong> is plain text with a few simple marks that
+mean something: <code>#</code> starts a heading, <code>-</code> starts a
+bullet, and <code>**</code> makes a word bold. QUILL Lite types those
+marks for you (see <a
+href="lite-guide-06-formatting-headings-and-the-insert-menu.html#formatting">Formatting</a>,
+in Chapter 6) and reads them back, so as you move around it can tell you
+that you have arrived at a Heading 2 or walked into a list of five
+items.</p>
+<p><strong>HTML</strong> is the same idea written as tags:
+<code>&lt;h2&gt;</code>, <code>&lt;ul&gt;</code>,
+<code>&lt;strong&gt;</code>. Everything you can do in Markdown, you can
+do in HTML, in HTML’s own spelling.</p>
+<p><strong>Rich text</strong> is like WordPad. Bold, italic, headings,
+alignment, bullet points and line spacing. It saves as a Rich Text file,
+which Word and WordPad both open.</p>
+<p>QUILL Lite picks the kind from the file’s name. That is only a first
+guess, and you can change it:</p>
+<table>
+<thead>
+<tr>
+<th>The file is called</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notes.rtf</code></td>
+<td>Rich text</td>
+</tr>
+<tr>
+<td><code>notes.md</code>, <code>.markdown</code>, <code>.mdx</code>,
+and <code>.txt</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>page.html</code>, <code>.htm</code>, <code>.xhtml</code></td>
+<td>HTML</td>
+</tr>
+<tr>
+<td><code>build.py</code>, <code>nginx.conf</code>,
+<code>app.log</code>, anything else</td>
+<td>Plain text</td>
+</tr>
+<tr>
+<td>nothing yet: a new, unsaved document</td>
+<td>Markdown</td>
+</tr>
+</tbody>
+</table>
+<p>A <code>.txt</code> file and a brand-new document start as Markdown,
+because if you type <code>## Notes</code> into one, you almost certainly
+mean a heading. A program file like <code>.py</code> or a settings file
+like <code>.conf</code> starts as plain text, because there a
+<code>#</code> starts a comment and a <code>-</code> is an option. You
+would not want every other line announced as “Heading 1”.</p>
+<h3 id="saying-otherwise">Saying otherwise</h3>
+<p>You can always change the guess. Writing HTML in a scratch
+<code>.txt</code> file is a perfectly normal thing to do. There are
+three ways to choose:</p>
+<ul>
+<li><strong>Alt+Shift+F</strong> steps through all four kinds: plain
+text, Markdown, HTML, rich text, and round again. Each one says its
+name, so keep pressing until you hear the one you want. This is the
+quickest way.</li>
+<li><strong>Ctrl+Alt+F6</strong> (<strong>Format &gt; Document
+Language</strong>) lets you pick one from a list, and tells you what
+each choice will do before you choose.</li>
+<li><strong>Enter on the status bar’s Format cell</strong> steps on to
+the next kind, just like Alt+Shift+F. The status bar is often where you
+notice the kind is wrong, so you can fix it right there.</li>
+</ul>
+<p>Switching between plain text, Markdown and HTML changes
+<strong>nothing in your document</strong>. It only changes what the
+formatting keys type from now on. Switching to or from rich text really
+converts your document, so QUILL Lite asks you first.</p>
+<p>Your choice lasts as long as the window is open. It describes what
+you are typing, not the file itself.</p>
+<p>The tutorial <em>Four kinds of document, and how to say which</em>
+lets you try each of these with the app guiding you.</p>
+<h3 id="what-the-conversion-keeps">What the conversion keeps</h3>
+<p>When you go <strong>out of rich text</strong>, your formatting is
+turned into Markdown, so you do not lose it. A Heading 2 becomes
+<code>## </code>, a bold word becomes <code>**bold**</code>, and a
+bullet list becomes lines that start with <code>- </code>. The
+<strong>Format</strong> cell then says Markdown, and heading navigation,
+the headings list and the outline still find everything they found a
+moment ago. If your document holds something Markdown cannot show, such
+as a table, a picture or a footnote, QUILL Lite names it before it
+asks.</p>
+<p>When you go <strong>into rich text</strong>, it works the other way.
+A Markdown document’s <code>## Title</code> becomes a real Heading 1,
+<code>**bold**</code> becomes truly bold, and an HTML document comes
+across too. A <strong>plain text</strong> document is left exactly as it
+is. The asterisks in a shopping list are not meant as bold, so QUILL
+Lite does not guess.</p>
+<h4 id="what-comes-with-you-both-ways">What comes with you, both
+ways</h4>
+<p>Headings, bold, italic, underline, strikethrough, superscript and
+subscript, font and size, text colour and highlight, bullet and numbered
+lists, links, code, block quotes, alignment, line spacing, indents,
+spacing before and after, named styles, page breaks, tables, pictures
+and horizontal lines.</p>
+<h4 id="opening-your-rich-text-in-word">Opening your rich text in
+Word</h4>
+<p>A rich text file from QUILL Lite opens properly in Word. Headings use
+Word’s own heading styles, and Quote, Title, Subtitle and Caption use
+the names Word knows. So Word’s style box says Quote, instead of just
+showing text that looks indented and italic.</p>
+<h4 id="your-files-name">Your file’s name</h4>
+<p>Your file keeps its name. But rich text cannot be saved into a
+<code>.txt</code> file, so the next time you press
+<strong>Ctrl+S</strong>, QUILL Lite offers <code>notes.rtf</code>
+instead of <code>notes.txt</code>, with the name already filled in. Just
+press Enter to accept it. That way the name always matches what is
+inside.</p>
+<h2 id="opening-a-pdf">Opening a PDF</h2>
+<p>QUILL Lite opens PDFs. Press <strong>Ctrl+O</strong> and choose one,
+the same as any other file. You can also drag one onto the window, or
+open it from Recent Documents.</p>
+<p>A PDF opens as its <strong>text</strong>. You can read it, search it,
+select and copy from it, and change it. What you cannot do is turn it
+back into a PDF: QUILL Lite never writes to a PDF. The PDF you opened
+stays exactly as it was.</p>
+<p>When it opens, QUILL Lite tells you how many pages it has, whether it
+has an outline, and which pages, if any, may read poorly.</p>
+<h3 id="what-comes-through-and-what-does-not">What comes through, and
+what does not</h3>
+<p>The words come through, in order, with the lines joined back into
+paragraphs. Each page stays a page, blank pages included, so page 3 is
+always the third page. Headings, lists and tables come through as
+ordinary lines of text: a heading keeps its own line, a list item keeps
+its own line, and each row of a table stays one line with its numbers in
+order. Pictures do not come through at all. A page set in two clear
+columns is read down the first column and then the second; a page with
+three columns, or columns wrapped around pictures, can still come out
+mixed. Those are the limits of reading a PDF’s text, and QUILL has the
+same ones.</p>
+<p>QUILL Lite reads the first 200 pages of a very long PDF, and tells
+you when it stopped early.</p>
+<h3 id="how-the-text-of-each-page-is-chosen">How the text of each page
+is chosen</h3>
+<p>A PDF can be read more than one way, and the ways do not always
+agree: one may spell a widely spaced line out a letter at a time, or run
+two columns together line by line, where another reads it properly.
+QUILL Lite decides page by page. A page whose first reading is clean is
+kept at once. A page that shows signs of trouble, or looks as if it is
+set in two columns, is read two more ways, and the reading with the
+fewest problems wins: fewest characters that cannot be read, words
+broken into letters, words glued together, and missing text. A short
+title page, a page of figures, or a page in another language is not
+marked down for being short.</p>
+<p>Nothing is uploaded, nothing is guessed, and the PDF is never
+changed. A character the PDF gave no meaning to is left in the text
+rather than deleted, and the page is named so you know to check it.</p>
+<h3 id="when-a-page-may-read-poorly">When a page may read poorly</h3>
+<p>When the PDF opens, QUILL Lite names any page that still reads
+poorly, for example: “Opened as text, 12 pages. Pages 3 and 7 may read
+poorly.” A page is named when every reading of it was poor, when it
+holds characters that could not be read, or when it is only a picture,
+like one scanned page in an otherwise ordinary PDF. Blank pages are
+never named. Go to the page with <strong>Ctrl+G</strong> and check it;
+for a picture page, OCR (below) can read it.</p>
+<h3 id="pages">Pages</h3>
+<p>A PDF keeps its pages:</p>
+<ul>
+<li>The status bar gets a <strong>Page</strong> part, which says
+something like “Page 3 of 12”. Press <strong>Enter</strong> on it to go
+to a page.</li>
+<li><strong>Ctrl+G</strong> (Go To) has a <strong>Page</strong> choice.
+Arrow to it and pick a page from the list.</li>
+</ul>
+<h3 id="page-breaks-and-what-you-hear">Page breaks, and what you
+hear</h3>
+<p>Between one page and the next, the text holds a single <strong>page
+break</strong> character (a “form feed”). It is what the Page part and
+Go To’s Page list count, so it stays in the text, and it is saved with
+the text if you save it. The last words of one page and the first words
+of the next sit on either side of it.</p>
+<p>What QUILL Lite itself says never includes it. When a message quotes
+text across a page break, such as the first words of a selection that
+starts at the bottom of one page, the page break is read as a pause, the
+same as a new line, and the status bar shows it the same way.
+<strong>Ctrl+Shift+C</strong> on it says “Page break”, where it used to
+say “Unnamed character”.</p>
+<p>What your screen reader says as you arrow onto it is up to the screen
+reader: some say nothing, some say “page break”, and some may say “form
+feed”. If yours reads the last line of a page and the first line of the
+next as one line, use <strong>Ctrl+G</strong>, <strong>Page</strong>, to
+land at the top of a page instead.</p>
+<h3 id="the-pdfs-own-outline">The PDF’s own outline</h3>
+<p>Many PDFs come with an outline: a list of chapters and sections,
+which other programs call bookmarks. When the PDF you open has one,
+<strong>Ctrl+G</strong> has an <strong>Outline</strong> choice. Each
+entry says its title and its page, for example “Chapter 2, page 14”. An
+entry inside another also says its level, for example “Summary, level 3,
+page 15”. Choose one and press <strong>Enter</strong> to go there: you
+land on the title itself, even when it is halfway down the page, or on
+the top of the page when the title cannot be found there. The level only
+describes the outline; it does not make anything a heading.</p>
+<h3 id="a-pdf-with-a-password">A PDF with a password</h3>
+<p>If the PDF is locked, QUILL Lite asks for its password. Type it and
+press <strong>Enter</strong>. If it is wrong, QUILL Lite says so and
+asks again. Press <strong>Escape</strong> to give up, and nothing
+opens.</p>
+<p>QUILL Lite uses the password once, to open that file, and never saves
+it.</p>
+<h3 id="a-scanned-pdf">A scanned PDF</h3>
+<p>Some PDFs are only pictures of pages: a scanned letter, or a
+photocopy saved as a PDF. There is no text in them to read. When QUILL
+Lite opens one, it says it looks scanned and asks whether to read it
+with OCR on this computer. OCR means recognizing the letters in the
+picture.</p>
+<ul>
+<li><strong>Yes</strong> reads every page. QUILL Lite says when it
+starts, and the status bar counts the pages as it goes. When it
+finishes, the text opens with its pages, and QUILL Lite counts it as
+unsaved work, because that text is not saved anywhere yet.</li>
+<li><strong>No</strong> opens whatever little text the PDF has, or
+nothing at all if it has none.</li>
+</ul>
+<p>Nothing is uploaded. The reading happens on your computer, with the
+OCR that comes with Windows. It reads the languages you have installed
+in Windows Settings. If QUILL’s own OCR engine, Tesseract, is installed,
+QUILL Lite uses that instead, because it can say how sure it is. OCR
+makes mistakes, so check the text, and spell check helps.</p>
+<p>If this computer has no OCR at all, QUILL Lite says so and opens
+nothing.</p>
+<h3 id="saving">Saving</h3>
+<p>Press <strong>Ctrl+S</strong> on a PDF and QUILL Lite tells you it
+will not write over the PDF, then opens <strong>Save As</strong> with
+the same name ending in <code>.txt</code>. Choose text, Markdown or rich
+text, and press <strong>Enter</strong>. From then on you are working on
+the new file. If you type a name ending in <code>.pdf</code>, QUILL Lite
+says it cannot save that kind of file, and asks you to choose
+another.</p>
+<p>To make a real PDF, print to <strong>Microsoft Print to PDF</strong>
+instead (see <a href="#printing">Printing</a>).</p>
+<h2 id="office-files-at-a-glance">Office files at a glance</h2>
+<p>QUILL Lite handles Office files in two different ways, and it helps
+to know which one you are getting before you start.</p>
+<ul>
+<li>A <strong>Word document</strong> (<code>.docx</code>) is a document
+you can <strong>edit and save as Word</strong>. It opens as rich text,
+with its headings, lists, bold, links and tables, and
+<strong>Ctrl+S</strong> writes a real Word document back. See <em>Word
+documents</em> below.</li>
+<li><strong>Everything else</strong> from Office or LibreOffice opens as
+<strong>readable text</strong>, so you can read it, search it and copy
+from it. QUILL Lite never writes back into those files.
+<strong>Ctrl+S</strong> explains why, then opens <strong>Save
+As</strong> so you can keep your text as a new file.</li>
+</ul>
+<p>This works the same in an installed copy of QUILL Lite and in the
+portable copy. Both carry everything Word editing needs, and nothing is
+downloaded or uploaded.</p>
+<table>
+<thead>
+<tr>
+<th>File type</th>
+<th>What QUILL Lite does</th>
+<th>Can you save back to it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Word document (<code>.docx</code>)</td>
+<td>Opens to edit as rich text. Asks first if the document has things a
+save would drop, such as comments or pictures</td>
+<td><strong>Yes.</strong> Ctrl+S saves a real Word document. A document
+you were warned about is backed up first</td>
+</tr>
+<tr>
+<td>Word document with macros (<code>.docm</code>)</td>
+<td>Opens as text to read and copy. Macros never run</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Word 97-2003 document (<code>.doc</code>)</td>
+<td>Opens as text when LibreOffice is installed. Without LibreOffice,
+QUILL Lite tells you how to make a <code>.docx</code></td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>OpenDocument text (<code>.odt</code>)</td>
+<td>Opens as text</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Excel workbook (<code>.xlsx</code>, or <code>.xls</code> with
+LibreOffice)</td>
+<td>Opens as text: a “Sheet:” heading for each sheet, then its cells as
+a text table</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>PowerPoint presentation (<code>.pptx</code>, or <code>.ppt</code>
+with LibreOffice)</td>
+<td>Opens as text: a “Slide” heading for each slide, then its bullets,
+tables and speaker notes</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Excel with macros (<code>.xlsm</code>), OpenDocument spreadsheet
+(<code>.ods</code>) or presentation (<code>.odp</code>)</td>
+<td><strong>Ctrl+O</strong> does not open these. <strong>File &gt;
+Import / Convert Document</strong> reads them into a new document</td>
+<td>Not applicable. You get a new, untitled document</td>
+</tr>
+</tbody>
+</table>
+<p><strong>To edit a file that opens as text, make it a
+<code>.docx</code> first.</strong> For example, to edit a
+<code>.docm</code>, a <code>.doc</code> or an <code>.odt</code> in
+full:</p>
+<ol type="1">
+<li>Open it in Word, or in LibreOffice Writer.</li>
+<li>Choose <strong>File &gt; Save As</strong>.</li>
+<li>Pick <strong>Word Document (.docx)</strong> and save.</li>
+<li>Open the new <code>.docx</code> in QUILL Lite.</li>
+</ol>
+<p>A <code>.docm</code> saved this way loses its macros, which is why
+QUILL Lite never edits one directly. To keep the text without leaving
+QUILL Lite, open the file, switch the window to rich text with
+<strong>Switch Document Mode</strong> (<strong>Alt+Shift+F</strong>),
+and save it with <strong>Ctrl+Shift+S</strong> under a new name ending
+in <code>.docx</code>. You get a new Word document, and the original is
+left untouched.</p>
+<p><strong>Open or Import / Convert?</strong> <strong>Ctrl+O</strong>
+opens the file itself: the window takes the file’s name, and a Word
+document saves back to that file. <strong>File &gt; Import / Convert
+Document</strong> always makes a new, untitled document from what it
+reads, named after the file with “(converted)” on the end. Use Import /
+Convert when you want a copy of the text to work on, or for a file
+Ctrl+O cannot open, such as a <code>.xlsm</code>, an e-book or a picture
+of a page. See <em>Importing and converting a document</em> below.</p>
+<h2 id="opening-word-excel-and-powerpoint-files">Opening Word, Excel and
+PowerPoint files</h2>
+<p>QUILL Lite opens Excel and PowerPoint files, Word files with macros,
+older Word files and OpenDocument text as their <strong>text</strong>,
+the same way it opens a PDF. A Word <code>.docx</code> is different: it
+opens to edit, as rich text, and saves as Word (see <em>Word
+documents</em> below). Press <strong>Ctrl+O</strong>, and in the file
+type list choose “Older Word, Excel and PowerPoint, opened as text”, or
+just pick the file from “All supported files”. You can also drag one
+onto the window, or open it from Recent Documents. Nothing is downloaded
+first, and nothing is uploaded: QUILL Lite uses the same readers as
+QUILL.</p>
+<p>These are QUILL’s own readers, and they are always used first, in the
+same order QUILL uses. They open a Word file in about a second, and a
+slide show in less, even the first time after you start QUILL Lite. Only
+if QUILL’s own reader cannot read a file, or finds no text in it, does
+QUILL Lite try a second reader (MarkItDown) where one is installed;
+QUILL Lite’s own installer does not include it, so for most people that
+second try never happens and the sentence you hear explains what was
+wrong with the file.</p>
+<p>It opens these kinds of file:</p>
+<ul>
+<li>Word documents with macros, <code>.docm</code> (a macro is never
+run), and a <code>.docx</code> you chose to open “for reading and plain
+editing” (see <em>Word documents</em>)</li>
+<li>Excel workbooks: <code>.xlsx</code></li>
+<li>PowerPoint presentations: <code>.pptx</code></li>
+<li>OpenDocument text, from LibreOffice Writer: <code>.odt</code></li>
+<li>The older Office 97-2003 files, <code>.doc</code>, <code>.xls</code>
+and <code>.ppt</code>, when LibreOffice is installed (see below)</li>
+</ul>
+<h3 id="finding-the-highlighted-passages-in-a-word-document">Finding the
+highlighted passages in a Word document</h3>
+<p>A Word file opened as text (a <code>.docm</code>, or a
+<code>.docx</code> you chose to open for reading) comes through without
+its formatting, but its highlights are not lost: QUILL Lite reads them
+from the file itself (<code>.docx</code> and <code>.docm</code>) and
+takes you to them. They are on <strong>Navigate &gt; Highlighted
+Passages</strong>, on the same keys as in QUILL:</p>
+<ul>
+<li><strong>Next Highlighted Passage</strong>
+(<strong>Alt+PageDown</strong>) puts the cursor at the start of the next
+highlighted passage and says its colour, where it is in the count and
+its words: “Yellow highlight, 2 of 5: sign and date here”. After the
+last one it goes round to the first.</li>
+<li><strong>Previous Highlighted Passage</strong>
+(<strong>Alt+PageUp</strong>) goes the other way.</li>
+<li><strong>List Highlighted Passages…</strong>
+(<strong>Ctrl+F2</strong>) lists them all, in order. Each row is the
+passage’s words, its colour, and the paragraph it is in, so a row makes
+sense on its own. Enter goes to the passage; Escape closes the list and
+leaves the cursor where it was. <strong>Alt+Left</strong> goes back
+after either.</li>
+</ul>
+<p>For example, a tenancy agreement whose landlord highlighted “deposit”
+in yellow and “two forms of ID” in pink: open it, press
+<strong>Ctrl+F2</strong>, and you hear “deposit, yellow highlight, in:
+Pay the deposit by Friday.” as the first row.</p>
+<p>The same keys work in a rich text document you have open in QUILL
+Lite, where the highlights are in the document itself. If you edit the
+text of a Word file after opening it, a passage whose words you changed
+is left out rather than guessed at. Highlights in headers, footers,
+footnotes and text boxes are not listed, because that text is not in the
+editor; nor is paragraph shading.</p>
+<h3 id="what-comes-through-and-what-does-not-1">What comes through, and
+what does not</h3>
+<ul>
+<li><strong>Word and OpenDocument text:</strong> each heading keeps its
+own line, marked with <code>#</code> signs the way Markdown marks one
+(<code>##</code> for a level 2 heading); bulleted and numbered lists
+keep their levels; tables become text tables; a line break inside a
+paragraph stays a line break; a picture comes through as its
+description, “[Image: …]”, when the author wrote one. Numbered items are
+numbered 1, 2, 3 in the text itself, so you hear the right number on
+each line. An equation comes through as text, the way an equation is
+written in Markdown: “Pythagorean theorem: (a^{2}+b^{2}=c^{2})”, where
+<code>^{2}</code> means “squared” and <code>\(</code> and
+<code>\)</code> mark where the equation starts and ends. (Before October
+2026 equations were left out without a word.)</li>
+<li><strong>Excel:</strong> each sheet starts with a heading, “Sheet:
+Budget”, and its cells follow as a text table whose first row is the
+header row. Dates read as dates and numbers as you would say them. A
+very large sheet is read up to 2,000 rows and 50 columns.</li>
+<li><strong>PowerPoint:</strong> each slide starts with a heading,
+“Slide 2: Figures”, in the order the presentation shows them. The
+bullets come next, then any tables, then the speaker notes under
+“Notes”.</li>
+</ul>
+<p>Bold, italic, fonts and colours do not come through, and nor do
+headers, footers, footnotes, comments, charts or the pictures
+themselves.</p>
+<p>For example, open <code>Budget.xlsx</code>. The document starts at
+“Sheet: Budget”, with the budget’s rows under it, and the next sheet’s
+heading, “Sheet: Notes”, follows the last row.</p>
+<h3 id="older-files-and-files-that-will-not-open">Older files and files
+that will not open</h3>
+<p>QUILL Lite cannot read the Office 97-2003 formats by itself. If
+LibreOffice (free, from libreoffice.org) is installed, QUILL Lite has it
+make a temporary copy in the newer format and opens that; your file is
+not changed. If it is not installed, QUILL Lite says it could not open
+the file and tells you what to do: open it in Word, Excel or PowerPoint
+(or LibreOffice), choose <strong>File &gt; Save As</strong>, pick the
+newer type, such as “Word Document (.docx)”, and open that copy.</p>
+<p>A password-protected file is named as password-protected: remove the
+password in the program that made it, save, and open it again. A damaged
+file is named as damaged.</p>
+<h3 id="saving-1">Saving</h3>
+<p>A file opened as text is never saved over: the text is not the file.
+Press <strong>Ctrl+S</strong> and QUILL Lite tells you why, then opens
+<strong>Save As</strong> with the same name ending in <code>.txt</code>.
+Choose text, Markdown or rich text and press <strong>Enter</strong>. A
+Word <code>.docx</code> opened <strong>to edit</strong> is different,
+and saves as Word; see <em>Word documents</em>, next.</p>
+<h2 id="word-documents">Word documents</h2>
+<p>Since October 2026 QUILL Lite <strong>edits</strong> Word documents.
+Open a <code>.docx</code> and it arrives as rich text, with its
+headings, lists, bold and links shown formatted; change it; press
+<strong>Ctrl+S</strong>; and what is written is a real Word document
+that Word, and anyone you send it to, opens as one. QUILL Lite does this
+with QUILL’s own Word code, the same code QUILL’s File &gt; Open and
+Save use, so the two programs open, ask, back up and save a Word
+document in exactly the same way.</p>
+<p>This section covers what opens, what is kept, the question you are
+sometimes asked, the backup, tables, saving, and the limits. A worked
+example is at the end.</p>
+<h3 id="what-opens-as-a-word-document">What opens as a Word
+document</h3>
+<ul>
+<li>A <code>.docx</code> file opens as a Word document to edit. Press
+<strong>Ctrl+O</strong>, choose “Word documents (*.docx)” in the file
+type list (or “All supported files”), and press <strong>Enter</strong>.
+Dragging the file onto the window, Recent Documents and opening it from
+File Explorer all do the same.</li>
+<li>A <code>.docm</code> (a Word file with macros), a <code>.doc</code>
+from Word 97-2003 and an OpenDocument <code>.odt</code> still open as
+<strong>text</strong>, read only, as described in <em>Opening Word,
+Excel and PowerPoint files</em> above. A <code>.docm</code> is not
+edited because saving it would drop its macros, and Word refuses a
+<code>.docm</code> without them.</li>
+<li>The file is read in the background, so the window keeps answering.
+You hear “Opening report.docx”, and when it is ready, “Opened as Rich
+Text. Headings and bold are shown formatted.”</li>
+</ul>
+<p>Word editing works in every copy of QUILL Lite, installed or
+portable, since the builds of 17 October 2026. Earlier test builds of
+the <em>installed</em> copy were missing a part Word editing needs, so
+they opened every <code>.docx</code> as text; the portable copy was not
+affected. If a copy were ever to lose that part again, a
+<code>.docx</code> would open as text, as described above, and
+<strong>Ctrl+S</strong> would offer Save As, so nothing would be lost.
+QUILL Lite’s build checks for exactly this and refuses to finish, so it
+should never happen to you.</p>
+<h3 id="what-is-kept">What is kept</h3>
+<p>Everything QUILL Lite can show in rich text comes in, and goes back
+out when you save:</p>
+<ul>
+<li>headings, Heading 1 to Heading 6, as Word’s own heading styles, so
+Word’s navigation pane and your screen reader’s heading keys find
+them;</li>
+<li>bulleted and numbered lists;</li>
+<li>bold, italic, underline, strikethrough, superscript and
+subscript;</li>
+<li>fonts, sizes, text colours and highlights;</li>
+<li>links;</li>
+<li>paragraph alignment, line spacing, spacing before and after, and
+indents;</li>
+<li>the Title, Subtitle, Quote and Caption styles;</li>
+<li>tables, as tables (see <em>Tables</em> below).</li>
+</ul>
+<p>Some things in a Word document cannot be shown in QUILL Lite’s
+editor, so a save cannot carry them: pictures, comments, tracked
+changes, headers and footers, footnotes and endnotes, more than one
+section, and a table’s own formatting, such as merged cells, borders and
+shading. QUILL Lite looks for these before it opens the file, and if it
+finds any it asks you first.</p>
+<h3 id="the-question-when-a-document-has-things-a-save-would-drop">The
+question, when a document has things a save would drop</h3>
+<p>When the document has any of those things, QUILL Lite names them and
+asks how to open it, in a window titled <strong>Open Word
+document</strong>. For example: “team.docx contains features QUILL
+Lite’s rich editor cannot carry: tables (1), comments. How should it
+open?” Use <strong>Up Arrow</strong> and <strong>Down Arrow</strong> to
+choose, then <strong>Enter</strong>:</p>
+<ol type="1">
+<li><strong>Open for reading and plain editing (recommended).</strong>
+The document opens as text, as it would without Word editing. Nothing
+about the file can change: <strong>Ctrl+S</strong> tells you so and
+offers Save As. This is the row you start on, and
+<strong>Escape</strong> gives the same answer, because it is the one
+that cannot hurt the file.</li>
+<li><strong>Edit as Rich Text, these will not survive a save: …</strong>
+The row names the same things again. The document opens to edit, and the
+first time you save, the original is backed up first (see <em>The
+backup</em>).</li>
+<li><strong>Edit a copy as Rich Text (the original stays
+untouched).</strong> QUILL Lite makes a dated copy beside the original,
+<code>team.backup-20261017-143005.docx</code>, and opens the copy to
+edit, saying “Editing a copy, team.backup-20261017-143005.docx. The
+original is untouched.” Your saves go to the copy; the original is never
+written.</li>
+</ol>
+<p>A document with none of those things opens to edit with no
+question.</p>
+<p>Press <strong>F1</strong> in the window for a summary of the three
+answers.</p>
+<h3 id="the-backup">The backup</h3>
+<p>The first time you save a document you chose to edit with its losses
+named, QUILL Lite copies the original beside itself before writing
+anything, and says so: “Backed up the original to
+team.backup-20261017-143005.docx”. The name is the original’s, then
+<code>backup-</code>, then the date and time (in Coordinated Universal
+Time), then <code>.docx</code>. It happens once each time you open the
+file, not on every save. If you want the pictures or comments back, they
+are all in that copy; open it in Word.</p>
+<p>A document that opened with no question is not backed up: there was
+nothing in it a save would drop. QUILL Lite’s own dated copies
+(<strong>File &gt; Earlier Versions</strong>) are kept as well, as for
+any file.</p>
+<h3 id="tables">Tables</h3>
+<p>A Word document you edit as rich text keeps its tables as
+<strong>real tables</strong>: a grid on screen, which your screen reader
+sees as a table. The arrow keys, <strong>Tab</strong> and
+<strong>Navigate &gt; Table</strong> read and change them one cell at a
+time (see “Moving through a table” and “Editing a table”). When you
+save, each one is a real Word table again, its first row marked as the
+header row. Add a row with <strong>Tab</strong> in the last cell or
+<strong>Navigate &gt; Table &gt; Insert Row Below</strong>, and a column
+with <strong>Insert Column Right</strong>.</p>
+<p>A Word document opened for reading and plain editing is text, so
+there a table arrives as rows of cells divided by <code>|</code>, with a
+row of dashes under the header row:</p>
+<pre><code>| Name | Role |
+| --- | --- |
+| Ann | Lead |</code></pre>
+<p>The same table keys read it cell by cell.</p>
+<p>To read a table cell by cell, use <strong>Navigate &gt;
+Table</strong> (see <em>Moving through a table</em> in Chapter 4). For
+example, with the cursor on “Name”, <strong>Ctrl+Alt+Down</strong> says
+“Row 2: Ann”.</p>
+<h3 id="saving-2">Saving</h3>
+<ul>
+<li><strong>Ctrl+S</strong> writes the Word document. A long document
+can take a moment, so the save runs in the background: the status bar
+says “Saving report.docx”, and you hear “Saved report.docx” when it is
+written. If you press <strong>Ctrl+S</strong> again before then, you
+hear “Still saving report.docx” and nothing else happens; QUILL Lite
+never starts a second save over the first. Closing the window in that
+moment waits too: answer the question again once you have heard
+“Saved”.</li>
+<li>If you type while a save is running, what you typed is not in the
+file yet, so the document still counts as changed. Press
+<strong>Ctrl+S</strong> again afterwards.</li>
+<li><strong>Ctrl+Shift+S</strong> (Save As) opens on the <strong>Word
+document (*.docx)</strong> row with the same name proposed. Type a new
+name ending in <code>.docx</code> to keep a second Word copy, or choose
+Rich Text, Text or Markdown to save in another form.</li>
+<li>Dark mode never reaches the file. While a Word document is being
+saved, QUILL Lite takes the screen’s text colour off the document and
+puts it back afterwards, so somebody opening your file in Word sees
+ordinary black text, not grey.</li>
+<li>Any rich text document can become a Word document: press
+<strong>Ctrl+Shift+S</strong> and type a name ending in
+<code>.docx</code>, or choose <strong>Word document
+(*.docx)</strong>.</li>
+<li>A plain text window cannot save a <code>.docx</code>. Switch it to
+rich text first with <strong>Alt+Shift+F</strong> (Switch Document
+Mode), or choose another kind of file.</li>
+</ul>
+<h3 id="limits">Limits</h3>
+<ul>
+<li>Pictures, comments, tracked changes, headers, footers, footnotes,
+endnotes, extra sections and table formatting are not kept by a save.
+You are always told before you start (see <em>The question</em>).</li>
+<li>Styles other than the headings and the four named above become
+normal paragraphs with the formatting you can see.</li>
+<li>A <code>.docm</code>, <code>.dotx</code> or <code>.dotm</code>
+cannot be saved; QUILL Lite says so and writes nothing.</li>
+<li>A password-protected or damaged <code>.docx</code> does not open,
+and QUILL Lite says which.</li>
+</ul>
+<h3 id="worked-example-a-meeting-agenda">Worked example: a meeting
+agenda</h3>
+<ol type="1">
+<li>Press <strong>Ctrl+O</strong>, choose <code>agenda.docx</code>, and
+press <strong>Enter</strong>. You hear “Opening agenda.docx”, then
+“Opened as Rich Text. Headings and bold are shown formatted.”</li>
+<li>Press <strong>Ctrl+Alt+H</strong> to move to the next heading. You
+hear “Heading 2: Actions”.</li>
+<li>Press <strong>Ctrl+End</strong> to go to the end of the agenda,
+press <strong>Enter</strong>, and type “Book the room by Friday.”</li>
+<li>Press <strong>Ctrl+S</strong>. You hear “Saved agenda.docx”.</li>
+<li>Open <code>agenda.docx</code> in Word. “Actions” is still a Heading
+2 in the navigation pane, and “Book the room by Friday.” is the last
+paragraph.</li>
+</ol>
+<p>The same document with a comment in it would first have asked the
+question above. Choosing <strong>Edit as Rich Text</strong> and saving
+would have said “Backed up the original to agenda.backup-…docx” before
+“Saved agenda.docx”, and the comment would still be in that copy.</p>
+<h2 id="importing-and-converting-a-document">Importing and converting a
+document</h2>
+<p><strong>File &gt; Import / Convert Document (OCR)…</strong> turns a
+document, or a picture of a page, into new text you can edit. It is
+QUILL’s command, with QUILL’s readers and QUILL’s words, on QUILL Lite’s
+File menu. It has no shortcut key, as in QUILL: press
+<strong>Alt+F</strong>, then <strong>I</strong>. It is also in the
+command palette.</p>
+<p>It reads:</p>
+<ul>
+<li><strong>Word, Excel, PowerPoint and OpenDocument files</strong>
+(<code>.docx</code>, <code>.doc</code>, <code>.xlsx</code>,
+<code>.xls</code>, <code>.pptx</code>, <code>.ppt</code>,
+<code>.odt</code>, <code>.ods</code>, <code>.odp</code>), with QUILL’s
+own readers, the same ones Ctrl+O uses;</li>
+<li><strong>web pages, e-books and CSV files</strong>
+(<code>.html</code>, <code>.htm</code>, <code>.epub</code>,
+<code>.csv</code>), which Ctrl+O would open as their raw markup or as a
+table of commas;</li>
+<li><strong>PDFs</strong>, from their own text, the same way Ctrl+O
+reads them;</li>
+<li><strong>pictures of pages</strong> (<code>.png</code>,
+<code>.jpg</code>, <code>.jpeg</code>, <code>.tif</code>,
+<code>.tiff</code>, <code>.bmp</code>, <code>.gif</code>,
+<code>.webp</code>), such as a photo of a letter, with OCR on this
+computer.</li>
+</ul>
+<h3 id="how-it-differs-from-open">How it differs from Open</h3>
+<p><strong>Ctrl+O</strong> opens the file itself: the window takes the
+file’s name, Recent Documents remembers it, and Save offers to save it
+again (or, for a PDF or an Office file, asks for a new name).
+<strong>Import / Convert</strong> makes a <strong>new, untitled
+document</strong> from what it reads, named after the file with
+“(converted)” on the end, for example “report (converted)”. Nothing
+remembers or points back at the original, and the original is never
+changed. Use it when you want text to work with rather than the file you
+started from, or when Ctrl+O cannot open the file at all: a picture, a
+web page you want as words, or an e-book.</p>
+<h3 id="step-by-step">Step by step</h3>
+<ol type="1">
+<li>Press <strong>Alt+F</strong>, then <strong>I</strong>. The Import /
+Convert Document box opens on the folder of the document you are
+in.</li>
+<li>Choose the file and press <strong>Enter</strong>. The type list
+starts on “All convertible documents”; you can narrow it to Documents or
+Images.</li>
+<li>QUILL Lite says “Converting report.docx”. You can keep working; the
+status bar’s message part shows how far it has got.</li>
+<li>When the text arrives, it opens in this window if the window is
+empty, or in a new window if it is not, so nothing you were writing is
+replaced. You hear what happened, for example “Opened report.docx as
+editable text, read by QUILL’s own Word reader. Nothing was
+uploaded.”</li>
+</ol>
+<p>The new document counts as unsaved, because its text exists nowhere
+else yet. Press <strong>Ctrl+S</strong> to save it as text, Markdown or
+rich text.</p>
+<h3 id="when-the-file-has-no-text-ocr">When the file has no text:
+OCR</h3>
+<p>A scanned PDF, or a PDF that is only pictures of pages, has no text
+to read. QUILL Lite then asks: “QUILL Lite could not find readable text
+in scan.pdf. It looks scanned or image-based. Run free on-device
+OCR?”</p>
+<ul>
+<li><strong>Yes</strong> reads the pictures with OCR on this computer.
+The status bar counts the pages as it goes, for example “Recognizing
+page 3 of 12”, and you hear when it is done.</li>
+<li><strong>No</strong> opens whatever little text the file has, which
+may be nothing.</li>
+<li><strong>Cancel</strong>, or <strong>Escape</strong>, stops, and
+nothing opens.</li>
+</ul>
+<p>A picture file goes straight to OCR, without the question, because a
+picture has no text of its own.</p>
+<p>Nothing is uploaded and nothing is downloaded. The OCR is the one
+Windows already has, which reads the languages installed in Windows
+Settings; if QUILL’s own OCR engine, Tesseract, is installed, QUILL Lite
+uses that instead, because it can say how sure it is (“Confidence 84 out
+of 100”). OCR makes mistakes: check the text, and spell check helps. If
+this computer has no OCR at all, QUILL Lite says so and opens nothing.
+Unlike QUILL, QUILL Lite never offers to download an OCR engine and has
+no cloud OCR.</p>
+<p>In the result, each page starts with a marker line such as
+<code>&lt;!-- Page 2 --&gt;</code>, as in QUILL, so
+<strong>Ctrl+F</strong> for “Page 2” finds it. When you want a scanned
+PDF with real pages instead, so the Page part and Go To’s Page list
+work, open it with <strong>Ctrl+O</strong>: it asks the same OCR
+question.</p>
+<h3 id="if-it-does-not-work">If it does not work</h3>
+<ul>
+<li>A <strong>password-protected PDF</strong> cannot be imported. QUILL
+Lite says so; open it with <strong>Ctrl+O</strong>, which asks for the
+password and never stores it.</li>
+<li>A <strong>damaged file</strong> is named as damaged. OCR does not
+help a damaged file.</li>
+<li>A <strong>very long PDF</strong>: the first 200 pages are read, and
+QUILL Lite says so when it stopped early, for example “Only the first
+200 of 340 pages were read.”</li>
+<li>If you <strong>close the window</strong> while a conversion is still
+running, the conversion stops, and nothing opens.</li>
+</ul>
+<p>Any failure is a box you must dismiss, with the reason in it, because
+it cost you the thing you asked for.</p>
+<h2 id="saving-3">Saving</h2>
+<p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
+under a new name.</p>
+<p>QUILL Lite makes you one promise: <strong>open a file, change
+nothing, save it, and you get exactly the file you started
+with.</strong> Nothing gets quietly tidied up behind your back.</p>
+<p>To keep that promise, it remembers three things about every file it
+opens, and puts them back the same way:</p>
+<ul>
+<li><strong>How the text is stored.</strong> Different files store
+letters and accents in different ways. QUILL Lite keeps whichever way
+yours already used.</li>
+<li><strong>How the lines end.</strong> Files made on Windows and files
+made on other systems mark the end of a line differently. QUILL Lite
+keeps yours.</li>
+<li><strong>Whether the file ended with a blank line.</strong> If it did
+not, it will not suddenly start.</li>
+</ul>
+<p>You can hear the first two in the status bar (<strong>F6</strong>).
+When you really do want to change them, for instance when somebody needs
+a copy of an old file in a newer format, use <strong>Tools &gt; File
+Encoding and Line Endings</strong> (<strong>Ctrl+Alt+E</strong>). The
+change takes effect the next time you save.</p>
+<p>The tutorial <em>Open a file, and give it back unchanged</em> lets
+you see this promise for yourself, with the app guiding you.</p>
+<p>When a file is not UTF-8, which many older Windows files are not,
+QUILL Lite tells you once as it opens: “Opened as Windows-1252, not
+UTF-8.” That is all it does. Every byte of the file is read, and a save
+puts every byte back.</p>
+<h3 id="when-another-program-changes-your-file">When another program
+changes your file</h3>
+<p>QUILL Lite keeps an eye on every file you have open. When something
+else writes to one, such as Word saving a document, a sync tool bringing
+down a newer copy, or an AI assistant rewriting a plan while you read
+it, QUILL Lite notices within a second or so.</p>
+<p>If you have not changed the document yourself, and you have turned on
+<strong>Reload automatically when you have no unsaved edits</strong>, it
+simply reads the file again. Your cursor stays on the same line, and you
+hear once: “Reloaded plan.md: changed by another program.”</p>
+<p>Otherwise it asks you, once for each change:</p>
+<ul>
+<li><strong>Keep Mine</strong> leaves your document exactly as it is.
+Enter and Escape both give this answer, because doing nothing to your
+text is the safe choice. The next time you save, your version replaces
+the one on disk, without another question.</li>
+<li><strong>Reload from Disk</strong> reads the file again and keeps
+your cursor on the same line. If you had unsaved changes, they are
+replaced.</li>
+<li><strong>Save As…</strong> saves your version under a new name and
+leaves theirs alone.</li>
+</ul>
+<p>The question has a checkbox, such as <strong>Do not ask me again for
+.md files</strong>. Check it and QUILL Lite remembers your answer,
+Reload or Keep Mine, for every file of that kind. That is handy when a
+tool rewrites the same file every few seconds. To take every remembered
+answer back, open Preferences and press <strong>Forget remembered
+file-change answers</strong>, then OK. A remembered Reload never throws
+away unsaved edits; QUILL Lite asks instead.</p>
+<p>If you are looking at a different document when the change happens,
+QUILL Lite waits and asks when you come back to that one. It also waits
+while any other window, such as Preferences or a Save question, is
+open.</p>
+<p>If the file is deleted or moved away, QUILL Lite tells you once,
+keeps your text, and marks the document as not saved, so you can use
+<strong>Save As</strong> to keep it somewhere.</p>
+<p>You can change all of this in Preferences, under <strong>When another
+program changes the file</strong>:</p>
+<ul>
+<li><strong>Watch the open file for external changes</strong> is on to
+begin with. Turn it off and QUILL Lite only checks when you save.</li>
+<li><strong>Reload automatically when you have no unsaved edits</strong>
+is off to begin with. Turn it on and an unchanged document is reloaded
+without asking. An answer you asked QUILL Lite to remember still comes
+first.</li>
+<li><strong>Ask before discarding unsaved edits on a conflict</strong>
+is on to begin with. Turn it off and QUILL Lite says nothing when a file
+you have changed is changed or deleted on disk, and leaves your text
+exactly as it is.</li>
+<li><strong>External-change debounce (milliseconds)</strong> is how
+often QUILL Lite looks, so a program that writes a file in several steps
+is dealt with once. The default is 750.</li>
+</ul>
+<p>These are QUILL’s settings too, with the same names, and QUILL asks
+the same question.</p>
+<h3 id="save-checks-once-more">Save checks once more</h3>
+<p>Right before <strong>Ctrl+S</strong> writes your file, QUILL Lite
+checks the file on disk once more. If another program changed it since
+you opened it or last saved it, an AI assistant rewriting a plan while
+you read it, say, QUILL Lite stops and asks instead of writing over that
+change:</p>
+<ul>
+<li><strong>Save As…</strong> keeps both: yours under a new name, theirs
+untouched. Enter gives this answer.</li>
+<li><strong>Reload from Disk</strong> shows the version on disk and
+throws away your unsaved edits.</li>
+<li><strong>Overwrite</strong> saves your version over theirs.</li>
+<li><strong>Cancel</strong>, or Escape, saves nothing.</li>
+</ul>
+<p>QUILL asks the same question.</p>
+<h3 id="how-this-file-is-written-encoding-and-line-endings">How this
+file is written: encoding and line endings</h3>
+<p><strong>Tools &gt; File Encoding and Line Endings…</strong>
+(<strong>Ctrl+Alt+E</strong>) is one window for both of those things. It
+is the same window QUILL opens from <strong>File &gt; File
+Format…</strong>. Nothing in it is applied until you save, and the
+window tells you so.</p>
+<h4 id="encoding">Encoding</h4>
+<p>This is how the letters are stored. You can choose:</p>
+<ul>
+<li>UTF-8, for anything new.</li>
+<li>UTF-8 with BOM, for the Windows tools that expect it.</li>
+<li>UTF-16.</li>
+<li>Windows-1252, which many older <code>.txt</code> files use.</li>
+</ul>
+<h4 id="line-endings">Line endings</h4>
+<p>You can choose:</p>
+<ul>
+<li>CRLF, which Windows programs write. A new QUILL Lite document starts
+with this.</li>
+<li>LF, which Unix, macOS and most programming tools expect.</li>
+</ul>
+<h4 id="a-file-that-is-something-else">A file that is something
+else</h4>
+<p>Some files use a way of storing text that neither list offers, such
+as a UTF-16 big-endian file, or a file whose lines end the way old Macs
+did. Such a file keeps what it has. You see a <strong>keep as
+is</strong> row at the top of the list, and it is already chosen. So if
+you open this window and just press Enter, nothing in the file
+changes.</p>
+<h4 id="reopen-with-encoding">Reopen with Encoding</h4>
+<p>Now and then an old file’s accented letters come out wrong, because
+it was written in an encoding nobody can guess from the file alone, such
+as Cyrillic Windows-1251. Press <strong>Reopen with Encoding…</strong>
+in this window, pick the encoding the file was written in, and QUILL
+Lite reads the same file again from disk that way. If you have unsaved
+changes it asks first, because reopening throws them away. Nothing on
+disk changes, and if the file is not valid in the encoding you picked,
+QUILL Lite says so and leaves your document alone.</p>
+<p>After a reopen the file saves back in that same encoding. To turn it
+into UTF-8 instead, open this window again, choose UTF-8, and save. The
+button is there for a plain text file you opened from disk; QUILL has
+the same one.</p>
+<h3 id="when-a-character-will-not-fit">When a character will not
+fit</h3>
+<p>Older files can only store a limited set of letters. If you type an
+em dash, a curly quote or an emoji into a file that cannot hold it,
+QUILL Lite asks you before it saves:</p>
+<blockquote>
+<p>3 characters cannot be saved as Windows-1252. Save as UTF-8
+instead?</p>
+</blockquote>
+<ul>
+<li><strong>Yes</strong> saves the file as UTF-8 and keeps every
+character. The <strong>Encoding</strong> cell in the status bar changes
+to UTF-8, because from now on that is what the file is.</li>
+<li><strong>No</strong> saves it the way it already was, and those
+characters become question marks. Sometimes that is what you want, for
+instance when another program has to read the file.</li>
+<li><strong>Cancel</strong> stops, and nothing is saved.</li>
+</ul>
+<h3 id="saving-an-html-page-as-markdown">Saving an HTML page as
+Markdown</h3>
+<p>When you press <strong>Ctrl+Shift+S</strong>, the list of types
+includes <strong>Markdown (*.md)</strong>. If the document you are
+saving is <strong>HTML</strong>, choosing Markdown really converts it as
+it saves:</p>
+<ul>
+<li>A heading becomes <code>#</code>.</li>
+<li>Bold becomes <code>**bold**</code>.</li>
+<li>A list becomes lines that start with <code>-</code>.</li>
+<li>Links keep both their words and their address.</li>
+</ul>
+<p>QUILL Lite says <strong>“Converted HTML to Markdown”</strong>, and
+the document in front of you changes to match the file you just
+saved.</p>
+<p>Tags that Markdown cannot show are dropped, but their words stay, so
+nothing you typed disappears. If the conversion would leave nothing at
+all, for example a page that is only a comment, QUILL Lite keeps your
+text exactly as it was and tells you, instead of saving an empty
+file.</p>
+<p>If the save fails, say because the file is locked or the disk is
+full, the document in front of you is left alone. It is still HTML, and
+Ctrl+Z still works as before. The same is true when you turn a rich text
+document into plain text: QUILL Lite asks, saves the plain file, and
+only then removes the formatting from the window.</p>
+<p>Saving a plain text or Markdown document as <code>.md</code> changes
+nothing at all. A <strong>rich text</strong> document is not offered
+Markdown, because QUILL Lite would have to guess which bold lines you
+meant as headings. Save it as plain text first (QUILL Lite asks before
+it removes the formatting), and then the Markdown choice is there.</p>
+<h3 id="which-kind-of-file-you-get-the-name-you-type-decides">Which kind
+of file you get: the name you type decides</h3>
+<p>When you save with <strong>Ctrl+Shift+S</strong>, the ending you type
+on the name decides what kind of file is written, whatever the
+<strong>Save as type</strong> list happens to show. Capitals do not
+matter: <code>NOTES.TXT</code> is a text file and
+<code>Report.RTF</code> is rich text.</p>
+<table>
+<thead>
+<tr>
+<th>You type</th>
+<th>What QUILL Lite writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notes.txt</code>, <code>notes.log</code>, or any other text
+ending</td>
+<td>Your text, exactly as it stands</td>
+</tr>
+<tr>
+<td><code>notes.md</code></td>
+<td>Your text as it stands; an HTML document is converted to Markdown
+(see above)</td>
+</tr>
+<tr>
+<td><code>notes.rtf</code></td>
+<td>Rich text, with its formatting. A plain document becomes a rich
+one</td>
+</tr>
+<tr>
+<td><code>page.html</code></td>
+<td>Your text as it stands. QUILL Lite treats HTML as something you
+write by hand, the way Notepad does</td>
+</tr>
+<tr>
+<td><code>minutes.docx</code></td>
+<td>A Word document, from a rich text window. From plain text, nothing:
+QUILL Lite says so (see below)</td>
+</tr>
+<tr>
+<td><code>minutes.docm</code>, <code>letter.dotx</code></td>
+<td>Nothing. QUILL Lite says so (see below)</td>
+</tr>
+<tr>
+<td><code>budget.xlsx</code>, <code>minutes.pdf</code>,
+<code>old.doc</code></td>
+<td>Nothing. These are formats QUILL Lite can only read or not open at
+all</td>
+</tr>
+</tbody>
+</table>
+<p>If you type a name with no ending at all, Windows adds the ending of
+the row selected in <strong>Save as type</strong>, so <code>notes</code>
+with <strong>Markdown (*.md)</strong> selected is saved as
+<code>notes.md</code>.</p>
+<p><strong>Word documents.</strong> A rich text window saves a real Word
+document: type <code>minutes.docx</code>, or choose <strong>Word
+document (*.docx)</strong> in Save as type (see <em>Word documents</em>,
+above). Until October 2026 a name ending in <code>.docx</code> got plain
+text written under it, which made a file Word refuses to open, so a
+plain text window is still refused, and so is every other Word ending
+(<code>.docm</code>, <code>.dotx</code>, <code>.dotm</code>). QUILL Lite
+shows a short message instead and writes nothing:</p>
+<blockquote>
+<p>QUILL Lite saves Word documents from rich text, so minutes.docx was
+not written from this plain text window. Switch Document Mode (Alt Shift
+F) to rich text first, or choose Rich Text (.rtf), Text or Markdown in
+the Save as type list.</p>
+</blockquote>
+<p>Press <strong>Enter</strong> to close the message; Save As is over,
+and your document is exactly as it was. For example, to send a plain
+letter to someone who uses Word, press <strong>Alt+Shift+F</strong>
+until you hear “Rich text mode”, then save it as
+<code>letter.docx</code>.</p>
+<p>The message comes before anything else. A rich text document is never
+asked whether to remove its formatting for a save to <code>.docx</code>:
+nothing is removed.</p>
+<p>Pressing <strong>Escape</strong> or <strong>Cancel</strong> in the
+Save As window writes nothing, as always.</p>
+<h3 id="if-something-goes-wrong">If something goes wrong</h3>
+<p>While a document has changes you have not saved, QUILL Lite keeps a
+spare copy of it about every thirty seconds. That copy is kept
+<strong>beside</strong> your file, never on top of it.</p>
+<p>If QUILL Lite or your computer stops unexpectedly, your work is
+offered back the next time you start, in its own document. It comes back
+<strong>the way it was</strong>. A file stored in an older encoding, or
+with Unix line endings, is still that same kind of file after it is
+recovered.</p>
+<p>If a spare copy cannot be read, for example because of a damaged disk
+or another program holding the file, QUILL Lite tells you and leaves it
+where it is. It is offered again next time, because it is still the only
+copy of that work.</p>
+<p>When you save, or close normally, the spare copy is deleted. So you
+are only ever offered work you actually need.</p>
+<h4 id="if-your-screen-reader-stops">If your screen reader stops</h4>
+<p>QUILL Lite checks every thirty seconds that your screen reader is
+still running. One missed check is ignored, so restarting NVDA or JAWS
+never sets anything off. When two checks in a row find it gone, QUILL
+Lite does two things, in this order:</p>
+<ol type="1">
+<li>Every document with unsaved changes writes its spare copy
+<strong>straight away</strong>, without waiting for the next
+thirty-second copy. These are the same copies described above, offered
+back the next time you start if QUILL Lite never closes normally.</li>
+<li>It explains what happened, for example: “NVDA appears to have
+stopped. Your work is safe: 2 documents snapshotted to autosave. QUILL
+Lite keeps running; restart your screen reader when ready.”</li>
+</ol>
+<p>QUILL Lite has no voice of its own, so that sentence is spoken only
+if another screen reader is still running. It is always written to the
+status bar of the document you were in, so when your reader is back,
+<strong>F6</strong> reads it.</p>
+<p>QUILL Lite does not close, and nothing in your documents changes.
+Restart your screen reader when you are ready; within half a minute
+QUILL Lite says, for example, “NVDA is running again.”</p>
+<p>QUILL has had this protection for some time; QUILL Lite now uses the
+same code, so the two behave the same. There is nothing to turn on: it
+only ever writes spare copies, which a normal close throws away, and it
+says nothing unless a screen reader has really stopped.</p>
+<h4 id="what-you-are-offered-and-what-is-tidied-away">What you are
+offered, and what is tidied away</h4>
+<p>Before the recovery window opens, QUILL Lite clears out three kinds
+of copy, and tells you it did:</p>
+<ul>
+<li>Copies that are identical to each other. A crash can save the same
+work several times, and that is still just one document.</li>
+<li>Copies nobody has come back for in <strong>thirty
+days</strong>.</li>
+<li>Untitled documents, if you have turned those off in
+Preferences.</li>
+</ul>
+<p>If everything it found was one of those, no window opens. Instead you
+hear “Tidied up unsaved work from last time”, so you know nothing was
+lost.</p>
+<h4 id="the-recovery-window">The recovery window</h4>
+<p>The window lists what is left, one row each, with a checkbox. Each
+row quotes the first few words of the document, like
+<code>begins "Dear Margaret, thank you for the lovely..."</code>, so you
+can tell two untitled windows from the same afternoon apart. There is
+also a read-only <strong>What this would do</strong> field you can arrow
+through. There are six buttons:</p>
+<ul>
+<li><strong>Restore Checked</strong> brings back the ones you have
+checked.</li>
+<li><strong>Restore All</strong> brings back everything.</li>
+<li><strong>Not Now</strong> changes nothing, and offers the same list
+next time.</li>
+<li><strong>Discard Checked</strong> throws away the ones you have
+checked.</li>
+<li><strong>Discard Everything</strong> throws away everything.</li>
+<li><strong>Never Offer Untitled</strong> is for you if you use QUILL
+Lite as a scratchpad and do not want yesterday’s throwaway notes
+back.</li>
+</ul>
+<p>You can change your mind about that last one later. In Preferences,
+turn on <strong>Offer untitled unsaved work back after a
+crash</strong>.</p>
+<h3 id="text-looks-blurry-or-a-window-is-the-wrong-size">Text looks
+blurry, or a window is the wrong size</h3>
+<p>QUILL Lite scales itself for each monitor. Text stays sharp at 125,
+150 or 200 percent, and when you move a window to a monitor with
+different scaling; windows and list columns keep their proportions. If a
+window looks wrong at your scaling, you can turn this off to see whether
+it is the cause. Search Windows for “Edit environment variables for your
+account”, add a variable named <code>QUILL_DPI_UNAWARE</code> with the
+value <code>1</code>, and start QUILL Lite again. Windows then stretches
+it the old way, so text is blurrier. Delete the variable to put scaling
+back, and tell support what you saw.</p>
+<h3 id="going-back-to-an-earlier-version">Going back to an earlier
+version</h3>
+<p>There is also a <strong>timestamped backups</strong> option, in
+<strong>Tools &gt; Customize Features</strong>. When it is on, QUILL
+Lite keeps a dated copy every time you save. This is for getting back
+the paragraph you deleted an hour ago, not for crashes. It starts
+switched off, because it does fill up a folder over time.</p>
+<p>Once it is on, <strong>File &gt; Earlier Versions…</strong>
+(<strong>Ctrl+Alt+Shift+E</strong>) lists your saved copies, newest
+first, like “Today at 4:12 PM, 2,341 words”. Up to twenty are kept for
+each document. After that, the oldest go.</p>
+<p>The word count helps you tell copies apart. Two saves a minute apart
+sound almost the same, but a version that is suddenly two thousand words
+shorter is usually the one you are looking for.</p>
+<p>You can bring one back in two ways:</p>
+<ul>
+<li><strong>Restore</strong> puts that version into the window you are
+in. It does <strong>not</strong> save, so your file is untouched until
+you decide. <strong>Ctrl+Z</strong> undoes it, so a mistake costs you
+one keystroke.</li>
+<li><strong>Open a Copy</strong> puts the old version in a new untitled
+window, and leaves the document you are working on alone. Use this when
+you just want to see what it said yesterday.</li>
+</ul>
+<p>If you had backups switched on before version 1.0, those older copies
+are in the list too.</p>
+<h3 id="a-web-page-you-can-share">A web page you can share</h3>
+<p><strong>File &gt; Export as HTML…</strong>
+(<strong>Ctrl+Alt+Shift+End</strong>) saves a copy of your document as a
+single web page. Its styles are inside it, it has no scripts, and it
+says which language it is in, so you can email it or put it on a website
+as it is. Headings, lists and tables come out as real headings, lists
+and tables, task lists show as check boxes, and <del>struck-out</del>
+text is struck out. Your document stays as it was; only the copy is a
+web page.</p>
+<p>If the document has notes written into the file, QUILL Lite asks
+whether to include them in the page, marked as notes. No is the default,
+so a note never ends up in a page by accident. QUILL has the same
+command on the same key.</p>
+<h2 id="opening-what-you-copied-a-link-or-a-file-you-drag-in">Opening
+what you copied, a link, or a file you drag in</h2>
+<p>Documents reach you in all sorts of ways: a file in File Explorer, a
+path somebody pasted into a chat, a link in an email. QUILL Lite opens
+all three without a trip through the Open dialog. The idea comes from
+PlanCake, a small reading app by Andre of Oire Software.</p>
+<p><strong>Open from Clipboard</strong>
+(<strong>Ctrl+Alt+Shift+Enter</strong>, on the File menu). Copy first,
+then press it:</p>
+<ul>
+<li>Files copied in File Explorer open, each in its own window. If you
+copied several, QUILL Lite tells you how many it opened.</li>
+<li>A file path copied as text opens that file, quotes and all. Several
+paths, one per line, open in turn.</li>
+<li>A web link goes to Open from URL, below.</li>
+</ul>
+<p>If the clipboard holds none of those, you hear “The clipboard holds
+no file, path or link.” <strong>Ctrl+V</strong> still pastes.</p>
+<p><strong>Open from URL…</strong> (<strong>Alt+F, F</strong>). Type or
+paste a web address. QUILL Lite finds out the file’s name and size and
+asks before downloading anything, for example “Download plan.md from
+example.com? It is 12 KB.” Say Yes and a small window shows how the
+download is going; its Cancel button stops it. If something goes wrong,
+you hear one plain sentence instead of an error. A link to a file’s page
+on GitHub opens the file itself.</p>
+<p>The download opens as a new, unsaved document named after the file.
+Save it wherever you like. The temporary copy is deleted as soon as it
+is read.</p>
+<p><strong>Drag and drop.</strong> Drag files from File Explorer onto
+the QUILL Lite window and they open. Text you drag into a document is
+still inserted where you drop it.</p>
+<p>QUILL has the same three, on the same key.</p>
+<h2 id="opening-something-you-worked-on-recently">Opening something you
+worked on recently</h2>
+<p>QUILL Lite remembers the documents you open, newest first, so getting
+back to one never means hunting through folders.</p>
+<p><strong>The quick way.</strong> Press <strong>Alt+Shift+1</strong> to
+reopen the document you opened most recently,
+<strong>Alt+Shift+2</strong> for the one before that, and so on up to
+<strong>Alt+Shift+8</strong>. The same list is on the File menu, under
+<strong>Open Recent</strong>: press <strong>Alt+F</strong>, then
+<strong>T</strong>. Each row says the file’s name first and then the
+folder it is in, so two files called “notes” are easy to tell apart.</p>
+<p><strong>The whole list.</strong> Press <strong>Alt+Shift+0</strong>,
+or choose <strong>File &gt; Recent Documents…</strong>. A window opens
+with every document QUILL Lite remembers. Arrow to one and press
+<strong>Enter</strong> to open it. In the same window you can:</p>
+<ul>
+<li><strong>Pin</strong> a document you come back to often
+(<strong>Alt+P</strong>). Pinned documents stay at the top of the list,
+however many others you open after them. On a pinned document the same
+button says <strong>Unpin</strong>.</li>
+<li><strong>Remove from List</strong> (<strong>Alt+R</strong>, or the
+<strong>Delete</strong> key) takes a document off the list. The file
+itself is not touched.</li>
+<li><strong>Open Containing Folder</strong> (<strong>Alt+F</strong>)
+shows the file in File Explorer, in its folder.</li>
+<li><strong>Clear Unpinned…</strong> (<strong>Alt+L</strong>) empties
+the list. It asks first, and <strong>No</strong> is the answer if you
+just press Enter. Pinned documents always stay.</li>
+<li><strong>Remember up to this many documents</strong>
+(<strong>Alt+U</strong>) sets how long the list is, from 1 to 50. Ten is
+where it starts.</li>
+<li><strong>Forget missing files when the app starts</strong>
+(<strong>Alt+M</strong>) tidies away files that have been deleted from
+this computer. A file on a USB drive or a network share is kept, because
+it is usually just unplugged.</li>
+</ul>
+<p>If a file has been moved or deleted, its row says “not found”. It
+stays in the window so you know what happened, and Remove from List
+tidies it away. The Open Recent menu leaves it out, so the quick keys
+only ever open something that is there.</p>
+<p>QUILL has the same window on the same key. The two apps keep separate
+lists, so what you open in one does not show up in the other.</p>
+<h2 id="reopening-what-you-had-open">Reopening what you had open</h2>
+<p>When you start QUILL Lite, it can offer you back the saved documents
+you had open last time.</p>
+<h3 id="when-it-asks-and-when-it-just-opens-them">When it asks, and when
+it just opens them</h3>
+<p>If you only had one or two documents open, it simply opens them
+again. If there were more, or a file has moved, it asks you first. That
+way you are not faced with a pile of windows to sort through before you
+can start.</p>
+<table>
+<thead>
+<tr>
+<th>Last time you had</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>one or two documents, both still there</td>
+<td>they open, as before</td>
+</tr>
+<tr>
+<td>three or more</td>
+<td>you are asked</td>
+</tr>
+<tr>
+<td>any document whose file has moved or gone</td>
+<td>you are asked</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-reopen-last-session-window">The Reopen Last Session
+window</h3>
+<p>The window lists what you had open, one row each, with a checkbox.
+Everything that can be opened starts checked. So pressing
+<strong>Enter</strong> opens all of it, and unchecking two means “all
+except those two”. If a file has gone, its row says so and you cannot
+check it.</p>
+<h4 id="the-buttons">The buttons</h4>
+<ul>
+<li><strong>Open Checked</strong> opens the checked rows and leaves the
+list as it is.</li>
+<li><strong>Open All</strong> opens everything that is still on your
+computer, checked or not.</li>
+<li><strong>Not Now</strong> opens nothing and changes nothing. You will
+be offered the same documents next time. Escape does the same.</li>
+<li><strong>Forget Checked</strong> takes the checked rows off the list,
+so you are not offered them again. <strong>Clear the List</strong> does
+that for all of them. <strong>Neither one touches your files.</strong>
+Forgetting only changes what QUILL Lite offers you, and a line under the
+buttons reminds you of that.</li>
+<li><strong>Never Ask Again</strong> opens the checked documents and
+stops asking from now on.</li>
+<li><strong>Ask Me Next Time</strong> undoes Never Ask Again. You will
+be asked again, just like a new install: when there are several
+documents, or one whose file has moved. The checked documents open
+too.</li>
+</ul>
+<h4 id="turning-the-question-back-on">Turning the question back on</h4>
+<p><strong>Only one of Never Ask Again and Ask Me Next Time can be
+pressed at a time.</strong> The other is greyed out, not hidden, so when
+you land on it you can tell which way the setting is now.</p>
+<p>If you pressed Never Ask Again and want the question back, open the
+window yourself with <strong>File &gt; Reopen Last Session…</strong>
+(<strong>Alt+Shift+F12</strong>) and press <strong>Ask Me Next
+Time</strong>. That is the only place this setting lives. It is not in
+Preferences.</p>
+<h4 id="what-you-hear-afterwards">What you hear afterwards</h4>
+<p>QUILL Lite tells you what happened, for example: “Reopened all 3
+documents”, “Reopened 1 of 2”, or “Forgot 2 documents. 1 still
+remembered. The files themselves are untouched.”</p>
+<h4 id="opening-it-whenever-you-like">Opening it whenever you like</h4>
+<p><strong>File &gt; Reopen Last Session…</strong>
+(<strong>Alt+Shift+F12</strong>) opens the same window any time, not
+just at startup. So Not Now is always safe to press: you can come back
+to the list later, and tidy it without restarting. QUILL has the same
+window on the same key.</p>
+<h2 id="printing">Printing</h2>
+<p>Press <strong>Ctrl+P</strong> to print. Press
+<strong>Ctrl+Alt+P</strong> for Page Setup. What you set there (paper
+size, orientation and all four margins) is remembered for next time.</p>
+<p>Long lines are wrapped to fit the page, whatever your Word Wrap
+setting says, so nothing runs off the edge of the paper.</p>
+<p><strong>Rich text prints as rich text.</strong> A heading comes out
+as a heading, and a bold word comes out bold.</p>
+<p>A plain text or Markdown document prints just as it reads. A Markdown
+heading prints with its <code>#</code> in front, the same as you hear
+it.</p>
+<h3 id="print-preview-ctrlaltshiftp">Print Preview
+(Ctrl+Alt+Shift+P)</h3>
+<p>Most print previews are a picture of the page, which is no help if
+you cannot see it. QUILL Lite’s Print Preview tells you what you
+actually want to know.</p>
+<p>It tells you <strong>how many pages</strong> there will be, on what
+paper, and with what margins. Then it goes page by page and tells you
+what is at the top of each one. “Page 3 of 7: Installing” tells you
+where that section starts, without printing anything.</p>
+<p>The page count is worked out for your real printer, so the number you
+hear is the number of pages you will get.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>Every document is plain text, Markdown, HTML or rich text. QUILL Lite
+guesses from the file’s name, and <strong>Alt+Shift+F</strong> or
+<strong>Ctrl+Alt+F6</strong> let you change it. Only rich text really
+converts your document, and it asks first.</p>
+<p><strong>Ctrl+S</strong> saves your file back exactly the way it came
+in, with its encoding, line endings and ending kept, and
+<strong>Ctrl+Alt+E</strong> changes those on purpose. You know what
+happens when a character will not fit, how a spare copy keeps your work
+safe after a crash, and how <strong>File &gt; Earlier Versions…</strong>
+brings back an older copy once backups are on.
+<strong>Alt+Shift+1</strong> to <strong>Alt+Shift+8</strong> reopen your
+recent documents, and <strong>Alt+Shift+0</strong> shows the whole list,
+where you can pin the ones you keep coming back to. QUILL Lite offers
+your last documents back, only asks when there are several or something
+has moved, and <strong>Alt+Shift+F12</strong> brings that window back
+whenever you want it. <strong>Ctrl+P</strong> prints,
+<strong>Ctrl+Alt+P</strong> sets up the page, and
+<strong>Ctrl+Alt+Shift+P</strong> tells you how many pages you will get
+and what starts each one.</p>
+<p>The tutorials <em>Open a file, and give it back unchanged</em> and
+<em>Four kinds of document, and how to say which</em> let you try all of
+this with the app guiding you.</p>
+<p>Next, Chapter 4, Moving around a document, shows you how to search,
+and how to jump straight to the place you want.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-guide-02-finding-your-way-around.html">Chapter 2: Finding
+your way around</a></li>
+<li>Next: <a href="lite-guide-04-moving-around-a-document.html">Chapter
+4: Moving around a document</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

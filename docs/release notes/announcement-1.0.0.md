@@ -73,7 +73,9 @@ QUILL has more than seven hundred named commands, and you can reach every one th
 ways: from the menu bar, from the Command Palette (**Ctrl+Shift+P**), and from a
 shortcut you assign. Nothing hides in a toolbar without a menu item. In the palette
 you can type words in any order, or type a shortcut to find its command. Each
-result is read with its shortcut, so you pick up the faster way as you go. The
+result is read with its shortcut, so you pick up the faster way as you go. And
+the palette has everything the menus have, down to your recent files and your
+open documents, each named by the menu it lives in. The
 status bar is a control panel too: arrow to any cell and press Enter to act on it.
 
 ## Braille files, kept exactly as they are
@@ -122,7 +124,8 @@ and subscript, fonts, sizes, colours, highlights, lists, links, code, quotes,
 alignment, spacing, indents, named styles, page breaks, tables and images. Switch to
 HTML and back a dozen times and you still have the document you started with. Rich
 Text is written with Word's own styles, so a file you send opens in Word with real
-Heading 1 and Quote styles.
+Heading 1 and Quote styles. And **Ctrl+Enter** is a page break, the same as in
+Word: a real one in a Word or rich text document, kept when you save.
 
 Plain text has two sensible answers, so QUILL asks you which one you want. It can
 take the `#` and `**` marks off for strictly plain text, or keep them as ordinary
@@ -179,16 +182,14 @@ document until you agree, and then the change is one undo step. QUILL never quie
 changes which AI is answering you, and never switches between the cloud and your
 own computer.
 
-You choose where your AI comes from, in one window: Choose Your AI (Ctrl+4).
-QUILL's free AI needs no account. Beside it are your ChatGPT plan, your GitHub
-Copilot, Codex and your own key. Copilot signs in with a short code your screen
-reader spells out, already on the clipboard. Which AI Am I Using (Ctrl+8) tells
-you where your words are going, and Do a Document Task (Ctrl+3) lets Copilot or
-Codex take on a job with several steps, asking you before it changes anything.
+Copilot signs in with a short code your screen reader spells out, already on
+the clipboard, and the Copilot engine comes with QUILL, so there is nothing else
+to install.
 
 ## For people who write code
 
-Choose the Developer profile and QUILL can work on a folder of code with an AI,
+Choose the Developer profile (Help, Feature Profiles, Switch Profile) and QUILL
+can work on a folder of code with an AI,
 on GitHub Copilot, Codex, Claude with your own key, or Ollama on your own
 computer for practice. Open the folder with File, Open Project Folder, press
 Ctrl+3, and say what you want done. The agent tells you its plan first. Every
@@ -198,6 +199,56 @@ you and a plain warning when it may reach the internet or delete files. Test
 results come back as one sentence. One command, Undo Last Agent Turn, puts back
 everything a turn changed, and coach mode lets the agent teach instead of type,
 for anyone learning. Nothing moves your focus, and nothing chatters.
+
+## Your website, from your editor
+
+If you look after a WordPress website, you know the block editor: floating
+toolbars, a canvas built for a mouse, and a lot of guessing about where you
+are. QUILL gives you another way in. Connect your site once, with File,
+WordPress, Connect a Site. Your browser fetches the password for you, and
+Windows keeps it safe. Then open a page or post, or paste the address of one
+you were reading, and edit it as an ordinary document.
+
+Ordinary writing stays ordinary: a heading is a heading and a list is a list.
+A button or a set of columns is one short line you can read, and anything QUILL
+does not understand is kept exactly as it was, so opening a page in QUILL never
+breaks it. Next Block and Previous Block tell you what each block is and where
+you are. **Ctrl+S** only ever saves on your computer. Save Draft to Site and
+Publish or Update are separate, Publish checks the page for missing alternative
+text, vague links and skipped headings first, and if somebody else changed the
+page while you worked, QUILL will not overwrite them.
+
+It looks after the site as well. The Media Library plays a sound or video file
+right where it is, and asks for alternative text on every picture. Check This
+Page checks your published page the way a visitor meets it, using axe-core,
+which comes with QUILL, and Check the Whole Site finds the problems across
+every page and fixes the safe ones in bulk, with an undo. Comments, menus,
+categories, users, plugins and settings are all lists you can arrow through,
+and every window knows what your account is allowed to do before it offers
+you a button. The commands sit where Word users would look for them, and
+**Ctrl+Alt+Shift+Grave**, then one letter, reaches the everyday ones: O to
+open, P to publish, M for the Media Library.
+
+## Forms you can hear before anyone fills them in
+
+Building a form usually means dragging boxes around a canvas. In QUILL a form
+is a short text document: a question per line, its settings underneath, and
+rules that read back to you as sentences, such as "Show Company name when Type
+is Business." Start from a template with File, New Form, add questions from a
+list, and let Check This Form point out a missing label or a field that says it
+is required only with an asterisk.
+
+Then choose **Fill It In Yourself**, and QUILL builds your form as a real
+window and lets you tab through it exactly as a visitor would, with your own
+screen reader, in each of its languages. When it is right, publish it to a
+WordPress site running the QUILL Accessible Forms plugin and read the
+responses in a list, or save it as a web page, a Word document, large print or
+braille-ready text from the same source, so the paper form and the web form
+never disagree.
+
+QUILL Lite has WordPress and Forms too, in the same places. The guide
+[WordPress and Forms in QUILL](https://www.quillforall.org/docs/wordpress-forms-guide.html), and fourteen guided lessons in Help, Tutorials,
+take you through both.
 
 ## Your work is safe
 

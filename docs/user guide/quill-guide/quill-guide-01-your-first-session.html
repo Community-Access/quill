@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 1: Your first session</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-1-your-first-session">Chapter 1: Your first session</h1>
+<p>This chapter is your first sit-down with QUILL, and I will stay with
+you the whole way. You will open QUILL, write a few lines, save them,
+and meet the handful of keys that do most of the work. If you have never
+used QUILL before, start here. If you have, skim the key list near the
+end and move on to Chapter 2.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>If you only have five minutes, do this.</p>
+<ol type="1">
+<li>The first time QUILL starts, the <strong>Personalise QUILL</strong>
+wizard offers to set up your keyboard layout, your profile and any
+optional features you want. It takes about two minutes. Finish it, or
+close it and come back later from <strong>Help &gt; Personalise
+QUILL…</strong> whenever you like.</li>
+<li>Press <code>Ctrl+N</code> to make a new document, or
+<code>Ctrl+O</code> to open one you already have.</li>
+<li>Type a few lines.</li>
+<li>Press <code>Ctrl+Shift+P</code> to open the Command Palette. Type
+<code>guide</code>, <code>spell</code>, <code>compare</code> or
+<code>glow</code>, and listen to how quickly QUILL finds what you
+meant.</li>
+<li>Press <code>F6</code> to move out of the editor and on towards the
+status bar along the bottom of the window. QUILL treats that strip as a
+place you can work, not just something to read. <code>Shift+F6</code>
+brings you back.</li>
+<li>Try <code>F7</code> for spell check, <code>Ctrl+F</code> to search,
+or <code>Ctrl+K</code> to insert a link.</li>
+<li>Press <code>F1</code> on any control to hear what it does and which
+keys work there.</li>
+</ol>
+<p>If you ever feel lost, <code>F1</code> is the first thing to try. For
+ideas about the document you have open, choose <strong>Help &gt; What
+Can I Do Here?</strong> (<code>Ctrl+Alt+Shift+F1</code>). Between them,
+they are like having a friend at your elbow.</p>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Forgotten where something lives?
+Press <code>Ctrl+Shift+P</code> and type a word, like “sort” or “print”.
+The palette says each command’s key as you arrow past it, so you pick up
+the keys while you work.</p>
+</blockquote>
+<h2 id="what-quill-is-like-to-use">What QUILL is like to use</h2>
+<p>A few promises shape everything in QUILL.</p>
+<ul>
+<li>The keyboard always comes first.</li>
+<li>Screen readers are part of the plan from the start, never an
+add-on.</li>
+<li>Every major action can be reached from the menus, from the Command
+Palette and through the command system.</li>
+<li>Your documents open on your computer and stay there, unless you
+choose an action that uses the network.</li>
+<li>QUILL tells you what changed, where you are and what you can do
+next.</li>
+</ul>
+<p>In day-to-day use, that means QUILL pays a lot of attention to where
+your focus goes, gives you status updates that mean something, makes
+commands easy to discover, and uses the standard Windows controls your
+screen reader already knows. It also tries hard to take the worry out of
+things. Opening a recovered draft, comparing two files or checking how
+well text came out of a scanned document are all made to be safe and
+easy to undo.</p>
+<h2 id="a-first-proper-session">A first proper session</h2>
+<p>Here is what your first real visit to QUILL is likely to look
+like.</p>
+<p>You start QUILL. There is no splash screen to wait through. The
+window appears quickly, with a menu bar across the top, the editor in
+the middle and a status bar along the bottom. If QUILL finds a screen
+reader running, it adjusts its hints and the way it announces things to
+suit. If QUILL finds signs of an earlier crash, or work it saved
+automatically, it offers to recover it for you straight away.</p>
+<p>From there, a good first session goes like this.</p>
+<ol type="1">
+<li>Open a file with <code>Ctrl+O</code>, or make a new one with
+<code>Ctrl+N</code>. If you would like a smaller file picker that is
+easier to use with a screen reader, open Preferences
+(<code>Ctrl+,</code>), go to <strong>General</strong> and turn on
+<strong>Use simple file open dialog</strong>.</li>
+<li>Read or write in the editor.</li>
+<li>Press <code>Ctrl+Shift+P</code> and explore commands, without
+memorising anything.</li>
+<li>Open the <strong>Navigate</strong> menu to jump by line, heading,
+block, region or page.</li>
+<li>Open the <strong>Tools</strong> menu for spelling, word count,
+checking extracted text, comparing files, macros and help with regular
+expressions.</li>
+<li>Choose <strong>Help &gt; Open Keyboard Reference</strong> to see
+every shortcut that works in your setup right now. QUILL builds this
+reference on the spot, so it always matches your current feature profile
+and any keys you have changed.</li>
+</ol>
+<p>The habit this teaches is the most useful one in QUILL: you do not
+need to go hunting. If QUILL can do something, you can reach it from
+wherever you are.</p>
+<blockquote>
+<p><strong>QUILLBert found something.</strong> He pressed
+<code>Ctrl+Shift+Grave</code> twice in a row to see what would happen,
+and suddenly every letter he typed moved him around the document instead
+of writing. H took him to a heading, P to a paragraph. That is Quick
+Nav, and it stays on until you press <code>Esc</code>, which is how he
+got his typing back. Chapter 2 explains the QUILL key properly.</p>
+</blockquote>
+<h2 id="the-keys-that-do-most-of-the-work">The keys that do most of the
+work</h2>
+<p>If you want a small set of keys to learn first, start with these.</p>
+<ul>
+<li><code>Ctrl+N</code> new document, <code>Ctrl+O</code> open,
+<code>Ctrl+S</code> save, <code>Ctrl+Shift+S</code> save as.</li>
+<li><code>Ctrl+Shift+P</code> the Command Palette.</li>
+<li><code>Ctrl+F</code> find, <code>F3</code> find next,
+<code>Shift+F3</code> find previous. <code>Alt+F3</code> turns Reveal
+Codes on and off, so you can hear the formatting that is normally
+hidden.</li>
+<li><code>Ctrl+G</code> go to a line. <code>Ctrl+Shift+G</code> Document
+Statistics, the word count and more.</li>
+<li><code>Ctrl+K</code> insert a link. <code>Ctrl+Enter</code> inserts a
+page break, as in Word; with the cursor on a link, it follows the link
+instead.</li>
+<li><code>Ctrl+Shift+Grave, L</code> (press the QUILL key, then L) for
+the List Manager, <code>Ctrl+Alt+Shift+L</code> for the Structured List
+Studio, and <code>Ctrl+Shift+F2</code> for Insert Special
+Character.</li>
+<li><code>Ctrl+F9</code> starts and stops Locked Dictation, and
+<code>Alt+F9</code> says what dictation is doing.</li>
+<li><code>F9</code> says the last result again, if you missed it.</li>
+<li><code>F7</code> spell check, <code>Ctrl+F7</code> next misspelling,
+<code>Ctrl+Shift+F7</code> previous misspelling, <code>Shift+F7</code>
+the thesaurus.</li>
+<li><code>Ctrl+Tab</code> and <code>Ctrl+Shift+Tab</code> move between
+open documents.</li>
+<li><code>F6</code> and <code>Shift+F6</code> move between the parts of
+the window.</li>
+<li><code>Alt+Z</code> turns soft wrap on and off.</li>
+</ul>
+<p>When those feel familiar, open <strong>Help &gt; Open Keyboard
+Reference</strong> and let QUILL show you the rest, taken from the keys
+you actually have.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You have opened QUILL, written something, found commands by name with
+the Command Palette, and met the keys you will use every day. You also
+know the two ways out of any muddle: <code>F1</code> on whatever you are
+on, and <strong>Help &gt; What Can I Do Here?</strong>.</p>
+<p>If you would like to go over this with QUILL keeping you company,
+open <strong>Help &gt; Tutorials…</strong> (<code>Ctrl+Alt+F1</code>)
+and take the track called Your first hour. Its lessons “Write and save
+your first document”, “Do anything by name” and “Getting unstuck” follow
+this chapter closely. On the website, <a
+href="https://www.quillforall.org/tutorials/01-your-first-hour.html">Your
+first hour with QUILL</a> walks the same ground at a gentler pace.</p>
+<p>When you are ready, Chapter 2, Finding your way around, takes you on
+a tour of the window, the menus and the QUILL key.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-00-introduction.html">Introduction</a></li>
+<li>Next: <a href="quill-guide-02-finding-your-way-around.html">Chapter
+2: Finding your way around</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

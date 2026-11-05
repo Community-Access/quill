@@ -93,7 +93,7 @@ $null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $ver
 Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("quilllite") -Skip:$SkipPublishedCheck
 
 # -- render docs (html + epub from the markdown source) -----------------------
-& (Join-Path $PSScriptRoot "render_docs.ps1")
+& (Join-Path $PSScriptRoot "render_docs.ps1") -Python $Python
 
 # -- no feedback token (2026-09-26) ------------------------------------------
 # This build used to generate and embed the bundled GitHub "feedback token", and

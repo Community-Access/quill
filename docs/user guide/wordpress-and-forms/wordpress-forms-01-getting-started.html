@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 1: Getting started and adding your sites</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-1-getting-started-and-adding-your-sites">Chapter 1:
+Getting started and adding your sites</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter gets you from nothing to a connected WordPress site. It
+explains what QUILL and QUILL Lite do with WordPress and what they leave
+alone, how to turn the feature on, where the commands live, and how to
+connect a site: with your browser, by pasting an application password,
+on WordPress.com, and when you look after more than one site. It ends
+with what your role on a site means, and how to sign out of a site for
+good.</p>
+<h2 id="what-wordpress-in-quill-is">What WordPress in QUILL is</h2>
+<p>If you look after a WordPress website, QUILL can write its pages and
+posts, open the ones already there, and publish your changes. You do it
+in the same editor you use for everything else, with Find, spelling,
+dictation, Read Aloud, bookmarks and all your usual keys. Everything in
+this manual works the same way in QUILL Lite.</p>
+<p>Three promises run through the whole feature:</p>
+<ul>
+<li><strong>Nothing reaches your site until you send it.</strong> Saving
+with Ctrl+S only ever saves on your computer. Sending is always a
+separate command, and publishing always asks first.</li>
+<li><strong>Your site keeps its look.</strong> QUILL works on the words
+and pictures inside your pages. Your theme, its layout and its design
+stay in WordPress.</li>
+<li><strong>Nothing is deleted for good without a copy first.</strong>
+Pages go to WordPress’s own Trash. The one thing WordPress cannot put in
+a Trash, a file in the Media Library, is copied to your computer before
+it goes.</li>
+</ul>
+<p>QUILL talks to your site through WordPress’s own REST API, the same
+doorway the block editor uses. You do not need to install a plugin for
+anything in this manual except forms, which need the QUILL Accessible
+Forms plugin on the site (Chapter 9 explains why).</p>
+<h2 id="turning-it-on">Turning it on</h2>
+<p>WordPress and Forms are two separate features, and each can be
+switched on or off on its own.</p>
+<p><strong>In QUILL,</strong> both are on in every feature profile
+except Essential. If you do not see <strong>File &gt;
+WordPress</strong>, choose another profile in <strong>Profiles and
+Features…</strong>, or switch on WordPress by itself there. Forms works
+the same way.</p>
+<p><strong>In QUILL Lite,</strong> WordPress and Forms are areas. Both
+are on in the Recommended, Everything and Developer profiles, and off in
+WordPad and Notepad, because neither of those programs ever published to
+a website or made a form. To turn one on without changing profile, check
+it in <strong>Tools &gt; Customize Features</strong>.</p>
+<p><strong>Safe Mode</strong> turns WordPress off, along with the other
+features that use the network. If you started QUILL in Safe Mode, every
+WordPress command says “WordPress is off in Safe Mode. Start the app
+normally to use it.” Forms is partly different: writing, checking,
+trying out and saving a form to paper still work in Safe Mode, because
+they never leave your computer.</p>
+<h2 id="where-everything-is">Where everything is</h2>
+<p>The commands sit where a Word user would look for them. Anything
+about a whole page or post, or about your sites, is in <strong>File &gt;
+WordPress</strong>. What you do inside a page joins the ordinary menus.
+Looking after the site itself is in <strong>Tools &gt;
+WordPress</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>What is there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File &gt; WordPress</td>
+<td>New, Open, the three saves, Properties, versions, Trash, Send and
+Copy, your sites</td>
+</tr>
+<tr>
+<td>Edit &gt; WordPress</td>
+<td>Next Block, Previous Block, Where Am I, and two link tools</td>
+</tr>
+<tr>
+<td>View</td>
+<td>WordPress Blocks, Preview Blocks, Block Notes, Play Media Here</td>
+</tr>
+<tr>
+<td>Insert</td>
+<td>Blocks, pictures, links to your own pages, notes, icons, Make a
+Picture</td>
+</tr>
+<tr>
+<td>Format &gt; WordPress</td>
+<td>Block Settings, Image Size, Mark Language</td>
+</tr>
+<tr>
+<td>Tools &gt; WordPress</td>
+<td>Checking, the Media Library, comments, menus, settings, and five
+submenus</td>
+</tr>
+</tbody>
+</table>
+<p>The five submenus of Tools &gt; WordPress are More Media, Design,
+Plugin Extras, Manage and Your Sites.</p>
+<p><strong>Dimmed rows.</strong> The commands about the page in front of
+you are dimmed unless a WordPress page or post is open. If you reach one
+another way, such as from the Command Palette, QUILL tells you why it
+cannot run and how to open one, for example “Insert Block works in a
+WordPress page or post. Open one with File, WordPress.” The site-wide
+commands, such as Comments or the Media Library, work from anywhere, and
+ask which site when you have more than one.</p>
+<p><strong>The Command Palette</strong> (Ctrl+Shift+P) lists every
+WordPress command. Type “WordPress”, or part of a command’s name, and
+press Enter. It is in the Tools menu in both editors.</p>
+<p><strong>The WordPress keys.</strong> The everyday commands also have
+a key each: press Ctrl+Alt+Shift+Grave, let go, and press one letter.
+Chapter 12 has the whole table. You do not need them to get started.</p>
+<h2 id="what-you-need-before-you-connect">What you need before you
+connect</h2>
+<p>You need three things:</p>
+<ul>
+<li><strong>Your site’s address,</strong> for example
+<code>https://example.org</code>. It must start with https. QUILL never
+sends a password to a site over plain http.</li>
+<li><strong>Your WordPress username,</strong> or the email address you
+sign in with.</li>
+<li><strong>An application password.</strong> This is a separate
+password WordPress makes for one app. It is not the password you sign in
+with. It is made of 24 letters and numbers, usually shown in groups of
+four, and you can take it away again at any time from your WordPress
+profile without changing your real password.</li>
+</ul>
+<p>You do not need to make the application password yourself if your
+site is reasonably new. QUILL can ask your site for one through your
+browser, and the site hands it straight back.</p>
+<h2 id="connecting-a-self-hosted-site-with-your-browser">Connecting a
+self-hosted site with your browser</h2>
+<p>This is the easy way, and the one to try first.</p>
+<ol type="1">
+<li>Choose <strong>File &gt; WordPress &gt; Connect a Site…</strong>.
+The Connect a WordPress Site window opens on <strong>Kind of
+site</strong>.</li>
+<li>Leave Kind of site on <strong>My own WordPress site
+(self-hosted)</strong>.</li>
+<li>Tab to <strong>Site address</strong> and type your site’s address,
+for example <code>https://example.org</code>.</li>
+<li>If you like, Tab to <strong>Name for this site</strong> and type a
+short name, such as “Community Radio”. QUILL uses it in every list and
+every confirmation. Leave it empty to use the site’s own title.</li>
+<li>Press <strong>Get Password with My Browser</strong>.</li>
+</ol>
+<p>Your browser opens your site’s own Authorize Application page. Sign
+in there if it asks. The page names QUILL as the app asking for a
+password. Choose <strong>Approve</strong>.</p>
+<p>What happens next depends on how new your site is:</p>
+<ul>
+<li><strong>On a newer site,</strong> the password comes straight back
+to QUILL, which checks it, saves it and says “Connected to Community
+Radio as Editor”, with your own site name and role. You can close the
+browser tab.</li>
+<li><strong>On an older site,</strong> WordPress shows you the new
+password on its own page, with a Copy button. Copy it and come back to
+QUILL, where a small window, Paste the Application Password, is waiting
+with one field. If the password is already on your clipboard, QUILL has
+put it in the field for you. Press Connect.</li>
+</ul>
+<p>Either way, the password never passes through anything but your
+browser, your site and your own computer. It is kept in Windows’ own
+Credential Manager, never in a settings file.</p>
+<p><strong>If the site has application passwords turned off,</strong>
+usually by a security plugin, QUILL says so in one sentence:
+“Application passwords are turned off on Community Radio. Ask the site’s
+administrator to turn them on.”</p>
+<h2 id="connecting-by-pasting-an-application-password">Connecting by
+pasting an application password</h2>
+<p>Use this when the browser route does not suit you, or when your
+site’s administrator gave you a password.</p>
+<ol type="1">
+<li>In your browser, sign in to your site and open your profile. In the
+WordPress dashboard that is <strong>Users &gt; Profile</strong>.</li>
+<li>Find the <strong>Application Passwords</strong> section near the
+bottom. Type a name such as “QUILL on my laptop” and press <strong>Add
+New Application Password</strong>.</li>
+<li>WordPress shows the new password once. Copy it.</li>
+<li>In QUILL, choose <strong>File &gt; WordPress &gt; Connect a
+Site…</strong>.</li>
+<li>Type the site’s address, then your <strong>Username</strong>, then
+paste the password into <strong>Application password</strong>.</li>
+<li>Press <strong>Connect</strong>.</li>
+</ol>
+<p>QUILL checks the connection before it saves anything. It asks the
+site who you are and what the site is called, so a wrong password is
+caught here, in words, and not the first time you try to publish. When
+it works you hear “Connected to” the site’s name, “as” and your
+role.</p>
+<p>If it does not work, the Connect window opens again with a
+<strong>Problem</strong> field at the top saying what went wrong, and
+everything you typed is still there. The commonest sentences are:</p>
+<ul>
+<li>“Community Radio did not accept the application password. Check it
+belongs to this account, then reconnect.” The password was made under a
+different user, or a character was lost when you copied it.</li>
+<li>“Community Radio does not know that username. Check it and
+reconnect.”</li>
+<li>“QUILL only connects to WordPress sites over HTTPS, so your password
+is never sent in the clear. Check that the address starts with
+https://.”</li>
+<li>“A security setting on Community Radio blocked QUILL. Ask the site’s
+administrator to allow the WordPress REST API and application
+passwords.”</li>
+</ul>
+<p>Chapter 11 has the rest, with what to do about each one.</p>
+<h2 id="wordpresscom-sites">WordPress.com sites</h2>
+<p>The Connect window offers a second kind of site, <strong>A
+WordPress.com site</strong>. Choosing it greys out the username and
+password fields, because a WordPress.com site is meant to be connected
+by signing in to WordPress.com in your browser, on every plan, the free
+one included, with nothing to install.</p>
+<p>That sign-in needs QUILL’s own WordPress.com app registration, and
+this build does not have it yet. If you choose A WordPress.com site and
+press Connect, QUILL says: “WordPress.com sign-in is not available in
+this build yet. If your WordPress.com plan allows plugins, connect with
+an application password at your site’s own address instead.”</p>
+<p>So, for now:</p>
+<ul>
+<li><strong>On a WordPress.com plan that allows plugins,</strong> your
+site accepts an application password at its own address. Choose My own
+WordPress site, type your site’s address, and connect with the browser
+or by pasting, as above. Everything in this manual then works.</li>
+<li><strong>On a plan without plugins,</strong> wait for the build that
+brings WordPress.com sign-in. When it comes, you will choose A
+WordPress.com site, press Get Password with My Browser, approve QUILL on
+WordPress.com, and sign in once. QUILL will keep you signed in from then
+on.</li>
+</ul>
+<h2 id="looking-after-more-than-one-site">Looking after more than one
+site</h2>
+<p>Connect each site the same way. There is no limit, and you can
+connect the same site twice with two different accounts, for example as
+yourself and as a test author.</p>
+<p><strong>File &gt; WordPress &gt; Sites…</strong> lists every site you
+have connected. Each row gives the site’s name, its address and your
+role there. From the list you can:</p>
+<ul>
+<li><strong>Rename</strong> a site, which changes only what QUILL calls
+it;</li>
+<li><strong>Verify</strong> it, which checks the password still works
+and says “Community Radio accepts QUILL. You are Editor there.”;</li>
+<li><strong>Make Default</strong>, so New and Open start there;</li>
+<li><strong>Remove</strong> it, which forgets the connection on this
+computer. Nothing on the site changes, and your local drafts for it
+stay.</li>
+</ul>
+<p>The list also names the application password QUILL is using on each
+site, so you can match it to the one in your WordPress profile.</p>
+<p><strong>File &gt; WordPress &gt; Switch Site…</strong> is the quick
+way to change your default site. It opens a short list, and you hear
+“Default site:” and the name you chose.</p>
+<p><strong>A document always stays with the site it came from.</strong>
+Switching the default never moves an open page to another site. Every
+confirmation names the site as well as the page, for example “Publish
+‘Spring Workshop’ to Community Radio?”, which matters most when two of
+your sites have pages with the same title. And if you publish a page to
+a site that is not your default, Check Before Publishing reminds you:
+“This goes to Community Radio, not your default site, Home Blog.”</p>
+<h2 id="what-your-role-on-a-site-means">What your role on a site
+means</h2>
+<p>WordPress gives every account a role: Administrator, Editor, Author,
+Contributor or Subscriber. QUILL asks the site what your account may do
+before it opens a window.</p>
+<ul>
+<li><strong>If your role cannot use a window at all,</strong> you hear
+one sentence, such as “Your account on Community Radio is an Author,
+which cannot manage users”, and nothing opens.</li>
+<li><strong>If it can use part of a window,</strong> you only get the
+buttons that will work.</li>
+<li><strong>If you are a Contributor,</strong> you cannot publish
+yourself. Publish or Update sends your post for review instead, and says
+so. An Editor or Administrator then publishes it.</li>
+<li><strong>If the site refuses something anyway,</strong> you hear why
+in words, such as “Your account on Community Radio can only change items
+you wrote yourself.”</li>
+</ul>
+<h2 id="signing-out-of-a-site">Signing out of a site</h2>
+<p>Removing a site from Sites only forgets it on this computer. The
+application password still exists on the site.</p>
+<p><strong>Tools &gt; WordPress &gt; Manage &gt; Sign Out This
+Site…</strong> goes further. It revokes the exact application password
+QUILL is using on that site, so it stops working everywhere, and forgets
+it on this computer. It asks whether to remove the site from QUILL as
+well, or keep it so you can connect again later. Your local drafts stay
+either way.</p>
+<p>Use it when you give away a computer, or when you stop looking after
+a site.</p>
+<h2 id="if-you-used-publish-in-quill-before">If you used Publish in
+QUILL before</h2>
+<p>Older versions of QUILL had a Publish submenu in the File menu. It is
+gone, and File &gt; WordPress does everything it did. Your saved
+connections are not lost: QUILL brings them in the first time WordPress
+loads, with the same saved passwords, and documents you opened from a
+site stay linked to it.</p>
+<h2 id="learn-it-with-a-guided-lesson">Learn it with a guided
+lesson</h2>
+<p><strong>Help &gt; Tutorials</strong> has a WordPress track in both
+editors, seven lessons that use a real test site. The first, Connect
+your WordPress site, walks through everything in this chapter step by
+step and tells you what you should hear at each step.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Next: <a
+href="wordpress-forms-02-writing-and-publishing.html">Chapter 2: Writing
+and publishing posts and pages</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

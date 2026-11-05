@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Introduction</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="introduction">Introduction</h1>
+<p>Welcome, and thank you for giving QUILL a try.</p>
+<p>QUILL is a writing studio for Windows and macOS, made for people who
+use a screen reader. I am blind, I use one every day, and I wanted an
+editor that was built around the keyboard and the ear from the very
+first line. QUILL is what came of that. You can write in it, of course.
+You can also open almost any document, have it read to you, dictate into
+it, check its spelling, compare two drafts, tidy up a scanned PDF, turn
+a manuscript into an audiobook, and a good deal more, all without
+reaching for the mouse.</p>
+<p>The name stands for <strong>Quality, Usable, Inclusive, Lightweight,
+Literate</strong>. QUILL is free, and it is made by Community
+Access.</p>
+<p>This guide is written for QUILL 1.0.0. QUILL 1.0 is not out yet, so
+now and then the guide may describe something your copy does not have.
+QUILL is still in beta, which means you will find rough edges and the
+odd surprise. If something confuses you or does not work, please tell
+us. Chapter 15 shows you how, and every report makes QUILL better for
+the next person.</p>
+<h2 id="what-you-will-be-able-to-do">What you will be able to do</h2>
+<p>By the time you have read this guide you will be able to open, write
+and save documents in all the common formats, and move around a long
+document by heading, paragraph or bookmark. You will know how to search
+and replace, check your spelling, format text, and have QUILL read your
+work back to you. You will be able to dictate, transcribe a recording,
+and, if you want it, ask the AI for help with a piece of writing. You
+will have QUILL set up to say as much or as little as you like, with
+your own keys and your own choice of features. And when something
+puzzles you, you will know where to find help.</p>
+<p>None of this needs to happen on day one. Chapter 1 gets you writing
+in a few minutes. Everything after that is there for when you are
+curious.</p>
+<h2 id="how-this-guide-is-laid-out">How this guide is laid out</h2>
+<p>The chapters follow the order you are likely to want things. Read
+from the beginning if you are new to QUILL, or jump to the chapter for
+the job in front of you.</p>
+<ol type="1">
+<li><a
+href="quill-guide-01-your-first-session.html#chapter-1-your-first-session">Chapter
+1: Your first session</a>. A short, hand-held start: write something,
+save it, and learn the handful of keys that do most of the work.</li>
+<li><a
+href="quill-guide-02-finding-your-way-around.html#chapter-2-finding-your-way-around">Chapter
+2: Finding your way around</a>. The window, the status bar, F1 help, the
+Command Palette, the QUILL key, and a tour of the menus.</li>
+<li><a
+href="quill-guide-03-opening-saving-and-converting-files.html#chapter-3-opening-saving-and-converting-files">Chapter
+3: Opening, saving and converting files</a>. Every format QUILL reads
+and writes, converting between them, and files on other computers and on
+GitHub.</li>
+<li><a
+href="quill-guide-04-writing-and-editing.html#chapter-4-writing-and-editing">Chapter
+4: Writing and editing</a>. Selecting, copying, the Copy Tray, inserting
+dates, symbols and emoji, abbreviations, and links.</li>
+<li><a
+href="quill-guide-05-formatting-structure-and-markup.html#chapter-5-formatting-structure-and-markup">Chapter
+5: Formatting, structure and markup</a>. Headings, lists, tables,
+Markdown and HTML, maths and citations.</li>
+<li><a
+href="quill-guide-06-moving-around-and-finding-things.html#chapter-6-moving-around-and-finding-things">Chapter
+6: Moving around and finding things</a>. Find and replace, jumping by
+heading, bookmarks and marks, Quick Nav mode, and Quill Eraser.</li>
+<li><a
+href="quill-guide-07-spelling-and-words.html#chapter-7-spelling-and-words">Chapter
+7: Spelling and words</a>. Spell checking, the thesaurus, the dictionary
+and document statistics.</li>
+<li><a
+href="quill-guide-08-reading-reviewing-and-listening.html#chapter-8-reading-reviewing-and-listening">Chapter
+8: Reading, reviewing and listening</a>. Read Aloud, Reveal Codes,
+comparing documents, OCR, audiobooks and keeping your place.</li>
+<li><a
+href="quill-guide-09-dictation-and-transcription.html#chapter-9-dictation-and-transcription">Chapter
+9: Dictation and transcription</a>. Speaking into a document and turning
+recordings into text, on your own computer.</li>
+<li><a
+href="quill-guide-10-ai-when-you-want-it.html#chapter-10-ai-when-you-want-it">Chapter
+10: AI, when you want it</a>. The free AI, your own keys, the assistant,
+and exactly what is sent where.</li>
+<li><a
+href="quill-guide-11-accessibility-speech-and-braille.html#chapter-11-accessibility-speech-and-braille">Chapter
+11: Accessibility, speech and braille</a>. How much QUILL says,
+low-vision settings, sounds, braille files and GLOW.</li>
+<li><a
+href="quill-guide-12-making-quill-yours.html#chapter-12-making-quill-yours">Chapter
+12: Making QUILL yours</a>. Feature profiles, keyboard packs, your own
+keys, Quillins and languages.</li>
+<li><a
+href="quill-guide-13-keeping-your-work-safe.html#chapter-13-keeping-your-work-safe">Chapter
+13: Keeping your work safe</a>. Autosave, recovery, restore points,
+sessions and safe mode.</li>
+<li><a
+href="quill-guide-14-projects-notes-and-the-quillville-family.html#chapter-14-projects-notes-and-the-quillville-family">Chapter
+14: Projects, notes and the QuillVille family</a>. Story Studio, the
+Vault, sticky notes, Git, Mastodon, and the apps that live alongside
+QUILL.</li>
+<li><a
+href="quill-guide-15-help-updates-and-support.html#chapter-15-help-updates-and-support">Chapter
+15: Help, updates and support</a>. F1, tutorials, updates, release
+channels and getting help from a person.</li>
+<li><a href="quill-guide-16-wordpress.html#chapter-16-wordpress">Chapter
+16: WordPress</a>. Writing, publishing and looking after a WordPress
+website.</li>
+<li><a href="quill-guide-17-forms.html#chapter-17-forms">Chapter 17:
+Forms</a>. Writing accessible forms, checking them, and filling them in
+yourself first.</li>
+</ol>
+<p>After the chapters come the appendices: the Developer Console,
+writing your own AI skills, the full list of emoji QUILL can insert,
+notes from earlier versions, and the Developer Console’s design
+document. Last of all are the <a
+href="quill-guide-glossary.html#glossary-of-quill-terms">Glossary of
+QUILL Terms</a> and <a
+href="quill-guide-getting-help.html#getting-help">Getting help</a>.</p>
+<p>QUILL also has guided tutorials, short lessons you do with QUILL open
+in front of you, on <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>). Whenever a lesson covers the same ground as
+part of this guide, the chapter gives you its name, so you can choose
+between reading about something and being walked through it. If you
+would rather learn by listening, <a
+href="../quill-step-by-step.md">QUILL, Step by Step</a> is a slower
+companion book written to be read aloud, one skill per chapter.</p>
+<p>Now and then a short note from QUILLBee, QUILLVille’s guide, is set
+apart as a quote: a faster key, a word explained, or something worth
+knowing before it catches you out. QUILLBert, the curious porcupine,
+wanders in once or twice when he has found something. The guide reads
+perfectly well if you skip every one of them, and you can meet the pair
+properly on the <a
+href="https://www.quillforall.org/meet-quillbert-and-quillbee.html">Meet
+QUILLBert and QUILLBee</a> page.</p>
+<h2 id="reading-this-guide-with-a-screen-reader">Reading this guide with
+a screen reader</h2>
+<p>The guide is built from headings so you can move through it quickly.
+Each chapter is a page of its own, and its title is the level 1 heading
+at the top. The main topics in a chapter are level 2 headings. When a
+topic has parts of its own, those parts sit one level deeper, at level
+3, and sometimes at level 4. In JAWS or NVDA, press 2 to move between
+the main topics and 3 to step through the parts of a topic. Shift with
+either number goes back. To see every heading at once, press Insert+F6
+in JAWS or Insert+F7 in NVDA and choose headings.</p>
+<p>The contents page, <a href="../userguide.html">QUILL User Guide</a>,
+lists every chapter with its main topics. At the bottom of every chapter
+are links to the chapter before it, the one after it, and back to the
+contents.</p>
+<p>The notes from QUILLBee and QUILLBert are block quotes. In a web
+browser, Q moves to the next one in JAWS and NVDA, and Shift+Q goes
+back, so they are as easy to skip as they are to find.</p>
+<p>Every chapter ends with a short section called What you learned, and
+where to go next. If you are skimming, those are a quick way to hear
+what a chapter covers before you read it.</p>
+<p>Keys are written the way QUILL writes them in its menus.
+<code>Ctrl+Shift+P</code> means hold down Ctrl and Shift together and
+press P. A menu path such as <strong>File &gt; Save As…</strong> means
+open the File menu and choose Save As. If you have changed a key in
+QUILL, your key is the one that works; <strong>Help &gt; Open Keyboard
+Reference</strong> always lists the keys you have right now.</p>
+<p>When a section walks you through something, the steps are numbered.
+Follow them with QUILL open beside the guide and you will learn faster
+than by reading alone. Alt+Tab moves you between the two.</p>
+<p>You do not always need this guide to answer a question. Press
+<code>F1</code> on almost anything in QUILL, a field, a button, a menu
+item or the editor itself, and QUILL tells you what it does and which
+keys go with it.</p>
+<hr />
+<ul>
+<li>Next: <a href="quill-guide-01-your-first-session.html">Chapter 1:
+Your first session</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

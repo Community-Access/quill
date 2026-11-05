@@ -2,184 +2,295 @@
 
 ## 1.0.0
 
-### WordPress, in QUILL and QUILL Lite (2026-11-04, in progress)
+### WordPress, in QUILL and QUILL Lite (2026-11-05)
 
-- **File > WordPress.** Write, open and publish the pages and posts of your
-  WordPress sites without leaving QUILL. You can connect as many sites as you
-  like. Connect a Site checks your application password before saving it,
-  or fetches one with your browser. The password is kept in Windows'
-  Credential Manager.
-- **Three kinds of save.** Ctrl+S saves on this computer, Save Draft to Site
-  sends an unpublished draft, and Publish or Update publishes after a
-  confirmation that names the page and the site. Closing a document never
-  publishes it.
+If you look after a WordPress website, QUILL now writes, opens, checks and
+publishes its pages and posts, and looks after the site itself, from the
+editor you already use. QUILL Lite has every command, in the same places, from
+the same code. The new guide, WordPress and Forms in QUILL, has the whole
+story, and Help > Tutorials has seven guided WordPress lessons.
+
+#### Connecting your sites
+
+- **As many sites as you like,** self-hosted or on WordPress.com. **File >
+  WordPress > Connect a Site...** asks for the site's address, your username
+  and an application password, checks them before it saves anything, and says
+  exactly what was wrong if it cannot connect: the wrong password, a site that
+  is not HTTPS, a security plugin blocking WordPress's REST API, or an account
+  without the role.
+- **Get Password with My Browser.** QUILL opens the site's own Authorize
+  Application page in your browser. Approve QUILL there and the password comes
+  back to QUILL by itself; on an older site WordPress shows it to you, and
+  QUILL offers the password you just copied. Or paste one you made yourself.
+  The password is kept in Windows Credential Manager, never in a settings file.
+- **WordPress.com.** The browser sign-in is built and waits on the family's
+  registration with WordPress.com. Until then, choosing WordPress.com says so
+  plainly, and a plan that allows plugins connects with an application
+  password at the site's own address.
+- **Sites** lists them all: Add, Rename, Verify, Remove (the connection only,
+  never the site's content) and Make Default. It also says which of your
+  application passwords QUILL is using, and **Sign Out This Site** (Tools >
+  WordPress > Manage) takes exactly that one away on the site itself.
+- **Switch Site** picks the default site, where New Page and New Post go. An
+  open document belongs to its own site for life, and every confirmation names
+  the page and the site: "Publish 'Spring Workshop' to Community Radio?"
+
+#### Writing, opening and saving
+
+- **New Page, New Post, Open Page or Post, Open by Web Address and Open Local
+  Draft,** in File > WordPress. Open lists posts, pages and your site's own
+  kinds (events, recipes, whatever your theme or plugins add), and Enter opens
+  the one you are on. Open by Web Address takes the address you were reading
+  in your browser. You choose HTML or Markdown; anything Markdown cannot show
+  is kept exactly.
+- **Three kinds of save.** Ctrl+S saves on this computer and nothing else.
+  **Save Draft to Site** sends an unpublished draft. **Publish or Update...**
+  runs Check Before Publishing first, then asks for a confirmation that names
+  the page and the site. Closing a document never publishes it.
 - **Nothing is overwritten.** If someone else changed the page while you
-  worked, nothing is sent; you can compare, open their copy, or send yours
-  anyway. Previous Versions keeps your earlier text and lists the site's own
-  history.
-- **Open what is there:** from a list, by its web address, or from your
-  local drafts, as HTML or as Markdown. Anything Markdown cannot show is kept
-  exactly.
-- **Pictures.** The Media Library and Insert Picture from This Computer, with
-  alternative text, decorative pictures, captions, width and featured image.
-  Check Before Publishing points out missing alternative text, vague links
-  and skipped headings, and never stops you publishing.
-- **Comments, categories and tags,** managed from QUILL.
-- **Tested against a real WordPress 7.1 site.** Two things it taught us:
-  WordPress 7.1 no longer gives its version in the REST index, so QUILL
-  reads it from the site's feed, which is how it knows the password can
-  come back by itself; and several changes at once (merging categories,
-  bulk fixes) are found where 7.1 really lists them.
+  worked, nothing is sent: you can compare, open their copy, or send yours
+  anyway. **Compare with Site** shows the difference at any time.
+- **Previous Versions** keeps your earlier text on this computer and lists the
+  site's own revisions. **Move to Trash** asks first, and Restore from Trash
+  is in the Open list.
+- **Schedule Publish** asks for a date, a time and a time zone (the site's own
+  first), and on a scheduled item offers Change the Schedule or Publish Now.
+- **Autosaves and working offline.** While a WordPress document is open it is
+  autosaved every two minutes, on this computer and as your account's autosave
+  on the site, and Open offers an autosave newer than the site's copy. A send
+  that gets no answer re-reads the site before offering Try Again, so nothing
+  is created twice. A site that cannot be reached gets your sends queued,
+  retried every two minutes and announced when they go through.
+- **Properties** holds the title, slug, status, excerpt, categories and
+  tags, the featured image, whether comments are open, and a reading-level
+  line. It shows the custom fields
+  your site's plugins register, and **Custom Fields** and **Plugin Fields**
+  open them on their own, with SEO titles and descriptions from Yoast and Rank
+  Math, and their lengths.
+- **Send and Copy** (File > WordPress) sends any open document to WordPress,
+  publishes to another of your sites, duplicates, sends a folder as drafts, and
+  downloads your own writing from a site.
+- **After a new page is published,** QUILL offers once to add it to a menu.
+
+#### Blocks, made plain
+
+- **Ordinary writing stays ordinary.** Paragraphs, headings, lists, quotes,
+  tables, pictures and code are written the way you always write them, and
+  QUILL adds and removes WordPress's block comments itself.
+- **Other blocks are fences.** A button, columns or an accordion is a short
+  `:::` line in Markdown, the same idea as QUILL's page breaks. In HTML each
+  block reads as one line, such as "Button block: Book a session".
+- **A block QUILL does not know is an island:** one protected line that goes
+  back to the site byte for byte, so opening a page in QUILL never breaks it.
+- **Insert > WordPress Block...** lists every block the site allows, its
+  patterns and synced patterns, and WordPress.org's free patterns, with a short
+  form for each one.
+- **Edit > WordPress:** Next Block, Previous Block and Where Am I say each
+  block's kind, place and first words; Hear Where a Link Goes and Fix Link
+  Text help with links.
+- **View > WordPress Blocks...** moves, duplicates, removes, changes and groups
+  blocks, one Undo step each, without touching the rest of the page. **Preview
+  Blocks** reads what your site makes of its blocks without saving anything.
+- **Format > WordPress > Block Settings...** uses the theme's own colours and
+  sizes by name, with the contrast of each colour. Image Size and Mark Language
+  are beside it.
+- **Block notes.** View > Block Notes and Insert > Note on This Block join in
+  the editorial notes people leave in the block editor.
+- **Insert > Link to a Page on This Site** links to one of the site's
+  published pages or posts, named by what you selected or by its title, and
+  Insert > WordPress Icon adds one of the site's icons.
+
+#### Pictures and media
+
+- **Insert > Picture from the Media Library** and **Picture from This
+  Computer,** with alternative text, decorative pictures, captions, width and
+  the featured image. **Paste Image** uploads a picture from the clipboard.
+- **Tools > WordPress > Media Library...** lists every file, with Used In,
+  Attach to This Page or Post, Set as Featured Image, Suggest Alt Text and
+  Describe Image. Enter plays a sound or video file and inserts anything else.
+  A suggestion only fills the field; you decide what is saved.
+- **More Media:** Upload Files (many at once, duplicates caught first,
+  progress spoken), Upload from Web Address, Upload a Large File in pieces,
+  Regenerate Sizes, Make a Smaller Copy (the original is never replaced), Edit
+  a Picture on the Site to turn or crop it into a new one, Site Logo with a
+  named confirmation and Restore Earlier, and Preview and Review to try a width
+  on a copy of the page.
+- **Alt Text Review** walks every picture in the page, and **Alt Text for the
+  Whole Library** every picture on the site.
+- **Media for listening:** Captions for Video, Transcript for Audio and Make a
+  Listening Version are made on this computer. Name Embeds gives each embedded
+  video or sound a caption naming it, and Publish a Document as a Page turns a PDF or Word file
+  into a readable page.
+- **Listen and watch.** A sound or video file in the Media Library plays
+  straight from the site with Quill Media Player's keys, captions read on
+  request. View > Play Media Here plays the one at the caret, and Open in Quill
+  Media Player hands it to the Player.
+- **The Picture Maker** (Insert > Make a Picture...), shared with QUILL Studio,
+  makes a picture from a description and uploads it. **Visual Review**
+  describes what a sighted visitor sees on the published page, on a desktop and
+  a phone. Both say what they will send to the AI before they send it.
+
+#### Checking, the visitor's way
+
+- **Check Before Publishing** points out missing alternative text, vague link
+  text, skipped heading levels and a fence QUILL could not turn into a block.
+  It never stops you publishing.
+- **Check This Page** runs the published page through axe-core 4.14.0 in a
+  hidden copy of the Edge or Chrome you already have, with a plain explanation
+  of each problem and Go to It. axe-core ships with QUILL, so nothing is
+  downloaded. Dead links are listed too.
+- **Check the Whole Site** checks every page and post, groups the problems
+  with counts, and offers Fix in Bulk for the safe fixes, with a preview, one
+  confirmation and **Undo Site Fix**.
+- **Also in Tools > WordPress:** Site-wide Find and Replace, Write an
+  Accessibility Statement, Palette Report (the contrast of every colour in the
+  theme), and In Short, a plain summary of a long page.
+
+#### Running the site
+
+- **Comments,** with every status, replies under the comment they answer,
+  Edit, Approve All and many at once. The number waiting is said the first
+  time you use a site in a session.
+- **Categories and Tags,** which you can convert, tidy when unused and make
+  the default. **Menus** and **Menu History**, read as a tree. **Site Check**
+  runs every Site Health test the site lists, and **Site Settings** includes
+  the site icon.
+- **Design:** Style Variations, each with its colour check, and Site Styles.
+  **Plugin Extras:** Events Coming Up and New Event for The Events Calendar,
+  and Shop Orders, read only, for WooCommerce.
+- **Manage:** Users, Application Passwords, Plugins, Themes, Fonts, Synced
+  Patterns, Widgets, Site Map, Template Outline, Bulk Edit with Undo, Page
+  Order, Previous Looks, Space Used, a downloaded copy of the site's design,
+  AI Abilities (off until you turn each one on) and Ask the Site.
+- **Your Sites:** Coming Up and What Changed on My Sites, across every site
+  you have connected.
+- **Every window knows your role first** and says what it cannot do, instead
+  of offering a button the site would refuse. Anything that changes many
+  items is one confirmation naming the count and the site, and can be undone.
+
+#### Where the commands are, and the keys
+
+- **Where Word keeps them.** File > WordPress holds what is about the whole
+  page or the site. Insert, Format > WordPress, View and Edit > WordPress hold
+  what you do inside a page. Tools > WordPress holds the checks and the site's
+  upkeep. The page commands are dimmed unless a WordPress page or post is in
+  front of you, and from the Command Palette they say why.
+- **The WordPress keys.** Press Ctrl+Alt+Shift+Grave, then one letter: O Open
+  Page or Post, P Publish or Update, D Save Draft to Site, M Media Library, S
+  Switch Site, W Open by Web Address, G New Page, N New Post, L Open Local
+  Draft, E Schedule Publish, I Open on Site, Y Copy Address, R Properties, V
+  Previous Versions, C Compare with Site, T Move to Trash, Shift+S Sites, A
+  Connect a Site, B WordPress Blocks, K Check Before Publishing, U Upload Files
+  and X Alt Text Review. QUILL says "WordPress keys" when the layer starts,
+  Escape leaves it, and a letter with no command says so and types nothing.
+  The menus show each key, and moving one in the Keyboard Manager moves its
+  letter.
 - **One WordPress feature replaces the two Publishing features.** It is on in
-  every profile except Essential.
-- **The old Publish submenu is gone.** Publishing Connections, Browse
-  Publishing Content and the rest are replaced by File > WordPress. Your saved
-  connections and their passwords carry over the first time you open it, and
-  the Experimental tab's "WordPress publishing connections" checkbox is gone
-  with them.
-- **Scheduling, autosaves and working offline.** Schedule Publish asks for a
-  date, a time and a time zone (the site's own first), and on a scheduled
-  item offers Change the Schedule or Publish Now. While a WordPress document
-  is open it is autosaved every two minutes, on this computer and as your
-  account's autosave on the site, and Open offers an autosave newer than the
-  site's copy. Restore from Trash is in the Open list. After a new page is
-  published, QUILL offers once to add it to a menu. A send that gets no
-  answer re-reads the site before offering Try Again, so nothing is created
-  twice, and a site that cannot be reached gets your sends queued, retried
-  every two minutes and announced when they go through.
-- **Running the site.** Tools > WordPress, with its Manage submenu: Comments with
-  every status, replies under the comment they answer, Edit and Approve All,
-  and the number waiting spoken the first time you use a site in a session;
-  Menus and Navigation as a readable tree; Widgets, Site Map and Template
-  Outline; Site Check and Site Settings, including the site icon; Users and
-  Application Passwords; Plugins, Themes, Fonts and Synced Patterns; Bulk
-  Edit with Undo, and Page Order; categories and tags you can convert, tidy
-  when unused, and make the default. Sign Out This Site takes QUILL's
-  password away on the site itself. Every window knows your role first and
-  says what it cannot do, instead of offering a button the site would refuse.
-- **Check This Page works out of the box.** axe-core 4.14.0 ships with
-  QUILL, so the visitor's-eye check runs without downloading anything.
-- **Media for listening.** Tools > WordPress > More Media: Captions for
-  Video, Transcript for Audio, Make a Listening Version, Name Embeds, and
-  Publish a Document as a Page for a PDF or Word file.
-- **Post This Episode, from QUILL Cast and Audio Studio, and Upload to
-  WordPress, in Quill Converter.** Each writes a WordPress draft with the
-  audio, its transcript and show notes, and opens it in QUILL to finish and
+  every profile except Essential. The old File > Publish submenu is gone; your
+  saved publishing connections and their passwords come across the first time
+  you open File > WordPress, and the Experimental tab's "WordPress publishing
+  connections" check box is gone with them.
+
+#### From the rest of the family
+
+- **Post This Episode,** in QUILL Cast and Audio Studio, and
+  **Upload to WordPress,** in Quill Converter, write a WordPress draft with the
+  audio, its transcript and show notes, and open it in QUILL to finish and
   publish.
-- **Listen and watch.** Play a sound or video file straight from the Media
-  Library, streamed from the site, with the same player keys as Quill Media
-  Player, and captions read on request. View > Play Media Here plays the one
-  at the caret.
-- **Enter works in the WordPress lists.** In Open, Enter opens the selected
-  page or post; in the Media Library it plays a sound or video file and
-  inserts anything else.
-- **The Media Library, all of it.** Insert, and Tools > WordPress with its More Media submenu:
-  Insert from Media Library, Paste Image (a picture on the clipboard is
-  uploaded and inserted), Upload Files (many at once, with duplicates caught
-  first and progress spoken), Upload from Web Address, Image Size with Back to
-  Earlier Size, Make a Smaller Copy (the original is never replaced), and the
-  Alt Text Review for every picture in the page. The Media Library window
-  gained Used In, Attach to This Page or Post, Set as Featured Image, Suggest
-  Alt Text and Describe Image. A suggestion only fills the field; you decide
-  what is saved.
-- **Blocks, made plain.** Insert, Format, View and Edit: Insert Block, with your
-  site's patterns and synced patterns and a short form for each block; Next
-  Block, Previous Block and Where Am I, which say each block's kind, place and
-  first words; a Blocks window that moves, duplicates, removes, changes and
-  groups blocks, one Undo step each, without touching the rest of the page;
-  Block Settings, with the theme's own colours and sizes by name and the
-  contrast of each colour; and Preview Blocks, which reads what your site
-  makes of its blocks without saving anything.
-- **Checking the site the visitor's way.** Tools > WordPress: Check
-  This Page runs the published page through axe-core in a hidden Edge or
-  Chrome, with plain explanations and Go to It. Check the Whole Site checks
-  every page and post, groups the problems with counts, and offers Fix in
-  Bulk for the safe fixes, with a preview, one confirmation and Undo Site Fix.
-  Also: Site-wide Find and Replace, Write an Accessibility Statement, Palette
-  Report, Mark Language, In Short, and a reading-level line in Properties.
-- **The Picture Maker, the site logo and Visual Review.** The Picture Maker,
-  shared with QUILL Studio, makes a picture from a description, can suggest
-  one from the page, and inserts it with an upload. Site Logo replaces the
-  logo or icon with a named confirmation and Restore Earlier. Visual Review
-  describes what a sighted visitor sees on the published page, on a desktop
-  and a phone, and says what it will send to the AI before it sends it.
-  Preview and Review tries a picture or logo width on a copy of the page.
-- **WordPress commands are where Word keeps them.** File > WordPress holds
-  what is about the whole page or the site. Inside a page, Insert has
-  WordPress Block, the two Picture rows, Link to a Page on This Site and Make
-  a Picture; Format > WordPress has Block Settings, Image Size and Mark
-  Language; View has WordPress Blocks and Preview Blocks; Edit > WordPress
-  has Next Block, Previous Block and Where Am I. The checks and the site's
-  upkeep are in Tools > WordPress. The page commands are dimmed unless a
-  WordPress page or post is in front of you.
-- **Forms.** Write accessible forms in BFL, the language of BITS Accessible
-  Forms: File > New Form, Insert > Form Field, View > Form Outline, Format >
-  Form Rules (each rule read as a sentence), and Tools > Forms with Check
-  This Form and Fill It In Yourself, which walks you through the form as a
-  visitor would, in each of its languages. One form definition is shared
-  with BITS Accessible Forms.
-- **Forms read back exactly as written.** Very large and very small numbers
-  in rules and calculations are written in plain digits, rounding matches the
-  site to the last digit, and priced choices use the short form.
-- **Seven guided Forms lessons** in Help > Tutorials, from starting a form
-  to reading its responses on your site.
-- **A rule's answer matches however you type it.** "Phone", "phone" or
-  "PHONE" all name the Phone choice.
-- **Forms on your site and on paper.** Publish Form, Insert Form Into Page,
-  Test on Site and Responses work with sites running BITS Accessible Forms.
-  Save a form as a web page, a Word document, large print or braille-ready
-  text. Draft a Form, Plain Language and Suggest Autofill Hints help with
-  the wording, and Summarise Responses asks before it sends anything.
-- **Forms: nothing you add is lost.** A question added at the top of a page
-  is kept when the form is saved, and choice lists from a library show in
-  Fill It In Yourself.
-- **WordPress keys.** Ctrl+Alt+Shift+Grave, then one letter: O Open, P
-  Publish or Update, M Media Library, S Switch Site, W Open by Web Address, D
-  Save Draft to Site, and the File > WordPress letters for the rest. The
-  menus show each key.
-- **Your site's look and plugins.** Tools > WordPress > Design has Style
-  Variations, with each look's colour check, and Site Styles. Insert Block
-  searches WordPress.org's free patterns. The Events Calendar, WooCommerce
-  and SEO plugins get small, plain extras, and Site Check runs every Site
-  Health test. AI Abilities are off until you turn each one on.
-- **More from your site.** Hear Where a Link Goes and Fix Link Text (Edit >
-  WordPress), dead links in Check This Page, Insert > WordPress Icon, large
-  uploads in pieces and Regenerate Sizes, Previous Looks and Menu History,
-  Space Used and a copy of the site's design, and Coming Up and What Changed
-  on My Sites across every site. File > WordPress > Send and Copy
-  sends any document to WordPress, publishes to another site, duplicates,
-  downloads your writing, and sends a folder as drafts.
-- **Block notes, custom fields and picture sizes.** View > Block Notes and
-  Insert > Note on This Block join in the block editor's notes. Properties
-  shows the custom fields your site's plugins register, and File >
-  WordPress > Custom Fields opens them. The picture window offers the
-  library's own sizes, and Tools > WordPress > More Media > Edit a Picture on
-  the Site turns or crops a picture into a new one.
-- **Sites says which password QUILL uses,** and Sign Out This Site takes
-  away exactly that one.
-- **Many comments at once,** and **Alt Text for the Whole Library**.
-- **Seven guided WordPress lessons** in Help > Tutorials: connecting your
-  site, writing and publishing a post, opening a page by its web address to
-  fix a sentence, pictures with alternative text, Check Before Publishing,
-  previous versions, and comments.
-- **Open in Quill Media Player** from the WordPress player now plays the
-  file in the Player, and a single file says "End of file" rather than
-  "End of book".
-- **Open lists your site's own kinds too.** Events, recipes, or whatever
-  your theme or plugins add, beside Posts and Pages.
-- **New: Insert > Link to a Page on This Site.** Pick one of the site's
-  published pages or posts, and the link goes in, named by what you selected
-  or by the page's title.
-- **Every WordPress field is read by its own label.** The label used to
-  come after its field, so a screen reader could read a field with the
-  label meant for the next one.
-- **Category and tag lists say whether each one is checked.** They are
-  separate check boxes now, so your screen reader announces the state as you
-  move.
-- **Fixed: a new page lost track of itself when first sent.** The first Save
-  Draft to Site or Publish on a page started in QUILL moved its file out from
-  under the editor, so the next command said it was not a WordPress document.
-  It now stays where it is.
+
+#### Tested against a real site, and fixed on the way
+
+- **Tested against a real WordPress 7.1 site.** WordPress 7.1 no longer gives
+  its version in the REST index, so QUILL reads it from the site's feed, which
+  is how it knows the password can come back by itself; and changes to many
+  items at once are found where 7.1 really lists them.
+- **Every WordPress field is read by its own label.** A label used to come
+  after its field, so a screen reader could read a field with the label meant
+  for the next one.
+- **Category and tag lists say whether each one is checked,** because they
+  are separate check boxes now.
+- **A new page no longer loses track of itself when first sent.** The first
+  Save Draft to Site or Publish on a page started in QUILL moved its file out
+  from under the editor, so the next command said it was not a WordPress
+  document.
+- **Open in Quill Media Player** from the WordPress player plays the file in
+  the Player, and a single file says "End of file" rather than "End of book".
+
+### Forms, in QUILL and QUILL Lite (2026-11-05)
+
+Write accessible forms as plain, readable text, check them, fill them in
+yourself with your screen reader, and publish them to your WordPress site or
+save them for paper. Contact forms, event sign-ups, membership renewals,
+surveys and feedback forms. QUILL Lite has every command, in the same places.
+The guide WordPress and Forms in QUILL has the whole story, and Help >
+Tutorials has seven guided Forms lessons.
+
+- **The QAF form language.** A form is a short text document: a title, pages
+  and sections that are headings for heading navigation, one line per
+  question (`email #email "Email address"`), indented `@` lines for its
+  settings, choices on lines that start with a plus sign, and rules such as
+  `@when #access is "yes"` that Form Rules reads back as sentences. It is the form language
+  of the QUILL Accessible Forms plugin (formerly BITS Accessible Forms, BFL),
+  so what you write is exactly what the site reads.
+- **`.qaf` files.** A form is saved as `name.qaf` and recognised by its first
+  line, `bfl 1`, the language's version. Older `.bfl` files still open.
+- **One form definition.** Underneath, every form is a JSON form model with a
+  published schema, shared byte for byte with the QUILL Accessible Forms
+  plugin. The QAF language, the plugin's visual builder and QUILL's windows are
+  three views of the same form, so none can fall behind. A document you open
+  and do not change is written back byte for byte, and a line QUILL does not
+  understand is kept as a protected island.
+- **One rule language** for conditions, calculations, scoring and defaults:
+  and, or, not, is one of, dates, field references and arithmetic. Every rule
+  reads back as a sentence.
+- **File > New Form...** starts from a template: blank, contact, event
+  registration, membership renewal, survey, accessibility feedback or
+  volunteer sign-up.
+- **Insert > Form Field...** lists every question type with a one-line
+  description, then asks only what that type needs: the label, whether it is
+  required, help text, choices, or one of about 120 choice libraries
+  (countries, states, time zones and more), which work offline.
+- **View > Form Outline...** is a tree of pages, sections and questions. Enter
+  goes to the question, and it moves and renames them, one Undo each.
+- **Format > Form Rules...** lists every rule as a sentence, such as "Show
+  Company name when Type is Business", and Add Rule builds one from three
+  choices. An answer matches however you type it: "Phone", "phone" or "PHONE"
+  all name the Phone choice.
+- **Tools > Forms > Check This Form...** finds a question with no label, a
+  group of choices with no question, required marked only by an asterisk, a
+  format rule with no help, a name or email field with no autofill hint, a
+  rule that points at nothing or hides a required question forever, duplicate
+  IDs, and a choice list too long to read, each with Go to It.
+- **Fill It In Yourself...** builds the form as a real window and lets you tab
+  through it exactly as a visitor would, with rules showing and hiding
+  questions, calculations updating, and Next and Back between pages, in each
+  of the form's languages. Submit sends nothing; it shows what would have been
+  sent.
+- **Form Properties...** holds the submit label, the message afterwards,
+  notifications, limits and scheduling.
+- **On your site.** Publish Form (live or as a draft, with the site's previous
+  copy kept), Insert Form Into Page, Test on Site (one marked test response)
+  and Responses work with sites running QUILL Accessible Forms. Responses lists
+  them newest first, one at a time, by date or by place, with Find, CSV, Word
+  and Open as Table. Responses are read only while the window is open and are
+  never written to a log. Forms on a site need that plugin; WordPress itself
+  has no forms.
+- **On paper.** Save As Web Page (a standalone accessible form), Save As Word
+  Document, Save As Large Print (18 point and up) and Save As Braille-Ready
+  Text (40 cells, contracted UEB). All of them work with no site and in Safe
+  Mode.
+- **With AI, if you want it.** Draft a Form, Plain Language and Suggest
+  Autofill Hints propose changes you accept as one Undo step. Summarise
+  Responses asks every time, with the number of responses it would send.
+- **Keys.** The Forms commands have no keys of their own: writing a form is
+  occasional, so each one is on its menu and in the Command Palette.
+- **The Forms feature** is on in every QUILL profile except Essential. In
+  QUILL Lite, Forms is an area of its own, on in Recommended and Everything.
+- **Fixed on the way:** a question added first on a page, first in a section
+  or in an empty form was dropped when the form was saved; Fill It In
+  Yourself showed no choices for a question drawing on a choice library; and
+  very large and very small numbers in rules are written in plain digits, with
+  rounding that matches the site to the last digit.
 
 ### Everything in the menus is in the Command Palette (2026-11-04)
 
@@ -187,8 +298,15 @@
   menus and on their keys but had never been added to the palette. Among them
   were your recent files, your open documents and some of the braille tools,
   so typing their names found nothing. The palette now reads them from the
-  menus each time it opens, named by the menus they sit in. A test checks that nothing in the menu bar is
-  left out.
+  menus each time it opens, named by the menus they sit in, and runs each one
+  exactly as the menu would. A dimmed item says why it is not available
+  instead of doing nothing. A test checks that nothing in the menu bar is left
+  out.
+- **QUILL Lite matches.** Its palette lists every command and its open
+  windows and recent files, sits first in Tools as QUILL's does, and is there
+  in every profile, WordPad and Notepad included. Ctrl+Shift+P opens it in
+  both editors.
+
 ### Agentic coding: project tasks (2026-11-04)
 
 Project tasks with an AI, in the Developer profile. QUILL Lite gets every one

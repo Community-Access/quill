@@ -861,7 +861,8 @@ def _render_readme(
     if staged_docs:
         docs_paragraph = (
             "\nIncluded guides:\n"
-            "- docs\\userguide.md - the full guided user manual\n"
+            "- docs\\userguide.html - the user guide's contents; its chapters\n"
+            "  are in docs\\quill-guide\n"
             "Internal engineering docs are published on the Quill GitHub Pages site\n"
             "instead of being bundled in the installer.\n"
         )
@@ -2538,6 +2539,12 @@ _SHIPPED_DOCS = (
     Path("CHANGELOG.md"),
 )
 
+#: Folders shipped whole beside those files (quill/core/user_guide_files.py).
+_SHIPPED_DOC_FOLDERS = (
+    Path("docs") / "user guide" / "quill-guide",
+    Path("docs") / "user guide" / "wordpress-and-forms",
+)
+
 
 def _stage_distribution_docs(portable_dir: Path, source_root: Path) -> list[Path]:
     docs_dir = portable_dir / "docs"
@@ -2553,6 +2560,13 @@ def _stage_distribution_docs(portable_dir: Path, source_root: Path) -> list[Path
             if rendered.is_file():
                 shutil.copy2(rendered, docs_dir / rendered.name)
         staged.append(target)
+    # The user guide is a contents page plus a folder of chapters, and its
+    # WordPress and Forms chapters link the shared manual's folder beside it;
+    # both keep their names so the guide's relative links still work here.
+    for relative in _SHIPPED_DOC_FOLDERS:
+        folder = source_root / relative
+        if folder.is_dir():
+            shutil.copytree(folder, docs_dir / folder.name, dirs_exist_ok=True)
     _complete_docs(docs_dir, source_root)
     # The licences sit beside quill.exe, where Help > Open Third-Party Notices
     # finds them (quill/tools/build_third_party_notices.py generates the first).

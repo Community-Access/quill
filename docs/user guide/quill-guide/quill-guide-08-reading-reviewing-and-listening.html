@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 8: Reading, reviewing and listening</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-8-reading-reviewing-and-listening">Chapter 8: Reading,
+reviewing and listening</h1>
+<p>This chapter is about taking things in rather than typing them. You
+will have QUILL read your document to you, look closely at text you did
+not write, see the formatting that normally stays hidden, and compare
+two versions of a file. Later on it covers turning documents into
+audiobooks, and keeping your place in everything you listen to. Start
+with Read Aloud. The rest is there when you need it.</p>
+<h2 id="read-aloud">Read Aloud</h2>
+<p>Read Aloud speaks your document in a voice of your choosing, separate
+from your screen reader. It is handy for proofreading by ear, for
+resting your ears from a fast screen reader voice, or for simply
+listening to a long piece. You can start, pause, stop, preview, and
+choose a voice.</p>
+<h3 id="starting-and-stopping">Starting and stopping</h3>
+<p>Everything for listening lives on <strong>Tools &gt; Reading and
+Dictation</strong>:</p>
+<ul>
+<li><strong>Read Aloud</strong> is a submenu:
+<ul>
+<li><strong>Start / Pause</strong> (press the QUILL key, then
+<code>R</code>) starts reading from the cursor, and pauses or carries on
+when you press it again.</li>
+<li><strong>Voice…</strong> and <strong>Settings…</strong> choose the
+voice and how fast, how loud and how high it speaks.</li>
+<li><strong>Generate Audio…</strong> saves the reading as a sound file
+instead of playing it, described below.</li>
+<li><strong>Announcement Backend…</strong> chooses how QUILL’s own short
+messages reach you: automatically, through your screen reader, or on the
+status bar only.</li>
+<li><strong>Announcement Trace (in Settings)…</strong> opens Settings at
+the switch that keeps a record of QUILL’s announcements. It is only
+useful when support asks you for it, and it never records your
+document.</li>
+</ul></li>
+<li><strong>Stop Reading</strong> (press the QUILL key, then
+<code>Shift+R</code>) stops the current reading straight away.</li>
+<li><strong>Say Selected</strong> (<code>Ctrl+Shift+Y</code>) reads the
+text you have selected.</li>
+<li><strong>Read All</strong> (<code>Alt+F8</code>) reads from the
+cursor to the end of the document.</li>
+<li><strong>OCR Image…</strong>, <strong>OCR Clipboard Image</strong>
+and <strong>OCR Screen Capture…</strong> turn a picture of text into
+text you can read. There is more on them under OCR Image, later in this
+chapter.</li>
+</ul>
+<p><strong>Generate Audio…</strong> makes a recording of your document
+in your Read Aloud voice. It uses the selection if you have one, and the
+whole document if you do not. Choose a name and a type in the save
+window: a Wave file always, and MP3, M4A, M4B audiobook, OGG, Opus or
+FLAC as well when the free ffmpeg tool is on your computer. Making audio
+from your documents, later in this chapter, covers the bigger jobs.</p>
+<p>There is one setting worth knowing about. <strong>Move cursor to
+follow Read Aloud</strong> (in <strong>Settings &gt; Read
+Aloud</strong>) makes the cursor select each sentence as it is read, so
+the caret tracks what you hear and stops where the reading stopped. It
+is <strong>off by default</strong>. With a screen reader running, moving
+the selection makes the screen reader say “selected” over the Read Aloud
+voice. If you are sighted or have low vision and want the cursor to
+follow along, turn it on.</p>
+<p>The rest of the <strong>Read Aloud</strong> page in Settings tunes
+the voice:</p>
+<ul>
+<li><strong>Read Aloud engine</strong> chooses which speech engine
+reads. Choosing a voice, below, explains them.</li>
+<li><strong>Read Aloud rate</strong> is the speed of the Windows voice
+in words per minute, from 80 to 450. The default is 200.</li>
+<li><strong>Read Aloud volume</strong> runs from 0 to 100. The default
+is 100.</li>
+<li><strong>Read Aloud pitch</strong> runs from 0 to 100. The default is
+50.</li>
+<li><strong>Read Aloud sentence pause (milliseconds)</strong> adds a
+pause between sentences, up to two seconds. The default is no extra
+pause.</li>
+<li><strong>ElevenLabs Read Aloud voice</strong> and <strong>ElevenLabs
+Read Aloud model</strong> are used when the engine is ElevenLabs. Pick a
+voice in the Voice Browser rather than typing one; left blank,
+ElevenLabs uses its default voice and model.</li>
+<li><strong>AI Voice provider</strong>, <strong>AI Voice model</strong>
+and <strong>AI Voice</strong> choose the cloud voice used by Read Aloud
+with AI Voice and by audio export: <strong>OpenAI</strong> (the
+default), <strong>Google Gemini</strong>, or <strong>ElevenLabs (export
+only)</strong>. Leave the model and voice on <strong>Provider
+default</strong> unless you have a favourite.</li>
+</ul>
+<h3 id="choosing-a-voice">Choosing a voice</h3>
+<p>Read Aloud uses voices on your own computer. The Windows system voice
+runs on <strong>SAPI 5</strong>. It is always there, works offline and
+needs no download, so Read Aloud works the moment QUILL is installed.
+<strong>eSpeak NG</strong>, <strong>Piper</strong>, and
+<strong>Kokoro</strong> (neural, offline) are extra downloads from
+Speech Center, which keeps the installer smaller.
+<strong>DECtalk</strong> works if you have installed it yourself; QUILL
+no longer downloads or distributes it, because its redistribution terms
+are unclear. Before any download starts, QUILL tells you what is
+available right now and what it suggests you do next. For cloud voices,
+see Read Aloud with AI Voice, which covers OpenAI and Google Gemini
+voices.</p>
+<p>The <strong>Kokoro</strong> voice models (about 120 MB) and the
+<strong>eSpeak NG</strong> engine with its voice data (about 40 MB) are
+not in the installer. The first time you choose one of these voices,
+QUILL downloads it for you from its own verified source. The download is
+checksum-checked and has a progress window you can cancel. Your other
+voices, including the SAPI 5 system voice, keep working while it
+downloads. If you are upgrading from a version that bundled these, your
+existing copies are kept and keep working, so there is nothing to
+download.</p>
+<h3 id="phonon-voices">Phonon voices</h3>
+<p><strong>Phonon</strong> is a newer neural voice that comes with
+QUILL, so there is nothing to download. It has 37 English voices plus
+its own default voice, and it runs entirely on your computer. It starts
+talking quickly, which you notice most when you press a key and want to
+hear something now. It reads numbers, dates and email addresses well on
+its own.</p>
+<p>Pick it in <strong>Manage Voices</strong> like any other engine,
+choose a voice, and press <strong>Preview</strong> to hear it. The speed
+control goes from 0.85 to 1.3 times normal. That is a narrower range
+than Kokoro’s, because Phonon starts to fall apart past it, and QUILL
+would rather tell you than let you pick a speed that sounds broken.
+QUILL remembers your choices as <code>read_aloud_phonon_voice</code> and
+<code>read_aloud_phonon_speed</code>.</p>
+<p>Phonon needs a processor from about 2015 or later (one with AVX2). On
+an older computer the voices are still listed, marked “needs a newer
+computer”, and choosing one tells you so and suggests Piper, which runs
+almost anywhere. Phonon never sends your text anywhere.</p>
+<p>Phonon 31m is by Gradium and is free under the Apache 2.0 licence.
+Phonon builds on Pocket TTS and the Mimi codec, developed by Kyutai.
+QUILL offers no voice cloning, and the voices should not be used to pass
+speech off as a real person’s.</p>
+<p><strong>Manage Voices</strong> is the <strong>Speech
+(Offline)</strong> tab of the Speech Settings dialog. It lists SAPI 5,
+DECtalk, Piper, Kokoro, Phonon, and eSpeak NG. ElevenLabs, the only
+cloud voice, has its own <strong>Speech (Online)</strong> tab, so local
+and cloud voices are never mixed in one list. The <strong>Set as
+Default</strong> button (also on the voice list’s right-click menu)
+applies your engine and voice choice at once, without closing the dialog
+with OK.</p>
+<p>To hear a voice before you choose it:</p>
+<ol type="1">
+<li>In <strong>Manage Voices</strong>, select the voice.</li>
+<li>Press the <strong>Preview</strong> button.</li>
+</ol>
+<p>If the voice is already downloaded, QUILL speaks the preview phrase
+with that voice’s real model. If it is not downloaded yet (a Kokoro
+voice, for example), QUILL plays a short pre-recorded sample so you can
+still hear it before you decide. The rate, volume, pitch, and speed
+controls only apply to real speech, so they stay dimmed until the voice
+is downloaded.</p>
+<p>Starting a new preview stops the one already playing, so previews
+never overlap. Some neural voices take a moment to get going. While they
+do, QUILL plays a short earcon and, by default, says “Generating
+preview, please wait”. You can turn either off on its own: the earcon in
+<strong>Tools &gt; Reading and Dictation &gt; Sound Scheme…</strong>,
+and the announcement in <strong>Settings &gt; Accessibility and
+Announcements</strong>. While a preview is generating or playing, the
+Preview/Test button becomes a Stop button, so you can cancel it at any
+time.</p>
+<h3 id="voices-in-other-languages">Voices in other languages</h3>
+<p>Read Aloud speaks more than English. The Windows engine lists every
+voice installed on your PC, in any language. Add one in Windows Settings
+under <strong>Time &amp; language &gt; Speech &gt; Manage
+voices</strong> (Italian’s Elsa, say, or a Spanish, French, German, or
+Japanese voice) and it appears in QUILL’s voice list, ready to use, with
+nothing to download from QUILL.</p>
+<p>The offline neural voices go further too:</p>
+<ul>
+<li><strong>Kokoro</strong> includes <strong>Spanish, French, Hindi,
+Italian, and Brazilian Portuguese</strong> voices. They are part of the
+voice pack you already downloaded, so picking one just works.</li>
+<li>The <strong>Piper</strong> catalog includes Italian voices (Paola
+and Riccardo) that you download like any other.</li>
+<li><strong>eSpeak NG</strong> offers those languages from its built-in
+data.</li>
+</ul>
+<p>Pick the voice whose language matches your document, and Read Aloud,
+audiobook export, and batch speech all speak it correctly.</p>
+<h3 id="text-cleanup-for-speech">Text cleanup for speech</h3>
+<p>Real documents are full of typography that trips up speech engines.
+The optional <strong>text cleanup</strong> pass (turn it on in Read
+Aloud settings) fixes curly quotes, em and en dashes, ellipses,
+invisible spaces, ligatures, bullets, symbols, fractions, and emoji, the
+same way every time. It also speaks <strong>phone numbers, emails, and
+URLs</strong> clearly. For each type you choose whether to announce it,
+speak it, or speak it and then repeat it, which makes an address easy to
+catch. Cleanup runs first, before anything else, so live Read Aloud and
+batch export sound the same.</p>
+<h3 id="teaching-quill-how-to-say-a-word">Teaching QUILL how to say a
+word</h3>
+<p><strong>Tools &gt; Speech &gt; Manage Pronunciations…</strong>
+teaches QUILL how to say particular words: names, brands, acronyms, and
+technical terms. Each entry is a substitution, either literal or a
+regular expression, and can be case-sensitive. QUILL applies it silently
+to the text just before speaking, so a correction is heard everywhere
+speech happens, in batch export and live Read Aloud alike.</p>
+<ul>
+<li>A dictionary can be <strong>global</strong> (all projects) or belong
+to one <strong>project</strong>.</li>
+<li>An entry can target a specific engine.</li>
+<li>You can <strong>preview</strong> an entry to hear the result.</li>
+<li>A small <strong>starter dictionary</strong> already covers common
+terms.</li>
+</ul>
+<h3 id="ssml-builder-and-ssml-playback">SSML Builder and SSML
+playback</h3>
+<p>For fine control over how a passage is spoken, the <strong>SSML
+Builder</strong> dialog writes <code>&lt;speak&gt;</code> markup for you
+from ordinary controls: emphasis, pauses (<code>&lt;break&gt;</code>),
+say-as, phonemes, and prosody. A read-only preview shows the markup it
+made, so you never type the tags yourself. Read Aloud plays this markup
+<strong>natively on SAPI 5 and eSpeak NG</strong>, so the pauses and
+emphasis happen instead of being read out.</p>
+<h3 id="read-document-in-browser-experimental">Read Document in Browser
+(experimental)</h3>
+<p>Your web browser has voices QUILL’s own engines cannot reach,
+including Microsoft Edge’s “Online (Natural)” voices. This optional
+feature reads your document with them.</p>
+<p>To turn it on:</p>
+<ol type="1">
+<li>Open <strong>Settings &gt; Experimental</strong>.</li>
+<li>Check the acknowledgement box.</li>
+<li>Turn on <strong>Read the document aloud in your
+browser</strong>.</li>
+<li>Apply Settings. It works straight away, with no restart.</li>
+</ol>
+<p>A <strong>Read in Browser (Experimental)</strong> item then appears
+under <strong>Tools &gt; Reading &amp; Dictation &gt; Read
+Aloud</strong>, and the command palette gains <strong>Read Document in
+Browser (Experimental)</strong>.</p>
+<p>When you use it, QUILL writes a self-contained, accessible reader
+page and opens it in the browser you chose under <strong>Settings &gt;
+General &gt; Preview browser</strong>. The page has:</p>
+<ul>
+<li>a labelled <strong>Voice</strong> picker. Each voice is marked “on
+this device” or “online”, and the list is filtered to your QUILL display
+language. Check <strong>Show all languages</strong> to see the
+rest.</li>
+<li>a <strong>Speed</strong> slider.</li>
+<li><strong>Play</strong> and <strong>Stop</strong> buttons.</li>
+</ul>
+<p>Focus lands on Play, changes are announced through a live region, and
+<strong>Escape</strong> stops. Reading goes section by section, so even
+a book-length document stays reliable. <strong>Pause</strong> keeps your
+place and tells you where you are (“Paused at section 12 of 300”), and
+resuming carries on from that section. <strong>Stop</strong> goes back
+to the top. Your voice and speed are remembered between sessions, and
+the document text carries your display-language tag so a screen reader
+reading the page pronounces it correctly.</p>
+<p>About privacy: QUILL itself makes no network call, and no audio file
+is made. Voices marked “on this device” speak locally. The browser’s
+“Online (Natural)” voices are made in the voice company’s cloud, so
+choosing one sends the text being read to that service. Pick an
+on-device voice to keep everything local. The reader page holds your
+document text. It is written to QUILL’s app-data folder and deleted when
+you close QUILL, so no plain copy is left behind.</p>
+<h3 id="voice-commands-on-the-same-menu">Voice commands on the same
+menu</h3>
+<p>The Speech menus also hold QUILL’s voice commands. They are listed
+here so you know what they are when you meet them. Chapter 9, Dictation
+and transcription, covers them properly.</p>
+<ul>
+<li><strong>Voice Command (Offline)</strong> (<strong>Tools &gt;
+Speech</strong>) is push-to-talk for QUILL. Run it, speak one command
+such as “save file”, “word count” or “next heading”, then run it again
+to stop and act. Recognition happens entirely on your computer with the
+offline speech engine, and only a safe list of non-destructive commands
+can ever run, so a misheard phrase cannot do damage. Say “cancel” or
+“never mind” to give up. Turn it on with the <strong>Voice commands
+(push-to-talk)</strong> setting. It is off by default and always off in
+Safe Mode.</li>
+<li><strong>Voice Conversation Mode</strong> (<strong>Tools &gt;
+Speech</strong>) is the hands-free version. Run it once and QUILL
+listens for a command, then keeps a short <strong>follow-up
+window</strong> open after acting, so you can chain commands (“next
+heading”, then “read aloud”, then “word count”) without arming it again.
+A sound marks every state: a rising chime when conversation mode starts,
+a soft two-note when the microphone opens, a gentle rise when your
+command is recognized (with a brief moment to say “cancel” before it
+runs), a sparkle when the action finishes, a quiet tick while QUILL is
+working, and a calm falling tone if nothing matched. Run it again, or
+say “stop”, to turn it off. The nine cues are <strong>Sound
+Events</strong> you can retune or replace in any sound pack. Four
+settings let you pace it to your own rhythm: the pause that ends a
+command, the cancel window, the follow-up window, and the “still
+working” tick interval. Set any of them to 0 to switch that part off. It
+uses the same on-device recognition and the same safe list as Voice
+Command, and is also off in Safe Mode.</li>
+<li><strong>Listen for Hey QUILL</strong> (<strong>Tools &gt;
+Speech</strong>) turns on always-listening. QUILL listens continuously,
+on your computer, for the phrase “Hey QUILL”. Say “Hey QUILL, save file”
+to run a command straight away, or just “Hey QUILL” to start one. The
+status bar shows that the microphone is live and plays a reminder now
+and then, so an open microphone never takes you by surprise. Run the
+command again, or say “stop”, to end it. The <strong>Listen for ‘Hey
+QUILL’ (wake word)</strong> check box on the Transcription page of
+Settings is the same switch, so turning it on in either place turns it
+on in both; check it and press OK, and QUILL starts listening straight
+away. If voice commands are off, QUILL tells you and leaves the box
+unchecked. Normally listening stops when you close QUILL, so the
+microphone is never on by surprise the next time. Turn on <strong>Keep
+listening for “Hey QUILL” across restarts</strong> and QUILL picks up
+listening again when it starts. Off in Safe Mode.</li>
+<li><strong>Speak Voice Status</strong> (<strong>Tools &gt;
+Speech</strong>) tells you what the voice features are doing right now:
+whether QUILL is listening for “Hey QUILL”, whether conversation mode is
+on, and whether it is listening for a command. When none of them is, it
+says “Voice is not listening right now”, which is the quick way to be
+sure the microphone is closed.</li>
+<li><strong>Ask a question by voice.</strong> In conversation or wake
+mode, if you speak a question rather than a command (starting with
+“ask”, or shaped like a question, such as “how do I save my document”),
+QUILL opens <strong>Ask QUILL</strong> with the question filled in and
+ready to send. You press Enter to send it, so a person always decides
+what reaches the AI. This needs AI set up. Questions are the only thing
+voice ever sends to a network service, and never on their own.</li>
+</ul>
+<p>For the complete reference (every voice mode, every spoken command,
+and the privacy rules) see <a href="../voice-interaction.md">Voice
+Interaction</a>.</p>
+<h2 id="reading-without-changing-anything-the-read-only-guard">Reading
+without changing anything: the Read-Only Guard</h2>
+<p>When you open a document only to read it, such as a manual, a long
+book or minutes you must not alter, one stray key can change it, and a
+<code>Ctrl+S</code> later saves the change. The <strong>Read-Only
+Guard</strong> locks the document against edits while you read.</p>
+<p>Press <code>Ctrl+Alt+Backspace</code>, or choose <strong>Tools &gt;
+Advanced &gt; Toggle Read-Only Guard</strong>. You hear “Document is
+read-only”. Press it again to hear “Document is editable”.</p>
+<p>While the guard is on:</p>
+<ul>
+<li>Typing, <code>Backspace</code>, <code>Delete</code>,
+<code>Enter</code> and pasting do nothing.</li>
+<li>Commands that change text say “Document is read-only” on the status
+bar and change nothing: snippets, the line tools, case changes, Copy
+Tray pastes, Markdown and HTML inserts, and a thesaurus or dictionary
+<strong>Replace</strong>, among others. They stop <em>before</em> they
+say anything, so you never hear “Inserted snippet” about a snippet that
+was not inserted.</li>
+<li>Reading and moving work as always: the arrow keys, Find
+(<code>Ctrl+F</code>), Go To (<code>Ctrl+G</code>), browse-mode
+navigation by heading, paragraph and link, selecting and copying, Read
+Aloud.</li>
+<li><strong>Bookmarks</strong> work as usual. They are kept beside the
+document, not inside it, so setting one never changes the file.</li>
+<li><strong>Document notes</strong> work too. A note you add with
+<strong>Add Inline Note</strong> (<code>Alt+Shift+I</code>) while the
+guard is on is kept beside the file instead of written into it, and
+<code>Alt+Shift+J</code> and <code>Alt+Shift+K</code> still move between
+notes.</li>
+</ul>
+<p>QUILL <strong>remembers</strong> the guard for that file. Close
+QUILL, open the same file tomorrow by double-clicking it in File
+Explorer, from <strong>Open Recent</strong> or with <code>Ctrl+O</code>,
+and it opens locked again, even if File Explorer spells the folder with
+different capitals. QUILL Lite has the same guard on the same key, with
+its own list.</p>
+<p>If QUILL cannot write down that you locked the file, for example
+because its settings folder is on a full disk, the document is still
+locked for now and you hear why:</p>
+<blockquote>
+<p>Document is read-only for now, but it could not be remembered for
+next time (There is not enough space on the disk).</p>
+</blockquote>
+<p>An untitled document cannot be remembered either, because it has no
+file name yet. Save it first if you want the lock to stay.</p>
+<p>A file Windows marks read-only, or one on a share you cannot write
+to, opens locked as well, and QUILL says so as it opens. Turn the guard
+off to type anyway, then save under a new name.</p>
+<p><strong>Long documents.</strong> Locking a document does not make it
+open faster: the text still has to be put into the editor, which for an
+eight-megabyte book takes about four tenths of a second on a fast
+computer. What the guard does speed up is moving around. Because a
+locked document cannot change, browse-mode keys (next heading, next
+paragraph, next link) read QUILL’s own copy of the text instead of
+copying the whole document out of the editor on every key. On that
+eight-megabyte book a heading jump went from about 46 milliseconds to
+well under one.</p>
+<h2 id="tools-for-reading-review-and-inspection">Tools for Reading,
+Review, and Inspection</h2>
+<p>These tools help when a file is hard to read, or when you need to
+know exactly what is in it. They answer questions like “which kind of
+space is that?”, “where does the bold end?” and “did this scan come
+through properly?”</p>
+<h3 id="describe-character-at-cursor">Describe Character at Cursor</h3>
+<p>Some characters sound the same but are not: a curly “smart” quote and
+a straight apostrophe, a no-break space and an ordinary space, an
+invisible zero-width space that quietly breaks a search, or a stray
+byte-order mark pasted from the web. <strong>Tools &gt; Advanced &gt;
+Describe Character at Cursor</strong> (<code>Ctrl+Shift+C</code>) tells
+you exactly what sits under the cursor. It says the answer where you are
+and leaves it in the status bar, so you can read it again.</p>
+<p>When you want to study a character, <strong>Character
+Details</strong> (<code>Ctrl+Alt+C</code>) opens the full description in
+a read-only window, the same kind F1 help uses, so your screen reader
+can read it all in one pass or line by line. It gives:</p>
+<ul>
+<li>the character’s name (for example “No-break space” or “Right single
+quotation mark”),</li>
+<li>its Unicode code point in both hexadecimal and decimal,</li>
+<li>its category in plain words (uppercase letter, dash punctuation,
+control character, and so on), and</li>
+<li>a note for the invisible characters that are easy to miss, plus a
+flag when the character is not ASCII.</li>
+</ul>
+<p>If the cursor is at the very end of the document, it tells you so
+instead of guessing.</p>
+<p>A <strong>page break</strong> is named as one. A PDF opens with a
+page break between each of its pages (a form feed character, which is
+what Go To’s Page list and the Page part of the status bar count). With
+the cursor on one, Describe Character says “Page break U+000C” and
+Character Details adds that one page ends there and the next begins.
+Before 2026-10-17 it said “Unnamed character”, which told you nothing.
+For example, open a three-page PDF, press <strong>Ctrl+G</strong>,
+choose <strong>Page</strong>, pick page 2, then press <strong>Left
+Arrow</strong> once and <strong>Ctrl+Shift+C</strong>: you hear “Page
+break”.</p>
+<p>QUILL also never hands that character, or any other control
+character, to your screen reader inside an announcement. When a message
+quotes text that crosses a page, such as the first words of a selection,
+the page break is read as a pause rather than as a character name. The
+text in your document is not changed.</p>
+<h3 id="reveal-codes-altf3">Reveal Codes (Alt+F3)</h3>
+<p>QUILL keeps formatting codes hidden, so your editing text stays clean
+and fast. Reveal Codes lets you see and hear every one of them when you
+ask. If you used WordPerfect, you will know it: this is the same idea,
+built for a screen reader.</p>
+<p>Press <code>Alt+F3</code> (or check <strong>View &gt; Reveal
+Codes</strong>) to open a pane below the editor. It shows your document
+as an ordered stream of bracketed codes and text:
+<code>[Bold On]</code>, <code>[Font: Arial]</code>,
+<code>[Size: 14]</code>, <code>[Center]</code>,
+<code>[Heading 2]</code>, <code>[Link: ...]</code>, <code>[Tab]</code>,
+<code>[¶ Hard Return]</code>, <code>[No-Break Space]</code>,
+<code>[Smart Quote]</code>, and so on. The editor itself does not
+change. Reveal Codes is a window onto the hidden formatting, not a
+different way of editing.</p>
+<p>Reveal Codes is <strong>hidden by default</strong> and costs nothing
+until you open it.</p>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Not sure whether a word is really
+bold, or where the bold stops? Press <code>Alt+F3</code>, arrow to it,
+and you will hear “bold on” right where it starts. Press
+<code>Alt+F3</code> again to close the pane.</p>
+</blockquote>
+<h4 id="moving-between-the-panes">Moving between the panes</h4>
+<p><code>F6</code> moves through the regions (Editor, then Reveal Codes
+when it is shown, then the Status Bar), and <code>Shift+F6</code> goes
+back, just like switching windows. The two carets stay in step however
+you move: arrow keys, word jumps, Home and End, Page Up and Page Down, a
+mouse click, or a jump from Find. Move in the editor and the pane
+follows to the same spot. Move in the pane and the editor’s cursor
+follows to the matching place. Sit in whichever you like and your place
+in the document comes with you.</p>
+<h4 id="moving-through-the-codes">Moving through the codes</h4>
+<p>In the default <strong>Flowed</strong> view the pane reads like your
+document with the hidden formatting showing, and the caret moves the way
+it does in the editor:</p>
+<ul>
+<li><code>Left Arrow</code> and <code>Right Arrow</code> move one
+character at a time, but step over a whole code in one go. One press
+moves you across <code>[Bold On]</code> and your screen reader just says
+“bold on”. It is never spelled out letter by letter.</li>
+<li><code>Ctrl+Left</code> and <code>Ctrl+Right</code> move by word,
+stopping at each code.</li>
+<li><code>Up Arrow</code> and <code>Down Arrow</code> move by line and
+read the new line, as in the editor.</li>
+<li><code>Home</code> and <code>End</code> go to the start and end of
+the line. <code>Ctrl+Home</code> and <code>Ctrl+End</code> go to the top
+and bottom of the document.</li>
+<li>Land on a code and you hear it named as one thing: “bold on”, “tab”,
+“centred”, “font Arial”. An opening code also tells you how far its
+formatting reaches (“bold on, 12 characters”).</li>
+</ul>
+<p>While you arrow through the pane, your screen reader does the
+talking. The region is named once when you arrive, and after that you
+hear the character, word, line, or code your screen reader reads. QUILL
+puts its fuller phrase (for example “italic on, 15 characters”) quietly
+in the status bar, where you can read it whenever you want it. Jumps you
+ask for (next or previous code, go to the matching pair) and mouse
+clicks are still spoken by QUILL.</p>
+<p>If you would rather hear QUILL’s own phrase on every arrow press,
+turn on <strong>Reveal Codes: Speak Codes Aloud</strong> in the command
+palette. It is off by default.</p>
+<p>In either view you can also jump code to code, skipping the plain
+text, and from an opening code to its matching close.</p>
+<h4 id="editing-a-run-in-place-f2">Editing a run in place (F2)</h4>
+<ol type="1">
+<li>Move onto text that sits between a pair of formatting codes, for
+example the words inside <code>[Bold On] ... [Bold Off]</code>.</li>
+<li>Press <code>F2</code>. The pane limits you to just that stretch of
+text, and you can edit it freely.</li>
+<li>Press <strong>Enter</strong> to put your change back into the
+document, or <strong>Escape</strong> to cancel.</li>
+</ol>
+<p>The codes around it are left exactly as they were. The whole stretch
+edits as one piece, so a run that contains a <code>[Tab]</code> or a
+code inside it (bold text with one italic word, say) comes along
+together. The inner codes appear as their markup and are put straight
+back when you press Enter. If you press F2 on plain text with no
+formatting around it, QUILL tells you there is nothing to edit
+there.</p>
+<h4 id="views-and-how-much-it-says">Views and how much it says</h4>
+<p>In <strong>Settings &gt; Editing</strong> (or on the View menu) you
+can choose:</p>
+<ul>
+<li><strong>Flowed</strong> (the default): the interactive pane
+described above, with codes shown inside the running text
+(<code>[Bold On]Hello[Bold Off]</code>), movement by character, and F2
+editing. It is the closest to the classic WordPerfect look and the most
+natural layout on a braille display.</li>
+<li><strong>Structured</strong>: one item per code in a list. It is
+clear and labelled, and good for scanning structure. Your screen reader
+reads each item as you arrow through it. Movement by character, word and
+line, and F2 editing, belong to the Flowed view only.</li>
+<li><strong>Verbosity</strong>: <em>quiet</em> (just the code name),
+<em>balanced</em> (adds how far an opening code reaches), or
+<em>detailed</em> (adds Unicode notes for invisible characters).</li>
+</ul>
+<p>QUILL remembers your view and verbosity between sessions.</p>
+<h3 id="epub-navigator">EPUB Navigator</h3>
+<p>When you open an EPUB, the navigator lets you move chapter by chapter
+instead of scrolling blindly through one long block of text.</p>
+<p>Chapter headings are also placed in the text itself, so single-key
+heading navigation (<code>H</code> and <code>Shift+H</code>) walks every
+heading in the book, not just the chapter breaks. Many older or
+home-made EPUBs never used real headings at all. For those, QUILL works
+the headings out from the book’s layout (a paragraph styled as a title
+or chapter, or a short bold line on its own), so heading navigation and
+the chapter outline still work where they would otherwise be empty.</p>
+<p>Equations are spoken, not skipped. When a chapter contains
+mathematics (MathML, or LaTeX written as a <code>math</code> span or
+between <code>$$...$$</code> or <code>\(...\)</code> delimiters), QUILL
+turns each equation into plain words and places it in the text as “Math
+Equation: …” so you hear the formula as part of its sentence. It uses
+the same math speech as the editor: the MathCAT engine when it is
+installed, and QUILL’s built-in reader otherwise. A formula QUILL cannot
+understand is read as its plain source instead of being dropped, and a
+book with no math reads just as before.</p>
+<h3 id="ocr-image">OCR Image</h3>
+<p><strong>OCR Image…</strong> (on <strong>Tools &gt; Reading and
+Dictation</strong>) reads the text out of a picture, using optical
+character recognition on your own computer. Nothing happens behind your
+back: you choose the image, confirm, and hear progress as it works.</p>
+<p>Two more commands on the same menu skip the file altogether:</p>
+<ul>
+<li><strong>OCR Clipboard Image</strong> reads the picture you have just
+copied, for example with the Print Screen key or Copy Image in a web
+browser. If there is no picture on the clipboard, QUILL tells you
+so.</li>
+<li><strong>OCR Screen Capture…</strong> takes a picture of the screen
+and reads it. QUILL asks whether you want <strong>The whole
+screen</strong> or <strong>The active window</strong>, with the active
+window already chosen.</li>
+</ul>
+<p>Both show you the recognised text to review, just like OCR Image.</p>
+<h3 id="document-intake-and-extraction-quality">Document intake and
+extraction quality</h3>
+<p>When you bring in a scanned PDF or another hard-to-read file, the
+text QUILL pulls out may not be perfect. These commands help you check.
+Instead of assuming every import is right, QUILL helps you ask whether
+the extraction is good enough, what may have been lost, and whether you
+should quote from it directly.</p>
+<h2 id="comparing-documents">Comparing documents</h2>
+<p>When you have two versions of something (a draft and the edited copy,
+or your file and the one that came back by email), comparing them tells
+you exactly what changed. Everything happens on your own computer. You
+can compare one file with another, review several open documents, move
+through the differences one at a time with both documents following
+along, and make a summary of what changed.</p>
+<h3 id="the-comparison-menu">The Comparison menu</h3>
+<p><strong>Tools &gt; Comparison</strong> holds:</p>
+<ul>
+<li><strong>Compare with File…</strong></li>
+<li><strong>Compare Open Documents</strong></li>
+<li><strong>Next Difference</strong> / <strong>Previous
+Difference</strong></li>
+<li><strong>Announce Current Difference</strong></li>
+<li><strong>Difference List…</strong></li>
+<li><strong>Toggle Synchronized Navigation</strong></li>
+<li><strong>Toggle Ignore Whitespace</strong></li>
+<li><strong>Compare Options…</strong></li>
+<li><strong>Generate Accessible Report</strong></li>
+<li><strong>Create Difference Summary</strong></li>
+<li><strong>Copy Current Difference</strong> / <strong>Copy All
+Differences</strong></li>
+</ul>
+<p><strong>Toggle Ignore Whitespace</strong> decides whether spaces
+count as a change. Each press moves one step and says where you are:
+exact (every space counts), ignore trailing (spaces at the ends of lines
+do not count), then ignore all (no difference in spacing counts), and
+back to exact. Use it when one copy went through a program that tidied
+the spacing and you only care about the words.</p>
+<p><strong>Generate Accessible Report</strong> writes every difference
+into a new Markdown document, under a heading that names the two files
+and says how many differences there are. Because it is an ordinary
+document, you can read it at your own pace, search it, and save or send
+it.</p>
+<h3 id="moving-through-the-differences">Moving through the
+differences</h3>
+<p>Once a comparison is open, these keys do most of the work:</p>
+<ul>
+<li><code>Ctrl+Alt+Shift+.</code> moves to the next difference.</li>
+<li><code>Ctrl+Alt+Shift+,</code> moves to the previous one.</li>
+<li><code>Ctrl+Alt+Shift+D</code> reads the current difference.</li>
+</ul>
+<p>The compare dialog is a list you can review with your screen reader,
+one difference at a time, entirely from the keyboard.</p>
+<h3 id="compare-sounds">Compare sounds</h3>
+<p>If you use a sound pack, compare mode plays short earcons: one when a
+comparison opens, one when it closes, separate ticks for moving to the
+next or previous difference, and a soft “blocked” tone when you reach
+the first or last difference and there is nothing further. You can turn
+each one on or off in <strong>Tools &gt; Reading and Dictation &gt;
+Sound Scheme…</strong> (<code>Ctrl+Alt+Shift+O</code>), under the
+Compare section. The topic on sound notifications and earcons has more
+about sound packs.</p>
+<h2 id="making-audio-from-your-documents">Making audio from your
+documents</h2>
+<p>QUILL can turn your writing into audio files: a single document, a
+whole folder, or a chaptered audiobook ready to publish. This section is
+for when you want something to keep, share or put on a phone. Live
+listening is Read Aloud, earlier in this chapter.</p>
+<h3 id="audiobook-and-batch-speech">Audiobook and Batch Speech</h3>
+<p><strong>Tools &gt; Speech &gt; Audiobook &amp; Batch Speech…</strong>
+(<code>Ctrl+Shift+Grave</code> then <code>Y</code>) is the guided home
+for audio production. It turns a whole folder of documents into speech
+audio in one pass, and it builds chaptered audiobooks from documents,
+from a folder of recordings, or from both. It is a wizard that asks one
+thing at a time. It is listed in the command palette under “Audio
+Studio…”. It replaced the old single-page Batch Export to Speech Audio
+dialog; every option is still there, spread across clear steps, and your
+saved project settings still fill everything in.</p>
+<h4 id="what-do-you-want-to-make">What do you want to make</h4>
+<p>The first page asks what you want to make. It remembers which one you
+chose last time and selects it for you.</p>
+<ul>
+<li><strong>Narrate documents into an audiobook or speech
+audio.</strong> The steps are: What should I read? (folder, file types,
+filters); Who should read it? (engine, voice with a preview button,
+pace, round-robin voices, voice casting rules, translated editions); How
+should chapters work? (chapter mode, spoken headings, the transition
+sounder and its volume, pauses); Output and diagnostics (format,
+existing-file policy, loudness, incremental-rebuild reuse, dry run, temp
+folder); the book page (optional, to put everything together into one
+audiobook); and a summary in plain words.</li>
+<li><strong>Combine audio files into one chaptered audiobook.</strong> A
+shorter path: pick the folder of recordings, describe the book (title,
+author, narrator, cover, M4B or MP3, ACX loudness), review the summary,
+and Start. Each file becomes one chapter, and you always review the
+chapter list before the book is built. There is more on this under Build
+an audiobook from a folder of recordings, below.</li>
+<li><strong>Edit an existing audiobook.</strong> Pick a finished MP3 or
+M4B and it opens in the Chapter Workbench, described below. A file with
+no chapter markers opens as one chapter, ready to split up.</li>
+</ul>
+<h4 id="moving-through-the-wizard">Moving through the wizard</h4>
+<p>Each step is announced as you arrive (“Step 2 of 7: What should I
+read?”). <strong>Back</strong> and <strong>Next</strong> move between
+steps. <strong>Skip to summary</strong> jumps ahead when your saved
+project profile already fills every page, so a repeat run is three
+keystrokes. The work runs in the background with progress for each file,
+and you can cancel it. It uses the same speech engine as live Read
+Aloud, so the voice you audition is the voice you get.</p>
+<p>The source pages offer a list of <strong>recent source
+folders</strong>, and the edit path’s file picker remembers
+<strong>recently opened audiobooks</strong>. Both lists are kept between
+sessions, are separate from your recent documents, and never grow
+without limit.</p>
+<h4 id="what-should-i-read">What should I read</h4>
+<ul>
+<li><strong>Source folder</strong>, and whether to include
+subfolders.</li>
+<li>The <strong>file types</strong> to include: <code>.docx</code>,
+<code>.md</code>, <code>.html</code>/<code>.htm</code>,
+<code>.txt</code>.</li>
+<li>Optional <strong>include/exclude filters</strong>: patterns
+separated by semicolons or commas, matched against the file name and its
+path.</li>
+<li><strong>Skip files larger than (MB)</strong>: a <strong>maximum file
+size</strong>, in megabytes (<code>0</code> means no limit). One
+accidental 400 MB export in a folder can no longer take over an
+overnight run. Any file over the limit is left out, and the live
+document count on the same step changes as you change the limit. Press
+<strong>Count documents</strong> to hear the settled count.</li>
+</ul>
+<h4 id="who-should-read-it">Who should read it</h4>
+<ul>
+<li><p><strong>Engine, voice, and pace.</strong> Any offline engine
+(SAPI 5, DECtalk, Piper, Kokoro, eSpeak NG), with a
+<strong>Preview</strong> button to hear the voice first.</p></li>
+<li><p><strong>Round-robin voices</strong> read each article or heading
+in a different voice, cycling through a list you build:</p>
+<ol type="1">
+<li>Pick a voice from the <strong>Round-robin voices</strong> combo
+box.</li>
+<li>Press <strong>Add voice</strong>.</li>
+<li>Repeat for each voice, and use <strong>Move Up</strong>,
+<strong>Move Down</strong> and <strong>Remove</strong> to set the
+order.</li>
+</ol>
+<p>Article 1 uses the first voice, article 2 the second, and so on,
+starting again at the top when the list runs out. The list uses voices
+from the engine you selected, so the sound quality stays consistent, and
+changing the engine clears it. Leave the list empty to use the single
+chosen voice.</p></li>
+<li><p><strong>Voice casting</strong> lets you say exactly who reads
+what, on top of the rotation. On the same page, add rules: a pattern
+plus the voice that should read every matching chapter. A pattern
+matches the heading title as a wildcard (<code>Chapter *</code>,
+<code>*interview*</code>, or an exact title, ignoring case) or a section
+number (<code>#1</code> for the opener). The first rule that matches
+wins; chapters no rule matches go to the rotation or the single voice.
+Rules use voices of the selected engine (switching engines clears them)
+and are saved in job files. A dialogue-heavy drama or an interview show
+can cast its voices on purpose instead of by rotation order.</p></li>
+<li><p>If a voice ever <strong>fails to speak</strong> (a broken system
+voice, a missing model, or a cloud voice the provider rejects), QUILL
+notes it and <strong>skips it on later runs</strong>, so one bad voice
+in a rotation cannot keep stopping your batches.</p></li>
+</ul>
+<p>Your combine and round-robin choices are remembered for each
+project.</p>
+<h4 id="translated-editions">Translated editions</h4>
+<p><strong>Also export in other languages (translated)</strong> makes a
+translated audiobook alongside the original.</p>
+<ol type="1">
+<li>Choose a <strong>language</strong>.</li>
+<li>Pick a <strong>voice</strong> for it.</li>
+<li>Press <strong>Add language</strong>. Repeat for as many languages as
+you want. <strong>Remove language</strong> drops one.</li>
+<li>Choose <strong>Translate with</strong>: <strong>AI provider</strong>
+(any AI provider you have set up) or <strong>LibreTranslate</strong>
+(runs locally).</li>
+</ol>
+<p>Voices are offered local ones first (eSpeak speaks nearly every
+language offline, plus any Windows voice installed for that language),
+then the <strong>premium multilingual cloud voices: OpenAI, Gemini, and
+ElevenLabs</strong>. Those need the matching provider API key, the same
+key the AI Voice feature uses. When you press Start, each document is
+translated and written as
+<code>&lt;doc&gt; (&lt;Language&gt;).&lt;ext&gt;</code> next to the
+original, with the same chapters, page-turn cue, and loudness. A
+pronunciation dictionary can be limited to one language, so it only
+affects that language’s narration. If a cloud voice you chose has no key
+set up, that language is skipped with a note and the run carries on.</p>
+<p>You see the cost first for cloud runs. Cloud translation and cloud
+narration are paid by use, so if your choices would use a paid cloud
+service, QUILL shows a <strong>combined cost estimate</strong> and asks
+you to confirm before it starts. Runs that use only local engines and
+LibreTranslate start straight away.</p>
+<h4 id="how-should-chapters-work">How should chapters work</h4>
+<ul>
+<li><strong>Chapters</strong> turn a long document into a
+<strong>chaptered</strong> file you can move around in. Choose
+<strong>MP3</strong> (ID3 chapter markers) or <strong>M4B
+audiobook</strong> (native MP4 chapter atoms, the Apple and audiobook
+format). Apple Podcasts, Overcast, VLC, foobar2000, and others recognize
+both.</li>
+<li>A <strong>transition sound</strong> plays between articles: a
+natural page-turn by default, or a different earcon from your active
+sound pack. Whichever you use is matched to the audio format
+automatically, so it always joins cleanly.</li>
+<li>You choose whether each heading is spoken, and set pauses between
+articles and between sentences, plus a short silence at the end that
+stops clipping.</li>
+<li>A very long section is split automatically at a safe sentence
+boundary, so no single passage runs past the engine’s time limit. The
+run report lists how many chapters each document got.</li>
+<li><strong>Chapter mode</strong>: keep the whole document as
+<strong>one chaptered file</strong>, or choose <strong>Separate file per
+article</strong> to write each section under a heading as its own
+<code>NNN - &lt;heading&gt;</code> audio file, in a folder for that
+document.</li>
+<li><strong>Combine empty headings</strong>: when a heading has no text
+of its own (a “Part” heading followed straight away by a “Chapter”
+heading), fold it into the next article that does have text and join
+their titles (“Part One: Chapter 1”), so you do not hear an empty
+chapter. Off by default. Turn it on with the <strong>Combine empty
+headings into the next article</strong> checkbox.</li>
+</ul>
+<h4 id="output-and-diagnostics">Output and diagnostics</h4>
+<ul>
+<li><strong>Output format</strong>: <strong>WAV</strong> (always
+available) or, when <code>ffmpeg</code> is installed, <strong>MP3, M4A,
+M4B (audiobook), Opus, FLAC, or OGG</strong>. When <code>ffmpeg</code>
+is missing, compressed formats fall back to WAV with a note for each
+file, instead of failing. MP3 has a quality setting, and WAV can be made
+to one sample rate and channel count throughout.</li>
+<li><strong>Normalize loudness</strong>: check <strong>Normalize
+loudness to audiobook (ACX) level</strong> to bring every exported file
+to the same audiobook loudness, the standard the Build Audiobook tool
+uses. QUILL measures each file and re-levels it in two passes, without
+touching the chapters or their timing. Needs ffmpeg; without it, the
+file is saved as it is, with a note.</li>
+<li><strong>If a file already exists</strong>: <strong>Skip</strong> (a
+cheap way to resume), <strong>Overwrite</strong>, or
+<strong>Rename</strong> so both are kept
+(<code>name (2).mp3</code>).</li>
+<li><strong>Output layout</strong>: mirror the source folders or
+<strong>flatten</strong> everything into one folder. You can also rename
+outputs with a <strong>template</strong> such as
+<code>{index:03d} - {stem}</code>, which gives
+<code>001 - chapter-one</code>.</li>
+<li><strong>Audiobook metadata</strong>: album, author or narrator,
+genre, and year are written into compressed files. Each file’s title
+comes from its heading or name, and its track number from its
+position.</li>
+<li><strong>Dry run</strong>: instead of speaking, write a
+<code>&lt;doc&gt;.preview.txt</code> for each document with the exact
+text that would be spoken (after cleanup, pronunciation fixes, and
+polish) and how many pronunciation substitutions were made. You can
+proofread what will be said before waiting on slow speech.</li>
+<li><strong>Audition</strong>: check <strong>Audition</strong> on the
+output step to convert only the first document. You can judge the voice,
+the pace, and the loudness in a couple of minutes before you commit to
+an overnight run.</li>
+<li><strong>Run report</strong>: optionally write a
+<code>manifest.json</code> and <code>manifest.csv</code> listing every
+file’s status, output path, length, and any error.</li>
+</ul>
+<h4 id="incremental-rebuilds">Incremental rebuilds</h4>
+<p>With <strong>Reuse unchanged audio from the last run</strong> checked
+(the default), QUILL takes a fingerprint of each document’s text
+together with every setting that shapes its audio. On the next run,
+documents that have not changed, and whose audio is still on disk, are
+reused instead of spoken again, and you hear “Reused … (unchanged since
+last run)”. Edit one chapter of a forty-document book and only that
+chapter is narrated again. Change the voice or any audio setting and
+everything rebuilds by itself. Uncheck the box to force a full rebuild.
+The fingerprints are kept in the source folder’s
+<code>.quill/speech-cache.json</code>; deleting that file also forces a
+fresh run.</p>
+<h4 id="the-book-page">The book page</h4>
+<ul>
+<li><strong>Look up book details.</strong> Type the title (and the
+author, if you know it) and press <strong>Look up book details</strong>.
+QUILL searches <strong>Open Library</strong> and
+<strong>MusicBrainz</strong>, two free public catalogs, and the match
+you pick fills in the author, genre, and year. QUILL asks before the
+first contact, and only the title and author you typed are sent. If the
+match has a cover image on Open Library and you have not set one, QUILL
+offers to download it as <code>cover.jpg</code> next to your audio and
+fills the cover field. Say no and nothing is fetched.</li>
+<li><strong>Spoken credits.</strong> Check <strong>Add spoken opening
+and closing credits</strong> and QUILL narrates the usual audiobook
+frame (“My Book. Written by Jane Doe. Narrated by Sam Reader.”) in the
+run’s own voice, as the first and last chapters.</li>
+<li><strong>Polish during the build.</strong> The audio source page’s
+<strong>Trim silences from each recording</strong> and the book page’s
+<strong>fade-in / fade-out / tempo</strong> controls are applied while
+the audiobook is built. Each chapter file is prepared first (silence
+trimmed from the start and end, fades added, and the tempo changed
+without changing pitch) and then joined into the master. The prepared
+copies live in the build’s temporary folder, so your source recordings
+are never overwritten. If polishing one file fails, the build keeps
+going with that file as it was. The defaults (no trim, <code>0</code> ms
+fades, <code>1.0</code> tempo) leave the audio unchanged.</li>
+</ul>
+<h4 id="settings-that-stay-with-the-folder">Settings that stay with the
+folder</h4>
+<p>A folder remembers its whole speech setup in
+<code>&lt;folder&gt;/.quill/speech-project.json</code>: engine, voice,
+output format, chapters, text cleanup, pronunciation dictionaries,
+metadata, and run policy. Set up a project once and run it again
+whenever you like. When you open the wizard on a folder you have set up
+before, those settings <strong>fill in by themselves</strong>, and your
+choices are <strong>saved when you press Start</strong>. Anything you
+change this run beats the folder’s saved settings, which beat your
+global defaults.</p>
+<p><strong>Job files</strong> go one step further. On the summary page,
+<strong>Save a job file</strong> writes a small <code>.quilljob</code>
+file that pins this exact run: folder, voices, chapters, mastering, and
+book details. You can edit it by hand. <strong>Load a job file</strong>
+on the first page brings everything back, filled in. Keep one per
+project, or edit it in Notepad between runs.</p>
+<h4 id="running-it-without-you">Running it without you</h4>
+<ul>
+<li><strong>Library mode</strong> (a checkbox on the combine-audio path)
+builds every subfolder as its own audiobook in one unattended run. Point
+it at a folder of book folders and come back to a shelf of finished
+masters, each titled after its folder.</li>
+<li>The watch action <strong>“Build audiobook from the folder”</strong>
+keeps a drop folder working for you. Whenever new recordings land in a
+watched folder, its chaptered master is rebuilt automatically. A batch
+of files arriving together causes one rebuild, not many.</li>
+</ul>
+<h3 id="export-to-translated-speech-audio-one-document">Export to
+Translated Speech Audio (one document)</h3>
+<p><strong>Tools &gt; Speech &gt; Export to Translated Speech
+Audio</strong> is the one-document version of the translated export
+above. It translates and narrates just the document you are editing,
+with no folder involved.</p>
+<ol type="1">
+<li>Pick the output format.</li>
+<li>Choose <strong>Translate with</strong>: any AI provider you have set
+up, or local LibreTranslate.</li>
+<li>Add one or more <strong>language + voice</strong> targets, the same
+way as in the wizard. Local voices are listed first, then the premium
+cloud voices.</li>
+<li>Press <strong>Export</strong>.</li>
+</ol>
+<p>QUILL writes <code>&lt;doc&gt; (&lt;Language&gt;).&lt;ext&gt;</code>
+next to your document. If the document has unsaved changes, QUILL offers
+to save first, so your latest edits are the ones translated. As with the
+wizard, a <strong>combined cost estimate</strong> appears before any
+paid cloud run.</p>
+<p>The dialog also has an <strong>“Open in Audio Studio”</strong>
+button. It closes the dialog and opens the Audiobook and Batch Speech
+wizard with your document already filled in, for when you want chapters
+and the rest.</p>
+<h3 id="build-an-audiobook-from-a-folder-of-recordings">Build an
+audiobook from a folder of recordings</h3>
+<p>The wizard’s <strong>Combine audio files</strong> path (<strong>Tools
+&gt; Speech &gt; Audiobook &amp; Batch Speech…</strong>, the second
+choice on the first page) joins a folder of existing audio files into
+one chaptered audiobook, the kind your audiobook or podcast app moves
+through track by track. Where the narrate path turns documents into
+speech, this one stitches a folder of audio (your own recordings, or
+speech QUILL exported earlier) into a single master.</p>
+<ul>
+<li>Point it at a <strong>folder of audio files</strong>. Each file
+becomes one <strong>chapter</strong>, in natural sort order, titled from
+the file name (a leading track number such as <code>01 - </code> is
+removed).</li>
+<li><strong>Edit the chapters before building.</strong> The dialog lists
+the chapters, and works fully from the keyboard. You can
+<strong>rename</strong> the selected one (type a new title and press
+Rename or Enter), <strong>move</strong> it <strong>up</strong> or
+<strong>down</strong>, <strong>merge</strong> it into the chapter above
+(the two files then play as one chapter with one marker), or
+<strong>remove</strong> it from the book. <strong>Restore
+original</strong> undoes every edit in one press.</li>
+<li><strong>Bring your titles with you.</strong> <strong>Import
+titles…</strong> reads chapter names, in order, from an Audacity label
+track, a CUE sheet, plain timestamp lines, Podcasting 2.0 chapters JSON,
+or a <strong>CSV spreadsheet</strong>. Any sheet with a “Title” column
+works, and so does a simple <code>number,title</code> list, so a chapter
+list you keep in Excel can name your MP3 files in one step.
+<strong>Export titles…</strong> writes the current list back out as
+text.</li>
+<li><strong>Honest numbers, before and after.</strong> The run log
+starts with a <strong>pre-flight check</strong>. It names files whose
+sample rate, channels, or format differ (the build still works; it
+re-encodes them) and gives an estimated length and size. After the
+build, QUILL <strong>re-reads the finished book</strong> and tells you
+what a player will actually see: “verified 24 chapters”, or exactly what
+went wrong. A plain-text <strong>chapter report</strong> and a
+<strong>Podcasting 2.0 <code>...chapters.json</code></strong> file are
+written next to the book.</li>
+<li>Choose <strong>M4B audiobook</strong> (native MP4 chapter atoms, the
+Apple and audiobook format) or <strong>MP3</strong> (ID3 chapter
+markers). You can move by chapter in both in Apple Podcasts, Overcast,
+VLC, foobar2000, and others.</li>
+<li>Check <strong>Normalize loudness to ACX (Audible/audiobook)
+spec</strong> to bring the master into the loudness range audiobook
+platforms require (RMS between -23 and -18 dB, peak under -3 dB). After
+the build, QUILL measures the result and says in the status bar whether
+it met the ACX range.</li>
+<li>Fill in the book’s <strong>title, author, narrator, genre, and
+year</strong>. A <strong>cover image</strong> in the folder (named like
+<code>cover.jpg</code>, <code>folder.png</code>, and so on) is picked up
+automatically, or you can browse for one.</li>
+<li>The build runs in the background, and the status bar tells you when
+it is done.</li>
+</ul>
+<h3 id="the-chapter-workbench">The Chapter Workbench</h3>
+<p>The Workbench is where you fix a finished audiobook by ear. Reach it
+from the wizard’s <strong>Edit an existing audiobook</strong> path, or,
+for any recording at all, from <strong>Tools &gt; Speech &gt; Find
+Chapters in a Recording…</strong>
+(<code>QUILL Key + Shift+O</code>).</p>
+<h4 id="automatic-chapters-for-a-lecture-a-meeting-or-any-mp3">Automatic
+chapters for a lecture, a meeting or any MP3</h4>
+<p>A two-hour lecture with no chapters is hard to move around by ear:
+there is nothing to skip to. <strong>Find Chapters in a
+Recording…</strong> fixes that. It asks for a recording (MP3, M4A or
+M4B), opens the Workbench on it, and starts <strong>Propose chapters
+from silences</strong> straight away.</p>
+<ol type="1">
+<li>Choose the recording and press Open.</li>
+<li>The <strong>Propose chapters from silences</strong> window asks two
+things: how quiet counts as silence (in decibels; -30 suits most speech,
+-40 a noisy room) and how long a pause must last (in seconds; 0.8
+catches a speaker drawing breath between topics, 2 or 3 only the real
+breaks). OK starts the scan.</li>
+<li>The scan runs in the background, and you can keep listening while it
+does. Each new chapter starts in the middle of a silence and is titled
+<strong>Proposed chapter 1</strong>, <strong>Proposed chapter 2</strong>
+and so on, so you can always tell a guess from a name somebody chose.
+You hear how many were proposed.</li>
+<li>Arrow through the list. Enter plays a chapter from its start;
+<strong>Hear boundary</strong> plays the moments around where it starts;
+<strong>Set start to playhead</strong>, <strong>Split at
+playhead</strong>, <strong>Nudge back</strong> and <strong>Nudge
+forward</strong> move a boundary until it sounds right; <strong>Merge
+into previous</strong> removes one that should not be there. Rename each
+one you keep (type the title and press Enter).</li>
+<li><strong>Save</strong> writes the chapters: an MP3 in place (only its
+tags change; the audio is untouched), an M4B as a new file.
+<strong>Export chapters…</strong> writes them as a CUE sheet,
+timestamps, Audacity labels, Podcasting 2.0 JSON or a spreadsheet
+instead. Reopen the file and the chapters are there.</li>
+</ol>
+<p>Some things to know:</p>
+<ul>
+<li><strong>Your own chapters are never silently replaced.</strong> If
+the recording already has two or more chapters, QUILL asks first.
+<strong>Keep mine, add proposals</strong> (the default) keeps every
+chapter you had, with its title and start, and adds a proposed chapter
+only where a silence is at least ten seconds from one of yours.
+<strong>Replace with the proposal</strong> swaps the whole list. Cancel
+changes nothing. A recording with no chapter marks of its own is not
+asked, because there is nothing of yours to lose.</li>
+<li><strong>Stopping.</strong> While the scan runs the button reads
+<strong>Stop proposing chapters</strong>. Press it again, or close the
+Workbench, and the scan’s answer is thrown away and the list stays
+exactly as it was. (The scan program finishes its pass in the background
+and nothing is written.)</li>
+<li><strong>Restore original</strong> takes back the whole proposal at
+once, whichever way you answered.</li>
+<li><strong>Long recordings.</strong> The scan is given time in
+proportion to the recording: at least ten minutes, and a tenth of the
+recording’s length for anything over a hundred minutes, so a whole day’s
+recording is scanned to the end.</li>
+<li>It needs ffmpeg. Without it you are told so, and the button comes
+back.</li>
+<li>Silence is a guess about structure, not knowledge of it. A speaker
+who pauses mid-sentence makes a boundary that is not a topic change;
+that is why every proposal is labelled and nothing is saved until you
+press Save.</li>
+</ul>
+<h4 id="the-chapter-list-and-the-player">The chapter list and the
+player</h4>
+<p>The chapter list reads each row in full (“3. The Long Road, starts
+1:02:03, runs 12:40”). Press Enter on a chapter to hear it.</p>
+<p>The built-in <strong>player</strong> has Play/Pause, Stop, Previous
+and Next chapter, Rewind and Forward, a position slider that speaks
+minutes and seconds, and a volume slider. The current chapter is
+announced as playback moves into it.</p>
+<ul>
+<li>It <strong>remembers where you stopped</strong> in each book and
+picks up there next time.</li>
+<li>It has a <strong>playback speed</strong> control, from 0.75x to 2x,
+with the pitch kept natural.</li>
+<li>It answers <strong>“Where am I?”</strong> with the whole picture:
+“Chapter 4 of 24: The Long Road. 3:12 into the chapter, 9:28 left in it.
+1:02:03 of 7:41:00 in the book, 6:38:57 remaining.”</li>
+</ul>
+<p>Playback normally uses Windows’ built-in media engine, with nothing
+to install. For gapless audio, exact seeking, and instant chapter jumps
+even in 8-hour books, download the <strong>mpv player engine</strong>
+from <strong>Help &gt; Download Optional Components</strong> (about 44
+MB, checksum-verified; its licenses and a source offer come inside the
+download). The player switches to <strong>libmpv</strong> the next time
+it opens. If you prefer, you can instead put a <code>libmpv-2.dll</code>
+into the data folder’s <code>engine-packs\mpv</code> folder, or set the
+<code>QUILL_LIBMPV</code> environment variable to point at one. If the
+DLL is missing or broken, QUILL quietly stays on the built-in
+engine.</p>
+<h4 id="fixing-the-chapters">Fixing the chapters</h4>
+<ul>
+<li><strong>Split at playhead</strong>: listen for the spot where a
+chapter should begin, pause there, and press the button. The chapter is
+cut in two exactly at that point. This is how you fix a book whose
+chapters landed in the wrong places.</li>
+<li><strong>Set start to playhead</strong>: move an existing boundary.
+Select the chapter, park the playhead where it should start, and press.
+The previous chapter’s end moves with it, so there are never gaps.</li>
+<li><strong>Merge into previous</strong>, <strong>Rename</strong> (type
+and press Enter), and <strong>Restore original</strong> (one press
+undoes every edit).</li>
+<li><strong>Add chapter…</strong> puts a marker at the playhead, or at a
+time you type, and asks what to call it. Past the end of the last
+chapter it adds a new one at the end instead of refusing.</li>
+<li><strong>Delete chapter</strong> removes a marker only. The audio
+joins its neighbour, and unlike Merge it works on the first and last
+chapters too.</li>
+<li><strong>Edit chapter…</strong> opens a small window for the title
+and the exact start and end (and a chapter link and image, if you
+publish with Podcasting 2.0).</li>
+<li><strong>Preview chapter</strong> plays just that chapter and stops
+at its end.</li>
+</ul>
+<h4 id="nudging-a-boundary-until-it-sounds-right">Nudging a boundary
+until it sounds right</h4>
+<p><strong>Nudge back</strong> and <strong>Nudge forward</strong> move
+the selected chapter’s start by one step. From the chapter list,
+<code>Alt+Left</code> and <code>Alt+Right</code> do the same, and adding
+Shift moves ten steps at once.</p>
+<ul>
+<li>The <strong>Step</strong> box goes from 100 milliseconds up to 10
+seconds, and remembers your choice for next time
+(<code>audio_studio_chapter_nudge_ms</code>, half a second to start
+with).</li>
+<li><strong>Hear boundary</strong> plays three seconds before the marker
+and two after it, then stops. It is the quickest way to tell whether a
+boundary falls in the middle of a sentence.</li>
+<li>Check <strong>Hear after each nudge</strong> to have that happen
+automatically after every press. It is off by default, so you only get
+sound on every keypress if you ask for it.</li>
+<li>Each nudge speaks only the new time (“0:00:09.500”), so it keeps up
+when you hold the key down. The full sentence follows about half a
+second after you stop.</li>
+<li>Push a marker into its neighbour and it stops there and says “Cannot
+move further” once.</li>
+</ul>
+<h4 id="finding-chapters-for-you">Finding chapters for you</h4>
+<ul>
+<li><strong>Propose chapters from silences…</strong> listens for
+silences in the recording, using ffmpeg’s <code>silencedetect</code>. A
+small dialog asks for the <strong>noise threshold</strong> (dB, default
+-30) and the <strong>minimum silence</strong> length (seconds, default
+0.8), and QUILL suggests chapter boundaries in the middle of each
+silence. The suggestions land in the chapter list for you to review;
+nothing is applied without you. Press <strong>Restore original</strong>
+to undo. So one long recording is no problem: open a single 80-minute
+file (it opens as one chapter), press one button, review, and save.</li>
+<li><strong>Propose AI titles…</strong> names a folder of
+<code>track07</code>-style chapters by listening to them. The first
+minute of each chapter is transcribed on this computer by the local
+speech model, so the audio never leaves your computer. Only that text
+goes to the AI you have set up (a local model keeps even the text on
+your computer). A short suggested title for each chapter lands in the
+list for you to review, and <strong>Restore original</strong> undoes the
+lot. Needs AI set up; not available in Safe Mode.</li>
+</ul>
+<h4 id="checking-importing-and-splitting">Checking, importing and
+splitting</h4>
+<ul>
+<li><strong>Check against ACX</strong> measures the file with ffmpeg’s
+loudnorm and shows a result with integrated loudness, true peak, and
+noise floor, plus a plain suggestion for each thing that fails
+(“Integrated loudness is -14.2 LUFS, target -20 plus or minus 3; make
+the recording 5.8 dB quieter”). The result is announced when the
+measurement finishes, however you close the dialog.</li>
+<li><strong>Import chapters…</strong> replaces the whole list from
+Audacity labels, a CUE sheet, timestamp lines, Podcasting 2.0 JSON, or
+CSV. <strong>Export chapters…</strong> writes the list in any of the
+same five formats.</li>
+<li><strong>Split into files…</strong> goes the other way: one audio
+file per chapter, named <code>NN - Title</code>, in a folder you pick.
+That gives you podcast episodes straight away, or tracks for players
+without chapter support.</li>
+</ul>
+<h4 id="book-details-and-tags">Book details and tags</h4>
+<p><strong>Book details</strong> (title, author, narrator, genre, year)
+are edited right in the Workbench. <strong>All tags…</strong> opens the
+full <strong>Tag Editor</strong> for everything else: twenty-six fields
+over five pages (main, details, publishing, sort order and cover art).
+They include track and disc numbers, composer, publisher, copyright,
+BPM, ISRC, language, grouping, the compilation flag, the four sort-order
+fields, and cover art you can load, save out or remove.
+<code>Ctrl+Tab</code> moves between pages. The five quick fields and the
+editor always agree with each other, in both directions.</p>
+<p>You can also open the Tag Editor on its own, without the Workbench:
+check <strong>Edit the tags only</strong> on the Studio wizard’s
+<em>Open a book</em> page.</p>
+<p>The same editor is in podHarvest. A file edited in one reads back
+exactly as you left it in the other, with the same fields, operations
+and keys. If you use both, you only learn it once.</p>
+<h4 id="saving">Saving</h4>
+<p><strong>Save</strong> writes an MP3’s edits <strong>in
+place</strong>: only the tags are rewritten and the audio is left alone.
+An M4B depends on what you changed. Tag edits alone also save in place
+and finish at once. A chapter change needs <strong>Save As</strong>,
+which copies the audio into a new file without re-encoding, so there is
+no loss of quality. Long saves run in the background, so QUILL stays
+responsive.</p>
+<h4 id="publishing">Publishing</h4>
+<p><strong>Publish…</strong> offers ways to get the finished book out
+into the world. Each one is something you choose to do:</p>
+<ul>
+<li><strong>Podcast feed</strong>: QUILL writes a complete
+<code>.rss</code> file next to the book (RSS 2.0 with iTunes and
+Podcasting 2.0 tags; chapter navigation uses the
+<code>chapters.json</code> file beside it). Upload the feed and audio
+wherever you like. Making the feed never touches the network.</li>
+<li><strong>Folder feed (all episodes)</strong>: run a whole show from
+one folder. Every MP3, M4B, or M4A master becomes an episode (the oldest
+file is episode 1), with its title from its tags or your own, your
+description for each episode (edited in an accessible episode list), its
+real publication date, length, and chapter link. The show settings are
+kept in the folder, so after each new build, one press of <strong>Write
+feed.rss now</strong> makes the complete feed again. <strong>Write show
+notes page</strong> makes an accessible <code>show-notes.html</code>
+beside it, with a heading for each episode, the descriptions, and
+chapter lists, ready to upload with the feed.</li>
+<li><strong>SFTP upload</strong>: save a destination (host, folder, and
+the public web address that matches it), and QUILL uploads the book and
+its companion files over SSH, with the same strict host-key checking as
+editing over SSH. The password is kept in the <strong>Windows Credential
+Manager</strong>, never in QUILL’s settings.</li>
+<li><strong>Auphonic</strong>: send the book to your own Auphonic
+account for professional post-production. QUILL uploads it, waits for
+the production to finish, and downloads the results into a folder next
+to the book. Your API token is also kept in the credential vault, and
+you can manage it on the Services page of <strong>AI &gt; AI
+Hub…</strong>, with QUILL’s other service keys. (AI Hub is on the AI
+menu once <strong>AI &gt; Show advanced AI features</strong> is
+checked.) Press <strong>Check account and load presets</strong> first:
+QUILL tells you whose account the token belongs to and how many
+processing credits remain, and fills the <strong>preset picker</strong>
+with your saved Auphonic presets. The confirmation then names the preset
+and your balance before anything uploads. QUILL asks before anything is
+uploaded.</li>
+</ul>
+<p>Publishing is not available in Safe Mode. Every upload runs in the
+background and tells you when it is done. SFTP uploads and Auphonic
+transfers show a progress dialog that speaks whole-percent steps as the
+file moves (“Uploading book.m4b: 42%”) and has a real
+<strong>Cancel</strong> button. What cancelling does depends on when you
+press it, and QUILL tells you which happened:</p>
+<ul>
+<li>Cancelling an SFTP upload stops in the middle of the file. Files
+that already finished stay on the server.</li>
+<li>Cancelling Auphonic before the upload finishes means no production
+starts.</li>
+<li>Cancelling Auphonic after that leaves the production running in your
+Auphonic account and skips the download.</li>
+</ul>
+<h3 id="the-universal-audio-converter">The Universal Audio
+Converter</h3>
+<p>Apart from the audiobook wizard, QUILL has a general <strong>audio
+converter</strong>. It changes audio files from one format to another,
+and pulls the sound out of video files, entirely on your computer using
+the bundled ffmpeg. It works in Safe Mode and never uploads anything.
+There are three ways in:</p>
+<ul>
+<li><strong>Voices &gt; Convert Audio…</strong>: the dialog, from the
+audiobook and batch speech wizard.</li>
+<li><strong><code>quill convert</code></strong>: a command for scripts,
+for example
+<code>quill convert *.wav --to mp3 --preset podcast --out ./done</code>.
+Add <code>--dry-run</code> to see the plan first,
+<code>--list-presets</code> or <code>--list-formats</code> to see what
+is available, and any of the Advanced options (<code>--bitrate</code>,
+<code>--sample-rate</code>, <code>--channels</code>,
+<code>--loudness</code>, <code>--gain</code>, <code>--high-pass</code>,
+<code>--trim-silence</code>, <code>--speed</code>,
+<code>--compress</code>, <code>--level</code>, <code>--fade-in</code>,
+<code>--fade-out</code>).</li>
+<li><strong>Convert from URL…</strong>: paste a link (YouTube, and the
+many sites yt-dlp supports) and QUILL downloads the best audio and hands
+it to the converter. This is the only part that uses the internet.
+yt-dlp is <strong>not</strong> bundled, so the first time you use it
+QUILL asks once, shows a rights notice (“only download content you have
+the right to use”), and installs the small yt-dlp component. It is not
+available in Safe Mode.</li>
+</ul>
+<h4 id="building-a-batch">Building a batch</h4>
+<ol type="1">
+<li>Add single files or whole folders. A folder is searched, and its
+layout of subfolders is copied into the output folder.</li>
+<li>Choose the output <strong>format</strong>. Only formats your ffmpeg
+can actually make are offered, so a conversion never fails halfway for
+lack of an encoder.</li>
+<li>Pick a <strong>preset</strong>: <em>Just convert</em> (change the
+container only), <em>MP3 128/192/320</em>, <em>Podcast</em>,
+<em>Audiobook</em>, <em>Voice memo</em>, <em>Web Opus</em>, <em>Archival
+FLAC</em>, or <em>Hearing-aid mono</em>.</li>
+<li>Choose an output folder, or leave it to make a
+<code>Converted</code> folder beside the source.</li>
+<li>Choose what happens when a file already exists:
+<strong>auto-number</strong> (never overwrites an original),
+<strong>skip</strong>, or <strong>overwrite</strong>.</li>
+</ol>
+<p>The batch runs in the background on several files at once, so the
+window stays responsive. Progress shows in the status bar and, when
+QUILL is minimized, in the tray tooltip. The final summary is spoken and
+always names any files that failed, so a problem is never hidden behind
+“done”.</p>
+<h4 id="advanced-options">Advanced options</h4>
+<p>Check <strong>Advanced options</strong> to show more controls on top
+of the preset:</p>
+<ul>
+<li>exact <strong>bit rate</strong>, <strong>sample rate</strong>,
+<strong>channels</strong> (keep, mono or stereo), and <strong>bit
+depth</strong></li>
+<li>loudness normalized to an <strong>audiobook</strong> (-20 LUFS, ACX)
+or <strong>podcast</strong> (-16 LUFS) target</li>
+<li><strong>gain</strong> in decibels</li>
+<li>a <strong>high-pass</strong> filter to remove low rumble</li>
+<li><strong>trim silence</strong> from the ends</li>
+<li><strong>speed</strong>, a tempo change from 0.5x to 2x with no
+change in pitch</li>
+<li>a <strong>compressor</strong> and a volume
+<strong>leveler</strong></li>
+<li><strong>fade in</strong> and <strong>fade out</strong>, in
+seconds</li>
+</ul>
+<p>Each control leaves the preset alone until you change it, so Advanced
+only overrides what you set on purpose. The effects are the same ones
+QUILL uses elsewhere, so the results match the rest of the app.</p>
+<h2 id="media">Media</h2>
+<p>QUILL also plays podcasts, recorded programmes and audiobook
+chapters. This part is about keeping your place in all of it, even
+across computers, and about letting it stop by itself when you fall
+asleep.</p>
+<h3 id="continue-listening">Continue Listening</h3>
+<p><strong>Continue Listening…</strong> (in the Command Palette) is one
+list of everything you started and did not finish, newest first, with
+the kind named on every row: a podcast episode you are twenty minutes
+into, a recorded programme or LibriVox chapter you were halfway through.
+It answers the question “what was I in the middle of?” in one place.</p>
+<ul>
+<li><strong>Resume</strong> starts the highlighted row where you left
+off.</li>
+<li><strong>Forget This One</strong> drops the saved place and removes
+the row. The episode stays unplayed, because “I am not going back to
+this” and “I finished it” are different things. Clearing what you have
+given up on keeps the list worth opening.</li>
+</ul>
+<h3 id="where-you-were-in-each-podcast">Where you were in each
+podcast</h3>
+<p>The Podcasts window remembers, for each podcast, which episode you
+last had selected, and puts you back on it the next time you choose that
+podcast – after closing the window and after restarting QUILL. It knows
+the episode by who it is (its feed’s own episode ID, with its address
+and date as fall-backs), not by its row number, so it still finds the
+right one after new episodes arrive at the top, after you change the
+episode sort, and after a refresh.</p>
+<p>If the episode has gone – the feed dropped it, or a filter hides it –
+you land on the remaining episode published closest to it (the newer of
+two equally close), so you are still in the same stretch of the back
+catalogue rather than back at the top. A podcast you have never opened
+starts at the first row, as before.</p>
+<p>For example: you are working through a history podcast from its first
+episode and stop on episode 41. Next week four new episodes have
+arrived. Choose the podcast and the cursor is on episode 41, not on the
+newest one.</p>
+<p>QUILL Cast does the same for a podcast opened from Favorites with
+Enter. The places that mix podcasts (New Episodes, the Inbox, the Play
+Queue) do not move a podcast’s remembered place. Each app keeps its own
+memory, in <code>podcast_episode_cursor.json</code> in its data folder;
+deleting the file only forgets the places.</p>
+<h3 id="carry-my-place-between-machines">Carry My Place Between
+Machines</h3>
+<p>If you listen on more than one computer, <strong>Carry My Place
+Between Machines…</strong> makes your place follow you. It needs two
+things: a folder both computers can see, and a recovery phrase.</p>
+<p>The folder is yours. Point it at somewhere inside OneDrive, Dropbox,
+iCloud Drive, a network share, or even a memory stick you carry between
+the two. QUILL runs no server of its own and never holds your listening
+history. Everything is encrypted before it reaches the folder, so
+whoever runs that folder learns nothing but file sizes and times.</p>
+<p>The recovery phrase is eight ordinary words, made up for you,
+something like <em>earth dock hollow iris farm laser daisy amber</em>.
+Write it down. It is the key, and QUILL cannot get it back for you if
+you lose it. <strong>Read My Phrase Aloud</strong> says it back
+numbered, one word at a time, which is just what you want while writing
+it on paper.</p>
+<p>To set up the second computer, use the same window:</p>
+<ol type="1">
+<li>Open <strong>Carry My Place Between Machines…</strong> on the second
+computer.</li>
+<li>Point it at the same folder.</li>
+<li>Type the phrase from the first computer.</li>
+</ol>
+<p>QUILL notices the folder is already set up and says so. If the phrase
+is wrong it tells you at once (“that recovery phrase does not match this
+folder; nothing was changed”) instead of half-syncing and failing later.
+Typing is forgiving about capitals, spacing and punctuation, and a word
+that is not on the word list is named, so you only need to check that
+one.</p>
+<p><strong>Sync Now</strong> runs it and tells you in a sentence what
+happened: what came back, what went out, and whether two computers
+disagreed about a place (the most recent wins, and you are told). It can
+also run when playback stops, if you like. If both computers remembered
+a different place in the same thing and they are more than a few minutes
+apart, QUILL treats that as a real disagreement and tells you, instead
+of quietly picking one.</p>
+<p>Everything works normally with no sync at all. Nothing ever waits on
+the folder before playing.</p>
+<h3 id="sharing-your-place-with-apps-that-are-not-quill">Sharing your
+place with apps that are not QUILL</h3>
+<p>The sync above carries your place between two copies of QUILL. It is
+encrypted from end to end, which is right, and which is also why no
+other app can read it. If you listen on a phone with a podcast app that
+is not ours, it does not help you.</p>
+<p><strong>Listening Places</strong> is the other half, and it is a
+separate checkbox in the same window. In the folder you already chose,
+QUILL also writes a small, plain file in a published format that any
+podcast app is free to read and write. There is no account, no server,
+and no signup. The format is written down publicly, so another app can
+simply support it.</p>
+<p>What that means for you:</p>
+<ul>
+<li><strong>Turn on only the half you want.</strong> The encrypted
+QUILL-to-QUILL sync and the shared plain file are separate switches,
+because they reveal different things. You can use either, both, or
+neither.</li>
+<li><strong>No recovery phrase is needed for this half.</strong> The
+shared file cannot be encrypted and still be readable by another app, so
+setting it up is one checkbox.</li>
+<li><strong>Titles are left out unless you say so.</strong> Every show
+and episode is identified by a scrambled fingerprint instead of its
+name, so a folder you share with a family member does not become a list
+of what you listen to. A third checkbox, off by default, adds readable
+titles if you want them.</li>
+<li><strong>Each device writes its own file.</strong> That stops a cloud
+drive ever making a “positions (Jeff’s conflicted copy)”, and it means a
+third and fourth device work with no extra setup.</li>
+<li><strong>The most recent place wins, not the furthest.</strong> If
+you jumped back twenty minutes on purpose and then opened the episode
+somewhere else, that jump is kept.</li>
+<li><strong>It reads at launch and when you press Sync Now, and at no
+other time.</strong> So a position from another device never moves the
+playhead under you in the middle of an episode.</li>
+</ul>
+<p><strong>Sync Now</strong> covers both halves in one press and reports
+on each.</p>
+<h3 id="sleep-timer">Sleep Timer</h3>
+<p>The sleep timer stops whatever is playing after a while, from one
+place. In this release radio and podcasts live in their own apps, so you
+set it in <strong>Quill Radio</strong> with <strong>Sleep
+Timer…</strong> on its Playback menu (<code>Ctrl+Shift+Z</code>), or in
+Quill Cast. The editor’s own Tools menu shows a Media submenu with the
+same Sleep Timer only in developer builds, where radio and podcasts are
+still part of the editor.</p>
+<ol type="1">
+<li>Choose a preset (15, 30, 45, 60, or 90 minutes), or type your own
+number of minutes.</li>
+<li>Press <strong>Start</strong>.</li>
+</ol>
+<p>Over the last 20 seconds, playback fades gently down and then stops.
+Your volume is then set back to what it was before the fade, so pressing
+play later is not suddenly quiet. Open the dialog again while a timer is
+running to hear how much time is left, or press <strong>Cancel Sleep
+Timer</strong> (also in the Command Palette as <strong>Media: Cancel
+Sleep Timer</strong>) to stop the countdown early.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now have QUILL read to you in the voice and language you
+like, and teach it how to say the words it gets wrong. You can inspect a
+character, hear the hidden formatting with Reveal Codes
+(<code>Alt+F3</code>), read an EPUB by chapter, and step through the
+differences between two documents. You know where QUILL makes
+audiobooks, fixes their chapters and publishes them, and how to keep
+your place in what you listen to.</p>
+<p>To practise with QUILL beside you, open <strong>Help &gt;
+Tutorials…</strong> (<code>Ctrl+Alt+F1</code>) and try “Have it read to
+you”, “See the formatting that is normally hidden” and “Inspect a
+document you did not write”. On the website, <a
+href="https://www.quillforall.org/tutorials/03-rescue-a-scanned-pdf.html">Rescue
+a scanned PDF</a> and <a
+href="https://www.quillforall.org/tutorials/04-document-to-audiobook.html">From
+document to published audiobook</a> walk through the longer jobs.</p>
+<p>Next, Chapter 9, Dictation and transcription, turns things around:
+you speak and QUILL writes.</p>
+<hr />
+<ul>
+<li>Previous: <a href="quill-guide-07-spelling-and-words.html">Chapter
+7: Spelling and words</a></li>
+<li>Next: <a
+href="quill-guide-09-dictation-and-transcription.html">Chapter 9:
+Dictation and transcription</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

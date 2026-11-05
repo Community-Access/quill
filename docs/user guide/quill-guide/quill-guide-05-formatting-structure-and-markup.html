@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 5: Formatting, structure and markup</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-5-formatting-structure-and-markup">Chapter 5:
+Formatting, structure and markup</h1>
+<p>This chapter is about the shape of your writing: headings, lists,
+bold and italic, fonts and colours, tables, equations and citations.
+QUILL keeps your text plain and easy to read while you work, and still
+gives you a properly formatted document when you save it as Word, RTF or
+HTML. If you write in Markdown or HTML, or you want a document that
+other people can navigate by heading, this is the chapter for you. Near
+the end you will also find the tools for tidying pasted text and fixing
+character encoding problems, and how QUILL tells you what it has
+done.</p>
+<h2 id="format-menu">Format menu</h2>
+<p>The <strong>Format</strong> menu is where you change how existing
+text looks and how it is laid out. Most of it works on the selection, or
+on the current line when nothing is selected.</p>
+<h3 id="case-comments-and-indentation">Case, comments and
+indentation</h3>
+<p>The <strong>Change Case</strong> submenu has five commands:</p>
+<ul>
+<li>Upper Case</li>
+<li>Lower Case</li>
+<li>Title Case</li>
+<li>Sentence Case</li>
+<li>Toggle Case (<code>Ctrl+Alt+Shift+N</code>)</li>
+</ul>
+<p>For code and structured text there are comment and indentation
+tools:</p>
+<ul>
+<li>Toggle Line Comment (<code>Ctrl+/</code>)</li>
+<li>Toggle Block Comment (<code>Ctrl+Shift+/</code>)</li>
+<li>Indent (<code>Ctrl+]</code>)</li>
+<li>Outdent (<code>Ctrl+[</code>)</li>
+<li><strong>Tab Key Inserts Tab Character</strong>
+(<code>Ctrl+Alt+Shift+I</code>), which Chapter 2 explains under the Tab
+key.</li>
+<li><strong>Describe Indent Depth</strong>
+(<code>Ctrl+Alt+Shift+V</code>), which tells you how deeply the line you
+are on is indented, such as “4 spaces” or “1 tab”, without moving
+anything.</li>
+</ul>
+<h3 id="working-with-whole-lines">Working with whole lines</h3>
+<p>These commands are on <strong>Format &gt; Line</strong>, and act on
+the line your cursor is on:</p>
+<ul>
+<li>Move Line Up (<code>Ctrl+Shift+Up</code>)</li>
+<li>Move Line Down (<code>Ctrl+Shift+Down</code>)</li>
+<li>Duplicate Line (<code>Ctrl+D</code>)</li>
+<li>Delete Line (<code>Ctrl+Shift+Delete</code>)</li>
+<li>Join Lines (<code>Ctrl+Alt+Shift+J</code>)</li>
+<li><strong>Delete to Line Start</strong>
+(<code>Ctrl+Shift+Backspace</code>) and <strong>Delete to Line
+End</strong> (<code>Ctrl+Alt+Shift+Delete</code>)</li>
+<li><strong>Delete to Document Start</strong> and <strong>Delete to
+Document End</strong>, which remove everything from the cursor to the
+top or the bottom of the document. They have no keys at first, because
+they remove a lot at once. Ctrl+Z puts it back, and so does <strong>Edit
+&gt; Restore Deleted Text…</strong>.</li>
+<li><strong>Delete Paragraph</strong>
+(<code>Ctrl+Alt+Shift+Backspace</code>)</li>
+<li><strong>Quote Lines</strong> (<code>Ctrl+Shift+Q</code>) and
+<strong>Unquote Lines</strong> (<code>Alt+Shift+.</code>), which add or
+take away the <code>&gt;</code> that marks a quoted line in an email or
+in Markdown.</li>
+</ul>
+<p>Five line tools have their own keys, so you do not have to walk the
+menu each time:</p>
+<ul>
+<li><strong>Hard-Wrap Lines</strong> (<code>Alt+Shift+W</code>)</li>
+<li><strong>Delete Lines Containing</strong>
+(<code>Alt+Shift+X</code>)</li>
+<li><strong>Convert Indentation to Spaces</strong>
+(<code>Alt+F11</code>)</li>
+<li><strong>Convert Indentation to Tabs</strong>
+(<code>Alt+F12</code>)</li>
+<li><strong>Line Statistics</strong> (<code>Ctrl+Alt+W</code>)</li>
+</ul>
+<p>The first four use the same keys as QUILL Lite, so your hands work
+the same way in both. Line Statistics is on <strong>Tools &gt;
+Advanced</strong>, and Document Statistics is on
+<code>Ctrl+Shift+G</code>.</p>
+<h3 id="sort-and-filter-whitespace-and-numbering-lines">Sort and Filter,
+Whitespace, and numbering lines</h3>
+<p>Three more submenus of the Format menu work on many lines at once.
+Each one works on the selected lines, or on the whole document when
+nothing is selected.</p>
+<p><strong>Format &gt; Sort and Filter</strong> puts lines in order and
+weeds them out:</p>
+<ul>
+<li><strong>Sort Lines A to Z</strong> (<code>Ctrl+Alt+S</code>) and
+<strong>Sort Lines Z to A</strong> (<code>Ctrl+Alt+Shift+S</code>)</li>
+<li><strong>Shuffle Lines</strong>, which puts them in a random order,
+handy for a quiz or a draw</li>
+<li><strong>Sort Lines Numerically</strong>, <strong>Sort Lines by
+Date</strong> and <strong>Sort Lines by Length</strong>, described
+below</li>
+<li><strong>Delete Lines Containing…</strong> (<code>Alt+Shift+X</code>)
+and <strong>Delete Lines Not Containing…</strong>. Type a word or
+phrase, and every line with it (or every line without it) goes.</li>
+<li><strong>Reverse Lines</strong> (<code>Alt+Shift+Z</code>)</li>
+<li><strong>Remove Duplicate Lines</strong>
+(<code>Ctrl+Alt+D</code>)</li>
+</ul>
+<p><strong>Format &gt; Whitespace</strong> tidies spaces and blank
+lines:</p>
+<ul>
+<li><strong>Trim Trailing Whitespace</strong>
+(<code>Ctrl+Alt+R</code>)</li>
+<li><strong>Trim Blank Lines at the Ends</strong>
+(<code>Ctrl+Shift+Enter</code>) and <strong>Remove Every Blank
+Line</strong> (<code>Ctrl+Alt+K</code>), described next</li>
+<li><strong>Normalize Whitespace</strong>
+(<code>Ctrl+Alt+Shift+T</code>)</li>
+<li><strong>Convert Indentation to Spaces</strong>
+(<code>Alt+F11</code>) and <strong>Convert Indentation to Tabs</strong>
+(<code>Alt+F12</code>)</li>
+</ul>
+<p><strong>Format &gt; Line</strong> has the numbering tools,
+<strong>Number Lines…</strong> (<code>Alt+Shift+N</code>) and
+<strong>Number Lines (Advanced)…</strong>, along with <strong>Hard-Wrap
+Lines…</strong> (<code>Alt+Shift+W</code>). <strong>Number Lines
+(Advanced)…</strong> is for the times the simple version is not enough.
+You can set a starting number, an increment, digits or Roman numerals, a
+zero-padding width, a custom suffix, and left or right alignment.</p>
+<h3 id="two-ways-to-remove-blank-lines">Two ways to remove blank
+lines</h3>
+<p>The Format menu has two blank-line commands, and their names tell you
+which is which.</p>
+<ul>
+<li><strong>Trim Blank Lines at the Ends</strong> removes only the blank
+lines before the first line of text and after the last one. Use it
+before you paste a fragment into something else.</li>
+<li><strong>Remove Every Blank Line</strong> removes all of them,
+including the ones between your paragraphs. Use it on text copied from a
+web page that arrived double-spaced.</li>
+</ul>
+<p>A line with nothing but spaces on it counts as blank to both
+commands. They used to be called Trim Blank Lines and Remove Blank
+Lines.</p>
+<h3 id="sorting-lines-by-number-length-or-date">Sorting lines by number,
+length or date</h3>
+<p>Besides the plain A to Z sorts, <strong>Format &gt; Sort and
+Filter</strong> has three more for structured lists. Each works on the
+selected lines, or the whole document if nothing is selected.</p>
+<ul>
+<li><strong>Sort Lines Numerically</strong> sorts by the first number on
+each line.</li>
+<li><strong>Sort Lines by Length</strong> puts the shortest lines
+first.</li>
+<li><strong>Sort Lines by Date</strong> sorts by the date on each
+line.</li>
+</ul>
+<p>Sort Lines by Date understands the common ways of writing a date:</p>
+<ul>
+<li>ISO dates, such as <code>2020-03-05</code>.</li>
+<li>Slash and dot forms, such as <code>03/04/2020</code> and
+<code>5.1.2020</code>.</li>
+<li>English month names, such as <code>Jan 5, 2020</code>,
+<code>5 January 2020</code> and <code>March 3rd, 1999</code>.</li>
+</ul>
+<p>When a numeric date could be read two ways, QUILL follows your
+region. In US English it reads the month first, so <code>03/04</code> is
+March 4th. Everywhere else it reads the day first, so <code>03/04</code>
+is 4 March. A date that can only mean one thing, like
+<code>25/12</code>, is always read correctly. Lines with no date it
+recognizes stay together at the bottom, in their original order, so
+nothing is lost.</p>
+<p>All three sorts have no key by default. You can give them one in the
+Keymap Editor.</p>
+<h3 id="bold-italic-and-rich-formatting">Bold, italic and rich
+formatting</h3>
+<p><strong>Bold</strong> and <strong>Italic</strong> are on the Format
+menu, as you would expect. Beyond those two, the menu applies real
+document formatting:</p>
+<ul>
+<li><strong>Underline</strong>, <strong>Strikethrough</strong>,
+<strong>Superscript</strong> and <strong>Subscript</strong></li>
+<li><strong>Font</strong> (the font family) and <strong>Size</strong>
+(the point size)</li>
+<li><strong>Text Colour</strong> and <strong>Highlight</strong></li>
+<li>paragraph <strong>Alignment</strong> (Left / Centre / Right /
+Justify)</li>
+<li>line spacing, indent and named styles</li>
+</ul>
+<p>QUILL uses what it calls hidden codes for this. The formatting is
+stored out of sight, so what you read and edit stays clean plain text
+with no clutter in it. When you save or export, the hidden codes become
+real formatting, and the document comes out as a properly formatted
+Word, RTF or HTML file.</p>
+<p>Everything else in QUILL works on that same clean text: undo, search,
+the outline, word counts, read-aloud and the AI tools all see your
+prose, not the markup.</p>
+<h4 id="applying-formatting">Applying formatting</h4>
+<p>Use the Font, Size, Align, Colour and Highlight items on the Format
+menu. If text is selected, the formatting applies to the selection. If
+nothing is selected, it applies to what you type next.</p>
+<p>Here is what each one offers:</p>
+<ul>
+<li><strong>Format &gt; Font</strong> has six everyday typefaces: Arial,
+Calibri, Times New Roman, Courier New, Verdana and Georgia.</li>
+<li><strong>Format &gt; Font Size</strong> has <strong>Grow
+Font</strong> (<code>Ctrl+Shift+.</code>) and <strong>Shrink
+Font</strong> (<code>Ctrl+Shift+,</code>), which step the size up or
+down, and a list of sizes from 8 to 72 point.</li>
+<li><strong>Format &gt; Align</strong> has <strong>Left</strong>
+(<code>Ctrl+L</code>), <strong>Center</strong> (<code>Ctrl+E</code>),
+<strong>Right</strong> (<code>Ctrl+R</code>) and
+<strong>Justify</strong> (<code>Ctrl+J</code>), the same keys as
+Word.</li>
+<li><strong>Format &gt; Text Color</strong> has Black, Red, Green, Blue,
+Orange and Purple.</li>
+<li><strong>Format &gt; Highlight</strong> has Yellow, Green, Turquoise,
+Pink and Gray.</li>
+<li><strong>Format &gt; Line Spacing</strong> has
+<strong>Single</strong> (<code>Ctrl+1</code>), <strong>One and a
+Half</strong> (<code>Ctrl+5</code>) and <strong>Double</strong>
+(<code>Ctrl+2</code>), Word’s keys again.</li>
+<li><strong>Format &gt; Paragraph Spacing</strong> adds 6 or 12 points
+of space before or after the paragraph.</li>
+<li><strong>Format &gt; Paragraph Indent</strong> indents the
+paragraph’s left edge by 18, 36 or 54 points, or indents just its first
+line by 18 or 36 points.</li>
+<li><strong>Format &gt; Paragraph Style</strong> makes the paragraph a
+<strong>Quote</strong>, a <strong>Title</strong>, a
+<strong>Subtitle</strong> or a <strong>Caption</strong>.</li>
+<li><strong>Format &gt; Insert Page Break</strong>
+(<code>Ctrl+Enter</code>, Word’s key) starts a new page at the cursor.
+In a Word or Rich Text document it is a real page break, the same one
+Word makes, and it is still there when you save and open the file again.
+In a Markdown document it goes on its own line and takes effect when you
+save or export to a format that has pages, such as Word or PDF. In a
+braille file it is a braille page break. With the cursor on a link,
+<code>Ctrl+Enter</code> follows the link instead, which is what it did
+before; in a plain text document QUILL tells you a page break needs
+another kind of document.</li>
+<li><strong>Format &gt; Clear Formatting</strong>
+(<code>Ctrl+Shift+N</code>) is Word’s “back to normal text”. In a rich
+text document it turns bold, italic, underline and strikethrough off,
+puts the size, colour, highlight, alignment and spacing back to normal,
+and takes the text out of any list, all as one step you can undo. In a
+Markdown document it takes the emphasis codes off the selected text, or
+off the paragraph when nothing is selected. When you are not sure what
+is still applied to some text, this is the way to be certain.</li>
+</ul>
+<p>The <strong>Markdown Format Codes…</strong> dialog gathers font
+family, point size, colour and highlight in one place. It writes hidden
+Markdown codes, so it works only in a Markdown document. It used to be
+called “More Font Options…”.</p>
+<p>The two items above it are the ones most people mean by “font”:</p>
+<ul>
+<li><strong>Font…</strong> changes the editor’s own typeface and
+size.</li>
+<li><strong>Font for Selection…</strong> changes the font of text in a
+rich text document.</li>
+</ul>
+<h4 id="hearing-what-is-there">Hearing what is there</h4>
+<p>Because the codes are hidden, you cannot read them in the text.
+<strong>Describe Formatting at Cursor</strong> speaks exactly what is in
+effect at the cursor, for example “Arial, 14 point, centred, bold”. Its
+key is <code>Ctrl+Shift+D</code>. To hear formatting changes as you
+arrow through a document, check <strong>Format &gt; Announce Formatting
+on Cursor Move</strong>. It stays on until you uncheck it, even after a
+restart.</p>
+<h4 id="saving-with-your-formatting">Saving with your formatting</h4>
+<p>When you use <strong>Save As</strong> (or Export) to <strong>Word
+(.docx)</strong>, <strong>Rich Text (.rtf)</strong> or
+<strong>HTML</strong>, the hidden codes become real formatting: font,
+size, colour, highlight, alignment and the rest. Word export uses a
+built-in writer when the optional <code>python-docx</code> component is
+installed, and Pandoc otherwise.</p>
+<p>If the format you are saving to cannot carry something, QUILL tells
+you before you commit, instead of quietly dropping it. Saving to plain
+text drops the formatting, and you get the same warning.</p>
+<h2 id="markdown-and-html-awareness">Markdown and HTML awareness</h2>
+<p>Plenty of people write in plain text and still care a great deal
+about the structure of what they export. QUILL helps with that by
+noticing whether the document in front of you looks like Markdown, HTML
+or plain text. It uses that to guide the insertion helpers and to switch
+on the commands that make sense for that kind of document. The heading
+and list keys below, for example, work in Markdown and HTML documents.
+In a plain-text document QUILL says the command is unavailable and
+leaves your text alone.</p>
+<h2 id="headings">Headings</h2>
+<p>Headings are what let you, and anyone you share a document with, jump
+through it by section. QUILL’s heading tools help you keep that
+structure tidy, not just add decoration.</p>
+<h3 id="setting-a-heading-level-ctrlalt1-to-6">Setting a heading level
+(Ctrl+Alt+1 to 6)</h3>
+<p>Put your cursor on a line and press <code>Ctrl+Alt+1</code> through
+<code>Ctrl+Alt+6</code> to make it a heading of that level. Press the
+same key again on a heading that is already that level to turn it back
+into an ordinary line. This works in Markdown and HTML documents.</p>
+<p><code>Alt+Shift+Left</code> and <code>Alt+Shift+Right</code> raise
+and lower the level of the heading you are on.</p>
+<p>If you use NVDA: these keys take the place of NVDA’s own keys for
+switching to synthesizer 1 through 6. If you rely on those, rebind
+QUILL’s heading keys in the Keymap Editor.</p>
+<h3 id="moving-a-section">Moving a section</h3>
+<p>In Markdown and HTML, a section is a heading and everything under it.
+You can move whole sections without cutting and pasting.</p>
+<ul>
+<li><code>Alt+Shift+Up</code> and <code>Alt+Shift+Down</code> move the
+section you are in one step, swapping it with the section before or
+after it. This is right for tidying two neighbouring sections.</li>
+<li><code>Alt+Shift+F5</code> is <strong>Select Section</strong>. It
+selects the section and everything under it, so ordinary
+<code>Ctrl+X</code> and <code>Ctrl+V</code> can put it anywhere:
+elsewhere in this document, in another document, or in another program.
+QUILL tells you how much it selected, for example “Selected Bread and 1
+section under it, 7 lines”, because your screen reader only says the
+selection changed.</li>
+<li><code>Ctrl+Alt+Shift+F5</code> is <strong>Move Section To…</strong>,
+which moves a section to a place you choose instead of one step at a
+time. It is described just below.</li>
+</ul>
+<p>Your cursor must be on the heading for <code>Alt+Shift+Up</code> and
+<code>Alt+Shift+Down</code>. In a plain-text document QUILL says the key
+is unavailable and nothing moves. A line such as <code># fake</code>
+inside a ``` code fence is never mistaken for a heading.</p>
+<p>When there is no section of the same level in the direction you are
+moving, the section trades places with whatever is next to it, the way
+Word’s outline Move Up and Move Down work on the same keys. A first
+child section rises above its parent’s heading. A section that runs to
+the end of the file cannot move down, and QUILL tells you so and names
+the key that would promote it to make it a sibling.</p>
+<p>The moved section keeps its level. Moving never renumbers your
+headings. To change a level, use <code>Alt+Shift+Left</code> and
+<code>Alt+Shift+Right</code>; you can combine the two.</p>
+<p><code>Alt+Shift+Up</code> and <code>Alt+Shift+Down</code> used to
+expand and shrink the selection. Those commands are now on
+<code>Ctrl+Shift+X</code> and <code>Ctrl+Alt+Shift+X</code>, and keymaps
+you saved in older versions are moved over automatically.</p>
+<h3 id="move-section-to-ctrlaltshiftf5">Move Section To
+(Ctrl+Alt+Shift+F5)</h3>
+<p>Moving a section forty places with <code>Alt+Shift+Up</code> means
+forty announcements to count. <strong>Move Section To…</strong> asks
+where you want it to go instead.</p>
+<ol type="1">
+<li>Put your cursor in the section you want to move and press
+<code>Ctrl+Alt+Shift+F5</code>.</li>
+<li>Choose the heading to move it next to. The list holds every heading
+in the document, and each row reads like “3 of 7, level 2 - Bread”, so
+two sections with the same name are still two different rows.</li>
+<li>Choose <strong>Before</strong>, <strong>After</strong> or
+<strong>Inside</strong> that heading.</li>
+</ol>
+<p>The whole move is a single edit, so one <code>Ctrl+Z</code> undoes
+it.</p>
+<p>Only <strong>Inside</strong> changes a level. It makes your section
+the last one under the heading you chose, moves everything in it one
+level deeper, and tells you the new level.</p>
+<p>A few things make the two lists easy to use by ear:</p>
+<ul>
+<li>Focus starts in the search box. Pressing Enter there takes you into
+the results; it does not accept whatever happens to be highlighted.</li>
+<li>The list never reorders itself as you type. It is your outline in
+document order, so you can find things by position.</li>
+<li>A heading inside the section you are moving is still listed, and
+marked as such. If you choose it, QUILL explains, for example:
+“Sourdough is inside Bread, so Bread cannot move into it. Promote
+Sourdough first if you want them side by side.”</li>
+</ul>
+<p>QUILL also refuses to push a heading past level 6, and tells you
+why.</p>
+<p>Press Escape at either question to cancel. Nothing changes and
+nothing is announced.</p>
+<h3 id="style-headings-and-the-heading-organizer">Style Headings and the
+Heading Organizer</h3>
+<p>To change how headings look, open <strong>Insert &gt; Heading &gt;
+Style Headings…</strong>. You can style all heading levels or just the
+level you are on, and set the font family, point size and alignment. In
+a Markdown document, styled headings are written as HTML heading tags so
+the formatting is kept.</p>
+<p>For bigger reorganising, open <strong>Navigate &gt; Heading
+Organizer…</strong> (<code>Alt+Shift+O</code>). It lists each heading as
+its level and title. In it you can:</p>
+<ul>
+<li>promote and demote headings with <code>Tab</code> and
+<code>Shift+Tab</code></li>
+<li>move sections up and down</li>
+<li>rename headings</li>
+<li>check the heading order before you apply your changes. It catches a
+wrong starting level, skipped levels and empty headings.</li>
+</ul>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Lost track of where you are in a
+long document? Press <code>Alt+Shift+O</code> to open the Heading
+Organizer and hear every heading as a list.</p>
+</blockquote>
+<h3 id="the-section-cell-on-the-status-bar">The Section cell on the
+status bar</h3>
+<p>The status bar can show a <strong>Section</strong> cell, which reads
+<code>Section: Heading N (ordinal of total)</code> whenever your cursor
+is on a heading in a Markdown or HTML document. It is hidden by default;
+turn it on in <strong>Tools &gt; Customize and Support &gt; Status Bar
+Layout…</strong>. In a plain-text document, or on a line that is not a
+heading, it stays empty.</p>
+<h2 id="lists">Lists</h2>
+<h3 id="bullet-and-numbered-lists-ctrlshiftl">Bullet and numbered lists
+(Ctrl+Shift+L)</h3>
+<p>Press <code>Ctrl+Shift+L</code> to start a bullet list, or
+<code>Ctrl+Shift+Grave, Shift+L</code> for a numbered list. QUILL looks
+at the line you are on:</p>
+<ul>
+<li>If it is not in a list, a new list starts at the cursor.</li>
+<li>If it is already in a list, the same key turns that list off. Only
+the list you are in changes; every other list in the document is left
+alone.</li>
+</ul>
+<p>When it turns a list off, QUILL tells you how many items it changed,
+for example “Bullet list removed, 4 items”, since that is the part you
+cannot see. <code>Ctrl+Z</code> puts the markers back.</p>
+<p>Numbered lists follow the <code>list_auto_fill_numbers</code>
+setting, <strong>Settings &gt; Editing &gt; Auto-fill numbered list
+markers</strong>. When it is on, every item gets its number,
+<code>1. </code>, <code>2. </code>, <code>3. </code> and so on. When it
+is off, only the first item does.</p>
+<p>These keys always work in Markdown and HTML documents. In a
+plain-text document QUILL says the command is unavailable.</p>
+<h3 id="typing-in-a-list">Typing in a list</h3>
+<p>Markdown lists behave the way they do in other editors, and QUILL
+tells you what <code>Enter</code> did, because your screen reader only
+hears a new line:</p>
+<ul>
+<li><code>Enter</code> at the end of an item starts the next one with
+the next marker: a hyphen after a hyphen, <code>3. </code> after
+<code>2. </code>, <code>3) </code> after <code>2) </code>, and an
+unchecked <code>- [ ] </code> after any task item. The item’s
+indentation is kept, so a nested item continues at its own depth. QUILL
+says “Continued list item”.</li>
+<li><code>Enter</code> in the middle of an item splits it there. In
+<code>1. bread milk</code>, with the cursor before <code>milk</code>,
+<code>Enter</code> gives <code>1. bread</code> and
+<code>2. milk</code>.</li>
+<li>A new numbered item renumbers the items below it while they still
+count on from it, so adding an item after the first of
+<code>1. 2. 3.</code> gives <code>1. 2. 3. 4.</code> and QUILL says
+“Continued list item, renumbered 2 items below”. A list that jumps (from
+<code>2.</code> to <code>7.</code>, say) keeps your numbering from the
+jump on.</li>
+<li><code>Enter</code> on an empty list marker ends the list: the marker
+goes, the empty line stays, and QUILL says “Exited list”.</li>
+<li><code>Ctrl+Z</code> straight afterwards takes back the new line, its
+marker and any renumbering in one step.</li>
+<li>On a list item, <code>Tab</code> nests it one level deeper and
+<code>Shift+Tab</code> brings it back out.</li>
+</ul>
+<p><strong>Plain text</strong> does this only if you ask: turn on
+<strong>Settings &gt; Editing &gt; Continue lists in plain
+text</strong>. It is off to begin with because, in a <code>.txt</code>
+file or a new untitled note, a line that happens to start with
+<code>1.</code> is as often a date, a version number or a paragraph you
+are numbering by hand. Even with the setting on, QUILL never continues a
+list in a code or settings file. In a rich text document
+(<code>.rtf</code>, <code>.docx</code>) lists are formatting rather than
+characters, and <code>Ctrl+Shift+L</code> makes them; <code>Enter</code>
+there is the word processor’s own.</p>
+<p>For bigger changes, open <strong>Insert &gt; List &gt; List
+Manager…</strong> (<code>Ctrl+Shift+Grave, L</code>). It shows your list
+as a tree, where you can move, promote, demote, add, edit and delete
+items.</p>
+<h3 id="structured-list-studio-ctrlaltshiftl">Structured List Studio
+(Ctrl+Alt+Shift+L)</h3>
+<p>The <strong>Structured List Studio</strong> lets you build a list by
+its parts (each item’s text, a checked box, a term and its definition)
+and writes the correct Markdown or HTML for you. You never have to type
+<code>-</code>, <code>1.</code>, <code>[ ]</code>,
+<code>&lt;ul&gt;</code> or <code>&lt;dl&gt;</code> yourself.</p>
+<p>Press <code>Ctrl+Alt+Shift+L</code>, or choose <strong>Insert &gt;
+List &gt; Structured List Studio…</strong>.</p>
+<ul>
+<li>With text selected, the studio turns your selection into a list. It
+makes one item per line, or one per paragraph when blank lines separate
+them, and removes any bullets, numbers or task markers already there.
+With nothing selected, it starts a new list.</li>
+<li>Choose the type: <strong>Bulleted</strong>,
+<strong>Numbered</strong>, <strong>Checklist</strong>, or
+<strong>Definition (or description) list</strong>. Then choose the
+output format, <strong>Markdown</strong> or <strong>HTML</strong>.</li>
+<li>As you work, a read-only <strong>Generated source</strong> field
+shows exactly what will be inserted. The items outline tells you each
+item’s text, its number or checked state, and its position.</li>
+<li>Inserting the finished list is a single edit, so one
+<code>Ctrl+Z</code> undoes it.</li>
+</ul>
+<h4 id="definition-lists">Definition lists</h4>
+<p>For a definition list, fill in the <strong>Term</strong> and
+<strong>Definition</strong> fields. For HTML, QUILL writes valid
+<code>&lt;dl&gt;</code>/<code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code>
+markup. For Markdown, it uses a Pandoc-compatible syntax. A term can
+have several synonyms (one per line, each becoming its own
+<code>&lt;dt&gt;</code>), and a definition can have several paragraphs
+(separated by a blank line, each becoming its own
+<code>&lt;dd&gt;</code>).</p>
+<p>If you make a Markdown definition list and the document has no
+profile set, QUILL asks how you want it written instead of guessing:</p>
+<ul>
+<li><strong>embedded HTML</strong>, the recommended choice because it
+works almost everywhere</li>
+<li>a specific <strong>Markdown profile</strong>: Pandoc, Markdown Extra
+or MultiMarkdown</li>
+<li>a plain <strong>“Term: Definition”</strong> list</li>
+</ul>
+<h4 id="nesting-reordering-and-editing-a-list-later">Nesting, reordering
+and editing a list later</h4>
+<ul>
+<li><strong>Indent</strong>, <strong>Outdent</strong> and <strong>Add
+child</strong> build nested lists.</li>
+<li><strong>Move up</strong> and <strong>Move down</strong> carry an
+item together with all its children.</li>
+<li>To edit a list you already have, put your cursor inside it with
+nothing selected and open the studio. It loads that list, and when you
+are done it rewrites just that block.</li>
+</ul>
+<h4 id="converting-and-importing">Converting and importing</h4>
+<ul>
+<li>Switching a list to another type carries the content across, and
+warns you before any structure would be lost.</li>
+<li><strong>Import from clipboard</strong> and <strong>Import from
+file…</strong> bring text in, with the live preview showing how QUILL
+understood it.</li>
+<li>When you choose OK, the studio checks the generated source. If
+something is wrong, your document is left unchanged and you are told
+what the problem was.</li>
+</ul>
+<h4 id="list-studio-settings">List Studio Settings</h4>
+<p>Open <strong>Insert &gt; List &gt; List Studio Settings…</strong> to
+set your defaults. You can pick a ready-made preset, adjust the main
+options (verbosity, markers, definition profile and loose lists), and
+export or import your settings as a JSON file. Save them <strong>for all
+documents</strong>, which is what the studio starts from next time, or
+<strong>for this document only</strong>, which overrides just the
+options you changed. The document’s format still chooses the Markdown
+syntax for definition lists automatically.</p>
+<p>The studio used to open with <code>F2</code>, and Insert Special
+Character used to be on <code>Shift+F2</code>. Today <code>F2</code> and
+<code>Shift+F2</code> move between bookmarks, and Insert Special
+Character is on <code>Ctrl+Shift+F2</code>. You can change any of these
+keys in the Keymap Editor.</p>
+<h3 id="checking-off-tasks">Checking off tasks</h3>
+<p>A task list is a list whose items start with a box:
+<code>- [ ]</code> for something still to do and <code>- [x]</code> for
+something done. <strong>Insert &gt; List &gt; Task</strong> makes one,
+and plans written by AI assistants are usually full of them.</p>
+<p>To check a task, put the cursor on its line and press
+<code>Ctrl+Alt+Enter</code> (**Insert</p>
+<blockquote>
+<p>List &gt; Toggle Task Done**). Press it again to uncheck it. QUILL
+tells you what changed and how many tasks in that list are done, for
+example “Checked: Write the tests. 3 of 7 tasks complete.” Select
+several lines first to check them all at once. <code>Ctrl+Z</code> takes
+it back like any other edit. On a line that is not a task, QUILL says so
+and changes nothing.</p>
+</blockquote>
+<p>In the preview and in <strong>File &gt; Export &gt; HTML</strong>, a
+task shows as a real check box, checked or not, with the task’s text as
+its label.</p>
+<h2 id="markdown-profiles-and-table-of-contents">Markdown profiles and
+table of contents</h2>
+<p>Markdown means different things to different writers. A poet wants
+every line break kept, a documentation author wants a table of contents,
+and someone contributing on GitHub wants task lists and strikethrough.
+<strong>Format &gt; Markdown</strong> lets you say which kind of writing
+you are doing without learning the names of Markdown extensions.</p>
+<ul>
+<li><strong>Insert &gt; Table of Contents</strong> builds a table of
+contents from your document’s headings. It uses no AI and makes no
+network call, and the links always match your headings exactly, because
+they are built from the headings themselves. If your document has a
+<code>[TOC]</code> marker on a line of its own, the table of contents
+goes there. Otherwise it goes right after your first heading.</li>
+<li><strong>Select Markdown Profile…</strong> lets you pick a named
+profile: Standard Markdown, GitHub-Style Markdown, Documentation, Poetry
+and Lyrics, Accessible Publishing, Technical Writing, PRD and Release
+Notes, or Custom. QUILL tells you in plain words what the profile turns
+on, for example “Markdown profile: Documentation. 5 extensions
+enabled.”</li>
+<li><strong>Preserve Single Line Breaks</strong> keeps every line break
+as a line break, instead of letting Markdown join the lines into one
+paragraph. Turn it on for poetry, lyrics, speeches and scripts, where
+the line is part of the meaning.</li>
+<li><strong>Read Markdown Processing Status</strong> tells you your
+current profile and what it turns on, without opening a dialog.</li>
+<li><strong>Select Citation Style…</strong> chooses how the Author or
+Student profile writes citations: as Markdown footnotes (light, nothing
+extra to install), or as full Academic bibliography entries through the
+MLA, Chicago and APA form that <strong>Insert &gt; Insert
+Citation…</strong> opens.</li>
+</ul>
+<p>If you would like an outline written in the AI’s own words instead,
+use <strong>AI &gt; Transform Selection &gt; Generate Table of
+Contents</strong>. The two commands are separate, and the AI one appears
+only when <strong>AI &gt; Use Artificial Intelligence</strong> is on and
+<strong>AI &gt; Show advanced AI features</strong> is checked.</p>
+<h2 id="equations-and-mathematics">Equations and mathematics</h2>
+<p>Most editors make maths hard for a screen-reader user. The notation
+is visual, and the usual tools give you a mouse and a palette of
+symbols. QUILL lets you type an equation as text instead. That works
+from the keyboard, you can review it character by character, and screen
+readers that speak maths already understand it.</p>
+<p>The bundled <strong>Math Equations</strong> Quillin adds a formula
+gallery, symbol abbreviations, a way to step through a formula, and
+export to Word. All of it is covered below, and also taught from start
+to finish in <a
+href="../../tutorials/07-type-math-like-a-pro.md">Tutorial 7: Write math
+without learning a new language</a>.</p>
+<h3 id="insert-equation-ctrlalt">Insert Equation (Ctrl+Alt+=)</h3>
+<p>Choose <strong>Insert &gt; Insert Equation…</strong> or press
+<code>Ctrl+Alt+=</code>. (Older versions of this guide gave
+<code>Ctrl+Shift+E</code>, which now selects the current line.) The
+dialog has two fields:</p>
+<ul>
+<li><strong>Equation</strong>: type <strong>LaTeX</strong>, such as
+<code>E = mc^2</code> or <code>\frac{-b \pm \sqrt{b^2-4ac}}{2a}</code>,
+or paste <strong>MathML</strong>
+(<code>&lt;math&gt;...&lt;/math&gt;</code>).</li>
+<li><strong>Display mode</strong>: <strong>Inline</strong> puts the
+equation inside your sentence. <strong>Block</strong> puts it on its own
+line.</li>
+</ul>
+<p>QUILL adds the delimiters for you: <code>\(...\)</code> for inline,
+or <code>$$...$$</code> on a line of its own for a block equation. Those
+are the marks Browser Preview and Word export both understand, so the
+equation shows as maths in the preview and becomes a real Word equation
+when you save as <code>.docx</code>. MathML goes in exactly as you typed
+it, because it already carries its own markup.</p>
+<p>To change an equation you already wrote, select it, including its
+delimiters, and open Insert Equation again. An equation from an older
+version of QUILL, written with single <code>$</code> signs, opens the
+same way, and inserting it again gives it the new delimiters. The field
+holds just the maths, with the delimiters taken off, and the display
+mode you used is already chosen. Change it, choose Insert, and the old
+equation is replaced.</p>
+<p>An equation is ordinary text in your file, so nothing in your
+document becomes hidden or unreadable. You can always arrow through the
+raw LaTeX to check it.</p>
+<p><em>Insert Equation was contributed by @salorajan.</em></p>
+<h4 id="the-math-equations-quillins-own-prompt">The Math Equations
+Quillin’s own prompt</h4>
+<p>The Math Equations Quillin has its own <strong>Insert
+Equation…</strong> command, a short prompt instead of a form. It writes
+exactly the same delimiters as QUILL’s own command, so it does not
+matter which one you use.</p>
+<ul>
+<li><p><strong>LaTeX</strong> is the most common format for typeset
+maths. Type the formula in standard LaTeX and choose a display mode.</p>
+<ul>
+<li><strong>Inline</strong> (<code>\(...\)</code>) keeps the equation
+within the surrounding text. <code>E=mc^2</code> becomes
+<code>\(E=mc^2\)</code>.</li>
+<li><strong>Block</strong> (<code>$$...$$</code>) gives the equation its
+own line, with a blank line above and below.
+<code>\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code> becomes
+<code>$$\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</code> on a single
+line.</li>
+</ul>
+<p>Both are delimiters MathJax recognizes without any setup, and
+<code>\(...\)</code> cannot be confused with a dollar amount in your
+prose the way a bare <code>$...$</code> could.</p></li>
+<li><p><strong>MathML</strong> is an XML format used in web publishing
+and accessible documents. If what you type starts with
+<code>&lt;math</code>, QUILL inserts it as it is and skips the display
+mode question. Screen readers can read MathML directly.</p></li>
+<li><p>If you select a LaTeX equation before you run it, QUILL removes
+the delimiters, fills in the bare formula, and puts the display mode it
+detected first in the list, so one keypress confirms it.</p></li>
+</ul>
+<h4 id="seeing-equations-rendered">Seeing equations rendered</h4>
+<p>Browser Preview (<code>Ctrl+Shift+Grave, V</code>) and HTML export
+add MathJax 3, so equations appear typeset in any browser. QUILL adds it
+only for documents that contain maths. The document itself always keeps
+the raw LaTeX or MathML, which is what your screen reader reads.</p>
+<p>MathJax is loaded from a public CDN by your browser, so the visual
+rendering needs an internet connection. The LaTeX or MathML, and
+everything your screen reader says, is always there offline. If you are
+offline, equations show as their source instead of typeset maths.
+Nothing is lost.</p>
+<h3 id="common-formulas-gallery">Common Formulas gallery</h3>
+<p>You do not have to type a common formula at all. <strong>Insert &gt;
+Snippet Gallery…</strong> lists ten ready-made formulas from the Math
+Equations Quillin:</p>
+<ul>
+<li>the Quadratic Formula</li>
+<li>the Pythagorean Theorem</li>
+<li>Slope-Intercept Form</li>
+<li>Point-Slope Form</li>
+<li>the Slope Formula</li>
+<li>the Distance Formula</li>
+<li>the Midpoint Formula</li>
+<li>Difference of Squares</li>
+<li>the Area and Circumference of a Circle</li>
+</ul>
+<p>Choose one and it goes in as a correctly formatted
+<code>$$...$$</code> block. To change it afterwards, select it and open
+Insert Equation, as with any other equation.</p>
+<h3 id="maths-symbol-abbreviations">Maths symbol abbreviations</h3>
+<p>Like Word’s Math AutoCorrect, you can type a backslash code followed
+by a space or punctuation, and QUILL turns it into the symbol. This
+works anywhere in ordinary text, but not inside the equation prompt.</p>
+<ul>
+<li><code>\alpha </code> becomes α</li>
+<li><code>\sqrt </code> becomes √</li>
+<li><code>\ne </code> becomes ≠</li>
+</ul>
+<p>Case matters where it matters in maths: <code>\delta </code> gives
+lowercase δ and <code>\Delta </code> gives uppercase Δ.</p>
+<p>There are 88 codes, covering operators, relations, set and logic
+notation, number sets, Greek letters, calculus and geometry. They come
+from the Word Math AutoCorrect list published by DAISY
+(daisy.org/MSMathCodes). You will find them under <strong>Preferences
+&gt; Editing &gt; Insert Automation</strong>, where you can turn off any
+one of them, or the whole set, like any other abbreviation.</p>
+<h3 id="explore-equation-structure">Explore Equation Structure</h3>
+<p>Hearing a long formula in one breath is hard to follow.
+<strong>Explore Equation Structure…</strong> lets you step through it
+one piece at a time.</p>
+<ol type="1">
+<li>Select an equation, or select nothing if you want to type a new
+one.</li>
+<li>Choose <strong>Insert &gt; Explore Equation Structure…</strong>, or
+press <code>Ctrl+Shift+Grave, Z</code>. The menu item comes from the
+Math Equations Quillin that ships with QUILL, so it is missing if you
+have turned that Quillin off or started in Safe Mode.</li>
+<li>If nothing was selected, a text prompt asks for the LaTeX or MathML.
+Enter accepts it; Escape cancels.</li>
+<li>QUILL says where you are (“Whole equation” at the top, or the
+piece’s name, such as “Fraction”, once you have gone deeper) and opens a
+list.</li>
+</ol>
+<p>The list holds the parts of the current piece, such as a fraction’s
+<strong>Numerator</strong> and <strong>Denominator</strong> or a power’s
+<strong>Base</strong> and <strong>Exponent</strong>, followed by
+<strong>Read this part aloud</strong>, <strong>Back up one
+level</strong> (once you are below the top) and <strong>Done
+exploring</strong>.</p>
+<p>Use the Up and Down arrows to move, or type a letter to jump to the
+next item starting with it. Press Enter, or choose <strong>OK</strong>,
+to act on the highlighted item:</p>
+<ul>
+<li>A part takes you into it and lists its own parts.</li>
+<li><strong>Read this part aloud</strong> reads just the current piece,
+then reopens the same list at the same place so you can carry on.</li>
+<li><strong>Back up one level</strong> goes to the piece that contains
+this one.</li>
+<li><strong>Done exploring</strong> ends and puts you back in the
+editor.</li>
+</ul>
+<p>Escape, or <strong>Cancel</strong>, ends the whole session at once,
+from any list at any depth, just like Done exploring. It does not go
+back one level; <strong>Back up one level</strong> is the choice for
+that.</p>
+<h4 id="richer-maths-speech-with-mathcat">Richer maths speech with
+MathCAT</h4>
+<p>Stepping through the parts needs nothing extra. It works the moment
+QUILL is installed, with no download. <strong>Read this part
+aloud</strong> can get better: install the free <strong>MathCAT math
+speech engine</strong> from <strong>Help &gt; Download Optional
+Components… &gt; MathCAT math speech engine</strong> (about 3 MB,
+MIT-licensed, from the <code>daisy/MathCATForC</code> project). That
+command then uses the same natural-language maths speech that NVDA
+ships, instead of QUILL’s simpler built-in reading. If you skip the
+download, or MathCAT cannot handle a particular formula, the command
+still works with the built-in reading.</p>
+<p>Nemeth and UEB maths braille are not available yet. If you use JAWS,
+its Math Viewer works once an equation is a native Word equation (see
+the next section), and it remains the fuller option, with braille
+support.</p>
+<h3 id="word-export-and-round-trip">Word export and round trip</h3>
+<p><strong>File &gt; Export &gt; Word Document…</strong> turns every
+<code>\(...\)</code> and <code>$$...$$</code> equation in your document
+into a genuine Word equation, the same kind Word’s own equation editor
+makes. It does this through Pandoc, one equation at a time. In Word, the
+equation tools work on it, and JAWS reads it as maths, not as a picture
+or as literal text. If Pandoc is not available, the equation is kept as
+its delimited text, never dropped.</p>
+<p>Open that Word file again later with <strong>File &gt; Open…</strong>
+and the equation comes back as the same plain, editable
+<code>\(...\)</code> or <code>$$...$$</code> text. This works whichever
+reader you have chosen in <strong>Settings &gt; Editing &gt; Word
+document reading engine</strong>.</p>
+<h3 id="ask-about-an-equation">Ask about an equation</h3>
+<p>The AI Hub’s <strong>Math Tutor</strong> agent explains a selected
+equation in plain language: what it means, what each symbol is, and its
+common name if it is a well-known formula. It does not solve anything or
+change your document.</p>
+<p>Ten worked examples, including the quadratic formula, the binomial
+theorem, integration by parts and Euler’s identity, are in
+<code>docs/math/latex_testing.md</code>.</p>
+<h2 id="citations-and-bibliographies">Citations and bibliographies</h2>
+<p>For research writing, <strong>Insert &gt; Insert Citation…</strong>
+builds a correctly formatted citation from the details you type, so you
+do not have to remember the punctuation and indentation rules.</p>
+<ol type="1">
+<li>Choose the <strong>source type</strong>: Book, Journal article, or
+Website.</li>
+<li>Choose the <strong>style</strong>: MLA 9, Chicago 17 (author-date),
+or APA 7.</li>
+<li>Choose what to <strong>insert</strong>: the in-text citation, the
+full bibliography entry (Works Cited or References), or both.</li>
+<li>Fill in the details: author or authors, title, year, and the fields
+for that source type. Separate several authors with a semicolon, for
+example <code>Jane Smith; John Doe</code>.</li>
+<li>Choose <strong>Insert</strong>. The citation goes in at your
+cursor.</li>
+</ol>
+<p>QUILL applies each style’s rules for you, including author order and
+“et al.”, initials, italics, and where every comma and full stop goes.
+You supply the facts and QUILL handles the formatting.</p>
+<h2 id="tables-code-blocks-and-tags">Tables, code blocks and tags</h2>
+<p>QUILL can guide you through inserting tables, code blocks, HTML tags
+and Markdown snippets. That helps when you want the structure but do not
+want to type every opening and closing marker correctly by hand each
+time.</p>
+<h2 id="cleanup-and-normalization">Cleanup and normalization</h2>
+<p>The cleanup commands under <strong>Format &gt; Whitespace</strong>,
+<strong>Format &gt; Sort and Filter</strong> and <strong>Format &gt;
+HTML and Encoding</strong> are made for pasted material, transcripts,
+exports and text moved from another program. Use them to turn messy text
+into something steady and readable.</p>
+<h2 id="character-encoding-tools">Character encoding tools</h2>
+<p>Text for the web often runs into encoding trouble: one tool wants
+UTF-8 and the next insists on plain ASCII. <strong>Format &gt; HTML and
+Encoding</strong> has the tools to sort that out.</p>
+<h3 id="finding-characters-that-are-not-plain-ascii">Finding characters
+that are not plain ASCII</h3>
+<p><strong>Show Non-ASCII Characters</strong> opens a read-only report
+of every character beyond plain ASCII. For each one it gives the line
+and column, the code point, the Unicode name, and whether it converts
+cleanly to Latin-1 and to Windows-1252 (MS-ANSI). It does the job people
+used to do at the command line by running a file through
+<code>iconv</code> with a sentinel string and hunting for what
+failed.</p>
+<p>You can go back and forth between the report and your document:</p>
+<ol type="1">
+<li>In the report, put your cursor on a character’s row. Each row starts
+with <code>line:column</code> followed by a tab.</li>
+<li>Choose <strong>Format &gt; HTML and Encoding &gt; Jump to Source
+Line</strong>. QUILL switches to your document and puts you on that
+line.</li>
+<li>When you have looked at the character, choose <strong>Jump Back to
+Non-ASCII Report</strong> to return to the report.</li>
+</ol>
+<p>You can give Jump to Source Line a key in the Keymap Editor to go
+faster.</p>
+<h3 id="html-tags-and-entities">HTML tags and entities</h3>
+<ul>
+<li><strong>Strip HTML Tags</strong> takes every tag out of the
+selection, or the whole document, and leaves just the words. It is the
+quick way to get readable text out of a piece of web page source.</li>
+<li><strong>Convert Non-ASCII to HTML Entities</strong> rewrites every
+non-ASCII character as an HTML entity: a named one such as
+<code>&amp;eacute;</code> where it exists, or a numeric one such as
+<code>&amp;#233;</code>. Ordinary ASCII, including <code>&amp;</code>
+and <code>&lt;</code>, is left alone. This is the reliable way to feed
+text to a tool, like Pandoc, that refuses accented characters.</li>
+<li><strong>Encode HTML Entities</strong> is the older command. It
+escapes only the five markup characters (<code>&lt;</code>,
+<code>&gt;</code>, <code>&amp;</code>, <code>"</code>, <code>'</code>),
+not accents and symbols.</li>
+<li><strong>Decode HTML Entities</strong> goes the other way. It turns
+entities such as <code>&amp;eacute;</code>, <code>&amp;amp;</code>,
+<code>&amp;#233;</code> and <code>&amp;#xE9;</code> back into é, &amp;,
+é and é, using the standard HTML entity table. An entity it does not
+know, such as <code>&amp;madeupword;</code>, is left as it is.</li>
+</ul>
+<h3 id="saving-in-a-different-encoding">Saving in a different
+encoding</h3>
+<ul>
+<li><strong>Re-encode As…</strong> saves a copy in the encoding you
+choose: UTF-8, UTF-8 with a byte-order mark, Latin-1, Windows-1252 or
+ASCII. A character that does not fit a narrower encoding is written as a
+numeric HTML entity, never a question mark, so nothing is lost and you
+can always convert it back.</li>
+<li><strong>Analyze Encoding Requirements</strong> tells you the
+smallest encoding your document fits in, without changing anything. Its
+short report gives your current encoding, whether the document still
+fits it, and if not, the simplest encoding that holds every character,
+checking in this order: ASCII, Latin-1 / ISO-8859-1, Windows-1252 /
+MS-ANSI, UTF-8.</li>
+<li><strong>Save Using Minimum Required Encoding…</strong> saves a copy
+in exactly that encoding, so a document that only needs Latin-1 is not
+forced into UTF-8. You can still choose UTF-8 yourself whenever you
+want; QUILL never switches you to it without asking.</li>
+</ul>
+<h3 id="stripping-and-repairing-characters">Stripping and repairing
+characters</h3>
+<ul>
+<li><strong>Remove Email Quote Markers</strong> removes the
+<code>&gt;</code> quote markers at the start of lines in forwarded
+email, including <code>Name&gt;</code> style prefixes.</li>
+<li><strong>Strip Low ASCII Characters</strong> removes control
+characters.</li>
+<li><strong>Strip High ASCII Characters</strong> removes non-ASCII
+characters.</li>
+<li><strong>Convert to Hex Dump</strong> opens a read-only view of the
+selection, or the whole document, as offset, hex and ASCII columns, so
+you can check exactly which bytes are there.</li>
+<li><strong>Convert OEM (DOS) to ANSI</strong> and <strong>Convert ANSI
+to OEM (DOS)</strong> fix text from the DOS era that shows up as garbage
+in Windows, or the other way round, by converting between code page 437
+(CP437) and Windows-1252.</li>
+<li><strong>Convert Line-Drawing Characters to ASCII</strong> and
+<strong>Strip Line-Drawing Characters</strong> deal with box-drawing
+characters (<code>─</code>, <code>│</code>, <code>┌</code> and the rest
+of the U+2500 to U+257F block) left over from old DOS art or terminal
+output. The first turns them into plain <code>-</code>, <code>|</code>
+and <code>+</code>. The second removes them.</li>
+</ul>
+<h2 id="more-search-and-analysis-tools">More search and analysis
+tools</h2>
+<ul>
+<li><strong>Multi Replace…</strong>, on <strong>Edit &gt; Search
+Tools</strong>, makes up to four find and replace swaps in one pass,
+with an option to ignore case. You do not have to run Find &amp; Replace
+four times.</li>
+<li><strong>Count Occurrences…</strong>
+(<code>Ctrl+Alt+Shift+F3</code>), also on <strong>Edit &gt; Search
+Tools</strong>, tells you how many times some text appears in the
+selection or the whole document.</li>
+<li><strong>Count Regular Expression Matches…</strong> and
+<strong>Extract Regular Expression Matches…</strong>, on the same
+submenu, ask for a regular expression. The first tells you how many
+matches there are. The second opens every match in a new document, one
+to a line, so you can pull all the email addresses or dates out of a
+long file. If regular expressions are new to you, <strong>Tools &gt;
+Advanced &gt; Regular Expression Helper…</strong> builds one for
+you.</li>
+<li><strong>Lines in First Block Only</strong> and <strong>Lines Common
+to Both Blocks</strong>, on the same submenu, compare two lists in one
+document. Paste one list, then the other below it, and put your cursor
+on the first line of the second list. QUILL treats everything above the
+cursor as the first block and everything from the cursor down as the
+second, and gives you the lines only the first block has, or the lines
+both blocks have.</li>
+<li><strong>Line Statistics</strong>, on <strong>Tools &gt;
+Advanced</strong> (<code>Ctrl+Alt+W</code>), looks for lines that hold
+exactly one number and opens a short report: count, total, average,
+median, mode and standard deviation. Lines that are not plain numbers
+are skipped, so they cause no error.</li>
+</ul>
+<h3 id="the-calculator">The Calculator</h3>
+<p><strong>Tools &gt; Calculator…</strong> is a calculator you can use
+without leaving your writing, and it can work on numbers that are
+already in your document.</p>
+<ol type="1">
+<li>If the numbers you care about are in the document, select them
+first: a few figures, a column, some comma-separated lines or a whole
+table. QUILL puts them in the calculator for you.</li>
+<li>Choose <strong>Tools &gt; Calculator…</strong>. Your cursor is in
+the box labelled <strong>Enter a calculation, or paste numbers, a
+column, or a table</strong>.</li>
+<li>To work something out, type it, for example <code>sqrt(264)</code>,
+<code>10 percent of 500</code> or <code>2^10 + 5!</code>, and press
+<strong>Calculate expression</strong>.</li>
+<li>To sum up a set of numbers, choose a <strong>Data
+operation</strong>: Sum, Average, Minimum, Maximum, Count, Product,
+Median, Range or Standard Deviation. Then choose what it is
+<strong>applied to</strong>: All numbers, Down each column, Across each
+row, or a Full summary. Press <strong>Apply</strong>.</li>
+<li>The answer is in the <strong>Result</strong> box. <strong>Copy
+Result</strong> puts it on the clipboard, and <strong>Insert Result at
+Cursor</strong> types it into your document.</li>
+<li>Press Escape, or <strong>Close</strong>, when you are done.</li>
+</ol>
+<h2 id="the-four-announcement-channels">The four announcement
+channels</h2>
+<p>Everything QUILL tells you travels on four channels, and you choose
+which ones you want:</p>
+<ul>
+<li><strong>Speech</strong>: through your screen reader, or QUILL’s own
+voice when no screen reader is running.</li>
+<li><strong>Braille</strong>: the same message on a connected display.
+See the next section.</li>
+<li><strong>Sound</strong>: short sounds for things that happen often,
+so you can stop listening to confirmations you already expect.</li>
+<li><strong>Status</strong>: the status bar, which always shows the
+message.</li>
+</ul>
+<p><strong>QUILL, Quill Radio and Quill Weather</strong> all send
+announcements the same way, so they behave alike wherever you are.</p>
+<h3 id="three-commands-worth-knowing">Three commands worth knowing</h3>
+<p>All three are in the command palette. Give them keys in the Keymap
+Editor if you use them often.</p>
+<ul>
+<li><strong>Repeat Last Announcement</strong> says the last message
+again. Speech is gone the moment it ends, so this helps when you were
+reading something else as a message went by.</li>
+<li><strong>Announcement Self-Test…</strong> sends a test phrase on
+every channel, then shows a report you can copy, saying which channels
+delivered it and which screen reader or display handled each one. If
+something is not reaching you, this is the quickest way to tell whether
+the trouble is QUILL, your screen reader, or a display that is not
+connected.</li>
+<li><strong>Report Editor Surface</strong> tells you, in one keystroke,
+which editor is active, its window class, whether the braille fix
+(system-edit emulation) is on, whether the editor border is hidden, and
+whether braille output is working and through which route. Nothing from
+your document is included. If you report a braille or speech problem,
+run this first and include what it says, so the problem can be looked at
+straight away.</li>
+</ul>
+<h3 id="announcement-settings">Announcement settings</h3>
+<p>These are in <strong>Settings &gt; Accessibility and
+Announcements</strong>, and you can search for them:</p>
+<ul>
+<li><strong>Show announcements in braille</strong>: on by default.</li>
+<li><strong>Braille announcement style</strong>: the same wording as
+speech, or a short form with the position first
+(<code>p7/87 l14 c3</code>).</li>
+<li><strong>Hold errors on the braille display</strong>: keeps an error
+under your fingers instead of letting the next message replace it.</li>
+<li><strong>Sound cues in the companion apps</strong>: sounds in Quill
+Radio and Quill Weather.</li>
+<li><strong>Confirm with a sound in Quiet Mode</strong>: hear that
+something worked without QUILL speaking.</li>
+<li><strong>Keep an announcement history</strong>: on by default. QUILL
+keeps a short list of what it has said, for the Spoken Echo and Repeat
+Last Announcement. Turn it off and nothing is kept, and the list is
+cleared straight away; Repeat Last Announcement can then only repeat the
+message still on the status bar.</li>
+<li><strong>Interrupt speech for</strong>: which messages cut across
+whatever your screen reader is saying. <strong>Warnings and
+errors</strong> is the default: problems, and the answer to something
+you just asked for, cut in. <strong>Errors only</strong> lets everything
+except a failure wait its turn. <strong>Never interrupt</strong> lets
+every message wait. The change takes effect as soon as you press
+OK.</li>
+</ul>
+<p>Quiet Mode and Meeting Mode silence braille along with speech:
+nothing is said and nothing is flashed to the display. The status bar
+keeps updating, so you can still read the latest message there.</p>
+<h3 id="announcements-on-a-braille-display">Announcements on a braille
+display</h3>
+<p>Everything QUILL announces, such as “Saved”, “Now playing: …”,
+“Weather updated”, or a recording starting and stopping, goes to a
+connected <strong>braille display</strong> as well as to speech, in
+QUILL and Quill Radio alike. It works through whichever screen reader
+you use: JAWS and NVDA both accept a flash message, and Narrator
+brailles the notifications QUILL already sends.</p>
+<p>Four things are worth knowing:</p>
+<ul>
+<li><strong>Braille never costs you speech.</strong> If the display is
+unplugged partway through, or the screen reader refuses the message, you
+still hear it.</li>
+<li><strong>Nothing is cut short.</strong> A long message is sent whole
+so you can pan across it. Cutting it to the width of the display would
+lose the end of a track title, which is usually the part you
+wanted.</li>
+<li><strong>The same message is not flashed twice in a row.</strong> A
+flash replaces what is under your fingers, so an identical message
+within a couple of seconds (a stream repeating the same title, for
+instance) is skipped.</li>
+<li><strong>A burst of messages settles instead of flickering.</strong>
+When several different messages arrive quickly, the first is shown at
+once and the rest are replaced a moment later by the newest one, so the
+display is never a blur. Errors are the exception: an error is always
+shown straight away.</li>
+</ul>
+<p>QUILL Lite now settles bursts in exactly the same way, using the same
+code, so dictation’s live preview no longer flickers on the display
+there either.</p>
+<p>To keep the display on your document, turn off <strong>Show
+announcements in braille</strong> in <strong>Settings &gt; Accessibility
+and Announcements</strong>. Quiet Mode and Meeting Mode silence braille
+along with speech.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now change case and tidy lines, apply rich formatting that
+stays out of your way until you save, and build headings, sections and
+lists by keyboard. You know how to write equations and citations, fix
+encoding problems, and choose how QUILL’s announcements reach you.</p>
+<p>To practise, open <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>) and try “Structure and formatting” and
+“Tables, by ear” in the Writing and editing track. For maths, work
+through <a
+href="https://www.quillforall.org/tutorials/07-type-math-like-a-pro.html">Write
+math without learning a new language</a> on the website.</p>
+<p>Next, Chapter 6, Moving around and finding things, shows you how to
+get around all that structure quickly.</p>
+<hr />
+<ul>
+<li>Previous: <a href="quill-guide-04-writing-and-editing.html">Chapter
+4: Writing and editing</a></li>
+<li>Next: <a
+href="quill-guide-06-moving-around-and-finding-things.html">Chapter 6:
+Moving around and finding things</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

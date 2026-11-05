@@ -64,6 +64,11 @@ def _published_paths() -> set[str]:
         if _SITE in path.parents or path.name == "index.html":
             continue
         published.add(f"docs/{path.name}")
+    # Step 2b: pages in folders under docs/user guide/ (the guide's chapters,
+    # the WordPress and Forms manual) are also served in those folders.
+    guide = _DOCS / "user guide"
+    for path in guide.glob("*/**/*.html"):
+        published.add(f"docs/{path.relative_to(guide).as_posix()}")
     for name, source in _DEPLOY_RENDERED.items():
         if (_ROOT / source).exists():
             published.add(f"docs/{name}")

@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 12: Making QUILL yours</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-12-making-quill-yours">Chapter 12: Making QUILL
+yours</h1>
+<p>QUILL comes ready to use, but no two people work the same way. This
+chapter is about shaping it to fit you: how much of QUILL you see, which
+keys do what, what the status bar tells you, and what happens when you
+start it in the morning. Start with profiles and keys, because they make
+the biggest difference for the least effort. After that come everyday
+preferences, the power tools, Quillins (extensions that add new
+commands), QUILL on a Mac, and how to use QUILL in another language or
+help translate it.</p>
+<h2 id="profiles-keyboard-packs-and-customization">Profiles, Keyboard
+Packs, and Customization</h2>
+<p>You can change a great deal in QUILL, and it tries to keep those
+changes tidy. A profile decides which parts of QUILL you see, a keyboard
+pack decides which keys you already know, and the Keymap Editor lets you
+change any single key. All three live under <strong>Tools &gt; Customize
+and Support</strong>.</p>
+<h3 id="feature-profiles">Feature profiles</h3>
+<p>A feature profile decides which groups of features are on, quiet or
+off. It lets QUILL stay calm when you are new to it, without taking
+anything away from you once you want more.</p>
+<h4 id="choosing-a-profile">Choosing a profile</h4>
+<p>A profile is a starting point, not a cage. You can switch any time
+from <strong>Profiles and Features…</strong>, and you can fine-tune
+single features afterwards without losing the rest of the profile’s
+choices.</p>
+<p>The first-run Personalise QUILL wizard offers seven profiles as
+starting points, each with a plain-English preview of what you get. The
+full set of ten lives in <strong>Profiles and Features…</strong>, along
+with the QUILL Lite profile. That includes profiles the wizard does not
+show, such as Reader and Student, Office and Admin, and Low Vision.</p>
+<ul>
+<li><strong>Essential.</strong> The calmest editor QUILL can be. Just
+text, files and the basics, with everything else a quiet opt-in
+away.</li>
+<li><strong>Casual Writer.</strong> Everyday writing, formatting and
+cleanup, with the more powerful features close by when you reach for
+them. For papers, citations and a table of contents, see Author or
+Student below.</li>
+<li><strong>Author or Student.</strong> Long-form writing with a table
+of contents, footnotes, and MLA, Chicago or APA citations, for papers,
+theses and class assignments. Choose footnote-style or full academic
+citations with <strong>Format &gt; Markdown &gt; Select Citation
+Style…</strong>.</li>
+<li><strong>Reader and Student.</strong> Reading, highlights, references
+and light writing, for working through someone else’s material more than
+producing your own.</li>
+<li><strong>Office and Admin.</strong> Reliable file work, sessions,
+cleanup and printing for everyday office documents.</li>
+<li><strong>Developer.</strong> Regular expressions, cleanup, inspection
+and document-analysis tools, right up front, and the only profile apart
+from Full Quill with the coding tools: project tasks with an AI,
+commands and tests, the Developer Console, and Git and GitHub. See
+“Project tasks: coding with an AI” in Chapter 10.</li>
+<li><strong>Low Vision.</strong> Higher contrast, larger reading aids
+and friendly inspection tools.</li>
+<li><strong>Braille and Screen Reader Power User.</strong> Navigation
+that suits a screen reader, with the advanced text tools within easy
+reach instead of buried.</li>
+<li><strong>Accessibility Professional.</strong> Reading, inspection,
+trust and accessibility diagnostics, for checking other people’s
+documents.</li>
+<li><strong>Full Quill.</strong> Everything visible, including advanced
+and experimental paths, for people who would rather see it all than
+wonder why something is missing.</li>
+<li><strong>QUILL Lite.</strong> QUILL with QUILL Lite’s nine menus and
+nothing else: a plain-text editor with rich text, spelling, the line
+tools and the clipboard, without the writing environment around them.
+Choose it if you are coming from the small editor and want QUILL to be
+the shape you already know.</li>
+</ul>
+<blockquote>
+<p><strong>QUILLBee’s shortcut:</strong> You can switch profiles from
+anywhere. Press <code>Alt+Shift+P</code>, pick one, and you are
+done.</p>
+</blockquote>
+<h4 id="the-quill-lite-profile">The QUILL Lite profile</h4>
+<p>The QUILL Lite profile does two things the others do not.</p>
+<ul>
+<li>It <strong>switches features off rather than hiding them</strong>.
+Everything it takes away is still in <strong>Customize Features</strong>
+and the command palette, so getting one thing back is a single checkbox,
+not a reinstall.</li>
+<li>It sets <code>Ctrl+N</code> to make a plain text document, because
+that is what QUILL Lite makes.</li>
+</ul>
+<p><strong>Bring my QUILL Lite settings.</strong> The first time you
+choose the profile, QUILL offers to start from your QUILL Lite setup.
+You can also do it any time with <strong>Tools &gt; Customize and
+Support &gt; Bring My QUILL Lite Settings…</strong>
+(<code>Alt+Shift+F11</code>), even if you only want your QUILL Lite
+abbreviations and not its menus. Before it does anything, QUILL tells
+you what it will bring, with counts, and what it will leave behind.</p>
+<p>What comes across follows one simple rule: <strong>content is shared
+and preferences are copied.</strong></p>
+<ul>
+<li>Your abbreviations, personal dictionary, copy tray, clip library and
+bookmarks are merged into QUILL’s folder, and QUILL Lite is pointed at
+the same copy. From then on, an abbreviation you add in either editor is
+in both.</li>
+<li>Wrap, autosave, spell-check-while-typing and the other editor
+preferences are copied once. After that each editor keeps its own, so
+they can drift apart.</li>
+<li>Keys you have rebound come across the same way. A QUILL Lite command
+that QUILL does not have is left behind instead of guessed at.</li>
+<li><strong>Nothing already in QUILL is replaced.</strong> Where both
+have an entry, QUILL’s wins, because it is the one you have been using
+most recently.</li>
+</ul>
+<h4 id="managing-profiles">Managing profiles</h4>
+<p>Use <strong>Profiles and Features…</strong> to:</p>
+<ul>
+<li>switch profiles</li>
+<li>quick-switch profiles from anywhere with
+<code>Alt+Shift+P</code></li>
+<li>compare profiles</li>
+<li>undo the last profile change</li>
+<li>reset to Essential</li>
+<li>import and export profile data</li>
+<li>create custom profiles</li>
+<li>update a custom profile from your current feature, settings and
+keymap state</li>
+<li>delete custom profiles</li>
+</ul>
+<p>When you make a custom profile, you choose how it starts:</p>
+<ul>
+<li><strong>Inherit parent profile</strong> starts from the built-in
+profile you selected.</li>
+<li><strong>Bare-bones start</strong> inherits nothing, and starts with
+only the locked core safety features turned on.</li>
+</ul>
+<h3 id="fine-tuning-individual-features">Fine-tuning individual
+features</h3>
+<p>Sometimes a profile is almost right, and you just want to add or
+remove one or two things. <strong>Help &gt; Feature Profiles &gt; Manage
+Individual Features</strong> lets you do that on top of your active
+profile, without making a whole new profile.</p>
+<p>The dialog has a checkbox for each feature you can turn on or off. A
+<strong>Show</strong> radio button at the top chooses between
+<strong>All features</strong> and <strong>Disabled features
+only</strong>. The disabled-only view lists just the features that are
+not on yet, so you can find the one you want without scrolling past
+everything that is already running.</p>
+<p>As you arrow to a checkbox, a read-only description at the bottom of
+the dialog tells you what the feature does and what it depends on.
+Turning a feature on also turns on the features it needs. Turning one
+off also turns off the features that need it, and QUILL tells you what
+changed in the status bar.</p>
+<p>In the disabled-only view, a feature you turn on drops out of the
+list straight away, and focus moves to the next disabled item, so you
+keep your place.</p>
+<h3 id="keyboard-packs">Keyboard packs</h3>
+<p>A keyboard pack sets up QUILL’s keys to match an editor you already
+know, so QUILL feels familiar from day one. The packs are:</p>
+<ul>
+<li>Quill Default</li>
+<li>Quill Writer</li>
+<li>Quill Navigation</li>
+<li>Quill Review</li>
+<li>Windows Notepad</li>
+<li>Notepad++</li>
+<li>VS Code</li>
+<li>Microsoft Word</li>
+</ul>
+<p>Choose a pack in <strong>Profiles and Features…</strong>. If you
+later change shortcuts by hand or import a keymap of your own, the
+pack’s name changes to <strong>Custom</strong> so you know it is no
+longer the stock pack.</p>
+<h3 id="keymap-editor">Keymap editor</h3>
+<p>Use the Keymap Editor (<strong>Tools &gt; Customize and Support &gt;
+Keymap Editor…</strong>) when you want to change the key for one
+command. If the key you choose is already in use, QUILL warns you before
+it reassigns anything.</p>
+<h4 id="rebinding-quill-quick-nav-keys">Rebinding QUILL Quick Nav
+keys</h4>
+<p>QUILL Quick Nav, the single-letter movement mode, has its own entries
+in the Keymap Editor:</p>
+<ul>
+<li><code>QUILL Quick Nav: Link</code></li>
+<li><code>QUILL Quick Nav: List</code></li>
+<li><code>QUILL Quick Nav: List Item</code></li>
+<li><code>QUILL Quick Nav: Table</code></li>
+<li><code>QUILL Quick Nav: Block Quote</code></li>
+<li><code>QUILL Quick Nav: Bookmark</code></li>
+<li><code>QUILL Quick Nav: Code Block</code></li>
+<li><code>QUILL Quick Nav: Table of Contents</code></li>
+<li><code>QUILL Quick Nav: Paragraph</code></li>
+<li><code>QUILL Quick Nav: Sentence</code></li>
+<li><code>QUILL Quick Nav: Heading</code></li>
+<li><code>QUILL Quick Nav: Block</code></li>
+</ul>
+<p>Here is an example that moves two of them:</p>
+<ol type="1">
+<li>Open <strong>Tools &gt; Customize and Support &gt; Keymap
+Editor…</strong>.</li>
+<li>Choose <code>QUILL Quick Nav: Link</code>.</li>
+<li>Enter <code>K</code> if you want link jumps on <code>K</code>
+instead of <code>A</code>.</li>
+<li>Choose <code>QUILL Quick Nav: Code Block</code>.</li>
+<li>Enter the grave accent key if you prefer it to the apostrophe.</li>
+</ol>
+<p>Two things to know:</p>
+<ul>
+<li>The Keymap Editor will not let you save a conflict.</li>
+<li>Quick Nav keys only work while QUILL Quick Nav mode is on.</li>
+</ul>
+<h3 id="recommended-shortcut-updates">Recommended shortcut updates</h3>
+<p>Once in a while a shortcut needs correcting for everyone. For
+example, Find went back to <code>Ctrl+F</code> after some early builds
+had moved it to a QUILL key chord. QUILL makes a correction like this
+<strong>once</strong> and never touches that key again, so you are
+always free to change it back in the Keymap Editor.</p>
+<p>If you would rather QUILL never changed your shortcuts at all, turn
+off <strong>Apply recommended keyboard-shortcut updates</strong> in
+Settings. Your keys then stay exactly as you set them, through every
+update.</p>
+<h3 id="reset-everything-to-factory-defaults">Reset everything to
+factory defaults</h3>
+<p>To start over completely, choose <strong>Tools &gt; Customize and
+Support &gt; Reset Everything to Factory Defaults…</strong>. QUILL asks
+you to confirm first, and the answer starts on “No”. Then it puts your
+settings, keyboard shortcuts, menu customizations and feature profile
+back the way they came, all in one step. Your documents, autosaves and
+backups are never touched.</p>
+<p>There are smaller resets too: <strong>Reset Keymap</strong> puts back
+only your shortcuts, and <strong>Reset to Factory Defaults</strong>
+inside Settings puts back only your settings.</p>
+<h2 id="general-preferences">General preferences</h2>
+<p>Most everyday preferences are in the Settings dialog: <strong>Tools
+&gt; Customize and Support &gt; Preferences…</strong>, or press
+<code>Ctrl+Comma</code>. A few quick toggles are on the View menu as
+well.</p>
+<h3 id="settings-you-can-change-today">Settings you can change
+today</h3>
+<p>These are the settings people most often want to change:</p>
+<ul>
+<li>theme behavior, including dark mode</li>
+<li>soft wrap</li>
+<li>recent files limit</li>
+<li>system tray mode</li>
+<li>persistent undo</li>
+<li>spell check as you type</li>
+<li><strong>spell check a document before saving.</strong> When this is
+on, saving opens the Spelling Review (<code>F7</code>) first, so you can
+correct the document before it is written. Off by default.</li>
+<li>line-number visibility</li>
+<li>whether QUILL starts with no document open</li>
+<li><strong>suggest a filename from the first line.</strong> When this
+is on, saving an untitled document fills in the Save dialog with a name
+taken from the first line. It works in every format, and leading markup
+such as a Markdown heading, quote or list bullet is left out. Off by
+default.</li>
+<li>read-aloud voice selection</li>
+<li>active feature profile</li>
+<li>active keyboard pack</li>
+<li>custom keybindings through the keymap editor</li>
+<li>status-bar order and status-bar visibility</li>
+<li><strong>reopen last session’s documents</strong>
+(<code>restore_session</code>). On by default, the way Notepad 11 and
+QUILL Lite both behave. The list of what was open is kept in
+<code>session_files</code>. A file you open from Explorer or the command
+line always wins, and opens <em>instead</em> of the session, not on top
+of it. <strong>Whether it asks first</strong> is
+<code>session_restore_ask</code>; see <a
+href="#reopening-last-session">Reopening last session</a>.</li>
+<li><strong>line endings for new documents</strong>
+(<code>default_line_ending</code>). Windows (CR LF) by default, which is
+what Notepad, WordPad, Word and QUILL Lite all write. Set it to Unix
+(LF) if you prefer. A file you <em>open</em> always keeps the line
+endings it already had; this only decides what a brand-new document
+starts with.</li>
+<li><strong>the format a new document starts in</strong>
+(<code>default_new_document_format</code>). Markdown, plain text or
+HTML. <strong>File &gt; New Rich Text Document</strong>
+(<code>Alt+Shift+T</code>) and <strong>New Plain Text Document</strong>
+(<code>Ctrl+Alt+N</code>) always start that kind of document, whatever
+the setting says, and <code>quill --rich</code> and
+<code>quill --plain</code> do the same from a command line.</li>
+</ul>
+<p>Some of these are on the View menu for quick toggling. The
+preference-style ones are in the <strong>Settings</strong> dialog
+(<strong>Tools &gt; Customize and Support &gt; Preferences…</strong>).
+Others are in <strong>Profiles and Features…</strong>, <strong>Status
+Bar Layout…</strong>, <strong>Keymap Editor…</strong> and the other
+customization commands under <strong>Tools &gt; Customize and
+Support</strong>.</p>
+<h3 id="status-bar-settings">Status bar settings</h3>
+<p>If the status bar says too much, or not enough, change it with
+<strong>Status Bar Layout…</strong>. You can reorder the items and
+choose which ones stay visible.</p>
+<h3 id="reopening-last-session">Reopening last session</h3>
+<p>QUILL remembers the saved documents you had open and offers them back
+the next time you start. With one document, opening it straight away is
+what you want. With four, you would have four tabs to sort through
+before you could start, so QUILL shows a chooser instead. It appears
+<strong>when it matters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Last time you had</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>one or two documents, both still there</td>
+<td>they open</td>
+</tr>
+<tr>
+<td>three or more</td>
+<td>the chooser</td>
+</tr>
+<tr>
+<td>any document whose file has moved or gone</td>
+<td>the chooser</td>
+</tr>
+</tbody>
+</table>
+<p>The chooser lists what was open, with a checkbox on each row.
+Everything that can be opened starts checked, so pressing
+<strong>Enter</strong> opens all of it, and unchecking two means “not
+those”. A row whose file has gone says so and cannot be checked.</p>
+<ul>
+<li><strong>Open Checked</strong> opens the checked rows and leaves the
+list alone.</li>
+<li><strong>Open All</strong> opens everything still on disk, checked or
+not.</li>
+<li><strong>Not Now</strong> opens nothing and changes nothing; the same
+documents are offered next time. Escape does the same.</li>
+<li><strong>Forget Checked</strong> takes the checked rows off the list
+so they stop being offered. <strong>Clear the List</strong> does that to
+all of them. Neither one touches a file. Forgetting only changes what
+QUILL offers you, not what is on your disk, and the window says so under
+the buttons.</li>
+<li><strong>Never Ask Again</strong> opens the checked documents and
+sets QUILL to reopen without asking from then on.</li>
+<li><strong>Ask Me Next Time</strong> undoes that, so you are asked
+again when it matters, like a new install. Only one of the pair is
+available at a time. The other is greyed out, not hidden, so landing on
+it tells you which way the setting is.</li>
+</ul>
+<p>Afterwards you hear what happened, for example “Reopened all 3
+documents”, “Reopened 1 of 2”, or “Forgot 2 documents. 1 still
+remembered. The files themselves are untouched.”</p>
+<p><strong>File &gt; Reopen Last Session…</strong>
+(<code>Alt+Shift+F12</code>) opens the same window whenever you want it.
+That is why Not Now is safe to press: you have put the answer off, not
+lost it, and you can tidy the list without waiting for a restart. If you
+pressed Never Ask Again and want the window back, open it this way and
+press Ask Me Next Time.</p>
+<p>The <code>session_restore_ask</code> setting holds your choice:
+<strong>always</strong>, <strong>when_it_matters</strong> (the default)
+or <strong>never</strong>. It is separate from
+<code>restore_session</code>, which decides whether last session is
+reopened at all. QUILL Lite has the same window on the same key, and the
+same setting under the same name.</p>
+<h3 id="starting-quill-automatically">Starting QUILL automatically</h3>
+<p><strong>Settings &gt; General</strong> has a <strong>Start QUILL when
+Windows starts</strong> checkbox, right next to <strong>Enable
+background mode</strong>. Check it and QUILL starts the next time you
+sign in to Windows. There is no elevation prompt, and nothing an
+installer or antivirus tool would find unusual: it uses the same
+per-user startup entry most everyday Windows apps use.</p>
+<p>Checking it also turns on <strong>Enable background mode</strong>,
+because a QUILL that starts quietly at sign-in needs a tray icon for you
+to bring the window back from. Unchecking <strong>Start QUILL when
+Windows starts</strong> removes the startup entry cleanly, and leaves
+<strong>Enable background mode</strong> as you set it.</p>
+<h3 id="task-recipes-and-working-modes">Task recipes and working
+modes</h3>
+<p>Some jobs mean changing several settings at once: getting ready to
+dictate, or keeping background checks from talking over you.
+<strong>More Preferences &gt; Task Recipes and Working Modes</strong>
+does that in one step, and always shows you exactly what it will change
+first.</p>
+<ol type="1">
+<li>Press the QUILL key and then <code>O</code> to open More Preferences
+(it is also <strong>Tools &gt; Customize and Support &gt; More
+Preferences…</strong>), and choose <strong>Task Recipes and Working
+Modes</strong>.</li>
+<li>Arrow through the list. <strong>What it changes</strong>, below the
+list, says setting by setting what each one would change from and
+to.</li>
+<li>Press <strong>Apply</strong>.</li>
+</ol>
+<p><strong>Recipes</strong> change their settings once:</p>
+<ul>
+<li><strong>Quiet background work</strong> stops podcast, watch folder,
+weather and GitHub checks from ticking or interrupting speech. They
+still run.</li>
+<li><strong>Prepare for dictation</strong> turns on Windows dictation’s
+announcements, its sounds, automatic punctuation and sensible
+spacing.</li>
+<li><strong>Make the editor easier to see</strong> chooses the dark
+theme and larger text.</li>
+<li><strong>Tell me more while I write</strong> says formatting as you
+move and indent depth, and gives Reveal Codes its detailed
+descriptions.</li>
+</ul>
+<p><strong>Put Back</strong> undoes the last recipe you applied in the
+window.</p>
+<p><strong>Working modes</strong> stay on until you turn them off, and
+turning one off puts every setting back exactly as it was:</p>
+<ul>
+<li><strong>Focus</strong> is for writing without interruption: no
+spelling marks as you type, no formatting called out, no start-up tips,
+quiet background work.</li>
+<li><strong>Review</strong> is for reading a draft through: spelling
+checked as you go, formatting called out, and Reveal Codes in
+detail.</li>
+</ul>
+<p>Check <strong>Turn a working mode on for this session only</strong>
+before turning one on, and QUILL turns it off again the next time it
+starts. Working modes are not the same as feature profiles (Profiles and
+Features), which decide which parts of QUILL you see at all. Every
+change a recipe or mode makes is an ordinary setting you could also
+change by hand.</p>
+<h3 id="finding-a-setting">Finding a setting</h3>
+<p>Settings has a lot of pages, so you never have to remember where
+something lives. At the top of the dialog is a <strong>Find a
+setting</strong> box. Type a word or two from a setting’s name or its
+help, such as “autosave” or “title bar”, and a list of <strong>Matching
+settings</strong> appears under it. After a short pause QUILL tells you
+how many there are. Press <code>Down Arrow</code> to move into the list,
+and <code>Enter</code> to go straight to the setting on its own page.
+Finding a setting never changes it. A setting you cannot change right
+now says “(disabled)” after its name.</p>
+<p><code>Ctrl+F</code> brings you back to the box from anywhere in the
+dialog. <code>Escape</code> in the box clears what you typed, and a
+second <code>Escape</code> closes Settings.</p>
+<p><strong>OK</strong> saves your changes and closes Settings,
+<strong>Cancel</strong> forgets them, and <strong>Apply</strong> saves
+them and leaves Settings open. Apply is unavailable until you have
+changed something.</p>
+<h3 id="more-on-the-general-page">More on the General page</h3>
+<ul>
+<li><strong>Title bar path</strong> shows just the file name in the
+title bar (the default) or the full path.</li>
+<li><strong>Unsaved-change title style</strong> is how the title bar
+marks a document with unsaved changes: <strong>Text</strong> adds
+“[modified]” (the default), <strong>Asterisk</strong> adds a star, and
+<strong>Asterisk and text</strong> adds both.</li>
+<li><strong>Preview browser</strong> chooses which of your browsers
+opens HTML previews.</li>
+<li><strong>Open preview beside the editor</strong> shows a Markdown or
+HTML document’s preview in a pane beside the editor as soon as you open
+it. Plain text is left alone. On to begin with.</li>
+<li><strong>Interface language</strong> is the language of menus,
+dialogs and messages, written as a short code such as <code>fr</code> or
+<code>es</code>. Leave it blank to follow Windows. <strong>Tools &gt;
+Writing and Language &gt; Change Display Language…</strong> sets it for
+you from a list.</li>
+<li><strong>Confirm destructive actions</strong> asks before your
+unsaved changes are thrown away, for example when you reload a file from
+disk. On to begin with.</li>
+<li><strong>Default document folder</strong> is where the Open and Save
+As windows start; <strong>Choose Default Folder…</strong> picks it. Once
+you have opened or saved something, QUILL starts where you last were for
+the rest of that session. Left blank, it starts in Documents.</li>
+<li><strong>Default new-document format</strong> is
+<strong>Markdown</strong> (the default), <strong>Plain text</strong> or
+<strong>HTML</strong>, as described above.</li>
+<li><strong>Open a blank document at startup</strong> hands you an empty
+Untitled document when nothing else is opening. Turn it off if you
+always open an existing file. Files you named, a restored session and
+recovered work still open.</li>
+<li><strong>Store QUILL’s data</strong> says where QUILL keeps your
+settings, snippets, dictionaries and keyboard shortcuts: <strong>In my
+user profile (recommended)</strong>, <strong>Next to QUILL, on this
+portable drive</strong> (only in a portable copy), or <strong>Custom
+folder</strong>, chosen with <strong>Choose Folder…</strong>. When you
+change it, QUILL offers to restart, and the change takes effect when it
+starts again.</li>
+<li><strong>Windows and your files</strong> is covered in Chapter 3,
+under Making QUILL your text editor.</li>
+</ul>
+<h3 id="the-administration-page">The Administration page</h3>
+<p>The <strong>Administration</strong> page holds updates, safety and
+the settings file itself:</p>
+<ul>
+<li><strong>Check for updates on startup</strong> and <strong>Release
+channel</strong> are covered in Chapter 15.</li>
+<li><strong>Enable Developer Console</strong> makes the Python and
+TypeScript consoles available under <strong>Tools &gt; Advanced &gt;
+Developer Console</strong>. Appendix A explains them. Some feature
+profiles turn it off.</li>
+<li><strong>TypeScript console execution timeout (seconds)</strong> is
+how long a TypeScript console command may run before QUILL stops it,
+from 5 to 300 seconds. The default is 30.</li>
+<li><strong>Trust SSH hosts on first connection</strong> is covered in
+Chapter 3, under Editing a file over SSH.</li>
+<li><strong>Apply recommended keyboard-shortcut updates</strong> lets
+QUILL apply an important shortcut correction once when you upgrade, such
+as putting Find back on <code>Ctrl+F</code>. You can still change it
+afterwards.</li>
+<li><strong>Upgrade notice</strong> is how QUILL tells you it has
+updated your settings or shortcuts after an upgrade:
+<strong>Silent</strong>, <strong>Brief announcement</strong> or
+<strong>Summary with Undo</strong>. A backup is always saved first.</li>
+</ul>
+<p>Below the settings are five buttons:</p>
+<ul>
+<li><strong>Export settings…</strong> saves your settings to a QUILL
+settings file (<code>.qsf</code>). Folders and file locations that
+belong to this computer are left out, and QUILL tells you how many.</li>
+<li><strong>Import settings…</strong> reads a settings file back.
+Settings closes, the imported settings take effect at once, and QUILL
+tells you what the file did and did not contain.</li>
+<li><strong>Reset to Factory Defaults</strong> puts every setting back
+the way it was when QUILL was installed. It asks first, and it cannot be
+undone.</li>
+<li><strong>Export profile…</strong> and <strong>Import
+profile…</strong> save and load your feature profile, the choice of
+which parts of QUILL you see, as a QUILL profile file
+(<code>.qpf</code>).</li>
+</ul>
+<h2 id="the-customize-and-support-menu">The Customize and Support
+menu</h2>
+<p><strong>Tools &gt; Customize and Support</strong> keeps every
+configuration and support command in one place, which is where you, and
+anyone helping you, will look for them. It used to be two separate
+menus, Support and Customize.</p>
+<ul>
+<li><strong>Preferences…</strong></li>
+<li><strong>Customize Menus…</strong></li>
+<li><strong>Bring My QUILL Lite Settings…</strong></li>
+<li><strong>Profiles and Features…</strong></li>
+<li><strong>Status Bar Layout…</strong></li>
+<li><strong>Export and Back Up…</strong> / <strong>Import or
+Restore…</strong></li>
+<li><strong>Keymap Editor…</strong> / <strong>Export Keymap…</strong> /
+<strong>Import Keymap…</strong> / <strong>Reset Keymap</strong></li>
+<li><strong>Reset Everything to Factory Defaults…</strong></li>
+<li><strong>Show Notifications</strong></li>
+<li><strong>Save Diagnostics…</strong></li>
+<li><strong>Open Logs Folder</strong> / <strong>View Startup
+Logs…</strong> / <strong>Open Diagnostics Folder</strong></li>
+<li><strong>Check for Updates</strong></li>
+</ul>
+<p>To write to us, use <strong>Help &gt; Get Help from
+Support…</strong>. It lives in the Help menu, not here.</p>
+<h2 id="power-tools">Power tools</h2>
+<p>The <strong>Advanced</strong> submenu (<strong>Tools &gt;
+Advanced</strong>) holds the automation utilities, developer tools and
+power switches for how the editor behaves. You can use QUILL for years
+without opening it, but it is worth knowing what is there.</p>
+<h3 id="editor-utilities">Editor utilities</h3>
+<ul>
+<li><strong>Toggle Read-Only Guard</strong>
+(<code>Ctrl+Alt+Backspace</code>) stops accidental edits to a document
+you are reviewing, and is remembered for that file. Bookmarks and notes
+keep working. Chapter 8, Reading without changing anything, has the
+details.</li>
+<li><strong>Toggle Clipboard Collector</strong> and <strong>Collect
+Clipboard Now</strong> gather clipboard entries into a running log in
+the open document. This works system-wide, the way EdSharp did: while
+the collector is on, anything you copy in <em>any</em> application, such
+as your browser, mail or a terminal, is added (each distinct copy once).
+If the document already has a file name, QUILL saves it quietly after
+each piece and you hear one sentence, “Collected and saved.” An untitled
+document is never saved and no Save As window opens; it is marked as
+changed, and you save it when you are ready. If a save cannot happen (a
+full disk, a read-only folder, a file another program has changed),
+QUILL says so and keeps collecting. To have collected text wait for you
+to save instead, clear <strong>Save the document after every clip the
+clipboard collector adds</strong> in <strong>Settings &gt;
+Editing</strong>. <strong>Alt+Shift+S</strong> turns the collector on
+and off. QUILL Lite has the same collector and the same setting, on the
+same key, in the Clipboard submenu of its Edit menu.</li>
+<li><strong>Toggle Key Describer</strong> says the names of keys instead
+of doing what they do. It is handy for writing down keystrokes.</li>
+<li><strong>Toggle Indentation Announcements</strong> and <strong>Infer
+Indentation…</strong> tell you when the indentation level changes as you
+move.</li>
+</ul>
+<h3 id="macros">Macros</h3>
+<ul>
+<li><strong>Start Recording</strong> and <strong>Stop Recording</strong>
+capture a sequence of editing commands.</li>
+<li><strong>Play Last Macro</strong> plays back the last one you
+recorded.</li>
+<li><strong>Manage Macros…</strong> lets you name, edit and organize
+saved macros.</li>
+</ul>
+<p>Macros are ideal for repetitive cleanup: record it once, then replay
+it as many times as you need.</p>
+<h3 id="authoring-utilities">Authoring utilities</h3>
+<ul>
+<li><strong>Regular Expression Helper…</strong> is the guided home for
+regular expressions, so you never have to face a wall of punctuation
+alone.
+<ul>
+<li>A <strong>category tree</strong> holds more than a hundred ready
+recipes: cleanup (multiple spaces, smart quotes, zero-width characters),
+words and phrases, lines, numbers, dates, email and web addresses,
+Markdown and HTML structure, punctuation and dialogue, writing and
+editing checks, OCR and scan cleanup, code identifiers, and
+capture-and-replace transformations with ready replace templates.</li>
+<li>Pick a recipe and three things happen at once. The pattern goes into
+the pattern box. A <strong>plain-language explanation</strong> appears
+(“One or more digits. Optionally: a period…”). And a
+<strong>preview</strong> runs against sample text taken from your
+selection, reading every match as a sentence (“Match 3: line 4, column
+7: <a href="mailto:foo@bar.com">foo@bar.com</a>”), with replace previews
+for the transformation recipes.</li>
+<li>The explanation is live. Type or paste <strong>any</strong> pattern
+and QUILL explains it step by step. A broken pattern is explained in
+words, with the exact character position (“Unclosed group: the
+open-parenthesis at character 4 has no matching close”).</li>
+<li>When the pattern is right, <strong>Use in Find All Matches</strong>
+takes it straight into the search, with regex mode on and no trip
+through the clipboard. <strong>Copy Pattern</strong> is there for
+everywhere else.</li>
+</ul></li>
+<li><strong>Pandoc Conversion Wizard…</strong> converts supported source
+files into Markdown, HTML or plain text, which opens straight away as a
+QUILL tab.</li>
+<li><strong>External Tools and Format Support…</strong> explains what
+each supported helper program adds, whether QUILL can already see it,
+and the easiest way to set it up.</li>
+<li><strong>YAML Structure Editor…</strong> inspects and edits YAML
+front matter and structure files.</li>
+</ul>
+<h3 id="document-intake">Document Intake</h3>
+<ul>
+<li><strong>Document Intake Report…</strong> tells you how good an
+extraction was, and whether the source probably had structure that did
+not survive.</li>
+<li><strong>Review Extraction Quality…</strong> walks you through the
+quality signals one by one.</li>
+<li><strong>Report Bad Extraction…</strong> flags a source for manual
+cleanup or another extraction.</li>
+</ul>
+<p>These matter when QUILL is reading an imported format for you. They
+help you answer questions like: Is this document safe to quote from
+directly? Does it need manual cleanup?</p>
+<p>An imported document opens with its own text and nothing else. QUILL
+never writes a heading such as “PDF Extract”, or the name of the engine,
+into the file you are reading. Everything about <em>how</em> it was read
+(format, engine, pages, quality score, which reader each PDF page’s text
+came from, and the pages that may read poorly, with the reason for each)
+is in the <strong>Document Intake Report</strong>, and the short version
+is announced when the file opens. For a Word, Excel or PowerPoint file
+the report also says which reader read it, how many sheets or slides it
+has, which sheet was cut short if one was, and, in the rare case QUILL’s
+own reader could not read the file and MarkItDown did, why (“QUILL’s own
+reader: not used.” followed by the reason). For example, a Word file
+whose only content is a scanned picture opens with “Read by: MarkItDown”
+if MarkItDown found text in it, and the next line says QUILL’s own
+reader found no text to read.</p>
+<h3 id="shell-integration">Shell Integration</h3>
+<ul>
+<li><strong>Install Shell Integration…</strong> adds QUILL to the
+Windows Explorer context menu and registers it as a protocol
+handler.</li>
+<li><strong>Remove Shell Integration</strong> takes those entries out
+again.</li>
+</ul>
+<p>The <strong>Integration and Context Menu</strong> page in Settings
+chooses what appears on that right-click menu:</p>
+<ul>
+<li><strong>Show QUILL in the file-manager right-click menu</strong> is
+the main switch. Off to begin with.</li>
+<li><strong>Offer “Open in QUILL”</strong> adds Open in QUILL for text
+documents. On to begin with.</li>
+<li><strong>Offer “OCR with QUILL”</strong> adds a command that turns an
+image or PDF into text. On to begin with.</li>
+<li><strong>Offer “OCR with QUILL (structured Markdown)”</strong> adds
+the AI-assisted version, which returns headings and lists as Markdown.
+It needs AI turned on. Off to begin with.</li>
+<li><strong>Offer “Read aloud in QUILL”</strong> opens a file and starts
+reading it aloud. Off to begin with.</li>
+<li><strong>Offer “Convert with QUILL”</strong> opens an audio or video
+file in Quill Converter so you can change its format. Off to begin
+with.</li>
+<li><strong>File types offered to QUILL</strong> chooses which files get
+QUILL on their right-click menu: images only, images and PDFs, or
+images, PDFs and text documents (the default). Audio and video files
+have their own Convert switch above.</li>
+</ul>
+<p>Your choices take effect as soon as you press OK, with no need to
+install shell integration again.</p>
+<h2 id="quillins">Quillins</h2>
+<p>Quillins are extensions. They add commands, snippets, menus,
+abbreviations, smart triggers, settings pages, status bar cells and
+document event handlers to QUILL, without a full restart.</p>
+<p>Each Quillin runs in its own worker process. That keeps faults apart:
+a Quillin that goes wrong cannot crash QUILL or damage your document. It
+is not a security sandbox, though. The worker is an ordinary Python
+interpreter, so what really keeps you safe is code review and the Author
+Covenant. QUILL draws every Quillin’s controls itself, using standard
+widgets that work well with a screen reader.</p>
+<h3 id="bundled-quillins">Bundled Quillins</h3>
+<p>QUILL comes with seventeen trusted Quillins of its own, all turned
+on:</p>
+<ul>
+<li><strong>Smart Insert</strong> (<code>com.quill.smartinsert</code>):
+abbreviations and smart text triggers for everyday templates. It adds
+the <code>qbug</code>, <code>qmeet</code>, <code>qlog</code> and
+<code>qtodo</code> abbreviations, and the <code>=bug()</code>,
+<code>=meeting()</code>, <code>=journal()</code>, <code>=todo()</code>,
+<code>=logentry()</code>, <code>=brftest()</code> and
+<code>=rand()</code> smart triggers. Its dynamic <code>qbrf</code>
+abbreviation is reached through <code>=brftest()</code> instead.
+Settings are under <strong>More Preferences &gt; Smart
+Insert</strong>.</li>
+<li><strong>BRF Tools</strong> (<code>com.quill.brftools</code>):
+preferences for braille translation defaults, page handling, status bar
+display and diagnostics. It needs the QUILL Braille Pack. Settings are
+under <strong>More Preferences &gt; BRF Tools</strong>.</li>
+<li><strong>Journal Stamp</strong>
+(<code>com.quill.journalstamp</code>): inserts a date header when you
+create a new journal document, tells you your word count (and daily goal
+progress) after every save, and announces session restores. It listens
+to <code>quillin.enabled</code> to log when it starts and to
+<code>settings.changed</code> to pick up new preferences straight away.
+Settings are under <strong>More Preferences &gt; Journal
+Stamp</strong>.</li>
+<li><strong>Document Guardian</strong>
+(<code>com.quill.docguardian</code>): warns before you close a short or
+unfinished document, can stamp an <code>Updated:</code> line before each
+save, and can speak the file name and size after each save. It uses the
+<code>quillin.enabled</code>, <code>quillin.disabled</code> and
+<code>quill.shutdown</code> events. Settings are under <strong>More
+Preferences &gt; Document Guardian</strong>, which has Close Guard, Save
+Stamp, Save Confirmation and Lifecycle Announcements tabs. The Lifecycle
+Announcements tab decides whether QUILL speaks a cue when the Quillin is
+turned on or off. It is off by default, so your first run stays
+quiet.</li>
+<li><strong>Status Scribe</strong>
+(<code>com.quill.statusscribe</code>): adds a live word, character and
+sentence count to the status bar. The count updates after every save and
+when you switch tabs. It uses the <code>ui.log</code> capability to
+write messages to the Developer Console. Settings are under <strong>More
+Preferences &gt; Status Scribe</strong>.</li>
+<li><strong>Text Tools</strong>: advanced text changes such as line
+numbering, hard-wrap, regex match counting and block filtering.</li>
+<li><strong>Insert Tools</strong>: date, time, and date-and-time
+snippets in the <strong>Insert &gt; Date and Time</strong> submenu.</li>
+<li><strong>Line Tools</strong>: line operations that work from where
+your cursor is.</li>
+<li><strong>Markdown Helpers</strong>: help with Markdown syntax.</li>
+<li><strong>Insert Character</strong>: a searchable picker for Unicode
+symbols.</li>
+<li><strong>Word Count (Node)</strong>: a word count that runs on the
+Node.js Quillin runtime, to show that Quillins can be written in
+JavaScript as well as Python.</li>
+<li><strong>AI Writing Prompts</strong>: extra entries for the prompt
+library.</li>
+<li><strong>AI Writing Skills</strong>: ready-made <code>.sqp</code>
+skill files for rewriting, pulling out meeting notes, and research
+drafts.</li>
+<li><strong>Math Equations</strong>: inserts LaTeX or MathML equations
+at the cursor with <strong>Insert &gt; Insert Equation…</strong>
+(<code>Ctrl+Alt+=</code>). Math Equations is covered earlier in this
+guide.</li>
+<li><strong>ElevenLabs Scribe Transcription</strong>, <strong>Groq
+Whisper Transcription</strong> and <strong>OpenAI Whisper
+Transcription</strong>: add those cloud services as optional
+transcription providers (ElevenLabs can also tell speakers apart). Audio
+is only uploaded when you choose to transcribe with that provider and
+have set up its API key. Never offline, and never without your
+consent.</li>
+</ul>
+<h3 id="quillin-preferences">Quillin preferences</h3>
+<p>Every enabled Quillin that has settings gets its own entry at the
+bottom of More Preferences (the QUILL key and then <code>O</code>, or
+<strong>Tools &gt; Customize and Support &gt; More
+Preferences…</strong>). <code>Ctrl+,</code> opens Settings itself; More
+Preferences is the list of everything Settings does not hold. Move to
+the Quillin by name and press Enter to open its settings.</p>
+<p><strong>Settings tabs.</strong> A Quillin with several groups of
+settings puts them on tabs. Use the Left and Right Arrow keys to move
+between tabs, and Tab to reach the controls on a tab. Changing tabs does
+not lose anything you have changed; everything is applied when you press
+Save.</p>
+<p><strong>Labels.</strong> Every labeled control (combo box, text
+field, number spinner) is placed right after its <code>StaticText</code>
+label, so JAWS and NVDA read the right label when you Tab to it.
+Checkboxes (<code>wx.CheckBox</code>) carry their own label.</p>
+<p><strong>Reset controls.</strong> Every preference page has Reset
+options:</p>
+<ul>
+<li><strong>Reset this setting</strong> puts that one setting back to
+the Quillin’s default.</li>
+<li><strong>Reset this section</strong> puts back every setting in the
+section.</li>
+<li><strong>Reset this Quillin</strong> puts back all of the Quillin’s
+settings.</li>
+</ul>
+<p><strong>Where settings are kept.</strong> Each Quillin’s settings are
+saved safely to
+<code>%APPDATA%\Quill\quillin_settings\&lt;quillin-id&gt;.json</code>.
+Turning a Quillin off hides its preference page but keeps its settings.
+When you uninstall one, QUILL asks whether to keep or delete them.</p>
+<h3 id="the-quillins-manager">The Quillins Manager</h3>
+<p>Open it from <strong>Tools &gt; Quillins &gt; Manage
+Quillins…</strong>. In the Manager you can:</p>
+<ul>
+<li>See every installed Quillin and whether it is enabled, disabled, or
+invalid (with the error).</li>
+<li>Select a Quillin to hear its details: name, version, author,
+description, categories, the oldest QUILL version it needs, the
+capabilities it asks for, the network hosts it may reach, and whether
+each of its event subscriptions is on or off.</li>
+<li><strong>Enable</strong> or <strong>Disable</strong> a Quillin
+without removing it. The change happens straight away.</li>
+<li><strong>Configure Events…</strong> opens a list of the selected
+Quillin’s document events, with a checkbox next to each. Check one to
+turn that handler on, uncheck it to stop it. Your choice is saved
+straight away and kept across restarts.</li>
+<li><strong>Reload</strong> reads all Quillins from disk again without
+restarting. Use it after editing a bundled Quillin while you
+develop.</li>
+<li><strong>Remove</strong> uninstalls a Quillin, after you confirm. Its
+folder is deleted from disk.</li>
+<li><strong>Install from Folder</strong> lets you pick a local folder
+that contains a Quillin. QUILL checks its <code>manifest.json</code>,
+copies the folder into your own extensions folder, and turns it on. This
+will be the way to install Quillins from other people once that is
+opened up.</li>
+</ul>
+<p>The details pane lists every capability a Quillin asks for (for
+example <code>fs.read</code>, <code>net</code>,
+<code>settings.own.read</code> or <code>settings.own.write</code>), any
+<code>net_allowed_hosts</code> limits, and whether each event
+subscription is on. Look at the capabilities before you turn on a
+Quillin from a source you do not know.</p>
+<p>If a Quillin cannot load, the details pane tells you why: it needs a
+newer QUILL (<code>min_quill_version</code>), something it depends on is
+missing (<code>requires</code>), or there is a mistake in its
+manifest.</p>
+<p>The details pane also has a <strong>Signature</strong> line for every
+Quillin: <code>verified</code> when a signature file beside the manifest
+matches the publisher key, <code>invalid</code> when there is one that
+does not match, or <code>unsigned</code> when there is none. It is read
+with the rest of the details, so you can hear whether a publisher
+vouches for a Quillin before you turn it on. The PyNaCl library this
+check needs comes with QUILL. The signing protocol is described in
+<code>docs/signing.md</code>.</p>
+<h3 id="document-events">Document events</h3>
+<p>Quillins can listen for things happening to your documents and act on
+them automatically, with nothing for you to do. There are fourteen
+events:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>When it fires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>document.opened</code></td>
+<td>A file was opened from disk</td>
+</tr>
+<tr>
+<td><code>document.activated</code></td>
+<td>You switched to this tab</td>
+</tr>
+<tr>
+<td><code>document.before_save</code></td>
+<td>Right before saving</td>
+</tr>
+<tr>
+<td><code>document.after_save</code></td>
+<td>After a successful save</td>
+</tr>
+<tr>
+<td><code>document.before_close</code></td>
+<td>Before a tab closes</td>
+</tr>
+<tr>
+<td><code>document.after_close</code></td>
+<td>After a tab closes</td>
+</tr>
+<tr>
+<td><code>document.created</code></td>
+<td>A new blank document was created</td>
+</tr>
+<tr>
+<td><code>document.loaded_from_session</code></td>
+<td>A document was restored from a crash</td>
+</tr>
+<tr>
+<td><code>smart_trigger.entered</code></td>
+<td>A smart trigger was activated</td>
+</tr>
+<tr>
+<td><code>abbreviation.expanded</code></td>
+<td>An abbreviation was expanded</td>
+</tr>
+<tr>
+<td><code>quillin.enabled</code></td>
+<td>This Quillin was just enabled or QUILL started with it on</td>
+</tr>
+<tr>
+<td><code>quillin.disabled</code></td>
+<td>This Quillin was disabled in the Manager</td>
+</tr>
+<tr>
+<td><code>quill.shutdown</code></td>
+<td>QUILL is about to close</td>
+</tr>
+<tr>
+<td><code>settings.changed</code></td>
+<td>A setting owned by this Quillin changed</td>
+</tr>
+</tbody>
+</table>
+<p>A Quillin can limit an event to certain file extensions, paths or
+content. A journal Quillin can stick to <code>**/journal/**</code>
+paths, and a <code>.LOG</code> handler can insist that the file starts
+with <code>.LOG</code>.</p>
+<p>Each event subscription has an <code>enabled_by_default</code> field.
+When the author sets it to <code>false</code>, that handler starts
+switched off, which suits optional or chatty behaviour. You can turn any
+event on or off for each Quillin in <strong>Quillins Manager &gt;
+Configure Events…</strong>.</p>
+<p>Handlers use <code>api.announce()</code> to speak their results, and
+must not hold up the editor while they work.</p>
+<h3 id="the-quillin-hub">The Quillin Hub</h3>
+<p>The <strong>Quillin Hub</strong> is where you can share what you make
+with the community, and not only Quillins. It takes seven kinds of
+file:</p>
+<ul>
+<li><strong>Quillin extensions</strong> (a zipped folder with
+<code>manifest.json</code>)</li>
+<li><strong>AI agents</strong> (a single <code>.md</code> or
+<code>.json</code> agent file)</li>
+<li><strong>Verbosity packs</strong> (<code>.qvp.json</code>)</li>
+<li><strong>Sound packs</strong> (<code>.qsp</code>)</li>
+<li><strong>Keyboard packs</strong> (<code>.kqp</code>)</li>
+<li><strong>AI skill packs</strong> (<code>.sqp</code>)</li>
+<li><strong>Pronunciation dictionaries</strong>
+(<code>.json</code>)</li>
+</ul>
+<p>To check your work before you send it:</p>
+<ol type="1">
+<li>Choose <strong>Tools &gt; Quillins &gt; Submit to Quillin
+Hub…</strong>.</li>
+<li>Pick your file. For a Quillin extension, pick its
+<code>manifest.json</code>; QUILL checks the whole folder.</li>
+<li>Listen to the result. QUILL works out what kind of file it is and
+runs the same checks the Hub runs, on your own computer, with nothing
+uploaded.</li>
+</ol>
+<p><strong>Passed</strong> means your work clears every check QUILL
+applies to its own bundled files. <strong>Needs work</strong> lists each
+error and warning so you know what to fix. The
+<strong>Signature</strong> line says <code>verified</code> if there is a
+signature file next to yours, <code>invalid</code> if there is one but
+it does not match, or <code>unsigned</code> if there is none. The Hub
+turns down unsigned submissions, so the “Open the Quillin Hub” button
+only appears when your file passes and is signed. Sign it with
+<code>python -m quill.tools.signing sign &lt;artifact&gt;</code> and run
+the check again. The check makes no network connection; only the “Open
+the Quillin Hub” button opens anything.</p>
+<p>Publishing happens through GitHub pull requests, so every submission
+is reviewed in the open. The Hub runs the same checks again, looks over
+any extension code for security and for honesty about the capabilities
+it asks for, reads your manifest so you never retype your name, version
+or description, and checks the publisher signature on every signature
+file sent with the submission.</p>
+<h3 id="authoring-quillins">Authoring Quillins</h3>
+<p>If you write code, Quillins are built screen-reader-first. Each one
+must ask for the smallest set of permissions it needs, and anything
+sensitive (such as writing to a file or changing a setting) asks you for
+consent when it happens.</p>
+<p>A Quillin can add:</p>
+<ul>
+<li><strong>Commands</strong>: Python or Node.js handlers, or simple
+declared snippets.</li>
+<li><strong>Menus</strong>: items in the normal QUILL menu bar.</li>
+<li><strong>Hotkeys</strong>: keys that respect the QUILL key chord
+prefix.</li>
+<li><strong>Abbreviations</strong>: short typed words that expand after
+a delimiter.</li>
+<li><strong>Smart triggers</strong>: <code>=name()</code> commands typed
+on the current line.</li>
+<li><strong>Sound events and sound packs</strong>: its own earcons for
+its own events.</li>
+<li><strong>Preferences</strong>: settings pages with tabs, sections,
+checked controls, search keywords and their own storage.</li>
+<li><strong>Document events</strong>: handlers that run when a document
+opens, saves, closes or is restored, or when the Quillin is enabled or
+disabled, or QUILL shuts down.</li>
+<li><strong>Status bar cells</strong>: live cells that QUILL refreshes
+and shows in the status bar. Needs the <code>ui.status</code>
+capability.</li>
+<li><strong>Categories</strong>: one or more labels
+(<code>writing</code>, <code>accessibility</code>, <code>braille</code>,
+<code>productivity</code> and more) for filtering in the Manager.</li>
+<li><strong>Dependencies (<code>requires</code>)</strong>: another
+Quillin that must be installed first. QUILL checks this when it finds
+the Quillin.</li>
+<li><strong>Network host allowlist
+(<code>net_allowed_hosts</code>)</strong>: with the <code>net</code>
+capability, a list of host names or wildcard patterns it may connect to.
+QUILL blocks any other host, even if you have granted general
+<code>net</code> consent.</li>
+<li><strong>Minimum version (<code>min_quill_version</code>)</strong>:
+the oldest QUILL release it supports. An older QUILL refuses to load
+it.</li>
+</ul>
+<p>The full authoring reference is
+<code>docs/quillins/quillins.md</code>. PRD section 5.83a (“The Quillin
+Hub - community distribution for every shareable artifact”) is the
+developer guide to every file you can share (Quillins, agents, verbosity
+packs, sound packs, keyboard packs, skill packs and pronunciation
+dictionaries) and how to check and submit each one. One checker covers
+them all:
+<code>python -m quill.tools.artifact_validate &lt;path&gt;</code>.</p>
+<h2 id="quill-on-macos">QUILL on macOS</h2>
+<p>QUILL runs on <strong>macOS</strong> as well as Windows, and the aim
+is for both to do the same things. Here is what is different, or worth
+knowing, on a Mac.</p>
+<h3 id="speech-and-voiceover">Speech and VoiceOver</h3>
+<ul>
+<li><strong>VoiceOver first, with QUILL’s own voice as a
+fallback.</strong> On macOS, QUILL sends its announcements to
+<strong>VoiceOver</strong> and never talks over it. Headings, regions
+and result messages behave as they do with NVDA and JAWS on Windows. If
+you run QUILL on a Mac <em>without</em> VoiceOver, it speaks the same
+announcements with the Mac’s own speech synthesizer, just as QUILL on
+Windows uses SAPI when no screen reader is running.</li>
+<li><strong>Read Aloud and earcons work on macOS.</strong> Live Read
+Aloud plays through <code>afplay</code>, so Piper, Kokoro, ElevenLabs
+and the system voices all speak, and the earcon volume slider works
+too.</li>
+<li><strong>The accessible WebView</strong> behind the chat, the
+Markdown and HTML preview, the About box and the update dialogs reads
+correctly with VoiceOver, as it does with NVDA and JAWS on Windows.</li>
+</ul>
+<h3 id="keys-on-a-mac">Keys on a Mac</h3>
+<ul>
+<li><strong>Function keys and the Fn key.</strong> Many of QUILL’s
+shortcuts use the F keys (<code>F3</code> for Find Next, <code>F7</code>
+for spell check, <code>F8</code> for selection, <code>F6</code> for
+moving between regions). On a stock MacBook those keys do system things
+(brightness, Mission Control, media) unless you hold
+<strong>Fn</strong>, or turn on <strong>Use F1, F2, etc. keys as
+standard function keys</strong> in <strong>System Settings &gt;
+Keyboard</strong>. So you do not have to, Find Next and Find Previous
+also work on the usual Mac keys, <code>Cmd+G</code> and
+<code>Cmd+Shift+G</code>, with no Fn. You can change any key in the
+Keymap Editor.</li>
+<li><strong>Mac-specific defaults.</strong> A few Windows keys would
+clash with macOS system shortcuts, so they are different on a Mac:
+<strong>Replace</strong> is <code>Cmd+Alt+F</code> (not
+<code>Cmd+H</code>, which is Hide), <strong>Pop Mark</strong> is
+<code>Cmd+Alt+M</code> (not <code>Cmd+M</code>, which is Minimize), and
+<strong>Select Chunk</strong> is <code>Cmd+Alt+Space</code> (not
+<code>Cmd+Space</code>, which is Spotlight). These may still change. If
+one clashes with something on your Mac, change it in the Keymap Editor
+and tell us through Help &gt; Get Help from Support.</li>
+<li><strong>Back / Forward Location on macOS</strong> uses
+<code>Cmd+[</code> and <code>Cmd+]</code>, so it does not clash with
+VoiceOver’s word-by-word reading on <code>Option+Left</code> and
+<code>Option+Right</code>. Windows keeps <code>Alt+Left</code> and
+<code>Alt+Right</code>.</li>
+<li><strong>Keymap profiles respect your platform.</strong> The built-in
+keymap profiles leave the platform’s own keys for quitting, back and
+forward, and switching documents alone, so on a Mac you get the right
+Cmd keys instead of Windows ones.</li>
+<li><strong>Help menu registered as system Help.</strong> The Help menu
+is the macOS system Help menu, so the usual <code>Cmd+?</code> Help
+shortcut works.</li>
+</ul>
+<h3 id="menus-files-and-the-rest">Menus, files and the rest</h3>
+<ul>
+<li><strong>A real macOS Window menu.</strong> The Window menu (Next,
+Previous, Close Other, Send to Tray) is the macOS Window menu, so it
+sits in its usual place just left of Help, together with the standard
+Mac items: Minimize (<code>Cmd+M</code>), Zoom, Bring All to Front and
+the list of open windows.</li>
+<li><strong>Standard Mac behaviors.</strong> Preferences and About are
+where a Mac puts them: <strong>QUILL &gt; Settings</strong> and
+<strong>QUILL &gt; About Quill</strong>. Preferences is the standard
+macOS menu entry, so it appears in the QUILL app menu as you would
+expect.</li>
+<li><strong>Tray status messages say “menu bar” on macOS.</strong> When
+QUILL goes to the background, comes back, or switches tray mode, the
+message names what you actually have: “menu bar” on macOS, where it is a
+menu-bar status item, and “system tray” on Windows.</li>
+<li><strong>Setting QUILL as your default editor takes effect
+immediately.</strong> After registering the file types (through
+<code>duti</code> if you have it; install it with
+<code>brew install duti</code>), QUILL refreshes the Mac’s
+LaunchServices database, so Finder opens your files in QUILL straight
+away instead of after a restart.</li>
+<li><strong>The default-folder hint shows a Mac path on macOS.</strong>
+In Settings, the empty default-folder box suggests
+<code>e.g. /Users/YourName/Documents (blank = last used)</code>.</li>
+<li><strong>macOS-safe launch paths.</strong> Opening a file, showing
+its folder, launching an installer or playing a voice sample all use the
+Mac’s own way of doing it.</li>
+<li><strong>Your secrets stay off the command line.</strong> API keys,
+SSH passphrases and other secrets QUILL keeps for you go into the macOS
+Keychain through the native Security framework, so the value never
+appears on a command line where other programs could see it. On a Mac
+without that native link, QUILL falls back to the <code>security</code>
+CLI and warns you the first time, because that way does put the value on
+the command line.</li>
+<li><strong>On-device AI.</strong> Ask QUILL uses <strong>Apple
+Foundation Models</strong> (Apple Intelligence) on a Mac that supports
+it, with no model to download and nothing sent to the cloud. The GGUF
+and llama.cpp model picker is hidden on a Mac because Apple’s model is
+used instead. You can still connect Ollama or a cloud service if you
+prefer.</li>
+<li><strong>Signed and notarized.</strong> Release Mac builds are signed
+with a Developer ID certificate and notarized by Apple, so Gatekeeper
+opens them without warnings. QUILL comes as a <code>.app</code> (and a
+disk image).</li>
+</ul>
+<h2 id="translation-and-community-localization">Translation and
+Community Localization</h2>
+<p>QUILL can show its menus and dialogs, and speak its messages, in
+other languages. The translations come from people in the community, the
+same way NVDA’s do, and you are welcome to help.</p>
+<h3 id="switching-quills-display-language">Switching QUILL’s display
+language</h3>
+<p>Once a translation is installed, you can switch the language QUILL
+uses for its menus, dialogs and spoken messages:</p>
+<ol type="1">
+<li>Open <strong>Tools &gt; Writing and Language &gt; Change Display
+Language…</strong>.</li>
+<li>Choose a language from the list, or <strong>System default</strong>
+to follow your operating system. Only languages with a finished
+translation (an <code>.mo</code> file) are listed, so you never pick one
+that has nothing to show.</li>
+<li>QUILL saves your choice and uses it for new spoken messages straight
+away. Restart QUILL so every menu and dialog reloads in that
+language.</li>
+</ol>
+<p>The first community translation is <strong>Italian</strong>, by Elena
+Brescacin: menus, dialogs and spoken messages, with anything not yet
+translated shown in English. QUILL keeps growing, and the translation
+grows with it. Pick <em>Italiano</em> from the list and QUILL speaks
+Italian straight away, with every menu following after a restart. More
+languages appear in the list as community translations arrive.</p>
+<h3 id="how-the-translation-pipeline-works">How the translation pipeline
+works</h3>
+<p>QUILL uses the standard GNU gettext pipeline
+(<code>POT &gt; PO &gt; MO</code>) for every string you see or hear, the
+same model NV Access uses for NVDA. If you have translated NVDA, JAWS
+scripts or other accessibility software before, it will feel
+familiar.</p>
+<ol type="1">
+<li><strong>Strings are marked in the source code</strong> with
+<code>_()</code> for ordinary strings, <code>ngettext()</code> for
+plural forms, and <code>lazy_gettext()</code> for strings that must be
+translated when they are shown, not when the program loads.</li>
+<li><strong>The POT file</strong> (<code>quill/locale/quill.pot</code>)
+is the master template, made automatically by
+<code>pybabel extract</code>. It holds every translatable string in
+QUILL.</li>
+<li><strong>PO files</strong>
+(<code>quill/locale/&lt;lang&gt;/LC_MESSAGES/quill.po</code>) hold the
+actual translations for each language. This is where translators
+work.</li>
+<li><strong>MO files</strong> are compiled from the PO files by
+<code>pybabel compile</code>. They are the files QUILL loads when it
+runs.</li>
+<li><strong>QUILL picks the language</strong> when it starts, from your
+<code>language</code> setting (a BCP 47 tag such as <code>fr</code>,
+<code>es</code> or <code>pt-BR</code>). If it is blank, QUILL follows
+the operating system’s language.</li>
+</ol>
+<p>Speech strings, the text a screen reader will say instead of text
+shown on screen, are marked with a <code># SPEECH:</code> comment in the
+source code. When you translate one, keep the natural spoken rhythm as
+well as the meaning.</p>
+<h3 id="contributing-translations">Contributing translations</h3>
+<p>To contribute a translation:</p>
+<ol type="1">
+<li><strong>Fork the QUILL repository</strong> and create a branch named
+<code>l10n/&lt;lang&gt;</code> (for example <code>l10n/fr</code>).</li>
+<li><strong>Copy <code>quill.pot</code> into your language
+folder</strong> as
+<code>quill/locale/fr/LC_MESSAGES/quill.po</code>.</li>
+<li><strong>Translate each <code>msgid</code> into a
+<code>msgstr</code>.</strong> Leave <code>msgstr</code> empty for
+anything you have not translated yet; English is used instead.</li>
+<li><strong>Run the translation check</strong> to make sure the
+placeholders are intact and see how complete it is:
+<code>python -m quill.tools.check_translation</code></li>
+<li><strong>Open a pull request.</strong> The Translation Coordinator
+reviews it and merges it when it is approved.</li>
+</ol>
+<p><strong>Tools that help:</strong></p>
+<ul>
+<li><a href="https://poedit.net/">Poedit</a>: a free, accessible PO file
+editor with spell check.</li>
+<li><a href="https://virtaal.translatehouse.org/">Virtaal</a>: a lighter
+alternative.</li>
+<li>Crowdin (once QUILL’s project is live): translation in the browser,
+with a review queue.</li>
+</ul>
+<p><strong>Do not translate:</strong></p>
+<ul>
+<li>Placeholder tokens such as <code>{name}</code>,
+<code>%(count)s</code> and <code>{path}</code>. Leave them exactly as
+they are in the <code>msgid</code>.</li>
+<li>ARIA role names such as <code>"dialog"</code>, <code>"button"</code>
+and <code>"listbox"</code>. They are passed to the accessibility system
+unchanged.</li>
+<li>Internal command names such as <code>"file.open"</code> and
+<code>"glow.audit"</code>. Nobody sees them.</li>
+<li>File extensions and format names: <code>.docx</code>,
+<code>EPUB</code>, <code>PDF</code>.</li>
+</ul>
+<h3 id="translation-roles-and-responsibilities">Translation roles and
+responsibilities</h3>
+<p>QUILL uses four roles, following NV Access community practice:</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Responsibilities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Translator</strong></td>
+<td>Translate strings from English into the target language.</td>
+</tr>
+<tr>
+<td><strong>Proofreader</strong></td>
+<td>Review translations for accuracy, tone, and natural language
+flow.</td>
+</tr>
+<tr>
+<td><strong>Language Coordinator</strong></td>
+<td>Own quality for one language; approve or request changes from
+translators and proofreaders.</td>
+</tr>
+<tr>
+<td><strong>Translation Coordinator</strong></td>
+<td>Oversee the whole translation project, manage Crowdin, coordinate
+string freeze, credit contributors.</td>
+</tr>
+</tbody>
+</table>
+<p>To become a translator or proofreader, open a GitHub issue with the
+label <code>translation</code> and say which language you would like to
+work on.</p>
+<h3 id="speech-string-guidelines">Speech string guidelines</h3>
+<p>Strings meant for a screen reader are marked <code># SPEECH:</code>
+in the source code. When you translate them:</p>
+<ul>
+<li><strong>Put spoken clarity before literal accuracy.</strong> A
+string that sounds right read aloud matters more than one that is
+grammatically perfect but awkward to hear.</li>
+<li><strong>Match the rhythm.</strong> Keep short speech strings short.
+People hear these dozens of times a session, so every extra word costs
+them time.</li>
+<li><strong>Keep the emphasis.</strong> Where the English uses word
+order to show what matters most (for example, the key word comes first),
+try to do the same.</li>
+<li><strong>Test with a screen reader.</strong> If you can, listen to
+your strings with NVDA or JAWS before you send them.</li>
+<li><strong>Ask if you are unsure.</strong> Open a GitHub issue tagged
+<code>translation</code> and <code>speech</code> if you are not sure how
+a speech string should be adapted.</li>
+</ul>
+<p>Strings are frozen before each release candidate. No new strings are
+added after the freeze, and translators have a two-week window to finish
+their language before the release is built.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now choose a feature profile and fine-tune single features,
+pick a keyboard pack, change any key in the Keymap Editor, and put
+everything back with a factory reset. You know the everyday preferences,
+how to find any setting by typing a word or two, how to carry your
+settings to another computer, how QUILL reopens your last session and
+starts with Windows, and how task recipes and working modes change
+several settings at once. You also met the power tools, Quillins, QUILL
+on a Mac, and how to change or help translate QUILL’s language.</p>
+<p>To practise, open <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>) and try “The QUILL key” and “Make QUILL the
+size you need”. For a longer walk-through, read <a
+href="https://www.quillforall.org/tutorials/02-own-the-keyboard.html">Own
+the keyboard</a> on the website.</p>
+<p>Next, Chapter 13, Keeping your work safe, shows how QUILL protects
+your documents and what to do when something goes wrong.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-11-accessibility-speech-and-braille.html">Chapter 11:
+Accessibility, speech and braille</a></li>
+<li>Next: <a href="quill-guide-13-keeping-your-work-safe.html">Chapter
+13: Keeping your work safe</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

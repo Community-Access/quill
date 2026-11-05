@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 11: Code editing in the editor itself</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-11-code-editing-in-the-editor-itself">Chapter 11: Code
+editing in the editor itself</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Project tasks are one half of QUILL for developers. The other half is
+the editor you write code in yourself. This chapter is a tour of the
+code editing features in QUILL and QUILL Lite: languages and tokens,
+folding, comments and indentation, encodings and line endings, searching
+a whole folder, Git and GitHub, editing over SSH, the Developer Console
+and word prediction. Each editor’s user guide covers these in full; this
+chapter tells you what exists, where it lives, and its key.</p>
+<h2 id="one-plain-editor-on-purpose">One plain editor, on purpose</h2>
+<p>QUILL edits code in the same text control it uses for everything
+else, which is what screen readers handle best. There is no special code
+surface to learn, no inline completion and no ghost text. The features
+below add to that control rather than replace it.</p>
+<h2 id="languages-and-moving-by-token">Languages, and moving by
+token</h2>
+<p>When you open a source file, QUILL picks a language profile from the
+file’s extension. It knows HTML, Markdown, CSS, Python, JavaScript,
+TypeScript, C, C++, C#, PHP, Go, Rust, Kotlin, Shell, YAML, JSON, TOML
+and SQL.</p>
+<ul>
+<li><strong>Set Document Language…</strong> (<code>Ctrl+Alt+F6</code>)
+chooses the language yourself, for an unsaved file or code pasted into a
+<code>.txt</code>. In QUILL it is on the Navigate menu, and
+<strong>Format &gt; Document Language</strong> is the same choice as a
+list. In QUILL Lite it is <strong>Format &gt; Document
+Language…</strong>, on the same key.</li>
+<li>In QUILL, <strong>Navigate &gt; Next Token</strong> and
+<strong>Previous Token</strong> move by code token rather than by word,
+landing on the next name, keyword, operator or value. <strong>Select
+Token</strong> (<code>Ctrl+Alt+Space</code>) selects the one you are
+on.</li>
+</ul>
+<h2 id="folding-that-never-hides-text">Folding that never hides
+text</h2>
+<p>Folding in QUILL changes only where the jump commands take you. It
+never hides lines from the arrow keys, so you can always tell folded
+text from deleted text.</p>
+<p>In QUILL:</p>
+<ul>
+<li><strong>Toggle Fold</strong> (<code>Ctrl+Shift+[</code>) folds or
+unfolds the heading section or fenced code block around the cursor, and
+says what happened.</li>
+<li><strong>Next Fold</strong> (<code>Alt+Shift+]</code>) and
+<strong>Previous Fold</strong> (<code>Alt+Shift+[</code>) jump between
+regions, saying each one’s name, state and length.</li>
+<li><strong>List Folds…</strong> (<code>Ctrl+Shift+]</code>) lists every
+region you can fold.</li>
+</ul>
+<p>In QUILL Lite, <strong>Navigate &gt; Fold or Unfold Section</strong>
+(<code>Ctrl+Shift+F9</code>).</p>
+<h2 id="comments-indentation-and-brackets">Comments, indentation and
+brackets</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>QUILL</th>
+<th>QUILL Lite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Toggle Line Comment</td>
+<td><code>Ctrl+/</code></td>
+<td><code>Ctrl+/</code></td>
+</tr>
+<tr>
+<td>Toggle Block Comment</td>
+<td><code>Ctrl+Shift+/</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td>Indent</td>
+<td><code>Ctrl+]</code></td>
+<td><code>Ctrl+]</code></td>
+</tr>
+<tr>
+<td>Outdent</td>
+<td><code>Ctrl+[</code></td>
+<td><code>Ctrl+[</code></td>
+</tr>
+<tr>
+<td>Describe Indent Depth</td>
+<td><code>Ctrl+Alt+Shift+V</code></td>
+<td><code>Ctrl+Alt+Shift+V</code></td>
+</tr>
+<tr>
+<td>Convert indentation to spaces</td>
+<td><code>Alt+F11</code></td>
+<td><code>Alt+F11</code></td>
+</tr>
+<tr>
+<td>Convert indentation to tabs</td>
+<td><code>Alt+F12</code></td>
+<td><code>Alt+F12</code></td>
+</tr>
+<tr>
+<td>Tab key inserts a tab character, or indents</td>
+<td><code>Ctrl+Alt+Shift+I</code></td>
+<td><code>Ctrl+Alt+Shift+I</code></td>
+</tr>
+<tr>
+<td>Match Bracket</td>
+<td><code>Ctrl+Shift+\</code></td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>Comments use the language’s own style: <code>#</code>,
+<code>//</code>, <code>&lt;!-- --&gt;</code> or <code>--</code>. In
+QUILL Lite the indentation commands are under <strong>Tools &gt;
+Indenting</strong>.</p>
+<h2 id="finding-your-way-through-a-file">Finding your way through a
+file</h2>
+<ul>
+<li><strong>Go To Line</strong> (<code>Ctrl+G</code>) in QUILL;
+<strong>Go To…</strong> on the same key in QUILL Lite.</li>
+<li><strong>Outline Navigator…</strong> (<code>Ctrl+Shift+O</code>, or
+<code>Ctrl+Alt+L</code>) in QUILL lists the document’s structure, to
+jump to. In QUILL Lite, <strong>List Headings…</strong> is on
+<code>Ctrl+Alt+L</code>.</li>
+</ul>
+<h2 id="abbreviations-for-html-and-css">Abbreviations for HTML and
+CSS</h2>
+<p>QUILL’s Edit menu has <strong>Expand Abbreviation</strong>,
+<strong>Preview Abbreviation…</strong> and <strong>Explain
+Abbreviation…</strong>, which turn short Emmet-style abbreviations such
+as <code>ul&gt;li*3</code> into full markup, or CSS shorthand into
+declarations. Preview shows the result in a new tab without touching
+your document; Explain says what an abbreviation means before you use
+it.</p>
+<h2 id="encodings-and-line-endings">Encodings and line endings</h2>
+<p>A code file has to go back to disk exactly as it came, or the next
+commit shows every line changed.</p>
+<ul>
+<li>In QUILL, <strong>File Format</strong> (<code>Ctrl+Alt+E</code>)
+shows and changes the encoding and line endings.</li>
+<li>In QUILL Lite, <strong>Tools &gt; File Encoding and Line
+Endings…</strong> is on the same key.</li>
+</ul>
+<p>Both keep a file’s encoding and line endings when they save, unless
+you change them.</p>
+<h2 id="searching-and-replacing-across-a-folder">Searching and replacing
+across a folder</h2>
+<p>Both editors search a whole folder, which is handy alongside a
+project task:</p>
+<ul>
+<li><strong>Search in Files…</strong> (<code>Ctrl+Alt+Shift+F</code>)
+lists every match across a folder, to jump to.</li>
+<li><strong>Replace Across Files…</strong> (<code>Ctrl+Shift+R</code>)
+replaces across a folder.</li>
+</ul>
+<p>In QUILL Lite both are on the Edit menu.</p>
+<h2 id="git-in-quill">Git, in QUILL</h2>
+<p>Everything under <strong>Tools &gt; Git and GitHub &gt; Local
+Git</strong> works on any git repository on your computer, with no
+account and no network. It needs the Developer profile, or Developer
+Tools checked, and <code>git</code>; if you do not have git,
+<strong>Help &gt; Download Optional Components</strong> has a portable
+copy.</p>
+<ul>
+<li><strong>Uncommitted Changes…:</strong> every changed file, staged
+and unstaged, with each file’s changes read the way Compare Documents
+reads them, and Stage, Unstage and Stage All.</li>
+<li><strong>Switch Branch…,</strong> which warns you about uncommitted
+changes and never quietly throws them away.</li>
+<li><strong>Stash Changes…</strong> and <strong>Manage
+Stashes…,</strong> by name rather than <code>stash@{2}</code>.</li>
+<li><strong>Who Wrote This Line…,</strong> git blame for the line you
+are on.</li>
+<li><strong>Start Bisect…</strong> and <strong>End Bisect,</strong> as
+plain questions: “Is this version good or bad?”</li>
+<li><strong>Resolve Conflicts…,</strong> one conflict at a time:
+“Conflict 1 of 3: your version says X, their version says Y.”</li>
+<li><strong>Interactive Rebase…</strong> as a real list, and
+<strong>Abort Rebase.</strong></li>
+<li><strong>Worktrees…</strong> and <strong>New Worktree…:</strong> a
+second folder on another branch, so the file under your cursor is never
+rewritten by a branch switch.</li>
+</ul>
+<p>None of these has a default key; every letter after the QUILL key is
+taken. Give any of them one in the Keymap Editor, or find them in the
+Command Palette (<code>Ctrl+Shift+P</code>), where they start “Local
+Git:”.</p>
+<p>Project tasks never commit, branch, stash or push for you. The agent
+can read the branch and the changed files, and a commit happens only if
+you ask for one in words and allow the command; pushing is never run
+(Chapter 5).</p>
+<h2 id="github-in-quill">GitHub, in QUILL</h2>
+<p>With <strong>GitHub Remote Access</strong> on (it needs Developer
+Tools):</p>
+<ul>
+<li><strong>File &gt; Open from Remote</strong> has Open Remote GitHub
+Repository…, Open Remote GitHub File URL…, Save to GitHub…, Manage
+GitHub Accounts… and Open GitHub Items…, the accessible viewer for
+issues, pull requests, branches and workflows. Pull request diffs read
+as a file list with QUILL’s spoken compare.</li>
+<li><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> has the
+repository commands: create, fork, rename and change visibility; the
+default branch and branch protection; delete a branch; Commit Multiple
+Files…; Browse Organization Repositories…; Create Release…; Dispatch
+Workflow…; Notifications…; Security Alerts…; and
+<strong>Codespaces…</strong> and <strong>Create Codespace…</strong>,
+which use the GitHub CLI, <code>gh</code>. Creating a Codespace may cost
+money, and QUILL says so and asks first.</li>
+</ul>
+<h2 id="editing-over-ssh-in-quill">Editing over SSH, in QUILL</h2>
+<p><strong>File &gt; Open over SSH &gt; Quick Connect…</strong> and
+<strong>Site Manager…</strong> open and save files on a server as if
+they were on your computer. Unknown host keys are refused unless you
+choose to trust a host the first time you connect.</p>
+<h2 id="the-developer-console-in-quill">The Developer Console, in
+QUILL</h2>
+<p><strong>Tools &gt; Advanced &gt; Developer Console</strong> has
+<strong>Open Python Console…</strong> and <strong>Open TypeScript
+Console…</strong>, scripting windows that look inside the running editor
+and drive it from code, plus Copy Diagnostic Summary and Restart
+TypeScript Worker. The TypeScript console needs Node.js. The console
+also needs <strong>Enable Developer Console</strong> on the
+Administration page of Settings. Appendix A of the QUILL user guide
+covers it fully.</p>
+<h2 id="word-prediction-in-quill">Word prediction, in QUILL</h2>
+<p><strong>Word Prediction…</strong> (<code>Ctrl+.</code>) offers words
+and snippets as a list you choose from, never as ghost text. It is on
+but quiet in the Developer profile.</p>
+<h2 id="shell-integration-in-quill">Shell integration, in QUILL</h2>
+<p><strong>Tools &gt; Advanced &gt; Install Shell Integration…</strong>
+adds QUILL to the Windows Explorer right-click menu, and <strong>Remove
+Shell Integration</strong> takes it out again.</p>
+<h2 id="validate-agents-in-quill">Validate Agents, in QUILL</h2>
+<p>If you write agents for QUILL, <strong>Validate Agents</strong>
+checks agent files against QUILL’s authoring standards, the same rules
+the build enforces. Open it with <strong>Validate</strong> on an agent
+in the AI Library, then check the built-in agents or browse to a file or
+folder of your own.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-10-transcript.html">Chapter 10: The
+transcript, and what QUILL keeps</a></li>
+<li>Next: <a href="developer-12-quill-lite.html">Chapter 12: QUILL Lite
+differences</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

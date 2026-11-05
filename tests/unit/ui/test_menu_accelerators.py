@@ -31,6 +31,7 @@ from pathlib import Path
 
 import pytest
 
+from quill.core.user_guide_files import read_guide_text
 from tests.wx_session import patch_call_after, shared_wx_app
 
 wx = pytest.importorskip("wx")
@@ -377,7 +378,8 @@ def test_every_alt_path_the_guide_teaches_reaches_a_menu_item(app_menu_bar) -> N
         key = _access_key(menu_bar.GetMenuLabel(index))
         if key:
             menus[key] = menu_bar.GetMenu(index)
-    text = "\n".join(path.read_text(encoding="utf-8") for path in _GUIDES[app])
+    # read_guide_text: a guide split into chapter files is read whole.
+    text = "\n".join(read_guide_text(path) for path in _GUIDES[app])
     paths = sorted(set(_DOC_ALT_PATH.findall(text)))
     assert paths, (
         f"{app}: the guide teaches no Alt paths; the pattern changed and this checks nothing"

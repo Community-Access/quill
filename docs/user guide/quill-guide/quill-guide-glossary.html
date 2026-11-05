@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Glossary of QUILL Terms</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="glossary-of-quill-terms">Glossary of QUILL Terms</h1>
+<p>These are the words you will meet in QUILL’s menus, dialogs and
+documentation, with what each one means. They are listed roughly in the
+order a new user tends to run into them.</p>
+<p><strong>Abbreviation</strong> A short word or phrase that QUILL turns
+into longer text as you type. For example, typing <code>brb</code> could
+become “be right back”. You manage them in the Abbreviation Manager
+(<code>Ctrl+Shift+Grave, Shift+A</code>). Abbreviations expand on their
+own, with no separate insert step, and they do not have fill-in
+placeholders. Snippets are the ones with placeholders.</p>
+<p><strong>Agent / Agent Center</strong> An AI helper that takes a goal
+you describe and turns it into a plan of several steps. The Agent Center
+shows you each step before it runs, so you can check it and approve it.
+Agents are built on the Writing Assistant and Prompt Studio, and they
+need an AI provider set up first.</p>
+<p><strong>Browse Mode / Quick Nav Mode</strong> A way of moving around
+where single keys become navigation commands. Press the QUILL key once
+to turn on Quick Nav for just the next key you press. Press it twice to
+lock Browse Mode on until you press Escape. While Browse Mode is on,
+letter keys and arrow keys move you around instead of typing, much like
+your screen reader’s virtual cursor on a web page. (In the keymap the
+QUILL key is written <code>Ctrl+Shift+Grave</code>; everywhere else
+QUILL shows it as <code>QUILL Key</code>.)</p>
+<p><strong>Command Palette</strong> A searchable list of every QUILL
+command, with the key each one is on right now. Open it with
+<code>Ctrl+Shift+P</code>, type any part of a command’s name to narrow
+the list, then press Enter to run it. It is the quickest way to anything
+when you do not remember the menu or the key.</p>
+<p><strong>Copy Tray</strong> A clipboard with twelve slots, kept inside
+QUILL. The Windows clipboard holds one thing at a time; the Copy Tray
+lets you copy different pieces of text into numbered slots and paste
+from any of them. To copy into a slot, press
+<code>Ctrl+Shift+Grave, Shift+1</code> through
+<code>Ctrl+Shift+Grave, Shift+9</code>, then
+<code>Ctrl+Shift+Grave, Shift+0</code>,
+<code>Ctrl+Shift+Grave, Shift+-</code> and
+<code>Ctrl+Shift+Grave, Shift+=</code> for slots ten to twelve. Open the
+Copy Tray dialog with <code>Ctrl+Alt+V</code>, which works much like
+<code>Win+V</code> does for Windows’ own clipboard history.</p>
+<p><strong>Document Tab</strong> One open file, or one thing QUILL made
+for you, in the editor area. QUILL opens everything in tabs: each file,
+compare summary or AI result gets its own. When you switch tabs with
+<code>Ctrl+Tab</code>, QUILL tells you the tab’s name.</p>
+<p><strong>GLOW (Guided Layout and Output Workflow)</strong> QUILL’s
+built-in checker for text quality and accessibility. GLOW looks through
+a document for problems with its structure: heading levels, link text
+like “click here”, missing alt text, missing language information,
+tables without header cells, spacing, and paragraphs that are too dense.
+It offers fixes that do the same thing every time. The results open as
+tabs you can read. Fixing the open document shows you a named preview
+and starts a compare, so you can review each change. Fixing a file on
+disk writes a repaired copy and leaves the original alone. The checks
+inside the editor cover plain text, Markdown and HTML. The optional GLOW
+engine adds checks and fixes for DOCX, PPTX, XLSX, PDF and EPUB, with a
+scored, graded report. You will find its commands on <strong>Tools &gt;
+Writing and Language</strong> once GLOW is turned on in the Experimental
+tab of Preferences.</p>
+<p><strong>Keymap / Keyboard Pack (.kqp)</strong> The list of which key
+runs which QUILL command. You can change any of it in
+<strong>Preferences &gt; Keyboard</strong>. You can export your keymap
+as a <code>.kqp</code> file (a Keyboard Pack) to share it, or import one
+somebody else made. Resetting the keymap puts the factory keys back and
+leaves your other preferences alone.</p>
+<p><strong>Macro</strong> A recording of things you did in QUILL that
+you can play back whenever you like. Start from <strong>Tools &gt;
+Advanced &gt; Macros &gt; Start Recording</strong>, do the steps you
+want to repeat, then stop recording. Play it back later and QUILL
+repeats the steps exactly. Macros are great for cleanup jobs you do over
+and over.</p>
+<p><strong>Profile (Feature Profile)</strong> A named set of switches
+that decides which QUILL features you see and can use. QUILL comes with
+profiles such as Writing, Developer and Accessibility. A profile hides
+the features you do not need for the work in front of you, so the menus
+and option dialogs stay short. Change or edit profiles in <strong>More
+Preferences &gt; Profiles and Features</strong>.</p>
+<p><strong>Prompt Studio</strong> The place to write and save AI prompts
+you want to reuse, with named blanks you fill in each time. A Prompt
+Studio template might be “Rewrite for Plain Language: ${input:text}”,
+where you supply the text each time you run it. Prompts are saved as
+<code>.pqp</code> files, and you can import and export them.</p>
+<p><strong>Quillin (Extension)</strong> An add-on for QUILL, also called
+an extension. A Quillin can add commands, menu items, AI prompts or
+automation scripts. Each one has a <code>manifest.json</code> file that
+describes what it does. Quillins run in a separate process, so if one
+crashes it cannot take the editor down with it. That is not a security
+sandbox, though: what keeps Quillins honest is code review and the
+Author Covenant. QUILL comes with several Quillins already (word count,
+AI writing prompts), and you can install others. The Quillin Manager is
+in <strong>Preferences &gt; Extensions</strong>.</p>
+<p><strong>Recovery / Session Recovery</strong> QUILL quietly saves a
+copy of your work every so often. If QUILL closes when you did not
+expect it (a crash, a power cut, an accidental close), it notices the
+unsaved work the next time it starts and offers to bring back the last
+version it kept. Recovery files are kept apart from your own saved
+files, so a damaged recovery file can never overwrite your original.
+Manage them in <strong>File &gt; Restore Backup…</strong>.</p>
+<p><strong>Remote Site</strong> A saved connection to a server, so QUILL
+can open and save files there directly. QUILL works with FTP, SFTP,
+HTTPS (WebDAV) and S3-compatible object storage. You name and save sites
+in <strong>File &gt; Open from Remote &gt; Manage Remote
+Sites…</strong>, so you do not have to type your sign-in details every
+time. Each site keeps the host, port, protocol, sign-in details
+(encrypted on Windows with DPAPI) and a starting folder.</p>
+<p><strong>Safe Mode</strong> A way of starting QUILL with AI, Watch
+Folder and Quillin extensions turned off. Use it when a Quillin or an AI
+provider is causing trouble and you want a clean start. Start QUILL with
+<code>--safe-mode</code> on the command line, or set
+<code>QUILL_SAFE_MODE=1</code> as an environment variable before you
+start it. In Safe Mode, the status bar tells you which features are
+off.</p>
+<p><strong>Session (AI Session)</strong> An ongoing conversation between
+you and an AI provider inside QUILL. A session has a name, a provider, a
+model and the history of what was said. You can keep several named
+sessions and switch between them. Sessions are kept on your computer and
+can be exported. The Writing Assistant always works inside a
+session.</p>
+<p><strong>Skill / Skill Library</strong> A named AI workflow you can
+reuse, made of several steps (prompts, transforms and conditions). A
+skill is more organised than a single prompt: each step can pass what it
+produced on to the next. The Skill Library (the Skills tab of <strong>AI
+&gt; AI Library…</strong>) is where you browse, run and write skills.
+Skills are stored as <code>.json</code> files; the skills you write and
+share by hand are <code>.sqp</code> files, and Appendix B shows you
+how.</p>
+<p><strong>Snippet</strong> A block of text you reuse, inserted at the
+cursor when you ask for it. A snippet can have fill-in blanks:
+<code>${input:name}</code> asks you to type something,
+<code>${choice:a|b}</code> gives you a list to pick from,
+<code>${date}</code> and <code>${time}</code> fill in the date and time,
+and <code>${cursor}</code> marks where the cursor lands afterwards.
+Insert one with <code>Ctrl+Shift+Grave, S</code>, and manage them with
+<code>Ctrl+Shift+Grave, Shift+S</code>. Abbreviations are different:
+they expand on their own as you type.</p>
+<p><strong>Sound Pack</strong> A set of sound files QUILL plays as
+feedback that is not speech: key sounds, navigation tones, alert chimes
+and, if you want them, tones for indentation levels when you write code.
+A Sound Pack is loaded from a named folder, and you can swap packs in
+Preferences. The default pack uses synthesised bell tones. A custom pack
+can use any WAV files, as long as they follow the naming convention.</p>
+<p><strong>Template</strong> A ready-made document shape to start new
+writing from. QUILL has two kinds. Snippets (<strong>Insert &gt; Insert
+Snippet…</strong>, <code>Ctrl+Shift+Grave, S</code>) insert reusable
+blocks with fill-in blanks anywhere. The <strong>Accessible Vault’s
+Insert Template</strong> command fills in note templates from your
+vault’s Templates folder: it fills in <code>{{date}}</code> and
+<code>{{title}}</code>, asks you any <code>{{prompt}}</code> questions,
+and puts the cursor at <code>{{cursor}}</code>.</p>
+<p><strong>Watch Folder</strong> A folder QUILL keeps an eye on while it
+runs. Drop a supported file into it, and QUILL opens the file as a new
+document tab (or deals with it by that folder’s own rules). It is handy
+for transcriptions, dictation and reviewing a batch of files. Set it up
+in <strong>Tools &gt; Watch Folder</strong>.</p>
+<p><strong>WebView / Side Preview</strong> The pane beside the editor
+that shows your document as a rendered page. Open it from the
+<strong>View</strong> menu, or turn on Auto Side-by-Side Preview and it
+opens on its own. <code>Alt+F6</code> moves focus to it, and while it is
+open it is one of the places <code>F6</code> cycles through. It uses
+Microsoft Edge WebView2 and shows Markdown, HTML and plain text,
+updating as you type. The preview is read-only and never changes your
+document.</p>
+<p><strong>Welcome Guide</strong> A short getting-started document that
+opens inside QUILL as a document tab. The full User Guide opens in your
+browser; the Welcome Guide shows only the features your current profile
+has turned on. Open it from <strong>Help &gt; Open Welcome
+Guide</strong>.</p>
+<p><strong>Writing Assistant</strong> QUILL’s AI writing panel. Tell it
+what you want to do in plain words and it suggests the QUILL commands
+that fit best. It also has ready-made rewrite, summarize, continue and
+grammar actions, and it can run a limited Python transform on the
+current document (with a list of allowed imports and limits on
+resources, which is not a security boundary). It works inside an AI
+Session and needs an AI provider set up in Preferences.</p>
+<p><strong>QUILL Key</strong> The key combination
+<code>Ctrl+Shift+Grave</code> (the grave or backtick key, above Tab).
+Press it once and the next key you press is a QUILL key command. Press
+it twice to lock Quick Nav Mode on. Most of QUILL’s more powerful
+features start with the QUILL key. QUILL tells you each chord as you
+press it, and you can change any of them in <strong>Preferences &gt;
+Keyboard</strong>. In menus, the Keyboard Reference, the status bar and
+the cheat sheet, these chords are written
+<code>QUILL Key + &lt;key&gt;</code>. In <code>keymap.json</code> and
+the Keymap Editor, the same chord is written
+<code>Ctrl+Shift+Grave, &lt;key&gt;</code>.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-appendix-e-design-notes-for-developers.html">Appendix
+E: Design notes for developers</a></li>
+<li>Next: <a href="quill-guide-licences-and-notices.html">Licences and
+notices</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

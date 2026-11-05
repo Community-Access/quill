@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Appendix B: Writing skills for QUILL</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="appendix-b-writing-skills-for-quill">Appendix B: Writing skills
+for QUILL</h1>
+<p>This appendix shows you how to write, check and share your own
+skills. A skill lives in a <code>.sqp</code> file (Skill Quill Pack). It
+is a multi-step AI workflow, written in plain Markdown. If you can write
+a prompt, you can write a skill.</p>
+<h2 id="what-a-skill-is">What a skill is</h2>
+<p>A QUILL prompt is one instruction. A skill is a short conversation: a
+series of instructions, where each step can see what the step before it
+produced.</p>
+<p>A skill is the right tool when:</p>
+<ul>
+<li>You want to analyse your text first, then act on what the analysis
+found.</li>
+<li>You want to gather information in one step and write with it in the
+next.</li>
+<li>You want to check something (is this a question or a statement?) and
+go a different way depending on the answer.</li>
+<li>You want a better result on the same task, by giving the model
+context it built for itself in an earlier step.</li>
+</ul>
+<h2 id="your-first-skill">Your first skill</h2>
+<p>Create a file called <code>my-first-skill.sqp</code> and open it in
+QUILL. Type this in:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Explain Then Simplify</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Explains the selected text in plain terms, then simplifies it further.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> Your Name</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Explain</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>Explain the following text as if the reader has no prior knowledge. Use simple</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>vocabulary and short sentences. Aim for 50-80 words.</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Text to explain:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>{selection}</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Simplify further</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>The explanation below is good, but we need it even simpler. Rewrite it so a</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>twelve-year-old would understand it immediately. Keep the core meaning.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>Explanation to simplify:</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>{step1.output}</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="in">label: Plain-language explanation</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: clipboard</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>The part between the two <code>---</code> lines is the front matter:
+the skill’s name and details. Each line that starts with
+<code># Step</code> begins a new step. <code>{selection}</code> is your
+selected text, and <code>{step1.output}</code> is whatever step 1
+produced.</p>
+<p>Save the file, then check it with the validator:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">sqp_validator</span> my-first-skill<span class="op">.</span><span class="fu">sqp</span></span></code></pre></div>
+<p>If all is well, you will see:</p>
+<pre><code>my-first-skill.sqp: OK</code></pre>
+<h2 id="adding-parameters">Adding parameters</h2>
+<p>Parameters let the person running the skill choose options first.
+Before step 1 begins, QUILL shows a small dialog that asks for those
+choices.</p>
+<p>Here is the same skill with a choice of reading level added:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Explain Then Simplify</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Explains and simplifies selected text at a chosen reading level.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> Your Name</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="an">parameters:</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: level</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">    label: Target reading level</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">    type: choice</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">    choices: [Grade 4, Grade 6, Grade 8]</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">    default: Grade 6</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Explain</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>Explain the following text so it is accessible at {parameters.level} reading level.</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>Use simple vocabulary and short sentences. Aim for 50-80 words.</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>Text to explain:</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>{selection}</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Simplify further</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>Rewrite the explanation below to be even clearer. Target: {parameters.level}.</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>Keep the core meaning intact.</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>{step1.output}</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="in">label: Plain-language explanation</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: clipboard</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>Now <code>{parameters.level}</code> can be used in both steps. Its
+value is whatever the user picked in the dialog.</p>
+<p>There are five kinds of parameter:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>UI control</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td>Single-line text field</td>
+<td>A keyword or name</td>
+</tr>
+<tr>
+<td><code>multiline</code></td>
+<td>Multi-line text area</td>
+<td>A block of context</td>
+</tr>
+<tr>
+<td><code>choice</code></td>
+<td>Drop-down list</td>
+<td>Reading level, tone, language</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>Checkbox</td>
+<td>Include citations: yes/no</td>
+</tr>
+<tr>
+<td><code>number</code></td>
+<td>Numeric field</td>
+<td>Word count target</td>
+</tr>
+</tbody>
+</table>
+<h2 id="using-the-input-block">Using the input block</h2>
+<p>A long piece of text can bury the instruction it belongs to. The
+<code>input</code> block adds the data after the instruction, so the
+step stays easy to read:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Extract key claims</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Read the following document and list the five most important claims it makes.</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>Number each claim. One sentence per claim.</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="in">```input</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="in">{document}</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>Without the <code>input</code> block you would write:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Extract key claims</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>Read the following document and list the five most important claims it makes.</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>Number each claim. One sentence per claim.</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>Document:</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>{document}</span></code></pre></div>
+<p>Both do the same thing. The <code>input</code> block is just tidier
+when the data is long.</p>
+<h2 id="branching-on-an-answer">Branching on an answer</h2>
+<p>A <code>condition</code> block sends the skill down one path or
+another, depending on what a step produced.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Detect intent</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>Read the following text. Is it asking a question, or making a statement?</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>Answer with exactly one word: &quot;question&quot; or &quot;statement&quot;.</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="in">```input</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="in">{selection}</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="in">```condition</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="in">if: &quot;{step1.output}&quot; contains &quot;question&quot;</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="in">then: step2</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="in">else: step3</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Answer the question</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>Answer this question clearly and concisely:</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>{selection}</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="in">label: Answer</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: clipboard</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 3: Expand the statement</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>Expand the following statement into a full paragraph with supporting detail:</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>{selection}</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="in">label: Expanded statement</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: clipboard</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>Here is what happens. After step 1 runs, QUILL checks the condition.
+If the output contains “question”, it jumps to step 2. Otherwise it
+jumps to step 3. Whichever step runs last is the one that produces the
+result.</p>
+<p>You can use these operators in a condition:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Matches when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contains</code></td>
+<td>Subject contains value (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>equals</code></td>
+<td>Subject exactly matches value (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>starts_with</code></td>
+<td>Subject starts with value</td>
+</tr>
+<tr>
+<td><code>ends_with</code></td>
+<td>Subject ends with value</td>
+</tr>
+<tr>
+<td><code>length_gt</code></td>
+<td>Subject length &gt; number</td>
+</tr>
+<tr>
+<td><code>length_lt</code></td>
+<td>Subject length &lt; number</td>
+</tr>
+<tr>
+<td><code>is_empty</code></td>
+<td>Subject is blank</td>
+</tr>
+</tbody>
+</table>
+<h2 id="controlling-the-output">Controlling the output</h2>
+<p>The <code>output</code> block on the last step decides what happens
+to the result.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="in">label: Rewritten paragraph</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: selection</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>It has three settings:</p>
+<ul>
+<li><code>format</code>: <code>text</code> (the default),
+<code>list</code> (the AI should return a bulleted or numbered list), or
+<code>json</code> (the AI should return valid JSON).</li>
+<li><code>accept_into</code>: what happens when the user presses Accept
+in the result dialog. <code>selection</code> replaces the current
+selection in the editor. <code>clipboard</code> copies the result to the
+clipboard. <code>none</code> just shows it, read-only (this is the
+default).</li>
+<li><code>label</code>: the heading of the result dialog, so the user
+knows what they are reviewing.</li>
+</ul>
+<h2 id="a-complete-example-accessible-rewrite">A complete example,
+Accessible Rewrite</h2>
+<p>Here is the “Accessible Rewrite” skill that comes with QUILL, in
+full.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Accessible Rewrite</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Rewrites selected text for plain-language accessibility.</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> QUILL Project</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="an">parameters:</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: reading_level</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">    label: Target reading level</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">    type: choice</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">    choices: [Grade 6, Grade 8, Grade 10, No target]</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">    default: Grade 8</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Analyse accessibility issues</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>Review the following text for plain-language accessibility issues. List the</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>problems as a numbered list. Focus on: sentence length (over 25 words), passive</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>voice, unexplained jargon or acronyms, abstract nouns where concrete ones would</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>serve better, and complex nested clauses. Be concise — one clear problem per</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>line. If the text has no issues, say &quot;No issues found.&quot;</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="in">```input</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="in">{selection}</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Rewrite for accessibility</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>Rewrite the text below to fix the issues identified in Step 1. Requirements:</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Target reading level: {parameters.reading_level}</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Preserve all factual content</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Do not add new information</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>Original text:</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>{selection}</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>Issues to fix:</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>{step1.output}</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="in">label: Rewritten text</span></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: selection</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>Step 1 reads the text and makes a numbered list of problems. Step 2
+gets that list through <code>{step1.output}</code>, along with the
+original text, so the model knows exactly what to fix. When the user
+presses Accept, the rewrite replaces the selection.</p>
+<h2 id="checking-your-skill">Checking your skill</h2>
+<p>Always run the validator before you share a skill:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">sqp_validator</span> my-skill<span class="op">.</span><span class="fu">sqp</span></span></code></pre></div>
+<p>For a stricter check:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">sqp_validator</span> my-skill<span class="op">.</span><span class="fu">sqp</span> <span class="op">--</span>strict</span></code></pre></div>
+<p>With <code>--strict</code>, it also warns you if
+<code>description</code> or <code>author</code> is missing.</p>
+<p>These are the errors people meet most, and how to fix them:</p>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema must be 'quill.skill/1'</code></td>
+<td>Missing or wrong schema</td>
+<td>Add <code>schema: quill.skill/1</code> to front matter</td>
+</tr>
+<tr>
+<td><code>front matter must include 'name'</code></td>
+<td>No <code>name:</code> field</td>
+<td>Add <code>name: My Skill</code></td>
+</tr>
+<tr>
+<td><code>must have at least one step</code></td>
+<td>No <code># Heading</code> lines</td>
+<td>Add at least one <code># Step N:</code> heading</td>
+</tr>
+<tr>
+<td><code>{step3.output} references a step that hasn't run yet</code></td>
+<td>Forward reference</td>
+<td>Steps can only reference outputs from earlier steps</td>
+</tr>
+<tr>
+<td><code>unknown parameter 'tone'</code></td>
+<td>Used <code>{parameters.tone}</code> but didn’t declare it</td>
+<td>Add <code>tone</code> to the <code>parameters</code> list in front
+matter</td>
+</tr>
+<tr>
+<td><code>output format 'xml' is invalid</code></td>
+<td>Bad <code>format:</code> value</td>
+<td>Use <code>text</code>, <code>list</code>, or <code>json</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="sharing-skills">Sharing skills</h2>
+<p>A <code>.sqp</code> file is plain text, so you can share it the same
+way you share any document. There are three ways it reaches other
+people:</p>
+<ul>
+<li>Through the Skill Library. Whoever receives your <code>.sqp</code>
+file imports it with <strong>AI &gt; AI Library…</strong> (on the AI
+menu once <strong>Show advanced AI features</strong> is checked there):
+choose the Skills tab, then <strong>Import .sqp</strong>.</li>
+<li>Through a Quillin. If you look after a Quillin, put your
+<code>.sqp</code> files in the Quillin’s folder. QUILL finds them on its
+own when the Skill Library loads.</li>
+<li>As a file on its own. A <code>.sqp</code> file holds everything it
+needs. Anyone can also open it in QUILL’s editor to read it, understand
+it and change any step.</li>
+</ul>
+<h2 id="tips-for-writing-good-skills">Tips for writing good skills</h2>
+<ul>
+<li>Be specific in each step. “List the five most important claims”
+works better than “What are the claims?” The model follows precise
+wording.</li>
+<li>Say exactly what you want back. Instead of “Summarise the
+following”, write “Write a one-sentence summary of the following text.
+Return only the summary sentence, no preamble.” Then
+<code>{step1.output}</code> holds just what you expect.</li>
+<li>Try it on short text first. Type two or three sentences into the
+editor, select them, and run the skill. Short text runs faster, and
+mistakes are easier to track down.</li>
+<li>Put long data in an <code>input</code> block. If the selection might
+be a whole document, put <code>{document}</code> in an
+<code>input</code> block instead of in the middle of the prompt. The
+step reads more cleanly.</li>
+<li>Give a branch its own detection step. If you are branching on
+whether the text is a question, a statement, a list or something else,
+let step 1 do only that sorting, and ask for a one-word answer. The
+tighter the answer, the more reliably the condition works.</li>
+<li>Choose <code>accept_into</code> on purpose. If the skill rewrites
+the selection, use <code>accept_into: selection</code>. If it makes
+something extra (a meeting summary, an outline), use
+<code>accept_into: clipboard</code>, so the user can paste it where they
+like. Use <code>none</code> for skills that only inform you (a grammar
+analysis, a readability score), where you read the result but do not
+insert it.</li>
+</ul>
+<h2 id="reference-card">Reference card</h2>
+<h3 id="front-matter-fields">Front matter fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema: quill.skill/1</code></td>
+<td>yes</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>name: ...</code></td>
+<td>yes</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>description: ...</code></td>
+<td>recommended</td>
+<td><code>""</code></td>
+</tr>
+<tr>
+<td><code>author: ...</code></td>
+<td>recommended</td>
+<td><code>""</code></td>
+</tr>
+<tr>
+<td><code>version: ...</code></td>
+<td>no</td>
+<td><code>1.0.0</code></td>
+</tr>
+<tr>
+<td><code>parameters: [...]</code></td>
+<td>no</td>
+<td><code>[]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="variables">Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{selection}</code></td>
+<td>Selected editor text (full document if nothing selected)</td>
+</tr>
+<tr>
+<td><code>{document}</code></td>
+<td>Full document text</td>
+</tr>
+<tr>
+<td><code>{title}</code></td>
+<td>Document title</td>
+</tr>
+<tr>
+<td><code>{clipboard}</code></td>
+<td>Clipboard text at skill-start time</td>
+</tr>
+<tr>
+<td><code>{stepN.output}</code></td>
+<td>Output from step N (must be a lower-numbered step)</td>
+</tr>
+<tr>
+<td><code>{parameters.name}</code></td>
+<td>Value of a declared parameter</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fenced-block-types">Fenced block types</h3>
+<table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Where</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>`input`</code></td>
+<td>Any step</td>
+<td>Appends data to the prompt</td>
+</tr>
+<tr>
+<td><code>`condition`</code></td>
+<td>Any step</td>
+<td>Branch to <code>then</code>/<code>else</code> step after this step
+runs</td>
+</tr>
+<tr>
+<td><code>`output`</code></td>
+<td>Last step</td>
+<td>Controls format, label, accept_into</td>
+</tr>
+<tr>
+<td><code>`use-prompt`</code></td>
+<td>Any step</td>
+<td>Delegates to a named Prompt Library prompt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="values-at-a-glance">Values at a glance</h3>
+<ul>
+<li>Condition operators: <code>contains</code>, <code>equals</code>,
+<code>starts_with</code>, <code>ends_with</code>,
+<code>length_gt</code>, <code>length_lt</code>,
+<code>is_empty</code>.</li>
+<li>Output formats: <code>text</code>, <code>list</code>,
+<code>json</code>.</li>
+<li>Output accept_into values: <code>selection</code>,
+<code>clipboard</code>, <code>none</code>.</li>
+</ul>
+<h2 id="where-to-go-next">Where to go next</h2>
+<p>Open the Skill Library from the <strong>AI</strong> menu and run one
+of the skills that come with QUILL, then open its <code>.sqp</code> file
+and see how it was put together. Chapter 10, AI, when you want it,
+covers the rest of the assistant.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-appendix-a-quill-developer-console.html">Appendix A:
+The QUILL Developer Console</a></li>
+<li>Next: <a
+href="quill-guide-appendix-c-every-emoji-quill-can-insert.html">Appendix
+C: Every emoji QUILL can insert</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

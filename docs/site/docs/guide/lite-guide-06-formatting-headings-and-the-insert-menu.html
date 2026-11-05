@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 6: Formatting, headings and the Insert menu</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-6-formatting-headings-and-the-insert-menu">Chapter 6:
+Formatting, headings and the Insert menu</h1>
+<p>The formatting keys are the ones you know from WordPad, and QUILL
+Lite makes each one write the right thing for the kind of document you
+are in. This chapter covers bold, lists and headings, how to hear that
+you are on a heading or in a list, how to skim a long document by
+folding it, and how to reshape it by moving whole sections. Then come
+links, and the Insert menu: the date, emoji, special characters, line
+breaks, and the Markdown and HTML tag pickers.</p>
+<h2 id="formatting">Formatting</h2>
+<p>The formatting keys are the ones you know from WordPad. Ctrl+B is
+still bold, Ctrl+I is still italic. What changes is that QUILL Lite
+gives you the right kind of bold for the document you are in.</p>
+<h3 id="one-key-the-right-answer-for-your-document">One key, the right
+answer for your document</h3>
+<p>In a Markdown document, bold is two asterisks. In HTML it is a tag.
+In rich text it is real bold. So when you press <strong>Ctrl+B</strong>,
+QUILL Lite writes whatever bold means in the document in front of you.
+Headings work the same way.</p>
+<table>
+<thead>
+<tr>
+<th>In a</th>
+<th><strong>Ctrl+B</strong> writes</th>
+<th><strong>Ctrl+Alt+2</strong> writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown document</td>
+<td><code>**bold**</code></td>
+<td><code>## Heading</code></td>
+</tr>
+<tr>
+<td>HTML document</td>
+<td><code>&lt;strong&gt;bold&lt;/strong&gt;</code></td>
+<td><code>&lt;h2&gt;Heading&lt;/h2&gt;</code></td>
+</tr>
+<tr>
+<td>Rich text document</td>
+<td>real bold</td>
+<td>a 16-point bold paragraph</td>
+</tr>
+<tr>
+<td>Plain text document</td>
+<td>nothing, and says why</td>
+<td>nothing, and says why</td>
+</tr>
+</tbody>
+</table>
+<p>Here is how it feels in practice:</p>
+<ol type="1">
+<li>Select a word and press <strong>Ctrl+B</strong>. The word is wrapped
+in bold.</li>
+<li>Or press <strong>Ctrl+B</strong> with nothing selected. The markup
+goes in empty, and your cursor lands in the middle of it, so you can
+type the bold words straight away.</li>
+</ol>
+<p>In Markdown and HTML you hear what was written, for example “Bold in
+Markdown”. That tells you two asterisks appeared, which is what actually
+happened.</p>
+<p>In HTML, bold is written as <code>&lt;strong&gt;</code> and italic as
+<code>&lt;em&gt;</code>. Screen readers can treat those as important
+text, which plain <code>&lt;b&gt;</code> and <code>&lt;i&gt;</code> do
+not give them.</p>
+<p>Applying a heading replaces the old one. Press
+<strong>Ctrl+Alt+2</strong> on a line that says <code>### Notes</code>
+and you get <code>## Notes</code>. If an HTML heading has an
+<code>id=</code>, it is kept, so links pointing at that heading still
+work.</p>
+<p>Alignment, line spacing and font are for rich text only. If you try
+one in another kind of document, QUILL Lite tells you it cannot run
+there.</p>
+<h3 id="lists">Lists</h3>
+<p><strong>Ctrl+Shift+L</strong> works in rich text and in Markdown. It
+goes round in a circle, like WordPad’s list button: bulleted list,
+numbered list, no list, then back to the start. Each stop says its name,
+so keep pressing until you hear the one you want.</p>
+<p>In rich text, the bullets and numbers are drawn for you and renumber
+themselves. In Markdown, QUILL Lite writes <code>- </code> or
+<code>1. </code> at the start of the lines you selected, and only those
+lines.</p>
+<h4 id="pressing-enter-in-a-list">Pressing Enter in a list</h4>
+<p>In a Markdown document, <strong>Enter</strong> keeps a list going,
+the way it does in QUILL and in other Markdown editors. QUILL Lite says
+what it did, because your screen reader only hears a new line:</p>
+<ul>
+<li><strong>Enter</strong> at the end of an item starts the next one
+with the next marker: a hyphen after a hyphen, <code>3. </code> after
+<code>2. </code>, <code>3) </code> after <code>2) </code>, and an
+unchecked <code>- [ ] </code> after a task item. A nested item keeps its
+indentation. You hear “Continued list item”.</li>
+<li><strong>Enter</strong> in the middle of an item splits it. In
+<code>1. bread milk</code>, with the cursor before <code>milk</code>,
+you get <code>1. bread</code> and <code>2. milk</code>.</li>
+<li>A new numbered item renumbers the items under it, so adding an item
+after the first of <code>1. 2. 3.</code> gives <code>1. 2. 3. 4.</code>,
+and you hear “Continued list item, renumbered 2 items below”. If your
+list jumps (from <code>2.</code> to <code>7.</code>), your own numbering
+from the jump on is left alone.</li>
+<li><strong>Enter</strong> on an item with nothing after its marker ends
+the list. The marker goes, the empty line stays, and you hear “Exited
+list”.</li>
+<li><strong>Ctrl+Z</strong> straight afterwards takes the whole thing
+back in one step: the new line, its marker and any renumbering.</li>
+</ul>
+<p>This needs the <strong>Markdown and HTML</strong> area switched on in
+Customize Features, like everything else that writes Markdown for
+you.</p>
+<p><strong>In plain text, only if you ask.</strong> Check
+<strong>Continue lists in plain text</strong> in <strong>Tools &gt;
+Preferences</strong> and the same happens in a <code>.txt</code> file or
+a new untitled document. It starts off, because in plain text a line
+that happens to begin with <code>1.</code> is as often a date or a
+version number as a list. It never happens in a source code or settings
+file, whatever the box says, and never in rich text, where
+<strong>Ctrl+Shift+L</strong> makes real lists and
+<strong>Enter</strong> is WordPad’s own.</p>
+<h3 id="keys-that-only-work-in-rich-text">Keys that only work in rich
+text</h3>
+<p>Underneath, every QUILL Lite document uses the same Windows editing
+box that WordPad uses. That box has some keys of its own:
+<strong>Ctrl+U</strong> underlines, <strong>Ctrl+E</strong>,
+<strong>Ctrl+L</strong>, <strong>Ctrl+R</strong> and
+<strong>Ctrl+J</strong> change alignment, <strong>Ctrl+=</strong> and
+<strong>Ctrl+Shift+=</strong> raise and lower text, and there are a few
+more. In a rich text document they all work as you would expect.</p>
+<p>In a Markdown, HTML or plain document, those keys have nothing to do.
+So QUILL Lite catches them and tells you, once per key in each
+document:</p>
+<blockquote>
+<p>Underline has no meaning in a plain text document.</p>
+</blockquote>
+<p>After that, pressing the same key again stays quiet, so you are not
+told the same thing over and over. Your document is never changed behind
+your back.</p>
+<h3 id="the-formatting-keys-at-a-glance">The formatting keys at a
+glance</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+B</strong>, <strong>Ctrl+I</strong>,
+<strong>Ctrl+U</strong></td>
+<td>Bold, italic, underline</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+.</strong> / <strong>Ctrl+Shift+,</strong></td>
+<td>Bigger / smaller text</td>
+</tr>
+<tr>
+<td><strong>Ctrl+L</strong>, <strong>Ctrl+E</strong>,
+<strong>Ctrl+R</strong>, <strong>Ctrl+J</strong></td>
+<td>Left, centre, right, justify</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+L</strong></td>
+<td>Lists: bulleted, numbered, none, round again</td>
+</tr>
+<tr>
+<td><strong>Ctrl+1</strong>, <strong>Ctrl+5</strong>,
+<strong>Ctrl+2</strong></td>
+<td>Single, one-and-a-half, double spacing</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+1</strong> to <strong>Ctrl+Alt+6</strong></td>
+<td>Heading 1 to 6</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+0</strong></td>
+<td>Back to ordinary text (removes the heading)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+N</strong></td>
+<td>Normal Text: take <em>all</em> formatting off</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+D</strong></td>
+<td>Describe the formatting where the cursor is</td>
+</tr>
+</tbody>
+</table>
+<p>The heading keys are also in <strong>Format &gt; Headings</strong>.
+The number in the menu is the number you press.</p>
+<h4 id="how-big-each-heading-is">How big each heading is</h4>
+<p>In rich text, a heading is bold text at its own size: 20, 16, 14, 12,
+11.5 and 10.5 point for levels 1 to 6. Ordinary text is 11 point. These
+are the same sizes QUILL uses, so when somebody opens your document in
+Word, the headings still look like headings. Every level has its own
+size, so QUILL Lite can always find every heading again.</p>
+<h4 id="taking-it-all-off-normal-text">Taking it all off: Normal
+Text</h4>
+<p><strong>Ctrl+Shift+N</strong> is Normal Text. It is the quick way
+back to plain, ordinary text when you are not sure what is applied. One
+press:</p>
+<ul>
+<li>takes off bold, italic, underline and strikethrough,</li>
+<li>puts the size back to ordinary body text,</li>
+<li>clears the colour and the highlight,</li>
+<li>sets the paragraph back to left aligned and single spaced,</li>
+<li>and takes it out of any list.</li>
+</ul>
+<p>One <strong>Ctrl+Z</strong> puts it all back if you change your mind.
+The typeface stays as it is. To change that, use <strong>Format &gt;
+Editor Font</strong>. This is the same key Word uses for the same
+job.</p>
+<p>In a Markdown or HTML document, <strong>Ctrl+Shift+N</strong> takes
+the heading marks off the line instead.</p>
+<h4 id="asking-what-is-here">Asking what is here</h4>
+<p><strong>Ctrl+Shift+D</strong> is the key worth remembering. It tells
+you what you are standing in, for example “Arial, 16 point, heading 2,
+bold”. When you cannot see the page, this is how you find out how your
+text looks.</p>
+<h3 id="moving-between-headings">Moving between headings</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+H</strong> / <strong>Ctrl+Alt+Shift+H</strong></td>
+<td>Next / previous heading</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+L</strong></td>
+<td>The list of every heading</td>
+</tr>
+</tbody>
+</table>
+<p>These work in every kind of document. In rich text they find the
+heading sizes listed above. In Markdown they find lines that start with
+<code>#</code>. In HTML they find <code>&lt;h1&gt;</code> to
+<code>&lt;h6&gt;</code>. A <code>#</code> inside a fenced code block is
+not treated as a heading.</p>
+<h3 id="skimming-a-long-document-with-folding">Skimming a long document
+with folding</h3>
+<p>When a sighted person gets a long document, they scroll and glance to
+see what is in it. Folding gives you the same quick overview by ear.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+F9</strong></td>
+<td><strong>Fold or Unfold Section</strong> (the one you are in)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Down</strong></td>
+<td><strong>Next Section</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Up</strong></td>
+<td><strong>Previous Section</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F10</strong></td>
+<td><strong>Unfold Everything</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Try it like this:</p>
+<ol type="1">
+<li>Open a long Markdown document.</li>
+<li>Press <strong>Ctrl+Alt+Shift+Down</strong> to move from section to
+section.</li>
+<li>Each time, you hear the heading, whether it is folded, and how many
+lines are under it, for example “Installing, expanded, 34 lines”.</li>
+</ol>
+<p>Folding never hides your text. A folded section reads exactly the
+same when you arrow through it, and Find still finds things inside it.
+Think of a fold as a note to yourself that says “I have dealt with this
+part”. You hear it as you pass by.</p>
+<p>Folding works in Markdown documents, where a heading line starting
+with <code>#</code> marks where each section begins.</p>
+<p>If you would like to practise this with the app guiding you, the
+tutorial <em>Skimming something long</em> walks through it step by
+step.</p>
+<h3 id="hearing-that-you-are-on-a-heading">Hearing that you are on a
+heading</h3>
+<p>When you arrow onto a heading, QUILL Lite says the level, for example
+<strong>“Heading 2”</strong>.</p>
+<p>Your screen reader cannot tell you this in an editor, because Windows
+editing boxes have no way to mark a paragraph as a heading. So QUILL
+Lite says it for you, and keeps it short:</p>
+<ul>
+<li><strong>Just the level.</strong> Your screen reader is already
+reading the line, so you do not hear the words twice.</li>
+<li><strong>Once, when you arrive.</strong> Moving around inside the
+heading says nothing more. Leave and come back, and you hear it
+again.</li>
+<li><strong>In rich text and in Markdown alike.</strong></li>
+</ul>
+<p>When you apply a heading yourself, you hear that once, not twice. And
+opening a document whose first line is its title does not greet you with
+“Heading 1”.</p>
+<h4 id="turning-heading-announcements-off">Turning heading announcements
+off</h4>
+<p>Sometimes you just want to read a document as text. Press
+<strong>Ctrl+Alt+F3</strong> (<strong>View &gt; Announce
+Headings</strong>) to turn the heading cue off, and press it again to
+turn it back on. You hear which way it went: “Headings will not be
+announced”, or “Headings announced on arrival”. QUILL Lite remembers
+your choice, but it is meant to be flipped whenever you need it.</p>
+<h4 id="when-a--is-not-a-heading">When a # is not a heading</h4>
+<p>In a <code>.md</code> or <code>.txt</code> file, or a new document
+you have not named yet, a line starting with <code>#</code> is a
+heading. In a <code>.py</code>, <code>.sh</code>, <code>.ini</code>,
+<code>.yml</code> or <code>.conf</code> file, a <code>#</code> starts a
+comment, so QUILL Lite says nothing and lists nothing. In an HTML
+document, headings are <code>&lt;h1&gt;</code> to
+<code>&lt;h6&gt;</code>, and those are the ones QUILL Lite reads and
+writes.</p>
+<h3 id="hearing-that-you-are-in-a-list">Hearing that you are in a
+list</h3>
+<p>When you arrow into a list, QUILL Lite says something like
+<strong>“Bulleted list, 5 items”</strong>. Go a level deeper and you
+hear <strong>“Level 2, 3 items”</strong>. Arrow out and you hear
+<strong>“Out of list”</strong>.</p>
+<p>On a web page, your screen reader tells you about lists. In an
+editor, a list is just lines of text, so without this a nested outline
+would sound like a run of lines starting with a dash. You would be left
+counting spaces by ear to know the level.</p>
+<p>It works in Markdown and in HTML, for all three kinds of list:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Markdown</th>
+<th>HTML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bulleted list</strong></td>
+<td><code>-</code>, <code>*</code>, <code>+</code></td>
+<td><code>&lt;ul&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Numbered list</strong></td>
+<td><code>1.</code>, <code>1)</code></td>
+<td><code>&lt;ol&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Definition list</strong></td>
+<td>a line, then <code>: the definition</code> under it</td>
+<td><code>&lt;dl&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>In a definition list you also hear <strong>“Term”</strong> and
+<strong>“Definition”</strong> as you move between them, so you always
+know which part you are in.</p>
+<p>Items are counted at your own level, inside your own list. Say a list
+has three items and the second one has four sub-items. You hear “3
+items” at level one and “4 items” at level two, never “7”. Two sub-lists
+under two different bullets count as two separate lists.</p>
+<h4 id="what-it-never-says">What it never says</h4>
+<ul>
+<li><strong>Nothing as you move down a list.</strong> Your screen reader
+is already reading each item.</li>
+<li><strong>Nothing about <code>- - -</code> or
+<code>***</code>.</strong> Those are dividing lines, not lists.</li>
+<li><strong>Nothing inside a fenced code block.</strong> A
+<code>- </code> in a code sample is part of the sample.</li>
+<li><strong>Nothing in a plain text document.</strong> Ordinary writing
+is full of hyphens, and you do not want to hear about every one.</li>
+</ul>
+<h4 id="turning-list-announcements-off">Turning list announcements
+off</h4>
+<p>Press <strong>Ctrl+Alt+F5</strong> (<strong>View &gt; Announce
+Lists</strong>). It has its own switch, separate from headings. When you
+are reorganising an outline, the levels help. When you are
+proof-reading, you may prefer quiet. You hear which way it went: “Lists
+will not be announced”, or “Lists announced as you enter them”.</p>
+<h4 id="which-item-you-are-on">Which item you are on</h4>
+<p>The spoken cue does not tell you which item you are on, because
+hearing that on every arrow press would be too much. The status bar’s
+List cell does. It says something like “Bulleted list, 4 of 9, level 2”,
+and you can check it whenever you like. Press <strong>Enter</strong> on
+that cell to turn the spoken list cue off and on.</p>
+<h3 id="all-of-them-at-once-the-heading-organizer">All of them at once:
+the Heading Organizer</h3>
+<p><strong>Alt+Shift+O</strong> opens <strong>Heading
+Organizer…</strong>: every heading in your document in one list. It is
+the easiest way to see and change the shape of a document, because the
+list reads the shape back to you as you work.</p>
+<ol type="1">
+<li>Arrow through the list. Each row says its level and its text, for
+example “Heading 2: Installing”.</li>
+<li>Press <strong>Tab</strong> to demote the heading you are on, or
+<strong>Shift+Tab</strong> to promote it.</li>
+<li>Use <strong>Move Up</strong> and <strong>Move Down</strong> to move
+a heading, together with everything under it, past its neighbour.</li>
+<li>Use <strong>Rename</strong> to change a heading’s words without
+moving it.</li>
+<li>Use <strong>Validate</strong> to check the result. It makes sure the
+document starts at Heading 1 and never skips a level on the way down,
+which is what screen readers rely on.</li>
+<li>Press <strong>Apply</strong> when you are happy.</li>
+</ol>
+<p>Beside the list there is a preview of the section under the heading
+you are on, which helps when two headings have similar names.</p>
+<p>Nothing changes in your document until you press
+<strong>Apply</strong>. Everything you did counts as one change, so one
+<strong>Ctrl+Z</strong> puts it all back. QUILL has the same window.</p>
+<p>The Heading Organizer works in Markdown, HTML and rich text
+documents. In rich text it moves each heading with its formatting, so
+bold and sizes come along.</p>
+<h3
+id="rearranging-headings-one-at-a-time-format--structure">Rearranging
+headings one at a time (Format &gt; Structure)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+Left</strong></td>
+<td>Promote heading: one level shallower</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Right</strong></td>
+<td>Demote heading: one level deeper</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Up</strong></td>
+<td>Move this whole section up, past whatever is above it</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Down</strong></td>
+<td>Move this whole section down, past whatever is below it</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F5</strong></td>
+<td>Select this section, subsections and all</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F5</strong></td>
+<td>Move Section To…: pick a destination instead of a direction</td>
+</tr>
+</tbody>
+</table>
+<p>These keys save you from cutting and pasting to reorganise a
+document. Selecting a section by hand means finding exactly where it
+ends by ear, which is easy to get wrong. <strong>Alt+Shift+Up</strong>
+moves the whole section in one press and tells you what happened.</p>
+<p>A “section” is the heading you are in plus everything under it, down
+to the next heading at the same level or higher. So moving a Heading 2
+brings its Heading 3s along with it.</p>
+<h4 id="where-a-moved-section-lands">Where a moved section lands</h4>
+<p>The move keys always move. If there is no heading at the same level
+next to yours, the section simply trades places with whatever is next to
+it, the same way Word’s outline view does on these keys. The first
+section inside a parent moves up above the parent’s own heading.</p>
+<p>A moved section keeps its level. Press the other key and you are back
+exactly where you started. To change a level, use
+<strong>Alt+Shift+Left</strong> and <strong>Alt+Shift+Right</strong>.
+You can move a section and then promote it.</p>
+<p>You hear where the section ended up, for example <em>“Section moved
+below Soup. Now 2 of 3 at this level.”</em> That tells you where it sits
+in the outline, which your screen reader cannot tell you.</p>
+<p>Sometimes a section has nowhere to go. In a document where every
+heading sits inside the one before it, everything below you is inside
+your own section. QUILL Lite tells you so and suggests what to do:
+<em>“Bottom of Heading 1. Everything below is inside this section.
+Alt+Shift+Left promotes Heading 3 to make it a sibling.”</em> The key it
+names is your own, so it is still right if you have changed it.</p>
+<h4 id="select-section-altshiftf5">Select Section (Alt+Shift+F5)</h4>
+<p><strong>Alt+Shift+F5</strong> selects the section you are in, with
+every subsection, stopping just before the blank line that separates it
+from the next one. Then press <strong>Ctrl+X</strong> and
+<strong>Ctrl+V</strong> to put it anywhere you like: elsewhere in this
+document, in another document, or in another program.</p>
+<p>You hear how much you selected, for example <em>“Selected Bread and 1
+section under it, 7 lines”</em>, or <em>“Selected Bread, 4 lines”</em>
+when nothing is nested inside. That answers the question “did it take
+the sub-headings too?”</p>
+<h4 id="move-section-to-ctrlaltshiftf5">Move Section To…
+(Ctrl+Alt+Shift+F5)</h4>
+<p>Pressing <strong>Alt+Shift+Up</strong> forty times is no way to move
+a section across a long document. <strong>Ctrl+Alt+Shift+F5</strong>
+asks where you want it to go instead. It asks two questions, each
+answered from a list you can type into.</p>
+<ol type="1">
+<li><strong>Which heading?</strong> Every heading in the document, in
+order, one per row, for example <code>3 of 7, level 2 - Bread</code>.
+The position comes first, so two sections both called “Notes” are easy
+to tell apart. Type to narrow the list; the order stays the same as you
+type. You start in the search box, and <strong>Enter</strong> there
+takes you into the results.</li>
+<li><strong>Before it, after it, or inside it?</strong> Pick one of
+three rows. Note that <strong>After it</strong> puts your section below
+that heading <em>and everything under it</em>.</li>
+</ol>
+<p>The whole move is one change, so one <strong>Ctrl+Z</strong> undoes
+it. You hear where the section landed: <em>“Moved Salad before Bread.
+Now 1 of 3 at this level.”</em></p>
+<p><strong>Inside it</strong> is the only choice that changes levels.
+Your section becomes the last one under the heading you picked, and it
+and everything under it go one level deeper. You hear the new level:
+<em>“Moved Bread inside Soup, now Heading 3. Now 1 of 2 at this
+level.”</em></p>
+<p>There are two things it will not do, and it tells you why:</p>
+<ul>
+<li><strong>A section cannot move inside itself.</strong> If you pick a
+heading that sits under the one you are moving, you hear <em>“Sourdough
+is inside Bread, so Bread cannot move into it. Promote Sourdough first
+if you want them side by side.”</em> Those headings stay in the list, so
+you are never left wondering where one went.</li>
+<li><strong>Nothing goes deeper than Heading 6</strong>, because
+Markdown has no deeper level. It tells you so and offers <strong>After
+it</strong> instead.</li>
+</ul>
+<p>Press <strong>Escape</strong> at either question to change nothing.
+Nothing is announced, because nothing happened.</p>
+<h4 id="good-to-know-about-all-six-keys">Good to know about all six
+keys</h4>
+<ul>
+<li><strong>Promoting a Heading 1 leaves it a Heading 1.</strong> It
+never turns into ordinary text.</li>
+<li><strong>Moving and selecting sections need a Markdown or HTML
+document</strong>, where the heading is written in the text. In rich
+text a heading is a font size, so there is nothing to move, and QUILL
+Lite tells you so. Promoting and demoting work in both.</li>
+<li><strong>These keys are the same in QUILL.</strong> Learn them once
+and they work in both editors, and you hear the same words in each.</li>
+</ul>
+<p>The tutorial <em>Skimming something long</em> ends with rearranging a
+document, if you would like to try these keys with some guidance.</p>
+<h3 id="checking-off-tasks">Checking off tasks</h3>
+<p>A task list is a list whose items start with a box:
+<code>- [ ]</code> for something to do and <code>- [x]</code> for
+something done. AI-written plans are full of them, and
+<strong>Ctrl+Alt+I</strong> (<strong>Markdown Tag…</strong>) can insert
+one.</p>
+<p>Put the cursor on a task and press <strong>Ctrl+Alt+Enter</strong>
+(<strong>Format &gt; Toggle Task Done</strong>) to check it. Press it
+again to uncheck it. You hear what changed and how many tasks in that
+list are done, for example “Checked: Write the tests. 3 of 7 tasks
+complete.” Select several tasks first to check them all at once.
+<strong>Ctrl+Z</strong> takes it back. On a line that is not a task,
+QUILL Lite says so and changes nothing. This is the same key as in
+QUILL.</p>
+<h2 id="links">Links</h2>
+<p>To add a link, press <strong>Ctrl+K</strong>. A box opens asking for
+the address and the words to show.</p>
+<ul>
+<li>If you select some words first, they are already filled in for
+you.</li>
+<li>If you leave the words empty, the address itself is shown as the
+link.</li>
+</ul>
+<p>QUILL Lite writes the link the right way for your document:
+<code>[text](address)</code> in Markdown, and
+<code>&lt;a href="address"&gt;text&lt;/a&gt;</code> in HTML. In a rich
+text document, the link becomes a real link in the text, with no
+brackets to see.</p>
+<h2 id="the-insert-menu">The Insert menu</h2>
+<p>The Insert menu is for anything you put into your document other than
+typing.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F5</strong></td>
+<td>Today’s date and the time</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F2</strong></td>
+<td>Special Character: 357 of them, in 15 groups, searchable by name or
+code point</td>
+</tr>
+<tr>
+<td><strong>Alt+.</strong></td>
+<td>Emoji: search or browse, with a description of each one</td>
+</tr>
+<tr>
+<td><strong>Shift+Enter</strong></td>
+<td>A line break that does not start a new paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Enter</strong></td>
+<td>Page Break: the rest starts on a new page (Word, Rich Text and
+Markdown documents)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+T</strong></td>
+<td>Table: the columns and rows you ask for, a real table in rich text
+(see “Making a table”)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+I</strong></td>
+<td>Markdown Tag: everything Markdown can write (Markdown documents
+only)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+O</strong></td>
+<td>HTML Tag: 111 tags and 20 whole form fields, searchable by what they
+do</td>
+</tr>
+</tbody>
+</table>
+<p>Insert sits just before Format on the menu bar, the same as in Word.
+You put something in, then you format it.</p>
+<h3 id="emoji-alt">Emoji (Alt+.)</h3>
+<p>Press <strong>Alt+.</strong> to open the emoji picker. You can search
+by name, by keyword, by what it looks like, or by a typed smiley:
+<code>:)</code> finds the smiling face and <code>&lt;3</code> finds the
+heart. Or you can browse by category, starting with
+<strong>Favourites</strong> and <strong>Recent</strong>.</p>
+<p>Every emoji has a written description of what it shows. You arrow
+through a list, and the description sits in a pane beside it, so you
+know exactly what you are about to send.</p>
+<p>When you insert one, QUILL Lite says its name. Screen readers do not
+all read emoji the same way, and some say nothing at all, so this is how
+you know it went in.</p>
+<p>Emoji work in every kind of document, rich text included.</p>
+<h3 id="the-two-tag-pickers">The two tag pickers</h3>
+<p>There are two tag pickers, one for Markdown and one for HTML.</p>
+<p>Markdown Tag appears only in Markdown documents. In a plain or rich
+text document it is not on the Insert menu at all, and if you press
+<strong>Ctrl+Alt+I</strong> there, QUILL Lite just says “Markdown tags
+are for Markdown documents.”</p>
+<p>HTML Tag stays on the menu in every document, but it is greyed out
+unless the document is HTML, and your screen reader tells you so when
+you arrive on it. If you press <strong>Ctrl+Alt+O</strong> anyway, QUILL
+Lite tells you what kind of document you are in and that
+<strong>Ctrl+Alt+F6</strong> is how to change it.</p>
+<p>In both pickers, if you have text selected, the tags go around it. If
+you do not, the cursor lands between the opening and closing tags, ready
+for you to type.</p>
+<h4 id="markdown-tag-ctrlalti">Markdown Tag (Ctrl+Alt+I)</h4>
+<p>This offers bold, italic, inline code, a fenced code block, the six
+heading levels, bullet, numbered and task lists, blockquote, link,
+image, table and footnote. Type a few letters to narrow the list. If you
+choose Link or Image, it asks you for the address next. An image then
+asks for its alt text: a short sentence saying what the picture shows
+and why it is there. Anything you had selected is already in the box.
+Leave it empty only for a decorative image; QUILL Lite then tells you
+that <strong>Tools &gt; AI &gt; Propose Alt Text</strong> can draft
+it.</p>
+<h4 id="html-tag-ctrlalto">HTML Tag (Ctrl+Alt+O)</h4>
+<p>This offers 111 tags and 20 whole form fields. You can search by what
+a tag does as well as by its name. Type “dropdown” and you find both a
+finished, labelled dropdown and the bare <code>select</code> tag. Type
+“glossary” and you find <code>&lt;dl&gt;</code>. Type “acronym” and you
+find <code>&lt;abbr&gt;</code>. Type “subtitles” and you find
+<code>&lt;track&gt;</code>.</p>
+<p>When you choose a bare tag, QUILL Lite asks if you want to add
+attributes, for example
+<code>class=note; id=summary; aria-label=Summary</code>. If you do not
+need any, just press <strong>Enter</strong> on the empty box to skip
+it.</p>
+<h4 id="whole-form-fields-wired-up">Whole form fields, wired up</h4>
+<p>The first rows in the HTML picker are not single tags. They are
+finished form controls. Choose <strong>Form field: dropdown</strong> and
+you get the label, a <code>for</code> that matches the field’s
+<code>id</code>, the <code>&lt;select&gt;</code>, and three
+<code>&lt;option&gt;</code>s, all at once.</p>
+<p>This saves you the fiddly part. The connections between a label and
+its field are invisible on the page. A missing <code>for</code>, a radio
+group without a shared <code>name</code>, or two fields with the same
+<code>id</code> all look fine until somebody tries to use the form.
+These fields arrive with all of that already done.</p>
+<table>
+<thead>
+<tr>
+<th>Choose</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>text</strong>, <strong>email</strong>,
+<strong>password</strong>, <strong>telephone</strong>, <strong>web
+address</strong>, <strong>number</strong>, <strong>date</strong>,
+<strong>search</strong>, <strong>file upload</strong></td>
+<td>a labelled input of that type, with <code>autocomplete</code> where
+the browser can help</td>
+</tr>
+<tr>
+<td><strong>long answer (textarea)</strong></td>
+<td>a labelled, five-row text area</td>
+</tr>
+<tr>
+<td><strong>dropdown (select)</strong></td>
+<td>label, select, and an empty first option, so nobody can send an
+answer they did not choose</td>
+</tr>
+<tr>
+<td><strong>dropdown with groups</strong></td>
+<td>the same, with two <code>&lt;optgroup&gt;</code>s</td>
+</tr>
+<tr>
+<td><strong>checkbox</strong></td>
+<td>the box first, then its label, so the label can be pressed too</td>
+</tr>
+<tr>
+<td><strong>checkbox group</strong></td>
+<td>a <code>&lt;fieldset&gt;</code>, a <code>&lt;legend&gt;</code>, and
+boxes sharing one <code>name</code></td>
+</tr>
+<tr>
+<td><strong>radio group</strong></td>
+<td>the same, with three radio buttons, one shared <code>name</code>,
+and exactly one chosen to start with</td>
+</tr>
+<tr>
+<td><strong>autocomplete (input + datalist)</strong></td>
+<td>an input joined to its own list of suggestions</td>
+</tr>
+<tr>
+<td><strong>required, with hint and error</strong></td>
+<td>a hint and an empty error, both named by
+<code>aria-describedby</code>, plus <code>aria-invalid</code> and
+<code>role="alert"</code></td>
+</tr>
+<tr>
+<td><strong>submit button</strong></td>
+<td>a <code>&lt;button type="submit"&gt;</code> with real text, not an
+<code>&lt;input value=""&gt;</code></td>
+</tr>
+<tr>
+<td><strong>whole form</strong></td>
+<td>a contact form: fieldset, legend, three labelled fields, and a
+submit button</td>
+</tr>
+<tr>
+<td><strong>grouped fields (fieldset)</strong></td>
+<td>an empty fieldset with a legend, for grouping fields you already
+have</td>
+</tr>
+</tbody>
+</table>
+<p>Two things make this even easier:</p>
+<ul>
+<li><strong>Select a word first and it becomes the label.</strong> The
+<code>id</code> is made from the same word, so the two match. Select
+“Postcode”, choose <strong>Form field: text</strong>, and you get a
+Postcode field with <code>id="postcode"</code> and
+<code>for="postcode"</code>.</li>
+<li><strong>It never repeats an <code>id</code>.</strong> QUILL Lite
+checks your document first. If you insert a second email field, its
+<code>id</code> is <code>email-2</code>, so the two fields never get
+mixed up.</li>
+</ul>
+<p>The bare tags are all still in the list, just below the form fields,
+for when a single tag is what you want.</p>
+<h3 id="typing-things-there-is-no-key-for">Typing things there is no key
+for</h3>
+<p><strong>Insert &gt; Special Character…</strong>
+(<strong>Ctrl+Shift+F2</strong>) opens a picker with 357 characters that
+your keyboard has no key for. There are two ways to find one.</p>
+<h4 id="search-for-it">Search for it</h4>
+<p>The window opens in the search box. Type part of a name, such as
+<code>dash</code>, <code>euro</code>, <code>acute</code>,
+<code>arrow</code> or <code>apostrophe</code>. Everyday words work too,
+even when they are not the official name: <code>gbp</code>,
+<code>sterling</code>, <code>copyright</code>, <code>eszett</code>,
+<code>micro</code>. Press <strong>Enter</strong> to move into the
+results.</p>
+<p>You can also type a code point. <code>2014</code>,
+<code>U+2014</code> or <code>d8212</code> all bring up the em dash
+first. This works for any character at all, even one that is not in the
+357.</p>
+<h4 id="browse-a-group">Browse a group</h4>
+<p>Clear the search box and you can browse fifteen groups: Whitespace,
+Dashes and hyphens, Quotes, Invisible and control, Typography, Legal and
+reference marks, Currency, Maths and units, Fractions, Superscripts and
+ordinals, Arrows, Accented letters (small and capital, listed
+separately), Greek letters, and Punctuation from other languages.</p>
+<h4 id="choosing-and-inserting">Choosing and inserting</h4>
+<p>The results list has three columns: the character, its name and its
+code point. As you arrow, the <strong>Description</strong> pane below
+shows the same detail <strong>Character Details…</strong> gives for a
+character already in your document. The code point is handy when two
+names sound alike: “Thin space” is U+2009 and “Hair space” is
+U+200A.</p>
+<p>Press <strong>Enter</strong> to insert the character you are on.
+QUILL Lite then tells you what it put in, for example “Inserted, U+2014
+Em dash”. Many of these characters are invisible on the page, so hearing
+it is how you know it worked.</p>
+<p>QUILL has the same picker, on the same key.</p>
+<h3 id="starting-a-new-page">Starting a new page</h3>
+<p><strong>Insert &gt; Page Break</strong> (<strong>Ctrl+Enter</strong>,
+the same key as in Word) starts a new page at the cursor. In a Word or
+Rich Text document it is a real page break, the same one Word makes, and
+it is still there when you save the file and open it again. In a
+Markdown document QUILL Lite puts the line <code>::: pagebreak</code> on
+its own line, and the break takes effect when you export to a format
+that has pages, such as Word or PDF. A plain text document has no pages,
+so QUILL Lite tells you that instead of doing nothing.</p>
+<h3 id="ending-a-line-without-starting-a-paragraph">Ending a line
+without starting a paragraph</h3>
+<p><strong>Insert &gt; Line Break</strong>
+(<strong>Shift+Enter</strong>, the same key as in Word) ends the line
+you are on and starts a new one, without starting a new paragraph.</p>
+<p>This matters mostly in Markdown. A blank line between two lines makes
+two paragraphs, usually with a gap between them. A line break keeps them
+in the same paragraph, one under the other. That is what you want for an
+address, a poem, or a few short lines that belong together.</p>
+<p>QUILL Lite writes the break the way the <strong>Markdown line break
+style</strong> setting says, and tells you which one it used. The
+standard choice is a backslash at the end of the line. The other choice
+is two spaces at the end of the line, which you cannot see or hear, and
+which some programs remove when they save. If you have ever added two
+spaces to the end of a line and nothing happened, that is probably
+why.</p>
+<p>QUILL has the same command on the same key.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>The formatting keys write the right thing for each kind of document.
+<strong>Ctrl+Shift+N</strong> takes all formatting off, and
+<strong>Ctrl+Shift+D</strong> tells you what formatting you are standing
+in. You can move between headings, hear when you arrive on a heading or
+walk into a list, skim with folding, and reshape a document with the
+Heading Organizer and the Structure keys. <strong>Ctrl+K</strong> adds a
+link written the right way for your document. The Insert menu puts in
+the date, emoji, special characters, line breaks and Markdown or HTML
+tags, and tells you what went in each time.</p>
+<p>For a guided walk through headings, folding and rearranging, try the
+tutorial <em>Skimming something long</em>. To see how the kind of
+document changes what these keys write, try <em>Four kinds of document,
+and how to say which</em>.</p>
+<p>Next, Chapter 7, Checking your writing, covers spelling, the
+thesaurus and the dictionary.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-guide-05-selecting-copying-and-changing-text.html">Chapter 5:
+Selecting, copying and changing text</a></li>
+<li>Next: <a href="lite-guide-07-checking-your-writing.html">Chapter 7:
+Checking your writing</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

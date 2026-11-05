@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 4: Pictures and the Media Library</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-4-pictures-and-the-media-library">Chapter 4: Pictures
+and the Media Library</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter covers everything to do with pictures, sound and video:
+putting a picture in a page with good alternative text, the Media
+Library window, listening to and watching your site’s files without
+downloading them, uploading, making a picture smaller, changing how big
+it shows, editing it on the site, making a new picture with AI, the site
+logo, and hearing what a sighted visitor sees. It ends with captions,
+transcripts, listening versions of your pages, and posting from QUILL’s
+other apps.</p>
+<h2 id="putting-a-picture-in-a-page">Putting a picture in a page</h2>
+<p>There are two ways in, both in the Insert menu:</p>
+<ul>
+<li><strong>Insert &gt; Picture from the Media Library…</strong> puts in
+something already on your site.</li>
+<li><strong>Insert &gt; Picture from This Computer…</strong> uses a file
+of yours. It goes into the page straight away, marked as not uploaded
+yet, and is uploaded the next time you choose Save Draft to Site or
+Publish. Its address is swapped in then.</li>
+</ul>
+<p>Either way the picture window opens, and that is where you say
+everything about it:</p>
+<ul>
+<li><strong>Alternative text:</strong> what the picture tells someone
+who cannot see it.</li>
+<li><strong>Decorative:</strong> check this for a divider, a border or a
+texture, so screen readers skip it.</li>
+<li><strong>Caption:</strong> visible text under the picture, for names
+or a photo credit.</li>
+<li><strong>Display width:</strong> how wide it shows. The proportions
+are always kept.</li>
+<li><strong>File size:</strong> which of the sizes WordPress made of the
+picture to use, such as “Medium, 300 wide”, when the picture is already
+in the library.</li>
+<li><strong>Use as featured image:</strong> the picture that stands for
+the whole page in lists and when the page is shared.</li>
+<li><strong>Link to:</strong> where the picture links to, if
+anywhere.</li>
+</ul>
+<p>Press <strong>Insert</strong>. You hear “Picture inserted:” and its
+alternative text.</p>
+<p>Sound and video from the library go in as players, and documents,
+such as a PDF, go in as a link.</p>
+<h2 id="writing-good-alternative-text">Writing good alternative
+text</h2>
+<p>Alternative text is read instead of the picture. A few habits make it
+good:</p>
+<ul>
+<li>Say what the picture is for, in a sentence or two. “Volunteers
+sorting donations at the spring fair” says more than “people at
+tables”.</li>
+<li>If the picture shows words, such as a poster or a sign, read them
+out.</li>
+<li>Leave out “image of” or “picture of”. A screen reader already says
+it is a picture, and Check Before Publishing flags it.</li>
+<li>Never use the file name. <code>IMG_2041.jpg</code> tells nobody
+anything, and QUILL flags that too.</li>
+<li>If the picture adds nothing a visitor needs, such as a decorative
+flourish, check Decorative rather than writing something.</li>
+<li>For a chart or a diagram, keep the alternative text short and put
+the detail in a paragraph after the picture.</li>
+</ul>
+<h2 id="asking-ai-for-help-with-pictures">Asking AI for help with
+pictures</h2>
+<p>Two buttons in the picture window, and the same two in the Media
+Library, use the AI you chose in Choose Your AI, the same way Ask About
+an Image does. QUILL tells you what it sends before it sends
+anything.</p>
+<ul>
+<li><strong>Suggest Alternative Text</strong> sends the picture and the
+text around it, and puts the suggestion in the Alternative text field
+for you to read and change. Nothing is saved until you choose OK or
+Insert. If the AI thinks the picture is decorative, QUILL says so
+instead of inventing words. For a chart it may also write a fuller
+description, and QUILL offers to add it as a paragraph after the
+picture.</li>
+<li><strong>Describe Image</strong> gives you a longer description, for
+you rather than for visitors, in a window you can read and copy.</li>
+</ul>
+<p>If AI is switched off, or you are in Safe Mode, QUILL says so and
+sends nothing.</p>
+<h2 id="the-media-library-window">The Media Library window</h2>
+<p><strong>Tools &gt; WordPress &gt; Media Library…</strong> lists every
+file on your site, newest first. Each row gives the title, the type, the
+size, the alternative text and when it was uploaded. Type in
+<strong>Find</strong> and press Enter to narrow the list by title, file
+name or alternative text.</p>
+<p>The details under the list say more about the file you are on,
+including where it is used. On a site with 500 files or fewer, QUILL
+works this out while the window is open and tells you when it is ready.
+On a bigger site, press <strong>Used In</strong> to search for the one
+you are on.</p>
+<p>The buttons:</p>
+<ul>
+<li><strong>Insert…</strong> puts the file at the caret. A picture opens
+the picture window first.</li>
+<li><strong>Play…</strong> plays a sound or video file (see the next
+section).</li>
+<li><strong>Used In</strong> says which pages and posts link to the
+file.</li>
+<li><strong>Attach to This Page or Post</strong> makes the open page the
+file’s parent on the site, which some galleries and themes use.</li>
+<li><strong>Set as Featured Image</strong> makes the picture the open
+page’s featured image.</li>
+<li><strong>Suggest Alternative Text…</strong> and <strong>Describe
+Image…</strong>, as above.</li>
+<li><strong>Edit Alternative Text…</strong> changes the library’s own
+alternative text on the site. You hear “Alternative text saved on
+Community Radio.”</li>
+<li><strong>Copy Address</strong> puts the file’s web address on the
+clipboard.</li>
+<li><strong>Remove from Library…</strong> deletes the file from the
+site.</li>
+</ul>
+<p><strong>Enter</strong> on a row plays a sound or video file and
+inserts anything else.</p>
+<p><strong>Removing a file is the one thing that cannot be undone on the
+site.</strong> WordPress has no Trash for media. So before removing a
+file, QUILL tells you how many pages use it, and saves a copy in your
+Documents folder, under “Removed from WordPress”. You hear where the
+copy went.</p>
+<h2 id="listening-and-watching">Listening and watching</h2>
+<p><strong>Play</strong> in the Media Library opens a small player and
+starts the file at once. It streams the file from your site and saves
+nothing on your computer.</p>
+<ul>
+<li>The keys are the same as QUILL’s own player and Quill Media Player:
+Play and Pause, Stop, Rewind, Forward, Where Am I, Speed, Volume and
+Mute.</li>
+<li><strong>Go to Position…</strong> jumps to a time you type, such as
+<code>0:01:30</code>.</li>
+<li><strong>Captions</strong> speaks the caption on screen at the
+moment, when the video has a captions file on your site.</li>
+<li><strong>Open in Quill Media Player</strong> hands the file over, for
+bookmarks and resume. Playback here pauses.</li>
+<li><strong>Open in Browser</strong> opens the file’s address in your
+browser.</li>
+<li><strong>Close</strong>, or Escape, stops playback and closes the
+window.</li>
+</ul>
+<p>Video shows its picture where the playback engine can. If it cannot,
+the window says so once and points you to Open in Browser.</p>
+<p>Play on a picture says “That file is not audio or video.”</p>
+<p><strong>View &gt; Play Media Here</strong> does the same for the
+sound or video block the caret is in, inside a page.</p>
+<h2 id="uploading">Uploading</h2>
+<p>These are in <strong>Tools &gt; WordPress &gt; More
+Media</strong>:</p>
+<ul>
+<li><strong>Upload Files…</strong> sends one or many files at once. For
+each one QUILL asks for a title and caption, and, for a picture, its
+alternative text first. Cancel skips that file and the rest carry on. If
+the same file is already on the site, QUILL asks whether to use the one
+already there. You hear how far along it is, such as “Uploading 2 of 5”,
+and at the end what was uploaded and what was not, and why.</li>
+<li><strong>Upload from Web Address…</strong> fetches a picture, sound,
+video or document from an address starting https, then uploads it to
+your site. It will not fetch an ordinary web page, an address that is
+not secure, or a file over 64 MB.</li>
+<li><strong>Paste Image</strong> takes a picture you have copied, asks
+for its alternative text, uploads it and puts it at the caret.</li>
+<li><strong>Upload a Large File…</strong> sends a long recording or
+video up in pieces, so a slow connection or a strict host does not lose
+the whole upload. You hear how far it has got.</li>
+</ul>
+<h2 id="making-a-picture-smaller-and-changing-how-big-it-shows">Making a
+picture smaller, and changing how big it shows</h2>
+<p>A photograph straight from a phone can be several megabytes, which is
+slow for visitors on a phone connection. Two commands help, and they do
+different things:</p>
+<ul>
+<li><strong>Tools &gt; WordPress &gt; More Media &gt; Make a Smaller
+Copy…</strong> makes a new, smaller file. Choose the largest width and a
+format: JPEG for photographs, WebP for smaller still, PNG for sharp
+edges such as a logo. The copy is made on your computer, QUILL tells you
+the size before and after, and only then asks whether to upload it as a
+new file. Your original stays in the library.</li>
+<li><strong>Format &gt; WordPress &gt; Image Size…</strong> changes how
+wide a picture in your page shows, without touching the file. Put the
+caret on the picture and choose from the sizes WordPress made of it.
+Nothing is cropped. Next time, <strong>Back to Earlier Size</strong> is
+at the top of the list, even after you have saved and closed the
+page.</li>
+</ul>
+<h2 id="editing-a-picture-on-the-site">Editing a picture on the
+site</h2>
+<p><strong>Tools &gt; WordPress &gt; More Media &gt; Edit a Picture on
+the Site…</strong> turns, flips or crops a picture (square, 4 by 3, or
+16 by 9), where your site offers it. The result is a new item in the
+library, so the original is kept. With AI on, QUILL describes the new
+picture for you.</p>
+<p><strong>Tools &gt; WordPress &gt; More Media &gt; Regenerate
+Sizes…</strong> remakes a picture’s smaller copies after an edit, so the
+theme shows the change everywhere.</p>
+<h2 id="alternative-text-for-a-whole-page-or-the-whole-site">Alternative
+text for a whole page, or the whole site</h2>
+<ul>
+<li><strong>Tools &gt; WordPress &gt; Alt Text Review…</strong> lists
+every picture in the page you have open, with its alternative text. It
+points out the ones with none, the ones that are just a file name, the
+very long ones and the ones that start “image of”. You can edit each
+one, mark it decorative, ask your AI for a suggestion, or go straight to
+it.</li>
+<li><strong>Tools &gt; WordPress &gt; Alt Text for the Whole
+Library…</strong> steps through every picture on the site that has no
+alternative text, with Suggest, and saves your answers in batches.</li>
+</ul>
+<h2 id="making-a-picture-with-ai">Making a picture with AI</h2>
+<p><strong>Insert &gt; Make a Picture…</strong> opens the Picture Maker,
+the same one QUILL Studio uses.</p>
+<ol type="1">
+<li>Describe the picture you want: the subject, the style, the colours,
+and anything to avoid. Not sure? <strong>Suggest from Page
+Content</strong> reads the page, or just your selection, and fills in a
+description for you to change.</li>
+<li>Choose a shape: wide, square or tall.</li>
+<li>Choose a background: Normal, Solid colour, or Transparent when your
+provider can make one.</li>
+<li>Press <strong>Make the picture</strong>. QUILL names the provider
+and model, and asks first.</li>
+</ol>
+<p>The picture is saved on your computer only, and a description of what
+was actually drawn opens straight away, so you know what you got. Every
+version is kept. To change one, type only the change, such as “make the
+sky darker”, and press <strong>Make the change</strong>.</p>
+<p><strong>Insert into Document</strong> opens the usual picture window,
+and the picture is uploaded to your Media Library when you press
+Insert.</p>
+<p>A made picture is an illustration, never a screenshot. If you ask for
+an app’s screen or a dialog, QUILL says so once.</p>
+<h2 id="the-site-logo-and-icon">The site logo and icon</h2>
+<p><strong>Tools &gt; WordPress &gt; More Media &gt; Site Logo…</strong>
+shows your site’s logo and its small site icon: the file, its real size
+and its alternative text. Replace either one from the library, from a
+file, or from the Picture Maker. QUILL names the site and the new
+picture and asks before it changes anything. The old image stays in your
+Media Library, and <strong>Restore Earlier</strong> puts back anything
+QUILL replaced. Changing the logo needs the Administrator role.</p>
+<h2 id="hearing-what-a-sighted-visitor-sees">Hearing what a sighted
+visitor sees</h2>
+<p><strong>Tools &gt; WordPress &gt; Visual Review…</strong> tells you
+what a sighted visitor sees on a published page.</p>
+<ol type="1">
+<li>QUILL opens the public page in Microsoft Edge, or Chrome if Edge is
+missing, hidden in the background, at a desktop width and at a phone
+width.</li>
+<li>It measures every picture: its size, whether it spills out of the
+page, whether it loaded, and its alternative text.</li>
+<li>It tells you what it would send to your AI, and sends it only if you
+say yes.</li>
+</ol>
+<p>The report starts with anything you should know, such as unpublished
+changes not being in it, then the review, then the measurements. Each
+finding is labelled as likely a problem, a design choice, or worth
+checking. QUILL never downloads a browser.</p>
+<p><strong>Tools &gt; WordPress &gt; More Media &gt; Preview and
+Review…</strong> does the same with a change you have not made yet.
+Choose a picture on the page, or the site logo, and type a width. QUILL
+shows that width in its captured copy only, so nothing on your site
+changes.</p>
+<p>Both work on published pages. A draft can only be opened by someone
+signed in to WordPress in a browser, so QUILL explains that instead.</p>
+<h2 id="captions-transcripts-and-listening-versions">Captions,
+transcripts and listening versions</h2>
+<p>These are in <strong>Tools &gt; WordPress &gt; More Media</strong>.
+The heavy work happens on this computer, and nothing reaches your site
+until you have reviewed it.</p>
+<p><strong>Captions for Video…</strong></p>
+<ol type="1">
+<li>Choose a video from the site’s Media Library.</li>
+<li>QUILL makes captions on this computer, with the same transcription
+it uses everywhere else, so the video is never sent anywhere to be
+transcribed.</li>
+<li>Review Captions opens. Each caption is one line: its time, then its
+words. Correct anything misheard, change “Speaker 1” to a name, and add
+sounds such as [applause].</li>
+<li>Choose OK. QUILL uploads the captions and connects them to the video
+in your page, so the player’s CC button works. If the video is not in
+the page yet, QUILL puts it at the caret with its captions.</li>
+</ol>
+<p><strong>Transcript for Audio…</strong> does the same for a sound
+file. After you review the transcript, choose whether it goes under the
+player folded away as “Read the transcript”, or in full.</p>
+<p><strong>Make a Listening Version…</strong> reads your page aloud with
+your Read Aloud voice, saves it as an MP3, uploads it, and puts a player
+at the top labelled, for example, “Listen to this post (6 minutes)”. Run
+it again after you change the page: QUILL tells you the recording is out
+of date and offers to make it again, and the new recording replaces the
+old one.</p>
+<p><strong>Name Embeds</strong> asks your site what every embedded
+YouTube, Vimeo or podcast link in the page is, and gives each one
+without a caption its title, so nobody meets an unnamed frame. A report
+says what each one turned out to be.</p>
+<p><strong>Publish a Document as a Page…</strong> Choose a PDF or Word
+file. QUILL converts it on this computer, uploads the original to the
+Media Library, and opens the text as a new page draft with a link to the
+original at the top. Many people find a page easier to read than a PDF.
+A scanned PDF is only read with OCR after you say yes.</p>
+<p>Your page changes go to the site only with your next Save Draft to
+Site or Publish.</p>
+<h2 id="posting-from-quills-other-apps">Posting from QUILL’s other
+apps</h2>
+<p>Three other apps in the family can send things to your site, through
+the same WordPress code and the same saved sites:</p>
+<ul>
+<li><strong>QUILL Cast</strong> can post an episode you have downloaded,
+with its player, show notes, chapters and transcript: <strong>Episode
+&gt; Post This Episode to WordPress…</strong>.</li>
+<li><strong>QUILL Studio</strong> can post a finished recording the same
+way, from its <strong>WordPress</strong> menu: <strong>Post an Episode
+to WordPress…</strong>.</li>
+<li><strong>Quill Converter</strong> can upload the files it made
+straight to your Media Library: <strong>File &gt; Upload to
+WordPress…</strong>.</li>
+</ul>
+<p>Cast and Studio write a local WordPress draft and open QUILL with it,
+so you can read it over before sending. If QUILL cannot start, the draft
+waits for you, in QUILL and in QUILL Lite, under <strong>File &gt;
+WordPress &gt; Open Local Draft…</strong>.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-03-blocks.html">Chapter 3: Blocks
+made plain</a></li>
+<li>Next: <a
+href="wordpress-forms-05-comments-categories-menus.html">Chapter 5:
+Comments, categories, tags and menus</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

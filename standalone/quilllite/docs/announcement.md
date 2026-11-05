@@ -283,15 +283,21 @@ lets you change it on purpose.
 
 ### Make it as big or as small as you want
 
-QUILL Lite has 21 parts you can switch on or off, and four profiles that set
+QUILL Lite has 24 parts you can switch on or off, and five profiles that set
 them all in one go:
 
-- **Notepad**: two areas. No formatting, no bookmarks, no line tools. Ctrl+N
+- **Notepad**: three areas. No formatting, no bookmarks, no line tools. Ctrl+N
   makes a plain text file. If you are replacing Notepad, choose this one.
 - **WordPad**: bold, italic, headings, alignment, bullets, printing, and a spell
   checker WordPad never had.
-- **Recommended**: what you get on a fresh install.
-- **Everything**: all of it.
+- **Recommended**: what you get on a fresh install, WordPress and Forms
+  included.
+- **Everything**: every writing area.
+- **Developer**: Recommended, plus project tasks with an AI for people who
+  write code.
+
+Every profile keeps the Command Palette, because it is how you find a
+command you cannot remember.
 
 Choose a profile and every switch below it moves to match. Choose **Custom** and
 they go back to how they were. A box you can read line by line tells you what
@@ -399,8 +405,10 @@ puts it in a new window and leaves your current work alone.
   headings, or open the **Heading Organizer** (Alt+Shift+O) and rearrange them
   all in one list. **Move Section To...** (Ctrl+Alt+Shift+F5) asks where you
   want a section to go, so you do not have to press a key forty times.
-- **The Command Palette** (Ctrl+Shift+P). Type part of a command's name and run
-  it. Its key is shown beside it, which is a nice way to learn the keys.
+- **The Command Palette** (Ctrl+Shift+P, in Tools). Type part of a command's
+  name and run it. It reaches every command and every menu item, open windows
+  and recent files included, in every profile. Its key is shown beside it,
+  which is a nice way to learn the keys.
 - **A special character picker** (Ctrl+Shift+F2) for 357 characters that have
   no key on the keyboard. Search by name, by code point, or by everyday words
   like `gbp`, `eszett` or `micro`. It tells you what it put in, since many of
@@ -496,6 +504,42 @@ tells you how much you have used in plain sentences, and Do a Document Task
 before it changes anything. Your own key can now be a Google Gemini,
 Anthropic Claude or OpenRouter key, or Ollama on your own computer.
 
+### Your website, from your editor
+
+If you look after a WordPress site, QUILL Lite now writes, opens, checks and
+publishes its pages and posts, and looks after the site too. Connect as many
+sites as you like by approving QUILL in your browser, or by pasting an
+application password. A page opens as plain writing: its blocks become short
+lines you can read, and anything QUILL Lite cannot show as plain text is kept
+safe and sent back unchanged. Next Block and Where Am I tell you where you
+are. Ctrl+S only ever saves on your computer; Save Draft to Site and Publish
+or Update are separate, and Publish checks for missing alternative text,
+vague links and skipped headings first. Check This Page tests the published
+page the way a visitor meets it, and Tools > WordPress looks after the Media
+Library, comments, categories and tags, menus, users and the rest. Press
+Ctrl+Alt+Shift+Grave (Grave is the key below Escape), then a letter, such as
+P to publish. Seven lessons in Help > Tutorials walk you through it.
+
+### Forms you can build by ear
+
+Write a contact form, a sign-up or a survey as plain text, one question at a
+time, starting from a template. Form Rules reads every rule as a sentence.
+Check This Form tells you what to fix, and Fill It In Yourself lets you try
+the form as a visitor would, in each of its languages. Publish it to your
+site with the QUILL Accessible Forms plugin, formerly BITS Accessible Forms,
+and read the responses in a list; or save it as a web page, a Word document,
+large print or braille-ready text.
+
+The WordPress and Forms guide covers both, step by step:
+https://www.quillforall.org/docs/wordpress-forms-guide.html
+
+### For people who write code
+
+Choose the new Developer profile, open a folder with File > Open Project
+Folder, and Ctrl+3 asks an AI to work on the whole project. You read every
+change before it is written, allow every command before it runs, hear the
+test results in one sentence, and Undo Last Agent Turn puts every file back.
+
 ### Finding the right word
 
 The Thesaurus (Shift+F7) finds the word you are really on. Look Up (Alt+F10)
@@ -560,6 +604,10 @@ tries again when you next open Preferences.
 - **Spell check reads only what you wrote**, skipping web addresses, file
   names and code.
 - **Word documents** open and save as Word, and PDFs open as text.
+  **Ctrl+Enter** starts a new page, as in Word, and Word's page breaks are
+  kept when you save.
+- **The Command Palette** (Ctrl+Shift+P) is in Tools and in every profile,
+  and reaches every command and menu item.
 - **Find in Open Documents** (Ctrl+Alt+Shift+F8) searches every document you
   have open, and folder search reaches every file in a folder.
 - **Recent Documents** (Alt+Shift+0) shows the whole list at once.
@@ -577,9 +625,11 @@ tries again when you next open Preferences.
 
 - **The QUILL Lite User Guide**, in the Start menu beside QUILL Lite, covers
   everything, one chapter at a time. AI help has a chapter of its own.
-- **Help > Tutorials** (**Ctrl+Alt+F1**) opens nine guided lessons. Start
-  with Open a file, and give it back unchanged. For AI help, try Asking a
-  question about a document.
+- **Help > Tutorials** (**Ctrl+Alt+F1**) opens guided lessons. Start with
+  Open a file, and give it back unchanged. For AI help, try Asking a question
+  about a document. WordPress and Forms have seven lessons each.
+- **The WordPress and Forms guide**, shared with QUILL:
+  https://www.quillforall.org/docs/wordpress-forms-guide.html
 - **Help > Get Help from Support** (**Ctrl+Alt+F2**) writes to
   support@community-access.org for you. A person at Community Access reads
   every message.

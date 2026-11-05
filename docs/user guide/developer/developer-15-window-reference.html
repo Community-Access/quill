@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 15: Window reference</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-15-window-reference">Chapter 15: Window reference</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Every developer window, with every control by the name your screen
+reader says, in Tab order, and what each one does. The windows are the
+same in QUILL and QUILL Lite. Press <code>F1</code> on any control for
+its own help sentence; each window’s F1 help starts with what the window
+is for.</p>
+<h2 id="open-project-folder">Open Project Folder</h2>
+<p>Opened by <strong>File &gt; Open Project Folder…</strong>. “Choose a
+folder to work on as a project.”</p>
+<ul>
+<li><strong>Recent projects</strong> (list): folders you have opened as
+projects, newest first, each as its name and full path. Enter or Space
+opens the one selected. Before you have any it says “No recent projects
+yet.” and is unavailable.</li>
+<li><strong>Browse for a Folder…</strong> (button): the Windows folder
+picker, to choose any folder. Choosing one opens it at once.</li>
+<li><strong>Open</strong> (button, the default when there are recent
+projects): opens the selected recent project.</li>
+<li><strong>Cancel</strong> (button): closes without opening a project.
+Escape does the same.</li>
+</ul>
+<h2 id="use-this-projects-agent-notes">Use This Project’s Agent
+Notes?</h2>
+<p>Opened by itself the first time a task starts in a project that has
+notes for AI agents. Chapter 8.</p>
+<ul>
+<li><strong>Question</strong> (read-only text): which files hold the
+notes, and what using them means. Focus starts here.</li>
+<li><strong>Notes</strong> (read-only text): empty until you press Read
+Them First; then the notes’ text, as it would be sent.</li>
+<li><strong>Read Them First</strong> (button): shows the notes in Notes
+and moves you there.</li>
+<li><strong>Use Them</strong> (button, the default): sends the notes
+with every task in this project, marked as data.</li>
+<li><strong>Don’t Use Them</strong> (button): leaves them out. Escape
+does the same.</li>
+</ul>
+<h2 id="do-a-project-task">Do a Project Task</h2>
+<p>Opened by <code>Ctrl+3</code> with a project open, or <strong>Do a
+Project Task…</strong> in the AI menu (QUILL) or Tools &gt; AI (QUILL
+Lite). A window of its own, not a dialog, so you can switch to your
+documents and back. The title is “Do a Project Task”; the project’s name
+is in the status line. Chapters 3, 7 and 9.</p>
+<ul>
+<li><strong>Conversation</strong> (read-only text): everything said in
+this task, filled in quietly.</li>
+<li><strong>Status</strong> (read-only text): which AI is working, the
+project, and the state: Working, Waiting for you, Stopping, Coach mode,
+Commands run without asking. For example, “Using GitHub Copilot. Project
+cli-tool. Working.”</li>
+<li><strong>Instruction</strong> (edit field): where you type. Focus
+starts here. Enter sends.</li>
+<li><strong>Coach mode</strong> (check box): the agent teaches and
+points; you type.</li>
+<li><strong>Plan</strong> (button): the cursor to the latest plan in the
+conversation.</li>
+<li><strong>Changes</strong> (button): the cursor to the latest list of
+changes.</li>
+<li><strong>Output</strong> (button): the last command’s full output, as
+a document.</li>
+<li><strong>Transcript</strong> (button): the whole task as a document,
+one heading per turn.</li>
+<li><strong>Undo Last Turn</strong> (button): puts back every file the
+last turn changed.</li>
+<li><strong>Explain Last Turn</strong> (button): asks what the last turn
+changed and why.</li>
+<li><strong>Allowed Commands…</strong> (button): Commands Allowed in
+This Project.</li>
+<li><strong>Engine Tools…</strong> (button): Engine Tools for This
+Project.</li>
+<li><strong>Send</strong> (button): starts a turn with what you typed,
+or sends it to the running one.</li>
+<li><strong>Stop</strong> (button): stops the task now, with any command
+it is running. Unavailable while nothing runs.</li>
+<li><strong>Close</strong> (button): closes the window, stopping a task
+that is still running.</li>
+</ul>
+<h2 id="review-changes">Review Changes</h2>
+<p>Opened by itself when a turn has changes, before a command runs and
+when the turn ends. Chapter 7.</p>
+<ul>
+<li><strong>Files</strong> (list): one row per file, as a sentence
+ending taken, not taken, or how many are taken. Focus starts here. Space
+takes or leaves the whole file; Enter moves to Change details.</li>
+<li><strong>Change details</strong> (read-only text): the change shown,
+with where it is, each line led by its line number, indentation as a
+count, and the agent’s reason.</li>
+<li><strong>Accept</strong> (button): takes the change shown.</li>
+<li><strong>Reject</strong> (button): leaves it out.</li>
+<li><strong>Next Change</strong> (button): the next change, then the
+next file’s.</li>
+<li><strong>Previous Change</strong> (button): the change before.</li>
+<li><strong>Accept All in File</strong> (button): takes every change in
+this file.</li>
+<li><strong>Reject All in File</strong> (button): leaves every change in
+this file out.</li>
+<li><strong>Why This Change?</strong> (button): says the agent’s
+reason.</li>
+<li><strong>Apply Accepted Changes</strong> (button, the default):
+writes every accepted change at once, after QUILL has kept its copy for
+undo.</li>
+<li><strong>Reject All</strong> (button): writes nothing. Escape, or
+closing the window, does the same.</li>
+</ul>
+<h2 id="run-this-command">Run This Command?</h2>
+<p>Opened when the agent asks to run a command. Chapter 6.</p>
+<ul>
+<li><strong>What will run</strong> (read-only text): one sentence on
+what, where and why. Focus starts here.</li>
+<li><strong>Command</strong> (read-only text): the exact command.</li>
+<li><strong>Warning</strong> (read-only text): only when QUILL found a
+risk.</li>
+<li><strong>Allow once</strong> (button, the default): runs it now.</li>
+<li><strong>Always allow this command here</strong> (button): only when
+there is no warning. Runs it and adds it to the project’s list.</li>
+<li><strong>Don’t allow</strong> (button): does not run it. Escape does
+the same.</li>
+</ul>
+<h2 id="keep-waiting">Keep Waiting?</h2>
+<p>A Yes or No question when a command has run for five minutes, and
+every five minutes after: “The command has run for 5 minutes. Keep
+waiting? Choose No to stop it.”</p>
+<h2 id="continue">Continue?</h2>
+<p>A Yes or No question when a turn reaches 40 steps: “The task stopped
+after 40 steps. Continue?”</p>
+<h2 id="commands-allowed-in-this-project">Commands Allowed in This
+Project</h2>
+<p>Opened by <strong>Tools &gt; Commands Allowed in This
+Project…</strong>, or Allowed Commands… in the task window. Chapter
+5.</p>
+<ul>
+<li><strong>About this list</strong> (read-only text): what the list
+does, and what it never does.</li>
+<li><strong>Allowed commands</strong> (list): the commands that run
+without asking. Focus starts here. Delete removes the selected one.</li>
+<li><strong>New command</strong> (edit field): a command or the start of
+one. Enter adds it.</li>
+<li><strong>Add</strong> (button): adds what you typed.</li>
+<li><strong>Remove</strong> (button): removes the selected command.</li>
+<li><strong>Run commands without asking</strong> (check box): the
+bypass. Checking it asks you to confirm first.</li>
+<li><strong>Close</strong> (button): closes the window. Escape does the
+same. Every change is saved as you make it.</li>
+</ul>
+<h2 id="run-commands-without-asking">Run Commands Without Asking?</h2>
+<p>A Yes or No question when you check the bypass, with No the default.
+It says what the bypass does, that pushing, publishing and system
+changes are still never run, and that Undo Last Turn cannot undo what a
+command did outside the project or on the internet.</p>
+<h2 id="engine-tools-for-this-project">Engine Tools for This
+Project</h2>
+<p>Opened by <strong>Engine Tools for This Project…</strong> in the AI
+menu (QUILL) or Tools</p>
+<blockquote>
+<p>AI (QUILL Lite), or Engine Tools… in the task window. Chapter 4.</p>
+</blockquote>
+<ul>
+<li><strong>About these tools</strong> (read-only text): what turning on
+an engine’s own tools means.</li>
+<li>One <strong>check box</strong> per tool, under a heading naming the
+engine, such as “GitHub Copilot’s own tools”. Each is off until you
+check it. Focus starts on the first.</li>
+<li><strong>OK</strong> (button): keeps what you checked, for this
+project.</li>
+<li><strong>Cancel</strong> (button): closes without changing anything.
+Escape does the same.</li>
+</ul>
+<h2 id="allow-this-step">Allow This Step?</h2>
+<p>Opened when an engine wants to use one of its own tools that you
+checked.</p>
+<ul>
+<li><strong>What will happen</strong> (read-only text): “The engine’s
+own shell tool:” and what it wants to do.</li>
+<li><strong>Allow once</strong> (button, the default): lets this one
+step happen.</li>
+<li><strong>Allow for this task</strong> (button): lets steps like this
+one happen until the task ends. The next task asks afresh.</li>
+<li><strong>Don’t allow</strong> (button): stops this step. Escape does
+the same.</li>
+</ul>
+<h2 id="undo-last-agent-turn-when-undo-refuses">Undo Last Agent Turn
+(when undo refuses)</h2>
+<p>A Yes or No question when Undo Last Turn would overwrite your own
+edits. It names the file and asks whether to open the file as it was
+before the agent’s turn, to compare. Yes opens that copy as a separate
+document, named like “cli.py before turn 2.py”. Your own file is not
+changed either way.</p>
+<h2 id="the-project-part-of-the-status-bar">The Project part of the
+status bar</h2>
+<p>Not a window, but you reach it like one. It says “Project cli-tool,
+main”, and adds “, waiting for you” when the task has a question you
+have not seen. Enter on it opens Do a Project Task.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-14-keys.html">Chapter 14: Every
+developer key</a></li>
+<li>Next: <a href="developer-guide.html">Contents</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

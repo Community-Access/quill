@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 11: Making QUILL Lite yours</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-11-making-quill-lite-yours">Chapter 11: Making QUILL
+Lite yours</h1>
+<p>QUILL Lite comes ready to use, and you never have to change a thing.
+But it is yours, and this chapter shows you how to shape it. You will
+find every everyday setting in one window, make QUILL Lite as small as
+Notepad or as full as you like with a profile, and change the key for
+any command. Nothing here is one-way, and you can always put things
+back.</p>
+<h2 id="settings">Settings</h2>
+<p>All of QUILL Lite’s everyday settings are in one window.</p>
+<h3 id="opening-preferences">Opening Preferences</h3>
+<p>Press <strong>Ctrl+,</strong> to open <strong>Tools &gt;
+Preferences</strong>. It is one long column of controls, with
+<strong>OK</strong> and <strong>Cancel</strong> at the bottom.</p>
+<ul>
+<li><strong>Tab</strong> moves down the column, and
+<strong>Shift+Tab</strong> moves back up.</li>
+<li><strong>F1</strong> on any control tells you what that one control
+does.</li>
+<li><strong>Nothing you change is saved until you press OK.</strong> So
+Escape is always safe.</li>
+</ul>
+<h3 id="finding-a-setting">Finding a setting</h3>
+<p>A <strong>Find a setting</strong> box at the top searches the names
+of the settings, what your screen reader calls them, and their help
+text.</p>
+<ol type="1">
+<li>Type a word, such as “spelling”.</li>
+<li>Press <strong>Down</strong> to reach Matching settings.</li>
+<li>Arrow to the one you want and press <strong>Enter</strong>. Focus
+moves to that control.</li>
+</ol>
+<p><strong>Ctrl+F</strong> takes you back to the search box. In the
+search, Enter moves you to a setting; it does not save. Escape clears
+what you typed first, and closes the window if the box is already empty.
+Searching never changes a setting for you, and OK and Cancel work just
+as before.</p>
+<h3 id="choosing-the-default-document-folder">Choosing the default
+document folder</h3>
+<p><strong>Default document folder</strong> chooses where Open and Save
+As start when you are working in a new document. Leave it blank to use
+your Windows <strong>Documents</strong> folder, or type a path or use
+<strong>Choose default folder…</strong> to pick another existing folder.
+A document you already saved continues to use its own folder.</p>
+<h3 id="if-your-settings-could-not-be-saved">If your settings could not
+be saved</h3>
+<p>Sometimes Windows will not let QUILL Lite save your settings, for
+example if the disk is full. If that happens:</p>
+<ul>
+<li>Your new settings still work until you close QUILL Lite.</li>
+<li>QUILL Lite tells you, and the warning stays in the status bar’s
+Message cell. Press <strong>F6</strong> to read it again.</li>
+<li>Free up some space, or fix access to the settings folder, then open
+Preferences again. QUILL Lite tries again by itself. You do not need to
+change anything or press OK.</li>
+</ul>
+<p>When it works, the warning goes away. QUILL Lite also tries to save
+whenever you change a setting and when you exit normally. This warning
+is only about your settings. It does not mean your document was not
+saved.</p>
+<h3 id="every-setting-in-order">Every setting, in order</h3>
+<p>Here is each control in the order you meet it.</p>
+<h4 id="profile">Profile</h4>
+<p><strong>Profile</strong> is the same four-choice box that Customize
+Features has, with the same description underneath. See <a
+href="#making-quill-lite-smaller-or-larger">Making QUILL Lite smaller
+(or larger)</a>, later in this chapter.</p>
+<h4 id="new-documents-are">New documents are</h4>
+<p><strong>New documents are:</strong> <strong>Plain text</strong> or
+<strong>Rich text</strong>. This only decides what
+<strong>Ctrl+N</strong> makes. <strong>New Plain Text Document</strong>
+(<strong>Ctrl+Alt+N</strong>) and <strong>New Rich Text
+Document</strong> (<strong>Alt+Shift+T</strong>) always make what their
+names say.</p>
+<p>If you choose the <strong>Notepad</strong> or
+<strong>WordPad</strong> profile, this control changes to match, right
+in front of you. So you can see what the profile chose and change it
+before you press OK.</p>
+<h4 id="theme">Theme</h4>
+<p><strong>Theme:</strong> <strong>Dark</strong> or <strong>Follow the
+system</strong>. <strong>Follow the system is the default.</strong> It
+uses the colours you have already chosen in Windows, so if you have a
+high-contrast or dark setting there, QUILL Lite follows it. Choose
+<strong>Dark</strong> if you want QUILL Lite dark whatever Windows is
+set to.</p>
+<p>The theme only changes the screen. The colours never go into your
+files, so nobody you send a document to will get grey text.</p>
+<p>You can also switch dark mode straight from the View menu with
+<strong>Alt+Shift+D</strong>. It says “Dark mode on” or “Dark mode
+off”.</p>
+<p>If you chose dark in an earlier version, you keep dark.</p>
+<h4 id="startup-and-recovery">Startup and recovery</h4>
+<p><strong>Reopen the documents I had open last time</strong> is on.
+Turn it off and QUILL Lite starts with only what you open yourself. This
+is not the same as recovering unsaved work after a crash, which happens
+either way.</p>
+<p><strong>Offer untitled unsaved work back after a crash</strong> is
+on. An untitled document has never been saved to a file, so this copy is
+the only one there is. Turn it off if you use QUILL Lite as a scratchpad
+and would rather it forgot.</p>
+<p><strong>Start with a blank document</strong> is on, just like Notepad
+and WordPad. If you always open an existing file, turn it off, so you
+are not handed an empty Untitled to close every time. Files you open by
+double-clicking, last session’s documents and recovered work all still
+appear. QUILL has the same setting under <strong>General</strong>.</p>
+<h4 id="sharing-with-quill">Sharing with QUILL</h4>
+<p><strong>Share QUILL’s abbreviation library</strong> is off. Turn it
+on and QUILL Lite uses QUILL for All’s list of short forms instead of
+its own, so a short form you add in either program works in both. It
+does nothing if QUILL is not installed.</p>
+<p><strong>Share QUILL’s dictionary of taught words</strong> is off. It
+works the same way for spelling: a word you teach in either editor is
+known to both.</p>
+<h4 id="clipboard-and-updates">Clipboard and updates</h4>
+<p><strong>Keep everything I copy in the clip library</strong> is off.
+Turn it on and every Ctrl+C is saved in the clip library by itself, not
+just the ones you keep with <strong>Ctrl+Alt+M</strong>. It is handy,
+but the library will fill up on its own.</p>
+<p><strong>Look for updates when QUILL Lite starts</strong> is on. It
+looks once a day and only speaks up if there is something new.
+<strong>Ctrl+Alt+U</strong> checks whenever you like.</p>
+<h4 id="spelling-and-autocorrect">Spelling and autocorrect</h4>
+<p><strong>Check spelling as I type</strong> is on. It is the same
+switch as <strong>Tools &gt; Spelling &gt; Check While Typing</strong>
+(<strong>Ctrl+Alt+F7</strong>), which is quicker to reach while you are
+writing.</p>
+<p><strong>Curl quotes as I type</strong> is off. It turns a straight
+quote into a matching curly one.</p>
+<p><strong>Turn two hyphens into an em dash</strong> is off. When you
+type the second hyphen of <code>--</code>, both become one long
+dash.</p>
+<p>Both of these also need <strong>Autocorrect while typing</strong>
+switched on in Customize Features. Neither ever runs in a plain text,
+source code or settings document.</p>
+<p><strong>Correct common misspellings as I type</strong> is off. It
+changes <code>teh</code> to <code>the</code> when you type the space
+after it. It also needs <strong>Autocorrect while typing</strong> in
+Customize Features, and unlike the two above it does run in plain text,
+because a misspelling is as wrong in a <code>.txt</code> file as
+anywhere. It never runs in source code or settings files. <em>Correcting
+misspellings as you type</em>, below, has the details.</p>
+<p><strong>Continue lists in plain text</strong> is off. With it on,
+<strong>Enter</strong> in a plain text list starts the next item, as it
+always does in Markdown. Chapter 6 has the details, under <em>Pressing
+Enter in a list</em>.</p>
+<h4 id="what-you-hear">What you hear</h4>
+<p><strong>When a command does something, give me:</strong> <strong>a
+sound</strong>, <strong>the action spoken</strong>,
+<strong>both</strong>, or <strong>nothing</strong>. This is how QUILL
+Lite tells you that a cut, copy, paste, undo or new selection worked. A
+sound is the default. Spoken words are easier while you are still
+learning the sounds.</p>
+<p>Two things happen whatever you choose. If your sound pack has no
+sound for a command, QUILL Lite speaks instead of staying silent. And if
+a command could not do what you asked, QUILL Lite <strong>always says so
+in words</strong>.</p>
+<p><strong>When a search misses:</strong> has the same four choices, set
+separately. You often press F3 several times in a row, and hearing “Not
+found” spoken each time gets tiring fast, so many people pick the sound
+here. The words are always in the status bar too.</p>
+<p><strong>Say a heading’s level:</strong> <strong>before the
+text</strong> or <strong>after the text</strong>. Before means QUILL
+Lite says it all in one go, like “Heading 2, Installing”. You will still
+hear it after a jump, such as Ctrl+Home or landing on a search result.
+After means your screen reader reads the line and QUILL Lite adds the
+level afterwards, which is quieter when you are reading line by
+line.</p>
+<h4 id="searching-and-wrapping">Searching and wrapping</h4>
+<p><strong>Searching carries on from the other end</strong> is on. When
+Find Next reaches the end, it starts again at the top and tells you so.
+Turn it off and it stops and tells you which end you are at. Then you
+know the word is not missing, you are just at the bottom.</p>
+<p><strong>Wrap long lines to the window</strong> is on. Turn it off and
+long lines run past the right edge of the window. <strong>Alt+Z</strong>
+on the View menu is the same switch.</p>
+<h4 id="timing">Timing</h4>
+<p><strong>Shortest gap between spoken messages (ms):</strong> from 0 to
+2000. The default is 0, which says everything as it happens. A bigger
+number skips anything QUILL Lite would say too soon after the last
+thing. That helps if holding a key down makes your screen reader talk
+too much. You do not lose anything: every message still goes to the
+status bar, and <strong>F6</strong> reads it back.</p>
+<p><strong>Copy unsaved work aside every (seconds):</strong> from 15 to
+600, and 30 by default. This is how often a changed document is copied
+to the recovery folder. The copy is kept beside your file, never on top
+of it, and it is removed as soon as you save.</p>
+<h4 id="editor-font">Editor font</h4>
+<p><strong>Editor font:</strong> a read-only box showing the font and
+size, and a <strong>Change Font…</strong> button that opens the font
+chooser. When you pick a font, the box updates and QUILL Lite says the
+new font out loud. The same chooser is on <strong>Ctrl+Alt+F</strong>
+(<strong>Format &gt; Editor Font</strong>), where Notepad has always
+kept it. It stays on the Format menu even if you switch rich text
+off.</p>
+<h4 id="ai-help">AI help</h4>
+<p><strong>Use QUILL’s free AI help</strong> is off. This one works
+straight away, without waiting for OK. Checking it shows you the whole
+agreement right then and saves your answer. Unchecking it takes your
+agreement back right then. If you decline the agreement, the check mark
+goes away again and QUILL Lite tells you so. See <a
+href="lite-guide-10-ai-help.html#chapter-10-ai-help">Chapter 10, AI
+help</a>.</p>
+<h4 id="when-another-program-changes-the-file">When another program
+changes the file</h4>
+<p><strong>Watch the open file for external changes</strong> is on.
+<strong>Reload automatically when you have no unsaved edits</strong> is
+off. <strong>Ask before discarding unsaved edits on a conflict</strong>
+is on. <strong>External-change debounce (milliseconds)</strong> is 750.
+<strong>Forget remembered file-change answers</strong> takes back every
+“Do not ask me again” answer when you press OK. What each one does is in
+<a
+href="lite-guide-03-opening-saving-and-printing.html#when-another-program-changes-your-file">When
+another program changes your file</a>, in Chapter 3.</p>
+<h3 id="what-is-not-in-here-and-where-it-is-instead">What is not in
+here, and where it is instead</h3>
+<p>Some switches are on a key instead, because you change them while you
+are working:</p>
+<table>
+<thead>
+<tr>
+<th>Not in Preferences</th>
+<th>Where it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dark mode</td>
+<td><strong>View &gt; Dark Mode</strong>
+(<strong>Alt+Shift+D</strong>)</td>
+</tr>
+<tr>
+<td>Word wrap</td>
+<td><strong>View &gt; Word Wrap</strong> (<strong>Alt+Z</strong>)</td>
+</tr>
+<tr>
+<td>Announce Headings, Announce Lists</td>
+<td><strong>View</strong> (<strong>Ctrl+Alt+F3</strong>,
+<strong>Ctrl+Alt+F5</strong>)</td>
+</tr>
+<tr>
+<td>Overwrite mode, Tab key behaviour, the status bar</td>
+<td><strong>View</strong></td>
+</tr>
+<tr>
+<td>App sounds on or off</td>
+<td><strong>Tools &gt; App Sounds</strong>
+(<strong>Alt+Shift+M</strong>)</td>
+</tr>
+<tr>
+<td>Which sound each event makes</td>
+<td><strong>Tools &gt; Sound Scheme</strong>
+(<strong>Ctrl+Alt+Shift+O</strong>)</td>
+</tr>
+<tr>
+<td>Which of the 24 areas exist at all</td>
+<td><strong>Tools &gt; Customize Features</strong>
+(<strong>Ctrl+Alt+F10</strong>)</td>
+</tr>
+<tr>
+<td>What any key does</td>
+<td><strong>Tools &gt; Keyboard Manager</strong>
+(<strong>Ctrl+Alt+Shift+Space</strong>)</td>
+</tr>
+<tr>
+<td>The twelve spelling announcement settings</td>
+<td><strong>Tools &gt; Spelling &gt; Announcements</strong>
+(<strong>Ctrl+Alt+Shift+F7</strong>)</td>
+</tr>
+<tr>
+<td>Whether you are asked about last session</td>
+<td>The <strong>Reopen Last Session</strong> window itself
+(<strong>Alt+Shift+F12</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p>People often look for that last one in Preferences. It lives in the
+window that asks the question. See <a
+href="lite-guide-03-opening-saving-and-printing.html#reopening-what-you-had-open">Reopening
+what you had open</a>, in Chapter 3.</p>
+<h3 id="taking-your-settings-with-you">Taking your settings with
+you</h3>
+<p><strong>Tools &gt; Back Up Settings…</strong>
+(<strong>Ctrl+Alt+F11</strong>) saves your settings to a
+<code>.qsf</code> file. <strong>Tools &gt; Restore Settings…</strong>
+(<strong>Ctrl+Alt+F12</strong>) reads one back, for example on a new
+computer.</p>
+<p>The backup holds your preferences. It leaves out the things that only
+make sense on this computer: your recent files, the documents QUILL Lite
+reopens at startup, the window size, and when it last checked for an
+update. The backup tells you how many file locations it left out.</p>
+<p>When you restore, QUILL Lite tells you what happened: how many
+settings came across, how many are new since the backup was made (those
+keep their usual values), and how many it did not recognise. If the file
+has nothing QUILL Lite recognises at all, nothing is changed, so picking
+the wrong file cannot reset your editor.</p>
+<p>QUILL has the same thing, as buttons in its Preferences window. The
+two use the same kind of file, but each one only reads its own
+backups.</p>
+<h2 id="making-quill-lite-smaller-or-larger">Making QUILL Lite smaller
+(or larger)</h2>
+<p>QUILL Lite has a lot in it. You may not want all of it, and you do
+not have to keep it. <strong>Tools &gt; Customize Features</strong>
+(<strong>Ctrl+Alt+F10</strong>) lets you switch whole parts of the app
+off.</p>
+<p>When you switch something off, it leaves the menus and its keys stop
+working. It is really gone, not just hidden. So a smaller QUILL Lite is
+one with fewer things to arrow past and fewer keys to press by
+accident.</p>
+<h3 id="profiles-five-ways-to-say-it-in-one-word">Profiles: five ways to
+say it in one word</h3>
+<p>You do not have to go through the checkboxes one by one. The
+<strong>Profile</strong> box at the top of the window offers five
+ready-made choices. <strong>Choosing one sets every checkbox below it
+straight away.</strong> There is no second button to press.</p>
+<p>Nothing is saved until you press <strong>Save</strong>. So you can
+try a profile, look at what it would do, and change your mind.</p>
+<h4 id="hearing-what-a-profile-does">Hearing what a profile does</h4>
+<p>Under the Profile box is a <strong>read-only description you can read
+line by line</strong>. It tells you two things. First, what the profile
+is. Then what it would do to your copy of QUILL Lite: how many of the 24
+areas it keeps and which ones, which ones it removes, and anything else
+it changes. Notepad, for example, also makes <strong>Ctrl+N</strong>
+create a plain text document. Press <strong>F1</strong> on the Profile
+box to hear the same thing.</p>
+<p>When you choose a profile, QUILL Lite says a short version, like
+this: “Notepad profile: 3 of 24 features on. New documents will be plain
+text. Nothing is saved until you press Save.” Your screen reader already
+reads the profile’s name, and the longer description is there for you to
+read at your own pace.</p>
+<h4 id="changing-your-mind">Changing your mind</h4>
+<p><strong>Custom puts everything back.</strong> If you arrow onto a
+profile you did not mean, choose <strong>Custom</strong>. Every checkbox
+goes back to how it was when you opened the window.</p>
+<p>You will also hear the box say Custom as soon as you check or uncheck
+anything yourself. That is not a warning. Picking your own is exactly
+what the list is for.</p>
+<p>After you choose a profile, the checkboxes are still ordinary
+checkboxes. You can change any of them. If you have changed a few and
+want to start the profile over, press <strong>Use Profile</strong>.</p>
+<h4 id="the-same-profiles-in-preferences">The same profiles in
+Preferences</h4>
+<p><strong>The same five profiles are in Preferences</strong> too, at
+the top, with the same description underneath. So if you think of “make
+this like Notepad” as a setting, you will find it where your other
+settings are. The 22 separate checkboxes are only in Customize
+Features.</p>
+<h4 id="the-five-profiles-at-a-glance">The five profiles at a
+glance</h4>
+<p>Here is each one at a glance, and then in more detail.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Areas on</th>
+<th>Ctrl+N makes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Recommended</strong></td>
+<td>19 of 24</td>
+<td>plain text (unchanged)</td>
+</tr>
+<tr>
+<td><strong>Everything</strong></td>
+<td>23 of 24</td>
+<td>plain text (unchanged)</td>
+</tr>
+<tr>
+<td><strong>Developer</strong></td>
+<td>20 of 24</td>
+<td>plain text (unchanged)</td>
+</tr>
+<tr>
+<td><strong>WordPad</strong></td>
+<td>6 of 24</td>
+<td><strong>rich text</strong></td>
+</tr>
+<tr>
+<td><strong>Notepad</strong></td>
+<td>3 of 24</td>
+<td><strong>plain text</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="recommended">Recommended</h4>
+<p><strong>This is what you get when you first install QUILL
+Lite.</strong> It keeps nineteen of the 24 areas: rich text, headings,
+Markdown and HTML, bookmarks, the line tools, the clipboard history,
+printing, abbreviations, the Selection submenu, spell check, the
+dictionary and thesaurus, Matches, Go Back and Go Forward, the Command
+Palette, Describe Character, text size, dictation, WordPress and
+Forms.</p>
+<p><strong>Off:</strong> autocorrect, timestamped backups, Go To
+Anything, AI help and coding. The first four are not switched off
+because they are poor. They are off because you should choose them
+yourself:</p>
+<ul>
+<li>Autocorrect can change the quotes in a settings file and break
+it.</li>
+<li>Backups slowly fill a folder on your computer.</li>
+<li>Go To Anything is one more way to jump around, and the command
+palette, the headings list and the bookmark list already do that.</li>
+<li>AI help sends the text you ask about over the internet, and only you
+should decide to do that.</li>
+</ul>
+<p>Coding, the fifth, belongs to the Developer profile below.</p>
+<p><strong>Choose this</strong> when you have been experimenting and
+want to get back to where you started.</p>
+<h4 id="everything">Everything</h4>
+<p><strong>23 of the 24 areas on</strong>: every writing area, including
+the four above. Coding stays off, because coding is what the Developer
+profile is for. That includes <strong>AI help</strong>, which is the one
+area that sends anything off your computer, so only choose this profile
+if you are happy with that.</p>
+<p>With Everything on:</p>
+<ul>
+<li>Autocorrect can straighten your quotes and turn two hyphens into a
+long dash. It does nothing else. It never capitalises sentences.</li>
+<li>Every save keeps a dated copy in your data folder.</li>
+<li>Go To Anything joins the command palette and the two lists.</li>
+</ul>
+<p><strong>Choose this</strong> if you would rather have it all and
+switch things off as they get in your way.</p>
+<h4 id="developer">Developer</h4>
+<p><strong>Everything in Recommended, plus Coding.</strong> Twenty of
+the 24 areas: the seventeen Recommended keeps and the Coding area, which
+no other profile has. Coding gives you project tasks with an AI,
+reviewed changes across files, commands and tests that ask first, Undo
+Last Agent Turn and coach mode. See <a
+href="lite-guide-10-ai-help.html#coding-project-tasks-in-the-developer-profile">Coding:
+project tasks, in the Developer profile</a> in Chapter 10.</p>
+<p><strong>Off:</strong> autocorrect, timestamped backups, Go To
+Anything and AI help, as in Recommended. Project tasks need an AI
+connection, so turn on AI help too when you want to use them.</p>
+<p><strong>Ctrl+N</strong> is unchanged.</p>
+<p><strong>Choose this</strong> if you write code and want an AI to help
+with it, and you want every change it makes shown to you first.</p>
+<h4 id="wordpad">WordPad</h4>
+<p><strong>Everything WordPad could do.</strong> Rich text you can
+format, print and spell check: bold, italic, underline, headings,
+alignment, bullets, indenting and line spacing, plus Find and Replace,
+printing and text size, and the Command Palette. Six of the 24
+areas.</p>
+<p><strong>Off</strong>, all eighteen of the others. These are the
+writing tools around the formatting, and coding:</p>
+<ul>
+<li>No line tools (Edit &gt; Lines) and no Change Case.</li>
+<li>No clipboard history or Copy Tray.</li>
+<li>No bookmarks, no abbreviations, and no Selection submenu.</li>
+<li>No Matches list, no Find in Open Documents or Search in Files, no
+Back and Forward, and no Go To Anything.</li>
+<li>No Describe Character and no dictation.</li>
+<li>No dictionary or thesaurus (WordPad never had one).</li>
+<li>No autocorrect and no backups.</li>
+<li><strong>No Markdown or HTML.</strong> Ctrl+B in a <code>.md</code>
+file goes back to meaning rich text bold, and QUILL Lite tells you
+so.</li>
+<li><strong>No AI help</strong> and no coding.</li>
+<li><strong>No WordPress</strong> and <strong>no Forms</strong>.</li>
+</ul>
+<p><strong>Ctrl+N makes a rich text document.</strong> So choosing
+WordPad changes a setting as well as the checkboxes: new documents start
+as rich text.</p>
+<p><strong>One thing real WordPad did not have:</strong> the spell
+checker. It stays, because a word processor without one would just be a
+nuisance.</p>
+<p><strong>Choose this</strong> for letters, notes and anything you want
+to look nice.</p>
+<h4 id="notepad">Notepad</h4>
+<p><strong>The smallest QUILL Lite can be.</strong> Many people come to
+QUILL Lite to replace Notepad, and this is the profile for them. It
+keeps three of the 24 areas: <strong>printing</strong>, <strong>text
+size</strong> and the <strong>Command Palette</strong>.</p>
+<p><strong>Off</strong>, all twenty of the others: the Format menu and
+everything under it, headings, Markdown and HTML, bookmarks, the line
+tools, Change Case, the clipboard history, abbreviations, the Selection
+submenu, spell check, the dictionary and thesaurus, Matches (and with it
+Find in Open Documents and Search in Files), Back and Forward, Go To
+Anything, Describe Character, dictation, autocorrect, backups, AI help,
+WordPress, Forms and coding. Nothing that Notepad does not have, apart
+from the palette.</p>
+<p><strong>Why every profile keeps the Command Palette:</strong> it is
+how you find a command when you do not know its key or its menu. Press
+<strong>Ctrl+Shift+P</strong> and type part of a name. Every command and
+every menu item is in it, including your open windows and your recent
+files, each with its key beside it.</p>
+<p><strong>Ctrl+N makes a plain text document</strong>, and the Save As
+dialog stops offering you formats you have switched off.</p>
+<p><strong>Some things stay, because Notepad has always had
+them:</strong> Find, Find Next, Replace, Go To Line, Select All, Insert
+Date and Time, Word Wrap, the font picker, the status bar and Undo.
+<strong>Tools &gt; File Encoding and Line Endings</strong> stays too.
+That is a big part of why people replace Notepad: so a file saves back
+exactly the way it arrived.</p>
+<p><strong>Choose this</strong> for settings files, logs, quick notes,
+and anything that must stay plain text with no hidden formatting.</p>
+<h4 id="moving-between-them">Moving between them</h4>
+<p>You can always go back. Choose <strong>Notepad</strong> and then
+<strong>Everything</strong>, and it all comes back, including the Format
+menu and its keys. The only thing a profile does not undo is a setting
+you changed by hand afterwards. A profile only changes the things it
+says it changes.</p>
+<p>Two things stay whichever profile you choose: <strong>Tools &gt;
+Preferences</strong> and <strong>Customize Features</strong> itself.
+Otherwise you could switch off the very window you need to switch things
+back on.</p>
+<h3 id="searching-the-list">Searching the list</h3>
+<p>There are 23 checkboxes, which is a lot to Tab through. Type in the
+search box below the Profile box and the list narrows as you type.</p>
+<p>It searches what an area does as well as its name. Type “curly
+quotes” and you find Autocorrect. Type “dictionary” and you find Spell
+check. The line under the box tells you how many are left. Press
+<strong>Down</strong> from the box to go straight into the list.</p>
+<h3 id="the-24-areas">The 24 areas</h3>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>What goes</th>
+<th>Starts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rich text and the Format menu</strong></td>
+<td>Bold, headings, alignment, bullets, spacing</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Heading navigation</strong></td>
+<td>Next and previous heading, the headings list</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Markdown and HTML</strong></td>
+<td>The two tag pickers, Document Language, and markup Bold</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Bookmarks</strong></td>
+<td>All nine, and the list</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Line tools and change case</strong></td>
+<td>Edit &gt; Lines, Tools &gt; Change Case</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Copy Tray and the clip library</strong></td>
+<td>Edit &gt; Clipboard (Cut, Copy, Paste and Copy All stay)</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Printing</strong></td>
+<td>Print and Page Setup</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Abbreviations</strong></td>
+<td>Short forms, and the list that manages them</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Spell check</strong></td>
+<td>Tools &gt; Spelling, and checking as you type</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Dictionary and thesaurus</strong></td>
+<td>Look Up, Thesaurus, Say Word Summary, and the two submenus on any
+word</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>The Selection submenu</strong></td>
+<td>F8 selecting, whole-structure selecting, marks</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Matches</strong></td>
+<td>The Matches submenu (All Matches, Count Occurrences), and Find in
+Open Documents, Search in Files and Replace Across Files on Edit (Find
+itself stays)</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Go Back and Go Forward</strong></td>
+<td>The trail of places you jumped from</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>The Command Palette</strong></td>
+<td>Ctrl+Shift+P, the search box for commands</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Describe Character</strong></td>
+<td>What the character under the cursor actually is</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Text size</strong></td>
+<td>Bigger, smaller, and reset</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Dictation</strong></td>
+<td>Tools &gt; Dictation: speaking into the document, and choosing the
+microphone</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>WordPress</strong></td>
+<td>File &gt; WordPress: your sites’ pages, posts, pictures, comments,
+categories and tags</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Forms</strong></td>
+<td>File &gt; New Form, and the form rows in Insert, View, Format and
+Tools &gt; Forms</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Autocorrect while typing</strong></td>
+<td>Curly quotes and long dashes (it does not capitalise sentences)</td>
+<td><strong>off</strong></td>
+</tr>
+<tr>
+<td><strong>Timestamped backups</strong></td>
+<td>A dated copy kept every time you save</td>
+<td><strong>off</strong></td>
+</tr>
+<tr>
+<td><strong>Go To Anything</strong></td>
+<td>One box that searches everything at once</td>
+<td><strong>off</strong></td>
+</tr>
+<tr>
+<td><strong>AI help (sends your text to QUILL’s servers)</strong></td>
+<td>Tools &gt; AI: summarize, rewrite, proofread, explain, and questions
+about a document</td>
+<td><strong>off</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The last four start switched off. They are still in this list, so you
+can find them and switch them on whenever you like.</p>
+<h4 id="why-autocorrect-backups-and-go-to-anything-start-off">Why
+autocorrect, backups and Go To Anything start off</h4>
+<p>Curly quotes look lovely in a letter but can break a settings file.
+Backups slowly fill a folder. And Go To Anything does a job that the
+command search, the headings list and the bookmark list already share
+between them.</p>
+<h4 id="switching-on-ai-help">Switching on AI help</h4>
+<p><strong>AI help is off for a different reason.</strong> Using it
+sends the passage you ask about over the internet, and that is your
+choice to make, nobody else’s. Its row in Customize Features tells you
+exactly what you are agreeing to before you switch it on. While the area
+is off, it has no menu, no keys, no sign-in saved on your computer, and
+makes no connection of any kind.</p>
+<p><strong>Switching it on is only the first step.</strong> Before
+anything is sent, QUILL Lite shows you the whole agreement: what is
+sent, what QUILL keeps, what it does not keep, what OpenAI does with it,
+and how to say no. Nothing happens until you accept.</p>
+<p>If you switch the area on and then decline the agreement, the AI menu
+stays but nothing in it will send anything. QUILL Lite does not quietly
+switch the area back off for you.</p>
+<p>You can reach the same agreement in <strong>three places</strong>.
+Use whichever you find first:</p>
+<ul>
+<li><strong>Tools &gt; AI &gt; Accounts and Usage &gt; Privacy
+Agreement…</strong> (<strong>Ctrl+Alt+Shift+K</strong>). Read it, accept
+it, or take it back. Taking it back also signs this computer out.</li>
+<li><strong>Preferences</strong>, where a check box says <em>Use QUILL’s
+free AI help</em>. Checking it shows the agreement. Unchecking it takes
+your agreement back.</li>
+<li><strong>Customize Features</strong>, where switching the area on
+asks you straight away.</li>
+</ul>
+<p>All three share one answer, so they always agree. If the agreement
+ever changes in a way that matters, such as what is sent or what is
+kept, you will be asked again.</p>
+<h4 id="how-autocorrect-works">How autocorrect works</h4>
+<p><strong>Autocorrect has three rules, and switching the area on does
+not turn any of them on.</strong> The area decides whether autocorrect
+exists at all. Three check boxes in <strong>Tools &gt;
+Preferences</strong> decide which rules run:</p>
+<ul>
+<li><strong>Curl quotes as I type</strong></li>
+<li><strong>Turn two hyphens into an em dash</strong></li>
+<li><strong>Correct common misspellings as I type</strong></li>
+</ul>
+<p>All three start off. So after you switch the area on, you also need
+to check the rule you want. They are separate because plenty of people
+want the long dash but not the curly quotes, or the spelling fixes and
+nothing else.</p>
+<p>The two typography rules never run in a plain text, source code or
+settings document, whatever the boxes say. A curly quote in a
+<code>.json</code> file would break it. Misspelling correction runs in
+plain text, Markdown and rich text, and never in source code or settings
+files.</p>
+<p>There is no fourth rule. QUILL Lite does <strong>not</strong>
+capitalise the start of a sentence, and never has.</p>
+<h4 id="correcting-misspellings-as-you-type">Correcting misspellings as
+you type</h4>
+<p>With the rule on, QUILL Lite fixes the misspellings almost everybody
+makes the moment you finish the word. Type <code>teh</code> and a space
+and it becomes <code>the </code>; type <code>recieve</code> and press
+<strong>Enter</strong> and it becomes <code>receive</code> before the
+new line starts. You hear the word-corrected sound and “Corrected to
+the”, because your screen reader only echoes the space and would never
+tell you the word changed.</p>
+<p>The built-in list has about 350 common English misspellings, such as
+<code>teh</code>, <code>seperate</code>, <code>definately</code>,
+<code>occured</code>, <code>untill</code> and <code>wierd</code>. Every
+one was checked against American and British dictionaries before it went
+in, so a word you spelled correctly is never on it. Your capitals are
+kept: <code>Teh</code> becomes <code>The</code>, and
+<code>febuary</code> becomes <code>February</code>. Brackets, quotes and
+punctuation round the word stay where they were, so
+<code>(recieve,</code> becomes <code>(receive,</code>.</p>
+<p>It never touches:</p>
+<ul>
+<li>a word typed all in capitals, such as <code>TEH</code>, which is far
+more often an acronym than a mistake;</li>
+<li>web addresses, email addresses and paths, or any word with a full
+stop, slash, colon, <code>@</code>, digit or underscore inside it, so
+<code>teh.example.com</code> and <code>adress@example.com</code> stay as
+typed;</li>
+<li>anything inside backticks or a fenced code block in Markdown;</li>
+<li>source code and settings files, by their name, the same list that
+keeps spell-check-as-you-type quiet in them.</li>
+</ul>
+<p><strong>Taking one back.</strong> <strong>Ctrl+Z</strong> straight
+after a correction puts back exactly what you typed, as one undo step.
+QUILL Lite then leaves that word alone in this document for the rest of
+the session: type the space again and the word stays, and the status bar
+says “Kept teh as you typed it”.</p>
+<h4 id="autocorrect-entries-altshift9">AutoCorrect Entries
+(Alt+Shift+9)</h4>
+<p><strong>Tools &gt; AutoCorrect Entries…</strong>
+(<strong>Alt+Shift+9</strong>) shows every correction, the built-in ones
+and yours, one per row: “teh becomes the, built in”. It is QUILL’s
+window, on QUILL’s key, so it works the same in both.</p>
+<ul>
+<li><strong>Find</strong> narrows the list as you type.</li>
+<li><strong>Corrections</strong> is the list. <strong>Enter</strong> or
+<strong>Space</strong> on a row edits it.</li>
+<li><strong>Add…</strong> makes a correction of your own: the word as
+you mistype it, what it should become, and whether case must match
+exactly. For example, <code>qill</code> becoming <code>QUILL</code>. The
+word must be letters only (an apostrophe inside is fine); what it
+becomes may be several words.</li>
+<li><strong>Edit…</strong> changes the row you are on. Editing a
+built-in one keeps your version beside it, and the row says “built in,
+changed by you”.</li>
+<li><strong>Turn Off</strong> stops the correction you are on without
+deleting it, and the row ends in “stopped”. The same button, now
+<strong>Turn On</strong>, starts it again. Use this when a correction
+keeps changing a word you meant.</li>
+<li><strong>Remove</strong> deletes one of yours. On a built-in one you
+changed or turned off, it puts it back as it shipped. A built-in
+correction cannot be deleted, so Remove on one turns it off instead and
+tells you so.</li>
+</ul>
+<p>Every button says what it did, and your changes are kept when you
+close the window.</p>
+<p>Your corrections are kept in your abbreviation list, under the
+category <strong>AutoCorrect</strong>: QUILL Lite’s own list, or QUILL’s
+if Preferences says share it, in which case QUILL and QUILL Lite share
+your corrections too. Turning <strong>Abbreviations</strong> off in
+Customize Features does not turn your corrections off. The window needs
+the <strong>Autocorrect while typing</strong> area switched on, like the
+rule itself.</p>
+<p><strong>Limits.</strong> The built-in list is English only. A
+correction happens when a space or <strong>Enter</strong> ends the word.
+AutoCorrect fixes known misspellings, not every misspelling;
+<strong>F7</strong> and the spell check as you type still find the
+rest.</p>
+<h4 id="what-can-never-be-switched-off">What can never be switched
+off</h4>
+<p>Three things always stay. <strong>Tools &gt; Preferences</strong> and
+<strong>Customize Features</strong> stay, so you can always get back to
+your settings. And <strong>File Encoding and Line Endings</strong>
+stays, because saving a file back exactly as it arrived is at the heart
+of QUILL Lite.</p>
+<h2 id="changing-what-a-key-does">Changing what a key does</h2>
+<p>You can change the key for any command in QUILL Lite. Open
+<strong>Tools &gt; Keyboard Manager…</strong>
+(<strong>Ctrl+Alt+Shift+Space</strong>).</p>
+<ol type="1">
+<li>The list shows every command and its key. Type part of a command’s
+name to find it.</li>
+<li>Press <strong>Enter</strong> on the command you want.</li>
+<li>Press the new key.</li>
+<li>Press <strong>Save</strong> when you are done.</li>
+</ol>
+<h3 id="finding-out-what-a-key-already-does">Finding out what a key
+already does</h3>
+<p>Want to know whether a key is free? Press <strong>Record a
+Key</strong>, then press the key. QUILL Lite tells you what it does now,
+for example “Ctrl+S is File &gt; Save”, or tells you it is free. That is
+much quicker than reading through two hundred rows.</p>
+<h3 id="when-a-key-is-taken">When a key is taken</h3>
+<p>If you choose a key another command already uses, QUILL Lite tells
+you which command has it and asks if you want to take it. If you say
+yes, that other command is left with no key until you give it one. That
+way two commands never share a key, which would leave one of them never
+working.</p>
+<h3 id="when-another-program-has-the-key">When another program has the
+key</h3>
+<p>Some programs take a key for the whole of Windows. Google Drive takes
+<strong>Ctrl+Alt+G</strong>, for example, and there are others. When
+that happens, the key never reaches QUILL Lite, even while you are
+typing in it. The command is fine; the key just goes to the other
+program.</p>
+<p>QUILL Lite warns you about this. Record a Key says the key is
+“already claimed by another application running on this computer”, and
+the Keyboard Manager says so if you pick one. It is only a warning, so
+you can keep the key if you want it. It may work again when that other
+program is closed.</p>
+<p>Windows does not tell QUILL Lite which program has the key, so it
+cannot tell you either.</p>
+<h3 id="what-cannot-be-changed">What cannot be changed</h3>
+<ul>
+<li><strong>The Insert key cannot be used.</strong> Your screen reader
+needs it, and you would need it to get your key back.</li>
+<li><strong>A key on its own</strong>, without Ctrl, Alt or Shift,
+cannot be used either. It would just type itself.</li>
+</ul>
+<h3 id="putting-things-back">Putting things back</h3>
+<ul>
+<li><strong>Reset to Default</strong> puts the command you are on back
+to its original key.</li>
+<li><strong>Reset Everything</strong> does that for every command, after
+asking you first.</li>
+<li>Nothing is saved until you press <strong>Save</strong>. Press
+<strong>Escape</strong> to leave with your keys just as they were.</li>
+</ul>
+<p><strong>Check for Problems</strong> looks over all your keys at once.
+It tells you about a key used twice, a key QUILL Lite cannot read, or a
+key Windows will accept but never actually send to a menu, which would
+leave it doing nothing.</p>
+<p>Only the keys you changed are saved. That way, if a later version of
+QUILL Lite improves a key you never touched, you still get the
+improvement.</p>
+<h2 id="making-quill-lite-your-text-editor">Making QUILL Lite your text
+editor</h2>
+<p>When you open a text file from File Explorer or your desktop, Windows
+opens it in Notepad. You can have it open in QUILL Lite instead. There
+are two ways, and you can use either one or both. Both are in
+Preferences (<strong>Ctrl+,</strong>), under <strong>Windows and your
+files</strong>, with a line that tells you which program opens in place
+of Notepad right now.</p>
+<h3 id="choosing-quill-lite-in-default-apps">Choosing QUILL Lite in
+Default apps</h3>
+<p>Windows lets you choose which app opens each kind of file. QUILL Lite
+cannot make that choice for you, but it can take you straight to the
+right place.</p>
+<ol type="1">
+<li>Open Preferences (<strong>Ctrl+,</strong>) and, under
+<strong>Windows and your files</strong>, press <strong>Make QUILL Lite
+My Text Editor…</strong>.</li>
+<li>Read the short message, then press <strong>OK</strong>.</li>
+<li>Windows Settings opens on the Default apps page for QUILL Lite. It
+lists file types such as .txt, .md and .rtf, each with the app that
+opens it now.</li>
+<li>Choose <strong>.txt</strong>, pick <strong>QUILL Lite</strong> in
+the list that appears, and choose <strong>Set default</strong>.</li>
+<li>Do the same for any other type you want QUILL Lite to open. Leave
+the rest as they are.</li>
+<li>Close Settings with <strong>Alt+F4</strong>.</li>
+</ol>
+<p>From now on, pressing Enter on a .txt file opens it in QUILL Lite.
+QUILL Lite is also in the <strong>Open with</strong> list when you press
+the Applications key on a file.</p>
+<p>On Windows 10, Settings opens on the general Default apps page
+instead. Choose <strong>Choose default apps by file type</strong>, find
+.txt, and pick QUILL Lite.</p>
+<p>To change your mind, go back to the same page and pick Notepad, or
+any other app, for that type.</p>
+<h3 id="opening-quill-lite-instead-of-notepad">Opening QUILL Lite
+instead of Notepad</h3>
+<p>Some programs open Notepad by name, and so does typing “notepad” in
+the Run box. Default apps does not change those. If you would like QUILL
+Lite to open every time anything asks for Notepad, check <strong>Open
+QUILL Lite instead of Notepad</strong> in Preferences, under
+<strong>Windows and your files</strong>. It is off until you turn it
+on.</p>
+<p>Three things to know first:</p>
+<ul>
+<li>It changes Notepad for everyone who uses this computer, not just for
+you.</li>
+<li>Windows asks for administrator approval. If your account is not an
+administrator, somebody with an administrator password will need to
+approve it.</li>
+<li>To undo it, clear the same checkbox and press OK. The checkbox
+always shows whether it is on right now.</li>
+</ul>
+<p>To turn it on:</p>
+<ol type="1">
+<li>Open Preferences (<strong>Ctrl+,</strong>) and, under
+<strong>Windows and your files</strong>, check <strong>Open QUILL Lite
+instead of Notepad</strong>. Then press <strong>OK</strong>.</li>
+<li>Read the message and choose <strong>Yes</strong>.</li>
+<li>Approve the Windows prompt that follows.</li>
+<li>QUILL Lite tells you when it is done.</li>
+</ol>
+<p>On Windows 11 there is one more step. The newer Notepad has a
+shortcut of its own, called an app execution alias, that can still open
+it. QUILL Lite offers to open the page where you turn that off. Choose
+<strong>Yes</strong>, find <strong>Notepad</strong> in the list, and
+turn it off. To get there yourself, open Settings, then Apps, then
+Advanced app settings, then App execution aliases.</p>
+<p>When QUILL Lite opens in place of Notepad, you get the file Notepad
+was asked to open, or a new blank plain text document if there was none.
+If a program asked Notepad to print a file, QUILL Lite opens it instead,
+and <strong>Ctrl+P</strong> prints it.</p>
+<p>If you uninstall QUILL Lite while this is on, the uninstaller puts
+Notepad back for you. If you use a portable copy, turn it off before you
+delete the folder.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>Preferences (<strong>Ctrl+,</strong>) holds your everyday settings in
+one column, and nothing is saved until you press OK. Press F1 on any
+control when you are unsure what it does. A few quick switches live on
+the View and Tools menus instead, and <strong>Ctrl+Alt+F11</strong> and
+<strong>Ctrl+Alt+F12</strong> back up and restore your settings.</p>
+<p>Customize Features (<strong>Ctrl+Alt+F10</strong>) makes QUILL Lite
+as small as Notepad or as full as you like, in one step with a profile
+or one checkbox at a time. Nothing is saved until you press Save, and
+nothing is one-way. The Keyboard Manager
+(<strong>Ctrl+Alt+Shift+Space</strong>) changes any key, Record a Key
+tells you what a key does now, you are warned when a key is taken, and
+you can always put things back. The Keyboard reference at the end of
+this guide lists every key QUILL Lite ships with.</p>
+<p>In Preferences, under Windows and your files, Make QUILL Lite My Text
+Editor takes you to the Windows page where you choose QUILL Lite for
+.txt and other types, and Open QUILL Lite instead of Notepad catches
+everything that still asks for Notepad by name.</p>
+<p>If you are curious about AI help, the tutorial <em>Asking a question
+about a document</em> walks you through switching it on.</p>
+<p>Next, Chapter 12, Your files, updates and QUILL for All, explains
+where QUILL Lite keeps things and how to get new versions.</p>
+<hr />
+<ul>
+<li>Previous: <a href="lite-guide-10-ai-help.html">Chapter 10: AI
+help</a></li>
+<li>Next: <a
+href="lite-guide-12-your-files-updates-and-quill-for-all.html">Chapter
+12: Your files, updates and QUILL for All</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

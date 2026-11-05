@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Introduction</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="introduction">Introduction</h1>
+<p>Welcome, and thank you for giving QUILL Lite a try.</p>
+<p>QUILL Lite is a text editor for people who use a screen reader. You
+open a file, you change it, and you save it. When you save, the file
+goes back exactly the way it came in. Everything in it has a key, and it
+tells you how each thing you do turned out, so you are never left
+wondering whether a key did anything.</p>
+<p>If you have used Notepad or WordPad, almost every key you already
+know works here. Where QUILL Lite does something a little differently,
+this guide tells you, and tells you what it means for you.</p>
+<p>If you write letters, notes, stories, web pages or settings files,
+and you find your way around Windows with NVDA or JAWS, QUILL Lite is
+for you. It is free, and it is small on purpose.</p>
+<p>The installer is <strong>for your Windows account only</strong> and
+does not need administrator approval. It puts QUILL Lite and its shared
+runtime in your user profile. One separate setting, <strong>Open QUILL
+Lite instead of Notepad</strong>, changes Notepad for everyone who uses
+the computer and therefore does require administrator approval; that
+setting is described later in this guide.</p>
+<h2 id="what-you-will-be-able-to-do">What you will be able to do</h2>
+<p>By the time you have read this guide you will be able to open any
+text file and save it back without changing a thing you did not mean to
+change. You will move between several documents, find words and jump to
+headings, and select exactly what you want without holding Shift down.
+You will format in plain text, Markdown, HTML or rich text, check your
+spelling and find a better word, write by talking, and, if you choose
+to, ask AI to help. You will have QUILL Lite set up as small or as full
+as you like. And when something puzzles you, you will know where to find
+help.</p>
+<p>None of this needs to happen on day one. You do not have to read this
+guide before you start. Open QUILL Lite, type, and press
+<strong>Ctrl+S</strong>. Chapter 1 gets you going in a few minutes, and
+everything after that is there for when you are curious. Read it in
+order, or jump to the chapter you need.</p>
+<h2 id="how-this-guide-is-laid-out">How this guide is laid out</h2>
+<p>The chapters follow the order you are likely to want things.</p>
+<ol type="1">
+<li><a href="lite-guide-01-your-first-minutes.html">Chapter 1: Your
+first minutes</a>. Start, type and save, the four keys that help when
+you are lost, and thirty short recipes to try with the app open in front
+of you.</li>
+<li><a href="lite-guide-02-finding-your-way-around.html">Chapter 2:
+Finding your way around</a>. Your numbered documents, the window, the
+status bar, the View menu, and finding any command by name.</li>
+<li><a href="lite-guide-03-opening-saving-and-printing.html">Chapter 3:
+Opening, saving and printing</a>. The four kinds of document, editing
+Word documents, how saving keeps your file exactly as it was, getting
+your work back after a crash, reopening last time’s documents, and
+printing.</li>
+<li><a href="lite-guide-04-moving-around-a-document.html">Chapter 4:
+Moving around a document</a>. Find, Go To, making a table and reading it
+cell by cell, bookmarks, and getting back to where you were.</li>
+<li><a
+href="lite-guide-05-selecting-copying-and-changing-text.html">Chapter 5:
+Selecting, copying and changing text</a>. Better ways to select, more
+than one thing on the clipboard, working on whole lines, and undo.</li>
+<li><a
+href="lite-guide-06-formatting-headings-and-the-insert-menu.html">Chapter
+6: Formatting, headings and the Insert menu</a>. Bold, lists and
+headings for every kind of document, hearing the shape of a document,
+reshaping it, links, and everything on the Insert menu.</li>
+<li><a href="lite-guide-07-checking-your-writing.html">Chapter 7:
+Checking your writing</a>. Spell check, the thesaurus, the dictionary,
+and finding out exactly which character you are on.</li>
+<li><a href="lite-guide-08-what-you-hear.html">Chapter 8: What you
+hear</a>. What QUILL Lite says and what it leaves to your screen reader,
+its sounds, and catching up on a message you missed.</li>
+<li><a href="lite-guide-09-writing-by-voice.html">Chapter 9: Writing by
+voice</a>. Dictation, from your first sentence to starting and stopping
+with your voice.</li>
+<li><a href="lite-guide-10-ai-help.html">Chapter 10: AI help</a>. The AI
+pad, conversations, QUILL’s free AI, and using your own key or your
+ChatGPT subscription.</li>
+<li><a href="lite-guide-11-making-quill-lite-yours.html">Chapter 11:
+Making QUILL Lite yours</a>. Preferences, profiles, switching off what
+you never use, and changing keys.</li>
+<li><a
+href="lite-guide-12-your-files-updates-and-quill-for-all.html">Chapter
+12: Your files, updates and QUILL for All</a>. Where your files are
+kept, staying up to date, and how QUILL Lite sits beside QUILL.</li>
+<li><a href="lite-guide-13-when-you-need-a-hand.html">Chapter 13: When
+you need a hand</a>. The lessons built into the app, and how to reach a
+real person at support.</li>
+<li><a href="lite-guide-14-wordpress.html">Chapter 14: WordPress</a>.
+Writing, publishing and looking after a WordPress website.</li>
+<li><a href="lite-guide-15-forms.html">Chapter 15: Forms</a>. Writing
+accessible forms, checking them, and filling them in yourself
+first.</li>
+</ol>
+<p>After the chapters comes the <a
+href="lite-guide-keyboard-reference.html">Keyboard reference</a>: every
+key QUILL Lite comes with, grouped by menu. Keep it handy for the first
+few weeks.</p>
+<p>QUILL Lite also has guided tutorials: fifteen short lessons you do
+with QUILL Lite open in front of you, on <strong>Help &gt;
+Tutorials…</strong> (<strong>Ctrl+Alt+F1</strong>). Whenever a lesson
+covers the same ground as part of this guide, the guide gives you its
+name, so you can choose between reading about something and being walked
+through it.</p>
+<h2 id="reading-this-guide-with-a-screen-reader">Reading this guide with
+a screen reader</h2>
+<p>The guide is built from headings so you can move through it quickly.
+Each chapter is a page of its own, and its title is the level 1 heading
+at the top. The main topics in a chapter are level 2 headings. When a
+topic has parts of its own, those parts sit one level deeper, at level
+3, and sometimes at level 4. In JAWS or NVDA, press 2 to move between
+the main topics and 3 to step through the parts of a topic. Shift with
+either number goes back. To see every heading at once, press Insert+F6
+in JAWS or Insert+F7 in NVDA and choose headings.</p>
+<p>The contents page, <a href="../quilllite-userguide.html">QUILL Lite User
+Guide</a>, lists every chapter with its main topics. At the bottom of
+every chapter are links to the chapter before it, the one after it, and
+back to the contents.</p>
+<p>Every chapter ends with a short section called What you learned, and
+where to go next. If you are skimming, those are a quick way to hear
+what a chapter covers before you read it.</p>
+<p>Keys are written the way QUILL Lite writes them in its menus.
+Ctrl+Shift+B means hold down Ctrl and Shift together and press B. A menu
+path such as Tools &gt; Preferences means open the Tools menu and choose
+Preferences.</p>
+<p>When a section walks you through something, the steps are numbered.
+Follow them with QUILL Lite open beside the guide and you will learn
+faster than by reading alone. Alt+Tab moves you between the two.</p>
+<p>You do not always need this guide to answer a question. Every window
+in QUILL Lite answers <strong>F1</strong> with a short note on what that
+window is for and what the control you are on does. When you wonder what
+a checkbox will change, F1 is often the quickest answer.</p>
+<hr />
+<ul>
+<li>Next: <a href="lite-guide-01-your-first-minutes.html">Chapter 1:
+Your first minutes</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

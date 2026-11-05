@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>WordPress and Forms in QUILL and QUILL Lite</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="wordpress-and-forms-in-quill-and-quill-lite">WordPress and Forms
+in QUILL and QUILL Lite</h1>
+<p>This is the manual for two things QUILL and QUILL Lite share: looking
+after WordPress websites, and writing accessible forms. Everything in it
+works the same way in both editors. It is a book of its own, beside each
+editor’s user guide, because there is a lot to say and you may only need
+part of it.</p>
+<h2 id="how-to-read-this-manual">How to read this manual</h2>
+<ul>
+<li><strong>New to it?</strong> Read Chapters 1 and 2, in that order.
+They take you from nothing to a published post. Then dip into the rest
+as you need it.</li>
+<li><strong>Only want forms?</strong> Start at Chapter 8. Chapter 9
+covers putting a form on a site, which needs Chapter 1’s connection
+first.</li>
+<li><strong>Looking something up?</strong> Chapter 13 describes every
+window, field and button, and Appendix A lists every WordPress feature
+QUILL uses and what your site needs for each.</li>
+<li><strong>Something went wrong?</strong> Chapter 11 has the sentences
+QUILL says when something fails, and what to do about each.</li>
+</ul>
+<p>Every chapter starts with a short “what this chapter covers” and ends
+with links to the chapters either side and back to these contents.
+Headings are real headings, so your screen reader’s heading keys move
+through each chapter.</p>
+<p>Throughout the manual, “Community Radio” stands for your own site’s
+name, which QUILL says in its place. The guided lessons in <strong>Help
+&gt; Tutorials</strong>, in both editors, walk through the commonest
+tasks on a test site, and tell you what you should hear at each
+step.</p>
+<h2 id="keys-at-a-glance">Keys at a glance</h2>
+<ul>
+<li><strong>Ctrl+Alt+Shift+Grave</strong>, then a letter: the WordPress
+keys. Grave is the key below Escape. O opens a page or post, P
+publishes, M opens the Media Library, S switches site, W opens a page by
+its web address, D saves a draft to the site. Escape leaves without
+doing anything.</li>
+<li><strong>Ctrl+S</strong> saves on your computer only. It never sends
+anything to a site.</li>
+<li><strong>Ctrl+Shift+P</strong> opens the Command Palette, which finds
+every WordPress and Forms command by name.</li>
+<li><strong>Ctrl+Z</strong> takes back any change a WordPress or Forms
+command made to your document.</li>
+<li><strong>F1</strong> on any control says what it is for.</li>
+</ul>
+<p>The Forms commands have no keys of their own: use the menus or the
+Command Palette. <a href="wordpress-forms-12-keys.html">Chapter 12</a>
+has every key.</p>
+<h2 id="contents">Contents</h2>
+<h3 id="chapter-1-getting-started-and-adding-your-sites"><a
+href="wordpress-forms-01-getting-started.html">Chapter 1: Getting
+started and adding your sites</a></h3>
+<p>What WordPress in QUILL does and leaves alone, how to turn it on, and
+how to connect a site, with your browser or a pasted application
+password, on WordPress.com, and when you look after several.</p>
+<ul>
+<li><a
+href="wordpress-forms-01-getting-started.html#what-wordpress-in-quill-is">What
+WordPress in QUILL is</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#turning-it-on">Turning it
+on</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#where-everything-is">Where
+everything is</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#what-you-need-before-you-connect">What
+you need before you connect</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#connecting-a-self-hosted-site-with-your-browser">Connecting
+a self-hosted site with your browser</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#connecting-by-pasting-an-application-password">Connecting
+by pasting an application password</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#wordpresscom-sites">WordPress.com
+sites</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#looking-after-more-than-one-site">Looking
+after more than one site</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#what-your-role-on-a-site-means">What
+your role on a site means</a></li>
+<li><a
+href="wordpress-forms-01-getting-started.html#signing-out-of-a-site">Signing
+out of a site</a></li>
+</ul>
+<h3 id="chapter-2-writing-and-publishing-posts-and-pages"><a
+href="wordpress-forms-02-writing-and-publishing.html">Chapter 2: Writing
+and publishing posts and pages</a></h3>
+<p>Starting, opening, saving, sending, publishing and scheduling, what
+happens when someone else changed the page first or the connection
+drops, and getting an earlier version back.</p>
+<ul>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#posts-and-pages">Posts
+and pages</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#writing-something-new">Writing
+something new</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#opening-what-is-already-there">Opening
+what is already there</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#the-three-ways-to-save">The
+three ways to save</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#when-someone-else-changed-it-first">When
+someone else changed it first</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#scheduling-a-post">Scheduling
+a post</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#autosaves-and-when-the-connection-drops">Autosaves,
+and when the connection drops</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#properties">Properties</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#previous-versions-and-comparing">Previous
+versions, and comparing</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#the-trash">The
+Trash</a></li>
+<li><a
+href="wordpress-forms-02-writing-and-publishing.html#send-and-copy">Send
+and Copy</a></li>
+</ul>
+<h3 id="chapter-3-blocks-made-plain"><a
+href="wordpress-forms-03-blocks.html">Chapter 3: Blocks made
+plain</a></h3>
+<p>How QUILL shows WordPress blocks as text you read line by line, and
+how to insert, move, change and preview them, with patterns, notes,
+links and icons.</p>
+<ul>
+<li><a
+href="wordpress-forms-03-blocks.html#how-blocks-look-in-a-markdown-document">How
+blocks look in a Markdown document</a></li>
+<li><a href="wordpress-forms-03-blocks.html#inserting-a-block">Inserting
+a block</a></li>
+<li><a
+href="wordpress-forms-03-blocks.html#moving-through-blocks">Moving
+through blocks</a></li>
+<li><a href="wordpress-forms-03-blocks.html#the-blocks-window">The
+Blocks window</a></li>
+<li><a href="wordpress-forms-03-blocks.html#block-settings">Block
+settings</a></li>
+<li><a
+href="wordpress-forms-03-blocks.html#hearing-what-the-site-will-show">Hearing
+what the site will show</a></li>
+<li><a href="wordpress-forms-03-blocks.html#notes-on-blocks">Notes on
+blocks</a></li>
+<li><a href="wordpress-forms-03-blocks.html#links-inside-a-page">Links
+inside a page</a></li>
+<li><a href="wordpress-forms-03-blocks.html#icons">Icons</a></li>
+</ul>
+<h3 id="chapter-4-pictures-and-the-media-library"><a
+href="wordpress-forms-04-pictures-and-media.html">Chapter 4: Pictures
+and the Media Library</a></h3>
+<p>Pictures with good alternative text, the Media Library, listening and
+watching, uploading, resizing, the Picture Maker, the site logo, what a
+sighted visitor sees, and captions, transcripts and listening
+versions.</p>
+<ul>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#putting-a-picture-in-a-page">Putting
+a picture in a page</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#writing-good-alternative-text">Writing
+good alternative text</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#the-media-library-window">The
+Media Library window</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#listening-and-watching">Listening
+and watching</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#uploading">Uploading</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#making-a-picture-smaller-and-changing-how-big-it-shows">Making
+a picture smaller, and changing how big it shows</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#making-a-picture-with-ai">Making
+a picture with AI</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#hearing-what-a-sighted-visitor-sees">Hearing
+what a sighted visitor sees</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#captions-transcripts-and-listening-versions">Captions,
+transcripts and listening versions</a></li>
+<li><a
+href="wordpress-forms-04-pictures-and-media.html#posting-from-quills-other-apps">Posting
+from QUILL’s other apps</a></li>
+</ul>
+<h3 id="chapter-5-comments-categories-tags-and-menus"><a
+href="wordpress-forms-05-comments-categories-menus.html">Chapter 5:
+Comments, categories, tags and menus</a></h3>
+<p>The comments visitors leave, the categories and tags that sort your
+posts, and the menus that let visitors find your pages.</p>
+<ul>
+<li><a
+href="wordpress-forms-05-comments-categories-menus.html#how-every-list-window-works">How
+every list window works</a></li>
+<li><a
+href="wordpress-forms-05-comments-categories-menus.html#comments">Comments</a></li>
+<li><a
+href="wordpress-forms-05-comments-categories-menus.html#categories-and-tags">Categories
+and tags</a></li>
+<li><a
+href="wordpress-forms-05-comments-categories-menus.html#menus">Menus</a></li>
+</ul>
+<h3 id="chapter-6-checking-before-you-publish"><a
+href="wordpress-forms-06-checking.html">Chapter 6: Checking before you
+publish</a></h3>
+<p>The checks that find what makes a page hard to use: before
+publishing, on the published page, across the whole site with fixes you
+can undo, and for contrast, reading level and language.</p>
+<ul>
+<li><a
+href="wordpress-forms-06-checking.html#check-before-publishing">Check
+Before Publishing</a></li>
+<li><a
+href="wordpress-forms-06-checking.html#check-this-page-the-way-a-visitor-gets-it">Check
+This Page, the way a visitor gets it</a></li>
+<li><a
+href="wordpress-forms-06-checking.html#check-the-whole-site">Check the
+Whole Site</a></li>
+<li><a
+href="wordpress-forms-06-checking.html#site-wide-find-and-replace">Site-wide
+Find and Replace</a></li>
+<li><a
+href="wordpress-forms-06-checking.html#colours-that-pass-and-say-so">Colours
+that pass, and say so</a></li>
+<li><a
+href="wordpress-forms-06-checking.html#marking-another-language">Marking
+another language</a></li>
+<li><a
+href="wordpress-forms-06-checking.html#an-accessibility-statement">An
+accessibility statement</a></li>
+</ul>
+<h3 id="chapter-7-running-your-site"><a
+href="wordpress-forms-07-running-your-site.html">Chapter 7: Running your
+site</a></h3>
+<p>Site health and settings, users and passwords, plugins, themes and
+fonts, patterns and widgets, the site’s look, the plugins QUILL works
+with, and AI abilities.</p>
+<ul>
+<li><a href="wordpress-forms-07-running-your-site.html#site-check">Site
+Check</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#site-settings">Site
+Settings</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#users-and-passwords">Users
+and passwords</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#plugins-themes-and-fonts">Plugins,
+themes and fonts</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#patterns-widgets-and-the-shape-of-the-site">Patterns,
+widgets and the shape of the site</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#changing-many-pages-at-once">Changing
+many pages at once</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#the-sites-look">The
+site’s look</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#plugins-quill-works-with">Plugins
+QUILL works with</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#ai-abilities-and-ask-the-site">AI
+Abilities and Ask the Site</a></li>
+<li><a
+href="wordpress-forms-07-running-your-site.html#across-all-your-sites">Across
+all your sites</a></li>
+</ul>
+<h3 id="chapter-8-writing-a-form"><a
+href="wordpress-forms-08-writing-forms.html">Chapter 8: Writing a
+form</a></h3>
+<p>Writing a form as text in the QAF form language: templates,
+questions, the outline, rules, properties, checking it, and filling it
+in yourself before anyone else sees it.</p>
+<ul>
+<li><a
+href="wordpress-forms-08-writing-forms.html#why-forms-are-text-here">Why
+forms are text here</a></li>
+<li><a href="wordpress-forms-08-writing-forms.html#form-files">Form
+files</a></li>
+<li><a
+href="wordpress-forms-08-writing-forms.html#starting-a-form">Starting a
+form</a></li>
+<li><a
+href="wordpress-forms-08-writing-forms.html#what-a-form-looks-like">What
+a form looks like</a></li>
+<li><a
+href="wordpress-forms-08-writing-forms.html#the-form-language-in-more-detail">The
+form language in more detail</a></li>
+<li><a
+href="wordpress-forms-08-writing-forms.html#adding-a-question">Adding a
+question</a></li>
+<li><a href="wordpress-forms-08-writing-forms.html#the-form-outline">The
+form outline</a></li>
+<li><a href="wordpress-forms-08-writing-forms.html#rules">Rules</a></li>
+<li><a href="wordpress-forms-08-writing-forms.html#form-properties">Form
+Properties</a></li>
+<li><a
+href="wordpress-forms-08-writing-forms.html#checking-a-form">Checking a
+form</a></li>
+<li><a
+href="wordpress-forms-08-writing-forms.html#fill-it-in-yourself">Fill It
+In Yourself</a></li>
+</ul>
+<h3 id="chapter-9-forms-on-your-site-on-the-web-and-on-paper"><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html">Chapter 9:
+Forms on your site, on the web and on paper</a></h3>
+<p>Publishing to the QUILL Accessible Forms plugin, putting a form on a
+page, reading responses, saving as a web page, large print and braille,
+bringing forms in from other builders, and AI help.</p>
+<ul>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#quill-accessible-forms">QUILL
+Accessible Forms</a></li>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#publishing-a-form">Publishing
+a form</a></li>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#putting-the-form-on-a-page">Putting
+the form on a page</a></li>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#reading-the-responses">Reading
+the responses</a></li>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#save-as-web-page">Save
+As Web Page</a></li>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#paper-large-print-and-braille">Paper,
+large print and braille</a></li>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#bringing-forms-in-from-other-builders">Bringing
+forms in from other builders</a></li>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#ai-help-with-forms">AI
+help with forms</a></li>
+<li><a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#privacy-and-safe-mode">Privacy
+and Safe Mode</a></li>
+</ul>
+<h3 id="chapter-10-quill-lite"><a
+href="wordpress-forms-10-quill-lite.html">Chapter 10: QUILL
+Lite</a></h3>
+<p>Why everything works the same in QUILL Lite, and the few differences:
+turning the features on, access letters, and the QUILL key.</p>
+<ul>
+<li><a
+href="wordpress-forms-10-quill-lite.html#one-set-of-commands-two-editors">One
+set of commands, two editors</a></li>
+<li><a
+href="wordpress-forms-10-quill-lite.html#turning-the-features-on">Turning
+the features on</a></li>
+<li><a
+href="wordpress-forms-10-quill-lite.html#menu-access-letters">Menu
+access letters</a></li>
+<li><a
+href="wordpress-forms-10-quill-lite.html#the-wordpress-keys-and-the-quill-key">The
+WordPress keys and the QUILL key</a></li>
+</ul>
+<h3 id="chapter-11-troubleshooting"><a
+href="wordpress-forms-11-troubleshooting.html">Chapter 11:
+Troubleshooting</a></h3>
+<p>What QUILL says when something fails, why, and what to do.</p>
+<ul>
+<li><a
+href="wordpress-forms-11-troubleshooting.html#before-you-start-three-quick-checks">Before
+you start: three quick checks</a></li>
+<li><a
+href="wordpress-forms-11-troubleshooting.html#connecting">Connecting</a></li>
+<li><a
+href="wordpress-forms-11-troubleshooting.html#what-your-role-allows">What
+your role allows</a></li>
+<li><a
+href="wordpress-forms-11-troubleshooting.html#opening-and-sending">Opening
+and sending</a></li>
+<li><a
+href="wordpress-forms-11-troubleshooting.html#pictures-and-media">Pictures
+and media</a></li>
+<li><a
+href="wordpress-forms-11-troubleshooting.html#forms">Forms</a></li>
+</ul>
+<h3 id="chapter-12-every-wordpress-and-forms-key"><a
+href="wordpress-forms-12-keys.html">Chapter 12: Every WordPress and
+Forms key</a></h3>
+<p>The WordPress keys and their whole table, and the keys inside the
+windows.</p>
+<ul>
+<li><a href="wordpress-forms-12-keys.html#the-wordpress-keys">The
+WordPress keys</a></li>
+<li><a href="wordpress-forms-12-keys.html#the-whole-table">The whole
+table</a></li>
+<li><a
+href="wordpress-forms-12-keys.html#commands-without-a-key">Commands
+without a key</a></li>
+<li><a href="wordpress-forms-12-keys.html#keys-inside-the-windows">Keys
+inside the windows</a></li>
+</ul>
+<h3 id="chapter-13-every-window-field-and-button"><a
+href="wordpress-forms-13-window-reference.html">Chapter 13: Every
+window, field and button</a></h3>
+<p>A reference, in menu order: every WordPress window, what each field
+and button does on your site, what you hear, and which roles can use
+it.</p>
+<ul>
+<li><a
+href="wordpress-forms-13-window-reference.html#how-to-read-this-chapter">How
+to read this chapter</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#file--wordpress">File
+&gt; WordPress</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#edit--wordpress">Edit
+&gt; WordPress</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#view">View</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#insert">Insert</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#format--wordpress">Format
+&gt; WordPress</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#tools--wordpress-checking">Tools
+&gt; WordPress: checking</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#tools--wordpress-pictures-and-media">Tools
+&gt; WordPress: pictures and media</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#tools--wordpress-the-sites-content">Tools
+&gt; WordPress: the site’s content</a></li>
+<li><a
+href="wordpress-forms-13-window-reference.html#tools--wordpress--manage">Tools
+&gt; WordPress &gt; Manage</a></li>
+</ul>
+<h3 id="appendix-a-every-wordpress-feature-quill-uses"><a
+href="wordpress-forms-appendix-a-features.html">Appendix A: Every
+WordPress feature QUILL uses</a></h3>
+<p>Every group of WordPress routes QUILL uses, where you reach it, its
+key, and what happens on a site that does not offer it.</p>
+<ul>
+<li><a
+href="wordpress-forms-appendix-a-features.html#writing-and-the-sites-content">Writing
+and the site’s content</a></li>
+<li><a
+href="wordpress-forms-appendix-a-features.html#blocks-and-patterns">Blocks
+and patterns</a></li>
+<li><a
+href="wordpress-forms-appendix-a-features.html#pictures-and-media">Pictures
+and media</a></li>
+<li><a
+href="wordpress-forms-appendix-a-features.html#the-sites-look">The
+site’s look</a></li>
+<li><a
+href="wordpress-forms-appendix-a-features.html#menus-and-widgets">Menus
+and widgets</a></li>
+<li><a
+href="wordpress-forms-appendix-a-features.html#running-the-site">Running
+the site</a></li>
+<li><a
+href="wordpress-forms-appendix-a-features.html#plugins-quill-recognises">Plugins
+QUILL recognises</a></li>
+</ul>
+</main>
+</body>
+</html>

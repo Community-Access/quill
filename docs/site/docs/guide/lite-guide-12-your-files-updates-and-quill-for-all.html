@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 12: Your files, updates and QUILL for All</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-12-your-files-updates-and-quill-for-all">Chapter 12:
+Your files, updates and QUILL for All</h1>
+<p>This chapter is about QUILL Lite’s place on your computer. You will
+learn where it keeps your settings and recovered work, how a portable
+copy keeps everything on the stick, and how to get a new version when
+one comes out. Then we will look at how QUILL Lite sits beside its
+bigger sibling, QUILL for All, and how to share what you have built up
+between them.</p>
+<h2 id="where-your-files-are-kept">Where your files are kept</h2>
+<p>QUILL Lite keeps your settings, your recent files, your copy tray and
+any recovered work in a QUILL Lite folder inside your own Windows user
+folder. To find out exactly where, open <strong>Help &gt; About QUILL
+Lite</strong>. It tells you.</p>
+<p>This folder is separate from QUILL for All’s folder. QUILL Lite and
+QUILL are two different programs, so you can install or remove one
+without touching the other.</p>
+<p>When you uninstall QUILL Lite, this folder stays. That way, if there
+is a recovered document you have not finished with, it is still there
+for you.</p>
+<h3 id="the-portable-copy-keeps-everything-on-the-stick">The portable
+copy keeps everything on the stick</h3>
+<p>The portable QUILL Lite is the <code>.zip</code> you unpack instead
+of installing. If that is the one you use, everything above works
+differently: all your settings and recovered work go into the
+<code>data\QuillLite</code> folder inside the bundle, right next to
+<code>QuillLite.exe</code>. Nothing at all is written to the computer
+you are plugged into. This happens from the very first time you start
+it. There is nothing to switch on.</p>
+<h4 id="if-you-used-a-portable-copy-before-version-10">If you used a
+portable copy before version 1.0</h4>
+<p>Older portable copies did not work this way. They kept their files in
+<code>%LOCALAPPDATA%\QuillLite</code> on whichever computer you were
+using, and they did not tell you. So if you have been carrying a
+portable QUILL Lite around, and something you were working on seems to
+be missing, look in that folder on the computer you used. Once you have
+what you need out of it, it is a good idea to delete that folder,
+especially if the computer is not yours.</p>
+<h4 id="turning-a-portable-copy-back-into-an-ordinary-one">Turning a
+portable copy back into an ordinary one</h4>
+<p>The <code>data</code> folder is what makes a copy portable. Delete
+the <code>data</code> folder from the bundle, and QUILL Lite goes back
+to keeping its files in your Windows user folder on this computer.</p>
+<h2 id="keeping-quill-lite-up-to-date">Keeping QUILL Lite up to
+date</h2>
+<p>To find out whether there is a newer QUILL Lite, open <strong>Help
+&gt; Check for Updates…</strong> (<strong>Ctrl+Alt+U</strong>). Every
+app in the QUILL family uses this same key and the same window, so once
+you know it here, you know it everywhere.</p>
+<p>If you already have the newest version, a small window tells you so.
+You always get an answer.</p>
+<p>Help &gt; About shows your version with a build number, such as 2.0.0
+(build 1). The build number tells you which build of a version you have:
+when a fix comes out without a new version number, it is a newer build,
+and Check for Updates offers it.</p>
+<h3 id="what-changed-help--whats-new">What changed: Help &gt; What’s
+New</h3>
+<p><strong>Help &gt; What’s New</strong> (press <strong>Alt+H</strong>,
+then <strong>W</strong>) opens QUILL Lite’s changelog in your web
+browser: every change, newest first. It has no shortcut key, as in
+QUILL, because you read it once after an update rather than every day.
+Every app in the QUILL family has the same item in its Help menu; in the
+apps other than the two editors it is on
+<strong>Ctrl+Shift+F1</strong>.</p>
+<h3 id="with-every-document-closed">With every document closed</h3>
+<p>If you close the last document, QUILL Lite’s window stays open with a
+full menu bar of what works without a document: <strong>File</strong>
+(New, New Rich Text Document, New Plain Text Document, Open, Recent
+Documents, Reopen Last Session and Exit), <strong>Tools</strong>
+(Preferences, the Keyboard Manager, the Sound Scheme and backing up or
+restoring your settings) and <strong>Help</strong> (Help for This
+Window, Tutorials, Keyboard Shortcuts, Get Help from Support, Check for
+Updates, Release Channel, What’s New and About). The keys are the same
+ones the document windows use, including any you have changed, and a
+feature you switched off in Customize Features is off here too. Activity
+and Repeat Last Result need a document window.</p>
+<h3 id="when-there-is-a-new-version">When there is a new version</h3>
+<p>If there is something newer, the window opens on the release notes
+for that version, so you can read what changed. They are in a read-only
+box you can arrow through like a document. Press <strong>Tab</strong> to
+reach two buttons:</p>
+<ul>
+<li><p><strong>Update</strong> downloads the new version and then offers
+to install it. Your settings, recent files and recovered work are kept
+whichever you choose:</p>
+<ul>
+<li><strong>Install and restart now</strong> (Enter) closes QUILL Lite,
+installs the update and opens QUILL Lite again.</li>
+<li><strong>Install when I close</strong> (Alt+C) lets you keep writing.
+The update goes in the next time you close QUILL Lite, and the next time
+you open it, you have the new version.</li>
+</ul>
+<p>A portable copy updates itself where it is. The new version takes the
+old folder’s place and your <code>data</code> folder moves across
+untouched; the old version is kept beside it, in a folder ending in
+<code>.previous</code>, until the new one has started three times or for
+a week. The installer updates quietly and doesn’t ask for administrator
+permission, because QUILL Lite is installed for you alone.</p></li>
+<li><p><strong>Close</strong> leaves everything as it is. Nothing is
+downloaded until you press Update.</p></li>
+</ul>
+<p>While it downloads, you hear when it is a quarter done, half done and
+three quarters done, and then when it has finished.</p>
+<h3 id="the-daily-check">The daily check</h3>
+<p>QUILL Lite also looks for a new version once a day, when it starts.
+It stays quiet while it looks, quiet if there is nothing new, and quiet
+if you are not online. You only hear from it when there really is a new
+version, and even then it just offers. Nothing changes until you say
+so.</p>
+<p>If you would rather it did not look at all, turn off “Look for
+updates when QUILL Lite starts” in <strong>Settings</strong>.
+<strong>Ctrl+Alt+U</strong> still works whenever you want to check
+yourself.</p>
+<h2 id="release-channels">Release channels</h2>
+<p>QUILL Lite comes in three flavours, and you choose which one your
+copy follows. They are called release channels.</p>
+<ul>
+<li><strong>Stable</strong> is the version we recommend. It has been
+checked with JAWS and NVDA, and it is what most people use. Every copy
+starts here.</li>
+<li><strong>Beta</strong> gets new features a few weeks early. It is
+mostly finished, but some things may not work right yet.</li>
+<li><strong>Dev</strong> is the work in progress, sometimes several
+builds a week. Things will break. Only choose it if a developer asked
+you to, or you enjoy testing.</li>
+</ul>
+<h3 id="choosing-a-channel">Choosing a channel</h3>
+<p>Open the <strong>Help</strong> menu, then choose <strong>Release
+Channel…</strong> (press <strong>Alt+H</strong>, then
+<strong>C</strong>). You can also get there from
+<strong>Settings</strong>, with the <strong>Change release
+channel…</strong> button under “Look for updates when QUILL Lite
+starts”.</p>
+<p>Arrow through Stable, Beta and Dev. As you move, the box below tells
+you what each one means and what choosing it would do. Nothing changes
+yet. Press <strong>Switch</strong> to move, or <strong>Close</strong>
+(Escape) to leave everything as it was.</p>
+<p>If you choose Beta or Dev, a short warning comes first: what could go
+wrong, how your settings are protected, and how to come back. Read it,
+check the <strong>I understand</strong> box, then choose <strong>Move to
+Beta</strong> (or <strong>Move to Dev</strong>). <strong>Stay on
+Stable</strong>, or Escape, changes nothing.</p>
+<p>Beta and Dev versions aren’t signed, so when you install one, Windows
+SmartScreen may warn that it comes from an unknown publisher; that’s
+expected, and choosing <strong>More info</strong>, then <strong>Run
+anyway</strong>, installs it.</p>
+<p>Before it moves, QUILL Lite saves a copy of your settings, keys and
+recent files list. If it cannot, it stays where it is and tells you why.
+Your documents are not copied, and updates do not change them. Then it
+checks for updates on the new channel straight away, and offers you the
+newest version there if there is one. Nothing is installed unless you
+say so.</p>
+<h3 id="when-quill-radio-or-quill-cast-is-installed-too">When Quill
+Radio or QUILL Cast is installed too</h3>
+<p>QUILL Lite, Quill Radio and QUILL Cast run on one shared engine on
+your computer. When an app moves to Beta or Dev, it gets its own copy of
+that engine, so the apps you leave on Stable are never touched. You can
+still move several at once: check them under “Also move my other
+QuillVille apps on this computer” and choose
+<strong>Switch</strong>.</p>
+<p>That second copy of the engine takes about 335 MB of disk space. It
+goes away by itself when your last app comes back to Stable. A portable
+copy carries its own engine, so it needs no extra space.</p>
+<h3 id="updates-on-beta-and-dev">Updates on Beta and Dev</h3>
+<p>On Beta and Dev, QUILL Lite downloads a new version quietly when its
+daily check finds one, so it is ready when you are. It never installs
+anything without asking: when the download is done, it says so and shows
+you what’s new, and you choose when to install.</p>
+<p>It waits instead of downloading on a metered connection, during Quiet
+Hours, and while Quill Radio is recording. Update History tells you why
+it waited. On Stable nothing changes.</p>
+<h3 id="if-an-update-doesnt-start">If an update doesn’t start</h3>
+<p>After an update, QUILL Lite checks that the new version really opens.
+If it doesn’t open within two minutes, the update undoes itself and puts
+back the version you had. If the new version is still running but stuck,
+it is closed first. The next time QUILL Lite starts, it tells you so.
+Nothing of yours is changed, and Update History has the details.</p>
+<p>If the installer itself doesn’t finish, nothing is changed at all:
+QUILL Lite opens again straight away as the version you had, and tells
+you the update could not be installed.</p>
+<p>To make this possible, QUILL Lite keeps a copy of the installer for
+the version you have: on Beta and Dev for as long as you have that
+version, and on Stable for a week or three starts after each update.
+That copy takes about 200 MB of disk space, which Stable gives back once
+the week or the three starts are up. After an update, the previous
+installer is kept until the new version has started three times, or for
+a week, and then it is deleted.</p>
+<h3 id="coming-back-to-stable">Coming back to Stable</h3>
+<p>Open <strong>Release Channel</strong> again and choose
+<strong>Stable</strong>.</p>
+<ul>
+<li>If the version you have is already a Stable one, you’re back
+straight away, and nothing is installed.</li>
+<li>If you have a newer Beta or Dev version, QUILL Lite checks whether
+Stable can read everything you have saved. If it can, choose <strong>Go
+back to</strong> (the Stable version) <strong>now</strong>, and QUILL
+Lite downloads Stable and offers to install it. Your settings come with
+you. If a few settings were only in Beta, they go back to their usual
+values, and the window tells you which.</li>
+<li>If Stable can’t read something yet, QUILL Lite says so and gives you
+two safe choices. <strong>Wait for Stable</strong> keeps the version you
+have, stops test versions, and moves you to Stable by itself as soon as
+Stable catches up. It tells you when that happens. <strong>Use the copy
+from</strong> (the day you joined) puts back the copy of your settings
+saved when you joined, then installs Stable. Anything you changed since
+then won’t be in it, but a copy of how things are right now is saved
+first, so nothing is thrown away.</li>
+<li>If there’s no saved copy, waiting is the only choice, and the window
+says so.</li>
+</ul>
+<p>The <strong>Update History</strong> button in the same window shows
+what the updater has done for QUILL Lite. And switching sends nothing
+about you: the only thing QUILL Lite ever sends when it checks for
+updates is a request for the list of versions.</p>
+<h2 id="what-quill-lite-is-not">What QUILL Lite is not</h2>
+<p>QUILL Lite is a companion to <strong>QUILL for All</strong>. It is
+not meant to replace it.</p>
+<p>If you want to convert documents, compare two documents, publish, or
+use braille tools, those are in QUILL. QUILL Lite stays a small, focused
+text editor on purpose.</p>
+<h3 id="dictation">Dictation</h3>
+<p>QUILL Lite has <a
+href="lite-guide-09-writing-by-voice.html#chapter-9-writing-by-voice">dictation</a>:
+built-in speech recognition that writes each phrase when you pause.
+QUILL has the very same feature on the same keys, under Tools &gt;
+Speech &gt; Live Dictation. QUILL’s offline Locked Dictation, which
+records a passage and then transcribes it with a model you download, is
+only in QUILL.</p>
+<h3 id="ai">AI</h3>
+<p>QUILL Lite has AI help, described in <a
+href="lite-guide-10-ai-help.html#chapter-10-ai-help">Chapter 10, AI
+help</a>. It can summarize, rewrite, proofread and explain, answer a
+question about the document you have open, and a few more things that
+chapter walks you through. It is there so you can get through a long
+document, or check your writing, without having to read every line
+yourself.</p>
+<p>Some of QUILL’s AI stays in QUILL: running a model on your own
+computer, the agents, and the picture description work. If you want
+those, QUILL has them.</p>
+<p>Both programs are free, both are made for people who use a screen
+reader, and you can install them side by side.</p>
+<h3 id="sharing-what-you-have-built-up-between-them">Sharing what you
+have built up between them</h3>
+<p>QUILL Lite keeps its own settings, separate from QUILL’s. That way it
+starts small and simple, and removing it never takes anything away from
+QUILL. But the things you collect over time, like abbreviations and
+words you have taught the spell checker, are nice to have in both. So
+you can choose to share them:</p>
+<ul>
+<li>In Preferences, <strong>Share QUILL’s abbreviations</strong> and
+<strong>Share QUILL’s personal dictionary</strong> make QUILL Lite use
+QUILL’s copies. A short form you add, or a word you teach, in either
+editor is then there in both.</li>
+<li>In QUILL, <strong>Tools &gt; Customize and Support &gt; Bring My
+QUILL Lite Settings…</strong> does it all in one step. It adds your
+QUILL Lite abbreviations, dictionary, copy tray, clip library and
+bookmarks into QUILL, turns those sharing switches on for you, and
+copies your preferences and any keys you changed across once. Nothing
+already in QUILL is replaced, and nothing is removed from QUILL
+Lite.</li>
+</ul>
+<h3 id="a-quill-that-feels-like-quill-lite">A QUILL that feels like
+QUILL Lite</h3>
+<p>QUILL also has a <strong>QUILL Lite profile</strong> (in QUILL,
+Preferences &gt; Profiles and Features). It makes QUILL show just these
+nine menus, and makes Ctrl+N create a plain text document, the way QUILL
+Lite does. It is there for the day you want one of QUILL’s extra tools
+but would like everything to still feel familiar.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>Your settings and recovered work live in your own user folder, and
+<strong>Help &gt; About QUILL Lite</strong> tells you where. A portable
+copy keeps everything on the stick instead. <strong>Ctrl+Alt+U</strong>
+checks for a new version, shows you what changed, and lets you install
+now or when you close. QUILL Lite also checks quietly once a day, and
+you can turn that off in Preferences.</p>
+<p>QUILL Lite is the small editor, and QUILL for All is the big one.
+They work side by side, and you can share your abbreviations, dictionary
+and more between them. If you are setting up a new computer, <em>Taking
+your settings with you</em>, in Chapter 11, shows you how to bring your
+settings along.</p>
+<p>Next, Chapter 13, When you need a hand, tells you what to do when you
+are stuck.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-guide-11-making-quill-lite-yours.html">Chapter 11: Making
+QUILL Lite yours</a></li>
+<li>Next: <a href="lite-guide-13-when-you-need-a-hand.html">Chapter 13:
+When you need a hand</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

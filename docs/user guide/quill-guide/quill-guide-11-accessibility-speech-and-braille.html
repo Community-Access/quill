@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 11: Accessibility, speech and braille</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-11-accessibility-speech-and-braille">Chapter 11:
+Accessibility, speech and braille</h1>
+<p>This chapter is about how QUILL talks to you, how it looks, and how
+it works with your braille display. You will learn how to ask QUILL what
+it knows, how to make it chattier or quieter, how to make the text the
+size you need, and what its sounds mean. Braille readers and
+transcribers will find braille files covered page by page, and anyone
+preparing documents for other people will find GLOW, the accessibility
+checker built into QUILL.</p>
+<h2 id="asking-quill-what-it-knows">Asking QUILL what it knows</h2>
+<p>Your screen reader tells you what is under the cursor. What it cannot
+tell you is what QUILL just did on its own, or what kind of document you
+have landed in. Only QUILL knows those things, so QUILL has commands
+that say them. You will find these in the <strong>View</strong>
+menu.</p>
+<h3 id="what-is-this-document-altshiftf1">What Is This Document?
+(Alt+Shift+F1)</h3>
+<p>Press <code>Alt+Shift+F1</code> to hear the shape of the document,
+not its file name (the title bar already has that). QUILL tells you how
+long it is, how many headings and list items it has, and whether it is
+read-only. Think of it as a quick glance at the page before you start
+reading.</p>
+<p>An empty document says it is empty. That matters, because an empty
+document and one that failed to load sound exactly the same, and you
+need to know whether to start typing.</p>
+<h3 id="what-changed-altshiftf2">What Changed? (Alt+Shift+F2)</h3>
+<p>Press <code>Alt+Shift+F2</code> to hear what the last command did to
+the text. Sort Lines, Remove Duplicate Lines, Change Case and thirty
+other commands rewrite the document while your screen reader says
+nothing. This tells you what happened without reading the whole thing
+again.</p>
+<h3 id="undo-and-say-what-changed-altshiftf3">Undo and Say What Changed
+(Alt+Shift+F3)</h3>
+<p>Press <code>Alt+Shift+F3</code> to undo and then hear what was taken
+back, or hear that there was nothing left to undo. An ordinary
+<code>Ctrl+Z</code> is silent in both cases, so you cannot tell them
+apart by listening.</p>
+<h3 id="repeat-last-announcement">Repeat Last Announcement</h3>
+<p>Speech is gone the moment it finishes. <strong>Repeat Last
+Announcement</strong> says the last thing again. It has no key out of
+the box; run it from the Command Palette (<code>Ctrl+Shift+P</code>) or
+give it a key of your own.</p>
+<h3 id="speak-status-bar">Speak Status Bar</h3>
+<p><strong>Speak Status Bar</strong> reads out the latest message on the
+status bar, which is handy when QUILL wrote something there without
+saying it. Like Repeat Last Announcement, it is in the Command Palette
+and has no key until you give it one.</p>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Missed more than one line? Press
+<code>Alt+Shift+E</code> to open the Spoken Echo and read the last
+twenty announcements at your own pace.</p>
+</blockquote>
+<h2 id="verbosity-and-announcements">Verbosity and Announcements</h2>
+<p>You decide how much QUILL says, and when. It can be as quiet or as
+talkative as you like. Open <strong>Verbosity Preferences</strong> from
+the Command Palette: press <code>Ctrl+Shift+P</code> and type
+“verbosity”. You can also give it a key of your own in the Keyboard
+Manager.</p>
+<p>QUILL speaks alongside your screen reader. It does not replace it, so
+it never repeats your typing echo or punctuation, which your screen
+reader already looks after.</p>
+<h3 id="profiles">Profiles</h3>
+<p>A profile sets how talkative QUILL is overall. Pick one of four:</p>
+<ul>
+<li><strong>Beginner</strong> gives full context for every action.</li>
+<li><strong>Normal</strong> is informative, and it is the default.</li>
+<li><strong>Expert</strong> leaves out routine confirmations. Errors are
+always spoken.</li>
+<li><strong>Quiet</strong> turns off speech and earcons, leaving braille
+and the on-screen status bar.</li>
+</ul>
+<p>QUILL tells you when you switch profiles.</p>
+<h3 id="channels">Channels</h3>
+<p>Choose which channels carry announcements: Speech, Braille and Sound.
+<strong>Visual</strong> (the status bar) is always on and cannot be
+turned off, so the on-screen status of an action is never lost.</p>
+<h3 id="quiet-mode-and-meeting-mode">Quiet Mode and Meeting Mode</h3>
+<p><strong>Quiet Mode</strong> silences speech and earcons, which is
+handy in a meeting or a shared room. <strong>Meeting Mode</strong>
+quiets sound further. A <code>[Q]</code> or <code>[M]</code> indicator
+shows when one is on, and the status bar keeps updating either way.
+<strong>Undo Verbosity Change</strong> steps back your last verbosity
+change.</p>
+<p>Each has a key that starts with the QUILL key:
+<code>Ctrl+Shift+Grave</code> then <code>Shift+Q</code> for Quiet Mode,
+<code>Ctrl+Shift+Grave</code> then <code>Shift+M</code> for Meeting
+Mode, and <code>Ctrl+Shift+Grave</code> then <code>Shift+Z</code> for
+Undo Verbosity Change. You can also run them from the Command Palette,
+or set your own keys in the Keymap Editor.</p>
+<h3 id="fewer-repeats-no-floods">Fewer repeats, no floods</h3>
+<p>Two settings under <strong>Settings &gt; Accessibility and
+Announcements</strong> keep speech from piling up.</p>
+<ul>
+<li><strong>Collapse repeated announcements</strong> (on by default)
+stops QUILL saying the exact same thing again when it repeats within a
+moment, for example when you hold a key at the top or bottom of a
+list.</li>
+<li><strong>Announcement budget (per 5 seconds)</strong> caps how many
+announcements are spoken in a burst. 0 means no cap.</li>
+</ul>
+<p>Both affect only what is spoken. The status bar still shows every
+update, so nothing is hidden.</p>
+<h3 id="trimming-specific-cues">Trimming specific cues</h3>
+<p>Two more toggles under <strong>Settings &gt; Accessibility and
+Announcements</strong> shape what QUILL says.</p>
+<ul>
+<li><strong>Announce entering and leaving dialogs</strong> (off by
+default) speaks “Entered” and “Exited <em>name</em> dialog” as dialog
+boxes open and close. It is off because your screen reader already
+announces dialogs and reads their titles. Turn it on if you like the
+extra cue.</li>
+<li><strong>Announce indentation depth on Tab</strong> (on by default)
+makes Tab and Shift+Tab speak the new depth, such as “4 spaces” or “1
+tab”, instead of “Indented lines”.</li>
+</ul>
+<p>Both affect only speech. The status bar still updates.</p>
+<h3 id="the-spoken-echo-altshifte">The Spoken Echo (Alt+Shift+E)</h3>
+<p>Speech flies past. An indent depth, a formatting description, a save
+result or a “no matches” is gone the instant it is spoken. The
+<strong>Spoken Echo</strong> remembers the last twenty things QUILL said
+and shows them, newest first, in a read-only window. You can arrow
+through it line by line, review it by character, select text and copy
+it.</p>
+<p>Open it any time with <code>Alt+Shift+E</code>, or from <strong>Help
+&gt; Show Spoken Echo</strong>. It works after any announcement, even
+one from an ordinary editing key such as Tab. So you can hear “8
+spaces”, then open the Echo to read and copy it. The Echo only records
+what QUILL speaks, never your typing. If you would rather QUILL kept no
+record at all, turn off <strong>Settings &gt; Accessibility and
+Announcements &gt; Keep an announcement history</strong>: the list is
+cleared, nothing new is added, and the Echo tells you the history is
+off.</p>
+<p>If you are used to pressing a screen reader’s reporting command
+twice, you can do the same here. Double-press an informational command
+(Describe Formatting, Document Summary, Context Help or Announce
+Contrast) and the Echo opens, instead of the same line being spoken
+again. <code>Alt+Shift+E</code> always works. The double-press can be
+turned off under <strong>Settings &gt; Accessibility and Announcements
+&gt; Double-press to show the Spoken Echo</strong> (on by default).</p>
+<h3 id="per-action-templates">Per-action templates</h3>
+<p>If you want to go further, you can edit exactly what each action
+says. Use tokens like <code>{line}</code> and filters like
+<code>${ordinal:line}</code>, with live checking and a preview as you
+type. Save your templates to a library, share them as
+<code>.quill-verbosity-profile.json</code> files, or install a QUILL
+Verbosity Pack (<code>.qvp.json</code>). These are all data files, never
+code.</p>
+<h3 id="preview-lab-and-history">Preview Lab and History</h3>
+<p>The Preview Lab lets you hear how a profile sounds against sample
+situations before you commit to it. History lets you review, replay and
+copy recent announcements, and ask “why did QUILL say that?” about any
+of them.</p>
+<h3 id="safe-mode">Safe Mode</h3>
+<p>If a custom setup ever misbehaves, Safe Mode brings back the built-in
+announcements without deleting your customizations.</p>
+<h3 id="quills-own-voice">QUILL’s own voice</h3>
+<p>When you run a screen reader, QUILL speaks through it. QUILL also has
+its own built-in voice (Windows SAPI 5), used only for people who do not
+run a screen reader. If that voice ever fails to start while your screen
+reader is doing the talking, QUILL does not interrupt you about it; it
+just makes a quiet note. If you do want QUILL’s own voice and it did not
+start, close QUILL and open it again; it tries the voice once each time
+it starts. (Some older messages call this “Retry TTS Engine”, but there
+is no such menu item in this release.)</p>
+<h3 id="what-quill-says-when-it-starts">What QUILL says when it
+starts</h3>
+<p>At startup QUILL speaks only one line, <code>QUILL Ready</code>.
+Other startup messages, such as the Document Guardian activation cue and
+the screen reader it detected, go to the status bar, so you can still
+see them, while your screen reader stays quiet. Two settings under
+<strong>Settings &gt; Accessibility and Announcements</strong> control
+startup speech:</p>
+<ul>
+<li><strong>Speech channel (verbosity)</strong> is the master switch.
+When it is off, every spoken announcement from built-in startup events
+and Quillin extensions is silenced, and the status bar keeps the same
+text. It is on by default so a new user hears <code>QUILL Ready</code>.
+Turn it off for a completely quiet start.</li>
+<li><strong>Speak screen-reader detection result at startup</strong>
+speaks the line
+<code>Detected screen reader: &lt;name&gt;. Adaptive hints enabled.</code>
+once the check finishes, but only when the speech channel is also on.
+The status bar always shows the result.</li>
+</ul>
+<p>Document Guardian has its own switch for its start and stop cue. Open
+<strong>More Preferences &gt; Document Guardian &gt; Lifecycle
+Announcements</strong> and turn on <strong>Speak activation and
+deactivation cues</strong> to hear
+<code>Document Guardian is now active.</code> when it starts and
+<code>is now inactive.</code> when it stops. It is off by default, and
+the status bar still records every time it is turned on or off.</p>
+<h3 id="more-on-the-accessibility-and-announcements-page">More on the
+Accessibility and Announcements page</h3>
+<p>The rest of the <strong>Accessibility and Announcements</strong> page
+in Settings:</p>
+<ul>
+<li><strong>Announcement verbosity</strong> is how chatty spoken status
+messages are overall: <strong>Minimal</strong>, <strong>Normal</strong>
+(the default) or <strong>Verbose</strong>.</li>
+<li><strong>Announce search and navigation wrap</strong> says so when a
+search or a move goes past the end and starts again at the other
+end.</li>
+<li><strong>Announce word and character counts</strong> speaks a count
+when you ask for one. Turned off, the count still goes to the status
+bar.</li>
+<li><strong>Announce mode entry and expiry</strong> says when a mode
+such as Quick Nav or the QUILL key starts or runs out.</li>
+<li><strong>Announce spelling results</strong> speaks spelling feedback
+such as how many misspellings were found.</li>
+<li><strong>Spoken punctuation level</strong> is how much punctuation
+those announcements include: <strong>None</strong>,
+<strong>Some</strong> (the default), <strong>Most</strong> or
+<strong>All</strong>.</li>
+<li><strong>Announcement throttle (milliseconds)</strong> is the
+shortest gap between two spoken announcements, up to two seconds. The
+default, 0, means no gap.</li>
+<li><strong>Record announcement trace</strong> keeps a log of QUILL’s
+announcements for support. It never records your document. Off to begin
+with.</li>
+<li><strong>Speak startup readiness and theme contrast
+announcements</strong> speaks the “Ready” tip after QUILL starts and the
+contrast ratio after you change theme. Off to begin with; both still
+appear on the status bar.</li>
+<li><strong>Say what list the cursor is in</strong> is the list
+announcement described in Chapter 6. On to begin with.</li>
+<li><strong>Enable sound notifications</strong> plays the short sounds
+for editing events such as an abbreviation expanding, a save or a
+search. On to begin with.</li>
+<li><strong>Sound pack path</strong> picks a sound pack with
+<strong>Choose Sound Pack…</strong>. Leave it blank for the Ink pack
+that comes with QUILL.</li>
+<li><strong>Sound notification volume</strong> runs from 0, silent, to
+100. The default is 80.</li>
+<li><strong>Silenced sound events</strong> is the list of sounds you
+have turned off. The Sound Scheme window, in Chapter 7, is the easy way
+to change it.</li>
+<li><strong>When a command does something, give me</strong> is how a
+copy, a paste, an undo or a started selection reports back: <strong>Play
+a sound</strong> (the default), <strong>Speak the action</strong>,
+<strong>Both a sound and speech</strong> or <strong>Neither</strong>.
+Speaking the action is a good choice while you are still learning the
+sounds.</li>
+<li><strong>When a search finds nothing, give me</strong> offers the
+same four answers, just for a search that finds nothing. It is separate
+because <code>F3</code> is pressed again and again, and hearing “Not
+found” every time wears thin. The status bar says it whichever you
+pick.</li>
+<li><strong>Announce “Generating preview, please wait” for slow voice
+previews</strong> is the heads-up described under Choosing a voice, in
+Chapter 8. On to begin with.</li>
+<li><strong>GitHub check: how often (minutes)</strong>, <strong>GitHub
+check: play a sound on each check</strong> and <strong>GitHub check: let
+results interrupt speech</strong> decide how often QUILL looks for
+GitHub notifications (every 15 minutes to begin with), and whether you
+hear each check and its results straight away. <strong>Weather
+check</strong> and <strong>Podcast check</strong> settings on the same
+page work the same way for weather alerts and podcast feeds, and
+<strong>Check podcast feeds in the background</strong> turns podcast
+checking on. It is off to begin with.</li>
+</ul>
+<h2 id="appearance">Appearance</h2>
+<p>QUILL is built so that people with low vision can see it as well as
+hear it. You can make the text larger, choose the typeface, check
+contrast and switch themes.</p>
+<h3 id="contrast-and-theme">Contrast and theme</h3>
+<p>You can check contrast, switch to dark mode, or follow the colours
+Windows uses. If you need a low-vision setup you can rely on, choose the
+one that works for your eyes and QUILL will keep to it.</p>
+<p>To check the current colours, press the QUILL key and then
+<code>Shift+C</code> (<strong>Announce Contrast Ratio</strong>). QUILL
+works out the contrast between the editor’s text and its background and
+gives it a grade, for example “Contrast ratio: 15.3:1, WCAG grade: AAA
+(excellent)”. QUILL always says it out loud, because you asked, and puts
+it on the status bar too. (<strong>Speak startup readiness and theme
+contrast announcements</strong> only covers what QUILL says on its own
+after it starts or after a theme change.)</p>
+<p>If you use a Windows high contrast theme, leave QUILL on the system
+theme and it uses that theme’s colours, light or dark, exactly as you
+chose them.</p>
+<h3 id="text-looks-blurry-or-a-window-is-the-wrong-size">Text looks
+blurry, or a window is the wrong size</h3>
+<p>QUILL scales itself for each monitor. Text stays sharp at 125, 150 or
+200 percent, and when you move a window to a monitor with different
+scaling; windows and list columns keep their proportions. If a window
+looks wrong at your scaling, you can turn this off to see whether it is
+the cause. Search Windows for “Edit environment variables for your
+account”, add a variable named <code>QUILL_DPI_UNAWARE</code> with the
+value <code>1</code>, and start QUILL again. Windows then stretches it
+the old way, so text is blurrier. Delete the variable to put scaling
+back, and tell support what you saw.</p>
+<h3 id="the-size-and-face-of-the-text">The size and face of the
+text</h3>
+<p>Three keys change the size of the text, and they are the ones you
+already know from Notepad, your web browser and QUILL Lite.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+=</code></td>
+<td>Increase Text Size, one point</td>
+</tr>
+<tr>
+<td><code>Ctrl+-</code></td>
+<td>Decrease Text Size, one point</td>
+</tr>
+<tr>
+<td><code>Ctrl+0</code></td>
+<td>Reset Text Size to the default (12 point)</td>
+</tr>
+</tbody>
+</table>
+<p>Each time you press one, QUILL says the new size, such as “14 point”,
+so you always know where you landed. The size runs from 6 to 72 points
+and is saved, so tomorrow the editor opens the way you left it
+today.</p>
+<p>To choose the typeface and size together, use <strong>Format &gt;
+Font…</strong> (<code>Ctrl+Alt+F</code>). It opens the standard Windows
+font window, which every Windows screen reader already reads well.</p>
+<p>Your choice of typeface is about how you read, not about the file.
+Choosing Consolas at 18 point changes what is on your screen and nothing
+in the document. The typeface is never saved into the file, just as dark
+mode is not. A colleague who opens the same file sees their own font,
+and you see yours.</p>
+<p>The size applies to every open tab, not only the one in front of you.
+It also stays put when you change theme.</p>
+<h3 id="rich-text-documents-work-a-little-differently">Rich text
+documents work a little differently</h3>
+<p>In a Word or RTF document, the point sizes are part of the heading
+structure. A Heading 1 is large because it is a Heading 1. If
+<code>Ctrl+=</code> made every bit of text bigger, your headings and
+body text would end up the same size, and heading navigation and the
+headings list, which rely on those sizes, would stop working well.</p>
+<p>So in a rich text document the same three keys zoom the view instead.
+The text on screen grows or shrinks by the same amount, the document
+itself is not touched, and the headings keep their sizes.
+<code>Ctrl+0</code> takes you back to 100 percent. You do not need to
+know which kind of document you are in: the keys are the same, and you
+get what you asked for.</p>
+<p>To change the face and size of text you have selected in a rich text
+document, use <strong>Format &gt; Font for Selection…</strong>
+(<code>Ctrl+Shift+F</code>). That one is a real edit to the file. In a
+plain or Markdown document it declines and tells you where to go
+instead. <code>Ctrl+Shift+F</code> is Word’s key for Font. If you used
+it for Search in Files in the past, Search in Files is now on
+<code>Ctrl+Alt+Shift+F</code>, as <strong>Edit &gt; Search in
+Files…</strong>.</p>
+<h3 id="the-text-settings-if-you-would-rather-type-them">The text
+settings, if you would rather type them</h3>
+<p>Both are on the <strong>Editing</strong> page of Settings, as
+<strong>Editor font</strong> and <strong>Editor text size
+(points)</strong>; or type “font” in <strong>Find a
+setting</strong>.</p>
+<ul>
+<li><strong>Editor font</strong> (<code>font_name</code>) is the
+typeface. Leave it empty to use whatever Windows picks, which is right
+if you have never chosen one.</li>
+<li><strong>Editor text size (points)</strong> (<code>font_size</code>)
+runs from 6 to 72, default 12. If a value in your settings file is
+outside that range, QUILL uses the nearest size it allows instead of
+refusing it, so the editor still opens in a readable size.</li>
+</ul>
+<p>QUILL Lite uses the same two setting names, so a settings file
+carried between the two means the same thing in both.</p>
+<h2 id="accessibility">Accessibility</h2>
+<p>These tools help you check QUILL itself and the document you are
+working on, and keep useful information within reach of the
+keyboard.</p>
+<h3 id="moving-between-regions-f6">Moving between regions (F6)</h3>
+<p>Press <code>F6</code> to move from the editor to the next major
+region of the window, and <code>Shift+F6</code> to move back. QUILL
+announces each move in the same way every time.</p>
+<h3 id="checking-where-you-are-and-what-you-have">Checking where you are
+and what you have</h3>
+<p>Earlier versions had an Accessibility submenu on the Tools menu, with
+an interface audit, a tab-order snapshot, a contrast validator and a
+link catalog. That submenu is not in this release. What it did is
+covered by these instead:</p>
+<ul>
+<li><strong>Navigate &gt; Speak Status Summary</strong> (the QUILL key,
+then <code>Q</code>) tells you the document’s name, where it is saved,
+whether it has unsaved changes and its encoding. The status bar,
+described next, has the line and column.</li>
+<li><code>Ctrl+Shift+Y</code> (<strong>Say Selected</strong>) reads what
+is selected.</li>
+<li>The QUILL key, then <code>Shift+C</code> (<strong>Announce Contrast
+Ratio</strong>), grades the editor’s colours (see Contrast and theme,
+above).</li>
+<li>For your document’s own accessibility, use the GLOW review described
+later in this chapter, or <strong>AI &gt; Accessibility
+Tune-Up…</strong> once <strong>AI &gt; Show advanced AI
+features</strong> is checked.</li>
+</ul>
+<h3 id="the-status-bar">The status bar</h3>
+<p>QUILL’s status bar is something you can move into and use, not just
+look at. It keeps useful information close and reachable from the
+keyboard.</p>
+<h3 id="the-page-indicator">The page indicator</h3>
+<p>The status bar has a <strong>Page</strong> cell for every document,
+on by default, next to your line and column.</p>
+<p>For PDFs this is an exact count. QUILL knows the real page boundaries
+from the file, so it reads, for example, “3 of 12.”</p>
+<p>Plain text, Markdown and most Word documents have no real pages until
+you print or export them, because page breaks depend on the font,
+margins and paper size. For these, the Page cell shows an estimate based
+on the word count, such as “~3 of ~12 (estimated).” The tilde and the
+word “estimated” always come together. A page number without them is a
+real count; with them, it is QUILL’s best guess.</p>
+<p>If your pages usually hold more or fewer words, change
+<strong>Settings &gt; Navigation and QUILL Key &gt; Estimated words per
+page</strong> (default 300, range 150-600).</p>
+<p>To jump to a page, press <strong>Go To</strong>
+(<code>Ctrl+G</code>), or press Enter on the Page cell. Choose
+<strong>Page</strong> at the top of the window, then pick from the list
+or type the number. For PDFs the rows are exact page numbers. For
+everything else each row reads <code>~4 (estimated)</code>, so you know
+which kind of jump you are making.</p>
+<p>Braille (BRF) documents have their own, more detailed page system
+(see <a href="#braille-mode">Braille mode</a>) and do not show this Page
+cell.</p>
+<h2 id="sound-notifications-and-earcons">Sound notifications and
+earcons</h2>
+<p>QUILL can play short sounds, called earcons, at moments that matter
+while you edit. Your screen reader stays free for the text, and the
+sound tells you “something happened”. Sound is optional and off by
+default for most events, and it never replaces speech.</p>
+<h3 id="sound-packs-and-events">Sound packs and events</h3>
+<ul>
+<li><strong>Sound packs (QSP).</strong> A sound pack is a folder (or a
+<code>.qsp</code> zip) of WAV files with a <code>manifest.json</code>
+that says which sound goes with which event. QUILL comes with the
+<strong>Ink</strong> pack and uses it whenever you turn sound on. On the
+first-run <strong>Keyboard and Sound</strong> page, the <strong>Sound
+pack</strong> control is a dropdown of the packs that come with QUILL.
+It starts on QUILL’s own pack, so turning sound on always gives you
+working earcons.</li>
+<li><strong>Per-event control.</strong> Open <strong>Tools &gt; Reading
+and Dictation &gt; Sound Scheme…</strong> to turn single events on or
+off. Events are grouped into Earcons, Compare and (when an indent-tone
+pack is loaded) Indentation tones, so you can keep, say, the save and
+search cues and silence the rest.</li>
+<li><strong>QUILL’s sounds on or off.</strong> <strong>App
+Sounds</strong> (in Reading &amp; Dictation, Alt+Shift+M) turns QUILL’s
+own sounds off or back on, and plays a short “off” or “on” cue so you
+know which way it went. <strong>App Sounds Play On…</strong> in the
+Sound Scheme window chooses the sound card they play on. The
+<strong>Sound notifications</strong> setting still silences every QUILL
+app at once.</li>
+<li><strong>Indentation tones.</strong> In code and other indented text,
+QUILL can play a tone as the caret crosses indent levels. The tone rises
+as you go deeper and falls as you come back out. Pick a scale
+(pentatonic, whole-tone, diatonic or chromatic) in the
+<strong>Indentation tones</strong> setting, or leave it Off. Blank lines
+stay silent and keep the previous level.</li>
+<li><strong>Compare cues.</strong> With a sound pack on, comparing
+documents plays its own cues for opening and closing a comparison,
+moving to the next or previous difference, and reaching the first or
+last difference. Comparing documents is covered in Chapter 8, Reading,
+reviewing and listening.</li>
+<li><strong>Numbered slots have their own notes.</strong> The twelve
+Copy Tray slots and the ten quick-bookmark slots each play their own
+pitch when you copy, paste, set or jump. Copy Tray slots are soft
+marimba taps and bookmarks are brighter chirps, so you know which family
+it is straight away. After a while, “slot seven” is a note you recognise
+rather than something you wait to hear.</li>
+<li><strong>Progress you can hear.</strong> Long downloads and installs
+play a short blip every 5 percent, rising in pitch as they get close to
+done. The 25, 50 and 75 percent marks have a touch of harmony, and 100
+percent ends with a small two-note finish. A sound never talks over your
+screen reader the way a spoken percentage does. QUILL still speaks the
+quarter marks.</li>
+<li><strong>Selection and boundary cues.</strong> Starting a selection
+with <code>F8</code> plays a rising two-note sound, and finishing it
+plays the same in reverse. The very top of the document gives a high
+tick, and the very end a low thud.</li>
+<li><strong>The other apps have their own sounds.</strong> Quill Radio
+and Quill Weather mark their own moments (connecting, a stall, a new
+weather alert) through the same Sound Events system, and you can turn
+each one off in the same place. Each app’s own user guide lists its
+sounds.</li>
+<li><strong>Keep the sound device awake.</strong> Some USB and Bluetooth
+audio devices go to sleep after a few silent seconds and clip the start
+of the next sound. If the start of your earcons or speech gets cut off,
+turn on <strong>Keep the sound device awake</strong> (in Settings,
+search “keepalive”). QUILL then plays a silent clip every 20 seconds so
+the device stays awake. Off by default.</li>
+</ul>
+<h3 id="choosing-between-a-tone-and-words">Choosing between a tone and
+words</h3>
+<p>Some moments can be marked with a sound or with a sentence. Which you
+want depends on how long you have used QUILL. A new tone means nothing
+until you learn it, but once you have, hearing “Copied” on every
+<code>Ctrl+C</code> gets old fast. So you choose.</p>
+<ul>
+<li><strong>Action feedback</strong> (<code>action_feedback</code>)
+covers the moments where a key did something and your screen reader says
+nothing: cut, copy, paste, delete, undo, redo, and starting a selection
+with <code>F8</code>. Choose <strong>Play a sound</strong> (the
+default), <strong>Speak the action</strong>, <strong>Both a sound and
+speech</strong>, or <strong>Neither</strong>. When a moment has a number
+worth hearing, such as “Pasted 1,234 characters as plain text” or
+“Selected 412 characters, 68 words”, the number is always spoken,
+because a tone cannot carry a count. <strong>Neither</strong> stays
+silent but still writes to the status bar, so you can read what
+happened.</li>
+<li><strong>Find: nothing found</strong>
+(<code>find_not_found_feedback</code>) offers the same four choices for
+when a search finds nothing. It is a separate setting because you press
+<code>F3</code> again and again, and “Not found” spoken every time soon
+gets wearing. It also starts on the tone alone.</li>
+</ul>
+<p>If you choose a sound for a moment your sound pack has no sound for,
+QUILL speaks instead, so you always get one or the other. Turning off a
+single event under <strong>Sound Events…</strong> is different: that is
+you asking for quiet, and it stays quiet.</p>
+<h3 id="wrapping-at-the-ends-of-a-search">Wrapping at the ends of a
+search</h3>
+<p><strong>Wrap around when searching</strong> (<code>wrap_find</code>)
+decides what happens when Find Next reaches the end of the document, or
+Find Previous reaches the start. When it is on (the default), the search
+carries on from the other end, and a wrap sound tells you it did. When
+it is off, the search stops and tells you where: <em>“No more matches.
+Reached the end of the document, and wrapping is off.”</em></p>
+<p>The two messages need different fixes. “Not found” means change what
+you are searching for. Reaching the end means go to the other end and
+search again. The setting works in both directions, in QUILL and QUILL
+Lite alike.</p>
+<h3 id="when-a-word-cannot-be-added-to-a-dictionary">When a word cannot
+be added to a dictionary</h3>
+<p><strong>Add to This Document Only</strong> and <strong>Add to This
+Project</strong> save a small dictionary file beside your document. A
+document you have not saved yet has nowhere to put one, so QUILL tells
+you and says what to do: <em>“Cannot add “Bhattacharya” to this document
+only until the document is saved. Save it, or add the word to your
+personal dictionary instead.”</em> Your <strong>personal
+dictionary</strong> always works, saved document or not, because it
+lives with your settings, not with the file.</p>
+<h3 id="background-checks">Background checks</h3>
+<p>QUILL quietly keeps an eye on a few things for you: a watched folder,
+the weather, and your GitHub account if you use it. Each of these has
+the same three controls, so once you have set one up you know them all.
+Find them in Settings by typing the monitor’s name in <strong>Find a
+setting</strong>, or “tick”, “interrupt” or “check”.</p>
+<ul>
+<li><strong>How often it checks.</strong> Watched folders count in
+seconds, so a file you just dropped in is noticed while you are still
+there. Feed and account checks count in minutes, since asking a server
+every few seconds does no good. A value of 0 or less is raised to that
+monitor’s minimum.</li>
+<li><strong>Whether each check makes a sound.</strong> Turn on
+<strong>Play a sound on each check</strong> to hear a short tick every
+time that monitor looks. This is not news that something happened; it
+shows the watcher is still running, so silence means it has stopped. It
+is off by default for every monitor. Turn it on for the one or two you
+really want to hear working.</li>
+<li><strong>Whether a result interrupts speech.</strong> Turn on
+<strong>Let results interrupt speech</strong> and that monitor’s
+announcements cut in over whatever is being spoken. Leave it off (the
+default) and they wait their turn, so a new result never cuts a sentence
+in half while you are reading. Some people want the weather to interrupt
+and the watched folder to wait, and some want the opposite. Real errors
+always interrupt, whatever the setting.</li>
+</ul>
+<p>QUILL sums up your choices in one sentence, for example: <em>“Checks
+every 15 minutes, ticks audibly, does not interrupt speech.”</em></p>
+<h3 id="every-sound-in-the-ink-pack">Every sound in the Ink pack</h3>
+<p>The Ink pack has sounds for these events:
+<code>quill_key_pressed</code> (the QUILL key is waiting for its next
+key), <code>abbreviation_expanded</code>,
+<code>abbreviation_deleted</code>, <code>snippet_inserted</code>,
+<code>autocomplete_accepted</code>, <code>document_saved</code>,
+<code>document_created</code>, <code>search_found</code>,
+<code>search_not_found</code>, <code>search_wrapped</code>,
+<code>heading_jumped</code>, <code>table_entered</code>,
+<code>browse_mode_on</code>, <code>browse_mode_off</code>,
+<code>ai_thinking_started</code>, <code>ai_response_received</code>,
+<code>ai_error</code>, <code>transcription_started</code>,
+<code>transcription_stopped</code>, <code>ssh_connected</code>,
+<code>ssh_disconnected</code>, <code>error</code>, <code>warning</code>,
+<code>sound_on</code>, <code>sound_off</code>, and the five compare
+events. Every sound in the pack is different, so two events never sound
+the same.</p>
+<p>If you make sound packs, you can map any event to any WAV file. The
+full QSP format and list of events are in the product requirements
+document, under “Sound notifications and QSP sound packs.” If you run
+QUILL from a source checkout, the <code>audition_ink_sounds</code>
+script in its scripts folder plays the pack family by family, and adding
+<code>--all</code> plays every sound in it.</p>
+<h2 id="braille-mode">Braille mode</h2>
+<p>QUILL opens and edits formatted braille files (<code>.brf</code>,
+<code>.brl</code>, <code>.pef</code> and <code>.ueb</code>) as plain
+NABCC, also called braille ASCII. If you proofread transcriptions, you
+can move through a file the way it is really laid out, in braille pages
+and cells, and QUILL tells you exactly where you are.</p>
+<h3 id="your-braille-display">Your braille display</h3>
+<p>QUILL shows text on your display starting in cell 1, and shows a
+selection with dots 7 and 8. Two checkboxes on <strong>Settings &gt;
+Braille Mode</strong> make this work, and both are on out of the
+box:</p>
+<ul>
+<li><strong>Fix braille cell alignment and selection dots
+(recommended)</strong></li>
+<li><strong>Hide editor border (required for braille cell
+alignment)</strong>. The visible border pushes braille output out of
+cell 1, so it has to go.</li>
+</ul>
+<p>Leave both on unless your display has trouble. If you uncheck the
+border setting, QUILL warns you first that cell alignment will break.
+Restart QUILL after changing either one so every document uses the new
+setting. If you remember the old Editor control type and Experimental
+surface settings, these two replaced them.</p>
+<h3 id="opening-and-saving-braille-files">Opening and saving braille
+files</h3>
+<p>Open a <code>.brf</code>, <code>.brl</code>, <code>.pef</code> or
+<code>.ueb</code> file the same way you open anything else. QUILL reads
+it as braille text. A UTF-8 byte-order mark is removed if there is one,
+and QUILL checks for any character that is not braille ASCII. Nothing
+else changes on the way in: what you see is what is in the file.</p>
+<p>Saving keeps the file byte for byte. QUILL does not trim trailing
+spaces or change line endings, and form feeds (the hard page breaks) are
+kept. If the text has characters outside braille ASCII, QUILL still
+saves them as they are and gives you one spoken warning that does not
+stop you, so nothing changes without your knowing. Open a file and save
+it, and you get back an identical file.</p>
+<h3 id="picking-up-where-you-left-off">Picking up where you left
+off</h3>
+<p>When you open a braille file again, QUILL puts your cursor back where
+you were and tells you, for example: “BRF file opened. 87 braille pages
+detected. Last position: braille page 12, line 14, cell 31.”</p>
+<p>Your place, your proofing progress and your notes are kept in a small
+companion file next to the braille file. The braille file itself is
+never changed. QUILL does not restore your place in Safe Mode or when
+companion files are turned off. If the file was shortened somewhere
+else, your cursor is placed safely inside it.</p>
+<h3 id="the-braille-status-cell">The braille status cell</h3>
+<p>While a braille file is open, the status bar has a braille cell that
+updates as you move. It reads like
+<code>BRF Pg 12/87 | Ln 14/25 | Cell 31/40 | Print 7</code>: the braille
+page, the line on that page, the cell on that line, and the print page.
+QUILL looks for print page numbers every time you open the file and
+every time the page map is rebuilt, so the print page is filled in
+whenever the file marks it. When the file has no print page markers, it
+reads <code>Print ?</code>.</p>
+<h3 id="the-braille-menu">The Braille menu</h3>
+<p>Braille commands are under <strong>Tools &gt; Braille</strong>. None
+of them has a key out of the box, so nothing clashes with your screen
+reader or the editor’s own keys. Give them keys in the keyboard
+customizer, or run them from the Command Palette.</p>
+<p>Every status, navigation and layout command is safe to run on a
+document that is not braille: it just says “This is not a braille
+document”. (Remove Trailing Spaces and Go to Longest Line work on any
+document’s text.)</p>
+<h4 id="status">Status</h4>
+<ul>
+<li><strong>Read Status</strong> (follows your status verbosity)</li>
+<li><strong>Read Detailed Status</strong> (adds the print page,
+continuation letter, running head, proofing state and how sure QUILL is
+of the layout)</li>
+<li><strong>Read Current Line and Cell</strong></li>
+<li><strong>Read Current Braille Page</strong></li>
+<li><strong>Read Current Print Page</strong></li>
+<li><strong>Read Progress Summary</strong> (how far through the document
+you are)</li>
+<li><strong>Announce Running Head</strong>, <strong>Include Running Head
+in Status</strong> and <strong>Omit Running Head from
+Status</strong></li>
+</ul>
+<h4 id="navigation">Navigation</h4>
+<ul>
+<li><strong>Go to Braille Page…</strong> (type a page number),
+<strong>Next Braille Page</strong> and <strong>Previous Braille
+Page</strong></li>
+<li><strong>Go to Print Page…</strong> (type a print page number that
+QUILL found)</li>
+<li><strong>Next Print Page Change</strong> and <strong>Previous Print
+Page Change</strong> jump to where the print page changes. Going past
+the first or last one tells you there are no more.</li>
+</ul>
+<h4 id="page-tools">Page Tools</h4>
+<ul>
+<li><strong>Insert Braille Page Break</strong> (a form feed) and
+<strong>Remove Braille Page Break</strong> at the cursor</li>
+<li><strong>Recalculate Page Map</strong> rebuilds the page map after
+you edit</li>
+<li><strong>Normalize Line Endings</strong> (a placeholder, not working
+yet)</li>
+</ul>
+<h4 id="proofing">Proofing</h4>
+<p>Keep track of your proofreading without ever changing the braille
+file.</p>
+<ul>
+<li><strong>Mark Current Page Proofed</strong> or <strong>Mark Current
+Page Needs Review</strong>, or take the mark off again with
+<strong>Clear Proofing Mark</strong>.</li>
+<li><strong>Add Proofing Note…</strong> adds a note to the current
+page.</li>
+<li><strong>Read Progress Summary</strong> speaks the pages proofed, the
+pages needing review, the last page you proofed, and an estimate of when
+you will finish.</li>
+<li><strong>List Proofed Pages…</strong> and <strong>List Pages Needing
+Review…</strong>. Choose a page to jump to it.</li>
+<li><strong>Export Proofing Report…</strong> saves a plain-text report
+of it all.</li>
+</ul>
+<p>Your progress is kept in the small companion file next to the braille
+file, so it travels with the document and never changes it. If the file
+has not been saved yet, these commands ask you to save it first.</p>
+<h4 id="validation">Validation</h4>
+<p><strong>Validate BRF Layout</strong> checks the layout of a braille
+file for ten kinds of problem: lines or pages that are too long, pages
+that look stuck (too short), missing page breaks, mixed line endings,
+characters that are not braille ASCII, page numbers that are malformed
+or missing, gaps or repeats in page numbering, running heads that do not
+match, and files in Unicode braille instead of NABCC. It opens a
+Warnings List; choose a warning to go to it.</p>
+<p><strong>Next Warning</strong> and <strong>Previous Warning</strong>
+move through what it found and say “Warning N of M” with the message.
+<strong>Warnings Summary</strong> speaks the total and the most common
+kinds. Validation only reads the file and never changes it.</p>
+<h4 id="repair">Repair</h4>
+<p>These fix the two problems that most often stop a braille file
+embossing cleanly.</p>
+<ul>
+<li><strong>Read Layout Metrics</strong> speaks the numbers in one go:
+the cell you are on and the length of this line; the longest line in the
+file against your cells-per-line limit, with “page width exceeded” when
+it is over; the current and total braille pages; and the longest page
+against your lines-per-page limit, with “page depth exceeded” when it is
+over.</li>
+<li><strong>Go to Longest Line</strong> and <strong>Go to Longest
+Page</strong> take you straight to the worst one so you can fix it. A
+page that is too long usually needs a page break where one is missing
+(Insert Braille Page Break).</li>
+<li><strong>Remove Trailing Spaces on This Line</strong> and
+<strong>Remove Trailing Spaces in Whole File</strong> clear the trailing
+spaces behind most page-width problems, and keep every line ending and
+form feed.</li>
+</ul>
+<p>The limits come from your <strong>Cells per line</strong> and
+<strong>Lines per page</strong> settings under <strong>Settings &gt;
+Braille Mode</strong>, so the numbers match the page size you are
+transcribing for.</p>
+<h3 id="translating-with-the-quill-braille-pack">Translating with the
+QUILL Braille Pack</h3>
+<p>Translating between print and braille, in either direction, needs the
+optional <strong>QUILL Braille Pack</strong> (also called the Universal
+BRF Pack). It contains the full catalogue of liblouis braille tables, a
+set of profiles that give those tables friendly names, and the
+translation engine itself.</p>
+<p>The pack is not included by default. Without it, the
+<strong>Translation</strong> submenu is hidden, so you never meet
+commands that do nothing. In its place, <strong>Tools &gt;
+Braille</strong> has <strong>Download Braille Translation
+Pack…</strong>, which opens Download Optional Components with the
+braille pack already chosen. Press <strong>Download</strong>, and the
+Translation submenu is there from then on. With it installed, the
+Translation submenu starts with the two commands most people want, then
+the detailed sections:</p>
+<ul>
+<li><strong>Back-Translate to Text (Auto-Detect Code)</strong> is the
+easy way. You do not need to know whether your braille is UEB Grade 2,
+UEB Grade 1, legacy American (EBAE) Grade 1 or 2, or computer braille.
+QUILL tries a sample of the document (or your selection) in every likely
+code, sees which reads most like real English, and uses that one. It
+tells you what it found, for example “Detected UEB Grade 2
+(contracted)”. If a file is uncontracted, QUILL says Grade 1, even
+though the Grade 2 table would also have worked.</li>
+<li><strong>Convert BRF File to Document…</strong> takes a braille file
+on disk straight to a readable document. Pick any <code>.brf</code> or
+<code>.brl</code> file, and QUILL detects its code, back-translates the
+whole file and opens the result as a draft, without your opening the
+braille file first. The draft is an ordinary document, so <strong>Save
+As</strong> can turn it into Markdown, HTML, Word (<code>.docx</code>)
+or plain text.</li>
+<li><strong>UEB (Unified English Braille)</strong>: Contracted (Grade
+2), Uncontracted (Grade 1), Translate Selection to UEB, and
+Back-Translate UEB (which skips detection).</li>
+<li><strong>Standard American English (Legacy)</strong>: Contracted
+(Grade 2) and Uncontracted (Grade 1), using the traditional North
+American English tables.</li>
+<li><strong>More Languages</strong> is filled in from the profiles in
+the pack you have installed. A language with more than one profile, such
+as contracted and uncontracted, gets its own submenu. German, French,
+Spanish, Russian, Korean and dozens more are there.</li>
+</ul>
+<p>Translating to braille opens the result in a new document and tells
+you how many braille pages it made. Translating back from braille always
+opens its result as a clearly labelled <strong>draft</strong>, because
+no automatic back-translation can be trusted completely. If you have
+text selected, only the selection is back-translated, which is handy for
+recovering one passage; otherwise the whole document is. QUILL tells you
+which, for example: “Back-translation draft from selection. N words.
+Review against the BRF.”</p>
+<p>Translation runs separately from QUILL, so a translation failure can
+never take QUILL down. If it fails, QUILL tells you why and does not
+open an empty document. The Translation submenu is also hidden in Safe
+Mode.</p>
+<p>Translation works the same whether you use the installed version, the
+portable version or a source checkout. The pack carries its own
+translation tool (<code>lou_translate</code>, next to the tables), so
+you do not need to install liblouis for Python separately. If you do
+have it, QUILL uses it, because it is a little faster.</p>
+<h3 id="the-braille-mode-page-in-settings">The Braille Mode page in
+Settings</h3>
+<p>Most of the <strong>Braille Mode</strong> page is covered above. The
+rest:</p>
+<ul>
+<li><strong>Use form feeds for page breaks</strong> treats the
+page-break characters in a braille file as real page breaks. Leave it on
+unless the file never used them. Turn it off and QUILL counts pages by
+your page size instead.</li>
+<li><strong>Calculate pages from geometry</strong>: when a braille file
+has no page breaks, QUILL works out the pages from your page size. Turn
+this off and a file like that is read as one long page. On to begin
+with.</li>
+<li><strong>Announce page changes automatically</strong>: turn this on
+and QUILL says “Braille page 5” as your cursor moves onto a new page. If
+you got there with Next Braille Page or Go to Braille Page, you only
+hear it once. Off to begin with.</li>
+<li><strong>Announce print page changes</strong>: turn this on to hear
+“Print page 7” when you move onto a new print page. Files without print
+page numbers stay quiet. Off to begin with.</li>
+<li><strong>Announce line overflow</strong>: turn this on and QUILL
+tells you when a line is longer than your Cells per line, for example
+“Line too long: 45 cells, limit 40”. You hear it once when you reach the
+line, or when your typing pushes it past the limit. Off to begin
+with.</li>
+<li><strong>Include proofing status in status string</strong>: Read
+Detailed Status tells you the last page you proofed and how many pages
+still need review, from the companion file. On to begin with; turn it
+off for a shorter status.</li>
+<li><strong>Include continuation in status string</strong>: Read
+Detailed Status names the continuation letter (7a, 7b) when a print page
+runs on. On to begin with.</li>
+<li><strong>Write sidecar on save</strong> saves a small companion file
+next to a braille file when you save it, recording the page size and
+line endings, so other tools can pick up where you left off. On to begin
+with.</li>
+<li><strong>Include running head in status string</strong> adds the
+page’s running head to the detailed braille status, when there is one.
+Off to begin with.</li>
+</ul>
+<h3 id="braille-files-in-convert-file">Braille files in Convert
+File</h3>
+<p>The everyday converter, <strong>File &gt; Convert File</strong>,
+accepts <code>.brf</code> and <code>.brl</code> files too; they appear
+in its file picker with everything else. Pick a braille file and any
+output format (Markdown, Word, HTML, EPUB, plain text and the rest).
+QUILL detects the braille code, back-translates and writes the result,
+and tells you which code it found. There is no separate braille
+converter to look for.</p>
+<h2 id="glow-workflows-inside-quill">GLOW Workflows Inside QUILL</h2>
+<p>GLOW (Guided Layout and Output Workflow) is QUILL’s built-in
+accessibility checker. It reviews your document for accessibility
+problems and offers safe, predictable fixes, and it shows you what it
+found in plain words, not a compliance dashboard. Its four commands are
+on <strong>Tools &gt; Writing and Language</strong>: <strong>GLOW Audit
+Document</strong>, <strong>GLOW Audit Selection</strong>, <strong>GLOW
+Fix Document</strong> and <strong>GLOW Fix Selection</strong>, once it
+is turned on in the Experimental tab as described next.</p>
+<h3 id="turning-glow-on">Turning GLOW on</h3>
+<p>GLOW is an <strong>experimental feature</strong> and is off by
+default while it matures. To turn it on:</p>
+<ol type="1">
+<li>Open <strong>Settings &gt; Experimental</strong>.</li>
+<li>Check <strong>Enable experimental features</strong>, the main switch
+for the whole tab.</li>
+<li>Check <strong>GLOW accessibility review and repair
+(experimental)</strong>.</li>
+<li>Apply your settings.</li>
+</ol>
+<p>The four GLOW rows appear on <strong>Tools &gt; Writing and
+Language</strong> straight away, with no restart. While GLOW is off, its
+commands still show up in the Command Palette, and running one tells you
+how to turn GLOW on. Experimental means still being finished, not
+unsafe: GLOW always shows you before it changes anything, and it never
+touches your original file.</p>
+<h3 id="auditing-a-document">Auditing a document</h3>
+<ul>
+<li><strong>GLOW Audit Current Document</strong> checks the whole file
+in front of you.</li>
+<li><strong>GLOW Audit Selection / Paragraph</strong> checks just the
+block at the caret.</li>
+<li><strong>GLOW Audit File…</strong> picks a document on disk (DOCX,
+PPTX, XLSX, PDF, EPUB or Markdown) and checks it in the background. You
+get a score, a grade, and every finding with a suggestion.</li>
+</ul>
+<p>The results open as ordinary QUILL tabs you can read, search,
+compare, or keep open beside the document. Each finding names the rule,
+how serious it is, where it is when that is known, and a suggestion in
+plain language.</p>
+<h3 id="fixing-a-document">Fixing a document</h3>
+<ul>
+<li><strong>GLOW Fix Selection / Paragraph</strong> tidies up where you
+are, in place.</li>
+<li><strong>GLOW Fix Current Document</strong> makes a fixed version and
+opens it straight away beside the original, so you can compare them.
+Accept or reject the changes knowing exactly what they are.</li>
+<li><strong>GLOW Fix File…</strong> saves a repaired copy of a document
+next to the original, for example <code>report-accessible.docx</code>.
+The original is never changed. QUILL checks the new file name with you
+first, and then opens an audit of the repaired copy so you can see the
+result.</li>
+</ul>
+<h3 id="what-glow-checks">What GLOW checks</h3>
+<p>In the editor, GLOW checks plain text, Markdown and HTML for:</p>
+<ul>
+<li>a missing space after a Markdown heading marker</li>
+<li>headings that skip a level</li>
+<li>vague link text, such as “click here”</li>
+<li>a missing language setting in HTML</li>
+<li>images with no alt text</li>
+<li>tables with no header cells</li>
+<li>indenting with tabs that can cause problems</li>
+<li>dense paragraphs and hard-to-read wording</li>
+</ul>
+<p>The optional GLOW engine adds Word, PowerPoint, Excel, PDF and EPUB
+files (DOCX, PPTX, XLSX, PDF, EPUB), with a scored and graded
+report.</p>
+<h3 id="the-glow-engine-and-updates">The GLOW engine and updates</h3>
+<p>The in-editor checks are always there. Checking and fixing those
+other file types needs the optional GLOW engine (installed with QUILL’s
+<code>glow</code> extra). When it is missing, QUILL tells you so
+plainly.</p>
+<p><strong>Help &gt; Check for GLOW Updates…</strong> looks for a newer
+engine when you ask it to; it never checks on its own. Downloading needs
+a separate yes from you, every download is checked for its signature and
+checksum, and if an install fails QUILL goes back to the engine it came
+with.</p>
+<h3 id="glow-settings">GLOW settings</h3>
+<p><strong>More Preferences &gt; GLOW Accessibility</strong> has the
+engine switch and the optional features that use the internet: AI alt
+text, PII redaction, and WCAG language processing. All of these are
+<strong>off by default</strong>, and each one asks your permission every
+time it is used. Out of the box, GLOW runs entirely on your own
+computer.</p>
+<h3 id="inserting-images-with-alt-text">Inserting images with alt
+text</h3>
+<p>GLOW’s audit finds missing alt text after the fact. <strong>Insert
+&gt; Image…</strong> stops it going missing in the first place. Before
+you can insert an image, you either write alt text that describes it, or
+check <strong>“This image is decorative”</strong>. Decorative is right
+for an image that carries no information, such as a divider line or a
+background flourish. It is not a way to skip describing an image that
+does carry information.</p>
+<p><strong>Let AI draft the alt text.</strong> If the provider you saved
+in <strong>Use My Own AI Key</strong> (<code>Alt+F2</code>) has a model
+that can see images, and you are not in Safe Mode, the window has a
+<strong>Suggest alt text with AI</strong> button. It uses that provider,
+the one QUILL’s advanced AI features use, not the connection chosen in
+Choose Your AI. Choose your image file and press it. QUILL describes the
+picture and puts the description in the alt text field for you to read,
+correct and approve before inserting. AI is fully turned off in Safe
+Mode, so the button does not appear there.</p>
+<p><strong>Images that fit a web page.</strong> When you insert into an
+<strong>HTML</strong> document, the window adds a <strong>Size and
+layout</strong> section:</p>
+<ul>
+<li><strong>Width</strong> and <strong>Height</strong> (optional) let a
+browser save the space, so the page does not jump about while the image
+loads.</li>
+<li><strong>Responsive</strong>, on by default, lets the image shrink to
+fit narrow columns instead of spilling over.</li>
+<li><strong>Caption</strong> (optional) is inserted as a proper
+<code>&lt;figure&gt;</code>/<code>&lt;figcaption&gt;</code>, so screen
+readers know the caption belongs to the image.</li>
+</ul>
+<p>These options are hidden in Markdown documents, which cannot hold
+them. There you get the familiar <code>![alt](path)</code>.</p>
+<p>For any image already in your document, whether typed by hand, pasted
+or brought in from another format, <strong>Tools &gt; Advanced &gt;
+Describe Image at Cursor</strong> tells you what a screen reader will
+hear there: “Image: sunset.png, alt text: a sunset over the lake,” or
+“Image: sunset.png, alt text MISSING” if it has none.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now ask QUILL what a document is and what just changed, set
+how much it says and through which channels, and read back anything you
+missed in the Spoken Echo. You know how to make the text the size you
+need, what QUILL’s sounds mean, how to work page by page in braille
+files, and how to check and fix a document with GLOW.</p>
+<p>To practise, open <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>) and try “Decide how much QUILL says”, “Make
+QUILL the size you need” and “Braille files, page by page”. On the
+website, <a
+href="https://www.quillforall.org/tutorials/06-make-it-accessible-with-glow.html">Make
+a document accessible with GLOW</a> walks through GLOW from start to
+finish.</p>
+<p>Next, Chapter 12, Making QUILL yours, shows you how to set up keys,
+profiles and preferences the way you like them.</p>
+<hr />
+<ul>
+<li>Previous: <a href="quill-guide-10-ai-when-you-want-it.html">Chapter
+10: AI, when you want it</a></li>
+<li>Next: <a href="quill-guide-12-making-quill-yours.html">Chapter 12:
+Making QUILL yours</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -26,6 +26,7 @@ import pytest
 
 from quill.core.browser_preview import render_preview_body
 from quill.core.help.renderer import load_topics
+from quill.core.user_guide_files import file_for_anchor, read_guide_text
 
 _REPO = Path(__file__).resolve().parents[3]
 
@@ -44,7 +45,8 @@ _GUIDES = {
 
 
 def _heading_ids(guide: Path) -> set[str]:
-    html = render_preview_body(guide.read_text(encoding="utf-8"), "markdown")
+    # The whole guide: its contents page and every chapter file.
+    html = render_preview_body(read_guide_text(guide), "markdown")
     return set(re.findall(r'id="([^"]+)"', html))
 
 
@@ -60,6 +62,19 @@ def test_every_help_topic_anchor_resolves(app: str) -> None:
         f"not exist in {guide.name}. Point each at an existing heading's id, or "
         "add the section to the guide:\n  " + "\n  ".join(broken)
     )
+
+
+@pytest.mark.parametrize("app", sorted(_GUIDES))
+def test_every_help_topic_anchor_opens_its_chapter(app: str) -> None:
+    """Full details opens the chapter holding the anchor, not the contents page.
+
+    The guide is one file per chapter (quill/core/user_guide_files.py), and
+    ``open_user_guide`` renders the file ``file_for_anchor`` names; an anchor it
+    could only find on the contents page would open there, at the top.
+    """
+    guide, load = _GUIDES[app]
+    lost = sorted({slug for slug in load().values() if file_for_anchor(guide, slug) == guide})
+    assert not lost, f"{app}: anchors no chapter file holds: {lost}"
 
 
 def test_renderer_still_gives_headings_ids() -> None:

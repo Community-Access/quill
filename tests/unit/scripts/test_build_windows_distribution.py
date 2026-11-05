@@ -156,6 +156,12 @@ version = "2.4.6"
     assert "Pandoc Conversion Wizard" in readme_text
 
     assert (portable_dir / "docs" / "userguide.md").exists()
+    # The guide is a contents page plus its chapter folder; without the folder
+    # every link on the contents page opens nothing.
+    assert (portable_dir / "docs" / "quill-guide" / "quill-guide-01-your-first-session.md").exists()
+    # The guide is a contents page plus its chapter folder; without the folder
+    # every link on the contents page opens nothing.
+    assert (portable_dir / "docs" / "quill-guide" / "quill-guide-01-your-first-session.md").exists()
     assert not (portable_dir / "docs" / "announcement-beta.md").exists()
     assert not (portable_dir / "docs" / "QUILL-PRD.md").exists()
 

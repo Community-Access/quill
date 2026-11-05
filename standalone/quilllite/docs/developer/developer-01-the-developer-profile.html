@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 1: Turning on the Developer profile</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-1-turning-on-the-developer-profile">Chapter 1: Turning
+on the Developer profile</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Nothing in this manual appears until you ask for it. This chapter
+shows you how to turn the coding tools on in QUILL and in QUILL Lite,
+what the Developer profile changes area by area, how to get the tools
+without the rest of the profile, and what happens when you turn them off
+again.</p>
+<h2 id="why-there-is-a-profile-at-all">Why there is a profile at
+all</h2>
+<p>Most people who use QUILL write letters, posts and books. They never
+need a project task, a command runner or a test summary, and meeting one
+in a menu would only be one more thing to skip past. So the coding tools
+live behind one choice: the <strong>Developer</strong> profile. Choosing
+it is the opt-in. No feature asks you again whether you want developer
+tools, and nobody else meets any of them: not in the menus, not in the
+Command Palette, and not in the tutorials.</p>
+<p>Both editors use the same words for it, and the profile’s description
+is the same promise in both: everything in the everyday set, plus tools
+for writing code, with project tasks with an AI, running commands and
+tests, and undo for every change an AI makes.</p>
+<h2 id="turning-it-on-in-quill">Turning it on in QUILL</h2>
+<p>Any of these does it:</p>
+<ul>
+<li><strong>Help &gt; Feature Profiles &gt; Switch Profile…</strong>
+(<code>Alt+Shift+P</code>), then choose <strong>Developer</strong> from
+the list.</li>
+<li><strong>Tools &gt; Customize and Support &gt; Profiles and
+Features…</strong>, then choose <strong>Developer</strong>.</li>
+</ul>
+<p>The profile used to be called Developer and Power Text. Your saved
+settings still know it by its old id, so nothing you set before is
+lost.</p>
+<p><strong>Full Quill</strong> turns the coding tools on too, because
+its promise is everything.</p>
+<h3 id="only-the-coding-tools-without-the-rest-of-the-profile">Only the
+coding tools, without the rest of the profile</h3>
+<p>If you like your current profile and only want the coding tools, open
+<strong>Help &gt; Feature Profiles &gt; Manage Individual
+Features…</strong> (<code>Ctrl+Alt+F10</code>) and check
+<strong>Developer Tools</strong>. That one feature carries every
+developer tool in QUILL, and each of them depends on it, so a profile
+can never half turn them on by accident.</p>
+<h2 id="turning-it-on-in-quill-lite">Turning it on in QUILL Lite</h2>
+<p>Open <strong>Tools &gt; Customize Features…</strong>
+(<code>Ctrl+Alt+F10</code>) and choose the <strong>Developer</strong>
+profile. It is Recommended plus one area, <strong>Coding: project tasks
+with an AI</strong>: twenty of the 24 areas.</p>
+<p>To keep your current profile and add coding alone, check
+<strong>Coding: project tasks with an AI</strong> in the same
+window.</p>
+<p>Coding is off in every other QUILL Lite profile, Everything included.
+Everything means every <em>writing</em> area; coding belongs to
+Developer.</p>
+<h3 id="one-more-check-box-in-quill-lite-ai-help">One more check box in
+QUILL Lite: AI help</h3>
+<p>Project tasks are AI tasks, and in QUILL Lite every AI command, Do a
+Document Task (<code>Ctrl+3</code>) and Choose Your AI
+(<code>Ctrl+4</code>) included, belongs to the area called <strong>AI
+help (sends your text to QUILL’s servers)</strong>. The Developer
+profile leaves that area off, as Recommended does. So in QUILL Lite,
+check <strong>AI help</strong> in Customize Features as well. Until you
+do, a project task says “AI help is switched off. Turn it on in Tools,
+Customize Features.”</p>
+<p>The area’s name talks about QUILL’s servers because that is where the
+free AI sends your text. A project task never runs on the free AI. With
+GitHub Copilot, Codex or your own key, your text goes to that service
+and not to QUILL’s.</p>
+<h2 id="in-quill-use-artificial-intelligence-must-be-on">In QUILL, Use
+Artificial Intelligence must be on</h2>
+<p>QUILL has one switch for all of its AI: <strong>AI &gt; Use
+Artificial Intelligence</strong>. If it is unchecked, a project task
+says “AI help is switched off. Turn it on in the AI menu, Use Artificial
+Intelligence.”</p>
+<h2 id="what-the-developer-profile-changes-area-by-area">What the
+Developer profile changes, area by area</h2>
+<h3 id="in-quill">In QUILL</h3>
+<p>These are on only in Developer and Full Quill:</p>
+<ul>
+<li><strong>Project tasks.</strong> Open Project Folder, Do a Project
+Task, Review Changes, Run This Command?, Undo Last Agent Turn, Stop
+Agent, Explain Last Turn, coach mode, the transcript and command output,
+Commands Allowed in This Project, and Engine Tools for This Project.
+Chapters 2 to 10 are about these.</li>
+<li><strong>Local Git.</strong> Everything under <strong>Tools &gt; Git
+and GitHub &gt; Local Git</strong>: Uncommitted Changes, Switch Branch,
+stashes, Who Wrote This Line, bisect, Resolve Conflicts, Interactive
+Rebase, and Worktrees.</li>
+<li><strong>GitHub.</strong> Opening and saving files on GitHub, the
+GitHub Items viewer, the repository administration commands under
+<strong>Tools &gt; Git and GitHub &gt; GitHub</strong>, and Codespaces.
+These need <strong>GitHub Remote Access</strong>, which depends on
+Developer Tools.</li>
+<li><strong>The Developer Console,</strong> the Python and TypeScript
+consoles under <strong>Tools &gt; Advanced &gt; Developer
+Console</strong>.</li>
+<li><strong>Word Prediction</strong> (<code>Ctrl+.</code>), which is on
+but quiet in the Developer profile.</li>
+<li><strong>Validate Agents,</strong> the agent standards check, reached
+from an agent in the AI Library.</li>
+</ul>
+<p>The Developer profile also keeps what Developer and Power Text always
+had: regular expressions, formatting, macros, links, document analysis,
+OCR, shell integration and the Keymap Editor on; Read Aloud, watch
+folders, the character inspector and cleanup on but quiet. “Quiet” means
+the feature works and stays out of the way.</p>
+<h3 id="in-quill-lite">In QUILL Lite</h3>
+<p>The Developer profile adds the <strong>Coding</strong> area. These
+commands appear, and leave again when you choose another profile:</p>
+<ul>
+<li><strong>File:</strong> Open Project Folder… and Close Project.</li>
+<li><strong>Edit &gt; Agent Work:</strong> Undo Last Agent Turn and Stop
+Agent.</li>
+<li><strong>View:</strong> Agent Task Transcript and Agent Command
+Output.</li>
+<li><strong>Tools:</strong> Commands Allowed in This Project…</li>
+<li><strong>Tools &gt; AI:</strong> Do a Project Task…, Explain Last
+Turn and Engine Tools for This Project…</li>
+</ul>
+<p>QUILL Lite has no Git, GitHub, SSH or Developer Console. Chapter 12
+has the rest of the differences.</p>
+<h3 id="the-tutorial">The tutorial</h3>
+<p>Both editors’ Tutorials windows gain a Coding track, “Coding, in the
+Developer profile”, with one lesson: <strong>Your first project
+task</strong>. The track is left out unless coding is on.</p>
+<h2 id="turning-it-off-again">Turning it off again</h2>
+<p>Choose any other profile, or uncheck <strong>Developer Tools</strong>
+(QUILL) or <strong>Coding</strong> (QUILL Lite). The developer commands
+leave the menus and the Command Palette, and <code>Ctrl+3</code> goes
+back to being Do a Document Task.</p>
+<p>Let a running project task finish, or stop it, before you switch. If
+you press a project command once coding is off, you hear “Project tasks
+are part of the Developer profile. Choose the Developer profile, or turn
+on Developer Tools in Customize Features.”</p>
+<h2 id="safe-mode">Safe Mode</h2>
+<p>In Safe Mode all AI is off, so project tasks are too. Open Project
+Folder and Do a Project Task say “AI is off in Safe Mode. Nothing can be
+signed in until QUILL starts normally.” and stop.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-guide.html">Contents</a></li>
+<li>Next: <a href="developer-02-projects.html">Chapter 2: Opening a
+project, and the project boundary</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

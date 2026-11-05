@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 11: Troubleshooting</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-11-troubleshooting">Chapter 11: Troubleshooting</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>QUILL never answers a problem with a bare error code. Every failure
+is one sentence that names the site and says what happened, and usually
+what to do. This chapter collects those sentences, grouped by when you
+meet them, with the reason behind each and the fix. If you hear
+something not listed here, it will still name the site and the cause;
+the sections below are the ones people meet most.</p>
+<h2 id="before-you-start-three-quick-checks">Before you start: three
+quick checks</h2>
+<p>Most problems are one of these:</p>
+<ol type="1">
+<li><strong>Is the feature on?</strong> If File &gt; WordPress or File
+&gt; New Form is missing, switch the feature on (Chapter 1, or Chapter
+10 for QUILL Lite).</li>
+<li><strong>Are you in Safe Mode?</strong> Every WordPress command says
+“WordPress is off in Safe Mode. Start the app normally to use it.”
+Restart QUILL normally.</li>
+<li><strong>Is a WordPress page in front of you?</strong> The page
+commands are dimmed otherwise, and from the Command Palette they say,
+for example, “Insert Block works in a WordPress page or post. Open one
+with File, WordPress.”</li>
+</ol>
+<h2 id="connecting">Connecting</h2>
+<p><strong>“QUILL only connects to WordPress sites over HTTPS, so your
+password is never sent in the clear. Check that the address starts with
+https://.”</strong> The address starts with http. Type it with https. If
+your site has no HTTPS at all, ask your host to turn on a free
+certificate; almost every host offers one.</p>
+<p><strong>“Community Radio did not accept the application password.
+Check it belongs to this account, then reconnect.”</strong> The password
+was made under a different user, was revoked, or lost a character on the
+way. Make a new one with Get Password with My Browser, or in your
+profile, and connect again.</p>
+<p><strong>“Community Radio did not accept the sign-in. Check the
+username and application password, then reconnect.”</strong> The same,
+or the username is wrong. You can use your email address instead of your
+username.</p>
+<p><strong>“Community Radio does not know that username.”</strong> Check
+the spelling, or use your email address.</p>
+<p><strong>“Application passwords are turned off on Community Radio. Ask
+the site’s administrator to turn them on.”</strong> A security plugin,
+or the host, has switched application passwords off. The administrator
+can turn them on in that plugin’s settings.</p>
+<p><strong>“A security setting on Community Radio blocked QUILL. Ask the
+site’s administrator to allow the WordPress REST API and application
+passwords.”</strong> A security plugin is blocking the REST API, which
+QUILL needs. The administrator can allow it, usually for signed-in users
+only, which is all QUILL needs.</p>
+<p><strong>It connects, then everything says the sign-in was not
+accepted.</strong> Run <strong>Tools &gt; WordPress &gt; Site
+Check</strong>. If the authorization header test fails, your host is
+stripping the header that carries the password. Site Check says so; your
+host can fix it, and many hosts have a help page for exactly this.</p>
+<p><strong>“Community Radio’s security certificate could not be checked,
+so QUILL did not connect.”</strong> The site’s HTTPS certificate has
+expired or does not match the address. Waiting will not fix it; tell the
+site’s host. QUILL never connects past a bad certificate, because that
+is how a password is stolen.</p>
+<p><strong>“QUILL could not find Community Radio. Check the address, and
+that you are online.”</strong> The address has a typo, or you are
+offline.</p>
+<p><strong>The browser approval page never sends the password
+back.</strong> Older sites cannot hand the password back to QUILL.
+WordPress shows it on the page instead, with a Copy button: copy it, and
+paste it into the Paste the Application Password window QUILL has open.
+If you closed that window, press Connect a Site again and paste the
+password into Application password, with your username.</p>
+<p><strong>“QUILL stopped waiting for the browser.”</strong> You took
+longer than QUILL waits. Press Get Password with My Browser again when
+you are ready.</p>
+<p><strong>WordPress.com.</strong> “WordPress.com sign-in is not
+available in this build yet.” See Chapter 1: on a plan with plugins,
+connect with an application password at your site’s own address.</p>
+<h2 id="what-your-role-allows">What your role allows</h2>
+<p><strong>“Your account on Community Radio is an Author, which cannot
+manage users.”</strong> The window needs a higher role. Ask an
+administrator to do it, or to change your role.</p>
+<p><strong>“Your account on Community Radio cannot publish this. You can
+save it as a draft, or submit it for review.”</strong> Contributors
+cannot publish. Publish or Update sends the post for review instead. An
+Author cannot publish pages.</p>
+<p><strong>“Your account on Community Radio can only change items you
+wrote yourself.”</strong> Authors and Contributors can edit only their
+own posts.</p>
+<p><strong>“Only an administrator on Community Radio can change site
+settings.”</strong> Site Settings, Site Logo, plugins, themes and users
+are for administrators.</p>
+<h2 id="opening-and-sending">Opening and sending</h2>
+<p><strong>“That address is not on any of your connected
+sites.”</strong> Open by Web Address only opens pages on sites you have
+connected. Connect the site first.</p>
+<p><strong>“QUILL could not find a page or post at that address on
+Community Radio.”</strong> The address is an archive, a category or the
+home page listing posts, which are not single pages.</p>
+<p><strong>“That page or post is no longer on Community Radio. It may
+have been deleted.”</strong> Someone deleted it, or moved it to the
+Trash. Look in Open with <code>trash</code> in Find.</p>
+<p><strong>The site’s copy changed.</strong> Somebody changed the page
+after you opened it. Nothing was sent. Choose Compare the two, Open the
+site’s copy, or Send mine anyway (Chapter 2).</p>
+<p><strong>“Community Radio took too long to answer.”</strong> The site
+is slow or your connection dropped. QUILL checks the site before
+offering Try Again, so nothing is created twice. If the site cannot be
+reached at all, your send is queued and goes through when it
+answers.</p>
+<p><strong>“Community Radio is asking QUILL to slow down. Wait a minute
+and try again.”</strong> The host limits how many requests come at once,
+which a large Check the Whole Site can reach. Wait, then carry on.</p>
+<p><strong>“Community Radio had a problem of its own (error
+500).”</strong> The site itself failed, often a plugin. Try again in a
+moment; if it keeps happening, the site’s error log will say why.</p>
+<p><strong>“N lines could not be turned into blocks; Check Before
+Publishing lists them.”</strong> A <code>:::</code> fence has a typo.
+Check Before Publishing names each line.</p>
+<p><strong>The page looks unchanged after an update.</strong> Your site
+or your host may be showing a cached copy. Wait a minute, or clear the
+cache in your caching plugin.</p>
+<h2 id="pictures-and-media">Pictures and media</h2>
+<p><strong>“That file is bigger than Community Radio accepts.”</strong>
+Make a Smaller Copy for a picture, or Upload a Large File for a long
+recording or video, which sends it in pieces.</p>
+<p><strong>“Community Radio has no room left for uploads.”</strong> The
+site or your plan is full. Space Used (Tools &gt; WordPress &gt; Manage)
+shows what takes the room.</p>
+<p><strong>An upload was not confirmed.</strong> QUILL checks the Media
+Library for the file before offering to upload again, and asks whether
+to use the copy already there, so you do not end up with two.</p>
+<p><strong>Video plays with no picture.</strong> The playback engine
+cannot show a picture on this computer. The player says so once; Open in
+Browser shows it.</p>
+<p><strong>Visual Review or Check This Page says it cannot run.</strong>
+They need Microsoft Edge or Google Chrome installed in its usual place.
+QUILL never downloads a browser. They also work only on published
+pages.</p>
+<h2 id="commands-a-site-does-not-offer">Commands a site does not
+offer</h2>
+<p>QUILL asks each site what it offers before it tries anything. A
+feature that needs a newer WordPress, a block theme, or a route a
+security plugin has hidden says so in one sentence, and nothing is sent.
+Appendix A lists every feature, what it needs, and what you hear when a
+site lacks it. The usual fixes are to update WordPress, or ask the
+administrator whether a security plugin is hiding part of the REST
+API.</p>
+<h2 id="forms">Forms</h2>
+<p><strong>“Check This Form works in a form document, a .qaf
+file.”</strong> The document in front is not a form. Open a
+<code>.qaf</code> file, or start one with File &gt; New Form.</p>
+<p><strong>“Publish Form needs QUILL Accessible Forms on Community
+Radio, and the site does not offer it.”</strong> Install and activate
+the plugin (Chapter 9), or use Save As Web Page.</p>
+<p><strong>“Publish Form stopped: this form has 2 problems to fix
+first.”</strong> Run Check This Form; the problems QUILL could not read
+are listed first.</p>
+<p><strong>A rule never fires.</strong> Check the rule’s sentence in
+Form Rules. If it compares with an answer, make sure it matches one of
+the question’s choices.</p>
+<p><strong>Fill It In Yourself shows no choices for a question.</strong>
+The question names a choice library the form does not have. Check This
+Form names it.</p>
+<p><strong>“Publish Form is off in Safe Mode.”</strong> Restart
+normally. Writing, checking and saving to paper still work in Safe
+Mode.</p>
+<h2 id="still-stuck">Still stuck</h2>
+<ul>
+<li>Press F1 on any control for what it is for.</li>
+<li><strong>Help &gt; Tutorials</strong> has guided WordPress and Forms
+lessons on a test site, which tell you what you should hear at every
+step.</li>
+<li>Write to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+with what you did and what you heard, word for word. That one sentence
+is usually all anyone needs.</li>
+</ul>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-10-quill-lite.html">Chapter 10:
+QUILL Lite</a></li>
+<li>Next: <a href="wordpress-forms-12-keys.html">Chapter 12: Every
+WordPress and Forms key</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

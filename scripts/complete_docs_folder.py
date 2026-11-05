@@ -74,22 +74,25 @@ def render(source: Path, lacking: list[str], folder: Path, pandoc: str) -> None:
             check=True,
         )
     if ".epub" in lacking:
-        subprocess.run(
-            [
-                pandoc,
-                str(source),
-                "-f",
-                "gfm+smart",
-                "-t",
-                "epub3",
-                "--metadata",
-                f"identifier={_identifier(source, folder)}",
-                "-o",
-                str(source.with_suffix(".epub")),
-            ],
-            check=True,
-            env={**os.environ, "SOURCE_DATE_EPOCH": rr.EPUB_SOURCE_DATE_EPOCH},
-        )
+        # A user guide split into chapters is one book: rr.epub_source joins it.
+        with rr.epub_source(source) as (epub_in, extra):
+            subprocess.run(
+                [
+                    pandoc,
+                    str(epub_in),
+                    "-f",
+                    "gfm+smart",
+                    "-t",
+                    "epub3",
+                    "--metadata",
+                    f"identifier={_identifier(source, folder)}",
+                    *extra,
+                    "-o",
+                    str(source.with_suffix(".epub")),
+                ],
+                check=True,
+                env={**os.environ, "SOURCE_DATE_EPOCH": rr.EPUB_SOURCE_DATE_EPOCH},
+            )
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 12: Every WordPress and Forms key</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-12-every-wordpress-and-forms-key">Chapter 12: Every
+WordPress and Forms key</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter lists every key for WordPress and Forms, in QUILL and
+QUILL Lite, which use the same keys. It explains the WordPress keys,
+gives the whole table of letters, and lists the keys that work inside
+the WordPress and Forms windows. Commands without a key are reached from
+their menus and from the Command Palette.</p>
+<h2 id="the-wordpress-keys">The WordPress keys</h2>
+<p>The WordPress commands share one starting key:
+<strong>Ctrl+Alt+Shift+Grave</strong>. Grave is the key below Escape,
+also called the backtick key. Hold Ctrl, Alt and Shift, press Grave, and
+let go. QUILL says “WordPress keys”. Then press one letter.</p>
+<p>The six you will use every day:</p>
+<ul>
+<li><strong>O</strong> opens a page or post;</li>
+<li><strong>P</strong> publishes or updates;</li>
+<li><strong>M</strong> opens the Media Library;</li>
+<li><strong>S</strong> switches site;</li>
+<li><strong>W</strong> opens a page by its web address;</li>
+<li><strong>D</strong> saves a draft to the site.</li>
+</ul>
+<p><strong>How it behaves:</strong></p>
+<ul>
+<li><strong>Escape</strong> after the WordPress key leaves it and says
+“Left WordPress keys”.</li>
+<li>A letter with no command says so, for example “No WordPress command
+on Q.”, and types nothing.</li>
+<li>If you wait more than about four seconds, the WordPress key gives up
+quietly and your next key types as normal.</li>
+<li>The command then speaks for itself, as it does from the menu.</li>
+<li>The menus show each key beside its row, in brackets, such as
+“(Ctrl+Alt+Shift+Grave, O)”.</li>
+<li>If you move a WordPress command to another letter in the Keyboard
+Manager, the menus, the key lists and the WordPress keys all
+follow.</li>
+</ul>
+<p><strong>Why the letters are what they are.</strong> Wherever a File
+&gt; WordPress row’s underlined letter was free, that is its key, so the
+menu teaches the key. Where two rows wanted one letter, the everyday one
+kept it: Publish kept P, so New Page went to G; Media Library kept M, so
+Compare with Site is C; Switch Site kept S, and Sites, the list you only
+open now and then, is S with Shift.</p>
+<h2 id="the-whole-table">The whole table</h2>
+<p>Press Ctrl+Alt+Shift+Grave, let go, then:</p>
+<table>
+<thead>
+<tr>
+<th>Letter</th>
+<th>Command</th>
+<th>Menu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G</td>
+<td>New Page</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>N</td>
+<td>New Post</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>O</td>
+<td>Open Page or Post</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>W</td>
+<td>Open by Web Address</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>L</td>
+<td>Open Local Draft</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>D</td>
+<td>Save Draft to Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>P</td>
+<td>Publish or Update</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>E</td>
+<td>Schedule Publish</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>I</td>
+<td>Open on Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>Y</td>
+<td>Copy Address</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>R</td>
+<td>Properties</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>V</td>
+<td>Previous Versions</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Compare with Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>T</td>
+<td>Move to Trash</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>S</td>
+<td>Switch Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>Shift+S</td>
+<td>Sites</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>A</td>
+<td>Connect a Site</td>
+<td>File &gt; WordPress</td>
+</tr>
+<tr>
+<td>M</td>
+<td>Media Library</td>
+<td>Tools &gt; WordPress</td>
+</tr>
+<tr>
+<td>B</td>
+<td>WordPress Blocks</td>
+<td>View</td>
+</tr>
+<tr>
+<td>K</td>
+<td>Check Before Publishing</td>
+<td>Tools &gt; WordPress</td>
+</tr>
+<tr>
+<td>U</td>
+<td>Upload Files</td>
+<td>Tools &gt; WordPress &gt; More Media</td>
+</tr>
+<tr>
+<td>X</td>
+<td>Alt Text Review</td>
+<td>Tools &gt; WordPress</td>
+</tr>
+</tbody>
+</table>
+<p>The page commands among them, such as P and B, are dimmed outside a
+WordPress page; their key then says why, as the menu row does.</p>
+<h2 id="the-quill-key-and-the-wordpress-key">The QUILL key and the
+WordPress key</h2>
+<p>In QUILL, Ctrl+Shift+Grave, the same key without Alt, is the QUILL
+key, which starts QUILL’s own layer of commands. The two never clash:
+one has Alt and one does not. QUILL Lite has no QUILL key, so in QUILL
+Lite the WordPress key is the only one of its kind.</p>
+<h2 id="commands-without-a-key">Commands without a key</h2>
+<p>Every other WordPress command, and every Forms command, has no key of
+its own. Each has a written reason in the code: no sensible key is free
+in both editors and in every other QUILL app, and these are commands you
+use now and then, not every hour. Reach them by:</p>
+<ul>
+<li><strong>the menus.</strong> File &gt; WordPress opens with Alt+F,
+then W, in both editors.</li>
+<li><strong>the Command Palette,</strong> Ctrl+Shift+P, in both editors.
+Type “WordPress” or “form”, or part of a command’s name, and press
+Enter.</li>
+</ul>
+<h2 id="keys-you-already-know">Keys you already know</h2>
+<p>These are the editor’s ordinary keys, and they work the same in a
+WordPress page or a form:</p>
+<ul>
+<li><strong>Ctrl+S</strong> saves on this computer, and never sends
+anything.</li>
+<li><strong>Ctrl+Z</strong> takes back any change a WordPress or Forms
+command made to the document, as one step.</li>
+<li><strong>Ctrl+Shift+P</strong> opens the Command Palette.</li>
+<li><strong>F1</strong> on any control says what it is for.</li>
+</ul>
+<h2 id="keys-inside-the-windows">Keys inside the windows</h2>
+<ul>
+<li><strong>Enter</strong> runs a list window’s main action: Open in the
+Open window, Play or Insert in the Media Library, Read in Responses, Go
+to It in the checking lists.</li>
+<li><strong>Escape</strong> closes a window without changing anything,
+and stops the media player.</li>
+<li><strong>Tab</strong> and <strong>Shift+Tab</strong> move between
+controls; Space checks or unchecks a check box.</li>
+<li>In the <strong>Form Outline</strong>, Alt+Shift+Up and
+Alt+Shift+Down move the question you are on, Alt+Shift+Right moves it
+into the section above, and Alt+Shift+Left moves it out.</li>
+<li>In <strong>Fill It In Yourself</strong>, Tab moves from question to
+question, as on a web page.</li>
+</ul>
+<h2 id="keys-in-the-other-apps">Keys in the other apps</h2>
+<ul>
+<li><strong>QUILL Cast:</strong> Episode &gt; Post This Episode to
+WordPress.</li>
+<li><strong>QUILL Studio:</strong> WordPress &gt; Post an Episode to
+WordPress.</li>
+<li><strong>Quill Converter:</strong> File &gt; Upload to
+WordPress.</li>
+</ul>
+<p>Each app’s own menu shows its key beside the row.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-11-troubleshooting.html">Chapter
+11: Troubleshooting</a></li>
+<li>Next: <a href="wordpress-forms-13-window-reference.html">Chapter 13:
+Every window, field and button</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

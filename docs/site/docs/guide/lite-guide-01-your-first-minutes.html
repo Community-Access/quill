@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 1: Your first minutes</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-1-your-first-minutes">Chapter 1: Your first minutes</h1>
+<p>This chapter is your first session with QUILL Lite. You will start
+it, type something and save it, and meet the four keys that rescue you
+whenever you are unsure. Then come thirty short recipes, each one a
+small job from start to finish, with what to press and what you should
+hear when it worked. Have QUILL Lite open as you read, and try each one
+as you meet it. A few minutes is plenty to begin.</p>
+<h2 id="the-first-minute">The first minute</h2>
+<p>Start QUILL Lite. You get one window with one empty document in it,
+called <strong>1: Untitled</strong>. Type something. When you want to
+keep it, press <strong>Ctrl+S</strong>.</p>
+<p>That really is all you need. Everything else in this guide is
+extra.</p>
+<p>Four keys are worth learning straight away, because they help you
+whenever you are unsure:</p>
+<ul>
+<li><strong>F1</strong> tells you where you are. Press it anywhere: in
+your document, on a button, in any window. QUILL Lite tells you what
+that window is for, and then what the thing you are on does.</li>
+<li><strong>F6</strong> takes you to the status bar, where the useful
+facts about your document live. Arrow along it to hear them. Press
+<strong>Escape</strong> to come back.</li>
+<li><strong>Ctrl+F1</strong> lists every key QUILL Lite has.</li>
+<li><strong>Ctrl+Alt+F1</strong> opens <strong>Tutorials…</strong>:
+fifteen short lessons that walk you through the things that are hard to
+discover just by pressing keys.</li>
+</ul>
+<h2 id="step-by-step-thirty-things-start-to-finish">Step by step: thirty
+things, start to finish</h2>
+<p>This section is all doing. Each recipe tells you what to press, in
+order, and what you should hear when it worked. The chapters after it
+explain each idea more slowly.</p>
+<p>Every key here is the one QUILL Lite comes with. If you have changed
+a key, <strong>Ctrl+F1</strong> shows the keys you really have.</p>
+<p>Each recipe assumes only that QUILL Lite is open.</p>
+<h3 id="getting-started">Getting started</h3>
+<p><strong>1. Open a file and save it back untouched.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+O</strong>. Choose the file and press Enter.</li>
+<li>Change nothing.</li>
+<li>Press <strong>Ctrl+S</strong>.</li>
+</ol>
+<p>You hear the file’s name when it opens, and a save sound when it
+saves. The file is exactly what it was before: the same way of storing
+letters, the same line endings, and the same ending, with or without a
+blank last line.</p>
+<p>Next time you want it, you do not need Ctrl+O at all:
+<strong>Alt+Shift+1</strong> reopens the last document you opened, and
+<strong>Alt+Shift+0</strong> lists all your recent ones.</p>
+<p><strong>2. Find out where you are.</strong></p>
+<ol type="1">
+<li>Press <strong>F6</strong>. You land in the status bar.</li>
+<li>Arrow left and right. Each cell says its name and its value: Line,
+Column, Words, Encoding, Line Endings, Format, Typing Mode, and the
+rest.</li>
+<li>Press <strong>Escape</strong>. You are back in your document, in the
+same spot.</li>
+</ol>
+<p><strong>3. Find out what a window or a control is for.</strong></p>
+<p>Press <strong>F1</strong>, anywhere. You hear what window you are in,
+in one sentence, and then what the thing you are on does.</p>
+<p><strong>4. Take a lesson.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+F1</strong>.</li>
+<li>Arrow to a lesson in the tree and press Enter.</li>
+<li>Read the step. If you would like the app to do the step for you,
+press <strong>Try it</strong>. Then press <strong>Next</strong>.</li>
+</ol>
+<p><strong>5. See every key QUILL Lite has.</strong></p>
+<p>Press <strong>Ctrl+F1</strong>. Type part of a name to narrow the
+list.</p>
+<h3 id="writing-and-editing">Writing and editing</h3>
+<p><strong>6. Make a heading.</strong></p>
+<ol type="1">
+<li>Put the cursor anywhere on the line.</li>
+<li>Press <strong>Ctrl+Alt+2</strong> for Heading 2. Levels 1 to 6 are
+<strong>Ctrl+Alt+1</strong> to <strong>Ctrl+Alt+6</strong>.</li>
+<li><strong>Ctrl+Alt+0</strong> turns it back into ordinary text.</li>
+</ol>
+<p>In a Markdown file this writes <code>## </code>. In HTML it writes
+<code>&lt;h2&gt;...&lt;/h2&gt;</code>. In a rich text document you get a
+real heading style. Arrow off the line and back onto it, and you hear
+<strong>“Heading 2”</strong> followed by the heading’s words.</p>
+<p><strong>7. Select a whole paragraph without counting.</strong></p>
+<p>Press <strong>Ctrl+Shift+H</strong>. You hear “Selected paragraph”
+and how many words.</p>
+<p><strong>8. Select something that does not line up
+neatly.</strong></p>
+<ol type="1">
+<li>Press <strong>F8</strong> where you want the selection to
+start.</li>
+<li>Move however you like: arrows, <strong>Ctrl+End</strong>, a search,
+<strong>Ctrl+G</strong>, a bookmark. You do not hold anything down.</li>
+<li>Press <strong>Shift+F8</strong> when you get there.</li>
+</ol>
+<p>You hear how many words you selected and which lines it covers.</p>
+<p><strong>9. Get back a selection you just lost.</strong></p>
+<p>Press <strong>Ctrl+Shift+F8</strong>. Whatever you last had selected
+comes back, however you selected it.</p>
+<p><strong>10. Move a line up or down.</strong></p>
+<p>Press <strong>Ctrl+Shift+Up</strong> or
+<strong>Ctrl+Shift+Down</strong>. If the line cannot move, you are told,
+for example “Already the first line”, so you are never left
+wondering.</p>
+<p><strong>11. Move a whole section, with its heading and everything
+under it.</strong></p>
+<ul>
+<li>One step at a time: <strong>Alt+Shift+Up</strong> or
+<strong>Alt+Shift+Down</strong>.</li>
+<li>Somewhere far away: press <strong>Ctrl+Alt+Shift+F5</strong>
+(<strong>Move Section To…</strong>) and choose where it goes from a
+list.</li>
+<li>Several at once: press <strong>Alt+Shift+O</strong> (<strong>Heading
+Organizer</strong>). Use Tab and Shift+Tab to make headings smaller or
+bigger, then close it.</li>
+</ul>
+<p>Each of these is undone with a single <strong>Ctrl+Z</strong>.</p>
+<p><strong>12. Change the case of something.</strong></p>
+<p>Select it, then press <strong>Ctrl+Shift+U</strong> for upper case,
+<strong>Ctrl+Shift+K</strong> for lower case,
+<strong>Ctrl+Shift+T</strong> for title case,
+<strong>Ctrl+Alt+Shift+U</strong> for sentence case, or
+<strong>Ctrl+Alt+Shift+N</strong> to invert it.</p>
+<p><strong>13. Move a deleted paragraph somewhere else.</strong></p>
+<ol type="1">
+<li>Put the cursor on the paragraph and press
+<strong>Ctrl+Alt+Shift+Backspace</strong> (Delete Paragraph).</li>
+<li>Go to where you want it.</li>
+<li>Press <strong>Ctrl+Alt+Shift+Z</strong> (Restore Deleted Text).</li>
+</ol>
+<p><strong>Ctrl+Z</strong> would put it back where it came from. This
+puts it where you are now.</p>
+<h3 id="finding-things">Finding things</h3>
+<p><strong>14. Find a word, and hear how many there are.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+F</strong>.</li>
+<li>Type what you are looking for. The count changes as you type, and
+your screen reader reads it for you.</li>
+<li><strong>Ctrl+Down</strong> and <strong>Ctrl+Up</strong> let you hear
+the next and previous match while you stay in the box.
+<strong>Enter</strong> takes you to the match in your document.</li>
+<li>Afterwards, <strong>F3</strong> and <strong>Shift+F3</strong> keep
+going forward and back.</li>
+</ol>
+<p><strong>15. Hear every match before you replace
+anything.</strong></p>
+<p>Press <strong>Ctrl+Shift+F3</strong> (<strong>All Matches</strong>).
+You get every match, each with its line, its column and the words around
+it. <strong>Ctrl+Alt+Shift+F3</strong> just counts them.</p>
+<p><strong>16. Find a character you cannot type.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+F</strong>, then Tab to <strong>Search
+mode</strong> and choose <strong>Special characters</strong>.</li>
+<li>Type <code>\t</code> for a tab, <code>\u2014</code> for an em dash,
+or <code>\N{NO-BREAK SPACE}</code> for exactly that character.</li>
+</ol>
+<p><strong>17. Go to a line, a bookmark or a heading.</strong></p>
+<p>Press <strong>Ctrl+G</strong>. Arrow between <strong>Line</strong>,
+<strong>Bookmark</strong> and <strong>Heading</strong> at the top, then
+pick from the list below.</p>
+<h3 id="keeping-your-place">Keeping your place</h3>
+<p><strong>18. Drop a bookmark and come back to it
+tomorrow.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+B</strong> where you are. For a numbered
+one, press <strong>Ctrl+Shift+1</strong> to
+<strong>Ctrl+Shift+9</strong>.</li>
+<li><strong>F2</strong> and <strong>Shift+F2</strong> move between your
+bookmarks. <strong>Alt+Shift+G</strong> lists them.</li>
+</ol>
+<p>Bookmarks are kept for each file, and they are still there after you
+close the document.</p>
+<p><strong>19. Pop off to check something, then come straight
+back.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+M</strong> (Set Mark) before you go.</li>
+<li>Go anywhere.</li>
+<li>Press <strong>Ctrl+M</strong> (Pop Mark) to come back.</li>
+</ol>
+<p><strong>Alt+Left</strong> also takes you back. Think of it as undo
+for moving around.</p>
+<p><strong>20. Skim a long document.</strong></p>
+<ol type="1">
+<li><strong>Ctrl+Alt+H</strong> and <strong>Ctrl+Alt+Shift+H</strong>
+move to the next and previous heading.</li>
+<li><strong>Ctrl+Alt+L</strong> lists all the headings.</li>
+<li><strong>Ctrl+Shift+F9</strong> folds away the section you are in.
+<strong>Ctrl+Shift+F10</strong> unfolds everything.</li>
+</ol>
+<h3 id="spelling">Spelling</h3>
+<p><strong>21. Check the whole document.</strong></p>
+<p>Press <strong>F7</strong>. It starts where your cursor is, takes you
+through one word at a time, and carries on from the top when it reaches
+the end.</p>
+<p><strong>22. Fix the word you are on, without a dialog.</strong></p>
+<p>Press the <strong>Applications key</strong> (or
+<strong>Shift+F10</strong>). Press <strong>Down</strong> once to land on
+the first suggestion. Press <strong>Enter</strong> to replace the
+word.</p>
+<p><strong>23. Teach QUILL Lite a word.</strong></p>
+<p>Press <strong>Ctrl+Alt+F9</strong> with the cursor anywhere in the
+word.</p>
+<p><strong>24. Hear every misspelling at once.</strong></p>
+<p>Press <strong>Alt+Shift+L</strong>. Each row tells you its line.
+Press Enter to go there.</p>
+<h3 id="clipboards-and-reuse">Clipboards and reuse</h3>
+<p><strong>25. Keep more than one thing on the clipboard.</strong></p>
+<ol type="1">
+<li><strong>Ctrl+Alt+Y</strong> puts what you selected into the next
+free slot in the tray. There are twelve slots.
+<strong>Alt+Shift+Y</strong> lets you pick the slot.</li>
+<li><strong>Ctrl+Alt+V</strong> pastes from any slot, even an hour
+later.</li>
+<li><strong>Ctrl+Alt+Shift+Y</strong> empties the tray.</li>
+</ol>
+<p><strong>26. Gather six things and paste them all at
+once.</strong></p>
+<ol type="1">
+<li>Select something and press <strong>Alt+Shift+C</strong>. Do that for
+each piece. They all go onto one growing pile.</li>
+<li><strong>Ctrl+Alt+Shift+G</strong> pastes the whole pile.</li>
+<li><strong>Ctrl+Alt+Shift+C</strong> empties it.</li>
+</ol>
+<p><strong>27. Type something long by typing something
+short.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+A</strong> (<strong>Manage
+Abbreviations</strong>). Add a short trigger and the text it should
+write.</li>
+<li>In your document, type the trigger and a space.</li>
+<li>Forgotten a trigger? Press <strong>Ctrl+Alt+Shift+Home</strong>
+(<strong>Snippets</strong>). It lists them all with a preview, the ones
+you use most at the top.</li>
+</ol>
+<h3 id="making-it-yours">Making it yours</h3>
+<p><strong>28. Change a key.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+Space</strong> (<strong>Keyboard
+Manager</strong>).</li>
+<li>Find the command and press the key you want. You are told if another
+command already uses it.</li>
+<li>Press <strong>Check for Problems</strong> before you leave, then
+<strong>Save</strong>.</li>
+</ol>
+<p><strong>29. Make QUILL Lite smaller.</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+F10</strong> (<strong>Customize
+Features</strong>).</li>
+<li>Choose <strong>Notepad</strong> in the Profile box. Every checkbox
+below changes to match straight away.</li>
+<li>Read the description under the box, then press
+<strong>Save</strong>.</li>
+</ol>
+<p>Choosing <strong>Recommended</strong> puts things back the way they
+came.</p>
+<p><strong>30. Silence every sound, right now.</strong></p>
+<p>Press <strong>Alt+Shift+M</strong> to turn QUILL Lite’s sounds off.
+Press it again to bring them back. To change one sound at a time, or
+choose which sound card they play on, press
+<strong>Ctrl+Alt+Shift+O</strong> (<strong>Sound Scheme</strong>).</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can start QUILL Lite, type and save, and you know the four keys
+that help when you are lost: <strong>F1</strong>, <strong>F6</strong>,
+<strong>Ctrl+F1</strong> and <strong>Ctrl+Alt+F1</strong>. You have also
+tried thirty everyday jobs: opening and saving, moving around,
+selecting, finding, spelling, clipboards and making the app your own.
+Every recipe is explained more slowly later in this guide, so when one
+catches your interest, look for it by name.</p>
+<p>If you would like to go over this with the app keeping you company,
+Help &gt; Tutorials has two lessons for it: <em>Open a file, and give it
+back unchanged</em> and <em>What to press when you are lost</em>.</p>
+<p>When you are ready, Chapter 2, Finding your way around, shows you how
+your documents share one window and where the facts about them live.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-guide-00-introduction.html">Introduction</a></li>
+<li>Next: <a href="lite-guide-02-finding-your-way-around.html">Chapter
+2: Finding your way around</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

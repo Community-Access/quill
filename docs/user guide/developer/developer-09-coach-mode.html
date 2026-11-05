@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 9: Coach mode and explanations</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-9-coach-mode-and-explanations">Chapter 9: Coach mode and
+explanations</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>QUILL’s project tasks are meant for people learning to code as much
+as for people who already do. This chapter covers coach mode, where the
+agent teaches and you type; Explain Last Turn, which asks the agent what
+it did and why; Why This Change? for one change; and the plain-language
+errors every task gives you.</p>
+<h2 id="coach-mode">Coach mode</h2>
+<p><strong>Coach mode</strong> (<code>Alt+A</code>) is a check box in
+the task window. When it is checked:</p>
+<ul>
+<li>the agent cannot change any file and cannot run commands. It keeps
+only the reading tools;</li>
+<li>it reads the project, explains in plain words, and points you to an
+exact place: “Look at cli.py line 40: the loop over files”;</li>
+<li>it tells you what you could type there, and why, one small step at a
+time;</li>
+<li>you make the change yourself, in the editor, with all of QUILL’s
+ordinary editing.</li>
+</ul>
+<p>That is how a tutor works. You learn the code by changing it, and the
+agent is there for the questions.</p>
+<p>Coach mode is chosen per turn: the turn starts with the box as it is
+when you press Enter. The status line adds “Coach mode”, the
+conversation marks the turn “Turn 2, coach mode.”, and the transcript
+heads it “Turn 2: you asked (coach mode)”. Places the agent pointed to
+are listed in the transcript under “Where to look”.</p>
+<p>Uncheck the box to let the next turn make changes again.</p>
+<h2 id="explain-last-turn">Explain Last Turn</h2>
+<p>After any turn, <strong>Explain Last Turn</strong> asks the agent to
+explain what it changed in the last turn and why, file by file, naming
+each file and line, in plain words for someone learning. Nothing is
+changed. The explanation becomes a turn of its own in the conversation
+and the transcript.</p>
+<ul>
+<li><code>Alt+X</code>, <strong>Explain Last Turn</strong>, in the task
+window;</li>
+<li><strong>AI &gt; Explain Last Turn</strong> in QUILL, or
+<strong>Tools &gt; AI &gt; Explain Last Turn</strong> in QUILL Lite. It
+brings the task window forward and asks.</li>
+</ul>
+<p>Explain Last Turn works on the task in the open task window. With no
+task window open, or before the first turn, you hear “There is no turn
+to explain yet.” Once a task window is closed, its turns can still be
+undone (Chapter 7) but not explained.</p>
+<h2 id="why-this-change">Why This Change?</h2>
+<p>In Review Changes, <strong>Why This Change?</strong>
+(<code>Alt+W</code>) says the reason the agent gave for the change you
+are on: “The agent’s reason: …” The agent is asked to give a short
+reason with every change, so this is usually there. When it is not, you
+hear “The agent gave no reason for this change to cli.py.” The same
+reason is also at the end of <strong>Change details</strong>.</p>
+<h2 id="errors-in-plain-words">Errors in plain words</h2>
+<p>When a command fails, the agent is asked to say in one plain sentence
+what the error means, before it tries a fix. You also hear QUILL’s own
+sentence for the result (Chapter 6), and the full output is one key away
+(<code>Alt+O</code>).</p>
+<h2 id="a-question-from-the-agent">A question from the agent</h2>
+<p>If the agent needs something only you know, it asks. The question
+goes in the conversation, starting “Question for you:”, and in the
+transcript under “Questions for you”. The agent then ends its turn. Type
+your answer in <strong>Instruction</strong> and press Enter.</p>
+<h2 id="a-suggested-way-to-learn">A suggested way to learn</h2>
+<ol type="1">
+<li>Open a small practice project (Chapter 3).</li>
+<li>Check Coach mode and ask what the code does, or how to fix a failing
+test.</li>
+<li>Make the change yourself and save it. To run the tests, uncheck
+Coach mode for one turn and ask the agent to run them; coach mode never
+runs commands.</li>
+<li>Use Explain Last Turn after any turn where the agent made changes
+you do not understand.</li>
+<li>Read the transcript (Chapter 10) afterwards. It is a record of what
+you learned.</li>
+</ol>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-08-agent-notes.html">Chapter 8: Agent
+notes in the repository</a></li>
+<li>Next: <a href="developer-10-transcript.html">Chapter 10: The
+transcript, and what QUILL keeps</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

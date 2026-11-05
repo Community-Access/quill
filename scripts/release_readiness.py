@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
+from collections.abc import Iterator
 from pathlib import Path
 
 
@@ -190,6 +193,36 @@ def _epub_identifier(repo_relative: Path) -> str:
     return f"urn:quill:{slug}"
 
 
+@contextlib.contextmanager
+def epub_source(source: Path) -> Iterator[tuple[Path, list[str]]]:
+    """What Pandoc reads to make *source*'s EPUB, and the extra arguments it needs.
+
+    A user guide split into chapter files (``quill/core/user_guide_files.py``)
+    is still one book: its EPUB is the whole guide, every chapter in order,
+    not the contents page on its own. Any other document is read as itself.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    if str(repo) not in sys.path:
+        sys.path.insert(0, str(repo))
+    from quill.core.user_guide_files import chapter_paths, single_document_text
+
+    if not chapter_paths(source):
+        yield source, []
+        return
+    with tempfile.TemporaryDirectory() as folder:
+        book = Path(folder) / source.name
+        book.write_text(single_document_text(source), encoding="utf-8", newline="\n")
+        yield (
+            book,
+            [
+                "--resource-path",
+                str(source.parent),
+                "--metadata",
+                f"title={_page_title(source)}",
+            ],
+        )
+
+
 def _build_docs(repo_root: Path) -> None:
     pandoc_path = _resolve_pandoc()
     # Scoped to the Pandoc calls rather than set globally: other tools in a
@@ -231,23 +264,25 @@ def _build_docs(repo_root: Path) -> None:
             ],
             cwd=repo_root,
         )
-        _run_step(
-            f"Building {epub_out.name}",
-            [
-                pandoc_path,
-                str(source),
-                "-f",
-                "gfm+smart",
-                "-t",
-                "epub3",
-                "--metadata",
-                f"identifier={_epub_identifier(source.relative_to(repo_root))}",
-                "-o",
-                str(epub_out),
-            ],
-            cwd=repo_root,
-            env=epub_env,
-        )
+        with epub_source(source) as (epub_in, extra):
+            _run_step(
+                f"Building {epub_out.name}",
+                [
+                    pandoc_path,
+                    str(epub_in),
+                    "-f",
+                    "gfm+smart",
+                    "-t",
+                    "epub3",
+                    "--metadata",
+                    f"identifier={_epub_identifier(source.relative_to(repo_root))}",
+                    *extra,
+                    "-o",
+                    str(epub_out),
+                ],
+                cwd=repo_root,
+                env=epub_env,
+            )
 
 
 def _require_tool(tool_name: str, *, install_hint: str) -> None:

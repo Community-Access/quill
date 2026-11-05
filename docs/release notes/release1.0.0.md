@@ -34,15 +34,65 @@ has the proper introductions.
 
 ## New in this build: WordPress
 
-If you look after a WordPress website, QUILL now writes, opens, checks and publishes its pages and posts, in the editor you already use. Connect your site once with **File > WordPress > Connect a Site...** and an application password; your browser can fetch the password for you. Saving with Ctrl+S stays on your computer. **Save Draft to Site** and **Publish or Update...** are separate, and Publish checks the page first for missing alternative text, vague links and skipped heading levels. If someone else changed the page while you worked, nothing is overwritten. You can schedule a post, go back to an earlier version, restore from the Trash, and keep working when the connection drops: QUILL queues the send and tells you when it goes through.
+If you look after a WordPress website, QUILL now writes, opens, checks and publishes its pages and posts in the editor you already use, and looks after the site too. You can connect as many sites as you like, self-hosted or on WordPress.com. The site keeps its theme; QUILL works on the words, the blocks and the pictures. The whole story is in [WordPress and Forms in QUILL](https://www.quillforall.org/docs/wordpress-forms-guide.html), and Help > Tutorials has seven guided WordPress lessons.
 
-Inside a page, the commands join the menus you know. **Insert** has WordPress blocks, pictures from your Media Library, links to your own pages and the Picture Maker. **Edit > WordPress** moves from block to block and tells you where you are. **Tools > WordPress** checks a page the way a visitor meets it, checks the whole site and fixes the safe things in bulk, and runs the site: the Media Library, comments, menus, settings, users, plugins and more. Captions, transcripts and a listening version of a page are made on this computer. QUILL Cast, QUILL Studio and Quill Converter can send episodes and files there too. File > Publish is gone; your saved connections come across by themselves. The commands have no keys yet: Alt+F, then W, opens File > WordPress, and every command is in the Command Palette. QUILL Lite has all of it, in the same places. Chapter 16 of the user guide has the whole story.
+**Connecting.** **File > WordPress > Connect a Site...** asks for the site's address, your username and an application password, which is a separate password WordPress makes for one program. Press **Get Password with My Browser** and QUILL opens your site's own Authorize Application page; approve QUILL there and the password comes back by itself. On an older site WordPress shows it to you, and QUILL offers the one you just copied. QUILL checks the password before it saves it, keeps it in Windows Credential Manager, and tells you plainly what went wrong if it cannot connect. The browser sign-in for WordPress.com is built and waits on the family's registration with WordPress.com; until then, a WordPress.com plan that allows plugins connects with an application password at the site's own address. **Sites** lists every site you have connected, and **Switch Site** chooses the one New Page and New Post go to.
+
+**Writing and saving.** **New Page**, **New Post**, **Open Page or Post** and **Open by Web Address** are in File > WordPress, and you can work in HTML or Markdown. Saving with **Ctrl+S** stays on your computer, always. **Save Draft to Site** sends an unpublished draft. **Publish or Update...** runs Check Before Publishing first, for missing alternative text, vague links and skipped heading levels, and then asks you to confirm with the page and the site named. If someone else changed the page while you worked, nothing is overwritten: you can compare, open their copy, or send yours anyway. You can schedule a post, go back to a previous version, restore from the Trash, and keep working when the connection drops; QUILL queues the send and tells you when it goes through. Every two minutes your work is autosaved, here and on the site.
+
+**Blocks, made plain.** Paragraphs, headings, lists and pictures are written the way you always write them, and QUILL handles WordPress's block markup for you. A button, columns or an accordion is a short `:::` fence line in Markdown, and a block QUILL does not know is a protected island that goes back to the site exactly as it came. **Insert > WordPress Block...** lists the site's blocks and patterns. **Edit > WordPress** has Next Block, Previous Block and Where Am I, which say each block's kind, place and first words. **View > WordPress Blocks...** moves, duplicates, groups and removes blocks, one Undo each, and **Format > WordPress > Block Settings...** names the theme's own colours and sizes, with the contrast of each colour.
+
+**Pictures and media.** **Insert > Picture from the Media Library...** and **Picture from This Computer...** ask for alternative text, or let you mark a picture decorative. **Tools > WordPress > Media Library...** shows every file on the site, and Enter plays a sound or video file right there, with the same keys as Quill Media Player. More Media uploads many files at once, makes a smaller copy without replacing the original, changes the site logo, and makes captions for a video, a transcript for a sound file and a listening version of a page, all on this computer.
+
+**Checking the site the visitor's way.** **Tools > WordPress > Check This Page** runs the published page through axe-core, which comes with QUILL, in a hidden copy of the Edge or Chrome you already have, and explains each problem in plain words with Go to It. **Check the Whole Site** checks every page and post, groups the problems with counts, and fixes the safe ones in bulk after one confirmation, with Undo Site Fix.
+
+**Running the site.** Tools > WordPress also has Comments, Categories and Tags, Menus, Site Check and Site Settings, and a Manage submenu for users, application passwords, plugins, themes and more. Every window reads your role first and tells you what you cannot do, instead of offering a button the site would refuse.
+
+**Keys.** The WordPress commands share one layer key. Press **Ctrl+Alt+Shift+Grave** (the key above Tab, with Ctrl, Alt and Shift), hear "WordPress keys", then one letter: O opens a page or post, P publishes or updates, D saves a draft to the site, M opens the Media Library, S switches site, W opens by web address, G starts a new page and N a new post, K is Check Before Publishing and B the Blocks window. The menus show every letter. Escape leaves the layer. Every WordPress command is in the Command Palette too.
+
+**What happened to File > Publish.** One WordPress feature replaces the two Publishing features, and is on in every profile except Essential. The old File > Publish submenu is gone; your saved publishing connections and their passwords come across the first time you open File > WordPress. QUILL Cast and Audio Studio can post an episode to WordPress, and Quill Converter can upload to it; each writes a draft and opens it in QUILL to finish. QUILL Lite has all of it, in the same places, on the same keys.
+
+> **QUILLBert found something:** He pressed **Ctrl+Alt+Shift+Grave**, then W, pasted the address of a page he had been reading on his own site, and fixed a typo in it without ever opening the block editor. Then he pressed **Ctrl+Alt+Shift+Grave** and P, heard the page and the site named, and pressed Enter.
+
+**Try this:** connect your site with File > WordPress > Connect a Site..., press **Ctrl+Alt+Shift+Grave** then G for a new page, write two sentences, and press **Ctrl+Alt+Shift+Grave** then D to send it as a draft. Nothing is public until you choose Publish or Update.
+
+## New in this build: Forms
+
+QUILL writes accessible forms: contact forms, event sign-ups, membership renewals, surveys and feedback forms. A form is a short, readable text document, so every tool you already use works on it, and QUILL turns it into a form on your WordPress site, a web page, a Word document, large print or braille-ready text. Before anyone else sees it, you can fill it in yourself with your screen reader. QUILL Lite has every Forms command, in the same places. [WordPress and Forms in QUILL](https://www.quillforall.org/docs/wordpress-forms-guide.html) has the whole story, and Help > Tutorials has seven guided Forms lessons.
+
+**What a form looks like.** It is written in the QAF form language, the language of the QUILL Accessible Forms plugin for WordPress (it used to be called BITS Accessible Forms). A `section` line and a `page` line are headings, so heading navigation jumps through a long form. Each question is one line, its type, its ID and its label in quotes, such as `email #email "Email address"`, with indented `@` lines under it for its settings, such as `@required`. Choices are lines that start with a plus sign. A rule is a line such as `@when #access is "yes"`, and Form Rules reads it back to you as a sentence. A form is saved as a `.qaf` file, and its first line, `bfl 1`, says which version of the language it uses. Underneath, QUILL and the plugin share one form definition, so what you write is exactly what your site reads.
+
+**Writing one.** **File > New Form...** starts from a template: blank, contact, event registration, membership renewal, survey, accessibility feedback or volunteer sign-up. **Insert > Form Field...** lists every question type with a one-line description, then asks only what that type needs; about 120 ready-made choice lists, such as countries, states and time zones, work without the internet. **View > Form Outline...** is a tree of pages, sections and questions you can move through and rearrange. **Format > Form Rules...** lists every rule as a sentence, "Show Company name when Type is Business", and Add Rule builds one from three choices.
+
+**Checking it and trying it.** **Tools > Forms > Check This Form...** finds a question with no label, a group of choices with no question, a field marked required only by an asterisk, a name or email field with no autofill hint, and a rule that points at nothing, each with Go to It. **Fill It In Yourself...** builds the form as a real window and you tab through it as a visitor would: labels, help, errors and required states announced, rules showing and hiding questions, Next and Back between pages, in each of the form's languages. Submit sends nothing; it shows you what would have been sent.
+
+**Publishing and paper.** On a site running QUILL Accessible Forms, Tools > Forms has **Publish Form...**, **Insert Form Into Page...**, **Test on Site** and **Responses...**, which lists what people sent, newest first, one at a time or by date, with Find and exports to CSV, Word and a table. WordPress itself has no forms, so a site needs that plugin to show them; everything else in QUILL's WordPress support needs nothing on the site. Without the plugin, or with no site at all, **Save As Web Page...**, **Save As Word Document...**, **Save As Large Print...** and **Save As Braille-Ready Text...** all work on this computer, even in Safe Mode. With an AI chosen, Draft a Form, Plain Language and Suggest Autofill Hints propose changes for you to accept, and Summarise Responses asks every time before it sends anything.
+
+**Keys.** The Forms commands have no keys of their own. Writing a form is occasional, so each command is on its menu, by its access letters, and in the Command Palette (**Ctrl+Shift+P**): type "form". The Forms feature is on in every profile except Essential.
+
+**Try this:** choose File > New Form..., pick the contact template, then Tools > Forms > Fill It In Yourself... and tab through your own form. Each required question says so. Answer them and press Submit: the What Would Be Sent window lists each question with its answer, and nothing has gone anywhere.
+
+## New in this build: every menu item in the Command Palette
+
+The Command Palette (**Ctrl+Shift+P**, first in the Tools menu) now finds everything in the menus, not just the registered commands. A few dozen menu items were never in it before, among them your recent files, your open documents and some of the braille tools, so typing their names found nothing. Now the palette reads the menus each time it opens, names each item by the menu it sits in, and runs it exactly as the menu would. A dimmed item tells you why it is not available instead of doing nothing. QUILL Lite's palette does the same, sits first in its Tools menu, and is there in every profile, WordPad and Notepad included.
+
+**Try this:** press **Ctrl+Shift+P** and type the name of a document you opened recently. It is there, with the menu it lives in, and Enter opens it.
+
+## New in this build: Ctrl+Enter for a page break
+
+**Ctrl+Enter** inserts a page break, as it does in Word. **Format > Insert Page Break** is the same command. In a Word or Rich Text document it is a real page break, kept when you save. In Markdown it is the `::: pagebreak` line, which becomes a page break when you export, and in a braille file it is a braille page break. In plain text, which has no pages, QUILL tells you so rather than doing nothing. Word documents also keep their page breaks now: they used to open as empty lines, so saving the document removed every one.
+
+If your fingers know Ctrl+Enter as Follow Link, it still follows a link when the cursor is on one in a text document. Follow Link is on the Navigate menu, and you can give it a key of its own in the Keymap Editor. QUILL Lite has the same key.
+
+**Try this:** open a Word document, put the cursor at the start of a heading, and press **Ctrl+Enter**. Save, open the file in Word, and the heading starts a new page.
 
 ## New in this build: Choose Your AI, with GitHub Copilot and Codex
 
 Press **Ctrl+4** (**AI > Choose Your AI...**) and one window lists every place your AI can come from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex, or your own key. Each row tells you whether it is in use, signed in or not set up, and one line says what it can do, who gets your text and what it costs. Enter uses it or signs you in. GitHub Copilot signs in with a short code that your screen reader spells out and that is already on the clipboard; Copilot Free works too, and the Copilot engine comes with QUILL, so there is nothing else to install. Codex uses your ChatGPT plan's sign-in.
 
-**Which AI Am I Using** (**Ctrl+8**) tells you in one line where your words are going, the model, and one thing about usage. **AI Usage** (**Ctrl+Alt+Shift+F2**) is one plain list, a sentence for each AI you have set up, each saying whose count it is: no meters, no charts. **Do a Document Task** (**Ctrl+3**) hands GitHub Copilot or Codex a job with several steps, asks before every step that changes something, and sends every edit through the review you already know, one undo each. When the AI you are using cannot do something, the command stays where it was, its name says what it needs, and pressing it offers to switch. QUILL Lite has all of this on the same keys, from the same code. See "Choose Your AI" in the user guide.
+**Which AI Am I Using** (**Ctrl+8**) tells you in one line where your words are going, the model, and one thing about usage. **AI Usage** (**Ctrl+Alt+Shift+F2**) is one plain list, a sentence for each AI you have set up, each saying whose count it is: no meters, no charts. **Do a Document Task** (**Ctrl+3**) hands GitHub Copilot or Codex a job with several steps, asks before every step that changes something, and sends every edit through the review you already know, one undo each. When the AI you are using cannot do something, the command stays where it was, its name says what it needs, and pressing it offers to switch. QUILL Lite has all of this on the same keys, from the same code. See "Choose Your AI" in the [user guide](https://www.quillforall.org/docs/userguide.html).
+
+**Try this:** press **Ctrl+4**, arrow through the list and hear what each AI costs and who gets your text. Choose one, then press **Ctrl+8** to hear, in one line, which AI will answer you.
 
 ## New in this build: project tasks, for people who write code
 
@@ -52,11 +102,17 @@ Nothing is written until you accept it. **Review Changes** lists each file as a 
 
 Coach mode has the agent explain and point to the line instead of editing, so you make the change yourself. The transcript is a document with a heading per turn that you can save as Markdown. Allow lists, undo copies and transcripts stay in QUILL's own data, never in your project. One thing said plainly: Windows gives QUILL no way to fence in a command you allow, so it can reach the internet and do anything your account can. Your approval is the safety line.
 
-It works on GitHub Copilot and Codex, on Claude with your own Anthropic key, and on Ollama on your own computer as a slower practice mode. QUILL's free AI does not do project tasks. The tutorial "Your first project task" walks you through one in about twelve minutes. QUILL Lite has the same feature in its own Developer profile. See "Project tasks: coding with an AI" in the user guide.
+It works on GitHub Copilot and Codex, on Claude with your own Anthropic key, and on Ollama on your own computer as a slower practice mode. QUILL's free AI does not do project tasks. The tutorial "Your first project task" walks you through one in about twelve minutes. QUILL Lite has the same feature in its own Developer profile. See "Project tasks: coding with an AI" in the [user guide](https://www.quillforall.org/docs/userguide.html).
+
+To get there, choose Help > Feature Profiles > Switch Profile... and pick Developer. If you want the coding tools without the rest of the profile, check Developer Tools in Help > Feature Profiles > Manage Individual Features... instead. A Project cell appears in the status bar the first time you open a project; it names the project and its git branch, and says "waiting for you" when the agent has a question.
+
+**Try this:** make an empty folder, open it with File > Open Project Folder..., press **Ctrl+3** and type "Write a README that says what this folder is for." Listen to the plan, accept the change in Review Changes, then press the QUILL key and U to undo the whole turn.
 
 ## New in this build: Find in Open Documents
 
 Press **Ctrl+Shift+F10** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL Lite has it too, on Ctrl+Alt+Shift+F8. Thanks to Chris Nova for asking.
+
+**Try this:** open two documents that share a word, press **Ctrl+Shift+F10**, type the word and choose Find All. The list names each document beside each match.
 
 ## New in this build: tables you can read and build
 
@@ -85,11 +141,15 @@ inside its cells, so format cell text once the table has its shape.
 
 QUILL Lite has all of this too, on the same keys.
 
+**Try this:** in a new rich text document press **Ctrl+Alt+T**, make a table of two columns and three rows with a header, type in the first cell, then press Tab and Down and listen to the cells being read.
+
 ## New in this build: Help > What's New
 
 **Help > What's New** opens QUILL's changelog, the list of everything that
 changed, in your web browser. Press **Alt+H**, then **W**. Every app in the
 QuillVille family has it on its Help menu now.
+
+**Try this:** press Alt+H, then W, and use your screen reader's heading keys to jump from one change to the next.
 
 ## Try this first
 
@@ -519,6 +579,9 @@ The **Command Palette** (**Ctrl+Shift+P**) finds any command by name:
   name, so the palette teaches you the faster way while it does the job.
 - When a command is unavailable, the row says why, instead of a bare
   "(unavailable)".
+- Everything on the menus is in it, including your recent files, your open
+  documents and the rows a menu builds as you go, each named by the menu it
+  sits in.
 
 The **Keymap Editor** (**Ctrl+Alt+Shift+Space**) changes any key. It can tell you
 what a key does. Its Record Keys mode lets you press a combination instead of
@@ -1829,23 +1892,25 @@ does not recognise. To have it accept a new key the first time and remember
 it, turn on the trust-on-first-use setting yourself. It is a setting, not a
 prompt you might click through.
 
-### Publishing, read-only in 1.0
+### WordPress and forms
 
-With the **Full Quill** profile, the File menu has a **Publish** submenu with
-three items: **Publishing Connections**, **Verify Current Publishing
-Connection**, and **Browse Publishing Content**. With them you can save a
-WordPress site account, check that it still signs in, browse the site's posts
-and pages, and open one in QUILL as an ordinary document to read or edit on
-your computer.
+QUILL writes, opens, checks and publishes the pages and posts of your
+WordPress sites, and looks after the sites themselves: File > WordPress for
+the page and the site, Insert, Format, View and Edit for what you do inside a
+page, and Tools > WordPress for the checks and the site's upkeep. It also
+writes accessible forms, which you can fill in yourself before anyone else
+does and publish to a site running QUILL Accessible Forms, or save as a web
+page, a Word document, large print or braille-ready text. Both are described
+at the top of these notes, under "New in this build", and in full in
+[WordPress and Forms in QUILL](https://www.quillforall.org/docs/wordpress-forms-guide.html).
 
-That is all publishing does in 1.0. Sending content back to a site (making a
-draft, publishing, updating a post, scheduling one) is a separate feature.
-It is switched off in this release, and Settings cannot turn it on. It is
-written and being reviewed, and it will come when it is ready. Site
-passwords are kept in the Windows credential vault, not in a settings file,
-and everything the read-only side sends goes through QUILL's checked network
-layer. Other profiles leave the Publish submenu off the File menu. To add it,
-go to Profiles and Features and turn on Publishing (Read-Only).
+Site passwords are kept in Windows Credential Manager, not in a settings file,
+and everything QUILL sends to a site goes through its checked network layer.
+Nothing reaches a site until you send it: **Ctrl+S** always saves on this
+computer only. The WordPress and Forms features are on in every profile
+except Essential. The read-only Publish submenu of earlier builds is gone;
+File > WordPress brings your saved connections across the first time you
+open it.
 
 ---
 

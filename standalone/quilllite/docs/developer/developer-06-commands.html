@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 6: Running commands and reading their output</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-6-running-commands-and-reading-their-output">Chapter 6:
+Running commands and reading their output</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>The agent runs your tests and builds by asking to run a command. This
+chapter covers the Run This Command? window line by line, the three
+warnings, how a command runs and how long it may take, the one-sentence
+result you hear, and the full output as a document you can read at your
+own pace.</p>
+<h2 id="run-this-command">Run This Command?</h2>
+<p>When the agent wants to run something, <strong>Run This
+Command?</strong> opens over the task window. Focus starts on
+<strong>What will run</strong>, one sentence that says what, where and
+why:</p>
+<blockquote>
+<p>Run pytest -q tests/test_cli.py in your project folder cli-tool, to
+check the new test.</p>
+</blockquote>
+<p>The reason at the end is the agent’s own, in its own words.</p>
+<p>Below it, <strong>Command</strong> holds the exact text, as it will
+run, in a read-only field. Arrow through it to check every character, or
+read it on a braille display. This is the text that runs, so it is the
+text to check.</p>
+<p>If QUILL found a risk, a third field, <strong>Warning</strong>,
+follows. Then the buttons:</p>
+<ul>
+<li><strong>Allow once</strong>, the default: Enter runs it.</li>
+<li><strong>Always allow this command here,</strong> only when there is
+no warning: runs it and adds it to the project’s allow list.</li>
+<li><strong>Don’t allow:</strong> Escape. The agent is told, and carries
+on without it.</li>
+</ul>
+<p>The question only opens while you are in the task window. If you are
+somewhere else in QUILL, you hear once “The project task is waiting for
+you. Press Ctrl+3 to answer.” and the question waits for you.</p>
+<h2 id="the-three-warnings">The three warnings</h2>
+<p>QUILL, not the AI, reads the command and adds a warning when one
+applies. There can be more than one.</p>
+<ul>
+<li><strong>“This may reach the internet.”</strong> For installers and
+network tools: <code>pip install</code> and the other Python package
+tools (<code>uv</code>, <code>poetry</code>, <code>pipx</code>,
+<code>conda</code>, <code>mamba</code>), <code>npm install</code> and
+its relatives, <code>npx</code>, <code>curl</code>, <code>wget</code>,
+<code>Invoke-WebRequest</code>, <code>Invoke-RestMethod</code>,
+<code>ssh</code>, <code>scp</code>, <code>ftp</code>,
+<code>git clone</code>, <code>fetch</code> and <code>pull</code>,
+<code>winget</code>, <code>choco</code>, <code>scoop</code>,
+<code>cargo install</code>, <code>go get</code>,
+<code>dotnet restore</code> and <code>gem install</code>, and anything
+with a web address in it.</li>
+<li><strong>“This deletes files.”</strong> For <code>del</code>,
+<code>erase</code>, <code>rm</code>, <code>rmdir</code>,
+<code>rd</code>, <code>Remove-Item</code>, <code>Clear-Content</code>,
+<code>unlink</code>, <code>git clean</code> and
+<code>git rm</code>.</li>
+<li><strong>“This runs outside the project.”</strong> For an argument
+that names a path outside the project folder, absolute or climbing out
+with <code>..</code>. The program itself does not count, so running your
+own Python from where it is installed does not set it off.</li>
+</ul>
+<p>A command with a warning can only be allowed once. It never goes on
+the allow list, because a command QUILL warns about is one somebody
+should look at every time.</p>
+<h2 id="how-a-command-runs">How a command runs</h2>
+<ul>
+<li><strong>In your project folder,</strong> through the Windows command
+processor, <code>cmd</code>. So a command is written the way you would
+type it at a <code>cmd</code> prompt. A PowerShell command needs
+<code>powershell -Command</code> in front.</li>
+<li><strong>With a clean environment:</strong> anything named like a
+token, secret, password, API key, access key or credential is taken out,
+and so is every setting of QUILL’s own. Colour output is turned off, and
+Python is told to write UTF-8, so the output reads cleanly.</li>
+<li><strong>One at a time,</strong> and <strong>Stop</strong> ends it,
+with every process it started.</li>
+<li><strong>Output to a file,</strong> never read at you as it
+arrives.</li>
+</ul>
+<h3 id="long-running-commands">Long-running commands</h3>
+<p>After a command has run for five minutes, QUILL asks “The command has
+run for 5 minutes. Keep waiting? Choose No to stop it.” Yes asks again
+five minutes later. No stops the command, and the agent is told.</p>
+<h2 id="the-result-in-one-sentence">The result, in one sentence</h2>
+<p>When a command finishes, you hear its result in one sentence, and the
+same sentence goes in the conversation. QUILL reads the output of the
+common test runners and build tools itself:</p>
+<ul>
+<li><strong>Tests:</strong> pytest, unittest, Jest (and Vitest’s summary
+in the same shape), <code>dotnet test</code>, <code>cargo test</code>
+and <code>go test</code>. You hear, for example, “Tests: 12 passed, 1
+failed: test_verbose_prints_names.” Up to three failing names are said,
+then “and 2 more”.</li>
+<li><strong>Errors:</strong> a Python traceback says where the program
+stopped and the last error line. Compiler errors in the usual
+<code>file(line,col): error</code> and <code>file:line:col: error</code>
+shapes are read the same way.</li>
+<li><strong>A command that was not found</strong> says so plainly, for
+example “The command pytest was not found.”, rather than a page of shell
+text.</li>
+<li><strong>Anything else</strong> gets the honest fallback: “The
+command ended with exit code 1. The last error line was: …”</li>
+</ul>
+<p>Failures and counts are always spoken, whatever your feedback
+settings, because no sound can say “2 failed”. The task’s sound cues
+play a different sound for a pass and a fail, if your sound scheme has
+them.</p>
+<p>When a command fails, the agent is asked to say in one plain sentence
+what the error means before it tries a fix.</p>
+<h2 id="the-full-output">The full output</h2>
+<p>The full output of every command is kept as a read-only document.
+Open the last command’s:</p>
+<ul>
+<li><code>Alt+O</code>, <strong>Output</strong>, in the task
+window;</li>
+<li><strong>View &gt; Agent Command Output</strong> from anywhere, even
+with the task window closed. It opens the newest output kept for the
+open project.</li>
+</ul>
+<p>It opens in the editor like any other document, so you can find in
+it, read it by line, bookmark the failing test and read it in braille.
+With colour turned off, there are no escape codes in it to wade
+through.</p>
+<p>The agent gets a trimmed copy: the result sentence, the failure
+lines, and the end of the output.</p>
+<h2 id="commands-and-undo-last-turn">Commands and Undo Last Turn</h2>
+<p>QUILL keeps its copy of the project before a turn first changes
+anything, and that includes a command. So if a command changes files
+inside the project, Undo Last Turn puts them back too. What it cannot
+take back is anything a command did outside the project or on the
+internet.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-05-permissions.html">Chapter 5:
+Permissions, the allow list and the bypass</a></li>
+<li>Next: <a href="developer-07-review-and-undo.html">Chapter 7:
+Reviewing changes, and undoing a turn</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

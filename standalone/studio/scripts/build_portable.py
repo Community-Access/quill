@@ -624,6 +624,11 @@ def _stage_docs(out_dir: Path, product: Product, source_root: Path) -> None:
         for item in docs_src.iterdir():
             if item.is_file() and item.suffix.lower() in (".md", ".html", ".epub", ".txt"):
                 shutil.copy2(item, dest / item.name)
+        # A user guide split into chapters (quill/core/user_guide_files.py) keeps
+        # them in docs/guide/, which userguide.html links into.
+        guide = docs_src / "guide"
+        if guide.is_dir():
+            shutil.copytree(guide, dest / "guide", dirs_exist_ok=True)
     if readme.is_file():
         shutil.copy2(readme, out_dir / f"README-{product.exe}.md")
     _stage_notices(out_dir, product, source_root)

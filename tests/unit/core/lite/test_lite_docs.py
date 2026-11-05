@@ -28,6 +28,7 @@ import pytest
 from quill.apps.lite_window_status import CELLS
 from quill.core.lite.commands import COMMANDS, plain_label
 from quill.core.lite.features import AREAS
+from quill.core.user_guide_files import chapter_paths, read_guide_text
 
 DOCS = Path(__file__).resolve().parents[4] / "standalone" / "quilllite" / "docs"
 GUIDE = DOCS / "userguide.md"
@@ -38,7 +39,9 @@ _KEYS_END = "<!-- keys:end -->"
 
 @pytest.fixture(scope="module")
 def guide() -> str:
-    return GUIDE.read_text(encoding="utf-8")
+    # The contents page and every chapter file (quill/core/user_guide_files.py):
+    # coverage is of the whole guide, wherever a key or a name now lives.
+    return read_guide_text(GUIDE)
 
 
 def _profile_section(guide: str, name: str) -> str | None:
@@ -47,14 +50,16 @@ def _profile_section(guide: str, name: str) -> str | None:
     Level-aware rather than pinned to ``####``: the guide is grouped into
     chapters, so the profiles sit a level deeper than they did when every topic
     was a top-level section, and a check pinned to one depth would either miss
-    the heading or run on into the next profile's text.
+    the heading or run on into the next profile's text. Since the guide became
+    one file per chapter (2026-11-04) each chapter's title is its only level 1
+    heading and its topics start at level 2, one level up from before.
     """
-    match = re.search(rf"^(#{{3,6}}) {re.escape(name)}[ \t]*$", guide, re.MULTILINE)
+    match = re.search(rf"^(#{{2,6}}) {re.escape(name)}[ \t]*$", guide, re.MULTILINE)
     if match is None:
         return None
     level = len(match.group(1))
     rest = guide[match.end() :]
-    end = re.search(rf"^#{{2,{level}}} ", rest, re.MULTILINE)
+    end = re.search(rf"^#{{1,{level}}} ", rest, re.MULTILINE)
     return rest[: end.start()] if end else rest
 
 
@@ -267,6 +272,20 @@ def test_every_shipped_document_has_its_rendered_pair(doc: str) -> None:
     assert source.is_file(), source
     for suffix in (".html", ".epub"):
         assert source.with_suffix(suffix).is_file(), source.with_suffix(suffix)
+
+
+@pytest.mark.parametrize("chapter", chapter_paths(GUIDE), ids=lambda path: path.name)
+def test_every_guide_chapter_has_its_rendered_pair(chapter: Path) -> None:
+    """The contents page links each chapter's HTML, and the installer stages it."""
+    for suffix in (".html", ".epub"):
+        assert chapter.with_suffix(suffix).is_file(), chapter.with_suffix(suffix)
+
+
+def test_the_guide_is_split_into_its_chapters() -> None:
+    """A contents page whose links resolve to nothing would pass every check above."""
+    names = [path.name for path in chapter_paths(GUIDE)]
+    assert len(names) >= 17, names
+    assert "lite-guide-keyboard-reference.md" in names
 
 
 def test_the_guide_states_the_cost_of_the_mdi_window_model(guide: str) -> None:

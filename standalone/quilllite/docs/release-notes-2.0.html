@@ -274,6 +274,15 @@ everything at once.</li>
 <li><strong>WordPress.</strong> Write, check and publish your website’s
 pages and posts, and look after the site, from the editor you already
 use.</li>
+<li><strong>Forms.</strong> Write an accessible form as plain text,
+check it, fill it in yourself, and put it on your website or on
+paper.</li>
+<li><strong>Project tasks, in a new Developer profile.</strong> An AI
+works on a whole folder of code, and nothing is written until you have
+read it.</li>
+<li><strong>The Command Palette in every profile</strong>, reaching
+every command and menu item, now in Tools as in QUILL.</li>
+<li><strong>Ctrl+Enter for a page break</strong>, as in Word.</li>
 </ul>
 <p>Everything works from the keyboard and tells you how it went, the way
 the rest of QUILL Lite does.</p>
@@ -347,47 +356,241 @@ always <strong>AutoCorrect Entries</strong>. The ninth file is in
 </ul>
 <h2 id="wordpress">WordPress</h2>
 <p>If you look after a WordPress website, QUILL Lite now writes, opens,
-checks and publishes its pages and posts. It is the WordPress area, on
-in the Recommended and Everything profiles.</p>
+checks and publishes its pages and posts, and looks after the site
+itself. It is the WordPress area, on in the Recommended, Everything and
+Developer profiles. The WordPress and Forms guide walks through every
+command: <a
+href="https://www.quillforall.org/docs/wordpress-forms-guide.html">https://www.quillforall.org/docs/wordpress-forms-guide.html</a></p>
+<h3 id="connecting-your-sites">Connecting your sites</h3>
 <ul>
 <li><strong>Connect a site</strong> with <strong>File &gt; WordPress
-&gt; Connect a Site…</strong> and an application password. Your browser
-can fetch the password for you, and you can connect as many sites as you
-look after.</li>
-<li><strong>Three saves, kept apart.</strong> Ctrl+S saves on this
-computer. <strong>Save Draft to Site</strong> sends a draft nobody else
-can see. <strong>Publish or Update…</strong> checks the page first, for
-missing alternative text, vague links and skipped heading levels, then
-asks.</li>
+&gt; Connect a Site…</strong>. Press <strong>Get Password with My
+Browser</strong>, approve QUILL on your site’s own page, and the
+application password comes back by itself. On an older WordPress, the
+site shows you the password and QUILL Lite waits for you to paste it.
+You can also type the address, your username and an application password
+yourself.</li>
+<li><strong>As many sites as you look after</strong>, self-hosted or
+WordPress.com. <strong>Switch Site…</strong> chooses the one you are
+working on, and <strong>Sites…</strong> sets the default and says which
+password each one uses.</li>
+<li><strong>The password is checked before it is saved</strong>, so a
+wrong one is caught straight away, in words. It is kept in Windows
+Credential Manager, and <strong>Sign Out This Site</strong> takes it
+away on the site itself.</li>
+<li><strong>WordPress.com:</strong> a plan that allows plugins connects
+with an application password at the site’s own address. The direct
+WordPress.com sign-in is not in this build yet, and choosing it says
+so.</li>
+</ul>
+<h3 id="writing-and-publishing">Writing and publishing</h3>
+<ul>
+<li><strong>Three saves, kept apart.</strong> <strong>Ctrl+S</strong>
+saves on this computer. <strong>Save Draft to Site</strong> sends a
+draft nobody else can see. <strong>Publish or Update…</strong> checks
+the page first, for missing alternative text, vague links and skipped
+heading levels, then asks, naming the site.</li>
 <li><strong>Nobody’s work is overwritten.</strong> If someone changed
 the page while you worked, nothing is sent until you have compared the
 two.</li>
 <li><strong>Schedule a post, go back to an earlier version, restore from
-the Trash, and keep working offline.</strong> A send that cannot reach
-the site waits, and QUILL Lite tells you when it goes through.</li>
-<li><strong>Inside a page, the commands join the menus you
-know.</strong> Insert has blocks, pictures and links to your own pages;
-Edit &gt; WordPress moves from block to block and says where you are;
-Format &gt; WordPress has Block Settings, Image Size and Mark
-Language.</li>
-<li><strong>Tools &gt; WordPress</strong> checks a page the way a
-visitor meets it, checks the whole site and fixes the safe things in
-bulk, and runs the site: the Media Library, comments, menus, settings,
-users, plugins and more.</li>
-<li><strong>Captions, transcripts and a listening version</strong> of a
-page are made on this computer. QUILL Cast, QUILL Studio and Quill
-Converter can send episodes and files to your site too.</li>
-<li><strong>No keys yet.</strong> Alt+F, then W, opens File &gt;
-WordPress, and every command is in the Command Palette
-(Ctrl+Shift+P).</li>
+the Trash, and keep working offline.</strong> Your page is autosaved
+every two minutes. A send that cannot reach the site waits, and QUILL
+Lite tells you when it goes through.</li>
+<li><strong>Open by Web Address…</strong> opens the page you were just
+reading on the site, so you can fix one sentence.</li>
 </ul>
+<h3 id="blocks-made-plain">Blocks, made plain</h3>
+<p>A page opens as writing, not code. Paragraphs, headings, lists,
+pictures and tables are plain Markdown. Buttons, columns and other
+blocks are short <code>:::</code> lines you can read and type. Anything
+QUILL Lite cannot turn into plain text and back exactly stays one
+protected line, an island, and goes back to the site unchanged, so
+opening a page and sending it back never changes a block you did not
+touch.</p>
+<ul>
+<li><strong>Edit &gt; WordPress</strong> has <strong>Next
+Block</strong>, <strong>Previous Block</strong> and <strong>Where Am
+I</strong>, which say each block’s kind, place and first words.</li>
+<li><strong>Insert &gt; WordPress Block…</strong> offers every block,
+your site’s patterns and WordPress.org’s free patterns, each with a
+short form to fill in.</li>
+<li><strong>View &gt; WordPress Blocks…</strong> moves, duplicates,
+removes and groups blocks, one Undo step each, and <strong>Preview
+Blocks</strong> reads what your site makes of them.</li>
+<li><strong>Format &gt; WordPress &gt; Block Settings…</strong> names
+the theme’s colours and sizes and tells you the contrast of each
+colour.</li>
+</ul>
+<h3 id="pictures-sound-and-video">Pictures, sound and video</h3>
+<ul>
+<li><strong>The Media Library</strong> (<strong>Tools &gt;
+WordPress</strong>) lists everything on your site. Enter plays a sound
+or video file and inserts anything else. It can say where a picture is
+used, attach it, make it the featured image, and suggest alternative
+text, which only fills the field until you save it.</li>
+<li><strong>Upload many files at once</strong>, paste a picture straight
+from the clipboard, upload from a web address, make a smaller copy, and
+crop or turn a picture on the site into a new one. <strong>Alt Text
+Review</strong> goes through every picture in the page.</li>
+<li><strong>Captions, transcripts and a listening version</strong> of a
+page are made on this computer, and a sound or video file plays straight
+from the site with Quill Media Player’s keys.</li>
+</ul>
+<h3 id="checking-the-page-the-way-a-visitor-meets-it">Checking the page
+the way a visitor meets it</h3>
+<ul>
+<li><strong>Check This Page</strong> runs the published page through
+axe-core, which comes with QUILL Lite, in the Edge or Chrome you already
+have. Each problem has a plain explanation and <strong>Go to
+It</strong>.</li>
+<li><strong>Check the Whole Site…</strong> groups every problem with
+counts, and fixes the safe ones in bulk, with a preview, one
+confirmation and <strong>Undo Site Fix</strong>.</li>
+<li><strong>Contrast and reading level</strong> are checked too: Palette
+Report tries every colour on every background, and Properties gives a
+reading-level line.</li>
+<li><strong>Visual Review…</strong> describes what a sighted visitor
+sees, on a desktop and on a phone, and tells you what it will send to
+the AI first.</li>
+</ul>
+<h3 id="looking-after-the-site">Looking after the site</h3>
+<p><strong>Tools &gt; WordPress</strong> has Comments, with replies
+under the comment they answer and many comments at once; Categories and
+Tags, as check boxes your screen reader reads; Menus as a readable tree;
+Site Check, with every Site Health test; Site Settings; and the
+<strong>Manage</strong> submenu, with Users, Application Passwords,
+Plugins, Themes, Fonts, Widgets, the Site Map, Bulk Edit and Page Order.
+Every window reads your role first and never offers a button the site
+would refuse. Anything that changes many things asks once, naming how
+many, and can be undone.</p>
+<h3 id="where-the-commands-are-and-the-keys">Where the commands are, and
+the keys</h3>
+<ul>
+<li><strong>Where Word keeps them.</strong> File &gt; WordPress for the
+whole page and the site; Insert, Format, View and Edit for what happens
+inside a page; Tools &gt; WordPress for the checks and the site. The
+page commands are dimmed unless a WordPress page or post is in front of
+you.</li>
+<li><strong>The WordPress keys.</strong> Press
+<strong>Ctrl+Alt+Shift+Grave</strong> (Grave is the key below Escape),
+then a letter. The everyday ones are in the table below; the rest are in
+the user guide, and the menus show every one.</li>
+<li><strong>Alt+F, W</strong> opens File &gt; WordPress, and every
+command is in the Command Palette.</li>
+<li><strong>Seven lessons</strong> in <strong>Help &gt;
+Tutorials</strong> take you from connecting your site to answering
+comments.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Keys</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, O</strong></td>
+<td>Open Page or Post…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, N</strong></td>
+<td>New Post…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, G</strong></td>
+<td>New Page…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, D</strong></td>
+<td>Save Draft to Site</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, P</strong></td>
+<td>Publish or Update…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, K</strong></td>
+<td>Check Before Publishing…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, M</strong></td>
+<td>Media Library…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, S</strong></td>
+<td>Switch Site…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, W</strong></td>
+<td>Open by Web Address…</td>
+</tr>
+</tbody>
+</table>
 <p>QUILL has the same commands in the same places. Chapter 14 of the
 user guide has the whole story.</p>
+<h2 id="forms">Forms</h2>
+<p>Write accessible forms, such as a contact form, an event sign-up or a
+survey, as plain text you can read line by line. It is the Forms area,
+on in the Recommended, Everything and Developer profiles. The WordPress
+and Forms guide has every step: <a
+href="https://www.quillforall.org/docs/wordpress-forms-guide.html">https://www.quillforall.org/docs/wordpress-forms-guide.html</a></p>
+<ul>
+<li><strong>File &gt; New Form…</strong> starts from a template: a blank
+form, a contact form, event registration, membership renewal, a survey,
+accessibility feedback or volunteer sign-up.</li>
+<li><strong>The QAF form language.</strong> Each question is a line or
+two of plain words: its type, its label and its choices. A form is saved
+as a <code>.qaf</code> file, and the same form definition is used by
+<strong>QUILL Accessible Forms</strong>, the WordPress plugin formerly
+called BITS Accessible Forms.</li>
+<li><strong>Insert &gt; Form Field…</strong> adds a question,
+<strong>View &gt; Form Outline…</strong> lists and moves the questions,
+and <strong>Format &gt; Form Rules…</strong> reads each rule as a
+sentence, such as “Show Company name when Type is Business.”</li>
+<li><strong>Tools &gt; Forms &gt; Check This Form…</strong> tells you
+what to fix, one sentence each, with Go to It.</li>
+<li><strong>Fill It In Yourself…</strong> lets you try the form the way
+a visitor would, in each of its languages, with its rules working as you
+answer. Nothing is sent.</li>
+<li><strong>On your website,</strong> with QUILL Accessible Forms
+installed: <strong>Publish Form…</strong>, <strong>Insert Form Into
+Page…</strong>, <strong>Test on Site</strong>, and
+<strong>Responses…</strong>, to read what people sent and export it to a
+spreadsheet or a Word document. Without the plugin, <strong>Save As Web
+Page…</strong> makes a form page that stands on its own.</li>
+<li><strong>On paper:</strong> Save As Word Document, Save As Large
+Print and Save As Braille-Ready Text.</li>
+<li><strong>With AI, if you choose:</strong> Draft a Form, Plain
+Language and Suggest Autofill Hints. Summarise Responses asks before it
+sends anything.</li>
+<li><strong>No keys of their own.</strong> Every Forms command has its
+menu letters and is in the Command Palette. Seven lessons in
+<strong>Help &gt; Tutorials</strong> teach it.</li>
+</ul>
+<p>QUILL has the same Forms commands in the same places. Chapter 15 of
+the user guide covers them.</p>
+<h2 id="the-command-palette-in-every-profile">The Command Palette, in
+every profile</h2>
+<ul>
+<li><strong>Press Ctrl+Shift+P</strong>, type part of a command’s name,
+and press Enter. Its key, if it has one, is read beside it, which is a
+good way to learn keys.</li>
+<li><strong>Every profile has it</strong>, WordPad and Notepad included:
+it is how you find a command when you do not know where it is.</li>
+<li><strong>It reaches everything:</strong> every command, plus what the
+menus build as you work, such as each open window and each recent file.
+The WordPress and Forms commands, most of which have no key, are all
+there.</li>
+<li><strong>It is in Tools now</strong>, first in the menu, where QUILL
+keeps it.</li>
+</ul>
 <h2 id="project-tasks-in-the-developer-profile">Project tasks, in the
 Developer profile</h2>
 <ul>
 <li><strong>A Developer profile</strong>, the fifth: Recommended plus a
-new <strong>Coding</strong> area, 18 of the 22 areas. Coding is off in
+new <strong>Coding</strong> area, 20 of the 24 areas. Coding is off in
 every other profile.</li>
 <li><strong>Do a Project Task.</strong> Open a folder with <strong>File
 &gt; Open Project Folder…</strong> and <strong>Ctrl+3</strong> works on
@@ -410,6 +613,8 @@ nothing.</li>
 <li>A tutorial, <em>Your first project task</em>, appears in the
 Developer profile.</li>
 </ul>
+<p>See “Coding: project tasks, in the Developer profile” in the user
+guide.</p>
 <h2 id="choose-your-ai-with-github-copilot-and-codex">Choose Your AI,
 with GitHub Copilot and Codex</h2>
 <ul>
@@ -1672,13 +1877,21 @@ same echo and is fixed too.</li>
 <td><strong>Shift+F4</strong></td>
 <td>Review Dictation</td>
 </tr>
+<tr>
+<td><strong>Ctrl+Enter</strong></td>
+<td>Page Break</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave</strong>, then a letter</td>
+<td>The WordPress keys</td>
+</tr>
 </tbody>
 </table>
 <p>The rest of the AI dictionary’s keys are in the user guide. All of
 these are in QUILL too, on the same keys.</p>
 <h2 id="where-to-learn-more">Where to learn more</h2>
 <p>The QUILL Lite User Guide, in the Start menu beside QUILL Lite,
-covers everything here in thirteen chapters:</p>
+covers everything here in fifteen chapters:</p>
 <ul>
 <li>Chapter 7, Checking your writing, for the thesaurus, Look Up and the
 AI dictionary.</li>
@@ -1692,9 +1905,14 @@ covers the same ground step by step.</li>
 making QUILL Lite your text editor.</li>
 <li>Chapter 12, Your files, updates and QUILL for All, for keeping QUILL
 Lite up to date.</li>
+<li>Chapter 14, WordPress, and Chapter 15, Forms. The WordPress and
+Forms guide, shared with QUILL, goes further: <a
+href="https://www.quillforall.org/docs/wordpress-forms-guide.html">https://www.quillforall.org/docs/wordpress-forms-guide.html</a></li>
 </ul>
 <p><strong>Help &gt; Tutorials</strong> (<strong>Ctrl+Alt+F1</strong>)
-has nine short lessons, if you would like a guided start.</p>
+has short lessons for the editor and for dictation, seven for WordPress,
+seven for Forms, and in the Developer profile one for project tasks, if
+you would like a guided start.</p>
 <p>If you get stuck, choose <strong>Help &gt; Get Help from
 Support</strong> (<strong>Ctrl+Alt+F2</strong>), or write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.

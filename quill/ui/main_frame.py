@@ -33,10 +33,7 @@ from quill.core.bookmark_anchor import BookmarkAnchor
 from quill.core.bookmarks import (  # N-13: keep the module as the supported home for these helpers
     DocumentMemory,
 )
-from quill.core.browser_preview import (
-    guess_preview_kind,
-    render_preview_html,
-)
+from quill.core.browser_preview import guess_preview_kind
 from quill.core.command_failure import describe_command_failure
 from quill.core.commands import CommandRegistry
 from quill.core.context_menu import (
@@ -7907,12 +7904,11 @@ class MainFrame(
             self._set_status(f"Keyboard reference saved to {target_path}")
 
     def open_user_guide(self, *, start_anchor: str | None = None) -> None:
-        """Open the bundled user guide as rendered HTML in the system browser.
+        """Open the user guide in the browser: the contents, or the chapter
+        holding *start_anchor* (quill.core.user_guide_files renders it).
 
-        Searches a small set of candidate locations so the command works in
-        the dev tree, an installed package, and a packaged Windows build.
-        Falls back to the in-app welcome guide if the markdown file cannot
-        be located on disk.
+        Searches the dev tree, an installed package and a packaged build;
+        falls back to the in-app welcome guide when no guide is on disk.
         """
         candidates = [
             Path(__file__).resolve().parent.parent.parent / "docs" / "user guide" / "userguide.md",
@@ -7932,24 +7928,12 @@ class MainFrame(
             self.open_welcome_guide()
             self._set_status("User guide file not found; opened welcome guide instead.")
             return
+        from quill.core.user_guide_files import render_guide
+
         try:
-            text = guide_path.read_text(encoding="utf-8")
+            target_path = render_guide(guide_path, app_data_dir() / "user-guide", start_anchor)
         except OSError as error:
-            self._set_status(f"Could not read user guide: {error}")
-            self.open_welcome_guide()
-            return
-        html_content = render_preview_html(
-            "Quill User Guide", text, "markdown", start_anchor=start_anchor
-        )
-        target_dir = app_data_dir() / "user-guide"
-        try:
-            target_dir.mkdir(parents=True, exist_ok=True)
-            target_path = target_dir / "userguide.html"
-            temp_path = target_path.with_suffix(".tmp")
-            temp_path.write_text(html_content, encoding="utf-8")
-            os.replace(temp_path, target_path)
-        except OSError as error:
-            self._set_status(f"Could not write user guide: {error}")
+            self._set_status(f"Could not open user guide: {error}")
             return
         if webbrowser.open(target_path.as_uri()):
             self._set_status("Opened user guide in browser")

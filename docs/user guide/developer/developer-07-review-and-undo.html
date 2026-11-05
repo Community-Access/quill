@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 7: Reviewing changes, and undoing a turn</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-7-reviewing-changes-and-undoing-a-turn">Chapter 7:
+Reviewing changes, and undoing a turn</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Nothing the agent proposes reaches your disk until you accept it, and
+one command puts a whole turn back. This chapter covers Review Changes
+for one file or many, how each change is read to you, what happens to
+files you have open, the checkpoints QUILL keeps under every turn, Undo
+Last Agent Turn, and what to do when undo refuses.</p>
+<h2 id="when-review-changes-opens">When Review Changes opens</h2>
+<p>The agent’s edits, new files, deletions and renames collect as
+proposals. <strong>Review Changes</strong> opens by itself:</p>
+<ul>
+<li>before the agent runs a command, so the command runs against what
+you accepted;</li>
+<li>when a turn ends with changes still waiting.</li>
+</ul>
+<p>There is no separate command to open it. If you are in another window
+when it is ready, you hear “The project task is waiting for you. Press
+Ctrl+3 to answer.” once, and it opens when you come back to the task
+window.</p>
+<h2 id="the-file-list">The file list</h2>
+<p>Focus starts in <strong>Files</strong> (<code>Alt+F</code>): one row
+per file, as a whole sentence. The last words say what you have
+chosen:</p>
+<ul>
+<li>“cli.py, changed, 3 changes, taken”</li>
+<li>“tests/test_cli.py, new file, 24 lines, taken”</li>
+<li>“old_util.py, deleted, taken”</li>
+<li>“util.py, renamed to helpers/util.py, not taken”</li>
+<li>“cli.py, changed, 3 changes, 2 of 3 taken”</li>
+</ul>
+<p>Every proposed change starts out taken, so if the agent got it right,
+Enter on Apply Accepted Changes is all you need.</p>
+<p>The row says its state in words rather than with a check box, because
+a check-list box’s state is not read as you arrow through it.</p>
+<ul>
+<li><strong>Space</strong> on a row takes the whole file, or leaves it
+if it was all taken.</li>
+<li><strong>Enter</strong> on a row moves you to its changes.</li>
+</ul>
+<h2 id="one-change-at-a-time">One change at a time</h2>
+<p><strong>Change details</strong> (<code>Alt+D</code>) shows the change
+you are on, as text you read with the arrow keys. It starts with the
+file and where the change is:</p>
+<blockquote>
+<p>cli.py. Change 2 of 3, lines 40 to 44, in function parse_args.
+Accepted.</p>
+</blockquote>
+<p>Then the change itself, read for code rather than for prose:</p>
+<ul>
+<li><strong>Every line is led by its line number,</strong> so a braille
+reader can find a line by number.</li>
+<li><strong>Indentation is said as a count,</strong> once, when it
+changes: “indent 8”.</li>
+<li><strong>A one-line change says what changed in the line,</strong>
+token by token: “In this line: changed tokn to token.” Then the line as
+it is now, and as it was.</li>
+<li><strong>A longer change</strong> says “New text, 5 lines:” with the
+new lines, and “Replaces 3 lines:” or “Removes 3 lines:” with the old
+ones.</li>
+<li><strong>A new file</strong> reads as plain text with line numbers:
+“New file tests/test_cli.py, 24 lines.”</li>
+<li><strong>A deletion</strong> says “Delete old_util.py, 30 lines.” and
+that Undo Last Turn brings it back.</li>
+<li><strong>A rename</strong> says “Rename util.py to helpers/util.py.”
+The text does not change, only the name and folder.</li>
+<li><strong>The agent’s reason</strong> comes last, when it gave
+one.</li>
+</ul>
+<p>Where a change sits (“in function parse_args”) comes from the file’s
+outline. Python is read exactly by its own parser; other languages by
+simple patterns for their functions and classes.</p>
+<h2 id="the-buttons">The buttons</h2>
+<ul>
+<li><strong>Accept</strong> (<code>Alt+A</code>) takes the change shown.
+You hear “Change 2 accepted.”</li>
+<li><strong>Reject</strong> (<code>Alt+R</code>) leaves it out; it is
+never written.</li>
+<li><strong>Next Change</strong> (<code>Alt+N</code>) shows the next
+change, and then the first change of the next file. At the end you hear
+“That was the last change.”</li>
+<li><strong>Previous Change</strong> (<code>Alt+P</code>) goes back,
+into the previous file too.</li>
+<li><strong>Accept All in File</strong> (<code>Alt+I</code>) and
+<strong>Reject All in File</strong> (<code>Alt+L</code>) mark every
+change in the file you are on.</li>
+<li><strong>Why This Change?</strong> (<code>Alt+W</code>) says the
+reason the agent gave: “The agent’s reason: …” or “The agent gave no
+reason for this change to cli.py.”</li>
+<li><strong>Apply Accepted Changes,</strong> the default: Enter writes
+every accepted change at once.</li>
+<li><strong>Reject All:</strong> Escape writes nothing from this
+turn.</li>
+</ul>
+<p>Closing the window any other way counts as Reject All, so nothing is
+ever written by accident.</p>
+<h2 id="applying">Applying</h2>
+<p>Apply Accepted Changes writes everything you accepted together, and
+only after QUILL has kept its copy of the project for Undo Last Turn. If
+one file cannot be written partway through, the whole set is rolled
+back, so you never end up with half a turn. The agent is then told
+exactly what you accepted, for example “Accepted 2 of 3 changes in
+cli.py”.</p>
+<h2 id="files-you-have-open">Files you have open</h2>
+<p>When a turn changes a file you have open, QUILL reloads the open copy
+in place, with your cursor where it was, and you hear one line, such as
+“cli.py was updated by the task.” Focus stays where it was.</p>
+<p>QUILL leaves the open copy alone, so your typing is never
+overwritten, when:</p>
+<ul>
+<li>it has edits you have not saved;</li>
+<li>it is open as rich text;</li>
+<li>in QUILL, it is a kind of file QUILL does not reload in place. QUILL
+reloads plain text, Markdown, Python, JavaScript, TypeScript, JSON, TOML
+and YAML files, and files with no extension.</li>
+</ul>
+<p>Then you hear, for example, “cli.html has changed on disk and is open
+with your own edits or in rich text, so QUILL left the open copy alone.
+Reload it to see the task’s change.” Close and reopen the file when you
+are ready.</p>
+<h2 id="the-checkpoints-under-every-turn">The checkpoints under every
+turn</h2>
+<p>Before a turn first changes anything, by an accepted review or by a
+command, QUILL notes every file in the project it can see, and keeps a
+private copy of each. After the turn it notes them again. That is what
+Undo Last Turn uses.</p>
+<ul>
+<li>The copies are in QUILL’s own data folder, never in your project and
+never in your git history. QUILL makes no commits, branches or
+stashes.</li>
+<li>It works the same with or without git.</li>
+<li>Secret files are never copied, because the agent cannot see
+them.</li>
+<li>QUILL keeps the last 10 turns of each project, and sweeps older
+copies.</li>
+<li>A file bigger than 5 MB is not copied, so it cannot be undone. A
+snapshot covers up to 5,000 files.</li>
+<li>Nothing is ever sent anywhere.</li>
+</ul>
+<h2 id="undo-last-agent-turn">Undo Last Agent Turn</h2>
+<p>One <code>Ctrl+Z</code> in one document is not enough for a turn that
+touched several files. <strong>Undo Last Turn</strong> puts back every
+file the last turn changed, across the whole project, and removes every
+file it made. You hear, for example, “Undid turn 2. cli.py and
+test_cli.py are back as they were; removed notes.txt.”</p>
+<p>Three ways to reach it:</p>
+<ul>
+<li><strong>Undo Last Turn</strong> (<code>Alt+U</code>) in the task
+window;</li>
+<li><strong>Edit &gt; Agent Work &gt; Undo Last Agent Turn</strong> from
+anywhere, even after the task window is closed;</li>
+<li>in QUILL, <code>Ctrl+Shift+Grave, U</code>: press the QUILL key,
+then U.</li>
+</ul>
+<p>Undo again to go back another turn, up to the last 10. The
+checkpoints are on disk, so this works after QUILL has been closed and
+opened again, once you open the project.</p>
+<p>While a turn is still running you hear “Stop the task, or let the
+turn finish, before undoing it.” With nothing to undo you hear “There is
+no agent turn to undo in this project.”</p>
+<h3 id="when-undo-refuses">When undo refuses</h3>
+<p>If you have edited one of those files since the turn, undo refuses
+rather than lose your work, and says which file:</p>
+<blockquote>
+<p>cli.py has changed since the agent’s turn. Undo would lose your
+edits. Open the file as it was before the agent’s turn, to compare? Your
+file is not changed either way.</p>
+</blockquote>
+<p><strong>Yes</strong> opens that earlier copy as a separate document,
+so you can compare and copy back what you need. <strong>No</strong>
+leaves everything as it is.</p>
+<h3 id="what-undo-cannot-do">What undo cannot do</h3>
+<p>Undo puts files in the project back. It cannot take back what a
+command did outside the project or on the internet: a package it
+installed, a file it wrote elsewhere, a request it sent.</p>
+<h2 id="stop-agent">Stop Agent</h2>
+<p><strong>Stop</strong> (<code>Alt+T</code>) in the task window stops
+the task straight away, and the command it is running stops with it. Any
+question still open is answered “don’t allow”. From any other window,
+choose <strong>Edit &gt; Agent Work &gt; Stop Agent</strong>; in QUILL
+that is also <code>Ctrl+Shift+Grave, K</code>. It stops a Do a Document
+Task too. If nothing is running, you hear “No agent task is
+running.”</p>
+<p>Changes already applied stay applied after a stop; Undo Last Turn
+takes them back.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-06-commands.html">Chapter 6: Running
+commands and reading their output</a></li>
+<li>Next: <a href="developer-08-agent-notes.html">Chapter 8: Agent notes
+in the repository</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -641,7 +641,7 @@ Post-conversion prompt rule (issue #262): when the target format is editable in 
 3. Tables round-trip as real tables across Markdown, HTML, and Word: Word tables *read* → GFM tables (`_table_to_rich_paragraphs`), and GFM-table paragraphs *written to* Word are reconstructed into native `w:tbl` objects (`_table_block_length`/`_emit_table` in `docx_writer`), with the header row bold and marked `<w:tblHeader>` (repeating header, screen-reader-announced). RTF was the exception until 2026-10-26, writing a table as pipe-text; since then a table in rich text is a real RichEdit table and is saved to RTF as a native table with its first row marked `\trhdr` (`quill/io/rtf_tables.py`).
 4. Image references round-trip in Markdown and render as `<img>` in HTML; images are not embedded into Word, and embedded Word images are not read.
 
-**Round-trip improvements (0.9.0, `quill/io`).** docx hyperlinks round-trip both ways — `rich_to_docx` writes a real `w:hyperlink` with an OPC relationship, `read_docx_rich` recovers the href via `iter_inner_content` (previously links degraded to plain text). Numbered lists are first-class: a `numbered` `RichParagraph` style plus `list_number` carried through `markdown_to_rich`/`rich_to_markdown` (identity, keeps a non-1 start), docx `List Number` read/write (sequential numbering assigned on read), and the offset map. `markdown_to_html` now emits `<img>` for images and `<blockquote>` for quote lines. Tables round-trip as real tables between Markdown, HTML, and Word: `docx_writer` detects consecutive GFM-table paragraphs (`_table_block_length`) and rebuilds a native `w:tbl` (`_emit_table`) with a bold, repeating `<w:tblHeader>` header row — so Markdown→Word and HTML→Word (via the hub) now produce editable Word tables, and Word→Markdown/HTML already preserved them. Remaining honest gaps: RTF drops alignment and page breaks (it wrote tables as pipe-text until 2026-10-26; they are native RTF tables now); docx drops page breaks on read; inline formatting inside a Markdown-authored table cell flattens to plain text on the way to Word; Word-embedded images are not extracted.
+**Round-trip improvements (0.9.0, `quill/io`).** docx hyperlinks round-trip both ways — `rich_to_docx` writes a real `w:hyperlink` with an OPC relationship, `read_docx_rich` recovers the href via `iter_inner_content` (previously links degraded to plain text). Numbered lists are first-class: a `numbered` `RichParagraph` style plus `list_number` carried through `markdown_to_rich`/`rich_to_markdown` (identity, keeps a non-1 start), docx `List Number` read/write (sequential numbering assigned on read), and the offset map. `markdown_to_html` now emits `<img>` for images and `<blockquote>` for quote lines. Tables round-trip as real tables between Markdown, HTML, and Word: `docx_writer` detects consecutive GFM-table paragraphs (`_table_block_length`) and rebuilds a native `w:tbl` (`_emit_table`) with a bold, repeating `<w:tblHeader>` header row — so Markdown→Word and HTML→Word (via the hub) now produce editable Word tables, and Word→Markdown/HTML already preserved them. Remaining honest gaps: RTF drops alignment and page breaks (it wrote tables as pipe-text until 2026-10-26; they are native RTF tables now); docx dropped page breaks on read until 2026-11-03 (5.22b); inline formatting inside a Markdown-authored table cell flattens to plain text on the way to Word; Word-embedded images are not extracted.
 
 **Conversion engine preferences.** Two settings expose the engine choice with speakable outcome descriptions: `docx_read_engine` (auto | markitdown | pandoc — auto is MarkItDown-first, then the python-docx render (`quill/io/docx_text.py`: headings, lists, tables), then the standard-library walk in `quill/io/office_word.py` (the same headings, lists and tables, for builds where python-docx cannot import because lxml is excluded); the pandoc preference degrades to auto when Pandoc is missing, so a preference never fails an open) and `docx_write_engine` (auto | native | pandoc — native is the hidden-codes-preserving python-docx writer; pandoc maps structure to Word styles and drops run-level font/size/color). The Convert File dialog carries a per-operation Conversion engine choice (Auto/Pandoc/MarkItDown) whose description follows the selection; MarkItDown is honored only where it honestly applies (Office/PDF source, Markdown/plain output) and the handler asks before substituting Pandoc, never silently. Engine evidence: `docs/qa/converter-bakeoff.md` (2026-07-04) — MarkItDown and Pandoc passed the full corpus; the python-docx reader loses tables/footnotes/links (fallback only); **pydocx is rejected permanently** (cannot import on Python 3.10+, last release 2016); **mammoth is not adopted** (no current gap) with a standing decision tree: if a MarkItDown fidelity gap appears, mammoth is the candidate and would be bundled (pure-Python; frozen builds cannot pip-install at runtime), lazily imported, and offered as a third read-engine choice.
 
@@ -1975,6 +1975,7 @@ This is a centrepiece of v0.2. See [section 7](#7-command-palette-deep-dive) for
 - Fuzzy matching with subsequence scoring, recency boost, and frequency boost (most-recently-used commands float to the top).
 - **Search shape (shipped 1.0.0):** multi-word queries are order-independent AND matches over title + id + shortcut + aliases (`url open` and `open url` both find *Open From URL...*); a curated intent-alias table (`core/palette.py` `COMMAND_ALIASES`) maps the words users actually think of (`settings`, `quit`, `theme`) to the commands they mean; and the shortcut text itself is searchable. Result navigation **speaks the command's shortcut with its title** — the palette teaches the keystroke while it dispatches, for screen-reader users exactly as the visual `Title [binding]` label does for sighted users.
 - **Toggle state rides in the title (shipped 1.0.1, #1383).** The palette lists `Command.title` verbatim and has no checkmark column, so a toggle registered once reads identically whichever way it is currently set — the one fact the user opened the palette to learn. Every boolean command therefore carries `(currently On)` / `(currently Off)`, stamped by `_refresh_palette_toggle_titles` immediately before the palette is built (`quill/ui/main_frame_palette_labels.py`), so no individual handler has to remember to retitle itself. Reported for Internet Radio's *Announce Track Titles*; generalised to soft wrap, dark mode, find wrap, the tab control, persistent undo, spell check as you type, word prediction, overwrite mode, extend-selection mode, tab insert mode, and abbreviation expansion.
+- **Every menu item is reachable (shipped 1.0.0, 2026-11-04).** When the palette opens, any menu item no registered command owns (recent files, open documents, the braille tools and other rows a menu builds at run time) is added under its menu path and runs by posting its own menu event, so it behaves exactly as the menu does. A dimmed item says why it is not available instead of doing nothing. `quill/ui/palette_menu_reach.py`, `CommandRegistry.unregister_prefix`; a real-frame test in `test_quill_menu_accelerators.py` fails if any menu item is missing from the palette. QUILL Lite matches: its palette is first in Tools, in every profile, and lists its open windows and recent files from its own menu bar. See [7.9](#79-reach-the-palette-is-a-superset-of-the-menus).
 - Each row shows: command title, current keybinding, source (core or plugin), and a short hint.
 - Right-arrow on a command edits its keybinding inline (see [section 8](#8-keymap-and-keystroke-reassignment)).
 - Fully keyboard driven. Standard `wx.ListBox` underneath, with a `wx.SearchCtrl` on top. All accessible via stock screen-reader behaviour.
@@ -2247,6 +2248,31 @@ exist: a `SetFont` call somewhere in `quill/ui`, the two settings fields on both
 products' `Settings`, and the five default bindings. It is deliberately an
 existence gate rather than a behavioural one, for the reason in the second
 paragraph.
+
+### 5.22b Page breaks with Ctrl+Enter (2026-11-03, #1754)
+
+Insert Page Break (`format.insert_page_break`, Format menu) is on
+**Ctrl+Enter**, Word's key (rule 1), and QUILL Lite's, so the command both
+editors have keeps it (rule 2).
+
+- **Rich mode (Word, RTF):** a real page break, through the shared
+  `RichEditStructureMixin.insert_page_break`. `ITextRange.Text` takes
+  U+000C, which the control writes as an RTF page break; `WriteText` and
+  `TypeText` turn a form feed into a paragraph mark, so they are not used.
+- **Markdown:** the `::: pagebreak` line, which every export turns into a
+  page break. A braille file gets a braille page break.
+- **Plain text** has no pages, so the command says why rather than nothing.
+- **Follow Link** gave up Ctrl+Enter as its own chord, and still answers it
+  when the caret is on a link in a text document (`insert_page_break` checks
+  first), so the old habit keeps working wherever a link can be. In a Word or
+  RTF document the key always breaks the page. The reason is recorded in
+  `keymap.py` and `UNBOUND_WITH_REASON`.
+- **The Word reader keeps page breaks.** python-docx gives a
+  `<w:br w:type="page"/>` run no text, so every break used to open as an
+  empty paragraph and the next save erased it. A break inside a paragraph now
+  splits it, and `w:pageBreakBefore` becomes a break.
+- The logic lives in `quill/ui/page_break.py` and
+  `quill/apps/lite_page_break.py`, so no budgeted module grows (GATE-11).
 
 ### 5.23 Recent locations history (browser-style back/forward)
 
@@ -8510,6 +8536,14 @@ While the palette is open and a command is highlighted:
 - Each list update fires a single accessibility event with the count of results; we do not spam announcements as the user types.
 - Live region is set on the help/result line below the list for status messages such as "Keybinding updated" and "Conflict with Find Next."
 
+### 7.9 Reach: the palette is a superset of the menus
+
+- Every enabled or dimmed item on the menu bar is a palette row, whether or not a registered command owns it. Rows built from the menus are titled by their menu path and rebuilt each time the palette opens, so a row a menu adds at run time is never missing.
+- A row with no command runs by posting its menu event; it never reimplements the item.
+- A dimmed item's row says why it is unavailable.
+- The palette is first in the Tools menu in both editors, and in every profile; `Ctrl+Shift+P` opens it everywhere.
+- Enforced by a test that builds the real menu bar and fails on any item the palette cannot find.
+
 ---
 
 ## 8. Keymap and keystroke reassignment
@@ -12521,6 +12555,20 @@ in both editors (`PROJECT_ROWS`):
 - **R51.** The tutorial "Your first project task"
   (`quill/core/tutorials/coding_lessons.py`), about twelve minutes and eight
   steps, is in a Coding track shown only when coding is on.
+
+### §36.14a After the first landing (2026-11-04)
+
+- **R52.** The Claude engine runs with none of Claude Code's own tools:
+  `disallowed_tools=["*"]` in `default` permission mode. `allowed_tools=[]`
+  only pre-approves nothing and left the built-ins visible to the model. A
+  test with a stand-in SDK checks the options.
+- **R53.** A command with quotes in it reaches `cmd` with its quotes intact,
+  and the command's own program path never counts as reaching outside the
+  project, so it neither warns nor hides Always Allow.
+- **R54.** The closing summary of a turn lists the commands it ran, and test
+  results use the right number ("1 error").
+- **R55.** Practice mode's call to Ollama goes through QUILL's one network
+  check, like every other address QUILL opens.
 
 ### §36.14 Tests and gates
 
@@ -16802,16 +16850,224 @@ with their passwords.
   installed, started hidden from its standard install folder over a
   loopback-only DevTools connection. No browser is ever downloaded.
 
-**Keys.** None yet. Every command has a written reason for having no key
-(rule 8) until keys are chosen; until then, Alt+F, W opens File > WordPress
-and every command is in the Command Palette.
+**Connecting (`quill/core/wordpress/signin.py`, `quill/ui/wordpress_connect.py`).**
 
-**WordPress.com.** The OAuth sign-in code is built; it waits on the family's
-app registration with WordPress.com. Until then, choosing WordPress.com says
-so plainly, and a plan with plugins can connect with an application password.
+- Connect a Site asks for the kind of site (self-hosted or WordPress.com),
+  the address, the username, the application password and an optional name,
+  which defaults to the site's own title. HTTPS only. It verifies before it
+  saves and names the failure: wrong password, not HTTPS, the REST API
+  blocked by a security plugin, or a role that cannot write.
+- **Get Password with My Browser** opens the site's Authorize Application
+  page. On a site whose WordPress accepts a loopback `success_url`, the
+  password returns to a one-time `http://127.0.0.1:<port>` listener with a
+  one-time `state`, and is saved and verified with no copy and paste. On an
+  older site no `success_url` is sent; WordPress shows the password, and
+  QUILL offers a password-shaped value from the clipboard when its dialog
+  gets focus back. Where the authorize screen is turned off, Connect says so
+  and offers the profile page. No relay page of ours ever carries a password.
+- WordPress 7.1 no longer gives its version in the REST index, so the
+  version is read from the site's feed to choose the route.
+- Secrets are kept in Windows Credential Manager. Sites shows which of the
+  account's application passwords QUILL uses (`introspect`), and Sign Out
+  This Site revokes exactly that one.
+- Many sites, one default. An open document belongs to its site for life;
+  every confirmation names the item and the site.
 
-**Where it is taught.** The WordPress chapter of each user guide, and the
-regression plan at `docs/qa/wordpress-regression-testing.md`.
+**Blocks, made plain (`blocks.py`, `fences*.py`).**
+
+- Paragraph, heading, list, quote, image, table, separator, code and
+  preformatted blocks are written as ordinary Markdown or HTML; QUILL adds and
+  removes the block comments on open and send.
+- Other blocks are `:::` fences in Markdown, the syntax already used for page
+  breaks. In HTML each block comment is folded into one spoken line.
+- A block QUILL does not know is an island: one protected line, sent back
+  byte for byte unless changed on purpose.
+- Core blocks are serialized exactly as WordPress's own save code writes
+  them, tested against WordPress's published block fixtures, so a page sent
+  from QUILL never shows the block editor's "invalid block" warning.
+- Insert Block offers the site's block types, patterns, synced patterns and
+  the WordPress.org pattern directory, each with a form generated from the
+  block's attribute schema. Block Settings names the theme's colour and size
+  presets and speaks each colour's contrast. Preview Blocks renders through
+  the site's block renderer without saving.
+
+**Checks.**
+
+- Check Before Publishing runs before every Publish or Update and never
+  blocks it: missing alternative text, vague link text, skipped heading
+  levels, and a fence that could not become a block.
+- Check This Page and Check the Whole Site run axe-core 4.14.0 (vendored)
+  against the published page. Check the Whole Site groups findings with
+  counts; Fix in Bulk applies only the fixes classed safe, after a preview
+  and one confirmation, as one `batch/v1` request, and Undo Site Fix puts
+  back what it replaced.
+- Palette Report and Block Settings speak contrast ratios; Properties
+  carries a reading-level line.
+
+**Keys (`quill/core/wordpress/keys.py`).** One layer, the same in both
+editors: Ctrl+Alt+Shift+Grave, then one letter from `LAYER_KEYS` in
+`menu.py` (O Open, P Publish or Update, D Save Draft to Site, M Media
+Library, S Switch Site, Shift+S Sites, W Open by Web Address, and fifteen
+more). Requirements:
+
+- The prefix was measured free in QUILL, in QUILL Lite and in every family
+  app's system-wide key, and a test pins that.
+- Starting the layer says "WordPress keys"; Escape says "Left WordPress
+  keys"; a letter with no command says "No WordPress command on X." and types
+  nothing; the layer times out after four seconds.
+- A row's own access letter is its layer letter wherever it is free, so the
+  menu teaches the key. Where two rows want one letter the everyday one keeps
+  it (rule 3). Menus show the key; both editors read the letters from the
+  live keymap, so a key moved in the Keyboard Manager moves its letter.
+- Every chord has a Key Describer title and appears in the generated
+  keyboard reference and QUILL Lite's key table. Commands with no letter keep
+  a written reason (rule 8) and are in the Command Palette.
+
+**Profiles.** One feature, on in every QUILL profile except Essential,
+replaces the two Publishing features. The old Experimental-tab check box is
+removed. In QUILL Lite, WordPress is its own area.
+
+**WordPress.com.** The OAuth 2.1 sign-in (authorization code with PKCE, a
+public client, scopes `sites posts media taxonomy comments`, refresh token in
+Credential Manager) is built and waits on the family's app registration with
+WordPress.com. Until then, choosing WordPress.com says so plainly, and a plan
+with plugins can connect with an application password at its own address.
+
+**Where it is taught.** The guide WordPress and Forms in QUILL
+(`docs/user guide/wordpress-and-forms/wordpress-forms-guide.md`), the user
+guides, seven guided lessons in Help > Tutorials, and the regression plan at
+`docs/qa/wordpress-regression-testing.md`. The plan of record and its
+progress log are `docs/design/wordpress.md`.
+
+## Forms (2026-11-05)
+
+**What it is.** Write, check, try out and publish accessible forms from QUILL
+and QUILL Lite: contact forms, event registrations, membership renewals,
+surveys and feedback forms. A form is a short, readable text document in the
+QAF form language, and QUILL turns it into a form on a WordPress site, a
+standalone web page, a Word document, large print or braille-ready text. The
+person can fill it in with their own screen reader before anyone else sees
+it. Plan of record: `docs/design/wordpress.md`, section 17a.
+
+**Four rules.** Simple first (a contact form is New Form, three questions,
+Publish). Both editors, from one shared module (rule 10; QUILL Lite is never
+ahead). One language, exactly as the site reads it. People's answers are
+private: read only when asked, never logged.
+
+**One definition (`quill/core/forms/`, wx-free).**
+
+- **The form model.** A JSON model with a published JSON Schema
+  (`schema/form.schema.json`) is the single definition: questions and their
+  types, pages and sections, choices and choice libraries, rules,
+  calculations and scoring, defaults, translations, settings and a
+  `version`. It is the model the QUILL Accessible Forms plugin stores, held
+  as plain data rather than a typed copy, and a test fails if the schema
+  drifts from the plugin's.
+- **One expression language** (`expr*.py`) for conditions, calculations,
+  scoring and defaults: `and`, `or`, `not`, comparisons, `is one of`, dates,
+  field references and arithmetic. Every rule renders as a sentence
+  (`expr_sentence.py`). Numbers in canonical text are plain digits, and
+  rounding matches the plugin's PHP exactly.
+- **The QAF form language** (formerly BFL, BITS Accessible Forms' language)
+  is a readable notation of the model and round-trips with it exactly. Its
+  first line is `bfl 1`. A document opened and not edited is written back
+  byte for byte, an edit rewrites only what it touched, and a line the reader
+  does not understand is kept as an island (`extensions.quill.islands`). The
+  writer reads its own output back and falls back to a whole, tidy rewrite
+  if a splice would lose an edit.
+- **Files.** A form document is `.qaf` (`menu.FORM_EXTENSION`), recognised
+  by its extension and its first line; older `.bfl` files still open. The
+  installer associates `.qaf` with QUILL.
+- **Choice libraries** (about 120, from the plugin) work offline.
+- **Imports and exports** in the core map SurveyJS, XLSForm and plain HTML
+  forms to and from the model. Anything a source has that the model cannot
+  hold is named in an import report and kept under `extensions.<tool>`,
+  never silently dropped. The plugin side imports from Gravity Forms,
+  WPForms, Contact Form 7, Ninja Forms and Google Forms.
+- **Conformance.** QUILL runs the plugin's shared conformance suite (read
+  live when the plugin's checkout is present, a vendored subset in CI).
+
+**Commands and placement (`quill/core/forms/menu.py`).** One table builds
+QUILL's menus (`quill/ui/main_frame_forms.py`) and generates QUILL Lite's
+command rows, and every row names one handler on
+`quill.ui.forms_commands.FormsCommands`; neither adapter has commands of its
+own, and a test asserts it.
+
+| Menu | Command | Command id |
+|---|---|---|
+| File | New Form... | `forms.new_form` |
+| Insert | Form Field... | `forms.insert_field` |
+| View | Form Outline... | `forms.outline` |
+| Format | Form Rules... | `forms.rules` |
+| Tools > Forms | Check This Form..., Fill It In Yourself..., Form Properties... | `forms.check`, `forms.fill_in`, `forms.properties` |
+| Tools > Forms | Publish Form..., Insert Form Into Page..., Test on Site, Responses... | `forms.publish`, `forms.insert_into_page`, `forms.test_on_site`, `forms.responses` |
+| Tools > Forms | Save As Web Page..., Word Document..., Large Print..., Braille-Ready Text... | `forms.save_*` |
+| Tools > Forms | Draft a Form..., Plain Language..., Suggest Autofill Hints... | `forms.draft`, `forms.plain_language`, `forms.suggest_autofill` |
+
+- Rows about the form in front (`DOCUMENT_ONLY`) are enabled only in a form
+  document; reached from the Command Palette elsewhere, the handler says why.
+- **Keys: none, each with its reason (rule 8).** No chord is free in both
+  editors and outside the family's system-wide keys that is not a menu
+  letter, a caret key, an AltGr character or a near miss for Alt+F4. Writing
+  a form is occasional (rule 9), so each command has its access letters and
+  the Command Palette.
+- QUILL feature `core.forms`, on in every profile except Essential. QUILL
+  Lite area Forms, on in Recommended and Everything, off in WordPad and
+  Notepad.
+
+**Requirements.**
+
+- **New Form** starts from a template (blank, contact, event registration,
+  membership renewal, survey, accessibility feedback, volunteer sign-up), each
+  a model written through the core's own writer; person-detail questions
+  carry autofill hints.
+- **Insert Field** lists every type with a one-line description and asks only
+  what that type needs, writing canonical QAF at the caret.
+- **Form Outline** is a tree of pages, sections and questions; go to, move
+  and rename are one undo step each. Section and page lines are headings for
+  heading navigation.
+- **Form Rules** lists every rule as a sentence; Add Rule builds one from
+  when, is and then. A typed answer is matched to the question's choices by
+  value or label in any capitals.
+- **Check This Form** reports, with Go to It: no visible label, a choice
+  group with no question, required shown only by an asterisk or colour, a
+  format rule with no help, a person-detail field with no autofill hint, a
+  rule that names a missing ID or hides a required question forever, an
+  empty page or one over 30 questions, duplicate IDs, a long choice list, and
+  where the site's older reader would read the form differently.
+- **Fill It In Yourself** builds a native window from the model with the
+  shared evaluator: labels, groups, help, errors and required states are the
+  controls' own, rules show and hide questions, calculations update, Next
+  checks a page's required questions, and the form can be run in each of its
+  languages. Submit sends nothing; it shows What Would Be Sent.
+- **On a site.** Publish Form, Insert Form Into Page (the plugin's block, or
+  a shortcode in Markdown), Test on Site (one marked test response) and
+  Responses work only where the site's REST index lists the plugin's
+  namespace (`qaf/v1`; `baf/v1` is a read-only alias for one release).
+  Publishing checks for a conflict, keeps the site's previous copy (ten per
+  form) and is confirmed by site. WordPress has no forms, so this is the one
+  WordPress feature that needs a plugin; everything else uses only the REST
+  API and application passwords.
+- **Responses** are downloaded only while the window is open, held in
+  memory and never logged: newest first, one at a time, by date and by
+  place, Find, and CSV, Word and Open as Table exports saved only where the
+  person chooses. Delete gives the count first. The number of new responses
+  is said once per site per session.
+- **Exports** (Web Page, Word, Large Print at 18 point and up, Braille-Ready
+  Text at 40 cells in contracted UEB) are local and work in Safe Mode.
+- **AI** (Draft a Form, Plain Language, Suggest Autofill Hints, Summarise
+  Responses) goes through Choose Your AI, says what it sends first, and
+  applies a proposal on a yes as one undo step. Summarise Responses asks
+  every time and gives the count.
+- **Safe Mode** turns off publishing, responses and the AI; writing,
+  checking, Fill It In Yourself and exports still work.
+- **Payment, CAPTCHA and address-lookup keys never reach QUILL.** A payment
+  field is an island.
+
+**Where it is taught.** The guide WordPress and Forms in QUILL, the Forms
+chapters of both user guides, seven guided lessons in Help > Tutorials, F1
+on every control, and regression tests 56 to 68 in
+`docs/qa/wordpress-regression-testing.md`.
 
 ## Closing note
 

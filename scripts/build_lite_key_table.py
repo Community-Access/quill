@@ -33,7 +33,11 @@ if str(REPO_ROOT) not in sys.path:
 from quill.core.lite.commands import COMMANDS, plain_label, split_menu  # noqa: E402
 from quill.core.lite.keymap import DEFAULT_ALIASES  # noqa: E402
 
-GUIDE = REPO_ROOT / "standalone" / "quilllite" / "docs" / "userguide.md"
+#: The guide is a contents page plus chapter files (quill/core/user_guide_files.py);
+#: the table lives in the Keyboard reference chapter, a level 1 page whose
+#: menus are level 2 headings and whose submenus are level 3.
+GUIDE = REPO_ROOT / "standalone" / "quilllite" / "docs" / "guide"
+GUIDE = GUIDE / "lite-guide-keyboard-reference.md"
 
 _START = "<!-- keys:start -->"
 _END = "<!-- keys:end -->"
@@ -62,7 +66,7 @@ the spelling wx understands.
 #: the menu rows would be telling somebody their whole keyboard and leaving six
 #: keys out of it.
 _ALIAS_PREAMBLE = """
-### Second keys
+## Second keys
 
 A few commands answer to two keys. The first is the one the menu shows; the
 second is here because it is the key a hand trained on Word or on a home-row
@@ -97,7 +101,7 @@ def render() -> str:
             grouped[menu] = []
         grouped[menu].append((key, plain_label(label)))
     # A submenu sits one heading level below its menu, so heading navigation
-    # walks the same tree the menu bar does: "### Edit", then "#### Matches"
+    # walks the same tree the menu bar does: "## Edit", then "### Matches"
     # inside it. Each menu comes first, then its submenus, whatever order the
     # rows happen to be declared in.
     parents: list[str] = []
@@ -108,7 +112,7 @@ def render() -> str:
     for parent in parents:
         if lines and lines[-1] != "":
             lines.append("")  # a heading needs air above it, in Markdown and by ear
-        lines += [f"### {plain_label(parent)}", ""]
+        lines += [f"## {plain_label(parent)}", ""]
         if parent in grouped:
             lines += ["| Key | Command |", "|---|---|"]
             lines += [f"| **{key}** | {label} |" for key, label in grouped[parent]]
@@ -118,10 +122,10 @@ def render() -> str:
             menu_parent, child = split_menu(menu)
             if menu_parent != parent or not child:
                 continue
-            lines += ["", f"#### {plain_label(child)} (in {plain_label(parent)})", ""]
+            lines += ["", f"### {plain_label(child)} (in {plain_label(parent)})", ""]
             lines += ["| Key | Command |", "|---|---|"]
             lines += [f"| **{key}** | {label} |" for key, label in grouped[menu]]
-    lines += ["", "### Built per window", "", "| Key | Command |", "|---|---|"]
+    lines += ["", "## Built per window", "", "| Key | Command |", "|---|---|"]
     lines += [f"| {key} | {what} |" for key, what in _PER_WINDOW]
     # The aliases are bound, and they appear in no menu label -- so a table
     # built only from the menu rows tells somebody their whole keyboard and

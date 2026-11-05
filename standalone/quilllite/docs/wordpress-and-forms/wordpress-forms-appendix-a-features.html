@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Appendix A: Every WordPress feature QUILL uses</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="appendix-a-every-wordpress-feature-quill-uses">Appendix A: Every
+WordPress feature QUILL uses</h1>
+<h2 id="what-this-appendix-covers">What this appendix covers</h2>
+<p>QUILL talks to your site through WordPress’s own REST API, which a
+site offers as a set of routes: one for posts, one for the Media
+Library, and so on. This appendix lists every group of routes QUILL
+uses, what it uses it for, where you reach that in QUILL and QUILL Lite,
+its WordPress key if it has one, and what happens on a site that does
+not offer it. It is for the curious, and for site administrators
+deciding what a security plugin may safely hide.</p>
+<h2 id="how-to-read-it">How to read it</h2>
+<ul>
+<li><strong>Where</strong> is the same in QUILL and QUILL Lite: both
+editors build their menus from one table. The Command Palette
+(Ctrl+Shift+P) reaches every row in both.</li>
+<li><strong>Key</strong> is the letter after Ctrl+Alt+Shift+Grave
+(Chapter 12). A dash means the command is reached from its menu or the
+Command Palette.</li>
+<li><strong>When the site lacks it.</strong> QUILL reads each site’s
+list of routes once a session, before it offers anything. A command
+whose route is missing stays in the menu, because your other sites may
+have it, but when you choose it on that site it says why in one sentence
+and sends nothing. The rows about the page in front of you are also
+dimmed whenever no WordPress page is open; that is about the document,
+not the site.</li>
+</ul>
+<h2 id="writing-and-the-sites-content">Writing and the site’s
+content</h2>
+<table>
+<thead>
+<tr>
+<th>Feature and routes</th>
+<th>Where</th>
+<th>Key</th>
+<th>When the site lacks it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pages and posts: <code>posts</code>, <code>pages</code></td>
+<td>File &gt; WordPress: New, Open, Save Draft to Site, Publish or
+Update, Properties, Move to Trash, Send and Copy</td>
+<td>G, N, O, D, P, R, T</td>
+<td>“Community Radio does not offer its pages and posts to QUILL.” A
+security plugin is hiding them.</td>
+</tr>
+<tr>
+<td>The site’s own kinds: <code>types</code></td>
+<td>File &gt; WordPress &gt; Open Page or Post (Events and the like
+beside Posts and Pages)</td>
+<td>O</td>
+<td>Open offers only Posts and Pages, and says nothing.</td>
+</tr>
+<tr>
+<td>Versions and autosaves: <code>revisions</code>,
+<code>autosaves</code></td>
+<td>File &gt; WordPress &gt; Previous Versions; the unsaved-version
+question in Open; autosave every two minutes</td>
+<td>V</td>
+<td>Previous Versions lists only what QUILL kept on your computer.</td>
+</tr>
+<tr>
+<td>Scheduling (part of <code>posts</code> and <code>pages</code>)</td>
+<td>File &gt; WordPress &gt; Schedule Publish</td>
+<td>E</td>
+<td>As for pages and posts.</td>
+</tr>
+<tr>
+<td>Categories and tags: <code>categories</code>, <code>tags</code></td>
+<td>Properties; New Post; Tools &gt; WordPress &gt; Categories and Tags;
+Bulk Edit</td>
+<td>R</td>
+<td>The pickers are empty; the window says the role or site cannot.</td>
+</tr>
+<tr>
+<td>Custom fields (the registered fields of <code>posts</code> and
+<code>pages</code>)</td>
+<td>File &gt; WordPress &gt; Custom Fields; Properties</td>
+<td>-</td>
+<td>“Community Radio has no custom fields for a post.”</td>
+</tr>
+<tr>
+<td>Comments and block notes: <code>comments</code></td>
+<td>Tools &gt; WordPress &gt; Comments; View &gt; Block Notes; Insert
+&gt; Note on This Block</td>
+<td>-</td>
+<td>Block Notes needs WordPress 6.9 or later, and says the site does not
+offer notes.</td>
+</tr>
+<tr>
+<td>Find and replace across the site (part of <code>posts</code> and
+<code>pages</code>)</td>
+<td>Tools &gt; WordPress &gt; Site-wide Find and Replace</td>
+<td>-</td>
+<td>As for pages and posts.</td>
+</tr>
+<tr>
+<td>Many changes at once: <code>batch/v1</code></td>
+<td>Fix in Bulk, Undo Site Fix, Merge Into, Bulk Edit, Do with Marked,
+Site-wide Find and Replace</td>
+<td>-</td>
+<td>“Community Radio does not offer this. It may be turned off, or the
+site may need a newer WordPress.” Nothing is changed. Batches arrived in
+WordPress 5.6.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="blocks-and-patterns">Blocks and patterns</h2>
+<table>
+<thead>
+<tr>
+<th>Feature and routes</th>
+<th>Where</th>
+<th>Key</th>
+<th>When the site lacks it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block types: <code>block-types</code></td>
+<td>Insert &gt; WordPress Block; Format &gt; WordPress &gt; Block
+Settings</td>
+<td>-</td>
+<td>The list leaves out whatever the site would not list, and keeps
+QUILL’s own everyday blocks.</td>
+</tr>
+<tr>
+<td>Previews: <code>block-renderer</code></td>
+<td>View &gt; Preview Blocks</td>
+<td>-</td>
+<td>The report says how many blocks the site could not show, and
+why.</td>
+</tr>
+<tr>
+<td>The site’s patterns: <code>block-patterns/patterns</code></td>
+<td>Insert &gt; WordPress Block</td>
+<td>-</td>
+<td>The list leaves the site’s patterns out, and says nothing.</td>
+</tr>
+<tr>
+<td>Synced patterns: <code>blocks</code>,
+<code>wp_pattern_category</code></td>
+<td>Insert &gt; WordPress Block; Tools &gt; WordPress &gt; Manage &gt;
+Synced Patterns</td>
+<td>-</td>
+<td>The window lists none, and skips the category question.</td>
+</tr>
+<tr>
+<td>WordPress.org patterns: <code>pattern-directory/patterns</code></td>
+<td>Insert &gt; WordPress Block &gt; WordPress.org Patterns</td>
+<td>-</td>
+<td>The button is not offered.</td>
+</tr>
+<tr>
+<td>Icons: <code>icons</code>, <code>icon-collections</code></td>
+<td>Insert &gt; WordPress Icon</td>
+<td>-</td>
+<td>“Community Radio has no icon library. Icons arrived in WordPress
+7.0.”</td>
+</tr>
+<tr>
+<td>Where a link goes: <code>wp-block-editor/v1/url-details</code></td>
+<td>Edit &gt; WordPress &gt; Hear Where a Link Goes, Fix Link Text; Dead
+Links in Check This Page</td>
+<td>-</td>
+<td>“Community Radio cannot read where a link goes. That needs WordPress
+5.9 or later.” Check This Page carries on without dead links.</td>
+</tr>
+<tr>
+<td>Naming embeds: <code>oembed/1.0/proxy</code></td>
+<td>Tools &gt; WordPress &gt; More Media &gt; Name Embeds</td>
+<td>-</td>
+<td>The report says the site could not describe the embed.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pictures-and-media">Pictures and media</h2>
+<table>
+<thead>
+<tr>
+<th>Feature and routes</th>
+<th>Where</th>
+<th>Key</th>
+<th>When the site lacks it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Media Library: <code>media</code></td>
+<td>Tools &gt; WordPress &gt; Media Library; Insert &gt; Picture from
+the Media Library; More Media uploads; Alt Text for the Whole Library;
+Captions, Transcript, Listening Version, Publish a Document as a
+Page</td>
+<td>M, U</td>
+<td>“Community Radio does not offer its Media Library to QUILL.”</td>
+</tr>
+<tr>
+<td>Editing a picture: <code>media/{id}/edit</code></td>
+<td>Tools &gt; WordPress &gt; More Media &gt; Edit a Picture on the
+Site</td>
+<td>-</td>
+<td>“Community Radio offers no edits QUILL can make to” the
+picture.</td>
+</tr>
+<tr>
+<td>Uploads in pieces: <code>media/{id}/sideload</code>,
+<code>finalize</code></td>
+<td>Tools &gt; WordPress &gt; More Media &gt; Upload a Large File</td>
+<td>-</td>
+<td>“Community Radio cannot take an upload in pieces. Upload Files sends
+it in one go instead.”</td>
+</tr>
+<tr>
+<td>Remaking sizes: <code>media/{id}/post-process</code></td>
+<td>Tools &gt; WordPress &gt; More Media &gt; Regenerate Sizes</td>
+<td>-</td>
+<td>“Community Radio cannot remake a picture’s sizes. That needs
+WordPress 6.9 or later.”</td>
+</tr>
+<tr>
+<td>Logo and icon: <code>settings</code></td>
+<td>Tools &gt; WordPress &gt; More Media &gt; Site Logo</td>
+<td>-</td>
+<td>Says the theme does not use the standard site logo.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-sites-look">The site’s look</h2>
+<table>
+<thead>
+<tr>
+<th>Feature and routes</th>
+<th>Where</th>
+<th>Key</th>
+<th>When the site lacks it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Colours and sizes: <code>global-styles/{id}</code></td>
+<td>Format &gt; WordPress &gt; Block Settings; Tools &gt; WordPress &gt;
+Palette Report; Design &gt; Site Styles</td>
+<td>-</td>
+<td>Says the theme sets no colours or font sizes, or is not a block
+theme.</td>
+</tr>
+<tr>
+<td>Style variations:
+<code>global-styles/themes/{theme}/variations</code></td>
+<td>Tools &gt; WordPress &gt; Design &gt; Style Variations</td>
+<td>-</td>
+<td>“The theme on Community Radio has no style variations.”</td>
+</tr>
+<tr>
+<td>Earlier looks: <code>global-styles/{id}/revisions</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Previous Looks</td>
+<td>-</td>
+<td>“Community Radio keeps no history of its site styles. That needs a
+block theme and WordPress 6.3 or later.”</td>
+</tr>
+<tr>
+<td>Themes: <code>themes</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Themes</td>
+<td>-</td>
+<td>The role sentence, if your role cannot see them.</td>
+</tr>
+<tr>
+<td>Fonts: <code>font-collections</code>, <code>font-families</code>,
+<code>font-faces</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Fonts</td>
+<td>-</td>
+<td>“Community Radio has no font library. It needs WordPress 6.5 or
+newer and a block theme.”</td>
+</tr>
+<tr>
+<td>Templates: <code>templates</code>, <code>template-parts</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Template Outline</td>
+<td>-</td>
+<td>“Community Radio uses a classic theme, so it has no block
+templates.”</td>
+</tr>
+<tr>
+<td>A copy of the design: <code>wp-block-editor/v1/export</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Download a Copy of the Site’s
+Design</td>
+<td>-</td>
+<td>“Community Radio cannot export its design. Only a block theme on
+WordPress 5.9 or later can.”</td>
+</tr>
+</tbody>
+</table>
+<h2 id="menus-and-widgets">Menus and widgets</h2>
+<table>
+<thead>
+<tr>
+<th>Feature and routes</th>
+<th>Where</th>
+<th>Key</th>
+<th>When the site lacks it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Menus: <code>menus</code>, <code>menu-items</code>,
+<code>menu-locations</code>, <code>navigation</code></td>
+<td>Tools &gt; WordPress &gt; Menus; the “Add it to a menu?” question;
+Site Map</td>
+<td>-</td>
+<td>“Community Radio does not offer its menus to QUILL.”</td>
+</tr>
+<tr>
+<td>Menu history: <code>navigation</code> revisions</td>
+<td>Tools &gt; WordPress &gt; Menu History</td>
+<td>-</td>
+<td>“Community Radio keeps no history of its Navigation blocks.” Classic
+menus use the versions QUILL keeps on your computer.</td>
+</tr>
+<tr>
+<td>Widgets: <code>sidebars</code>, <code>widgets</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Widgets</td>
+<td>-</td>
+<td>Says the site has no widget areas, and points to Template
+Outline.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="running-the-site">Running the site</h2>
+<table>
+<thead>
+<tr>
+<th>Feature and routes</th>
+<th>Where</th>
+<th>Key</th>
+<th>When the site lacks it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Settings: <code>settings</code></td>
+<td>Tools &gt; WordPress &gt; Site Settings</td>
+<td>-</td>
+<td>“Only an administrator on Community Radio can change site
+settings.”</td>
+</tr>
+<tr>
+<td>Health: <code>wp-site-health/v1/tests</code></td>
+<td>Tools &gt; WordPress &gt; Site Check</td>
+<td>-</td>
+<td>Each test the site could not run is one line, such as “the site
+could not run this test”; for a role that cannot run them, “Health
+checks: only an administrator can run them.”</td>
+</tr>
+<tr>
+<td>Space used: <code>wp-site-health/v1/directory-sizes</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Space Used</td>
+<td>-</td>
+<td>“Community Radio does not say how much space it uses. That needs
+WordPress 5.6 or later.”</td>
+</tr>
+<tr>
+<td>People: <code>users</code>, <code>users/me</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Users and My Profile; your
+role on every window</td>
+<td>-</td>
+<td>The role sentence; your own profile is still yours.</td>
+</tr>
+<tr>
+<td>Application passwords:
+<code>users/{id}/application-passwords</code>,
+<code>introspect</code></td>
+<td>Sites &gt; Which Password; Manage &gt; Application Passwords; Sign
+Out This Site</td>
+<td>-</td>
+<td>“Community Radio did not say which application password QUILL is
+using.”</td>
+</tr>
+<tr>
+<td>Plugins: <code>plugins</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; Plugins</td>
+<td>-</td>
+<td>“Your account on Community Radio is an Editor, which cannot manage
+plugins.”, or, where a security plugin hides the route, “Community Radio
+does not offer this.”</td>
+</tr>
+<tr>
+<td>Abilities: <code>wp-abilities/v1</code></td>
+<td>Tools &gt; WordPress &gt; Manage &gt; AI Abilities, Ask the
+Site</td>
+<td>-</td>
+<td>“Community Radio offers no abilities for AI. That needs WordPress
+6.9 or later, and a site or plugin that describes some.”</td>
+</tr>
+</tbody>
+</table>
+<h2 id="plugins-quill-recognises">Plugins QUILL recognises</h2>
+<p>These are not part of WordPress itself. Each is offered only when the
+plugin’s own routes are on the site, and Site Check names it.</p>
+<table>
+<thead>
+<tr>
+<th>Feature and routes</th>
+<th>Where</th>
+<th>Key</th>
+<th>When the site lacks it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL Accessible Forms: <code>qaf/v1</code> (or the older
+<code>baf/v1</code>)</td>
+<td>Tools &gt; Forms: Publish Form, Insert Form Into Page, Test on Site,
+Responses</td>
+<td>-</td>
+<td>“Publish Form needs QUILL Accessible Forms on Community Radio, and
+the site does not offer it.”</td>
+</tr>
+<tr>
+<td>The Events Calendar: <code>tribe/events/v1</code></td>
+<td>Plugin Extras &gt; Events Coming Up, New Event; Plugin Fields</td>
+<td>-</td>
+<td>Plugin Fields says the plugins add no fields.</td>
+</tr>
+<tr>
+<td>WooCommerce: <code>wc/v3</code></td>
+<td>Plugin Extras &gt; Shop Orders; Plugin Fields</td>
+<td>-</td>
+<td>As above.</td>
+</tr>
+<tr>
+<td>Yoast SEO and Rank Math (their registered fields)</td>
+<td>Plugin Fields; Properties</td>
+<td>-</td>
+<td>As above.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="across-all-your-sites">Across all your sites</h2>
+<p>Coming Up and What Changed on My Sites (Tools &gt; WordPress &gt;
+Your Sites) read the routes above from every connected site. A site that
+does not answer is listed as “Did not answer:” and its name, and the
+rest carry on.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-13-window-reference.html">Chapter
+13: Every window, field and button</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

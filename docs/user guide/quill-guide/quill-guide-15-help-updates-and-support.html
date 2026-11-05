@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 15: Help, updates and support</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-15-help-updates-and-support">Chapter 15: Help, updates
+and support</h1>
+<p>This last chapter is about the help that is always within reach. You
+will meet the Help menu, the F1 key that explains whatever you are
+standing on, the guided tutorials, and the support form that puts you in
+touch with a real person. It also covers keeping QUILL up to date. Read
+it early if you like to know where the safety rails are, or come back to
+it the first time you feel stuck.</p>
+<h2 id="the-help-menu">The Help menu</h2>
+<p>The <strong>Help</strong> menu is where QUILL turns into a guide. It
+is not a dead end with an About box at the bottom: most of what is on it
+does real work. The welcome guide teaches the basics, the keyboard
+reference shows the keys you actually have, the user guide gives you the
+full map, diagnostics capture what QUILL is doing right now, and
+<strong>Get Help from Support…</strong> turns all of that into a message
+somebody can answer.</p>
+<p>The menu stays steady while you arrow through it quickly. QUILL waits
+until the menu closes before it updates anything on it.</p>
+<h3 id="guides-and-references">Guides and references</h3>
+<ul>
+<li><strong>Help on This Control</strong> (<code>F1</code>) tells you
+about whatever you are on. Chapter 2 has the details.</li>
+<li><strong>Announce Mode Shortcuts</strong> (press the QUILL key, then
+<code>Shift+H</code>) says the handful of keys that matter where you are
+right now: the browse-mode keys while you are in QUILL browse mode, the
+status bar keys while you are on the status bar, and the everyday
+editing keys otherwise.</li>
+<li><strong>Show Spoken Echo</strong> (<code>Alt+Shift+E</code>) shows
+the last things QUILL said, so you can read them at your own pace.
+Chapter 11 has more.</li>
+<li><strong>Open User Guide</strong> (<code>Ctrl+Shift+F1</code>) opens
+this guide as a document inside QUILL.</li>
+<li><strong>Open Welcome Guide</strong> opens a lighter getting-started
+document that knows which feature profile you are using.</li>
+<li><strong>Open Keyboard Reference</strong> builds a fresh list of
+shortcuts from the keys that are bound right now, so it always matches
+your setup.</li>
+<li><strong>Tutorials…</strong> (<code>Ctrl+Alt+F1</code>) opens the
+guided lessons. They have their own topic, <a
+href="#tutorials">Tutorials</a>, later in this chapter.</li>
+<li><strong>What Can I Do Here?</strong> gives help that fits what you
+are doing at the moment.</li>
+<li><strong>Why Don’t I See a Feature?</strong> explains why a command
+is hidden by your feature profile.</li>
+</ul>
+<h3 id="activity-and-repeat-last-result-shiftf9-and-f9">Activity and
+Repeat Last Result (Shift+F9 and F9)</h3>
+<p><strong>Activity…</strong> (<code>Shift+F9</code>) lists everything
+QUILL told you in this session, newest first. Each row says what you can
+do about it, with these buttons: <strong>Retry</strong>, <strong>Open
+Folder</strong>, <strong>Copy Details</strong> and <strong>Clear
+List</strong>.</p>
+<ul>
+<li>If a settings file could not be saved, QUILL says so once, with the
+reason. Its row has a Retry that saves again and an Open Folder that
+shows you the folder on disk. When a later save works, QUILL tells you
+that too.</li>
+<li>Background work that finishes after you closed its window lands here
+as a row to review, so the result is not lost.</li>
+<li>Nothing in the list leaves this computer, and no document text is
+ever in it.</li>
+</ul>
+<p><strong>Repeat Last Result</strong> (<code>F9</code>) says the newest
+result that mattered again. That is the last thing QUILL itself told
+you, not the last thing your screen reader read. It also names what
+Activity offers for that result. The same two keys do the same thing in
+QUILL Lite, Quill Radio and QUILL Cast.</p>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Missed what QUILL just said because
+your screen reader talked over it? Press <code>F9</code> and you will
+hear it again.</p>
+</blockquote>
+<h3 id="status-diagnostics-and-setup">Status, diagnostics and setup</h3>
+<ul>
+<li><strong>Status Page</strong> opens a live view of what QUILL is
+doing right now. The Application Status page topic in this guide
+describes it.</li>
+<li><strong>Save Diagnostics…</strong> writes a diagnostics bundle on
+this computer. You can look through it before you share it with
+anyone.</li>
+<li><strong>Feature Profiles</strong> gathers the profile commands:
+<ul>
+<li><strong>Switch Profile…</strong> (<code>Alt+Shift+P</code>) chooses
+another profile.</li>
+<li><strong>Profile Health Check…</strong> gives a short report on your
+profile: which one is active, and whether any command has been left
+without a feature to belong to, or switched off when it should not be.
+Most of the time it ends with “No coverage problems found”. It is mainly
+useful when support asks you to read it to them.</li>
+<li><strong>Manage Individual Features…</strong>
+(<code>Ctrl+Alt+F10</code>) turns single features on and off.</li>
+<li><strong>Undo Last Profile Change</strong> puts back the profile you
+had before your last change. If there is nothing to undo, it says
+so.</li>
+<li><strong>Reset to Essential Profile</strong> goes back to the
+smallest, simplest profile. It asks first, with <strong>No</strong>
+already chosen.</li>
+</ul></li>
+<li><strong>Personalise QUILL…</strong> is the first-run setup wizard.
+Run it again whenever you like to adjust your keyboard pack, feature
+profile, remote access, AI, reading and accessibility, writing tools,
+data location, and startup behaviour. <a
+href="#personalising-quill">Personalising QUILL</a> walks through
+it.</li>
+<li><strong>Get Help from Support…</strong> (<code>Ctrl+Alt+F2</code>)
+opens the support form. When you have filled it in, QUILL hands the
+message to your own mail program, addressed to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>.
+A person reads and answers it. It is not a public issue tracker, and you
+do not need an account anywhere. The steps are in <a
+href="#get-help-from-support-step-by-step">Get Help from Support, step
+by step</a>.</li>
+</ul>
+<h3 id="updates-about-and-notices">Updates, About and notices</h3>
+<ul>
+<li><strong>Check for Updates…</strong> checks the signed update list,
+offers you the download, and can close QUILL so setup runs straight
+away. Installed and portable copies are handled differently; <a
+href="#checking-for-updates">Checking for Updates</a> explains
+both.</li>
+<li><strong>What’s New</strong> opens QUILL’s changelog, the list of
+everything that changed in each version, in your web browser. It has no
+shortcut of its own, because <code>Ctrl+Shift+F1</code> is the User
+Guide here; press <code>Alt+H</code>, then <code>W</code>. Every
+QuillVille app has the same command on its Help menu.</li>
+<li><strong>About Quill</strong> shows the version, publisher details,
+and the third-party components QUILL uses, each with its license and
+version. The version has a build number, such as 1.0.0 (build 2): the
+build number tells you which build of a version you have, and a fix
+shipped without a new version number comes as a newer build that Check
+for Updates offers you.</li>
+<li><strong>Open Third-Party Notices</strong> opens the full notices
+document, with tables of those components and the text of every bundled
+license.</li>
+</ul>
+<h3 id="on-a-mac">On a Mac</h3>
+<p>On macOS the <strong>Help</strong> menu is the system Help menu, so
+the usual <code>Cmd+?</code> shortcut opens it. (See Appendix D, Notes
+from earlier versions.)</p>
+<h2 id="help-learning-and-daily-confidence">Help, Learning, and Daily
+Confidence</h2>
+<p>Nobody remembers everything, and QUILL does not expect you to. There
+are several layers of help, and you can reach each one from the
+keyboard.</p>
+<ul>
+<li><strong>F1</strong> gives help on the control that has focus. It
+works anywhere in QUILL.</li>
+<li><strong>Open User Guide</strong> (<code>Ctrl+Shift+F1</code>) is for
+when you want the full map.</li>
+<li><strong>Open Welcome Guide</strong> is for when you want a lighter
+introduction.</li>
+<li><strong>Open Keyboard Reference</strong> is for when you want the
+exact keys you have now.</li>
+<li><strong>Key Cheatsheet</strong> gives you a quick list of shortcuts.
+It has no menu row: press <code>Alt+Shift+/</code> (or
+<code>Ctrl+F1</code>), or find it in the Command Palette.</li>
+<li><strong>What Can I Do Here?</strong>
+(<code>Ctrl+Alt+Shift+F1</code>) gives help on the spot, for the
+document you are in.</li>
+<li><strong>Why Don’t I See a Feature?</strong> is for when a command
+seems to have disappeared.</li>
+<li><strong>Why Is This Unavailable?</strong> (<code>Alt+F1</code>) is
+for something you can see but cannot use. Move to the greyed-out button
+or menu item and press <code>Alt+F1</code>, and QUILL tells you why it
+is turned off.</li>
+</ul>
+<p>That last one is worth remembering. When something you expected is
+missing, it tells you why, usually because your feature profile hides
+it, so you are not left guessing.</p>
+<h3 id="context-sensitive-help-f1">Context-Sensitive Help (F1)</h3>
+<p>Press <code>F1</code> on any control in QUILL that can take focus,
+and a small help window opens. It tells you:</p>
+<ol type="1">
+<li><strong>The dialog you are in</strong>, when you are inside one: its
+name and a plain summary of what it does, so you always know where you
+are.</li>
+<li><strong>The focused control</strong>: what it is, how it works, and
+which keys apply to it.</li>
+</ol>
+<p>All of that text is in one read-only field, so your screen reader
+reads the whole thing in one go when the window opens. There are no
+headings to move past.</p>
+<p>From the help window:</p>
+<ul>
+<li>Press <strong>Escape</strong>, or <strong>Enter on Close</strong>,
+to go back to where you were.</li>
+<li><strong>Tab to Open User Guide</strong> and press it to jump to the
+part of this guide that covers the control.</li>
+</ul>
+<p>Here is how the Help keys fit together:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F1</code></td>
+<td>Help on the control that has focus</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F1</code></td>
+<td>Open the full User Guide</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+F1</code></td>
+<td>Open What Can I Do Here? for the document you are in</td>
+</tr>
+<tr>
+<td><code>Ctrl+F1</code></td>
+<td>Open the Key Cheatsheet</td>
+</tr>
+<tr>
+<td><code>Shift+F1</code></td>
+<td>Open About Quill</td>
+</tr>
+</tbody>
+</table>
+<p>A few things worth knowing:</p>
+<ul>
+<li>In the main editor, F1 tells you the editor shortcuts and some
+writing tips.</li>
+<li>In dialogs such as Preferences, Find/Replace and Spell Check, F1
+names both the dialog and the setting you are on.</li>
+<li>In the Personalise QUILL wizard, F1 on any control explains what
+that setting does and what you can change later.</li>
+<li>When you use a menu and come back to the editor, QUILL remembers
+which control had focus, so F1 still talks about the right one.</li>
+</ul>
+<h3 id="personalising-quill">Personalising QUILL</h3>
+<p>The <strong>Personalise QUILL</strong> wizard runs on its own the
+first time QUILL starts. You can run it again at any time from
+<strong>Help &gt; Personalise QUILL…</strong>.</p>
+<p>It has six short pages, or five if you leave AI writing help off on
+the Extras page:</p>
+<ol type="1">
+<li><strong>Welcome</strong> introduces what the wizard covers.</li>
+<li><strong>Intent</strong> is the page that matters most. It asks one
+question: <em>What kind of writing do you do?</em> and shows a list of
+seven starting points. Arrow up and down the list. As you move, a large
+read-only text area below it changes to tell you, in plain English,
+exactly what you will get if you choose that one. No feature codes, no
+jargon, and no list of what you will miss out on. Just what you
+get.</li>
+<li><strong>Extras</strong> offers a few optional extras, such as AI
+writing help, Braille Mode and typing automation. You only see the ones
+your starting point does not already include. Each is a single checkbox,
+and checking one adds a sentence to the preview, so you always know what
+you are agreeing to.</li>
+<li><strong>AI Provider</strong> appears only if you turned AI on in
+Extras. It asks for your provider and your API key. The providers are
+Anthropic (Claude), OpenAI (GPT), Google Gemini, OpenRouter (many
+models), and Ollama, which runs models on your own computer or connects
+to an Ollama-compatible cloud host. Your key is kept safely in the
+Windows Credential Manager, not in a settings file. You can skip this
+page and add a key later.</li>
+<li><strong>Keyboard and Sound</strong> is where you choose a keyboard
+pack and whether QUILL plays sound cues. QUILL detects your screen
+reader and picks accessible defaults for you.</li>
+<li><strong>Summary</strong> lets you check every choice before anything
+happens. It is plain text: your profile name, which features are on,
+which Quillins are turned on, your keyboard pack and your sound setting.
+Use Back to change any page. Nothing in QUILL changes until you press
+Finish.</li>
+</ol>
+<p>Every page starts with a heading that takes focus, so you land on the
+page title first. The preview is a read-only document, so VoiceOver on
+the Mac does not call it an editable text field.</p>
+<p><strong>Important:</strong> nothing is saved until you press Finish.
+If you close or cancel the wizard, none of your settings change.</p>
+<h4 id="profiles-explained">Profiles explained</h4>
+<p>QUILL comes with eleven built-in feature profiles: the ten described
+under Choosing a profile, plus the QUILL Lite profile. Each one starts
+you at a different amount of features and a different level of
+accessibility support. The wizard offers seven plain-English starting
+points that lead to them; its Writer starting point is the Casual Writer
+profile. You can switch profile at any time from <strong>Tools &gt;
+Customize and Support &gt; Profiles and Features…</strong> or by
+pressing <code>Alt+Shift+P</code>.</p>
+<p>Choosing a profile, earlier in this guide, says who each one is
+for.</p>
+<h2 id="tutorials">Tutorials</h2>
+<p><strong>Help &gt; Tutorials…</strong> (<code>Ctrl+Alt+F1</code>)
+opens 29 guided tutorials: 159 steps, about 147 minutes in all. They
+cover the parts of QUILL worth learning first, in the order you would
+naturally learn them. They are not a second copy of this guide. A guide
+can tell you what something does. It cannot tell you what to do next,
+because it cannot see what you have already done. The Tutorials window
+can.</p>
+<h3 id="how-the-lessons-work">How the lessons work</h3>
+<ul>
+<li><strong>They show the keys you have.</strong> A step names the
+command it is about, and the key is filled in when the step is shown. If
+you have rebound a key, the tutorial says your key.</li>
+<li><strong>Try it runs the step.</strong> Any step that names a command
+can be carried out from the lesson. A tutorial can open a window for you
+and then talk you through what you are looking at.</li>
+<li><strong>Follow me notices when you have done it.</strong> Check
+<strong>Follow me</strong> and the lesson keeps an eye on QUILL, once a
+second. It watches what changed, never which key you pressed, so however
+you do the step, it says what it saw (“Done: the document changed”) and
+reads you the next one. It never takes over the keyboard, and nothing is
+marked. Every step still has <strong>Next</strong>, so if the check
+never notices, it costs you one keypress.</li>
+</ul>
+<p>The Tutorials window is an ordinary window, not a wizard. Leave it
+open, go to your document, do the step there, and hear the lesson move
+on in the background.</p>
+<h3 id="finding-a-lesson">Finding a lesson</h3>
+<p>The lessons are in six tracks, in teaching order. Each row says how
+many steps it has, about how long it takes, and whether you have
+finished it. The filter box narrows the list: every word you type has to
+appear somewhere in a tutorial. Type <strong>here</strong> to see only
+the tutorials about the window you came from.</p>
+<h3 id="your-place-is-kept">Your place is kept</h3>
+<p>Close a lesson half way through and it opens at the same step next
+time. Finishing a lesson is remembered separately from where you are in
+it. <strong>Forget my progress</strong> clears all of that and changes
+nothing else. Nothing about your progress leaves this computer.</p>
+<h3 id="reading-instead-of-doing">Reading instead of doing</h3>
+<p><strong>Read it all</strong> shows a whole tutorial as one page of
+text. <strong>The whole book as a document</strong> opens all 24 as one
+page. It is made from the same lessons the window teaches, so the two
+always agree. It also comes as <code>tutorials.md</code> beside this
+guide. The document gives the keys QUILL comes with; only the window
+knows the ones you have rebound.</p>
+<p>Quill Radio, QUILL Cast and Quill Weather each have their own
+lessons, opened with the same <code>Ctrl+Alt+F1</code> in every app.
+QUILL’s own set covers your first hour, writing, reading, how much QUILL
+says, the assistant, and the things you meet in your second week. The
+menus and the command palette cover the rest.</p>
+<h3 id="quill-step-by-step">QUILL, Step by Step</h3>
+<p>Prefer to learn by listening? <a
+href="../quill-step-by-step.md">QUILL, Step by Step</a> is a separate,
+slower manual written to be read aloud. It has seventeen short chapters,
+one skill each, with practice moments and recaps, and none of this
+guide’s reference tables. It comes beside this guide as Markdown, HTML
+and EPUB. The EPUB opens straight into ElevenReader, Voice Dream or any
+reading app, so it can talk you through QUILL while your hands stay on
+the keyboard.</p>
+<h2 id="get-help-from-support-step-by-step">Get Help from Support, step
+by step</h2>
+<p>Use this whenever QUILL does something you did not expect, when you
+are stuck, when you have a question, or when you want to suggest
+something. It is the same form QUILL Lite and Quill Radio use, and it
+reaches a person at <strong>Community Access</strong>, not a public
+issue tracker.</p>
+<ol type="1">
+<li>Choose <strong>Help &gt; Get Help from Support…</strong>, or press
+<code>Ctrl+Alt+F2</code> from anywhere in QUILL. On the Help menu its
+letter is <strong>L</strong>, because <strong>G</strong> already opens
+the user guide. If you gave it a different key in the past, that key
+still works.</li>
+<li>The form opens on <strong>What kind of message</strong>. Choose one
+of: something is broken, a question, an accessibility problem, or an
+idea or request. This only helps the message reach the right
+person.</li>
+<li>Tab to <strong>Subject</strong> and type one short line, as you
+would for an email.</li>
+<li>Tab to <strong>What happened</strong> and describe it in your own
+words. This is the part a person reads first.</li>
+<li><strong>What you expected</strong> and <strong>Steps to
+reproduce</strong> are optional. If you can give steps, they help more
+than anything else.</li>
+<li><strong>Your email address</strong> is optional too. The message
+goes from your own mail account, so support can already reply to you
+there. Only fill this in if you want the reply to go somewhere
+else.</li>
+<li><strong>Screen reader</strong> is filled in from whatever is
+running. Change it if it is wrong.</li>
+<li>Below the fields, QUILL tells you what else is included: its
+version, your Windows version and, when this computer is connected to
+QUILL’s free AI, your <strong>QUILL AI support ID</strong>. That is the
+number support asks for first.</li>
+<li>Press <strong>Send</strong> (or Enter). Your own mail program opens
+with the whole message written and addressed to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>.
+<strong>Nothing is sent until you press Send in your mail
+program.</strong> Read it over, attach a diagnostics bundle if you like,
+or close it if you change your mind. Pressing Escape in the form cancels
+without writing anything.</li>
+</ol>
+<h3 id="if-something-gets-in-the-way">If something gets in the way</h3>
+<ul>
+<li>If a required field is empty, QUILL tells you which one and leaves
+you in the form.</li>
+<li>If the message is too long for a mail link, your mail program opens
+with the start of it. QUILL puts the complete text on your clipboard and
+tells you to paste it in with Control V.</li>
+<li>If this computer has no mail program set up (you only use webmail,
+say), QUILL shows you the address and puts the whole message on your
+clipboard, so nothing you typed is lost.</li>
+<li>Writing to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>
+yourself always works just as well.</li>
+</ul>
+<p>Want to share more detail? <strong>Help &gt; Save
+Diagnostics…</strong> writes a bundle with private details removed,
+which you review and can attach to the email.</p>
+<h3 id="no-more-github-reports">No more GitHub reports</h3>
+<p>QUILL no longer files GitHub issues for you, and no copy of QUILL
+carries a built-in GitHub “reporting token”. Your own GitHub sign-in,
+for QUILL’s GitHub features, is separate and has not changed. Check for
+Updates used to offer to “restore the token” by reinstalling the same
+version; that offer has gone too, and Check for Updates now only ever
+offers a newer version.</p>
+<h2 id="checking-for-updates">Checking for Updates</h2>
+<p>QUILL can check for updates and install them while you carry on
+working.</p>
+<h3 id="manual-update-check">Manual update check</h3>
+<p>To check for updates now:</p>
+<ol type="1">
+<li>Press <code>Alt+H</code> to open the <strong>Help</strong>
+menu.</li>
+<li>Press <code>U</code> for <strong>Check for Updates</strong>.</li>
+<li>If a newer version is out, QUILL tells you and asks whether to
+download it.</li>
+<li>If you say yes, QUILL downloads it in the background and tells you
+when it is ready.</li>
+<li>The next time you close and reopen QUILL, the update is applied for
+you.</li>
+</ol>
+<h3 id="automatic-update-checks">Automatic update checks</h3>
+<p>QUILL can check for updates each time it starts:</p>
+<ol type="1">
+<li>Press <code>Alt+E</code> to open the <strong>Edit</strong>
+menu.</li>
+<li>Press <code>Shift+S</code> for <strong>Settings</strong>.</li>
+<li>In the <strong>Updates</strong> section, turn on <strong>Check for
+updates on startup</strong>.</li>
+</ol>
+<p>With automatic checks on, QUILL lets you know quietly when a new
+version is available, and you download it when it suits you.</p>
+<h3 id="update-size-and-speed">Update size and speed</h3>
+<p>QUILL uses small incremental updates (“micro-updates”) instead of a
+full reinstall. They often download in seconds, and your settings,
+documents and preferences are kept.</p>
+<h3 id="updating-a-portable-copy">Updating a portable copy</h3>
+<p>If you run the <strong>portable</strong> copy of QUILL, Check for
+Updates notices and offers the portable <code>.zip</code> for the new
+version instead of the installer. It downloads to your updates
+folder.</p>
+<p>On Windows, choose <strong>Install and restart now</strong> and QUILL
+closes, puts the new version in place of the old folder, moves your
+<code>data</code> folder across, and opens again. The old version is
+kept beside it, as a folder ending in <code>.previous</code>, until the
+new one has started three times or for a week, so that a failed update
+can put it back. If a file in the folder is still open and the folders
+can’t be swapped, QUILL copies the new version over the old one instead,
+and your <code>data</code> folder is left alone either way.</p>
+<p>If you would rather do it yourself, choose <strong>Extract
+now</strong>: QUILL unzips the update into a ready-to-run folder next to
+your current one. Copy your <code>data</code> folder into it and start
+QUILL from there.</p>
+<p>Installed copies keep getting the installer, which puts itself in
+place quietly. It doesn’t ask for administrator permission, because
+QUILL is installed for you alone; if you installed it for everyone on
+the computer, Windows may ask for permission.</p>
+<h3 id="staying-on-a-release-channel">Staying on a release channel</h3>
+<p>By default, QUILL follows the Stable channel and only offers you
+finished versions. To try new features early, see <a
+href="#release-channels">Release Channels</a> below.</p>
+<h2 id="release-channels">Release Channels</h2>
+<p>QUILL comes in three flavours, and you choose which one this copy
+follows. They’re called release channels.</p>
+<ul>
+<li><strong>Stable</strong> is the version we recommend. It has been
+checked with JAWS and NVDA, and it’s what most people use. Every copy
+starts here.</li>
+<li><strong>Beta</strong> gets new features a few weeks early. It’s
+mostly finished, but some things may not work right yet.</li>
+<li><strong>Dev</strong> is the work in progress, sometimes several
+builds a week. Things will break. Only choose it if a developer asked
+you to, or you enjoy testing.</li>
+</ul>
+<h3 id="choosing-a-channel">Choosing a channel</h3>
+<ol type="1">
+<li>Open the <strong>Help</strong> menu, then choose <strong>Release
+Channel…</strong> (press <strong>Alt+H</strong>, then
+<strong>I</strong>). You can also get there from Settings: on the
+<strong>Administration</strong> page, the <strong>Release
+channel</strong> row has a <strong>Change release channel…</strong>
+button.</li>
+<li>Arrow through Stable, Beta and Dev. As you move, the box below tells
+you what each one means and what choosing it would do. Nothing changes
+yet.</li>
+<li>Press <strong>Switch</strong> to move. Press <strong>Close</strong>,
+or Escape, to leave everything as it was.</li>
+</ol>
+<p>If you choose Beta or Dev, QUILL shows a short warning first: what
+could go wrong, how your settings are protected, and how to come back.
+Read it, check the <strong>I understand</strong> box, then choose
+<strong>Move to Beta</strong> (or <strong>Move to Dev</strong>).
+<strong>Stay on Stable</strong> changes nothing, and so does Escape.</p>
+<p>Beta and Dev versions aren’t signed, so when you install one, Windows
+SmartScreen may warn that it comes from an unknown publisher; that’s
+expected, and choosing <strong>More info</strong>, then <strong>Run
+anyway</strong>, installs it.</p>
+<h3 id="what-happens-when-you-move-to-beta-or-dev">What happens when you
+move to Beta or Dev</h3>
+<ul>
+<li>QUILL saves a copy of your settings, keys and preferences first. If
+it can’t, it stays where it is and tells you why. Your documents aren’t
+copied, and updates don’t change them.</li>
+<li>QUILL then checks for updates on the new channel straight away, and
+offers you the newest Beta or Dev version if there is one. Nothing is
+installed unless you say so.</li>
+<li>From then on, Check for Updates offers you versions from your
+channel. On Stable, you’re never offered a test version.</li>
+</ul>
+<p>If you installed a Beta version yourself, QUILL notices the first
+time it checks for updates. It puts itself on the Beta channel and tells
+you so, and you can change it in the Release Channel window whenever you
+like.</p>
+<h3 id="updates-on-beta-and-dev">Updates on Beta and Dev</h3>
+<p>When QUILL’s startup check finds a new version, it downloads it for
+you, as it always has, so it is ready when you are. It never installs
+anything without asking: when the download is done, it says so and shows
+you what’s new, and you choose when to install.</p>
+<p>On Beta and Dev, it waits instead of downloading on a metered
+connection, during Quiet Hours, and while Quill Radio is recording. The
+notifications list and Update History tell you why it waited.</p>
+<h3 id="if-an-update-doesnt-start">If an update doesn’t start</h3>
+<p>After an update, QUILL checks that the new version really opens. If
+it doesn’t open within two minutes, the update undoes itself and puts
+back the version you had: if the new version is still running but stuck,
+it’s closed first. The next time QUILL starts, it tells you so. Nothing
+of yours is changed, and Update History has the details. A portable copy
+goes back by swapping its old folder back in; an installed copy goes
+back by reinstalling the version you had.</p>
+<p>If the installer itself doesn’t finish, nothing is changed: QUILL
+opens again straight away as the version you had, and tells you the
+update could not be installed. Update History has the details, and you
+can try again from Check for Updates.</p>
+<p>To make this possible, QUILL keeps a copy of the installer for the
+version you have: on Beta and Dev for as long as you have that version,
+and on Stable for a week or three starts after each update. That copy
+takes about 200 MB of disk space, which Stable gives back once the week
+or the three starts are up. After an update, the previous installer is
+kept until the new version has started three times, or for a week, and
+then it is deleted.</p>
+<h3 id="coming-back-to-stable">Coming back to Stable</h3>
+<p>Open <strong>Release Channel</strong> again and choose
+<strong>Stable</strong>.</p>
+<ul>
+<li>If the version you have is already a Stable one, you’re back
+straight away, and nothing is installed.</li>
+<li>If you have a newer Beta or Dev version, QUILL checks whether Stable
+can read everything you have saved. If it can, choose <strong>Go back
+to</strong> (the Stable version) <strong>now</strong>, and QUILL
+downloads Stable and offers to install it. Your settings and keys come
+with you.</li>
+<li>If Stable can’t read something yet, QUILL says so and gives you two
+safe choices. <strong>Wait for Stable</strong> keeps the version you
+have, stops test versions, and moves you to Stable by itself as soon as
+Stable catches up. It tells you when that happens. <strong>Use the copy
+from</strong> (the day you joined) puts back the copy of your settings
+and keys saved when you joined, then installs Stable. Anything you
+changed since then won’t be in it, but a copy of how things are right
+now is saved first, so nothing is thrown away.</li>
+<li>If there’s no saved copy, waiting is the only choice, and the window
+says so.</li>
+</ul>
+<h3 id="moving-your-other-apps-together">Moving your other apps
+together</h3>
+<p>If QUILL Lite, Quill Radio or QUILL Cast is on this computer too, the
+Release Channel window lists it under <strong>Also move my other
+QuillVille apps on this computer</strong>. Check any you’d like to move
+in the same step. Every box starts unchecked.</p>
+<p>Those apps run on one shared engine. When one of them moves to Beta
+or Dev, it gets its own copy of that engine, so the apps you leave on
+Stable are never touched. That copy takes about 335 MB of disk space,
+and it goes away by itself when the last of them comes back to Stable.
+QUILL itself doesn’t use the shared engine, so moving QUILL on its own
+needs no extra space.</p>
+<h3 id="update-history">Update History</h3>
+<p>The <strong>Update History</strong> button in the Release Channel
+window shows what the updater has done for QUILL: channel changes, the
+copies of your settings it saved, and so on. It’s a record to read;
+nothing in it changes anything.</p>
+<h3 id="your-privacy">Your privacy</h3>
+<p>Switching channels sends nothing about you. When QUILL checks for
+updates, the only thing it sends is a request for the list of
+versions.</p>
+<h2 id="secure-connections-and-certificates">Secure connections and
+certificates</h2>
+<p>QUILL trusts the same security certificates Windows trusts. Whenever
+it goes online, to check for updates, download something, talk to an AI
+service or open a web address, it checks the site’s certificate the way
+your web browser does. A site that opens in Microsoft Edge should open
+in QUILL too. QUILL Lite, Quill Radio, QUILL Cast and the other
+QuillVille apps all check the same way.</p>
+<p>If QUILL says “The site’s security certificate could not be
+verified”:</p>
+<ol type="1">
+<li>Check that this computer’s date and time are right. A clock that is
+off, even by a day, is the most common cause.</li>
+<li>Run Windows Update. It keeps the list of certificates Windows trusts
+up to date.</li>
+<li>If your antivirus scans secure web pages, or you are on a work or
+school network, that software looks inside secure connections, and
+Windows has to trust its certificate for QUILL to trust it. Most
+antivirus programs set that up when they are installed. If yours did
+not, or you are at work, ask whoever looks after your computer or
+network.</li>
+</ol>
+<p>QUILL does not skip the check to get past this message. When a
+certificate cannot be verified, someone may be sitting between you and
+the site, so QUILL stops before sending anything.</p>
+<h2 id="beta-feedback-and-bug-reporting">Beta Feedback and Bug
+Reporting</h2>
+<p>QUILL is ready for serious beta use, and it has a real support
+starting point built in.</p>
+<h3 id="what-you-can-use-today">What you can use today</h3>
+<ul>
+<li>Recovery state.</li>
+<li>Notifications.</li>
+<li>Extraction review.</li>
+<li>Exporting a bad-extraction package, for problems with
+extraction.</li>
+<li><strong>Save Diagnostics…</strong>, a general command that writes a
+bundle on this computer.</li>
+<li><strong>Get Help from Support…</strong> (<code>Ctrl+Alt+F2</code>),
+which writes a message to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+in your own mail program, with details about your setup already filled
+in. It used to be called <strong>Report a Bug…</strong>.</li>
+<li>A diagnostics runbook and a documented support process.</li>
+</ul>
+<p>QUILL helps you gather diagnostics on your own computer, check what
+you are about to share, and start a clear support message without
+leaving QUILL.</p>
+<h3 id="what-is-still-to-come">What is still to come</h3>
+<p>QUILL does not yet have a secure way to upload straight from the app
+without signing in anywhere. For now, the <strong>Help &gt; Get Help
+from Support…</strong> form is the one route: it emails support through
+your own mail program and never files anything on GitHub. A fuller route
+that needs no GitHub sign-in is planned:</p>
+<ol type="1">
+<li>a Community Access feedback form on a secure (HTTPS) web page,</li>
+<li>an optional upload of a diagnostics bundle you have reviewed,</li>
+<li>a plain-language bug template with a summary of your setup and the
+steps to reproduce the problem,</li>
+<li>alongside the in-app <strong>Help &gt; Get Help from
+Support…</strong> form.</li>
+</ol>
+<h2 id="control-reference">Control Reference</h2>
+<p>The Control Reference lists every control in QUILL that can take
+focus, grouped by section. For each one it says what the control does,
+which keys apply to it, and which part of this guide covers it in
+depth.</p>
+<p>The full list is in the <a href="CONTROL_REFERENCE.md">Control
+Reference</a>.</p>
+<p>If you build QUILL yourself, you can regenerate it after adding new
+help topics:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">build_docs</span></span></code></pre></div>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You now know your way around the Help menu, including Activity
+(<code>Shift+F9</code>) and Repeat Last Result (<code>F9</code>). F1
+explains any control, What Can I Do Here? helps on the spot, and the
+Personalise QUILL wizard can be run again whenever your needs change.
+You can send a message to a real person with Get Help from Support
+(<code>Ctrl+Alt+F2</code>), and you know how to check for updates.</p>
+<p>To practise, open <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>) and try “Getting unstuck” and “Do anything by
+name” from the Your first hour track. On the website, <a
+href="https://www.quillforall.org/tutorials/01-your-first-hour.html">Your
+first hour with QUILL</a> covers the same ground at a gentler pace.</p>
+<p>The last two chapters are for anyone who looks after a website:
+WordPress, and Forms, for writing accessible forms. After them come the
+appendices, including the Glossary of QUILL Terms and Getting help, for
+whenever you need them.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-14-projects-notes-and-the-quillville-family.html">Chapter
+14: Projects, notes and the QuillVille family</a></li>
+<li>Next: <a href="quill-guide-16-wordpress.html">Chapter 16:
+WordPress</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

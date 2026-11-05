@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 7: Running your site</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-7-running-your-site">Chapter 7: Running your site</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Beyond writing, someone has to look after a site: its health, its
+settings, its people, its plugins and its look. This chapter covers
+everything QUILL offers for that, in <strong>Tools &gt;
+WordPress</strong> and its Manage, Design, Plugin Extras and Your Sites
+submenus. Most of it needs the Administrator role; the windows only show
+what your role can use. Everything that changes the site says what it
+will change, and asks first.</p>
+<h2 id="quill-asks-the-site-first">QUILL asks the site first</h2>
+<p>Sites differ. One runs the newest WordPress with a block theme,
+another an older version with a classic theme and a security plugin.
+QUILL reads what each site offers, once a session, before it offers
+anything. A command your site does not have, or your role cannot use,
+says why in one sentence, such as “Community Radio does not offer this.
+It may be turned off, or the site may need a newer WordPress.” Nothing
+is sent.</p>
+<h2 id="site-check">Site Check</h2>
+<p><strong>Tools &gt; WordPress &gt; Site Check</strong> lists what the
+site says about its own health, critical things first: the WordPress
+version, HTTPS, the time zone, readable addresses, and every Site Health
+test the site lists, each read as one line.</p>
+<p>Site Check also names the plugins QUILL recognises, such as The
+Events Calendar, WooCommerce, Yoast SEO, Rank Math and QUILL Accessible
+Forms.</p>
+<p>If the authorization header test fails, Site Check explains that
+application passwords cannot work on that site until the host fixes it.
+That one line has saved many people an afternoon.</p>
+<h2 id="site-settings">Site Settings</h2>
+<p><strong>Tools &gt; WordPress &gt; Site Settings…</strong> shows the
+site’s title, tagline, language, time zone, date format, front page,
+posts page, site icon and more. Choose one and press
+<strong>Change</strong>. QUILL tells you the old value and the new one,
+and asks before it saves.</p>
+<p>The site language matters more than it looks: it decides which voice
+a visitor’s screen reader uses for the whole site.</p>
+<h2 id="users-and-passwords">Users and passwords</h2>
+<p>These are in <strong>Tools &gt; WordPress &gt; Manage</strong>:</p>
+<ul>
+<li><strong>Users…</strong> lists everyone with an account and their
+role. Administrators can add a user, edit one, change a role and delete
+one. QUILL makes a strong password for a new user and never shows it;
+they choose their own with “Lost your password?” on the sign-in page.
+Deleting asks who gets the person’s posts first, so no writing is lost.
+<strong>My Profile</strong> changes your own name, biography and
+website.</li>
+<li><strong>Application Passwords…</strong> lists every app and computer
+signed in to the site with an application password, and marks this
+computer’s. <strong>Revoke</strong> shuts off an old laptop or an app
+you no longer use.</li>
+<li><strong>Sign Out This Site…</strong> revokes QUILL’s own password on
+the site, as Chapter 1 describes.</li>
+</ul>
+<h2 id="plugins-themes-and-fonts">Plugins, themes and fonts</h2>
+<p>Also in <strong>Tools &gt; WordPress &gt; Manage</strong>:</p>
+<ul>
+<li><strong>Plugins…</strong> lists what is installed and whether each
+is active, and says what the well-known accessibility plugins do. You
+can activate, deactivate, install and delete plugins. A new plugin is
+installed by its WordPress.org name, and switched off at first, so it
+cannot surprise you.</li>
+<li><strong>Themes…</strong> lists the themes and what the active one
+supports. WordPress does not let apps switch themes, so <strong>Open in
+Dashboard</strong> takes you to the right page in your browser.</li>
+<li><strong>Fonts…</strong> describes each font in words, such as
+“serif, suits body text”, and installs more from the site’s font
+collections.</li>
+</ul>
+<h2 id="patterns-widgets-and-the-shape-of-the-site">Patterns, widgets
+and the shape of the site</h2>
+<p>Also in <strong>Tools &gt; WordPress &gt; Manage</strong>:</p>
+<ul>
+<li><strong>Synced Patterns…</strong> lists the site’s reusable patterns
+and where each one is used. You can edit, rename, unsync (each use
+becomes ordinary blocks), delete an unused one, or make a new one from
+your selection. When your site sorts its patterns into categories, it
+asks which category to show first.</li>
+<li><strong>Widgets…</strong> lists every widget by the area the theme
+shows it in, such as the sidebar or the footer. <strong>Add
+Text…</strong>, <strong>Edit…</strong>, <strong>Move to Area…</strong>,
+or <strong>Remove…</strong>, which sends it to Inactive Widgets rather
+than deleting it.</li>
+<li><strong>Site Map…</strong> answers “where does this page live?”:
+every page under its parent, then every post under its categories, with
+the menus that link to each.</li>
+<li><strong>Template Outline</strong> lists a block theme’s templates
+and their blocks, starting with the one your open page uses. It explains
+the things on a page that are not in the page, such as a sign-up box the
+theme adds to every post.</li>
+</ul>
+<h2 id="changing-many-pages-at-once">Changing many pages at once</h2>
+<p>Also in <strong>Tools &gt; WordPress &gt; Manage</strong>:</p>
+<ul>
+<li><strong>Bulk Edit…</strong> lists your posts or pages. Select the
+ones you want, then change their status, author, comments setting or
+parent page, or add a category or tag. QUILL asks once, naming how many
+and which site, and <strong>Undo Bulk Edit</strong> puts them back.</li>
+<li><strong>Page Order…</strong> shows your pages as a tree. Moving one
+sets its parent and its place, which is how a site’s page structure is
+built.</li>
+</ul>
+<h2 id="the-sites-look">The site’s look</h2>
+<p>These are in <strong>Tools &gt; WordPress &gt; Design</strong>, for
+sites with a block theme. Everything else about the look stays in
+WordPress’s Site Editor.</p>
+<ul>
+<li><strong>Style Variations…</strong> lists the ready-made looks your
+theme comes with. Each one is listed by name with how many of its colour
+pairings are too faint for body text, and <strong>Details</strong> reads
+out its whole Palette Report. <strong>Apply</strong> makes one the
+site’s look. QUILL keeps the look you had, on this computer, first, so
+<strong>Put Back the Previous Look</strong> brings it back.</li>
+<li><strong>Site Styles…</strong> lists your site’s colours and font
+sizes, by name. Each colour says how it reads on the page background,
+such as “Accent (dark green), #1a4d2e, 7.2 to 1 on the page background,
+passes”. Choose <strong>Change</strong>, type the new colour or size,
+and QUILL tells you the new contrast before anything is saved.</li>
+</ul>
+<p>And in <strong>Tools &gt; WordPress &gt; Manage</strong>:</p>
+<ul>
+<li><strong>Previous Looks…</strong> lists your site’s earlier styles,
+dated, each with its colours. <strong>Go Back to This Look…</strong>
+restores one, and the look you had is kept, so you can change your
+mind.</li>
+<li><strong>Download a Copy of the Site’s Design…</strong> saves a zip
+of your block theme with your changes, a good thing to have before you
+try something new. On a classic theme it says only a block theme
+can.</li>
+<li><strong>Space Used</strong> says how much room your uploads, themes,
+plugins, WordPress itself and the database take, in plain words.</li>
+</ul>
+<h2 id="plugins-quill-works-with">Plugins QUILL works with</h2>
+<p>QUILL needs no plugin for anything but forms. But where your site has
+one of these, QUILL makes use of it. The commands are in <strong>Tools
+&gt; WordPress &gt; Plugin Extras</strong>, and the fields are in
+Properties and <strong>File &gt; WordPress &gt; Plugin
+Fields…</strong>.</p>
+<ul>
+<li><strong>The Events Calendar.</strong> <strong>Events Coming
+Up…</strong> lists every event from today, with when and where.
+<strong>New Event…</strong> makes a draft event and opens it. An event’s
+start, end and venue show in Properties and can be changed in Plugin
+Fields.</li>
+<li><strong>WooCommerce.</strong> A product’s price and stock show in
+Properties and can be changed in Plugin Fields; a price change asks
+first. <strong>Shop Orders…</strong> lists the newest orders, to read.
+QUILL never changes an order, and copies one only after asking, because
+it holds the customer’s name and address.</li>
+<li><strong>Yoast SEO and Rank Math.</strong> The SEO title and
+description show in Properties with their length, and in Plugin Fields a
+line under each keeps the count, telling you when the text goes over
+what search engines show.</li>
+</ul>
+<h2 id="ai-abilities-and-ask-the-site">AI Abilities and Ask the
+Site</h2>
+<p>WordPress 6.9 lets a site offer actions to AI, called abilities, such
+as “list upcoming events” or “create a draft”.</p>
+<ul>
+<li><strong>Tools &gt; WordPress &gt; Manage &gt; AI Abilities…</strong>
+lists each ability your site offers, by name. Every ability is off until
+you turn it on, one by one, for that site.</li>
+<li><strong>Tools &gt; WordPress &gt; Manage &gt; Ask the Site…</strong>
+sends your question to the AI you chose in Choose Your AI. If the AI
+wants to use an ability, QUILL asks you first, every time, and says
+exactly what it will be given. The answer ends by saying what ran on
+your site.</li>
+</ul>
+<h2 id="across-all-your-sites">Across all your sites</h2>
+<p>These are in <strong>Tools &gt; WordPress &gt; Your Sites</strong>,
+and look at every site you have connected:</p>
+<ul>
+<li><strong>Coming Up…</strong> lists everything scheduled on all your
+sites, soonest first.</li>
+<li><strong>What Changed on My Sites…</strong> lists new comments, posts
+other people published, and health warnings since you last looked,
+across every site. It only appears when you ask; QUILL never interrupts
+you with it. Run it again and it says nothing is new.</li>
+</ul>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-06-checking.html">Chapter 6:
+Checking before you publish</a></li>
+<li>Next: <a href="wordpress-forms-08-writing-forms.html">Chapter 8:
+Writing a form</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

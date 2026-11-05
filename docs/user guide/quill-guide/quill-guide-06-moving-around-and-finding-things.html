@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 6: Moving around and finding things</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-6-moving-around-and-finding-things">Chapter 6: Moving
+around and finding things</h1>
+<p>Long documents are where a screen reader user loses the most time, so
+QUILL gives you a lot of ways to get from here to there without
+listening to everything in between. This chapter starts with the
+everyday things: finding a word, jumping to a line or a heading, and
+getting back to where you were. Then it moves on to bookmarks, Quick
+Nav, folding, inline notes and the tools for code and tidy text. If you
+work with transcripts, legal text, long Markdown notes, HTML source or
+text pulled out of a PDF, this is the chapter to spend time with.</p>
+<h2 id="search-and-replace">Search and replace</h2>
+<h3 id="finding-text-ctrlf">Finding text (Ctrl+F)</h3>
+<p>These are the keys you will use every day:</p>
+<ul>
+<li><code>Ctrl+F</code> opens Find.</li>
+<li><code>F3</code> finds the next match, and <code>Shift+F3</code>
+finds the previous one.</li>
+<li><code>Ctrl+Shift+F3</code> opens <strong>Find All Matches</strong>,
+a summary of every match in one list. (It used to be on
+<code>Alt+F3</code>, which now belongs to Reveal Codes.)</li>
+<li><code>Ctrl+H</code> opens Replace.</li>
+<li><code>Ctrl+Shift+Grave</code> then <code>X</code> replaces all.</li>
+<li><code>Ctrl+Shift+F10</code> opens <strong>Find in Open
+Documents</strong>, which finds and replaces across every document you
+have open (see below).</li>
+</ul>
+<p><strong>Find Next</strong>, <strong>Find Previous</strong> and
+<strong>Find All Matches</strong> live on the <strong>Edit</strong>
+menu, beside Find and Replace.</p>
+<h3 id="search-modes">Search modes</h3>
+<p>You can search for plain text, whole words, wildcards or a regular
+expression. If regular expressions are new to you, the Regular
+Expression Helper (<strong>Tools &gt; Advanced &gt; Regular Expression
+Helper…</strong>) explains the syntax when you need it. QUILL also keeps
+your search history, so a search you run often is there waiting for you
+next time.</p>
+<h3 id="searching-a-whole-folder-of-files">Searching a whole folder of
+files</h3>
+<p>QUILL no longer has a top-level Search menu. Its commands now live on
+the <strong>Edit</strong> menu. Three searches reach wider than the
+document in front of you, and they sit together directly under
+<strong>Find All Matches</strong>, in every feature profile, including
+the one a new install starts with:</p>
+<ul>
+<li><strong>Edit &gt; Find in Open Documents…</strong>
+(<code>Ctrl+Shift+F10</code>) searches every document you have open (see
+below).</li>
+<li><strong>Edit &gt; Search in Files…</strong>
+(<code>Ctrl+Alt+Shift+F</code>) searches every file in a folder, and
+every folder inside it, without opening them.</li>
+<li><strong>Edit &gt; Replace Across Files…</strong>
+(<code>Ctrl+Shift+R</code>) does the same search and replaces what it
+finds, in the files on disk.</li>
+</ul>
+<p>QUILL Lite has the same three rows in the same order on its own Edit
+menu, on the same keys, so what you learn in one editor works in the
+other.</p>
+<p>Both folder commands open one window. Fill in the <strong>Starting
+folder</strong> (it starts as the folder of the document you have open),
+a <strong>File pattern</strong> such as <code>*.md</code> or
+<code>*.txt</code>, and the <strong>Search text</strong>. Under
+<strong>Match mode</strong> choose Plain text, Wildcard or Regular
+expression, and check <strong>Case sensitive</strong> or <strong>Whole
+word</strong> if you need them. <strong>Output format</strong> decides
+how much the results tell you: filenames only, filenames with line
+numbers and counts, counts only, or each filename with the matching
+lines around it. Replace Across Files adds a
+<strong>Replacement</strong> box and <strong>Preview before
+replacing</strong>, which shows you every change in a tab of its own and
+asks before it writes anything.</p>
+<p><strong>An example.</strong> You want every note in your
+<code>Clients</code> folder that mentions Rosa Diaz. Press
+<code>Ctrl+Alt+Shift+F</code>, check that the starting folder is
+<code>Clients</code>, type <code>*.md</code> as the file pattern and
+<code>Rosa Diaz</code> as the search text, and press Enter. QUILL
+searches in the background, then opens the results in a new tab and
+tells you, for example, “Search complete: 7 match(es) in 3 file(s)”.
+Arrow through the tab to hear each file and line. If she has changed her
+name, press <code>Ctrl+Shift+R</code> instead, fill in the replacement,
+keep Preview before replacing checked, read the preview tab, and answer
+Yes.</p>
+<p>Search in Files reads files only; Replace Across Files changes files
+on disk that are not open in QUILL, so keep the preview on until you are
+sure of your search text.</p>
+<p>The rest of the search commands are on <strong>Edit &gt; Search
+Tools</strong>:</p>
+<ul>
+<li><strong>Count Regular Expression Matches…</strong> and
+<strong>Extract Regular Expression Matches…</strong> tell you how many
+times a regular expression matches, or pull every match out for
+you.</li>
+<li><strong>Lines in First Block Only</strong> and <strong>Lines Common
+to Both Blocks</strong> compare two marked blocks of lines and keep the
+lines that are only in the first, or the lines both share.</li>
+<li><strong>Multi Replace…</strong> runs up to four find-and-replace
+pairs in one pass.</li>
+<li><strong>Count Occurrences…</strong> (<code>Ctrl+Alt+Shift+F3</code>)
+tells you how many times a piece of text appears in the document.</li>
+</ul>
+<h3 id="find-and-replace-in-all-your-open-documents">Find and replace in
+all your open documents</h3>
+<p>Sometimes the thing you are looking for is in one of a dozen
+documents you have open, or you need to change a name in all of them.
+<strong>Find in Open Documents…</strong>
+(<strong>Ctrl+Shift+F10</strong>, on <strong>Edit</strong>) searches
+every document QUILL has open, not just the one in front of you.</p>
+<p>It searches the text exactly as it is in each tab, so it finds:</p>
+<ul>
+<li>changes you have not saved yet,</li>
+<li>new documents you have never saved,</li>
+<li>formatted documents, such as Word and RTF files, searched as you see
+them.</li>
+</ul>
+<p>Anything that is not open is left alone, and it never writes to a
+file on disk. If you want to search files that are saved in a folder
+instead, that is <strong>Edit &gt; Search in Files…</strong>
+(<code>Ctrl+Alt+Shift+F</code>), described just above.</p>
+<p>The window has the same choices as Find and Replace:</p>
+<ul>
+<li><strong>Find what</strong> and <strong>Replace with</strong>.</li>
+<li><strong>Search mode</strong>: Normal, Extended or Regular
+expression, just as in Find.</li>
+<li><strong>Match case</strong>, <strong>Whole word only</strong>, and
+<strong>Wrap around</strong>, which is checked when it opens. With it
+checked, the search goes on from the first document after the last one,
+and comes back to where you started.</li>
+</ul>
+<p>Its buttons:</p>
+<ul>
+<li><strong>Find Next</strong> (<strong>Enter</strong>) and <strong>Find
+Previous</strong> go to the next or previous match. When one document
+has no more, they move on to the next document and bring it to the
+front, and you hear its name and the line: “Chapter 3.txt, line 12: She
+opened the door.” While you stay in one document you only hear the line,
+the way Find works. If the search goes past the last document and starts
+again from the first, you hear “Back to the start” first.</li>
+<li><strong>Find All</strong> lists every match in every open document,
+in order, each with the document’s name, the line number and the line.
+Arrow through it and press <strong>Enter</strong> to go straight to that
+match. It is the quickest way to check what Replace All is about to
+change.</li>
+<li><strong>Replace All</strong> does nothing until you have heard what
+it found, for example: “312 matches in 87 of 104 open documents. Replace
+them all?” Press <strong>Yes</strong> to go ahead.
+<ul>
+<li>Each document is changed on its own, so <strong>Ctrl+Z</strong> in
+any one window takes back just that document’s replacements. In a
+formatted document each replacement is its own undo step, which keeps
+the formatting around it exactly as it was.</li>
+<li>Nothing is saved for you. Every changed document is marked as
+changed, and you save them when you are ready, one at a time or with
+<strong>Save All</strong>.</li>
+<li>Documents that cannot be changed, such as a read-only file or a
+report QUILL wrote for you, are still searched, but Replace All leaves
+them alone and tells you how many it skipped.</li>
+</ul></li>
+<li><strong>Close</strong> (<strong>Escape</strong>) puts the window
+away.</li>
+</ul>
+<p>After you close it, <strong>F3</strong> and <strong>Shift+F3</strong>
+keep searching across all your open documents, so you can work through
+them one match at a time without opening the window again. As soon as
+you start an ordinary Find (<strong>Ctrl+F</strong>) or Replace
+(<strong>Ctrl+H</strong>), F3 goes back to searching just the document
+you are in.</p>
+<p>QUILL and QUILL Lite share this window and work the same way, on the
+same key.</p>
+<h2 id="navigation">Navigation</h2>
+<p>The <strong>Navigate</strong> menu is built for moving through large,
+dense material without looking at it. Here are the commands in the order
+you are likely to want them.</p>
+<h3 id="go-to-ctrlg">Go To (Ctrl+G)</h3>
+<p><strong>Go To…</strong> (<code>Ctrl+G</code>) is one window for four
+kinds of place: a <strong>line</strong> number, a <strong>page</strong>,
+a <strong>bookmark</strong> or a <strong>heading</strong>. A PDF with an
+outline adds a fifth, <strong>Outline</strong>.</p>
+<ol type="1">
+<li>Press <code>Ctrl+G</code>.</li>
+<li>Choose the kind of place from the radio buttons at the top.</li>
+<li>Type a number, or pick from the list, and press Enter.</li>
+</ol>
+<p>The number field and the list follow your choice. The one that does
+not apply is dimmed but stays where it is, so the window never changes
+shape under you. Pages are exact in a PDF and marked
+<code>~4 (estimated)</code> everywhere else.</p>
+<p>QUILL Lite opens the same window on the same key. It offers the Page
+row only for a PDF, because only a PDF has real pages there. The old
+<strong>Go To Line</strong> and <strong>Go To Page</strong> commands
+both land here now, so a key you gave them still works.</p>
+<p><strong>Go to Percent…</strong> moves you a part of the way through
+the document, for example halfway.</p>
+<h3 id="going-back-after-a-jump">Going back after a jump</h3>
+<p>Every jump leaves a trail. <strong>Back Location</strong> takes you
+back to where you were before, and <strong>Forward Location</strong>
+takes you forward again.</p>
+<ul>
+<li><strong>Back Location</strong>: <code>Alt+Left</code> on Windows,
+<code>Cmd+[</code> on macOS.</li>
+<li><strong>Forward Location</strong>: <code>Alt+Right</code> on
+Windows, <code>Cmd+]</code> on macOS.</li>
+</ul>
+<h3 id="moving-by-heading-and-structure">Moving by heading and
+structure</h3>
+<p>Headings are the table of contents of a document, and moving by them
+is the fastest way around a long one.</p>
+<ul>
+<li><strong>Next Heading</strong> (<code>Ctrl+Alt+H</code>) and
+<strong>Previous Heading</strong> (<code>Ctrl+Alt+Shift+H</code>) move
+between headings only: the <code>#</code>, <code>##</code> and
+<code>###</code> lines in Markdown, and real headings elsewhere.</li>
+<li><strong>Next Structure</strong> (<code>Alt+Down</code>) and
+<strong>Previous Structure</strong> (<code>Alt+Up</code>) move between
+every structural element: headings, and also list items, code blocks,
+tables and block quotes. This steps you through the full outline.</li>
+<li><strong>Next Region</strong> (<code>F6</code>) and <strong>Previous
+Region</strong> (<code>Shift+F6</code>) cycle the larger parts of the
+window.</li>
+</ul>
+<p>So a heading is one kind of structure. Next Structure is the wide
+sweep, and Next Heading is the headings-only part of it.</p>
+<p>A few more commands on the same menu:</p>
+<ul>
+<li><strong>Outline Navigator…</strong> (<code>Ctrl+Shift+O</code>)
+lists the document’s outline so you can jump to any part of it.</li>
+<li><strong>Heading Organizer…</strong> (<code>Alt+Shift+O</code>) is
+for changing heading levels, moving whole sections, and checking that
+your headings are in a sensible order.</li>
+<li><strong>Next Block</strong> and <strong>Previous Block</strong> move
+by block.</li>
+<li><strong>Match Bracket</strong> (<code>Ctrl+Shift+\</code>) jumps to
+the bracket that pairs with the one at the cursor.</li>
+<li><strong>First Non-Blank</strong> and <strong>Last Non-Blank</strong>
+move to the first or last character on the line that is not a
+space.</li>
+</ul>
+<p>Not on the menu, but worth knowing: press
+<code>Ctrl+Alt+Shift+A</code> for <strong>Go to Anything</strong>, a
+quick search box for jumping to anything by name. It has no menu item;
+you can also find it in the Command Palette
+(<code>Ctrl+Shift+P</code>).</p>
+<h3 id="asking-where-you-are">Asking where you are</h3>
+<p>Three commands on the Navigate menu answer “where am I?” without
+moving you. Each one starts with the QUILL key
+(<code>Ctrl+Shift+Grave</code>):</p>
+<ul>
+<li><strong>Speak Window Title</strong> (QUILL key, then <code>F</code>)
+reads QUILL’s title bar, which names the document and says whether it
+has unsaved changes.</li>
+<li><strong>Speak Full Path</strong> (QUILL key, then <code>P</code>)
+reads where the document is saved, folder and all. A document that has
+never been saved says so.</li>
+<li><strong>Speak Status Summary</strong> (QUILL key, then
+<code>Q</code>) gives the lot in one breath: the document’s name, where
+it is, whether it is saved or modified, and its encoding.</li>
+</ul>
+<p>What they say also goes on the status bar, so you can read it again
+in braille.</p>
+<h2 id="search-replace-and-deep-navigation">Search, Replace, and Deep
+Navigation</h2>
+<p>QUILL knows what headings, lists and tables are, and it tells you
+about them as you move. That is the deeper layer of navigation: line and
+page jumps, block and heading movement, bracket matching, structural
+next and previous, back and forward history, the outline and bookmarks,
+all working together. Combined with marks and compare sessions, it makes
+a long review much less fragile.</p>
+<h3 id="hearing-that-a-paragraph-is-a-heading">Hearing that a paragraph
+is a heading</h3>
+<p>Apply Heading 2 to a paragraph, arrow away and arrow back, and your
+screen reader reads the line but does not say it is a heading. That is
+not your reader’s fault. No Windows edit control has paragraph styles.
+The control can tell JAWS or NVDA the font name, the point size and the
+weight, but it has no way to say that a paragraph is a heading. Word can
+do it only because it ships its own accessibility support for that.</p>
+<p>So QUILL says it for you. Move onto a heading and you hear “Heading
+2, Installing”: the level first, then the heading’s own words, as one
+sentence.</p>
+<ul>
+<li><strong>The level comes first.</strong> On a big jump, such as
+<code>Ctrl+Home</code>, a search hit or a bookmark, NVDA and JAWS drop
+anything that was waiting to be spoken. A level said first, as part of
+the sentence, is never lost that way. It is also the order a web browser
+uses.</li>
+<li><strong>Once, when you arrive.</strong> Moving around inside a
+heading says nothing more. You hear it again when you leave and come
+back.</li>
+<li><strong>Every kind of heading.</strong> Rich text, Markdown, HTML
+and a real <code>Heading 2</code> style in a Word document all sound the
+same.</li>
+</ul>
+<p>If you would rather hear the words first, open <strong>Settings &gt;
+Accessibility and Announcements</strong> and change “Say a heading’s
+level” (the <code>heading_announce_position</code> setting) to
+<code>after</code>. Your reader then reads the line and QUILL adds
+“Heading 2” behind it. It is a little quieter when you read line by
+line, but on a big jump you may miss the level.</p>
+<p>Applying a heading already tells you what happened, so you never hear
+it twice. A document that opens on its own title does not greet you with
+“Heading 1” over your reader’s first reading of the line.</p>
+<p>Sometimes you want to read a document simply as text, and one extra
+phrase per heading is one too many. <strong>View &gt; Announce
+Headings</strong> (<code>Ctrl+Alt+F3</code>) turns the cue off and on
+without leaving the document, and it controls the table cue too. QUILL
+tells you which way it went, “Headings announced on arrival” or
+“Headings will not be announced”, so an accidental press is never a
+mystery. Your choice is remembered (the <code>announce_headings</code>
+setting), but think of it as something you press per document.</p>
+<p>Headings are only found where they really exist. A <code>#</code> at
+the start of a line is a heading in Markdown and HTML, but in a shell
+script or a Python file it is a comment, and QUILL says nothing.</p>
+<h3 id="hearing-that-you-are-in-a-list">Hearing that you are in a
+list</h3>
+<p>Arrow into a list and QUILL says “Bulleted list, 5 items”. Go a level
+deeper and it says “Level 2, 3 items”. Arrow out and it says “Out of
+list”.</p>
+<p>On a web page your screen reader tells you about lists itself. In an
+editor a list is only characters, so a nested outline would otherwise
+sound like a run of lines beginning with a dash, and you would have to
+count spaces to tell level two from level three.</p>
+<p>It works in Markdown and in HTML, for all three kinds of list:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Markdown</th>
+<th>HTML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bulleted list</strong></td>
+<td><code>-</code>, <code>*</code>, <code>+</code></td>
+<td><code>&lt;ul&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Numbered list</strong></td>
+<td><code>1.</code>, <code>1)</code></td>
+<td><code>&lt;ol&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Definition list</strong></td>
+<td>a line, then <code>: the definition</code> under it</td>
+<td><code>&lt;dl&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>In a definition list you also hear “Term” and “Definition” as you
+move between the two, so you can tell if you have written one inside
+out.</p>
+<p>Items are counted at your own level, inside your own list. A
+three-item list whose second item has four sub-items is “3 items” at
+level one and “4 items” at level two, never “7”. Two sub-lists under two
+different bullets are two lists.</p>
+<p>QUILL stays quiet:</p>
+<ul>
+<li><strong>As you move down a list.</strong> Your reader is already
+speaking each item.</li>
+<li><strong>On <code>- - -</code> or <code>***</code>.</strong> Those
+are horizontal rules.</li>
+<li><strong>Inside a fenced code block.</strong> A <code>- </code> in a
+code sample is part of the sample.</li>
+<li><strong>In a plain document.</strong> A letter is full of
+hyphens.</li>
+<li><strong>In rich text.</strong> There the bullets belong to the
+control, and a <code>-</code> you type is a hyphen.</li>
+</ul>
+<p>To turn the list cue off, use <strong>View &gt; Announce
+Lists</strong> (<code>Ctrl+Alt+F5</code>). It is a separate switch from
+the heading one, because when you are reorganising an outline you want
+the levels, and when you are proofreading the same file you may not.
+QUILL tells you which way it went, “Lists will not be announced” or
+“Lists announced as you enter them”, and remembers your choice as the
+<code>announce_lists</code> setting.</p>
+<p>The key is <code>Ctrl+Alt+F5</code> rather than
+<code>Ctrl+Alt+F4</code> on purpose: miss the Control key on that one
+and you have pressed <code>Alt+F4</code>, which closes the window.</p>
+<h3 id="moving-through-a-table-cell-by-cell">Moving through a table cell
+by cell</h3>
+<p>Arrowing along a table line tells you the characters but not the
+shape. QUILL gives tables their own keys, and every move tells you where
+you are before it tells you what is there.</p>
+<ul>
+<li><code>Ctrl+Alt+Right</code> and <code>Ctrl+Alt+Left</code> move one
+cell along the row.</li>
+<li><code>Ctrl+Alt+Down</code> and <code>Ctrl+Alt+Up</code> move one
+cell down or up the column.</li>
+<li><code>Alt+Home</code> and <code>Alt+End</code> jump to the first or
+last cell of the row.</li>
+<li><code>Ctrl+Alt+Home</code> and <code>Ctrl+Alt+End</code> jump to the
+first or last cell of the whole table.</li>
+</ul>
+<p>Each move says what changed and then the contents: along a row, the
+column (“Column 3: Portland”); down a column, the row (“Row 4:
+Portland”); a jump to another row and column, both. The table’s size is
+said once, when you arrive. An empty cell is called “blank”. When there
+is nowhere to go, QUILL says so and stays put: “No more cells” at the
+end of a row, “No more rows” at the end of a column, and “No more cells,
+end of table” (or “No more rows, end of table”) on the very last cell.
+That way you know whether the row stopped or the whole table did.</p>
+<p><strong>The arrow keys read a table cell by cell.</strong> Inside a
+table, <strong>Up</strong> and <strong>Down</strong> go to the cell
+above and below in the same column and say it, “Row 3: Ann”, instead of
+the screen reader reading the whole row as one line.
+<strong>Right</strong> at the end of a cell’s text goes to the next
+cell, and <strong>Left</strong> at its start to the end of the cell
+before, “Column 2, Role: Lead”; inside a cell’s text they move letter by
+letter as always. <strong>Down</strong> from the line above a table
+lands in its first cell and says its shape once, “Table, 3 rows, 2
+columns. Name”; <strong>Up</strong> past the first row or
+<strong>Down</strong> past the last leaves the table, and you hear “Out
+of table”. Shift with the arrows still selects. This works the same with
+JAWS, NVDA and Narrator, in rich text and in <code>|</code> tables, with
+nothing to install. JAWS keeps <strong>Ctrl+Alt</strong> with the arrows
+for its own table commands, so with JAWS use the arrows,
+<strong>Tab</strong> and the <strong>Navigate &gt; Table</strong>
+menu.</p>
+<p>Outside a table the table keys do no harm; QUILL just says “Not in a
+table”.</p>
+<p>When a table has a header row (a <code>| --- |</code> row under its
+first row), moving into a new column also says the column’s header:
+“Column 3, City: Portland”. Moving up or down the same column does not
+repeat it.</p>
+<p>All of these are also on <strong>Navigate &gt; Table</strong>, the
+same submenu as in QUILL Lite.</p>
+<p>This works on Markdown tables you type yourself and on tables QUILL
+brings in from Word. A <code>.docx</code> table arrives as a real table
+laid out as Markdown rows, so the same keys and announcements apply. So
+does a real table in an <code>.rtf</code> file. A cell whose text
+contains a <code>|</code> character stays one cell and does not throw
+the column count off.</p>
+<h3 id="editing-a-table">Editing a table</h3>
+<ul>
+<li><strong>Tab</strong> and <strong>Shift+Tab</strong> move to the next
+and previous cell, on to the next row at the end of one, as in Word.
+<strong>Tab</strong> in the very last cell adds a row and puts you in
+its first cell.</li>
+<li><strong>Navigate &gt; Table</strong> also has <strong>Insert Row
+Below</strong>, <strong>Insert Column Right</strong>, <strong>Delete
+Row</strong>, <strong>Delete Column</strong> and <strong>Tidy
+Table</strong>. Each is one Undo, and each says what it did: “Added row
+3”, “Deleted column 2, City. 4 columns left”. Deleting a header row
+makes the next row the header. Tidy Table lines the columns up by
+padding every cell to its column’s widest, so the table is easier to
+read on screen; the cells you hear are unchanged.</li>
+<li><strong>Insert &gt; Insert Table…</strong> (<code>Ctrl+Alt+T</code>)
+makes a new one.</li>
+</ul>
+<p><strong>Real tables in rich text.</strong> In a rich text document a
+table is a real table: a grid on screen, with no <code>|</code>
+characters, which your screen reader, Word and WordPad all see as a
+table. Insert Table makes one there, and a Word or RTF document’s tables
+open as them. Every key above works on a real table the same way, and
+Tab in its last cell adds a row. Tidy Table says a real table is already
+lined up. Adding or deleting a row or a column rebuilds a real table
+with its text in place, but bold, italic or a font <em>inside</em> its
+cells does not survive the rebuild, so format cell text once the table
+has its shape.</p>
+<p>Saved as <code>.rtf</code> or as a Word document, a real table stays
+one, its first row marked as the header row. A <code>|</code> table in a
+Markdown document you switch to rich text becomes a real table, and
+switching back to Markdown or plain text turns a real table into
+<code>|</code> rows.</p>
+<h2 id="quill-quick-nav-mode">QUILL Quick Nav Mode</h2>
+<p>Quick Nav is like browse mode on a web page. Single letters move you
+around a long document, and nothing you press changes the text. It only
+moves the cursor.</p>
+<h3 id="turning-quick-nav-on">Turning Quick Nav on</h3>
+<p>There are two ways in:</p>
+<ul>
+<li><strong>Locked Quick Nav, the usual way.</strong> Press
+<code>Ctrl+Shift+Grave</code> twice in a row. The first press starts the
+QUILL key; the second locks Quick Nav on until you press
+<code>Esc</code>. QUILL says “QUILL browse mode locked. It stays active
+until you press Escape.”</li>
+<li><strong>For one move.</strong> Press <code>Ctrl+Shift+Grave</code>
+then <code>N</code>. Quick Nav is on for the next move. If the
+<code>browse_mode_sticky</code> setting is on, it stays locked until
+<code>Esc</code>; otherwise it ends when the QUILL key times out.</li>
+</ul>
+<h3 id="quick-nav-keys">Quick Nav keys</h3>
+<p>Once Quick Nav is on, the keys are the same either way:</p>
+<ul>
+<li><code>H</code> moves to the next heading, and <code>Shift+H</code>
+to the previous one.</li>
+<li><code>1</code> through <code>6</code> move to the next heading at
+that level, and <code>Shift+1</code> through <code>Shift+6</code> to the
+previous one.</li>
+<li><code>A</code> and <code>Shift+A</code> move by link.</li>
+<li><code>L</code> and <code>Shift+L</code> move by list.</li>
+<li><code>I</code> and <code>Shift+I</code> move by list item.</li>
+<li><code>T</code> and <code>Shift+T</code> move by table.</li>
+<li><code>Q</code> and <code>Shift+Q</code> move by block quote.</li>
+<li><code>B</code> and <code>Shift+B</code> move by bookmark.</li>
+<li><code>'</code> and <code>Shift+'</code> move by code block.</li>
+<li><code>N</code> and <code>Shift+N</code> move by inline note.</li>
+<li><code>M</code> and <code>Shift+M</code> move by misspelled
+word.</li>
+<li><code>F</code> and <code>Shift+F</code> move by page, in a document
+with page breaks.</li>
+<li><code>P</code> and <code>Shift+P</code> move by paragraph.</li>
+<li><code>S</code> and <code>Shift+S</code> move by sentence.</li>
+<li><code>Tab</code> and <code>Shift+Tab</code> move by block.</li>
+<li><code>C</code> opens the table of contents (the Outline
+Navigator).</li>
+<li><code>.</code> (period) repeats your last move.</li>
+<li><code>]</code> jumps to the line after the current list or table,
+and <code>[</code> to the line above it.</li>
+<li><code>Esc</code> leaves Quick Nav.</li>
+</ul>
+<p>The key table at the top of this guide and the QUILL key cheat sheet
+are the up-to-date reference.</p>
+<p>A few things to know:</p>
+<ul>
+<li>If there is nothing of that kind to move to, QUILL tells you.</li>
+<li>Find and replace commands take you back to normal editing on their
+own.</li>
+<li>After each move QUILL tells you where you landed. <strong>QUILL
+browse move detail</strong>, in <strong>Settings &gt; Navigation and
+QUILL Key</strong>, sets how much it says: <em>Line and column</em> (the
+default), <em>Line only</em> or <em>Say nothing</em>.</li>
+<li><strong>Preload QUILL browse cache in background</strong>, on the
+same page, is on by default. If you turn it off, QUILL builds the cache
+the first time you use Quick Nav.</li>
+</ul>
+<h3 id="moving-by-misspelling-and-by-page">Moving by misspelling and by
+page</h3>
+<p><strong><code>M</code> and <code>Shift+M</code></strong> move to the
+next and previous misspelled word. QUILL selects the word and tells you
+what it is and where: “Misspelled: recieve, line 12”. It uses the same
+spelling check as the Misspellings list in the Quick Nav panel, with
+your own dictionaries, so the key and the panel always agree. With the
+word selected you can type the right spelling straight over it, or press
+<code>Esc</code> to leave Quick Nav and use the spelling commands. At
+the last misspelling, <code>M</code> goes round to the first (unless you
+turned off wrapping in Settings); with none at all you hear “No
+misspelled words in this document.”</p>
+<p><strong><code>F</code> and <code>Shift+F</code></strong> move to the
+next and previous page. Pages here are the page breaks in the text
+itself: a PDF opened in QUILL has one between every page, and so does a
+braille file or a text file with page breaks. (F is for form feed, the
+character that marks a page break; <code>P</code> was already
+Paragraph.) QUILL says “Page 5 of 12”. <code>Shift+F</code> from the
+middle of a page goes to the top of that page first, and from the top of
+a page to the page before. In a document with no page breaks you hear
+“This document has no page breaks.”</p>
+<p>QUILL also tells you the page <strong>once</strong> when the cursor
+crosses a page break by any other means: an arrow key,
+<code>Page Down</code>, a search or a jump. Arrow down past the end of
+page 4 and you hear “Page 5 of 12”; keep arrowing through page 5 and you
+hear nothing more about pages until you reach page 6. Moving with
+<code>F</code> does not make QUILL say the page twice. A document with
+no page breaks never mentions pages at all.</p>
+<p>For example, open a 12-page PDF and press
+<code>Ctrl+Shift+Grave</code> twice to lock Quick Nav. Press
+<code>F</code> four times to reach page 5 and read it with the arrow
+keys. Press <code>M</code> to jump to the first misspelled word after
+the cursor, fix it, and press <code>Esc</code> to leave Quick Nav.</p>
+<p>QUILL Lite has no Quick Nav, so it has neither key; its status bar
+shows the same “Page 5 of 12”.</p>
+<h3 id="how-quick-nav-finds-things">How Quick Nav finds things</h3>
+<p>QUILL builds a list of the places in the document once, and reuses it
+until the text or the kind of document changes. That keeps Quick Nav
+quick on long Markdown and HTML files.</p>
+<ul>
+<li>Headings come from Markdown and HTML headings.</li>
+<li>List items come from Markdown list markers and HTML
+<code>&lt;li&gt;</code> tags.</li>
+<li>Paragraphs come from blank lines in text and Markdown, and from
+block tags in HTML.</li>
+<li>Sentences come from sentence-ending punctuation.</li>
+<li>Tables come from Markdown tables and HTML <code>&lt;table&gt;</code>
+tags.</li>
+<li>Block quotes come from Markdown <code>&gt;</code> lines and HTML
+<code>&lt;blockquote&gt;</code> tags.</li>
+<li>Code blocks come from Markdown fences and HTML
+<code>&lt;pre&gt;</code> or <code>&lt;code&gt;</code> tags.</li>
+<li>Bookmarks come from your bookmarks.</li>
+<li>The list is rebuilt after you edit, replace the whole document, or
+switch tabs.</li>
+</ul>
+<h3 id="quill-key-prefix-actions">QUILL key prefix actions</h3>
+<p>Press the QUILL key (<code>Ctrl+Shift+Grave</code>) once and it waits
+briefly for a second key:</p>
+<ul>
+<li><code>N</code> turns on Quick Nav, as described above. Pressing the
+QUILL key a second time instead locks it on whatever the setting
+says.</li>
+<li><code>M</code> pastes web content as Markdown. QUILL reads the rich
+HTML on the clipboard (the <code>HTML Format</code> copied from web
+pages and word processors), turns headings, lists, links, bold and
+italic, code and block quotes into Markdown, and inserts it at the
+cursor. If there is no rich HTML, the plain text on the clipboard is
+treated as HTML. A read-only document is never changed.</li>
+<li><code>A</code> opens selection actions when text is selected.</li>
+<li><code>F</code> speaks the window title, <code>P</code> speaks the
+full path of the current file, and <code>Q</code> speaks a short status
+summary. These are handy when several documents are open and you want to
+check where you are.</li>
+<li><code>?</code> shows the QUILL key cheat sheet, and <code>Esc</code>
+cancels.</li>
+</ul>
+<p>Quick Nav (Landmarks) has a key of its own,
+<code>Ctrl+Shift+Z</code>, rather than a QUILL key letter. It lists
+everything in the document you can move to (headings, links, lists,
+tables, block quotes, bookmarks, code blocks) with a filter that shows
+how many of each there are. It also lists the document’s misspellings
+and, while a search is active, the search hits, so you can jump to a
+misspelled word or a match from the same place.</p>
+<h3 id="quick-nav-and-quill-key-settings">Quick Nav and QUILL key
+settings</h3>
+<p>The <strong>Navigation and QUILL Key</strong> page in Settings holds
+the rest of the choices for Quick Nav and the QUILL key:</p>
+<ul>
+<li><strong>Wrap QUILL browse navigation</strong> carries on from the
+other end of the document when there is nothing more in the direction
+you are moving. On to begin with.</li>
+<li><strong>QUILL browse feedback</strong> is how each move is
+signalled: <strong>Speech only</strong> (the default), <strong>Sound
+only</strong>, <strong>Speech and sound</strong> or
+<strong>Silent</strong>.</li>
+<li><strong>Sticky browse mode</strong> keeps Quick Nav on after a move
+instead of going back to editing.</li>
+<li><strong>QUILL key prefix timeout (seconds)</strong> is how long the
+QUILL key waits for its second key. The default is 2.5 seconds, and 0
+means it waits until you press something.</li>
+<li><strong>Browse mode follow-on timeout</strong> is how long Quick Nav
+stays on between moves after you start it with <code>N</code>:
+<strong>Instant</strong>, <strong>Fast</strong> (one and a half
+seconds), <strong>Normal</strong> (four seconds), <strong>Slow</strong>
+(eight seconds), <strong>Custom…</strong> or <strong>Unlimited</strong>,
+which is the default. With Custom, type your own time in milliseconds in
+the box that follows it.</li>
+<li><strong>Custom sound for browse mode entry (WAV file)</strong>,
+<strong>Custom sound for browse mode exit (WAV file)</strong>,
+<strong>Custom sound for browse navigation (WAV file)</strong> and
+<strong>Custom sound for browse not-found (WAV file)</strong> replace
+the four Quick Nav beeps with sounds of your own. Each has a
+<strong>Choose WAV file…</strong> button and a <strong>Preview</strong>
+button. Leave one blank to keep the beep.</li>
+<li><strong>Include headings in Quick Nav</strong>, <strong>Include
+links in Quick Nav</strong> and <strong>Include lists in Quick
+Nav</strong> decide what the Quick Nav list (<code>Ctrl+Shift+Z</code>)
+offers. All three are on to begin with.</li>
+<li><strong>Quick Nav debounce (milliseconds)</strong> is how long that
+list waits after you stop typing in its filter before it searches. The
+default is 250.</li>
+<li><strong>Quick Nav minimum characters</strong> is how many letters
+you type before the filter starts matching, from 1 to 5. The default is
+1.</li>
+</ul>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Lost in a long document? Press
+<code>Ctrl+Shift+Grave</code> twice, then <code>H</code> to hop from
+heading to heading. <code>Esc</code> puts you back to typing.</p>
+</blockquote>
+<h2 id="bookmarks-and-marks">Bookmarks and marks</h2>
+<h3 id="bookmarks">Bookmarks</h3>
+<p>A bookmark is a place you want to come back to, even days later. The
+commands live together on <strong>Navigate &gt; Bookmarks</strong>:</p>
+<ul>
+<li><strong>Set Bookmark</strong> (<code>Ctrl+Shift+B</code>) drops a
+bookmark in the next free numbered slot.</li>
+<li><strong>Next Bookmark</strong> (<code>F2</code>) and
+<strong>Previous Bookmark</strong> (<code>Shift+F2</code>)</li>
+<li><strong>Clear All Bookmarks</strong> (<code>Ctrl+Alt+B</code>)</li>
+<li><strong>Set Bookmark 1</strong> to <strong>Set Bookmark 9</strong>
+(<code>Ctrl+Shift+1</code> to <code>Ctrl+Shift+9</code>), described
+under Numbered bookmarks below</li>
+<li><strong>Set Named Bookmark…</strong>, which asks for a name</li>
+<li><strong>Go To Named Bookmark…</strong></li>
+<li><strong>List Named Bookmarks…</strong>
+(<code>Alt+Shift+G</code>)</li>
+<li><strong>Set Temporary Bookmark</strong>
+(<code>Ctrl+Alt+J</code>)</li>
+<li><strong>Go to Temporary Bookmark</strong>
+(<code>Ctrl+Shift+J</code>)</li>
+</ul>
+<p>Bookmarks belong to each document and are kept between sessions. When
+you reopen a file, its bookmarks are still there. QUILL also remembers
+your last cursor position in each saved document and puts you back there
+when you reopen it. A new document that has never been saved keeps its
+bookmarks only until you close it; save it, and they are kept.</p>
+<p>Bookmarks also stay on the right words as you edit. Each one
+remembers the text around it, so it follows that text even after you add
+or delete paragraphs above it. If the bookmarked text itself is deleted,
+the bookmark goes back to the position it remembered. This works for
+named and numbered bookmarks alike, and you do not have to do
+anything.</p>
+<h3 id="temporary-bookmark">Temporary bookmark</h3>
+<p>Sometimes you just want to say “right here” and come straight back,
+with no name and no dialog. That is the temporary bookmark. Both
+commands are on <strong>Navigate &gt; Bookmarks</strong>, just under
+<strong>List Named Bookmarks…</strong>, and in the command palette:</p>
+<ul>
+<li><strong>Set Temporary Bookmark</strong> (<code>Ctrl+Alt+J</code>)
+sets it at the cursor.</li>
+<li><strong>Go to Temporary Bookmark</strong>
+(<code>Ctrl+Shift+J</code>) jumps back to it.</li>
+</ul>
+<p>Set it, move away, jump back. Setting a new one quietly replaces the
+old one. It is not kept between sessions: it is scratch paper for the
+work in front of you. Use a named bookmark for anything you want to find
+next week.</p>
+<p>If you used the 0.9.0 betas, the temporary bookmark was on
+<code>Ctrl+Shift+K</code> and <code>Alt+Shift+K</code>. Those keys now
+belong to Lower Case and Previous Inline Note.</p>
+<h3 id="numbered-bookmarks">Numbered bookmarks</h3>
+<p>Numbered bookmarks give you fixed slots you set with one keystroke,
+no menu and nothing to type:</p>
+<ul>
+<li><code>Ctrl+Shift+1</code> through <code>Ctrl+Shift+9</code> set the
+bookmark for that slot at the cursor.</li>
+<li><code>Ctrl+Shift+B</code> drops a bookmark in the next free
+slot.</li>
+<li><code>Ctrl+Alt+B</code> clears them all.</li>
+</ul>
+<p>To get back to one, use <code>F2</code> and <code>Shift+F2</code>,
+the bookmark list (<code>Alt+Shift+G</code>), or <strong>Go To…</strong>
+(<code>Ctrl+G</code>) with Bookmark chosen. They are stored like named
+bookmarks, under names such as “Quick 3”, so they are kept with the
+document. Going to a slot you have not set tells you so plainly.</p>
+<h3 id="highlighted-passages">Highlighted passages</h3>
+<p>Somebody has gone through a contract, a set of meeting notes or a
+draft with Word’s highlighter: the yellow bits are the ones you must
+read. A sighted reader sees them at a glance. QUILL lets you go straight
+to them by ear, in the same way bookmarks take you to places you marked
+yourself. The three commands are on <strong>Navigate &gt; Highlighted
+Passages</strong>:</p>
+<ul>
+<li><strong>Next Highlighted Passage</strong>
+(<code>Alt+PageDown</code>) moves the cursor to the start of the next
+highlighted passage and says its colour, where it is in the count and
+its words, for example “Yellow highlight, 2 of 5: budget is final”.
+After the last passage it goes round to the first.</li>
+<li><strong>Previous Highlighted Passage</strong>
+(<code>Alt+PageUp</code>) does the same backwards.</li>
+<li><strong>List Highlighted Passages…</strong> (<code>Ctrl+F2</code>)
+shows every passage in one list, in document order. Each row starts with
+the passage’s words, so typing a letter finds a row, then gives the
+colour and the paragraph it sits in: “budget is final, yellow highlight,
+in: The budget is final unless the board objects.” The list opens on the
+passage you are in, or the next one after the cursor. Enter (or
+<strong>Go To</strong>) closes the list and puts the cursor on the
+passage; Escape closes it and leaves the cursor where it was.</li>
+</ul>
+<p><code>Alt+Left</code> (Back) returns you to where you were before a
+jump, as it does after any other jump.</p>
+<p><strong>Where the highlights come from.</strong> QUILL reads them
+fresh every time you press one of these keys, so a highlight you have
+just added with <strong>Format &gt; Highlight</strong>, or just taken
+off with <strong>Format &gt; Clear Formatting</strong>
+(<code>Ctrl+Shift+N</code>), is already counted, and typing above a
+passage never sends you to the wrong place.</p>
+<ul>
+<li>A Word document you edit as Rich Text, and any RTF document: the
+highlights in the document itself.</li>
+<li>A Markdown document: the hidden highlight codes that <strong>Format
+&gt; Highlight</strong> writes, such as
+<code>[budget is final]{highlight="yellow"}</code>.</li>
+<li>A Word document you chose to open for reading and plain editing: the
+highlights in the <code>.docx</code> file on disk, placed on the text by
+their words and the paragraph they are in. If you have since retyped a
+passage’s words, that passage is left out rather than guessed at.</li>
+</ul>
+<p><strong>Describe Formatting at Cursor</strong>
+(<code>Ctrl+Shift+D</code>) now also names the highlight in a rich
+document: “Calibri, 11 point, yellow highlight”. Before this it said
+nothing about highlighting there.</p>
+<p><strong>Colours.</strong> QUILL knows all fifteen of Word’s highlight
+colours by name: yellow, green, turquoise, pink, blue, red and gray, and
+the darker dark blue, teal, dark green, violet, dark red, dark yellow,
+dark gray and black. Saving a rich Word document now keeps each
+passage’s colour. Before 2026-10-16 a green or pink highlight came back
+yellow after a save from rich mode, Pink and Turquoise on the Highlight
+menu did nothing in a rich document, and the darker colours were dropped
+when the document was opened.</p>
+<p><strong>Limits.</strong> Highlights in headers, footers, footnotes,
+comments and text boxes are not listed, because QUILL does not show that
+text in the editor. A highlight that comes only from a Word character
+style, rather than from the highlighter, is not counted. Shading (a
+paragraph’s background colour) is not a highlight and is not listed.</p>
+<h3 id="marks-bookmarks-and-selecting-a-block">Marks, bookmarks and
+selecting a block</h3>
+<p>These three all “mark a spot”, so they are easy to mix up. Here is
+what each one does.</p>
+<p><strong>Bookmarks are named places that are saved.</strong> They
+travel with the file, as described above. Use <strong>Set Named
+Bookmark…</strong>, <strong>Go To Named Bookmark…</strong> and
+<strong>List Named Bookmarks…</strong> when you want to name a place and
+come back to it days later.</p>
+<p><strong>The mark ring is a short stack of temporary jump
+points.</strong> It lasts only for the current session and is never
+saved.</p>
+<ul>
+<li><strong>Set Temporary Mark</strong> (<code>Ctrl+Shift+M</code>)
+drops a point at the cursor. The status bar says “Mark ring point set at
+line …, column … (temporary jump)”.</li>
+<li><strong>Jump to Previous Mark</strong> (<code>Ctrl+M</code>) jumps
+back to the most recent mark and removes it from the ring.</li>
+<li><strong>Swap Cursor and Mark</strong> (<code>Ctrl+Alt+X</code>)
+moves the cursor to the mark.</li>
+<li><strong>List Recent Marks</strong> (<code>Alt+M</code>) shows the
+marks in the ring.</li>
+</ul>
+<p>These commands only move the cursor. They do not select text and they
+do not copy anything. In some other editors you drop a mark, move away,
+and cut or copy everything in between. QUILL’s mark is not that. It is a
+breadcrumb you can jump back to.</p>
+<p><strong>To copy or cut from one point to another, select the
+text.</strong> Put the cursor at the start, then either hold Shift while
+you move to the end (arrows, <code>Ctrl</code> with the arrows, the Page
+keys, Home and End) or use one of the selection commands below. Then
+press <code>Ctrl+C</code> to copy or <code>Ctrl+X</code> to cut. There
+is no separate “copy from the mark to the cursor” command; the selection
+is what gets copied.</p>
+<p><strong>Selecting a block, a line or a paragraph.</strong> A block
+here means the indented block at the cursor: a run of lines at the same
+indent, like the inside of a list item or a code block. The selection
+commands are on <strong>Edit &gt; Selection</strong>:</p>
+<ul>
+<li><strong>Select Line</strong> (<code>Ctrl+Shift+E</code>) selects the
+current line.</li>
+<li><strong>Select Paragraph</strong> (<code>Ctrl+Shift+H</code>)
+selects the paragraph around the cursor.</li>
+<li><strong>Select Block</strong> (<code>Ctrl+Alt+Shift+B</code>)
+selects the indented block at the cursor.</li>
+<li><strong>Select to Start/End of Line</strong> and <strong>Select to
+Start/End of Document</strong>.</li>
+<li><strong>Expand Selection</strong> (<code>Ctrl+Shift+X</code>) grows
+the selection one step at a time: word, line, paragraph, block,
+document, telling you the new size each time.</li>
+</ul>
+<p>Each one tells you what it selected and how many words, so you know
+exactly what you have before you copy or delete it.</p>
+<h2 id="favorite-folders">Favorite folders</h2>
+<p>Favorite folders are a short list of folders you want to reach
+quickly. They are different from the recent folders Windows keeps.
+Recent folders track what you opened lately; favorites track what you
+actually want to hand. A folder you use all the time but have not
+touched in months still belongs here.</p>
+<ul>
+<li><strong>Add Current Folder to Favorites</strong>
+(<code>Ctrl+Shift+Grave</code> then <code>Shift+F</code>) adds the
+current document’s folder. Save the document first if it is new.</li>
+<li><strong>Remove Favorite Folder…</strong>
+(<code>Ctrl+Shift+Grave</code> then <code>Shift+X</code>) lets you
+choose a favorite to take off the list.</li>
+<li><strong>Open From Favorite Folder…</strong>
+(<code>Ctrl+Shift+Grave</code> then <code>G</code>) opens Quick Open,
+described next.</li>
+</ul>
+<p>All three are on <strong>File &gt; Favorite Folders</strong>.</p>
+<h3 id="open-from-favorite-folder">Open From Favorite Folder</h3>
+<p><strong>Open From Favorite Folder…</strong> opens a small window with
+a text box already focused, much like Quick Open in Visual Studio
+Code.</p>
+<ol type="1">
+<li>Start typing part of a file name. The list below narrows as you
+type, across every favorite folder at once, and capital letters do not
+matter.</li>
+<li>Arrow to the file you want. Each entry tells you which favorite
+folder it came from.</li>
+<li>Press Enter, or choose <strong>OK</strong>, to open it.</li>
+</ol>
+<p>By default QUILL looks only at the files directly inside each
+favorite folder, not in folders inside them, which keeps the list
+instant. Check <strong>Include subfolders</strong> to search every
+subfolder too. That search stops at a few thousand files, so even a very
+large folder cannot hang the window.</p>
+<h2 id="folding-and-inline-notes">Folding and inline notes</h2>
+<h3 id="code-folding">Code folding</h3>
+<p>Folding lets you tuck away a heading section or a fenced code block
+(<code>```</code>…<code>```</code>) so it is out of your way, without
+ever hiding it from you.</p>
+<ul>
+<li><strong>Toggle Fold</strong> (<code>Ctrl+Shift+[</code>) folds or
+unfolds the smallest region around the cursor and tells you what
+happened: “Folded: 14 lines under ‘Chapter Two’” or “Unfolded: ‘Chapter
+Two’.”</li>
+<li><strong>Next Fold</strong> (<code>Alt+Shift+]</code>) and
+<strong>Previous Fold</strong> (<code>Alt+Shift+[</code>) jump between
+regions you can fold, folded or not, and tell you the region’s name,
+whether it is folded, and how many lines it has.</li>
+<li><strong>List Folds</strong> (<code>Ctrl+Shift+]</code>) opens a list
+of every region you can fold, with its state and line count. Pick one to
+jump to it, or fold and unfold it from there.</li>
+</ul>
+<p>In most editors, folding hides lines and the arrow keys skip right
+over them, so a screen reader user cannot tell whether text was folded
+or deleted. QUILL never does that. Folding never changes the text, and
+arrowing by character, word or line works exactly as before. Arrow
+through a folded region and you will read every word of it. Folding only
+changes where the jump commands take you.</p>
+<h3 id="inline-notes">Inline notes</h3>
+<p>Inline notes are comments you attach to a line or a selection: a
+question, a reminder, a note to yourself while you draft, or your
+thoughts on a plan somebody sent you. They are on <strong>Tools &gt;
+Writing and Language</strong>, and you can change any of their keys in
+the Keymap Editor.</p>
+<ul>
+<li><strong>Add Inline Note…</strong> (<code>Alt+Shift+I</code>)
+attaches a note to the selected text, or to the current line if nothing
+is selected. The <strong>Note on</strong> line at the top shows the
+start of that text, so you can check you are in the right place. Type
+the note and choose Save.</li>
+<li><strong>Next Inline Note</strong> (<code>Alt+Shift+J</code>) and
+<strong>Previous Inline Note</strong> (<code>Alt+Shift+K</code>) move to
+the next or previous noted text, and QUILL reads the note.</li>
+<li><strong>Speak Inline Note</strong> (<code>Alt+Shift+H</code>) reads
+the note at the cursor. Press it twice quickly to open the note so you
+can read, change or delete it.</li>
+<li><strong>Delete Inline Note…</strong> (<code>Alt+Shift+Delete</code>)
+deletes the note at the cursor. QUILL reads you the note and asks first,
+and No is the default.</li>
+<li><strong>List Inline Notes…</strong> (<code>Alt+Shift+Enter</code>)
+shows every note in the document in one list: the note, the line it is
+on, the text it is about, and whether it is private or in the file.
+Press <code>Enter</code> to go to a note, <code>Delete</code> to delete
+one and <code>F2</code> to edit one. The buttons also let you
+<strong>Remove All</strong> notes (QUILL asks first), <strong>Copy
+All</strong> of them as plain text, or <strong>Export</strong> them to a
+Markdown or JSON file.</li>
+<li>In Quick Nav, <code>N</code> and <code>Shift+N</code> move to the
+next and previous note too.</li>
+</ul>
+<p>Each note remembers the exact text it was placed on, plus a little
+around it, so it follows that text as you edit. If that text is deleted,
+the note is kept, not lost: the list shows it last, marked “the text it
+was on is gone”, so you can read it and remove it. A new document keeps
+its notes until you close it; save it and they are kept.</p>
+<h4 id="hearing-which-lines-have-notes">Hearing which lines have
+notes</h4>
+<p>As you arrow through a document, QUILL plays a soft two-tap sound
+when the cursor arrives on a line that has an inline note, private or in
+the file. It plays once as you arrive, and never while you move along
+that same line with the left and right arrows, <code>Home</code>,
+<code>End</code> or <code>Ctrl+Left</code> and <code>Ctrl+Right</code>.
+Move off the line and back, and you hear it again. A note on a selection
+that runs over several lines counts as one place: you hear it as you
+enter, not on every line of it.</p>
+<p>For example, you have a note on the line “Back up the uploads
+folder.” Arrow down: on the line before, nothing; on that line, the tap;
+then press <code>Alt+Shift+H</code> to hear the note itself.</p>
+<p>To change it, open <strong>Settings</strong>, go to the
+<strong>Editing</strong> page and find <strong>When the caret reaches a
+line with an inline note</strong> (the <code>inline_note_line_cue</code>
+setting). The choices are <strong>Play a sound</strong> (the default),
+<strong>Say “note”</strong>, and <strong>Nothing</strong>. A few things
+to know:</p>
+<ul>
+<li>With the sound chosen, a braille display also shows the word “note”,
+because a sound does not reach somebody reading in braille without
+speech. With the word chosen, your screen reader’s braille shows it
+already.</li>
+<li>If your sound pack has no sound for this, QUILL says “note” instead,
+so the setting never ends up silent by accident. You can change or
+switch off the sound itself in <strong>Sound Scheme</strong>, where it
+is listed as “Arrived on a line with an inline note”.</li>
+<li><strong>Next Inline Note</strong> and <strong>Previous Inline
+Note</strong> read you the note itself, so arriving with them plays no
+tap on top.</li>
+</ul>
+<h4 id="private-notes-and-notes-in-the-file">Private notes and notes in
+the file</h4>
+<p>Normally a note is private. It is kept in QUILL’s own settings
+folder, the document itself is never changed, and nobody else ever sees
+it. That works in every kind of document.</p>
+<p>In a Markdown or HTML document you can also write a note <strong>into
+the file</strong>. Check <strong>Write this note into the file</strong>
+in the Add Inline Note window, and the note goes into the document as a
+hidden comment on its own line, right after the text it is about:</p>
+<pre><code>Back up the uploads folder.
+&lt;!-- quill-note: And the database dump. --&gt;</code></pre>
+<p>The file is still a perfectly good Markdown or HTML file. Web pages,
+GitHub and other programs hide the comment, but anyone who opens the
+file in a text editor, and any AI assistant you hand the file to, can
+read your note. That makes it the way to review a plan an AI assistant
+wrote: read it, leave your notes in the file, and give the file back.
+Because a note in the file is part of the text, <code>Ctrl+Z</code>
+takes back adding, changing or deleting one.</p>
+<p>The check box remembers your last choice for each document. To start
+every new note in the file, turn on <strong>Write new inline notes into
+the file</strong> (the <code>inline_notes_in_file</code> setting) on the
+<strong>Editing</strong> page in Settings. It is off unless you change
+it.</p>
+<h4 id="notes-on-the-command-line">Notes on the command line</h4>
+<p>A script, or an AI assistant working in a terminal, can read and
+clear the notes written into a file without opening QUILL:</p>
+<ul>
+<li><code>quill --notes list plan.md</code> prints every note with its
+line and the text it is about. Add <code>--json</code> for a list a
+program can read.</li>
+<li><code>quill --notes check plan.md</code> says how many notes are
+left.</li>
+<li><code>quill --notes clear plan.md</code> removes them all and saves
+the file, keeping its encoding and line endings.</li>
+</ul>
+<p>The exit code tells a script what happened: 0 means done (or, for
+<code>check</code>, no notes left), 3 means <code>check</code> found
+notes still in the file, 1 means the file could not be read or written,
+and 2 means the command was mistyped. Private notes are never shown
+here; they stay yours.</p>
+<h2 id="working-in-code">Working in code</h2>
+<h3 id="code-aware-editing">Code-aware editing</h3>
+<p>When you open a source file, QUILL loads a language profile based on
+the file extension. It knows HTML, Markdown, CSS, Python, JavaScript,
+TypeScript, C, C++, C#, PHP, Go, Rust, Kotlin, Shell, YAML, JSON, TOML
+and SQL, and treats anything else as plain text. The profile tells QUILL
+how the language is put together, so moving and announcements make sense
+for code.</p>
+<ul>
+<li><strong>Next Token</strong> and <strong>Previous Token</strong>, on
+the Navigate menu, move by code token instead of by word. You land on
+the next name, keyword, operator or value, which is much easier to
+follow by ear than moving by character or word.</li>
+<li>Token movement goes well with the optional indentation tones
+described under <a
+href="quill-guide-11-accessibility-speech-and-braille.html#sound-notifications-and-earcons">Sound
+notifications and earcons</a>, so you hear the structure as pitch while
+you move.</li>
+</ul>
+<h3 id="setting-the-document-language">Setting the document
+language</h3>
+<p>QUILL normally goes by the file extension, but you can set the
+language yourself for the current document. That helps with an unsaved
+document, an unusual extension, or code you pasted into a plain
+<code>.txt</code> file. You get the whole of that language’s editing
+support:</p>
+<ul>
+<li><strong>Bold</strong> and <strong>Italic</strong> insert the right
+markup (<code>&lt;strong&gt;</code>/<code>&lt;em&gt;</code> for HTML,
+<code>**...**</code>/<code>*...*</code> for Markdown).</li>
+<li>The <strong>heading, table, list, and tag</strong> menu items become
+available for HTML and Markdown.</li>
+<li><strong>Toggle Line/Block Comment</strong> uses the language’s
+comment style (<code>#</code>, <code>//</code>,
+<code>&lt;!-- --&gt;</code>, <code>-- </code>).</li>
+<li>Heading and structure navigation, the outline, link insertion and
+live preview all follow the language you chose.</li>
+</ul>
+<p>There are three ways to set it, and they all do the same thing:</p>
+<ul>
+<li><strong>Key:</strong> <code>Ctrl+Alt+F6</code> opens the language
+picker. Type to find a language; the current one is already
+selected.</li>
+<li><strong>Menus:</strong> <strong>Navigate &gt; Set Document
+Language…</strong> opens the same picker. <strong>Format &gt; Document
+Language</strong> is a checkable list where you can switch with one key
+press and hear which language is active.</li>
+<li><strong>Status bar:</strong> the <strong>Language</strong> part
+shows the current language, with <strong>(set)</strong> after it when
+you chose it yourself. Press Enter on it to open the picker.</li>
+</ul>
+<p>Choose <strong>Auto-detect from file</strong> to go back to following
+the file name. Setting a language never renames the file. If you set
+HTML on a <code>.txt</code> file, QUILL reminds you to use <strong>Save
+As</strong> to save it as <code>.html</code>. The choice applies to the
+current tab and is forgotten when you close the file.</p>
+<h3 id="automatic-language-detection">Automatic language detection</h3>
+<p>QUILL can guess the language when you paste or type code into a plain
+<code>.txt</code> or new document. This is off by default. Turn it on in
+<strong>Settings &gt; Editing &gt; Auto-detect document
+language</strong>, which has four choices:</p>
+<ul>
+<li><strong>Off</strong>: never guess. This is the default.</li>
+<li><strong>Hint in the status bar only</strong>: the status bar quietly
+shows something like “Looks like HTML”. Nothing changes and nothing is
+spoken.</li>
+<li><strong>Suggest and announce, you confirm</strong>: QUILL tells you
+which language it thinks this is (“This looks like HTML”) and you decide
+whether to set it.</li>
+<li><strong>Switch automatically</strong>: QUILL sets the language and
+tells you.</li>
+</ul>
+<p>QUILL waits a moment after you stop typing or pasting, then looks at
+the first several thousand characters. It is careful: it only acts when
+it is confident, never guesses on ordinary prose, and never overrides a
+real file extension or a language you set yourself. It also learns a
+little from the languages you use during a session. In every mode you
+either stay in control or hear what changed. Braille files and pasted
+braille are not affected, because braille has its own Braille Mode.</p>
+<h3 id="abbreviation-expansion">Abbreviation expansion</h3>
+<p>If you write HTML or CSS, three commands on the <strong>Edit</strong>
+menu turn short Emmet-style abbreviations into full markup. You can type
+<code>ul&gt;li.item$*3&gt;a[href]{Item $}</code> instead of a whole
+three-item list.</p>
+<ul>
+<li><strong>Expand Abbreviation</strong> expands the selection, or, with
+nothing selected, the word just before the cursor. It is one undo step,
+so one Undo puts it all back.</li>
+<li><strong>Preview Abbreviation…</strong> asks for an abbreviation
+(filled in from your selection, if you have one) and shows the result in
+a new tab without touching your document. It is a safe way to try
+something.</li>
+<li><strong>Explain Abbreviation…</strong> gives you a plain, indented
+breakdown of what an abbreviation means (tag, id, classes, attributes
+and how many times it repeats) before you expand it. It is the quickest
+way to learn the grammar by ear.</li>
+</ul>
+<p>The usual Emmet operators work: child (<code>&gt;</code>), sibling
+(<code>+</code>), climb-up (<code>^</code>), grouping
+(<code>(...)</code>), multiplication (<code>*N</code>) and numbering
+(<code>$</code>, with <code>$$</code> for zero-padded numbers). So do
+ids (<code>#id</code>), classes (<code>.a.b</code>), attributes
+(<code>[attr="value" bool-attr]</code>) and text (<code>{...}</code>).
+Common tags get sensible attributes if you leave them out:
+<code>a</code> gets an empty <code>href</code>, and <code>img</code>
+gets <code>src</code> and <code>alt</code>. Elements like
+<code>br</code> and <code>img</code> never get a closing tag.</p>
+<p>Some ready-made snippets expand as they are:</p>
+<ul>
+<li><code>!</code> gives a full HTML5 page.</li>
+<li><code>!a11y</code> gives an HTML5 page with a skip link and
+<code>header</code>/<code>main</code>/<code>footer</code> landmarks in
+place.</li>
+<li><code>skiplink</code> gives just the skip link.</li>
+<li><code>form:a11y</code> gives a labeled form field inside a
+fieldset.</li>
+<li><code>table:a11y</code> gives a table with a caption and properly
+scoped header cells.</li>
+</ul>
+<p>When the document is a <code>.css</code> file, all three commands
+work with CSS shorthand instead, such as <code>d:f</code> for
+<code>display: flex;</code>, <code>pos:a</code> for
+<code>position: absolute;</code>, <code>m10-20</code> for
+<code>margin: 10px 20px;</code> and <code>mt-10</code> for
+<code>margin-top: -10px;</code>.</p>
+<p>If QUILL cannot make sense of an abbreviation, the status bar tells
+you what it expected and where.</p>
+<h2 id="quill-eraser">Quill Eraser</h2>
+<p>Quill Eraser (<strong>Tools &gt; Writing &amp; Language &gt; Quill
+Eraser…</strong>) tidies the small mechanical slips in your text: extra
+spaces, spaces at the ends of lines, a missing space after punctuation,
+too many blank lines, and sentences that start with a small letter. It
+offers a fix for each one. It follows fixed rules, so there is no AI and
+nothing goes over the network.</p>
+<p>To check only part of the document, select it and use <strong>Quill
+Eraser on Selection…</strong>. If nothing is selected, it offers to
+check the whole document.</p>
+<h3 id="what-quill-eraser-checks">What Quill Eraser checks</h3>
+<p>Each finding comes with a confidence level (High, Medium or Low) so
+you can decide what to fix first.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Confidence</th>
+<th>What it catches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multiple spaces between words</td>
+<td>High</td>
+<td>Two or more spaces where one space belongs</td>
+</tr>
+<tr>
+<td>Trailing spaces at end of line</td>
+<td>High</td>
+<td>Spaces or tabs at the end of a line</td>
+</tr>
+<tr>
+<td>Space before punctuation</td>
+<td>High</td>
+<td>A space immediately before <code>,</code>, <code>.</code>,
+<code>!</code>, <code>?</code>, <code>;</code>, or <code>:</code></td>
+</tr>
+<tr>
+<td>Excessive blank lines</td>
+<td>High</td>
+<td>More consecutive blank lines than your configured maximum (default:
+2)</td>
+</tr>
+<tr>
+<td>Missing space after sentence punctuation</td>
+<td>Medium</td>
+<td>A sentence-ending <code>.</code>, <code>!</code>, or <code>?</code>
+directly followed by a letter</td>
+</tr>
+<tr>
+<td>Missing space after comma, semicolon, or colon</td>
+<td>Medium</td>
+<td>A <code>,</code>, <code>;</code>, or <code>:</code> directly
+followed by a letter</td>
+</tr>
+<tr>
+<td>Sentence starts with lowercase letter</td>
+<td>Medium</td>
+<td>A sentence or paragraph that begins with a lowercase character</td>
+</tr>
+</tbody>
+</table>
+<p>Quill Eraser leaves web addresses, email addresses, file paths, code,
+decimal numbers and times alone. In a Markdown file it also skips fenced
+code blocks, inline code, front matter and link addresses.</p>
+<h3 id="code-files">Code files</h3>
+<p>If you run Quill Eraser on a code file (<code>.py</code>,
+<code>.js</code>, <code>.ts</code>, <code>.html</code> and so on), it
+asks first. You can check only for spaces at the ends of lines, which is
+safe in code, or skip the check. The prose rules are never used on code
+files.</p>
+<h3 id="the-review-dialog">The review dialog</h3>
+<p>When Quill Eraser finds something, it opens a review window that
+stays open while you keep working in the editor.</p>
+<ul>
+<li>The <strong>findings list</strong> shows each issue in order:
+confidence, type and line number.</li>
+<li>Select a finding and the pane below tells you what was found, what
+the fix is, and what it means in plain English.</li>
+<li><strong>Apply Fix</strong> makes the fix and moves on to the next
+issue.</li>
+<li><strong>Ignore</strong> hides the finding for this session without
+changing anything.</li>
+<li><strong>Go to Issue</strong> takes you to the exact place in the
+editor with the text selected, so you can decide for yourself.</li>
+<li><strong>Previous / Next</strong> move through the list.</li>
+<li><strong>Rescan</strong> checks again after you have made changes by
+hand.</li>
+<li><strong>Close</strong> closes the window.</li>
+</ul>
+<p>QUILL tells you the result of every action.</p>
+<h3 id="quill-eraser-settings">Quill Eraser settings</h3>
+<p>Four settings at the end of the <strong>Spelling</strong> page in
+Settings (<code>Ctrl+,</code>) control Quill Eraser. Each one’s name
+starts with “Quill Eraser”, so typing eraser in <strong>Find a
+setting</strong> lists all four:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hygiene_min_confidence</code></td>
+<td><code>high</code></td>
+<td>Minimum confidence level to report. Set to <code>medium</code> or
+<code>low</code> to see more findings.</td>
+</tr>
+<tr>
+<td><code>hygiene_allow_double_space_after_period</code></td>
+<td>off</td>
+<td>Suppresses the “multiple spaces” rule when exactly two spaces follow
+<code>.</code>, <code>!</code>, or <code>?</code>
+(two-space-after-period style).</td>
+</tr>
+<tr>
+<td><code>hygiene_max_blank_lines</code></td>
+<td>2</td>
+<td>Maximum consecutive blank lines before a finding is raised.</td>
+</tr>
+<tr>
+<td><code>hygiene_rules_disabled</code></td>
+<td>(empty)</td>
+<td>Comma-separated list of rule IDs to disable (e.g.
+<code>prose.lowercase_sentence_start,prose.missing_space_after_comma</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>The rule IDs you can put in the disabled list are
+<code>prose.multiple_spaces</code>, <code>prose.trailing_spaces</code>,
+<code>prose.space_before_punctuation</code>,
+<code>prose.excessive_blank_lines</code>,
+<code>prose.missing_space_after_sentence_punct</code>,
+<code>prose.missing_space_after_comma</code> and
+<code>prose.lowercase_sentence_start</code>.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now find text in one document or many, jump by line, page,
+heading or bookmark with <code>Ctrl+G</code>, and get back with
+<code>Alt+Left</code>. You know what QUILL says about headings, lists
+and tables, how Quick Nav moves you with single letters, and the
+difference between bookmarks, marks and a selection. Favorite folders,
+folding, inline notes, the code tools and Quill Eraser are there when
+you want them.</p>
+<p>To practise with QUILL guiding you, open <strong>Help &gt;
+Tutorials…</strong> (<code>Ctrl+Alt+F1</code>) and try “Get around a
+long document”, “Find, replace, and search across files”, “Select, mark,
+and move text”, “Tables, by ear” and “Quick Nav: single-letter
+movement”. On the website, <a
+href="https://www.quillforall.org/tutorials/02-own-the-keyboard.html">Own
+the keyboard</a> covers much of the same ground.</p>
+<p>Next, Chapter 7, Spelling and words, shows you how to check spelling
+and find the right word.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-05-formatting-structure-and-markup.html">Chapter 5:
+Formatting, structure and markup</a></li>
+<li>Next: <a href="quill-guide-07-spelling-and-words.html">Chapter 7:
+Spelling and words</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

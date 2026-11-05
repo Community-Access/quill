@@ -104,3 +104,14 @@ def test_the_radio_only_entry_point_still_works() -> None:
     """Radio's build_release.ps1 calls it by name; a rename must not reach it."""
     assert (_REPO_ROOT / "scripts" / "sync_site_radio_docs.py").is_file()
     assert sync.main(["--app", "radio", "--check"]) == 0
+
+
+def test_every_guide_chapter_is_on_the_site() -> None:
+    """A guide split into chapters links them from its contents page; a chapter
+    the site lacks is a link on the site that goes nowhere."""
+    pairs = sync.guide_pages()
+    assert pairs, "no chapter pages planned; GUIDE_FOLDERS points at nothing"
+    missing = [str(page.relative_to(_REPO_ROOT)) for page, _source in pairs if not page.is_file()]
+    assert missing == [], "chapter pages not on the site: " + ", ".join(missing)
+    for page, source in pairs:
+        assert b'href="../userguide.html' not in sync.site_copy(page, source), page.name

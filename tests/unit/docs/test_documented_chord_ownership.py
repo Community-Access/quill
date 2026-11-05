@@ -46,6 +46,7 @@ import pytest
 
 from quill.core.lite.commands import COMMANDS, plain_label
 from quill.core.lite.keymap import DEFAULT_ALIASES, chord_identity
+from quill.core.user_guide_files import guide_files, manual_files
 
 _ROOT = Path(__file__).resolve().parents[3]
 
@@ -54,12 +55,17 @@ _ROOT = Path(__file__).resolve().parents[3]
 #: quoting a *rejected* chord is fine, and a PRD saying "Customize Features
 #: (Ctrl+Alt+Shift+F)" is wrong in exactly the way this gate exists to catch.
 DOCUMENTS: tuple[Path, ...] = (
-    _ROOT / "standalone" / "quilllite" / "docs" / "userguide.md",
+    # The user guide is its contents page and every chapter file
+    # (quill/core/user_guide_files.py), each checked and reported on its own.
+    *guide_files(_ROOT / "standalone" / "quilllite" / "docs" / "userguide.md"),
     _ROOT / "standalone" / "quilllite" / "docs" / "announcement.md",
     _ROOT / "standalone" / "quilllite" / "docs" / "release-notes-1.0.md",
     _ROOT / "standalone" / "quilllite" / "docs" / "CHANGELOG.md",
     _ROOT / "standalone" / "quilllite" / "docs" / "prd.md",
     _ROOT / "docs" / "qa" / "quilllite-signoff.md",
+    # The WordPress and Forms manual, shared with QUILL; QUILL Lite's guide
+    # sends its readers there for everything WordPress and Forms.
+    *manual_files(),
 )
 
 #: A chord as any of these documents spells one. The trailing class is wide

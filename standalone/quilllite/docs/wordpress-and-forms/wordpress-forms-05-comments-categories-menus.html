@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 5: Comments, categories, tags and menus</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-5-comments-categories-tags-and-menus">Chapter 5:
+Comments, categories, tags and menus</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter covers the parts of a site that grow around your
+writing: the comments visitors leave, the categories and tags that sort
+your posts, and the menus that let visitors find your pages. Each has
+one window in **Tools</p>
+<blockquote>
+<p>WordPress**, built the same way as every other list in this manual: a
+list, the details of the row you are on, and buttons for what you can
+do.</p>
+</blockquote>
+<h2 id="how-every-list-window-works">How every list window works</h2>
+<p>Most windows in this manual share one shape, so learning one teaches
+you the rest:</p>
+<ul>
+<li><strong>The list</strong> comes first. Arrow through it; each row is
+one sentence.</li>
+<li><strong>Find</strong>, where there is one, narrows the list. Type
+and press Enter.</li>
+<li><strong>The details</strong> below the list say more about the row
+you are on.</li>
+<li><strong>The buttons</strong> act on the row you are on. A button
+that needs a row is dimmed until you are on one.</li>
+<li><strong>Enter</strong> runs the window’s main action, such as Open
+or Read.</li>
+<li><strong>Close</strong>, or Escape, leaves.</li>
+<li><strong>F1</strong> on any control says what it is for.</li>
+</ul>
+<p>Only the buttons your role can use are there. If your role cannot use
+the window at all, it does not open, and you hear why.</p>
+<h2 id="comments">Comments</h2>
+<p><strong>Tools &gt; WordPress &gt; Comments…</strong> opens on the
+comments waiting for you to approve. Replies sit under the comment they
+answer, one level deeper, so you read a conversation in order.</p>
+<p><strong>Show…</strong> switches between the four lists WordPress
+keeps: Waiting, Approved, Spam and Trash. Each list has the buttons that
+make sense for it:</p>
+<ul>
+<li><strong>Approve</strong> publishes a waiting comment. You hear, for
+example, “Comment from Alex approved.”</li>
+<li><strong>Unapprove</strong> takes an approved comment off the site;
+it waits again.</li>
+<li><strong>Spam</strong> and <strong>Not Spam</strong> move it to the
+spam list and back.</li>
+<li><strong>Trash</strong> and <strong>Restore</strong> move it to the
+Trash and back.</li>
+<li><strong>Reply…</strong> answers the comment, published under your
+name. You hear “Reply to Alex published on Community Radio.”</li>
+<li><strong>Edit…</strong> changes the comment’s text, for fixing a typo
+or removing a phone number someone posted by mistake.</li>
+<li><strong>Open on Site</strong> opens the page the comment is on, in
+your browser.</li>
+<li><strong>Approve All…</strong> approves every waiting comment, after
+one question.</li>
+</ul>
+<p><strong>Many at once.</strong> <strong>Mark</strong> marks the
+comment you are on, <strong>Mark Everything</strong> marks the whole
+list, and <strong>Do with Marked…</strong> approves, sends to spam or to
+the Trash every marked comment at once, after telling you how many.</p>
+<p><strong>The waiting count.</strong> The first time you use a site in
+a session, QUILL says how many comments are waiting, such as “Community
+Radio: 3 comments waiting.” If you would rather not hear it, press
+<strong>Waiting Count on First Use</strong> in the Comments window to
+turn it off for that site, and again to turn it back on.</p>
+<h3 id="a-walk-through-answering-a-question-in-the-comments">A
+walk-through: answering a question in the comments</h3>
+<ol type="1">
+<li>Choose <strong>Tools &gt; WordPress &gt; Comments…</strong>. You
+hear “Comments: Waiting”, the site’s name, and the first comment.</li>
+<li>Arrow to the comment, and read it in the details.</li>
+<li>Press <strong>Approve</strong>, so it shows on the site.</li>
+<li>Press <strong>Reply…</strong>, type your answer and press OK.</li>
+<li>Press <strong>Show…</strong>, choose Spam, and check nothing real
+has been caught there.</li>
+</ol>
+<p>The guided lesson on comments, in <strong>Help &gt;
+Tutorials</strong>, does the same on a test site.</p>
+<h2 id="categories-and-tags">Categories and tags</h2>
+<p>Categories are the broad shelves of a blog, such as News and Events.
+Tags are the small labels, such as “volunteers” or “spring fair”. Only
+posts have them.</p>
+<p><strong>Tools &gt; WordPress &gt; Categories and Tags…</strong> asks
+which, then lists every category or tag with how many posts use it. You
+can:</p>
+<ul>
+<li><strong>Add…</strong> a new one;</li>
+<li><strong>Rename…</strong> one, which changes it on every post that
+has it;</li>
+<li><strong>Delete…</strong> one, after a question that says how many
+posts use it;</li>
+<li><strong>Merge Into…</strong> another, which moves every post across
+first and then removes the empty one, in one step;</li>
+<li><strong>Convert to Tag…</strong>, or Convert to Category, which
+turns one into the other and keeps its posts;</li>
+<li><strong>Find Unused…</strong>, which lists the ones no post uses so
+you can tidy them away;</li>
+<li><strong>Make Default…</strong>, as an administrator, which chooses
+the category a post gets when nobody chooses one.</li>
+</ul>
+<p>Choosing categories and tags for one post is in the post’s own
+Properties (Chapter 2), not here.</p>
+<h2 id="menus">Menus</h2>
+<p>A menu is the list of links in your site’s header or footer that
+visitors use to find your pages. WordPress does not add a new page to a
+menu by itself, which is why QUILL asks “Add it to a menu?” the first
+time you publish a page.</p>
+<p><strong>Tools &gt; WordPress &gt; Menus…</strong> shows a menu as a
+tree. Each row says the item, what kind of thing it links to, its level
+and its place, such as “Sessions, page, level 1, 3 of 7”.</p>
+<ul>
+<li><strong>Add Page…</strong>, <strong>Add Post…</strong>, <strong>Add
+Category…</strong> and <strong>Add Link…</strong> add an item at the
+end. Add Link takes any web address and its words.</li>
+<li><strong>Rename…</strong> changes what the item says.</li>
+<li><strong>Move Up</strong> and <strong>Move Down</strong> change its
+place.</li>
+<li><strong>Move In</strong> puts it under the item above it, as a
+dropdown. <strong>Move Out</strong> takes it back up a level.</li>
+<li><strong>Remove…</strong> takes it out of the menu. The page itself
+is not touched.</li>
+<li><strong>Check Menu</strong> finds items with no name, and links to
+pages that are drafts or gone.</li>
+<li><strong>Locations…</strong> chooses where the theme shows the menu,
+such as the header or the footer.</li>
+<li><strong>Other Menu…</strong> opens another menu on the same
+site.</li>
+</ul>
+<p>Sites with a block theme keep their menus in Navigation blocks
+instead. Those open in the same window and work the same way.</p>
+<h3 id="menu-history">Menu History</h3>
+<p><strong>Tools &gt; WordPress &gt; Menu History…</strong> lists
+earlier versions of a menu.</p>
+<ul>
+<li><strong>Bring Back Removed Items…</strong> puts back anything taken
+out since, at the end of the menu.</li>
+<li><strong>Restore This Version…</strong> makes a Navigation block’s
+menu exactly as it was then.</li>
+</ul>
+<p>For a classic menu, QUILL keeps a version on this computer each time
+you open the Menus window, so there is always something to go back
+to.</p>
+<h3 id="a-walk-through-putting-a-new-page-in-the-menu">A walk-through:
+putting a new page in the menu</h3>
+<ol type="1">
+<li>Publish the new page. QUILL asks “Add it to a menu?”.</li>
+<li>Choose <strong>Yes, open Menus</strong>. The Menus window opens with
+the page added at the end.</li>
+<li>Press <strong>Move Up</strong> until it sits where you want it. Each
+press says its new place.</li>
+<li>If it belongs under another item, such as About, press <strong>Move
+In</strong>.</li>
+<li>Press <strong>Check Menu</strong> to make sure nothing points to a
+draft.</li>
+<li>Close the window. The change is already on the site.</li>
+</ol>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a
+href="wordpress-forms-04-pictures-and-media.html">Chapter 4: Pictures
+and the Media Library</a></li>
+<li>Next: <a href="wordpress-forms-06-checking.html">Chapter 6: Checking
+before you publish</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

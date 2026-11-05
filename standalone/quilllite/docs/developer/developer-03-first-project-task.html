@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 3: Your first project task</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-3-your-first-project-task">Chapter 3: Your first project
+task</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter walks through one whole project task, from an empty
+practice folder to an undone turn, and says what you hear at each step.
+It works the same in QUILL and QUILL Lite. Allow about fifteen minutes.
+If you would rather be guided inside the editor, the lesson <strong>Your
+first project task</strong> in **Help</p>
+<blockquote>
+<p>Tutorials…** (<code>Ctrl+Alt+F1</code>) covers the same ground.</p>
+</blockquote>
+<h2 id="before-you-start">Before you start</h2>
+<p>You need three things:</p>
+<ul>
+<li><strong>The Developer profile,</strong> or Developer Tools (QUILL)
+or Coding (QUILL Lite) checked on its own. In QUILL Lite, check
+<strong>AI help</strong> as well. Chapter 1 has the details.</li>
+<li><strong>An AI that can run tasks,</strong> chosen in <strong>Choose
+Your AI</strong> (<code>Ctrl+4</code>): My GitHub Copilot, Codex, or My
+own key with Anthropic Claude or Ollama on this computer. QUILL’s free
+AI does not run tasks. Chapter 4 helps you choose.</li>
+<li><strong>A practice folder.</strong> Use a copy, not your real work,
+the first time. Undo Last Turn puts files back, but practising on a copy
+costs nothing.</li>
+</ul>
+<h2 id="step-1-make-a-practice-folder">Step 1: make a practice
+folder</h2>
+<p>Make an empty folder, for example <code>cli-tool</code>, and put one
+small file of code in it with a mistake. A Python file is easiest:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add(a, b):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">-</span> b</span></code></pre></div>
+<p>Save it as <code>calc.py</code>. If you want the agent to have tests
+to run, add a second file, <code>test_calc.py</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> unittest</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> calc <span class="im">import</span> add</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AddTests(unittest.TestCase):</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_add(<span class="va">self</span>):</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual(add(<span class="dv">2</span>, <span class="dv">3</span>), <span class="dv">5</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&quot;__main__&quot;</span>:</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    unittest.main()</span></code></pre></div>
+<h2 id="step-2-open-the-folder-as-a-project">Step 2: open the folder as
+a project</h2>
+<p>Choose <strong>File &gt; Open Project Folder…</strong>, then
+<strong>Browse for a Folder…</strong>, and pick the folder.</p>
+<p>You hear: “Project cli-tool is open.” The status bar’s Project part
+now names it.</p>
+<h2 id="step-3-open-the-task-window-and-ask">Step 3: open the task
+window and ask</h2>
+<p>Press <code>Ctrl+3</code>. With a project open, it opens <strong>Do a
+Project Task</strong>. Focus is in <strong>Instruction</strong>. Type
+one plain request:</p>
+<blockquote>
+<p>Fix the add function and run the tests.</p>
+</blockquote>
+<p>and press Enter.</p>
+<p>If your folder has notes for AI agents, such as an
+<code>AGENTS.md</code>, QUILL asks once first, in <strong>Use This
+Project’s Agent Notes?</strong> Chapter 8 explains the choices. A
+practice folder has none, so this does not appear.</p>
+<p>You hear nothing at first. The conversation fills in quietly, and the
+status line says “Working”. QUILL does not read streaming text at
+you.</p>
+<h2 id="step-4-read-the-plan">Step 4: read the plan</h2>
+<p>Before it changes anything, the agent records its plan as numbered
+steps. You hear “The plan is ready. 3 steps.” Focus does not move.</p>
+<p>Press <code>Alt+P</code>. The cursor lands on the plan in the
+conversation, under a line that says “Plan:”. Read it with the arrow
+keys. Nothing has changed yet. If you want something different, type it
+in Instruction, for example “don’t touch the tests”, and press
+Enter.</p>
+<h2 id="step-5-review-the-change">Step 5: review the change</h2>
+<p>The agent reads <code>calc.py</code> (reading needs no permission)
+and proposes an edit. Proposed changes are not written. Before a command
+runs, and when a turn ends with changes, <strong>Review Changes</strong>
+opens.</p>
+<p>You hear the window’s title and the first file’s row: “calc.py,
+changed, 1 change, taken”. Every proposed change starts out taken.</p>
+<p>Press Enter on the row. Focus moves to <strong>Change
+details</strong>, which reads:</p>
+<blockquote>
+<p>calc.py. Change 1 of 1, line 2, in function add. Accepted.</p>
+</blockquote>
+<p>then “In this line: changed - to +.”, then the line as it is now and
+as it was, each led by its line number.</p>
+<p>Press <code>Alt+A</code> to Accept or <code>Alt+R</code> to Reject.
+Then press Enter on <strong>Apply Accepted Changes</strong>, which
+writes what you accepted at once. Escape, or <strong>Reject
+All</strong>, writes nothing.</p>
+<h2 id="step-6-allow-the-test-command">Step 6: allow the test
+command</h2>
+<p>The agent asks to run the tests. <strong>Run This Command?</strong>
+opens, with focus on one sentence:</p>
+<blockquote>
+<p>Run python -m unittest in your project folder cli-tool, to check the
+fix.</p>
+</blockquote>
+<p>Tab once to <strong>Command</strong> and arrow through the exact
+text. Nothing here reaches the internet or deletes anything, so there is
+no Warning line. Press Enter for <strong>Allow once</strong>.</p>
+<p>When the command finishes, you hear the result in one sentence:
+“Tests: 1 passed.” The full output is one key away:
+<code>Alt+O</code>.</p>
+<h2 id="step-7-hear-the-closing-summary">Step 7: hear the closing
+summary</h2>
+<p>When the turn ends, the closing summary is built from what really
+happened, not from what the AI says it did. You hear something like:</p>
+<blockquote>
+<p>Turn 1. Done. Changed calc.py. Ran 1 command; the last result: Tests:
+1 passed. Undo Last Turn puts every file back.</p>
+</blockquote>
+<h2 id="step-8-undo-the-whole-turn">Step 8: undo the whole turn</h2>
+<p>Press <code>Alt+U</code>, Undo Last Turn. You hear “Undid turn 1.
+calc.py is back as it was.” The mistake is back, so you can try
+again.</p>
+<p>The same works with the task window closed: <strong>Edit &gt; Agent
+Work &gt; Undo Last Agent Turn</strong>, which in QUILL is also
+<code>Ctrl+Shift+Grave, U</code>.</p>
+<h2 id="step-9-try-coach-mode">Step 9: try coach mode</h2>
+<p>Check <strong>Coach mode</strong> (<code>Alt+A</code>) and ask:</p>
+<blockquote>
+<p>How do I fix the add function myself?</p>
+</blockquote>
+<p>In coach mode the agent changes nothing and runs nothing. It explains
+and points you to a place, such as “Look at calc.py line 2: the operator
+is a minus.” You make the change yourself in the editor. Chapter 9 has
+more.</p>
+<h2 id="stopping-at-any-point">Stopping at any point</h2>
+<p><strong>Stop</strong> (<code>Alt+T</code>) in the task window stops
+the task at once, with any command it is running. From any other window,
+choose <strong>Edit &gt; Agent Work &gt; Stop Agent</strong>; in QUILL
+that is also <code>Ctrl+Shift+Grave, K</code>.</p>
+<h2 id="if-you-are-elsewhere-when-the-task-needs-you">If you are
+elsewhere when the task needs you</h2>
+<p>Nothing pops up over your typing. If you are in another QUILL window
+when the task has a question, you hear once “The project task is waiting
+for you. Press Ctrl+3 to answer.” and the Project part of the status bar
+adds “, waiting for you”. Press <code>Ctrl+3</code> and the question
+opens. If QUILL is not the window in front at all, it says nothing.</p>
+<h2 id="that-is-the-whole-loop">That is the whole loop</h2>
+<p>Every change is reviewed before it is written, every command asks
+first, and one command undoes a turn. The rest of this manual is detail
+on each part.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-02-projects.html">Chapter 2: Opening a
+project, and the project boundary</a></li>
+<li>Next: <a href="developer-04-engines.html">Chapter 4: Engines, and
+choosing one</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2: Finding your way around</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-2-finding-your-way-around">Chapter 2: Finding your way
+around</h1>
+<p>This chapter is a walk around QUILL. You will learn how to get help
+on whatever you are on, how to run any command by name, how the QUILL
+key opens up the rest of QUILL, and what lives where in the window and
+the menus. Read it once from top to bottom, then come back to it
+whenever you wonder where something is.</p>
+<h2 id="getting-around-quill">Getting around QUILL</h2>
+<p>QUILL is built so you never have to memorise an action to reach it.
+Three things carry most of the load: <code>F1</code> for help on what
+you are on, the Command Palette for running anything by name, and the
+QUILL key for the bigger features.</p>
+<h3 id="help-on-the-focused-control-f1">Help on the focused control
+(F1)</h3>
+<p>Press <code>F1</code> on anything that can take focus, whether that
+is a field in a dialog, a button, a menu item or the editor itself, and
+a small help window opens. It tells you what the control does and which
+keys work there. All of the text sits in one read-only field, so your
+screen reader reads the whole thing as soon as the window opens.</p>
+<p>The help keys are:</p>
+<ul>
+<li><code>F1</code> help on the focused control.</li>
+<li><code>Ctrl+Shift+F1</code> open the full User Guide.</li>
+<li><code>Ctrl+Alt+Shift+F1</code> open <strong>What Can I Do
+Here?</strong>, ideas for the document you have open.</li>
+<li><code>Ctrl+F1</code> the Key Cheatsheet, a list of shortcuts.</li>
+<li><code>Shift+F1</code> About QUILL.</li>
+</ul>
+<p>Chapter 15, Help, updates and support, covers context-sensitive help
+in full.</p>
+<p>F1 works the same way in every QuillVille app: Radio, Cast, the Media
+Player, Audio Studio, Inkwell, Weather, the Converter and Beacon. It
+answers two questions at once. First it says what the <em>window</em>
+you are in is for, in a sentence or two written for that window. Then it
+describes the <em>control</em> under your cursor: what it wants, what
+format it expects, what its default is and what changing it affects. A
+field that asks for a number of seconds says so, and says which number
+it starts at.</p>
+<p>Some controls already explain themselves by name, such as “Reload the
+highlighted source from the internet”. For those, F1 gives you the name
+plus a line on how to work that kind of control (“A list: Up and Down
+move between rows, Enter acts on the row, and Shift+F10 lists everything
+else you can do to it”). Nothing answers F1 with silence.</p>
+<p>If you would rather read it all in one place, every help sentence in
+the family is collected in <a href="../../f1-help-reference.md">the F1
+help reference</a>. The default keyboard shortcuts have a companion
+document, <a href="../../keyboard-reference.md">the keyboard
+reference</a>. Both are made from the app itself, so they always match
+what QUILL really does.</p>
+<h3 id="the-command-palette-ctrlshiftp">The Command Palette
+(Ctrl+Shift+P)</h3>
+<p><code>Ctrl+Shift+P</code> opens the Command Palette, a list of every
+command in QUILL that you can search. Type any part of a command’s name
+to narrow the list, then press Enter to run it. It is the quickest way
+to any action when you do not know its key or where it lives in the
+menus. Searching for <code>guide</code>, <code>spell</code>,
+<code>compare</code> or <code>glow</code> is good practice. You can also
+open it from <strong>Tools &gt; Command Palette…</strong>.</p>
+<p>Your search can be looser than the exact name:</p>
+<ul>
+<li>Words can come in any order. <code>url open</code> and
+<code>open url</code> both find <strong>Open From URL…</strong>.</li>
+<li>A shortcut works as a search. <code>ctrl+o</code> finds Open.</li>
+<li>Everyday words are understood. <code>settings</code> finds
+<strong>Preferences…</strong>, and <code>quit</code> finds
+<strong>Exit</strong>.</li>
+</ul>
+<p>As you arrow through the results, QUILL says each command’s shortcut
+along with its name. Before long you will find you reach for the key and
+not the palette.</p>
+<p><strong>Everything in the menus is in the palette.</strong> That
+includes the rows that change as you work: your recent files, your open
+documents, and the lists of templates, sound packs and voices. Each one
+is named by the menus it sits in, so a recent file is listed under File
+and Open Recent, with its number and name. Typing the name of anything
+you can see in a menu finds it. If it is dimmed in the menu right now,
+the palette tells you so rather than doing nothing.</p>
+<p>Every on/off command in the palette says which way it is set right
+now, for example <strong>Toggle Soft Wrap (currently On)</strong> and
+<strong>Toggle Dark Mode (currently Off)</strong>. The same goes for
+find wrap, the tab control, persistent undo, spell check as you type,
+word prediction, overwrite mode, extend-selection mode, tab insert mode,
+abbreviation expansion and more. A menu can show a check mark, but a
+list in the palette cannot, so the state goes in the name. You never
+have to flip a switch just to find out which way it was.</p>
+<p>When a command cannot run right now, the palette tells you why. A
+command switched off by a safety update reads as “(unavailable: Turned
+off by a safety update: …)”, and trying to run it says the reason
+again.</p>
+<p>The palette learns from you, too. The commands you use most rise
+towards the top of the list.</p>
+<h4 id="palette-search-modes">Palette search modes</h4>
+<p>Start your search with one of these characters to change how the
+palette looks:</p>
+<ul>
+<li>Normal search, or <code>&gt;</code>, searches all commands.</li>
+<li><code>:</code> searches command IDs.</li>
+<li><code>?</code> favours commands that have a key.</li>
+<li><code>~</code> puts recently used commands first.</li>
+</ul>
+<h3 id="the-quill-key">The QUILL key</h3>
+<p>The <strong>QUILL key</strong> is <code>Ctrl+Shift+Grave</code>. The
+grave key is the back-tick key, just above Tab. Press it, then one more
+key, and you reach most of QUILL’s bigger features without leaving the
+keyboard.</p>
+<p>Everywhere QUILL shows one of these keys, in menus, in <strong>About
+&gt; Keyboard Reference</strong>, in the QUILL Key Help dialog, on the
+cheat sheet and in the status bar, it writes it as
+<code>QUILL Key + &lt;key&gt;</code>: <code>QUILL Key + S</code>,
+<code>QUILL Key + Shift+O</code> and so on. When you type one into the
+Keymap Editor you write it as
+<code>Ctrl+Shift+Grave, &lt;key&gt;</code>. Both mean the same
+thing.</p>
+<p>The QUILL key works in two ways.</p>
+<ol type="1">
+<li><strong>Prefix Mode (One-shot).</strong> Press it once and QUILL
+waits a moment for your next key. That key runs a command, such as
+<code>G</code> to open a file from a favorite folder or <code>M</code>
+to paste rich text as Markdown, and then QUILL goes back to normal.</li>
+<li><strong>Browse Mode (Locked).</strong> Press the QUILL key twice in
+a row and QUILL locks <strong>Quick Nav (Browse) mode</strong> on. Now
+single letters move you through the document: <code>H</code> for
+headings, <code>P</code> for paragraphs, <code>S</code> for sentences
+and more. It stays on until you press <code>Esc</code>.</li>
+</ol>
+<p>Every one of these chords can be changed in the Keymap Editor, which
+the next topic covers. The full cheat sheet is one key away:
+<code>QUILL Key + ?</code>.</p>
+<h4 id="the-quill-key-chords">The QUILL key chords</h4>
+<p>These are the chords QUILL starts with.</p>
+<ul>
+<li><code>QUILL Key + N</code> Quick Nav (browse) mode for your next
+move. If <strong>Sticky browse mode</strong> (the
+<code>browse_mode_sticky</code> setting) is on, it stays locked until
+<code>Esc</code>. Otherwise it ends when the QUILL key times out.</li>
+<li><code>QUILL Key</code> pressed twice locks Quick Nav on until
+<code>Esc</code>, whatever that setting says. This is the way most
+people use it: the first press gets QUILL ready, the second locks browse
+mode.</li>
+<li><code>QUILL Key + G</code> opens <strong>Open From Favorite
+Folder…</strong>. (Go to Anything is <code>Ctrl+Alt+Shift+A</code>, and
+the Quick Nav landmark list is <code>Ctrl+Shift+Z</code>.)</li>
+<li><code>QUILL Key + M</code> pastes the rich HTML on the clipboard as
+Markdown at the cursor.</li>
+<li><code>QUILL Key + V</code> opens the browser preview of the current
+document.</li>
+<li><code>QUILL Key + A</code> opens selection actions when text is
+selected. With nothing selected, it expands an abbreviation by hand in
+the middle of a word.</li>
+<li><code>QUILL Key + Shift+A</code> opens the abbreviation
+manager.</li>
+<li><code>QUILL Key + Shift+1</code> to <code>Shift+9</code>, then
+<code>Shift+0</code>, <code>Shift+-</code> and <code>Shift+=</code> copy
+the selection to slots 1 to 12 of the Copy Tray.</li>
+<li><code>QUILL Key + ?</code> shows the QUILL key cheat sheet.</li>
+<li><code>QUILL Key + Esc</code> cancels the QUILL key without running
+anything.</li>
+</ul>
+<p>A few things that once had a QUILL key chord have moved:</p>
+<ul>
+<li>Opening from, saving to and managing remote sites (FTP, SFTP, HTTPS,
+WebDAV, S3 and GitHub) have no key to start with. Find them under
+<strong>File &gt; Open from Remote</strong>, or give them a key of your
+own. (These were <code>QUILL Key + Shift+O</code>,
+<code>QUILL Key + W</code> and <code>QUILL Key + Shift+M</code>.)</li>
+<li>Turning abbreviation expansion on or off is
+<code>Alt+Shift+A</code>.</li>
+<li>The Copy Tray dialog is <code>Ctrl+Alt+V</code>.</li>
+<li>Switching the Tab key between indenting and typing a tab character
+is <code>Ctrl+Alt+Shift+I</code>.</li>
+</ul>
+<h4 id="hearing-the-quill-key">Hearing the QUILL key</h4>
+<p>When you press the QUILL key, QUILL plays a short double ping that
+sounds like nothing else, so you know it is ready before any speech
+arrives. The sound is in every sound pack that comes with QUILL, and you
+can switch it off on its own in <strong>Tools &gt; Reading and Dictation
+&gt; Sound Scheme…</strong> (this used to be called Sound Events).</p>
+<p>Some keyboards and drivers report the grave key in unusual ways.
+QUILL checks for it three different ways, so it recognises the key on
+any layout.</p>
+<p>On macOS, use the physical <strong>Control</strong> key for the QUILL
+key, not Cmd. <code>Cmd+Shift+Grave</code> is macOS’s own shortcut for
+cycling windows, and QUILL never sees it. If you would rather use Cmd,
+change that system shortcut first in <strong>System Settings &gt;
+Keyboard &gt; Keyboard Shortcuts &gt; Mission Control</strong>.</p>
+<h4 id="moving-a-quill-key-chord">Moving a QUILL key chord</h4>
+<ol type="1">
+<li>Open the Keymap Editor, from <strong>Tools &gt; Customize and
+Support &gt; Keymap Editor…</strong>
+(<code>Ctrl+Alt+Shift+Space</code>).</li>
+<li>Find the command you want to move.</li>
+<li>Type the new chord in the form <code>Ctrl+Shift+Grave, X</code>,
+putting the key you want in place of <code>X</code>.</li>
+</ol>
+<p>The Keymap Editor stores chords in that
+<code>Ctrl+Shift+Grave, X</code> form, and menus and the cheat sheet
+show them as <code>QUILL Key + X</code>. If the chord you pick is
+already in use, QUILL tells you before anything is overwritten.</p>
+<h2 id="the-keyboard-manager">The Keyboard Manager</h2>
+<p>The Keymap Editor, also called the Keyboard Manager, is where you see
+and change every key in QUILL. Open it from <strong>Tools &gt; Customize
+and Support &gt; Keymap Editor…</strong>
+(<code>Ctrl+Alt+Shift+Space</code>), or from the Keymap Editor entry in
+More Preferences (the QUILL key, then <code>O</code>). It is made to be
+quick and safe to use, however you think about shortcuts.</p>
+<ul>
+<li><strong>Search two ways from one box.</strong> Type part of a
+command’s name to narrow the list. Or type a <em>shortcut</em>, such as
+<code>ctrl+alt+m</code>, <code>Control + Shift + K</code>, or even a
+QUILL key chord like <code>quill, s</code>. The editor then tells you
+which command that key belongs to, or that it is “unassigned and
+available”. You never have to remember whether a key is free. Just
+ask.</li>
+<li><strong>Forgiving spelling.</strong> Write the modifiers however you
+like: <code>control</code>, <code>ctrl</code> or <code>ctl</code>, in
+any order (<code>shift+ctrl+k</code> is the same as
+<code>ctrl+shift+k</code>) and in any case. QUILL tidies up what you
+type before saving it. A Mac-style <code>Cmd</code> stays separate from
+<code>Ctrl</code> and is never mixed up with it.</li>
+<li><strong>Record Keys.</strong> Would you rather press the keys than
+spell them? Choose <strong>Record Keys</strong>, press the chord, and
+QUILL fills it in for you.</li>
+<li><strong>Clear warnings when a key is taken.</strong> If you choose a
+key that another command already has, QUILL tells you that command’s
+name and offers to move the key over, taking it off the other command.
+Nothing is replaced behind your back.</li>
+<li><strong>Diagnostics and repair.</strong> <strong>Run
+Diagnostics</strong> checks your whole keymap. It reports duplicate
+shortcuts, keys for commands that no longer exist, bindings it cannot
+read, and any key that is “assigned but inert”, meaning the editor
+cannot actually use it. For the problems it can fix, one press of
+<strong>Heal</strong> removes the bad entries and reapplies your keymap,
+so the menus and the shortcuts agree again.</li>
+</ul>
+<h2 id="the-main-window">The Main Window</h2>
+<p>QUILL’s main window is kept simple: a menu bar across the top, the
+editor in the middle and a status bar along the bottom. When you have
+several documents open you can also show a row of tabs, which the
+Windows and tabs topic, later in this chapter, covers.</p>
+<h3 id="the-menu-bar">The menu bar</h3>
+<p>The menus run across the top of the window in the order you know from
+Windows and Office: File, Edit, View, Insert, Format, Navigate, Tools,
+AI, Window, QuillVille and Help. There used to be a Search menu as well.
+Its commands now live on the <strong>Edit</strong> menu: the folder
+searches as rows of Edit itself, and the rest under <strong>Edit &gt;
+Search Tools</strong>.</p>
+<p>Every menu and every menu item can be reached from the keyboard.
+Press <code>Alt</code> with the menu’s underlined letter:
+<code>Alt+F</code> for File, <code>Alt+E</code> for Edit,
+<code>Alt+V</code> for View, <code>Alt+T</code> for Tools,
+<code>Alt+W</code> for Window and <code>Alt+H</code> for Help.</p>
+<p>The menus cover everything. If QUILL can do something, there is
+almost always a menu item for it. The menus topic, later in this
+chapter, says what each one holds.</p>
+<h3 id="the-editor">The editor</h3>
+<p>The editor is the heart of QUILL. It is where you write, where text
+taken from other files lands, and where reports and comparison summaries
+open, as ordinary documents you can read and edit like any other.</p>
+<p>The editor handles:</p>
+<ul>
+<li>plain text writing</li>
+<li>Markdown-aware writing</li>
+<li>HTML-aware writing</li>
+<li>moving by the structure of the document</li>
+<li>selection helpers</li>
+<li>cleaning up text</li>
+<li>spelling and the thesaurus</li>
+<li>inserting and following links</li>
+<li>reviewing changes after a comparison</li>
+</ul>
+<h3 id="the-status-bar">The status bar</h3>
+<p>The status bar is something you can work in, not just a strip of text
+to read.</p>
+<p>Press <code>F6</code> to move into it. Once you are there, you can
+move between its cells and press Enter on one, and most cells open a
+related window. <code>Shift+F6</code> takes you back to the editor.
+Depending on your layout and what you are doing, the status bar can
+show:</p>
+<ul>
+<li>the current message</li>
+<li>line and column</li>
+<li>word count</li>
+<li>insert or overwrite mode</li>
+<li>tab mode (whether the Tab key indents the line or types a tab
+character)</li>
+<li>selection size</li>
+<li>encoding</li>
+<li>line endings</li>
+<li>spell-check state</li>
+<li>background tasks</li>
+<li>notifications</li>
+<li>read-aloud state</li>
+<li>autosave timing</li>
+<li>the current search term</li>
+<li>the file path, or that the file is unsaved</li>
+</ul>
+<p>You can reorder the cells or hide some of them in <strong>Tools &gt;
+Customize and Support &gt; Status Bar Layout…</strong>. <strong>Restore
+Defaults</strong> there puts every cell back the way it started.</p>
+<p>Open the context menu on a status cell (right-click,
+<code>Shift+F10</code> or the Applications key) to
+<strong>Activate</strong> it, <strong>Hide this item</strong>, or open
+<strong>Status bar settings…</strong>. On the
+<strong>Notifications</strong> cell (or the <strong>Background
+Tasks</strong> cell) the menu also has <strong>Clear All
+Notifications</strong>, which empties the notification list in one go
+without opening the dialog.</p>
+<p>The status bar never says the same thing twice. When the title bar is
+set to show the full path, QUILL hides the file path cell. The current
+message cell hides itself too, whenever its text is exactly the same as
+another cell you can see.</p>
+<p>To hide or show the whole status bar, use <strong>View &gt; Status
+Bar</strong>, described in View and display, later in this chapter.</p>
+<h3 id="moving-between-regions-f6">Moving between regions (F6)</h3>
+<p><code>F6</code> and <code>Shift+F6</code> move you between the main
+parts of the window. If you write, check and move around entirely from
+the keyboard, this soon becomes second nature.</p>
+<p>When <strong>Show Tab Control</strong> is on (in the View menu) and
+at least one document is open, the row of document tabs joins the
+<code>F6</code> cycle as <strong>Document Tabs</strong>, so you can
+reach the tabs from the keyboard instead of skipping past them. The
+order is the editor, then Document Tabs, then the preview (when you have
+it open beside the editor), then the status bar. On the tab row, Left
+and Right Arrow move between tabs, and Enter, Space or Tab takes you
+back to the editor on the document you chose.</p>
+<h3 id="the-tab-key-indent-or-tab-character">The Tab key, indent or tab
+character</h3>
+<p>Out of the box, the <strong>Tab</strong> key indents. It adds one
+level of indentation at the start of the current line, or of every line
+you have selected, and <strong>Shift+Tab</strong> takes one level away.
+On a Markdown list item, Tab and Shift+Tab move the item in and out a
+level. QUILL speaks each of these, so you hear that the line moved even
+though the cursor stays where it was.</p>
+<p>When you indent with Tab, or outdent with Shift+Tab, QUILL says how
+deep the line now sits, for example “4 spaces”, “8 spaces” or “1 tab”.
+If you would rather just hear “Indented lines”, turn off
+<strong>Announce indentation depth on Tab</strong> in Preferences, under
+<strong>Accessibility</strong>.</p>
+<p>Two settings decide what an indent is made of, both in
+Preferences:</p>
+<ul>
+<li><strong>Indent size</strong> is the number of spaces per indent
+level, from 1 to 8. The default is 4.</li>
+<li><strong>Indent with tabs</strong> makes QUILL insert tab characters
+instead of spaces.</li>
+</ul>
+<p>Whichever you choose, the spoken depth follows it.</p>
+<p>If you would rather Tab typed a real tab character at the cursor, the
+way it does in a plain text editor, switch <strong>Tab Mode</strong>
+with <code>Ctrl+Alt+Shift+I</code>, or with <strong>Format &gt; Tab Key
+Inserts Tab Character</strong>, which is checked while the mode is on.
+QUILL says the new mode when you switch, and the <strong>Tab
+Mode</strong> cell in the status bar shows <strong>Indent</strong> or
+<strong>Tab char</strong>. Even while Tab types a tab character,
+Shift+Tab still outdents, so you can take back a stray indent without
+leaving the mode. Tab Mode lasts until you close QUILL.</p>
+<h2 id="the-menus">The menus</h2>
+<p>Here is what each menu holds and which chapter tells you more. They
+are listed in the order they sit on the menu bar.</p>
+<h3 id="file">File</h3>
+<p>File is where documents begin and end: new, open, save and save as,
+recent files and favourite folders, opening from a web address or over
+SSH and remote sites, snapshots, publishing, and importing and exporting
+other formats. Chapter 3, Opening, saving and converting files, covers
+all of it.</p>
+<h3 id="edit">Edit</h3>
+<p>Edit holds the everyday editing commands, along with selection tools,
+the Copy Tray, and what used to be the Search menu: <strong>Edit &gt;
+Search in Files…</strong>, <strong>Edit &gt; Replace Across
+Files…</strong> and the <strong>Edit &gt; Search Tools</strong> submenu.
+Chapter 4, Writing and editing, covers editing and selection, and
+Chapter 6, Moving around and finding things, covers searching.</p>
+<h3 id="view">View</h3>
+<p>View changes how your document is shown without changing what is in
+it: soft wrap, the tab row, the status bar, text size, previews and
+Reveal Codes. It is covered later in this chapter, under View and
+display.</p>
+<h3 id="insert">Insert</h3>
+<p>Insert puts things into your document: headings, lists, the date and
+time, links and special characters. Chapter 4, Writing and editing,
+covers it.</p>
+<h3 id="format">Format</h3>
+<p>Format holds font, size, alignment, colour and paragraph settings,
+along with changing case, working on lines, sorting, whitespace, HTML
+and Markdown, and the document’s language. Chapter 5, Formatting,
+structure and markup, covers it.</p>
+<h3 id="navigate">Navigate</h3>
+<p>Navigate gathers the ways to move around a document: go to line, go
+to heading, go to an entry in a notebook, the Heading Organizer, the
+Outline Navigator, back and forward through places you have been, and
+next and previous by structure. It also has bookmarks, folding and
+sticky notes. When you need to get around a long document, start here.
+Chapter 6, Moving around and finding things, covers it.</p>
+<h3 id="tools">Tools</h3>
+<p>Tools is QUILL’s workshop, for jobs that are more than plain editing.
+The Command Palette is here, along with spelling and writing tools
+(Chapter 7, Spelling and words), reading, comparison and inspection
+tools (Chapter 8, Reading, reviewing and listening), speech and
+dictation (Chapter 9, Dictation and transcription), and braille and
+accessibility (Chapter 11, Accessibility, speech and braille).
+<strong>Tools &gt; Customize and Support</strong> is where you make
+QUILL your own (Chapter 12, Making QUILL yours), and Story Studio, the
+Vault and Git are covered in Chapter 14, Projects, notes and the
+QuillVille family.</p>
+<h3 id="ai">AI</h3>
+<p>AI holds the optional assistant: proofreading, changing the selected
+text, translation, reading aloud, transcribing audio and more. Nothing
+in it runs unless you choose it. Chapter 10, AI, when you want it,
+covers it.</p>
+<h3 id="window">Window</h3>
+<p>Window lists your open documents and lets you move between them, open
+a new tab, close the others, or send QUILL to the system tray. It is
+covered later in this chapter, under Windows and tabs.</p>
+<h3 id="quillville">QuillVille</h3>
+<p>QuillVille (<code>Alt+Q</code>) opens the other apps in the QUILL
+family. Each row has its own letter, so <code>Alt+Q</code> and then one
+letter opens an app with nothing held down, and each has a key of its
+own:</p>
+<ul>
+<li><strong>Open Quill Radio</strong>
+(<code>Ctrl+Alt+Shift+F7</code>)</li>
+<li><strong>Open Quill Weather</strong>
+(<code>Ctrl+Alt+Shift+F8</code>)</li>
+<li><strong>Open Quill Converter</strong>
+(<code>Ctrl+Alt+Shift+F9</code>), which changes audio and video files
+from one format to another</li>
+<li><strong>Open Quill Inkwell</strong>
+(<code>Ctrl+Alt+Shift+F10</code>)</li>
+</ul>
+<p>The menu lists only the apps that have been released, and the keys
+are handed out in the order the menu lists them, starting at
+<code>Ctrl+Alt+Shift+F7</code>. Quill Cast and Audio Studio are not
+released yet, so they are not on this menu; when one is, it joins the
+list and the keys of the rows below it move down by one. The menu always
+shows each row’s current key beside it, so press <strong>Alt+Q</strong>
+and listen rather than relying on memory. (Once Quill Cast is running,
+its own show-and-hide key, <code>Ctrl+Alt+Shift+F12</code>, brings it
+forward from any program.)</p>
+<ul>
+<li><strong>Open Quill Radio</strong> (<code>Alt+Q</code>,
+<code>R</code>, or <code>Ctrl+Alt+Shift+F7</code>)</li>
+<li><strong>Open Quill Weather</strong> (<code>Alt+Q</code>,
+<code>W</code>, or <code>Ctrl+Alt+Shift+F8</code>)</li>
+<li><strong>Open Quill Converter</strong> (<code>Alt+Q</code>,
+<code>V</code>, or <code>Ctrl+Alt+Shift+F9</code>), which changes audio
+and video files from one format to another</li>
+<li><strong>Open Quill Inkwell</strong> (<code>Alt+Q</code>,
+<code>I</code>, or <code>Ctrl+Alt+Shift+F10</code>), which expands your
+abbreviations in every program</li>
+<li><strong>Open QUILL Transcribe</strong> (<code>Alt+Q</code>,
+<code>T</code>, or <code>Ctrl+Alt+Shift+F11</code>), which types what
+you say into any program. It is released on 1 November 2026.</li>
+</ul>
+<p>For example, to start dictating into an email, press
+<code>Ctrl+Alt+Shift+F11</code>. QUILL Transcribe opens (or comes to the
+front if it is already running), and its own start and stop key,
+Alt+Shift+Backslash unless you changed it, then works in your email
+program. Inside QUILL you do not need it: <code>Ctrl+F11</code> dictates
+into the document you are in.</p>
+<p>Those five are every row this menu shows. Quill Cast and Audio Studio
+join it when they are released; Cast will keep
+<code>Ctrl+Alt+Shift+F12</code>, the key that shows and hides it from
+any program. Every row is a command you can give a different key in
+<strong>Tools &gt; Customize and Support &gt; Keymap Editor…</strong>
+(<code>Ctrl+Alt+Shift+Space</code>): search for “QuillVille: Open”.</p>
+<p>If an app is not on your computer yet, QUILL offers to download it
+for you. Nothing is downloaded until you say yes. QUILL Transcribe has
+nothing to download until 1 November 2026; before then QUILL says it
+could not fetch it and offers to open the download page instead. Chapter
+14, Projects, notes and the QuillVille family, says more.</p>
+<h3 id="help">Help</h3>
+<p>Help has help on the control you are on, <strong>What Can I Do
+Here?</strong>, the tutorials, the User Guide, the keyboard reference,
+<strong>Personalise QUILL…</strong>, feature profiles, checking for
+updates and ways to get support. Chapter 15, Help, updates and support,
+covers it.</p>
+<h2 id="windows-and-tabs">Windows and tabs</h2>
+<p>QUILL lets you have many documents open at once. Each one gets its
+own tab, and QUILL opens things it makes for you as tabs too. The
+welcome guide, the keyboard reference and a comparison summary all open
+as ordinary tabs, right beside the work that produced them.</p>
+<h3 id="tabs-and-document-switching">Tabs and document switching</h3>
+<ul>
+<li><code>Ctrl+Tab</code> and <code>Ctrl+Shift+Tab</code> move to the
+next and previous document.</li>
+<li><code>Ctrl+W</code> closes the document you are in.</li>
+<li>The context menu on a tab lets you close that tab, close the other
+tabs, or close the tabs to its right.</li>
+<li>The same menu can show a saved document in File Explorer.</li>
+</ul>
+<p>To see the row of tabs, turn on <strong>Show Tab Control</strong> in
+the View menu (<code>QUILL Key + Shift+T</code>).</p>
+<h3 id="the-window-menu">The Window menu</h3>
+<p>The <strong>Window</strong> menu is small but handy.</p>
+<ul>
+<li><strong>New Tab</strong> (<code>Ctrl+T</code>) opens a new, empty
+document tab.</li>
+<li><strong>Next Document</strong> (<code>Ctrl+Tab</code>, also
+<code>Ctrl+F6</code>; on macOS <code>Cmd+Shift+]</code>) moves to the
+next open document.</li>
+<li><strong>Previous Document</strong> (<code>Ctrl+Shift+Tab</code>,
+also <code>Ctrl+Shift+F6</code>; on macOS <code>Cmd+Shift+[</code>)
+moves to the previous open document. macOS keeps <code>Cmd+Tab</code>
+for its own App Switcher, so on a Mac QUILL uses the same tab keys as
+Safari and Xcode.</li>
+<li><strong>Close Other Documents</strong> (<code>Ctrl+Shift+F4</code>)
+closes every document except the one you are in.</li>
+<li><strong>Send to System Tray</strong> (<code>QUILL Key + T</code>)
+tucks QUILL into the notification area without closing it.</li>
+<li>After those come your open documents, numbered, such as <strong>1:
+notes.txt (Alt+1) (active)</strong> and <strong>2: other.md
+(Alt+2)</strong>. Press <code>Alt+W</code> to open the Window menu, then
+the number, to go straight to that document. The one you are in is
+marked active. The list keeps up as you open and close files, and an
+untitled document takes its new name the moment you save it.</li>
+</ul>
+<p>You can also jump straight to a document by its position without
+opening the menu. <strong>Go to Document 1</strong> to <strong>Go to
+Document 10</strong> are <code>Alt+1</code> to <code>Alt+9</code>, and
+<code>Alt+0</code> for the tenth. If no document is open in that
+position, QUILL says so and leaves you where you are. You can change
+these keys in the Keymap Editor, like any other.</p>
+<blockquote>
+<p><strong>QUILLBee’s shortcut:</strong> Juggling notes, extracted files
+and previews? Keep your main document first in the row, and
+<code>Alt+1</code> will always bring you home.</p>
+</blockquote>
+<h2 id="view-and-display">View and display</h2>
+<p>The <strong>View</strong> menu changes how QUILL shows your document
+on screen. Nothing on it changes what is in the document.</p>
+<ul>
+<li><strong>Toggle Soft Wrap</strong> (<code>Alt+Z</code>) wraps long
+lines to fit the window without changing the file.</li>
+<li><strong>Show Tab Control</strong> shows or hides the row of document
+tabs.</li>
+<li><strong>Status Bar</strong> (<code>Alt+Shift+B</code>) shows or
+hides the <strong>whole</strong> status bar. It is the same switch on
+the same key as in Notepad and QUILL Lite. It is a different thing from
+choosing which cells the bar carries (right-click the bar, or
+<strong>Tools &gt; Customize and Support &gt; Status Bar
+Layout…</strong>): a bar with every cell hidden still takes up a row of
+the window. The setting is <strong><code>show_status_bar</code></strong>
+(<strong>Show status bar</strong>). It is on to start with, and QUILL
+remembers your choice. QUILL says which way it went, because your screen
+reader will not tell you a bar has left the window.</li>
+<li><strong>Increase Text Size</strong> (<code>Ctrl+=</code>),
+<strong>Decrease Text Size</strong> (<code>Ctrl+-</code>) and
+<strong>Reset Text Size</strong> (<code>Ctrl+0</code>) change how big
+the editor’s text is without leaving the document. They are the same
+three keys as in Notepad and QUILL Lite. Chapter 11, Accessibility,
+speech and braille, has more on the size and face of the text.</li>
+<li><strong>Preview…</strong> (<code>Alt+Shift+V</code>),
+<strong>Preview Side by Side</strong>, <strong>Focus Preview</strong>
+(<code>Alt+F6</code>) and <strong>Browser Preview…</strong>
+(<code>QUILL Key + V</code>) show your document rendered, the way a
+reader would see it.</li>
+<li><strong>Auto Side-by-Side Preview</strong> opens a live preview
+beside the editor automatically.</li>
+<li><strong>Announce Headings</strong> and <strong>Announce
+Lists</strong> choose whether QUILL tells you when you move onto a
+heading or a list.</li>
+<li><strong>What Is This Document?</strong>, <strong>What
+Changed?</strong> and <strong>Undo and Say What Changed</strong> tell
+you the things a screen reader cannot work out for itself.</li>
+<li><strong>Show Entries Panel</strong> and <strong>Reveal
+Codes</strong> (<code>Alt+F3</code>) show more of the document’s
+structure and formatting.</li>
+</ul>
+<p>Two switches that used to be on this menu are now in Preferences
+(<code>Ctrl+,</code>): <strong>Wrap Find Searches</strong> decides
+whether Find carries on from the top when it reaches the end, and
+<strong>Start With No Document Open</strong> makes QUILL open to an
+empty workspace instead of a starter document.</p>
+<p>Other settings that once lived here are in Preferences too, where
+they are saved in one place: the theme and dark mode, system tray mode,
+how the title bar shows the path, how the title marks unsaved changes,
+persistent undo, spell check as you type, and word prediction as you
+type. You reach them from <strong>Tools &gt; Customize and Support &gt;
+Preferences…</strong>.</p>
+<h3 id="live-preview-while-you-type">Live preview while you type</h3>
+<p>Open the side-by-side preview with <strong>Preview Side by
+Side</strong>, or turn on Auto Side-by-Side Preview. <code>Alt+F6</code>
+jumps straight into it, and while it is open it joins the
+<code>F6</code> cycle too.</p>
+<p>As you edit, the preview updates quietly in place. The new content is
+swapped in without reloading the page, so your braille display and
+screen reader are not interrupted, nothing is read again from the top,
+and you keep your place. This is the live preview to use if you read
+with a screen reader or braille.</p>
+<p>The <strong>Browser Preview</strong> in your web browser can also
+follow your edits. A real browser has to reload the whole page to do
+that, so QUILL refreshes it only when you pause typing, not on every
+key. Each time, it puts you back at the section you are editing, or
+where you had scrolled to, instead of at the top.</p>
+<h3 id="jump-from-the-preview-back-to-the-editor">Jump from the preview
+back to the editor</h3>
+<p>Reading the side preview, and want to change what you just heard? Go
+to a block (a heading, paragraph, list item, quote, table or code block)
+and open its context menu with the <strong>Applications key</strong>,
+<strong>Shift+F10</strong> or a right-click. Choose <strong>Go to this
+location in the editor</strong>. The cursor moves to that block in your
+document, focus goes with it, and QUILL tells you where you landed.</p>
+<p>Pressing <strong>Enter</strong> on a block does the same, when your
+screen reader passes the key through. The context menu is the dependable
+way, though: in browse mode there is no way to ask where the virtual
+cursor is, but a context menu always belongs to the exact spot you are
+on. The jump is offered when the preview matches your document word for
+word. A preview that expands Vault links does not offer it, because the
+places would no longer line up.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You know three ways to reach anything in QUILL: <code>F1</code> for
+help on what you are on, the Command Palette (<code>Ctrl+Shift+P</code>)
+for any command by name, and the QUILL key
+(<code>Ctrl+Shift+Grave</code>) for the bigger features and Quick Nav.
+You have been round the window with <code>F6</code>, heard what each
+menu holds, moved between documents and tabs, and seen how View changes
+what is on screen.</p>
+<p>For a guided go at the same ground, open <strong>Help &gt;
+Tutorials…</strong> (<code>Ctrl+Alt+F1</code>). In the Your first hour
+track, “Do anything by name”, “The QUILL key” and “Getting unstuck”
+match this chapter, and “Make QUILL the size you need”, in Living with
+it, covers text size. On the website, <a
+href="https://www.quillforall.org/tutorials/02-own-the-keyboard.html">Own
+the keyboard</a> goes deeper into keys and the Keymap Editor.</p>
+<p>Next, Chapter 3, Opening, saving and converting files, shows you how
+to bring documents in and send them out in the format you need.</p>
+<hr />
+<ul>
+<li>Previous: <a href="quill-guide-01-your-first-session.html">Chapter
+1: Your first session</a></li>
+<li>Next: <a
+href="quill-guide-03-opening-saving-and-converting-files.html">Chapter
+3: Opening, saving and converting files</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

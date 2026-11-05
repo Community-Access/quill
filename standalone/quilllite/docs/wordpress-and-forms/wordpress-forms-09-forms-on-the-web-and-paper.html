@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 9: Forms on your site, on the web and on paper</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-9-forms-on-your-site-on-the-web-and-on-paper">Chapter 9:
+Forms on your site, on the web and on paper</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>A form you have written and checked can go four ways: onto your
+WordPress site through the QUILL Accessible Forms plugin, onto any
+website as a page of its own, onto paper in ordinary or large print, and
+into braille. This chapter covers each one, then reading the responses
+people send, bringing forms in from other form builders, and the
+optional AI help for forms. It ends with what is kept private and what
+Safe Mode turns off.</p>
+<h2 id="quill-accessible-forms">QUILL Accessible Forms</h2>
+<p>WordPress has no forms of its own. Something on the site has to show
+the form to visitors, check and store their answers, send the emails and
+keep spam out, and QUILL runs on your computer, so it cannot do that for
+your visitors. That job belongs to a plugin: <strong>QUILL Accessible
+Forms</strong>, made by the same people as QUILL, free and MIT-licensed.
+It used to be called BITS Accessible Forms.</p>
+<p>The plugin reads the same form language QUILL writes, so a form you
+publish from QUILL is exactly the form you checked and filled in
+yourself. It also has its own accessible builder screens, if someone on
+your team prefers to work in the dashboard.</p>
+<p>To use it, install QUILL Accessible Forms on your site in the usual
+way, or ask your site’s administrator to. Site Check (Chapter 7) names
+it when it is there. A site that still runs it under its old name, BITS
+Accessible Forms, works too.</p>
+<p>Forms are published only to QUILL Accessible Forms. If your site does
+not have it, Save As Web Page, below, still puts your form on the
+web.</p>
+<h2 id="publishing-a-form">Publishing a form</h2>
+<ol type="1">
+<li>Open the form, and check it with <strong>Tools &gt; Forms &gt; Check
+This Form…</strong>. Publish will not send a form QUILL cannot read
+properly, such as one with a rule that makes no sense: it says, for
+example, “Publish Form stopped: this form has 2 problems to fix first.”
+Check This Form lists them.</li>
+<li>Choose <strong>Tools &gt; Forms &gt; Publish Form…</strong>.</li>
+<li>If you have more than one site, choose the site that has QUILL
+Accessible Forms.</li>
+<li>The first time, QUILL asks <strong>Publish as</strong>:
+<strong>Live</strong>, so people can fill it in wherever it is placed,
+or a <strong>draft</strong>, which waits until you make it live, here or
+in the plugin.</li>
+<li>QUILL asks you to confirm, naming the form and the site.</li>
+</ol>
+<p>You hear, for example, “Published Ask us anything on Community Radio,
+form 12, live. Insert Form Into Page puts it on a page.”</p>
+<p><strong>Publishing again</strong> updates the same form on the site;
+the question then says Update. If someone changed the form on the site
+since you last published, QUILL says so before it replaces it, and keeps
+the site’s copy on your computer first. It keeps the last ten copies of
+each form.</p>
+<p>If the site does not have the plugin, you hear, for example, “Publish
+Form needs QUILL Accessible Forms on Community Radio, and the site does
+not offer it.”</p>
+<h2 id="putting-the-form-on-a-page">Putting the form on a page</h2>
+<p>A published form shows wherever you place it.</p>
+<ol type="1">
+<li>Open the page from <strong>File &gt; WordPress &gt; Open Page or
+Post…</strong>.</li>
+<li>Put the cursor where the form goes.</li>
+<li>Choose <strong>Tools &gt; Forms &gt; Insert Form Into
+Page…</strong>.</li>
+<li>QUILL lists the site’s forms, each with how many responses it has
+had. The one you published last from this computer is selected. Press
+Enter.</li>
+</ol>
+<p>QUILL inserts the plugin’s form block in an HTML page, or its
+shortcode in a Markdown page. You hear “Inserted the Ask us anything
+form”, and that it shows on the page once the page is sent. Then Save
+Draft to Site or Publish the page as usual.</p>
+<h2 id="test-on-site">Test on Site</h2>
+<p><strong>Tools &gt; Forms &gt; Test on Site</strong> opens the page
+that shows your form, in your web browser, so you can fill it in there
+with your screen reader, the way a visitor will. You hear “Opened
+Contact on Community Radio, where the form is.” If no page shows the
+form yet, QUILL opens the form in QUILL Accessible Forms on the site
+instead, and reminds you that Insert Form Into Page puts it on a
+page.</p>
+<h2 id="reading-the-responses">Reading the responses</h2>
+<p><strong>Tools &gt; Forms &gt; Responses…</strong> lists what people
+sent, newest first, such as “Response 41, 3 November, 2:10 PM, Jane
+Smith, Event registration”. With a published form open, it goes straight
+to that form’s responses. Otherwise QUILL asks which site, then which
+form, each with how many responses it has had.</p>
+<p>The buttons:</p>
+<ul>
+<li><strong>Read</strong>, or Enter: one response, a question and its
+answer on each line, in a window you can read and copy.</li>
+<li><strong>View…:</strong> the list; or grouped under a heading for
+each day; or grouped for each place the responses gave.</li>
+<li><strong>Find…:</strong> shows only responses containing some words.
+Leave it empty to show every response again.</li>
+<li><strong>Mark:</strong> marks or unmarks the response you are on, to
+delete several.</li>
+<li><strong>Export to CSV…:</strong> saves the responses shown as a CSV
+file, where you choose.</li>
+<li><strong>Open as Table…:</strong> does the same and opens the file
+afterwards, as a table you can walk cell by cell.</li>
+<li><strong>Export to Word…:</strong> saves the response you are on, or
+all of those shown, as a Word document.</li>
+<li><strong>Summarise…:</strong> asks your AI for a summary (see
+below).</li>
+<li><strong>Delete…:</strong> deletes the marked responses, or the one
+you are on, after telling you how many. They go to the Trash in QUILL
+Accessible Forms, not away for good.</li>
+<li><strong>Say New Count:</strong> turns on or off the spoken count of
+new responses.</li>
+</ul>
+<p><strong>The new response count.</strong> The first time you use a
+site in a session, QUILL says how many new responses each form has, for
+example “Community Radio: 4 new responses to Event registration.” The
+plugin has no “unread” mark, so “new” means new since you last opened
+Responses in QUILL.</p>
+<p><strong>Responses are people’s personal details.</strong> QUILL reads
+them only while the Responses window is open, keeps them in memory,
+never writes them to a log, and saves them only where you choose.</p>
+<h2 id="save-as-web-page">Save As Web Page</h2>
+<p><strong>Tools &gt; Forms &gt; Save As Web Page…</strong> makes a web
+page of its own with the form in it, every question properly labelled,
+to upload anywhere. QUILL asks <strong>Send answers to</strong>: the
+https web address the form should send its answers to, such as a form
+service your organisation already uses. Leave it empty for a form to
+print or read, which sends nothing.</p>
+<p>This is the way to put a form on a site without QUILL Accessible
+Forms. Such a form has no Responses window in QUILL; its answers go
+wherever you sent them.</p>
+<h2 id="paper-large-print-and-braille">Paper, large print and
+braille</h2>
+<p>Every form can be saved three more ways, without a site, even in Safe
+Mode:</p>
+<ul>
+<li><strong>Save As Word Document…:</strong> a printable form. Each
+question is a heading, with lines to write on and boxes to check.</li>
+<li><strong>Save As Large Print…:</strong> the same Word form at 18
+point and up. You hear, for example, “Saved Ask us anything large
+print.docx, a large-print Word document, 18 point and up, with 5
+questions, lines to write on and boxes to check.”</li>
+<li><strong>Save As Braille-Ready Text…:</strong> one question per
+block, choices lettered a, b, c, 40 cells to a line. QUILL asks
+<strong>Save as</strong>: text you can emboss or read on a display as it
+is, or, with the braille pack installed, a BRF file translated to UEB
+contracted braille by QUILL’s own braille translator.</li>
+</ul>
+<p>All of these come from the same form, so the paper version always
+asks what the web version asks. Change the form, save again, and they
+all agree.</p>
+<h2 id="bringing-forms-in-from-other-builders">Bringing forms in from
+other builders</h2>
+<p>Forms made in other WordPress form plugins are brought in on the
+site, by QUILL Accessible Forms’ own Import and Export screen, which
+reads forms from Gravity Forms, WPForms, Contact Form 7, Ninja Forms and
+Google Forms, and lists anything it could not bring across in an import
+report rather than dropping it silently. The same screen can export a
+form back to those builders.</p>
+<p>QUILL does not publish to those other plugins, only to QUILL
+Accessible Forms.</p>
+<h2 id="ai-help-with-forms">AI help with forms</h2>
+<p>If you have chosen an AI in Choose Your AI, four commands can help.
+Each one tells you what it sends before it sends it, and nothing changes
+until you have read the proposal and said yes. Undo takes it all out in
+one step.</p>
+<ul>
+<li><strong>Tools &gt; Forms &gt; Draft a Form…:</strong> describe the
+form in a sentence or two, such as who fills it in and what you need to
+know. Only that description is sent. The AI writes it as a form, which
+you read in full, and QUILL then asks whether to use it: in place of the
+form in front, or saved as a new form.</li>
+<li><strong>Tools &gt; Forms &gt; Plain Language…:</strong> sends your
+questions’ labels and help text, never anybody’s answers. You get
+simpler wording, each beside what is there now, to accept or decline as
+one step.</li>
+<li><strong>Tools &gt; Forms &gt; Suggest Autofill Hints…:</strong> for
+questions such as name, email, phone and address that have no autofill
+hint, and for questions with a format rule but no help. It sends their
+labels and kinds only.</li>
+<li><strong>Summarise…</strong>, a button in Responses: this sends
+people’s answers, so QUILL asks every time. It says how many responses
+would go, and that they may include names and email addresses. The
+summary opens in a window to read; check it against the responses before
+you rely on it.</li>
+</ul>
+<h2 id="privacy-and-safe-mode">Privacy and Safe Mode</h2>
+<ul>
+<li>Payment details and website passwords never pass through QUILL.
+Payment fields, CAPTCHA keys and the like stay on your website.</li>
+<li>Nothing is sent without a deliberate Publish Form, Insert Form Into
+Page, Test on Site, Responses or AI command.</li>
+<li>In Safe Mode, Publish Form, Insert Form Into Page, Test on Site,
+Responses and the four AI commands each say they are off: “Publish Form
+is off in Safe Mode, because it would reach your site or an AI.”
+Writing, checking, Fill It In Yourself and the four Save As commands
+still work.</li>
+</ul>
+<h2 id="a-walk-through-from-your-computer-to-your-site">A walk-through:
+from your computer to your site</h2>
+<ol type="1">
+<li>Check the form, then <strong>Tools &gt; Forms &gt; Publish
+Form…</strong>. Choose Live. Confirm. You hear the form’s number on the
+site.</li>
+<li><strong>File &gt; WordPress &gt; Open Page or Post…</strong>, and
+open your Contact page.</li>
+<li>Put the cursor after the first paragraph, and <strong>Tools &gt;
+Forms &gt; Insert Form Into Page…</strong>. Choose the form.</li>
+<li><strong>File &gt; WordPress &gt; Publish or Update…</strong>.</li>
+<li>Open the form again, and <strong>Tools &gt; Forms &gt; Test on
+Site</strong>. Fill it in once in your browser.</li>
+<li><strong>Tools &gt; Forms &gt; Responses…</strong>. Your test
+response is at the top. Read it, then Mark it and Delete it.</li>
+</ol>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-08-writing-forms.html">Chapter 8:
+Writing a form</a></li>
+<li>Next: <a href="wordpress-forms-10-quill-lite.html">Chapter 10: QUILL
+Lite</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

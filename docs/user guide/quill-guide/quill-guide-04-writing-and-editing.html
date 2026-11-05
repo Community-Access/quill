@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 4: Writing and editing</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-4-writing-and-editing">Chapter 4: Writing and
+editing</h1>
+<p>This chapter is about the work you do most: typing, fixing, moving
+text around and putting things in. It starts with the keys you already
+know from other Windows programs, then shows the extras QUILL adds, such
+as a tray of twelve clipboards, abbreviations that type for you, and an
+emoji picker that describes every emoji in words. Read the first few
+topics now. The rest will keep until you want them.</p>
+<h2 id="writing-and-editing">Writing and editing</h2>
+<p>Start with the commands you already know. They work in QUILL exactly
+as they do everywhere else:</p>
+<ul>
+<li><code>Ctrl+Z</code> to undo</li>
+<li><code>Ctrl+Y</code> to redo</li>
+<li><code>Ctrl+X</code>, <code>Ctrl+C</code> and <code>Ctrl+V</code> to
+cut, copy and paste</li>
+<li><code>Ctrl+A</code> to select everything</li>
+</ul>
+<p>Once those feel at home, QUILL has more to offer. You can put text
+away in a numbered slot and paste it back with one chord, get back
+something you deleted and drop it somewhere else, and run any command
+twenty times in a row. Each has its own topic below.</p>
+<h3 id="ending-a-line-without-a-new-paragraph-shiftenter">Ending a line
+without a new paragraph (Shift+Enter)</h3>
+<p><strong>Line Break</strong> (<code>Shift+Enter</code>) ends the line
+<strong>without starting a new paragraph</strong>, the same key Word
+uses. In Markdown a blank line between two lines makes two paragraphs,
+while a line break makes two lines of one paragraph. Use it for an
+address block, a verse, or a run of short lines that should sit close
+together.</p>
+<p>QUILL writes the break in the style set in <strong>Settings &gt;
+Editing &gt; Markdown line break style</strong>
+(<code>markdown_hard_break_style</code>), and says which one it used.
+The default is a <strong>backslash</strong> at the end of the line. The
+other style, two spaces at the end of the line, cannot be seen on
+screen, is not spoken by a screen reader, and is often removed by other
+programs when they save. QUILL reads both styles, so a document written
+elsewhere with two spaces still shows its breaks correctly here.</p>
+<p>You can also choose it from the menu: <strong>Insert &gt; Line
+Break</strong>. QUILL Lite has the same command in the same place, on
+the same key.</p>
+<h2 id="the-edit-menu">The Edit menu</h2>
+<p>The <strong>Edit</strong> menu holds the commands you use while
+writing. The standard clipboard commands come first:</p>
+<ul>
+<li>Undo</li>
+<li>Redo</li>
+<li>Cut</li>
+<li>Copy</li>
+<li>Paste</li>
+<li><strong>Paste Text Only</strong> (<code>Ctrl+Shift+V</code>), which
+pastes the words on the clipboard and leaves behind any fonts, colours
+or links that came with them. If something is selected, the pasted text
+replaces it.</li>
+<li><strong>Copy With Attribution</strong>
+(<code>Alt+Shift+C</code>)</li>
+<li>Select All</li>
+</ul>
+<p><strong>Magic Paste</strong> (press the QUILL key, then
+<code>Shift+V</code>) looks at what is on the clipboard before it
+pastes, and tells you what it found: plain text, a web address,
+Markdown, HTML or an image. Then it offers the ways that kind of thing
+can go in. A web address can go in as a Markdown link, Markdown can keep
+its formatting, HTML can come in as clean text or exactly as it is, and
+an image can go in as a picture reference. Plain text is always one of
+the choices. Arrow to the one you want and press
+<strong>Paste</strong>.</p>
+<p>After those come the commands that know about selection and
+position:</p>
+<ul>
+<li><strong>Find…</strong>, <strong>Replace…</strong>, <strong>Find
+Next</strong>, <strong>Find Previous</strong> and <strong>Find All
+Matches</strong>. The Replace dialog has a <strong>Replace All</strong>
+button, so bulk replacement happens in the same place.</li>
+<li><strong>Find in Open Documents…</strong>, <strong>Search in
+Files…</strong> and <strong>Replace Across Files…</strong>, the three
+searches that reach beyond this document (Chapter 6 covers them).</li>
+<li><strong>Word Prediction…</strong> opens inline word and tag
+suggestions (<code>Ctrl+.</code>).</li>
+<li><strong>Extend Selection Mode</strong> turns selection growth into a
+mode of its own.</li>
+<li>The <strong>Selection</strong> submenu: Select Word, Select Line,
+Select Paragraph, Select Block, Select to Start or End of Line, Select
+to Start or End of Document, and the mark commands: <strong>Set
+Temporary Mark</strong>, <strong>Jump to Previous Mark</strong>,
+<strong>Swap Cursor and Mark</strong> and <strong>List Recent
+Marks</strong>. Selecting text, later in this chapter, has the
+keys.</li>
+<li><strong>Search Tools</strong>, with Count Occurrences, Multi Replace
+and the regular expression tools (Chapter 5 and Chapter 6 cover
+them).</li>
+<li><strong>Paste HTML as Markdown</strong> turns rich HTML from the
+clipboard into Markdown as it pastes.</li>
+<li><strong>Paste Markdown as HTML</strong> does the opposite. It turns
+Markdown on the clipboard into a clean piece of HTML, using the same
+renderer as the live preview and HTML export, and inserts it at the
+cursor. It has no key at first; give it one in the Keymap Editor.</li>
+<li><strong>Follow Link</strong>, on the <strong>Navigate</strong> menu,
+opens the link under the caret. <code>Ctrl+Enter</code> still does it
+when the caret is on a link; anywhere else that key now inserts a page
+break. Adding a link is on the <strong>Insert</strong> menu.</li>
+<li>The delete group, on <strong>Format &gt; Line</strong>:
+<strong>Delete to Line Start</strong>, <strong>Delete to Line
+End</strong>, <strong>Delete to Document Start</strong>, <strong>Delete
+to Document End</strong> and <strong>Delete Paragraph</strong> remove
+text measured from the cursor. Edit &gt; Restore Deleted Text, below,
+brings the last three back.</li>
+</ul>
+<p><strong>Preferences…</strong> and <strong>Customize Menus…</strong>
+are with the rest of QUILL’s settings, under <strong>Tools &gt;
+Customize and Support</strong>.</p>
+<h3 id="find-and-replace">Find and Replace</h3>
+<p>By default <code>Ctrl+F</code> and <code>Ctrl+H</code> open the
+standard Windows Find and Replace dialog. Turn on <strong>Settings &gt;
+Navigation and QUILL Key &gt; Use QUILL’s own Find dialog</strong> and
+they open QUILL’s own accessible Find dialog instead. It does everything
+the Windows one does, and adds these:</p>
+<ul>
+<li><strong>Extended mode (special characters).</strong> Choose
+<em>Extended</em> in the Mode list to search for characters you cannot
+type: <code>\n</code> for a line break, <code>\t</code> for a tab,
+<code>\xNN</code> or <code>\uNNNN</code> by code, or
+<code>\N{EM DASH}</code> by name. The <strong>Insert Special
+Character…</strong> button offers forty named characters, such as the
+non-breaking space, curly quotes, the zero-width space and the soft
+hyphen. Those invisible characters can quietly spoil a document, and now
+you can find them by name. Replacements understand the same codes, so
+“replace every non-breaking space with a plain space” takes two
+fields.</li>
+<li><strong>A spoken match count as you type.</strong> Pause for a
+moment and QUILL says “17 matches”, so you know the search is right
+before you go.</li>
+<li><strong>Peek navigation.</strong> <code>Ctrl+Down</code> and
+<code>Ctrl+Up</code> step through the matches while you stay in the
+search field. Each step speaks the match in its sentence and selects it
+in the editor, and you can keep typing at any moment. Look around first,
+then press Enter when the search is right.</li>
+<li><strong>Spoken match context.</strong> Each match is read as the
+sentence around it (“line 40: …the quick brown fox…”), not just a
+position. QUILL always tells you when the search wraps past the end of
+the document.</li>
+<li><strong>A Direction group with a name.</strong> The Up and Down
+choice is a labelled group, so your screen reader says “Direction” when
+you reach it.</li>
+<li><strong>One dialog, always.</strong> <code>Ctrl+F</code> while it is
+open takes you back to the search field. <code>Ctrl+H</code> switches it
+to Replace without opening another window. <code>Ctrl+L</code> jumps
+back to the search field from anywhere in the dialog. Escape closes it
+and returns you to your text. <strong>Count</strong> tells you how many
+matches there are without moving anywhere.</li>
+</ul>
+<p>The setting is off when QUILL is installed, while the dialog is
+tested with every screen reader. The Windows dialog is unchanged, and
+you can switch back at any time. For now this dialog searches the
+current document only. Searching folders or the Vault from it will come
+later.</p>
+<p>Chapter 6, Moving around and finding things, has much more on
+searching.</p>
+<h2 id="selecting-text">Selecting text</h2>
+<p>You can select the usual way, holding Shift while you move. QUILL
+also gives you ways to select a whole unit at once, to mark where a
+selection starts and finish it later, and to leave yourself marks to
+jump back to.</p>
+<h3 id="anchor-selection-with-f8">Anchor selection with F8</h3>
+<p>With anchor selection you drop an invisible anchor, move anywhere you
+like, and then select everything between the anchor and the cursor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F8</code></td>
+<td>Start selection</td>
+<td>Sets an invisible anchor at the cursor.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+F8</code></td>
+<td>Toggle selection marker</td>
+<td>Drops the anchor without moving the cursor, or picks it back up if
+you change your mind.</td>
+</tr>
+<tr>
+<td><code>Shift+F8</code></td>
+<td>Complete selection</td>
+<td>Selects from the anchor to the cursor and says how much.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F8</code></td>
+<td>Reselect</td>
+<td>Brings back the last selection you made.</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+F8</code></td>
+<td>Go to start of selection</td>
+<td>Moves to the start of the selection without changing it.</td>
+</tr>
+<tr>
+<td><code>Ctrl+F8</code></td>
+<td>Copy all</td>
+<td>Copies the whole document.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+A</code></td>
+<td>Unselect all</td>
+<td>Drops the selection, leaving the cursor where it is.</td>
+</tr>
+<tr>
+<td><code>Alt+F8</code></td>
+<td>Read all</td>
+<td>Reads the document from the beginning.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selecting-by-structure">Selecting by structure</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+W</code></td>
+<td>Select word</td>
+<td>Selects the word the cursor is in.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Space</code></td>
+<td>Select sentence</td>
+<td>Selects the sentence the cursor is in.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Space</code></td>
+<td>Select token</td>
+<td>Selects the run of characters the cursor is in, whatever kind they
+are. On a word it is the same as Select Word; its real use is a run of
+punctuation, such as the <code>::</code> in a path, or the spaces at the
+start of a line.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+E</code></td>
+<td>Select line</td>
+<td>Selects the whole line.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+H</code></td>
+<td>Select paragraph</td>
+<td>Selects the paragraph at the cursor and says its size and word
+count.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+B</code></td>
+<td>Select block</td>
+<td>Selects the indented block at the cursor.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+X</code></td>
+<td>Expand selection</td>
+<td>Grows the selection one step: line, then paragraph, then block, then
+the whole document.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+X</code></td>
+<td>Shrink selection</td>
+<td>Undoes the last expand step.</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+F5</code></td>
+<td>Select section</td>
+<td>Selects the section at the cursor with all its subsections, and says
+how many sections and lines that is. Cut and paste then move it
+anywhere.</td>
+</tr>
+</tbody>
+</table>
+<p>The ordinary selection keys are on the <strong>Edit &gt;
+Selection</strong> menu too, so you can find them there if you forget:
+<strong>Select to Start of Line</strong> (<code>Shift+Home</code>),
+<strong>Select to End of Line</strong> (<code>Shift+End</code>),
+<strong>Select to Start of Document</strong>
+(<code>Ctrl+Shift+Home</code>) and <strong>Select to End of
+Document</strong> (<code>Ctrl+Shift+End</code>).</p>
+<p>Once something is selected, press <code>Ctrl+Alt+Q</code> for
+<strong>Duplicate Selection</strong>: it puts a copy of the selection
+straight after itself, which saves a copy and a paste when you are
+building a list of similar lines. With nothing selected, it duplicates
+the line you are on. It is not on the menu bar; besides the key, it is
+on the editor’s right-click menu (press the Applications key) under
+<strong>Change Case</strong>, and in the Command Palette.</p>
+<p>You can also run any of these from the Command Palette, and change
+their keys in the Keymap Editor.</p>
+<h3 id="extend-selection-mode">Extend Selection Mode</h3>
+<p>In Extend Selection Mode, the keys that normally move the cursor grow
+the selection instead. Turn it on and off from the Selection menu, or
+with <code>Alt+Shift+F9</code>. You can change the key in the Keymap
+Editor. While it is on, <strong>EXT</strong> shows in the status
+bar.</p>
+<h3 id="the-mark-ring">The mark ring</h3>
+<p>The mark ring is a short stack of temporary places to jump back to
+while you work.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+M</code></td>
+<td>Set Temporary Mark</td>
+<td>Puts a temporary mark at the cursor.</td>
+</tr>
+<tr>
+<td><code>Ctrl+M</code></td>
+<td>Jump to Previous Mark</td>
+<td>Jumps to the latest mark and takes it off the ring.</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+X</code></td>
+<td>Swap Cursor and Mark</td>
+<td>Swaps the cursor with the top mark.</td>
+</tr>
+<tr>
+<td><code>Alt+M</code></td>
+<td>List Recent Marks</td>
+<td>Shows every mark with its line and column.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="named-marks-and-the-review-buffer">Named marks and the review
+buffer</h3>
+<p>Named marks last for the whole session. Find them on <strong>Edit
+&gt; Selection</strong>:</p>
+<ul>
+<li><strong>Set Named Mark</strong> gives the cursor position a name and
+remembers it, and tells you the line and column.</li>
+<li><strong>Jump to Named Mark</strong> shows a list of your marks with
+their positions. Choose one and you are there.</li>
+<li><strong>Review Buffer</strong> opens the current selection in a
+read-only window, so you can read through it with your screen reader
+without any risk of changing it. You need a selection first. Its key is
+<code>Alt+Shift+U</code>.</li>
+</ul>
+<p>Set Named Mark and Jump to Named Mark have no keys at first. Give
+them keys in the Keymap Editor, or use the Selection menu.</p>
+<h2 id="getting-text-back-and-doing-it-again">Getting text back, and
+doing it again</h2>
+<h3 id="restore-deleted-text">Restore Deleted Text</h3>
+<p>Undo (<code>Ctrl+Z</code>) puts your last edit back exactly where it
+was. Sometimes you want something else: you deleted a sentence, and now
+you want to put it somewhere <em>else</em>. <strong>Edit &gt; Restore
+Deleted Text…</strong> (<code>Ctrl+Alt+Shift+Z</code>) remembers the
+last three pieces of text you removed with QUILL’s delete commands
+(delete to start or end of line, delete to start or end of document, and
+delete paragraph). Pick one from the list and it goes in at the
+cursor.</p>
+<ul>
+<li>The list is newest first, with a short preview and the length of
+each, so you can tell them apart by ear.</li>
+<li>If only one deletion is remembered, it comes straight back with no
+list.</li>
+<li>To change its key, search for “Restore Deleted Text” in the Keymap
+Editor.</li>
+</ul>
+<p>Fans of the classic WordPerfect Editor will know this as its “Cancel”
+buffer, except that here you choose where the text lands.</p>
+<h3 id="repeat-next-command">Repeat Next Command</h3>
+<p>When you need to do the same thing many times, such as moving down
+twenty lines, deleting ten words, typing forty dashes or replaying a
+macro, you do not have to press the key over and over. Choose
+<strong>Edit &gt; Repeat Next Command…</strong>, type how many times,
+and the <em>next</em> command you run happens that many times. Then the
+count clears itself and editing carries on as normal.</p>
+<ul>
+<li>It works with nearly any command, including moving, deleting,
+inserting and a recorded macro.</li>
+<li>The most it will repeat is 1000 times, so a slip of the finger
+cannot run away with you.</li>
+<li>It has no key at first. If you use it often, give it one in the
+Keymap Editor (<strong>Tools &gt; Customize and Support &gt; Keymap
+Editor…</strong>; search for “Repeat Next Command”).</li>
+</ul>
+<p>This is the “Repeat” command from the classic WordPerfect Editor.</p>
+<h2 id="copy-tray">Copy Tray</h2>
+<p>The Copy Tray is <strong>twelve</strong> clipboards of your own, each
+with a number. You put text in a slot on purpose, and it stays there
+until you replace it or clear it, even after you close and reopen QUILL.
+The Windows clipboard is shared by every program and changes every time
+you copy. Copy Tray slots belong to QUILL alone.</p>
+<h3 id="pasting-and-copying-with-a-slot">Pasting and copying with a
+slot</h3>
+<p><strong>To paste from a slot, hold <code>Ctrl+Alt+Shift</code> and
+press a number key.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Alt+Shift+1</code> through
+<code>Ctrl+Alt+Shift+9</code></td>
+<td>Paste from slots 1 to 9</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+0</code></td>
+<td>Paste from slot 10</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+-</code></td>
+<td>Paste from slot 11</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+=</code></td>
+<td>Paste from slot 12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>To copy into a slot, press the QUILL key and then the same
+key with Shift:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+1</code> through
+<code>Shift+9</code></td>
+<td>Copy the selection to slots 1 to 9</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+0</code></td>
+<td>Copy the selection to slot 10</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+-</code></td>
+<td>Copy the selection to slot 11</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+Grave, Shift+=</code></td>
+<td>Copy the selection to slot 12</td>
+</tr>
+</tbody>
+</table>
+<p>A paste chord does more if you press it quickly more than once:</p>
+<ul>
+<li><strong>Press once</strong> to paste the slot at the cursor.</li>
+<li><strong>Press twice</strong> to peek. QUILL reads the slot to you
+without pasting it, so you can check what is there first.</li>
+<li><strong>Press three times</strong> to open the Copy Tray dialog on
+that slot.</li>
+</ul>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Can’t remember what is in slot 3?
+Press <code>Ctrl+Alt+Shift+3</code> twice, quickly. QUILL reads it to
+you and pastes nothing.</p>
+</blockquote>
+<h3
+id="copy-to-next-empty-slot-copy-to-tray-slot-and-search-tray-slots">Copy
+to Next Empty Slot, Copy to Tray Slot and Search Tray Slots</h3>
+<p><strong>Edit &gt; Copy Tray &gt; Copy to Next Empty Slot</strong>
+(<code>Ctrl+Alt+Y</code>) copies the selection to the first slot, from 1
+to 12, that is empty and not pinned, and tells you which: “Copied to
+slot 4 (first empty).” If all twelve slots are full, QUILL tells you so
+and overwrites nothing.</p>
+<p><strong>Edit &gt; Copy Tray &gt; Copy to Tray Slot…</strong>
+(<code>Alt+Shift+Y</code>) lets you choose the slot yourself, from a
+list. Each row says what is in that slot now, its label if it has one,
+and whether it is pinned, so you know what you would be replacing before
+you replace it. Arrow to the slot and press Enter. QUILL says “Copied to
+tray slot 3”, or “Replaced tray slot 3” if something was there
+already.</p>
+<p><strong>Edit &gt; Copy Tray &gt; Search Tray Slots…</strong> opens a
+small search box. Type a word or phrase and QUILL searches the text and
+labels of every slot and reads you the matches. Press the slot’s number
+to paste it, or Escape to cancel.</p>
+<h3 id="pinned-slots">Pinned slots</h3>
+<p>In the Copy Tray dialog you can pin any slot. A pinned slot:</p>
+<ul>
+<li>Is never filled by Copy to Next Empty Slot.</li>
+<li>Is read with “pinned” in front: “Slot 1 (pinned, signature)”.</li>
+<li>Stays pinned after a restart (the pin is saved in
+<code>copy_tray.json</code>).</li>
+</ul>
+<p>To pin or unpin a slot, open the Copy Tray dialog
+(<code>Ctrl+Alt+V</code>), choose the slot, and press the Pin/Unpin
+button.</p>
+<h3 id="the-copy-tray-dialog">The Copy Tray dialog</h3>
+<p>Open it with <code>Ctrl+Alt+V</code>, or <strong>Edit &gt; Copy Tray
+&gt; Open Copy Tray…</strong>. It lists all twelve slots. Each row has
+the slot number, a label if you gave it one, and a preview of the text.
+Move with the arrow keys. The buttons are:</p>
+<ul>
+<li><strong>Paste</strong> puts the chosen slot’s text at the cursor.
+Enter or a double-click on a row does the same.</li>
+<li><strong>Paste from Clipboard</strong> stores what is on the Windows
+clipboard in the chosen slot.</li>
+<li><strong>Pin / Unpin</strong> pins or unpins the chosen slot.</li>
+<li><strong>Save Changes</strong> keeps edits you typed straight into
+the content area.</li>
+<li><strong>Clear Slot</strong> empties the chosen slot.</li>
+<li><strong>Close</strong> closes without pasting.</li>
+</ul>
+<p>To empty every slot at once, choose <strong>Edit &gt; Copy Tray &gt;
+Clear All Tray Slots</strong> (<code>Ctrl+Alt+Shift+Y</code>). QUILL
+asks first and tells you how many slots have something in them, with
+<strong>No</strong> already chosen, because this cannot be undone. If
+the tray is already empty, it just says so.</p>
+<h3 id="other-ways-to-reach-the-tray">Other ways to reach the tray</h3>
+<ul>
+<li><strong>The Paste from Slot rows.</strong> <strong>Edit &gt; Copy
+Tray</strong> has twelve rows, from <strong>Paste from Slot 1</strong>
+to <strong>Paste from Slot 12</strong>. A slot that has something in it
+shows its label and a preview on its row: “1 signature, Hi, I wanted to
+follow…”. Your screen reader reads both as you move through the
+submenu.</li>
+<li><strong>The status bar.</strong> The <code>Slots: X/12</code> cell
+shows how many of the twelve slots are in use. Click it to open the Copy
+Tray dialog. If you cannot find it, add it in <strong>Tools &gt;
+Customize and Support &gt; Status Bar Layout…</strong>.</li>
+<li><strong>The system tray.</strong> QUILL’s icon in the system tray
+has a Copy Tray submenu listing every slot in use. Choose one to paste
+it into the active editor, without bringing QUILL to the front
+first.</li>
+</ul>
+<h3 id="copy-tray-tips">Copy Tray tips</h3>
+<ul>
+<li>Put a signature, a disclaimer or a heading you use all the time in
+slot 1 and pin it. One chord pastes it anywhere, and Copy to Next Empty
+Slot will never overwrite it.</li>
+<li>Label your slots for a research session: slot 1 “intro quote”, slot
+2 “methodology note”, slot 3 “source URL”. Copy one piece into each as
+you read, then paste them in order as you write.</li>
+<li>Slots survive restarts, so you can keep a small set of pieces you
+reach for every day.</li>
+<li>You can change every Copy Tray key in the Keymap Editor
+(<strong>Tools &gt; Customize and Support &gt; Keymap
+Editor…</strong>).</li>
+</ul>
+<h2 id="clip-library">Clip Library</h2>
+<p>The twelve Copy Tray slots are for things you chose to keep. The
+<strong>Clip Library</strong>, on the <strong>Edit &gt; Copy
+Tray</strong> submenu, is a second, bigger store: a searchable history
+of up to 200 clips.</p>
+<ul>
+<li><strong>Edit &gt; Copy Tray &gt; Keep Selection in Clip
+Library</strong> (<code>Ctrl+Alt+M</code>) remembers the current
+selection. Keeping the same text again from the same place does nothing,
+because it is already there.</li>
+<li><strong>Edit &gt; Copy Tray &gt; Open Clip Library…</strong>
+(<code>Ctrl+Alt+Shift+M</code>) opens the library. Search as you type,
+<strong>Favorite</strong> a clip so it is never pushed out as the
+history fills up, <strong>Remove</strong> one you no longer need,
+<strong>Copy to Clipboard</strong>, or <strong>Promote to Copy
+Tray…</strong> to give a clip a labelled slot of its own.</li>
+<li><strong>Rename…</strong> gives a clip a short name, which is much
+easier to find later than its first few words. Leave the name empty to
+go back to a preview of the text.</li>
+<li><strong>Combine Marked…</strong> joins several clips into one piece
+of text. Mark them with Ctrl or Shift (plain arrow keys still choose
+just one), choose what goes between them (space, comma, full stop,
+vertical bar, new line or blank line), and the joined text goes on the
+clipboard in the order the clips are listed.</li>
+<li><strong>Save as Abbreviation…</strong> turns a clip into an
+abbreviation. QUILL and Quill Inkwell share one abbreviation library, so
+a clip saved this way can be typed in every program, not just here.</li>
+</ul>
+<p><strong>Automatic capture.</strong> Turn on <strong>Settings &gt;
+Editing &gt; “Automatically keep everything you copy in the Clip
+Library”</strong> (off at first) and every copy you make inside QUILL is
+kept for you, whether you used the menu, its key or a right-click Copy.
+It only sees copies made in QUILL, never the system clipboard in
+general, and never anything you copied before you turned it on.</p>
+<p><strong>Format.</strong> What Copy to Clipboard puts on the
+clipboard, and what Send as Email and Copy as Email Body send, both
+follow one setting: <strong>Settings &gt; Editing &gt; “Kept and sent
+content format”</strong> (plain text, Markdown or HTML). Change it once
+and both follow.</p>
+<p><strong>What the Clip Library is not.</strong> It remembers what you
+keep or copy <em>inside QUILL</em>. It does not watch the system
+clipboard, and it keeps no history of what you copy in other programs.
+For a clipboard history across everything you do, use a clipboard
+manager alongside QUILL. The two do different jobs.</p>
+<h2 id="copy-with-source">Copy With Source</h2>
+<p><code>Alt+Shift+C</code> copies the selection and adds a note of
+where it came from in the document. With nothing selected, QUILL copies
+the current line. This is handy for notes, reviews and gathering
+evidence.</p>
+<p>In a Markdown document you can choose what goes on the clipboard,
+under <strong>Settings &gt; Editing &gt; Markdown clipboard
+format</strong>. <strong>Plain text only</strong> (the default) copies
+the Markdown just as you wrote it. <strong>HTML</strong> or <strong>Rich
+text</strong> adds a formatted copy as well, so when you paste into Word
+or an email the headings, bold and links arrive formatted. Notepad and
+other plain-text programs still get the plain text.</p>
+<h2 id="links">Links</h2>
+<p><code>Ctrl+K</code> adds a link written the right way for the
+document’s format. <code>Ctrl+Enter</code> with the caret on a link
+follows it. In Markdown and HTML this makes citations and
+cross-references much less work.</p>
+<h2 id="the-insert-menu">The Insert menu</h2>
+<p>The <strong>Insert</strong> menu puts structured content at the
+cursor. QUILL treats Markdown and HTML as everyday writing formats, so
+the tag pickers sit here next to the other inserts.</p>
+<ul>
+<li><strong>Insert Link…</strong> adds a link in the right form for the
+document’s format.</li>
+<li>The <strong>Heading</strong> submenu: Heading 1 through 6,
+<strong>Decrease Level</strong> and <strong>Increase Level</strong>, and
+<strong>Style Headings…</strong> (font, size and alignment) for the
+current level or all levels.</li>
+<li><strong>Body Text</strong> (<code>Ctrl+Alt+0</code>).</li>
+<li>The <strong>List</strong> submenu: <strong>Bullet</strong>,
+<strong>Numbered</strong>, <strong>Task</strong>, <strong>List
+Manager…</strong> and <strong>Structured List Studio…</strong>
+(<code>Ctrl+Alt+Shift+L</code>).</li>
+<li><strong>Insert Code Block</strong>, <strong>Insert
+Footnote</strong>, <strong>Insert Table…</strong>, <strong>Insert Block
+Quote</strong>, <strong>Insert Horizontal Rule</strong>, <strong>Insert
+HTML Tag…</strong> and <strong>Insert Markdown Tag…</strong>.</li>
+<li><strong>Date and Time</strong> (<code>F5</code>) and the
+<strong>Date and Time</strong> submenu.</li>
+<li><strong>Insert Snippet…</strong> and <strong>Manage
+Snippets…</strong> for reusable text with blanks to fill in.</li>
+<li><strong>Special Character…</strong>
+(<code>Ctrl+Shift+F2</code>).</li>
+<li><strong>Line Break</strong> (<code>Shift+Enter</code>), described
+under Writing and editing at the start of this chapter.</li>
+<li><strong>Insert Emoji…</strong> (<code>Alt+.</code>).</li>
+<li><strong>File Content…</strong> inserts the contents of another file
+at the cursor.</li>
+<li><strong>Insert Equation…</strong> (<code>Ctrl+Alt+=</code>).</li>
+</ul>
+<p>The topics below explain the ones that need more than a line.</p>
+<h3 id="headings-and-lists">Headings and lists</h3>
+<p><strong>Heading N sets the level, it does not add one.</strong>
+<code>Ctrl+Alt+2</code> on a line that reads <code>### Notes</code>
+gives you <code>## Notes</code>, not <code>## ### Notes</code>. It works
+from anywhere on the line, not just the start. With several lines
+selected, it makes <strong>all</strong> of them headings in one change,
+so a single <code>Ctrl+Z</code> puts them all back. Your screen reader
+says “Heading 2” either way, so it is good to know QUILL gets this
+right.</p>
+<p><strong>Body Text</strong> (<code>Ctrl+Alt+0</code>) is the bottom
+rung of the <code>Ctrl+Alt+1</code> to <code>6</code> heading ladder. It
+takes the heading marker off and leaves the words.</p>
+<p><strong>Next Heading</strong> is <code>Ctrl+Alt+H</code> and
+<strong>Previous Heading</strong> is <code>Ctrl+Alt+Shift+H</code>.
+<code>Ctrl+Alt+L</code> opens the <strong>Outline Navigator</strong>,
+the same key QUILL Lite uses for List Headings, so either habit works,
+and <code>Ctrl+Shift+O</code> opens it too. <strong>AI
+Thesaurus</strong> no longer has a key of its own; reach it from the AI
+menu or the Command Palette. The plain <strong>Thesaurus</strong> keeps
+Word’s <code>Shift+F7</code>.</p>
+<p>Bullet lists are on <code>Ctrl+Shift+L</code> and numbered lists on
+<code>Ctrl+Shift+Grave, Shift+L</code>.</p>
+<h3 id="format-aware-inserts">Format-aware inserts</h3>
+<p>Block quote, horizontal rule, table and image write Markdown in a
+Markdown document and HTML in an HTML document. If the document’s format
+is not set yet (a new or plain document), QUILL asks <strong>“Markdown
+or HTML?”</strong> the first time, then remembers your answer for that
+document and stops asking.</p>
+<p>A table is the one insert that also has a rich text form: in a rich
+text document <strong>Insert Table</strong> makes a real table, a grid
+your screen reader, Word and WordPad all read as a table, not rows of
+<code>|</code> characters. <a
+href="quill-guide-06-moving-around-and-finding-things.html#moving-through-a-table-cell-by-cell">Moving
+through a table cell by cell</a> covers reading and editing it.</p>
+<p>Some have keys of their own:</p>
+<ul>
+<li><strong>Insert Table</strong> is <code>Ctrl+Alt+T</code>.</li>
+<li><strong>Insert Block Quote</strong> is the same command as
+<strong>Quote Lines</strong> (<code>Ctrl+Shift+Q</code>), because both
+wrote the same <code>&gt; </code> in Markdown. <strong>Unquote
+Lines</strong> (<code>Alt+Shift+.</code>, that is Alt, Shift and the
+period) takes the <code>&gt; </code> off again.</li>
+<li><strong>Insert Horizontal Rule</strong> is
+<code>Ctrl+Alt+-</code>.</li>
+</ul>
+<p>You can change all of them in the Keymap Editor.</p>
+<p><strong>Insert Markdown Tag appears only in Markdown
+documents.</strong> In a plain or rich text document it is not on the
+menu at all, and if you press its key there, QUILL just says “Markdown
+tags are for Markdown documents.” <strong>Insert HTML Tag</strong> is
+the same idea for HTML, except that it stays on the menu, dimmed, in any
+document that is not HTML. <strong>Navigate &gt; Set Document
+Language…</strong> changes what kind of document you are in.</p>
+<h3 id="special-character-ctrlshiftf2">Special Character
+(Ctrl+Shift+F2)</h3>
+<p><strong>Special Character…</strong> opens a picker for the 357
+characters a keyboard has no key for. Search by name (<code>dash</code>,
+<code>euro</code>, <code>acute</code>, <code>arrow</code>) or by a word
+people use even if Unicode does not (<code>gbp</code>,
+<code>copyright</code>, <code>eszett</code>). Or clear the box and
+browse one of fifteen groups: whitespace, dashes, quotes, invisibles,
+typography, legal and reference marks, currency, maths and units,
+fractions, superscripts and ordinals, arrows, accented letters (small
+and capital), Greek, and punctuation from other languages.</p>
+<p>Each row shows the character, its name and its code point, and a
+description pane changes as you arrow. <strong>The search box is also
+the code-point box</strong>: <code>2014</code>, <code>U+2014</code> and
+<code>d8212</code> all find the em dash, and a code point that is in no
+group still works, so the picker reaches every character Unicode has.
+When you insert one, QUILL tells you what it was, in Describe
+Character’s words, because most of these characters cannot be seen on
+the page.</p>
+<p>In both QUILL and QUILL Lite the picker is on <strong>Insert &gt;
+Special Character…</strong> (<code>Ctrl+Shift+F2</code>). Both keys can
+be changed in the Keymap Editor.</p>
+<h3 id="insert-equation-ctrlalt">Insert Equation (Ctrl+Alt+=)</h3>
+<p><strong>Insert Equation…</strong> (<code>Ctrl+Alt+=</code>) asks for
+a LaTeX or MathML equation in up to two steps.</p>
+<ol type="1">
+<li>Type the formula in LaTeX, for example <code>E=mc^2</code> or
+<code>\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code>, or paste a MathML
+fragment.</li>
+<li>For LaTeX, choose whether it sits inline in the text
+(<code>\(...\)</code>) or as a block of its own
+(<code>$$...$$</code>).</li>
+</ol>
+<p>If a LaTeX equation is already selected when you open Insert
+Equation, QUILL takes off its delimiters and puts the bare formula in
+the box for you. MathML (anything starting with <code>&lt;math</code>)
+goes in exactly as typed, with no second step. Browser Preview and HTML
+export show equations using MathJax 3. Math Equations, later in this
+guide, has the formula gallery, symbol abbreviations, exploring an
+equation part by part, and Word export.</p>
+<h3 id="word-prediction-and-snippets">Word prediction and snippets</h3>
+<p>Word prediction and snippets are kept apart, so each has its own
+key.</p>
+<ol type="1">
+<li>Press <code>Ctrl+.</code> to open <strong>Word Prediction</strong>
+(also <strong>Edit &gt; Word Prediction…</strong>).</li>
+<li>Type, and matching words from your document, HTML tags and Markdown
+tags appear.</li>
+<li>Arrow to the one you want and press Enter to insert it.</li>
+</ol>
+<p>To set up and look after snippets:</p>
+<ul>
+<li>Press <code>Ctrl+Shift+Grave, S</code> for <strong>Insert
+Snippet</strong>.</li>
+<li>Press <code>Ctrl+Shift+Grave, Shift+S</code> for <strong>Manage
+Snippets</strong> (create, edit, delete, import, export, and starter
+packs).</li>
+<li>Open <strong>More Preferences &gt; Install Starter Snippet
+Packs</strong> for sample sets for everyday writing, developer work, and
+support and accessibility notes.</li>
+<li>In <strong>General Preferences</strong>, turn <strong>Word
+prediction and tag IntelliSense</strong> or <strong>Expand snippet
+triggers while typing</strong> on or off as you like.</li>
+</ul>
+<p>Snippets can have blanks such as <code>${input:name}</code>,
+<code>${choice:a|b}</code>, <code>${date}</code>, <code>${time}</code>
+and <code>${cursor}</code>.</p>
+<p><strong>Finding a snippet by name.</strong> In <strong>Insert
+Snippet</strong>, type any part of a snippet’s name, trigger or text,
+spaces included, and the list narrows as you type. The words can come in
+any order: <code>notes meeting</code> finds “Meeting notes for Tuesday”
+and “Notes from the meeting”. Snippets whose name starts with what you
+typed come first. Press Down Arrow to move into the list, Enter to
+insert the top match or the one you are on, and Escape to cancel. The
+Abbreviations manager’s search box and <strong>Search Tray
+Slots</strong> match words in any order in the same way.</p>
+<p><strong>Large libraries.</strong> With thousands of snippets, the
+list shows the first 200 matches, and the line above it says how many
+matched in all, for example “4,980 matches; showing the first 200. Type
+more to narrow them.” Every snippet is still reachable: type a little
+more of its name. QUILL also waits until you pause typing before it
+refills a long list, so typing a whole name fills it once instead of
+after every letter. Enter never acts on an out-of-date list.</p>
+<p><strong>Typing a name in a list.</strong> In lists you arrow through,
+such as Copy Tray, Open Recent, bookmarks and most other pick-one lists,
+you can type the start of a row’s name, spaces included, to move to it.
+While you are typing a name, Space is part of the name; after a pause of
+about a second, Space on its own opens the selected row as before. Enter
+always opens the row and Escape always closes the list.</p>
+<h3 id="date-and-time">Date and time</h3>
+<p><strong>Date and Time</strong> (<code>F5</code>) types the time and
+date at the caret and reads it back to you. It uses Notepad’s key and
+Notepad’s layout (<code>14:07 16/09/2026</code>), and QUILL Lite’s too.
+It is built into QUILL, so it works in <strong>Safe Mode</strong> as
+well.</p>
+<p><strong>Insert &gt; Date and Time</strong> is also a submenu. The
+bundled Insert Tools Quillin
+(<code>com.quill.bundled.insert-tools</code>) adds three items to
+it:</p>
+<ul>
+<li><strong>Insert Date</strong> puts today’s date at the cursor, in the
+format <code>${date}</code> uses.</li>
+<li><strong>Insert Time</strong> puts the current time at the cursor,
+using <code>${time}</code>.</li>
+<li><strong>Insert Date and Time</strong> puts both, with one space
+between them.</li>
+</ul>
+<p>Those three are part of the Insert Tools Quillin, so they switch off
+with the rest of it, and in Safe Mode. If you turn the Quillin off, the
+submenu stays but its three items go. Turn it on or off in
+<strong>Preferences &gt; Quillins</strong>, for example if you would
+rather use date and time snippets of your own.</p>
+<h3 id="insert-emoji-alt">Insert Emoji (Alt+.)</h3>
+<p><strong>Insert &gt; Insert Emoji…</strong> (<code>Alt+.</code>) opens
+the Accessible Emoji Picker. It is for the opposite case from
+<strong>Special Character…</strong>: you do not know the code, and you
+want help finding the right one. You can browse or search all 3,781
+standard emoji by name, keyword, symbol or a typed smiley like
+<code>:)</code>, and each has a real spoken description of what it looks
+like. There is no grid of pictures anywhere in it. It is a category list
+and a list of named results, like QUILL’s other browse-and-search
+windows.</p>
+<p>There are two ways to find an emoji.</p>
+<ul>
+<li><p><strong>Search</strong> (the box at the top) looks, in this
+order, for: the emoji itself if you paste or type one in; an old typed
+smiley like <code>:)</code>, <code>:D</code> or <code>&lt;3</code>; part
+of the official Unicode name or a keyword (for example “grin”, “dog” or
+“heart”); and last, part of the emoji’s description. So a
+half-remembered word like “melting” or “puddle” can still find the right
+one even when it is not a keyword.</p></li>
+<li><p><strong>Category</strong> (the list on the left) follows
+Unicode’s own groups, largest first:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Emoji</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>People &amp; Body</td>
+<td>2,261</td>
+</tr>
+<tr>
+<td>Flags</td>
+<td>270</td>
+</tr>
+<tr>
+<td>Objects</td>
+<td>264</td>
+</tr>
+<tr>
+<td>Symbols</td>
+<td>224</td>
+</tr>
+<tr>
+<td>Travel &amp; Places</td>
+<td>218</td>
+</tr>
+<tr>
+<td>Smileys &amp; Emotion</td>
+<td>169</td>
+</tr>
+<tr>
+<td>Animals &amp; Nature</td>
+<td>159</td>
+</tr>
+<tr>
+<td>Food &amp; Drink</td>
+<td>131</td>
+</tr>
+<tr>
+<td>Activities</td>
+<td>85</td>
+</tr>
+</tbody>
+</table>
+<p>Clearing the search box takes you back to the category you chose
+last.</p></li>
+</ul>
+<p>As you arrow through the results, the <strong>Description</strong>
+pane shows the emoji’s category and subgroup, its official name, its
+keywords, any old typed smiley, and one or two sentences about what it
+actually looks like: colours, shapes, expression and pose, not just its
+name again. Press <strong>Insert</strong>, or Enter on a result, to type
+the emoji at your cursor and close the picker. <strong>Cancel</strong>
+or Escape closes it without inserting anything.</p>
+<p><strong>Favorites and Recent</strong> sit above the nine Unicode
+categories:</p>
+<ul>
+<li><strong>Favorites</strong> lists the emoji you have starred. Choose
+any emoji, from a category, a search or Recent, and press <strong>Add to
+Favorites</strong>. Once it is a favourite the button reads
+<strong>Remove from Favorites</strong>.</li>
+<li><strong>Recent</strong> fills itself with the last 30 emoji you
+inserted, newest first.</li>
+</ul>
+<p>Taking an emoji out of Favorites, or letting it drop off Recent, only
+changes those two lists. The emoji is still in the picker, under its
+category and in search, as before.</p>
+<p>All 3,781 emoji, with their categories, keywords, typed smileys and
+descriptions, come in one file installed with QUILL. The picker never
+goes online, in Safe Mode or otherwise. The PRD’s Accessible Emoji
+Picker section explains how the catalogue is kept up to date.</p>
+<p>The full list, with every description, is in Appendix C, Every emoji
+QUILL can insert.</p>
+<h2 id="abbreviation-expansion">Abbreviation Expansion</h2>
+<p>Abbreviation Expansion types longer text for you, like TextExpander.
+You type a short trigger word followed by a space, full stop, comma or
+other punctuation, and QUILL quietly replaces the trigger with the full
+text. For example, type <code>btw </code> (with the space at the end)
+and QUILL changes it to <code>by the way </code>.</p>
+<p><strong>It is off by default</strong>, so your text never changes as
+you type unless you asked for it. Turn it on when you want it; QUILL
+remembers your choice.</p>
+<h3 id="turning-it-on-and-off">Turning it on and off</h3>
+<p>Any of these turns it on, and the same again turns it off:</p>
+<ul>
+<li>Press <code>Alt+Shift+A</code>, or choose <strong>Insert &gt; Toggle
+Abbreviation Expansion</strong>.</li>
+<li>Click the <strong>ABR: On / ABR: Off</strong> cell in the status
+bar, if it is showing (add it in the status bar settings).</li>
+<li>Change <strong>Abbreviation expansion</strong> in <strong>Settings
+&gt; Editing</strong>.</li>
+</ul>
+<h3 id="the-built-in-abbreviations">The built-in abbreviations</h3>
+<p>QUILL comes with fifteen abbreviations for common shorthand. You can
+edit or switch off any of them, and add your own.</p>
+<table>
+<thead>
+<tr>
+<th>Abbreviation</th>
+<th>Expansion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>afaik</code></td>
+<td>as far as I know</td>
+</tr>
+<tr>
+<td><code>afaict</code></td>
+<td>as far as I can tell</td>
+</tr>
+<tr>
+<td><code>asap</code></td>
+<td>as soon as possible</td>
+</tr>
+<tr>
+<td><code>atm</code></td>
+<td>at the moment</td>
+</tr>
+<tr>
+<td><code>btw</code></td>
+<td>by the way</td>
+</tr>
+<tr>
+<td><code>fwiw</code></td>
+<td>for what it’s worth</td>
+</tr>
+<tr>
+<td><code>imo</code></td>
+<td>in my opinion</td>
+</tr>
+<tr>
+<td><code>imho</code></td>
+<td>in my humble opinion</td>
+</tr>
+<tr>
+<td><code>irl</code></td>
+<td>in real life</td>
+</tr>
+<tr>
+<td><code>omw</code></td>
+<td>on my way</td>
+</tr>
+<tr>
+<td><code>tbh</code></td>
+<td>to be honest</td>
+</tr>
+<tr>
+<td><code>tbc</code></td>
+<td>to be confirmed</td>
+</tr>
+<tr>
+<td><code>tbd</code></td>
+<td>to be determined</td>
+</tr>
+<tr>
+<td><code>ttyl</code></td>
+<td>talk to you later</td>
+</tr>
+<tr>
+<td><code>wrt</code></td>
+<td>with regard to</td>
+</tr>
+</tbody>
+</table>
+<h3 id="managing-your-abbreviations">Managing your abbreviations</h3>
+<p>Open <strong>Insert &gt; Manage Abbreviations…</strong>
+(<code>Ctrl+Shift+Grave, Shift+A</code>) to add, edit and organise your
+abbreviations. Each one has:</p>
+<ul>
+<li><strong>Abbreviation</strong>: the short trigger word, such as
+<code>btw</code>.</li>
+<li><strong>Expansion</strong>: the full text that replaces it, such as
+<code>by the way</code>.</li>
+<li><strong>Description</strong>: an optional note for yourself.</li>
+<li><strong>Case sensitive</strong>: when checked, only the exact
+capitals match. Otherwise any capitalisation of the trigger works.</li>
+<li><strong>Enabled</strong>: switch one off without deleting it.</li>
+<li><strong>Category</strong>: any word you like (Work, Personal, Email)
+to group the list. There is a category filter beside the search box, and
+abbreviations with no category are listed under Uncategorised.</li>
+<li><strong>Expand after</strong>: which keys set it off. A space or
+punctuation (the default), a space only, punctuation only, or never.
+<strong>Never</strong> means it only expands from Quick Insert, which
+suits a long expansion you would not want to appear by accident.</li>
+<li><strong>Speak</strong>: what your screen reader says when it
+expands: nothing, the abbreviation, or the expanded text. You set this
+for each one, because a short one usually needs no announcement and a
+long template sometimes does.</li>
+<li><strong>Sound</strong>: follow the main sound setting, always play,
+or never play.</li>
+<li><strong>Add a trailing space after punctuation</strong>: adds a
+space after the punctuation that set it off, so <code>co.</code> gives
+<code>Company, </code> and not <code>Company ,</code>. It makes no
+difference after a space, which already leaves one.</li>
+</ul>
+<p>The <strong>Search</strong> box at the top of the manager filters the
+list as you type any part of a trigger or its expansion. Switched-off
+abbreviations show “(disabled)” after their name.</p>
+<p><strong>Import</strong> and <strong>Export</strong> read and write
+your library as a JSON file. Export saves the whole library. Import adds
+a file’s abbreviations to yours, skips any it already has, and tells you
+how many it added.</p>
+<h3 id="other-ways-to-use-an-abbreviation">Other ways to use an
+abbreviation</h3>
+<ul>
+<li><strong>Expand now.</strong> Press <code>Ctrl+Shift+Grave, A</code>
+(or <strong>Insert &gt; Expand Abbreviation</strong>) to expand the word
+just before the cursor without typing a space or punctuation. Useful in
+the middle of a word or at the very end of a document.</li>
+<li><strong>Quick Insert.</strong> <strong>Insert &gt; Quick
+Insert…</strong> opens a list of every switched-on abbreviation, with
+the ones you use most at the top and a preview of each expansion. Type a
+few letters, arrow down, press Enter, and the expansion goes in at the
+cursor. It is how you use an abbreviation you have not memorised, and
+the only way to reach one set to expand after Never. It has no key at
+first, but you can give it one in the keyboard settings, and it is in
+the Command Palette.</li>
+<li><strong>New Abbreviation from Clipboard.</strong> <strong>Insert
+&gt; New Abbreviation from Clipboard…</strong> opens a new abbreviation
+with the clipboard text already in the expansion, so all you add is the
+trigger. It is the quickest way to turn a signature, an address or a
+block of standard wording into an abbreviation.</li>
+</ul>
+<h3 id="abbreviations-in-every-program-with-quill-inkwell">Abbreviations
+in every program, with Quill Inkwell</h3>
+<p>Your abbreviations also work in other programs through <strong>Quill
+Inkwell</strong>, a small free companion app that sits in the system
+tray. It uses the very same library file as QUILL. Add an abbreviation
+here and it works in your browser; add one there and it works here. Open
+it from the QuillVille menu, and see Quill Inkwell’s own user guide for
+where it will and will not type.</p>
+<p><strong>Abbreviations for certain programs only.</strong> You can
+limit an abbreviation to named programs, such as a signature to your
+mail program or a code snippet to your code editor, by listing them in
+its <strong>Applications</strong> field. Leave the field empty, as it is
+at first, and it works everywhere. This only matters in Quill Inkwell,
+which types into whatever program you are in. Inside QUILL there is only
+one program, so the field has no effect there. If Inkwell cannot tell
+which program is in front, a limited abbreviation does
+<strong>not</strong> fire, so it never types into the wrong place.</p>
+<h3 id="variables-in-expansions">Variables in expansions</h3>
+<p>An expansion can include these:</p>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Inserts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>${cursor}</code></td>
+<td>Puts the cursor here after expanding</td>
+</tr>
+<tr>
+<td><code>${date}</code></td>
+<td>Today’s date (for example June 11, 2026)</td>
+</tr>
+<tr>
+<td><code>${time}</code></td>
+<td>The current time (for example 02:30 PM)</td>
+</tr>
+<tr>
+<td><code>${clipboard}</code></td>
+<td>The text on the system clipboard</td>
+</tr>
+<tr>
+<td><code>${datetime}</code></td>
+<td>The date and time together</td>
+</tr>
+<tr>
+<td><code>${day}</code></td>
+<td>Day of the month</td>
+</tr>
+<tr>
+<td><code>${month}</code></td>
+<td>Month name</td>
+</tr>
+<tr>
+<td><code>${year}</code></td>
+<td>Four-digit year</td>
+</tr>
+<tr>
+<td><code>${username}</code></td>
+<td>Your Windows user name</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fields-that-ask-you-something">Fields that ask you
+something</h3>
+<p>A signature is the same every time. A letter or a bug report is the
+same <em>except</em> for a name, a date or a reference number. Put a
+field in the expansion and QUILL asks for it before inserting:</p>
+<ul>
+<li><code>${field:Label}</code> asks for a value with that label.</li>
+<li><code>${field:Label=something}</code> offers a starting value you
+can keep or change.</li>
+<li>The same label used twice is asked once and filled in everywhere, so
+a name in the greeting also appears in the sign-off.</li>
+<li><code>${choice:Label|first reminder|second reminder|final notice}</code>
+gives you a list to choose from instead of a box to type in. Use it
+whenever the answer is one of a few known ones: choosing is one arrow
+key, and you never have to spell “Second reminder” exactly right. The
+first option is the default.</li>
+</ul>
+<p>A small form opens with one labelled control for each field, a box to
+type in or a list to choose from, in the order they appear in the text.
+Tab moves between them, Enter moves to the next one, Enter on the last
+one accepts, and Escape cancels and leaves your text exactly as it was.
+<code>${cursor}</code> still works alongside fields: the cursor lands
+where the template puts it once your answers are in. Quill Inkwell shows
+the same form, so a template works the same wherever you use it.</p>
+<h3 id="timing-and-sound">Timing and sound</h3>
+<ul>
+<li><strong>Multi-press window.</strong> How quickly you must press a
+key twice or three times to count as a double or triple press is set in
+<strong>Settings &gt; Editing</strong> as <strong>Multi-press time
+window (ms)</strong>. The default is 400 ms, and it can be anything from
+100 to 1000 ms. Make it longer if you press keys slowly, or shorter if
+double presses happen by accident when you type fast.</li>
+<li><strong>Sound.</strong> To hear a sound when an abbreviation
+expands, turn on <strong>Play sound on abbreviation expansion</strong>
+in <strong>Settings &gt; Editing</strong>. You can point
+<strong>Abbreviation expansion sound file</strong> at a
+<code>.wav</code> file, or leave it empty for the standard system
+beep.</li>
+</ul>
+<h3 id="abbreviations-from-quillins">Abbreviations from Quillins</h3>
+<p>Installed Quillins can add abbreviations of their own. You can switch
+each one on or off on that Quillin’s own preferences page: open
+<strong>Preferences</strong> (<code>Ctrl+Comma</code>) and go to the
+Quillin by name. For the bundled Smart Insert Quillin, they are on its
+<strong>Abbreviations</strong> tab. These are kept apart from your own
+library and never saved into it, so removing a Quillin removes its
+abbreviations too. Your own abbreviations always win over a Quillin’s.
+If two Quillins use the same trigger, the one loaded first wins.
+<strong>They work in other programs too</strong>, through Quill Inkwell,
+so a Quillin full of medical abbreviations or company wording is useful
+everywhere you type.</p>
+<p>The bundled <strong>Smart Insert</strong> Quillin adds four
+abbreviations that expand as you type:</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Inserts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qbug</code></td>
+<td>A bug report template (Title, Build, Screen reader, Windows version,
+Steps, Expected, Actual, Notes)</td>
+</tr>
+<tr>
+<td><code>qmeet</code></td>
+<td>A meeting notes template with today’s date</td>
+</tr>
+<tr>
+<td><code>qlog</code></td>
+<td>A date and time stamp</td>
+</tr>
+<tr>
+<td><code>qtodo</code></td>
+<td>A three-item to-do checklist</td>
+</tr>
+</tbody>
+</table>
+<p>Only abbreviations with fixed text expand as you type. Ones that
+build their text when used, such as Smart Insert’s <code>qbrf</code>, do
+not fire from typing the word. Use the matching smart trigger
+(<code>=brftest()</code>) or the Insert menu command instead.</p>
+<h3 id="abbreviation-tips">Abbreviation tips</h3>
+<ul>
+<li>Use <code>${cursor}</code> to put the cursor inside a template. For
+example, <code>sig</code> expanding to
+<code>Best regards,${cursor}Jeff</code> leaves the cursor just after the
+comma.</li>
+<li>Use case-sensitive abbreviations sparingly. Most triggers are lower
+case, and you rarely need it.</li>
+<li>Abbreviations expand before snippets. If a word is both, the
+abbreviation wins.</li>
+<li>Export your library now and then, as a backup and to copy it to
+another computer.</li>
+</ul>
+<h2 id="autocorrect-fixing-common-misspellings-as-you-type">AutoCorrect:
+fixing common misspellings as you type</h2>
+<p>AutoCorrect fixes the misspellings almost everybody makes, the moment
+you finish the word. Type <code>teh</code> and a space, and QUILL
+changes it to <code>the </code>. Type <code>recieve</code> and press
+<code>Enter</code>, and it becomes <code>receive</code> before the new
+line starts. You hear the word-corrected sound and QUILL says “Corrected
+to the”, because your screen reader only echoes the space you typed and
+would otherwise never tell you the word changed.</p>
+<p><strong>It is off to begin with</strong>, like everything else that
+changes your text without being asked. Turn it on in <strong>Settings
+&gt; Editing &gt; Correct common misspellings as I type</strong>
+(<code>Ctrl+,</code> opens Settings; type “misspell” in its search box
+to jump there). QUILL remembers the choice.</p>
+<h3 id="what-it-corrects">What it corrects</h3>
+<p>QUILL ships a list of about 350 common English misspellings, such as
+<code>teh</code>, <code>recieve</code>, <code>seperate</code>,
+<code>definately</code>, <code>occured</code>, <code>untill</code>,
+<code>wierd</code> and <code>adress</code>. Every one was checked
+against two English dictionaries (American and British) before it went
+in: a word that is spelled correctly in either is never on the list, and
+neither is a word that is also a real word or a name, such as
+<code>calender</code> (a machine for pressing cloth) or
+<code>Sargent</code>.</p>
+<p>QUILL keeps your capital letters. Some examples:</p>
+<ul>
+<li><code>teh </code> becomes <code>the </code>, and <code>Teh </code>
+at the start of a sentence becomes <code>The </code>.</li>
+<li><code>febuary </code> becomes <code>February </code>, because the
+correction has its own capital.</li>
+<li><code>(recieve, </code> becomes <code>(receive, </code>. Brackets,
+quotes and punctuation around the word stay where they were.</li>
+<li><code>TEH </code> is left alone. A word typed all in capitals is far
+more often an abbreviation or an acronym than a mistake.</li>
+</ul>
+<h3 id="what-it-never-touches">What it never touches</h3>
+<p>AutoCorrect looks only at a whole word that a space or
+<code>Enter</code> has just ended. It never changes:</p>
+<ul>
+<li><strong>Code and settings files.</strong> Nothing is corrected in a
+file whose name marks it as code or configuration (<code>.py</code>,
+<code>.json</code>, <code>.yaml</code>, <code>.ini</code>,
+<code>.html</code>, <code>.csv</code> and the rest), the same list that
+keeps spell-check-as-you-type quiet in those files. Plain text
+(<code>.txt</code>), Markdown, rich text and new untitled documents are
+all corrected.</li>
+<li><strong>Web addresses, email addresses and paths.</strong> A word
+with a full stop, slash, colon, <code>@</code>, digit or underscore
+inside it is never a misspelling, so <code>teh.example.com</code>,
+<code>adress@example.com</code> and <code>my_recieve_function</code>
+stay exactly as typed.</li>
+<li><strong>Code inside prose.</strong> In a Markdown document, nothing
+inside backticks or inside a fenced code block is corrected.</li>
+</ul>
+<h3 id="taking-a-correction-back">Taking a correction back</h3>
+<p><code>Ctrl+Z</code> straight after a correction puts back exactly
+what you typed (the correction and the space are one undo step). QUILL
+then leaves that word alone in this window for the rest of the session:
+type the space again and the word stays the way you wrote it, and the
+status line says “Kept teh as you typed it”. If you never want a
+correction again, turn it off in AutoCorrect Entries, below.</p>
+<h3 id="autocorrect-entries-altshift9">AutoCorrect Entries
+(Alt+Shift+9)</h3>
+<p><strong>Insert &gt; AutoCorrect Entries…</strong>
+(<code>Alt+Shift+9</code>) shows every correction, the built-in ones and
+your own, one per row, read as a sentence: “teh becomes the, built in”.
+It is the same window, on the same key, in QUILL Lite.</p>
+<ul>
+<li><strong>Find</strong> narrows the list as you type. Type
+<code>rec</code> and only the corrections with <code>rec</code> in the
+misspelling or the correction remain.</li>
+<li><strong>Corrections</strong> is the list. <code>Enter</code> or
+<code>Space</code> on a row edits it.</li>
+<li><strong>Add…</strong> makes a correction of your own. You type the
+word as you mistype it, what it should become, and whether case must
+match exactly. For example, add <code>qill</code> becoming
+<code>QUILL</code>, or <code>adn</code> becoming <code>and</code> if it
+is not already there. The word to correct must be letters only (an
+apostrophe inside is fine); what it becomes can be several words.</li>
+<li><strong>Edit…</strong> changes the row you are on. Editing a
+built-in correction saves your version beside it, and the row then says
+“built in, changed by you”.</li>
+<li><strong>Turn Off</strong> stops the correction you are on without
+deleting it; the row then ends in “stopped”, and the same button, now
+<strong>Turn On</strong>, starts it again. This is the answer when a
+correction keeps changing a word you meant.</li>
+<li><strong>Remove</strong> deletes a correction of yours. On a built-in
+correction you changed or turned off, it puts it back the way QUILL
+shipped it. A built-in correction cannot be deleted, so Remove on one
+turns it off instead and tells you so.</li>
+</ul>
+<p>Every button says what it did. Your changes are kept when you close
+the window with <strong>Close</strong> or <code>Escape</code>.</p>
+<h3 id="where-your-corrections-are-kept">Where your corrections are
+kept</h3>
+<p>Your corrections are kept with your abbreviations, in the same
+<code>abbreviations.json</code> file in QUILL’s data folder, under the
+category <strong>AutoCorrect</strong>. So <strong>Back Up
+Settings</strong> carries them, and you can see them in <strong>Manage
+Abbreviations</strong> too (choose the AutoCorrect category). They are
+not abbreviations, though: they never expand while only Abbreviation
+Expansion is on, they do not appear in Quick Insert, and Quill Inkwell
+does not type them in other programs. AutoCorrect works inside QUILL and
+QUILL Lite.</p>
+<h3 id="limits">Limits</h3>
+<ul>
+<li>The built-in list is English only.</li>
+<li>A correction happens when a space or <code>Enter</code> ends the
+word. A word followed only by a full stop at the very end of your
+document is corrected when you type the space after the full stop.</li>
+<li>AutoCorrect fixes known misspellings, not every misspelling. Spell
+check (<code>F7</code>) and spell-check-as-you-type still find the
+rest.</li>
+</ul>
+<h2 id="insert-automation">Insert Automation</h2>
+<p>Insert Automation ties abbreviations, smart text triggers,
+<code>.LOG</code> files and append anchors together, all from the
+keyboard. Everything it does is announced and can be undone, and it only
+acts on an exact match. Nothing runs in the background, and nothing
+reads through your file unless you asked.</p>
+<h3 id="smart-text-triggers">Smart Text Triggers</h3>
+<p>A smart text trigger is a short command that starts with
+<code>=</code>, sits on a line by itself, and expands when you press
+Enter. Because it starts with <code>=</code>, it cannot go off by
+accident in the middle of a sentence.</p>
+<p>The bundled <strong>Smart Insert</strong> Quillin comes with
+these:</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Inserts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>=bug()</code></td>
+<td>A bug report template</td>
+</tr>
+<tr>
+<td><code>=meeting()</code></td>
+<td>Meeting notes with today’s date</td>
+</tr>
+<tr>
+<td><code>=journal()</code></td>
+<td>A journal entry with today’s date</td>
+</tr>
+<tr>
+<td><code>=todo()</code> or <code>=todo(5)</code></td>
+<td>A to-do checklist (5 items unless you give another number)</td>
+</tr>
+<tr>
+<td><code>=logentry()</code></td>
+<td>A time stamp at the cursor, in your Log Mode format</td>
+</tr>
+<tr>
+<td><code>=brftest()</code></td>
+<td>A predictable test document of several braille pages</td>
+</tr>
+<tr>
+<td><code>=rand(3,4)</code></td>
+<td>Three paragraphs of four readable sentences each</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to use one.</strong> Type the trigger on a line by itself
+and press Enter. If it matches, QUILL replaces the whole line with the
+new text and tells you what it inserted. If it does not match, nothing
+happens and Enter works as usual.</p>
+<p><strong>Large inserts.</strong> If a trigger would produce more than
+a set amount of text (50 paragraphs at first), QUILL asks before
+inserting anything. Change the amount on the <strong>General</strong>
+tab of the <strong>Smart Insert</strong> page in More Preferences.</p>
+<p><strong>Switching triggers on and off.</strong> Every trigger can be
+switched on or off on the <strong>Smart Triggers</strong> tab of that
+same Smart Insert page. A switched-off trigger’s <code>=name()</code>
+text is simply left on the line as you typed it.</p>
+<h3 id="log-files-that-stamp-themselves">Log files that stamp
+themselves</h3>
+<p>If the first line of a text file is <code>.LOG</code>, QUILL treats
+it as a log with a time stamp for each entry, just as Notepad has for
+decades.</p>
+<p>When you open a <code>.LOG</code> file, QUILL:</p>
+<ol type="1">
+<li>Finds <code>.LOG</code> at the top of the file (within the first
+4096 bytes).</li>
+<li>Finds where the new entry belongs: a
+<code>QUILL-LOG-APPEND-HERE</code> anchor near the bottom of the file,
+or the end of the document if there is none.</li>
+<li>Puts in a fresh time stamp.</li>
+<li>Leaves the cursor just after it, so you can start typing.</li>
+<li>Says “Log timestamp inserted. Type your entry.”</li>
+</ol>
+<p>QUILL never changes a read-only file. <code>.LOG</code> further down
+a file does nothing on its own. A UTF-8 BOM before <code>.LOG</code> is
+fine.</p>
+<p><strong>Time stamp format.</strong> Choose it on the <strong>Log
+Mode</strong> tab of the Smart Insert page in More Preferences:</p>
+<ul>
+<li>Long date and time (the default):
+<code>Sunday, June 14, 2026 9:42 PM</code></li>
+<li>Short: <code>06/14/2026 09:42 PM</code></li>
+<li>ISO 8601: <code>2026-06-14T21:42:00</code></li>
+<li>Date only, Time only, or a custom <code>strftime</code> pattern</li>
+</ul>
+<p>For example, set Timestamp format to Custom and enter
+<code>%Y-%m-%d %H:%M</code> to get <code>2026-06-14 21:42</code>.</p>
+<h3 id="append-anchors">Append Anchors</h3>
+<p>Any file can have a <code>QUILL-APPEND-HERE</code> line near the
+bottom. When QUILL adds something that belongs at the end of the file,
+such as a log time stamp, a template or a braille test block, it puts
+the new text just above the anchor and leaves the anchor where it is for
+next time.</p>
+<p>That gives you a fixed spot that keeps working. Footer notes, details
+or closing instructions stay below the anchor, and new text always lands
+above them.</p>
+<p>A <code>.LOG</code> file can use the more specific
+<code>QUILL-LOG-APPEND-HERE</code> anchor to keep log entries apart from
+other added text.</p>
+<p><strong>To add an anchor,</strong> type
+<code>QUILL-APPEND-HERE</code> on a line by itself near the bottom of
+your file. That is all. QUILL finds it the next time it adds something
+to that file.</p>
+<h2 id="look-up-thesaurus-and-the-dictionary">Look Up, Thesaurus and the
+Dictionary</h2>
+<p>Press the <strong>Applications key</strong> (or
+<code>Shift+F10</code>, or right-click) on any word and the menu has two
+submenus named after that word.</p>
+<ul>
+<li><strong>Thesaurus for “running”</strong> has the best replacements
+one key away, each further meaning as a submenu of its own,
+<strong>Opposites</strong>, <strong>Say Word Summary</strong> (what the
+thesaurus knows, spoken) and <strong>More in Thesaurus…</strong>.</li>
+<li><strong>Dictionary for “running”</strong> starts with <strong>Look
+Up “running”…</strong> and, when AI is on, goes on with the thirteen AI
+dictionary items described under the AI menu.</li>
+</ul>
+<p>If you have selected a single word, the menus use that word instead
+of the one at the cursor.</p>
+<h3 id="thesaurus-shiftf7">Thesaurus (Shift+F7)</h3>
+<p><strong>Thesaurus…</strong> (<code>Shift+F7</code>, <strong>Tools
+&gt; Writing and Language</strong>) opens a two-part window for the word
+you are on, or asks you for one. It finds your word even when it is not
+in its plain form. The thesaurus knows “run”, not “running”, and
+“happy”, not “happier”, so QUILL works back to the plain word and tells
+you: in the title (“running (as run)”) and on each meaning (“verb, from
+run: sprinting, dashing, …”). It then gives each replacement back in the
+form your sentence needs, with the same capitals: “sprinting” for
+“running”, “More glad” for “Happier”, “sought” for “sought”.</p>
+<p>You start in the Senses list, with the part of speech first, so type
+<strong>n</strong> for the nouns or <strong>v</strong> for the verbs.
+Tab moves to the words for the chosen meaning: replacements, then
+<em>broader:</em> and <em>opposite:</em> words, each labelled. Enter or
+<strong>Replace</strong> puts the chosen word in and drops the
+selection.</p>
+<p>Press <code>Ctrl+Alt+Shift+[</code> for <strong>Say Word
+Summary</strong>: it reads you the plain word, its meanings for each
+part of speech, the first few replacements and the opposites, without
+opening anything. It has no menu item; besides the key, you can find it
+as “Word Summary” in the Command Palette (<strong>Tools &gt; Command
+Palette…</strong>, <code>Ctrl+Shift+P</code>). QUILL Lite has the same
+thesaurus.</p>
+<h3 id="look-up-word-altf10">Look Up Word (Alt+F10)</h3>
+<p><strong>Look Up Word…</strong> (<code>Alt+F10</code>, <strong>Tools
+&gt; Writing and Language</strong>) is the dictionary without AI, in a
+window QUILL Lite shares. You start in the <strong>Result</strong>, a
+read-only box you arrow through: the word, then a labelled section for
+each kind of answer. Below it, <strong>Words you can use</strong> lists
+every synonym, opposite, related word and rhyme, each saying which it
+is.</p>
+<ul>
+<li>Enter or <strong>Replace Word</strong> puts the chosen word in place
+of yours.</li>
+<li><strong>Copy</strong> copies the chosen word, or the whole
+result.</li>
+<li><strong>Add to Dictionary</strong> adds the word to your personal
+dictionary.</li>
+</ul>
+<p>Offline, Look Up uses the thesaurus and nothing leaves this computer.
+The <strong>Use online sources</strong> checkbox is off until you check
+it. When it is on, the word, and only the word, never your sentence or
+document, goes to three free services that need no account:</p>
+<ul>
+<li>the Free Dictionary, for definitions with examples</li>
+<li>Datamuse, for more synonyms, opposites, rhymes and related
+words</li>
+<li><strong>Wikipedia</strong>, for a short summary with a link to the
+article (a word with no real article, or a page that only lists other
+meanings, shows no encyclopedia section)</li>
+</ul>
+<p>The offline answer appears straight away and QUILL says “Looking up
+online”. When the online answer arrives it replaces the box, and QUILL
+tells you. Your choice is remembered as
+<code>dictionary_online_lookups</code> in the settings file. Uncheck the
+box and the next lookup is offline again.</p>
+<p>Chapter 7, Spelling and words, has more on spelling and the
+dictionary.</p>
+<h2 id="sending-your-writing-somewhere-else">Sending your writing
+somewhere else</h2>
+<h3 id="send-as-email-and-copy-as-email-body">Send as Email and Copy as
+Email Body</h3>
+<p><strong>File &gt; Send as Email</strong> opens your usual mail
+program with the selection, or the whole document if nothing is
+selected, as the message. <strong>File &gt; Copy as Email Body</strong>
+prepares the same text and puts it on the clipboard instead. Use that
+when your mail program cuts off or refuses a very long message. Both
+follow the same format setting as the Clip Library. Copy as Email Body
+is also on the QUILL key: press the QUILL key and then <code>C</code>
+(<strong>Copy Selection For Email</strong>).</p>
+<h3 id="using-quill-as-an-external-editor">Using QUILL as an external
+editor</h3>
+<p>Some programs, such as Thunderbird, can hand a draft to another
+editor and take it back when you are done. QUILL opens one window per
+file and closes when you close it, which is exactly what those programs
+expect, so QUILL needs no special setup. For Thunderbird:</p>
+<ol type="1">
+<li>Install the <strong>External Editor Revived</strong> add-on in
+Thunderbird (Tools &gt; Add-ons and Themes, then search for it). It also
+needs a small companion program, and its own setup page walks you
+through that.</li>
+<li>In the add-on’s settings, set the editor to QUILL’s full path. On
+Windows this is usually
+<code>C:\Users\&lt;you&gt;\AppData\Local\Programs\QUILL for All\quill.exe</code>.
+Copy the exact path from the Target field of your QUILL shortcut.</li>
+<li>Write a message and press the add-on’s edit-externally key
+(<code>Ctrl+E</code> in Thunderbird, unless you changed it). Your draft
+opens in QUILL with everything QUILL offers: spell check, read aloud, AI
+tools and braille. Save (<code>Ctrl+S</code>) and close QUILL, and the
+text goes back into Thunderbird’s message window.</li>
+</ol>
+<p>The same steps work with any program that opens an editor on a file
+and reads it back when the editor closes.</p>
+<h2 id="autooutline-numbered-headings">AutoOutline numbered
+headings</h2>
+<p><strong>Format &gt; Line &gt; Update Outline Numbering</strong>
+numbers every heading in your document by its level, typed as real text
+at the start of the heading:</p>
+<ul>
+<li><strong>Numeric</strong> (the default): <code>1</code>,
+<code>1.1</code>, <code>1.2</code>, <code>2</code>,
+<code>2.1</code>…</li>
+<li><strong>Legal</strong>: <code>I</code>, <code>I.A</code>,
+<code>I.B</code>, <code>II</code>…</li>
+</ul>
+<p>Choose the style in <strong>Settings &gt; Editing &gt; “AutoOutline
+numbering style.”</strong> Because the numbers are real text, they are
+read aloud, survive copy and paste, and export with nothing to set up.
+Add, remove or move headings, then run <strong>Format &gt; Line &gt;
+Update Outline Numbering</strong> again. It replaces the old numbers
+instead of adding new ones in front. <strong>Format &gt; Line &gt;
+Remove Outline Numbering</strong> takes them out again.</p>
+<h2 id="work-personas">Work Personas</h2>
+<p>A <strong>Work Persona</strong> is a named set of things you use
+together: a feature profile, a working folder, some favourite files and,
+if you like, a keymap profile. Make one for each part of your work, such
+as school, a freelance client or a novel, and switch to it in one
+step.</p>
+<p>Open <strong>Tools &gt; Work Personas…</strong> to manage them.</p>
+<ol type="1">
+<li>Choose <strong>New Persona</strong>.</li>
+<li>Type a name, pick a feature profile, browse to a working folder, add
+your favourite files and, if you want, choose a keymap profile.</li>
+<li>Choose <strong>Save</strong>.</li>
+</ol>
+<p>Then:</p>
+<ul>
+<li><strong>Apply Now</strong> switches your feature profile, changes
+your working folder, reopens your favourite files and applies the
+keymap, all in the current session. Keymap changes take effect the next
+time you start QUILL.</li>
+<li><strong>Generate Shortcut…</strong> makes a launcher you can
+double-click to open QUILL straight into that persona, even when QUILL
+is not running. On Windows it is a real shortcut where possible, or a
+<code>.bat</code> file otherwise. On macOS it is a <code>.command</code>
+file you open from Finder, which starts QUILL in Terminal.</li>
+<li>From a command prompt or another shortcut,
+<code>quill --persona "Persona Name"</code> does the same.</li>
+</ul>
+<p>A persona is for one person’s different kinds of work. It is not a
+separate user account, and it does not replace Story Studio, Notebooks
+or the Copy Tray, though a persona can point to any of them.</p>
+<h2 id="typing-stays-ahead-of-you">Typing stays ahead of you</h2>
+<p>QUILL is built so that your next keystroke never has to wait. Between
+one character and the next, it does only three things: updates your
+text, refreshes the modified marker, and quietly sets the status
+line.</p>
+<p>Everything else, such as the side preview, the spelling hint, word
+prediction, getting browse mode ready, language detection, turning menu
+items on and off, and autosave, waits until after your screen reader has
+been told about the character. QUILL waits for a fifth of a second of
+quiet first, and if you type faster than that it skips the work until
+you pause. So the faster you type, the less QUILL does between
+keystrokes.</p>
+<p>The status bar’s word count, line and column, and progress cells also
+update in those pauses, using the text QUILL already holds. And the
+abbreviation feature only touches the Windows clipboard, which every
+program and your screen reader share, at the moment an abbreviation that
+uses <code>${clipboard}</code> expands.</p>
+<p>This matters most with a screen reader. NVDA and JAWS speak the
+character you typed when they get a signal from the same part of QUILL
+that does this work. Anything done between keystrokes is heard as a
+delay before the character, and if enough builds up, as keystrokes
+running together. A missing space between words is usually the first
+sign. If you ever notice that in a very large document, please report it
+rather than changing your screen reader settings: it means something is
+slowing down typing that should not be.</p>
+<h2 id="the-editing-page-in-settings">The Editing page in Settings</h2>
+<p>Most of the <strong>Editing</strong> page in Settings
+(<code>Ctrl+,</code>) is described where the feature itself is. These
+are the rest:</p>
+<ul>
+<li><strong>Enable soft wrap</strong> wraps long lines to the width of
+the window. It is on to begin with, and <code>Alt+Z</code> turns it on
+and off as you work.</li>
+<li><strong>Auto-fill numbered list markers</strong> writes
+<code>1.</code>, <code>2.</code>, <code>3.</code> in front of every item
+when you insert a Markdown numbered list, instead of only the first. It
+is off to begin with, but QUILL does it anyway while you are in a
+Markdown document, and for five minutes after you turn a numbered list
+on.</li>
+<li><strong>Backspace after expansion</strong> decides what
+<code>Backspace</code> does straight after an abbreviation expands:
+<strong>Delete the expanded text</strong> (the default) or
+<strong>Revert to the typed abbreviation</strong>.</li>
+<li><strong>Enable persistent undo</strong> keeps a saved file’s undo
+history from one session to the next. It is off to begin with; Chapter
+13 has more.</li>
+<li><strong>How to open CSV files</strong> is <strong>Ask each
+time</strong> (the default), <strong>Plain text</strong> or
+<strong>Grid</strong>.</li>
+<li><strong>How to open Word files</strong> is <strong>Ask each
+time</strong> (the default), <strong>Plain text</strong> or
+<strong>Structured</strong>.</li>
+<li><strong>Autosave interval (seconds)</strong> is how often QUILL
+autosaves the open document, from 5 to 600 seconds. The default is
+30.</li>
+<li><strong>Autoformat straight quotes to curly</strong> turns straight
+quotes into curly ones as you type. Off to begin with.</li>
+<li><strong>Autoformat double hyphen to dash</strong> turns two hyphens
+into a dash as you type. Off to begin with.</li>
+<li><strong>Correct common misspellings as I type</strong> turns on
+AutoCorrect, which changes <code>teh</code> to <code>the</code> when you
+type the space after it. Off to begin with; Chapter 4’s AutoCorrect
+section has the details.</li>
+<li><strong>Continue lists in plain text</strong> makes
+<code>Enter</code> continue a list in a plain text document the way it
+always does in Markdown. Off to begin with; see Typing in a list in
+Chapter 5.</li>
+<li><strong>Multi-press time window (ms)</strong> is how long QUILL
+waits for a second or third press of the same key before it treats the
+first as a single press. It matters for the Copy Tray and Command
+Palette keys that do something different when pressed twice. The default
+is 400. Fast typists may like 300, and 500 gives you more time.</li>
+</ul>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You now know the everyday editing keys, how to select by anchor, by
+structure and with marks, and how to get deleted text back or repeat a
+command. You met the Copy Tray and the Clip Library, the Insert menu
+with its special characters, equations, snippets, dates and emoji, and
+abbreviations, smart triggers and log files that do some of the typing
+for you.</p>
+<p>To practise, open <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>) and try “Select, mark, and move text” and
+“Spelling, words, and the thesaurus” from the Writing and editing
+track.</p>
+<p>Next, Chapter 5, Formatting, structure and markup, shows how to give
+your writing shape: headings, lists, tables and formatting.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-03-opening-saving-and-converting-files.html">Chapter
+3: Opening, saving and converting files</a></li>
+<li>Next: <a
+href="quill-guide-05-formatting-structure-and-markup.html">Chapter 5:
+Formatting, structure and markup</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

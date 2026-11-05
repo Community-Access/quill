@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 5: Permissions, the allow list and the bypass</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-5-permissions-the-allow-list-and-the-bypass">Chapter 5:
+Permissions, the allow list and the bypass</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter is the whole permission model in one place: what the
+agent may do without asking, what it must ask for, what it can never do,
+the per-project allow list, the deliberate bypass, and what QUILL
+honestly cannot stop on Windows. It also explains why each rule is the
+way it is.</p>
+<h2 id="the-short-version">The short version</h2>
+<table>
+<thead>
+<tr>
+<th>What the agent wants</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read, list or search files in the project</td>
+<td>Allowed, without asking</td>
+</tr>
+<tr>
+<td>Change, add, delete or rename a file</td>
+<td>Proposed only; you decide in Review Changes</td>
+</tr>
+<tr>
+<td>Run a command</td>
+<td>Asks you in Run This Command?, unless you allowed it</td>
+</tr>
+<tr>
+<td>Use one of the engine’s own tools</td>
+<td>Refused unless you checked it; then asks each time</td>
+</tr>
+<tr>
+<td>Push, publish, force a remote, change system settings</td>
+<td>Never, whatever you allow</td>
+</tr>
+<tr>
+<td>See a secret file</td>
+<td>Never; it is hidden from the agent</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reading-needs-no-permission">Reading needs no permission</h2>
+<p>Inside the project folder, reading is free: listing files, reading
+them, searching, reading an outline, and reading the git branch and
+changed files. That is the same rule Do a Document Task has for the
+document you have open. It keeps a task from asking you twenty questions
+before it has done anything. The boundary in Chapter 2 is what keeps
+reading safe: nothing outside the folder, and no secrets.</p>
+<h2 id="changes-are-proposals">Changes are proposals</h2>
+<p>When the agent edits a file, makes one, deletes one or renames one,
+nothing is written. The change joins the turn’s list of proposed
+changes. Before a command runs, and when the turn ends, Review Changes
+shows them, and only what you accept is written, all at once. Chapter 7
+covers the window.</p>
+<p>The agent is told the truth about what happened: “Proposed a change
+to cli.py. Nothing is written yet”, and afterwards exactly which changes
+you took and which you left.</p>
+<h2 id="commands-ask">Commands ask</h2>
+<p>Every command the agent wants to run opens <strong>Run This
+Command?</strong> first. Chapter 6 covers that window and running
+commands in full. Your three answers:</p>
+<ul>
+<li><strong>Allow once</strong> (Enter): run it now. The next command
+asks again.</li>
+<li><strong>Always allow this command here:</strong> run it now, and add
+it to this project’s allow list, so next time it runs without asking.
+Offered only when QUILL found no warning.</li>
+<li><strong>Don’t allow</strong> (Escape): do not run it. The agent is
+told, and carries on without it.</li>
+</ul>
+<h2 id="what-quill-never-runs-for-an-agent">What QUILL never runs for an
+agent</h2>
+<p>Some things QUILL keeps for you, whatever you have allowed and even
+with the bypass on:</p>
+<ul>
+<li><strong>pushing to a remote:</strong> any
+<code>git ... push</code>;</li>
+<li><strong>publishing a package:</strong> <code>npm publish</code>,
+<code>yarn publish</code>, <code>pnpm publish</code>,
+<code>twine upload</code>, <code>cargo publish</code>,
+<code>gem push</code> and <code>nuget push</code>;</li>
+<li><strong>changing a remote repository:</strong>
+<code>gh release</code> or <code>gh repo</code> with create, delete or
+edit;</li>
+<li><strong>forcing a remote:</strong> git with <code>--force</code>, or
+<code>-f</code> against origin or upstream;</li>
+<li><strong>changing system settings:</strong> <code>reg add</code>,
+<code>reg delete</code> and <code>reg import</code>,
+<code>bcdedit</code>, <code>diskpart</code>, <code>netsh</code>,
+<code>setx</code>, <code>schtasks</code>, <code>sc</code>,
+<code>Set-ExecutionPolicy</code>, <code>shutdown</code>,
+<code>Restart-Computer</code>, <code>Stop-Computer</code>, and
+formatting a drive.</li>
+</ul>
+<p>The agent is told “The person keeps this step for themselves. Do not
+try another way to do it; tell them the exact command, and they will run
+it if they want to.” So it gives you the command, and you decide.</p>
+<h2 id="the-allow-list-commands-allowed-in-this-project">The allow list:
+Commands Allowed in This Project</h2>
+<p><strong>Tools &gt; Commands Allowed in This Project…</strong>, or
+<strong>Allowed Commands…</strong> (<code>Alt+W</code>) in the task
+window, opens the project’s own list of commands that run without
+asking.</p>
+<ul>
+<li><strong>Allowed commands</strong> lists them. Delete removes the
+selected one, as does <strong>Remove</strong>.</li>
+<li><strong>New command:</strong> type a command or the start of one,
+then press Enter or <strong>Add</strong>.</li>
+</ul>
+<p>How a line matches: it allows that exact command, or any command that
+starts with it and a space. So <code>pytest</code> allows
+<code>pytest -q tests</code>, but not <code>pytest-watch</code>. Spaces
+are tidied, so two spaces count as one.</p>
+<p>What never gets on the list:</p>
+<ul>
+<li>a pattern the AI suggests: only what you type, or what you chose
+with Always allow;</li>
+<li>a command QUILL warns about: those always ask, every time, even if
+you typed them here.</li>
+</ul>
+<h3 id="why-the-list-lives-in-quill-not-in-the-project">Why the list
+lives in QUILL, not in the project</h3>
+<p>The list is kept in QUILL’s own data, for that project only. A
+project folder cannot carry its own allow list, so a project you clone
+or download can never approve its own commands. If a repository could
+ship a file saying “rm -rf is fine here”, the first person to open it
+would have agreed to that without knowing.</p>
+<h2 id="the-bypass-run-commands-without-asking">The bypass: Run commands
+without asking</h2>
+<p>The same window has a check box: <strong>Run commands without
+asking</strong>. It is off until you check it, and when you check it
+QUILL asks you to confirm:</p>
+<blockquote>
+<p>Run commands without asking in this project? The agent will run any
+command it chooses without showing it to you first, except pushing,
+publishing and system changes, which QUILL never runs for an agent. Undo
+Last Turn still puts files back, but it cannot undo what a command did
+outside the project or on the internet.</p>
+</blockquote>
+<p>No is the default. While the bypass is on:</p>
+<ul>
+<li>the task window’s status line says “Commands run without
+asking”;</li>
+<li>every command it runs is noted in the conversation: “Ran without
+asking, as this project allows: …”;</li>
+<li>the never list above still applies;</li>
+<li>it is for this project only.</li>
+</ul>
+<p>Uncheck it to go back to asking.</p>
+<h2 id="engine-tools-ask-too">Engine tools ask too</h2>
+<p>If you checked any of an engine’s own tools (Chapter 4), each use
+asks you in <strong>Allow This Step?</strong>. It has three answers:
+<strong>Allow once</strong>, <strong>Allow for this task</strong> (steps
+like this one until the task ends; the next task asks afresh), and
+<strong>Don’t allow</strong>. A tool you did not check is refused
+without a question.</p>
+<h2 id="what-quill-cannot-stop-on-windows">What QUILL cannot stop on
+Windows</h2>
+<p>Windows gives QUILL no simple way to fence a command in. A real
+sandbox needs administrator rights or Windows features many people do
+not have. So once you allow a command, it can reach the internet, read
+files outside the project, and do anything your own Windows account can
+do. QUILL cannot prevent that.</p>
+<p>Your approval is the safety line. That is why QUILL shows you the
+exact command, warns you when it sees a risk, asks every time unless you
+choose otherwise, and keeps the never list.</p>
+<p>What QUILL does do for every command:</p>
+<ul>
+<li>runs it in your project folder;</li>
+<li>takes your API keys, GitHub and Copilot tokens, and QUILL’s own
+settings out of its environment;</li>
+<li>runs it so that Stop ends the whole command, child processes and
+all;</li>
+<li>keeps its output in a file rather than reading it at you.</li>
+</ul>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-04-engines.html">Chapter 4: Engines,
+and choosing one</a></li>
+<li>Next: <a href="developer-06-commands.html">Chapter 6: Running
+commands and reading their output</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

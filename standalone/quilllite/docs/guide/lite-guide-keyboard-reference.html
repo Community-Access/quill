@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Keyboard reference</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="keyboard-reference">Keyboard reference</h1>
+<p>This is every key QUILL Lite has, grouped by menu, the same way the
+menus are laid out. You do not need to learn them all. Skim for the ones
+you use most, and come back when you wonder whether there is a key for
+something.</p>
+<p><strong>Ctrl+F1</strong> shows this same list inside the app, and you
+can type part of a name to narrow it. If a key does not suit you,
+<em>Changing what a key does</em>, in Chapter 11, shows you how to pick
+another.</p>
+<!-- keys:start -->
+
+<p>Generated from the same table that builds the menus, so it cannot
+drift from what is actually bound. <strong>Ctrl+F1</strong> shows this
+list inside the app.</p>
+<h2 id="file">File</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+N</strong></td>
+<td>New</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+T</strong></td>
+<td>New Rich Text Document</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+N</strong></td>
+<td>New Plain Text Document</td>
+</tr>
+<tr>
+<td><strong>Ctrl+O</strong></td>
+<td>Open…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Enter</strong></td>
+<td>Open from Clipboard</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+0</strong></td>
+<td>Recent Documents…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+S</strong></td>
+<td>Save</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+S</strong></td>
+<td>Save As…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+E</strong></td>
+<td>Earlier Versions…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F12</strong></td>
+<td>Reopen Last Session…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+End</strong></td>
+<td>Export as HTML…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+P</strong></td>
+<td>Page Setup…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+P</strong></td>
+<td>Print Preview…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+P</strong></td>
+<td>Print…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+W</strong></td>
+<td>Close Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F4</strong></td>
+<td>Close Window (MDI)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Q</strong></td>
+<td>Exit QUILL Lite</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wordpress-in-file">WordPress (in File)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, G</strong></td>
+<td>New Page…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, N</strong></td>
+<td>New Post…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, O</strong></td>
+<td>Open Page or Post…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, W</strong></td>
+<td>Open by Web Address…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, L</strong></td>
+<td>Open Local Draft…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, D</strong></td>
+<td>Save Draft to Site</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, P</strong></td>
+<td>Publish or Update…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, E</strong></td>
+<td>Schedule Publish…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, I</strong></td>
+<td>Open on Site</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, Y</strong></td>
+<td>Copy Address</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, R</strong></td>
+<td>Properties…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, V</strong></td>
+<td>Previous Versions…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, C</strong></td>
+<td>Compare with Site</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, T</strong></td>
+<td>Move to Trash…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, S</strong></td>
+<td>Switch Site…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, Shift+S</strong></td>
+<td>Sites…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, A</strong></td>
+<td>Connect a Site…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="edit">Edit</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Z</strong></td>
+<td>Undo</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Y</strong></td>
+<td>Redo</td>
+</tr>
+<tr>
+<td><strong>Ctrl+X</strong></td>
+<td>Cut</td>
+</tr>
+<tr>
+<td><strong>Ctrl+C</strong></td>
+<td>Copy</td>
+</tr>
+<tr>
+<td><strong>Ctrl+V</strong></td>
+<td>Paste</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+V</strong></td>
+<td>Paste Text Only</td>
+</tr>
+<tr>
+<td><strong>Del</strong></td>
+<td>Delete</td>
+</tr>
+<tr>
+<td><strong>Ctrl+A</strong></td>
+<td>Select All</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F8</strong></td>
+<td>Copy All</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F</strong></td>
+<td>Find…</td>
+</tr>
+<tr>
+<td><strong>F3</strong></td>
+<td>Find Next</td>
+</tr>
+<tr>
+<td><strong>Shift+F3</strong></td>
+<td>Find Previous</td>
+</tr>
+<tr>
+<td><strong>Ctrl+H</strong></td>
+<td>Replace…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F8</strong></td>
+<td>Find in Open Documents…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F</strong></td>
+<td>Search in Files…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+R</strong></td>
+<td>Replace Across Files…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+G</strong></td>
+<td>Go To…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+C</strong></td>
+<td>Describe Character</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+C</strong></td>
+<td>Character Details…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="matches-in-edit">Matches (in Edit)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+F3</strong></td>
+<td>All Matches…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F3</strong></td>
+<td>Count Occurrences</td>
+</tr>
+</tbody>
+</table>
+<h3 id="lines-in-edit">Lines (in Edit)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+Up</strong></td>
+<td>Move Line Up</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Down</strong></td>
+<td>Move Line Down</td>
+</tr>
+<tr>
+<td><strong>Ctrl+D</strong></td>
+<td>Duplicate Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+J</strong></td>
+<td>Join Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Delete</strong></td>
+<td>Delete Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Backspace</strong></td>
+<td>Delete to Start of Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Delete</strong></td>
+<td>Delete to End of Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Backspace</strong></td>
+<td>Delete Paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Z</strong></td>
+<td>Restore Deleted Text</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+S</strong></td>
+<td>Sort Lines A to Z</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+S</strong></td>
+<td>Sort Lines Z to A</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Z</strong></td>
+<td>Reverse Lines</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+N</strong></td>
+<td>Number Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+K</strong></td>
+<td>Remove Every Blank Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+D</strong></td>
+<td>Remove Duplicate Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+R</strong></td>
+<td>Trim Trailing Spaces</td>
+</tr>
+<tr>
+<td><strong>Ctrl+/</strong></td>
+<td>Toggle Line Comment</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Q</strong></td>
+<td>Quote Lines</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+.</strong></td>
+<td>Remove Quote Marks</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+X</strong></td>
+<td>Delete Lines Containing…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+W</strong></td>
+<td>Hard Wrap Lines…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+T</strong></td>
+<td>Tidy Whitespace</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selection-in-edit">Selection (in Edit)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F8</strong></td>
+<td>Start Selection</td>
+</tr>
+<tr>
+<td><strong>Shift+F8</strong></td>
+<td>Complete Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F8</strong></td>
+<td>Reselect Last Selection</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F8</strong></td>
+<td>Go to Start of Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F8</strong></td>
+<td>Toggle Selection Marker</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F9</strong></td>
+<td>Extend Selection Mode</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+W</strong></td>
+<td>Select Word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+E</strong></td>
+<td>Select Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+H</strong></td>
+<td>Select Paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Space</strong></td>
+<td>Select Sentence</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+B</strong></td>
+<td>Select Block</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+X</strong></td>
+<td>Expand Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+X</strong></td>
+<td>Shrink Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+A</strong></td>
+<td>Unselect All</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+M</strong></td>
+<td>Set Mark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+M</strong></td>
+<td>Pop Mark</td>
+</tr>
+<tr>
+<td><strong>Alt+M</strong></td>
+<td>List Marks</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+X</strong></td>
+<td>Exchange Cursor and Mark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Y</strong></td>
+<td>Say Selection</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+U</strong></td>
+<td>Review Buffer…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Q</strong></td>
+<td>Duplicate Selection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="clipboard-in-edit">Clipboard (in Edit)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Y</strong></td>
+<td>Copy to Tray</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Y</strong></td>
+<td>Copy to Tray Slot…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+V</strong></td>
+<td>Paste from Tray…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Y</strong></td>
+<td>Clear Copy Tray</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+S</strong></td>
+<td>Clipboard Collector</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+C</strong></td>
+<td>Collect Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+G</strong></td>
+<td>Paste Everything Collected</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+C</strong></td>
+<td>Clear the Collector</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+M</strong></td>
+<td>Keep Clip</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+M</strong></td>
+<td>Recent Clips…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="view">View</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+D</strong></td>
+<td>Dark Mode</td>
+</tr>
+<tr>
+<td><strong>Alt+Z</strong></td>
+<td>Word Wrap</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F3</strong></td>
+<td>Announce Headings</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F5</strong></td>
+<td>Announce Lists</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+W</strong></td>
+<td>Overwrite Mode</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+I</strong></td>
+<td>Tab Key Inserts a Tab Character</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+B</strong></td>
+<td>Status Bar</td>
+</tr>
+<tr>
+<td><strong>Ctrl+=</strong></td>
+<td>Increase Text Size</td>
+</tr>
+<tr>
+<td><strong>Ctrl+-</strong></td>
+<td>Decrease Text Size</td>
+</tr>
+<tr>
+<td><strong>Ctrl+0</strong></td>
+<td>Reset Text Size</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+G</strong></td>
+<td>Document Statistics</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+W</strong></td>
+<td>Line Statistics</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, B</strong></td>
+<td>WordPress Blocks…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="insert">Insert</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F5</strong></td>
+<td>Date and Time</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F2</strong></td>
+<td>Special Character…</td>
+</tr>
+<tr>
+<td><strong>Alt+.</strong></td>
+<td>Emoji…</td>
+</tr>
+<tr>
+<td><strong>Shift+Enter</strong></td>
+<td>Line Break</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Enter</strong></td>
+<td>Page Break</td>
+</tr>
+<tr>
+<td><strong>Ctrl+K</strong></td>
+<td>Link…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+T</strong></td>
+<td>Table…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+I</strong></td>
+<td>Markdown Tag…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+O</strong></td>
+<td>HTML Tag…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="format">Format</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+B</strong></td>
+<td>Bold</td>
+</tr>
+<tr>
+<td><strong>Ctrl+I</strong></td>
+<td>Italic</td>
+</tr>
+<tr>
+<td><strong>Ctrl+U</strong></td>
+<td>Underline</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+.</strong></td>
+<td>Grow Font</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+,</strong></td>
+<td>Shrink Font</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+N</strong></td>
+<td>Normal Text</td>
+</tr>
+<tr>
+<td><strong>Ctrl+L</strong></td>
+<td>Align Left</td>
+</tr>
+<tr>
+<td><strong>Ctrl+E</strong></td>
+<td>Centre</td>
+</tr>
+<tr>
+<td><strong>Ctrl+R</strong></td>
+<td>Align Right</td>
+</tr>
+<tr>
+<td><strong>Ctrl+J</strong></td>
+<td>Justify</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+L</strong></td>
+<td>Lists</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Enter</strong></td>
+<td>Toggle Task Done</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F</strong></td>
+<td>Editor Font…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F</strong></td>
+<td>Font for Selection…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+D</strong></td>
+<td>Describe Formatting at Cursor</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F</strong></td>
+<td>Switch Document Mode</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F6</strong></td>
+<td>Document Language…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="line-spacing-in-format">Line Spacing (in Format)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+1</strong></td>
+<td>Single Spacing</td>
+</tr>
+<tr>
+<td><strong>Ctrl+5</strong></td>
+<td>One and a Half Spacing</td>
+</tr>
+<tr>
+<td><strong>Ctrl+2</strong></td>
+<td>Double Spacing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="headings-in-format">Headings (in Format)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+1</strong></td>
+<td>Heading 1</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+2</strong></td>
+<td>Heading 2</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+3</strong></td>
+<td>Heading 3</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+4</strong></td>
+<td>Heading 4</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+5</strong></td>
+<td>Heading 5</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+6</strong></td>
+<td>Heading 6</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+0</strong></td>
+<td>Body Text</td>
+</tr>
+</tbody>
+</table>
+<h3 id="structure-in-format">Structure (in Format)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+Left</strong></td>
+<td>Promote Heading</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Right</strong></td>
+<td>Demote Heading</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Up</strong></td>
+<td>Move Section Up</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Down</strong></td>
+<td>Move Section Down</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F5</strong></td>
+<td>Select Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F5</strong></td>
+<td>Move Section To…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+O</strong></td>
+<td>Heading Organizer…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="navigate">Navigate</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Left</strong></td>
+<td>Go Back</td>
+</tr>
+<tr>
+<td><strong>Alt+Right</strong></td>
+<td>Go Forward</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+H</strong></td>
+<td>Next Heading</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+H</strong></td>
+<td>Previous Heading</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+L</strong></td>
+<td>List Headings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F9</strong></td>
+<td>Fold or Unfold Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Down</strong></td>
+<td>Next Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Up</strong></td>
+<td>Previous Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F10</strong></td>
+<td>Unfold Everything</td>
+</tr>
+<tr>
+<td><strong>F6</strong></td>
+<td>Status Bar</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+A</strong></td>
+<td>Go To Anything…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="table-in-navigate">Table (in Navigate)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Right</strong></td>
+<td>Next Cell</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Left</strong></td>
+<td>Previous Cell</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Down</strong></td>
+<td>Cell Below</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Up</strong></td>
+<td>Cell Above</td>
+</tr>
+<tr>
+<td><strong>Alt+Home</strong></td>
+<td>First Cell in Row</td>
+</tr>
+<tr>
+<td><strong>Alt+End</strong></td>
+<td>Last Cell in Row</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Home</strong></td>
+<td>First Cell</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+End</strong></td>
+<td>Last Cell</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bookmarks-in-navigate">Bookmarks (in Navigate)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+B</strong></td>
+<td>Set Bookmark</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+G</strong></td>
+<td>Go to Bookmark…</td>
+</tr>
+<tr>
+<td><strong>F2</strong></td>
+<td>Next Bookmark</td>
+</tr>
+<tr>
+<td><strong>Shift+F2</strong></td>
+<td>Previous Bookmark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+B</strong></td>
+<td>Clear All Bookmarks</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+J</strong></td>
+<td>Set Temporary Bookmark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+J</strong></td>
+<td>Go to Temporary Bookmark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+1</strong></td>
+<td>Set Bookmark 1</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+2</strong></td>
+<td>Set Bookmark 2</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+3</strong></td>
+<td>Set Bookmark 3</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+4</strong></td>
+<td>Set Bookmark 4</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+5</strong></td>
+<td>Set Bookmark 5</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+6</strong></td>
+<td>Set Bookmark 6</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+7</strong></td>
+<td>Set Bookmark 7</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+8</strong></td>
+<td>Set Bookmark 8</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+9</strong></td>
+<td>Set Bookmark 9</td>
+</tr>
+</tbody>
+</table>
+<h3 id="highlighted-passages-in-navigate">Highlighted Passages (in
+Navigate)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+PageDown</strong></td>
+<td>Next Highlighted Passage</td>
+</tr>
+<tr>
+<td><strong>Alt+PageUp</strong></td>
+<td>Previous Highlighted Passage</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F2</strong></td>
+<td>List Highlighted Passages…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tools">Tools</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+P</strong></td>
+<td>Command Palette…</td>
+</tr>
+<tr>
+<td><strong>Alt+F10</strong></td>
+<td>Look Up Word…</td>
+</tr>
+<tr>
+<td><strong>Shift+F7</strong></td>
+<td>Thesaurus…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+[</strong></td>
+<td>Say Word Summary</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+E</strong></td>
+<td>File Encoding and Line Endings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Backspace</strong></td>
+<td>Read-Only Guard</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Home</strong></td>
+<td>Snippets…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+A</strong></td>
+<td>Manage Abbreviations…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+A</strong></td>
+<td>Expand Abbreviations</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+9</strong></td>
+<td>AutoCorrect Entries…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+,</strong></td>
+<td>Preferences…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F11</strong></td>
+<td>Back Up Settings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F12</strong></td>
+<td>Restore Settings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F10</strong></td>
+<td>Customize Features…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Space</strong></td>
+<td>Keyboard Manager…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+M</strong></td>
+<td>App Sounds</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+O</strong></td>
+<td>Sound Scheme…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spelling-in-tools">Spelling (in Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F7</strong></td>
+<td>Check Spelling…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F7</strong></td>
+<td>Spelling for This Word</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+L</strong></td>
+<td>List Misspellings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F7</strong></td>
+<td>Next Misspelling</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F7</strong></td>
+<td>Previous Misspelling</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F9</strong></td>
+<td>Add Word to Dictionary</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F7</strong></td>
+<td>Check While Typing</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+;</strong></td>
+<td>Dictionary Status…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F7</strong></td>
+<td>Announcements…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ai-in-tools">AI (in Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+6</strong></td>
+<td>Ask AI a Question…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Z</strong></td>
+<td>Ask About This Document…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F5</strong></td>
+<td>Ask About an Image…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+G</strong></td>
+<td>AI Assistant…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+7</strong></td>
+<td>Prompt Library…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+3</strong></td>
+<td>Do a Document Task…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F3</strong></td>
+<td>Tidy Dictated Text…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+8</strong></td>
+<td>Which AI Am I Using</td>
+</tr>
+<tr>
+<td><strong>Ctrl+4</strong></td>
+<td>Choose Your AI…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="aiaccounts-and-usage-in-tools">AI|Accounts and Usage (in
+Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+F2</strong></td>
+<td>Use My Own AI Key…</td>
+</tr>
+<tr>
+<td><strong>Alt+F5</strong></td>
+<td>Use My ChatGPT Subscription…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F10</strong></td>
+<td>Connect or Sign Out…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F9</strong></td>
+<td>Usage…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+9</strong></td>
+<td>Web Searches Left</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+K</strong></td>
+<td>Privacy Agreement…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dictionary-in-tools">Dictionary (in Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+’</strong></td>
+<td>Define in Context</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F10</strong></td>
+<td>Word Explorer…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+;</strong></td>
+<td>Synonyms That Fit</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+-</strong></td>
+<td>Simpler Word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+=</strong></td>
+<td>More Formal Word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+’</strong></td>
+<td>More Vivid Word</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+-</strong></td>
+<td>Opposites</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+/</strong></td>
+<td>Is This the Right Word?</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+=</strong></td>
+<td>Use It in a Sentence</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+,</strong></td>
+<td>Where It Comes From</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+’</strong></td>
+<td>How to Say It</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+;</strong></td>
+<td>Rhymes</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+]</strong></td>
+<td>Find the Word For…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inline-notes-in-tools">Inline Notes (in Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+I</strong></td>
+<td>Add Inline Note…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+J</strong></td>
+<td>Next Inline Note</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+K</strong></td>
+<td>Previous Inline Note</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+H</strong></td>
+<td>Speak Inline Note (Twice to Edit)</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Delete</strong></td>
+<td>Delete Inline Note…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Enter</strong></td>
+<td>List Inline Notes…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dictation-in-tools">Dictation (in Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+F11</strong></td>
+<td>Dictation On</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F6</strong></td>
+<td>Dictation Settings…</td>
+</tr>
+<tr>
+<td><strong>Shift+F11</strong></td>
+<td>Recent Phrases…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F10</strong></td>
+<td>My Words and Phrases…</td>
+</tr>
+<tr>
+<td><strong>Shift+F5</strong></td>
+<td>Transcribe a Recording…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F11</strong></td>
+<td>Switch Dictation Language</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+PageDown</strong></td>
+<td>Start or Stop Live Transcript</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+PageUp</strong></td>
+<td>Dictation Context for This Document…</td>
+</tr>
+<tr>
+<td><strong>Alt+F9</strong></td>
+<td>Dictation Status</td>
+</tr>
+<tr>
+<td><strong>F11</strong></td>
+<td>Speak a Command</td>
+</tr>
+<tr>
+<td><strong>Shift+F4</strong></td>
+<td>Review Dictation…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="change-case-in-tools">Change Case (in Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+U</strong></td>
+<td>UPPERCASE</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+K</strong></td>
+<td>lowercase</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+T</strong></td>
+<td>Title Case</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+U</strong></td>
+<td>Sentence case</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+N</strong></td>
+<td>Invert Case</td>
+</tr>
+</tbody>
+</table>
+<h3 id="indenting-in-tools">Indenting (in Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+]</strong></td>
+<td>Indent</td>
+</tr>
+<tr>
+<td><strong>Ctrl+[</strong></td>
+<td>Outdent</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+V</strong></td>
+<td>Describe Indent Depth</td>
+</tr>
+<tr>
+<td><strong>Alt+F11</strong></td>
+<td>Convert to Spaces</td>
+</tr>
+<tr>
+<td><strong>Alt+F12</strong></td>
+<td>Convert to Tabs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wordpress-in-tools">WordPress (in Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, K</strong></td>
+<td>Check Before Publishing…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, M</strong></td>
+<td>Media Library…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, X</strong></td>
+<td>Alt Text Review…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wordpressmore-media-in-tools">WordPress|More Media (in
+Tools)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Grave, U</strong></td>
+<td>Upload Files…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="window">Window</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Tab</strong></td>
+<td>Next Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F6</strong></td>
+<td>Next Window (MDI)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Tab</strong></td>
+<td>Previous Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F4</strong></td>
+<td>Close Other Documents</td>
+</tr>
+</tbody>
+</table>
+<h2 id="help">Help</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F1</strong></td>
+<td>Help for This Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F1</strong></td>
+<td>Tutorials…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F1</strong></td>
+<td>Keyboard Shortcuts</td>
+</tr>
+<tr>
+<td><strong>Shift+F9</strong></td>
+<td>Activity…</td>
+</tr>
+<tr>
+<td><strong>F9</strong></td>
+<td>Repeat Last Result</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F2</strong></td>
+<td>Get Help from Support…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+U</strong></td>
+<td>Check for Updates…</td>
+</tr>
+<tr>
+<td><strong>Shift+F1</strong></td>
+<td>About QUILL Lite</td>
+</tr>
+</tbody>
+</table>
+<h2 id="built-per-window">Built per window</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+1</strong> to <strong>Alt+9</strong></td>
+<td>Go to that numbered document</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+1</strong> to <strong>Alt+Shift+8</strong></td>
+<td>Reopen that recent file</td>
+</tr>
+</tbody>
+</table>
+<h2 id="second-keys">Second keys</h2>
+<p>A few commands answer to two keys. The first is the one the menu
+shows; the second is here because it is the key a hand trained on Word
+or on a home-row editor already reaches for. Both work, always, and
+rebinding the first in the Keyboard Manager leaves the second alone.</p>
+<table>
+<thead>
+<tr>
+<th>Second key</th>
+<th>Command</th>
+<th>The key the menu shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+;</strong></td>
+<td>Start Selection</td>
+<td><strong>F8</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+’</strong></td>
+<td>Complete Selection</td>
+<td><strong>Shift+F8</strong></td>
+</tr>
+<tr>
+<td><strong>Alt+F7</strong></td>
+<td>Next Misspelling</td>
+<td><strong>Ctrl+F7</strong></td>
+</tr>
+<tr>
+<td><strong>F12</strong></td>
+<td>Save As…</td>
+<td><strong>Ctrl+Shift+S</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+F12</strong></td>
+<td>Open…</td>
+<td><strong>Ctrl+O</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F12</strong></td>
+<td>Print…</td>
+<td><strong>Ctrl+P</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Two of these read differently on a keyboard than in a table:
+<strong>Ctrl+Shift+&gt;</strong> and <strong>Ctrl+Shift+&lt;</strong>
+are the keys your fingers know, and they are listed above as
+<code>Ctrl+Shift+.</code> and <code>Ctrl+Shift+,</code> because that is
+the same physical key and the spelling wx understands.</p>
+<!-- keys:end -->
+
+<hr />
+<ul>
+<li>Previous: <a href="lite-guide-licences-and-notices.html">Licences
+and notices</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

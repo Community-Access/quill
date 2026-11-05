@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 3: Blocks made plain</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-3-blocks-made-plain">Chapter 3: Blocks made plain</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>WordPress keeps most page layout in blocks. This chapter explains how
+QUILL shows blocks as plain text you can read line by line, how to
+insert one, move between them, rearrange them, change their settings,
+and hear what the site will make of them before you publish. It also
+covers patterns, the notes people leave on blocks, and the tools for
+links and icons that live inside a page.</p>
+<h2 id="what-a-block-is">What a block is</h2>
+<p>In the WordPress block editor, a page is a stack of blocks: a
+paragraph, a heading, a picture, a button, two columns side by side, an
+embedded video, a pattern your designer made. In a browser it is a
+canvas full of floating toolbars, and it is one of the hardest parts of
+WordPress to use with a screen reader.</p>
+<p>In QUILL a block is just a piece of your document with a name. Every
+action on it is a command, a list or a form. Nothing floats and nothing
+is dragged.</p>
+<h2 id="how-blocks-look-in-a-markdown-document">How blocks look in a
+Markdown document</h2>
+<p><strong>Ordinary writing stays ordinary.</strong> A paragraph,
+heading, list, quote, picture, table, separator or code block is plain
+Markdown. QUILL adds and removes WordPress’s hidden block markers
+itself, when it opens and when it sends. You never see or type one.</p>
+<p><strong>Other blocks are fences.</strong> A fence is a line starting
+with three colons. A button is one line:</p>
+<pre><code>::: button &quot;Book a session&quot; https://example.org/book</code></pre>
+<p>Blocks that hold other blocks open and close:</p>
+<pre><code>::: columns
+::: column
+Morning sessions run from nine.
+::: column
+Evening sessions run from six.
+::: end columns
+
+::: details &quot;What does it cost?&quot;
+The first session is free.
+::: end details</code></pre>
+<p>QUILL writes fences for buttons, columns, groups, details (the
+fold-away kind), embeds, spacers and preformatted text.</p>
+<p><strong>Anything else is an island.</strong> A block QUILL has no
+Markdown for, such as a plugin’s contact form or a complicated gallery,
+shows as one protected line, for example:</p>
+<pre><code>::: block jetpack/contact-form island-3</code></pre>
+<p>The block’s real content waits in the background and goes back to
+your site exactly as it came. Leave the line where it is, or move it
+with the rest of the text, and the block stays whole.</p>
+<p><strong>Nothing is converted on trust.</strong> When QUILL opens a
+page, it turns each block into Markdown and straight back again, and
+compares the result with the original. If one byte differs, such as an
+extra colour or a setting Markdown cannot say, that block becomes an
+island instead. So opening a page and sending it back never changes a
+block you did not edit.</p>
+<h2 id="how-blocks-look-in-an-html-document">How blocks look in an HTML
+document</h2>
+<p>An HTML document shows the page exactly as the site keeps it, with
+WordPress’s block markers as HTML comments, such as
+<code>&lt;!-- wp:paragraph --&gt;</code>. Leave them where they are.
+Every command in this chapter works in an HTML document too, and keeps
+the markers right for you.</p>
+<h2 id="inserting-a-block">Inserting a block</h2>
+<ol type="1">
+<li>Put the caret in the block you want the new one to follow.</li>
+<li>Choose <strong>Insert &gt; WordPress Block…</strong>.</li>
+<li>The list holds every block you can add: the everyday ones first,
+then the rest of your site’s blocks, its patterns and its synced
+patterns. Each row says the block’s name and what it is for.</li>
+<li>Type part of a name in <strong>Find</strong> and press Enter to
+narrow the list. “but” finds Button and Buttons.</li>
+<li>Choose <strong>Insert</strong>. A short form asks only what that
+block needs: a button asks for its text and link, columns ask how many,
+details asks for its summary line, an embed asks for the address.</li>
+<li>Press OK. The block goes in after the block you were in, and you
+hear its name and “inserted”.</li>
+</ol>
+<p><strong>Patterns</strong> are the easiest blocks of all. A site
+owner, or their designer, builds “Event announcement” or “Staff profile”
+once in the block editor. From then on, anyone can insert it by name and
+fill in the words.</p>
+<p><strong>Patterns from WordPress.org.</strong> In the same window,
+choose <strong>WordPress.org Patterns</strong> to search the free
+Pattern Directory. Before a pattern goes in, QUILL tells you what it is
+for, the blocks it holds in order, and how many of its pictures have no
+alternative text, so you know what you are adding. Undo takes it out
+again.</p>
+<h2 id="moving-through-blocks">Moving through blocks</h2>
+<p>These are in <strong>Edit &gt; WordPress</strong>:</p>
+<ul>
+<li><strong>Next Block</strong> and <strong>Previous Block</strong> move
+the caret from block to block and say what each one is, where it is and
+how it starts, for example “Image block, 4 of 12: Volunteers at the
+spring fair”. At either end you hear “No more blocks after this one” or
+“No blocks before this one”.</li>
+<li><strong>Where Am I</strong> says the block you are in and what it
+sits inside, for example “Paragraph block: Morning sessions, inside
+column 1 of Columns”. Between blocks it says “Not in a block” and names
+the next one.</li>
+</ul>
+<h2 id="the-blocks-window">The Blocks window</h2>
+<p><strong>View &gt; WordPress Blocks…</strong> opens a list of every
+block in the document, with blocks inside other blocks listed under
+them. From it you can:</p>
+<ul>
+<li><strong>Go To</strong> the block: the window closes and the caret is
+on it;</li>
+<li><strong>Move Up</strong> and <strong>Move Down</strong>, which swap
+it with its neighbour;</li>
+<li><strong>Duplicate</strong>, which puts a copy straight after
+it;</li>
+<li><strong>Remove</strong>, after a question;</li>
+<li><strong>Change To</strong>, which makes a paragraph a heading, a
+list into paragraphs, and so on;</li>
+<li><strong>Group</strong>, which puts the block inside a new Group
+block, and <strong>Ungroup</strong>, which takes it out again.</li>
+</ul>
+<p>Each change is one step, so Ctrl+Z in the document takes it back, and
+nothing else in your document moves. Every byte outside the block you
+changed stays exactly as it was.</p>
+<h2 id="block-settings">Block settings</h2>
+<p><strong>Format &gt; WordPress &gt; Block Settings…</strong> opens a
+form for the block the caret is in: its alignment, its width (wide or
+full, where the theme allows it), its colours, its font size and any
+other setting it has. A plugin’s block gets a usable form too, built
+from what the block says about itself.</p>
+<p><strong>Colours and sizes come from your theme, by name.</strong> You
+choose “Accent (dark green)” and “Large”, never a code such as
+<code>#2f5d50</code>. Every colour says how well it reads against what
+it sits on, for example “Accent (dark green), 7.4 to 1, passes”. You can
+still choose a faint one; QUILL tells you it is hard to read.</p>
+<p>In a Markdown document, a setting Markdown cannot write turns the
+block into a protected island line. QUILL asks before it does that.</p>
+<p>When the settings are saved you hear “Block settings changed”, with a
+warning added if a colour you chose is too faint.</p>
+<h2 id="hearing-what-the-site-will-show">Hearing what the site will
+show</h2>
+<p><strong>View &gt; Preview Blocks</strong> asks your site to draw its
+blocks, without saving anything, and reads the result as plain text. Use
+it to hear what a list of latest posts, a query loop or a plugin’s block
+will really say before you publish. Some blocks are drawn fresh by the
+site every time a visitor comes, and this is the only way to hear them
+from QUILL.</p>
+<p><strong>View &gt; Play Media Here</strong> plays the sound or video
+block the caret is in, streamed from your site, with the same player
+keys as the Media Library’s Play (Chapter 4). Nothing is downloaded. On
+any other block you hear “There is no audio or video block at the
+caret.”</p>
+<h2 id="notes-on-blocks">Notes on blocks</h2>
+<p>WordPress 6.9 and later lets people leave notes on blocks in the
+block editor, the way you might leave a comment in a Word document.</p>
+<ul>
+<li><strong>View &gt; Block Notes…</strong> lists them, each read as a
+sentence, such as “Sam on the second paragraph: tighten this”.
+<strong>Go to It</strong> takes you to the block. <strong>Reply</strong>
+answers the note, and <strong>Resolve</strong> marks it done.</li>
+<li><strong>Insert &gt; Note on This Block…</strong> leaves a note of
+your own on the block the caret is in.</li>
+</ul>
+<p>On a site older than 6.9 these commands say the site does not offer
+notes. In a Markdown document, a block with a note becomes a protected
+line, and QUILL asks before adding one.</p>
+<h2 id="links-inside-a-page">Links inside a page</h2>
+<ul>
+<li><strong>Insert &gt; Link to a Page on This Site…</strong> lists your
+site’s published pages and posts. Choose one and the link goes in at the
+caret, worded with the text you selected, or the page’s title when
+nothing is selected. It is written as a Markdown or HTML link to match
+your document.</li>
+<li><strong>Edit &gt; WordPress &gt; Hear Where a Link Goes.</strong>
+With the caret on a link, QUILL asks your site to look at the page and
+reads you its title and description. With no link there, type an
+address: QUILL tells you what is there, so a typo is caught before the
+link goes in, and offers to insert it with the page’s own title as the
+words.</li>
+<li><strong>Edit &gt; WordPress &gt; Fix Link Text…</strong> lists every
+“click here” or “read more” link in the page, with the title of the page
+it goes to. Choose <strong>Use the Page’s Title</strong> for one, or
+<strong>Use All Titles</strong>, and the links say where they go.</li>
+</ul>
+<h2 id="icons">Icons</h2>
+<p><strong>Insert &gt; WordPress Icon…</strong> lists your site’s icons
+by name, on WordPress 7.0 and later. Give the icon a label that says
+what it means, such as “Phone us”, or insert it as decorative so screen
+readers skip it. An icon is never left unnamed: an empty label inserts
+nothing.</p>
+<h2 id="a-walk-through-adding-a-booking-button-under-a-paragraph">A
+walk-through: adding a booking button under a paragraph</h2>
+<ol type="1">
+<li>Open the page in Markdown and put the caret in the paragraph the
+button should follow.</li>
+<li>Choose <strong>Insert &gt; WordPress Block…</strong>, type
+<code>button</code> in Find and press Enter.</li>
+<li>Choose Button and press Insert.</li>
+<li>Type the button’s text, “Book a session”, and its link. Press
+OK.</li>
+<li>You hear “Button inserted.” Arrow down and you read
+<code>::: button "Book a session" https://example.org/book</code>.</li>
+<li>Choose <strong>Edit &gt; WordPress &gt; Where Am I</strong> to
+confirm where it landed.</li>
+<li>Choose <strong>View &gt; Preview Blocks</strong> to hear the site
+draw it, then <strong>Save Draft to Site</strong>.</li>
+</ol>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a
+href="wordpress-forms-02-writing-and-publishing.html">Chapter 2: Writing
+and publishing posts and pages</a></li>
+<li>Next: <a href="wordpress-forms-04-pictures-and-media.html">Chapter
+4: Pictures and the Media Library</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

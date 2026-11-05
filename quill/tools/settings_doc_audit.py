@@ -62,6 +62,11 @@ _CORPUS_PATHS = (
     "quill/core/help/topics.json",
 )
 _CORPUS_GLOBS = (
+    # The user guide's chapters (quill/core/user_guide_files.py); the contents
+    # page above links them. The WordPress and Forms manual is where those
+    # chapters now send a reader for the settings they used to describe.
+    "docs/user guide/quill-guide/*.md",
+    "docs/user guide/wordpress-and-forms/*.md",
     "docs/apps/*.md",
     "docs/Product Requirement Documents and Specifications/*.md",
 )

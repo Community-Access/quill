@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2: Writing and publishing posts and pages</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-2-writing-and-publishing-posts-and-pages">Chapter 2:
+Writing and publishing posts and pages</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter is the everyday work: starting a post or a page, opening
+one that is already on your site, saving it on your computer, sending it
+as a draft, publishing it, and scheduling it for later. It also covers
+what QUILL does when someone else changed the page while you were
+working, what happens when the connection drops, and how to get an
+earlier version back. It ends with the Send and Copy commands, which
+move writing between documents and sites.</p>
+<h2 id="posts-and-pages">Posts and pages</h2>
+<p>WordPress has two kinds of writing, and QUILL keeps them apart the
+way WordPress does:</p>
+<ul>
+<li><strong>A post</strong> is dated. It goes in your blog or news list,
+newest first, and can have categories and tags. A weekly news item is a
+post.</li>
+<li><strong>A page</strong> stays put. It is not dated and has no
+categories. About, Contact and Opening Hours are pages. Pages can sit
+under other pages, which is how a site builds its structure.</li>
+</ul>
+<p>Many sites have their own kinds as well, such as events or recipes,
+added by a plugin or the theme. QUILL’s Open window lists those beside
+Posts and Pages.</p>
+<h2 id="writing-something-new">Writing something new</h2>
+<ol type="1">
+<li>Choose <strong>File &gt; WordPress &gt; New Post…</strong> or
+<strong>File &gt; WordPress &gt; New Page…</strong>. The window opens on
+<strong>Site</strong>, with your default site chosen.</li>
+<li>Tab to <strong>Title</strong> and type it. The title is what
+visitors see at the top of the page and in lists.</li>
+<li>Tab to <strong>Slug</strong>. It has filled itself in from the title
+as you typed: the slug is the last part of the page’s web address, so
+“Spring Workshop” becomes <code>spring-workshop</code>. Leave it alone
+to keep it, or type your own.</li>
+<li>Choose <strong>Markdown</strong> or <strong>HTML</strong> under
+<strong>Write in</strong>.</li>
+<li>For a post, check the <strong>Categories</strong> and
+<strong>Tags</strong> it belongs to. Space checks or unchecks each
+one.</li>
+<li>Press <strong>Create</strong>.</li>
+</ol>
+<p>You hear “New post for” your site’s name, and that nothing is sent
+until you choose Save Draft to Site or Publish. The new document opens,
+empty, ready for your first paragraph.</p>
+<p><strong>Markdown or HTML?</strong> Markdown is the easier one to
+write by ear. Two number signs and a space start a heading, a dash and a
+space start a bullet, and QUILL turns it into what WordPress needs when
+you send it. HTML gives you exact control, and is right if you already
+think in tags. You cannot switch a document between the two later. That
+is deliberate: a document that started as Markdown is never quietly read
+as HTML, so nothing on your page is ever reinterpreted. QUILL remembers
+your last choice for next time.</p>
+<p><strong>Do not repeat the title as a heading.</strong> Your theme
+already shows the title at the top of the page as its main heading.
+Start straight in with your first paragraph, and use Heading 2 for the
+sections inside. Check Before Publishing points it out if you
+forget.</p>
+<p><strong>Everything else is in Properties.</strong> The excerpt, the
+featured image, whether comments are open and the rest are not asked up
+front. They are in <strong>File &gt; WordPress &gt;
+Properties…</strong>, described later in this chapter.</p>
+<h2 id="opening-what-is-already-there">Opening what is already
+there</h2>
+<p><strong>File &gt; WordPress &gt; Open Page or Post…</strong> asks
+which site, then which kind: Posts, Pages, or any kind your site adds,
+such as Events. Then the Open window lists everything of that kind,
+newest change first. Each row says the title, its status (published,
+draft, pending review, scheduled, private or in the Trash) and when it
+last changed, for example “Opening Hours, published, yesterday”.</p>
+<ul>
+<li><strong>Find by title or status</strong> narrows the list. Type part
+of a title and press Enter. Type a status, such as <code>draft</code>,
+<code>pending</code>, <code>private</code> or <code>trash</code>, to see
+only those.</li>
+<li><strong>Enter</strong>, or the <strong>Open</strong> button, opens
+the row you are on.</li>
+<li><strong>Move to Trash…</strong> and <strong>Restore from
+Trash</strong> are in the same window.</li>
+</ul>
+<p>When you open a page, QUILL asks how you want to see it:</p>
+<ul>
+<li><strong>HTML</strong> shows it exactly as the site has it, block
+markers and all.</li>
+<li><strong>Markdown</strong> is easier to read and edit. Ordinary
+paragraphs, headings, lists and pictures become plain Markdown, other
+blocks become short <code>:::</code> lines, and anything Markdown cannot
+show, such as a plugin’s contact form, sits on one short protected line.
+Chapter 3 explains these.</li>
+</ul>
+<p>Either way, nothing on the site changes by being opened. A block you
+did not touch goes back exactly as it came, byte for byte.</p>
+<p>You hear “Opened Opening Hours from Community Radio.” If you already
+had a working copy of that page on this computer, QUILL opens your copy
+rather than a second one.</p>
+<p><strong>An unsaved version.</strong> If the page has an autosave
+newer than the copy on the site, from a browser or from QUILL, QUILL
+asks first: “There is an unsaved version from yesterday, 4:12 PM. Open
+that instead?” Choose which one you want.</p>
+<h3 id="opening-a-page-from-its-web-address">Opening a page from its web
+address</h3>
+<p><strong>File &gt; WordPress &gt; Open by Web Address…</strong> is the
+quickest route when someone sends you a link to the page that needs
+fixing.</p>
+<ol type="1">
+<li>Copy the page’s address, from an email or from your browser’s
+address bar.</li>
+<li>Choose Open by Web Address. QUILL has already picked the address up
+from the clipboard.</li>
+<li>Press Enter.</li>
+</ol>
+<p>QUILL works out which of your sites the address belongs to, even if
+it is not your default. It understands an ordinary address such as
+<code>https://example.org/opening-hours/</code>, and the short forms
+WordPress uses, such as <code>?p=42</code> and <code>?page_id=7</code>.
+If the page is already open, QUILL takes you to it instead of opening a
+second copy.</p>
+<h3 id="your-local-drafts">Your local drafts</h3>
+<p><strong>File &gt; WordPress &gt; Open Local Draft…</strong> lists
+everything you have written for any of your sites that is saved on this
+computer, with the site each one belongs to. It is where a new post you
+started yesterday is waiting, and where QUILL Cast, QUILL Studio and
+Quill Converter leave the drafts they make for you (Chapter 4).</p>
+<h2 id="the-three-ways-to-save">The three ways to save</h2>
+<p>There are three kinds of save, and they are deliberately
+separate:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl+S</td>
+<td>Saves on this computer. Nothing is sent.</td>
+</tr>
+<tr>
+<td>Save Draft to Site</td>
+<td>Sends an unpublished draft. Visitors cannot see it.</td>
+</tr>
+<tr>
+<td>Publish or Update…</td>
+<td>Publishes it, or updates the published page, after you confirm.</td>
+</tr>
+</tbody>
+</table>
+<p>Both of the last two are in <strong>File &gt; WordPress</strong>.
+Closing a WordPress document never publishes it, and never sends
+anything.</p>
+<h3 id="save-draft-to-site">Save Draft to Site</h3>
+<p>Save Draft to Site puts your writing on the site where only you and
+the site’s editors can see it. It is the safe way to try it in the
+site’s own preview before anybody else reads it. You hear “Draft saved
+to Community Radio. It is not public.”</p>
+<p>If you put pictures in from your computer, they are uploaded now, and
+their addresses are swapped into your page.</p>
+<h3 id="publish-or-update">Publish or Update</h3>
+<ol type="1">
+<li>Choose <strong>File &gt; WordPress &gt; Publish or
+Update…</strong>.</li>
+<li>QUILL runs Check Before Publishing on the page, then asks. The
+question names the title and the site, such as “Publish on Community
+Radio: Spring Workshop”, and says what the check found: “Ready to
+publish: no problems found”, or, for example, “2 things to look at: 1
+problem, 1 to check”.</li>
+<li>Read the findings if there are any. None of them stop you. Choose
+<strong>Publish</strong>, or <strong>Publish Anyway</strong> when there
+are findings, or Escape to go back and fix them.</li>
+</ol>
+<p>You hear “Published on Community Radio. The address is on the
+clipboard.” The page’s web address is ready to paste into an email.</p>
+<p>A page that is already published says Update rather than Publish. A
+private or scheduled page keeps that status when you update it.</p>
+<p><strong>Open on Site</strong> (in File &gt; WordPress) opens the page
+in your browser, so you can hear it the way a visitor will. <strong>Copy
+Address</strong> puts its address on the clipboard again later. A
+draft’s address only opens for someone signed in to WordPress, and QUILL
+says so when it copies one: “Draft address copied. It needs a WordPress
+sign-in to open.”</p>
+<p><strong>A new page is not in your menus yet.</strong> WordPress does
+not add a new page to the site’s navigation by itself. The first time a
+page is published, QUILL asks “Add it to a menu?” with three answers:
+<strong>Yes, open Menus</strong>, which opens the Menus window with the
+page added at the end; <strong>Not this time</strong>; and <strong>No,
+and stop asking</strong> for that site.</p>
+<p><strong>If you are a Contributor,</strong> the command is called
+Submit for Review, and your post goes to the site as pending review for
+an Editor to publish.</p>
+<h2 id="when-someone-else-changed-it-first">When someone else changed it
+first</h2>
+<p>Before every update, QUILL asks the site when the page last changed.
+If someone changed it after you opened it, perhaps a colleague in the
+block editor, QUILL will not overwrite their work. Nothing is sent.
+Instead you hear who changed it and when, and get three choices:</p>
+<ul>
+<li><strong>Compare the two</strong> shows the lines that differ, each
+starting “Site:” for the site’s copy or “Yours:” for yours.</li>
+<li><strong>Open the site’s copy</strong> opens their version, so you
+can copy your change into it.</li>
+<li><strong>Send mine anyway</strong> replaces their version with yours.
+It asks once more before it does, and the site’s copy is kept in
+Previous Versions first, so even then nothing is lost.</li>
+</ul>
+<h2 id="scheduling-a-post">Scheduling a post</h2>
+<p>To publish later, open the page or post and choose <strong>File &gt;
+WordPress &gt; Schedule Publish…</strong>.</p>
+<ol type="1">
+<li>Type the date, such as <code>2026-11-20</code>.</li>
+<li>Type the time, such as <code>16:15</code> or
+<code>4:15 PM</code>.</li>
+<li>Pick the time zone. Your site’s own time zone is at the top of the
+list.</li>
+<li>Press OK.</li>
+</ol>
+<p>QUILL reads the date and time back to you with the site’s name before
+anything is sent. If the time is in the past, or is not one QUILL can
+read, the window opens again with the problem at the top.</p>
+<p>The page then shows as scheduled in Open. To move it, or publish it
+straight away, open it and choose Schedule Publish again. You get two
+choices: <strong>Change the schedule</strong> or <strong>Publish
+now</strong>.</p>
+<p><strong>Tools &gt; WordPress &gt; Your Sites &gt; Coming Up…</strong>
+lists everything scheduled on all your sites, soonest first.</p>
+<h2 id="autosaves-and-when-the-connection-drops">Autosaves, and when the
+connection drops</h2>
+<p><strong>Autosaves.</strong> While a WordPress document is open, QUILL
+keeps an autosave every two minutes whenever the text has changed: on
+this computer, and, once the page is on the site, as your account’s
+autosave there too. It is the same autosave the WordPress editor keeps,
+so if your computer dies, the words are safe on the site. You hear
+nothing when it works. If it stops working, QUILL tells you once.</p>
+<p><strong>When a send gets no answer.</strong> Your copy stays on this
+computer, and QUILL asks the site what happened before doing anything
+else, so nothing is ever created twice. If the page did arrive, you hear
+the usual result. If it did not, QUILL offers <strong>Try
+Again</strong>.</p>
+<p><strong>When the site cannot be reached at all,</strong> the send
+waits in a queue. You hear, for example, “Community Radio cannot be
+reached, so ‘Hours’ is queued.” QUILL tries again every two minutes and
+tells you when it goes through: “Back online: 2 drafts sent to Community
+Radio.” A queued publish is never sent over somebody else’s newer
+change: QUILL checks first, and if the site’s copy changed, it tells you
+and sends nothing.</p>
+<p>A schedule is never queued. It is a time you chose, and sending it
+late could be worse than not sending it, so QUILL tells you it failed
+instead.</p>
+<h2 id="properties">Properties</h2>
+<p><strong>File &gt; WordPress &gt; Properties…</strong> holds
+everything about the page apart from its words:</p>
+<ul>
+<li><strong>About:</strong> the site, the address, the author and when
+it last changed, to read;</li>
+<li><strong>Title</strong>, <strong>Slug</strong> and
+<strong>Status</strong>;</li>
+<li><strong>Excerpt:</strong> the short summary some themes show in
+lists;</li>
+<li><strong>Categories</strong> and <strong>Tags</strong>, for a post,
+as separate check boxes;</li>
+<li><strong>Allow comments</strong>;</li>
+<li><strong>Keep at the top of the blog</strong>, for a post;</li>
+<li><strong>Password to read it</strong>, optional: visitors must type
+it to read the page;</li>
+<li>the reading level, such as “about 9th grade, 14 words per sentence”,
+worked out on this computer;</li>
+<li>any custom fields your site keeps for the page, and the fields of
+the plugins QUILL recognises (Chapter 7).</li>
+</ul>
+<p>Changes are kept with your copy and go to the site the next time you
+send it.</p>
+<p><strong>File &gt; WordPress &gt; Custom Fields…</strong> shows just
+the extra fields your site’s plugins and theme keep for a page, such as
+an SEO title or an event date. <strong>File &gt; WordPress &gt; Plugin
+Fields…</strong> changes the fields of The Events Calendar, WooCommerce,
+Yoast SEO and Rank Math, where your site has them.</p>
+<h2 id="previous-versions-and-comparing">Previous versions, and
+comparing</h2>
+<p><strong>File &gt; WordPress &gt; Previous Versions…</strong> lists
+earlier versions, newest first. Each row says when it was kept and why,
+such as “Opened from site”, “Saved”, “Site copy before update” or
+“Before restore”. The site’s own history is in the same list, marked “On
+the site”, so this is a true history, not just what QUILL happened to
+keep.</p>
+<ul>
+<li><strong>View…</strong> shows a whole version, title first, in a
+window you can read and copy from, so you can take back one paragraph
+without the rest.</li>
+<li><strong>Restore</strong> puts that version in the editor. It never
+publishes by itself. You hear “Version put in the editor. Nothing was
+sent; your text before is in Previous Versions.”</li>
+</ul>
+<p><strong>File &gt; WordPress &gt; Compare with Site</strong> shows the
+lines that differ between your copy and the site’s, starting with a
+count such as “3 lines only on Community Radio, 1 only in yours.”</p>
+<h2 id="the-trash">The Trash</h2>
+<p><strong>File &gt; WordPress &gt; Move to Trash…</strong> moves the
+page to WordPress’s Trash, after naming it and the site. It is not
+deleted, and a copy stays on your computer.</p>
+<p><strong>To bring one back,</strong> choose <strong>File &gt;
+WordPress &gt; Open Page or Post…</strong>, type <code>trash</code> in
+Find, press Enter, and press <strong>Restore from Trash</strong> on the
+row. You hear “‘Hours’ is back on Community Radio as a draft. Open it to
+publish it again.”</p>
+<h2 id="send-and-copy">Send and Copy</h2>
+<p><strong>File &gt; WordPress &gt; Send and Copy</strong> moves writing
+between your documents and your sites:</p>
+<ul>
+<li><strong>Send This Document to WordPress…</strong> turns any document
+open in QUILL into a new draft. Its first heading becomes the title, its
+headings stay headings, and its pictures go to the Media Library.</li>
+<li><strong>Publish to Another Site…</strong> copies the page you are
+editing to another of your sites, as a draft there. Pictures are
+uploaded again. Categories and tags are matched by name, and QUILL asks
+before creating any that are missing.</li>
+<li><strong>Duplicate…</strong> makes a new draft from any page or post,
+on the same site or another, with everything but the date and status. On
+the same site, the copy’s title ends “(copy)”.</li>
+<li><strong>Send a Folder as Drafts…</strong> turns a folder of Markdown
+or text files into drafts in one go. Each file is checked first, and one
+question tells you how many are going and how many have something to
+look at.</li>
+<li><strong>Download My Writing…</strong> saves every page and post to a
+folder as Markdown, with the pictures and a contents page called
+<code>index.md</code>. Run it again later and only what changed is
+fetched.</li>
+</ul>
+<h2 id="a-walk-through-fixing-one-sentence-someone-sent-you">A
+walk-through: fixing one sentence someone sent you</h2>
+<p>A volunteer emails you a link: the opening hours on your site are
+wrong.</p>
+<ol type="1">
+<li>Copy the link from the email.</li>
+<li>Choose <strong>File &gt; WordPress &gt; Open by Web
+Address…</strong> and press Enter.</li>
+<li>QUILL asks Open as. Choose Markdown. You hear “Opened Opening Hours
+from Community Radio.”</li>
+<li>Use Find to get to the wrong sentence, and fix it.</li>
+<li>Choose <strong>File &gt; WordPress &gt; Publish or Update…</strong>.
+You hear “Update on Community Radio” and what the check found.</li>
+<li>Choose Publish. You hear “Published on Community Radio. The address
+is on the clipboard.”</li>
+<li>Paste the address into your reply to the volunteer.</li>
+</ol>
+<p>The guided lesson Open a page by its address and fix a sentence, in
+<strong>Help &gt; Tutorials</strong>, walks through the same thing on a
+test site.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-01-getting-started.html">Chapter
+1: Getting started and adding your sites</a></li>
+<li>Next: <a href="wordpress-forms-03-blocks.html">Chapter 3: Blocks
+made plain</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -402,10 +402,10 @@ Notepad replacement is most of the job.
 
 ### 3.3a Profiles: a name is a promise, not a preset
 
-Nineteen checkboxes is the right way to change one thing and the wrong way to
-say "give me the small one". :data:`quill.core.lite.features.PROFILES` is four
-named starting points -- **Recommended**, **Everything**, **WordPad**,
-**Notepad** -- and the design rules behind them are worth stating, because each
+Twenty-four checkboxes is the right way to change one thing and the wrong way
+to say "give me the small one". :data:`quill.core.lite.features.PROFILES` is five
+named starting points -- **Recommended**, **Everything**, **Developer**,
+**WordPad**, **Notepad** -- and the design rules behind them are worth stating, because each
 one has a cheaper wrong version.
 
 **A profile is a baseline, not a mode.** Applying one checks and unchecks every
@@ -416,7 +416,7 @@ owns the dialog and reverts what you do -- makes the checklist a lie.
 
 **A profile is written as what it takes away.** `AppProfile.disabled` lists the
 areas switched off, never the ones kept, so an area added in a later version is
-*on* in all four profiles until somebody decides otherwise. A profile written
+*on* in every profile until somebody decides otherwise. A profile written
 before a feature existed must not silently remove it.
 
 **Two of them carry a setting, and only those two.** "Notepad" does not mean
@@ -459,7 +459,8 @@ choice a default gets to make on somebody's behalf. See §5.6: the area switch
 and the agreement are two separate questions, and Everything can turn the first
 on without ever answering the second.
 
-Notepad keeps two areas and still has Find, Replace, Go To Line, Select All,
+Notepad keeps three areas (printing, text size and the Command Palette) and
+still has Find, Replace, Go To Line, Select All,
 Insert Date and Time, Word Wrap, the font picker, the status bar, Undo, printing
 and text size -- everything Notepad has had since 1985 -- because those live
 outside the switchable areas by design. It also keeps File Encoding and Line
@@ -2141,9 +2142,58 @@ with their passwords.
   installed, started hidden from its standard install folder over a
   loopback-only DevTools connection. No browser is ever downloaded.
 
-**Keys.** None yet. Every command has a written reason for having no key
-(rule 8) until keys are chosen; until then, Alt+F, W opens File > WordPress
-and every command is in the Command Palette.
+**Connecting.** `quill/ui/wordpress_connect.py`, shared. Connect a Site...
+takes an address and then one of two routes, and verifies before it saves:
+it reads the account (`users/me`) and the site's name, so a wrong password
+is caught in words at Connect, not at the first Publish.
+
+- **Through the browser.** Get Password with My Browser reads the site's REST
+  index for its Authorize Application address and the WordPress version
+  (from the feed when, as on WordPress 7.1, the index no longer gives it). On
+  a site with the loopback change, QUILL listens once on `127.0.0.1` and
+  WordPress hands the application password straight back. On an older site
+  WordPress shows it with a Copy button and QUILL waits on one Paste field,
+  offering a password-shaped clipboard value when focus comes back. A site
+  with application passwords turned off says so.
+- **By hand.** Address, username and an application password made in
+  WordPress.
+- Passwords live in Windows Credential Manager (`sites.py`); Sites says which
+  one QUILL uses, and Sign Out This Site revokes exactly that one on the site.
+
+**Keys: the WordPress layer** (`quill/core/wordpress/keys.py`,
+`menu.LAYER_KEYS`). **Ctrl+Alt+Shift+Grave**, then one letter, in both
+editors: free in QUILL, in QUILL Lite and in every family app's system-wide
+key (the 2026-11 survey). Grave cannot be a wx accelerator on its own, so the
+layer is run from the key-down handler (`_wordpress_key_down` in
+`quill/apps/lite_window_wordpress.py`) by the same `WordPressKeyLayer` object
+QUILL's char hook asks, and never by an accelerator table. It says "WordPress
+keys" when it starts, because the prefix changes nothing on screen; "Left
+WordPress keys" on Escape; "No WordPress command on X." for an unbound
+letter; and gives up after four seconds. A command that runs speaks for
+itself (GATE-13).
+
+| Letter | Command | Letter | Command |
+|---|---|---|---|
+| G | New Page... | R | Properties... |
+| N | New Post... | V | Previous Versions... |
+| O | Open Page or Post... | C | Compare with Site |
+| W | Open by Web Address... | T | Move to Trash... |
+| L | Open Local Draft... | S | Switch Site... |
+| D | Save Draft to Site | Shift+S | Sites... |
+| P | Publish or Update... | A | Connect a Site... |
+| E | Schedule Publish... | M | Media Library... |
+| I | Open on Site | B | WordPress Blocks... |
+| Y | Copy Address | K | Check Before Publishing... |
+| U | Upload Files... | X | Alt Text Review... |
+
+Each letter is the row's own access letter wherever that is free, so the menu
+teaches the key. Where two rows want one letter the everyday one keeps it
+(rule 3): Publish keeps P, so New Page takes G; Media Library keeps M, so
+Compare with Site takes C; Switch Site keeps S, so Sites takes Shift+S. The
+letters are the command table's resolved keys, so a row moved in the Keyboard
+Manager, or an area switched off, is not a layer letter. Every other WordPress
+row has a written reason for having no key (rule 8), and Alt+F, W opens File >
+WordPress.
 
 **WordPress.com.** The OAuth sign-in code is built; it waits on the family's
 app registration with WordPress.com. Until then, choosing WordPress.com says
@@ -2153,14 +2203,17 @@ QUILL has all of this on the same rows from the same code; QUILL Lite is not
 ahead (section 2.2). In QUILL Lite it is the WordPress area: on in
 Recommended and Everything, off in WordPad and Notepad.
 
-**Where it is taught.** The WordPress chapter of each user guide, and the
-regression plan at `docs/qa/wordpress-regression-testing.md`.
+**Where it is taught.** Chapter 14 of the user guide; the shared WordPress
+and Forms guide (`docs/user guide/wordpress-and-forms/wordpress-forms-guide.md`,
+on the site as `wordpress-forms-guide.html`); the seven WordPress lessons in
+Help > Tutorials, written once in `quill/core/tutorials/wordpress_lessons.py`;
+and the regression plan at `docs/qa/wordpress-regression-testing.md`.
 ## Project tasks, in the Developer profile (2026-11-04)
 
 QUILL Lite reaches project tasks through the shared code QUILL uses
 (`quill/ui/project_task_commands.py` and the `quill/ui/project_*.py` windows),
-so the two editors cannot do them two ways. The plan of record is `code.md`
-("Agentic coding in QUILL"); QUILL's PRD section 36 has the full requirements.
+so the two editors cannot do them two ways. The plan of record is
+`docs/design/code.md` ("Agentic coding in QUILL"); QUILL's PRD section 36 has the full requirements.
 
 **Area and profile.**
 
@@ -2203,3 +2256,164 @@ opens the project task whenever a project is open, and each row's reason is in
 - PT-L5. A window with unsaved edits or in rich text is never reloaded under
   the person; it is named instead.
 - PT-L6. Every handler has a behavioural test (`test_lite_project_task.py`).
+
+## Forms (2026-11-05)
+
+The plan of record is `wordpress.md` section 17a. QUILL's PRD carries the same
+requirements; QUILL Lite reaches every one of them through the shared code, and
+is not ahead (section 2.2).
+
+**What it is.** A person writes an accessible form (a contact form, a sign-up,
+a survey, a registration) as readable text, checks it, fills it in themselves
+the way a visitor would, and then publishes it to their WordPress site or
+saves it for paper. It is the **Forms** area: on in Recommended,
+Everything and Developer, off in WordPad and Notepad ("Neither program ever
+made a form").
+
+**One model, one readable face.**
+
+- The form is a JSON form model (`quill/core/forms/model.py`, its schema in
+  `quill/core/forms/schema/`, `model_json.py`), the same model the QUILL
+  Accessible Forms plugin (QAF, formerly BITS Accessible Forms) stores. The
+  readable face is the QAF form language, written and read by
+  `bfl_write.py` and `bfl_read.py`; user-facing text calls it "the QAF form
+  language", never BFL (`wordpress.md` 17a.17). Anything the language cannot
+  express yet is kept as an island under `extensions.quill.islands`, which the
+  plugin passes back unchanged.
+- Form files are `.qaf`, recognised by their first line (`bfl 1`, the
+  language's version); `.bfl` files still open. The extension lives in one
+  constant, `quill/core/forms/menu.py` `FORM_EXTENSION`.
+- Expressions (`expr.py`, `expr_eval.py`) and rules (`rules.py`) are
+  evaluated the way the plugin evaluates them, to the last digit of rounding,
+  and are read back as sentences (`expr_sentence.py`): "Show Company name when
+  Type is Business or Type is Charity." A rule's answer matches a choice in
+  any capitals.
+- Interop (`interop_html.py`, `interop_surveyjs.py`, `interop_xlsform.py`)
+  names in a report anything a source has that the model cannot hold, and
+  never drops it silently (17a.15). Save As Web Page uses the HTML exporter;
+  the importers have no menu row in 2.0.
+
+**One menu table.** `quill/core/forms/menu.py` is the WordPress table's shape:
+QUILL builds its menus from `PLACES` (`quill/ui/main_frame_forms.py`) and QUILL
+Lite's command table is generated from it (`lite_rows`), so a command sits in
+the same place in both, and every row names one shared handler on
+`quill.ui.forms_commands.FormsCommands`, reached in QUILL Lite through
+`quill/apps/lite_window_forms.py`.
+
+| Menu | Rows |
+|---|---|
+| File | New Form... (after New Plain Text Document) |
+| Insert | Form Field... |
+| View | Form Outline... |
+| Format | Form Rules... |
+| Tools > Forms | Check This Form..., Fill It In Yourself..., Form Properties...; Publish Form..., Insert Form Into Page..., Test on Site, Responses...; Save As Web Page..., Save As Word Document..., Save As Large Print..., Save As Braille-Ready Text...; Draft a Form..., Plain Language..., Suggest Autofill Hints... |
+
+Every row but New Form, Insert Form Into Page, Responses and Draft a Form is
+in `DOCUMENT_ONLY`: dimmed unless a form document is in front, and the
+handler says why when it is reached another way (the Command Palette).
+
+**Access letters.** New Form takes M in File (Close Window gives it up; Ctrl+F4
+is its route) and Form Rules takes M in Format (Switch Document Mode gives it
+up; Alt+Shift+F is its route). Tools > Forms has no letter in QUILL Lite's
+Tools menu, as Tools > WordPress has none: no letter of either name is free
+there (GATE-14: no letter rather than a duplicate).
+
+**Keys.** None, each with its reason (rule 8). No chord is free in both
+editors and outside every family app's system-wide key; writing a form is
+occasional, so each command gets a way in, its menu letters and the Command
+Palette, and not a chord (rule 9). A letter on the WordPress key layer is the
+one open option, and waits on Jeff (`wordpress.md` 19).
+
+**Requirements.**
+
+- FM-L1. New Form starts from a template (Blank, Contact form, Event
+  registration, Membership renewal, Survey, Accessibility feedback,
+  Volunteer sign-up, in `quill/ui/forms_templates.py`); every
+  person-detail question carries its autofill hint.
+- FM-L2. Form Outline and Form Rules are the WordPress list window, so a
+  person who knows the Blocks window knows them. Every change is one Undo
+  step in the editor, made by reading the document fresh and writing it
+  back, so the window can never disagree with the page.
+- FM-L3. Check This Form (`quill/ui/forms_check.py`) gives one sentence per
+  finding, each with Go to It, from four sources in order: what the reader
+  could not read, what the model does not allow, the accessibility checks
+  (labels, autofill hints, long choice lists), and where the plugin's own
+  reader would make something different of the text (`baf_compare.py`).
+- FM-L4. Fill It In Yourself (`quill/ui/forms_fill.py`, wx-free, and its
+  window) runs the form in any of its languages, page by page, with the
+  rules evaluator deciding what shows, hides, is worked out and is still
+  needed. Submit sends nothing; it says what would have been sent. A type
+  the window cannot offer as a control is named instead of skipped.
+- FM-L5. Publish Form, Insert Form Into Page, Test on Site and Responses need
+  the QAF plugin on the site; nothing else in WordPress needs a plugin
+  (17a.16). Without it, Save As Web Page makes a standalone accessible page
+  that submits to an address the writer chooses.
+- FM-L6. Responses are personal data. They are read from the site only when
+  the Responses window opens, held in memory while it is open, never
+  logged, and written to a file (CSV or Word) only where the person chooses.
+  Summarise Responses asks first, every time.
+- FM-L7. AI is optional (Draft a Form, Plain Language, Suggest Autofill
+  Hints, Summarise Responses) and uses the connection chosen in Choose Your
+  AI, through the same gates as every other AI command.
+- FM-L8. Seven guided lessons, written once in
+  `quill/core/tutorials/forms_lessons.py`, the same seven QUILL has.
+- FM-L9. Every handler has a behavioural test (GATE-LITE-COVER).
+
+**Where it is taught.** Chapter 15 of the user guide, the shared WordPress and
+Forms guide (`docs/user guide/wordpress-and-forms/wordpress-forms-guide.md`,
+on the site as `wordpress-forms-guide.html`), and the Forms rows of
+`docs/qa/wordpress-regression-testing.md`.
+
+## The Command Palette in every profile, reaching every command (2026-11-04)
+
+**Where it is.** Tools > Command Palette... (**Ctrl+Shift+P**,
+`cmd_command_palette`), first in the Tools menu, where QUILL keeps it, so the
+same command is in the same place in both editors (rule 2). It was in View
+until 2026-11-04. Its row has no access letter: its L was also Look Up
+Word's, and a duplicate letter means one of the pair never answers (GATE-14).
+
+**In every profile.** WordPad and Notepad used to switch the palette off. It
+is the way a command is found when its key or menu is not known, so a profile
+that removed it removed the way to find everything else. Every profile keeps
+it (section 3.3a); WordPad keeps 6 of the 24 areas and Notepad 3.
+
+**What it lists.** `LiteServices.command_registry` (`quill/apps/lite_services.py`)
+builds the list per call, for the document in front:
+
+- every row of the command table, resolved through the feature switches and
+  the keymap, so a switched-off area lists nothing and each row shows the key
+  the person actually has;
+- then every menu row the table cannot hold, the ones the menus build at run
+  time (each open window in the Window menu, each file in Open Recent), found
+  by walking the menu bar (`quill/ui/palette_menu_reach.py`), named by the
+  menus they sit in, and skipped when the table already covers the path.
+
+Every entry runs through the Read-Only Guard, as the menus and keys do. QUILL's
+palette reaches its menu rows through the same `palette_menu_reach` module
+(`quill/ui/main_frame_palette_labels.py`), so the two editors find run-time rows
+the same way.
+
+**Requirements.**
+
+- CP-L1. No profile can remove the palette.
+- CP-L2. Every enabled menu row, static or built at run time, is reachable
+  from the palette.
+- CP-L3. A command with no key of its own (the WordPress, Forms and project
+  rows among them) is in the palette under its menu path.
+
+## Page breaks on Ctrl+Enter (2026-11-03)
+
+**Insert > Page Break** (**Ctrl+Enter**, `cmd_insert_page_break`), as in Word
+(rule 1). QUILL has the same command on the same key, in its Format menu
+(PR #1754).
+
+- In a Word or Rich Text document it inserts a real page break, which is kept
+  when the document is saved.
+- In Markdown it inserts the `::: pagebreak` line, which becomes a page break
+  on export.
+- Word page breaks survive a round trip. Opening a Word document used to turn
+  each page break into an empty paragraph, so saving it removed them all; they
+  now open as page breaks and are saved as page breaks.
+- In a plain text or HTML document it inserts nothing and says why: "A page
+  break needs a Word, Rich Text or Markdown document". It never writes a form
+  feed.

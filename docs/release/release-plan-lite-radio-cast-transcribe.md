@@ -259,6 +259,22 @@ python scripts/promote_release.py --app weather --version 2.2.1+<n> --to stable 
     --notes-file docs/release/whats-new/whats-new-weather-2.2.1.md
 ```
 
+## QUILL 1.0.0
+
+QUILL's own release is built by `windows-release.yml` from a tag, so it is
+listed with `--existing` rather than `--dist` (see [RELEASE.md](RELEASE.md),
+"QUILL 1.0.0 becomes Stable this way"). Its "What's new" is
+`docs/release/whats-new/whats-new-quill-1.0.0.md`.
+
+```powershell
+python scripts/publish_release.py --app quill --version 1.0.0 --channel beta --existing `
+    --notes-file docs/release/whats-new/whats-new-quill-1.0.0.md --dry-run
+python scripts/publish_release.py --app quill --version 1.0.0 --channel beta --existing `
+    --notes-file docs/release/whats-new/whats-new-quill-1.0.0.md
+python scripts/promote_release.py --app quill --version 1.0.0 --to stable `
+    --notes-file docs/release/whats-new/whats-new-quill-1.0.0.md
+```
+
 ## At a glance
 
 | | QUILL Lite 2.0.0 | Quill Radio 3.2.0 | QUILL Cast 2.0.0 | QUILL Transcribe 1.0.0 |

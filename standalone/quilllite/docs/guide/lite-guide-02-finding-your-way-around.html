@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2: Finding your way around</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-2-finding-your-way-around">Chapter 2: Finding your way
+around</h1>
+<p>You have typed something, and now you want to know where everything
+lives. QUILL Lite keeps all your documents inside one window and gives
+each one a number, so you can always get back to it. In this chapter we
+will look at that window, close several documents at once, walk along
+the status bar where the facts about your document live, flip the
+switches on the View menu, and find any command just by typing part of
+its name. Have QUILL Lite open while you read, and try each thing as you
+meet it.</p>
+<h2 id="your-documents-are-numbered">Your documents are numbered</h2>
+<p>QUILL Lite opens your documents <strong>inside one window</strong>,
+and gives each one a number. Your first document is 1, the next is 2,
+and so on. A document keeps its number for as long as it is open, even
+if you close the one before it.</p>
+<p>The number is how you get back to it:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+1</strong> to <strong>Alt+9</strong></td>
+<td>Go straight to that document</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Tab</strong> / <strong>Ctrl+Shift+Tab</strong></td>
+<td>Next / previous document</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F6</strong></td>
+<td>Next document (the usual Windows key, same thing)</td>
+</tr>
+<tr>
+<td><strong>Window menu</strong></td>
+<td>Every open document, by number, with a mark on the one you are
+in</td>
+</tr>
+</tbody>
+</table>
+<p><strong>One thing to know.</strong> Because your documents live
+inside one window, they do <strong>not</strong> appear in Alt+Tab.
+Alt+Tab shows <em>QUILL Lite</em> once. Use the four ways above to move
+between your documents. If a document seems to have disappeared, it has
+not: press <strong>Alt+1</strong> or open the Window menu and it is
+there.</p>
+<p><strong>Ctrl+N</strong> makes a new document. <strong>Ctrl+W</strong>
+closes the one you are in. <strong>Ctrl+Q</strong> closes everything,
+and asks you about anything you have not saved.</p>
+<p>If you would like to practise this with the app guiding you, the
+tutorial <em>Your documents are numbered</em> opens a second file and
+walks you between them.</p>
+<h3 id="opening-a-large-file-or-one-on-a-network-drive">Opening a large
+file, or one on a network drive</h3>
+<p>A file of a megabyte or more, or any file on a network drive, opens
+without freezing the window. Here is what happens:</p>
+<ol type="1">
+<li>A new document window appears straight away. Its title has its
+number, the word “Opening” and the file’s name, and QUILL Lite says
+“Opening” and the name once.</li>
+<li>While the file is loading, the window is read-only, so nothing you
+type can get lost.</li>
+<li>When the file arrives, the text appears and your cursor is at the
+top, ready to read.</li>
+</ol>
+<p>To cancel, close that window with <strong>Ctrl+W</strong>. If the
+file cannot be read, for example because the network drive went away or
+the disk is busy, QUILL Lite tells you why and asks whether to try
+again. Yes tries again. No closes the empty window.</p>
+<p>Smaller files on your own computer open all at once, as you would
+expect.</p>
+<h3 id="opening-a-second-quill-lite">Opening a second QUILL Lite</h3>
+<p>If you open a file from File Explorer while QUILL Lite is already
+running, it opens in the QUILL Lite you already have. That keeps all
+your documents, and their numbers, in one place.</p>
+<p>If you really do want two separate QUILL Lite windows, one on each
+monitor for example, start it with the extra option
+<code>--new-instance</code>.</p>
+<p>The two share one settings file, and they do not undo each other’s
+choices. When one saves its settings, it writes only the settings it
+changed. If both changed the same setting, the one that saves last wins.
+A setting you change in one window does not change the other window
+while it is open. It takes effect there the next time you start QUILL
+Lite.</p>
+<h2 id="the-window">The window</h2>
+<p>QUILL Lite opens <strong>maximized</strong>, filling the screen, the
+first time you start it. After that, it opens the way you left it. Make
+it smaller, and it opens at that size next time. Make it full screen
+again, and that is remembered too.</p>
+<p>Full screen is the starting point because a small window can cut text
+off, or show only a few rows of a list. You can change it with one key,
+and QUILL Lite will not ask again.</p>
+<p>All the QuillVille apps work this way: QUILL, Quill Radio, Cast,
+Weather, Audio Studio, Inkwell, the Converter, QUILL Transcribe, the
+Media Player and Beacon. QUILL Transcribe, released on 1 November 2026,
+is the one that types what you say into other programs; in QUILL Lite
+itself you dictate with Ctrl+F11.</p>
+<h2 id="closing-a-lot-of-windows-at-once">Closing a lot of windows at
+once</h2>
+<p><strong>Window &gt; Close Other Documents</strong>
+(<strong>Ctrl+Shift+F4</strong>) keeps the document you are in and
+closes all the others. QUILL uses the same key, so you only need to
+learn it once.</p>
+<h3 id="when-some-have-unsaved-changes">When some have unsaved
+changes</h3>
+<p>If any of those documents has changes you have not saved, QUILL Lite
+asks you about it. The question also tells you how many more documents
+are waiting, so you know right away whether this is one question or
+sixty-seven. You can answer:</p>
+<ul>
+<li><strong>Save</strong>: save this document, then ask about the next
+one.</li>
+<li><strong>Don’t Save</strong>: close this document without saving,
+then ask about the next one.</li>
+<li><strong>Save All</strong>: save this one and every other one
+waiting, without asking again. A document that has never been saved will
+still ask where to put it.</li>
+<li><strong>Don’t Save Any</strong>: close all the rest and lose their
+changes, without asking again. This cannot be undone.</li>
+<li><strong>Cancel</strong>: stop. Whatever is still open stays open,
+and you hear how many documents closed before you stopped.</li>
+</ul>
+<p><strong>Pressing Enter chooses Save</strong>, so you never lose work
+by pressing Enter. If a save fails, for example because the disk is full
+or the file has become read-only, QUILL Lite stops there and does not
+close that document. Save All also stops, and you will be asked about
+each one again.</p>
+<h3 id="coming-back-with-alttab-and-leaving">Coming back with Alt+Tab,
+and leaving</h3>
+<p>When you Alt+Tab back to QUILL Lite, it puts you back in the document
+you were working in, ready to type. If you were in the Find box, another
+control or an open menu, you stay there.</p>
+<p>When you close QUILL Lite, it stops taking in new files to open
+before it closes its windows. Any files that were still waiting to open
+are opened the next time you start it. If you press Cancel on a save
+question while closing, QUILL Lite stays open and carries on as
+normal.</p>
+<h2 id="the-status-bar">The status bar</h2>
+<p>The status bar is a row of small facts about your document: where you
+are, how long it is, what kind of file it is, and whether you have
+saved. It is the first place to go when you want to know something.</p>
+<p>Here is how to use it:</p>
+<ol type="1">
+<li>Press <strong>F6</strong>. You land in the status bar. (In the menus
+this is <strong>Navigate &gt; Status Bar</strong>.)</li>
+<li>Press <strong>Left Arrow</strong> and <strong>Right Arrow</strong>
+to move along it, or <strong>Home</strong> and <strong>End</strong> to
+jump to either end. Each part says its name and its value.</li>
+<li>Press <strong>Enter</strong> on a part to act on it. What Enter does
+is in the table below.</li>
+<li>Press <strong>Escape</strong> to go back to your document, right
+where you left it.</li>
+</ol>
+<h3 id="hiding-the-bar">Hiding the bar</h3>
+<p><strong>View &gt; Status Bar</strong> (<strong>Alt+Shift+B</strong>)
+takes the bar off the screen and puts it back, just like Notepad’s. You
+lose nothing while it is hidden. A few keys give you the same facts out
+loud:</p>
+<ul>
+<li><strong>Ctrl+Shift+G</strong> speaks the counts for the whole
+document.</li>
+<li><strong>Ctrl+Alt+W</strong> speaks the line widths: the longest
+line, which line that is, and the average. That is handy when you are
+writing for a braille display or a narrow window.</li>
+<li><strong>Ctrl+G</strong> asks for a line number to go to, which is
+what the Position part would have told you.</li>
+</ul>
+<p>If you press F6 while the bar is hidden, QUILL Lite tells you it is
+hidden.</p>
+<h3 id="every-part-in-order">Every part, in order</h3>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it tells you</th>
+<th>Enter does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Status Message</strong></td>
+<td>The last thing QUILL Lite told you, so speech you missed can be
+heard again</td>
+<td>repeats it</td>
+</tr>
+<tr>
+<td><strong>Position</strong></td>
+<td>Which line and column you are on, out of how many lines</td>
+<td>Go to a line</td>
+</tr>
+<tr>
+<td><strong>Page</strong></td>
+<td>Which page you are on, out of how many. Only a PDF has pages, so
+this part is only there when a PDF is open</td>
+<td>Go to a page</td>
+</tr>
+<tr>
+<td><strong>Word Count</strong></td>
+<td>How many words the document has</td>
+<td>repeats it</td>
+</tr>
+<tr>
+<td><strong>Character Count</strong></td>
+<td>How many characters, spaces included</td>
+<td>repeats it</td>
+</tr>
+<tr>
+<td><strong>Selection</strong></td>
+<td>How much is selected, or “No selection”</td>
+<td>repeats it</td>
+</tr>
+<tr>
+<td><strong>Typing Mode</strong></td>
+<td>Whether typing inserts or overwrites</td>
+<td>switches between them</td>
+</tr>
+<tr>
+<td><strong>Tab Mode</strong></td>
+<td>Whether the Tab key types a tab or indents the line</td>
+<td>switches between them</td>
+</tr>
+<tr>
+<td><strong>Format</strong></td>
+<td>Which of the four kinds this document is: plain text, Markdown, HTML
+or rich text</td>
+<td>rings on to the next kind</td>
+</tr>
+<tr>
+<td><strong>Heading</strong></td>
+<td>Which heading you are inside</td>
+<td>lists every heading</td>
+</tr>
+<tr>
+<td><strong>List</strong></td>
+<td>Which list you are inside, how many items, which one you are on</td>
+<td>stops or resumes announcing lists</td>
+</tr>
+<tr>
+<td><strong>Dictation</strong></td>
+<td>What dictation is doing: off, listening, hearing you, writing,
+spelling, command mode, waiting for a command, or waiting for the wake
+phrase</td>
+<td>starts or stops dictation</td>
+</tr>
+<tr>
+<td><strong>Notifications</strong></td>
+<td>Progress and results from background work, including audio
+transcription</td>
+<td>reads a notification or opens its result</td>
+</tr>
+<tr>
+<td><strong>Encoding</strong></td>
+<td>How this file stores its letters and accents</td>
+<td>change it</td>
+</tr>
+<tr>
+<td><strong>Line Endings</strong></td>
+<td>How this file marks the end of a line</td>
+<td>change it</td>
+</tr>
+<tr>
+<td><strong>Saved State</strong></td>
+<td>Whether you have unsaved changes</td>
+<td>saves</td>
+</tr>
+<tr>
+<td><strong>Project</strong></td>
+<td>The open project and its git branch, and “waiting for you” when the
+project task needs an answer. Only there while a project is open, in the
+Developer profile</td>
+<td>opens Do a Project Task</td>
+</tr>
+<tr>
+<td><strong>AI</strong></td>
+<td>Which AI is in use, such as “AI: ChatGPT plan”</td>
+<td>opens Choose Your AI</td>
+</tr>
+</tbody>
+</table>
+<p>That is seventeen parts, or sixteen when the document has no pages,
+and an eighteenth, Project, while a project is open. Most of them
+explain themselves. A few are worth a closer look.</p>
+<h4 id="status-message">Status Message</h4>
+<p>Speech is gone the moment it is spoken. If QUILL Lite said something
+and you missed it, this is where you go to hear it again.</p>
+<h4 id="typing-mode">Typing Mode</h4>
+<p>Every Windows editor has an overwrite mode, where what you type
+replaces the letters already there instead of pushing them along. Most
+editors never tell you which mode you are in, so you find out by typing
+over a sentence you wanted to keep. This part tells you.</p>
+<p>To switch, press <strong>Ctrl+Alt+Shift+W</strong>, or press
+<strong>Enter</strong> on this part.</p>
+<p>The <strong>Insert</strong> key switches it too. QUILL Lite does not
+take the Insert key for itself, because your screen reader uses it. It
+just notices when you press it, so this part always tells you the
+truth.</p>
+<h4 id="tab-mode">Tab Mode</h4>
+<p>When you start, the <strong>Tab</strong> key types a tab character,
+just as it does in Notepad. Press <strong>Ctrl+Alt+Shift+I</strong> and
+Tab indents the whole line instead, which is usually what you want when
+you are working on code. <strong>Shift+Tab</strong> outdents in either
+mode, so you can always take back a tab you did not mean.</p>
+<h4 id="format">Format</h4>
+<p>This tells you whether the document is plain text, Markdown, HTML or
+rich text. That one fact decides a lot: what <strong>Ctrl+B</strong>
+writes, what the heading keys write, which tag picker the Insert menu
+offers, and whether the List part has anything to say.</p>
+<p>QUILL Lite guesses the kind from the file’s name. Press
+<strong>Enter</strong> here to move on to the next kind; you will hear
+its name. <strong>Ctrl+Alt+F6</strong> takes you straight to the one you
+want. There is more in <a
+href="lite-guide-03-opening-saving-and-printing.html#four-kinds-of-document">Four
+kinds of document</a>, in Chapter 3.</p>
+<h4 id="list">List</h4>
+<p>When you arrive in a list, you hear something like “Bulleted list, 5
+items”. You do not hear more on every arrow press, because that would be
+a lot to sit through. When you want to know exactly where you are, this
+part tells you which item you are on, for example “Bulleted list, 4 of
+9, level 2”.</p>
+<h4 id="encoding-and-line-endings">Encoding and Line Endings</h4>
+<p>These two decide whether your file opens properly on somebody else’s
+computer. You will rarely need to change them. But when a file arrives
+looking like nonsense, this is where to look.</p>
+<p>In a rich text document they read <strong>“RTF (rich text)”</strong>
+and <strong>“Not applicable (rich text)”</strong>. A rich text file
+keeps its letters and its line breaks in its own way, so these two
+questions do not apply to it.</p>
+<p>If a file came in a form QUILL Lite cannot write back, such as UTF-16
+big-endian or the old Mac style of line ending, the list you get from
+Enter shows a <strong>keep as is</strong> choice and stays on it. That
+way you cannot convert a file by accident when you only opened it to
+read. There is more in <a
+href="lite-guide-03-opening-saving-and-printing.html#how-this-file-is-written-encoding-and-line-endings">How
+this file is written</a>, in Chapter 3.</p>
+<h2 id="the-view-menu">The View menu</h2>
+<p>The View menu has seven switches and three text sizes. Each switch
+tells you its new setting out loud when you press it, so you never have
+to go and check.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Switch</th>
+<th>Starts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+D</strong></td>
+<td><strong>Dark Mode</strong>: dark colours, whatever Windows is set
+to</td>
+<td>following Windows</td>
+</tr>
+<tr>
+<td><strong>Alt+Z</strong></td>
+<td><strong>Word Wrap</strong>: long lines fold to fit the window
+instead of running off the side</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F3</strong></td>
+<td><strong>Announce Headings</strong>: say “Heading 2, Installing” when
+you arrive on one</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F5</strong></td>
+<td><strong>Announce Lists</strong>: say “Bulleted list, 5 items” when
+you enter one</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+W</strong></td>
+<td><strong>Overwrite Mode</strong>: what you type replaces what is
+there</td>
+<td>off</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+I</strong></td>
+<td><strong>Tab Key Inserts a Tab Character</strong>: when off, Tab
+indents the line</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+B</strong></td>
+<td><strong>Status Bar</strong>: show or hide the bar</td>
+<td>on</td>
+</tr>
+</tbody>
+</table>
+<p>When you arrow onto one of these in the menu, its check mark tells
+you whether it is on, without changing it.</p>
+<p><strong>The two announcement switches belong to each
+document</strong>, not to the whole app. So you can have headings
+announced in a letter, and switched off in a settings file full of lines
+that start with <code>#</code>.</p>
+<p><strong>Overwrite Mode</strong> can also be changed from the status
+bar: press <strong>F6</strong>, arrow to <strong>Typing Mode</strong>,
+and press <strong>Enter</strong>. The <strong>Insert</strong> key
+switches it too, and QUILL Lite tells you what happened. It does not
+take that key for itself, because your screen reader uses it.</p>
+<h3 id="making-the-text-bigger-or-smaller">Making the text bigger or
+smaller</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+=</strong></td>
+<td>Increase Text Size</td>
+</tr>
+<tr>
+<td><strong>Ctrl+-</strong></td>
+<td>Decrease Text Size</td>
+</tr>
+<tr>
+<td><strong>Ctrl+0</strong></td>
+<td>Reset Text Size</td>
+</tr>
+</tbody>
+</table>
+<p>These change only how big the text looks on screen. Your file is not
+changed, and your screen reader says the same things.</p>
+<p><strong>Ctrl+Shift+.</strong> and <strong>Ctrl+Shift+,</strong> are
+something else. In a rich text document they change the font size of the
+text you have selected, and that is saved in the file.</p>
+<h3 id="what-is-in-this-document-in-numbers">What is in this document,
+in numbers</h3>
+<ul>
+<li><strong>Document Statistics</strong> (<strong>Ctrl+Shift+G</strong>)
+tells you the size of the whole document: characters, words, lines and
+paragraphs.</li>
+<li><strong>Line Statistics</strong> (<strong>Ctrl+Alt+W</strong>) tells
+you about line widths. It is useful when you are writing to fit
+something, like a braille display, a narrow window, or a line limit in
+code.</li>
+</ul>
+<h2 id="finding-a-command">Finding a command</h2>
+<p>Cannot remember where something is? Press
+<strong>Ctrl+Shift+P</strong> to open the <strong>Command
+Palette…</strong>. It is also the first item in the
+<strong>Tools</strong> menu, the same place as in QUILL. Type part of
+what you want, such as “sort”, “bookmark” or “print”, then choose it
+from the list and press <strong>Enter</strong>. You do not need to know
+which menu it is in.</p>
+<p>Each command in the list shows its key beside it. That is a gentle
+way to learn keys as you go. If you have changed a key, the palette
+shows your key.</p>
+<h3 id="typing-a-name-to-reach-it-in-a-list">Typing a name to reach it
+in a list</h3>
+<p>Most lists in QUILL Lite, such as Snippets, Recent Documents, the
+bookmark and heading lists and Recent Clips, let you type the start of a
+row’s name to move to it. You can type the <strong>whole</strong> name,
+spaces included:</p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+Home</strong> to open Snippets.</li>
+<li>Type <code>meeting notes</code> at an ordinary pace. The list moves
+to the first row that starts with “meeting notes”, and stays on it while
+the row still matches.</li>
+<li>Press <strong>Enter</strong> to put that snippet in.</li>
+</ol>
+<p>While you are typing a name, <strong>Space is part of the
+name</strong>. It used to open whatever row the first word had reached,
+so typing “meeting notes” could insert “Meeting agenda”. If you pause
+for about a second, the next key starts a new name, and
+<strong>Space</strong> on its own opens the selected row as before.
+<strong>Enter</strong> always opens the selected row and
+<strong>Escape</strong> always closes the list.</p>
+<p>Typing the same letter again and again steps through the rows that
+start with it. If nothing starts with what you typed, you hear “No match
+for” and what you typed, and the selection stays where it was.</p>
+<h3 id="one-box-for-everything-go-to-anything">One box for everything:
+Go To Anything</h3>
+<p><strong>Navigate &gt; Go To Anything…</strong>
+(<strong>Ctrl+Alt+Shift+A</strong>) is like the Command Palette, but it
+searches more. Type a few letters and the list shows matching commands,
+headings in this document, and bookmarks you have set, all together.
+Press <strong>Enter</strong> to run the command or go to the place.</p>
+<p><strong>It starts switched off.</strong> You can already do each of
+these with its own key: the Command Palette, the headings list
+(<strong>Ctrl+Alt+L</strong>) and the bookmark list
+(<strong>Alt+Shift+G</strong>). If you would rather have one key for all
+three, turn it on in <strong>Tools &gt; Customize Features</strong>
+(<strong>Ctrl+Alt+F10</strong>).</p>
+<p>Headings only show up here in a <strong>rich text</strong> document.
+In a Markdown or HTML file, use the headings list on Ctrl+Alt+L
+instead.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>Your documents share one window, and each has a number, so
+<strong>Alt+1</strong> to <strong>Alt+9</strong>,
+<strong>Ctrl+Tab</strong> and the Window menu always find them, even
+though Alt+Tab does not. Big files and files on a network drive open
+without freezing. The window starts maximized and then remembers the
+size you choose. <strong>Ctrl+Shift+F4</strong> closes every document
+except the one you are in, and Enter on its question always means
+Save.</p>
+<p>The status bar is a row of facts you reach with <strong>F6</strong>,
+walk with the arrow keys and leave with <strong>Escape</strong>, and
+Enter on a part acts on it. The View menu turns things on and off and
+tells you the new setting, <strong>Ctrl+Shift+G</strong> and
+<strong>Ctrl+Alt+W</strong> give you the numbers, and
+<strong>Ctrl+Shift+P</strong> finds any command by name.</p>
+<p>If you would like some practice, Help &gt; Tutorials has <em>Your
+documents are numbered</em>, which walks you between two documents, and
+<em>What to press when you are lost</em>, which starts at the status
+bar.</p>
+<p>Next, Chapter 3, Opening, saving and printing, explains the four
+kinds of document and how QUILL Lite gives your file back exactly as it
+came.</p>
+<hr />
+<ul>
+<li>Previous: <a href="lite-guide-01-your-first-minutes.html">Chapter 1:
+Your first minutes</a></li>
+<li>Next: <a
+href="lite-guide-03-opening-saving-and-printing.html">Chapter 3:
+Opening, saving and printing</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

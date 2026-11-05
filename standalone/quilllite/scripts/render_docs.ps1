@@ -5,7 +5,14 @@
 # markdown. build_release.ps1 calls this before staging the bundled docs\
 # folder that the app's own Help menu opens.
 #
-# Usage: .\scripts\render_docs.ps1
+# The user guide is a contents page (docs\userguide.md) plus its chapters in
+# docs\guide\ (quill/core/user_guide_files.py), so the chapters are rendered
+# too, and userguide.epub is the whole book: every chapter joined, in order,
+# by -Python (the contents page on its own would be a book of links).
+#
+# Usage: .\scripts\render_docs.ps1 [-Python <python.exe>]
+
+param([string]$Python = "python")
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
@@ -35,7 +42,10 @@ $htmlTemplateArgs = @("--template", $templatePath)
 $quillRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\.."))
 
 Invoke-WithSourceDateEpoch {
-    Get-ChildItem $docsDir -Filter "*.md" | ForEach-Object {
+    $sources = @(Get-ChildItem $docsDir -Filter "*.md")
+    $guideDir = Join-Path $docsDir "guide"
+    if (Test-Path $guideDir) { $sources += @(Get-ChildItem $guideDir -Filter "*.md") }
+    $sources | ForEach-Object {
         $htmlOut = [System.IO.Path]::ChangeExtension($_.FullName, "html")
         $epubOut = [System.IO.Path]::ChangeExtension($_.FullName, "epub")
         Write-Host "Rendering $($_.Name) -> $(Split-Path -Leaf $htmlOut), $(Split-Path -Leaf $epubOut)"
@@ -54,7 +64,17 @@ Invoke-WithSourceDateEpoch {
         # the current time, so every rebuild rewrote every file.
         $relativePath = $_.FullName.Substring($quillRoot.Length + 1).Replace([char]92, '/')
         $epubId = Get-QuillEpubIdentifier -RepoRelativePath $relativePath
-        & $pandocExe $_.FullName -f gfm+smart -t epub3 --metadata "identifier=$epubId" -o $epubOut
+        $epubIn = $_.FullName
+        $bookArgs = @()
+        if ($_.Name -eq "userguide.md" -and (Test-Path $guideDir)) {
+            # The whole book, joined by the same helper QUILL's renderers use.
+            $epubIn = Join-Path ([System.IO.Path]::GetTempPath()) "quilllite-userguide-book.md"
+            Push-Location $quillRoot
+            try { & $Python -m quill.core.user_guide_files book $_.FullName $epubIn } finally { Pop-Location }
+            if ($LASTEXITCODE -ne 0) { throw "Could not join the user guide's chapters into one book." }
+            $bookArgs = @("--resource-path", $docsDir, "--metadata", "title=$pageTitle")
+        }
+        & $pandocExe $epubIn -f gfm+smart -t epub3 --metadata "identifier=$epubId" @bookArgs -o $epubOut
         if ($LASTEXITCODE -ne 0) { throw "Pandoc EPUB render failed for $($_.Name)" }
     }
 }

@@ -46,6 +46,8 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.user_guide_files import chapter_paths
+
 ROOT = Path(__file__).resolve().parents[3]
 
 __all__ = [
@@ -346,8 +348,13 @@ class OptIn:
 #: for a claim in another.
 _HEADING = re.compile(r"^#{1,2}\s")
 
+#: A user guide split into chapter files (quill/core/user_guide_files.py) has
+#: one chapter per file, titled by its only level 1 heading, so the whole file
+#: is the section -- its ``##`` topics are what used to be ``###``.
+_CHAPTER_HEADING = re.compile(r"^#\s")
 
-def _sections(text: str) -> list[tuple[int, str]]:
+
+def _sections(text: str, heading: re.Pattern[str] = _HEADING) -> list[tuple[int, str]]:
     """``(first line, lower-cased text)`` for each heading-delimited section."""
     out: list[tuple[int, str]] = []
     start, chunk = 1, []
@@ -355,7 +362,7 @@ def _sections(text: str) -> list[tuple[int, str]]:
     for number, line in enumerate(text.splitlines(), 1):
         if line.lstrip().startswith("```"):
             fenced = not fenced  # a "## heading" in a code sample is not a chapter
-        if not fenced and _HEADING.match(line) and chunk:
+        if not fenced and heading.match(line) and chunk:
             out.append((start, re.sub(r"\s+", " ", " ".join(chunk)).lower()))
             start, chunk = number, []
         chunk.append(line)
@@ -418,9 +425,14 @@ def check_documents(
     extra = {chord_identity(k): normalise(v) for k, v in (extra_keys or {}).items()}
     findings: list[str] = []
     used: set[str] = set()
-    for document in documents:
+    parts: list[tuple[Path, re.Pattern[str]]] = []
+    for given in documents:
+        chapters = chapter_paths(given)
+        parts.append((given, _HEADING))
+        parts += [(chapter, _CHAPTER_HEADING) for chapter in chapters]
+    for document, heading in parts:
         text = document.read_text(encoding="utf-8")
-        sections = _sections(text)
+        sections = _sections(text, heading)
         for number, path in path_claims(text, tops):
             if _resolves(path, items):
                 continue

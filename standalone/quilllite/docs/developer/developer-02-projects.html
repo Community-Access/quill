@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2: Opening a project, and the project boundary</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-2-opening-a-project-and-the-project-boundary">Chapter 2:
+Opening a project, and the project boundary</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>A project is a folder. This chapter covers opening one and closing
+it, the Project part of the status bar, what changes about
+<code>Ctrl+3</code> while a project is open, and the boundary: exactly
+what the agent may see inside your folder, what it never sees, and how
+much it reads at a time.</p>
+<h2 id="a-project-is-just-a-folder">A project is just a folder</h2>
+<p>There is nothing to set up and no project file. Any folder will do: a
+git repository, a folder of scripts, or a book manuscript. QUILL never
+writes anything into the folder to mark it as a project. Everything it
+keeps about a project lives in its own data folder in your user profile
+(Chapter 10 lists what).</p>
+<h2 id="opening-one">Opening one</h2>
+<p>Choose <strong>File &gt; Open Project Folder…</strong>. The
+<strong>Open Project Folder</strong> window lists your recent projects
+first, newest at the top, so the usual case is Down Arrow and Enter.
+Each row says the folder’s name and then its full path. QUILL remembers
+your last ten projects.</p>
+<p>To open a folder that is not in the list, choose <strong>Browse for a
+Folder…</strong>, which opens the Windows folder picker. The first time,
+the list says “No recent projects yet.” and focus starts on Browse for a
+Folder.</p>
+<p>When the folder opens you hear “Project cli-tool is open, on branch
+main.”, or “Project cli-tool is open.” when the folder is not a git
+repository. Here and all through this manual, cli-tool stands for your
+own folder’s name.</p>
+<p>Only one project is open at a time, for every window of the editor.
+Opening another closes the first. If a task is still running you hear “A
+project task is running. Stop it, or let it finish, before closing the
+project.” and nothing changes.</p>
+<h2 id="the-project-part-of-the-status-bar">The Project part of the
+status bar</h2>
+<p>While a project is open, the status bar has a
+<strong>Project</strong> part. It says “Project cli-tool, main”, and
+adds “, waiting for you” when the task has a question you have not seen
+yet. Press Enter on it to open the task.</p>
+<ul>
+<li>In QUILL the part is hidden until the first time you open a project;
+then QUILL shows it for you. You can hide it again in <strong>Tools &gt;
+Customize and Support &gt; Status Bar Layout…</strong>.</li>
+<li>In QUILL Lite the part is there only while a project is open, so
+nobody without one ever meets it.</li>
+</ul>
+<h2 id="what-changes-about-ctrl3">What changes about Ctrl+3</h2>
+<p><code>Ctrl+3</code> is the front door to AI tasks in both editors.
+With a project open, it opens <strong>Do a Project Task</strong>. With
+no project open, it is Do a Document Task, as it always was. One key,
+one window, and the window’s status line says which project it is
+working on.</p>
+<h2 id="closing-a-project">Closing a project</h2>
+<p>Choose <strong>File &gt; Close Project</strong>. You hear “The
+project is closed.” and <code>Ctrl+3</code> goes back to Do a Document
+Task. If a task is running, QUILL asks you to stop it or let it finish
+first.</p>
+<h2 id="the-project-boundary">The project boundary</h2>
+<p>QUILL, not the AI, decides what the agent may see. These rules hold
+whichever engine you use.</p>
+<h3 id="inside-the-folder-only">Inside the folder only</h3>
+<p>Every path the agent names is checked and must stay inside the
+project folder, after symbolic links and junctions are followed. QUILL
+refuses:</p>
+<ul>
+<li>paths that climb out with <code>..</code>;</li>
+<li>absolute paths and network (UNC) paths;</li>
+<li>Windows device names, such as <code>con</code> or
+<code>nul</code>;</li>
+<li>alternate data streams, such as <code>file.txt:hidden</code>.</li>
+</ul>
+<h3 id="secrets-are-invisible">Secrets are invisible</h3>
+<p>Files that look like secrets are never listed, read, searched, copied
+for undo, or sent. That includes:</p>
+<ul>
+<li><code>.env</code> files and anything named like one
+(<code>.env.local</code>, <code>prod.env</code>);</li>
+<li>keys and certificates: <code>*.pem</code>, <code>*.key</code>,
+<code>*.pfx</code>, <code>*.p12</code>, <code>*.keystore</code>,
+<code>*.jks</code>, and <code>id_rsa</code>, <code>id_dsa</code>,
+<code>id_ecdsa</code> and <code>id_ed25519</code> files;</li>
+<li>password databases: <code>*.kdbx</code> and <code>*.kdb</code>;</li>
+<li>files named <code>credentials...</code>, <code>secrets...</code>,
+<code>secret.*</code>, <code>*.token</code>, <code>token.json</code> and
+<code>tokens.json</code>;</li>
+<li><code>.npmrc</code>, <code>.pypirc</code>, <code>.netrc</code>,
+<code>_netrc</code>, <code>.git-credentials</code> and
+<code>.htpasswd</code>;</li>
+<li>everything inside <code>.ssh</code>, <code>.aws</code>,
+<code>.gnupg</code>, <code>.azure</code> and git’s own <code>.git</code>
+folder.</li>
+</ul>
+<p>When a listing skips some, the agent is told how many: “3 files
+hidden by QUILL because they look like secrets; ask the person if you
+need what is in them.” So it knows something is there, and asks you
+rather than guessing.</p>
+<p>On top of that, every excerpt of a file that is sent is scrubbed for
+keys and tokens that live in ordinary files.</p>
+<h3 id="folders-that-are-skipped">Folders that are skipped</h3>
+<p>Generated and cached folders are never listed or searched:
+<code>node_modules</code>, <code>__pycache__</code>, <code>.venv</code>,
+<code>venv</code>, <code>.mypy_cache</code>, <code>.pytest_cache</code>,
+<code>.ruff_cache</code>, <code>.tox</code>, <code>.idea</code> and
+<code>.vs</code>. Files your <code>.gitignore</code> ignores are left
+out of listings too, and the agent is told how many.</p>
+<h3 id="how-much-is-read-at-a-time">How much is read at a time</h3>
+<ul>
+<li>One read returns at most 400 lines, with line numbers. The agent
+asks for the next range when it needs more, which keeps the cost down on
+a plan that counts requests.</li>
+<li>A listing returns at most 600 entries, and a search at most 200
+matches.</li>
+<li>A file bigger than 2 MB is never read whole or searched.</li>
+<li>Pictures, PDFs, archives, programs and other binary files are
+described (“PNG image, 48 KB”) and never sent.</li>
+</ul>
+<h3 id="what-the-agent-can-do-inside-the-boundary">What the agent can do
+inside the boundary</h3>
+<p>The agent works only through QUILL’s own project tools. It can list
+files, read them, search them, read a file’s outline (its functions and
+classes), read the git branch and changed files, record a plan, ask you
+a question, and propose changes: an edit, a new file, a deletion or a
+rename. It can ask to run a command. Reading needs no permission. Every
+change goes to Review Changes (Chapter 7) and every command asks first
+(Chapters 5 and 6).</p>
+<p>In coach mode the agent keeps only the reading tools, plus one for
+pointing you to a file and line (Chapter 9).</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-01-the-developer-profile.html">Chapter
+1: Turning on the Developer profile</a></li>
+<li>Next: <a href="developer-03-first-project-task.html">Chapter 3: Your
+first project task</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,2438 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 3: Opening, saving and converting files</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-3-opening-saving-and-converting-files">Chapter 3:
+Opening, saving and converting files</h1>
+<p>This chapter is about getting your words in and out of QUILL. We
+start with the everyday things: opening a file, saving it, and what
+QUILL says when something about a file changes. Then we look at the
+kinds of documents QUILL understands, how to turn one format into
+another, and how to work with files that live on a server or on GitHub.
+Read the first two topics now. Come back to the rest when you have a
+Word file to send or a folder of documents to convert.</p>
+<h2 id="opening-files">Opening files</h2>
+<p>Most of the time you open a file with <strong>File &gt;
+Open…</strong> (<code>Ctrl+O</code>). The File menu has a few other ways
+in, and each one is handy at the right moment:</p>
+<ul>
+<li><strong>New</strong> creates a blank document.</li>
+<li><strong>Open…</strong> opens a document from disk.</li>
+<li><strong>Open Recent</strong> takes you back to files you used
+lately. At the bottom of that list, <strong>Clear Recent Files…</strong>
+empties it when you want a fresh start. It asks first, and pinned files
+stay. Your files stay where they are; only the list goes. Just above
+Clear, <strong>Recent Documents…</strong> (<code>Alt+Shift+0</code>)
+shows the whole list in a window of its own. More on that just
+below.</li>
+<li><strong>Open from Clipboard</strong>
+(<code>Ctrl+Alt+Shift+Enter</code>) opens whatever you copied: a file
+copied in File Explorer, a file path copied as text, or a web link. More
+on it just below.</li>
+<li><strong>Open from URL…</strong> downloads a document from the web.
+Before anything is downloaded, QUILL asks you, naming the website and
+the size of the file.</li>
+<li><strong>New Document from Clipboard</strong> opens a new document
+that already holds whatever text is on the clipboard. It is on the Edit
+menu too.</li>
+<li><strong>Snapshots</strong> saves a group of open documents as one
+workspace snapshot, so you can reopen them all together later. If you
+know Visual Studio Code, it is a little like a lightweight workspace
+there.</li>
+</ul>
+<p>Files on a server or on GitHub have their own commands. They are
+covered later in this chapter, under Remote access and GitHub remote
+files.</p>
+<h3 id="opening-what-you-copied-a-link-or-a-file-you-drag-in">Opening
+what you copied, a link, or a file you drag in</h3>
+<p>Documents reach you in all sorts of ways: a file in File Explorer, a
+path somebody pasted into a chat, a link in an email. QUILL opens all
+three without a trip through the Open dialog. The idea comes from
+PlanCake, a small reading app by Andre of Oire Software.</p>
+<p><strong>Open from Clipboard</strong>
+(<code>Ctrl+Alt+Shift+Enter</code>, on the File menu). Copy first, then
+press it. QUILL looks at what you copied:</p>
+<ul>
+<li>Files copied in File Explorer open, one after another. If you copied
+several, QUILL tells you how many it opened.</li>
+<li>A file path copied as text opens that file. The quotes File
+Explorer’s “Copy as path” puts around it are fine. Several paths, one
+per line, open in turn.</li>
+<li>A web link goes to Open from URL, described next.</li>
+</ul>
+<p>If the clipboard holds none of those, QUILL says “The clipboard holds
+no file, path or link.” and nothing else happens. <code>Ctrl+V</code>
+still pastes, as always.</p>
+<p><strong>Open from URL…</strong> (on the File menu). Type or paste a
+web address. QUILL finds out the file’s name and size, then asks before
+downloading anything, for example “Download plan.md from example.com? It
+is 12 KB.” Say Yes and a small window shows how the download is going.
+Its Cancel button stops it. If something goes wrong, you hear one plain
+sentence, such as “Nothing was found at that address on example.com.” A
+link to a file’s page on GitHub opens the file itself rather than the
+web page around it.</p>
+<p>The document opens read-only, with its web address in the tab name.
+To keep it, save a copy. QUILL works from a temporary copy of the
+download and deletes it when you close the tab.</p>
+<p><strong>Drag and drop.</strong> Drag files from File Explorer onto
+the QUILL window and they open, and QUILL says how many. Text you drag
+into the document is still inserted where you drop it.</p>
+<p>QUILL Lite has all three, on the same key.</p>
+<h3 id="opening-something-you-worked-on-recently">Opening something you
+worked on recently</h3>
+<p>QUILL remembers the documents you open, newest first. There are two
+quick ways back to one.</p>
+<p><strong>The first eight.</strong> <code>Alt+Shift+1</code> reopens
+the document you opened most recently, <code>Alt+Shift+2</code> the one
+before that, and so on up to <code>Alt+Shift+8</code>. They are the
+first eight rows of <strong>File &gt; Open Recent</strong>, where each
+row says the file’s name first and then its folder.</p>
+<p><strong>The whole list.</strong> Press <code>Alt+Shift+0</code>, or
+choose <strong>File &gt; Open Recent &gt; Recent Documents…</strong>.
+Arrow to a document and press Enter to open it. In the same window you
+can:</p>
+<ul>
+<li><strong>Pin</strong> a document you keep coming back to
+(<code>Alt+P</code>). Pinned documents stay at the top, however many
+others you open. On a pinned one, the button says
+<strong>Unpin</strong>.</li>
+<li><strong>Remove from List</strong> (<code>Alt+R</code>, or the Delete
+key) takes one off the list. The file is not touched.</li>
+<li><strong>Open Containing Folder</strong> (<code>Alt+F</code>) shows
+the file in File Explorer.</li>
+<li><strong>Clear Unpinned…</strong> (<code>Alt+L</code>) empties the
+list. It asks first, and pressing Enter answers No. Pinned documents
+always stay.</li>
+<li><strong>Remember up to this many documents</strong>
+(<code>Alt+U</code>) sets the length of the list, from 1 to 50. It is
+the same setting as <strong>Recent files to remember</strong> in
+Settings.</li>
+<li><strong>Forget missing files when the app starts</strong>
+(<code>Alt+M</code>) is the same setting as <strong>Drop missing recent
+files automatically</strong>, described below.</li>
+</ul>
+<p>A file that has moved or been deleted says “not found” in this
+window, and Remove from List tidies it away. QUILL Lite has the same
+window on the same key; the two apps keep their own lists.</p>
+<h3 id="the-simple-file-open-dialog">The Simple File Open dialog</h3>
+<p>QUILL can open files with either the standard Windows file open
+dialog or its own <strong>Simple File Open</strong> dialog. The simple
+one is a short, keyboard-friendly window: one list of files, a small
+filter, your recent files and a switch for hidden files. Both are
+reached the same way, with <strong>File &gt; Open…</strong> or
+<code>Ctrl+O</code>. Which one you get is decided by <strong>Settings
+&gt; General &gt; Use simple file open dialog</strong>. It is off to
+begin with. Turn it on if you would like a plain picker that is easy to
+use with a screen reader.</p>
+<p>Here is what is in the Simple File Open dialog:</p>
+<ul>
+<li>A <strong>Path</strong> field at the top shows the folder you are
+in. Type a path and press Enter. A folder opens in the list, and a file
+opens in QUILL. Press <code>Ctrl+L</code> from anywhere in the dialog to
+jump back to this field. You can paste a path in whatever form you have
+it: with the quotes File Explorer’s “Copy as path” adds, with
+<code>%APPDATA%</code>-style environment variables, as a
+<code>file://</code> link, or starting with <code>~</code>. QUILL tidies
+it up for you.</li>
+<li>A <strong>Filter</strong> dropdown chooses which file types are
+shown. The default, <strong>Supported files</strong>, shows plain text,
+Markdown, HTML and Rich Text. Choose <strong>Plain text</strong>,
+<strong>Markdown</strong>, <strong>HTML</strong> or <strong>Rich
+Text</strong> to narrow it further, or <strong>All files</strong> to see
+everything.</li>
+<li>A <strong>Files</strong> list shows the folders and files where you
+are. Folders start with <code>[dir]</code>. To go up to the parent
+folder, press Backspace in the list or use the <strong>Up</strong>
+button.</li>
+<li>A <strong>Hidden</strong> toggle shows or hides files whose names
+start with a dot, or that Windows marks as hidden. Press
+<code>Ctrl+H</code> in the path field or the file list to flip it. On a
+Mac, use <code>Cmd+Shift+.</code> instead, as the Finder does, because
+<code>Ctrl+H</code> there is the system’s Hide shortcut.</li>
+<li>A <strong>Recent</strong> button pops up your recently opened files,
+so you can reopen one with a single choice.</li>
+<li>A <strong>Use Windows Dialog</strong> button opens the standard
+Windows dialog just this once. Your setting does not change, so the next
+<code>Ctrl+O</code> brings you back to the simple dialog. It is there
+for the odd case, such as a very long path or a custom file association,
+where you want the Windows picker.</li>
+<li>An <strong>Open</strong> button and a <strong>Cancel</strong>
+button. Enter opens the selected file and Escape cancels.</li>
+</ul>
+<p>Under the list, a status line tells you the folder you are in, how
+many entries are showing, and any error. If a folder is off limits
+(“permission denied”) or a path is not a folder, the dialog stays open
+so you can fix the path and try again.</p>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Someone sent you a file path in an
+e-mail? In the Simple File Open dialog, press <code>Ctrl+L</code> to
+jump to the Path field, paste it, and press Enter. Quotes and all, QUILL
+tidies it up.</p>
+</blockquote>
+<h3 id="when-a-file-is-not-where-it-was">When a file is not where it
+was</h3>
+<p>Files move. A OneDrive or SharePoint file can be a placeholder whose
+contents were never downloaded to this PC. A file on <strong>File &gt;
+Open Recent</strong> may have been renamed or deleted since you last
+used it. A file on a USB stick or a network share simply is not there
+when that drive is not connected.</p>
+<p>When that happens, QUILL says so in one sentence, in the status bar
+and out loud:</p>
+<blockquote>
+<p><em>Bingo3.html is no longer there. It may have been moved, renamed,
+or deleted, or it may live on a drive that is not connected.</em></p>
+</blockquote>
+<p>That is all. There is no dialog to close, and QUILL stays exactly
+where it was, so you can press <code>Ctrl+O</code> and pick something
+else. If you choose a folder where QUILL expected a file, it tells you
+that instead.</p>
+<p>Your Recent list keeps the entry. A file that is missing today may be
+on a USB stick you plug back in tomorrow, so QUILL does not quietly
+forget it because one open failed.</p>
+<p>If you would rather lose dead entries, turn on <strong>Drop missing
+recent files automatically</strong> in Settings, on the General page
+(the setting is <code>recent_files_auto_clear_missing</code>, and it is
+off by default). Even then, it only removes entries whose file has been
+deleted from one of this PC’s own fixed drives. Files on USB, removable
+or network drives are never even checked, so unplugging a drive never
+clears its history. “Not connected” is not the same as “gone”.</p>
+<h2 id="saving-files">Saving files</h2>
+<p>Saving is three commands on the <strong>File</strong> menu:</p>
+<ul>
+<li><strong>Save</strong> writes the current document.</li>
+<li><strong>Save As…</strong> writes it to a new name or place, and
+converts it to the file type you choose in the dialog.</li>
+<li><strong>Save All</strong> writes every open document that has
+changes.</li>
+</ul>
+<p><strong>Save As…</strong> really converts. QUILL keeps your text as
+portable Markdown-style markup, so choosing <strong>Rich Text Format
+(*.rtf)</strong> writes real RTF, <strong>HTML (*.html)</strong> writes
+a standalone web page, and <strong>Text (*.txt)</strong> writes your
+text as a plain file. Choosing <strong>Markdown (*.md)</strong> keeps
+the markup just as it is. The file’s extension always decides the
+format. If you type a name with no extension, the type you selected
+supplies one. There is more on each format under What happens when you
+save in another format, later in this chapter.</p>
+<p>When Save As changes the format, QUILL can reload the file so the
+editor matches it. For example, a freshly saved <code>.rtf</code> can
+reopen in the Rich text editor. Reloading replaces what is in the editor
+with the saved file, so by default QUILL asks first with a Yes or No
+question. To stop the question, set <strong>Settings &gt; Editing &gt;
+Reload after Save As to match the format</strong> to <em>Reload
+automatically</em> or <em>Keep current surface</em>.</p>
+<p><strong>Filename suggestions.</strong> When you save a document that
+has never been saved, QUILL fills in the name box from the document’s
+first line. It removes leading <code>#</code> marks, quotes and bullets,
+and any characters a file name cannot hold. This is only a suggestion:
+type over it with anything you like. It never renames a document that is
+already saved. It is on by default, and you can turn it off with
+<strong>Suggest a filename from the first line</strong> in
+Preferences.</p>
+<h3 id="save-as-plain-text">Save As Plain Text</h3>
+<p><strong>Save As Plain Text…</strong> saves a clean plain-text copy,
+with the markup taken out. Plain text has no links, so <strong>Settings
+&gt; Editing &gt; Links in plain-text export</strong> decides what
+happens to a Markdown link. You can keep the link text and its URL (the
+default, so you never lose where a link pointed), the link text only,
+the URL only, or the original Markdown link. The same setting applies
+whenever Save As writes a <code>.txt</code> file. If your document has
+hidden formatting such as fonts, colours or alignment, QUILL offers to
+keep it in an <strong>Illumination</strong>, which comes next.</p>
+<h3
+id="keeping-formatting-in-a-plain-text-file-with-illuminations">Keeping
+formatting in a plain-text file with Illuminations</h3>
+<p>A plain <code>.txt</code> file has nowhere to store fonts, colours or
+alignment, so saving formatted text as plain text normally loses the
+formatting. QUILL gives you a choice. It is named after the painted
+decoration a scribe adds to a manuscript: an
+<strong>Illumination</strong> is a small companion file,
+<code>yourfile.txt.illumination</code>, that keeps the formatting beside
+the clean text. Your <code>.txt</code> stays truly plain, so Notepad,
+e-mail and every other program can read it. When you open it again
+<em>in QUILL</em>, the Illumination puts back every font, colour and
+alignment exactly.</p>
+<p>What happens is set by <strong>Settings &gt; Editing &gt; Saving
+formatted text as plain text</strong>:</p>
+<ul>
+<li><strong>Ask each time</strong> (the default). QUILL asks whether to
+keep your formatting by saving as Markdown, Word or RTF instead, to save
+the plain <code>.txt</code> <strong>plus</strong> an Illumination, or to
+save plain text only and drop the formatting.</li>
+<li><strong>Always save an Illumination sidecar</strong>. QUILL writes
+the clean <code>.txt</code> and the <code>.illumination</code> companion
+every time, with no question.</li>
+<li><strong>Save plain text and drop the formatting</strong>. The
+classic save that loses formatting. The <code>.txt</code> is clean, and
+any old Illumination beside it is removed.</li>
+</ul>
+<p>Two things to keep in mind. The Illumination is a <em>separate
+file</em>, so if you copy or e-mail only the <code>.txt</code>, the
+formatting stays behind. Keep the pair together. And if you edit the
+<code>.txt</code> in another program, QUILL notices the text no longer
+matches its Illumination and opens it as plain text, so formatting never
+lands on the wrong words. If you want one file that keeps everything,
+save as <strong>Markdown</strong>, which keeps the formatting inline, or
+<strong>Word/RTF</strong>, which turn it into real formatting.</p>
+<h3 id="encoding-and-line-endings-ctrlalte">Encoding and line endings
+(Ctrl+Alt+E)</h3>
+<p><strong>File &gt; File Format…</strong> (<code>Ctrl+Alt+E</code>) is
+one window for the two things that decide exactly how your file is
+written to disk. QUILL Lite opens the same window on the same key; on
+its Tools menu it is called <strong>File Encoding and Line
+Endings…</strong>.</p>
+<ul>
+<li><strong>Encoding.</strong> Choose UTF-8 for anything new. UTF-8 with
+BOM suits the Windows tools that expect one. There is also UTF-16, and
+Windows-1252 for older <code>.txt</code> files that use it. A file that
+arrived in something else, such as UTF-16 big-endian, shows as a
+<strong>keep as is</strong> row and stays that way.</li>
+<li><strong>Line endings.</strong> CRLF is what Windows programs write,
+and it is what a new QUILL document starts with, the same as Notepad,
+WordPad, Word and QUILL Lite. LF is what Unix, macOS and most build
+tools expect. A file that arrived with old-style Mac CR endings keeps
+them, in its own <strong>keep as is</strong> row.</li>
+</ul>
+<p>Nothing changes until you save, and the window tells you so. If the
+encoding you chose cannot hold a character in your document, the save
+names that character and offers Save As. It never quietly turns it into
+a question mark.</p>
+<p><strong>When a file is not UTF-8.</strong> Most files today are
+UTF-8. When QUILL opens one that is not, such as an older Windows file,
+it tells you once: “Opened as Windows-1252, not UTF-8.” Nothing about
+the file has changed. QUILL reads every byte, and a save puts every byte
+back as it was.</p>
+<p><strong>Reopen with Encoding…</strong> Now and then an old file’s
+accented letters come out wrong, because it was written in an encoding
+nobody can guess from the file alone, such as Cyrillic Windows-1251. In
+the File Format window, choose <strong>Reopen with Encoding…</strong>,
+pick the encoding the file was written in, and QUILL reads the same file
+again from disk that way. If you have unsaved changes, QUILL asks first,
+because reopening throws them away. Nothing on disk changes. If the file
+is not valid in the encoding you picked, QUILL says so and leaves your
+document as it was.</p>
+<p>After a reopen, the file saves back in that same encoding, so the
+next program that reads it sees what it always saw. To turn it into
+UTF-8 instead, open File Format again, choose UTF-8, and save.</p>
+<h3 id="when-another-program-changes-the-file-you-are-editing">When
+another program changes the file you are editing</h3>
+<p>QUILL keeps an eye on the file you have open. When something else
+writes to it (Word saving a <code>.docx</code>, a build tool
+regenerating a <code>.md</code>, a colleague’s sync client),
+<strong>QUILL asks</strong> what you want to do. Unless you tell it to,
+it never reloads on its own.</p>
+<p>You have three answers:</p>
+<ul>
+<li><strong>Reload from Disk</strong> reads the file again, using the
+right reader for its format, and keeps your cursor where it was.</li>
+<li><strong>Keep Mine</strong> leaves your tab exactly as it is. The
+version on disk is ignored until you save over it or reload. Escape
+gives this answer too, because doing nothing to your text is the safe
+choice.</li>
+<li><strong>Open Disk Version in a New Tab</strong> opens what is on
+disk as a second, read-only tab named
+<code>&lt;name&gt; (on disk)</code>, so you can compare the two and
+decide. Your own tab is not touched.</li>
+</ul>
+<p>The question has a checkbox, such as <strong>“Do not ask me again for
+.docx files.”</strong> Check it and QUILL remembers your answer for
+every file of that format. That way a build that rewrites the file you
+are reading every few seconds is answered once, not every time. Reload
+and Keep Mine can be remembered. Opening the disk version in a new tab
+is a one-off comparison, so it never is. To take every remembered answer
+back, choose <strong>File &gt; Forget Remembered File-Change
+Answers</strong> (<code>Ctrl+Shift+0</code>). A remembered Reload never
+throws away unsaved edits; QUILL asks instead.</p>
+<p>If the file changes while you <em>do</em> have unsaved edits, the
+same question spells out what is at stake: reloading throws away your
+edits, and keeping yours overwrites the disk version the next time you
+save.</p>
+<p><strong>Save looks once more.</strong> Right before Save writes your
+file, QUILL checks the file on disk again. If another program changed it
+since you opened it or last saved it, even a moment ago, QUILL stops and
+asks instead of writing over that change:</p>
+<ul>
+<li><strong>Save As…</strong> keeps both: yours under a new name, theirs
+untouched. Enter gives this answer.</li>
+<li><strong>Reload from Disk</strong> shows the version on disk and
+throws away your unsaved edits.</li>
+<li><strong>Overwrite</strong> saves your version over theirs.</li>
+<li><strong>Cancel</strong>, or Escape, saves nothing.</li>
+</ul>
+<p>This matters most when an AI assistant or a sync tool is rewriting a
+file while you read it. If you already answered Keep Mine for that
+change, Save does not ask again. QUILL Lite checks the same way, and
+watches the same way, with the same four settings in its
+Preferences.</p>
+<p>Two related commands are on the File menu:</p>
+<ul>
+<li><strong>Reload from Disk</strong> throws away your changes in memory
+and reads the file again, after asking you to confirm.</li>
+<li><strong>Check for External Changes…</strong> asks the same question
+whenever you want to check.</li>
+</ul>
+<p>Four settings on the <strong>General</strong> page of Settings shape
+all of this:</p>
+<ul>
+<li><strong>Watch the open file for external changes</strong> is on to
+begin with. Turn it off and QUILL stops noticing when another program
+changes or deletes your file.</li>
+<li><strong>Reload automatically when you have no unsaved edits</strong>
+is off to begin with. Turn it on and, as long as you have not changed
+anything yourself, QUILL reloads a changed file without asking, in every
+format, and keeps your cursor where it was. An answer you asked QUILL to
+remember still comes first.</li>
+<li><strong>Ask before discarding unsaved edits on a conflict</strong>
+is on to begin with. It is the question above, when you do have unsaved
+edits, and the question about a file that was deleted. Turn it off and
+QUILL says nothing in those cases and leaves your text exactly as it
+is.</li>
+<li><strong>External-change debounce (milliseconds)</strong> is how long
+QUILL waits after it notices a change before it reacts, so a program
+that writes a file in several steps is dealt with once. The default is
+750.</li>
+</ul>
+<h2 id="the-rest-of-the-file-menu">The rest of the File menu</h2>
+<p>The <strong>File</strong> menu covers the whole life of a document.
+Besides opening and saving, you will find these:</p>
+<ul>
+<li><strong>Restore Backup…</strong> brings back a saved backup
+version.</li>
+<li><strong>Page Setup…</strong> and <strong>Print…</strong> handle
+paper and printing.</li>
+<li><strong>Print Studio…</strong> goes a step further. It first tells
+you what the printout will be, for example “3 pages, Letter, default
+margins”, which is a print preview you can hear. Then you can choose
+<strong>all, odd, or even pages</strong>, <strong>print in reverse
+order</strong>, or <strong>skip the first page</strong> (handy when page
+1 is pre-printed letterhead) before it hands you to the same print
+dialog Print uses.</li>
+<li><strong>Header and Footer…</strong> builds a header and footer for
+the current document. Start from a preset such as <strong>Title left,
+page number right</strong>, <strong>Filename and date</strong> or
+<strong>Roman numerals for front matter</strong>, or make your own from
+a small set of pieces (title, filename, date, page number) placed left,
+center or right. Turn on <strong>Different first page</strong> to give
+page 1 its own header and footer, and choose <strong>numeric or
+Roman</strong> page numbers with any starting number. It is saved with
+the document and printed on every page, from Print or Print Studio.</li>
+<li><strong>Run Current File</strong> runs the saved file with the
+program it belongs to, and <strong>Open Target at Cursor</strong> opens
+the path or link under the cursor.</li>
+<li><strong>Rename Current File…</strong> and <strong>Delete Current
+File…</strong> rename or delete the file on disk without leaving the
+editor.</li>
+<li><strong>Close Document</strong> closes the current tab.</li>
+<li><strong>Exit</strong> closes QUILL.</li>
+</ul>
+<p>Anything on this menu that could cost you work, such as reloading,
+restoring a backup or opening a web address, asks before it acts.</p>
+<h2 id="making-quill-your-text-editor">Making QUILL your text
+editor</h2>
+<p>Installing QUILL tells Windows that QUILL can open your text files,
+Markdown, rich text, HTML, Word documents, EPUB books and a few more. It
+doesn’t take anything over. QUILL simply shows up when you choose
+<strong>Open with</strong> on a file, and in Windows Settings under
+<strong>Default apps</strong>, which is where you decide which app opens
+what.</p>
+<p>Both of the next steps live in one place: open
+<strong>Settings</strong>, go to the <strong>General</strong> page, and
+find <strong>Windows and your files</strong>. A line at the top tells
+you which program opens in place of Notepad right now.</p>
+<p>The <strong>Make QUILL My Text Editor…</strong> button takes you the
+rest of the way. It tells you what Windows lets an app do and what is up
+to you, then opens the Default apps page for QUILL. Choose
+<strong>.txt</strong>, pick <strong>QUILL</strong>, and choose
+<strong>Set default</strong>. Do the same for any other type you’d like
+QUILL to open. Anything you leave alone stays with the app that opens it
+now, and you can change your mind on the same page. This works from a
+portable copy of QUILL too.</p>
+<p>Some programs still start Notepad by name, and so does typing
+“notepad” in the Run box. If you’d like QUILL to open for those as well,
+check <strong>Open QUILL instead of Notepad</strong> and press
+<strong>OK</strong> or <strong>Apply</strong>. It’s off to begin with.
+Because it changes Notepad for everyone on the computer, QUILL asks
+first and Windows asks for administrator approval. The checkbox always
+shows whether it’s on right now, and clearing it puts Notepad back. On
+Windows 11, QUILL then shows you where to turn off the newer Notepad’s
+app execution alias, which would otherwise go around the switch.
+Uninstalling QUILL puts Notepad back for you.</p>
+<p>Only one program can open in place of Notepad. If QUILL Lite, or
+another program, already does, QUILL tells you who before it takes over.
+QUILL Lite has the same two settings in its Preferences.</p>
+<h2 id="working-with-different-document-types">Working with Different
+Document Types</h2>
+<p>QUILL is at its best with plain text, Markdown, HTML, RTF, EPUB, and
+text pulled out of other documents. It can also bring in PDFs and
+scanned pages, with tools to check what came through, and it understands
+the structure of Office files. Here is what each kind of file gets.</p>
+<h3 id="plain-text">Plain text</h3>
+<p>Plain text stays plain. QUILL never slips hidden formatting into
+it.</p>
+<h3 id="markdown">Markdown</h3>
+<p>Markdown gets commands that understand its structure: help with
+lists, headings, links and code blocks.</p>
+<h3 id="html">HTML</h3>
+<p>HTML gets tag insertion, help with editing its structure, and link
+handling.</p>
+<h3 id="rtf">RTF</h3>
+<p>When an RTF file contains unsafe embedded content, such as OLE
+objects, QUILL removes it as the file opens and tells you. Remote
+fields, which would fetch something from the internet, are flagged and
+wait for your consent instead of being fetched quietly.</p>
+<p>Earlier versions had an optional <strong>Rich text lens</strong> for
+RTF files, switched on under Settings, Editing (the “Editor surface”
+choice) and toggled with an editing-lens shortcut. It has been retired.
+To move a document between Plain text, Markdown, HTML, Rich Text and
+Word, use <strong>Format &gt; Document Format…</strong>
+(<code>Alt+Shift+F</code>).</p>
+<h3 id="csv-and-tsv">CSV and TSV</h3>
+<p>When you open a CSV or TSV file, QUILL asks how: in the CSV grid
+mode, or in the normal text editor. You can remember your choice as the
+default and still switch modes inside the tab at any time. Grid mode is
+built for the keyboard and for screen-reader users who want to edit a
+table cell by cell without leaving QUILL.</p>
+<h3 id="office-files-at-a-glance">Office files at a glance</h3>
+<p>QUILL handles Office files in two different ways, and it helps to
+know which one you are getting.</p>
+<ul>
+<li>A <strong>Word document</strong> (<code>.docx</code>) is a document
+you can <strong>edit and save as Word</strong>. It opens as rich text,
+with its headings, lists, bold, links and tables, and
+<strong>Ctrl+S</strong> writes a real Word document back.</li>
+<li><strong>Everything else</strong> from Office or LibreOffice opens as
+<strong>readable text</strong>, so you can read it, search it and copy
+from it. QUILL never writes back into those files.
+<strong>Ctrl+S</strong> opens <strong>Save As</strong> so you can keep
+your text as a new file, and the original stays as it was.</li>
+</ul>
+<p>This works the same in an installed copy of QUILL and in the portable
+copy: both carry everything Word editing needs. QUILL Lite treats each
+of these files the same way, with the same code; it has no structured
+Word view.</p>
+<table>
+<thead>
+<tr>
+<th>File type</th>
+<th>What QUILL does</th>
+<th>Can you save back to it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Word document (<code>.docx</code>)</td>
+<td>Opens to edit as rich text. QUILL asks first if the document has
+things a save would drop, such as comments or pictures. You can also
+choose the read-only structured Word view (see below)</td>
+<td><strong>Yes.</strong> Ctrl+S saves a real Word document. A document
+you were warned about is backed up first</td>
+</tr>
+<tr>
+<td>Word document with macros (<code>.docm</code>)</td>
+<td>Opens as text to read and copy. Macros never run</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Word 97-2003 document (<code>.doc</code>)</td>
+<td>Opens as text when LibreOffice is installed. Without LibreOffice,
+QUILL tells you how to make a <code>.docx</code></td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>OpenDocument text (<code>.odt</code>)</td>
+<td>Opens as text</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Excel workbook (<code>.xlsx</code>, or <code>.xls</code> with
+LibreOffice)</td>
+<td>Opens as text: a “Sheet:” heading for each sheet, then its cells as
+a text table</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>PowerPoint presentation (<code>.pptx</code>, or <code>.ppt</code>
+with LibreOffice)</td>
+<td>Opens as text: a “Slide” heading for each slide, then its bullets,
+tables and speaker notes</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Excel with macros (<code>.xlsm</code>), OpenDocument spreadsheet
+(<code>.ods</code>) or presentation (<code>.odp</code>)</td>
+<td><strong>File &gt; Open</strong> does not open these. <strong>Import
+/ Convert Document</strong> reads them into a new document</td>
+<td>Not applicable. You get a new, unsaved tab</td>
+</tr>
+</tbody>
+</table>
+<p><strong>To edit a file that opens as text, make a <code>.docx</code>
+of it.</strong> You can do this in either of two ways.</p>
+<ul>
+<li>In Word or LibreOffice Writer, choose <strong>File &gt; Save
+As</strong>, pick <strong>Word Document (.docx)</strong>, and open the
+new file in QUILL.</li>
+<li>In QUILL, open the file, then choose <strong>File &gt; Save
+As…</strong> with <strong>Word Document (*.docx)</strong> as the type
+and a new name. QUILL writes a new Word document from what you see, and
+the original is not touched.</li>
+</ul>
+<p>A <code>.docm</code> saved as <code>.docx</code> loses its macros,
+which is why QUILL never edits one in place.</p>
+<p><strong>File &gt; Open or Import / Convert Document?</strong>
+<strong>File &gt; Open</strong> (<code>Ctrl+O</code>) opens the file
+itself: the tab takes the file’s name, and a Word document saves back to
+it. <strong>File &gt; Import &gt; Import / Convert Document
+(OCR)…</strong> always makes a new, unsaved tab from what it reads, and
+never points back at the file. Use it when you want a copy of the text
+to work on, or for a file File &gt; Open cannot read, such as a
+<code>.xlsm</code>, an <code>.ods</code> or a picture of a page. See
+<em>Import / Convert Document (OCR)</em> later in this chapter.</p>
+<h3 id="word-docx-and-doc">Word (.docx and .doc)</h3>
+<p>When you open a Word document, QUILL first asks how you want to see
+it: in the <strong>structured Word view</strong> or in the
+<strong>normal text editor</strong>. Check <strong>Remember this choice
+for Word files</strong> to stop the question. To change your answer
+later, use <strong>How to open Word files</strong> in Settings, on the
+Editing page: <strong>Ask each time</strong>, <strong>Plain
+text</strong> (the normal text editor, where a <code>.docx</code> is
+still edited as rich text) or <strong>Structured</strong>.</p>
+<ul>
+<li>The <strong>normal text editor</strong> is the one to choose when
+you want to change the document. A <code>.docx</code> opens there as
+rich text that you can edit and save back as Word. If the file holds
+things QUILL’s editor cannot keep, such as pictures, comments, tracked
+changes, headers and footers, QUILL names them and asks again. For the
+details, see <em>Editing Word documents (.docx)</em> under <em>One
+Editor, Every Format</em>: the three choices, the backup, tables and the
+limits. A <code>.doc</code> opens there as text, when LibreOffice is
+installed.</li>
+<li>The <strong>structured Word view</strong> is for reading, and you
+cannot type in it. It reads tables in a straight line, headers and then
+rows, which is easier to follow with a screen reader.</li>
+</ul>
+<p>For example, open <code>agenda.docx</code> and choose <strong>Open in
+normal text editor</strong>. You hear “Opened as Rich Text. Headings and
+bold are shown formatted.” Press <code>Ctrl+End</code>, type a line, and
+press <code>Ctrl+S</code>. The file opens in Word with its headings
+still headings and your line at the end.</p>
+<p><strong>Saving to Word.</strong> You can save any document
+<em>as</em> Word. In <strong>File &gt; Save As…</strong>, choose
+<strong>Word Document (*.docx)</strong> (or <strong>Rich Text Format
+(*.rtf)</strong>) in the file type list, and QUILL converts the current
+content as it saves. Markdown and HTML structure (headings, lists,
+emphasis, links, simple tables) becomes real Word styles, so you can
+move around the result in Word by heading, not just look at it. Saving
+plain text this way gives you a correct but unformatted document,
+because plain text has no structure to carry.</p>
+<p><strong>How long opening takes.</strong> The first Word, PowerPoint
+or Excel file you open after starting QUILL takes longest, because QUILL
+loads its document converter then; later ones in the same session open
+in under a second for an ordinary document. Old-style Word files
+(<code>.doc</code>, from Word 97 to 2003) are converted by LibreOffice
+when it is installed. When it is not, QUILL now tells you so straight
+away, instead of first spending ten seconds or more loading a converter
+that cannot read <code>.doc</code> at all. Install LibreOffice, or save
+the file as <code>.docx</code> from Word, and open it again. A PDF’s
+time grows with its number of pages, because every page is read for its
+text.</p>
+<h3 id="epub">EPUB</h3>
+<p>EPUB books get the navigator and reading chapter by chapter.</p>
+<h3 id="powerpoint-pptx-and-ppt">PowerPoint (.pptx and .ppt)</h3>
+<p>QUILL keeps a presentation’s structure when it brings it in. Every
+slide starts with its own heading, “Slide 3: Quarterly results” (just
+“Slide 3” when the slide has no title), so <strong>Next Heading</strong>
+(<code>Ctrl+Alt+H</code>) moves one slide at a time and you hear the
+slide number before the title. Under each heading:</p>
+<ul>
+<li>the slide’s bullets, as list items indented by their level;</li>
+<li>any tables, under a <strong>Tables</strong> heading, as text tables
+you can Tab through;</li>
+<li>the description of each picture, as “[Image: …]”, when the author
+wrote one;</li>
+<li>the speaker notes, under a <strong>Notes</strong> heading.</li>
+</ul>
+<p>Slides arrive in the order the presentation shows them, even when
+they were rearranged in PowerPoint. A hidden slide is included and says
+“(hidden slide)” after its title, because its words are still the
+author’s.</p>
+<h3 id="excel-style-spreadsheets-xlsx-and-xls">Excel-style spreadsheets
+(.xlsx and .xls)</h3>
+<p>Spreadsheets come in as text, with their structure kept. Each sheet
+starts with its own heading, “Sheet: Budget”, so <strong>Next
+Heading</strong> (<code>Ctrl+Alt+H</code>) moves sheet by sheet. The
+cells follow as a text table whose first row is the header row. Numbers
+read the way you would say them (950, not 950.0), true and false as TRUE
+and FALSE, and dates as dates (2026-11-01, not the number Excel stores).
+A formula shows the result Excel last calculated. Blank rows are left
+out.</p>
+<p>So that a huge workbook cannot freeze QUILL, each sheet is read up to
+2,000 rows and 50 columns. When a sheet is bigger, QUILL opens what fits
+and says so as the file opens (“part of it was too large and was cut
+short”), and the <strong>Document Intake Report</strong> names the
+sheet.</p>
+<h3 id="office-files-quill-reads-by-itself">Office files QUILL reads by
+itself</h3>
+<p>QUILL reads Word, Excel, PowerPoint and OpenDocument files with its
+own built-in readers. Nothing has to be downloaded first, and nothing is
+uploaded. QUILL’s own reader is always the <strong>first</strong>
+choice, in every place a file comes in: <strong>File &gt; Open</strong>,
+<strong>Import / Convert Document</strong>, Recent Documents, a file
+opened from File Explorer, and QUILL Lite. The optional MarkItDown
+converter is asked only when QUILL’s own reader cannot read a file, or
+finds no text in it, and MarkItDown can read that format. You never need
+to install anything.</p>
+<p>These readers make the <strong>text</strong> you get from a file that
+opens as text (see <em>Office files at a glance</em>): Excel,
+PowerPoint, OpenDocument, <code>.docm</code>, a <code>.docx</code> you
+open for reading only, and everything Import / Convert Document reads. A
+<code>.docx</code> you open to edit goes through QUILL’s Word editing
+instead, described in <em>Word (.docx and .doc)</em> above.</p>
+<p><strong>Why it matters: speed.</strong> MarkItDown takes a long time
+to start: on a test computer, the first Word file after starting QUILL
+from source took 12 to 17 seconds to open when MarkItDown read it,
+almost all of that spent loading MarkItDown itself. QUILL’s own Word
+reader opens the same file in about a second, and later opens in about
+half a second. A spreadsheet or a slide show opens in a fraction of a
+second.</p>
+<p><strong>What you get is the same or better.</strong> On QUILL’s own
+test files, QUILL’s readers keep everything MarkItDown kept and add some
+things it did not: the document’s title as a heading, a pipe character
+inside a table cell kept in its cell, the first row of a Word table as
+the table’s header row, a heading for every sheet (“Sheet: Budget”) and
+every slide (“Slide 2: Figures”), nested bullets on slides, true and
+false shown as TRUE and FALSE instead of 1.0 and 0.0, and an empty
+spreadsheet cell left empty instead of the word NaN. Two things
+MarkItDown did better have been fixed in QUILL’s reader: numbered lists
+are now numbered 1, 2, 3 in the text itself (they used to read “1, 1,
+1”), and <strong>equations</strong> in a Word document now come through
+as text, written the way QUILL’s own <strong>Insert Equation</strong>
+writes them, for example <code>\(a^{2}+b^{2}=c^{2}\)</code>. One
+difference remains on purpose: a line break inside a Word paragraph
+(Shift+Enter) ends in a backslash, which is how Markdown writes a hard
+line break you can hear and find; MarkItDown left no mark.</p>
+<p>If you prefer MarkItDown for Word files anyway, set <strong>Word
+document reading engine</strong> to <strong>MarkItDown first</strong>
+(see “Choosing a conversion engine”).</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>How to open it</th>
+<th>What comes through</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Word (.docx, .docm)</td>
+<td><strong>File &gt; Open</strong> (<code>Ctrl+O</code>) or
+<strong>Import / Convert Document</strong></td>
+<td>Headings, bulleted and numbered lists with their levels, tables,
+line breaks, picture descriptions, equations (as LaTeX text)</td>
+</tr>
+<tr>
+<td>OpenDocument text (.odt)</td>
+<td><strong>File &gt; Open</strong> or <strong>Import / Convert
+Document</strong></td>
+<td>Headings, nested lists, tables, line breaks</td>
+</tr>
+<tr>
+<td>Excel (.xlsx)</td>
+<td><strong>File &gt; Open</strong> or <strong>Import / Convert
+Document</strong></td>
+<td>One heading per sheet; each sheet as a table</td>
+</tr>
+<tr>
+<td>Excel with macros (.xlsm), OpenDocument spreadsheet (.ods)</td>
+<td><strong>Import / Convert Document</strong></td>
+<td>The same</td>
+</tr>
+<tr>
+<td>PowerPoint (.pptx)</td>
+<td><strong>File &gt; Open</strong> or <strong>Import / Convert
+Document</strong></td>
+<td>One heading per slide; bullets, tables, picture descriptions,
+speaker notes</td>
+</tr>
+<tr>
+<td>OpenDocument presentation (.odp)</td>
+<td><strong>Import / Convert Document</strong></td>
+<td>The same</td>
+</tr>
+<tr>
+<td>Word, Excel or PowerPoint 97-2003 (.doc, .xls, .ppt)</td>
+<td>Either, when LibreOffice is installed</td>
+<td>Whatever LibreOffice carries into the newer format, then as
+above</td>
+</tr>
+</tbody>
+</table>
+<p>What does not come through: bold, italic, fonts and colours; headers
+and footers; footnotes and comments; charts and SmartArt; and pictures
+themselves (only the descriptions their authors wrote). A macro is never
+run.</p>
+<p><strong>An example.</strong> Press <code>Ctrl+O</code> and open
+<code>Budget.xlsx</code>. QUILL says it opened the file, “read by
+QUILL’s own Excel reader”, and that it has 2 sheets. The document starts
+at “Sheet: Budget”. Press <code>Ctrl+Alt+H</code> and you are on “Sheet:
+Notes”. Open the same file with <strong>File &gt; Import &gt; Import /
+Convert Document (OCR)…</strong> instead and it opens in a new, unsaved
+tab, and QUILL says “Opened Budget.xlsx as editable text, read by
+QUILL’s own Excel reader. 2 sheets. Nothing was uploaded.”</p>
+<p><strong>Older Office files (.doc, .xls, .ppt).</strong> QUILL has no
+reader of its own for the Office 97-2003 formats. When LibreOffice
+(free, from libreoffice.org) is installed, QUILL asks it to make a
+temporary copy in the newer format and reads that; your file is not
+changed. When LibreOffice is not installed, QUILL tells you what to do
+instead: open the file in Word, Excel or PowerPoint (or in LibreOffice),
+choose <strong>File &gt; Save As</strong>, pick the newer type (for
+example “Word Document (.docx)”), and open that copy.</p>
+<p><strong>Files QUILL cannot read.</strong> A password-protected Word,
+Excel or PowerPoint file is named as password-protected, with the fix:
+remove the password in the program that made it (in Word, the Info page
+of its File menu), save, and try again. A damaged file is named as
+damaged, with the advice to open it in the program that made it and save
+it again.</p>
+<h3 id="pdf-and-ocr-derived-text">PDF and OCR-derived text</h3>
+<p>PDFs and scanned pages are where QUILL’s tools for checking extracted
+text matter most. Treat them as a proofreading step, not an extra. The
+next topics cover opening PDFs, OCR and those checks.</p>
+<h2 id="what-happens-when-you-save-in-another-format">What happens when
+you save in another format</h2>
+<p><strong>File &gt; Save As</strong> truly converts your document to
+the format you pick in the “Save as type” list. It never just renames
+the file. QUILL’s editor holds your text in one clean form, and Save As
+writes that text out in the format you chose. Here is what each choice
+does:</p>
+<ul>
+<li><strong>Markdown (.md)</strong>: your text is written exactly as it
+is in the editor. Markdown is QUILL’s own format, so nothing is
+converted or lost.</li>
+<li><strong>Text (.txt)</strong>: also written exactly as it is,
+Markdown markup included, so a plain-text file comes back just as it
+went out. If you want the markup <em>stripped</em>, with headings and
+emphasis turned into plain words, use <strong>File &gt; Save As Plain
+Text</strong> instead. That command also offers to keep your formatting
+in an Illumination. A third route is <strong>Format &gt; Document
+Format…</strong> with Plain text chosen, which <em>asks</em> which of
+the two you want. Save As leaves your file byte for byte as it was, so a
+.txt you opened comes back unchanged.</li>
+<li><strong>HTML (.html)</strong>: converted to a complete web page with
+your document’s title, ready for a browser.</li>
+<li><strong>Rich Text (.rtf)</strong>: converted with all its
+formatting. Fonts, sizes, colors, highlights and alignment all carry
+over.</li>
+<li><strong>Word (.docx)</strong>: converted to a real Word document.
+Headings become Word heading styles, so Word and screen readers can move
+by them. Each line in the editor becomes one Word paragraph, so your
+line breaks stay exactly where they were. Hidden-codes formatting (font,
+size, color, highlight, alignment) becomes real Word formatting.</li>
+<li><strong>An extension QUILL cannot write</strong>, for example typing
+<code>notes.pdf</code> in the name box: QUILL refuses rather than
+writing a broken file. For PDF, ODT and EPUB it offers to open
+<strong>File &gt; Export</strong>, which makes them properly with
+Pandoc.</li>
+</ul>
+<p><strong>You keep editing QUILL text.</strong> After a Save As that
+converts, the file on disk is Word (or HTML, or RTF), but the editor
+still holds QUILL’s clean text, and every <code>Ctrl+S</code> after that
+converts it again. QUILL tells you this after the save: “Saved as
+report.docx, Word format. You are still editing QUILL text; each save
+converts it to Word.” The window title and tab title change to the new
+name straight away, and from then on <code>Ctrl+S</code> saves quietly
+to the same file.</p>
+<p><strong>Your originals are protected.</strong> If you opened a PDF,
+EPUB, spreadsheet or presentation, what you are editing is text taken
+out of it, and the original file cannot hold your changes. Pressing
+<code>Ctrl+S</code> on one of these never overwrites the original. QUILL
+explains why and opens Save As, so your edits go into a new file in a
+format that can hold them.</p>
+<h3 id="the-name-you-type-decides-a-worked-example">The name you type
+decides: a worked example</h3>
+<p>The ending you type always wins over the <strong>Save as
+type</strong> list, and capitals do not matter. Suppose you have an
+untitled document of meeting minutes with a heading, some bold and a
+short list:</p>
+<ol type="1">
+<li>Press <code>Ctrl+Shift+S</code> (<strong>File &gt; Save
+As…</strong>).</li>
+<li>Type <code>Minutes.DOCX</code> in the name box. The type list can
+show anything; it is the name that counts.</li>
+<li>Press Enter. QUILL writes a real Word document: Word opens it, the
+heading is a Word heading you can move to by heading, the bold is bold,
+and the list is a list. You hear “Saved as Minutes.DOCX, Word format.
+You are still editing QUILL text; each save converts it to Word.”</li>
+</ol>
+<p>The same document saved under other names:</p>
+<table>
+<thead>
+<tr>
+<th>You type</th>
+<th>What is written</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>minutes.txt</code> or <code>MINUTES.TXT</code></td>
+<td>Your text exactly as it is, markup included</td>
+</tr>
+<tr>
+<td><code>minutes.md</code></td>
+<td>Your text exactly as it is</td>
+</tr>
+<tr>
+<td><code>minutes.html</code></td>
+<td>A complete web page, with the heading, bold and list as HTML</td>
+</tr>
+<tr>
+<td><code>minutes.rtf</code></td>
+<td>Rich text with its formatting</td>
+</tr>
+<tr>
+<td><code>minutes.docx</code></td>
+<td>A real Word document, as above</td>
+</tr>
+<tr>
+<td><code>minutes</code> with <strong>Word Document</strong>
+selected</td>
+<td><code>minutes.docx</code>, a Word document</td>
+</tr>
+<tr>
+<td><code>minutes.txt</code> with <strong>Word Document</strong>
+selected</td>
+<td><code>minutes.txt</code>, plain text: the typed ending wins, and no
+<code>minutes.txt.docx</code> is made</td>
+</tr>
+<tr>
+<td><code>minutes.pdf</code>, <code>.odt</code> or
+<code>.epub</code></td>
+<td>Nothing yet: QUILL offers <strong>File &gt; Export</strong>, which
+makes these properly</td>
+</tr>
+<tr>
+<td><code>budget.xlsx</code> or another format QUILL only reads</td>
+<td>Nothing: QUILL says it cannot save that format</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cancel</strong> or <strong>Escape</strong> in the Save As
+window writes nothing and leaves the document as it was.</p>
+<p>QUILL Lite has no Word writer. Typing a <code>.docx</code> name there
+gets a short message saying so and naming Rich Text (<code>.rtf</code>),
+which Word opens; nothing is written. Use QUILL when you need a
+<code>.docx</code>.</p>
+<h3 id="what-carries-over-between-formats">What carries over between
+formats</h3>
+<p>QUILL converts everything through one clean form inside, so what
+survives a Save As or a conversion depends on the feature, not on the
+pair of formats. This table is what QUILL’s own tests check.
+<strong>Yes</strong> means it carries over as that format’s own
+structure. <strong>Partly</strong> means it carries over, but as text or
+as QUILL’s portable markup rather than a real object in that format.
+<strong>No</strong> means it is not kept. The numbers point to the notes
+after the table.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th style="text-align: center;">Markdown</th>
+<th style="text-align: center;">HTML</th>
+<th style="text-align: center;">Word (.docx)</th>
+<th style="text-align: center;">Rich Text (.rtf)</th>
+<th style="text-align: center;">Plain text (.txt)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Headings (1 to 6)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td><strong>Bold</strong>, <em>italic</em></td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Underline</td>
+<td style="text-align: center;">Partly (1)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Strikethrough</td>
+<td style="text-align: center;">Partly (1)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Superscript / subscript</td>
+<td style="text-align: center;">Partly (1)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Text colour / highlight</td>
+<td style="text-align: center;">Partly (1)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Font family / size</td>
+<td style="text-align: center;">Partly (1)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Links</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Bullet lists</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Numbered lists</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Blockquotes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Partly (2)</td>
+<td style="text-align: center;">Partly (2)</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Code blocks</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Partly (2)</td>
+<td style="text-align: center;">Partly (2)</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Horizontal rule</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Partly (2)</td>
+<td style="text-align: center;">Partly (2)</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Tables</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Partly (3)</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Images</td>
+<td style="text-align: center;">Partly (4)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No (4)</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Paragraph alignment</td>
+<td style="text-align: center;">Partly (1)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td>Page breaks</td>
+<td style="text-align: center;">Partly (1)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ol type="1">
+<li><strong>In Markdown</strong>, underline, strikethrough, superscript
+and subscript, colour, highlight, font, alignment and page breaks are
+kept in QUILL’s <em>hidden-codes</em> markup. You don’t see it while you
+edit, and it turns into real formatting when you export to HTML, Word or
+RTF. Markdown itself has no standard way to write these, so another
+Markdown app shows QUILL’s <code>[text]{...}</code> codes instead of the
+effect.</li>
+<li><strong>Blockquotes, code blocks and horizontal rules</strong>
+belong to Markdown and show properly in HTML. In Word and RTF they
+appear as their Markdown markers (<code>&gt;</code>, <code>```</code>,
+<code>---</code>) rather than a Word quote or code style.</li>
+<li><strong>Tables</strong> travel as real tables between Markdown, HTML
+and Word. A Word table you <em>open</em> in QUILL becomes a clean
+Markdown (GFM) table that you can edit and move around in. Markdown and
+HTML tables stay as they are. A table you <em>save to</em> Word becomes
+a real, editable Word table with a header row that repeats, so a screen
+reader announces the column headers. In rich text, and in an
+<code>.rtf</code> file, a table is a real table with its header row
+marked.</li>
+<li><strong>Images</strong>: an image <em>reference</em>
+(<code>![alt](path)</code>) survives a trip through Markdown and becomes
+<code>&lt;img&gt;</code> in HTML. QUILL does not put image files inside
+Word documents, and images inside a Word document you open are not
+brought into the text.</li>
+</ol>
+<p><strong>Plain text (.txt)</strong> never carries formatting. That is
+what plain text is for. Use <strong>Save As Plain Text</strong> when you
+want the markup flattened on purpose, with the option to keep your
+formatting in an Illumination.</p>
+<h3 id="choosing-a-conversion-engine">Choosing a conversion engine</h3>
+<p>More than one converter can handle a Word document, and each gives a
+slightly different result. QUILL lets you choose, and describes what
+each choice gives you in plain words. The defaults suit almost everyone.
+The choices are there for when they don’t.</p>
+<ul>
+<li><p><strong>Word document reading engine</strong> (<strong>Settings
+&gt; Editing</strong>) decides how a <code>.docx</code> becomes editable
+text when you open it. <strong>Auto (QUILL’s own reader first)</strong>
+is the default: QUILL’s own Word reader reads the file in about a
+second, keeping headings, numbered and bulleted lists, tables, line
+breaks, picture descriptions and equations, and MarkItDown is asked only
+if that reader fails. <strong>MarkItDown first</strong> asks MarkItDown
+before QUILL’s own reader. It keeps the same headings, lists and tables
+in its own style, but the first Word file you open after starting QUILL
+waits 10 to 20 seconds while MarkItDown loads; when MarkItDown cannot
+run, QUILL’s own reader steps in. Neither keeps images, comments or
+fonts. <strong>Pandoc</strong> keeps more of the structure, so footnotes
+and complex tables come through better. It needs Pandoc installed. If
+Pandoc is missing, this setting quietly acts as Auto, so your file still
+opens. This setting is only about Word files: spreadsheets and slide
+shows are always read by QUILL’s own reader first.</p>
+<p>For example: you open a 40-page Word report each morning and want it
+to appear at once. Leave the setting on <strong>Auto</strong>. If one
+particular document comes in with a table you think MarkItDown handles
+better, choose <strong>MarkItDown first</strong>, open it, and set it
+back afterwards.</p></li>
+<li><p><strong>Word document saving engine</strong> (<strong>Settings
+&gt; Editing</strong>) decides how your text becomes a
+<code>.docx</code> when you save. <strong>Auto</strong> (the default)
+uses the native writer. <strong>Native</strong> keeps QUILL’s formatting
+codes (fonts, sizes, colors, highlights, alignment) and makes each line
+in the editor one Word paragraph. It is the best choice for documents
+written in QUILL. <strong>Pandoc</strong> turns structure into Word
+styles (headings, lists, tables, links and footnotes) but drops font,
+size and color codes.</p></li>
+<li><p>In the <strong>Convert File dialog</strong>, the
+<strong>Conversion engine</strong> choice (Auto, Pandoc or MarkItDown)
+applies to one conversion at a time. As you arrow through it, a
+description under the choice changes, so you hear what each engine will
+do before you convert. MarkItDown only works when the source is Word,
+PowerPoint, Excel or PDF and the result is Markdown or plain text. If
+you choose it for anything else, QUILL says so and offers Pandoc. It
+never swaps in an engine you did not pick. If MarkItDown itself cannot
+run on this computer, QUILL’s own reader converts the file instead and
+the announcement says so, for example “Converted to report.md.
+MarkItDown could not run here, so QUILL’s own Word reader read the file
+instead.”</p></li>
+</ul>
+<h2 id="import-and-export">Import and Export</h2>
+<p>QUILL can convert between the formats the people around you use,
+without you leaving the editor. <strong>File &gt; Import</strong> brings
+a document from another program into QUILL as a new tab. <strong>File
+&gt; Export</strong> saves the current document as a different file
+type. Both use Pandoc and work in the background, so the editor never
+freezes. Exports keep your line breaks exactly: one line in the editor
+is one paragraph in the exported document, in every format.</p>
+<p><strong>Import (File &gt; Import)</strong> reads Markdown,
+CommonMark, GitHub-Flavored Markdown, HTML, Word documents
+(<code>.docx</code>), OpenDocument Text (<code>.odt</code>), Rich Text
+(<code>.rtf</code>), plain text, CSV and TSV tables, EPUB books, and
+LaTeX or TeX.</p>
+<p><strong>Export (File &gt; Export)</strong> writes the same set, plus
+PDF and a <strong>DAISY Talking Book</strong>, which are export
+only.</p>
+<p>A few examples cover most of what people do:</p>
+<ul>
+<li>Choose <strong>File &gt; Import &gt; Word Document</strong>, pick a
+<code>.docx</code>, and a new Markdown tab opens with the document ready
+to edit.</li>
+<li>Choose <strong>File &gt; Export &gt; EPUB Book</strong>, pick a
+folder, and QUILL writes an EPUB next to your current file.</li>
+<li>Choose <strong>File &gt; Export &gt; PDF</strong> to publish a
+finished document.</li>
+</ul>
+<p><strong>A web page you can share.</strong> <strong>File &gt; Export
+&gt; HTML…</strong> (<code>Ctrl+Alt+Shift+End</code>) saves a copy of
+your document as one web page: its styles are inside it, it has no
+scripts, and it says what language it is in, so you can email it or put
+it on a website as it is. Task lists show as check boxes and
+<del>struck-out</del> text is struck out. The document you are editing
+stays the document you are editing. If notes are written into the file,
+QUILL asks whether to include them in the page, marked as notes; No is
+the default, so a note never ends up in a page by accident.</p>
+<p><strong>Getting there by keyboard.</strong>
+<code>File &gt; Import</code> and <code>File &gt; Export</code> are
+ordinary menus: open the menu, arrow down and press Enter. There is no
+single key for the whole list, because choosing the format is the point
+of the command. The quickest way is the Command Palette
+(<code>Ctrl+Shift+P</code>): type <code>import</code> or
+<code>export</code> and pick the format from the list.</p>
+<p><strong>After the conversion.</strong> When the new file is one QUILL
+can edit (Markdown, CommonMark, GFM, HTML, plain text, CSV or TSV),
+QUILL asks whether to open it in a new window. Press
+<strong>Yes</strong> to open it, or <strong>No</strong> to carry on
+where you were. PDF, DOCX, EPUB, ODT and RTF don’t ask, because QUILL
+cannot edit those directly. Instead a message tells you where the file
+was saved and copies the path to the clipboard, so you can paste it into
+File Explorer.</p>
+<p><strong>Other formats.</strong> Both menus end with <strong>Other
+Pandoc Format…</strong>. It shows a list of every other format Pandoc
+can read (on Import) or write (on Export), such as CommonMark and
+GitHub-Flavored Markdown. Arrow to the one you want and press Enter, and
+the conversion runs just like the named ones above. On Export, the list
+opens on your <strong>Default export preset</strong> (Settings &gt;
+General; HTML unless you change it), so if you nearly always export the
+same way, Enter alone does it.</p>
+<p><strong>What it does not do.</strong> Importing a PDF this way is not
+supported, because Pandoc cannot do it reliably. Use Import / Convert
+Document, described below, and for print-to-braille work, the braille
+and DAISY tools.</p>
+<h3 id="daisy-talking-book-export">DAISY Talking Book export</h3>
+<p><strong>File &gt; Export &gt; DAISY Talking Book</strong> saves the
+current document as a DAISY 2.02 text-only talking book. DAISY is the
+accessible book format read by DAISY software and by players such as the
+Victor Reader Stream, Plextalk and APH units. A DAISY book is a
+<em>folder</em>, not a single file, so the name you choose becomes a
+folder holding <code>ncc.html</code>, <code>content.html</code> and
+<code>book.smil</code>. Your headings become the player’s navigation
+points, and Markdown styling is flattened into clean, readable text. The
+book has no audio, so a player reads it with its own text-to-speech. You
+can also open the folder in APH Book Wizard Producer to record or
+synthesize a full text-and-audio book. The export reads what is on
+screen, so you do not have to save first.</p>
+<h3 id="batch-conversion">Batch Conversion</h3>
+<p>When you have a whole folder of documents to convert, opening them
+one at a time is slow going. <strong>File &gt; Import &gt; Batch
+Conversion…</strong> (or <strong>File &gt; Export &gt; Batch
+Conversion…</strong>, which opens the same wizard) converts a whole
+folder in the background. The key is the QUILL key, then <code>B</code>
+(<code>Ctrl+Shift+Grave</code> then <code>B</code>).</p>
+<p>Use the single-file Import and Export menus for one document. Use the
+wizard when you have a folder of documents, when every file needs the
+same treatment, and when you are happy to let it run while you keep
+writing.</p>
+<h4 id="the-wizard-page-by-page">The wizard, page by page</h4>
+<ol type="1">
+<li><strong>Introduction.</strong> A short summary, then a check for
+Pandoc and its version. If Pandoc is not installed, the page says so,
+and Start stays unavailable until you install Pandoc 3.x from <a
+href="https://pandoc.org">https://pandoc.org</a>.</li>
+<li><strong>Folder and options.</strong> A folder picker, an
+<strong>Include subfolders</strong> checkbox, an <strong>Output
+layout</strong> choice (Same folder as source, or Output subfolder per
+source folder), and an <strong>Overwrite</strong> choice (Ask each time,
+Never, Always). These start from your Settings, and the last folder you
+used is remembered for next time.</li>
+<li><strong>Format and profile.</strong> A <strong>Direction</strong>
+choice (Import into QUILL, or Export from QUILL), a list of source
+formats and a list of target formats from the main Import and Export
+set, and a picker for the seven built-in conversion profiles.</li>
+<li><strong>Review and start.</strong> A plain-text summary of the whole
+plan. Press <strong>Start</strong> to begin the batch and close the
+wizard.</li>
+</ol>
+<p>QUILL keeps each file’s name and changes only the extension:
+<code>report.docx</code> becomes <code>report.md</code> (or
+<code>report.html</code>, <code>report.epub</code>, and so on). With
+<strong>Output subfolder per source folder</strong> (the default), the
+results go into a new <code>Output/</code> folder inside the source
+folder. With <strong>Same folder as source</strong>, they go next to the
+originals.</p>
+<h4 id="profiles">Profiles</h4>
+<p>The profile picker offers seven ready-made profiles. Each one comes
+with a plain description that your screen reader reads before you press
+Start.</p>
+<ul>
+<li><strong>Clean Word Document</strong>: <code>report.md</code> becomes
+a polished Word document, with no Markdown left showing.</li>
+<li><strong>Accessible HTML Page</strong>: a single HTML page with a
+title block and <code>lang</code> metadata, ready for an accessibility
+check.</li>
+<li><strong>EPUB Book</strong>: an EPUB ready for publishing yourself,
+with a table of contents and EPUB-3 metadata.</li>
+<li><strong>GitHub README</strong>: GitHub-Flavored Markdown with no
+wrapper, ready to paste into a repository.</li>
+<li><strong>Print PDF</strong>: a PDF with standard PDF metadata. Pandoc
+picks the right engine for your computer.</li>
+<li><strong>Instructor Handout</strong>: a print-ready PDF with 1-inch
+margins and numbered top-level sections.</li>
+<li><strong>Plain Text for Screen Readers</strong>: plain text with no
+HTML wrapper, no smart quotes and a fixed 80-column width. The right
+choice for feeding a text-to-speech engine.</li>
+</ul>
+<h4 id="overwriting-existing-files">Overwriting existing files</h4>
+<p>The three overwrite choices save you from answering a question for
+every file:</p>
+<ul>
+<li><strong>Ask each time</strong>: QUILL lists every result that would
+replace an existing file and asks once, with a single Yes or No. If you
+say No, those files are skipped.</li>
+<li><strong>Never</strong>: existing files are skipped automatically.
+The Status Page counts them under <em>skipped</em>, so the totals still
+add up.</li>
+<li><strong>Always</strong>: existing files are replaced without asking.
+Useful when you run the same batch again.</li>
+</ul>
+<h4 id="following-progress">Following progress</h4>
+<p>To watch the batch, open the Status Page (<strong>Help &gt; Status
+Page</strong>). The Tasks &amp; Downloads tab shows a row for it as it
+works. The first row is
+<code>Batch conversion: scanning &lt;folder&gt;</code>, followed by one
+row per file.</p>
+<p>When the batch is done, QUILL says one line, through the announcement
+backend you have set up, with the converted, skipped and failed counts
+and how long it took:</p>
+<blockquote>
+<p>“Batch conversion complete. 12 of 14 files converted in 4.2 seconds.
+2 skipped.”</p>
+</blockquote>
+<p>That line follows your verbosity settings under <strong>Settings &gt;
+Accessibility and Announcements</strong>. The Status Page row updates
+either way, so sighted and low-vision users see the same result. A short
+report then lists every file that gave a warning or failed, with the
+exact error.</p>
+<h4 id="batch-settings">Batch settings</h4>
+<p>Three Settings choose what the wizard starts with:</p>
+<ul>
+<li><strong>Include subfolders in batch conversion</strong>: on or off,
+on by default (<code>True</code>).</li>
+<li><strong>Overwrite behaviour for batch conversion</strong>: Ask each
+time (the default), Never or Always.</li>
+<li><strong>Default output layout for batch conversion</strong>: Output
+subfolder per source folder (the default) or Same folder as source.</li>
+</ul>
+<p>You can change any of them in the wizard for one run. To change what
+it starts with every time, use Preferences.</p>
+<h2 id="import--convert-document-ocr">Import / Convert Document
+(OCR)</h2>
+<p><strong>File &gt; Import &gt; Import / Convert Document
+(OCR)…</strong> (also on <strong>Tools &gt; Reading and Dictation &gt;
+OCR and Document Conversion</strong>) is QUILL’s rescue tool for
+documents that are hard to read: locked-down Office files, EPUBs,
+scanned PDFs and photos of pages. It follows one rule: <strong>free
+first, local first, and nothing is ever uploaded</strong> without your
+say-so.</p>
+<p>Here is how a conversion goes:</p>
+<ol type="1">
+<li><strong>The file’s own text is read first.</strong> Word, Excel,
+PowerPoint, OpenDocument, HTML, EPUB, CSV, and PDFs that already contain
+text convert straight away on your computer and open as clean, editable
+text in a new tab. No account, no key, no upload, no cost, and nothing
+to download: QUILL has its own reader for every one of these (see
+“Office files QUILL reads by itself”). For Word, Excel, PowerPoint and
+OpenDocument files QUILL’s own reader goes first, and the optional
+MarkItDown converter is asked only if it cannot read the file; for HTML,
+EPUB, CSV and Excel 97-2003 (.xls), MarkItDown goes first where it can
+run, and QUILL’s own reader steps in where it cannot. Either way QUILL
+says who read the file and what it found, for example “Opened
+Budget.xlsx as editable text, read by QUILL’s own Excel reader. 2
+sheets. Nothing was uploaded.” <strong>Review Last OCR Result…</strong>
+lists the same facts afterwards. A PDF is read by the same PDF reader
+<strong>File &gt; Open</strong> uses, so its pages come through with
+their page breaks, and QUILL tells you how many pages it read.</li>
+<li><strong>A scanned document is noticed, not dumped on you.</strong>
+If a PDF comes back nearly empty, QUILL says “It looks scanned or
+image-based” and <em>asks</em> whether to run free OCR on your computer.
+Yes runs it. No opens the empty result anyway. Cancel imports nothing.
+QUILL never opens a blank result without telling you, and never runs OCR
+without asking.</li>
+<li><strong>OCR on your computer rescues the scan.</strong> The local
+Tesseract engine reads each page on your own computer (it uses only the
+processor and works offline). It marks where each page begins with a
+searchable <code>&lt;!-- Page N --&gt;</code> marker and tells you how
+it is going (“Recognizing page 3 of 12…”). When it is not confident
+about what it read, QUILL tells you plainly, so you know to check the
+result. <strong>No Tesseract? Windows OCR does it instead,</strong> with
+no download and no question: it is the OCR built into Windows 10 and 11,
+and it reads the languages you have in Windows Settings. It cannot say
+how confident it is, so check the text yourself. When Tesseract is
+installed, QUILL uses Tesseract. <strong>A picture of a page works the
+same way</strong> (since 2026-10-17): a <code>.png</code>,
+<code>.jpg</code>, <code>.tif</code> or other image goes straight to
+OCR, with Tesseract when it is installed and Windows OCR when it is not.
+Before, a picture needed Tesseract, and without it the conversion
+stopped with a message about installing it. For example, choose a photo
+of a letter, <code>letter.jpg</code>, and you hear “Opened letter.jpg
+from Windows OCR on this computer. Nothing was uploaded. Check the text;
+OCR makes mistakes.”</li>
+</ol>
+<p>QUILL Lite has the same command, on its File menu, with the same
+readers and the same sentences (since 2026-10-17). It never offers to
+download Tesseract and has no cloud OCR, and its result opens in a
+window rather than a tab.</p>
+<p>Other problems get their own clear message instead of the scanned-PDF
+question. A file that is really corrupt is reported as <em>damaged</em>,
+with a note that OCR won’t help (repair it or export it again from where
+it came from). A PDF on a computer with no text extractor points you to
+<strong>Help &gt; Download Optional Components…</strong> (the “PDF and
+Office text extraction” item in its list) instead of claiming it is
+scanned. The installed apps come with a PDF reader, so this only happens
+with a pip or source install. A <em>password-protected</em> PDF is
+handled separately, as described next: Import / Convert Document tells
+you to open it with <strong>File &gt; Open</strong>, which asks for the
+password.</p>
+<p>Office files get the same kind of plain message. A password-protected
+Word, Excel or PowerPoint file is named as password-protected, with the
+fix. An Office 97-2003 file (.doc, .xls or .ppt) is read through
+LibreOffice when it is installed; when it is not, QUILL tells you to
+save it in the newer format from Word, Excel, PowerPoint or LibreOffice
+and import that copy. Earlier versions said “MarkItDown is not
+installed” for every Office file in the installed app, and the download
+it pointed to could not fix it. That message is gone.</p>
+<h3 id="opening-a-scanned-pdf-with-file--open">Opening a scanned PDF
+with File &gt; Open</h3>
+<p>You don’t have to go to Import / Convert Document to read a scanned
+PDF. When you open one with <strong>File &gt; Open</strong>, QUILL
+notices there is no text in it (or very little) and asks whether to read
+it with OCR on this computer. Nothing is uploaded, and the PDF is not
+changed.</p>
+<ul>
+<li><strong>Yes</strong> reads the pages, with Tesseract if it is
+installed and Windows OCR if not. The status bar counts the pages as it
+goes. The text then replaces the note in the PDF’s tab, with its pages,
+and the tab counts as unsaved work because that text is not saved
+anywhere yet. If you typed in the tab while it was reading, the text
+opens in a new tab instead, so nothing you wrote is lost.</li>
+<li><strong>No</strong> leaves the PDF open as it was.</li>
+</ul>
+<p>QUILL Lite asks the same question in the same words.</p>
+<h3 id="opening-a-password-protected-pdf">Opening a password-protected
+PDF</h3>
+<p>When you open a PDF that is locked with a password, QUILL asks for
+the password and reads the document. You don’t need to remove the
+password in another program first. Type the password and the PDF opens.
+If it is wrong, QUILL tells you and lets you try again. Press
+<strong>Cancel</strong> to stop opening it.</p>
+<p><strong>The password is used only to open that one file for
+reading.</strong> QUILL <strong>never stores, logs or remembers
+it</strong>, so if you close the file and open it again, it asks again.
+PDFs that are technically locked but open with an empty password (they
+only restrict permissions) open with no question, as before.</p>
+<h3 id="a-pdfs-bookmarks-come-across">A PDF’s bookmarks come across</h3>
+<p>If a PDF has an outline, the chapters and sections you would see in
+Adobe Reader’s bookmarks pane, QUILL adds those entries to its own
+bookmark list (<strong>List Named Bookmarks…</strong>,
+<code>Alt+Shift+G</code>) when you open the file, as it does for Word
+and EPUB structure. Each bookmark takes you to its title on its page: if
+“Chapter 2” starts halfway down page 14, the bookmark lands on “Chapter
+2”, not on the top of the page. When QUILL cannot find the title at the
+start of a line on that page, the bookmark goes to the top of the page
+instead. Two entries with the same title, such as a “Summary” in every
+chapter, stay two bookmarks (“Summary” and “Summary (2)”), each at its
+own place. This happens once, the first time you open the PDF. If you
+already have bookmarks in the file, or you later rename or delete some
+of those bookmarks, opening the file again will not change them, bring
+them back or make duplicates. A PDF with no outline opens as usual.</p>
+<p>The outline is also in <strong>Go To</strong> (<code>Ctrl+G</code>),
+as its own <strong>Outline</strong> choice. Each entry says its title
+and its page, such as “Chapter 2, page 14”. An entry that sits inside
+another says its level too, such as “Summary, level 3, page 15”, so you
+can hear the outline’s shape. The level is only a description: it does
+not turn the line into a heading. An entry always takes you to its title
+on that page, even after you have edited the text above it.</p>
+<h3 id="how-quill-chooses-the-text-of-each-page">How QUILL chooses the
+text of each page</h3>
+<p>A PDF can be read more than one way, and the ways do not always
+agree. One reader may spell a widely spaced line out a letter at a time
+(“W i d e l e t t e r s”), while another reads it as words; one may run
+two columns together line by line, while another reads down the first
+column and then the second. QUILL does not simply take the first answer
+it gets. It decides <strong>page by page</strong>:</p>
+<ol type="1">
+<li><strong>The usual reader goes first.</strong> For most pages its
+text is clean, and QUILL keeps it straight away, so an ordinary PDF
+opens as quickly as it always did.</li>
+<li><strong>A doubtful page gets a second and third look.</strong> If
+the first reading has signs of trouble (letters one at a time, words run
+together, characters that cannot be read, a line of text per word), or
+the page looks as if it is set in two columns, QUILL reads that page
+again in two other ways and keeps whichever reads best.</li>
+<li><strong>“Reads best” means fewest problems, not most text.</strong>
+QUILL counts what a listener would trip over: characters it could not
+read, words broken into single letters, words glued together, one word
+per line, part of the page missing, and columns read across instead of
+down. A short title page, a page of figures, or a page in Greek or
+Japanese is not marked down for being short or for not being
+English.</li>
+</ol>
+<p>The repairs described below run on every reading, and QUILL compares
+the readings both before and after repair, so a repair that would make a
+page worse is not used on it.</p>
+<p><strong>What you hear when a page is doubtful.</strong> When the PDF
+opens, QUILL names the pages that may still read poorly, for example:
+“Opened report.pdf. 12 pages. extracted by pdfplumber + pypdf. quality
+81/100. Pages 3 and 7 may read poorly.” A page is named when it still
+reads badly in every way QUILL tried, when it holds characters QUILL
+could not read, or when it is only a picture (a scanned page inside an
+otherwise ordinary PDF). A blank page is never named: there is nothing
+on it to miss. The <strong>Document Intake Report</strong> lists those
+pages with the reason for each, such as “Page 7: 2 characters could not
+be read”, and says which reader’s text each page uses.</p>
+<p><strong>What QUILL does not do.</strong> It does not guess. A
+character that the PDF’s own font gave no meaning to is left in the
+text, rather than deleted or swapped for a letter that might be wrong;
+the page is named instead, so you know to check it. QUILL does not turn
+anything into headings, tables or other structure: a heading stays a
+line of text, and a row of a table stays a line with its numbers in
+order. Nothing is uploaded, and OCR never runs unless you say yes (see
+“Opening a scanned PDF with File &gt; Open”, above). The optional
+MarkItDown converter, if you have it, is only asked about a PDF that
+still reads poorly, and its text is used for a page only when it keeps
+the PDF’s pages and reads clearly better. The PDF itself is never
+changed.</p>
+<p><strong>Limits.</strong> QUILL reads the first 200 pages of a very
+long PDF and says so. Columns are only put in order when the gap between
+them is clear; a page with three columns, or columns that run around
+pictures, can still come out mixed. Tables come through as lines of
+text, and pictures do not come through at all. The same rules apply in
+File &gt; Open, Import / Convert Document, Document Q&amp;A, and in
+QUILL Lite.</p>
+<h3 id="the-text-from-a-pdf-is-repaired-before-you-read-it">The text
+from a PDF is repaired before you read it</h3>
+<p>A PDF does not store sentences. It stores where each letter was
+printed on the page. So what comes out is a picture of the page rather
+than the words the author typed, and read aloud that can be rough going.
+QUILL fixes four things as it opens the file, page by page:</p>
+<ul>
+<li><strong>Words split across lines are joined again.</strong> Print
+layout breaks long words with a hyphen at the end of a line, so “inter-”
+on one line and “national” on the next would be read as two words, and a
+search for “international” found nothing. QUILL joins them. A hyphen
+that belongs to the word stays: <strong>Anglo-Saxon</strong>,
+<strong>2018-2019</strong> and an identifier such as
+<strong>ISBN-</strong> are left exactly as written, and a word that is
+always hyphenated, such as “self-” at the end of one line and “aware” on
+the next, becomes <strong>self-aware</strong>.</li>
+<li><strong>Paragraphs are put back together.</strong> Every printed
+line arrives as its own line of text, so speech would stop at the edge
+of the page instead of the end of the sentence, and moving to the next
+paragraph moved one printed line. QUILL joins lines that were only
+broken because the page ran out of room. Blank lines, list items
+(including “a)” and “iv.” items), headings, short deliberate lines and
+finished sentences keep their breaks, so lists stay lists and paragraphs
+stay separate. A heading such as “CHAPTER TWO” or “2.1 Methods” under a
+long line of text stays on its own line instead of being swallowed into
+the paragraph, and so do address lines, rows set out in columns, and
+rows of figures, so two long rows of a table stay two rows.</li>
+<li><strong>Spaced-out headings are closed up.</strong> A designer’s
+letter-spaced title comes through as “C H A P T E R O N E”, which a
+screen reader spells one letter at a time and a search never matches. It
+becomes “CHAPTER ONE”. Ordinary text is left alone: a line such as “A B
+testing” is not a heading and is not touched, and a whole sentence
+spaced out with no gaps between its words is not closed up into one long
+word (QUILL looks for a better reading of that page instead).</li>
+<li><strong>Missing joined letters are restored.</strong> The joined
+“fi”, “fl” and “ff” shapes a typesetter uses are often stored as
+characters that mean nothing outside the document’s own font, so a
+screen reader reads <em>nothing</em> where they were, and “office” is
+announced as “o ce”. QUILL turns them back into letters where they sit
+inside a word. Any other character with no meaning is
+<strong>kept</strong>, not deleted: deleting it could quietly change
+what the page says (a font that stored its “x” that way would turn “next
+box” into “net bo”). Instead QUILL names the page as one that may read
+poorly, so you know to check it.</li>
+</ul>
+<p>These repairs are careful. When a case could go either way, QUILL
+leaves the text as it found it, and a PDF whose text is already clean
+comes through unchanged. They never cross from one page to the next, so
+<strong>Go To Page</strong> and the page count stay exact.</p>
+<h3 id="installing-the-ocr-engine">Installing the OCR engine</h3>
+<p>The OCR engine is a free, one-time download of about 48 MB:
+<strong>Tools &gt; Reading and Dictation &gt; OCR and Document
+Conversion &gt; Install Local OCR Engine (Tesseract)…</strong>. QUILL
+fetches the official installer from its own verified release, checks it
+byte for byte, and opens it for you to finish. It never installs
+anything silently. If Tesseract is already on your computer (or
+installed with Homebrew on a Mac), QUILL finds it and uses it.</p>
+<h3 id="the-optional-datalab-chandra-ocr-cloud-service">The optional
+Datalab Chandra OCR cloud service</h3>
+<p>Some documents are too hard even for OCR on your computer: complex
+tables, forms, handwriting, crowded columns, very poor scans. For those,
+QUILL supports an optional paid cloud service, Datalab Chandra OCR,
+using your own key. QUILL only offers it <em>after</em> the OCR on your
+computer comes back weak (or when you turn down installing the free
+engine). <strong>Every single upload requires your explicit
+consent</strong> in a window that names the service, reminds you to
+think about private, medical, legal or financial content, and notes that
+Datalab deletes results from its servers about an hour after processing.
+A file whose name suggests sensitive content (tax, medical, legal and
+similar) gets an extra CAUTION line. QUILL decides that from the name
+only and never looks inside the file to decide. There is no “don’t ask
+again”.</p>
+<p>To set it up, choose <strong>Tools &gt; Reading and Dictation &gt;
+OCR and Document Conversion &gt; OCR Service Settings…</strong>. This
+opens the <strong>AI Hub Services tab</strong>. Turn the service on,
+paste your Datalab API key (it is kept in the Windows credential vault,
+never in a settings file), choose the default mode (Fast, Balanced or
+Accurate) and output (Markdown is recommended), and press <strong>Test
+Connection</strong>. The test checks your key and the address and
+uploads no document. Other buttons open the provider’s website, key
+page, pricing, privacy documents, API documents and list of supported
+file types in your browser, and <strong>Copy Service Summary</strong>
+copies a description with no secrets in it, for support requests.</p>
+<h3 id="checking-and-tidying-up-after-ocr">Checking and tidying up after
+OCR</h3>
+<p><strong>Review Last OCR Result…</strong> opens a checklist for your
+most recent conversion: which service made it, the page count, how
+confident the recognition was, and, for OCR on your computer, every line
+it was unsure of, listed as <code>Page N: [confidence] text</code>.
+Arrow through the flagged lines, then search the converted document for
+the page marker (for example <code>&lt;!-- Page 3 --&gt;</code>) to jump
+to the trouble spot. That way you check by ear exactly where it is
+needed, instead of proofreading everything again.</p>
+<p><strong>Delete OCR Temporary Files</strong> clears any leftover job
+files from QUILL’s data folder and tells you what it removed. The local
+tools normally clean up after themselves. Converted results live only in
+the open, unsaved document until you choose to save.</p>
+<p><strong>OCR and Conversion Services…</strong> explains each service
+in plain words: the free local converter, the local OCR engine and the
+optional Datalab cloud service. For each it tells you what it does, what
+it is best at, whether it runs on your computer or in the cloud, what it
+costs and how it is set up right now.</p>
+<p>Two settings are there for unusual setups: the OCR recognition
+language (<code>ocr_language</code>, English by default) and a path to
+the engine if QUILL cannot find it (<code>tesseract_path</code>). The
+cloud service’s other options, apart from the key, are on the Services
+tab.</p>
+<h2 id="remote-access">Remote access</h2>
+<p>QUILL can open files from a server, save to it, and copy to it, much
+as it works with files on your own computer. You can use FTP, SFTP,
+HTTPS, WebDAV, and Amazon S3 (or any S3-compatible service). Every
+remote action is something you choose, QUILL tells you what is
+happening, and nothing is written to disk before you confirm. The
+commands are on <strong>File &gt; Open from Remote</strong>:</p>
+<ul>
+<li><strong>Open from Remote…</strong> lists every site you have saved,
+lets you look around a folder on the server, and downloads the file you
+choose. QUILL tells you the host and the expected size, saves the
+download to a temporary file, and opens it in a normal tab whose title
+ends with <code>(from site:path)</code>. The document is
+<strong>read-only</strong> until you save it back with <strong>Save Copy
+to Remote…</strong> or copy it to your own computer.</li>
+<li><strong>Save to Remote</strong> writes the current document to a
+path you choose on one of your saved sites, and keeps a tilde backup
+next to the original.</li>
+<li><strong>Save Copy to Remote…</strong> writes a copy to the server
+and leaves your local file as it is.</li>
+<li><strong>Manage Remote Sites…</strong> adds, edits and deletes saved
+sites for all five kinds of server. Each site’s password goes into
+<strong>Windows Credential Manager</strong> when it is available, or
+otherwise into a file protected by Windows (DPAPI). On a Mac, the
+Keychain is used.</li>
+</ul>
+<p>All remote traffic uses a <strong>verified TLS context</strong>, a
+checked and encrypted connection. Cloud addresses (S3, HTTPS, and WebDAV
+over HTTPS) must use HTTPS. FTP is allowed because you chose it, usually
+for a computer on your own network or an older server. Every remote
+connection is listed in QUILL’s record of the places it connects to, and
+file listings from S3 and WebDAV servers are read in a way that a
+booby-trapped listing cannot take advantage of.</p>
+<p>These commands have no keys of their own out of the box. Reach them
+from the menu or the Command Palette (<code>Ctrl+Shift+P</code>), or
+give them keys in the Keymap Editor.</p>
+<h3 id="editing-a-file-over-ssh">Editing a file over SSH</h3>
+<p>If you look after a Linux server, a Raspberry Pi or a web host, you
+can edit its files over SSH as though they were on your own computer.
+The commands are on <strong>File &gt; Open over SSH</strong>.</p>
+<ol type="1">
+<li>Choose <strong>File &gt; Open over SSH &gt; Quick Connect…</strong>.
+The <strong>Connect to SSH Server</strong> window opens.</li>
+<li>Fill in <strong>Host or IP address</strong>, <strong>Port</strong>
+(22 unless your server says otherwise) and
+<strong>Username</strong>.</li>
+<li>Choose how you sign in under <strong>Authentication</strong>:
+<strong>Password</strong>, <strong>Private key file</strong> or
+<strong>SSH agent</strong>. For a password, type it in <strong>Password
+/ key passphrase</strong>. For a key, type its path, or press
+<strong>Browse…</strong> to find it. OpenSSH, PEM and PuTTY
+(<code>.ppk</code>) keys all work. If your key has a passphrase, type
+that in the same box.</li>
+<li>Press <strong>Connect</strong>. QUILL says “Connecting to” and the
+server’s name, and then opens the <strong>Open Remote File</strong>
+window on your home folder.</li>
+<li>Arrow through the list. Folders say “dir” in front of their names.
+Press Enter on a folder to go into it, or on <strong>.. (parent
+directory)</strong> to go back up. Press Enter on the file you want, or
+choose <strong>Open</strong>.</li>
+</ol>
+<p>The file opens in a normal tab, and the status bar says that saving
+uploads it back. Press <code>Ctrl+S</code> as usual, and QUILL sends
+your changes to the server, keeps a backup copy of the old version next
+to it with a tilde on the end of its name, and keeps the line endings
+the file already had.</p>
+<p>If you connect to the same server often, save it once in <strong>File
+&gt; Open over SSH &gt; Site Manager…</strong>. The <strong>SSH Site
+Manager</strong> window lists your <strong>Saved sites</strong>, with
+<strong>New</strong>, <strong>Edit</strong> and <strong>Delete</strong>
+buttons beside the list. Pick a site and press <strong>Connect</strong>.
+A saved site never keeps your password: QUILL asks for it each time you
+connect.</p>
+<p>QUILL is careful about which servers it trusts. It only connects to a
+server whose identity your computer already knows, from the same list
+OpenSSH uses, or one you have already told QUILL to trust. A server it
+has never seen is turned away, so a server pretending to be yours cannot
+slip in. If you really do want QUILL to accept a new server the first
+time it sees it, turn on <strong>Trust SSH hosts on first
+connection</strong> on the <strong>Administration</strong> page of
+Settings. Leave it off unless you have a reason.</p>
+<h2 id="github-remote-files">GitHub remote files</h2>
+<p>QUILL can browse GitHub repositories, open files from them and save
+your changes back, without Git, the GitHub CLI or GitHub Desktop
+installed.</p>
+<h3 id="getting-started-with-github">Getting started with GitHub</h3>
+<p>The first time you use a GitHub feature, QUILL asks you to confirm
+that it may connect to GitHub. You are asked once, and QUILL remembers
+your answer.</p>
+<p>You do not need a GitHub account to browse public repositories. For
+private repositories, and for anything that changes GitHub, you need a
+Personal Access Token (PAT).</p>
+<h4 id="creating-a-personal-access-token">Creating a Personal Access
+Token</h4>
+<ol type="1">
+<li>Go to github.com and sign in.</li>
+<li>Open Settings &gt; Developer settings &gt; Personal access tokens
+&gt; Tokens (classic).</li>
+<li>Choose Generate new token.</li>
+<li>Give it a name such as “QUILL” and select the <code>repo</code>
+scope (or <code>public_repo</code> if you only need public
+repositories).</li>
+<li>Copy the token. You will only see it once.</li>
+</ol>
+<p>QUILL keeps your token safely in <strong>Windows Credential
+Manager</strong>. It is never saved in a text file.</p>
+<h4 id="managing-your-github-account">Managing your GitHub account</h4>
+<p>Use <strong>File &gt; Open from Remote &gt; Manage GitHub
+Accounts…</strong> to:</p>
+<ul>
+<li>See which GitHub account you are signed in as.</li>
+<li>Add or replace a token.</li>
+<li>Sign out and clear your stored token.</li>
+</ul>
+<h4 id="if-the-github-commands-are-missing">If the GitHub commands are
+missing</h4>
+<p>GitHub access is the feature called GitHub Remote Access
+(<code>core.github_remote</code>). If you can’t find it, open
+<strong>File &gt; Open from Remote</strong> and check whether the GitHub
+items are there. If PyGithub is not installed, QUILL shows a message
+explaining how to install it: <code>pip install "quill[github]"</code>.
+The GitHub commands are also unavailable in Safe Mode.</p>
+<h3 id="opening-and-saving-github-files">Opening and saving GitHub
+files</h3>
+<h4 id="the-repository-browser">The repository browser</h4>
+<p>Open <strong>File &gt; Open from Remote &gt; GitHub
+Repository…</strong>. The browser has these parts:</p>
+<ul>
+<li><strong>Account</strong> shows your GitHub username, or “Anonymous”
+if no token is stored.</li>
+<li><strong>Repository</strong>: type an owner/repo name such as
+<code>microsoft/vscode</code> and press Enter or choose Load.</li>
+<li><strong>Branch or tag</strong> chooses which version of the
+repository to browse. It starts on the repository’s default branch.</li>
+<li><strong>Current path</strong> shows where you are in the folder
+tree.</li>
+<li><strong>File list</strong> lists folders and files, folders
+first.</li>
+<li><strong>Status</strong> shows progress messages and item
+counts.</li>
+</ul>
+<p>To move around:</p>
+<ul>
+<li>Press Enter on a folder to open it.</li>
+<li>Press Enter on a file to open it (the same as choosing Open
+File).</li>
+<li>Press Backspace to go up one level.</li>
+<li>Press <code>F5</code> to refresh the current folder.</li>
+<li>Tab through the buttons: <strong>Open File</strong>, <strong>Go
+Up</strong>, <strong>Refresh</strong>, <strong>Copy URL</strong>,
+<strong>Cancel</strong>.</li>
+</ul>
+<h4 id="opening-a-file-from-its-address">Opening a file from its
+address</h4>
+<p>If you have the web address of a file on GitHub, perhaps from a
+colleague, use <strong>File &gt; Open from Remote &gt; GitHub File
+URL…</strong>. Paste an address like
+<code>https://github.com/owner/repo/blob/branch/path/to/file</code> and
+press Enter. QUILL fetches the file directly.</p>
+<p>GitHub’s file service only handles files up to 1 MB. A larger file
+has to be downloaded by hand from github.com.</p>
+<h4 id="saving-back-to-github">Saving back to GitHub</h4>
+<p>When you have opened a file from GitHub and made changes, use
+<strong>File &gt; Open from Remote &gt; Save to GitHub…</strong>. QUILL
+asks for a commit message. Type a short description of your changes and
+press Enter. QUILL commits your changes to the same repository, branch
+and file path.</p>
+<ul>
+<li>You need a token with permission to write (<code>repo</code>
+scope).</li>
+<li>If the file changed on GitHub after you opened it, QUILL tells you
+to refresh and try again.</li>
+<li>Pressing Save never does this for you. You choose Save to GitHub
+each time.</li>
+</ul>
+<h3 id="the-github-items-viewer">The GitHub Items viewer</h3>
+<p><strong>File &gt; Open from Remote &gt; GitHub Items…</strong> opens
+a viewer for a repository’s issues, pull requests, branches, commits,
+tags, releases, workflows and workflow runs. It is the same kind of
+overview the GitHub website gives you, made for the keyboard and a
+screen reader. It owes a great deal to <a
+href="https://github.com/kellylford/GHManage">GHManage</a>, Kelly Ford’s
+open-source GitHub browser for screen-reader users, which QUILL has
+followed from the start. QUILL adds its own touches: pull request and
+branch differences are read through the same engine as Compare Documents
+instead of as a raw patch, and the Quick filter stays quiet while you
+type.</p>
+<p>You can browse without signing in. Signing in adds the
+<strong>Batch…</strong> menu and the <strong>Actions…</strong> menu, for
+things like new issues and pull requests, merging, deleting branches,
+running workflows and replying to comments. Your pins, favorites and
+column choices are saved on your own computer only.</p>
+<h4 id="loading-a-repository">Loading a repository</h4>
+<p>Type a repository as <code>owner/repo</code>, paste a
+<code>github.com</code> address, or paste a <code>git@github.com:</code>
+remote, and press <strong>Load</strong>. QUILL turns any of those into
+<code>owner/repo</code> for you. If the document you are editing came
+from GitHub, or lives in a git folder whose <code>origin</code> remote
+points at GitHub, the repository is already filled in.</p>
+<ul>
+<li><strong>Pinned…</strong> opens a menu of your pinned repositories.
+Choose one to load it straight away, or pin or unpin the repository you
+have loaded. It is your own short list for the few repositories you
+really work in. It is separate from anything GitHub keeps and never
+synced anywhere.</li>
+<li><strong>Favorites.</strong> Press <code>Ctrl+D</code> on any row (an
+issue, a pull request, a branch, a release) to bookmark it. The
+<strong>Favorites…</strong> button lists every bookmark across every
+repository. Choose one to open it in your browser. Favorites are kept
+between sessions.</li>
+<li><strong>View Upstream.</strong> When the repository you load is a
+fork, the <strong>View Upstream</strong> button becomes available. Press
+it to load the repository it was forked from, just as if you had typed
+its name. The button stays unavailable for a repository that is not a
+fork, or, rarely, for a fork whose parent GitHub cannot find.</li>
+</ul>
+<h4 id="views-and-the-list">Views and the list</h4>
+<p>Pick a <strong>View</strong>: Issues &amp; PRs (issues and pull
+requests together), Branches, Commits, Tags, Releases, Workflows or
+Workflow Runs. The list shows one row per item, and the
+<strong>Details</strong> box below shows the full text of the selected
+row. In Issues &amp; PRs you can also filter by <strong>Show</strong>
+(Both, Issues, PRs) and <strong>State</strong> (Open, Closed, All), and
+<strong>Sort</strong> by number, title, last updated or number of
+comments.</p>
+<ul>
+<li><strong>List mode.</strong> There are two ways to read the list.
+<strong>Quick</strong> shows short cells as they appear in the columns.
+<strong>Full</strong> says each cell as <code>field: value</code> (for
+example
+<code>number: 208, type: ISSUE, state: OPEN, title: Fix the thing</code>),
+so your screen reader reads a line that explains itself instead of bare
+values. Switch with the <strong>List mode</strong> choice, or press
+<code>M</code> in the list.</li>
+<li><strong>Columns…</strong> lists every field for the current view as
+a checkbox. Uncheck the ones you don’t need (at least one always stays).
+Your choice is remembered for each view.</li>
+<li><strong>View More</strong> loads the next page of results.</li>
+</ul>
+<h4 id="searching-and-filtering">Searching and filtering</h4>
+<ul>
+<li><strong>Search with GitHub’s own syntax.</strong> Press
+<code>Ctrl+F</code> (or Tab to the Search box), type any GitHub search,
+such as <code>label:bug is:open crash</code>,
+<code>author:alice is:pr</code> or
+<code>created:&gt;2026-01-01 no:assignee</code>, and press Enter. The
+results replace the Issues &amp; PRs list, limited to the loaded
+repository. Clear the box and press Enter to get the normal list back.
+Loading another repository also clears the search.</li>
+<li><strong>Quick filter.</strong> <code>Ctrl+Shift+F</code> moves to
+the <strong>Quick filter</strong> box, next to Search. Instead of asking
+GitHub, it narrows the list you already have, as you type. Nothing goes
+over the network, so it is instant even on a slow connection. It never
+moves your focus while you type, and it doesn’t announce a count after
+every letter, which would talk over your screen reader’s own typing
+echo. QUILL only says the count when a real fetch finishes. Press Escape
+in the box to clear it. Switching views or loading another repository
+clears it too.</li>
+</ul>
+<h4 id="reading-issues-pull-requests-and-comments">Reading issues, pull
+requests and comments</h4>
+<p>When you select an issue or pull request, the details show its text
+and then load the comments. Press <code>Alt+N</code> for the next
+comment and <code>Alt+P</code> for the previous one. QUILL selects and
+scrolls to each and says “Comment N of M” (and “first” or “last” at
+either end).</p>
+<p><strong>AI thread summaries.</strong> Select an issue or pull request
+and press <strong>Summarize</strong>. QUILL’s AI boils the whole
+discussion, text and comments, down to a short summary in plain prose:
+what it is about, where it stands, open questions and the next step. It
+goes at the top of the details and is read out. It uses the same AI
+connection and consent questions as every other AI feature in QUILL. If
+AI is not set up, Summarize offers to set it up instead of failing
+quietly.</p>
+<h4 id="pull-request-diffs-and-branch-comparisons">Pull request diffs
+and branch comparisons</h4>
+<ul>
+<li><strong>Pull request diffs.</strong> Select a pull request and press
+<strong>Diff…</strong>. A list of its changed files opens, each row
+reading <code>status: filename +added -removed</code>. Select a file to
+hear its changes through the same engine as <strong>Compare
+Documents</strong>, for example “Difference 2 of 5. Text changed at line
+41”, with both sides labeled (<code>main:</code> and
+<code>this PR:</code>) and the changed words described. A new file reads
+as its content, a deleted file says so plainly, and a binary or very
+large file falls back to its change counts and GitHub’s patch text.</li>
+<li><strong>Compare two branches.</strong> In the
+<strong>Branches</strong> view, select a branch and press
+<strong>Compare…</strong> or <code>Ctrl+Shift+B</code>. QUILL asks for
+the base branch, then the branch to compare with it (the row you
+selected fills in the second question). It tells you how far ahead and
+behind the two branches are and lists every commit between them. The
+<strong>Changed Files</strong> tab walks each file’s differences the
+same way <strong>Diff…</strong> does. Comparing only reads, so it works
+without signing in.</li>
+</ul>
+<h4 id="workflows">Workflows</h4>
+<p>Switch to the <strong>Workflows</strong> view to see the repository’s
+workflow definitions, the <code>.yml</code> files themselves. The
+<strong>Workflow Runs</strong> view below them shows run history. Select
+a workflow and press Enter, or use <strong>Actions… &gt; Run “name” on
+Branch…</strong>, to run it: QUILL asks for a branch, confirms, and
+tells you whether GitHub accepted the run. You need to be signed in. If
+the workflow does not accept manual runs, QUILL shows GitHub’s own
+explanation.</p>
+<h4 id="batch-operations">Batch operations</h4>
+<p>The list lets you select several rows: hold Shift or Ctrl to select
+issues or pull requests, then press <strong>Batch…</strong> and choose
+Close, Reopen or Add label. You must be signed in, because browsing
+without an account only ever reads. A confirmation names the exact
+action and the exact item numbers, and nothing changes on GitHub until
+you confirm. If some items fail, QUILL tells you which, and the rest
+still go through.</p>
+<h4 id="keys-in-the-items-viewer">Keys in the Items viewer</h4>
+<ul>
+<li>Enter on a row opens it in your browser. On a
+<strong>Branch</strong> row, Enter shows that branch’s commits. On a
+<strong>Workflow</strong> row, Enter runs it on a branch you
+choose.</li>
+<li>Backspace in the Commits view (reached with Enter on a branch) goes
+back to the branch list.</li>
+<li><code>Ctrl+R</code> refreshes the current view. <code>Ctrl+O</code>
+opens the selected item in your browser. <code>Ctrl+G</code> goes to an
+issue or pull request by number (in the Issues &amp; PRs view).</li>
+<li><code>Ctrl+F</code> moves to the GitHub search box, and
+<code>Ctrl+Shift+F</code> to the Quick filter box.
+<code>Ctrl+Shift+B</code> compares two branches (Branches view).
+<code>Ctrl+D</code> adds the selected row to your favorites.</li>
+</ul>
+<p>The Items viewer follows the same rules as the other GitHub commands:
+it is off in Safe Mode, asks for your consent the first time, and works
+without an account for public repositories (GitHub allows fewer requests
+then) or with your stored token for private ones.</p>
+<h4 id="doing-more-from-the-items-viewer">Doing more from the Items
+viewer</h4>
+<p>When you are signed in, the <strong>Actions…</strong> button opens a
+menu that changes with what you are looking at:</p>
+<ul>
+<li>In <strong>Issues &amp; PRs</strong>: <strong>New Issue…</strong>
+and <strong>New Pull Request…</strong> ask for a title (and, for a pull
+request, the head and base branches) and an optional description. If
+exactly one unmerged pull request is selected, <strong>Merge Pull
+Request #N…</strong> appears too. Merging changes the target branch for
+everyone, so you confirm it by typing the pull request number again, not
+just by pressing Yes.</li>
+<li>With comments loaded: <strong>Reply to Thread…</strong> posts a new
+comment. (GitHub’s comments are not threaded, so a reply is simply
+another comment in the same conversation.) Once you have used
+<code>Alt+N</code> or <code>Alt+P</code> to land on a comment,
+<strong>Edit This Comment…</strong> and <strong>Delete This
+Comment…</strong> appear as well. GitHub only lets you edit or delete
+your own comments, so trying it on someone else’s brings back GitHub’s
+permission error. To delete, you type “delete” to confirm.</li>
+<li>In <strong>Branches</strong>: select one branch and <strong>Delete
+Branch ‘name’…</strong> appears. Type the branch name again to confirm.
+It cannot be undone from QUILL. <strong>Compare…</strong> is here too,
+and needs no sign-in.</li>
+<li>In <strong>Workflows</strong>: select one workflow and <strong>Run
+“name” on Branch…</strong> appears, the same as pressing Enter.</li>
+<li>In <strong>Workflow Runs</strong>: select one run and <strong>Re-run
+Workflow</strong> and <strong>View Artifacts…</strong> both appear.</li>
+</ul>
+<p>All of these need you to be signed in. Without an account, the viewer
+only reads.</p>
+<h4 id="downloading-workflow-run-artifacts">Downloading workflow run
+artifacts</h4>
+<p>Select a workflow run and choose <strong>Actions… &gt; View
+Artifacts…</strong> to see that run’s build artifacts, each with its
+size and whether GitHub has already let it expire (an expired artifact
+can’t be downloaded). From there:</p>
+<ul>
+<li><strong>Download Selected…</strong> downloads the highlighted
+artifact, and <strong>Download All…</strong> downloads every artifact in
+the run. Both ask you to choose a folder first.</li>
+<li>If a file with that name is already in the folder, QUILL asks before
+replacing it.</li>
+<li>A progress window with a <strong>Cancel</strong> button follows the
+download. Cancelling stops after the artifact that is downloading at the
+moment.</li>
+<li><strong>Refresh</strong> fetches the list again, which helps while a
+run is still producing artifacts, and <strong>Open Run in
+Browser</strong> takes you to the run’s page on GitHub.</li>
+</ul>
+<p>A note on your token: GitHub hands the actual download to a
+different, short-lived address (usually on Azure Blob Storage). QUILL
+makes that second request without your token, so your token is only ever
+sent to github.com.</p>
+<h3 id="managing-repositories">Managing repositories</h3>
+<p>These commands are on <strong>Tools &gt; Git and GitHub &gt;
+GitHub</strong>. They let you do things you would otherwise open a
+browser for. All of them need you to be signed in. If you are not, QUILL
+offers to sign you in right there.</p>
+<h4 id="repository-administration">Repository administration</h4>
+<ul>
+<li><strong>Create Repository…</strong> asks for a name, a description,
+private or public, and an optional organization. Right after creating
+it, QUILL offers to set up a local folder synced to the new repository
+in one step, using the same folder sync as <strong>Sync Folder with
+GitHub</strong> (QUILL Sync). Starting a new project never means leaving
+QUILL.</li>
+<li><strong>Fork Repository…</strong> forks into your account or an
+organization you choose, and offers to sync it locally afterwards in the
+same way.</li>
+<li><strong>Rename Repository…</strong> renames it. GitHub sends the old
+address on to the new one, but anything elsewhere that has the old name
+written into it will need updating. You confirm by typing the
+repository’s current <code>owner/repo</code> name again.</li>
+<li><strong>Change Visibility…</strong> switches a repository between
+private and public. QUILL tells you which it is now before asking.
+Making a repository public adds a warning line, because its whole
+history becomes visible. You confirm by typing the repository name
+again.</li>
+<li><strong>Change Default Branch…</strong> loads the branches and lets
+you pick the new default from a simple list.</li>
+<li><strong>Configure Branch Protection…</strong> is a short wizard.
+Pick a branch, then set the required approving reviews, required status
+checks, and whether the rules apply to administrators too. Or check
+“Remove all protection from this branch instead” to clear the
+rules.</li>
+<li><strong>Delete Branch…</strong> lists the branches (never the
+default branch, so you cannot delete the one everything depends on by
+accident), then asks you to type the branch name again to confirm. It
+can’t be undone from inside QUILL.</li>
+<li><strong>Commit Multiple Files…</strong> lets you pick one or more
+files on your computer, choose the branch and write a commit message.
+QUILL commits them all to GitHub together in one commit. This is
+different from <strong>Save to GitHub</strong>, which only commits the
+document you have open. Only plain text (UTF-8) files are
+supported.</li>
+</ul>
+<p>The four riskiest actions, renaming, changing visibility, deleting a
+branch and (in the Items viewer) merging a pull request, all ask you to
+type the exact name or number instead of answering Yes or No. A stray
+press of Enter on one of these is much harder to put right than most
+things in QUILL.</p>
+<p>All eight are in the Command Palette (<code>Ctrl+Shift+P</code>).
+They have no keys out of the box. You can give any of them one in the
+Keymap Editor (<strong>Tools &gt; Customize and Support &gt; Keymap
+Editor…</strong>).</p>
+<h4
+id="organizations-releases-notifications-and-security-alerts">Organizations,
+releases, notifications and security alerts</h4>
+<p>Five more commands on <strong>Tools &gt; Git and GitHub &gt;
+GitHub</strong>:</p>
+<ul>
+<li><strong>Browse Organization Repositories…</strong> lists the
+organizations your account belongs to, then that organization’s
+repositories. Choose one to open it in the GitHub Items viewer. This is
+for browsing only. QUILL does not manage organization teams or their
+permissions.</li>
+<li><strong>Create Release…</strong> asks for a tag and an optional
+title, then either your own release notes or GitHub’s automatic notes (a
+summary of pull requests merged since the last release), and whether to
+save it as a draft or publish it straight away.</li>
+<li><strong>Dispatch Workflow…</strong> runs a GitHub Actions workflow
+on a branch or tag you choose, the same as “Run workflow” on github.com.
+It is useful for workflows set up to be started by hand.</li>
+<li><strong>Notifications…</strong> is a real inbox: every notification
+for your account, across every repository, not just the one you have
+loaded. Each tells you whether it is read or unread, which repository it
+is from and why you got it. Choosing one opens your GitHub notifications
+page and marks it read.</li>
+<li><strong>Security Alerts…</strong> lists a repository’s open
+Dependabot alerts (severity, the package affected and a summary), so you
+can see what needs attention without opening a browser.</li>
+</ul>
+<h4 id="codespaces">Codespaces</h4>
+<p>Two more commands on <strong>Tools &gt; Git and GitHub &gt;
+GitHub</strong> use the <code>gh</code> command-line tool installed on
+your own computer, instead of QUILL’s usual GitHub connection. If you
+don’t have <code>gh</code> yet, see Downloading git and the GitHub CLI
+elsewhere in this guide.</p>
+<ul>
+<li><strong>Codespaces…</strong> lists your active Codespaces (name,
+repository and state). Select one for a menu to <strong>Stop</strong> or
+<strong>Delete</strong> it.</li>
+<li><strong>Create Codespace…</strong> asks for a repository and an
+optional branch, then creates a Codespace. <strong>Codespaces use GitHub
+compute and storage minutes and may cost money.</strong> This is the one
+GitHub command in QUILL that says so, and it asks you to confirm, naming
+the cost, before it does anything.</li>
+</ul>
+<p>These two are new. They have been tested with a stand-in for
+<code>gh</code>, but not yet with a real Codespaces repository. If
+something looks wrong, please tell us through <strong>Help &gt; Get Help
+from Support</strong>.</p>
+<h2 id="command-line-launching">Command-line launching</h2>
+<p>You can start QUILL from a command line, a script or a shortcut, and
+tell it which file to open and where to put the cursor. Most people
+never need this. It is handy when another tool, such as a search or a
+list of errors, hands you a file name and line number.</p>
+<p>The command is <code>quill.exe</code>, the launcher that comes with
+both the installed and the portable copy. During setup, the installer
+offers an “Add Quill to PATH” option. Turn it on and <code>quill</code>
+works from any Command Prompt or PowerShell window without the full
+path. If you skipped that option, use the full path instead (usually
+<code>"%LOCALAPPDATA%\Programs\Quill for All\quill.exe"</code> for an
+install just for you). From a source checkout, the command is
+<code>python -m quill</code>.</p>
+<p>These are the options:</p>
+<ul>
+<li><code>--help</code>: show the command help and exit.</li>
+<li><code>--version</code>: print QUILL’s version and exit without
+opening the window.</li>
+<li><code>--safe-mode</code>: start with optional features switched
+off.</li>
+<li><code>--reset-profile</code>: reset the feature profile store before
+starting.</li>
+<li><code>--diagnostics</code>: start with diagnostics tracing on.</li>
+<li><code>--dump-stacks</code>: write a thread-stack dump and exit.</li>
+<li><code>--line N</code>: the line (counting from 1) for the first file
+you open.</li>
+<li><code>--column M</code>: the column (counting from 1) for the first
+file you open.</li>
+<li><code>--goto FILE[:LINE[:COL]]</code>: open a file at a line and
+column in one argument (both optional, counting from 1). It is the short
+form of <code>--line</code> and <code>--column</code>, handy when a
+linter, a search result or a build error gives you a
+<code>file:line:column</code> string. Example:
+<code>--goto main.kt:27:5</code>.</li>
+<li><code>--diff LEFT RIGHT</code>: open two files straight into compare
+mode, on the first difference, without opening each one by hand.</li>
+<li><code>--new-window</code>: start a new copy of QUILL instead of
+handing the file to the one already running.</li>
+<li><code>--wait</code>: when handing the file to a QUILL that is
+already running, wait until that QUILL closes.</li>
+</ul>
+<p>Some examples:</p>
+<ul>
+<li><code>quill --version</code></li>
+<li><code>quill notes.md --line 40 --column 5</code></li>
+<li><code>quill --goto main.kt:27:5</code></li>
+<li><code>quill --diff old-draft.md new-draft.md</code></li>
+<li><code>quill --new-window notes.md</code></li>
+</ul>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now open files, including ones that have moved, and save them
+in the format you need. You know what each kind of document gets in
+QUILL, what carries over when you convert, and how to convert one file
+or a whole folder. You can rescue a scanned PDF, work with files on a
+server or on GitHub, and start QUILL from a command line.</p>
+<p>To practise with QUILL open, choose <strong>Help &gt;
+Tutorials…</strong> (<code>Ctrl+Alt+F1</code>) and try “Write and save
+your first document” and “Open anything, save as anything”. On the
+website, <a
+href="https://www.quillforall.org/tutorials/03-rescue-a-scanned-pdf.html">Rescue
+a scanned PDF</a>, <a
+href="https://www.quillforall.org/tutorials/04-document-to-audiobook.html">From
+document to published audiobook</a> and <a
+href="https://www.quillforall.org/tutorials/08-github-inside-quill.html">GitHub
+inside QUILL</a> walk through the longer jobs.</p>
+<p>Next, Chapter 4, Writing and editing, is where you start shaping the
+words themselves.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-02-finding-your-way-around.html">Chapter 2: Finding
+your way around</a></li>
+<li>Next: <a href="quill-guide-04-writing-and-editing.html">Chapter 4:
+Writing and editing</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

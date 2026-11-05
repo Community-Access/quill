@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 13: When you need a hand</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-13-when-you-need-a-hand">Chapter 13: When you need a
+hand</h1>
+<p>Everyone gets stuck sometimes, and this chapter is about what to do
+then. You will meet the ten guided lessons built into QUILL Lite, then
+learn what to do if QUILL Lite will not start, how to write to a real
+person at support, and the one thing worth attaching when you do. And
+remember that <strong>F1</strong> works everywhere, and tells you where
+you are and what the thing you are on does.</p>
+<h2 id="fifteen-lessons-inside-the-app">Fifteen lessons, inside the
+app</h2>
+<p>QUILL Lite has fifteen short guided lessons built in. They walk you
+through the things that are hard to work out just by pressing keys. Each
+one takes a few minutes, and you can stop whenever you like.</p>
+<p>To open them, press <strong>Ctrl+Alt+F1</strong>, or choose
+<strong>Help &gt; Tutorials…</strong>.</p>
+<h3 id="the-lessons">The lessons</h3>
+<p>The lessons come in two groups, called tracks.</p>
+<h4 id="your-first-documents">Your first documents</h4>
+<table>
+<thead>
+<tr>
+<th>Lesson</th>
+<th>What it covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open a file, and give it back unchanged</td>
+<td>Opening a file, the three facts QUILL Lite keeps about it, and
+saving it back just as it was</td>
+</tr>
+<tr>
+<td>Four kinds of document, and how to say which</td>
+<td>Plain text, Markdown, HTML and rich text, and what each one
+changes</td>
+</tr>
+<tr>
+<td>Your documents are numbered</td>
+<td>Moving between the documents you have open</td>
+</tr>
+<tr>
+<td>What to press when you are lost</td>
+<td>F1, F6, Ctrl+F1, and Escape</td>
+</tr>
+</tbody>
+</table>
+<h4 id="working-in-a-document">Working in a document</h4>
+<table>
+<thead>
+<tr>
+<th>Lesson</th>
+<th>What it covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selecting more than a few words</td>
+<td>F8, extend mode, and taking a whole paragraph in one key</td>
+</tr>
+<tr>
+<td>Finding your way back</td>
+<td>Bookmarks, marks, and Go Back</td>
+</tr>
+<tr>
+<td>Skimming something long</td>
+<td>Headings, folding, and the headings list</td>
+</tr>
+<tr>
+<td>Spelling, without a red squiggle</td>
+<td>F7, the misspelling sound, and the Applications key</td>
+</tr>
+<tr>
+<td>Asking a question about a document</td>
+<td>AI help, from the very beginning</td>
+</tr>
+<tr>
+<td>Write by talking</td>
+<td>Dictation with Ctrl+F11: a first sentence, scratch that, holding the
+key, Recent Phrases and the settings</td>
+</tr>
+<tr>
+<td>Punctuation and symbols by voice</td>
+<td>Saying marks, starting a heading and a list, spelling a web
+address</td>
+</tr>
+<tr>
+<td>Fix a word by voice</td>
+<td>Select, correct and spell that</td>
+</tr>
+<tr>
+<td>Snippets and clips by voice</td>
+<td>Copy all, paste clip, insert snippet</td>
+</tr>
+<tr>
+<td>Switch to Spanish and back</td>
+<td>Switch Dictation Language, and by voice</td>
+</tr>
+<tr>
+<td>Make a live transcript</td>
+<td>Writing down a talk or a meeting as it happens</td>
+</tr>
+</tbody>
+</table>
+<p>If you are new, start with the first lesson and go in order. All
+fifteen together take about sixty-nine minutes, but there is no need to
+do them in one sitting.</p>
+<h3 id="how-a-lesson-works">How a lesson works</h3>
+<p>Each lesson is a few steps. Every step tells you three things:</p>
+<ol type="1">
+<li><strong>What to press.</strong> It always shows
+<strong>your</strong> key. If you have changed a key in the Keyboard
+Manager, the lesson knows.</li>
+<li><strong>Why you would want to</strong>, in a sentence.</li>
+<li><strong>What you should hear when it worked.</strong> That way you
+can tell for yourself that you got it right.</li>
+</ol>
+<p>Some steps also have a <strong>Worth knowing</strong> line, a small
+tip that will save you trouble later.</p>
+<h3 id="finding-your-way-around-the-window">Finding your way around the
+window</h3>
+<p>The window opens on <strong>Contents</strong>. This is a tree with
+the two tracks and the lessons under them. There is a filter box above
+it: type part of a lesson’s name to find it, or type the word
+<code>here</code> to see the lessons about the window you just came
+from.</p>
+<p>Under the tree are four buttons: <strong>Start</strong>, <strong>Read
+it all</strong>, <strong>The whole book as a document</strong>, and
+<strong>Forget my progress</strong>.</p>
+<p>When you start a lesson, the step appears in a box you can arrow
+through and copy from with <strong>Ctrl+C</strong>. Under it are five
+buttons:</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Try it</strong></td>
+<td>Does this step for you, just as its key would</td>
+</tr>
+<tr>
+<td><strong>Next</strong></td>
+<td>Goes to the next step and reads it</td>
+</tr>
+<tr>
+<td><strong>Back</strong></td>
+<td>Goes to the previous step and reads it</td>
+</tr>
+<tr>
+<td><strong>Say it again</strong></td>
+<td>Reads the step out in full</td>
+</tr>
+<tr>
+<td><strong>Contents</strong></td>
+<td>Back to the list, keeping your place</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Try it</strong> is there for when you have not learned a key
+yet. The lesson can do the step for you, then tell you about the place
+you have landed in.</p>
+<p>You will also find a <strong>Follow me</strong> check box. In QUILL
+Lite it is greyed out. In some other QuillVille apps it moves you on to
+the next step by itself. Here, every step already ends with QUILL Lite
+saying something out loud, so you will know when it worked, and you
+press <strong>Next</strong> when you are ready.</p>
+<h3 id="coming-and-going">Coming and going</h3>
+<p>The lessons window stays open beside your document, so you can go
+back and forth between them. Press <strong>Escape</strong> or
+<strong>Alt+F4</strong> to close it. QUILL Lite remembers which lessons
+you have finished, and where you were in the one you were working
+on.</p>
+<p>Every QuillVille app has lessons in the same kind of window, on the
+same key. If you would rather read all the lessons straight through,
+press <strong>The whole book as a document</strong>. It opens the full
+set in your web browser.</p>
+<h2 id="getting-help">Getting help</h2>
+<p>There is always a way to get help. This part starts with what to do
+if QUILL Lite will not start, then shows you how to write to
+support.</p>
+<h3 id="if-quill-lite-does-not-start">If QUILL Lite does not start</h3>
+<p>If QUILL Lite cannot start, it does not just disappear. A plain
+message opens, and your screen reader reads it by itself. It says “QUILL
+Lite did not start”, gives the reason in words, tells you where the
+launch log is, and gives you the support address.</p>
+<p>What to do depends on the reason:</p>
+<ul>
+<li><strong>It says the zip was opened from inside.</strong> Extract the
+whole zip first. Press the Applications key on the zip, choose
+<strong>Extract All…</strong>, then open <code>QuillLite.exe</code> from
+the folder you extracted.</li>
+<li><strong>It names a missing file or DLL.</strong> Extract the zip
+again into an empty folder, and check whether your antivirus program has
+put a file into quarantine.</li>
+<li><strong>It says Windows refused to run its files.</strong> Move the
+folder somewhere that belongs to you, such as Documents or a USB
+stick.</li>
+<li><strong>It says “Python reported”.</strong> Send the launch log to
+support. For a portable copy it is <code>data\logs\launch.log</code>
+inside the QUILL Lite folder. For an installed copy it is
+<code>%APPDATA%\Quill\logs\QuillLite-launch.log</code>. Each start
+replaces the log, so send it before you try again.</li>
+<li><strong>Nothing happens at all, and there is no message.</strong>
+QUILL Lite is probably already running, and your new start simply handed
+over to it. Check the taskbar, and Task Manager.</li>
+</ul>
+<h3 id="support-by-email">Support by email</h3>
+<p>Support is run by <strong>Community Access</strong>. The address is
+<strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>.
+A real person reads every message and replies by email.</p>
+<p>Every message from QUILL Lite goes to that one address. Nothing is
+posted on GitHub or on any other public site.</p>
+<h3 id="get-help-from-support-step-by-step">Get Help from Support, step
+by step</h3>
+<p>The quickest way to write to support is <strong>Help &gt; Get Help
+from Support…</strong> (Ctrl+Alt+F2). Every app in the QUILL family
+opens the same window with this key.</p>
+<h4 id="filling-in-the-window">Filling in the window</h4>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+F2</strong>. The Get Help from Support window
+opens. Its first line says the message goes to <a
+href="mailto:support@community-access.org">support@community-access.org</a>,
+and that nothing is sent until you send it from your mail program.</li>
+<li><strong>What kind of message</strong> (Alt+W) is a list: Something
+is broken, A question, An accessibility problem, or An idea or request.
+Use the Up and Down arrows. This only helps your message reach the right
+person, so do not worry about picking exactly right.</li>
+<li><strong>Subject</strong> (Alt+U) is a short line saying what the
+message is about, just like an email subject. For example, “Spelling
+stops after I paste”. You have to fill this in.</li>
+<li><strong>What happened</strong> (Alt+H) is where you describe the
+problem, in as much or as little detail as you like. This is what a
+person reads first. You have to fill this in too. Enter starts a new
+line here, so press <strong>Tab</strong> to move on.</li>
+<li><strong>What you expected</strong> (Alt+X) is what you thought would
+happen instead. You can leave it empty.</li>
+<li><strong>Steps to reproduce</strong> (Alt+R) is how someone else
+could make it happen, for example “Open a .docx, press F7, press
+Ctrl+V”. You can leave it empty, but if you can fill it in, it helps
+more than anything else.</li>
+<li><strong>Your email address</strong> (Alt+E) is where support should
+reply. You can leave it empty. The message goes from your own mail
+account, so support can reply there anyway. Only fill this in if you
+want the answer to go somewhere else.</li>
+<li><strong>Screen reader</strong> (Alt+A) is which one you use, if any.
+It is already filled in with the screen reader that is running, so
+usually you can leave it.</li>
+<li>A line under the fields tells you what else is included, for example
+“Also included: QUILL Lite 2.0.0, your QUILL AI support ID (…), and your
+Windows version.”</li>
+</ol>
+<h4 id="sending-it">Sending it</h4>
+<ol type="1">
+<li>Press <strong>Enter</strong>, or Tab to <strong>Send</strong> and
+press <strong>Space</strong>.</li>
+<li>If the subject or What happened is empty, or the email address does
+not look right, you hear the first problem and the whole list is shown.
+Press <strong>Enter</strong> to close it, fix the field, and send
+again.</li>
+<li>Otherwise your <strong>own mail program opens with the whole message
+already written</strong>, addressed to <a
+href="mailto:support@community-access.org">support@community-access.org</a>,
+with a subject such as “[QUILL Lite 2.0.0] Spelling stops after I
+paste”. You hear “Your mail program is opening with the message ready.
+Nothing is sent until you send it there.” The Get Help window
+closes.</li>
+<li><strong>Press Send in your mail program.</strong> Nothing leaves
+your computer until you do, so you can read it over, add anything, or
+change your mind.</li>
+</ol>
+<h4 id="if-you-have-no-mail-program">If you have no mail program</h4>
+<p>If you only use webmail, there is no mail program to open. QUILL Lite
+says “No mail program answered. Write to <a
+href="mailto:support@community-access.org">support@community-access.org</a>.”
+Your message is not lost. The whole message, with the address and
+subject at the top, is on your clipboard. Start a new email to
+<strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>
+in your webmail and paste it with <strong>Ctrl+V</strong>. The Get Help
+window stays open with everything you typed.</p>
+<p>If your message is very long, the email holds a shortened copy with a
+line saying so, and the complete text goes on your clipboard. QUILL Lite
+tells you when this happens. Paste the full text over the shortened one
+with <strong>Ctrl+V</strong>.</p>
+<h4 id="what-is-included-and-what-is-not">What is included, and what is
+not</h4>
+<ul>
+<li>Included: what you typed, the kind of message, QUILL Lite’s name and
+version, your Windows version, and the screen reader you chose. If this
+computer is connected to QUILL’s free AI, its <strong>support
+ID</strong> is included too. That lets support look up your AI allowance
+without needing a name or password.</li>
+<li>Not included: your documents, your file names, your settings, or
+anything you did not type. If support needs more, they will ask
+you.</li>
+<li>It is an ordinary email from your own account to Community Access.
+Nothing is posted in public, and QUILL Lite itself does not send
+anything.</li>
+</ul>
+<h4 id="what-happens-next">What happens next</h4>
+<p>A person at Community Access reads your message and replies by email,
+usually to the address you sent it from. If you open the window and
+change your mind, press <strong>Escape</strong> or choose
+<strong>Cancel</strong> to close it without sending anything.</p>
+<p>You never have to use the window. Writing to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>
+yourself, from any email account, works just as well. Just say which app
+you were using and what happened.</p>
+<h3 id="the-one-thing-worth-attaching">The one thing worth
+attaching</h3>
+<p>Sometimes QUILL Lite starts but behaves oddly. Maybe there is no
+formatting, every word is called a misspelling, or nothing is spoken.
+When that happens, run it once with
+<strong><code>--check</code></strong>:</p>
+<pre><code>QuillLite.exe --check</code></pre>
+<p>No window opens. Instead it writes about a dozen lines to
+<strong><code>check.log</code></strong> in your data folder
+(<strong>Help &gt; About QUILL Lite</strong> tells you where that is),
+and prints the same lines. They say which version you have, whether it
+is a frozen build, whether rich text started properly, which text mode
+it is in, which screen reader it can reach, whether the spelling
+dictionary loaded, and where your data is kept.</p>
+<p>Paste those lines into your email to support. They answer the first
+questions support would ask, so you get help faster.</p>
+<h4 id="other-ways-to-start-quill-lite">Other ways to start QUILL
+Lite</h4>
+<p>There are three more options for the same command line.
+<strong><code>--rich</code></strong> and
+<strong><code>--plain</code></strong> start with a new document of that
+kind, whatever your setting says.
+<strong><code>--new-instance</code></strong> starts a second, separate
+QUILL Lite instead of handing the file to the one that is already
+open.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p><strong>Ctrl+Alt+F1</strong> opens nine guided lessons in two tracks.
+Each step tells you what to press and what you should hear, <strong>Try
+it</strong> can do a step for you, and your place is remembered. If
+QUILL Lite will not start, the message tells you why and what to try. To
+reach a person, press <strong>Ctrl+Alt+F2</strong>, fill in the form,
+and send it from your own mail program, or just write to <a
+href="mailto:support@community-access.org">support@community-access.org</a>.
+If QUILL Lite starts but seems wrong, <code>--check</code> gives support
+the facts they need.</p>
+<p>A good first lesson is <em>Open a file, and give it back
+unchanged</em>. For help inside the app any time, <em>What to press when
+you are lost</em> teaches the three keys that explain where you are:
+<strong>F1</strong>, <strong>F6</strong> and
+<strong>Ctrl+F1</strong>.</p>
+<p>After this chapter comes Chapter 14, WordPress, for anyone who looks
+after a website, and Chapter 15, Forms, for writing accessible forms.
+Then the Keyboard reference: every key QUILL Lite has, menu by menu.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-guide-12-your-files-updates-and-quill-for-all.html">Chapter
+12: Your files, updates and QUILL for All</a></li>
+<li>Next: <a href="lite-guide-14-wordpress.html">Chapter 14:
+WordPress</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

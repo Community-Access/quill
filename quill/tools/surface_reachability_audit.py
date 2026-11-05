@@ -178,8 +178,11 @@ def documented_surfaces() -> dict[str, list[str]]:
     guides are where somebody would have read about those welcome screens.
     """
     found: dict[str, list[str]] = {}
+    from quill.core.user_guide_files import read_guide_text
+
     for guide in sorted(REPO_ROOT.glob("standalone/*/docs/userguide.md")):
-        text = guide.read_text(encoding="utf-8", errors="replace")
+        # A guide split into chapter files is read whole (contents + chapters).
+        text = read_guide_text(guide)
         names = sorted({
             match.strip()
             for match in re.findall(r"\*\*([A-Z][A-Za-z0-9 ']{2,40}?)\.\.\.\*\*", text)

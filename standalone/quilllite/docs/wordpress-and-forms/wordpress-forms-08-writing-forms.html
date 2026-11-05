@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 8: Writing a form</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-8-writing-a-form">Chapter 8: Writing a form</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter is about making a form: a contact form, an event
+sign-up, a membership renewal, a survey or a feedback page. It explains
+why QUILL writes forms as text, what the QAF form language looks like,
+how to start a form from a template, add questions, rearrange them,
+write rules that show and hide questions, set the form’s properties,
+check it for problems, and fill it in yourself with your screen reader
+before anyone else sees it. Everything in this chapter happens on your
+own computer, needs no site, and works in Safe Mode. Chapter 9 covers
+putting the form on the web and on paper.</p>
+<h2 id="why-forms-are-text-here">Why forms are text here</h2>
+<p>Making a form usually means dragging boxes around a web page, which
+is one of the hardest things on the web to do with a screen reader. But
+a form is really structured text: a title, some pages and sections, the
+questions, their choices, and a few rules. QUILL is good at text, so
+that is how you write one.</p>
+<p>You write the form as a short plain text document in the <strong>QAF
+form language</strong>, the language of the QUILL Accessible Forms
+plugin for WordPress. You check it, and then you fill it in yourself,
+with your screen reader, before anyone else sees it. When it is right,
+you can publish it to your site, save it as a web page, or print it.</p>
+<p><strong>Turning it on.</strong> Forms is on in every QUILL feature
+profile except Essential, and in QUILL Lite’s Recommended, Everything
+and Developer profiles. If you do not see <strong>File &gt; New
+Form…</strong>, switch Forms on in <strong>Profiles and
+Features…</strong> in QUILL, or check it in <strong>Tools &gt; Customize
+Features</strong> in QUILL Lite.</p>
+<h2 id="where-everything-is">Where everything is</h2>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>What is there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File</td>
+<td>New Form, beside the other New commands</td>
+</tr>
+<tr>
+<td>Insert</td>
+<td>Form Field</td>
+</tr>
+<tr>
+<td>View</td>
+<td>Form Outline</td>
+</tr>
+<tr>
+<td>Format</td>
+<td>Form Rules</td>
+</tr>
+<tr>
+<td>Tools &gt; Forms</td>
+<td>Check, Fill It In Yourself, Properties, publishing, saving and
+AI</td>
+</tr>
+</tbody>
+</table>
+<p>Apart from New Form and Responses, these commands are dimmed unless a
+form is open. If you reach one another way, such as from the Command
+Palette, QUILL tells you why, for example “Check This Form works in a
+form document, a .qaf file. Start one with New Form in the File menu, or
+open one.”</p>
+<p>None of the Forms commands has a shortcut key. Every sensible key is
+already taken by something you use more often, and you will not write
+forms every day. Use the menus, or press Ctrl+Shift+P, type “form”, and
+pick the command from the list.</p>
+<h2 id="form-files">Form files</h2>
+<p>A form is an ordinary text file whose name ends in <code>.qaf</code>.
+Ctrl+S saves it like any other document, File &gt; Open opens it, and
+you can read it in any text editor. A form saved by an earlier build
+with the <code>.bfl</code> ending still opens and works the same.</p>
+<p>Most commands rewrite only the question they change, and the rest of
+your form stays exactly as you wrote it, spacing and all. Moving a
+question can rewrite the whole form in the standard layout. Ctrl+Z takes
+either back.</p>
+<h2 id="starting-a-form">Starting a form</h2>
+<ol type="1">
+<li>Choose <strong>File &gt; New Form…</strong>. The New Form window
+opens on <strong>Title</strong>.</li>
+<li>Type the form’s title, the name your visitors will see.</li>
+<li>Tab to <strong>Template</strong> and choose one. There are seven,
+each a few questions you can change:
+<ul>
+<li><strong>Blank:</strong> one question to start from.</li>
+<li><strong>Contact form:</strong> name, email address and a
+message.</li>
+<li><strong>Event registration:</strong> name, email, how many are
+coming, and access arrangements, asked only when needed.</li>
+<li><strong>Membership renewal:</strong> contact details, membership
+level, and how they would like the newsletter.</li>
+<li><strong>Survey:</strong> a rating, a yes or no, and room to say
+more.</li>
+<li><strong>Accessibility feedback:</strong> where the problem was, what
+happened, what they use, and whether to reply.</li>
+<li><strong>Volunteer sign-up:</strong> contact details, the days they
+can help, and what they would like to do.</li>
+</ul></li>
+<li>Press <strong>Next</strong>. The ordinary Save As window opens, with
+a file name made from your title. Choose a folder and press Save.</li>
+</ol>
+<p>You hear, for example, “Saved Ask us anything.qaf, a contact form
+with 3 questions.” The new form opens straight away, ready to
+change.</p>
+<h2 id="what-a-form-looks-like">What a form looks like</h2>
+<p>Here is the Event registration template, as QUILL writes it:</p>
+<pre><code>bfl 1
+form &quot;Spring fair&quot;
+
+text #name &quot;Your name&quot;
+  @required
+  @autocomplete &quot;name&quot;
+email #email &quot;Email address&quot;
+  @required
+  @description &quot;We send your confirmation here.&quot;
+  @autocomplete &quot;email&quot;
+number #guests &quot;How many people are coming, including you?&quot;
+  @required
+  @description &quot;A number from 1 to 10.&quot;
+  @default 1
+  @min 1
+  @max 10
+radio #access &quot;Do you need any access arrangements?&quot;
+  + No
+  + Yes
+textarea #access_details &quot;Tell us what you need&quot;
+  @when #access is &quot;yes&quot;</code></pre>
+<p>Read it a line at a time:</p>
+<ul>
+<li><strong>The first line,</strong> <code>bfl 1</code>, says which
+version of the form language this is. Leave it alone.</li>
+<li><strong><code>form</code></strong> gives the form’s title.</li>
+<li><strong>Each question</strong> starts on a line of its own: the kind
+of question, its id (the word after the <code>#</code>), and its label
+in quotes. The id is the name rules use for the question; visitors never
+see it.</li>
+<li><strong>The indented lines</strong> under a question are its
+settings, starting with <code>@</code>, and its choices, starting with
+<code>+</code>.</li>
+<li><strong><code>@when</code></strong> is a rule: Tell us what you need
+only appears when somebody answers Yes.</li>
+</ul>
+<p>You never have to type any of this. The commands below write it for
+you. But it is ordinary text, so Find, spelling, copy and paste all work
+on it, and if you would rather type a question yourself, you can.</p>
+<h2 id="the-form-language-in-more-detail">The form language in more
+detail</h2>
+<h3 id="pages-and-sections">Pages and sections</h3>
+<p>A long form is easier in pages. A <code>page</code> line starts one,
+optionally with a title, and everything indented under it belongs to it.
+A <code>section</code> groups questions under a heading, with its own id
+and label:</p>
+<pre><code>page
+  section #about &quot;About you&quot;
+    text #name &quot;Your name&quot;
+      @required
+  select #country &quot;Country&quot;
+    @library &quot;countries&quot;
+
+page &quot;Your session&quot;
+  radio #size &quot;T-shirt size&quot;
+    + Small
+    + Large</code></pre>
+<h3 id="the-settings-you-will-use-most">The settings you will use
+most</h3>
+<ul>
+<li><code>@required</code>: the visitor must answer it.</li>
+<li><code>@description "..."</code>: help text, read with the question.
+Say what is expected, such as “A number from 1 to 10”.</li>
+<li><code>@placeholder "..."</code>: an example shown inside an empty
+box. It is never a label: a placeholder disappears as soon as someone
+types.</li>
+<li><code>@autocomplete "..."</code>: an autofill hint, so the visitor’s
+browser can fill in their name, email, phone or address. The usual hints
+are <code>name</code>, <code>email</code>, <code>tel</code> and
+<code>street-address</code>.</li>
+<li><code>@default ...</code>: the answer the question starts with.</li>
+<li><code>@min</code> and <code>@max</code>: the smallest and largest
+number. <code>@minlength</code> and <code>@maxlength</code> do the same
+for the length of text.</li>
+<li><code>@library "..."</code>: take the choices from a ready-made
+choice library, such as <code>countries</code>, instead of listing
+them.</li>
+<li><code>@when ...</code>: show the question only when the condition is
+true.</li>
+<li><code>@calculate ...</code>: work the answer out from other
+answers.</li>
+</ul>
+<h3 id="choices">Choices</h3>
+<p>Each choice is a <code>+</code> line. QUILL stores a choice by a
+value made from its words, in small letters with hyphens, so “Large
+print” is stored as <code>large-print</code>. A rule can name either the
+words or the value, in any capitals.</p>
+<h3 id="conditions-and-calculations">Conditions and calculations</h3>
+<p>Conditions and calculations use one small expression language. A
+question is named by its id with a <code>#</code>:</p>
+<ul>
+<li>comparing: <code>#type is "business"</code>,
+<code>#type is not "business"</code>, <code>#age &gt; 17</code>,
+<code>#age is at least 18</code>;</li>
+<li>empty or not: <code>#phone is empty</code>,
+<code>#consent is filled</code>;</li>
+<li>words: <code>#email contains "@"</code>;</li>
+<li>a list: <code>#country is one of ["uk", "ie"]</code>;</li>
+<li>dates: <code>#date is before today()</code>,
+<code>#date is within 7 days of today()</code>;</li>
+<li>joining: <code>and</code>, <code>or</code> and <code>not</code>, as
+in <code>#age &gt; 17 and #consent is filled</code>;</li>
+<li>arithmetic, for <code>@calculate</code>: <code>#tickets * 5</code>,
+or <code>round(#total * 1.2, 2)</code>.</li>
+</ul>
+<p>QUILL reads every rule back as a sentence, such as “Age is greater
+than 17 and Consent is filled in”, or “Tickets times 5”, so you can
+check it means what you meant.</p>
+<h2 id="adding-a-question">Adding a question</h2>
+<p>Put the cursor on the question you want the new one to follow, then
+choose <strong>Insert &gt; Form Field…</strong>.</p>
+<ol type="1">
+<li>The Kind of question list opens. Each row says what a visitor meets,
+such as “Choose one: Choose one from a group of buttons”.
+<strong>Section</strong> and <strong>Page break</strong> are at the top.
+Type a word such as “date” in <strong>Search</strong> and press Enter to
+narrow the list, then press Enter on a row.</li>
+<li>A short window asks only what that kind of question needs:
+<ul>
+<li><strong>Label:</strong> the question, as visitors will hear it;</li>
+<li><strong>Id (optional):</strong> leave it empty and QUILL makes one
+from the label;</li>
+<li><strong>Required:</strong> check it if visitors must answer;</li>
+<li><strong>Help text:</strong> a sentence read with the question,
+saying what is expected;</li>
+<li>for a question with choices, <strong>Choices, one per line</strong>,
+or a <strong>Choice library</strong>, a ready-made list such as
+countries or time zones;</li>
+<li>for a page break, an optional <strong>Page title</strong>.</li>
+</ul></li>
+<li>Press Insert. The question goes in after the one your cursor was on,
+and your cursor moves to it. You hear, for example, “Inserted Best way
+to reply, choose one.”</li>
+</ol>
+<p>A page break starts a new page at your cursor: everything after it
+moves to the new page.</p>
+<h3 id="the-kinds-of-question">The kinds of question</h3>
+<ul>
+<li><strong>Text:</strong> one line of text, such as a name; several
+lines, such as a message; a number; an email address; a phone number; a
+web address; an amount of money; a password; a hidden value visitors
+never see.</li>
+<li><strong>Choosing:</strong> one from a drop-down list; several from a
+list; one from a group of buttons; check as many as apply; one check box
+to agree to something; one on-or-off switch.</li>
+<li><strong>Scales:</strong> a score out of five; how likely they are to
+recommend you, from 0 to 10; how much they agree with each statement; a
+grid of the same choices for several questions; putting choices in
+order; a quiz question with a right answer.</li>
+<li><strong>Dates and times:</strong> a date; a time; both; a first and
+last date.</li>
+<li><strong>People and places:</strong> a name in parts; a postal
+address in parts.</li>
+<li><strong>Other:</strong> a file they send; a signature; a number
+worked out from other answers; a group of questions they can fill in
+more than once; and text shown on the form that is not a question.</li>
+</ul>
+<p>Payment fields, and the fields some sites use to make posts or
+register users, are left to the site. If a form you open has one, QUILL
+keeps it exactly as it is, as a protected line.</p>
+<h2 id="the-form-outline">The form outline</h2>
+<p><strong>View &gt; Form Outline…</strong> lists every page, section
+and question in order. Each row reads like a sentence, for example
+“Email address, email field, required, page 1”. The list starts with a
+count, such as “Page 1, 3 questions”.</p>
+<ul>
+<li><strong>Go to It</strong>, or Enter, puts the cursor on that
+question in the document.</li>
+<li><strong>Move Up</strong> and <strong>Move Down</strong> move it, as
+do Alt+Shift+Up and Alt+Shift+Down. Moving past the top or bottom of a
+page takes it on to the next page.</li>
+<li><strong>Move In</strong> puts it into the section just above it, as
+does Alt+Shift+Right. <strong>Move Out</strong> takes it out of its
+section, as does Alt+Shift+Left.</li>
+<li><strong>Rename…</strong> changes what the question says.</li>
+<li><strong>Change Id…</strong> changes its id, and every rule that
+mentions it changes too.</li>
+<li><strong>Change Type…</strong> makes it a different kind of question.
+Its label, help and rules stay.</li>
+<li><strong>Duplicate</strong> puts a copy straight after it.</li>
+<li><strong>Remove…</strong> takes it out, after asking you first.</li>
+</ul>
+<p>Every change is one step that Ctrl+Z in the document takes back.</p>
+<h2 id="rules">Rules</h2>
+<p><strong>Format &gt; Form Rules…</strong> lists every rule in the form
+as a sentence, such as “Show Tell us what you need when Do you need any
+access arrangements? is Yes.” Calculations are there too: “Cost is
+Tickets times 5.”</p>
+<p>To add one, press <strong>Add Rule…</strong> and make three
+choices:</p>
+<ol type="1">
+<li><strong>When this question</strong>, and how its answer is compared
+in <strong>Is</strong>: is, is not, is filled in, is empty, contains, is
+more than, or is less than. Type the answer to compare with in
+<strong>This answer</strong>. You can type the choice’s words, such as
+Phone, in any capitals; QUILL matches it to the choice.</li>
+<li><strong>Then</strong>: show, hide, require, make optional, enable,
+disable, or skip to a page.</li>
+<li><strong>To this question or page</strong>: what the rule acts
+on.</li>
+</ol>
+<p>If you know the form language, you can type the whole condition in
+<strong>Or write the condition yourself</strong> instead, for example
+<code>#age &gt; 17 and #consent is filled</code>. QUILL checks that it
+makes sense before it writes anything, and tells you what is wrong if it
+does not.</p>
+<p>You hear the new rule as a sentence, such as “Show Phone number when
+Best way to reply is Phone.”, and an <code>@when</code> line appears
+under the question.</p>
+<p>The other buttons: <strong>Edit…</strong> changes a rule’s condition
+(an empty condition removes it), <strong>Remove…</strong> takes a rule
+out after asking, and <strong>Go to It</strong> takes you to the
+question the rule is on.</p>
+<h2 id="form-properties">Form Properties</h2>
+<p><strong>Tools &gt; Forms &gt; Form Properties…</strong> holds
+everything about the form that is not a question:</p>
+<ul>
+<li><strong>Title:</strong> the form’s name;</li>
+<li><strong>Description:</strong> a sentence or two shown above the
+questions;</li>
+<li><strong>Language:</strong> the language the form is written in, as a
+short code such as <code>en</code>, <code>fr</code> or
+<code>pt-BR</code>;</li>
+<li><strong>Submit button:</strong> what the send button says;</li>
+<li><strong>Success message:</strong> what visitors read after
+sending;</li>
+<li><strong>Redirect to:</strong> a web address to go to after sending,
+instead of the message;</li>
+<li><strong>Let visitors save and continue later:</strong> for a long
+form.</li>
+</ul>
+<p>At the bottom, <strong>On the site (read only)</strong> says what the
+website decides: whether the CAPTCHA and the spam trap are on, how many
+email notifications there are, and the form’s number on the site once it
+is published. You read these here; you change them on the site. You hear
+“Form properties saved in the document.” when you press OK.</p>
+<h2 id="checking-a-form">Checking a form</h2>
+<p><strong>Tools &gt; Forms &gt; Check This Form…</strong> looks for
+anything that would make the form hard to fill in, and lists what to
+fix, most serious first:</p>
+<ul>
+<li>a question with no label, or with only a placeholder for one;</li>
+<li>a group of choices with no question for the group;</li>
+<li>a question marked required only with an asterisk or a word, instead
+of Required;</li>
+<li>a format rule, such as a smallest number, with no help text saying
+what is expected;</li>
+<li>name, email, phone and address questions without an autofill hint,
+so the browser cannot fill them in, for example “Phone number has no
+autofill hint, so the browser cannot fill it in. The hint is tel.”;</li>
+<li>a rule that names a question that does not exist, or that can never
+show a required question;</li>
+<li>an empty page, or more than 30 questions on one page;</li>
+<li>the same id used twice;</li>
+<li>a list of more than 15 choices, which would be easier as a choice
+library.</li>
+</ul>
+<p>Anything QUILL could not read is listed first, in the form language’s
+own words, such as a word it did not expect. Lines that start “On the
+site today” are different: they say where the forms plugin on your
+website currently reads your form differently from how it is written, so
+you know before you publish.</p>
+<p>Press Enter or <strong>Go to It</strong> to go to the line. After you
+fix something, <strong>Check Again</strong> reads the form afresh. When
+there is nothing left you hear “Check This Form found nothing to
+fix.”</p>
+<h2 id="fill-it-in-yourself">Fill It In Yourself</h2>
+<p><strong>Tools &gt; Forms &gt; Fill It In Yourself…</strong> opens
+your form as a real window, built from the same text, and you fill it in
+as a visitor would.</p>
+<ul>
+<li><strong>Tab</strong> moves from question to question. Each one is an
+ordinary edit box, check box, list or group of radio buttons, so your
+screen reader says its label, its group, and “required” where it
+is.</li>
+<li><strong>Rules work as you answer.</strong> When an answer makes a
+question appear or disappear, QUILL tells you, for example “Phone number
+appears.” or “Phone number is hidden.”</li>
+<li><strong>Answers that are worked out,</strong> such as a total,
+update as you type.</li>
+<li><strong>Next</strong> goes to the next page, but first checks this
+page: if a required question has no answer, QUILL tells you which, and
+puts you on it. <strong>Back</strong> goes back.</li>
+<li><strong>Language,</strong> at the top, lets you try the form in each
+language it is translated into.</li>
+<li><strong>Submit</strong> sends nothing. It shows <strong>What Would
+Be Sent</strong>: “Nothing was sent. This is what the form would send:”,
+then each question and its answer, anything that still needs an answer,
+and what the rules worked out.</li>
+<li><strong>Close</strong>, or Escape, leaves without keeping
+anything.</li>
+</ul>
+<p>If a question is hard to understand by ear here, it will be hard for
+your visitors too. This is the moment to fix it.</p>
+<h2 id="a-walk-through-a-contact-form-with-a-rule">A walk-through: a
+contact form with a rule</h2>
+<ol type="1">
+<li><strong>File &gt; New Form…</strong>, title “Ask us anything”,
+template Contact form, Next, Save.</li>
+<li>Put the cursor on the Your message question. <strong>Insert &gt;
+Form Field…</strong>, search “choose”, pick Choose one. Label “Best way
+to reply”, choices Email and Phone. Insert.</li>
+<li><strong>Insert &gt; Form Field…</strong> again, Phone number, label
+“Phone number”. Insert.</li>
+<li><strong>Format &gt; Form Rules…</strong>, <strong>Add
+Rule…</strong>: when Best way to reply, is, Phone; then Show; Phone
+number. You hear “Show Phone number when Best way to reply is
+Phone.”</li>
+<li><strong>Tools &gt; Forms &gt; Check This Form…</strong> says the
+phone question has no autofill hint. Go to It, and add a line
+<code>@autocomplete "tel"</code> under it. Check Again.</li>
+<li><strong>Tools &gt; Forms &gt; Fill It In Yourself…</strong>. Tab
+through. Choose Phone and hear “Phone number appears.” Submit, and read
+What Would Be Sent.</li>
+</ol>
+<p>The Forms track in <strong>Help &gt; Tutorials</strong> has seven
+guided lessons that build this same form.</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a
+href="wordpress-forms-07-running-your-site.html">Chapter 7: Running your
+site</a></li>
+<li>Next: <a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html">Chapter 9:
+Forms on your site, on the web and on paper</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

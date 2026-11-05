@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 10: AI help</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-10-ai-help">Chapter 10: AI help</h1>
+<p>AI help can summarize a passage, tidy your wording, answer a question
+about your document, translate, and more. It is off when you first
+install QUILL Lite. To use it you do two things: switch it on, and
+accept the privacy agreement. Doing only one of them is not enough.
+<em>Switching on AI help</em>, in Chapter 11, explains why there are two
+steps, and the three places you can find the agreement.</p>
+<p>If you would like the app to walk you through it, the tutorial
+<em>Asking a question about a document</em> covers turning it on,
+connecting, asking and checking what you have left.</p>
+<p>Once it is on, you have one window to work in, called the pad. It can
+do seventeen things, and two keys open it:</p>
+<ul>
+<li><strong>AI Assistant</strong> (<strong>Ctrl+Alt+G</strong>) opens
+the pad where you are.</li>
+<li><strong>Ask About This Document</strong>
+(<strong>Ctrl+Alt+Z</strong>) opens the same pad with <strong>Ask a
+question about the document</strong> already chosen, so you can go
+straight to typing your question.</li>
+<li><strong>Ask AI a Question</strong> (<strong>Ctrl+6</strong>) opens
+the <strong>AI Conversation</strong> about the document you are in. Its
+first line says which AI you are asking. Each message takes your
+selection, or else the paragraph or section you are in, the title and
+the headings, read fresh every time, and never the whole file.</li>
+<li><strong>Prompt Library</strong> (<strong>Ctrl+7</strong>) runs one
+of your saved prompts on the selection. See <em>Your saved prompts</em>,
+below.</li>
+</ul>
+<p>There are also twelve questions you can ask about the word you are
+on, under <strong>Tools &gt; Dictionary</strong>. They are explained in
+<em>Dictionary</em>, in Chapter 7.</p>
+<h2 id="how-tools--ai-is-laid-out">How Tools &gt; AI is laid out</h2>
+<p><strong>Tools &gt; AI</strong> reads in four groups, in the same
+order as the AI menu of every other app in the family, and every command
+keeps its key wherever it sits:</p>
+<ol type="1">
+<li><strong>Ask:</strong> Ask AI a Question (<strong>Ctrl+6</strong>),
+Ask About This Document (<strong>Ctrl+Alt+Z</strong>), Ask About an
+Image (<strong>Ctrl+F5</strong>), AI Assistant
+(<strong>Ctrl+Alt+G</strong>) and Prompt Library
+(<strong>Ctrl+7</strong>).</li>
+<li><strong>Work on your document:</strong> Do a Document Task
+(<strong>Ctrl+3</strong>), Propose Alt Text and Tidy Dictated Text
+(<strong>Ctrl+F3</strong>).</li>
+<li><strong>Which AI:</strong> Which AI Am I Using
+(<strong>Ctrl+8</strong>) and Choose Your AI
+(<strong>Ctrl+4</strong>).</li>
+<li><strong>Accounts and Usage</strong>, a submenu of the windows you
+open now and then: Use My Own AI Key (<strong>Alt+F2</strong>), Use My
+ChatGPT Subscription (<strong>Alt+F5</strong>), Connect or Sign Out
+(<strong>Ctrl+Alt+Shift+F10</strong>), Usage
+(<strong>Ctrl+Alt+Shift+F9</strong>), Web Searches Left
+(<strong>Ctrl+9</strong>) and the Privacy Agreement
+(<strong>Ctrl+Alt+Shift+K</strong>).</li>
+</ol>
+<p>Your own key can come from OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter or Ollama Cloud, from a service of your own, or from Ollama
+running on this computer, which is free and sends nothing anywhere.</p>
+<h2 id="using-the-ai-pad">Using the AI pad</h2>
+<h3 id="what-the-pad-looks-like-top-to-bottom">What the pad looks like,
+top to bottom</h3>
+<ol type="1">
+<li><strong>What will be sent.</strong> A read-only box holding exactly
+the text that will go, and nothing else from your document. It is worth
+arrowing through it before you press anything.</li>
+<li><strong>Send this much.</strong> A chooser that appears when there
+is more than one sensible choice: what you selected, the paragraph you
+are in, or the whole section. The box above changes to match as you
+choose.</li>
+<li><strong>What do you want done?</strong> A list of the seventeen
+things the pad can do. Arrow through it, or press a letter to jump:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Choose</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Summarize</strong></td>
+<td>A few plain sentences saying what this passage says</td>
+</tr>
+<tr>
+<td><strong>Rewrite</strong></td>
+<td>The same meaning, clearer and shorter</td>
+</tr>
+<tr>
+<td><strong>Proofread</strong></td>
+<td>Spelling, grammar and punctuation corrected, wording left alone</td>
+</tr>
+<tr>
+<td><strong>Explain</strong></td>
+<td>What this passage means, in plain language</td>
+</tr>
+<tr>
+<td><strong>Shorten</strong></td>
+<td>The same passage at about half the length, every important fact
+kept</td>
+</tr>
+<tr>
+<td><strong>Simplify</strong></td>
+<td>Plain, easy-to-read language: short sentences, everyday words,
+technical terms explained</td>
+</tr>
+<tr>
+<td><strong>Make more formal</strong></td>
+<td>The same meaning in a professional tone, for work or official
+letters</td>
+</tr>
+<tr>
+<td><strong>Make friendlier</strong></td>
+<td>The same meaning in a warmer tone, as if to someone you know</td>
+</tr>
+<tr>
+<td><strong>Turn into a list</strong></td>
+<td>A bulleted list, or numbered steps when the passage describes a
+process</td>
+</tr>
+<tr>
+<td><strong>Find action items</strong></td>
+<td>Every task, who does it and by when, and every date or deadline, one
+per line</td>
+</tr>
+<tr>
+<td><strong>Suggest headings</strong></td>
+<td>Headings that divide a long passage into sections you can jump
+between by heading, and where each goes</td>
+</tr>
+<tr>
+<td><strong>Continue writing</strong></td>
+<td>A next paragraph in the same voice, for you to keep, change or throw
+away</td>
+</tr>
+<tr>
+<td><strong>Write an email reply</strong></td>
+<td>Select an email you received; get a polite reply to edit, with
+decisions left in [square brackets]</td>
+</tr>
+<tr>
+<td><strong>Translate</strong></td>
+<td>The passage in the language you choose, from twenty, meaning and
+formatting kept</td>
+</tr>
+<tr>
+<td><strong>Ask a question about the document</strong></td>
+<td>You type a question; QUILL Lite finds the parts of the document that
+answer it and sends only those</td>
+</tr>
+<tr>
+<td><strong>Ask a general question</strong></td>
+<td>You type any question; only the question is sent, nothing from your
+document</td>
+</tr>
+<tr>
+<td><strong>Have a conversation</strong></td>
+<td>A window where you talk back and forth; each reply remembers what
+was said before</td>
+</tr>
+</tbody>
+</table>
+<ol start="4" type="1">
+<li><strong>Your question.</strong> This box appears only for the three
+choices where you type something. For <strong>Have a
+conversation</strong> it is your first message, and you can leave it
+empty: the conversation window then opens ready for you. For
+<strong>Translate</strong>, you get a <strong>Translate into</strong>
+list instead, with twenty languages. Spanish is chosen until you pick
+another.</li>
+<li><strong>Put the answer in.</strong> Where the answer goes when it
+arrives. See <em>Where the answer goes</em>, below.</li>
+<li><strong>Send.</strong> Nothing leaves your computer until you press
+it.</li>
+</ol>
+<p>A few things worth knowing about the choices:</p>
+<ul>
+<li>A general question is one question and one answer. The next question
+does not remember the last one. If you want it to remember, choose
+<strong>Have a conversation</strong> instead (see <em>Having a
+conversation</em>, below).</li>
+<li>Answers to a general question and conversation replies can be longer
+than the others: about 1,000 tokens, which is roughly 750 words.</li>
+<li>Any of the seventeen can be switched off on QUILL’s service from
+time to time. If the one you chose is off, the pad tells you when you
+press Send, and nothing is used.</li>
+<li>QUILL’s free service can add a tool without a new version of QUILL
+Lite. A tool it offers that your copy does not have built in appears at
+the end of the list, after <strong>Have a conversation</strong>. Press
+<code>F1</code> on it to hear what it does; <strong>Send</strong> runs
+it like any other choice, and it uses one request. The first time you
+open the pad, a new tool can take a moment to appear. These tools are
+offered only on QUILL’s free service, not with your own API key or your
+ChatGPT plan.</li>
+</ul>
+<h3 id="what-comes-back-and-what-you-can-do-with-it">What comes back,
+and what you can do with it</h3>
+<p>The answer arrives in a read-only box of its own. Under it are these
+buttons:</p>
+<ul>
+<li><strong>Replace My Selection</strong></li>
+<li><strong>Review Changes</strong>, which compares the answer with your
+selection change by change (see below).</li>
+<li><strong>Insert Below</strong></li>
+<li><strong>Copy</strong></li>
+<li><strong>Try Again</strong></li>
+<li><strong>Follow Up</strong>, which carries on from this answer as a
+conversation.</li>
+</ul>
+<p>The first three only appear when they make sense. For example, if you
+did not select anything, there is nothing to replace or review.</p>
+<p>Nothing is changed in your document for you. Proofread, for instance,
+tells you what it found and leaves every character alone until you press
+Replace My Selection. You always get to read it first.</p>
+<h3 id="reviewing-the-changes-word-by-word">Reviewing the changes word
+by word</h3>
+<p><strong>Review Changes</strong> opens <strong>Review AI
+Changes</strong>, the review window QUILL uses for its AI edits. It
+lists every change the answer would make to your selection, one per
+line. Arrow to one and press <strong>Alt+D</strong> to read it in
+<strong>Change details</strong>: what was there, what would replace it,
+and for a small change the exact words that differ and the sentence they
+are in. Every change starts checked. Press Space to uncheck one you want
+to keep as it was, then choose <strong>Apply Checked</strong>, or
+<strong>Accept All</strong> for every change. It goes in as one edit, so
+<strong>Ctrl+Z</strong> takes it all back. <strong>Reject All</strong>,
+or Escape, changes nothing.</p>
+<h4 id="keeping-some-words-of-a-change-and-not-others">Keeping some
+words of a change and not others</h4>
+<p>In prose, one change is often a whole paragraph, and the AI may have
+changed three words in it: one you like, one you do not, and one you are
+unsure about. You no longer have to take all three or none.</p>
+<p>When the change you are on holds two or more word edits, a second
+list appears under <strong>Changes</strong>: <strong>Words in this
+change</strong>. Press <code>Alt+W</code> to go to it, or
+<code>Tab</code> from the Changes list. Each row is one word edit with
+the sentence it is in, so arrowing down the list reads you each edit in
+context. Every row starts checked. Press <code>Space</code> to drop an
+edit: the original words stay there, and the rest of the change still
+goes in. <code>Alt+C</code> takes you back to <strong>Changes</strong>,
+and <code>Alt+D</code> to <strong>Change details</strong>, which shows
+the sentence before and after for the word edit you are on.</p>
+<p>For example, the AI rewrote “The quick brown fox jumps over the lazy
+dog. It was very tired that day.” The Words list says:</p>
+<ul>
+<li>Changed “quick” to “rapid”, in: The rapid brown fox leaps over the
+lazy dog.</li>
+<li>Changed “jumps” to “leaps”, in: The rapid brown fox leaps over the
+lazy dog.</li>
+<li>Changed “very” to “rather”, in: It was rather tired that day.</li>
+</ul>
+<p>Uncheck the first and choose <strong>Apply Checked</strong>. Your
+document now says “The quick brown fox leaps over the lazy dog. It was
+rather tired that day.” You hear “Applied 1 change, 1 of them in part,
+as one undo step”, and <code>Ctrl+Z</code> takes the whole thing
+back.</p>
+<p>A few things to know:</p>
+<ul>
+<li>Drop every word edit in a change and the change itself is unchecked;
+you hear “No word edits left in this change, so it will not be applied”.
+Check one back and the change is checked again. Checking or unchecking a
+whole change in the Changes list checks or unchecks all its word
+edits.</li>
+<li><strong>Accept All</strong> still takes every change and every word
+edit, checked or not, and the result is exactly the AI’s version.
+<strong>Reject All</strong> still changes nothing.</li>
+<li>A change with only one word edit has no Words list, because its own
+check box already says everything. A change shown as whole lines (a
+rewrite, or spacing only) has none either.</li>
+<li>Changes to spacing between the words of a change go in with the
+change whenever any of its word edits does; nobody is asked about a
+space.</li>
+</ul>
+<h3 id="where-the-answer-goes">Where the answer goes</h3>
+<p>The pad’s <strong>Put the answer in</strong> list has three
+choices:</p>
+<ul>
+<li><strong>The AI Result window.</strong> The starting choice: you read
+the answer first, then choose what to do with it, as above.</li>
+<li><strong>My document, at the cursor.</strong> The answer goes
+straight in where the cursor is, as one edit <strong>Ctrl+Z</strong>
+takes back, and QUILL Lite reads it aloud.</li>
+<li><strong>The clipboard.</strong> The answer goes on the clipboard and
+is read aloud. Your document does not change.</li>
+</ul>
+<p>QUILL Lite remembers your choice until you change it. It applies to
+every answer: from the pad, the Chat Key and the Prompt Library.</p>
+<h3 id="how-answers-are-read-aloud">How answers are read aloud</h3>
+<p>AI answers usually come written in Markdown, with <code>#</code>
+before a heading, <code>**</code> around bold words and <code>-</code>
+before each item of a list. When QUILL Lite reads an answer aloud, it
+reads the words and leaves those symbols out, so you never hear “star
+star” or “hash hash”, or a link’s whole web address.</p>
+<p>That happens wherever an answer is spoken: an answer put <strong>at
+the cursor</strong> or <strong>on the clipboard</strong>, and every
+reply in an <strong>AI Conversation</strong>.</p>
+<p>Only what you hear changes. What goes into your document, onto the
+clipboard, into the answer window or into the conversation is the answer
+exactly as it came, symbols and all.</p>
+<p>For example, with <strong>Put the answer in</strong> set to
+<strong>My document, at the cursor</strong>, an answer of</p>
+<pre class="text"><code>## Summary
+
+**Three** points:
+
+- Costs went down.
+- See [the report](https://example.com/report).</code></pre>
+<p>goes into your document as those six lines, and you hear: “Answer
+inserted at the cursor. Press Control Z to undo. Summary Three points:
+Costs went down. See the report.”</p>
+<p>A few things are worth knowing. A link is read by its words, never
+its address. A picture is read as “image” and its description. A block
+of code is read as “code block”: the code itself is in your document,
+where you can read it a character at a time. The answer window is not
+read out for you; your screen reader reads it as text, so you can check
+the formatting first.</p>
+<h3 id="your-saved-prompts">Your saved prompts</h3>
+<p><strong>Prompt Library</strong> (<strong>Ctrl+7</strong>) is QUILL’s
+library of prompts: the ones QUILL comes with, such as Make Concise and
+Formal Tone, and any you write with <strong>New Prompt</strong>. Choose
+one and press <strong>Run with AI</strong>, or <strong>Enter</strong>.
+The window closes, your selection goes where the prompt says
+<code>{selection}</code>, and the prompt is sent to the AI as a general
+question, using one request. If the prompt with your text in it is
+bigger than the free limit allows, you are told and nothing is sent.
+<strong>Import</strong> and <strong>Export</strong> share prompts with
+QUILL and with other people as a prompt pack file.</p>
+<p><strong>Your prompts are QUILL’s prompts too.</strong> The Prompt
+Library reads the one list the whole family shares,
+<code>prompts.json</code> in QUILL’s data folder, so a prompt you save
+here shows up in QUILL and the other way round. The first time this
+version starts, the prompts QUILL Lite kept in its own folder are
+brought into that list once, in the background. A prompt both had
+becomes one; two different prompts with the same name are both kept, and
+the second is named after where it came from, such as “Tighten (from
+QUILL Lite)”. The old file is left as it was for one release. On a
+computer without QUILL, nothing is written to QUILL’s folder until you
+have a prompt to keep.</p>
+<h3 id="what-is-sent-and-when">What is sent, and when</h3>
+<p>Text is only sent when you press Send in the pad, or send a message
+in a conversation. Then the text you asked about, either the selection
+or the document, goes to the AI in use (QUILL’s own service, unless you
+chose another in Choose Your AI) and the answer comes back. Nothing is
+sent while you type, nothing is sent in the background, and closing the
+pad without asking sends nothing at all.</p>
+<h2 id="having-a-conversation">Having a conversation</h2>
+<p><strong>Have a conversation</strong> opens the <strong>AI
+Conversation</strong> window. You talk back and forth, and each reply
+knows what was said before it.</p>
+<p>There are two ways in:</p>
+<ul>
+<li>Choose <strong>Have a conversation</strong> in the pad.</li>
+<li>Press <strong>Follow Up</strong> in any answer window to carry on
+from that answer. If the answer was about your document, the follow-up
+keeps sending the same passages, so you can keep asking about them.</li>
+</ul>
+<h3 id="what-is-in-the-conversation-window">What is in the conversation
+window</h3>
+<p>From top to bottom:</p>
+<ol type="1">
+<li><strong>About this conversation.</strong> What goes with each
+message, and which service answers it.</li>
+<li><strong>Conversation.</strong> Everything said so far, newest at the
+end, as “You:” and “AI:” paragraphs. It is read-only. Press Shift+Tab
+from the message box to reach it.</li>
+<li><strong>Your message.</strong> This is where you start. Type, then
+press <strong>Enter</strong> to send.</li>
+<li>The buttons: <strong>Send</strong>, <strong>New
+Conversation</strong>, <strong>Copy Last Reply</strong>,
+<strong>Messages…</strong>, <strong>Export Conversation…</strong>,
+<strong>Saved Conversations</strong>, <strong>Insert Last Reply
+Below</strong>, and Close.</li>
+<li><strong>Status.</strong> Whether it is working, what answered, or
+what went wrong.</li>
+</ol>
+<p>When a reply arrives, it is read aloud and added to the conversation.
+You stay in the message box, so you can answer straight away.</p>
+<p>Nothing goes into your document unless you press <strong>Insert Last
+Reply Below</strong>, and <strong>Ctrl+Z</strong> takes that back like
+any other edit.</p>
+<h3 id="saved-conversations">Saved conversations</h3>
+<p>Every conversation is saved on this computer as it goes. Press
+<strong>Saved Conversations</strong> (<strong>Alt+V</strong>) in the
+conversation window to see them, newest first, each with how it began,
+how many messages it holds and when it was last used. Press
+<strong>Enter</strong> on one to open it and carry on where it left off,
+or <strong>Delete</strong> to remove it; QUILL Lite asks first.
+<strong>New Conversation</strong> starts a new saved conversation and
+keeps the old one.</p>
+<h3 id="going-back-over-a-conversation">Going back over a
+conversation</h3>
+<p>In the conversation window:</p>
+<ul>
+<li><strong>Alt+1</strong> reads the newest message aloud,
+<strong>Alt+2</strong> the one before it, and so on up to
+<strong>Alt+0</strong> for the tenth newest. Each is said with its place
+and its speaker, for example “Message 4 of 9, AI: …”, and the newest
+starts with “Newest”. Focus stays in <strong>Your message</strong> and
+your half-typed message stays where it is. With fewer messages than the
+key asks for, you hear how many there are, for example “There are only 2
+messages so far. Alt+2 reads the oldest.”</li>
+<li><strong>Messages…</strong> (<strong>Alt+G</strong>) lists every
+message, oldest first, one row each. Press <strong>Enter</strong> to
+open a message in a reading window where its headings and tables are
+real ones (in browse mode, <strong>H</strong> moves by heading and
+<strong>T</strong> by table), or <strong>Read as Text</strong> to see it
+exactly as it arrived in a plain text box. Close it with
+<strong>Escape</strong> and you are back on the same row; the list opens
+on that row again next time.</li>
+<li><strong>Export Conversation…</strong> (<strong>Alt+X</strong>) saves
+the whole conversation as a <strong>Word document</strong> or a
+<strong>Text file</strong> you name. Every message is kept in order with
+who said it: in Word, each message is a level-2 heading such as “Message
+3 of 8, AI” with the message beneath it and its tables as real Word
+tables; in a text file, each message is a paragraph starting “You:” or
+“AI:”. The Save As window asks before replacing a file,
+<strong>Cancel</strong> writes nothing, and your document is never
+changed. If the file cannot be written, you hear why and any file
+already there is left as it was.</li>
+<li>A reply that arrives while you are reading the
+<strong>Conversation</strong> box does not move your place in it. If you
+are not in the box, it shows the end, as before.</li>
+</ul>
+<p>Example: you ask “Plan a three-day trip to Lisbon”, then “Make day
+two cheaper”. Press <strong>Alt+3</strong> to hear the first plan again,
+and <strong>Export Conversation…</strong> to keep both plans in a Word
+file, each under its own heading.</p>
+<p>These work the same on QUILL’s free AI, your own key, your ChatGPT
+plan and GitHub Copilot, and every one saves to the same <strong>Saved
+Conversations</strong>.</p>
+<h3 id="long-conversations-on-the-free-ai">Long conversations on the
+free AI</h3>
+<p>Each message you send is one request, and conversations have their
+own monthly share: 40 of your 100 requests.</p>
+<p>To stay within the size limit, each message carries as much of the
+conversation so far as will fit, newest first. That means a very long
+conversation slowly forgets how it began. The first time that happens,
+the window tells you: “The beginning of this conversation is no longer
+sent, to stay within the free limit.” Press <strong>New
+Conversation</strong> whenever you want a fresh start.</p>
+<p>With your own AI key there is no such limit. The whole conversation
+goes with every message and is billed to your provider’s account, so a
+long conversation costs more per reply. It is only shortened if it grows
+past what the model can read at once, and the window tells you if that
+happens.</p>
+<h2 id="choose-your-ai">Choose Your AI</h2>
+<p><strong>Choose Your AI</strong> is the one window for where your AI
+comes from: QUILL’s free AI, your ChatGPT plan, your GitHub Copilot,
+Codex or your own key. Press <strong>Choose Your AI</strong>
+(<strong>Ctrl+4</strong>), or choose <strong>Tools &gt; AI &gt; Choose
+Your AI…</strong>. Focus lands on the list, on the one in use. There are
+five things in the window, in Tab order:</p>
+<ul>
+<li><strong>Connections</strong>, a list. Each row says its name and
+then “in use”, “signed in” or “not set up”.</li>
+<li><strong>About this connection</strong>, one short line: what it can
+do, who gets your text and what it costs.</li>
+<li><strong>Model</strong>, that connection’s own models, the
+recommended one first. The free AI says “QUILL chooses the model”.</li>
+<li><strong>One button</strong> that follows the row: <strong>Use
+This</strong>, <strong>Sign In…</strong> or <strong>Sign
+Out</strong>.</li>
+<li><strong>Close</strong>, or press <strong>Escape</strong>.</li>
+</ul>
+<p><strong>Enter</strong> on a row does what the button says.
+<strong>Delete</strong> on a row you are signed in to asks whether to
+sign out, with <strong>No</strong> as the default.</p>
+<p>A row can also say “signed out by OpenAI” or “signed out by GitHub”
+(the company ended the sign-in; <strong>Sign In…</strong> starts it
+again), “not available yet” (this copy cannot offer it yet; see below),
+or “not available for your account” (your organisation has switched
+Copilot off for you).</p>
+<p>QUILL Lite says nothing when the window opens or as you move along
+the list, because your screen reader already reads each row. It speaks
+only what happened: “Now using My ChatGPT plan.”, “Signed in to My
+ChatGPT plan. It is now in use.”, or “Signed out. No AI is in use until
+you choose one.” If no AI is in use, the next AI command opens this
+window and says “No AI is in use. Choose one.” QUILL Lite never moves
+you to another AI by itself: not when you sign out, not when a key goes
+missing, not when a sign-in ends or a limit is reached. Each of those is
+said once, nothing is sent, and the choice stays yours.</p>
+<p><strong>Use My Own AI Key</strong> (<strong>Alt+F2</strong>),
+<strong>Use My ChatGPT Subscription</strong> (<strong>Alt+F5</strong>)
+and <strong>Connect or Sign Out</strong>
+(<strong>Ctrl+Alt+Shift+F10</strong>) keep their keys and open this
+window on their own row, with the sign-in ready.</p>
+<p><strong>Signing in to GitHub Copilot.</strong> <strong>Sign
+In…</strong> on <strong>My GitHub Copilot</strong> opens a small step
+with a short code from GitHub. The code is spaced out so your screen
+reader reads one character at a time, it is said once, and it is already
+on the clipboard. Press <strong>Open the Page</strong>, paste or type
+the code on GitHub’s page and approve QUILL Lite. The step closes by
+itself and you hear “Signed in to My GitHub Copilot. It is now in use.”
+<strong>Cancel</strong> stops waiting at once. Copilot Free works too:
+its only model is “Auto (Copilot Free chooses)”. QUILL Lite signs in to
+GitHub on its own, separately from QUILL.</p>
+<p>Signing in to GitHub from inside QUILL Lite needs QUILL Lite’s own
+registration with GitHub. Until a build carries it, the row says “not
+available yet”, <strong>About this connection</strong> says “Not
+available yet: GitHub sign-in for QUILL Lite has not been registered, so
+it comes in a later update.”, and <strong>Sign In…</strong> says the
+same instead of opening the step. Once you are signed in, the pad, Ask,
+the Prompt Library and Ask About an Image (on a Copilot model that sees)
+go to Copilot on your plan. A Copilot error is said once; nothing is
+retried or switched.</p>
+<p><strong>Codex</strong> runs on your ChatGPT plan with the same
+sign-in, so once you are signed in to your plan, <strong>Use
+This</strong> on <strong>Codex, for tasks</strong> is one key. While
+Codex is in use, single requests (the pad, Ask, Ask About an Image) go
+straight to your plan, and the Codex program starts only for a document
+task. Its usage is your plan’s. If this copy does not include the Codex
+engine, the row says “not available yet”.</p>
+<p><strong>Plan Options.</strong> While your ChatGPT plan’s row, or
+Codex’s, is selected and signed in, a <strong>Plan Options…</strong>
+button appears beside the action button. It has <strong>Allow web
+search</strong>, a check box saved as soon as you change it, and
+<strong>Forget on This Computer</strong>, which forgets the sign-in here
+without telling OpenAI. QUILL Lite stays listed under Apps in ChatGPT’s
+settings until you remove it there.</p>
+<h3 id="which-ai-am-i-using">Which AI Am I Using</h3>
+<p><strong>Which AI Am I Using</strong> (<strong>Ctrl+8</strong>) says
+in one line which AI is in use, the model, and one thing about usage. On
+GitHub Copilot that is GitHub’s own count; the first time it waits a
+moment for GitHub’s answer. On Codex it says “Codex, on your ChatGPT
+plan. Single requests go to the plan directly.” Press it twice quickly
+to open <strong>Choose Your AI</strong>.</p>
+<p>The status bar’s last cell before the message, <strong>AI</strong>,
+says the same thing shorter: “AI: free”, “AI: ChatGPT plan”, “AI:
+Copilot, Auto”, “AI: Codex”, “AI: own key”, or “AI: none” when nothing
+is in use. Press <strong>F6</strong>, arrow to it and press
+<strong>Enter</strong> to open <strong>Choose Your AI</strong>.</p>
+<h3 id="one-usage-list">One Usage list</h3>
+<p><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens one
+list with a sentence for each AI you have set up, each saying whose
+count it is: QUILL’s, your provider’s, or a count kept on this computer.
+<strong>Manage Usage</strong> opens the selected one’s own page. It is
+all text, with no meter or chart.</p>
+<h3 id="when-the-ai-in-use-cannot-do-something">When the AI in use
+cannot do something</h3>
+<p>The command stays in the menu with its key, and its name says what it
+needs, such as <strong>Ask About an Image (needs a connection that
+sees)</strong>. Pressing it sends nothing and asks whether to switch to
+one that can, with <strong>Yes</strong> as the default.</p>
+<h2 id="do-a-document-task">Do a Document Task</h2>
+<p><strong>Do a Document Task</strong> (<strong>Ctrl+3</strong>), in
+<strong>Tools &gt; AI</strong>, hands a job with several steps to GitHub
+Copilot or Codex, whichever is in use: “Fix the heading levels, then
+build a table of contents”, or “Turn these notes into actions grouped by
+owner.” On any other AI its name says “(needs Copilot or Codex)” and
+pressing it offers to switch.</p>
+<p>The window has six things, in Tab order:
+<strong>Conversation</strong>, a read-only record of the task;
+<strong>Status</strong>, which says “Using GitHub Copilot” or “Using
+Codex on your ChatGPT plan”; <strong>Instruction</strong>, where focus
+starts; <strong>Send</strong>; <strong>Stop</strong>; and
+<strong>Close</strong>. Type what you want done and press
+<strong>Enter</strong>. While the task runs, what you type goes to it as
+a follow-up. <strong>Stop</strong> ends it at once, and
+<strong>Close</strong> stops a task that is still running.</p>
+<p>Nothing changes without you. Before a step that changes something,
+<strong>Allow This Step?</strong> says in one sentence what will happen:
+<strong>Enter</strong> is <strong>Allow once</strong>, <strong>Allow for
+this task</strong> stops it asking about that kind of step until the
+task ends, and <strong>Escape</strong> is <strong>Don’t allow</strong>.
+Every edit then opens <strong>Review AI Changes</strong>, so you accept
+or reject each change, and each one undoes with <strong>Ctrl+Z</strong>.
+The next task asks again.</p>
+<p>When the task ends you hear its summary, such as “Done. 1 change
+applied: Changed the document. Each can be undone with Control Z.” It is
+built from what really happened and says how many changes you declined;
+the AI’s own summary follows in the conversation. Nothing else is
+spoken; the conversation fills in quietly, one
+<strong>Shift+Tab</strong> away.</p>
+<p>A task can only read your document, propose edits and run a short
+list of safe QUILL Lite commands. It cannot reach the web, your files or
+anything else, and it answers in plain text, never charts. Whatever the
+engine keeps while it works is deleted when the task ends or you press
+<strong>Stop</strong>. If Copilot or Codex is in use but cannot be
+started, you hear “Document tasks need My GitHub Copilot or Codex. Press
+Ctrl+4 to choose one.”</p>
+<h2 id="propose-alt-text">Propose Alt Text</h2>
+<p><strong>Tools &gt; AI &gt; Propose Alt Text…</strong> opens the same
+window with the request already typed in: give alt text to every picture
+in this document that has none. Press <strong>Enter</strong> to send it,
+or change it first. It has no key of its own; <strong>Ctrl+3</strong>
+reaches the same window.</p>
+<p>The task proposes short alt text for each Markdown or HTML picture
+that is missing it, one at a time, and each proposal opens
+<strong>Review AI Changes</strong> on that one change, undone with
+<strong>Ctrl+Z</strong>. When the AI in use can see pictures, the task
+may ask to look at one, and <strong>Allow This Step?</strong> names it;
+the first picture on each AI also asks whether pictures may go to that
+company. Only pictures saved on this computer are sent, never one from a
+web address. On an AI that cannot see, the proposals come from the words
+around each picture. QUILL has the same command in its AI menu.</p>
+<h2 id="propose-alt-text-1">Propose Alt Text</h2>
+<p><strong>Tools &gt; AI &gt; Propose Alt Text…</strong> opens the same
+window as Do a Document Task with the request already typed in: give alt
+text to every picture in this document that has none. Press
+<strong>Enter</strong> to send it as it is, or change it first. It has
+no key of its own, because <strong>Ctrl+3</strong> gets you to the same
+window; from the menu it is <strong>Alt+T</strong>, <strong>A</strong>,
+<strong>T</strong>.</p>
+<p>The task finds the document’s pictures, in Markdown and HTML alike,
+and proposes short alt text for each one that is missing it, one picture
+at a time. Each proposal opens <strong>Review AI Changes</strong> on
+just that change, so you hear exactly what will be written, and each one
+undoes with <strong>Ctrl+Z</strong>. Pictures that already have alt text
+are left alone.</p>
+<p>If the AI in use can see pictures, the task may ask to look at one,
+and <strong>Allow This Step?</strong> names the picture first. Only
+pictures saved on this computer are ever sent; a picture on a web
+address is never fetched. On an AI that cannot see pictures, every
+proposal comes from the words around the picture, and the summary says
+so. Like Do a Document Task, it needs GitHub Copilot or Codex.</p>
+<h2 id="quills-free-ai">QUILL’s free AI</h2>
+<p>Unless you choose otherwise, AI help runs on QUILL’s own free
+service. There is no account, no password and no email address to give.
+You connect each computer once, and then you have a monthly
+allowance.</p>
+<h3 id="connecting-this-computer">Connecting this computer</h3>
+<ol type="1">
+<li>Open <strong>Tools &gt; AI &gt; Accounts and Usage &gt; Connect or
+Sign Out</strong> (<strong>Ctrl+Alt+Shift+F10</strong>). If you have
+just accepted the agreement and this computer is not connected yet, you
+are brought here automatically.</li>
+<li>The window gets an eight-character code from QUILL and reads it out
+to you. The code is also in a read-only box, where you can arrow through
+it one character at a time. <strong>Say the Code Again</strong> repeats
+it, and <strong>Copy the Code</strong> puts it on the clipboard.</li>
+<li>Press <strong>Open the Connect Page</strong>. Your browser opens
+with the code already filled in. Press <strong>Confirm</strong> on that
+page. If you prefer, you can type the code into the web address the
+window names on any other device with a browser, such as your
+phone.</li>
+<li>Come back to QUILL Lite. The window changes to say you are
+connected, and you will hear that it worked. Your focus stays where it
+was.</li>
+</ol>
+<p>Afterwards, the window says you are connected and tells you this
+computer’s <strong>support ID</strong>, which is what to give if you
+ever write to support about AI. It is also in <strong>Help &gt; About
+QUILL Lite</strong>. To disconnect this computer, open <strong>Choose
+Your AI</strong> (<strong>Ctrl+4</strong>), arrow to <strong>QUILL’s
+free AI</strong> and press <strong>Delete</strong>, or <strong>Sign
+Out</strong> when it is the AI in use.</p>
+<p>Each computer connects separately. Signing one out does not sign out
+the others.</p>
+<p><strong>What is recorded.</strong> When you use AI, the text you
+asked about goes to QUILL and on to the model that writes the answer.
+QUILL records how many requests you make and how big they were. It does
+not record what you wrote or what came back.</p>
+<h3 id="how-much-you-can-send-at-once">How much you can send at
+once</h3>
+<p>One request can be about <strong>3,000 tokens</strong>. That is
+roughly <strong>2,250 words</strong> or <strong>12,000
+characters</strong>, counting your document text, your question and the
+instructions together.</p>
+<p>If what you chose is bigger than that, the pad tells you before
+anything is sent, in words rather than tokens: “that is about 4,000
+words, and the free limit is about 2,250”. Select less and try again.
+Nothing is sent in the meantime.</p>
+<p>The answer is capped at about 500 tokens, which is a few hundred
+words. For a general question it is about 1,000.</p>
+<p>A long document still works. <strong>Ask About This Document</strong>
+does not send the whole file. It picks the <strong>three passages most
+likely to answer your question</strong>, each about 180 words and
+labeled with the heading it sits under, and sends those. So you can ask
+about a hundred-page document; the limit is on how much goes in one
+request, not on how long your document is. The pad shows you which
+passages it chose before anything is sent.</p>
+<h3 id="checking-what-you-have-left">Checking what you have left</h3>
+<ul>
+<li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) shows
+what each AI you have set up has used, the free AI included. Look here
+before you run out, rather than finding out when a request is turned
+down.</li>
+<li><strong>Web Searches Left</strong> (<strong>Ctrl+9</strong>) says
+how many of this month’s web searches are left. See <em>Searching the
+web on the free AI</em>, below.</li>
+<li><strong>Help &gt; About QUILL Lite</strong> shows the same
+allowance, and this computer’s <strong>support ID</strong>, under
+<strong>QUILL’s free AI</strong>. The numbers are fetched fresh each
+time, so give it a moment after About opens.</li>
+<li><strong>Connect or Sign Out</strong>
+(<strong>Ctrl+Alt+Shift+F10</strong>) connects this computer, or
+disconnects it. Signing out does not take back your agreement. Taking
+back your agreement does sign you out.</li>
+<li><strong>Privacy Agreement</strong>
+(<strong>Ctrl+Alt+Shift+K</strong>) always opens, whether AI help is
+switched on or not, and whether you have accepted or not. You can always
+read what you are agreeing to.</li>
+</ul>
+<p>All of these keys are listed again in <em>Every key, in one
+table</em>, under <strong>Tools &gt; AI</strong>.</p>
+<h3 id="limits-and-when-they-start-again">Limits, and when they start
+again</h3>
+<p>The free AI is shared by everyone who uses it, so it has limits. Here
+is every one of them in one place.</p>
+<h4 id="your-allowance-at-a-glance">Your allowance at a glance</h4>
+<p>These are the service’s current settings. They can change without an
+update to QUILL Lite, and <strong>Usage</strong> always shows the
+numbers that apply to you right now.</p>
+<table>
+<thead>
+<tr>
+<th>Limit</th>
+<th>How many</th>
+<th>Starts again</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requests a month</td>
+<td>100</td>
+<td>The 1st of the month</td>
+</tr>
+<tr>
+<td>Requests a day</td>
+<td>20</td>
+<td>Every night</td>
+</tr>
+<tr>
+<td>Requests an hour</td>
+<td>8</td>
+<td>At the top of each hour</td>
+</tr>
+<tr>
+<td>Any one kind of request a month</td>
+<td>60</td>
+<td>The 1st of the month</td>
+</tr>
+<tr>
+<td>A new connection’s first 48 hours</td>
+<td>15</td>
+<td>Rises to 100 on its own</td>
+</tr>
+</tbody>
+</table>
+<p>“Any one kind” means that Summarize, Rewrite, Proofread, Explain and
+Ask About This Document each have a monthly share of 60, so no single
+one can use up your whole month. The daily and hourly limits are there
+to catch something running away by mistake. Ordinary work stays well
+inside them.</p>
+<h4 id="when-the-counts-start-again">When the counts start again</h4>
+<p>The service keeps time in <strong>UTC</strong>, not in your own time
+zone:</p>
+<ul>
+<li><strong>The hour</strong> starts again on the hour.</li>
+<li><strong>The day</strong> starts again at <strong>midnight
+UTC</strong>. That is <strong>8 PM Eastern</strong> or <strong>5 PM
+Pacific</strong> in summer, and an hour earlier in winter. So in North
+America, your new day’s requests arrive in the evening.</li>
+<li><strong>The month</strong> starts again at <strong>midnight UTC on
+the 1st</strong>. Usage shows the exact date.</li>
+</ul>
+<h4 id="what-counts-as-a-request">What counts as a request</h4>
+<p>One request is one press of <strong>Send</strong> that comes back
+with an answer. <strong>Try Again</strong> is another request.</p>
+<p>A request that does not produce an answer is <strong>not
+counted</strong>. That includes one that was too long, one sent with no
+internet connection, one that hit a problem on the service, and one sent
+after a limit was already reached. Opening Usage or About never uses
+anything.</p>
+<h4 id="when-the-ai-service-is-busy">When the AI service is busy</h4>
+<p>Every AI service has busy moments: too many people at once, a server
+restarting, a request that took too long. QUILL now handles them the
+same way on the free AI, your own OpenAI or Google Gemini key, and a
+ChatGPT plan:</p>
+<ul>
+<li>It <strong>tries the request up to three times</strong>, one second
+apart and then two, when the service answers that it is busy,
+overloaded, timed out or asked to slow down (the HTTP answers 408, 409,
+429, 500, 502, 503 and 504).</li>
+<li>When the service says how long to wait, QUILL waits that long
+instead, up to 20 seconds. If it asks for longer, QUILL tells you now
+rather than leave you listening to silence.</li>
+<li>It <strong>never sends a request twice when the service says not
+to</strong>, because a second copy might be counted, or charged, twice.
+Your free AI allowance being used up, or your ChatGPT plan’s usage, is
+said at once too: trying again cannot change it.</li>
+<li><strong>You only hear the end of it.</strong> While QUILL is trying
+again you hear nothing new; if the last try fails, you hear that one
+failure, in the same words as before. If a try succeeds, you just get
+your answer.</li>
+<li>A streamed answer that has already started to arrive is never
+started again, so you never hear the beginning twice.</li>
+</ul>
+<p>For example, you press Summarize at a busy moment. The first try is
+answered “the service is busy”, QUILL waits a second and tries again,
+and the answer arrives. All you notice is that it took a second
+longer.</p>
+<h4 id="when-you-reach-a-limit">When you reach a limit</h4>
+<p>The AI window tells you <strong>which</strong> limit you reached and
+<strong>when it starts again</strong>. Your focus moves to that message,
+so you can read it again with the arrow keys. It ends with an error
+code, <code>QUILL-AI-GATEWAY-QUOTA</code>, which is useful to include if
+you write to support.</p>
+<p>Nothing is used, nothing in your document changes, and the rest of
+the editor carries on as normal. Wait until the time it names, or ask
+for more (see <em>Asking for more</em>, below).</p>
+<p>If the message says QUILL’s free AI is <strong>paused</strong>, it is
+not about you. The service has a spending limit for everyone together,
+and when that is reached, the free AI pauses for everyone until the 1st.
+This is rare, and you are told when it happens.</p>
+<h4 id="a-new-connection-starts-smaller">A new connection starts
+smaller</h4>
+<p>For its <strong>first 48 hours</strong>, a newly connected computer
+gets <strong>15 requests</strong>. After that, the full allowance
+applies <strong>on its own</strong>. You do not need to do anything.
+This keeps people from connecting over and over to get a fresh allowance
+each time, and most people trying it out do not reach 15 on the first
+day.</p>
+<p>While it applies, <strong>Usage</strong> and <strong>About</strong>
+say so and tell you exactly when it ends. Signing out and connecting
+again starts a new connection, so it never gets you more.</p>
+<h4 id="computers-that-share-an-internet-connection">Computers that
+share an internet connection</h4>
+<p>A household, a classroom or a library usually shares one internet
+address. A few limits apply to that address as a whole: how many
+computers can be connected from it at once, how many new connections it
+can make in an hour, and a monthly total shared by every computer on it.
+They are generous for a home, and the exact numbers are not published.
+Signing a computer out frees up its place.</p>
+<p>If a class or a computer lab runs into these limits, write to
+support. This is exactly the kind of thing they can help with.</p>
+<h4 id="asking-for-more">Asking for more</h4>
+<ol type="1">
+<li>Choose <strong>Get Help from Support</strong> in the Help menu
+(<strong>Ctrl+Alt+F2</strong>).</li>
+<li>Say what you need and why: a course, a deadline, a book.</li>
+<li>Send it. If this computer is connected, its <strong>support
+ID</strong> is added to the message for you, and that is all support
+needs to find you. There is no account name or password to give.</li>
+</ol>
+<p>Support can raise your monthly allowance, and can end the smaller
+new-connection allowance early. The change applies from your next
+request. You do not need to sign out, reconnect or update anything, and
+Usage shows the new number the next time you open it.</p>
+<p>Your support ID is also in <strong>Help &gt; About QUILL
+Lite</strong> and in <strong>Usage</strong>, with a <strong>Copy Support
+ID</strong> button, if you would rather write from somewhere else.</p>
+<h2 id="using-your-own-ai-key">Using your own AI key</h2>
+<p>If you have a key from OpenAI, Google Gemini, Anthropic, OpenRouter,
+Ollama Cloud or another OpenAI-compatible service, or Ollama on your own
+computer, you can use <strong>your own key</strong> instead of QUILL’s
+free service. Then <strong>every limit goes away</strong>: no monthly,
+daily or hourly allowance, no 2,250-word ceiling, and no smaller first
+48 hours. You pay the provider for what you use.</p>
+<h3 id="setting-it-up">Setting it up</h3>
+<p>Open <strong>Tools &gt; AI &gt; Accounts and Usage &gt; Use My Own AI
+Key</strong> (<strong>Alt+F2</strong>). The window has these parts, from
+top to bottom:</p>
+<ol type="1">
+<li><strong>Provider.</strong> Choose <strong>OpenAI</strong>,
+<strong>Google Gemini</strong>, <strong>Anthropic Claude</strong>,
+<strong>OpenRouter</strong>, <strong>Ollama Cloud</strong>, a
+<strong>Custom OpenAI-compatible service</strong>, or <strong>Ollama on
+this computer</strong>, which needs no key. Everything else in the
+window follows this choice: where your text goes, which key, which
+models and whose prices. AI help uses the key saved for the provider you
+choose here, and never another one. QUILL never guesses the provider
+from a key or a model name.</li>
+<li><strong>About this.</strong> A read-only box that says exactly where
+your text goes. Arrow through it once.</li>
+<li><strong>API key.</strong> Paste the key for the provider you chose.
+An OpenAI key comes from platform.openai.com, under API keys, and starts
+with <code>sk-</code>. A Gemini key comes from Google AI Studio at
+aistudio.google.com/apikey. The About box says where to get a key for
+each of the others.</li>
+<li><strong>Model.</strong> A list of every model your key can use for
+text, filled in from your account once the key is checked. For OpenAI,
+<strong>Luna 6 comes first, then the other GPT-6 models</strong>. For
+Gemini, <strong>2.5 Flash comes first, then 2.5 Pro</strong>. The rest
+follow by name. Each row says roughly what it costs, for example
+“gpt-6-luna, about $0.57 per 100 requests (estimate)”, so you can
+compare them just by arrowing down. Models that cannot answer in text,
+such as speech, transcription, image and embedding models, are left
+out.</li>
+<li><strong>Cost estimate.</strong> What the chosen model costs per
+request and per 100 requests, at the chosen provider’s prices.
+<strong>These are estimates to help you compare, not the provider’s
+actual prices.</strong> A typical request is about a page of text in and
+a paragraph back. The real prices are at openai.com/api/pricing and
+ai.google.dev/pricing.</li>
+<li><strong>Status.</strong> Whether a key is saved for the chosen
+provider, what the last test said, and whether a key for the other
+provider is saved too.</li>
+<li><strong>Test the Key.</strong> Checks the key with your provider,
+fills in the model list, then sends one tiny request to the chosen model
+and tells you whether it answered. That request costs a fraction of a
+cent.</li>
+<li><strong>Remove the Saved Key.</strong> Forgets the chosen provider’s
+key <strong>straight away</strong>. If your own key was the AI in use,
+no AI is in use until you choose one.</li>
+</ol>
+<p>Press <strong>OK</strong> to save. QUILL Lite says “AI help uses your
+own OpenAI key, with no limits”, or “your own Google Gemini key”.</p>
+<p><strong>To change the model later</strong>, press
+<strong>Alt+F2</strong> again. With a key saved, your models are listed
+straight away. Pick another and press OK.</p>
+<p><strong>Saving a key is choosing it.</strong> Press OK with a key
+saved and your own key is the AI in use. Remove it while it is in use
+and no AI is in use until you pick one in <strong>Choose Your
+AI</strong>; the next AI command says “No AI is in use. Choose one.”
+Your text never moves to the free AI unless you choose it.</p>
+<p><strong>Ollama on this computer needs no key.</strong> Install Ollama
+from ollama.com, pull a model, and choose <strong>Ollama on this
+computer</strong>. The About box starts with “Runs on this computer.
+Nothing is sent.”, and that is exactly what happens: the model runs on
+your computer, nothing is billed and nothing leaves it. The key box is
+off, a <strong>Server address</strong> box says where Ollama listens
+(usually <code>http://localhost:11434</code>), the Model list is
+whatever Ollama has, and the test button reads <strong>Test the
+Connection</strong>. A custom service has a Server address too. These
+providers used to be set up in QUILL’s AI Hub; they are the same
+providers, with the same saved keys, in this one window in both
+editors.</p>
+<p><strong>You can save both keys.</strong> The Provider list decides
+which one is used. If you choose OpenAI, a saved Gemini key just sits
+there unused. The status line tells you it is there, and choosing Google
+Gemini is how you use it. Your text only ever goes to the company you
+chose.</p>
+<p><strong>With a Gemini key, Ask About an Image works too.</strong>
+Gemini’s models can read pictures, and so can a picture-reading model in
+Ollama on this computer. The free service and the other providers here
+cannot, so with a Gemini key, <strong>Ctrl+F5</strong> works just as it
+does with a ChatGPT subscription.</p>
+<h3 id="what-changes-with-your-own-key">What changes with your own
+key</h3>
+<ul>
+<li>Your text goes <strong>straight from your computer to the provider
+you chose</strong>, on your account. Nothing passes through QUILL’s
+servers, so QUILL records nothing at all, not even the request count it
+keeps for the free service. With Ollama on this computer, nothing leaves
+the computer.</li>
+<li><strong>That company bills you</strong> for each request, under its
+own terms and privacy policy. Ollama on this computer bills
+nothing.</li>
+<li>While an answer is on its way, <strong>Send</strong> becomes
+<strong>Stop</strong> (<code>Alt+S</code>). Stopping closes a Gemini
+stream immediately; for another route it discards that request’s
+eventual answer. It never stops a request from another AI window.</li>
+<li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) has a
+row for your key, and <strong>Manage Usage</strong> opens your
+provider’s usage page, such as your OpenAI or Google AI Studio account,
+where your requests and charges are listed. <strong>Help &gt; About
+QUILL Lite</strong> shows the model and that page’s address instead of
+the free allowance.</li>
+<li>You do not need to connect this computer, and you are not asked to
+accept the free service’s agreement. That agreement is about QUILL’s
+servers, and your text never goes there.</li>
+<li>The pad, its seventeen choices, and what comes back are all the
+same, down to the instructions sent along with your text.</li>
+<li><strong>There are no limits.</strong> Nothing is turned down for
+being too long, the answer is not capped, and <strong>Ask a question
+about the document</strong> sends the whole document instead of the
+three best passages, so nothing is missed.</li>
+<li><strong>You get warnings instead of limits.</strong> The <em>About
+to send</em> line tells you how many words are going and roughly what
+they will cost with the model you chose. That is an estimate, not your
+actual bill, and the answer costs extra. It also tells you when the text
+is more than the free service would accept, and, for something very
+large, that it may be more than the model can read at once. In that
+case, the provider turns the request down and charges nothing.</li>
+</ul>
+<h3 id="where-the-key-is-kept">Where the key is kept</h3>
+<p>Your key is kept in Windows’ own credential store, not in a settings
+file. Once saved, it is never shown again: the box stays empty and says
+a key is saved. A portable copy of QUILL Lite keeps it in an encrypted
+file instead.</p>
+<p>QUILL and QUILL Lite share the key. A key saved in either one works
+in both, and removing it in either removes it from both.</p>
+<h3 id="if-a-request-fails">If a request fails</h3>
+<p>You hear what went wrong, followed by the error code
+<code>QUILL-AI-OWN-KEY-FAILED</code>, and the message names the
+provider. The usual causes are a mistyped key, a model your account
+cannot use, an account with no credit, or the wrong provider chosen for
+the key you saved. <strong>Test the Key</strong> tells you which one it
+is.</p>
+<h3 id="if-the-ai-you-use-is-not-available">If the AI you use is not
+available</h3>
+<p>QUILL Lite never quietly sends your text to a different company from
+the one you chose. Every AI command goes to the one AI chosen in
+<strong>Choose Your AI</strong>. If that AI cannot take a request, for
+example because your Gemini key has gone from Windows’ credential store
+or OpenAI ended your ChatGPT sign-in, nothing is sent and you hear why,
+once:</p>
+<blockquote>
+<p>Your ChatGPT plan sign-in has ended. Nothing was sent. Press Ctrl+4
+to sign in again or choose another.</p>
+</blockquote>
+<p>If no AI is in use at all, you hear “No AI is in use. Choose one.”
+and Choose Your AI opens. QUILL Lite does not offer the free AI, or
+anything else, in its place; switching is something you do.</p>
+<p>This covers the pad, the Chat Key, the Prompt Library, AI
+conversations, <strong>Ask About an Image</strong> and document tasks.
+Changing the AI yourself is never questioned: signing in or out,
+<strong>Use This</strong>, or saving or removing a key all count as your
+choice. A request that simply <em>fails</em> (no connection, a limit
+reached) is said once, with what to do, and nothing is retried.</p>
+<h2 id="using-your-chatgpt-subscription">Using your ChatGPT
+subscription</h2>
+<p>If you already pay for ChatGPT (a paid plan such as Plus or Pro),
+QUILL Lite can use that plan for its AI commands, and you never handle a
+key. You sign in once, in your browser, just as you sign in to ChatGPT
+itself.</p>
+<p>From then on, the pad, its seventeen choices, Ask About This Document
+and conversations all run on your plan. There is <strong>no per-request
+bill</strong>, and nothing passes through QUILL’s servers.</p>
+<p>Requests draw on your plan’s own usage limits, which are shared with
+ChatGPT itself and any other app you have connected. In ChatGPT,
+<strong>Settings &gt; Usage</strong> shows how much each app used and
+lets you set a weekly limit for it. When the limit is reached, QUILL
+Lite says so and does not switch to an API key; you can wait for it to
+reset, or choose another AI yourself.</p>
+<p>You also get two things the free service cannot do:
+<strong>descriptions of pictures</strong>, and <strong>web
+search</strong> when you want an answer about something current. Both
+are described later in this chapter. The same sign-in also unlocks
+<strong>Codex</strong>, for document tasks.</p>
+<h3 id="signing-in">Signing in</h3>
+<ol type="1">
+<li>Press <strong>Use My ChatGPT Subscription</strong>
+(<strong>Alt+F5</strong>), in <strong>Tools &gt; AI</strong>.
+<strong>Choose Your AI</strong> opens on <strong>My ChatGPT
+plan</strong>, with the sign-in step ready. (<strong>Sign In…</strong>
+on that row does the same.)</li>
+<li>The step says “To use My ChatGPT plan, approve QUILL Lite on
+OpenAI’s page.” Press <strong>Open the Page</strong>. Your browser opens
+on OpenAI’s own sign-in page. Sign in as you would to ChatGPT. When the
+page asks whether <strong>QUILL Lite</strong> may use your plan, allow
+it.</li>
+<li>Come back to QUILL Lite. The step closes by itself and you hear
+“Signed in to My ChatGPT plan. It is now in use.” You are done.</li>
+</ol>
+<p>You stay signed in until you sign out or remove the app in ChatGPT’s
+settings; a brief problem on OpenAI’s side no longer signs you out.</p>
+<p>If the browser did not open, the step shows the address to paste into
+any browser on this computer. <strong>Cancel</strong> gives up without
+changing anything.</p>
+<h3 id="once-you-are-signed-in">Once you are signed in</h3>
+<p>Everything about the plan is in <strong>Choose Your AI</strong>
+(<strong>Ctrl+4</strong>):</p>
+<ol type="1">
+<li><strong>Model</strong>, on the plan’s row. Every model your plan
+offers, read from your account, the first marked “(recommended)”.
+Whichever you choose is saved at once.</li>
+<li><strong>Plan Options…</strong>, beside the action button while the
+plan’s row is selected. <strong>Allow web search</strong> is off until
+you check it; when it is on, the model may look things up on the web
+through OpenAI to answer a question. <strong>Forget on This
+Computer</strong> forgets the sign-in here without telling OpenAI, for a
+computer that is offline or a sign-in you already removed in ChatGPT’s
+settings.</li>
+<li><strong>Sign Out</strong>, the action button while the plan is in
+use. It asks OpenAI to cancel QUILL Lite’s sign-in and forgets it on
+this computer. Afterwards no AI is in use until you choose one; QUILL
+Lite does not move you to the free service or to a key by itself.</li>
+<li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) has your
+plan’s row, and <strong>Manage Usage</strong> opens ChatGPT’s own usage
+page, the place to see your plan’s limits and what you have left.</li>
+</ol>
+<p>Being signed in to your plan and having a saved key do not fight:
+whichever one you chose is the one in use, and the other waits until you
+choose it.</p>
+<h3 id="what-changes-on-your-plan">What changes on your plan</h3>
+<ul>
+<li>Your text goes <strong>straight from your computer to
+OpenAI</strong>, on your account, under OpenAI’s terms and privacy
+policy. Nothing passes through QUILL’s servers, and QUILL keeps no
+copy.</li>
+<li><strong>What you use counts toward your plan’s own usage
+limits</strong>, which OpenAI sets. When you reach one, QUILL Lite tells
+you in plain words, with the error code
+<code>QUILL-AI-CHATGPT-LIMIT</code>. Manage Usage, in the Usage window,
+shows when it resets.</li>
+<li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) has a
+row for your plan with the requests QUILL Lite sent today, counted on
+this computer, and <strong>Manage Usage</strong> opens your plan’s own
+page. <strong>Help &gt; About QUILL Lite</strong> shows the account and
+the model instead of the free allowance.</li>
+<li>You do not need to connect this computer to the free service, and
+you are not asked to accept the free service’s agreement, because your
+text never goes to QUILL’s servers. <strong>About this
+connection</strong> in Choose Your AI tells you where it does go.</li>
+<li>The pad, its seventeen choices, and what comes back are
+<strong>exactly the same</strong>, down to the instructions sent with
+your text. There is no size limit, so instead of turning anything down,
+the <em>About to send</em> line tells you how many words are going and
+that they count toward your plan.</li>
+<li><strong>Conversations send the whole conversation</strong> with each
+message, so a long one remembers its beginning for as long as the model
+can read it.</li>
+</ul>
+<h3 id="where-the-sign-in-is-kept">Where the sign-in is kept</h3>
+<p>QUILL Lite keeps only a sign-in token, in Windows’ credential store
+(or an encrypted file in a portable copy), under QUILL Lite’s own name.
+QUILL Lite never sees your ChatGPT password.</p>
+<p><strong>Each QUILL app signs in on its own.</strong> QUILL Lite,
+QUILL and Quill Radio each appear separately under Apps in ChatGPT’s
+settings, and signing one out leaves the others as they were.</p>
+<h3 id="if-a-request-fails-1">If a request fails</h3>
+<p>You hear what went wrong, followed by an error code:</p>
+<ul>
+<li><code>QUILL-AI-CHATGPT-SIGNED-OUT</code>: OpenAI no longer accepts
+this computer’s sign-in. The row says “signed out by OpenAI”; press
+<strong>Sign In…</strong> on it again.</li>
+<li><code>QUILL-AI-CHATGPT-LIMIT</code>: your plan’s usage is used up
+for now.</li>
+<li><code>QUILL-AI-CHATGPT-UNAVAILABLE</code>: OpenAI is not letting
+other apps use plans just now.</li>
+<li><code>QUILL-AI-CHATGPT-FAILED</code>: anything else. The sentence
+before the code says what to check.</li>
+</ul>
+<h2 id="extras-on-a-subscription-or-your-own-key">Extras on a
+subscription or your own key</h2>
+<h3 id="ask-about-an-image">Ask About an Image</h3>
+<p><strong>Tools &gt; AI &gt; Ask About an Image</strong>
+(<strong>Ctrl+F5</strong>) tells you what is in a picture. It could be a
+screenshot someone sent you, a photo of a letter, a chart in a report,
+or a restaurant’s menu from its website. Choose the file, ask a question
+or ask nothing, and hear what the model sees.</p>
+<p>It needs an AI that can see pictures: your ChatGPT plan or Codex, a
+GitHub Copilot model that sees, a Google Gemini key, or a
+picture-reading model in Ollama on this computer. On any other AI the
+menu says <strong>Ask About an Image (needs a connection that
+sees)…</strong>, and pressing it sends nothing and offers to switch to
+one that can, with <strong>Yes</strong> as the default.</p>
+<p>This and nothing else in QUILL Lite looks at a picture, and only at a
+file you choose. QUILL Lite has no AI that looks at your screen, and
+none that makes pictures or charts: every answer is text.</p>
+<ol type="1">
+<li>Press <strong>Ctrl+F5</strong>. The Ask About an Image window opens,
+with focus in <strong>Image file</strong>.</li>
+<li>Type or paste the file’s full path, or press <strong>Browse</strong>
+(Alt+B) to pick it. JPEG, PNG, WebP and GIF pictures all work.</li>
+<li><strong>Your question</strong> (Alt+Q) is optional. Leave it empty
+to get a plain description written for a blind reader: what the picture
+is, what matters most in it, and every word of any text in it, written
+out exactly. Or ask something, such as “what does the sign say”, “is
+anyone smiling” or “what is the total on this receipt”. You get the
+answer first, then just the description that helps.</li>
+<li>Press <strong>Enter</strong> for <strong>Ask</strong>. You hear
+“Working.” If the file is not really a picture, or is over 20 MB, you
+are told so here and nothing is sent. Otherwise the picture goes to the
+model.</li>
+<li>The answer opens in the <strong>Image Description</strong> window,
+with focus on the text so your screen reader reads it. <strong>Insert
+Below</strong> puts it into your document under the paragraph you are
+in, which is handy for captioning a picture in something you are
+writing. <strong>Copy</strong> puts it on the clipboard, and
+<strong>Ctrl+Z</strong> takes an insert back.</li>
+</ol>
+<p>Only the picture and your question are sent. Nothing from your
+document goes with them.</p>
+<h3 id="tidy-dictated-text">Tidy Dictated Text</h3>
+<p>Speech recognition writes what it heard, and that is not always what
+you meant: “their” for “there”, a name it has never met, two words run
+together, a comma where a period belonged, and every “um” you did not
+know you said. <strong>Tools &gt; AI &gt; Tidy Dictated Text</strong>
+(<strong>Ctrl+F3</strong>) fixes exactly those things and nothing
+else.</p>
+<p>It works on any AI except the free one: your ChatGPT plan, GitHub
+Copilot, Codex or your own key. It is not available on the free service.
+On the free AI it tells you so and opens Choose Your AI on your plan’s
+row.</p>
+<ol type="1">
+<li>Dictate as usual (<strong>Ctrl+F11</strong>, talk, pause). When the
+paragraph is done, leave the cursor in it, or select exactly the part
+you want tidied.</li>
+<li>Press <strong>Ctrl+F3</strong>. You hear “Working.” The selection,
+or the whole paragraph the cursor is in, goes to the model. It is asked
+to fix misheard words, punctuation and capital letters, and to remove
+fillers and false starts, while keeping your meaning, your wording and
+your order.</li>
+<li>The <strong>Tidied Dictation</strong> window opens with focus on the
+corrected text, so you hear it first. <strong>Replace My
+Selection</strong> puts it where the dictated text was.
+<strong>Copy</strong> puts it on the clipboard. <strong>Escape</strong>
+keeps what you had. If you typed in that paragraph while waiting for the
+answer, Replace is not offered, and the window tells you why.</li>
+<li><strong>Ctrl+Z</strong> takes a replacement back in one step.</li>
+</ol>
+<p>Nothing changes until you press Replace, and the model is told not to
+add anything. A tidied paragraph says what you said, spelled the way you
+meant it.</p>
+<h3 id="my-dictation-instructions">My Dictation Instructions</h3>
+<p>You can tell Tidy Dictated Text how you like your writing. Open
+<strong>Dictation Settings</strong> (<strong>Alt+Shift+F6</strong>),
+press <strong>More Dictation Settings…</strong>
+(<strong>Alt+A</strong>), then <strong>My Dictation
+Instructions…</strong> (<strong>Alt+I</strong>). A short file opens in
+QUILL Lite. Write one instruction per line, in plain words, and save
+it:</p>
+<ul>
+<li>Write numbers as digits.</li>
+<li>Use British spelling.</li>
+<li>QUILL is always written in capitals.</li>
+<li>Never change legal terms.</li>
+</ul>
+<p>From then on, Tidy Dictated Text follows them. They go with the
+passage you tidy, and only then: never with every phrase as you talk.
+The AI is told that your dictated text is something to correct, never a
+request to answer, so “ask Sam to send the report” comes back tidied,
+not answered.</p>
+<h3 id="web-search">Web search</h3>
+<p>Most of what the AI does works only from what you send it. Sometimes,
+though, you need an answer about the world today: whether an event has
+been announced, what a word has come to mean this year, what a web page
+says right now.</p>
+<p>With <strong>Allow web search</strong> checked in your plan’s
+<strong>Plan Options</strong>, the model may search the web through
+OpenAI when a question needs it, and tell you what it found. This works
+for <strong>Ask a general question</strong>, <strong>Ask a question
+about the document</strong> and conversations. It is off until you turn
+it on, because a search sends your question somewhere else too, and that
+is your choice to make.</p>
+<p>To turn it on:</p>
+<ol type="1">
+<li>Press <strong>Alt+F5</strong>. Choose Your AI opens on <strong>My
+ChatGPT plan</strong>.</li>
+<li>Tab to <strong>Plan Options…</strong> and press it.</li>
+<li>Press <strong>Alt+W</strong>, or Tab to <strong>Allow web
+search</strong>, and press <strong>Space</strong>. It is saved straight
+away. Press <strong>Escape</strong> to close the options.</li>
+</ol>
+<p>Press Space on the same check box to turn it off again.</p>
+<h3 id="searching-the-web-on-the-free-ai">Searching the web on the free
+AI</h3>
+<p>QUILL’s free service can search the web too, ten times a month for
+each computer’s account. When the service has search switched on, the
+pad’s list ends with <strong>Search the web</strong>: type a question,
+press <strong>Send</strong>, and the answer comes back with the sites it
+used, one per line. Each search also uses one ordinary request.</p>
+<p>Press <strong>Ctrl+9</strong> (<strong>Tools &gt; AI &gt; Accounts
+and Usage &gt; Web Searches Left</strong>) to hear how many searches are
+left this month and when they start again. If the service is not
+offering web search at the moment, Ctrl+9 says that instead. On your
+ChatGPT plan, use <strong>Allow web search</strong> above instead; with
+your own key there is no web search.</p>
+<h2 id="coding-project-tasks-in-the-developer-profile">Coding: project
+tasks, in the Developer profile</h2>
+<p>This part is for people who write code. Everybody else can skip it:
+none of it appears unless you choose the <strong>Developer</strong>
+profile (see <a
+href="lite-guide-11-making-quill-lite-yours.html#making-quill-lite-smaller-or-larger">Making
+QUILL Lite smaller (or larger)</a> in Chapter 11).</p>
+<p>A project task is Do a Document Task grown up. Instead of one
+document, the AI works on a whole folder: it reads the files, plans,
+proposes changes to several of them, and runs your tests. You stay in
+charge of every step. Nothing it proposes is written until you accept
+it, no command runs until you allow it, and one command puts every file
+back.</p>
+<p>QUILL has exactly the same thing, from the same code, in the same
+menus.</p>
+<h3 id="turning-it-on">Turning it on</h3>
+<p>Choose the <strong>Developer</strong> profile in <strong>Tools &gt;
+Customize Features</strong> (<strong>Ctrl+Alt+F10</strong>), or check
+<strong>Coding: project tasks with an AI</strong> there on its own.
+Either way the project commands appear in the menus below, and they
+leave again when you choose another profile.</p>
+<p>Project tasks need a connection that runs tasks: <strong>My GitHub
+Copilot</strong> or <strong>Codex</strong> on your ChatGPT plan, or, on
+your own key, <strong>Claude</strong> or <strong>Ollama on this
+computer</strong>. QUILL’s free AI does not run tasks. Choose with
+<strong>Choose Your AI</strong> (<strong>Ctrl+4</strong>).</p>
+<h3 id="where-the-commands-are">Where the commands are</h3>
+<p>They sit where you would look for that kind of command:</p>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>Commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>File</strong></td>
+<td><strong>Open Project Folder…</strong>, <strong>Close
+Project</strong></td>
+</tr>
+<tr>
+<td><strong>Edit &gt; Agent Work</strong></td>
+<td><strong>Undo Last Agent Turn</strong>, <strong>Stop
+Agent</strong></td>
+</tr>
+<tr>
+<td><strong>View</strong></td>
+<td><strong>Agent Task Transcript</strong>, <strong>Agent Command
+Output</strong></td>
+</tr>
+<tr>
+<td><strong>Tools</strong></td>
+<td><strong>Commands Allowed in This Project…</strong></td>
+</tr>
+<tr>
+<td><strong>Tools &gt; AI</strong></td>
+<td><strong>Do a Project Task…</strong>, <strong>Explain Last
+Turn</strong>, <strong>Engine Tools for This Project…</strong></td>
+</tr>
+</tbody>
+</table>
+<p>None of them has a key of its own. There was no key free in both
+editors, and you rarely need one: <strong>Ctrl+3</strong> opens Do a
+Project Task whenever a project is open, and the task window has a key
+for everything else.</p>
+<h3 id="opening-a-project">Opening a project</h3>
+<p>A project is just a folder. <strong>File &gt; Open Project
+Folder…</strong> lists the projects you opened before, newest first, so
+the usual case is Down Arrow and Enter. <strong>Browse for a
+Folder…</strong> picks any other one.</p>
+<p>QUILL Lite says “Project”, the folder’s name, “is open”, and the
+status bar gains a <strong>Project</strong> part that names it, with its
+git branch when it has one. That part is only there while a project is
+open. Enter on it opens the task.</p>
+<p>The first time you run a task in a project that has notes written for
+AI agents, such as <code>AGENTS.md</code>, <code>CLAUDE.md</code>,
+<code>GEMINI.md</code>, Copilot’s instruction files or Cursor’s rules,
+QUILL Lite asks once whether to use them. <strong>Read Them
+First</strong> shows their text in the same window. Nothing in those
+files can approve a command or a change. They are the project’s words,
+not yours.</p>
+<h3 id="the-task-window">The task window</h3>
+<p>Press <strong>Ctrl+3</strong>. The window is the one Do a Document
+Task uses, with more keys:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+I</strong></td>
+<td>the instruction field, where focus starts</td>
+</tr>
+<tr>
+<td><strong>Alt+C</strong></td>
+<td>the conversation, read with the arrow keys</td>
+</tr>
+<tr>
+<td><strong>Alt+P</strong></td>
+<td>puts the cursor on the latest plan</td>
+</tr>
+<tr>
+<td><strong>Alt+H</strong></td>
+<td>puts the cursor on the latest list of changes</td>
+</tr>
+<tr>
+<td><strong>Alt+O</strong></td>
+<td>opens the last command’s full output</td>
+</tr>
+<tr>
+<td><strong>Alt+R</strong></td>
+<td>opens the whole task as a document, one heading per turn</td>
+</tr>
+<tr>
+<td><strong>Alt+U</strong></td>
+<td>Undo Last Turn</td>
+</tr>
+<tr>
+<td><strong>Alt+X</strong></td>
+<td>Explain Last Turn</td>
+</tr>
+<tr>
+<td><strong>Alt+A</strong></td>
+<td>Coach mode</td>
+</tr>
+<tr>
+<td><strong>Alt+W</strong></td>
+<td>Commands Allowed in This Project</td>
+</tr>
+<tr>
+<td><strong>Alt+L</strong></td>
+<td>Engine Tools for This Project</td>
+</tr>
+<tr>
+<td><strong>Alt+T</strong></td>
+<td>Stop</td>
+</tr>
+</tbody>
+</table>
+<p>Type what you want, such as “fix the add function and run the tests”,
+and press Enter. The conversation fills in silently. QUILL Lite speaks
+only when something happens that you would want to know: “The plan is
+ready”, with the number of steps; a command’s result; the turn’s closing
+summary. If you are in another window of QUILL Lite when the task needs
+an answer, it says once “The project task is waiting for you. Press
+Ctrl+3 to answer.” and waits.</p>
+<h3 id="reviewing-changes">Reviewing changes</h3>
+<p>When the agent has edits, <strong>Review Changes</strong> opens. The
+list has one row per file, as a whole sentence: “cli.py, changed, 3
+changes, taken”. The row says whether the file is taken, so there is no
+check box to listen for.</p>
+<ul>
+<li><strong>Space</strong> on a row takes or leaves the whole file.</li>
+<li><strong>Enter</strong> moves to its changes. Each one says where it
+is (“Change 2 of 3, lines 40 to 44, in function parse_args”), what
+changed in a line (“changed tokn to token”), and every line with its
+line number first. Indentation is said as a count when it changes.</li>
+<li><strong>Accept</strong> and <strong>Reject</strong> act on the
+change shown; <strong>Next Change</strong> and <strong>Previous
+Change</strong> move on and back, into the next file too.</li>
+<li><strong>Why This Change?</strong> says the reason the agent
+gave.</li>
+<li><strong>Apply Accepted Changes</strong> writes everything you
+accepted at once. <strong>Reject All</strong>, or Escape, writes
+nothing.</li>
+</ul>
+<p>When a file you have open is changed, it reloads in place with your
+cursor where it was, and QUILL Lite says so once. A document with
+unsaved edits, or in rich text, is left alone and named, so your typing
+is never overwritten.</p>
+<h3 id="commands-and-tests">Commands and tests</h3>
+<p>When the agent wants to run something, <strong>Run This
+Command?</strong> shows one sentence on what, where and why, then the
+exact command, which you can arrow through. When QUILL Lite sees a risk
+it adds a warning: “This may reach the internet.”, “This deletes files.”
+or “This runs outside the project.”</p>
+<ul>
+<li><strong>Allow once</strong> runs it. Enter does the same.</li>
+<li><strong>Always allow this command here</strong> runs it and adds it
+to this project’s list. It is only offered when there is no
+warning.</li>
+<li><strong>Don’t allow</strong>, or Escape, does not.</li>
+</ul>
+<p>Some things are never run for the agent: pushing, publishing a
+package, forcing a remote, and changing system settings. The agent is
+told to ask you to do those yourself.</p>
+<p>Test results come back as one sentence, such as “Tests: 12 passed, 1
+failed: test_verbose_prints_names.” The full output is a document:
+<strong>Alt+O</strong> in the task window, or <strong>View &gt; Agent
+Command Output</strong>.</p>
+<p>Be clear about one thing. QUILL Lite cannot stop a command you allow
+from reaching the internet or doing anything your own account can do.
+Windows gives it no way to without administrator features. That is why
+every command asks.</p>
+<p><strong>Commands Allowed in This Project</strong> is your list of
+commands that run without asking. A line allows that exact command, or
+any command that starts with it and a space, so <code>pytest</code>
+allows <code>pytest -q tests</code>. The list lives in QUILL’s own data,
+never in the project, so a project you download cannot approve its own
+commands. The same window has <strong>Run commands without
+asking</strong>. It is off until you check it, it asks you to confirm,
+and while it is on the task window’s status line says so.</p>
+<h3 id="undo-stop-and-explain">Undo, Stop, and Explain</h3>
+<p><strong>Undo Last Agent Turn</strong> (<strong>Edit &gt; Agent
+Work</strong>) puts back every file the last turn changed and removes
+files it made, then says “Undid turn 3” and which files. Before each
+turn QUILL Lite keeps a private copy of the project in its own data,
+never in your git history. If you have edited one of those files since,
+undo refuses rather than lose your work, names the file, and offers to
+open it as it was before the turn so you can compare.</p>
+<p><strong>Stop Agent</strong> stops the task and the command it is
+running, from any window.</p>
+<p><strong>Explain Last Turn</strong> asks the agent what it changed and
+why, in plain words, without changing anything. <strong>Coach
+mode</strong> goes further: the agent does not change files or run
+commands at all. It explains, points you to a file and line, and you
+make the change yourself. It is a good way to learn.</p>
+<h3 id="engine-tools">Engine tools</h3>
+<p>By default the AI uses only QUILL’s own tools, so every change is
+reviewed and every command approved. <strong>Engine Tools for This
+Project…</strong> lists the engine’s own tools, such as Copilot’s shell
+and editor, as check boxes. They are all off until you check them, each
+use still asks you, and their edits go straight to disk without Review
+Changes. A turn that has any on says so in its plan.</p>
+<h3 id="engines">Engines</h3>
+<ul>
+<li><strong>My GitHub Copilot</strong> and <strong>Codex</strong> run
+tasks on your account.</li>
+<li><strong>Claude</strong>, on your own Anthropic key, runs through the
+Claude Agent SDK with QUILL’s tools and none of Claude Code’s own unless
+you turn them on.</li>
+<li><strong>Ollama on this computer</strong> is practice mode:
+“Practice, on this computer. Nothing is sent. Slower and less capable.”
+Good for a classroom or for learning without signing in to
+anything.</li>
+</ul>
+<h3 id="where-things-are-kept">Where things are kept</h3>
+<p>Everything QUILL Lite remembers about a project lives in its own data
+folder, not in the project: the recent projects, your answer about the
+agent notes, the allowed commands, the engine tools you checked, the
+checkpoints for undo, command output, and the task’s transcript.
+<strong>View &gt; Agent Task Transcript</strong> opens the transcript as
+a Markdown document; use <strong>Save As</strong> to keep a copy
+anywhere. Safe Mode turns project tasks off, like the rest of the
+AI.</p>
+<p>To practise once, slowly, open <strong>Help &gt; Tutorials…</strong>
+(<strong>Ctrl+Alt+F1</strong>) and choose <em>Your first project
+task</em>. It appears only in the Developer profile.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You now know how to open the AI pad, pick one of its seventeen
+choices, and decide whether to use what comes back. You know how to
+connect to QUILL’s free service and keep an eye on your allowance, and
+how to switch to your own key or your ChatGPT subscription when you want
+no limits, picture descriptions or web search.</p>
+<p>If you would like to practise with the app guiding you, open
+<strong>Help &gt; Tutorials…</strong> (<strong>Ctrl+Alt+F1</strong>) and
+choose <em>Asking a question about a document</em>. For the twelve word
+questions, see <em>Dictionary</em> in Chapter 7, and to get the most out
+of Tidy Dictated Text, read Chapter 9, Writing by voice.</p>
+<p>Next, Chapter 11, Making QUILL Lite yours, shows you how to shape the
+app around you, including where AI help is switched on and off.</p>
+<hr />
+<ul>
+<li>Previous: <a href="lite-guide-09-writing-by-voice.html">Chapter 9:
+Writing by voice</a></li>
+<li>Next: <a href="lite-guide-11-making-quill-lite-yours.html">Chapter
+11: Making QUILL Lite yours</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

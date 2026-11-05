@@ -56,6 +56,19 @@ jobs:
               -not -name 'index.html' \
               -exec cp {} site-root/docs/ \;
 
+          # 2b. QUILL's user guide is a contents page plus a folder of chapters
+          #     (quill/core/user_guide_files.py): userguide.html links them as
+          #     quill-guide/<chapter>.html, and the WordPress and Forms chapters
+          #     link ../wordpress-and-forms/. So the pages in folders under
+          #     docs/user guide/ are also published in those same folders, and
+          #     those relative links work on the site as they do in the tree.
+          find "docs/user guide" -mindepth 2 -name '*.html' -print0 |
+              while IFS= read -r -d '' page; do
+                  rel="${page#docs/user guide/}"
+                  mkdir -p "site-root/docs/$(dirname "$rel")"
+                  cp "$page" "site-root/docs/$rel"
+              done
+
           # 3. Render the project's top-level contributor/governance docs to
           #    HTML so the site is self-contained (no links off to raw Markdown).
           #    Uses the same accessible template and +smart reader as

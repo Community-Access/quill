@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 7: Checking your writing</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-7-checking-your-writing">Chapter 7: Checking your
+writing</h1>
+<p>WordPad never had a spell checker. QUILL Lite has the same one QUILL
+uses, and it is made to be heard rather than seen: a short sound when
+you finish a word it does not know, the letters spelled out when you
+want them, and the Applications key to fix the word you are on. This
+chapter covers all of that, then the thesaurus and the dictionary for
+finding a better word, and finally how to find out exactly which
+character your cursor is on.</p>
+<h2 id="spell-check">Spell check</h2>
+<p>QUILL Lite has a spell checker, the same one QUILL uses. WordPad
+never had one. You can check as you type, check the whole document, or
+fix one word at a time.</p>
+<h3 id="checking-the-whole-document">Checking the whole document</h3>
+<p>Press <strong>F7</strong> to check the whole document. Here is what
+happens:</p>
+<ol type="1">
+<li>QUILL Lite finds the next misspelled word and shows you
+suggestions.</li>
+<li>Arrow through the suggestions.</li>
+<li>Choose what to do: change this word, change every one like it, skip
+it, or add it to your dictionary so it is never questioned again.</li>
+</ol>
+<p>The check starts where your cursor is, just as in Word. When it
+reaches the end of the document, it tells you, then carries on from the
+beginning. If you would rather it simply stopped at the end, you can
+turn that off in Preferences.</p>
+<h3 id="what-spell-check-reads">What spell check reads</h3>
+<p>Spell check reads what you wrote as language, and passes over the
+rest. This applies everywhere: checking as you type, the
+<strong>F7</strong> review, next and previous misspelling, the list of
+every misspelling and the context menu, exactly as in QUILL, which
+shares this code.</p>
+<p>The file’s extension picks one of four rules: writing, Markdown,
+markup or code. The rule follows the document’s name at the moment you
+check, so a new document is read as writing, and once you save it as
+<code>notes.md</code> or <code>script.py</code> the next check uses the
+Markdown or code rule.</p>
+<p><strong>Every rule</strong> skips these, wherever they appear:</p>
+<ul>
+<li>web addresses: <code>https://...</code>,
+<code>www.example.com</code>, <code>mailto:</code> and
+<code>file:</code> links, and a bare <code>example.com</code> (a common
+ending such as <code>.com</code>, <code>.org</code>, <code>.io</code> or
+<code>.uk</code>, or any domain followed by a path);</li>
+<li>email addresses;</li>
+<li>file paths: <code>C:\Users\...</code>, <code>\\server\share</code>,
+<code>./notes</code>, <code>~/notes</code>, <code>/usr/local/bin</code>
+and <code>docs\guide</code>;</li>
+<li>file names with an extension people recognise, such as
+<code>notes.txt</code>, <code>report.docx</code>, <code>song.mp3</code>
+or <code>setup.exe</code>.</li>
+</ul>
+<p>Before this, checking <code>www.example.com</code> stopped on
+<code>www</code>, <code>example</code> and <code>com</code> one by
+one.</p>
+<p><strong>Writing.</strong> Plain text, a document you have never
+saved, and any extension not named below. The only things skipped are
+the ones above. Logs, tables and patches (<code>.log</code>,
+<code>.csv</code>, <code>.tsv</code>, <code>.diff</code>,
+<code>.patch</code>) are read this way too, because there is no code in
+them to find.</p>
+<p><strong>Markdown.</strong> <code>.md</code>, <code>.markdown</code>,
+<code>.mdown</code>, <code>.mkd</code> and <code>.mdx</code>. The
+writing rule, and it also skips:</p>
+<ul>
+<li>inline code, with any number of backticks;</li>
+<li>fenced code blocks, between <code>```</code> or <code>~~~</code>
+lines;</li>
+<li>link and image addresses, and the address in a reference line such
+as <code>[1]: https://...</code>;</li>
+<li>HTML tags, and an HTML comment on one line.</li>
+</ul>
+<p>It still checks link text and image alt text, because someone wrote
+those to be read.</p>
+<p><strong>Markup.</strong> <code>.html</code>, <code>.htm</code>,
+<code>.xhtml</code>, <code>.xml</code>, <code>.xsl</code>,
+<code>.xslt</code>, <code>.svg</code>, <code>.opml</code>,
+<code>.rss</code> and <code>.atom</code>. Spell check reads the text
+between the tags and the comments. It skips the tags, attribute names
+and attribute values, except the values people read or hear:
+<code>alt</code>, <code>title</code>, <code>aria-label</code>,
+<code>aria-description</code> and <code>placeholder</code>. Inside
+<code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> it reads only
+the strings and comments, as it would in code.</p>
+<p><strong>Code.</strong> Only string literals and comments are checked.
+These extensions use the code rule:</p>
+<ul>
+<li>C, C++ and other compiled languages: <code>.c</code>,
+<code>.h</code>, <code>.cc</code>, <code>.cpp</code>, <code>.cxx</code>,
+<code>.hpp</code>, <code>.hxx</code>, C# (<code>.cs</code>), Java, Go,
+Rust (<code>.rs</code>), Swift, Objective-C (<code>.m</code>,
+<code>.mm</code>), Kotlin (<code>.kt</code>, <code>.kts</code>), Scala,
+D (<code>.d</code>), Pascal (<code>.pas</code>), Fortran
+(<code>.f</code>, <code>.f90</code>) and assembly (<code>.asm</code>,
+<code>.s</code>);</li>
+<li>scripting: Python (<code>.py</code>, <code>.pyi</code>,
+<code>.pyw</code>), Ruby, Perl (<code>.pl</code>, <code>.pm</code>),
+PHP, Lua, Tcl, R, Julia (<code>.jl</code>), Dart, Groovy, Visual Basic
+and VBScript (<code>.vb</code>, <code>.vbs</code>);</li>
+<li>the web: JavaScript (<code>.js</code>, <code>.jsx</code>,
+<code>.mjs</code>, <code>.cjs</code>), TypeScript (<code>.ts</code>,
+<code>.tsx</code>), Vue, Svelte, and CSS with <code>.scss</code>,
+<code>.sass</code>, <code>.less</code> and <code>.styl</code>;</li>
+<li>shells and builds: <code>.sh</code>, <code>.bash</code>,
+<code>.zsh</code>, <code>.fish</code>, PowerShell (<code>.ps1</code>,
+<code>.psm1</code>, <code>.psd1</code>), batch files (<code>.bat</code>,
+<code>.cmd</code>), makefiles (<code>.mk</code>), CMake, Gradle, Inno
+Setup (<code>.iss</code>) and <code>.spec</code>;</li>
+<li>settings and data: JSON (<code>.json</code>, <code>.jsonc</code>,
+<code>.json5</code>), YAML (<code>.yaml</code>, <code>.yml</code>),
+TOML, <code>.ini</code>, <code>.cfg</code>, <code>.conf</code>,
+<code>.properties</code>, <code>.env</code>, <code>.plist</code>,
+<code>.reg</code>, <code>.lock</code>, <code>.map</code>, SQL, GraphQL
+(<code>.graphql</code>, <code>.gql</code>) and Protocol Buffers
+(<code>.proto</code>).</li>
+</ul>
+<p>Inside a string or a comment it still skips:</p>
+<ul>
+<li>placeholders: <code>{0}</code>, <code>{name}</code>,
+<code>{0:N2}</code>, <code>{{</code> and <code>}}</code>,
+<code>%s</code>, <code>%d</code>, <code>%(name)s</code>,
+<code>${x}</code>, <code>$name</code> and <code>$(name)</code>;</li>
+<li>escapes such as <code>\n</code>, <code>\t</code>, <code>\x41</code>
+and <code>\u00e9</code>;</li>
+<li>words shaped like names in code: <code>snake_case</code>, any word
+with a digit in it, <code>camelCase</code>, and names like
+<code>HTTPServer</code>;</li>
+<li>the quote marks, and a string’s prefix such as the <code>f</code> in
+<code>f"..."</code>, so a misspelled word in single quotes is reported
+without a quote stuck to it.</li>
+</ul>
+<p><strong>How code and markup are read.</strong> QUILL Lite uses
+Pygments, which knows over five hundred languages, to find the strings,
+comments and text. With Pygments it also passes over regular
+expressions, single characters, the interpolated parts of a string,
+preprocessor lines such as <code>#include</code>, and the
+<code>#!</code> line at the top of a script. Pygments loads the first
+time you check a code or markup file, so it costs nothing when QUILL
+Lite starts.</p>
+<p>A simpler built-in reader takes over when Pygments cannot load, when
+it has no reader for an extension, or when the file is over 100,000
+characters, where Pygments would be slow. It knows the comments and
+strings of these families:</p>
+<ul>
+<li><code>#</code> comments: Python, Ruby, Perl, the shells, PowerShell,
+R, Julia, Tcl, YAML, TOML, CMake, makefiles, <code>.conf</code>,
+<code>.properties</code>, <code>.env</code>, GraphQL and
+<code>.spec</code>;</li>
+<li>CSS and its relatives; SQL, with <code>--</code> comments; Lua;
+JSON, including <code>//</code> and <code>/* */</code> comments;</li>
+<li>Visual Basic and VBScript; batch files (<code>rem</code> and
+<code>::</code>); <code>.ini</code>, <code>.cfg</code>,
+<code>.reg</code> and <code>.iss</code> (<code>;</code> and
+<code>#</code> comments);</li>
+<li>everything else in the code list is read the C way: <code>//</code>
+and <code>/* */</code> comments and strings in double quotes, single
+quotes or backticks.</li>
+</ul>
+<p>For markup, the built-in reader reads the text, comments and the
+attributes above, reads <code>&lt;script&gt;</code> and
+<code>&lt;style&gt;</code> as code, and skips character entities such as
+<code>&amp;amp;</code>. It is less precise than Pygments, but it is
+never silent.</p>
+<h3 id="the-spelling-keys">The spelling keys</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F7</strong></td>
+<td>Check the whole document</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F7</strong></td>
+<td>Suggestions for the word you are on</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F7</strong> / <strong>Ctrl+Shift+F7</strong></td>
+<td>Go to the next / previous mistake</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+L</strong></td>
+<td>List every misspelling, with its line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F9</strong></td>
+<td>Add this word to your dictionary</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F7</strong></td>
+<td>Turn checking-as-you-type on or off here</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F7</strong></td>
+<td>Spelling Announcements: how a misspelling is said</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Alt+Shift+F7</strong> and <strong>Ctrl+Alt+F9</strong> work
+from anywhere in a word, not only from its first letter.</p>
+<h4 id="hearing-the-letters">Hearing the letters</h4>
+<p><strong>Ctrl+F7</strong> takes you to the next mistake and selects
+it, so your screen reader reads the word. Then, after a short pause,
+QUILL Lite spells it out. That matters because “receive” and “recieve”
+sound exactly the same. The letters tell you what is wrong. If you do
+not need the spelling, just press your next key and it stops.</p>
+<h4 id="every-misspelling-in-one-list">Every misspelling in one
+list</h4>
+<p><strong>Alt+Shift+L</strong> lists every misspelling at once, with
+the line each one is on. Press <strong>Enter</strong> on a row to go
+there. This is handy when you want to know how many mistakes there are,
+or pick which one to fix first. Words you have chosen to ignore are left
+out.</p>
+<h3 id="while-you-type">While you type</h3>
+<p>When you finish a word that is not in the dictionary, you hear a
+short falling blip, and the status bar shows which word it was. “Finish”
+means you typed a space, a comma or a new line after it, so you are
+never interrupted in the middle of a word. It is a sound rather than
+speech, so it does not talk over the sentence you are writing.</p>
+<p>You can silence the sound, have the word spoken as well, or change
+how long it waits before mentioning the same word again. All of that is
+in <strong>Tools &gt; Spelling &gt; Announcements…</strong>
+(<strong>Ctrl+Alt+Shift+F7</strong>).</p>
+<p>If you would like to try spelling with the app guiding you, the
+tutorial <em>Spelling, without a red squiggle</em> walks through typing
+a mistake, fixing it, teaching a word and checking the whole
+document.</p>
+<h3 id="spelling-announcements">Spelling Announcements</h3>
+<p>The Spelling Announcements window has twelve settings in three
+groups. QUILL has the same twelve settings under
+<strong>Spelling</strong> in its Settings window, so setting them up
+once sets up both.</p>
+<h4 id="while-you-are-typing">While you are typing</h4>
+<p>Whether the sound plays at all, whether the word is spoken too (off
+to begin with), and how long to wait before the same word is mentioned
+again. Zero means every time.</p>
+<h4 id="spelling-a-word-out">Spelling a word out</h4>
+<p>Whether words are spelled out at all, and how:</p>
+<ul>
+<li><strong>Letters</strong> are the fastest.</li>
+<li><strong>The phonetic alphabet</strong> (romeo, echo, charlie) is
+clearer when B, D, E, P, T and V all sound alike, such as with a fast
+voice, a poor speaker or a noisy room.</li>
+<li><strong>Both</strong> is good for learning a new word.</li>
+</ul>
+<p>You can also have capitals named, so “cap M, A, C, cap D” tells
+MacDonald from Macdonald. An example box shows what your choices sound
+like, and says it out loud as you change them.</p>
+<h4 id="when-the-letters-follow">When the letters follow</h4>
+<p>There are three pauses before a word is spelled out, one for each
+place it happens:</p>
+<ul>
+<li>in the <strong>F7</strong> check, where you have stopped to decide,
+the pause is longer;</li>
+<li>when moving between misspellings, it is shorter;</li>
+<li>in a list of suggestions, where you are arrowing, it is shorter
+again.</li>
+</ul>
+<p>You can switch each one off on its own.</p>
+<h3 id="the-word-you-are-on-the-applications-key">The word you are on:
+the Applications key</h3>
+<p>This is the quickest way to fix a word as you go:</p>
+<ol type="1">
+<li>Put your cursor in a word QUILL Lite thinks is misspelled.</li>
+<li>Press the <strong>Applications key</strong> (or
+<strong>Shift+F10</strong>).</li>
+<li>Press <strong>Down Arrow</strong> once. You land on the first
+suggestion.</li>
+<li>Press <strong>Enter</strong> to use it.</li>
+</ol>
+<p>No window opens and your cursor stays where it was. A sighted person
+spots a red squiggle and right-clicks it. For you, the Applications key
+is the squiggle, and the first thing it offers is the answer.</p>
+<p>The menu is always laid out the same way:</p>
+<ol type="1">
+<li>The suggestions, at the top.</li>
+<li>A separator, then one row called <em>Spelling Actions for
+“wrold”</em> (with your word in it).</li>
+<li>The <strong>Thesaurus</strong> and <strong>Dictionary</strong>
+submenus for the word (see below).</li>
+<li>When your cursor is on a web address, two rows for it:
+<strong>Open</strong> followed by the address, which opens it in your
+web browser, and <strong>Copy Link Address</strong>. They are there for
+a plain address, a Markdown link and an HTML link alike, and they are
+simply not in the menu when there is no link.</li>
+<li>The everyday rows: Undo, Redo, Cut, Copy, Paste, Delete, Select
+All.</li>
+</ol>
+<p>Only the number of suggestions changes. Everything after them stays
+in the same order, so you can learn it once.</p>
+<h4 id="inside-spelling-actions">Inside Spelling Actions</h4>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ignore Once</strong></td>
+<td>Skip this one place. Nothing is remembered after you close the
+window.</td>
+</tr>
+<tr>
+<td><strong>Ignore in This Document</strong></td>
+<td>Stop reporting this word anywhere in this document, until you close
+it.</td>
+</tr>
+<tr>
+<td><strong>Add “word” to My Dictionary</strong></td>
+<td>Keep it for good, in your own dictionary.</td>
+</tr>
+<tr>
+<td><strong>Add to This Document Only</strong></td>
+<td>Keep it beside this file, so anyone who opens the file gets it
+too.</td>
+</tr>
+<tr>
+<td><strong>More Suggestions…</strong></td>
+<td>The full list, in a window you can arrow through.</td>
+</tr>
+<tr>
+<td><strong>Check Document…</strong></td>
+<td>The F7 check, from here.</td>
+</tr>
+<tr>
+<td><strong>Next / Previous Misspelling</strong></td>
+<td>Move on without leaving the keyboard.</td>
+</tr>
+</tbody>
+</table>
+<p>A word you ignore is ignored everywhere: you stop hearing about it as
+you type, <strong>Ctrl+F7</strong> stops going to it, and
+<strong>Alt+Shift+F7</strong> stops offering suggestions for it.
+Ignoring lasts until you close the document. To keep a word for good,
+add it to a dictionary.</p>
+<h3 id="thesaurus-and-dictionary-on-any-word">Thesaurus and Dictionary
+on any word</h3>
+<p>The Applications key menu has two more submenus on
+<strong>any</strong> word, spelled right or not. They come after the
+spelling rows and before the everyday rows, and both name the word they
+are about, so you always know what they will do.</p>
+<ul>
+<li><strong>Thesaurus for “running”</strong> opens on the best
+replacements. Press <strong>Enter</strong> on <em>sprinting</em> and it
+replaces <em>running</em>. QUILL Lite looks the word up as <em>run</em>,
+then gives you the replacement back in the <em>-ing</em> form, with the
+same capitals as your word. Below the first meaning, each other meaning
+has its own submenu (for example “As a noun: …”), then an
+<strong>Opposites</strong> submenu, then <strong>Say Word
+Summary</strong>, which tells you what the thesaurus knows without
+opening anything, and <strong>More in Thesaurus…</strong>, which opens
+the full thesaurus window.</li>
+<li><strong>Dictionary for “running”</strong> starts with <strong>Look
+Up “running”…</strong>, the dictionary that works without AI (see
+<em>Dictionary</em>, later in this chapter). When AI help is on, it then
+offers the twelve questions the AI dictionary can answer about the word
+as it is used in <em>this</em> sentence: Define in Context, Synonyms
+That Fit, Simpler Word, More Formal Word, More Vivid Word, Opposites, Is
+This the Right Word?, Use It in a Sentence, Where It Comes From, How to
+Say It, Rhymes, and the Word Explorer, which answers all of them at
+once. Last comes <strong>Find the Word For…</strong>, the reverse
+dictionary. If AI help is on but the AI in use is the free one, the
+submenu has one row that tells you so and opens Choose Your AI.</li>
+</ul>
+<p>If you have selected a single word, that word is used instead of the
+one at the cursor. There is no Thesaurus row on a number or on empty
+space.</p>
+<p>On a word that is spelled correctly, there is no Spelling Actions row
+at all, just the thesaurus, the dictionary and the everyday rows.</p>
+<p>QUILL has the same menu in the same order, with one extra dictionary
+for its projects.</p>
+<h3 id="when-it-stays-quiet">When it stays quiet</h3>
+<p>Some files are not writing at all. They hold settings and
+instructions for programs, full of made-up words and abbreviations that
+no dictionary knows. Checking those as you type would give you a stream
+of warnings that are all wrong.</p>
+<p>So QUILL Lite does not check those files as you type. It recognises
+them by the kind of file they are, and tells you once when you open one,
+so you know nothing is broken.</p>
+<p>If you do want checking in one of them, press
+<strong>Ctrl+Alt+F7</strong>. It changes only the document you are in.
+<strong>Tools &gt; Spelling</strong> shows a check mark beside
+<strong>Check While Typing</strong> so you can always see which way it
+is set.</p>
+<p><strong>F7</strong> always works, in every file. If you ask for a
+check, you get one.</p>
+<h3 id="your-dictionary">Your dictionary</h3>
+<p>Words you teach QUILL Lite are kept in your own dictionary, in QUILL
+Lite’s folder. If you also use QUILL, one setting in Preferences lets
+both share the same list, so a word you teach either one is known to
+both.</p>
+<p>A single document can also have its own short word list, kept in a
+small file beside it. That is useful for names that belong to one piece
+of work and nowhere else.</p>
+<h2 id="thesaurus">Thesaurus</h2>
+<p>The thesaurus helps you find a different word for the one you have.
+Press <strong>Shift+F7</strong>, the same key as in Word and QUILL, or
+choose <strong>Tools &gt; Thesaurus…</strong>. It opens on the word you
+are on, or the word you selected. If your cursor is not on a word, it
+asks you for one.</p>
+<p>It is the same thesaurus QUILL uses, and it comes inside QUILL Lite.
+Nothing is downloaded and nothing is sent anywhere.</p>
+<h3 id="it-finds-the-word-you-mean">It finds the word you mean</h3>
+<p>A thesaurus lists plain forms of words: <em>run</em>, not
+<em>running</em>; <em>happy</em>, not <em>happier</em>. QUILL Lite works
+your word back to its plain form for you (running to run, studies to
+study, happier to happy, stopped to stop) and tells you so in the title,
+for example “running (as run)”, and in each meaning’s row, for example
+“verb, from run: sprinting, dashing, …”.</p>
+<h3 id="replacements-come-back-in-the-right-form">Replacements come back
+in the right form</h3>
+<p>Choose <em>sprint</em> for <em>running</em> and your document gets
+<em>sprinting</em>. Choose <em>glad</em> for <em>Happier</em> and you
+get <em>More glad</em>, because QUILL Lite knows which words take
+<em>-er</em> and which take <em>more</em>. It knows irregular verbs too:
+replacing <em>sought</em> with <em>seek</em> gives you <em>sought</em>.
+If it is not sure of a form, it gives you the plain word rather than
+guess.</p>
+<h3 id="using-the-thesaurus-window">Using the thesaurus window</h3>
+<ol type="1">
+<li>You start in the <strong>Senses</strong> list. There is one row per
+meaning, with the part of speech first. Type <strong>n</strong> to jump
+to the nouns, or <strong>v</strong> to the verbs.</li>
+<li>Press <strong>Tab</strong> to reach the words for the meaning you
+picked. You get replacements first, then <em>broader:</em> words, then
+<em>opposite:</em> words, each labelled.</li>
+<li>Press <strong>Enter</strong>, or choose <strong>Replace</strong>, to
+put the word in place of yours. The selection is then cleared, so your
+next keystroke cannot type over it.</li>
+</ol>
+<p>Other choices:</p>
+<ul>
+<li><strong>Copy</strong> puts the word on the clipboard instead, and
+tells you so.</li>
+<li><strong>Escape</strong> closes the window and changes nothing.</li>
+<li>If you typed the word into the thesaurus rather than starting from
+your document, Replace is not available and Copy is the default.</li>
+</ul>
+<h3 id="a-quick-summary-without-opening-anything">A quick summary
+without opening anything</h3>
+<p><strong>Say Word Summary</strong> (<strong>Ctrl+Alt+Shift+[</strong>)
+tells you what the thesaurus knows about a word, without opening a
+window. You hear something like: “running, looked up as run: 27 meanings
+as a verb, 6 as an adjective, 3 as a noun. First: sprinting, dashing, …
+Opposites: standing, …”. It is also in the Thesaurus submenu of the
+Applications key menu. It is a good way to decide whether the full
+window is worth opening.</p>
+<h3 id="checking-your-word-lists">Checking your word lists</h3>
+<p><strong>Tools &gt; Spelling &gt; Dictionary Status…</strong>
+(<strong>Alt+Shift+;</strong>) tells you how many words are in your
+personal dictionary and in this document’s own list, where each file is
+kept, and whether the thesaurus is there.</p>
+<h3 id="turning-it-off">Turning it off</h3>
+<p>The thesaurus and dictionary are one switch in Customize Features,
+called <strong>Dictionary and thesaurus</strong>. It is on to begin
+with, and off in the WordPad and Notepad profiles.</p>
+<h2 id="dictionary">Dictionary</h2>
+<p>QUILL Lite has two dictionaries. The first, Look Up, works without
+AI. The second uses AI to answer questions about a word as it is used in
+your sentence.</p>
+<h3 id="look-up-the-dictionary-without-ai">Look Up: the dictionary
+without AI</h3>
+<p>To open it, press <strong>Alt+F10</strong> (<strong>Tools &gt; Look
+Up Word…</strong>), or choose <strong>Look Up “word”…</strong> at the
+top of the Dictionary submenu on any word. It is the same Look Up window
+QUILL has.</p>
+<ol type="1">
+<li>You start in the <strong>Result</strong>, a read-only box you can
+arrow through. It gives the word, then a labelled section for each kind
+of answer.</li>
+<li>Under it, <strong>Words you can use</strong> lists every synonym,
+opposite, related word and rhyme, each saying which it is.</li>
+<li>Press <strong>Enter</strong>, or choose <strong>Replace
+Word</strong>, to put the selected word in place of yours.</li>
+</ol>
+<p>You can also choose <strong>Copy</strong> to copy the selected word
+(or the whole result, if nothing is selected), or <strong>Add to
+Dictionary</strong> to teach the word to your spelling dictionary.</p>
+<h4 id="without-the-internet">Without the internet</h4>
+<p>When you are offline, Look Up gives you synonyms, opposites and
+related words from the word list inside QUILL Lite. Nothing leaves your
+computer.</p>
+<h4 id="with-the-internet-when-you-say-so">With the internet, when you
+say so</h4>
+<p>There is a checkbox called <strong>Use online sources</strong>. It is
+off until you check it. When it is on, the word, and only the word,
+never your sentence or your document, is sent to three free services
+that need no account and no key:</p>
+<ul>
+<li>the Free Dictionary, for definitions with examples,</li>
+<li>Datamuse, for more synonyms, opposites, rhymes and related
+words,</li>
+<li>and Wikipedia, for a short summary with a link to the article.</li>
+</ul>
+<p>You see the offline answer straight away and hear “Looking up
+online”. When the online answer arrives, it replaces the result and you
+are told. If Wikipedia has no real article for the word, there is simply
+no encyclopedia section.</p>
+<p>QUILL Lite remembers your choice, and so does QUILL if the two share
+settings, so you are not asked again. Uncheck the box and you are
+offline again from the next lookup.</p>
+<h3 id="the-ai-dictionary">The AI dictionary</h3>
+<p>The rest of <strong>Tools &gt; Dictionary</strong>, and of the
+Dictionary submenu on a word, uses AI to read the sentence your word is
+in. The offline thesaurus knows every meaning of <em>bank</em>, but it
+cannot tell which one your sentence means. These twelve questions send
+<strong>the word and the sentence it is in</strong> (never the rest of
+your document) and answer in plain words written to be listened to.
+Where it helps, you also get a list of choices, each with a reason.</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Key</th>
+<th>What comes back</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Define in Context</strong></td>
+<td>Ctrl+Alt+Shift+’</td>
+<td>What the word means <em>here</em>, its part of speech, and the
+meaning you might be confusing it with</td>
+</tr>
+<tr>
+<td><strong>Word Explorer…</strong></td>
+<td>Ctrl+F10</td>
+<td>Everything at once: meaning, how to say it, an example, where it
+comes from, what it is confused with, and the best replacements</td>
+</tr>
+<tr>
+<td><strong>Synonyms That Fit</strong></td>
+<td>Ctrl+Shift+;</td>
+<td>Replacements that keep this sentence’s meaning and tone, already in
+the right form</td>
+</tr>
+<tr>
+<td><strong>Simpler Word</strong></td>
+<td>Ctrl+Shift+-</td>
+<td>Plainer, more widely known words, and what is lost</td>
+</tr>
+<tr>
+<td><strong>More Formal Word</strong></td>
+<td>Ctrl+Shift+=</td>
+<td>Words suited to professional writing</td>
+</tr>
+<tr>
+<td><strong>More Vivid Word</strong></td>
+<td>Ctrl+Shift+’</td>
+<td>Livelier or more specific words</td>
+</tr>
+<tr>
+<td><strong>Opposites</strong></td>
+<td>Alt+Shift+-</td>
+<td>Opposites that would fit in the word’s place</td>
+</tr>
+<tr>
+<td><strong>Is This the Right Word?</strong></td>
+<td>Ctrl+Alt+Shift+/</td>
+<td>Affect or effect, complement or compliment: a plain yes, or the
+difference and the right word first</td>
+</tr>
+<tr>
+<td><strong>Use It in a Sentence</strong></td>
+<td>Alt+Shift+=</td>
+<td>Three short example sentences in the same sense</td>
+</tr>
+<tr>
+<td><strong>Where It Comes From</strong></td>
+<td>Alt+Shift+,</td>
+<td>The word’s origin and how its meaning developed</td>
+</tr>
+<tr>
+<td><strong>How to Say It</strong></td>
+<td>Alt+Shift+’</td>
+<td>Syllables with the stress in capitals, a plain respelling, the IPA,
+and the common mispronunciation</td>
+</tr>
+<tr>
+<td><strong>Rhymes</strong></td>
+<td>Ctrl+Alt+Shift+;</td>
+<td>Perfect rhymes first, then near rhymes, with syllable counts</td>
+</tr>
+<tr>
+<td><strong>Find the Word For…</strong></td>
+<td>Ctrl+Alt+Shift+]</td>
+<td>The reverse dictionary: describe the meaning, get the word, inserted
+at the cursor</td>
+</tr>
+</tbody>
+</table>
+<h4 id="the-answer-window">The answer window</h4>
+<ol type="1">
+<li>You start on the answer, so your screen reader reads it to you.</li>
+<li>Press <strong>Tab</strong> to reach <strong>Choices</strong>: one
+line per replacement, with a note.</li>
+<li>Press <strong>Enter</strong>, or choose <strong>Use This
+Word</strong>, to put the selected word in place of yours (or at the
+cursor, for Find the Word For). One <strong>Ctrl+Z</strong> takes it
+back.</li>
+</ol>
+<p>Other buttons:</p>
+<ul>
+<li><strong>Copy Choice</strong> and <strong>Copy Answer</strong> copy
+to the clipboard.</li>
+<li><strong>Ask Something Else…</strong> closes the answer and opens the
+Dictionary submenu again on the same word.</li>
+</ul>
+<p>If you typed over the word while the answer was on its way, Use This
+Word is not available and tells you why. Copy still works.</p>
+<h4 id="what-you-need-for-it">What you need for it</h4>
+<p>The AI dictionary works on any AI except the free one: your ChatGPT
+plan, GitHub Copilot, Codex or your own key. It does not use QUILL’s
+free AI service, because a dictionary gets asked many times a day and
+would use up the free allowance quickly. On the free AI, every row tells
+you so and opens Choose Your AI. All of these rows switch off together
+when you turn off <strong>AI help</strong> in Customize Features.
+Chapter 10, AI help, explains how to connect a key or sign in.</p>
+<h2 id="inline-notes">Inline notes</h2>
+<p>An inline note is a comment you attach to a line or a selection: a
+question, a reminder, or what you think of a plan somebody sent you.
+They are on <strong>Tools &gt; Inline Notes</strong>, on the same keys
+as in QUILL.</p>
+<ul>
+<li><strong>Alt+Shift+I</strong> (<strong>Add Inline Note…</strong>)
+adds a note to the selected text, or to the line you are on if nothing
+is selected. The <strong>Note on</strong> line at the top shows the
+start of that text, so you can check you are in the right place before
+you save.</li>
+<li><strong>Alt+Shift+J</strong> and <strong>Alt+Shift+K</strong>
+(<strong>Next Inline Note</strong> and <strong>Previous Inline
+Note</strong>) move to the next or previous note and read it to you.
+They go round from the end to the start.</li>
+<li><strong>Alt+Shift+H</strong> (<strong>Speak Inline Note</strong>)
+reads the note you are on. Press it twice quickly to change or delete
+the note.</li>
+<li><strong>Alt+Shift+Delete</strong> (<strong>Delete Inline
+Note…</strong>) deletes the note you are on. QUILL Lite reads you the
+note and asks first; No is the default.</li>
+<li><strong>Alt+Shift+Enter</strong> (<strong>List Inline
+Notes…</strong>) shows every note in the document: the note, the line it
+is on, the text it is about, and whether it is private or in the file.
+<strong>Enter</strong> goes to a note, <strong>Delete</strong> deletes
+one and <strong>F2</strong> edits one. The buttons let you
+<strong>Remove All</strong> of them (you are asked first), <strong>Copy
+All</strong> of them as plain text, or <strong>Export</strong> them to a
+Markdown or JSON file.</li>
+</ul>
+<p>A note follows its text as you edit. If the text is deleted, the note
+is not lost: the list shows it at the end, marked “the text it was on is
+gone”, so you can read it and remove it.</p>
+<h3 id="hearing-which-lines-have-notes">Hearing which lines have
+notes</h3>
+<p>As you arrow through a document, QUILL Lite plays a soft two-tap
+sound when the cursor arrives on a line that has an inline note, private
+or in the file. It plays once as you arrive, and never while you move
+along that same line with the left and right arrows, <code>Home</code>,
+<code>End</code> or <code>Ctrl+Left</code> and <code>Ctrl+Right</code>.
+Move off the line and back, and you hear it again. A note on a selection
+that runs over several lines counts as one place: you hear it as you
+enter, not on every line of it.</p>
+<p>For example, you have a note on the line “Back up the uploads
+folder.” Arrow down: on the line before, nothing; on that line, the tap;
+then press <code>Alt+Shift+H</code> to hear the note itself.</p>
+<p>To change it, open <strong>Preferences</strong> and find <strong>When
+the caret reaches a line with an inline note</strong> (the
+<code>inline_note_line_cue</code> setting). The choices are <strong>Play
+a sound</strong> (the default), <strong>Say “note”</strong>, and
+<strong>Nothing</strong>. A few things to know:</p>
+<ul>
+<li>With the sound chosen, a braille display also shows the word “note”,
+because a sound does not reach somebody reading in braille without
+speech. With the word chosen, your screen reader’s braille shows it
+already.</li>
+<li>If your sound pack has no sound for this, QUILL Lite says “note”
+instead, so the setting never ends up silent by accident. You can change
+or switch off the sound itself in <strong>Sound Scheme</strong>, where
+it is listed as “Arrived on a line with an inline note”.</li>
+<li><strong>Next Inline Note</strong> and <strong>Previous Inline
+Note</strong> read you the note itself, so arriving with them plays no
+tap on top.</li>
+</ul>
+<h3 id="private-notes-and-notes-in-the-file">Private notes and notes in
+the file</h3>
+<p>Normally a note is private. It is kept in QUILL Lite’s own folder,
+the document is never changed, and nobody else sees it. That works in
+every kind of document.</p>
+<p>In a Markdown or HTML document, you can check <strong>Write this note
+into the file</strong> instead. The note goes into the document as a
+hidden comment on its own line, right after the text it is about:</p>
+<pre><code>Back up the uploads folder.
+&lt;!-- quill-note: And the database dump. --&gt;</code></pre>
+<p>The file is still a proper Markdown or HTML file, and web pages hide
+the comment. But anyone who opens the file in a text editor, or an AI
+assistant you give it to, can read your note. That is the way to review
+a plan an AI assistant wrote for you: leave your notes in the file and
+hand it back. Because the note is part of the text,
+<strong>Ctrl+Z</strong> takes back adding, changing or deleting it.</p>
+<p>The check box remembers your choice for each document. To start every
+new note in the file, turn on <strong>Write new inline notes into the
+file</strong> in <strong>Preferences</strong>. It is off unless you
+change it.</p>
+<h3 id="notes-from-the-command-line">Notes from the command line</h3>
+<p>A script, or an AI assistant working in a terminal, can read and
+clear the notes in a file without opening a window:</p>
+<ul>
+<li><code>QuillLite.exe --notes list plan.md</code> prints every note,
+its line and the text it is about. Add <code>--json</code> for a list a
+program can read.</li>
+<li><code>QuillLite.exe --notes check plan.md</code> says how many notes
+are left.</li>
+<li><code>QuillLite.exe --notes clear plan.md</code> removes them all
+and saves the file.</li>
+</ul>
+<p>The exit code is 0 when it worked (or, for <code>check</code>, when
+no notes are left), 3 when <code>check</code> finds notes still there, 1
+when the file cannot be read or written, and 2 when the command is
+mistyped. Private notes never appear here.</p>
+<h2 id="what-is-this-character">What is this character?</h2>
+<p>Press <strong>Ctrl+Shift+C</strong> to hear exactly which character
+your cursor is on: its name, and how it behaves when you search.</p>
+<p>This helps more than you might think. Your screen reader says “space”
+for several different characters that sound the same but act
+differently. One of them is often the reason a search will not find text
+that is plainly there.</p>
+<p>For the full details, press <strong>Ctrl+Alt+C</strong>. It opens a
+window you can read line by line.</p>
+<p>A <strong>page break</strong>, the character a PDF has between its
+pages, is named as one: <strong>Ctrl+Shift+C</strong> says “Page break”,
+and <strong>Ctrl+Alt+C</strong> adds that one page ends there and the
+next begins. See <a
+href="lite-guide-03-opening-saving-and-printing.html#page-breaks-and-what-you-hear">Page
+breaks, and what you hear</a>.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p><strong>F7</strong> checks the whole document,
+<strong>Ctrl+F7</strong> hops between mistakes and spells each one out,
+and the Applications key fixes the word you are on, or opens or copies a
+web address your cursor is on. You can quiet or tune the spelling
+sounds, and teach QUILL Lite your own words. <strong>Shift+F7</strong>
+opens the thesaurus and puts a better word in place, already in the
+right form, and <strong>Say Word Summary</strong> tells you what it
+knows without opening anything. <strong>Alt+F10</strong> looks a word
+up, offline or online as you choose, and the AI dictionary answers
+questions about a word as it is used in your sentence.
+<strong>Ctrl+Shift+C</strong> names the character under your cursor,
+which helps when a search will not find something you know is there.</p>
+<p>To practise spelling with the app guiding you, try the tutorial
+<em>Spelling, without a red squiggle</em>.</p>
+<p>Next, Chapter 8, What you hear, explains what QUILL Lite says out
+loud, the sounds it plays, and how to catch a message you missed.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-guide-06-formatting-headings-and-the-insert-menu.html">Chapter
+6: Formatting, headings and the Insert menu</a></li>
+<li>Next: <a href="lite-guide-08-what-you-hear.html">Chapter 8: What you
+hear</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

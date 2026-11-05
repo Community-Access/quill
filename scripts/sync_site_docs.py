@@ -167,6 +167,38 @@ def planned(app_key: str | None = None) -> list[tuple[Path, Path]]:
     return pairs
 
 
+#: app key -> the folder of chapter pages beside its user guide. A guide split
+#: into chapters (quill/core/user_guide_files.py) links them from its contents
+#: page as ``<folder>/<chapter>.html``, so the site publishes them in that same
+#: folder under ``docs/`` and those links work unchanged. Each chapter's own link
+#: back to the contents (``../userguide.html``) is the one thing rewritten: on
+#: the site, ``/docs/userguide.html`` is QUILL's guide, not this app's.
+GUIDE_FOLDERS: dict[str, str] = {"quilllite": "guide"}
+
+
+def guide_pages(app_key: str | None = None) -> list[tuple[Path, Path]]:
+    """Every ``(site page, source render)`` pair for the guides' chapter folders."""
+    pairs: list[tuple[Path, Path]] = []
+    for key, folder in sorted(GUIDE_FOLDERS.items()):
+        if app_key and key != app_key:
+            continue
+        source_dir = _source(key, folder)
+        for source in sorted(source_dir.glob("*.html")):
+            pairs.append((_SITE_DOCS / folder / source.name, source))
+    return pairs
+
+
+def site_copy(page: Path, source: Path) -> bytes:
+    """What the site serves for *source*: a chapter's contents link renamed."""
+    data = source.read_bytes()
+    folder = page.parent.name
+    for key, guide_folder in GUIDE_FOLDERS.items():
+        if guide_folder == folder and page.parent.parent == _SITE_DOCS:
+            renamed = f'href="../{key}-userguide.html'.encode()
+            data = data.replace(b'href="../userguide.html', renamed)
+    return data
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--app", help="sync only this app key (e.g. radio)")
@@ -210,6 +242,18 @@ def main(argv: list[str] | None = None) -> int:
         print(line)
     for line in stale:
         print(line)
+
+    for page, source in guide_pages(args.app):
+        wanted = site_copy(page, source)
+        if page.is_file() and page.read_bytes() == wanted:
+            continue
+        if args.check:
+            stale.append(f"  stale or missing: {page.relative_to(_REPO_ROOT)}")
+            continue
+        page.parent.mkdir(parents=True, exist_ok=True)
+        page.write_bytes(wanted)
+        synced += 1
+        print(f"  synced {page.relative_to(_SITE_DOCS)} <- {source.relative_to(_REPO_ROOT)}")
 
     if missing_sources:
         print(f"Site sync incomplete: {len(missing_sources)} source(s) missing.", file=sys.stderr)

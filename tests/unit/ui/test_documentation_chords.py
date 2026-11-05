@@ -30,6 +30,7 @@ import re
 from pathlib import Path
 
 from quill.core.native_richedit_keys import NATIVE_FORMATTING_CHORDS
+from quill.core.user_guide_files import guide_files, manual_files, read_guide_text
 from quill.core.wordpress.menu import LAYER_PREFIX
 
 _ROOT = Path(__file__).resolve().parents[3]
@@ -64,6 +65,9 @@ GUIDES: tuple[Path, ...] = (
     _ROOT / "docs" / "release notes" / "announcement-1.0.0.md",
     _ROOT / "standalone" / "quilllite" / "docs" / "release-notes-1.0.md",
     _ROOT / "standalone" / "quilllite" / "docs" / "announcement.md",
+    # The WordPress and Forms manual both guides hand over to: its index and
+    # every page it links, each scanned and reported on its own.
+    *manual_files(),
 )
 
 #: A chord as the guides write it. QUILL's guide uses backticks and QUILL Lite's
@@ -286,6 +290,13 @@ def _is_a_range_endpoint(text: str, match: object) -> bool:
 
 
 def _stale_chords(guide: Path, live: set[str]) -> list[str]:
+    # Each user guide is a contents page plus a folder of chapters
+    # (quill/core/user_guide_files.py); every file is read, and a stale chord
+    # is reported by the chapter file and line it is on.
+    return [entry for part in guide_files(guide) for entry in _stale_chords_in(part, live)]
+
+
+def _stale_chords_in(guide: Path, live: set[str]) -> list[str]:
     text = guide.read_text(encoding="utf-8")
     stale: list[str] = []
     for match in _CHORD.finditer(text):
@@ -323,6 +334,11 @@ def test_the_gate_is_actually_reading_the_guides() -> None:
     live = _live_chords()
     assert len(live) > 300, f"only {len(live)} live chords found"
     floors = {
+        # Both user guides: the floor counts the whole guide (the contents page
+        # and every chapter, read_guide_text), not the contents page alone,
+        # which teaches one or two keys. Unchanged at 20 when the guides were
+        # split into chapters on 2026-11-04: what it guards is "the gate still
+        # reads the guide", and the whole guide is what it reads.
         "userguide.md": 20,
         # The listen-along manual teaches by prose rather than by table, but a
         # book whose whole point is keystrokes still names scores of them.
@@ -334,12 +350,18 @@ def test_the_gate_is_actually_reading_the_guides() -> None:
     }
     total = 0
     for guide in GUIDES:
-        text = guide.read_text(encoding="utf-8")
+        text = read_guide_text(guide)
         found = [m.group(1) or m.group(2) for m in _CHORD.finditer(text)]
         total += len(found)
-        floor = floors[guide.name]
+        # A manual page may be about menus rather than keys; its floor is the
+        # manual as a whole, below.
+        floor = floors.get(guide.name, 0)
         assert len(found) >= floor, f"{guide.name}: only {len(found)} chords seen"
     assert total > 400, f"only {total} chords across the corpus"
+    manual = sum(
+        len(list(_CHORD.finditer(page.read_text(encoding="utf-8")))) for page in manual_files()
+    )
+    assert manual >= 5, f"only {manual} chords seen in the WordPress and Forms manual"
 
 
 def test_a_chord_the_product_moved_would_be_caught() -> None:

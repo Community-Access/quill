@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 13: Every window, field and button</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-13-every-window-field-and-button">Chapter 13: Every
+window, field and button</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter is a reference. It goes through every WordPress command
+in menu order and, for each one, says where it is, which WordPress roles
+can use it, every field, list and button in its window, what each one
+does on your site, and what you hear. The earlier chapters explain how
+to use these together; come here when you want to know exactly what a
+button does before you press it. The names are the ones on screen,
+without their underlined letters. Forms windows are described in full in
+Chapters 8 and 9.</p>
+<h2 id="how-to-read-this-chapter">How to read this chapter</h2>
+<p><strong>Where.</strong> Every command is in the same menu in QUILL
+and QUILL Lite. Where a command has a WordPress key, it is given as the
+letter to press after Ctrl+Alt+Shift+Grave (Chapter 12).</p>
+<p><strong>Who.</strong> WordPress’s standard roles, from least to most:
+Subscriber, Contributor, Author, Editor, Administrator. QUILL asks your
+site what your account may actually do, so a site that changes its roles
+with a plugin is read correctly; the roles below are WordPress’s
+defaults. In short:</p>
+<ul>
+<li><strong>Contributors</strong> write and edit their own posts, but
+cannot publish or upload.</li>
+<li><strong>Authors</strong> also publish their own posts and upload
+files. They cannot write pages.</li>
+<li><strong>Editors</strong> also write and publish pages, edit
+everyone’s posts, moderate comments and manage categories and tags.</li>
+<li><strong>Administrators</strong> also run the site: settings, menus,
+widgets, users, plugins, themes, fonts and styles.</li>
+</ul>
+<p>A window your role cannot use does not open; you hear one sentence,
+such as “Your account on Community Radio is an Author, which cannot
+manage users.”</p>
+<p><strong>The shared shapes.</strong> Most windows are one of five
+shapes, so their common parts are described once here:</p>
+<ul>
+<li><strong>A list window</strong> has the list, sometimes a
+<strong>Find</strong> field above it (type and press Enter to narrow the
+list), a read-only <strong>Details</strong> field saying more about the
+row you are on, one button per action, and <strong>Close</strong>. Enter
+runs the main action. A button that needs a row is dimmed until you are
+on one.</li>
+<li><strong>A choice window</strong> has one list and OK and Cancel.
+Enter chooses.</li>
+<li><strong>A question window</strong> has one field and OK and
+Cancel.</li>
+<li><strong>A confirmation</strong> names the site and what will change,
+and has a button named for the change, such as <strong>Move to
+Trash</strong>, and Cancel. Nothing is sent until you press it.</li>
+<li><strong>A report</strong> has a read-only <strong>Report</strong>
+field to read line by line, <strong>Copy All</strong>, and
+<strong>Close</strong>.</li>
+</ul>
+<p><strong>The site.</strong> A command that works on a whole site, not
+the page in front of you, asks <strong>Site</strong> first when you have
+more than one: a choice window with your default site selected.</p>
+<h2 id="file--wordpress">File &gt; WordPress</h2>
+<h3 id="new-page-and-new-post">New Page and New Post</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; New Page… (key G)
+and New Post… (key N).</li>
+<li><strong>Who:</strong> a post, Contributor and up; a page, Editor and
+up.</li>
+<li><strong>The window:</strong>
+<ul>
+<li><strong>Site:</strong> which of your sites it belongs to, for
+good;</li>
+<li><strong>Title:</strong> filled in by you; the theme shows it;</li>
+<li><strong>Slug:</strong> filled in from the title as you type;</li>
+<li><strong>Write in:</strong> Markdown or HTML, which cannot change
+later;</li>
+<li>for a post, a <strong>Categories</strong> group and a
+<strong>Tags</strong> group of check boxes;</li>
+<li><strong>Create</strong> and Cancel.</li>
+</ul></li>
+<li><strong>On the site:</strong> nothing. The document is made on your
+computer.</li>
+<li><strong>You hear:</strong> “New post for Community Radio. Ctrl+S
+keeps it on this computer; nothing is sent until you choose Save Draft
+to Site or Publish.”</li>
+</ul>
+<h3 id="open-page-or-post">Open Page or Post</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Open Page or Post…
+(key O).</li>
+<li><strong>Who:</strong> Contributor and up; you see what your role may
+edit.</li>
+<li><strong>The windows:</strong>
+<ul>
+<li><strong>Show:</strong> a choice of Posts, Pages and any kind your
+site adds, such as Events;</li>
+<li><strong>Open from</strong> your site: a list window. The list is
+labelled Posts, Pages or Items; each row is the title, status and when
+it changed. <strong>Find by title or status</strong> narrows it.
+Buttons: <strong>Open</strong>, <strong>Move to Trash…</strong> and
+<strong>Restore from Trash</strong>;</li>
+<li><strong>Open as:</strong> “HTML, exactly as the site has it” or
+“Markdown, easier to read; anything Markdown cannot show is kept
+exactly”;</li>
+<li><strong>Unsaved Version,</strong> when the site has a newer
+autosave: “Yes, open the unsaved version” or “No, open the copy on the
+site”.</li>
+</ul></li>
+<li><strong>On the site:</strong> reads the list and the page. Move to
+Trash and Restore from Trash change the page’s status.</li>
+<li><strong>You hear:</strong> “Opened Opening Hours from Community
+Radio.” If you already have a working copy: “Opened your working copy of
+Opening Hours. Compare with Site shows what changed on the site
+since.”</li>
+</ul>
+<h3 id="open-by-web-address">Open by Web Address</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Open by Web
+Address… (key W).</li>
+<li><strong>Who:</strong> Contributor and up.</li>
+<li><strong>The window:</strong> a question, <strong>Web
+address</strong>, with the clipboard’s address already in it.</li>
+<li><strong>On the site:</strong> finds the page by its address, and
+opens it as above.</li>
+<li><strong>You hear:</strong> the usual “Opened” sentence, or “That
+address is not on any of your connected sites.”</li>
+</ul>
+<h3 id="open-local-draft">Open Local Draft</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Open Local Draft…
+(key L).</li>
+<li><strong>Who:</strong> anyone; it reads only your computer.</li>
+<li><strong>The window:</strong> a choice, <strong>Drafts</strong>,
+newest first, each with its site.</li>
+<li><strong>You hear:</strong> “You have no local WordPress drafts yet.”
+when there are none.</li>
+</ul>
+<h3 id="save-draft-to-site">Save Draft to Site</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Save Draft to Site
+(key D). Dimmed outside a WordPress page.</li>
+<li><strong>Who:</strong> Contributor and up for posts; Editor and up
+for pages.</li>
+<li><strong>On the site:</strong> creates or updates the page as a
+draft, uploads any pictures from your computer first, and keeps the
+site’s copy in Previous Versions before replacing it.</li>
+<li><strong>You hear:</strong> “Draft saved to Community Radio. It is
+not public.” If the site’s copy changed since you opened it, the
+<strong>The Site Copy Changed</strong> window asks <strong>What
+now</strong>: Compare the two, Open the site’s copy, or Send mine anyway
+(which asks once more, <strong>Send Mine</strong>).</li>
+</ul>
+<h3 id="publish-or-update">Publish or Update</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Publish or Update…
+(key P). Called Submit for Review when your role cannot publish. Dimmed
+outside a WordPress page.</li>
+<li><strong>Who:</strong> publishing posts, Author and up; pages, Editor
+and up; Contributors submit for review.</li>
+<li><strong>The window:</strong> a confirmation titled, for example,
+“Publish on Community Radio”, with the title and what Check Before
+Publishing found, and a <strong>Publish</strong> button, or
+<strong>Publish Anyway</strong> when there are findings.</li>
+<li><strong>On the site:</strong> publishes the page, or updates it,
+keeping a private or scheduled status as it was.</li>
+<li><strong>You hear:</strong> “Published on Community Radio. The
+address is on the clipboard.” or “Submitted for review on Community
+Radio.” For a new page, <strong>Add to a Menu</strong> asks: Yes, open
+Menus; Not this time; or No, and stop asking for that site.</li>
+</ul>
+<h3 id="schedule-publish">Schedule Publish</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Schedule Publish…
+(key E). Dimmed outside a WordPress page.</li>
+<li><strong>Who:</strong> Author and up for posts; Editor and up for
+pages.</li>
+<li><strong>The window:</strong> <strong>Date (year-month-day)</strong>,
+<strong>Time</strong>, <strong>Time zone</strong> (your site’s first),
+and a <strong>Problem</strong> field at the top when the last try could
+not be used. Then a confirmation, <strong>Schedule</strong>. On a page
+already scheduled, <strong>What now</strong>: Change the schedule, or
+Publish now (<strong>Publish Now</strong>).</li>
+<li><strong>On the site:</strong> sets the page to publish at that
+time.</li>
+<li><strong>You hear:</strong> “Scheduled on Community Radio for” and
+the date and time.</li>
+</ul>
+<h3 id="open-on-site-and-copy-address">Open on Site and Copy
+Address</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Open on Site (key
+I) and Copy Address (key Y). Dimmed outside a WordPress page.</li>
+<li><strong>Who:</strong> anyone who can open the page.</li>
+<li><strong>You hear:</strong> “Address copied.” or “Draft address
+copied. It needs a WordPress sign-in to open.” Before the page is on the
+site: “This is not on Community Radio yet.”</li>
+</ul>
+<h3 id="properties">Properties</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Properties… (key
+R). Dimmed outside a WordPress page.</li>
+<li><strong>Who:</strong> whoever may edit the page.</li>
+<li><strong>The window:</strong> <strong>About</strong> (read only:
+site, address, author, last change, reading level);
+<strong>Title</strong>; <strong>Slug</strong>; <strong>Status</strong>
+(Draft, Pending review, Published, Private); <strong>Excerpt</strong>;
+for a post, the <strong>Categories</strong> and <strong>Tags</strong>
+check boxes, <strong>Allow comments</strong>, <strong>Keep at the top of
+the blog</strong>; <strong>Password to read it (optional)</strong>; and
+any custom and plugin fields. OK and Cancel.</li>
+<li><strong>On the site:</strong> nothing until your next send.</li>
+<li><strong>You hear:</strong> “Kept with your copy: 2 categories, 3
+tags. They go to the site when you next send.”</li>
+</ul>
+<h3 id="custom-fields">Custom Fields</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Custom Fields….
+Dimmed outside a WordPress page.</li>
+<li><strong>Who:</strong> whoever may edit the page.</li>
+<li><strong>The window:</strong> one field per custom field your site
+registers for that kind of page, each labelled and explained by the
+site, and OK.</li>
+<li><strong>You hear:</strong> “3 custom fields kept with your copy.
+They go to Community Radio when you next send.” or “Community Radio has
+no custom fields for a post.”</li>
+</ul>
+<h3 id="plugin-fields">Plugin Fields</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Plugin Fields….
+Dimmed outside a WordPress page.</li>
+<li><strong>Who:</strong> whoever may edit the item.</li>
+<li><strong>The window:</strong> only the fields your site’s plugins
+have:
+<ul>
+<li>The Events Calendar: <strong>Starts</strong>, <strong>Ends</strong>,
+<strong>Venue</strong>;</li>
+<li>WooCommerce: <strong>Regular price</strong>, <strong>Sale
+price</strong>, and <strong>Stock</strong> where the shop counts
+it;</li>
+<li>Yoast SEO or Rank Math: <strong>SEO title</strong> and <strong>SEO
+description</strong>, each with a read-only count against what search
+engines show.</li>
+</ul></li>
+<li><strong>On the site:</strong> saves straight away; a price change
+asks first (<strong>Change Price</strong>).</li>
+<li><strong>You hear:</strong> “Saved to Community Radio:” and what was
+saved.</li>
+</ul>
+<h3 id="previous-versions">Previous Versions</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Previous Versions…
+(key V). Dimmed outside a WordPress page.</li>
+<li><strong>Who:</strong> whoever may edit the page; the site’s own
+history needs the right to edit it there.</li>
+<li><strong>The window:</strong> a list window,
+<strong>Versions</strong>, newest first. Buttons: <strong>View…</strong>
+(a report, <strong>Version</strong>, of the whole text) and
+<strong>Restore</strong>.</li>
+<li><strong>On the site:</strong> nothing. Restore only changes your
+document.</li>
+<li><strong>You hear:</strong> “Version put in the editor. Nothing was
+sent; your text before is in Previous Versions.”</li>
+</ul>
+<h3 id="compare-with-site">Compare with Site</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Compare with Site
+(key C). Dimmed outside a WordPress page.</li>
+<li><strong>The window:</strong> a report, lines starting “Site:” and
+“Yours:”.</li>
+</ul>
+<h3 id="move-to-trash">Move to Trash</h3>
+<ul>
+<li><strong>Where:</strong> File &gt; WordPress &gt; Move to Trash… (key
+T). Dimmed outside a WordPress page.</li>
+<li><strong>Who:</strong> whoever may delete the page: your own posts,
+Author and up; anyone’s, Editor and up.</li>
+<li><strong>The window:</strong> a confirmation, <strong>Move to
+Trash</strong>.</li>
+<li><strong>On the site:</strong> moves the page to WordPress’s
+Trash.</li>
+<li><strong>You hear:</strong> “‘Hours’ moved to the Trash on Community
+Radio.”</li>
+</ul>
+<h3 id="send-and-copy">Send and Copy</h3>
+<p>All in File &gt; WordPress &gt; Send and Copy:</p>
+<ul>
+<li><strong>Send This Document to WordPress…</strong> <strong>Make it
+a</strong>: post or page. Then the site. The draft is made, its pictures
+uploaded. Who: Contributor and up (Author and up with pictures, which
+need uploading).</li>
+<li><strong>Publish to Another Site…</strong> Dimmed outside a WordPress
+page. <strong>Copy to</strong>: the other site. If that site lacks some
+categories or tags, a confirmation, <strong>Create Them</strong>, or
+Cancel to copy without them. Arrives as a draft.</li>
+<li><strong>Duplicate…</strong> <strong>Duplicate a</strong>: post or
+page; then the item; then <strong>Where</strong>: this site or another.
+You hear “‘Hours (copy)’ is a new draft on Community Radio.”</li>
+<li><strong>Send a Folder as Drafts…</strong> A folder chooser; then a
+confirmation, <strong>Send 3 Drafts</strong>, which lists anything to
+look at in each file.</li>
+<li><strong>Download My Writing…</strong> A folder chooser. Saving runs
+in the background, and you hear when it is done. Run it again to carry
+on or update.</li>
+</ul>
+<h3 id="switch-site-sites-and-connect-a-site">Switch Site, Sites and
+Connect a Site</h3>
+<ul>
+<li><strong>Switch Site…</strong> (key S): a choice,
+<strong>Site</strong>. You hear “Default site: Community Radio.”</li>
+<li><strong>Sites…</strong> (key Shift+S): the WordPress Sites list
+window. Buttons: <strong>Add…</strong>, <strong>Rename…</strong>
+(question, <strong>Name</strong>), <strong>Verify</strong>, <strong>Make
+Default</strong>, <strong>Remove…</strong> (confirmation,
+<strong>Remove</strong>), and <strong>Which Password</strong>, which
+says which of your application passwords QUILL signs in with.</li>
+<li><strong>Connect a Site…</strong> (key A): the Connect a WordPress
+Site window, with <strong>Kind of site</strong>, <strong>Site
+address</strong>, <strong>Username</strong>, <strong>Application
+password</strong>, <strong>Name for this site (optional)</strong>,
+<strong>Get Password with My Browser</strong>, <strong>Connect</strong>
+and Cancel, and a <strong>Problem</strong> field after a failed try.
+Then, on older sites, <strong>Paste the Application Password</strong>,
+and sometimes <strong>Your WordPress Username</strong>. Any role can
+connect.</li>
+</ul>
+<h2 id="edit--wordpress">Edit &gt; WordPress</h2>
+<p>All dimmed outside a WordPress page. Who: anyone editing the
+page.</p>
+<ul>
+<li><strong>Next Block</strong> and <strong>Previous Block:</strong> you
+hear the block, its place and its first words.</li>
+<li><strong>Where Am I:</strong> you hear the block and what it sits
+inside.</li>
+<li><strong>Hear Where a Link Goes:</strong> with no link at the caret,
+a question, <strong>Address</strong>; then a confirmation,
+<strong>Insert Link</strong>. Needs WordPress 5.9 or later.</li>
+<li><strong>Fix Link Text…:</strong> the Fix Link Text list window,
+<strong>Links</strong>, with <strong>Use the Page’s Title</strong> and
+<strong>Use All Titles</strong>. You hear “The link now says ‘About’.”
+or “3 links now say where they go.”</li>
+</ul>
+<h2 id="view">View</h2>
+<p>All dimmed outside a WordPress page.</p>
+<ul>
+<li><strong>WordPress Blocks…</strong> (key B): the Blocks list window.
+Buttons: <strong>Go To</strong>, <strong>Move Up</strong>, <strong>Move
+Down</strong>, <strong>Duplicate</strong>, <strong>Remove…</strong>
+(confirmation, <strong>Remove Block</strong>), <strong>Change
+To…</strong> (choice, <strong>Kind of block</strong>),
+<strong>Group</strong>, <strong>Ungroup</strong>. Changes only your
+document.</li>
+<li><strong>Preview Blocks:</strong> a report, as your site draws the
+blocks. Nothing is saved on the site.</li>
+<li><strong>Block Notes…:</strong> the Notes list window. Buttons:
+<strong>Go to It</strong>, <strong>Reply…</strong> (question,
+<strong>Reply</strong>), <strong>Resolve or Reopen</strong>, <strong>Add
+Note…</strong>. Needs WordPress 6.9 or later. Who: whoever may edit the
+page.</li>
+<li><strong>Play Media Here:</strong> opens the player (see Media
+Library, below).</li>
+</ul>
+<h2 id="insert">Insert</h2>
+<p>All dimmed outside a WordPress page.</p>
+<ul>
+<li><strong>WordPress Block…:</strong> the Insert Block list window,
+<strong>Blocks</strong>, with <strong>Find</strong>,
+<strong>Insert</strong>, and <strong>WordPress.org Patterns…</strong>
+(question, <strong>Search for</strong>; choice,
+<strong>Patterns</strong>; confirmation, <strong>Insert</strong> and the
+pattern’s name). A block’s own form follows, with one field, check box
+or list per setting.</li>
+<li><strong>Picture from the Media Library…:</strong> a choice,
+<strong>Files</strong>; then the picture window. Who: Author and
+up.</li>
+<li><strong>Picture from This Computer…:</strong> a file chooser, then
+the picture window. Uploads on your next send. Who: Author and up.</li>
+<li><strong>The picture window:</strong> <strong>Alternative
+text</strong>, <strong>Suggest Alternative Text</strong>,
+<strong>Decorative: it adds nothing a visitor needs</strong>,
+<strong>Caption</strong>, <strong>Display width</strong> (choose or type
+pixels), <strong>File size</strong> (the library’s sizes), <strong>Use
+as featured image</strong>, <strong>Link to</strong> (Nothing, The
+picture file, or an address you type), <strong>Describe Image…</strong>,
+<strong>Insert</strong> and Cancel. You hear “Picture inserted:” and its
+alternative text.</li>
+<li><strong>Link to a Page on This Site…:</strong> a choice,
+<strong>Page or post</strong>. You hear “Link to ‘About’ inserted.”</li>
+<li><strong>Note on This Block…:</strong> a question,
+<strong>Note</strong>. In a Markdown document, a confirmation first,
+<strong>Add Note</strong>.</li>
+<li><strong>Make a Picture…:</strong> the Picture Maker:
+<strong>Describe the picture, or the change you want</strong>,
+<strong>Shape</strong>, <strong>Background</strong>,
+<strong>Colour</strong> (for a solid background), <strong>Make the
+picture</strong> (then <strong>Make the change</strong>),
+<strong>Suggest from Page Content</strong>, <strong>Versions</strong>,
+<strong>Description of the chosen version</strong>, <strong>Describe
+Image</strong>, <strong>Open in Image Viewer</strong>, <strong>Save
+As…</strong>, <strong>Insert into Document…</strong>, <strong>Open
+folder</strong> and <strong>Close</strong>. A confirmation, <strong>Make
+the Picture</strong>, names the provider before anything is sent.</li>
+<li><strong>WordPress Icon…:</strong> the Insert Icon list window,
+<strong>Icons</strong>, with <strong>Find</strong>, <strong>Insert with
+a Label…</strong> (question, <strong>Label</strong>) and <strong>Insert
+as Decorative</strong>. Needs WordPress 7.0 or later.</li>
+</ul>
+<h2 id="format--wordpress">Format &gt; WordPress</h2>
+<p>All dimmed outside a WordPress page.</p>
+<ul>
+<li><strong>Block Settings…:</strong> the block’s own form. In a
+Markdown document a confirmation may come first, <strong>Make Protected
+Block</strong>. You hear “Block settings changed.”</li>
+<li><strong>Image Size…:</strong> a choice, <strong>Size</strong>, with
+Back to Earlier Size at the top when there is one. You hear “Picture
+shown at” and the size.</li>
+<li><strong>Mark Language…:</strong> a question,
+<strong>Language</strong>. You hear, for example, “The selection is
+marked as French.”</li>
+</ul>
+<h2 id="tools--wordpress-checking">Tools &gt; WordPress: checking</h2>
+<ul>
+<li><strong>Check Before Publishing…</strong> (key K): the list window,
+<strong>Things to look at</strong>, with <strong>Go to It</strong>.
+Dimmed outside a WordPress page. Reads only your document.</li>
+<li><strong>Check This Page:</strong> the list window,
+<strong>Findings</strong>, with <strong>Explain…</strong>, <strong>Go to
+It</strong>, <strong>Write a Note for the Theme Author…</strong>,
+<strong>Page Shape…</strong> and <strong>Dead Links…</strong>. Reads the
+public page; any role.</li>
+<li><strong>Check the Whole Site…:</strong> a choice, <strong>How
+thorough</strong>; then the list window, <strong>Problems</strong>, with
+<strong>Pages…</strong> and <strong>Fix in Bulk…</strong> (a preview
+report, then a confirmation such as <strong>Fix 17 Pages</strong>).
+Fixing needs the right to edit those pages: Editor and up.</li>
+<li><strong>Undo Site Fix…:</strong> the list window,
+<strong>Fixes</strong>, with <strong>Undo…</strong> and
+<strong>View…</strong>.</li>
+<li><strong>Site-wide Find and Replace…:</strong> questions
+<strong>Find</strong> and <strong>Replace with</strong>; a choice,
+<strong>How to match</strong> (plain words or a pattern, any case or
+matching case); then the list window, <strong>Matches</strong>, with
+<strong>Include or Skip</strong>, <strong>Include All</strong>,
+<strong>Skip All</strong>, <strong>Include Block Settings</strong> and
+<strong>Replace…</strong> (confirmation, <strong>Replace in 4
+Pages</strong>). Editor and up.</li>
+<li><strong>Write an Accessibility Statement…:</strong> a question,
+<strong>Contact</strong>. Opens a new page draft; nothing is sent.</li>
+<li><strong>Palette Report:</strong> a report. Any role.</li>
+<li><strong>In Short…:</strong> uses your AI; puts a paragraph at the
+top. Dimmed outside a WordPress page.</li>
+</ul>
+<h2 id="tools--wordpress-pictures-and-media">Tools &gt; WordPress:
+pictures and media</h2>
+<ul>
+<li><strong>Media Library…</strong> (key M): the list window,
+<strong>Files</strong>, with <strong>Find</strong>,
+<strong>Insert…</strong>, <strong>Play…</strong>, <strong>Used
+In</strong>, <strong>Attach to This Page or Post</strong>, <strong>Set
+as Featured Image</strong>, <strong>Suggest Alternative Text…</strong>,
+<strong>Describe Image…</strong>, <strong>Edit Alternative
+Text…</strong> (question, <strong>Alternative text</strong>),
+<strong>Copy Address</strong> and <strong>Remove from Library…</strong>
+(confirmation, <strong>Remove</strong>). Who: Author and up; changing or
+removing someone else’s file, Editor and up.</li>
+<li><strong>The player:</strong> Play and Pause, Stop, Rewind and
+Forward (ten seconds), Where Am I, <strong>Speed</strong>,
+<strong>Position</strong>, <strong>Volume</strong>, Mute,
+<strong>Captions</strong>, <strong>Go to Position…</strong>,
+<strong>Open in Quill Media Player</strong>, <strong>Open in
+Browser</strong> and <strong>Close</strong>.</li>
+<li><strong>Alt Text Review…</strong> (key X): the list window,
+<strong>Pictures</strong>, with <strong>Edit…</strong>, <strong>Mark
+Decorative</strong>, <strong>Suggest…</strong> and <strong>Go to
+Picture</strong>. Dimmed outside a WordPress page; changes only your
+document.</li>
+<li><strong>Alt Text for the Whole Library…:</strong> the list window,
+<strong>Pictures</strong>, with <strong>Write…</strong>,
+<strong>Suggest…</strong> and <strong>Save Now</strong>. Author and up
+for your own files; Editor and up for everyone’s.</li>
+<li><strong>Visual Review…:</strong> a confirmation, <strong>Send for
+Review</strong>, naming what goes to your AI; then a report. Published
+pages only.</li>
+</ul>
+<h3 id="more-media">More Media</h3>
+<p>All in Tools &gt; WordPress &gt; More Media. Uploading needs Author
+and up.</p>
+<ul>
+<li><strong>Upload Files…</strong> (key U): a file chooser; then for
+each file the upload window: <strong>Alternative text</strong>,
+<strong>Suggest Alternative Text</strong>, <strong>Decorative: it adds
+nothing a visitor needs</strong>, <strong>Title</strong>,
+<strong>Caption</strong>, <strong>Describe Image…</strong>,
+<strong>Upload</strong> and Cancel. If the file is already there, a
+confirmation, <strong>Use the One There</strong>.</li>
+<li><strong>Upload from Web Address…:</strong> a question,
+<strong>Address</strong>.</li>
+<li><strong>Paste Image:</strong> the upload window, for the copied
+picture.</li>
+<li><strong>Upload a Large File…:</strong> a file chooser. Needs a site
+that takes uploads in pieces; otherwise it says Upload Files sends it in
+one go.</li>
+<li><strong>Regenerate Sizes…:</strong> a choice,
+<strong>Picture</strong>. Needs WordPress 6.9 or later.</li>
+<li><strong>Make a Smaller Copy…:</strong> choices
+<strong>Picture</strong>, <strong>Largest width</strong> and
+<strong>Format</strong>; then a confirmation,
+<strong>Upload</strong>.</li>
+<li><strong>Edit a Picture on the Site…:</strong> choices
+<strong>Picture</strong> and <strong>Edit</strong> (turn, flip or crop,
+where the site offers it); a confirmation, <strong>Make Edited
+Copy</strong>; then <strong>Use It Here</strong>.</li>
+<li><strong>Site Logo…:</strong> the list window, <strong>Logo and
+icon</strong>, with <strong>From the Library…</strong>, <strong>From a
+File…</strong>, <strong>From the Picture Maker…</strong>,
+<strong>Preview a Width…</strong> and <strong>Restore Earlier…</strong>;
+then a confirmation naming the new picture. Administrator.</li>
+<li><strong>Preview and Review…:</strong> a choice, <strong>Preview a
+new width for</strong>; a question, <strong>Width in pixels</strong>;
+then as Visual Review.</li>
+<li><strong>Captions for Video…:</strong> a choice of video; the review
+question, <strong>Captions, one on each line with its
+time</strong>.</li>
+<li><strong>Transcript for Audio…:</strong> a choice of sound file; the
+review question, <strong>Transcript</strong>; a choice, <strong>Insert
+it</strong>: folded or in full.</li>
+<li><strong>Make a Listening Version…:</strong> dimmed outside a
+WordPress page. When one exists, a confirmation, <strong>Make
+Again</strong>.</li>
+<li><strong>Name Embeds:</strong> dimmed outside a WordPress page. A
+report.</li>
+<li><strong>Publish a Document as a Page…:</strong> a file chooser; a
+question, <strong>Page title</strong>; for a scanned file, a
+confirmation, <strong>Read the Pages</strong>. Editor and up, for the
+page.</li>
+</ul>
+<h2 id="tools--wordpress-the-sites-content">Tools &gt; WordPress: the
+site’s content</h2>
+<ul>
+<li><strong>Comments…:</strong> the list window,
+<strong>Comments</strong>, with <strong>Show…</strong> (choice,
+<strong>Show</strong>: Waiting, Approved, Spam, Trash), the status’s own
+buttons (Approve, Unapprove, Spam, Not Spam, Trash, Restore),
+<strong>Approve All…</strong>, <strong>Reply…</strong>,
+<strong>Edit…</strong>, <strong>Open on Site</strong>, <strong>Waiting
+Count on First Use</strong>, <strong>Mark</strong>, <strong>Mark
+Everything</strong> and <strong>Do with Marked…</strong>. Editor and
+up.</li>
+<li><strong>Categories and Tags…:</strong> a choice,
+<strong>Manage</strong>; then the list window with
+<strong>Add…</strong>, <strong>Rename…</strong>, <strong>Merge
+Into…</strong>, <strong>Convert to Tag…</strong> (or Category),
+<strong>Find Unused…</strong>, <strong>Delete…</strong> and <strong>Make
+Default…</strong> (categories). Editor and up; Make Default,
+Administrator.</li>
+<li><strong>Menus…:</strong> a choice, <strong>Menu</strong>; then the
+list window, <strong>Menu items</strong>, with <strong>Add
+Page…</strong>, <strong>Add Post…</strong>, <strong>Add
+Category…</strong>, <strong>Add Link…</strong>,
+<strong>Rename…</strong>, <strong>Move Up</strong>, <strong>Move
+Down</strong>, <strong>Move In</strong>, <strong>Move Out</strong>,
+<strong>Remove…</strong>, <strong>Check Menu</strong>, <strong>Other
+Menu…</strong> and <strong>Locations…</strong>. Administrator.</li>
+<li><strong>Menu History…:</strong> a choice, <strong>Menu</strong>; the
+list window, <strong>Versions</strong>, with <strong>Bring Back Removed
+Items…</strong> and <strong>Restore This Version…</strong>.
+Administrator.</li>
+<li><strong>Site Check:</strong> a report. Administrator.</li>
+<li><strong>Site Settings…:</strong> the list window,
+<strong>Settings</strong>, with <strong>Change…</strong>: Site title,
+Tagline, Site language, Time zone, Date format, Time format, First day
+of the week, Administrator email, Front page shows, Front page, Posts
+page, Posts per page, New posts take comments, New posts take pingbacks,
+Turn emoticons into pictures, Default post format, Site icon. Each
+change is a confirmation such as <strong>Change Tagline</strong>.
+Administrator.</li>
+</ul>
+<h2 id="tools--wordpress--design">Tools &gt; WordPress &gt; Design</h2>
+<p>Block themes only. Administrator.</p>
+<ul>
+<li><strong>Style Variations…:</strong> the list window,
+<strong>Variations</strong>, with <strong>Apply…</strong> (confirmation)
+and <strong>Put Back the Previous Look…</strong>.</li>
+<li><strong>Site Styles…:</strong> the list window,
+<strong>Styles</strong>, with <strong>Change…</strong> (question,
+<strong>Colour</strong> or <strong>Size</strong>) and <strong>Put Back
+the Previous Look…</strong>.</li>
+</ul>
+<h2 id="tools--wordpress--plugin-extras">Tools &gt; WordPress &gt;
+Plugin Extras</h2>
+<p>Only with the plugin on the site.</p>
+<ul>
+<li><strong>Events Coming Up…:</strong> the list window,
+<strong>Events</strong>, with <strong>Open</strong> and <strong>Open on
+Site</strong>.</li>
+<li><strong>New Event…:</strong> <strong>Name</strong>,
+<strong>Starts</strong>, <strong>Ends</strong>, <strong>Venue</strong>,
+and <strong>Make Draft</strong>.</li>
+<li><strong>Shop Orders…:</strong> the list window,
+<strong>Orders</strong>, read only, with <strong>Copy Order…</strong>
+(confirmation, <strong>Copy Order</strong>). Whoever the shop lets read
+its orders.</li>
+</ul>
+<h2 id="tools--wordpress--manage">Tools &gt; WordPress &gt; Manage</h2>
+<ul>
+<li><strong>Users…:</strong> the list window, <strong>Users</strong>,
+with <strong>Add User…</strong> (questions <strong>Username</strong>,
+<strong>Email</strong>, <strong>Name</strong>, a choice
+<strong>Role</strong>, and a confirmation), <strong>Edit…</strong>,
+<strong>Change Role…</strong>, <strong>Delete…</strong> (choice,
+<strong>Give their posts and pages to</strong>, then a confirmation),
+<strong>Application Passwords…</strong> and <strong>My Profile…</strong>
+(<strong>Display name</strong>, <strong>Biography</strong>,
+<strong>Website</strong>). Administrator; My Profile, every role.</li>
+<li><strong>Application Passwords…:</strong> the list window,
+<strong>Passwords</strong>, with <strong>Revoke…</strong>. Every role,
+for their own.</li>
+<li><strong>Plugins…:</strong> the list window,
+<strong>Plugins</strong>, with <strong>Activate or Deactivate…</strong>,
+<strong>Add Plugin…</strong> (question, <strong>Plugin’s WordPress.org
+name</strong>), <strong>Delete…</strong> and <strong>Open in
+Dashboard</strong>. Administrator.</li>
+<li><strong>Themes…:</strong> the list window, <strong>Themes</strong>,
+with <strong>Open in Dashboard</strong>. Administrator.</li>
+<li><strong>Fonts…:</strong> the list window, <strong>Fonts</strong>,
+with <strong>Install…</strong> (choice, <strong>Font</strong>) and
+<strong>Delete…</strong>. Administrator; WordPress 6.5 or later and a
+block theme.</li>
+<li><strong>Synced Patterns…:</strong> the list window,
+<strong>Patterns</strong>, with <strong>Edit…</strong>,
+<strong>Rename…</strong>, <strong>Unsync…</strong>,
+<strong>Delete…</strong> and <strong>New from Selection…</strong>; first
+a choice, <strong>Category</strong>, when the site sorts patterns.
+Contributor and up for patterns your role may change.</li>
+<li><strong>Widgets…:</strong> a choice, <strong>Widget area</strong>;
+the list window, <strong>Widgets</strong>, with <strong>Add
+Text…</strong>, <strong>Edit…</strong>, <strong>Move to Area…</strong>,
+<strong>Remove…</strong> and <strong>Open in Dashboard</strong>.
+Administrator; classic themes.</li>
+<li><strong>Site Map…:</strong> the list window, <strong>Site
+map</strong>, with <strong>Open</strong> and <strong>Open on
+Site</strong>.</li>
+<li><strong>Template Outline:</strong> a report. Block themes.</li>
+<li><strong>Bulk Edit…:</strong> a choice, <strong>Edit</strong>: Posts
+or Pages; the list window with <strong>Select</strong>, <strong>Select
+All</strong>, <strong>Change…</strong> (choices <strong>Change</strong>
+and <strong>To</strong>; then a confirmation) and <strong>Undo Bulk
+Edit…</strong>. Editor and up.</li>
+<li><strong>Page Order…:</strong> the list window,
+<strong>Pages</strong>, with <strong>Move Up</strong>, <strong>Move
+Down</strong>, <strong>Move In</strong>, <strong>Move Out</strong> and
+<strong>Open</strong>. Editor and up.</li>
+<li><strong>Previous Looks…:</strong> the list window,
+<strong>Looks</strong>, with <strong>Palette Report…</strong> and
+<strong>Go Back to This Look…</strong>. Administrator.</li>
+<li><strong>Space Used:</strong> a report. Administrator.</li>
+<li><strong>Download a Copy of the Site’s Design…:</strong> a save
+window. Administrator, block themes.</li>
+<li><strong>AI Abilities…:</strong> the list window,
+<strong>Abilities</strong>, with <strong>Turn On or Off</strong>
+(confirmation, <strong>Turn On</strong> and the ability’s name).
+WordPress 6.9 or later.</li>
+<li><strong>Ask the Site…:</strong> a question,
+<strong>Question</strong>; a confirmation, <strong>Run</strong> and the
+ability’s name, before each ability; then a report.</li>
+<li><strong>Sign Out This Site…:</strong> a choice, <strong>After
+signing out</strong>: remove the site from QUILL, or keep it in the
+list.</li>
+</ul>
+<h2 id="tools--wordpress--your-sites">Tools &gt; WordPress &gt; Your
+Sites</h2>
+<p>Across every connected site.</p>
+<ul>
+<li><strong>Coming Up…:</strong> the list window,
+<strong>Scheduled</strong>, with <strong>Open</strong>.</li>
+<li><strong>What Changed on My Sites…:</strong> the list window,
+<strong>Changes</strong>, with <strong>Open in Browser</strong>.</li>
+</ul>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="wordpress-forms-12-keys.html">Chapter 12: Every
+WordPress and Forms key</a></li>
+<li>Next: <a href="wordpress-forms-appendix-a-features.html">Appendix A:
+Every WordPress feature QUILL uses</a></li>
+<li><a href="wordpress-forms-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 7: Spelling and words</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-7-spelling-and-words">Chapter 7: Spelling and words</h1>
+<p>This chapter is about getting the words right. You will check
+spelling a whole document at a time or one word at a time, hear exactly
+how a misspelled word is spelled, find a better word in the thesaurus,
+look up what a word means, and count what you have written. Near the end
+you will also find how to quieten QUILL’s sounds, or choose new ones.
+Everything here works on your own computer, with no AI and no internet
+connection, unless you choose otherwise. AI spelling and grammar help is
+in Chapter 10, AI, when you want it.</p>
+<h2 id="spelling">Spelling</h2>
+<p>QUILL checks spelling on your own computer. Nothing you write is
+uploaded, and no AI provider is involved. The everyday commands are on
+the <strong>Tools</strong> menu:</p>
+<ul>
+<li><strong>Spell Check…</strong> (<code>F7</code>) opens the Spelling
+Review, which walks you through every misspelling.</li>
+<li><strong>Spell Check Word</strong> (<code>Alt+Shift+F7</code>) checks
+only the word you are on.</li>
+<li><strong>Next Misspelling</strong> (<code>Ctrl+F7</code>) moves
+straight to the next one in the document, and <code>Ctrl+Shift+F7</code>
+goes back to the previous one.</li>
+</ul>
+<h3 id="spelling-review-f7">Spelling Review (F7)</h3>
+<p>Press <code>F7</code> to start a guided spelling review.</p>
+<ul>
+<li><strong>What it checks.</strong> If you have text selected, QUILL
+checks only the selection. With nothing selected, it reviews the whole
+document, starting at your caret.</li>
+<li><strong>Where you land.</strong> The <strong>Spelling
+Review</strong> dialog opens with focus in a read-only
+<strong>Context</strong> field. The misspelled word is selected inside
+its sentence, so you hear it in context. You can arrow through it letter
+by letter or copy the text, just as you would in a read-only
+document.</li>
+</ul>
+<p>The controls, in Tab order, are: Context, Change to, Suggestions, the
+<strong>Review most-frequent words first</strong> checkbox, then the
+buttons Change, Change All, Ignore Once, Ignore All, Read Sentence, Add
+to Dictionary, Undo Last and Close.</p>
+<ul>
+<li><strong>Suggestions</strong> lists the corrections QUILL has for the
+word. Arrow through them; choosing one fills <strong>Change to</strong>
+for you.</li>
+<li><strong>Change</strong> replaces this occurrence and moves to the
+next problem. Pressing <strong>Enter</strong> in the <strong>Change
+to</strong> field does the same.</li>
+<li><strong>Change All</strong> replaces every remaining occurrence in
+the part you are checking, and keeps the capitals as they were
+(<code>teh</code> becomes <code>the</code>, <code>Teh</code> becomes
+<code>The</code>, <code>TEH</code> becomes <code>THE</code>).</li>
+<li><strong>Ignore Once</strong> skips this occurrence. <strong>Ignore
+All</strong> skips every occurrence, for this session only.</li>
+<li><strong>Add to Dictionary</strong> adds the word to your personal
+dictionary for good.</li>
+<li><strong>Undo Last</strong> takes back your last spelling action
+without closing the dialog. It is unavailable until you have done
+something.</li>
+<li><strong>Read Sentence</strong> (<code>Ctrl+R</code>) reads aloud the
+whole sentence around the misspelling, so you can hear the word in
+context without leaving the dialog. The <strong>Read Sentence</strong>
+button does the same thing.</li>
+<li><code>Alt+W</code> takes you back to Context and selects the current
+word again, at any point. It is handy after you have been arrowing
+around the context.</li>
+</ul>
+<p>When every problem has been dealt with, QUILL tells you how many
+words were changed, ignored and added to the dictionary, and puts you
+back in the document.</p>
+<h4 id="review-most-frequent-words-first">Review most-frequent words
+first</h4>
+<p>Normally the review goes from top to bottom. Check <strong>Review
+most-frequent words first</strong> in the dialog and it walks the
+misspellings by how often each word turns up instead, with the most
+common first. It is the same dialog and the same buttons (Change, Change
+All, Ignore Once, Ignore All, Add to Dictionary, Undo Last); only the
+order changes.</p>
+<p>This is for really messy documents: a rough scan that came through
+OCR, or a document with one mistake repeated many times. Press
+<strong>Change All</strong> on the top word and the order is worked out
+again straight away, so whatever is now most common among what is left
+comes to the front. You clear the worst offenders first, without hunting
+for them in reading order. QUILL remembers the checkbox for next
+time.</p>
+<h4 id="how-much-the-review-says">How much the review says</h4>
+<p><strong>Spelling review announcement verbosity</strong>, on the
+<strong>Spelling</strong> page of Settings, chooses how much the review
+tells you:</p>
+<ul>
+<li><strong>Concise</strong>: progress numbers and the result of each
+action, and nothing else.</li>
+<li><strong>Balanced</strong> (the default): the kind of problem, the
+current word, your progress and the results.</li>
+<li><strong>Detailed</strong>: all of that, plus hints about the
+controls and reminders of what you are checking.</li>
+</ul>
+<p>Four more settings on the same page belong to the review:</p>
+<ul>
+<li><p><strong>Spelling review context display mode</strong>: the
+Context box usually shows the sentence with the misspelling plus the
+sentences either side. Choose <strong>Full paragraph</strong> to see the
+whole paragraph instead; Read Sentence then reads the
+paragraph.</p></li>
+<li><p><strong>Spell out the misspelled word letter by letter</strong>:
+after telling you the misspelling, QUILL reads it letter by letter. On
+to begin with.</p></li>
+<li><p><strong>Pause before spelling the word (milliseconds)</strong> is
+how long it waits before spelling starts, from 100 to 3000. The default
+is 800.</p></li>
+<li><p><strong>Wrap spelling review to the beginning</strong>: when the
+review reaches the end of the document, it offers to carry on from the
+top back to where you started. On to begin with.</p></li>
+</ul>
+<h3 id="spell-check-word-altshiftf7">Spell Check Word
+(Alt+Shift+F7)</h3>
+<p>If you are used to checking just the word under the cursor in another
+word processor, <strong>Spell Check Word</strong>
+(<code>Alt+Shift+F7</code>) is that. It checks only the word at your
+cursor and leaves the rest of the document alone.</p>
+<ul>
+<li>If the word is spelled correctly, QUILL says so and that is all. No
+dialog opens.</li>
+<li>If it is misspelled, a small list opens with the same choices as the
+right-click spelling menu: suggested corrections, <strong>Add to
+Dictionary</strong> and <strong>Ignore</strong>. Pick one and you are
+back to typing.</li>
+</ul>
+<p>Use <code>F7</code> when you want to work through a whole document or
+selection. Use <code>Alt+Shift+F7</code> when you only want to check the
+one word in front of you.</p>
+<h3 id="moving-between-misspellings">Moving between misspellings</h3>
+<p>Sometimes you would rather stay in the document and hop from one
+problem to the next. <code>Ctrl+F7</code> moves to the next misspelling
+and <code>Ctrl+Shift+F7</code> to the previous one. When you land on
+one, QUILL says the word and then spells it (see How a misspelling is
+said, later in this chapter).</p>
+<blockquote>
+<p><strong>QUILLBee’s shortcut:</strong> Coming from Word?
+<code>Alt+F7</code> also jumps to the next misspelling, just as it does
+there.</p>
+</blockquote>
+<p>To hear them all in one place, open the <strong>Misspelling
+List</strong> (<code>Alt+Shift+L</code>). It lists every misspelling in
+document order. Arrow through it and press Enter to jump to any one.</p>
+<h4 id="ranked-spelling">Ranked spelling</h4>
+<p><strong>Tools &gt; Writing and Language &gt; Misspelling List (Ranked
+by Frequency)…</strong> (<code>Alt+Shift+R</code>) shows the same list
+in a different order. The word that turns up most often comes first, and
+each entry carries its count, for example “teh (Ln 12, Col 4, 8
+occurrences).”</p>
+<p>A repeated typo or a single OCR misreading is usually the quickest
+thing to fix first. Deal with one entry, by correcting it or with
+<strong>Add to Dictionary</strong>, and you have dealt with every
+occurrence of that word at once. Arrow through the list and press Enter
+to jump to any occurrence, exactly as in the regular list. The
+document-order list on <code>Alt+Shift+L</code> stays as it was, and it
+is still the default.</p>
+<h3 id="spell-check-as-you-type">Spell check as you type</h3>
+<p>With <strong>spell check as you type</strong> turned on, finishing a
+word the dictionary does not know plays a soft spelling sound, and the
+status line shows “Possible misspelling” with the word. The sound comes
+from your current sound pack; if the pack has no spelling sound, you
+hear the Windows beep instead. QUILL uses a sound here, not speech, so
+it never talks over your screen reader in the middle of a sentence.</p>
+<p>The check waits until you have <strong>finished</strong> a word, with
+a space, a comma or a new line. It does not judge a word you are still
+typing, so “recie” on the way to “receive” never sets it off.</p>
+<p>Web addresses, email addresses, file paths and code are never treated
+as misspellings. <strong>What spell check reads</strong>, below, has the
+details.</p>
+<p>You can switch the spelling sound on or off by itself in
+<strong>Tools &gt; Reading and Dictation &gt; Sound Scheme…</strong>
+(look for “Possible misspelling as you type”). The spell check as you
+type toggle turns the whole live check on or off.</p>
+<h4 id="quiet-in-code-files">Quiet in code files</h4>
+<p>In source and configuration files the live check says nothing at all.
+That covers <code>.py</code>, <code>.json</code>, <code>.js</code>,
+<code>.css</code>, <code>.ps1</code>, <code>.log</code>,
+<code>.yml</code> and the other coding file types. Almost every name and
+setting in a file like that is a word no dictionary knows, so you would
+hear nothing but wrong alerts.</p>
+<p>Markdown is writing, so <code>.md</code> files <strong>are</strong>
+checked. Only the code blocks, inline code, web addresses and email
+addresses inside them are skipped.</p>
+<p>The setting is
+<strong><code>spellcheck_skip_code_files</code></strong>, and it is on
+by default. Turn it off if you want the live check everywhere, whatever
+the file type.</p>
+<p><code>F7</code> is never silenced by this setting. The Spelling
+Review checks whatever document you run it on, a code file included,
+reading its strings and comments. Pressing <code>F7</code> is you asking
+for a check.</p>
+<h4 id="what-spell-check-reads">What spell check reads</h4>
+<p>Spell check reads what you wrote as language, and passes over the
+rest. This applies everywhere: checking as you type, the
+<strong>F7</strong> review, next and previous misspelling, the list of
+every misspelling, the context menu and browse mode.</p>
+<p>The file’s extension picks one of four rules: writing, Markdown,
+markup or code. The rule follows the document’s name at the moment you
+check, so a new document is read as writing, and once you save it as
+<code>notes.md</code> or <code>script.py</code> the next check uses the
+Markdown or code rule.</p>
+<p><strong>Every rule</strong> skips these, wherever they appear:</p>
+<ul>
+<li>web addresses: <code>https://...</code>,
+<code>www.example.com</code>, <code>mailto:</code> and
+<code>file:</code> links, and a bare <code>example.com</code> (a common
+ending such as <code>.com</code>, <code>.org</code>, <code>.io</code> or
+<code>.uk</code>, or any domain followed by a path);</li>
+<li>email addresses;</li>
+<li>file paths: <code>C:\Users\...</code>, <code>\\server\share</code>,
+<code>./notes</code>, <code>~/notes</code>, <code>/usr/local/bin</code>
+and <code>docs\guide</code>;</li>
+<li>file names with an extension people recognise, such as
+<code>notes.txt</code>, <code>report.docx</code>, <code>song.mp3</code>
+or <code>setup.exe</code>.</li>
+</ul>
+<p>Before this, checking <code>www.example.com</code> stopped on
+<code>www</code>, <code>example</code> and <code>com</code> one by
+one.</p>
+<p><strong>Writing.</strong> Plain text, a document you have never
+saved, and any extension not named below. The only things skipped are
+the ones above. Logs, tables and patches (<code>.log</code>,
+<code>.csv</code>, <code>.tsv</code>, <code>.diff</code>,
+<code>.patch</code>) are read this way too, because there is no code in
+them to find.</p>
+<p><strong>Markdown.</strong> <code>.md</code>, <code>.markdown</code>,
+<code>.mdown</code>, <code>.mkd</code> and <code>.mdx</code>. The
+writing rule, and it also skips:</p>
+<ul>
+<li>inline code, with any number of backticks;</li>
+<li>fenced code blocks, between <code>```</code> or <code>~~~</code>
+lines;</li>
+<li>link and image addresses, and the address in a reference line such
+as <code>[1]: https://...</code>;</li>
+<li>HTML tags, and an HTML comment on one line.</li>
+</ul>
+<p>It still checks link text and image alt text, because someone wrote
+those to be read.</p>
+<p><strong>Markup.</strong> <code>.html</code>, <code>.htm</code>,
+<code>.xhtml</code>, <code>.xml</code>, <code>.xsl</code>,
+<code>.xslt</code>, <code>.svg</code>, <code>.opml</code>,
+<code>.rss</code> and <code>.atom</code>. Spell check reads the text
+between the tags and the comments. It skips the tags, attribute names
+and attribute values, except the values people read or hear:
+<code>alt</code>, <code>title</code>, <code>aria-label</code>,
+<code>aria-description</code> and <code>placeholder</code>. Inside
+<code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> it reads only
+the strings and comments, as it would in code.</p>
+<p><strong>Code.</strong> Only string literals and comments are checked.
+These extensions use the code rule:</p>
+<ul>
+<li>C, C++ and other compiled languages: <code>.c</code>,
+<code>.h</code>, <code>.cc</code>, <code>.cpp</code>, <code>.cxx</code>,
+<code>.hpp</code>, <code>.hxx</code>, C# (<code>.cs</code>), Java, Go,
+Rust (<code>.rs</code>), Swift, Objective-C (<code>.m</code>,
+<code>.mm</code>), Kotlin (<code>.kt</code>, <code>.kts</code>), Scala,
+D (<code>.d</code>), Pascal (<code>.pas</code>), Fortran
+(<code>.f</code>, <code>.f90</code>) and assembly (<code>.asm</code>,
+<code>.s</code>);</li>
+<li>scripting: Python (<code>.py</code>, <code>.pyi</code>,
+<code>.pyw</code>), Ruby, Perl (<code>.pl</code>, <code>.pm</code>),
+PHP, Lua, Tcl, R, Julia (<code>.jl</code>), Dart, Groovy, Visual Basic
+and VBScript (<code>.vb</code>, <code>.vbs</code>);</li>
+<li>the web: JavaScript (<code>.js</code>, <code>.jsx</code>,
+<code>.mjs</code>, <code>.cjs</code>), TypeScript (<code>.ts</code>,
+<code>.tsx</code>), Vue, Svelte, and CSS with <code>.scss</code>,
+<code>.sass</code>, <code>.less</code> and <code>.styl</code>;</li>
+<li>shells and builds: <code>.sh</code>, <code>.bash</code>,
+<code>.zsh</code>, <code>.fish</code>, PowerShell (<code>.ps1</code>,
+<code>.psm1</code>, <code>.psd1</code>), batch files (<code>.bat</code>,
+<code>.cmd</code>), makefiles (<code>.mk</code>), CMake, Gradle, Inno
+Setup (<code>.iss</code>) and <code>.spec</code>;</li>
+<li>settings and data: JSON (<code>.json</code>, <code>.jsonc</code>,
+<code>.json5</code>), YAML (<code>.yaml</code>, <code>.yml</code>),
+TOML, <code>.ini</code>, <code>.cfg</code>, <code>.conf</code>,
+<code>.properties</code>, <code>.env</code>, <code>.plist</code>,
+<code>.reg</code>, <code>.lock</code>, <code>.map</code>, SQL, GraphQL
+(<code>.graphql</code>, <code>.gql</code>) and Protocol Buffers
+(<code>.proto</code>).</li>
+</ul>
+<p>Inside a string or a comment it still skips:</p>
+<ul>
+<li>placeholders: <code>{0}</code>, <code>{name}</code>,
+<code>{0:N2}</code>, <code>{{</code> and <code>}}</code>,
+<code>%s</code>, <code>%d</code>, <code>%(name)s</code>,
+<code>${x}</code>, <code>$name</code> and <code>$(name)</code>;</li>
+<li>escapes such as <code>\n</code>, <code>\t</code>, <code>\x41</code>
+and <code>\u00e9</code>;</li>
+<li>words shaped like names in code: <code>snake_case</code>, any word
+with a digit in it, <code>camelCase</code>, and names like
+<code>HTTPServer</code>;</li>
+<li>the quote marks, and a string’s prefix such as the <code>f</code> in
+<code>f"..."</code>, so a misspelled word in single quotes is reported
+without a quote stuck to it.</li>
+</ul>
+<p><strong>How code and markup are read.</strong> QUILL uses Pygments,
+which knows over five hundred languages, to find the strings, comments
+and text. With Pygments it also passes over regular expressions, single
+characters, the interpolated parts of a string, preprocessor lines such
+as <code>#include</code>, and the <code>#!</code> line at the top of a
+script. Pygments loads the first time you check a code or markup file,
+so it costs nothing when QUILL starts.</p>
+<p>A simpler built-in reader takes over when Pygments cannot load, when
+it has no reader for an extension, or when the file is over 100,000
+characters, where Pygments would be slow. It knows the comments and
+strings of these families:</p>
+<ul>
+<li><code>#</code> comments: Python, Ruby, Perl, the shells, PowerShell,
+R, Julia, Tcl, YAML, TOML, CMake, makefiles, <code>.conf</code>,
+<code>.properties</code>, <code>.env</code>, GraphQL and
+<code>.spec</code>;</li>
+<li>CSS and its relatives; SQL, with <code>--</code> comments; Lua;
+JSON, including <code>//</code> and <code>/* */</code> comments;</li>
+<li>Visual Basic and VBScript; batch files (<code>rem</code> and
+<code>::</code>); <code>.ini</code>, <code>.cfg</code>,
+<code>.reg</code> and <code>.iss</code> (<code>;</code> and
+<code>#</code> comments);</li>
+<li>everything else in the code list is read the C way: <code>//</code>
+and <code>/* */</code> comments and strings in double quotes, single
+quotes or backticks.</li>
+</ul>
+<p>For markup, the built-in reader reads the text, comments and the
+attributes above, reads <code>&lt;script&gt;</code> and
+<code>&lt;style&gt;</code> as code, and skips character entities such as
+<code>&amp;amp;</code>. It is less precise than Pygments, but it is
+never silent.</p>
+<h3 id="spell-check-a-document-before-saving">Spell check a document
+before saving</h3>
+<p>Turn on <strong>Settings &gt; Editing &gt; Spell check a document
+before saving</strong> (off by default) and QUILL opens the Spelling
+Review for you each time you save, so you can fix misspellings before
+the file is written. Fix or skip them as usual; the save then goes ahead
+with your corrections. This applies to <strong>Save</strong> and
+<strong>Save As</strong> for the document you are working on.</p>
+<h3 id="spell-check-language">Spell-check language</h3>
+<p><strong>Tools &gt; Writing and Language &gt; Spell Check
+Language…</strong> chooses the language the spell checker uses. It
+affects both the <code>F7</code> review and the check as you type.</p>
+<p><strong>English (United States)</strong> is built in and works
+offline straight away. Other languages are downloaded when you first
+choose them. Pick <strong>Spanish (Spain)</strong> or <strong>French
+(France)</strong>, for example, and QUILL fetches that dictionary from
+its own verified source. The download is checksum-checked, and a
+progress window lets you cancel it. After that the language works
+offline, just like English.</p>
+<p>QUILL remembers your choice between sessions. If you are offline, or
+you cancel the download, English keeps working and nothing else changes.
+The downloaded dictionaries are kept in your QUILL data folder, so
+reinstalling or upgrading QUILL never makes you fetch them again.</p>
+<h2 id="how-a-misspelling-is-said">How a misspelling is said</h2>
+<p>Speech alone cannot tell you what is wrong with a misspelled word.
+“receive” and “recieve” sound the same, so hearing the word tells you
+nothing. <strong>The letters are the answer.</strong> So when you land
+on a misspelling, with Next or Previous Misspelling or in the
+<code>F7</code> review, QUILL says the word, pauses, and then spells
+it.</p>
+<p>The spelling comes as a second, separate announcement, so you can cut
+it off. Press your next key and the spelling is cancelled before you
+hear it. If you are moving fast you lose nothing, and if you want the
+letters they are there.</p>
+<p>Twelve settings under <strong>Spelling</strong> in Settings control
+all of this. Both editors also gather them in a window of their own. In
+QUILL it is <strong>Spelling Announcements</strong>, on
+<code>Ctrl+Alt+Shift+F6</code>, or type its name in the command palette
+(<code>Ctrl+Shift+P</code>); it has no menu item in QUILL. In QUILL Lite
+it is <strong>Announcements…</strong>, on the Spelling submenu of its
+Tools menu. They are the same twelve settings in the same file, so
+setting them up once sets up both editors.</p>
+<h3 id="while-you-are-typing">While you are typing</h3>
+<ul>
+<li><strong>Play a sound when you type a misspelling</strong>
+(<code>spelling_alert_sound</code>) plays the falling blip when you
+finish a misspelled word. Turn it off for silence.</li>
+<li><strong>Also say the word when you type a misspelling</strong>
+(<code>spelling_alert_speech</code>) speaks the word as well. It is off
+by default, because being interrupted while you are writing costs more
+than it tells you.</li>
+<li><strong>Shortest gap between two alerts for the same word
+(milliseconds)</strong> (<code>spelling_alert_repeat_ms</code>) is the
+shortest time before the same word is reported again, so one stubborn
+name does not become a drumbeat. Zero means every time. The default is
+750.</li>
+</ul>
+<p>Whichever way you set those two, the status bar always shows the
+word, for example “Possible misspelling: teest”, so you can read it with
+your screen reader whenever you like. QUILL does not speak that status
+line on its own; it is spoken only when <strong>Also say the word when
+you type a misspelling</strong> is on, which is what the setting means
+in QUILL Lite too.</p>
+<h3 id="spelling-a-word-out">Spelling a word out</h3>
+<ul>
+<li><strong>Spell misspelled words out letter by letter</strong>
+(<code>spell_aloud_enabled</code>) is the main switch.</li>
+<li><strong>How letters are spoken</strong>
+(<code>spell_aloud_style</code>) chooses how the letters are said. Plain
+<strong>Letters (R, E, C)</strong> are fastest. The <strong>Phonetic
+alphabet (romeo, echo, charlie)</strong> is clear where B, D, E, P, T
+and V all sound alike. <strong>Letters, then the phonetic
+alphabet</strong> is for learning a word rather than checking one.</li>
+<li><strong>Say which letters are capitals</strong>
+(<code>spell_aloud_capitals</code>) says “cap” before a capital letter,
+so you can tell MacDonald from Macdonald. It is worth having, because
+letters are always spoken as capitals, whatever the word does (several
+voices read a single lower-case letter as a word).</li>
+</ul>
+<h3 id="when-the-letters-follow">When the letters follow</h3>
+<p>There are three pauses, because the right wait is different in each
+place.</p>
+<ul>
+<li><strong>Pause before spelling a word (milliseconds)</strong>
+(<code>spell_aloud_delay_ms</code>) is the pause in the <code>F7</code>
+review, where you have stopped to decide. The default is 800 ms.</li>
+<li><strong>Spell the word when you move to a misspelling</strong>
+(<code>spell_aloud_on_navigation</code>) and <strong>Pause before
+spelling when moving between misspellings (milliseconds)</strong>
+(<code>spell_aloud_navigation_delay_ms</code>) cover Next and Previous
+Misspelling. There you may just be passing through, so the default pause
+is shorter, 600 ms.</li>
+<li><strong>Spell each suggestion as you arrow through them</strong>
+(<code>spell_aloud_suggestions</code>) and <strong>Pause before spelling
+a suggestion (milliseconds)</strong>
+(<code>spell_aloud_suggestion_delay_ms</code>) spell whichever
+correction you arrow onto in the suggestions. Choosing between two
+spellings by ear is as hard in a list as it is in the document.</li>
+<li><strong>Spell the first suggestion on arrival</strong>
+(<code>spell_aloud_first_suggestion</code>) also spells the top
+suggestion when the review reaches a new word. It is off by default,
+because it doubles what you hear each time you arrive.</li>
+</ul>
+<h2 id="the-thesaurus-look-up-and-other-word-tools">The thesaurus, Look
+Up and other word tools</h2>
+<p>The rest of the writing and language commands on the
+<strong>Tools</strong> menu are about words themselves: finding a better
+one, finding out what one means, and counting them. Chapter 4, Writing
+and editing, gives a short introduction; this is the fuller story.</p>
+<h3 id="thesaurus-shiftf7">Thesaurus (Shift+F7)</h3>
+<p><strong>Tools &gt; Writing and Language &gt; Thesaurus…</strong>
+(<code>Shift+F7</code>) opens a two-pane picker for the word you are on.
+It finds the word even when it is in another form, so “running” finds
+“run”, and when you choose a replacement it goes back in the form your
+sentence needs.</p>
+<h3 id="look-up-word-altf10">Look Up Word (Alt+F10)</h3>
+<p><strong>Look Up Word…</strong> (<code>Alt+F10</code>) is a dictionary
+with no AI. Out of the box it uses the thesaurus, which works offline.
+Check <strong>Use online sources</strong> in the window and it also
+brings definitions, more words, and a Wikipedia summary from three free
+online services. Nothing goes online until you check that box.</p>
+<h3 id="say-word-summary-and-dictionary-status">Say Word Summary and
+Dictionary Status</h3>
+<ul>
+<li>Press <code>Ctrl+Alt+Shift+[</code> for <strong>Say Word
+Summary</strong>, which says what the thesaurus knows about the word you
+are on, without opening a window. There is no menu item for it; the key
+or the Command Palette (<code>Ctrl+Shift+P</code>) reaches it.</li>
+<li><strong>Dictionary Status…</strong> (<code>Alt+Shift+;</code>) shows
+which spelling engine QUILL is using, how many words are in your
+personal, document and project dictionaries, and whether the thesaurus
+is installed.</li>
+</ul>
+<h3 id="document-statistics-ctrlshiftg">Document Statistics
+(Ctrl+Shift+G)</h3>
+<p><strong>Tools &gt; Writing and Language &gt; Document
+Statistics…</strong> (<code>Ctrl+Shift+G</code>) gives you the number of
+words, characters, lines and paragraphs, and the reading time. It used
+to be called Word Count. It now has the same name and key as in Word and
+QUILL Lite.</p>
+<h2 id="sounds-and-turning-them-off">Sounds, and turning them off</h2>
+<p>QUILL plays short sounds, called earcons, for things your screen
+reader does not mention, like a misspelling or a paste. Here is how to
+silence them all at once, change one, or build a set of your own.</p>
+<h3 id="where-quills-sounds-play-and-turning-them-off">Where QUILL’s
+sounds play, and turning them off</h3>
+<p>QUILL makes short sounds of its own. You choose where they play, and
+you can turn them off.</p>
+<ul>
+<li><strong>Alt+Shift+M</strong> turns QUILL’s sounds off. Press it
+again and they come back, on the same sound card as before. You hear a
+short sound as they go off, and another where they now play when they
+come back on, and both are spoken too. <strong>Tools &gt; Reading and
+Dictation &gt; App Sounds</strong> has a check mark that shows whether
+they are on.</li>
+<li>The <strong>App Sounds Play On…</strong> button in <strong>Tools
+&gt; Reading and Dictation &gt; Sound Scheme…</strong>
+(<code>Ctrl+Alt+Shift+O</code>) lets you pick where they play:
+<ul>
+<li><strong>System default</strong>. This is where it starts. The sounds
+go where Windows sends sound.</li>
+<li><strong>None (no sounds)</strong>. QUILL makes no sounds at all.
+Everything it tells you is still spoken.</li>
+<li><strong>Any sound card or headset in the list.</strong> The sounds
+get a device of their own.</li>
+</ul></li>
+</ul>
+<p>After you choose, one sound plays on the new device, so you know
+straight away where it went.</p>
+<p>If the device you chose is unplugged or asleep, you still hear every
+sound, on the system default, and QUILL tells you once. When the device
+comes back, the sounds go back to it by themselves.</p>
+<p>This changes QUILL only. Your other QUILL apps keep their own choice,
+unless you have checked “Share these choices with my other Quill apps”,
+which copies a change here to the others that share. Your screen reader
+is never moved. Until October 2026, Alt+Shift+M silenced QUILL and QUILL
+Lite together. Now every QUILL app has its own, on the same key; to
+silence all of them at once, turn off <strong>Sound
+notifications</strong> in Settings.</p>
+<h3 id="the-sound-scheme-window">The Sound Scheme window</h3>
+<p><strong>Tools &gt; Reading and Dictation &gt; Sound Scheme…</strong>
+(<code>Ctrl+Alt+Shift+O</code>) lists every sound QUILL can make, and
+lets you hear them.</p>
+<p>As you arrow through the list, each event plays as you land on it.
+That turns a list of about a hundred and forty sound names into
+something you can browse by ear. It is a checkbox under the list, so if
+you are hunting for one row you can turn it off and pass the rest in
+silence.</p>
+<p>Each row tells you everything about itself: its group, the event,
+whether it is switched on, which file it plays and how long that file
+is. Your screen reader reads it all as you arrive, so you never have to
+Tab away to find out. The buttons underneath work on the row you are
+on:</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Play</strong></td>
+<td>Play this event now, even when the event is switched off</td>
+</tr>
+<tr>
+<td><strong>Switched on</strong></td>
+<td>Silence this one event without changing which sound it has</td>
+</tr>
+<tr>
+<td><strong>Browse…</strong></td>
+<td>Use a WAV file of your own</td>
+</tr>
+<tr>
+<td><strong>No Sound</strong></td>
+<td>Remove the sound from this event entirely</td>
+</tr>
+<tr>
+<td><strong>Use Default</strong></td>
+<td>Put this one event back to the sound the scheme ships</td>
+</tr>
+</tbody>
+</table>
+<p>QUILL refuses a file that is not a WAV, is longer than ten seconds,
+or is bigger than two megabytes, and tells you why when you choose it.
+Better to hear about it then than to have the event go silent later with
+no clue why.</p>
+<ul>
+<li><strong>Save As Scheme</strong> saves the whole set under a name you
+choose, as an ordinary folder with the sounds copied into it. It keeps
+working after you tidy your Downloads folder, and you can zip it up and
+send it to a friend.</li>
+<li><strong>Delete Scheme</strong> removes one of your own schemes. The
+schemes that come with QUILL cannot be deleted.</li>
+<li><strong>Restore All Defaults</strong> puts every event back and
+switches them all on. It always works completely, because QUILL never
+overwrites the sounds it ships.</li>
+</ul>
+<p>QUILL Lite opens the same window over the same schemes, so a scheme
+you make in one editor is offered in the other.</p>
+<p>The <strong>Scheme</strong> list at the top also offers <strong>VS
+Code Signals</strong>: the sounds Visual Studio Code plays for its own
+accessibility signals, used under the MIT licence. They cover errors,
+warnings, saving, finished and failed tasks, AI requests and answers,
+dictation and recording starting and stopping, and undo and redo.
+Anything they have no sound for stays quiet, or is spoken where QUILL
+speaks instead. Choose it in one app and the rest of the family plays it
+too, each from the next time it starts.</p>
+<h3 id="the-sounds-themselves">The sounds themselves</h3>
+<p>The <strong>Ink</strong> pack that comes with QUILL has a sound for
+every event. That includes the ones desktop programs have had for
+decades: open, close, cut, copy, paste, delete, undo, redo, print,
+information, question and task finished. Those are the moments a screen
+reader says nothing about; nothing is announced when a paste lands, for
+example.</p>
+<p>Related sounds share a tone and differ by direction, so you learn a
+family once instead of one sound at a time.</p>
+<ul>
+<li><strong>Undo and redo are the same figure, played backwards from
+each other.</strong></li>
+<li>Open and close are one pair of bells, rising and falling. App start
+and app exit are the same pair, one note longer.</li>
+<li>Cut, copy and paste are one dry wooden tick in three gestures.
+Delete is that tick dropped an octave and a half, with a breath of noise
+underneath.</li>
+<li>Nothing to undo does not move in pitch at all, because nothing
+moved.</li>
+</ul>
+<h2 id="starting-with-a-blank-document-or-not">Starting with a blank
+document, or not</h2>
+<p>When you start QUILL without opening anything, it gives you an empty
+<strong>Untitled</strong> document, as most editors do. If you always
+open an existing file and would rather not close a blank one every time,
+turn off <strong>open_blank_document_at_startup</strong>, under
+<strong>General</strong> in Settings.</p>
+<p>Turning it off changes only that one case. A file you double-clicked,
+a file named on the command line, the documents from your last session
+and recovered unsaved work all still open. QUILL Lite has the same
+setting, with the same name, in <strong>Preferences</strong>.</p>
+<h2 id="spelling-keys-at-a-glance">Spelling keys at a glance</h2>
+<p>These work straight from the document, without opening a dialog
+first.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F7</code></td>
+<td>Open the Spelling Review</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+F7</code></td>
+<td>Spell Check Word, the word at the cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+F7</code></td>
+<td>Jump to the next misspelling</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F7</code></td>
+<td>Jump to the previous misspelling</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+L</code></td>
+<td>Misspelling List</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+R</code></td>
+<td>Misspelling List, ranked by frequency</td>
+</tr>
+<tr>
+<td><code>Shift+F7</code></td>
+<td>Thesaurus</td>
+</tr>
+<tr>
+<td><code>Alt+F10</code></td>
+<td>Look Up Word</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+[</code></td>
+<td>Say Word Summary</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+;</code></td>
+<td>Dictionary Status</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+F9</code></td>
+<td>Add Word to Dictionary, the word at the cursor</td>
+</tr>
+</tbody>
+</table>
+<p>Press <code>Ctrl+Alt+F9</code> for <strong>Add Word to
+Dictionary</strong>. It teaches your personal dictionary the word at the
+cursor, so a name or a word from your work stops being called a
+misspelling, in this document and every other. If the word is already
+there, QUILL tells you and changes nothing. It has no row on the menu
+bar: use the key, the Command Palette (<code>Ctrl+Shift+P</code>), or
+<strong>Add to Dictionary</strong> in the spelling choices for a
+misspelled word.</p>
+<h2 id="what-you-learned-and-where-to-go-next">What you learned, and
+where to go next</h2>
+<p>You can now check a whole document with <code>F7</code>, or one word
+with <code>Alt+Shift+F7</code>, and hop between misspellings with
+<code>Ctrl+F7</code>. You know how to put the most common mistakes
+first, how QUILL spells a word out and how to tune that, and how to pick
+a spell-check language. You met the thesaurus, Look Up Word and Document
+Statistics, and you can silence QUILL’s sounds with
+<code>Alt+Shift+M</code> or change them in the Sound Scheme window.</p>
+<p>To practise with QUILL open, try the lesson “Spelling, words, and the
+thesaurus” in <strong>Help &gt; Tutorials…</strong>
+(<code>Ctrl+Alt+F1</code>).</p>
+<p>Next, Chapter 8, Reading, reviewing and listening, shows you how to
+have your work read back to you and how to check a document before you
+share it.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="quill-guide-06-moving-around-and-finding-things.html">Chapter 6:
+Moving around and finding things</a></li>
+<li>Next: <a
+href="quill-guide-08-reading-reviewing-and-listening.html">Chapter 8:
+Reading, reviewing and listening</a></li>
+<li><a href="../userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

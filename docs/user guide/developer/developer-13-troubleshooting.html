@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 13: Troubleshooting</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-13-troubleshooting">Chapter 13: Troubleshooting</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>The sentences QUILL says when a project task cannot do what you
+asked, what each one means, and what to do. It also covers a few things
+that surprise people the first time. Every sentence here is the one both
+editors say.</p>
+<h2 id="the-commands-are-not-in-the-menus">The commands are not in the
+menus</h2>
+<p>The project commands appear only with coding on. In QUILL, choose the
+Developer profile or check <strong>Developer Tools</strong> in
+<strong>Help &gt; Feature Profiles &gt; Manage Individual
+Features…</strong> (<code>Ctrl+Alt+F10</code>). In QUILL Lite, choose
+the Developer profile or check <strong>Coding</strong> in <strong>Tools
+&gt; Customize Features…</strong> (<code>Ctrl+Alt+F10</code>). Chapter 1
+has the details.</p>
+<h2 id="project-tasks-are-part-of-the-developer-profile">“Project tasks
+are part of the Developer profile.”</h2>
+<p>The full sentence is “Project tasks are part of the Developer
+profile. Choose the Developer profile, or turn on Developer Tools in
+Customize Features.” You pressed a project command with coding off. Turn
+it on as above. In QUILL, the window that turns on Developer Tools on
+its own is called Manage Individual Features.</p>
+<h2 id="ai-help-is-switched-off">“AI help is switched off.”</h2>
+<ul>
+<li><strong>In QUILL:</strong> “AI help is switched off. Turn it on in
+the AI menu, Use Artificial Intelligence.” Check <strong>AI &gt; Use
+Artificial Intelligence</strong>.</li>
+<li><strong>In QUILL Lite:</strong> “AI help is switched off. Turn it on
+in Tools, Customize Features.” The Developer profile leaves the AI help
+area off. Check <strong>AI help</strong> in Customize Features. With
+Copilot, Codex or your own key, your text does not go to QUILL’s
+servers, whatever the area’s name says.</li>
+</ul>
+<h2 id="in-quill-lite-ctrl3-does-nothing">In QUILL Lite, Ctrl+3 does
+nothing</h2>
+<p><code>Ctrl+3</code> and Choose Your AI (<code>Ctrl+4</code>) belong
+to the AI help area. Check AI help in Customize Features, as above.</p>
+<h2 id="ai-is-off-in-safe-mode">“AI is off in Safe Mode.”</h2>
+<p>The full sentence ends “Nothing can be signed in until QUILL starts
+normally.” QUILL was started in Safe Mode, which turns all AI off. Start
+it normally.</p>
+<h2 id="no-project-is-open-choose-open-project-folder-first">“No project
+is open. Choose Open Project Folder first.”</h2>
+<p>You chose a project command, such as Do a Project Task or Commands
+Allowed in This Project, with no project open. Choose <strong>File &gt;
+Open Project Folder…</strong>.</p>
+<h2 id="ctrl3-opened-do-a-document-task">Ctrl+3 opened Do a Document
+Task</h2>
+<p>No project is open, so <code>Ctrl+3</code> did what it always does.
+Open a project first. If one is open and you still get the document
+task, coding has been turned off; see the start of this chapter.</p>
+<h2 id="the-task-will-not-start-or-says-your-ai-cannot-run-tasks">The
+task will not start, or says your AI cannot run tasks</h2>
+<p>Project tasks need My GitHub Copilot, Codex, or My own key with
+Anthropic Claude or Ollama on this computer. If you hear “Document tasks
+need My GitHub Copilot or Codex. Press Ctrl+4 to choose one.”, or QUILL
+offers to switch, press <code>Ctrl+4</code> and choose one of those.
+QUILL’s free AI and the other own-key providers answer in text only.</p>
+<p>When a task cannot start for another reason, such as a sign-in that
+has expired, the conversation says why, and so does what you hear.</p>
+<h2
+id="with-claude-or-ollama-the-window-says-no-engine-or-github-copilot">With
+Claude or Ollama, the window says “No engine” or “GitHub Copilot”</h2>
+<p>In this version, the task window’s status line names only GitHub
+Copilot and Codex, so with My own key it starts “No engine”, and the
+agent’s replies in the conversation are labelled “GitHub Copilot”. The
+task is still running on your own key, with the engine you chose in
+Choose Your AI.</p>
+<h2
+id="engine-tools-says-this-engine-offers-no-tools-of-its-own-here">Engine
+Tools says “This engine offers no tools of its own here.”</h2>
+<p>The engine you are using has no tools of its own that QUILL can
+offer. That is so for Ollama, and in this version for Claude on your own
+key as well. QUILL’s own project tools still do everything a task
+needs.</p>
+<h2
+id="a-project-task-is-running-stop-it-or-let-it-finish-before-closing-the-project">“A
+project task is running. Stop it, or let it finish, before closing the
+project.”</h2>
+<p>You tried to close the project, or open another, while a task was
+running. Press <strong>Stop</strong> (<code>Alt+T</code>) in the task
+window, or wait for the turn to end.</p>
+<h2 id="the-task-is-waiting-and-nothing-has-opened">The task is waiting,
+and nothing has opened</h2>
+<p>A question opens only while you are in the task window, so it never
+lands on top of your typing. Press <code>Ctrl+3</code> to bring the task
+window back, and the question opens. The Project part of the status bar
+says “, waiting for you” while one is waiting.</p>
+<h2 id="a-command-i-expected-to-run-without-asking-still-asks">A command
+I expected to run without asking still asks</h2>
+<p>Check three things:</p>
+<ul>
+<li>the command has a warning line. Commands with a warning always ask,
+even if they are on the list;</li>
+<li>the list entry is not the start of the command followed by a space.
+<code>pytest</code> allows <code>pytest -q</code>, but <code>py</code>
+does not allow <code>pytest</code>;</li>
+<li>the command is on the list for a different project. Each project has
+its own list.</li>
+</ul>
+<h2 id="the-agent-says-i-keep-this-step-for-myself">The agent says I
+keep this step for myself</h2>
+<p>It wanted to push, publish, force a remote or change a system
+setting, and QUILL never runs those for an agent. It should have told
+you the exact command. Run it yourself, in your own terminal, if you
+want it.</p>
+<h2 id="a-command-fails-at-once-but-works-in-my-terminal">A command
+fails at once, but works in my terminal</h2>
+<p>QUILL runs commands through <code>cmd</code>, in the project folder,
+with tokens, keys and QUILL’s own settings removed from the environment.
+So:</p>
+<ul>
+<li>a PowerShell command needs <code>powershell -Command</code> in
+front;</li>
+<li>a command that needs a token from an environment variable will not
+see it. Run that one yourself;</li>
+<li>if you hear “The command … was not found.”, the program is not on
+your PATH, or the agent guessed the wrong name.</li>
+</ul>
+<h2 id="a-command-has-been-running-for-a-long-time">A command has been
+running for a long time</h2>
+<p>After five minutes QUILL asks whether to keep waiting. Choose No to
+stop it, or press Stop at any time.</p>
+<h2 id="the-task-stopped-after-40-steps">The task stopped after 40
+steps</h2>
+<p>A turn that takes more than 40 steps asks “The task stopped after 40
+steps. Continue?” Yes lets it carry on. No ends the turn. Many steps
+usually means the instruction was broad; try asking for one part at a
+time.</p>
+<h2 id="my-open-file-did-not-update-after-the-task-changed-it">My open
+file did not update after the task changed it</h2>
+<p>QUILL leaves an open copy alone when it has unsaved edits, when it is
+in rich text, or, in QUILL, when it is a kind of file QUILL does not
+reload in place (Chapter 7). You hear that it was left alone. Save or
+discard your edits, then close and reopen the file.</p>
+<h2
+id="clipy-has-changed-since-the-agents-turn-undo-would-lose-your-edits">“cli.py
+has changed since the agent’s turn. Undo would lose your edits.”</h2>
+<p>Undo refuses rather than overwrite your own edits. Choose
+<strong>Yes</strong> to open the file as it was before the turn,
+compare, and copy back what you need. Chapter 7 explains.</p>
+<h2 id="there-is-no-agent-turn-to-undo-in-this-project">“There is no
+agent turn to undo in this project.”</h2>
+<p>Nothing is left to undo: QUILL keeps the last 10 turns per project,
+and each undo uses one up. Turns made in the other editor are kept by
+that editor.</p>
+<h2 id="undo-did-not-bring-back-a-big-file">Undo did not bring back a
+big file</h2>
+<p>Files bigger than 5 MB are not copied for undo, so they cannot be put
+back. Keep large files under version control.</p>
+<h2 id="there-is-no-turn-to-explain-yet">“There is no turn to explain
+yet.”</h2>
+<p>Explain Last Turn works on the task in the open task window. A new
+task window has no turns to explain until it has done something.</p>
+<h2 id="the-agent-ignored-the-projects-agentsmd">The agent ignored the
+project’s AGENTS.md</h2>
+<p>You may have answered <strong>Don’t Use Them</strong> the first time.
+QUILL asks once per project and remembers the answer. In this version
+there is no command to change that answer.</p>
+<h2 id="the-agent-cannot-see-a-file">The agent cannot see a file</h2>
+<p>It may look like a secret, be in a skipped folder, be ignored by
+<code>.gitignore</code>, be bigger than 2 MB, or be outside the project
+folder. Chapter 2 lists the rules. The agent is told when files were
+hidden, and should ask you. Paste what it needs into Instruction, or
+tell it where to look.</p>
+<h2 id="the-transcript-i-wanted-has-gone">The transcript I wanted has
+gone</h2>
+<p>Each new task window starts a new transcript for that project,
+replacing the last. Save a copy with <strong>Save As</strong> when you
+want to keep one (Chapter 10).</p>
+<h2 id="where-to-next">Where to next</h2>
+<ul>
+<li>Previous: <a href="developer-12-quill-lite.html">Chapter 12: QUILL
+Lite differences</a></li>
+<li>Next: <a href="developer-14-keys.html">Chapter 14: Every developer
+key</a></li>
+<li><a href="developer-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>
