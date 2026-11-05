@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from quill.core.forms import ai_prompts as ap
-from quill.core.forms import baf_site as bs
 from quill.core.forms import print_layout as pl
 from quill.core.forms import published as pub
+from quill.core.forms import qaf_site as bs
 from quill.core.forms import responses as rs
 
 
@@ -49,10 +49,90 @@ def test_braille_text_wraps_at_forty_cells():
 
 
 def test_a_page_shows_the_form_by_block_or_shortcode():
+    assert bs.shows_form('<!-- wp:qaf/form {"formId":12,"showTitle":false} /-->', 12)
+    assert bs.shows_form('[qaf_form id="12" title="false"]', 12)
+    assert not bs.shows_form('[qaf_form id="120"]', 12)
+    assert bs.placement(3, "markdown") == ('\n[qaf_form id="3"]\n', "a shortcode")
+    assert bs.placement(3, "html")[0] == '\n<!-- wp:qaf/form {"formId":3} /-->\n'
+
+
+def test_a_page_written_while_the_site_ran_baf_still_shows_the_form():
+    """QAF keeps BAF's shortcode as an alias (17a.17), so the older names still count."""
     assert bs.shows_form('<!-- wp:baf/form {"formId":12,"showTitle":false} /-->', 12)
     assert bs.shows_form('[baf_form id="12" title="false"]', 12)
     assert not bs.shows_form('[baf_form id="120"]', 12)
-    assert bs.placement(3, "markdown")[1] == "a shortcode"
+
+
+class _Api:
+    """A client that answers the REST index and records every other route asked."""
+
+    def __init__(self, *namespaces: str) -> None:
+        self.index = {"namespaces": ["wp/v2", *namespaces], "routes": {}}
+        self.asked: list[str] = []
+
+    def get(self, route: str, **_params: object) -> object:
+        if route == "":
+            self.asked.append("index")
+            return self.index
+        self.asked.append(route)
+        return {"id": 7, "title": "Fair"}
+
+    def post(self, route: str, _body: object) -> object:
+        self.asked.append("POST " + route)
+        return {"id": 7, "title": "Fair"}
+
+    def delete(self, route: str) -> object:
+        self.asked.append("DELETE " + route)
+        return {"deleted": True}
+
+    def iter_collection(self, route: str, _params: object = None, **_kw: object):
+        self.asked.append(route)
+        return iter([])
+
+
+def test_qaf_v1_is_preferred_when_the_site_offers_both():
+    """QAF answers writes on qaf/v1 only; baf/v1 is a read-only alias for one release."""
+    api = _Api("baf/v1", "qaf/v1")
+
+    assert bs.site_namespace(api) == "qaf/v1"
+    assert bs.supports_qaf(api)
+    bs.list_forms(api)
+    bs.get_form(api, 7)
+    bs.create_form(api, {})
+    bs.update_form(api, 7, {})
+    bs.delete_responses(api, [3])
+
+    assert api.asked == [
+        "index",
+        "qaf/v1/forms",
+        "qaf/v1/forms/7",
+        "POST qaf/v1/forms",
+        "POST qaf/v1/forms/7",
+        "DELETE qaf/v1/entries/3",
+    ]
+    assert bs.plugin_prefix(api) == "qaf"
+    assert "page=qaf-form-builder" in bs.builder_url("https://x.example", 7)
+
+
+def test_a_site_still_running_baf_is_answered_on_baf_v1():
+    api = _Api("baf/v1")
+
+    assert bs.site_namespace(api) == "baf/v1"
+    bs.list_forms(api)
+    bs.create_form(api, {})
+
+    assert api.asked == ["index", "baf/v1/forms", "POST baf/v1/forms"]
+    assert bs.plugin_prefix(api) == "baf"
+    assert bs.placement(3, "markdown", "baf")[0] == '\n[baf_form id="3"]\n'
+    assert "page=baf-form-builder" in bs.builder_url("https://x.example", 7, "baf")
+
+
+def test_a_site_with_neither_is_asked_nothing_else():
+    api = _Api()
+
+    assert not bs.supports_qaf(api)
+    assert bs.site_namespace(api) == ""
+    assert api.asked == ["index"]
 
 
 def test_publish_body_keeps_the_sites_own_config():
@@ -93,7 +173,7 @@ def test_csv_has_a_column_per_question_and_any_extra_answers():
 
 def test_published_store_keeps_links_counts_and_ten_versions(tmp_path: Path):
     store = pub.PublishedStore(tmp_path)
-    store.set_link(tmp_path / "a.bfl", pub.Link("s", 3, "A"))
+    store.set_link(tmp_path / "a.qaf", pub.Link("s", 3, "A"))
     store.mark_seen("s", 3, 7)
     for n in range(12):
         folder = tmp_path / pub.VERSIONS_FOLDER / "s" / "3"
@@ -101,7 +181,7 @@ def test_published_store_keeps_links_counts_and_ten_versions(tmp_path: Path):
         (folder / f"2026010{n:02d}.bfl").write_text("x", encoding="utf-8")
     store.keep_version("s", 3, "bfl 1\n")
 
-    assert store.link_for(tmp_path / "a.bfl").form_id == 3
+    assert store.link_for(tmp_path / "a.qaf").form_id == 3
     assert pub.new_responses(store, "s", {3: ("A", 9)}) == [("A", 2)]
     assert len(store.versions("s", 3)) == pub.KEEP_VERSIONS
 

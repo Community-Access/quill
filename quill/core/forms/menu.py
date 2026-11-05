@@ -41,14 +41,23 @@ from pathlib import Path
 #: One command: (command id, menu title, shared handler on FormsCommands).
 Row = tuple[str, str, str]
 
-#: A form document's file extension (wordpress.md 17a.4.1). An open question
-#: for Jeff (17a.13: ``.bfl`` or ``.form.md``), so it lives in this one place.
-FORM_EXTENSION = ".bfl"
+#: A form document's file extension (wordpress.md 17a.4.1; Jeff chose ``.qaf``
+#: in 17a.17, for QUILL Accessible Forms). What is inside is the QAF form
+#: language, whose first line (``bfl 1``) is its version.
+FORM_EXTENSION = ".qaf"
+
+#: Extensions a form document may still have from before 17a.17. Read like a
+#: ``.qaf`` file and never mentioned: New Form and the Save As filter only ever
+#: offer :data:`FORM_EXTENSION`.
+LEGACY_FORM_EXTENSIONS: tuple[str, ...] = (".bfl",)
+
+#: Every extension a form document is recognised by.
+FORM_EXTENSIONS: tuple[str, ...] = (FORM_EXTENSION, *LEGACY_FORM_EXTENSIONS)
 
 
 def is_form_path(path: Path | str | None) -> bool:
-    """Whether *path* names a form document (a BFL file)."""
-    return bool(path) and str(path).lower().endswith(FORM_EXTENSION)
+    """Whether *path* names a form document (a ``.qaf`` file, or an older ``.bfl``)."""
+    return bool(path) and str(path).lower().endswith(FORM_EXTENSIONS)
 
 
 @dataclass(frozen=True)

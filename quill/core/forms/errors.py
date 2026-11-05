@@ -36,7 +36,7 @@ class ExpressionError(FormError):
         super().__init__(message)
         #: Where the problem is, in characters of the text.
         self.position = position
-        #: The same place in UTF-8 bytes, as BAF reports it (set by ``expr.parse``).
+        #: The same place in UTF-8 bytes, as QAF reports it (set by ``expr.parse``).
         self.byte_offset = position
 
 

@@ -4,11 +4,11 @@ Modelled on the WordPress harness (``tests/unit/ui/wordpress/conftest.py``),
 with nothing real behind it:
 
 - ``pub_host`` is the editor as the shared commands see it (the WordPress
-  host): its text in a string, a ``.bfl`` path, what it announced, background
+  host): its text in a string, a ``.qaf`` path, what it announced, background
   work run at once, a fake browser, and a fake chosen AI (``host.ai``);
 - ``pub_site`` answers REST routes by ``(method, path)`` and records every
   request, so a test asserts what was sent as well as what was said. It starts
-  with the REST index listing ``baf/v1``;
+  with the REST index listing ``qaf/v1``;
 - ``pub_dialogs`` scripts every dialog the commands open. Unscripted questions
   answer **cancel**, because cancel is the branch people forget to write;
 - ``fp`` builds :class:`~quill.ui.forms_publish_commands.FormsPublishCommands`
@@ -28,8 +28,8 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 
 SITE_URL = "https://radio.example"
-BAF = "/wp-json/baf/v1"
-INDEX = {"namespaces": ["wp/v2", "baf/v1"], "routes": {}}
+QAF = "/wp-json/qaf/v1"
+INDEX = {"namespaces": ["wp/v2", "qaf/v1"], "routes": {}}
 
 FAIR = """bfl 1
 form "Spring fair"
@@ -267,7 +267,7 @@ def pub_site() -> FakeSite:
 
 @pytest.fixture
 def pub_host(tmp_path: Path) -> FakeHost:
-    path = tmp_path / "fair.bfl"
+    path = tmp_path / "fair.qaf"
     path.write_text(FAIR, encoding="utf-8")
     return FakeHost(text=FAIR, path=path)
 
@@ -340,7 +340,7 @@ def fp(
 
 
 def form_payload(form_id: int = 12, **changes: Any) -> dict[str, Any]:
-    """A form as BAF's REST API returns it."""
+    """A form as QAF's REST API returns it."""
     data: dict[str, Any] = {
         "id": form_id,
         "title": "Spring fair",

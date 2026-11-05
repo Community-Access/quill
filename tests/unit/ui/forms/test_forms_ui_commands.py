@@ -38,7 +38,7 @@ def test_outside_a_form_each_command_says_why_and_opens_nothing(
     forms_host.path = Path("notes.md")
     run(forms)
     assert forms_host.announced == [
-        f"{name} works in a form document, a .bfl file. Start one with New Form in the File "
+        f"{name} works in a form document, a .qaf file. Start one with New Form in the File "
         "menu, or open one."
     ]
     assert forms_dialogs.calls == [] and forms_dialogs.list_windows == []
@@ -61,7 +61,7 @@ def test_new_form_cancelled_at_the_first_question_does_nothing(forms, forms_host
 def test_new_form_writes_the_template_saves_it_and_opens_it(
     forms, forms_host, forms_dialogs, tmp_path
 ) -> None:
-    target = tmp_path / "Bake sale.bfl"
+    target = tmp_path / "Bake sale.qaf"
     forms_dialogs.answer("ask_fields", {"title": "Bake sale", "template": "contact"})
     forms_dialogs.answer("ask_save_path", target)
     forms.cmd_new_form()
@@ -69,7 +69,7 @@ def test_new_form_writes_the_template_saves_it_and_opens_it(
     model = fd.read(target.read_text(encoding="utf-8")).model
     assert model["title"] == "Bake sale"
     assert [f["id"] for f in fd.fields(model)] == ["name", "email", "message"]
-    assert forms_host.announced == ["Saved Bake sale.bfl, a contact form with 3 questions."]
+    assert forms_host.announced == ["Saved Bake sale.qaf, a contact form with 3 questions."]
     asked = forms_dialogs.asked("ask_save_path")[0]
     assert asked["suggested"] == "Bake sale"
 
@@ -90,10 +90,10 @@ def test_new_form_cancelled_at_save_writes_nothing(forms, forms_host, forms_dial
 
 def test_new_form_that_cannot_be_saved_says_so(forms, forms_host, forms_dialogs, tmp_path) -> None:
     forms_dialogs.answer("ask_fields", {"title": "X", "template": "blank"})
-    forms_dialogs.answer("ask_save_path", tmp_path / "missing folder" / "x.bfl")
+    forms_dialogs.answer("ask_save_path", tmp_path / "missing folder" / "x.qaf")
     forms.cmd_new_form()
     assert forms_host.opened == []
-    assert forms_host.said.startswith("QUILL could not save x.bfl")
+    assert forms_host.said.startswith("QUILL could not save x.qaf")
 
 
 # -- Insert Field ------------------------------------------------------------ #

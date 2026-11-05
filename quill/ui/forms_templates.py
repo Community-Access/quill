@@ -1,6 +1,6 @@
 """The New Form templates (wordpress.md 17a.4.1), as form models.
 
-wx-free. Each template is the form model BAF stores (plain dicts), so New
+wx-free. Each template is the form model QAF stores (plain dicts), so New
 Form writes it as canonical BFL through the core's own writer and every
 template is a form the core can read back. They are short on purpose: a
 contact form is three questions, and a template is a start, not a finished

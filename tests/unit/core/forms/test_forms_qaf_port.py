@@ -22,10 +22,10 @@ from typing import Any
 import pytest
 
 from quill.core.forms import bfl_lexer as L
-from quill.core.forms.baf_format import baf_format, baf_minify, php_empty
-from quill.core.forms.baf_parser import (
-    baf_parse,
+from quill.core.forms.qaf_format import php_empty, qaf_format, qaf_minify
+from quill.core.forms.qaf_parser import (
     is_safe_custom_attribute,
+    qaf_parse,
     sanitize_title,
     split_choice,
 )
@@ -59,14 +59,14 @@ def test_vendored_set_is_present_and_small() -> None:
 def test_vendored_fixture_parse_matches_baf(name: str) -> None:
     source = (FIXTURES / f"{name}.bfl").read_text(encoding="utf-8")
     golden = json.loads((FIXTURES / f"{name}.baf.json").read_text(encoding="utf-8"))
-    assert _normal(baf_parse(source)) == _normal(golden["parse"])
+    assert _normal(qaf_parse(source)) == _normal(golden["parse"])
 
 
 @pytest.mark.parametrize("name", VENDORED)
 def test_vendored_fixture_format_matches_baf_byte_for_byte(name: str) -> None:
     source = (FIXTURES / f"{name}.bfl").read_text(encoding="utf-8")
     golden = json.loads((FIXTURES / f"{name}.baf.json").read_text(encoding="utf-8"))
-    assert baf_format(source) == golden["format"]
+    assert qaf_format(source) == golden["format"]
 
 
 def _live_sources() -> list[Any]:
@@ -114,12 +114,12 @@ def test_every_baf_example_parses_and_formats_exactly_like_baf() -> None:
     parse_bad = [
         s.origin
         for s, e in zip(sources, expected, strict=True)
-        if _normal(baf_parse(s.text)) != _normal(e["parse"])
+        if _normal(qaf_parse(s.text)) != _normal(e["parse"])
     ]
     format_bad = [
         s.origin
         for s, e in zip(sources, expected, strict=True)
-        if baf_format(s.text) != e["format"]
+        if qaf_format(s.text) != e["format"]
     ]
     assert parse_bad == []
     assert format_bad == []
@@ -151,8 +151,8 @@ def test_mutated_examples_still_match_baf() -> None:
     mutated = _mutations(sources, 300)
     expected = _run_php(mutated)
     for text, e in zip(mutated, expected, strict=True):
-        assert _normal(baf_parse(text)) == _normal(e["parse"]), text
-        assert baf_format(text) == e["format"], text
+        assert _normal(qaf_parse(text)) == _normal(e["parse"]), text
+        assert qaf_format(text) == e["format"], text
 
 
 # -- unit checks on the port's pieces ------------------------------------------------
@@ -215,10 +215,10 @@ def test_custom_attribute_safety() -> None:
 
 def test_baf_drops_the_first_indented_choice() -> None:
     """A documented BAF bug the port keeps, so Check This Form can warn about it."""
-    result = baf_parse('select "D"\n  + A\n  + B')
+    result = qaf_parse('select "D"\n  + A\n  + B')
     assert [c["label"] for c in result["form"]["fields"][0]["choices"]] == ["B"]
 
 
 def test_minify_and_php_empty() -> None:
-    assert baf_minify('form "x"\n\n  // c\n  text "a"\n0\n') == 'form "x"\ntext "a"'
+    assert qaf_minify('form "x"\n\n  // c\n  text "a"\n0\n') == 'form "x"\ntext "a"'
     assert php_empty("0") and php_empty([]) and not php_empty("0.0")

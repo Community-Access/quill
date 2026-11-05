@@ -1,6 +1,6 @@
-"""Working an expression out: a port of ``BAF_Expression::evaluate``.
+"""Working an expression out: a port of ``QAF_Expression::evaluate``.
 
-The context is BAF's, all keys optional:
+The context is QAF's, all keys optional:
 
 - ``values``: field ID to answer (text, number, true or false, a list, or None);
 - ``today``: ``"YYYY-MM-DD"`` (today in UTC when absent);
@@ -8,7 +8,7 @@ The context is BAF's, all keys optional:
 - ``geo``: the value of ``geo()``;
 - ``scores``: field ID to points, for ``score(#field)``; ``score``: the total.
 
-The rules (empty, truth, ``is``, dates, arithmetic) are written down in BAF's
+The rules (empty, truth, ``is``, dates, arithmetic) are written down in QAF's
 ``docs/expression-language.md``; Fill It In Yourself relies on them matching
 the site exactly.
 """

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from quill.core.forms.baf_compare import divergences
+from quill.core.forms.qaf_compare import divergences
 
 
 def test_agreement_gives_no_sentences() -> None:

@@ -58,7 +58,7 @@ class Block:
 def resolve_choices(model: M.Model) -> M.Model:
     """A copy of *model* with every choice library written out as choices.
 
-    The form's own libraries come first, then BAF's built-in ones. A cascading
+    The form's own libraries come first, then QAF's built-in ones. A cascading
     library (State after Country) has no fixed list, so it stays empty and the
     question gets lines to write on instead.
     """

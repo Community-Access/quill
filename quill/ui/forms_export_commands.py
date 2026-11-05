@@ -6,7 +6,7 @@ works in Safe Mode (17a.11). One source, every format -- each export reads the
 form in front through the same model, so a paper form and its web form can
 never disagree.
 
-- **Web page:** BAF's accessible markup patterns
+- **Web page:** QAF's accessible markup patterns
   (:func:`quill.core.forms.interop_html.export_html`): a ``<label>`` for every
   control, a ``<fieldset>`` and ``<legend>`` for every group, help tied with
   ``aria-describedby``, required as an attribute and a word. It submits to an

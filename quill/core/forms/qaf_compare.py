@@ -1,9 +1,9 @@
-"""Where BAF's older BFL parser and the BFL 1 reader disagree, in sentences.
+"""Where QAF's older BFL parser and the BFL 1 reader disagree, in sentences.
 
-BAF's Structure Mode and its REST ``/bfl/parse``, ``/bfl/validate``,
+QAF's Structure Mode and its REST ``/bfl/parse``, ``/bfl/validate``,
 ``/bfl/compile`` and ``/bfl/format`` now use the BFL 1 reader and writer; ``/bfl/parse``
 answers ``{valid, model, config, errors, warnings}``. The older parser
-(``includes/bfl``, ported exactly in :mod:`baf_parser`) is left only in BAF's
+(``includes/bfl``, ported exactly in :mod:`qaf_parser`) is left only in QAF's
 older ``.bfl``/``.json`` file importer. It drops the first choice of an
 indented list, the field after an indented ``if``, the inside of indented
 ``columns``, and every BFL 1 spelling, so Check This Form uses this to warn
@@ -15,8 +15,8 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.forms import model as M
-from quill.core.forms.baf_parser import baf_parse
 from quill.core.forms.bfl_read import read
+from quill.core.forms.qaf_parser import qaf_parse
 
 
 def _old_fields(config: dict[str, Any]) -> list[dict[str, Any]]:
@@ -33,7 +33,7 @@ def _old_fields(config: dict[str, Any]) -> list[dict[str, Any]]:
 def divergences(text: str) -> list[str]:
     """Sentences saying what the older parser would make differently of ``text``."""
     model = read(text).model
-    old = _old_fields(baf_parse(text))
+    old = _old_fields(qaf_parse(text))
     by_id = {f["id"]: f for f in old}
     out: list[str] = []
     for fid, item in M.fields(model).items():

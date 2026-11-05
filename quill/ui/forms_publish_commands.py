@@ -7,10 +7,11 @@ and the AI (:mod:`forms_ai_commands`) -- as a mixin of the shared
 :class:`~quill.ui.forms_commands.FormsCommands`, so QUILL and QUILL Lite
 reach the same handlers and nothing is written twice.
 
-A form reaches a site only through BITS Accessible Forms' own routes
-(``baf/v1``), on a site the person connected, through the shared WordPress
-client, and only after a confirmation naming the site. Which site and form a
-document was published to is kept on this computer
+A form reaches a site only through QUILL Accessible Forms' own routes
+(``qaf/v1``, or the older ``baf/v1`` on a site that offers only that), on a
+site the person connected, through the shared WordPress client, and only after
+a confirmation naming the site. Which site and form a document was published
+to is kept on this computer
 (:class:`~quill.core.forms.published.PublishedStore`), with the site's
 ``updated_at`` at that moment: a later Publish compares it, as pages do (5.4),
 and keeps the site's copy as a previous version before replacing it (5.6).
@@ -20,8 +21,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.forms import baf_site as bs
 from quill.core.forms import published as pub
+from quill.core.forms import qaf_site as bs
 from quill.core.wordpress import local as lc
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui.forms_ai_commands import FormsAiCommands
@@ -29,7 +30,7 @@ from quill.ui.forms_export_commands import FormsExportCommands
 from quill.ui.forms_responses_commands import FormsResponsesCommands
 from quill.ui.forms_site_base import FormsSiteBase
 
-#: How a form is published: (BAF's status, what the person chooses).
+#: How a form is published: (QAF's status, what the person chooses).
 STATUSES: tuple[tuple[str, str], ...] = (
     ("active", "Live: people can fill it in wherever it is placed"),
     ("draft", "Draft: on the site, but nobody can fill it in yet"),
@@ -60,7 +61,7 @@ class FormsPublishCommands(
             existing = bs.get_form(api, link.form_id) if same_site and link else None
             return api, existing
 
-        self.with_baf(
+        self.with_qaf(
             command,
             profile,
             f"reading {profile.name}",
@@ -90,7 +91,7 @@ class FormsPublishCommands(
                 rows=[label for _status, label in STATUSES],
                 initial=0,
                 help_text="Live forms take responses wherever they are placed on the site. A "
-                "draft waits until you make it live, here or in BITS Accessible Forms.",
+                "draft waits until you make it live, here or in QUILL Accessible Forms.",
             )
             if picked is None:
                 return
@@ -168,15 +169,17 @@ class FormsPublishCommands(
                 "again with Connect a Site."
             )
             return
-        self.with_baf(
+        self.with_qaf(
             command,
             profile,
             f"listing the forms on {profile.name}",
-            bs.list_forms,
-            lambda forms: self._insert_form(profile, copy.text_format, forms),
+            lambda api: (bs.list_forms(api), bs.plugin_prefix(api)),
+            lambda found: self._insert_form(profile, copy.text_format, *found),
         )
 
-    def _insert_form(self, profile: Any, text_format: str, forms: list[bs.SiteForm]) -> None:
+    def _insert_form(
+        self, profile: Any, text_format: str, forms: list[bs.SiteForm], prefix: str = "qaf"
+    ) -> None:
         if not forms:
             self.host.announce(
                 f"{profile.name} has no forms yet. Publish one with Publish Form, then insert it."
@@ -197,7 +200,7 @@ class FormsPublishCommands(
         if index is None:
             return
         form = forms[index]
-        text, what = bs.placement(form.id, text_format)
+        text, what = bs.placement(form.id, text_format, prefix)
         self.host.insert_text(text)
         note = "" if form.live else " It is a draft, so visitors see nothing until it is live."
         self.host.announce(
@@ -223,10 +226,11 @@ class FormsPublishCommands(
             )
             return
 
-        def work(api: Any) -> tuple[bs.SiteForm, list[tuple[str, str, str]]]:
-            return bs.get_form(api, link.form_id), bs.pages_showing(api, link.form_id)
+        def work(api: Any) -> tuple[bs.SiteForm, list[tuple[str, str, str]], str]:
+            form = bs.get_form(api, link.form_id)
+            return form, bs.pages_showing(api, link.form_id), bs.plugin_prefix(api)
 
-        self.with_baf(
+        self.with_qaf(
             command,
             profile,
             f"finding the form on {profile.name}",
@@ -235,7 +239,11 @@ class FormsPublishCommands(
         )
 
     def _open_test(
-        self, profile: Any, form: bs.SiteForm, pages: list[tuple[str, str, str]]
+        self,
+        profile: Any,
+        form: bs.SiteForm,
+        pages: list[tuple[str, str, str]],
+        prefix: str = "qaf",
     ) -> None:
         draft = "" if form.live else " It is a draft, so only you can see it there."
         live = [p for p in pages if p[1]]
@@ -247,10 +255,11 @@ class FormsPublishCommands(
                 f"Opened {name or 'the page'}{state} on {profile.name}, where the form is.{draft}"
             )
             return
-        self.host.open_in_browser(bs.builder_url(profile.site_url, form.id))
+        self.host.open_in_browser(bs.builder_url(profile.site_url, form.id, prefix))
         self.host.announce(
             f"No page on {profile.name} shows {form.title or 'this form'} yet, so QUILL opened it "
-            f"in BITS Accessible Forms on the site. Insert Form Into Page puts it on a page.{draft}"
+            "in QUILL Accessible Forms on the site. Insert Form Into Page puts it on a page."
+            f"{draft}"
         )
 
 

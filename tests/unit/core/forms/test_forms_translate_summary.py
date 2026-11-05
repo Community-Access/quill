@@ -94,4 +94,4 @@ def test_outline_with_islands() -> None:
     rows = [r.text for r in outline(doc.model, doc.islands)]
     assert rows[0] == "Page 1, 1 question"
     assert rows[1] == "A, text field, page 1"
-    assert rows[-1] == "Kept as written, not read by BAF: === Old export line ==="
+    assert rows[-1] == "Kept as written, not read by QAF: === Old export line ==="

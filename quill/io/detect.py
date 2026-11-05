@@ -21,6 +21,8 @@ TEXT_EXTENSIONS = {
     ".css",
     ".js",
     ".ts",
+    # A form document (QUILL Accessible Forms, wordpress.md 17a.17): plain text.
+    ".qaf",
 }
 
 STRUCTURED_EXTENSIONS = {

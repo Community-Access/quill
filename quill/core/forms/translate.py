@@ -1,6 +1,6 @@
 """Translations: one form, several languages, side by side.
 
-The shape is BAF's (``docs/form-model.md``, "Translations")::
+The shape is QAF's (``docs/form-model.md``, "Translations")::
 
     "translations": { "es": {
         "title": "...", "description": "...",

@@ -1,9 +1,9 @@
 """Reading and writing a stored form model, and upgrading old ones.
 
-The model is BAF's JSON (``schema/form.schema.json``); QUILL keeps it as plain
+The model is QAF's JSON (``schema/form.schema.json``); QUILL keeps it as plain
 dicts and lists, so this module only reads, writes, and upgrades.
 
-**Versions and migrations** (BAF's ``docs/form-model.md``, "Versions"):
+**Versions and migrations** (QAF's ``docs/form-model.md``, "Versions"):
 every form carries ``version``. A reader that meets a newer version refuses
 it and says which it needs. A change that only adds optional properties keeps
 the version; anything that changes the meaning of an existing form makes a new
@@ -80,7 +80,7 @@ def loads(text: str) -> Model:
 
 
 def dumps(model: Model) -> str:
-    """The model as BAF writes it: pretty JSON, UTF-8, ending in a newline."""
+    """The model as QAF writes it: pretty JSON, UTF-8, ending in a newline."""
     return encode(model, pretty=True) + "\n"
 
 

@@ -6,9 +6,9 @@ import pytest
 
 from quill.core.forms import expr as E
 from quill.core.forms import model as M
-from quill.core.forms.baf_site import form_from_payload
 from quill.core.forms.bfl_read import read
 from quill.core.forms.bfl_write import choice_line, to_bfl
+from quill.core.forms.qaf_site import form_from_payload
 
 
 @pytest.mark.parametrize(

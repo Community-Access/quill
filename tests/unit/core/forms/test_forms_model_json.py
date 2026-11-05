@@ -37,9 +37,9 @@ def test_round_trip_and_valid() -> None:
     assert dumps(form).endswith("\n")
 
 
-def test_the_schema_is_bafs() -> None:
+def test_the_schema_is_qafs() -> None:
     schema = schema_check.load_schema()
-    assert schema["$id"].startswith("https://bits-acb.org/baf/schema/")
+    assert schema["$id"].startswith("https://bits-acb.org/qaf/schema/")
     assert set(schema["$defs"]["field_type"]["enum"]) == set(M.FIELD_TYPES)
 
 

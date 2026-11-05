@@ -16,7 +16,14 @@ from typing import Any
 import pytest
 
 from quill.apps.lite_window_forms import DocumentFormsMixin
-from quill.core.forms.menu import DOCUMENT_ONLY, PLACES, all_rows, is_form_path, lite_handler
+from quill.core.forms.menu import (
+    DOCUMENT_ONLY,
+    FORM_EXTENSION,
+    PLACES,
+    all_rows,
+    is_form_path,
+    lite_handler,
+)
 from quill.core.lite.commands import COMMANDS
 
 
@@ -116,9 +123,29 @@ def test_every_shared_handler_exists() -> None:
     assert DOCUMENT_ONLY <= {h for _p, (_c, _t, h) in all_rows()}
 
 
-def test_a_form_document_is_a_bfl_file() -> None:
-    assert is_form_path("C:/forms/fair.BFL") and is_form_path(Path("x.bfl"))
+def test_a_form_document_is_a_qaf_file() -> None:
+    assert FORM_EXTENSION == ".qaf"
+    assert is_form_path("C:/forms/fair.QAF") and is_form_path(Path("x.qaf"))
     assert not is_form_path("notes.md") and not is_form_path(None) and not is_form_path("")
+
+
+def test_a_bfl_file_someone_already_has_is_still_a_form() -> None:
+    """Read like a .qaf file and never offered: New Form and Save As say .qaf (17a.17)."""
+    assert is_form_path("C:/forms/fair.BFL") and is_form_path(Path("x.bfl"))
+
+
+def test_a_qaf_file_opened_from_disk_reads_as_a_form(tmp_path) -> None:
+    """File > Open of a .qaf: plain text whose first line is the language's version."""
+    from quill.core.lite.filetypes import OPEN_WILDCARD
+    from quill.ui import forms_doc as fd
+
+    path = tmp_path / "fair.qaf"
+    path.write_text('bfl 1\nform "Fair"\n\ntext #name "Your name"\n', encoding="utf-8")
+
+    assert "*.qaf" in OPEN_WILDCARD
+    assert is_form_path(path)
+    doc = fd.read(path.read_text(encoding="utf-8"))
+    assert doc.model["title"] == "Fair"
 
 
 @pytest.mark.parametrize(
@@ -162,7 +189,7 @@ def test_lite_dims_the_form_rows_outside_a_form() -> None:
     window._sync_forms_items()
     dims = {h: i.enabled for h, i in window._menu_items.items()}
     assert dims["cmd_forms_check"] is False and dims["cmd_forms_new_form"] is None
-    window.path = "fair.bfl"
+    window.path = "fair.qaf"
     window._sync_forms_items()
     assert window._menu_items["cmd_forms_check"].enabled is True
 
@@ -206,7 +233,7 @@ def test_quill_dims_the_form_rows_outside_a_form() -> None:
     check = bar.items[frame._forms_ids["forms.check"]]
     new = bar.items[frame._forms_ids["forms.new_form"]]
     assert check.enabled is False and new.enabled is None
-    frame.document.path = "C:/forms/fair.bfl"
+    frame.document.path = "C:/forms/fair.qaf"
     frame._refresh_forms_menu_items(bar)
     assert check.enabled is True
 

@@ -1,13 +1,13 @@
-"""BAF's own BFL formatter, ported exactly from ``class-baf-bfl-formatter.php``.
+"""QAF's own BFL formatter, ported exactly from ``class-qaf-bfl-formatter.php``.
 
-``baf_format(text)`` returns, byte for byte, what BAF's "Format" action makes
+``qaf_format(text)`` returns, byte for byte, what QAF's "Format" action makes
 of a BFL document. It is here for conformance and so QUILL can show a person
-what BAF would do to their form; QUILL never uses it to write a document,
-because BAF's formatter loses things (conditions, columns, most modifiers and
+what QAF would do to their form; QUILL never uses it to write a document,
+because QAF's formatter loses things (conditions, columns, most modifiers and
 every choice library reference spelled as a keyword). The conformance report
 lists them. QUILL's own writer is :mod:`quill.core.forms.bfl_write`.
 
-BAF's parser never reports an error, so its fallback ``basic_format`` is
+QAF's parser never reports an error, so its fallback ``basic_format`` is
 unreachable and is not ported.
 """
 
@@ -16,7 +16,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from quill.core.forms.baf_parser import baf_parse, sanitize_title
+from quill.core.forms.qaf_parser import qaf_parse, sanitize_title
 
 _SETTING_MAP = (
     ("enable_honeypot", "honeypot"),
@@ -85,7 +85,7 @@ class BafFormatter:
         return self.indent * self.level + content
 
     def format(self, source: str) -> str:
-        return self.compile(baf_parse(source)["form"])
+        return self.compile(qaf_parse(source)["form"])
 
     def compile(self, form: dict[str, Any]) -> str:
         self.level = 0
@@ -247,13 +247,13 @@ class BafFormatter:
         return lines
 
 
-def baf_format(source: str, **options: Any) -> str:
-    """``BAF_BFL_Formatter::format``: BFL text as BAF re-prints it."""
+def qaf_format(source: str, **options: Any) -> str:
+    """``QAF_BFL_Formatter::format``: BFL text as QAF re-prints it."""
     return BafFormatter(**options).format(source)
 
 
-def baf_minify(source: str) -> str:
-    """``BAF_BFL_Formatter::minify``: trimmed lines, no blanks or comments."""
+def qaf_minify(source: str) -> str:
+    """``QAF_BFL_Formatter::minify``: trimmed lines, no blanks or comments."""
     out = []
     for line in source.split("\n"):
         text = line.strip(" \t\n\r\0\x0b")

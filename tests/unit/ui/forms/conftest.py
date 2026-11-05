@@ -4,7 +4,7 @@ The shared Forms commands (``quill/ui/forms_*``) run against these with no
 window, modelled on the WordPress harness (``tests/unit/ui/wordpress``):
 
 - ``forms_host`` is the editor as the commands see it: its text in a string,
-  a path ending in ``.bfl``, what it announced, and where the caret went;
+  a path ending in ``.qaf``, what it announced, and where the caret went;
 - ``forms_dialogs`` replaces every dialog entry point the commands call with
   a scripted answer. Unscripted questions answer **cancel**, because cancel
   is the branch people forget to write. List windows (the outline, the rules,
@@ -161,7 +161,7 @@ class FormsScript:
 
 @pytest.fixture
 def forms_host(tmp_path: Path) -> FakeHost:
-    return FakeHost(text=FAIR, path=tmp_path / "fair.bfl")
+    return FakeHost(text=FAIR, path=tmp_path / "fair.qaf")
 
 
 @pytest.fixture

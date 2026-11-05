@@ -1,4 +1,7 @@
-"""Find BITS Accessible Forms' own BFL examples, read-only, for conformance tests.
+"""Find QUILL Accessible Forms' own form-language examples, read-only, for tests.
+
+The plugin was BITS Accessible Forms (BAF) until 17a.17; the examples come from
+its older layout, so the names below are BAF's.
 
 BAF (``S:\\code\\baf`` on Jeff's machine; set ``QUILL_BAF_ROOT`` to point
 elsewhere) keeps its BFL examples in two places: the fenced ``bfl`` blocks of
@@ -33,6 +36,20 @@ def baf_root() -> Path | None:
     """BAF's folder, or None when it is not on this machine (CI)."""
     root = Path(os.environ.get("QUILL_BAF_ROOT", str(DEFAULT_BAF_ROOT)))
     if (root / "includes" / "bfl" / "class-baf-bfl-parser.php").is_file():
+        return root
+    return None
+
+
+def qaf_root() -> Path | None:
+    """The plugin's repository whatever its branch, for the conformance suite.
+
+    :func:`baf_root` asks for the older parser's PHP under its BAF name, because
+    the PHP harness runs it. The conformance runner needs only the repository
+    (it reads the suite from a branch with ``git archive``), so a working tree
+    already on QUILL Accessible Forms' renamed branch counts too (17a.17).
+    """
+    root = Path(os.environ.get("QUILL_BAF_ROOT", str(DEFAULT_BAF_ROOT)))
+    if (root / ".git").exists() or (root / "tests" / "conformance").is_dir():
         return root
     return None
 

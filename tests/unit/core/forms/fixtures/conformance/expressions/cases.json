@@ -1,5 +1,5 @@
 {
-  "about": "Expression language cases. Every reader of the BAF form model must parse each text to the given canonical text (and AST where given), render the sentence with the labels below, reject every error case, and evaluate every evaluation case to its result with the context below. Numbers compare numerically (3 and 3.0 are equal).",
+  "about": "Expression language cases. Every reader of the QAF form model must parse each text to the given canonical text (and AST where given), render the sentence with the labels below, reject every error case, and evaluate every evaluation case to its result with the context below. Numbers compare numerically (3 and 3.0 are equal).",
   "labels": { "type": "Type", "age": "Age", "company": "Company name", "start": "Start date", "qty": "Quantity", "price": "Price", "colours": "Colours", "email": "Email", "q1": "Question 1" },
   "choices": { "type": { "business": "Business", "charity": "Charity", "person": "Individual" } },
   "context": {

@@ -5,8 +5,8 @@ what to fix and the id of the question it is about, which is how Go to It
 finds the line. Four sources, in this order: what the reader could not read
 (BFL errors, in the core's own words), what the form model does not allow
 (the core's schema and semantic checks), the accessibility checks in 17a.5,
-and where BAF's current reader would make something different of the text
-(:func:`quill.core.forms.baf_compare.divergences`) -- a form that reads well
+and where QAF's current reader would make something different of the text
+(:func:`quill.core.forms.qaf_compare.divergences`) -- a form that reads well
 here and loses a question on the site is a finding too.
 """
 
@@ -19,7 +19,7 @@ from typing import Any
 from quill.core.forms import model as M
 from quill.ui import forms_doc as fd
 
-#: Autofill hints a person's details should carry (the tokens BAF writes).
+#: Autofill hints a person's details should carry (the tokens QAF writes).
 AUTOFILL: dict[str, str] = {
     "email": "email",
     "phone": "tel",
@@ -97,7 +97,7 @@ def _id_at(model: fd.Model, path: str) -> str | None:
 
 def _divergences(text: str) -> list[str]:
     try:
-        from quill.core.forms.baf_compare import divergences
+        from quill.core.forms.qaf_compare import divergences
 
         return [f"On the site today: {s}" for s in divergences(text)]
     except Exception:  # noqa: BLE001 - the comparison is advice, never a failure

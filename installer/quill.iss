@@ -207,6 +207,7 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes";
 Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".html"; ValueData: ""; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".htm"; ValueData: ""; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".csv"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".qaf"; ValueData: ""; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".rst"; ValueData: ""; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".json"; ValueData: ""; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".docx"; ValueData: ""; Flags: uninsdeletekey
@@ -223,6 +224,7 @@ Root: HKA; Subkey: "Software\Classes\.rtf\OpenWithProgids"; ValueType: string; V
 Root: HKA; Subkey: "Software\Classes\.html\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\.htm\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\.csv\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.qaf\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\.rst\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\.json\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\.docx\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
@@ -242,6 +244,7 @@ Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: st
 Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".html"; ValueData: "Quill.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".htm"; ValueData: "Quill.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".csv"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".qaf"; ValueData: "Quill.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".rst"; ValueData: "Quill.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".json"; ValueData: "Quill.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".docx"; ValueData: "Quill.Document"; Flags: uninsdeletekey

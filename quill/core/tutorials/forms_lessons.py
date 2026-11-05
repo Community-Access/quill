@@ -31,7 +31,7 @@ __all__ = ["FORM_FILE", "FORM_TITLE", "forms_lessons"]
 
 #: The form every lesson builds on.
 FORM_TITLE = "Ask us anything"
-FORM_FILE = "Ask us anything.bfl"
+FORM_FILE = "Ask us anything.qaf"
 
 
 def forms_lessons(
@@ -67,8 +67,8 @@ def forms_lessons(
                     body=(
                         "A form in "
                         f"{app} is a short plain text document: a title, some "
-                        "questions, their choices and a few rules, written in BITS "
-                        "Accessible Forms' form language. You never have to learn the "
+                        "questions, their choices and a few rules, written in the QAF "
+                        "form language. You never have to learn the "
                         "language, because the Forms commands write it for you."
                     ),
                     hear="Nothing yet. This step is the idea the rest build on.",
@@ -112,7 +112,7 @@ def forms_lessons(
                     ),
                     hear=f'"Saved {FORM_FILE}, a contact form with 3 questions."',
                     note=(
-                        "A form file ends in .bfl. It is ordinary text, so you can open "
+                        "A form file ends in .qaf. It is ordinary text, so you can open "
                         "it in any text editor too."
                     ),
                 ),

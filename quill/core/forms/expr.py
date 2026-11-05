@@ -1,13 +1,13 @@
-"""The BAF expression language: reading, canonical text and the tree.
+"""The QAF expression language: reading, canonical text and the tree.
 
 One small language does every job in a form: conditions, calculations, quiz
-scoring and smart defaults. Its home is BAF (``docs/expression-language.md``
-and ``includes/model/class-baf-expression.php``); this module is a port, so
+scoring and smart defaults. Its home is QAF (``docs/expression-language.md``
+and ``includes/model/class-qaf-expression.php``); this module is a port, so
 both programs read every text to the same tree and write the same canonical
-text, byte for byte. ``tests/conformance/expressions/cases.json`` in BAF is
+text, byte for byte. ``tests/conformance/expressions/cases.json`` in QAF is
 the contract.
 
-The tree is plain JSON, as BAF shares it:
+The tree is plain JSON, as QAF shares it:
 
 - ``{"type": "literal", "value": ...}``, ``{"type": "ref", "field": "id"}``,
   ``{"type": "list", "items": [...]}``, ``{"type": "var", "name": "score"}``,

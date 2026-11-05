@@ -1,7 +1,7 @@
 """What a form does with some answers: scores, the quiz outcome, what is shown.
 
 :func:`score`, :func:`context`, :func:`outcome` and :func:`is_shown` are ports
-of ``BAF_Form_Model``'s, and BAF's ``tests/conformance/models/behaviour.json``
+of ``QAF_Form_Model``'s, and QAF's ``tests/conformance/models/behaviour.json``
 checks them. :func:`evaluate_form` puts them together for Fill It In
 Yourself: visibility of every item, calculations in document order, which
 shown fields still need an answer, and the rules (require, optional, set,

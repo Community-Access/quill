@@ -1,0 +1,15 @@
+{
+  "about": "QAF form language text that must be reported as an error, with the line the error is on. 'contains' is a hint; only the line is binding for other readers.",
+  "cases": [
+    { "name": "a newer form language version", "line": 1, "contains": "version 2", "qaf": "bfl 2\nform \"Later\"\ntext #a \"A\"\n" },
+    { "name": "a version line without a number", "line": 1, "contains": "version number", "qaf": "bfl\nform \"X\"\n" },
+    { "name": "a condition that does not parse", "line": 3, "contains": "not valid", "qaf": "form \"X\"\ntext #a \"A\"\n  @when #b is\n" },
+    { "name": "an if block whose condition does not parse", "line": 2, "contains": "not valid", "qaf": "form \"X\"\nif #a is one of \"b\"\n  text #c \"C\"\n" },
+    { "name": "a calculation that does not parse", "line": 3, "contains": "not valid", "qaf": "form \"X\"\ncalculation #t \"Total\"\n  @calculate #a * \n" },
+    { "name": "an unclosed quote", "line": 2, "contains": "not closed", "qaf": "form \"X\"\ntext #a \"Unclosed\n" },
+    { "name": "a rule without an action", "line": 2, "contains": "action", "qaf": "form \"X\"\nrule\n  @when #a is 1\n" },
+    { "name": "a library without a name", "line": 2, "contains": "name", "qaf": "form \"X\"\nlibrary\n  + A\n" },
+    { "name": "a translation without a language", "line": 2, "contains": "language", "qaf": "form \"X\"\ntranslation\n  @title \"Y\"\n" },
+    { "name": "extensions that are not JSON", "line": 2, "contains": "JSON", "qaf": "form \"X\"\n  @extensions nope\n" }
+  ]
+}

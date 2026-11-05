@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://bits-acb.org/baf/schema/form-1.schema.json",
-  "title": "BAF form model, version 1",
-  "description": "The single definition of a BITS Accessible Forms form. BAF's visual builder, BFL and QUILL's form windows are all views of this model. Documented in docs/form-model.md.",
+  "$id": "https://bits-acb.org/qaf/schema/form-1.schema.json",
+  "title": "QAF form model, version 1",
+  "description": "The single definition of a QUILL Accessible Forms form. QAF's visual builder, BFL and QUILL's form windows are all views of this model. Documented in docs/form-model.md.",
   "type": "object",
   "required": ["version", "title", "pages"],
   "additionalProperties": false,
@@ -31,7 +31,7 @@
     },
     "extensions": {
       "type": "object",
-      "description": "Data owned by another program (a plugin, an importer). Kept and sent back unchanged; never interpreted by BAF or BFL."
+      "description": "Data owned by another program (a plugin, an importer). Kept and sent back unchanged; never interpreted by QAF or BFL."
     }
   },
   "$defs": {
@@ -48,13 +48,13 @@
     "expression": {
       "type": "string",
       "minLength": 1,
-      "format": "baf-expression",
-      "description": "Canonical text in the BAF expression language (docs/expression-language.md)."
+      "format": "qaf-expression",
+      "description": "Canonical text in the QAF expression language (docs/expression-language.md)."
     },
     "scalar": { "type": ["string", "number", "boolean", "null"] },
     "settings": {
       "type": "object",
-      "description": "Form settings. The documented keys are BAF's own settings (BAF_Form::get_default_settings); any other key is kept as it is.",
+      "description": "Form settings. The documented keys are QAF's own settings (QAF_Form::get_default_settings); any other key is kept as it is.",
       "propertyNames": { "$ref": "#/$defs/id" },
       "properties": {
         "submit_label": { "type": "string" },

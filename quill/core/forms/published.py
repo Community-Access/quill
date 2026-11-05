@@ -3,7 +3,7 @@
 wx-free. One small file in QUILL's data folder, ``forms-published.json``,
 holds three things and nothing personal:
 
-- **links:** a form document's path -> the site, BAF's form id, its title and
+- **links:** a form document's path -> the site, QAF's form id, its title and
   the ``updated_at`` the site gave when it was last published. Conflict
   protection compares that stamp with the site's (as 5.4 does for pages), and
   Test on Site and Responses start from it;
@@ -22,6 +22,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from quill.core.forms.menu import FORM_EXTENSION, FORM_EXTENSIONS
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic, write_text_atomic
 
@@ -117,15 +118,23 @@ class PublishedStore:
         folder = self.base / VERSIONS_FOLDER / _safe(site_id) / str(int(form_id))
         folder.mkdir(parents=True, exist_ok=True)
         stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
-        target = folder / f"{stamp}.bfl"
+        target = folder / f"{stamp}{FORM_EXTENSION}"
         write_text_atomic(target, bfl, newline="\n")
-        for old in sorted(folder.glob("*.bfl"))[:-KEEP_VERSIONS]:
+        for old in self._versions_in(folder)[:-KEEP_VERSIONS]:
             old.unlink(missing_ok=True)
         return target
 
     def versions(self, site_id: str, form_id: int) -> list[Path]:
         folder = self.base / VERSIONS_FOLDER / _safe(site_id) / str(int(form_id))
-        return sorted(folder.glob("*.bfl"), reverse=True) if folder.is_dir() else []
+        return self._versions_in(folder)[::-1] if folder.is_dir() else []
+
+    @staticmethod
+    def _versions_in(folder: Path) -> list[Path]:
+        """The kept copies, oldest first: ``.qaf``, and any ``.bfl`` kept before 17a.17."""
+        return sorted(
+            (p for p in folder.glob("*") if p.suffix.lower() in FORM_EXTENSIONS),
+            key=lambda p: p.name,
+        )
 
 
 def new_responses(

@@ -160,7 +160,10 @@ AppProfile = EditorProfile
 
 #: The types QUILL Lite really opens (``quill.core.lite.filetypes``): plain
 #: text and its usual spellings, Markdown, rich text, HTML, and CSV, which it
-#: opens as the plain text it is.
+#: opens as the plain text it is. ``.qaf`` is a form document (QUILL
+#: Accessible Forms, wordpress.md 17a.17), which both editors' Forms commands
+#: work in; it joined on 2026-11-05. The older ``.bfl`` still opens and is
+#: never registered.
 _LITE_EXTENSIONS: tuple[str, ...] = (
     ".txt",
     ".text",
@@ -171,6 +174,7 @@ _LITE_EXTENSIONS: tuple[str, ...] = (
     ".html",
     ".htm",
     ".csv",
+    ".qaf",
 )
 
 #: QUILL opens everything QUILL Lite does, and the formats ``quill/io`` reads
@@ -199,7 +203,7 @@ QUILL_LITE = EditorProfile(
     launcher_name="QuillLite.exe",
     icon_name="quill-lite.ico",
     exe_stems=("quilllite",),
-    types_phrase="text, Markdown, rich text, HTML and CSV files",
+    types_phrase="text, Markdown, rich text, HTML, CSV and form files",
 )
 
 #: QUILL's installed ``quill.exe`` is a stamped ``pythonw.exe``: bare, it starts
@@ -217,7 +221,9 @@ QUILL = EditorProfile(
     ),
     module="quill",
     exe_stems=("quill",),
-    types_phrase=("text, Markdown, rich text, HTML, Word, OpenDocument, EPUB, JSON and CSV files"),
+    types_phrase=(
+        "text, Markdown, rich text, HTML, Word, OpenDocument, EPUB, JSON, CSV and form files"
+    ),
 )
 
 #: Every editor that can own the Notepad hook, in the order they are named.

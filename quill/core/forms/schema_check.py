@@ -1,11 +1,12 @@
-"""Checking a model against the published schema: a port of ``BAF_JSON_Schema``.
+"""Checking a model against the published schema: a port of ``QAF_JSON_Schema``.
 
-The schema file, ``schema/form.schema.json``, is BAF's own, copied unchanged
-(its ``$id`` is BAF's); the conformance test checks it is byte-identical to
-BAF's when BAF is on the machine. QUILL ships no ``jsonschema`` dependency, so
-this interprets the file itself, using the same keywords BAF's PHP does and
+The schema file, ``schema/form.schema.json``, is QAF's own, copied unchanged
+(its ``$id`` is QAF's); the conformance test checks it is byte-identical to
+QAF's when QAF is on the machine. QUILL ships no ``jsonschema`` dependency, so
+this interprets the file itself, using the same keywords QAF's PHP does and
 reporting the same JSON pointers. ``"format": "baf-expression"`` means "parses
-as an expression".
+as an expression"; ``qaf-expression`` is read the same way, for the schema QAF
+publishes under its new name (17a.17).
 """
 
 from __future__ import annotations
@@ -111,7 +112,7 @@ class _Checker:
                 self.error(path, f"Must be at least {schema['minLength']} character(s).")
             if "pattern" in schema and not re.search(schema["pattern"], v):
                 self.error(path, f"Does not match the pattern {schema['pattern']}.")
-            if schema.get("format") == "baf-expression":
+            if schema.get("format") in ("qaf-expression", "baf-expression"):
                 problem = E.check(v)
                 if problem is not None:
                     self.error(path, "Not a valid expression: " + problem)

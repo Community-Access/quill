@@ -3,9 +3,9 @@
 wx-free, and the **one place the Forms windows call the core's BFL reader and
 writer** (:mod:`quill.core.forms.bfl_document`), so the commands never depend
 on how the core spells a document. Everything else here works on the form
-model itself -- BAF's JSON, plain dicts and lists, described by
+model itself -- QAF's JSON, plain dicts and lists, described by
 ``quill/core/forms/schema/form.schema.json`` -- which is the stable contract
-between QUILL and BAF.
+between QUILL and QAF.
 
 An edit is: read the editor's text, change the model, write it back. The
 writer copies every statement nobody touched byte for byte, so the editor

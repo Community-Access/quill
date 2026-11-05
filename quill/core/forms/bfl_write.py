@@ -1,9 +1,9 @@
-"""Writing the form model as canonical BFL: a port of BAF's ``BAF_BFL_Writer``.
+"""Writing the form model as canonical BFL: a port of QAF's ``QAF_BFL_Writer``.
 
-:func:`to_bfl` writes exactly what BAF's writer writes, byte for byte: ``bfl 1``
+:func:`to_bfl` writes exactly what QAF's writer writes, byte for byte: ``bfl 1``
 first, two spaces a level, a blank line between top-level blocks, ``#id`` left
 out where the reader would make up the same one, and every expression in
-canonical text. BAF's ``tests/conformance/bfl/canonical`` cases are the
+canonical text. QAF's ``tests/conformance/qaf/canonical`` cases are the
 contract. Writing an *edited* document while keeping its untouched text is
 :func:`quill.core.forms.bfl_document.write_bfl`.
 """
