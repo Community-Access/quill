@@ -68,7 +68,7 @@ def test_consent_names_provider_model_and_endpoint() -> None:
     assert "Send this description to OpenAI" in message
     assert "gpt-image-1" in message
     # The endpoint is named as a word of its own, not merely somewhere inside it.
-    assert "api.openai.com" in {word.strip(".,;:()") for word in message.split()}
+    assert any(word.strip(".,;:()") == "api.openai.com" for word in message.split())
     assert "your chosen AI" in pm.consent_message(
         pm.PictureConnection("OpenAI", "openai", "k"), described_by="your chosen AI"
     )

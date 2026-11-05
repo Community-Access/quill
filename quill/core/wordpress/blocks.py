@@ -111,7 +111,6 @@ class Block:
 # ---------------------------------------------------------------------------
 
 _HEAD = re.compile(r"<!--\s+(/)?wp:([a-z][a-z0-9_-]*/)?([a-z][a-z0-9_-]*)\s+")
-_TAIL_PLAIN = re.compile(r"(/)?-->")
 _TAIL_ATTRS = re.compile(r"\}\s+(/)?-->")
 
 
@@ -143,24 +142,32 @@ def _tokens(text: str) -> list[_Token]:
             return out
         after = m.end()
         attrs_text: str | None = None
-        tail = _TAIL_PLAIN.match(text, after)
-        if tail is None and text.startswith("{", after):
+        # WordPress's own block parser ends a delimiter only at "-->" (or "/-->"
+        # for a void block), so this does too; anything else is not a block.
+        void: bool | None = None
+        end = 0
+        if text.startswith("/-->", after):
+            void, end = True, after + 4
+        elif text.startswith("-->", after):
+            void, end = False, after + 3
+        elif text.startswith("{", after):
             tail = _TAIL_ATTRS.search(text, after)
             if tail is not None:
                 attrs_text = text[after : tail.start() + 1]
-        if tail is None:
+                void, end = bool(tail.group(1)), tail.end()
+        if void is None:
             pos = m.start() + 1
             continue
         closer, namespace, short = m.group(1), m.group(2), m.group(3)
         name = (namespace or "core/") + short
-        if tail.group(1):
+        if void:
             kind = "void"
         elif closer:
             kind = "closer"
         else:
             kind = "opener"
-        out.append(_Token(kind, m.start(), tail.end(), name, _parse_attrs(attrs_text)))
-        pos = tail.end()
+        out.append(_Token(kind, m.start(), end, name, _parse_attrs(attrs_text)))
+        pos = end
 
 
 def _pair(tokens: Sequence[_Token]) -> list[bool]:
