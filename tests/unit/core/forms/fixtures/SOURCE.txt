@@ -3,9 +3,9 @@ Where these fixtures come from
 
 All of them come from BITS Accessible Forms (BAF), S:\code\baf on Jeff's
 machine. BAF is copyright BITS (Blind Information Technology Solutions) and
-Community Access, released under GPL-2.0-or-later. They are copied here for
-testing; QUILL itself is MIT-licensed, so reusing them here rests on the same
-owners' permission. The choice-library data in
+Community Access, released under the MIT License (relicensed from
+GPL-2.0-or-later in November 2026), the same licence as QUILL. They are
+copied here for testing. The choice-library data in
 quill/core/forms/libraries/baf_libraries.json and the schema in
 quill/core/forms/schema/form.schema.json have the same origin.
 
