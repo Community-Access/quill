@@ -312,7 +312,7 @@ fi
 wp eval '$d = WP_CONTENT_DIR . "/mu-plugins"; if (!is_dir($d)) { mkdir($d, 0755, true); }
 file_put_contents($d . "/quill-test-events.php", "<?php
 add_action(\"init\", function () {
-  register_post_type(\"event\", array(\"label\" => \"Events\", \"public\" => true, \"show_in_rest\" => true, \"rest_base\" => \"events\", \"supports\" => array(\"title\", \"editor\", \"revisions\", \"author\")));
+  register_post_type(\"event\", array(\"label\" => \"Events\", \"public\" => true, \"show_in_rest\" => true, \"rest_base\" => \"events\", \"rewrite\" => array(\"slug\" => \"quill-event\"), \"supports\" => array(\"title\", \"editor\", \"revisions\", \"author\")));
 });
 ");'
 post open-day event publish "Open Day" "<!-- wp:paragraph --><p>Come and see the studio.</p><!-- /wp:paragraph -->" >/dev/null
@@ -326,4 +326,7 @@ if [ "$(wp comment list --post_id="$welcome" --status=all --format=count)" -lt 3
 fi
 
 # --- menus -----------------------------------------------------------------
+# The Events type (quill-event/) and any plugin types need their rules written.
+wp rewrite flush --hard >/dev/null
+
 echo "Done. Site: $URL  Admin: $URL/wp-admin  Accounts: $(pwd)/$ACCOUNTS"
