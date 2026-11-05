@@ -121,6 +121,8 @@ for f in quill-test-tone.wav quill-test-clip.mp4 quill-test-clip.en.vtt; do
   name="${f%.*}"; name="${name//./-}"
   if [ -z "$(wp post list --post_type=attachment --name="$name" --field=ID)" ]; then
     [ -f "seed/$f" ] || docker cp "wordpress-test:/tmp/$f" "seed/$f"
+    # setup.sh runs under umask 077; WordPress reads the file as another user.
+    chmod 644 "seed/$f" 2>/dev/null || true
     docker cp "seed/$f" "wordpress-test:/var/www/html/wordpress/$f"
     # The title is the name, so the slug checked above is the one WordPress makes.
     # A site that refuses .vtt uploads still gets the tone and the clip.
