@@ -440,10 +440,16 @@ paragraph over the top of that is what GATE-13 exists to stop.
 
 | Profile | Areas on | Ctrl+N | For |
 |---|---|---|---|
-| Recommended | 17 of 21 | unchanged | the shipped answer, and the way back from experimenting |
-| Everything | 21 of 21 | unchanged | turning things off as they annoy you rather than finding them one at a time |
-| WordPad | 5 of 21 | **rich** | letters and notes that should look like something |
-| Notepad | 2 of 21 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+| Recommended | 19 of 24 | unchanged | the shipped answer, and the way back from experimenting |
+| Everything | 23 of 24 | unchanged | turning things off as they annoy you rather than finding them one at a time |
+| WordPad | 6 of 24 | **rich** | letters and notes that should look like something |
+| Notepad | 3 of 24 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+| Developer | 20 of 24 | unchanged | Recommended plus Coding, for project tasks with an AI |
+
+Every profile keeps the Command Palette (2026-11-04): it is how a command is
+found, so a profile that removed it removed the way to find everything else.
+It lists every command in the table and every menu row built at run time
+(open windows, recent files).
 
 The four Recommended leaves off are autocorrect, timestamped backups, Go To
 Anything and **AI help** -- and the last of those is off for a different kind of
@@ -2063,6 +2069,92 @@ is spoken.
 QUILL has all of this on the same chords from the same code; QUILL Lite is not
 ahead (section 2.2).
 
+## WordPress (2026-11-04)
+
+**What it is.** A person who looks after a WordPress website writes, opens,
+checks and publishes its pages and posts in the editor they already use, and
+looks after the site itself (media, comments, menus, settings, users) through
+list windows of one shared shape. The site keeps its theme. The editor works
+on the words, the blocks and the media. Nothing reaches a site until the
+person sends it: **Ctrl+S** is always a local save, and Save Draft to Site
+and Publish or Update are separate commands, the second confirmed after a
+Check Before Publishing pass. In QUILL it replaces the old Publish submenu of the File menu
+and its two Publishing features; saved publishing connections are imported once,
+with their passwords.
+
+**One shared layer, one adapter each, one menu table.**
+
+- **The shared layer.** Everything that talks to a site is wx-free code in
+  `quill/core/wordpress/`: the REST client (`api.py`, HTTPS only, every
+  refusal turned into a sentence naming the site), one function per action
+  (`site.py`, `site_media.py`), many sites with one default (`sites.py`,
+  secrets in Credential Manager), local working copies with versions and
+  conflict detection (`local.py`), the block grammar and Markdown fences
+  (`blocks.py`, `fences*.py`, byte-for-byte round trips, and anything that
+  would not round-trip stays a protected island), the checks, contrast and
+  reading level, scheduling and the offline queue, and the media, listening
+  and site-audit logic. The commands are shared too: one class,
+  `quill.ui.wordpress_commands.WordPressCommands`, built from per-area
+  mixins, reaches the editor only through a small host protocol
+  (`quill/ui/wordpress_host.py`).
+- **One adapter each.** `quill/ui/main_frame_wordpress.py` (QUILL) and
+  `quill/apps/lite_window_wordpress.py` (QUILL Lite) implement that host and
+  build the menus. Neither has a command of its own; a test asserts it, so
+  the two editors cannot grow different WordPress features. QUILL Cast, QUILL
+  Studio and Quill Converter reach the same code through
+  `quill/ui/wordpress_family.py`, a host with no editor that writes a local
+  draft and starts QUILL with it.
+- **One menu table.** `quill/core/wordpress/menu.py` names every row, its
+  place and its shared handler. QUILL builds its menus from it, and QUILL
+  Lite's command table is generated from it, so a command sits in the same
+  place in both. File > WordPress keeps what is about a whole document or a
+  site (New, Open, the three saves, Schedule Publish, Properties, Previous
+  Versions, Compare with Site, Move to Trash, the sites). What happens inside
+  a page joins Insert (blocks, pictures, links, Make a Picture), Format >
+  WordPress (Block Settings, Image Size, Mark Language), View (WordPress
+  Blocks, Preview Blocks) and Edit > WordPress (Next Block, Previous Block,
+  Where Am I). Looking after the site is Tools > WordPress, with its More
+  Media and Manage submenus. Rows about the page in front are enabled only in
+  a WordPress document; reached another way, the handler says why.
+
+**Principles carried through every window.**
+
+- The account's role is read before a window opens. A role that cannot use
+  it hears one sentence naming the role; a role that can use part of it
+  never sees a button the site would refuse.
+- Every destructive action is a named confirmation. Anything that changes
+  many items is one `batch/v1` request after one confirmation naming the
+  count and the site, and keeps what it replaced so it can be undone.
+- A send checks for a conflict first and never overwrites another person's
+  change. A send that gets no answer re-reads the site before offering Try
+  Again, so nothing is created twice; a site that cannot be reached queues
+  the send, and the queue gets the same conflict check.
+- Autosaves every two minutes, locally and as the account's autosave on the
+  site; Open offers a newer autosave.
+- Speech follows GATE-13: background results, counts and failures, one
+  sentence naming the site. Every control has inline F1 help.
+- AI is optional. Suggest Alternative Text, Describe Image, the Picture
+  Maker, Visual Review and In Short use the editor's own AI connection and
+  gates, and say what they will send before they send it. Captions,
+  transcripts and listening versions run on this computer.
+- Check This Page uses the vendored axe-core in the Edge or Chrome already
+  installed, started hidden from its standard install folder over a
+  loopback-only DevTools connection. No browser is ever downloaded.
+
+**Keys.** None yet. Every command has a written reason for having no key
+(rule 8) until keys are chosen; until then, Alt+F, W opens File > WordPress
+and every command is in the Command Palette.
+
+**WordPress.com.** The OAuth sign-in code is built; it waits on the family's
+app registration with WordPress.com. Until then, choosing WordPress.com says
+so plainly, and a plan with plugins can connect with an application password.
+
+QUILL has all of this on the same rows from the same code; QUILL Lite is not
+ahead (section 2.2). In QUILL Lite it is the WordPress area: on in
+Recommended and Everything, off in WordPad and Notepad.
+
+**Where it is taught.** The WordPress chapter of each user guide, and the
+regression plan at `docs/qa/wordpress-regression-testing.md`.
 ## Project tasks, in the Developer profile (2026-11-04)
 
 QUILL Lite reaches project tasks through the shared code QUILL uses
@@ -2076,7 +2168,7 @@ so the two editors cannot do them two ways. The plan of record is `code.md`
   default and off in every profile but Developer, Everything included. A
   store seeded before the area existed gets it off once, through a second
   seeding marker (`_seeded_coding`).
-- A fifth profile, **Developer**: Recommended plus Coding, 18 of 22 areas.
+- A fifth profile, **Developer**: Recommended plus Coding, 20 of 24 areas.
   Ctrl+N is unchanged.
 
 **Commands** (handlers on the shared mixin; area Coding, by handler in

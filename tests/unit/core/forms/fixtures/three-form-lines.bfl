@@ -1,0 +1,5 @@
+form "My Form" @description "A comprehensive form with validation" @ajax @honeypot @captcha "recaptcha3"
+
+form "Another Form" @description "A simple form" @ajax
+
+form "Third Form" @description "Multi-step form with anti-spam" @honeypot @captcha

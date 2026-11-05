@@ -161,6 +161,11 @@ class DocumentTypingMixin(DocumentAbbreviationsMixin, DocumentTypingAssistMixin)
         ``Skip`` is what lets the control do the overtype it was always going
         to do. All this adds is that the status cell knows.
         """
+        # The WordPress keys come first: after their prefix, O is a command and
+        # not a letter to type (lite_window_wordpress.py, wordpress.md 19).
+        wordpress_key = getattr(self, "_wordpress_key_down", None)
+        if wordpress_key is not None and wordpress_key(event):
+            return
         code = event.GetKeyCode()
         # A side effect, not a branch: the key goes on to the control, which
         # does the deleting. All this adds is that it is audible.

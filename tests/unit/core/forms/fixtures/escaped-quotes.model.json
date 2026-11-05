@@ -1,0 +1,16 @@
+{
+ "version": 1,
+ "title": "Test",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "name",
+     "type": "text",
+     "label": "Say \"Hello\""
+    }
+   ]
+  }
+ ]
+}

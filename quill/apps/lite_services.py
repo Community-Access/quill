@@ -32,7 +32,7 @@ from typing import Any
 
 from quill.core.lite import features as features_mod
 from quill.core.lite import keymap as keymap_mod
-from quill.core.lite.commands import plain_label
+from quill.core.lite.commands import plain_label, split_menu
 from quill.core.lite.keymap import binding_for, resolved_commands
 
 logger = logging.getLogger(__name__)
@@ -194,17 +194,32 @@ class LiteServicesMixin:
         from quill.core.commands import CommandRegistry
 
         registry = CommandRegistry()
+        table_paths: list[tuple[str, ...]] = []
         for menu, label, key, handler, kind in resolved_commands(self.feature_enabled, self.keymap):
             # A submenu's title row names a menu, not a command: it has no
             # handler to run and no key to show.
             if kind in {"sep", "sub"}:
                 continue
+            parent, child = split_menu(menu)
+            table_paths.append(tuple(part for part in (parent, child, label) if part))
             registry.try_register(
                 f"lite.{handler}",
                 f"{plain_label(menu)}: {plain_label(label)}",
                 # Through the Read-Only Guard, as the menus and keys are.
                 (lambda h=handler: _run_guarded(frame, h)),
                 keybinding=key,
+            )
+        # What the table cannot hold -- the open windows, the recent files --
+        # is still in the menus, so the palette finds it there too.
+        menu_bar = frame.GetMenuBar() if hasattr(frame, "GetMenuBar") else None
+        if menu_bar is not None:
+            from quill.ui.palette_menu_reach import register_menu_items
+
+            register_menu_items(
+                registry,
+                menu_bar,
+                covered_paths=table_paths,
+                post_menu_event=lambda item_id: _post_menu_item(frame, item_id),
             )
         return registry
 
@@ -278,3 +293,19 @@ def _run_guarded(frame: Any, handler: str) -> None:
         run(handler)
     else:
         getattr(frame, handler)()
+
+
+def _post_menu_item(frame: Any, item_id: int) -> None:
+    """Run a menu item from the palette the way choosing it in the menu does."""
+    import wx
+
+    menu_bar = frame.GetMenuBar()
+    item = menu_bar.FindItemById(item_id) if menu_bar is not None else None
+    if item is None or not item.IsEnabled():
+        announce = getattr(frame, "_announce", None)
+        if callable(announce):
+            announce("That is not available right now")
+        return
+    event = wx.CommandEvent(wx.wxEVT_MENU, item_id)
+    event.SetEventObject(frame)
+    wx.PostEvent(frame, event)

@@ -1,0 +1,149 @@
+{
+    "version": 1,
+    "title": "Logic",
+    "pages": [
+        {
+            "id": "page_1",
+            "items": [
+                {
+                    "id": "contact",
+                    "type": "radio",
+                    "label": "Contact Method",
+                    "choices": [
+                        {
+                            "value": "email",
+                            "label": "Email"
+                        },
+                        {
+                            "value": "phone",
+                            "label": "Phone"
+                        }
+                    ]
+                },
+                {
+                    "id": "email",
+                    "type": "email",
+                    "label": "Email Address",
+                    "required": true,
+                    "when": "#contact is \"Email\""
+                },
+                {
+                    "id": "email_confirm",
+                    "type": "text",
+                    "label": "Confirm email",
+                    "required": true,
+                    "when": "#contact is \"Email\""
+                },
+                {
+                    "id": "phone",
+                    "type": "phone",
+                    "label": "Phone Number",
+                    "required": true,
+                    "mask": "(999) 999-9999",
+                    "when": "#contact is \"Phone\""
+                },
+                {
+                    "id": "addr",
+                    "type": "address",
+                    "label": "Address",
+                    "when": "#contact is \"Post\""
+                },
+                {
+                    "id": "company",
+                    "type": "text",
+                    "label": "Company"
+                },
+                {
+                    "id": "field_7",
+                    "type": "text",
+                    "label": "Company website",
+                    "placeholder": "https://...",
+                    "when": "#company is not empty"
+                },
+                {
+                    "id": "field_8",
+                    "type": "text",
+                    "label": "Tell us what you do",
+                    "help": "Student, freelancer, etc.",
+                    "when": "#company is empty"
+                },
+                {
+                    "id": "age",
+                    "type": "number",
+                    "label": "Age"
+                },
+                {
+                    "id": "field_10",
+                    "type": "text",
+                    "label": "Which university?",
+                    "when": "#age > 17"
+                },
+                {
+                    "id": "field_11",
+                    "type": "consent",
+                    "label": "A parent agrees",
+                    "when": "#age < 13"
+                },
+                {
+                    "id": "code",
+                    "type": "text",
+                    "label": "Code"
+                },
+                {
+                    "id": "a_detail",
+                    "type": "text",
+                    "label": "About A codes",
+                    "when": "#code starts with \"A\""
+                },
+                {
+                    "id": "z_detail",
+                    "type": "text",
+                    "label": "About Z codes",
+                    "when": "#code ends with \"Z\""
+                },
+                {
+                    "id": "dash_detail",
+                    "type": "text",
+                    "label": "About dashed codes",
+                    "when": "#code contains \"-\""
+                },
+                {
+                    "id": "show_address",
+                    "type": "checkbox",
+                    "label": "Show Address",
+                    "choices": [
+                        {
+                            "value": "yes",
+                            "label": "Yes"
+                        }
+                    ]
+                },
+                {
+                    "id": "field_17",
+                    "type": "columns",
+                    "when": "#show_address is \"yes\"",
+                    "columns": [
+                        {
+                            "items": [
+                                {
+                                    "id": "street",
+                                    "type": "text",
+                                    "label": "Street"
+                                }
+                            ]
+                        },
+                        {
+                            "items": [
+                                {
+                                    "id": "city",
+                                    "type": "text",
+                                    "label": "City"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

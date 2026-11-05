@@ -1,0 +1,27 @@
+{
+  "about": "What a valid model does with a set of answers. 'scores' and 'total' come from the scoring rules in docs/form-model.md; 'outcome' is the ID of the first outcome whose condition holds; 'shown' and 'hidden' list items whose visibility (own condition, enclosing sections and page, show and hide rules) must come out that way.",
+  "today": "2026-11-04",
+  "cases": [
+    { "model": "valid/quiz-and-translations.json", "name": "all right",
+      "answers": { "q1": "6", "q2": ["nemeth", "ueb"], "q3": " braille ", "feel": "high" },
+      "scores": { "q1": 2, "q2": 2, "q3": 1, "feel": 2 }, "total": 7, "outcome": "top" },
+    { "model": "valid/quiz-and-translations.json", "name": "partly right",
+      "answers": { "q1": "6", "q2": ["ueb"], "q3": "Louis", "feel": "mid" },
+      "scores": { "q1": 2, "q2": 1, "q3": 0, "feel": 1 }, "total": 4, "outcome": "retry" },
+    { "model": "valid/quiz-and-translations.json", "name": "a wrong choice cancels partial credit",
+      "answers": { "q1": "8", "q2": ["ueb", "morse"], "q3": "braille", "feel": "low" },
+      "scores": { "q1": 0, "q2": 0, "q3": 1, "feel": 0 }, "total": 1, "outcome": "retry" },
+    { "model": "valid/quiz-and-translations.json", "name": "nothing answered",
+      "answers": {},
+      "scores": { "q1": 0, "q2": 0, "q3": 0, "feel": 0 }, "total": 0, "outcome": "retry" },
+    { "model": "valid/logic-and-layout.json", "name": "a business",
+      "answers": { "type": "business", "company": "Acme", "staff": "", "contact_by": "phone" },
+      "shown": ["type", "company", "staff", "phone", "first", "contact"], "hidden": ["postal", "country", "region", "children", "start"] },
+    { "model": "valid/logic-and-layout.json", "name": "a charity with no staff count",
+      "answers": { "type": "charity", "company": "Helping Hands", "contact_by": "post" },
+      "shown": ["company", "postal", "country"], "hidden": ["staff", "school"] },
+    { "model": "valid/logic-and-layout.json", "name": "a person",
+      "answers": { "type": "person", "children": [ "x" ], "contact_by": "email" },
+      "shown": ["children", "start", "child_name"], "hidden": ["company", "postal"] }
+  ]
+}

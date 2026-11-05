@@ -23,9 +23,7 @@ if TYPE_CHECKING:  # imports kept out of cold-start path
 from quill import __version__, build_info
 from quill.branding import APP_SHORT_NAME
 from quill.core import thesaurus as thesaurus_engine
-from quill.core.a11y_regions import (
-    RegionTracker,
-)
+from quill.core.a11y_regions import RegionTracker
 from quill.core.ai import Assistant
 from quill.core.ai.agent import allowed_tools
 from quill.core.announce import Channel as AnnounceChannel
@@ -347,6 +345,7 @@ from quill.ui.main_frame_emoji_picker import EmojiPickerMixin
 from quill.ui.main_frame_equations import EquationsMixin
 from quill.ui.main_frame_external_change import ExternalChangeMixin
 from quill.ui.main_frame_format_codes import FormatCodesMixin
+from quill.ui.main_frame_forms import FormsMenuMixin
 from quill.ui.main_frame_gh_bridge import GhBridgeMixin
 from quill.ui.main_frame_git_sync import GitSyncMixin
 from quill.ui.main_frame_github import GitHubRemoteMixin
@@ -398,7 +397,6 @@ from quill.ui.main_frame_preferences import PreferencesMixin
 from quill.ui.main_frame_preview import PreviewMixin, _BrowserPreviewSession
 from quill.ui.main_frame_print import PrintMixin
 from quill.ui.main_frame_profile_picker import ProfilePickerMixin
-from quill.ui.main_frame_publishing import PublishingCommandsMixin
 from quill.ui.main_frame_quick_insert import QuickInsertMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
@@ -443,11 +441,10 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_updates import UpdatesMixin
 from quill.ui.main_frame_vault import VaultMixin
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
-from quill.ui.main_frame_voice_preview import (
-    VoicePreviewMixin,
-)
+from quill.ui.main_frame_voice_preview import VoicePreviewMixin
 from quill.ui.main_frame_watch_folder import WatchFolderRuntimeMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
+from quill.ui.main_frame_wordpress import WordPressMenuMixin
 from quill.ui.main_frame_work_persona import WorkPersonaMixin
 from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.main_frame_write_safety import WriteSafetyMixin
@@ -714,6 +711,8 @@ class MainFrame(
     SessionRestoreMixin,
     MagicalTierMixin,
     LiteBridgeMixin,
+    WordPressMenuMixin,
+    FormsMenuMixin,
     NativeKeyGuardMixin,
     ExternalChangeMixin,
     OpenSourcesMixin,
@@ -829,7 +828,6 @@ class MainFrame(
     SpellVoiceMixin,
     SpellcheckCommandsMixin,
     BwSpeechMixin,
-    PublishingCommandsMixin,
     KeymapIoMixin,
     MenuEditorMixin,
     PreferencesMixin,
@@ -2302,7 +2300,7 @@ class MainFrame(
             self._quill_key_mode_started_at = 0.0
             event.Skip()
             return
-        if self._handle_quill_key_mode_event(event):
+        if self._wordpress_key_event(event) or self._handle_quill_key_mode_event(event):
             return
         event.Skip()
 
@@ -4187,7 +4185,7 @@ class MainFrame(
         # itself is unchanged.
         prefix = getattr(self.settings, "quill_key_binding", "Ctrl+Shift+Grave")
         display = format_binding_for_display(binding, prefix=prefix)
-        if display != binding:
+        if display != binding or ", " in display:  # a sequence (WordPress keys)
             # #612: text after a literal tab in a wx menu item label is not
             # just decorative -- wx parses it as a real native accelerator
             # (wxGetAccelFromString). "QUILL Key + S" parses as a clean,
@@ -4460,10 +4458,9 @@ class MainFrame(
         # HTML row's rule, which had always been html_only. Worse by ear than by
         # eye: an enabled row promises the command will work, and a document
         # that quietly became half-Markdown is not something you can see you
-        # did. Set Document Language turns the rows back on in one keystroke.
+        # did; Set Document Language turns the rows back on in one keystroke.
         markdown_ready = context == "markdown"
-        # Insert Markdown Tag is not dimmed but absent outside Markdown, in both
-        # editors (quill/ui/markdown_tag_row.py); its key still says why.
+        # Insert Markdown Tag is absent, not dimmed, outside Markdown (markdown_tag_row.py).
         shown = self._markdown_tags_apply()
         sync_menu_row(self, "_markdown_tag_row", menu_bar, self._id_insert_markdown_tag, shown)
         active_surface = self._active_markup_surface()
@@ -4519,6 +4516,8 @@ class MainFrame(
                 menu_item.Enable(html_only)
         self._route_dimmed_markup_keys(markdown_ids, structured_markup_ids, html_ids)
         self._refresh_language_menu_radio(menu_bar)
+        self._refresh_wordpress_menu_items(menu_bar)  # main_frame_wordpress.py
+        self._refresh_forms_menu_items(menu_bar)  # main_frame_forms.py
         # A row that was disabled when the pass last ran was skipped on purpose,
         # so a row that has just been *enabled* has no route yet. Re-running the
         # pass here is what keeps "every enabled item advertises a route" true
@@ -4550,13 +4549,9 @@ class MainFrame(
         enabled = True if feature_manager is None else feature_manager.is_enabled(feature_id)
         # Experimental gates (Settings > Experimental). These features ship dark
         # until the user opts in: the master switch plus the per-feature checkbox.
-        # GLOW is catalog-on, so the experimental gate narrows it; the read-only
-        # publishing tools are profile-off, so the gate is the user's way to
-        # light them (the locked send half is unaffected — it stays locked_off).
+        # GLOW is catalog-on, so the experimental gate narrows it.
         if feature_id == "core.glow":
             return enabled and self._experimental_gate_on("glow_experimental_enabled")
-        if feature_id == "future.publishing_read":
-            return enabled or self._experimental_gate_on("publishing_experimental_enabled")
         return enabled
 
     def _experimental_gate_on(self, setting_name: str) -> bool:
@@ -7434,6 +7429,7 @@ class MainFrame(
         # just before the list is built -- keeps every toggle honest without
         # each handler having to remember to retitle itself.
         self._refresh_palette_toggle_titles()
+        self._register_menu_palette_rows()
         dialog = CommandPaletteDialog(
             self.frame,
             self.commands,

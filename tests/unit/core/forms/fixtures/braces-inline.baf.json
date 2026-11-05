@@ -1,0 +1,29 @@
+{
+ "origin": "guide:3",
+ "parse": {
+  "form": {
+   "title": "",
+   "description": "",
+   "fields": [
+    {
+     "id": "field_1",
+     "type": "text",
+     "label": "Your Name",
+     "required": true,
+     "placeholder": "Jane Doe",
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"\"\n\n  text \"Your Name\"\n    @required\n    @placeholder \"Jane Doe\""
+}

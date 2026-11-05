@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "title": "",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "dept",
+     "type": "select",
+     "label": "Department",
+     "placeholder": "Select one...",
+     "required": true,
+     "choices": [
+      {
+       "value": "sales",
+       "label": "Sales"
+      },
+      {
+       "value": "support",
+       "label": "Support"
+      },
+      {
+       "value": "billing",
+       "label": "Billing"
+      }
+     ]
+    },
+    {
+     "id": "preferred",
+     "type": "radio",
+     "label": "Preferred Contact",
+     "required": true,
+     "choices": [
+      {
+       "value": "email",
+       "label": "Email me"
+      },
+      {
+       "value": "phone",
+       "label": "Call me"
+      },
+      {
+       "value": "sms",
+       "label": "Text me"
+      }
+     ]
+    },
+    {
+     "id": "interests",
+     "type": "checkbox",
+     "label": "Interests",
+     "choices": [
+      {
+       "value": "tech",
+       "label": "Technology"
+      },
+      {
+       "value": "sports",
+       "label": "Sports"
+      },
+      {
+       "value": "art",
+       "label": "Art"
+      }
+     ],
+     "props": {
+      "multiple": true,
+      "allow_other": true
+     }
+    }
+   ]
+  }
+ ]
+}

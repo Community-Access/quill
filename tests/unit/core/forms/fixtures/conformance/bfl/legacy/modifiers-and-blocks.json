@@ -1,0 +1,85 @@
+{
+    "version": 1,
+    "title": "Contact Us",
+    "description": "Write to us",
+    "settings": {
+        "ajax_submission": true,
+        "enable_honeypot": true,
+        "enable_captcha": true,
+        "captcha_type": "hcaptcha",
+        "submit_label": "Send Message",
+        "success_message": "Thank you for contacting us!"
+    },
+    "pages": [
+        {
+            "id": "page_1",
+            "items": [
+                {
+                    "id": "name",
+                    "type": "text",
+                    "label": "Your Name",
+                    "placeholder": "Enter your name",
+                    "required": true,
+                    "validation": {
+                        "max_length": 100
+                    }
+                },
+                {
+                    "id": "last",
+                    "type": "text",
+                    "label": "Last Name",
+                    "placeholder": "Last name",
+                    "required": true
+                },
+                {
+                    "id": "b1",
+                    "type": "text",
+                    "label": "Brace",
+                    "placeholder": "Enter name",
+                    "required": true
+                },
+                {
+                    "id": "b2",
+                    "type": "text",
+                    "label": "Multiline brace",
+                    "required": true,
+                    "validation": {
+                        "min_length": 2
+                    }
+                },
+                {
+                    "id": "b3",
+                    "type": "text",
+                    "label": "Bracket",
+                    "placeholder": "Enter name",
+                    "required": true
+                },
+                {
+                    "id": "b4",
+                    "type": "text",
+                    "label": "Begin",
+                    "help": "Shown under the box",
+                    "required": true
+                },
+                {
+                    "id": "message",
+                    "type": "textarea",
+                    "label": "Your Message",
+                    "required": true,
+                    "validation": {
+                        "min": 20,
+                        "max": 1000
+                    },
+                    "props": {
+                        "rows": 6
+                    }
+                },
+                {
+                    "id": "field_8",
+                    "type": "submit",
+                    "label": "Send Message"
+                }
+            ]
+        }
+    ]
+}

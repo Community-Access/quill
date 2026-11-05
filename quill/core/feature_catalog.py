@@ -483,46 +483,34 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         privacy="network after confirmation",
         category="future",
     ),
-    "future.publishing": FeatureDefinition(
-        "future.publishing",
-        "Publishing",
-        aliases=("publishing", "publish", "site publishing"),
+    "core.wordpress": FeatureDefinition(
+        "core.wordpress",
+        "WordPress",
+        aliases=("wordpress", "blog", "website", "wordpress.com"),
         description=(
-            "Publishing connections and provider-aware remote publishing flows. "
-            "Locked off while the publishing-providers-framework branch is under "
-            "review; gating this off keeps it out of the public release until "
-            "the feature is ready to ship. Once enabled, available by default "
-            "in the Casual Writer, Author or Student, Developer and Power "
-            "Text, and Full Quill profiles; off by default elsewhere, but any "
-            "user can still turn it on individually via Manage Individual "
-            "Features."
+            "Write, open, edit and publish WordPress pages and posts on as many sites as "
+            "you like, self-hosted or WordPress.com, and manage their Media Library, "
+            "comments, categories and tags, from File > WordPress. Nothing reaches a "
+            "site without Save Draft to Site or Publish. Replaces the older Publishing "
+            "features. On by default in every profile except Essential."
         ),
         maturity="advanced",
         privacy="network after confirmation",
-        category="future",
-        locked_off=True,
+        category="writing",
     ),
-    "future.publishing_read": FeatureDefinition(
-        "future.publishing_read",
-        "Publishing (Read-Only)",
-        aliases=(
-            "publishing read",
-            "read only publishing",
-            "open from wordpress",
-            "import from wordpress",
-        ),
+    "core.forms": FeatureDefinition(
+        "core.forms",
+        "Forms",
+        aliases=("forms", "form", "survey", "questionnaire", "bfl", "accessible forms"),
         description=(
-            "Read-only publishing: add a site account, browse its posts and "
-            "pages, and open one into the editor. Sending content back to the "
-            "site (create, update, publish, schedule) stays under the separate "
-            "Publishing feature, which remains locked off until it is approved. "
-            "Available by default only in the Full Quill profile; off by default "
-            "elsewhere, but any user can turn it on individually via Manage "
-            "Individual Features."
+            "Write accessible forms -- contact forms, sign-ups, surveys -- as plain text "
+            "in BITS Accessible Forms' language, check them, and fill them in yourself "
+            "with your screen reader before anyone else sees them: File > New Form, "
+            "Insert > Form Field, View > Form Outline, Format > Form Rules and "
+            "Tools > Forms. Runs on this computer. On by default in every profile "
+            "except Essential."
         ),
-        maturity="advanced",
-        privacy="network after confirmation",
-        category="future",
+        category="writing",
     ),
     "future.youtube_oauth": FeatureDefinition(
         "future.youtube_oauth",

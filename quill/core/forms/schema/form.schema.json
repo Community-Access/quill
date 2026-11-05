@@ -1,0 +1,406 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bits-acb.org/baf/schema/form-1.schema.json",
+  "title": "BAF form model, version 1",
+  "description": "The single definition of a BITS Accessible Forms form. BAF's visual builder, BFL and QUILL's form windows are all views of this model. Documented in docs/form-model.md.",
+  "type": "object",
+  "required": ["version", "title", "pages"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1, "description": "The model version this form was written for." },
+    "id": { "$ref": "#/$defs/id" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "language": { "$ref": "#/$defs/language" },
+    "settings": { "$ref": "#/$defs/settings" },
+    "pages": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/page" } },
+    "rules": { "type": "array", "items": { "$ref": "#/$defs/rule" } },
+    "choice_libraries": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/id" },
+      "additionalProperties": { "type": "array", "items": { "$ref": "#/$defs/choice" } }
+    },
+    "scoring": { "$ref": "#/$defs/form_scoring" },
+    "confirmations": { "type": "array", "items": { "$ref": "#/$defs/confirmation" } },
+    "notifications": { "type": "array", "items": { "$ref": "#/$defs/notification" } },
+    "translations": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/language" },
+      "additionalProperties": { "$ref": "#/$defs/translation" }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Data owned by another program (a plugin, an importer). Kept and sent back unchanged; never interpreted by BAF or BFL."
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+      "description": "Letters, digits and underscores, not starting with a digit. Field IDs are what expressions refer to (#id)."
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+      "description": "A BCP 47 language tag such as en, es or pt-BR."
+    },
+    "expression": {
+      "type": "string",
+      "minLength": 1,
+      "format": "baf-expression",
+      "description": "Canonical text in the BAF expression language (docs/expression-language.md)."
+    },
+    "scalar": { "type": ["string", "number", "boolean", "null"] },
+    "settings": {
+      "type": "object",
+      "description": "Form settings. The documented keys are BAF's own settings (BAF_Form::get_default_settings); any other key is kept as it is.",
+      "propertyNames": { "$ref": "#/$defs/id" },
+      "properties": {
+        "submit_label": { "type": "string" },
+        "ajax_submission": { "type": "boolean" },
+        "enable_honeypot": { "type": "boolean" },
+        "enable_captcha": { "type": "boolean" },
+        "captcha_type": { "type": "string" },
+        "save_continue_enabled": { "type": "boolean" },
+        "rate_limit_enabled": { "type": "boolean" }
+      }
+    },
+    "page": {
+      "type": "object",
+      "required": ["id", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "when": { "$ref": "#/$defs/expression" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "props": { "$ref": "#/$defs/props" }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": ["type"],
+      "properties": { "type": { "type": "string" } },
+      "if": { "properties": { "type": { "const": "section" } } },
+      "then": { "$ref": "#/$defs/section" },
+      "else": {
+        "if": { "properties": { "type": { "const": "columns" } } },
+        "then": { "$ref": "#/$defs/columns" },
+        "else": { "$ref": "#/$defs/field" }
+      }
+    },
+    "section": {
+      "type": "object",
+      "required": ["type", "id", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "section" },
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "type": "string" },
+        "help": { "type": "string" },
+        "when": { "$ref": "#/$defs/expression" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "props": { "$ref": "#/$defs/props" }
+      }
+    },
+    "columns": {
+      "type": "object",
+      "required": ["type", "id", "columns"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "columns" },
+        "id": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/expression" },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["items"],
+            "additionalProperties": false,
+            "properties": {
+              "width": { "type": "string" },
+              "items": { "type": "array", "items": { "$ref": "#/$defs/item" } }
+            }
+          }
+        },
+        "props": { "$ref": "#/$defs/props" }
+      }
+    },
+    "field_type": {
+      "enum": [
+        "text", "textarea", "number", "email", "phone", "website", "hidden", "password",
+        "color", "range", "slider", "currency", "otp", "toggle",
+        "select", "multiselect", "radio", "checkbox", "consent", "image_choice",
+        "likert", "matrix", "ranking", "rating", "nps", "quiz",
+        "date", "time", "datetime", "daterange", "appointment",
+        "name", "address", "fileupload", "signature", "typed_signature", "rich_text",
+        "map", "social", "table", "captcha", "repeater", "calculation",
+        "payment", "product", "quantity", "price", "total", "coupon",
+        "html", "progress", "summary", "submit", "save",
+        "post_title", "post_content", "post_excerpt", "post_category", "post_tags", "post_image", "post_custom",
+        "user_login", "user_email", "user_password"
+      ]
+    },
+    "field": {
+      "type": "object",
+      "required": ["id", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "$ref": "#/$defs/field_type" },
+        "label": { "type": "string" },
+        "help": { "type": "string" },
+        "placeholder": { "type": "string" },
+        "required": { "type": "boolean" },
+        "default": { "description": "A fixed starting value: text, a number, true/false, or a list for several choices." },
+        "smart_default": { "$ref": "#/$defs/expression" },
+        "mask": { "type": "string" },
+        "when": { "$ref": "#/$defs/expression" },
+        "calculation": { "$ref": "#/$defs/expression" },
+        "choices": { "type": "array", "items": { "$ref": "#/$defs/choice" } },
+        "choice_library": { "$ref": "#/$defs/id" },
+        "cascade": {
+          "type": "object",
+          "required": ["from"],
+          "additionalProperties": false,
+          "properties": {
+            "from": { "$ref": "#/$defs/id" },
+            "library": { "$ref": "#/$defs/id" },
+            "empty_message": { "type": "string" },
+            "loading_message": { "type": "string" }
+          }
+        },
+        "validation": { "$ref": "#/$defs/validation" },
+        "scoring": { "$ref": "#/$defs/field_scoring" },
+        "attributes": {
+          "type": "object",
+          "propertyNames": { "pattern": "^(data-[a-z0-9_.-]+|aria-[a-z]+|title|lang|dir|translate|contenteditable|draggable|spellcheck|tabindex|accesskey|role|slot|part)$" },
+          "additionalProperties": { "type": ["string", "number", "boolean"] }
+        },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "props": { "$ref": "#/$defs/props" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "enum": ["select", "multiselect", "radio", "checkbox", "ranking", "image_choice", "quiz"] } } },
+          "then": {
+            "anyOf": [ { "required": ["choices"] }, { "required": ["choice_library"] }, { "required": ["cascade"] } ],
+            "x-message": "A choice field needs choices, a choice library or a cascade."
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "calculation" } } },
+          "then": { "required": ["calculation"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "quiz" } } },
+          "then": { "required": ["scoring"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "matrix" } } },
+          "then": { "required": ["props"], "properties": { "props": { "required": ["rows", "columns"] } } }
+        },
+        {
+          "if": { "properties": { "type": { "const": "likert" } } },
+          "then": { "required": ["props"], "properties": { "props": { "required": ["rows"] } } }
+        },
+        {
+          "if": { "properties": { "type": { "not": { "const": "repeater" } } } },
+          "then": { "not": { "required": ["items"] }, "x-message": "Only a repeater holds fields of its own." }
+        }
+      ]
+    },
+    "choice": {
+      "type": "object",
+      "required": ["value", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "string" },
+        "label": { "type": "string" },
+        "price": { "type": "number" },
+        "image": { "type": "string" },
+        "points": { "type": "number" },
+        "description": { "type": "string" },
+        "selected": { "type": "boolean" }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "min": { "type": ["number", "string"] },
+        "max": { "type": ["number", "string"] },
+        "min_length": { "type": "integer", "minimum": 0 },
+        "max_length": { "type": "integer", "minimum": 0 },
+        "pattern": { "type": "string" },
+        "message": { "type": "string" },
+        "unique": { "type": "boolean" },
+        "unique_scope": { "enum": ["form", "global"] },
+        "unique_message": { "type": "string" }
+      }
+    },
+    "field_scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "correct": { "type": "array", "items": { "type": "string" } },
+        "points": { "type": "number" },
+        "partial": { "type": "boolean" },
+        "case_sensitive": { "type": "boolean" },
+        "feedback_correct": { "type": "string" },
+        "feedback_incorrect": { "type": "string" },
+        "feedback_partial": { "type": "string" },
+        "explanation": { "type": "string" }
+      }
+    },
+    "form_scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "show_score": { "type": "boolean" },
+        "pass_mark": { "type": "number" },
+        "outcomes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "when", "message"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "when": { "$ref": "#/$defs/expression" },
+              "message": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": ["action", "targets", "when"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "enum": ["show", "hide", "require", "optional", "enable", "disable", "set", "skip_to"] },
+        "targets": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" } },
+        "when": { "$ref": "#/$defs/expression" },
+        "value": { "$ref": "#/$defs/expression" }
+      },
+      "if": { "properties": { "action": { "const": "set" } } },
+      "then": { "required": ["value"] },
+      "else": { "not": { "required": ["value"] }, "x-message": "Only a set rule has a value." }
+    },
+    "confirmation": {
+      "type": "object",
+      "required": ["id", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "enum": ["message", "redirect", "page"] },
+        "message": { "type": "string" },
+        "url": { "type": "string" },
+        "page_id": { "type": ["integer", "string"] },
+        "when": { "$ref": "#/$defs/expression" },
+        "props": { "$ref": "#/$defs/props" }
+      }
+    },
+    "notification": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "enabled": { "type": "boolean" },
+        "to": { "type": "string" },
+        "cc": { "type": "string" },
+        "bcc": { "type": "string" },
+        "from_name": { "type": "string" },
+        "from_email": { "type": "string" },
+        "reply_to": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "when": { "$ref": "#/$defs/expression" },
+        "props": { "$ref": "#/$defs/props" }
+      }
+    },
+    "translation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "pages": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/id" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "title": { "type": "string" }, "description": { "type": "string" } }
+          }
+        },
+        "fields": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/id" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string" },
+              "help": { "type": "string" },
+              "placeholder": { "type": "string" },
+              "choices": { "type": "object", "additionalProperties": { "type": "string" } }
+            }
+          }
+        },
+        "confirmations": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/id" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "message": { "type": "string" } }
+          }
+        },
+        "outcomes": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/id" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "message": { "type": "string" } }
+          }
+        },
+        "messages": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/id" },
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "props": {
+      "type": "object",
+      "description": "Settings particular to one field type (a matrix's rows, an NPS field's low label). Names are the field class's own setting names. Names BFL uses for its fixed modifiers are not allowed, so every prop has an unambiguous BFL spelling.",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+        "not": {
+          "enum": [
+            "id", "type", "label", "help", "description", "desc", "placeholder", "required", "default",
+            "smart_default", "mask", "when", "calculate", "library", "choices", "items", "props",
+            "min", "max", "minlength", "maxlength", "min_length", "max_length", "pattern", "error_message",
+            "unique", "unique_scope", "unique_message",
+            "cascade_from", "cascadefrom", "cascade_library", "cascadelibrary", "empty_message", "emptymessage",
+            "loading_message", "loadingmessage", "attr",
+            "correct", "points", "partial", "case_sensitive", "feedback_correct", "feedback_incorrect",
+            "feedback_partial", "explanation",
+            "readonly", "class", "css", "admin", "allowother", "confirm", "hidden",
+            "default_value", "input_mask", "custom_attributes", "conditional_logic", "choice_library",
+            "formula", "calculation", "correct_answers", "partial_credit", "custom_error_message",
+            "smart_default_expression", "page", "fields", "model_items", "scoring", "validation",
+            "cascade", "attributes", "options"
+          ]
+        }
+      }
+    }
+  }
+}

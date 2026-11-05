@@ -1,0 +1,86 @@
+{
+  "about": "A subset of BAF's conformance manifest (tests/conformance/manifest.json on BAF's feat/json-form-model branch, 44f04f1), vendored so CI always runs some cases. Same shape as BAF's; the schema is quill/core/forms/schema/form.schema.json.",
+  "model_version": 1,
+  "bfl_version": 1,
+  "suites": [
+    {
+      "kind": "schema",
+      "file": "../../../../../../quill/core/forms/schema/form.schema.json"
+    },
+    {
+      "kind": "expressions",
+      "file": "expressions/cases.json"
+    },
+    {
+      "kind": "expressions",
+      "file": "expressions/php-edges.json"
+    },
+    {
+      "kind": "valid-models",
+      "files": [
+        "models/valid/logic-and-layout.json",
+        "models/valid/quiz-and-translations.json",
+        "bfl/canonical/edge-cases.json",
+        "bfl/canonical/priced-choices.json"
+      ]
+    },
+    {
+      "kind": "invalid-models",
+      "file": "models/invalid/cases.json"
+    },
+    {
+      "kind": "behaviour",
+      "file": "models/behaviour.json"
+    },
+    {
+      "kind": "bfl-canonical",
+      "cases": [
+        {
+          "bfl": "bfl/canonical/logic-and-layout.bfl",
+          "model": "models/valid/logic-and-layout.json"
+        },
+        {
+          "bfl": "bfl/canonical/quiz-and-translations.bfl",
+          "model": "models/valid/quiz-and-translations.json"
+        },
+        {
+          "bfl": "bfl/canonical/edge-cases.bfl",
+          "model": "bfl/canonical/edge-cases.json"
+        },
+        {
+          "bfl": "bfl/canonical/priced-choices.bfl",
+          "model": "bfl/canonical/priced-choices.json"
+        }
+      ]
+    },
+    {
+      "kind": "bfl-legacy",
+      "cases": [
+        {
+          "bfl": "bfl/legacy/choices.bfl",
+          "model": "bfl/legacy/choices.json",
+          "canonical": "bfl/legacy/choices.canonical.bfl"
+        },
+        {
+          "bfl": "bfl/legacy/conditions.bfl",
+          "model": "bfl/legacy/conditions.json",
+          "canonical": "bfl/legacy/conditions.canonical.bfl"
+        },
+        {
+          "bfl": "bfl/legacy/modifiers-and-blocks.bfl",
+          "model": "bfl/legacy/modifiers-and-blocks.json",
+          "canonical": "bfl/legacy/modifiers-and-blocks.canonical.bfl"
+        },
+        {
+          "bfl": "bfl/legacy/library-keywords.bfl",
+          "model": "bfl/legacy/library-keywords.json",
+          "canonical": "bfl/legacy/library-keywords.canonical.bfl"
+        }
+      ]
+    },
+    {
+      "kind": "bfl-errors",
+      "file": "bfl/errors.json"
+    }
+  ]
+}

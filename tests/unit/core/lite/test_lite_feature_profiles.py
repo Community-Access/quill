@@ -325,7 +325,14 @@ def test_every_profile_has_a_description_worth_the_space() -> None:
 
 def test_a_description_says_how_many_areas_it_leaves_on() -> None:
     """The one number somebody comparing four profiles actually wants."""
-    words = {0: "zero", 2: "Two", 5: "Five", 14: "fourteen", 17: "seventeen", 18: "Eighteen"}
+    words = {
+        0: "zero",
+        3: "Three",
+        6: "Six",
+        14: "fourteen",
+        19: "nineteen",
+        20: "Twenty",
+    }
     for profile in PROFILES:
         on = len(AREAS) - len(profile.disabled)
         spelled = words.get(on, str(on))

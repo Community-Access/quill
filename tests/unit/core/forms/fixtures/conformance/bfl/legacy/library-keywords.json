@@ -1,0 +1,72 @@
+{
+    "version": 1,
+    "title": "Where you live",
+    "pages": [
+        {
+            "id": "page_1",
+            "items": [
+                {
+                    "id": "field_1",
+                    "type": "select",
+                    "label": "Country",
+                    "choice_library": "countries"
+                },
+                {
+                    "id": "state",
+                    "type": "select",
+                    "label": "State",
+                    "required": true,
+                    "choice_library": "us_states"
+                },
+                {
+                    "id": "field_3",
+                    "type": "radio",
+                    "label": "Month",
+                    "choice_library": "months"
+                },
+                {
+                    "id": "langs",
+                    "type": "checkbox",
+                    "label": "Languages",
+                    "choice_library": "languages"
+                },
+                {
+                    "id": "field_5",
+                    "type": "select",
+                    "label": "Size",
+                    "choices": [
+                        {
+                            "value": "small",
+                            "label": "Small"
+                        },
+                        {
+                            "value": "large",
+                            "label": "Large"
+                        }
+                    ]
+                },
+                {
+                    "id": "field_6",
+                    "type": "multiselect",
+                    "label": "Topics",
+                    "required": true,
+                    "choices": [
+                        {
+                            "value": "news",
+                            "label": "News"
+                        },
+                        {
+                            "value": "sport",
+                            "label": "Sport"
+                        }
+                    ]
+                },
+                {
+                    "id": "field_7",
+                    "type": "text",
+                    "label": "Name"
+                }
+            ]
+        }
+    ]
+}

@@ -26,3 +26,11 @@ quill/core/data/family_menu_chords.json text eol=lf
 # exactly as recorded (a SHA-256 test checks them), so no checkout may convert
 # their line endings.
 quill/assets/sound_packs/vscode_signals/** -text
+
+# Byte-exact WordPress and Forms test data, and the vendored axe-core whose
+# SHA-256 a test pins: a Windows runner's autocrlf checkout turned their LF
+# into CRLF, so the block round trips and the hash failed there only.
+quill/data/axe/** -text
+tests/unit/core/wordpress/fixtures_blocks/** -text
+tests/unit/core/forms/fixtures/** -text
+quill/core/forms/schema/** -text

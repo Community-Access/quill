@@ -1,0 +1,29 @@
+{
+ "version": 1,
+ "title": "",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "field_1",
+     "type": "select",
+     "label": "Country",
+     "choice_library": "countries"
+    },
+    {
+     "id": "field_2",
+     "type": "select",
+     "label": "State",
+     "choice_library": "us_states"
+    },
+    {
+     "id": "field_3",
+     "type": "select",
+     "label": "Month",
+     "choice_library": "months"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "version": 1,
+ "title": "",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "username",
+     "type": "text",
+     "label": "Username",
+     "help": "Choose a unique username (3-20 characters)",
+     "placeholder": "jane_doe",
+     "required": true,
+     "default": "user_"
+    },
+    {
+     "id": "email",
+     "type": "email",
+     "label": "Email",
+     "placeholder": "jane@example.com",
+     "required": true,
+     "default": "noreply@company.com"
+    }
+   ]
+  }
+ ]
+}

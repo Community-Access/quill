@@ -1,0 +1,28 @@
+{
+ "version": 1,
+ "title": "",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "field_1",
+     "type": "select",
+     "label": "T-Shirt",
+     "choices": [
+      {
+       "value": "small",
+       "label": "Small",
+       "price": 10
+      },
+      {
+       "value": "large",
+       "label": "Large",
+       "price": 12
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

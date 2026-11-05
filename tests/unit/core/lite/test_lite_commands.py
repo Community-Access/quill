@@ -29,7 +29,12 @@ import collections
 
 import pytest
 
+from quill.core.forms.menu import all_rows as forms_rows
+from quill.core.forms.menu import lite_handler as forms_handler
 from quill.core.lite.commands import COMMANDS, SUBMENU_SEP, menu_titles, shortcut_text
+from quill.core.wordpress.keys import is_sequence
+from quill.core.wordpress.menu import LAYER_KEYS, lite_handler
+from quill.core.wordpress.menu import all_rows as wordpress_rows
 from tests.wx_session import shared_wx_app
 
 
@@ -127,6 +132,25 @@ KEYLESS_WITH_REASON: dict[str, str] = {
             "cmd_table_delete_column",
             "cmd_table_tidy",
         )
+    },
+    # The WordPress rows with no letter on the WordPress keys (wordpress.md 19):
+    # as in QUILL, where the same rows have none either (rule 2). The rows that
+    # have one carry "Ctrl+Alt+Shift+Grave, <letter>" as their key.
+    **{
+        lite_handler(command_id): "As in QUILL (rule 2): the WordPress keys give a letter "
+        "to the File > WordPress rows and the everyday Tools rows, and rule 9 leaves the "
+        "rest to their own WordPress submenu's access letters and the Command Palette."
+        for _submenu, (command_id, _title, _handler) in wordpress_rows()
+        if command_id not in LAYER_KEYS.values()
+    },
+    # The Forms rows (wordpress.md 17a.10): as in QUILL, where the same rows have
+    # none either (rule 2). quill/core/forms/menu.py has the survey.
+    **{
+        forms_handler(command_id): "As in QUILL (rule 2): no chord is free in both editors "
+        "and outside every family app's system-wide key that is not a menu letter, a caret "
+        "key or an AltGr character. Rule 9: writing a form is occasional, so its menu "
+        "letters and the Command Palette are the way in."
+        for _submenu, (command_id, _title, _handler) in forms_rows()
     },
     "cmd_whats_new": "As in QUILL, where What's New has no key either (rule 2): no chord "
     "is free in both editors -- Ctrl+Shift+F1, the standalone apps' key for it, is "
@@ -297,6 +321,8 @@ def test_every_key_is_one_wx_can_actually_parse() -> None:
         for menu, label, key, _handler in _items():
             if not key:
                 continue  # a KEYLESS_WITH_REASON row has nothing to parse
+            if is_sequence(key):
+                continue  # two presses, run by the WordPress keys layer, never wx
             entry = wx.AcceleratorEntry()
             if not entry.FromString(f"item\t{key}"):
                 unparsed.append(f"{menu} > {label}: {key!r}")

@@ -4373,6 +4373,28 @@ files stay where they are on your disk.
 Uninstalling QUILL Cast never deletes any of it. If you come back, your
 podcasts are waiting.
 
+#### Posting an episode to WordPress
+
+If you look after a WordPress website, Cast can post an episode there for
+you. Download the episode first, select it, then choose
+**Episode > Post This Episode to WordPress...** (**Ctrl+Alt+P**).
+
+Cast uploads the audio to your site's Media Library. If the same file is
+already there, it asks whether to use that one. If the episode has no
+transcript, Cast offers to make one on this computer first. Then it writes a
+post with a player, the show notes, the chapters with their times, and the
+transcript folded away under the player.
+
+Nothing is published. The post is a draft on this computer, and Cast opens
+QUILL with it, so you can read it through and publish it from the WordPress
+submenu of QUILL's File menu. If QUILL cannot start, the draft waits for
+you, in QUILL and in QUILL Lite: choose Open Local Draft in the WordPress
+submenu of their File menu.
+
+You connect your site once, in QUILL or QUILL Lite, with Connect a Site in
+the WordPress submenu of their File menu. Their user guides have a whole
+chapter on WordPress.
+
 ### What you learned, and where to go next
 
 Your listening is now safe and it can travel. You can see how much you have

@@ -1,0 +1,7 @@
+text #company "Company"
+
+if #company filled
+  text "Company website" @placeholder "https://..."
+
+if #company empty
+  text "No company? That's okay—tell us what you do" @description "Student, freelancer, etc."

@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "title": "Membership",
+  "description": "Every rule shape, condition shape and layout container.",
+  "language": "en",
+  "settings": { "submit_label": "Join", "ajax_submission": true, "enable_honeypot": true, "save_continue_enabled": true, "validation_mode": "on_blur" },
+  "choice_libraries": {
+    "member_types": [
+      { "value": "person", "label": "An individual" },
+      { "value": "business", "label": "A business" },
+      { "value": "charity", "label": "A charity" }
+    ]
+  },
+  "pages": [
+    {
+      "id": "about",
+      "title": "About you",
+      "items": [
+        { "id": "type", "type": "radio", "label": "Joining as", "required": true, "choice_library": "member_types" },
+        { "id": "company", "type": "text", "label": "Company name", "when": "#type is \"business\" or #type is \"charity\"" },
+        { "id": "staff", "type": "number", "label": "Staff", "when": "#type is one of [\"business\", \"charity\"] and #company is not empty" },
+        { "type": "columns", "id": "names", "columns": [
+          { "width": "1/2", "items": [ { "id": "first", "type": "text", "label": "First name", "smart_default": "user(\"first_name\")" } ] },
+          { "width": "1/2", "items": [ { "id": "last", "type": "text", "label": "Last name" } ] }
+        ] },
+        { "type": "section", "id": "contact", "label": "How to reach you", "help": "We only use this to send your card.", "items": [
+          { "id": "contact_by", "type": "select", "label": "Contact me by", "choices": [ { "value": "email", "label": "Email" }, { "value": "phone", "label": "Phone" }, { "value": "post", "label": "Post" } ] },
+          { "id": "phone", "type": "phone", "label": "Phone", "mask": "(999) 999-9999" },
+          { "type": "section", "id": "postal", "label": "Postal address", "when": "#contact_by is \"post\"", "items": [
+            { "id": "country", "type": "select", "label": "Country", "choice_library": "countries" },
+            { "id": "region", "type": "select", "label": "State or province", "cascade": { "from": "country", "library": "states", "empty_message": "Choose a country first.", "loading_message": "Loading..." } }
+          ] }
+        ] },
+        { "id": "after_section", "type": "html", "props": { "content": "<p>Almost there.</p>" } }
+      ]
+    },
+    {
+      "id": "family",
+      "title": "Your family",
+      "description": "Only for household memberships.",
+      "when": "#type is \"person\"",
+      "props": { "next_button_text": "Continue" },
+      "items": [
+        { "id": "children", "type": "repeater", "label": "Children", "props": { "max_rows": 6 }, "items": [
+          { "id": "child_name", "type": "text", "label": "Name" },
+          { "id": "child_born", "type": "date", "label": "Date of birth" },
+          { "type": "section", "id": "child_school", "label": "School", "when": "age(#child_born) >= 5", "items": [
+            { "id": "school", "type": "text", "label": "School name" }
+          ] }
+        ] },
+        { "id": "start", "type": "date", "label": "Start date", "smart_default": "today() + 1", "when": "#type is \"person\" and not #children is empty" },
+        { "id": "renewal", "type": "date", "label": "Renewal", "when": "#start is within 30 days or #start is before \"2027-01-01\" or #start is after today()" }
+      ]
+    },
+    {
+      "id": "pay",
+      "title": "Payment",
+      "items": [
+        { "id": "members", "type": "quantity", "label": "Members", "default": 1 },
+        { "id": "fee", "type": "price", "label": "Fee each", "props": { "base_price": 20 } },
+        { "id": "discount", "type": "calculation", "label": "Discount", "calculation": "if(#members > 10, #members * #fee * 0.1, 0)" },
+        { "id": "total", "type": "total", "label": "Total", "calculation": "round(#members * #fee - #discount, 2)" },
+        { "id": "agree", "type": "consent", "label": "I agree", "required": true }
+      ]
+    }
+  ],
+  "rules": [
+    { "action": "show", "targets": ["company"], "when": "#type is not \"person\"" },
+    { "action": "hide", "targets": ["staff"], "when": "#staff is empty and #type is \"charity\"" },
+    { "action": "require", "targets": ["phone"], "when": "#contact_by is \"phone\"" },
+    { "action": "optional", "targets": ["last"], "when": "#first contains \" \"" },
+    { "action": "enable", "targets": ["total"], "when": "#members >= 1" },
+    { "action": "disable", "targets": ["fee", "discount"], "when": "#members < 1" },
+    { "action": "set", "targets": ["fee"], "when": "#type is \"charity\"", "value": "10" },
+    { "action": "skip_to", "targets": ["pay"], "when": "#type is not \"person\"" }
+  ],
+  "confirmations": [
+    { "id": "charity_thanks", "type": "message", "message": "Thank you. Charity membership is free for the first year.", "when": "#type is \"charity\"" },
+    { "id": "thanks", "type": "redirect", "url": "https://example.org/welcome", "props": { "pass_field_data": true } }
+  ],
+  "notifications": [
+    { "id": "office", "enabled": true, "to": "office@example.org", "subject": "New member: {first} {last}", "message": "{all_fields}", "when": "#total > 0" }
+  ],
+  "extensions": { "quill": { "last_opened_on": "page_2" } }
+}

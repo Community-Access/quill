@@ -437,12 +437,14 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
             self._announce(
                 _("Resuming where you left off, at {pos}").format(pos=format_timestamp(resume))
             )
-        else:
+        elif self._chapters:
             self._announce(
                 _("Loaded: {count} chapters, {total}").format(
                     count=len(self._chapters), total=format_timestamp(length_ms)
                 )
             )
+        else:  # one file with no chapters is a file, not a book of none
+            self._announce(_("Loaded, {total}").format(total=format_timestamp(length_ms)))
         self._update_status()
         self._timer.Start(_TICK_MS)
         if getattr(self, "_autoplay", False):
@@ -450,7 +452,7 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
 
     def _on_engine_finished(self) -> None:
         self._sync_play_label()
-        self._announce(_("End of book"))
+        self._announce(_("End of book") if self._chapters else _("End of file"))
         if self._on_finished_cb is not None:
             self._on_finished_cb()
 
@@ -532,8 +534,11 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
                     left=format_timestamp(max(0, c.end_ms - pos)),
                 )
             )
+        whole = _("{pos} of {total} in the book, {left} remaining")
+        if not self._chapters:
+            whole = _("{pos} of {total} in the file, {left} remaining")
         parts.append(
-            _("{pos} of {total} in the book, {left} remaining").format(
+            whole.format(
                 pos=format_timestamp(pos),
                 total=format_timestamp(self._length_ms),
                 left=format_timestamp(max(0, self._length_ms - pos)),

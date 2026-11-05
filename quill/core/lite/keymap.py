@@ -54,6 +54,7 @@ from quill.core.lite.commands import (
 )
 from quill.core.reserved_keys import RESERVED_KEYS as _SHARED_RESERVED_KEYS
 from quill.core.storage import write_json_atomic
+from quill.core.wordpress.menu import LAYER_PREFIX as WORDPRESS_LAYER_PREFIX
 
 __all__ = [
     "DEFAULT_ALIASES",
@@ -156,6 +157,8 @@ def normalise_chord(key: str) -> str:
     punctuation (``Ctrl+,``, which is the only spelling wx will parse) and a
     named key gets its wx name.
     """
+    if ", " in str(key).strip():
+        return _normalise_layer_key(str(key).strip())
     parts = [part.strip() for part in str(key).split("+") if part.strip()]
     if not parts:
         return ""
@@ -197,6 +200,28 @@ def normalise_chord(key: str) -> str:
         return ""
     ordered = [mod for mod in _MODIFIER_ORDER if mod in modifiers]
     return "+".join([*ordered, main])
+
+
+def _normalise_layer_key(key: str) -> str:
+    """A WordPress key, ``"Ctrl+Alt+Shift+Grave, O"``, normalised; "" for any other pair.
+
+    The one two-press key QUILL Lite has (wordpress.md 19): the layer in
+    ``quill/core/wordpress/keys.py`` runs it, never a wx accelerator. Its second
+    key is a letter or digit, with Shift or without, and nothing else.
+    """
+    head, _sep, tail = key.partition(", ")
+    # Compared by its parts: Grave is no key wx can take on its own, so the
+    # prefix is never a chord here -- which is also why it is free.
+    spelled = sorted(part.strip().lower() for part in head.split("+"))
+    if spelled != sorted(part.lower() for part in WORDPRESS_LAYER_PREFIX.split("+")):
+        return ""
+    prefix = WORDPRESS_LAYER_PREFIX
+    parts = [part.strip() for part in tail.split("+") if part.strip()]
+    if not parts or len(parts[-1]) != 1 or not parts[-1].isalnum():
+        return ""
+    if {part.lower() for part in parts[:-1]} - {"shift"}:
+        return ""
+    return f"{prefix}, {'Shift+' if len(parts) > 1 else ''}{parts[-1].upper()}"
 
 
 def chord_identity(key: str) -> str:
@@ -326,7 +351,7 @@ def command_titles() -> dict[str, str]:
         parent, child = split_menu(menu)
         path = [plain_label(parent)]
         if child:
-            path.append(plain_label(child))
+            path.extend(plain_label(part) for part in child.split("|"))
         path.append(plain_label(label))
         titles[handler] = " > ".join(path)
     return titles

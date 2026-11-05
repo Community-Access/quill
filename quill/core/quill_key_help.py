@@ -16,6 +16,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
 from quill.branding import QUILL_KEY_LABEL
+from quill.core.wordpress.menu import LAYER_KEYS as WORDPRESS_LAYER_KEYS
+from quill.core.wordpress.menu import all_rows as wordpress_rows
 
 #: Cheat-sheet for the prefix-pending state (just after the QUILL key is pressed).
 MODE_PREFIX = "prefix"
@@ -354,6 +356,13 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "edit.copy_to_tray_10": "Copy To Tray 10",
     "edit.copy_to_tray_11": "Copy To Tray 11",
     "edit.copy_to_tray_12": "Copy To Tray 12",
+    # The WordPress keys (Ctrl+Alt+Shift+Grave, then a letter; wordpress.md 19),
+    # titled as their menu rows read, from the one table both editors use.
+    **{
+        command_id: title.replace("&", "").removesuffix("...")
+        for _path, (command_id, title, _handler) in wordpress_rows()
+        if command_id in WORDPRESS_LAYER_KEYS.values()
+    },
 }
 
 

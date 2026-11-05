@@ -1,0 +1,63 @@
+{
+    "version": 1,
+    "title": "Order",
+    "pages": [
+        {
+            "id": "page_1",
+            "items": [
+                {
+                    "id": "size",
+                    "type": "select",
+                    "label": "Size",
+                    "choices": [
+                        {
+                            "value": "small",
+                            "label": "Small",
+                            "price": 10
+                        },
+                        {
+                            "value": "medium",
+                            "label": "Medium",
+                            "price": 15.5
+                        },
+                        {
+                            "value": "large",
+                            "label": "Large",
+                            "price": 20.0
+                        },
+                        {
+                            "value": "free",
+                            "label": "Free",
+                            "price": 0
+                        },
+                        {
+                            "value": "credit",
+                            "label": "Credit",
+                            "price": -5
+                        },
+                        {
+                            "value": "xl",
+                            "label": "Extra large",
+                            "price": 25
+                        },
+                        {
+                            "value": "time-later",
+                            "label": "Time: later",
+                            "price": 3
+                        },
+                        {
+                            "value": "huge",
+                            "label": "Huge",
+                            "price": 30,
+                            "points": 1
+                        },
+                        {
+                            "value": "plain",
+                            "label": "Plain"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

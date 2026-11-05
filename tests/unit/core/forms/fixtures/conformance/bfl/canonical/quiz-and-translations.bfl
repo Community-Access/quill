@@ -1,0 +1,71 @@
+bfl 1
+form "Braille basics quiz"
+  @language "en"
+
+page "Questions"
+  quiz #q1 "How many dots are in a braille cell?"
+    @correct ["6"]
+    @points 2
+    @explanation "Literary braille uses a six-dot cell; computer braille adds two."
+    + 4|Four
+    + 6|Six
+    + 8|Eight
+  quiz #q2 "Which are braille codes?"
+    @correct ["ueb","nemeth"]
+    @points 2
+    @partial
+    @feedback_partial "Partly right."
+    @question_type "multiple_answer"
+    + UEB
+    + Nemeth
+    + Morse
+  text #q3 "Who invented braille? (surname)"
+    @correct ["Braille"]
+    @points 1
+    @case_sensitive false
+  radio #feel "How confident do you feel?"
+    + "low" | "Not very" @points 0
+    + "mid" | "Fairly" @points 1
+    + "high" | "Very" @points 2
+
+scoring
+  @show_score
+  @pass_mark 5
+  outcome #top
+    @when score >= 7
+    @message "Top marks."
+  outcome #pass
+    @when score >= 5
+    @message "You passed."
+  outcome #retry
+    @when score < 5
+    @message "Have another go."
+
+confirmation #done
+  @message "Thanks for taking the quiz."
+
+translation "es"
+  @title "Cuestionario de braille"
+  page #page_1
+    @title "Preguntas"
+  field #q1
+    @label "¿Cuántos puntos tiene una celda braille?"
+    + 4|Cuatro
+    + 6|Seis
+    + 8|Ocho
+  field #q3
+    @label "¿Quién inventó el braille? (apellido)"
+    @description "Una sola palabra."
+    @placeholder "Apellido"
+  confirmation #done
+    @message "Gracias por hacer el cuestionario."
+  outcome #pass
+    @message "Aprobó."
+  outcome #retry
+    @message "Inténtelo de nuevo."
+  message #required "Este campo es obligatorio."
+
+translation "fr"
+  @title "Quiz sur le braille"
+  field #q1
+    @label "Combien de points dans une cellule braille ?"

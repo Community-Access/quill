@@ -1,0 +1,4 @@
+text "Your Name" begin
+  @required
+  @placeholder "Jane Doe"
+end

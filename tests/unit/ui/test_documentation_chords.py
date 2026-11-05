@@ -30,6 +30,7 @@ import re
 from pathlib import Path
 
 from quill.core.native_richedit_keys import NATIVE_FORMATTING_CHORDS
+from quill.core.wordpress.menu import LAYER_PREFIX
 
 _ROOT = Path(__file__).resolve().parents[3]
 
@@ -104,9 +105,10 @@ _PLACEHOLDER = re.compile(
     re.IGNORECASE,
 )
 
-#: The leader itself. ``Ctrl+Shift+Grave`` is a prefix, not a binding: nothing is
-#: bound to it, and everything after it is.
-_LEADER = "ctrl+shift+grave"
+#: The leaders themselves. ``Ctrl+Shift+Grave`` (the QUILL key) and
+#: ``Ctrl+Alt+Shift+Grave`` (the WordPress keys, wordpress.md 19) are prefixes,
+#: not bindings: nothing is bound to either, and everything after them is.
+_LEADERS = frozenset({"ctrl+shift+grave", LAYER_PREFIX.lower()})
 
 #: The second half of a leader chord, written on its own where the prose has
 #: already said which leader it follows -- "QUILL Key, then Shift+O". Never a
@@ -239,7 +241,7 @@ def _is_a_single_chord(chord: str) -> bool:
     if _SENTENCE_SHAPE.search(chord):
         return False
     key = _normalise(chord)
-    if key == _LEADER or _NATIVE_NAVIGATION.match(key):
+    if key in _LEADERS or _NATIVE_NAVIGATION.match(key):
         return False
     if _CHORD_TAIL.match(key) or _MENU_MNEMONIC.match(key) or _READER_KEY.search(key):
         return False
@@ -355,6 +357,7 @@ def test_the_shapes_that_are_allowed_through_are_still_recognised() -> None:
         "Shift+digit",  # a placeholder
         "Ctrl+Shift+",  # a sentence that continues
         "Ctrl+Shift+Grave",  # the leader itself
+        "Ctrl+Alt+Shift+Grave",  # the WordPress keys' leader
         "Shift+O",  # the second half of a leader chord
         "Alt+F",  # a menu mnemonic
         "Ctrl+JAWSKey+V",  # the reader's own modifier

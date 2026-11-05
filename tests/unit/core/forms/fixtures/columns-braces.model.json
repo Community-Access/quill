@@ -1,0 +1,37 @@
+{
+ "version": 1,
+ "title": "",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "field_1",
+     "type": "columns",
+     "columns": [
+      {
+       "items": [
+        {
+         "id": "first",
+         "type": "text",
+         "label": "First name",
+         "required": true
+        }
+       ]
+      },
+      {
+       "items": [
+        {
+         "id": "last",
+         "type": "text",
+         "label": "Last name",
+         "required": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

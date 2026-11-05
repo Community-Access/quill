@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>WordPress regression testing for QUILL and QUILL Lite</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="wordpress-regression-testing-for-quill-and-quill-lite">WordPress
+regression testing for QUILL and QUILL Lite</h1>
+<p>A real WordPress site exists for testing every WordPress feature in
+QUILL and QUILL Lite, with known content, so a test always starts from
+the same place and its results can be compared from one build to the
+next.</p>
+<ul>
+<li><strong>Site:</strong> <a
+href="https://lp.csedesigns.com/wordpress/">https://lp.csedesigns.com/wordpress/</a></li>
+<li><strong>Dashboard:</strong> <a
+href="https://lp.csedesigns.com/wordpress/wp-admin/">https://lp.csedesigns.com/wordpress/wp-admin/</a></li>
+<li><strong>WordPress version:</strong> 7.1.4 when it was built
+(2026-11-04). It is new enough for the application-password handback to
+<code>127.0.0.1</code> (wordpress.md 4.2, tier 1).</li>
+<li><strong>Kind:</strong> self-hosted. WordPress.com is tested
+separately, once QUILL’s WordPress.com app is registered.</li>
+</ul>
+<h2 id="accounts">Accounts</h2>
+<p>There is one account per role, so the role behaviour can be tested
+(wordpress.md 9.2):</p>
+<table>
+<thead>
+<tr>
+<th>Username</th>
+<th>Role</th>
+<th>Can publish posts</th>
+<th>Can publish pages</th>
+<th>Can upload</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>quilladmin</td>
+<td>Administrator</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>quill-editor</td>
+<td>Editor</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>quill-author</td>
+<td>Author</td>
+<td>yes</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>quill-contributor</td>
+<td>Contributor</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>quill-subscriber</td>
+<td>Subscriber</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>The passwords are never written into this repository. They live on
+the server, readable only by its owner:</p>
+<ul>
+<li>the sign-in passwords and an application password for each of the
+first four accounts:
+<code>~/app/wordpress-test/test-accounts.txt</code>;</li>
+<li>the administrator’s sign-in password: <code>ADMIN_PASSWORD</code> in
+<code>~/app/wordpress-test/.env</code>.</li>
+</ul>
+<p>To read them:
+<code>ssh lp.csedesigns.com cat app/wordpress-test/test-accounts.txt</code>.
+Paste an application password into QUILL’s Connect a Site; never into a
+chat, an issue or a test file.</p>
+<h2 id="what-is-on-the-site">What is on the site</h2>
+<p>The content is seeded by <code>~/app/wordpress-test/setup.sh</code>.
+Each seeded item exists for a reason:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Kind and status</th>
+<th>Tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Welcome to the test site (<code>/welcome/</code>)</td>
+<td>post, published, News, tags WordPress and Accessibility, 3
+revisions, comments</td>
+<td>Open by Web Address, Previous Versions (site history), Compare,
+Comments</td>
+</tr>
+<tr>
+<td>Pinned news</td>
+<td>post, published, sticky</td>
+<td>Properties: Keep at the top of the blog</td>
+</tr>
+<tr>
+<td>Things to check before publishing</td>
+<td>post, draft, Training</td>
+<td>Check Before Publishing (one problem of each kind)</td>
+</tr>
+<tr>
+<td>Waiting for review</td>
+<td>post, pending, by quill-contributor</td>
+<td>Open with status Pending, Contributor’s Submit for Review</td>
+</tr>
+<tr>
+<td>Scheduled for next month</td>
+<td>post, scheduled</td>
+<td>Update keeps Scheduled</td>
+</tr>
+<tr>
+<td>A private post</td>
+<td>post, private</td>
+<td>Update keeps Private</td>
+</tr>
+<tr>
+<td>Password protected</td>
+<td>post, published, password <code>quill</code></td>
+<td>Properties: password</td>
+</tr>
+<tr>
+<td>Classic content</td>
+<td>post, published, no block comments</td>
+<td>Freeform content round trip</td>
+</tr>
+<tr>
+<td>Written by the author</td>
+<td>post, published, by quill-author</td>
+<td>Author editing their own post</td>
+</tr>
+<tr>
+<td>In the Trash</td>
+<td>post, in the Trash</td>
+<td>Open with Trash, restore</td>
+</tr>
+<tr>
+<td>About Us (<code>/about/</code>), Contact</td>
+<td>pages, published</td>
+<td>Pages list, Open by Web Address</td>
+</tr>
+<tr>
+<td>Meet the Team</td>
+<td>page, child of About Us</td>
+<td>Page parent</td>
+</tr>
+<tr>
+<td>Every Block (<code>/every-block/</code>)</td>
+<td>page, published</td>
+<td>Block round trip (see below)</td>
+</tr>
+<tr>
+<td>A Draft Page</td>
+<td>page, draft</td>
+<td>Drafts</td>
+</tr>
+<tr>
+<td>Event announcement</td>
+<td>synced pattern</td>
+<td>Synced patterns</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Media:</strong></p>
+<ul>
+<li>photo-volunteers, with alternative text;</li>
+<li>square-logo, with alternative text, set as the site logo and the
+site icon;</li>
+<li>wide-banner, no alternative text;</li>
+<li>decorative-divider, no alternative text;</li>
+<li>animated-ish (a GIF that is mostly text).</li>
+</ul>
+<p><strong>Categories:</strong> News, Training, JAWS Training (a child
+of Training), Product Updates, Empty Category, and Uncategorized.</p>
+<p><strong>Tags:</strong> JAWS, Braille, WordPress, Accessibility, and
+Unused Tag.</p>
+<p><strong>Comments on Welcome:</strong> one approved, one waiting, one
+spam.</p>
+<p><strong>Every Block</strong> contains, in order:</p>
+<ul>
+<li>a paragraph and a heading;</li>
+<li>buttons and columns;</li>
+<li>details;</li>
+<li>an image with a caption;</li>
+<li>a table with a header row;</li>
+<li>a quote with a citation;</li>
+<li>code;</li>
+<li>a separator;</li>
+<li>a YouTube embed;</li>
+<li>Latest Posts (a void, dynamic block);</li>
+<li>a gallery shortcode (an island).</li>
+</ul>
+<h2 id="before-each-test-run">Before each test run</h2>
+<p>Put the content back to its starting state:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp.csedesigns.com app/wordpress-test/reset.sh</span></code></pre></div>
+<p>It keeps the accounts, application passwords, settings and media, and
+reseeds every page, post and pattern. Then confirm the site is as
+expected:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp.csedesigns.com app/wordpress-test/verify.sh</span></code></pre></div>
+<p><code>verify.sh</code> signs in as each role with its application
+password, and prints what each can do and what content exists. It never
+prints a password.</p>
+<h2 id="the-tests">The tests</h2>
+<p>Run each test in QUILL and again in QUILL Lite, with a screen reader
+and the keyboard only. A result is a pass only when it is the same in
+both editors. For each test, note the build, the editor, the screen
+reader, and pass or fail.</p>
+<p>Where the commands are (the same in both editors, from
+<code>quill/core/wordpress/menu.py</code>):</p>
+<ul>
+<li><strong>File &gt; WordPress:</strong> New, Open, Open by Web
+Address, Open Local Draft, Save Draft to Site, Publish or Update,
+Schedule Publish, Open on Site, Copy Address, Properties, Previous
+Versions, Compare with Site, Move to Trash, Switch Site, Sites, Connect
+a Site.</li>
+<li><strong>Insert, Format &gt; WordPress, View, Edit &gt;
+WordPress:</strong> blocks, pictures, links, Block Settings, Image Size,
+Mark Language, and block navigation.</li>
+<li><strong>Tools &gt; WordPress:</strong> the checks, the Media
+Library, Alt Text Review, Visual Review, Comments, Categories and Tags,
+Menus, Site Check, Site Settings, and the More Media and Manage
+submenus.</li>
+</ul>
+<p>The rows about the page in front are dimmed outside a WordPress
+document. The commands have no keys yet: use Alt+F, W, or the Command
+Palette.</p>
+<h3 id="connecting-4">Connecting (4)</h3>
+<ol type="1">
+<li><strong>Connect by hand.</strong> Choose File &gt; WordPress &gt;
+Connect a Site, then enter the address, quill-editor and its application
+password. Expect “Connected to QUILL WordPress Test Site as
+Editor”.</li>
+<li><strong>Connect with the browser.</strong> Use Get Password with My
+Browser and approve in the browser. Expect the password to come back by
+itself (tier 1, on WordPress 7.1).</li>
+<li><strong>Wrong password.</strong> Expect a plain sentence that names
+the site, with the dialog reopened and the fields kept.</li>
+<li><strong>HTTP address.</strong> Use
+<code>http://lp.csedesigns.com/wordpress</code>. Expect a refusal that
+explains HTTPS.</li>
+<li><strong>Many sites.</strong> Connect as quill-editor and again as
+quill-author, renaming one of them. In Sites, check the role on each
+row, Make Default, then Switch Site.</li>
+<li><strong>Remove.</strong> Expect only the connection to be forgotten;
+the site is unchanged.</li>
+</ol>
+<h3 id="writing-and-opening-51-52">Writing and opening (5.1, 5.2)</h3>
+<ol start="7" type="1">
+<li><strong>New Post, Markdown.</strong> Check that the slug follows the
+title, and that the categories and tags are listed. Ctrl+S saves
+locally; check that the post is not on the site.</li>
+<li><strong>New Page, HTML.</strong></li>
+<li><strong>Open Page or Post.</strong> Open Posts, with Find set to
+“draft”, then “trash”. Each row reads title, status and last
+changed.</li>
+<li><strong>Open Every Block as Markdown,</strong> change nothing, then
+Save Draft to Site. In the dashboard’s code editor, the content must be
+byte for byte the same, with only blank lines between blocks normalised.
+Do it again as HTML.</li>
+<li><strong>Open by Web Address</strong> with
+<code>https://lp.csedesigns.com/wordpress/welcome/</code> on the
+clipboard. Then try <code>.../?p=&lt;id&gt;</code> and a page
+address.</li>
+<li><strong>Open Local Draft</strong> lists the drafts from test 7, with
+their site.</li>
+</ol>
+<h3 id="saving-and-publishing-53-54-92">Saving and publishing (5.3, 5.4,
+9.2)</h3>
+<ol start="13" type="1">
+<li><strong>Save Draft to Site</strong> on test 7’s post. Check the site
+has a draft and the public page does not.</li>
+<li><strong>Publish or Update.</strong> The confirmation names the title
+and the site; after publishing, the address is on the clipboard.</li>
+<li><strong>Contributor.</strong> As quill-contributor, Publish becomes
+Submit for Review. The post arrives as Pending.</li>
+<li><strong>Author and pages.</strong> As quill-author, publishing a
+page is refused in words.</li>
+<li><strong>Private and Scheduled keep their status.</strong> Open A
+private post, change a word, and Update. Do the same with Scheduled for
+next month.</li>
+<li><strong>Conflict.</strong>
+<ul>
+<li>Open Welcome in QUILL.</li>
+<li>In the dashboard, edit and update it.</li>
+<li>In QUILL, choose Update.</li>
+<li>Expect nothing to be sent, and a sentence that names the
+change.</li>
+<li>Then try each of Compare, Open the Site’s Copy, and Send Mine
+Anyway.</li>
+</ul></li>
+<li><strong>Closing never publishes.</strong> Close an edited document;
+the site is unchanged.</li>
+</ol>
+<h3 id="properties-versions-trash-55-56">Properties, versions, Trash
+(5.5, 5.6)</h3>
+<ol start="20" type="1">
+<li><strong>Properties on Pinned news.</strong> Change the categories
+and tags, the excerpt, and Keep at the top of the blog. Send, and check
+them in the dashboard.</li>
+<li><strong>Previous Versions on Welcome</strong> lists the local
+versions and the 3 site revisions. View one, then Restore one; nothing
+is published.</li>
+<li><strong>Compare with Site</strong> after a local change.</li>
+<li><strong>Move to Trash.</strong> The confirmation names the item and
+the site, and the item appears under Trash in Open.</li>
+</ol>
+<h3 id="checks-7">Checks (7)</h3>
+<ol start="24" type="1">
+<li><p><strong>Tools &gt; WordPress &gt; Check Before Publishing on
+“Things to check before publishing”.</strong> Expect each of these:</p>
+<ul>
+<li>a heading 1 in the body;</li>
+<li>a skipped heading level;</li>
+<li>“click here”;</li>
+<li>a link whose text is its address;</li>
+<li>a new tab not said;</li>
+<li>a picture with no alternative text;</li>
+<li>colour alone;</li>
+<li>a table with no header row.</li>
+</ul>
+<p><strong>Go to It</strong> reaches each one.</p></li>
+</ol>
+<h3 id="pictures-6">Pictures (6)</h3>
+<ol start="25" type="1">
+<li><strong>Tools &gt; WordPress &gt; Media Library.</strong>
+<ul>
+<li>Rows read title, kind, size, alternative text and date.</li>
+<li>Find: “banner”.</li>
+<li>Edit Alternative Text on wide-banner, and check it in the
+dashboard.</li>
+</ul></li>
+<li><strong>Insert &gt; Picture from the Media Library</strong> into a
+post. Check that the alternative text is kept per placement.</li>
+<li><strong>Insert &gt; Picture from This Computer.</strong>
+<ul>
+<li>Inserted at once, and marked as not uploaded yet.</li>
+<li>Uploaded on Save Draft to Site, with the address swapped in.</li>
+</ul></li>
+<li><strong>Remove from Library</strong> on a copy you uploaded in test
+27. Check a backup is saved under Documents, Removed from
+WordPress.</li>
+</ol>
+<h3 id="comments-categories-and-tags-98-913">Comments, categories and
+tags (9.8, 9.13)</h3>
+<ol start="29" type="1">
+<li><strong>Tools &gt; WordPress &gt; Comments.</strong> Approve the
+waiting comment, reply to it, and mark one as spam.</li>
+<li><strong>Tools &gt; WordPress &gt; Categories and Tags.</strong>
+<ul>
+<li>Add a tag.</li>
+<li>Rename Unused Tag.</li>
+<li>Merge Empty Category into News. Expect the post count in the
+sentence, and the empty category deleted.</li>
+<li>Delete a tag.</li>
+</ul></li>
+</ol>
+<h3 id="listen-and-watch-61a">Listen and watch (6.1a)</h3>
+<p><code>setup.sh</code> seeds a three-second tone (quill-test-tone,
+WAV), a five-second silent test-pattern video (quill-test-clip, MP4),
+its English captions (quill-test-clip.en.vtt), and a Listen and Watch
+page with one audio block and one video block.</p>
+<ol start="31" type="1">
+<li><strong>Play on the tone</strong> in the Media Library.
+<ul>
+<li>A small player opens and the tone plays at once.</li>
+<li>The keys are the ones in QUILL’s player: Play and Pause, Stop,
+Rewind, Forward, Where am I, Speed, Volume and Mute. There are no
+chapter buttons.</li>
+<li>Go to Position 0:00:02 moves there.</li>
+<li>Close, and the tone stops. Try again with Escape and with
+Alt+F4.</li>
+</ul></li>
+<li><strong>Play on the clip.</strong> The picture shows with NVDA and
+with JAWS, and nothing else takes focus. Press Captions at about one
+second: expect “This is the QUILL test clip.” Press it after five
+seconds: expect “No caption at” and the time.</li>
+<li><strong>Nothing is saved.</strong> After tests 31 and 32, check that
+the Downloads and Documents folders have no new copy of either
+file.</li>
+<li><strong>Play on a picture</strong> (photo-volunteers): expect “That
+file is not audio or video.”</li>
+<li><strong>Open in Browser</strong> from the player: playback here
+pauses and the file opens in the browser. <strong>Open in Quill Media
+Player</strong> starts Quill Media Player where it is installed, and
+says so where it is not.</li>
+<li><strong>Play Media Here</strong> in the Listen and Watch page, with
+the caret on the audio block and then on the video block. On the
+paragraph, expect “There is no audio or video block at the caret.”</li>
+<li><strong>QUILL Lite.</strong> Repeat 31, 32 and 36 in QUILL
+Lite.</li>
+</ol>
+<h3 id="the-sites-own-kinds-52">The site’s own kinds (5.2)</h3>
+<ol start="38" type="1">
+<li><strong>Events.</strong> File &gt; WordPress &gt; Open Page or Post
+lists Posts, Pages and Events. Choose Events: “Open Day” is there. Open
+it, change a word, and Save Draft to Site, then Publish or Update. Check
+the site shows the change, then Move to Trash and restore it from the
+Open list.</li>
+<li><strong>A role that cannot list kinds.</strong> As
+quill-contributor, Open still offers Posts and Pages, and says nothing
+about the kinds it could not read.</li>
+</ol>
+<h3 id="every-route-916">Every route (9.16)</h3>
+<p>Sign in as quill-admin unless a test says otherwise. Each command
+reads the site’s list of routes first; where a test says “a site without
+it”, use a WordPress older than the route, or a security plugin that
+hides it.</p>
+<ol start="40" type="1">
+<li><strong>Hear Where a Link Goes.</strong> In a post, put the caret on
+a link to one of the site’s pages and choose Edit &gt; WordPress &gt;
+Hear Where a Link Goes. It says the page’s title and description. With
+the caret on no link, type an address with a typo: it says the page
+could not be reached and offers nothing to insert.</li>
+<li><strong>Fix Link Text.</strong> Add a “click here” link to the About
+page. Edit &gt; WordPress &gt; Fix Link Text lists it with “About”; Use
+the Page’s Title makes the link say “About”.</li>
+<li><strong>Dead links.</strong> Add a link to
+<code>/no-such-page/</code>, publish, and run Tools &gt; WordPress &gt;
+Check This Page. The summary says one link goes nowhere, and Dead Links
+names it.</li>
+<li><strong>Insert Icon</strong> (WordPress 7.0 or later). Insert &gt;
+WordPress Icon lists the site’s icons. Insert one with a label and one
+as decorative; publish and check with NVDA that the first is read by its
+label and the second is skipped. An empty label inserts nothing.</li>
+<li><strong>Upload a Large File.</strong> Tools &gt; WordPress &gt; More
+Media &gt; Upload a Large File with a video over 16 MB. Progress is
+spoken at each quarter, and the library item plays. On a site without
+the pieces route, QUILL says so and sends nothing.</li>
+<li><strong>Regenerate Sizes.</strong> After Edit a Picture on the Site,
+Tools &gt; WordPress &gt; More Media &gt; Regenerate Sizes on that
+picture. The thumbnail in the Media Library shows the edit.</li>
+<li><strong>Previous Looks</strong> (block theme). Change a colour in
+Site Styles, then Tools &gt; WordPress &gt; Manage &gt; Previous Looks.
+The earlier look is listed with its date and palette; Go Back to This
+Look restores it, and the look you left is now in the list.</li>
+<li><strong>Menu History.</strong> Open Tools &gt; WordPress &gt; Menus,
+remove an item, then Tools &gt; WordPress &gt; Menu History: Bring Back
+Removed Items puts it back at the end. For a Navigation block, Restore
+This Version restores it whole.</li>
+<li><strong>Space Used.</strong> Tools &gt; WordPress &gt; Manage &gt;
+Space Used says the total and lists uploads, themes, plugins, WordPress
+and the database in words. As quill-editor it says the role cannot see
+it.</li>
+<li><strong>Download a Copy of the Site’s Design</strong> (block theme).
+Tools &gt; WordPress
+<blockquote>
+<p>Manage &gt; Download a Copy of the Site’s Design saves a zip that
+opens and holds the theme. On a classic theme it says only a block theme
+can.</p>
+</blockquote></li>
+<li><strong>Send This Document to WordPress.</strong> Open a Markdown
+file with a heading and a picture beside it, and choose File &gt;
+WordPress &gt; Send, Copy and Download &gt; Send This Document to
+WordPress. The draft’s title is the heading, the picture is in the Media
+Library, and the draft opens.</li>
+<li><strong>Publish to Another Site and Duplicate.</strong> With two
+sites connected, copy a post with a category the other site lacks: QUILL
+asks before creating it, and the copy is a draft there with its
+pictures. Duplicate a page on the same site: the new draft is titled
+“(copy)” and opens.</li>
+<li><strong>Download My Writing.</strong> Save the site to an empty
+folder; check <code>index.md</code>, one file per page and post, and the
+pictures folder. Run it again: it says everything is already up to
+date.</li>
+<li><strong>Send a Folder as Drafts.</strong> A folder of three Markdown
+files, one with a “click here” link. The confirmation gives the count
+and says one has things to look at; three drafts arrive.</li>
+<li><strong>Coming Up and What Changed.</strong> Schedule a post on each
+site. Tools &gt; WordPress &gt; Your Sites &gt; Coming Up lists both by
+date. Leave a comment as quill-contributor, then What Changed on My
+Sites lists it; run it again and it says nothing is new.</li>
+<li><strong>QUILL Lite.</strong> Repeat 40, 43, 50 and 54 in QUILL
+Lite.</li>
+</ol>
+<h3 id="forms-17a">Forms (17a)</h3>
+<p>Tests 56 to 62 need nothing from the site. Tests 63 to 68 need BITS
+Accessible Forms installed and active on the test site first. It is not
+there yet: installing it from <code>S:\code\baf</code> waits on Jeff
+(wordpress.md 17a.13, question 3). Until then, run 63 to 68 only as far
+as the “needs BITS Accessible Forms” sentence in test 63.</p>
+<p>Forms is on in every feature profile except Essential. The commands
+have no keys: use the menus, or type “form” in the Command Palette.
+Where they are (the same in both editors, from
+<code>quill/core/forms/menu.py</code>):</p>
+<ul>
+<li><strong>File:</strong> New Form.</li>
+<li><strong>Insert:</strong> Form Field. <strong>View:</strong> Form
+Outline. <strong>Format:</strong> Form Rules.</li>
+<li><strong>Tools &gt; Forms:</strong> Check This Form, Fill It In
+Yourself, Form Properties, Publish Form, Insert Form Into Page, Test on
+Site, Responses, Save As Web Page, Save As Word Document, Save As Large
+Print, Save As Braille-Ready Text, Draft a Form, Plain Language, Suggest
+Autofill Hints.</li>
+</ul>
+<p>The tests build one form, “Ask us anything”, as the guided Forms
+lessons do.</p>
+<ol start="56" type="1">
+<li><strong>New Form.</strong> File &gt; New Form, title “Ask us
+anything”, template Contact form, Next, and save it. Expect “Saved Ask
+us anything.bfl, a contact form with 3 questions.” and the form open.
+View &gt; Form Outline starts “Page 1, 3 questions”.</li>
+<li><strong>Form Field.</strong> With the caret on Your message, Insert
+&gt; Form Field, search “choose”, pick Choose one, label “Best way to
+reply”, choices Email and Phone. Expect “Inserted Best way to reply,
+choose one.” Then add a Phone number question labelled “Phone number”:
+“Inserted Phone number, phone number.”</li>
+<li><strong>Form Rules.</strong> Format &gt; Form Rules &gt; Add Rule:
+when Best way to reply is <code>phone</code>, then Show, Phone number.
+Expect “Show Phone number when Best way to reply is Phone.” and an
+<code>@when #reply is "phone"</code> line under the question. Typing
+<code>Phone</code> or <code>PHONE</code> gives the same rule: the answer
+is matched to the choice in any capitals.</li>
+<li><strong>Check This Form.</strong> Expect “Phone number has no
+autofill hint, so the browser cannot fill it in. The hint is tel.” Go to
+It lands on the question. Add <code>@autocomplete "tel"</code> under it;
+Check Again lists only the “On the site today” lines.</li>
+<li><strong>Fill It In Yourself.</strong> Tab through: each label is
+read, with “required” where it is. Choosing Phone says “Phone number
+appears.”; choosing Email says “Phone number is hidden.” Submit shows
+What Would Be Sent, starting “Nothing was sent.” Escape twice returns to
+the document.</li>
+<li><strong>Save As Large Print and Braille-Ready Text.</strong> Expect
+“Saved Ask us anything large print.docx, a large-print Word document, 18
+point and up, with 5 questions, lines to write on and boxes to check.”
+and “Saved Ask us anything.txt, braille-ready text with 5 questions, one
+a block.” Open both; with the braille pack installed, also save the UEB
+contracted .brf. Repeat in Safe Mode: all four Save As commands still
+work.</li>
+<li><strong>Not a form.</strong> In an ordinary text document, run Check
+This Form from the Command Palette. Expect “Check This Form works in a
+form document, a .bfl file. Start one with New Form in the File menu, or
+open one.”</li>
+<li><strong>Publish Form.</strong> With BITS Accessible Forms not
+installed, expect “Publish Form needs BITS Accessible Forms on QUILL
+WordPress Test Site, and the site does not offer it.” Once it is
+installed: Publish as Live, then Publish. Expect “Published Ask us
+anything on QUILL WordPress Test Site, form” a number, “live.” Publish
+again: the question says Update.</li>
+<li><strong>Changed on the site.</strong> Change the form’s title in
+BITS Accessible Forms on the site, then Publish Form. QUILL asks before
+publishing over it, and keeps the site’s copy as a previous
+version.</li>
+<li><strong>Insert Form Into Page and Test on Site.</strong> Open the
+Contact page, put the caret after its first paragraph, Insert Form Into
+Page, choose the form, and Publish or Update. Test on Site in the form
+opens that page in the browser, where the form can be filled in with
+NVDA.</li>
+<li><strong>Responses.</strong> Send two responses from the site.
+Responses, with the form open, goes straight to “Responses to Ask us
+anything”, newest first. Read, View, Find, Export to CSV, Open as Table
+and Export to Word each do what they say. Mark one, then Delete: it goes
+to the Trash in BITS Accessible Forms.</li>
+<li><strong>New response count.</strong> Restart, then run any site
+command for Forms. Expect, once a session, “QUILL WordPress Test Site:”
+and the number of new responses to Ask us anything. Say New Count turns
+it off.</li>
+<li><strong>QUILL Lite, and Safe Mode.</strong> Repeat 56 to 61, 63 and
+66 in QUILL Lite. Then in Safe Mode, Publish Form and Responses each say
+they are off in Safe Mode, while writing, checking, Fill It In Yourself
+and the four Save As commands still work.</li>
+</ol>
+<h3 id="what-the-site-lets-you-test-that-quill-may-not-have-yet">What
+the site lets you test that QUILL may not have yet</h3>
+<p>The site already has what the later parts of wordpress.md need. Add a
+test here when each feature lands:</p>
+<ul>
+<li>the site logo and icon (6.10);</li>
+<li>synced patterns (9.13);</li>
+<li>the <code>batch/v1</code> route (Fix in Bulk, merge);</li>
+<li>revisions and autosaves (9.3);</li>
+<li>a scheduled post (5.8);</li>
+<li>a block island (Latest Posts, the gallery shortcode);</li>
+<li>the Classic content;</li>
+<li>a page hierarchy (Page Order);</li>
+<li>five roles (Users).</li>
+</ul>
+<p>Known detail: WordPress lists the batch endpoint as the route
+<code>/batch/v1</code> in the REST index, not as a namespace. A
+capability check must look at <code>routes</code>.</p>
+<h2 id="looking-after-the-site">Looking after the site</h2>
+<ul>
+<li><strong>Where it runs:</strong> on lp.csedesigns.com, in two Docker
+containers, <code>wordpress-test</code> (WordPress 7.x, PHP 8.3, Apache)
+and <code>wordpress-test-db</code> (MariaDB 11). Both are defined in
+<code>~/app/wordpress-test/docker-compose.yml</code>.</li>
+<li><strong>How it is reached:</strong> the web stack’s Caddy serves it
+at <code>/wordpress/</code>, through the <code>@wordpress_test</code>
+route in <code>~/app/web/caddy/Caddyfile</code>. That route sits above
+the redirect to letitglow.app, like the other lp.csedesigns.com routes.
+The Caddyfile was backed up before the change, as
+<code>Caddyfile.bak-2026-11-04-wordpress</code>.</li>
+<li><strong>Secrets:</strong> in <code>.env</code> and
+<code>test-accounts.txt</code>, both chmod 600. Search engines are told
+not to index the site.</li>
+<li><strong>Reseed:</strong> <code>reset.sh</code>.</li>
+<li><strong>Check:</strong> <code>verify.sh</code>.</li>
+<li><strong>Logs:</strong> <code>docker logs wordpress-test</code>.</li>
+<li><strong>Update WordPress:</strong>
+<code>docker compose pull &amp;&amp; docker compose up -d</code>, in
+<code>~/app/wordpress-test</code>.</li>
+<li><strong>Change the database password:</strong> change it in MariaDB,
+update <code>.env</code>, then
+<code>docker compose up -d --force-recreate wordpress</code>. The
+container reads the password when it starts.</li>
+<li><strong>Remove it all:</strong>
+<ol type="1">
+<li>Run <code>docker compose down -v</code> in
+<code>~/app/wordpress-test</code>.</li>
+<li>Delete the <code>@wordpress_test</code> route from the
+Caddyfile.</li>
+<li>Reload Caddy with
+<code>docker exec web-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile</code>.</li>
+</ol></li>
+</ul>
+</main>
+</body>
+</html>

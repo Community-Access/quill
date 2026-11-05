@@ -309,6 +309,25 @@ def test_the_preferences_hub_has_a_way_in(quill_menu_bar, monkeypatch) -> None:
     assert opened == [True]
 
 
+def test_the_wordpress_keys_show_beside_their_rows(quill_menu_bar) -> None:
+    """A two-press key goes in brackets, never after the tab (wordpress.md 19).
+
+    After the tab wx would try to parse "Ctrl+Alt+Shift+Grave, O" as one
+    accelerator and drop it; in brackets it is text, and the WordPress keys
+    layer (main_frame_wordpress.py) is what runs it. Built straight from the
+    rows, because a fresh test profile has the WordPress feature off.
+    """
+    from quill.core.wordpress.menu import WORDPRESS_ROWS
+
+    frame = quill_menu_bar._quill_main_frame
+    menu = frame._fill_wordpress_menu(wx.Menu(), WORDPRESS_ROWS)
+    labels = [item.GetItemLabel() for item in menu.GetMenuItems()]
+    assert "&Open Page or Post... (Ctrl+Alt+Shift+Grave, O)" in labels
+    assert "Switc&h Site... (Ctrl+Alt+Shift+Grave, S)" in labels
+    assert "&Sites... (Ctrl+Alt+Shift+Grave, Shift+S)" in labels
+    assert not [label for label in labels if chr(9) in label and "Grave" in label]
+
+
 def test_two_keys_that_did_nothing_now_run_their_command(quill_menu_bar) -> None:
     """QUILL key, C had no command behind it; Alt+F1 was registered keyless."""
     commands = quill_menu_bar._quill_main_frame.commands
@@ -348,3 +367,32 @@ def test_copy_selection_for_email_copies_the_selection(quill_menu_bar, monkeypat
     frame._set_status = lambda _message: None
     frame.copy_as_email_body()
     assert copied and copied[0].strip() == "Dear Sam"
+
+
+def test_every_menu_item_is_in_the_command_palette(quill_menu_bar) -> None:
+    """Typing a menu item's name in the palette always finds it.
+
+    The palette lists the command registry, and a menu item built with only a
+    wx id and a handler was never in it -- reachable by the menu and its key,
+    invisible to the one surface whose promise is "every command".
+    ``quill.ui.palette_menu_reach`` adds those items under their menu path when
+    the palette opens; this is the check that nothing is left out.
+    """
+    from quill.ui.palette_menu_reach import MENU_COMMAND_PREFIX, walk_menu_items
+
+    frame = quill_menu_bar._quill_main_frame
+    frame._register_menu_palette_rows()
+    covered = set(frame._command_to_menu_id_map().values())
+    registered = {command.id for command in frame.commands.list()}
+    missing = [
+        " > ".join(path)
+        for path, item in walk_menu_items(quill_menu_bar)
+        if item.GetId() not in covered and f"{MENU_COMMAND_PREFIX}{item.GetId()}" not in registered
+    ]
+    assert missing == []
+    menu_rows = [c for c in frame.commands.list() if c.id.startswith(MENU_COMMAND_PREFIX)]
+    assert all(" > " in c.title for c in menu_rows)
+    # Rebuilding replaces rather than piles up.
+    frame._register_menu_palette_rows()
+    again = [c for c in frame.commands.list() if c.id.startswith(MENU_COMMAND_PREFIX)]
+    assert len(again) == len(menu_rows)

@@ -323,7 +323,6 @@
   "quill:preview_browser": "one_side",
   "quill:pronunciation_enabled": "one_side",
   "quill:pronunciation_enabled_dictionary_ids": "one_side",
-  "quill:publishing_experimental_enabled": "one_side",
   "quill:quick_nav_debounce_ms": "one_side",
   "quill:quick_nav_include_headings": "one_side",
   "quill:quick_nav_include_links": "one_side",

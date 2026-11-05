@@ -32,6 +32,12 @@ and QUILLBee explains. They're new around here, and
 has the proper introductions.
 
 
+## New in this build: WordPress
+
+If you look after a WordPress website, QUILL now writes, opens, checks and publishes its pages and posts, in the editor you already use. Connect your site once with **File > WordPress > Connect a Site...** and an application password; your browser can fetch the password for you. Saving with Ctrl+S stays on your computer. **Save Draft to Site** and **Publish or Update...** are separate, and Publish checks the page first for missing alternative text, vague links and skipped heading levels. If someone else changed the page while you worked, nothing is overwritten. You can schedule a post, go back to an earlier version, restore from the Trash, and keep working when the connection drops: QUILL queues the send and tells you when it goes through.
+
+Inside a page, the commands join the menus you know. **Insert** has WordPress blocks, pictures from your Media Library, links to your own pages and the Picture Maker. **Edit > WordPress** moves from block to block and tells you where you are. **Tools > WordPress** checks a page the way a visitor meets it, checks the whole site and fixes the safe things in bulk, and runs the site: the Media Library, comments, menus, settings, users, plugins and more. Captions, transcripts and a listening version of a page are made on this computer. QUILL Cast, QUILL Studio and Quill Converter can send episodes and files there too. File > Publish is gone; your saved connections come across by themselves. The commands have no keys yet: Alt+F, then W, opens File > WordPress, and every command is in the Command Palette. QUILL Lite has all of it, in the same places. Chapter 16 of the user guide has the whole story.
+
 ## New in this build: Choose Your AI, with GitHub Copilot and Codex
 
 Press **Ctrl+4** (**AI > Choose Your AI...**) and one window lists every place your AI can come from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex, or your own key. Each row tells you whether it is in use, signed in or not set up, and one line says what it can do, who gets your text and what it costs. Enter uses it or signs you in. GitHub Copilot signs in with a short code that your screen reader spells out and that is already on the clipboard; Copilot Free works too, and the Copilot engine comes with QUILL, so there is nothing else to install. Codex uses your ChatGPT plan's sign-in.

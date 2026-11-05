@@ -1,0 +1,33 @@
+{
+ "version": 1,
+ "title": "Test",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "contact",
+     "type": "radio",
+     "label": "Contact Method",
+     "choices": [
+      {
+       "value": "email",
+       "label": "Email"
+      },
+      {
+       "value": "phone",
+       "label": "Phone"
+      }
+     ]
+    },
+    {
+     "id": "email",
+     "type": "email",
+     "label": "Email Address",
+     "required": true,
+     "when": "#contact is \"Email\""
+    }
+   ]
+  }
+ ]
+}

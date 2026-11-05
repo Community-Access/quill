@@ -243,6 +243,22 @@ AREAS: tuple[AppArea, ...] = (
         "while Dictation On is checked.",
     ),
     AppArea(
+        "wordpress",
+        "WordPress",
+        "File > WordPress: write, open and publish pages and posts on your "
+        "WordPress sites, and manage their pictures, comments, categories and "
+        "tags. Nothing reaches a site until you choose Save Draft to Site or "
+        "Publish, and it only connects to sites you add yourself.",
+    ),
+    AppArea(
+        "forms",
+        "Forms",
+        "File > New Form: write accessible forms -- contact forms, sign-ups, "
+        "surveys -- as plain text, check them, and fill them in yourself before "
+        "anyone else sees them, from Insert, View, Format and Tools > Forms. "
+        "Everything here runs on this computer.",
+    ),
+    AppArea(
         "coding",
         "Coding: project tasks with an AI",
         "Tools for writing code, in the Developer profile: Open Project Folder, "
@@ -301,7 +317,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "recommended",
         "Recommended",
-        "What a new install is: seventeen of the 22 areas on. Four of the five "
+        "What a new install is: nineteen of the 24 areas on. Four of the five "
         "left off are the ones that would be wrong on by default rather than "
         "merely unused -- autocorrect rewriting a configuration file's quotes, "
         "backups quietly filling a folder, a second 'go to' front door "
@@ -316,7 +332,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "everything",
         "Everything",
-        "21 of the 22 areas on: every writing area, including the four a new "
+        "23 of the 24 areas on: every writing area, including the four a new "
         "install leaves off. Coding stays off; that is the Developer profile. "
         # Not "and capitalise your sentences": the area description three
         # hundred lines up was corrected for saying so and this one was
@@ -340,8 +356,8 @@ PROFILES: tuple[AppProfile, ...] = (
         "AI makes. Open a folder as a project and Ctrl+3 works on the whole "
         "project instead of one document. Nothing the agent proposes is written "
         "until you accept it, no command runs until you allow it, and Undo Last "
-        "Turn puts every file back. Eighteen of the 22 areas: Recommended's "
-        "seventeen and Coding, which no other profile has.",
+        "Turn puts every file back. Twenty of the 24 areas: Recommended's "
+        "nineteen and Coding, which no other profile has.",
         frozenset(DEFAULT_OFF - {"coding"}),
     ),
     AppProfile(
@@ -350,10 +366,11 @@ PROFILES: tuple[AppProfile, ...] = (
         "What WordPad was: rich text you can format, print and check the "
         "spelling of -- bold, italic, headings, alignment, bullets and line "
         "spacing -- and none of the writing tools behind them. No line "
-        "operations, no clipboard history, no bookmarks, no abbreviations, no "
-        "command palette. Ctrl+N makes a rich text document, which is the half "
-        "of this name a list of menus cannot say. Five of the 22 areas, "
-        "plus a spell checker WordPad never had.",
+        "operations, no clipboard history, no bookmarks, no abbreviations. "
+        "Ctrl+N makes a rich text document, which is the half of this name a "
+        "list of menus cannot say. Six of the 24 areas, plus a spell checker "
+        "WordPad never had, and the command palette, which every profile "
+        "keeps because it is how a command is found.",
         frozenset({
             "abbreviations",
             "autoformat",
@@ -362,7 +379,6 @@ PROFILES: tuple[AppProfile, ...] = (
             "character_info",
             "clipboard",
             "coding",
-            "command_palette",
             "dictation",
             # WordPad has never had a dictionary or thesaurus, and the
             # profile's promise is the feature list of the program it is
@@ -375,6 +391,10 @@ PROFILES: tuple[AppProfile, ...] = (
             # it does *not* have. "WordPad, but it sends your writing to a
             # server" is a profile whose name has stopped being true.
             "hosted_ai",
+            # Neither program had a way to publish to a website.
+            "wordpress",
+            # Neither program ever made a form.
+            "forms",
             "markup",
             "matches",
             "selection",
@@ -387,7 +407,9 @@ PROFILES: tuple[AppProfile, ...] = (
         "notepad",
         "Notepad",
         "The smallest QUILL Lite gets, and the one most people are replacing "
-        "something with. Two of the 22 areas: printing and text size. No "
+        "something with. Three of the 24 areas: printing, text size and the "
+        "command palette, which every profile keeps because it is how a "
+        "command is found. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
         "history, no spell check -- nothing Notepad does not have, which is the "
         "point of choosing it. Ctrl+N makes a plain text document. What stays "
@@ -403,13 +425,16 @@ PROFILES: tuple[AppProfile, ...] = (
             "character_info",
             "clipboard",
             "coding",
-            "command_palette",
             "dictation",
             "dictionary",
             "go_to_anything",
             "headings",
             "history",
             "hosted_ai",
+            # Neither program had a way to publish to a website.
+            "wordpress",
+            # Neither program ever made a form.
+            "forms",
             # Markdown bold in a .md would be a genuine improvement on Notepad,
             # which is exactly why it is off here: this profile's promise is
             # "nothing Notepad does not have", and a profile that quietly keeps

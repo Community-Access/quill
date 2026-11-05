@@ -1,9 +1,9 @@
 """Publish a single vault note (Accessible Vault, Phase 7) — wx-free, GATED.
 
-Publishing is the *send* path, which QUILL gates behind ``future.publishing``
-(``locked_off``). This module makes that gate explicit and testable: it only ever
+Publishing is the *send* path, which QUILL gates behind ``core.wordpress`` (the
+WordPress feature). This module makes that gate explicit and testable: it only ever
 produces a payload when the caller passes ``feature_enabled=True`` (i.e.
-``features.is_enabled("future.publishing")``); otherwise it returns ``None`` and nothing
+``features.is_enabled("core.wordpress")``); otherwise it returns ``None`` and nothing
 can be sent. The HTML is produced by the same resolver the static-site export uses
 (:func:`quill.core.vault.site_export.note_to_html_fragment`), so a published note has its
 `[[links]]` and `![[embeds]]` resolved to real HTML. The actual POST goes through QUILL's
@@ -41,9 +41,9 @@ def prepare_note_publish(
 ) -> PublishPayload | None:
     """Build the publish payload for ``note_path``, or ``None`` when gated off/missing.
 
-    Returns ``None`` unless ``feature_enabled`` is true (the ``future.publishing`` gate)
+    Returns ``None`` unless ``feature_enabled`` is true (the ``core.wordpress`` gate)
     and the note exists — so a caller can never accidentally send when publishing is
-    locked. ``url_for`` lets the caller map links to absolute site URLs for the target
+    off. ``url_for`` lets the caller map links to absolute site URLs for the target
     (defaults to same-directory ``.html`` anchors).
     """
     if not feature_enabled:

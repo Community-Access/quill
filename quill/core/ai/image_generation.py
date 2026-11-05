@@ -61,6 +61,9 @@ class ImageRequest:
     size: str = "landscape"
     model: str = ""
     host: str = ""
+    #: "" (the provider decides) or "transparent", which only OpenAI can make;
+    #: a solid colour is asked for in the words (:mod:`quill.core.ai.picture_maker`).
+    background: str = ""
 
     @property
     def effective_model(self) -> str:
@@ -113,6 +116,9 @@ def build_request(request: ImageRequest) -> tuple[str, dict[str, str], bytes]:
             "size": openai_size,
             "n": 1,
         }
+        if request.background == "transparent":
+            body["background"] = "transparent"
+            body["output_format"] = "png"
     else:
         endpoint = f"{request.effective_host}/v1beta/models/{request.effective_model}:predict"
         headers = {"x-goog-api-key": request.api_key, "Content-Type": "application/json"}

@@ -1,0 +1,39 @@
+{
+ "version": 1,
+ "title": "Test",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "field1",
+     "type": "text",
+     "label": "Field 1",
+     "required": true
+    },
+    {
+     "id": "field2",
+     "type": "text",
+     "label": "Field 2",
+     "placeholder": "Test",
+     "required": true
+    },
+    {
+     "id": "field3",
+     "type": "text",
+     "label": "Field 3",
+     "required": true,
+     "validation": {
+      "max_length": 50
+     }
+    },
+    {
+     "id": "field4",
+     "type": "text",
+     "label": "Field 4",
+     "required": true
+    }
+   ]
+  }
+ ]
+}

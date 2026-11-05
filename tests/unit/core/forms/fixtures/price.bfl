@@ -1,0 +1,3 @@
+select "T-Shirt"
+  + Small:10
+  + Large:12

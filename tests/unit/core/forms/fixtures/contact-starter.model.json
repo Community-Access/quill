@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "title": "Contact Us",
+ "description": "A simple starter form",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "field_1",
+     "type": "text",
+     "label": "Your Name",
+     "placeholder": "Jane Doe",
+     "required": true
+    },
+    {
+     "id": "field_2",
+     "type": "email",
+     "label": "Email Address",
+     "placeholder": "jane@example.com",
+     "required": true
+    },
+    {
+     "id": "field_3",
+     "type": "textarea",
+     "label": "Message",
+     "required": true,
+     "props": {
+      "rows": 6
+     }
+    },
+    {
+     "id": "field_4",
+     "type": "submit",
+     "label": "Send"
+    }
+   ]
+  }
+ ]
+}

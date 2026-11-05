@@ -1,0 +1,20 @@
+number #age "Age" {
+  @min 0
+  @max 120
+  @step 1
+  @description "Must be 18 or older"
+}
+
+number #price "Price per unit" [
+  @min 0.01
+  @step 0.01
+  @prefix "$"
+  @default 9.99
+]
+
+number #quantity "Quantity" begin
+  @min 1
+  @max 1000
+  @step 5
+  @description "Order in increments of 5"
+end

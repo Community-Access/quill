@@ -138,6 +138,12 @@ NAMING_HELPERS: frozenset[str] = frozenset({"_name", "set_accessible_name", "nam
 #: distrust; this one is verified to reach MSAA ``accName`` (#1693).
 SPEAKING_HELPERS: frozenset[str] = frozenset({"set_spoken_name"})
 
+#: Layout helpers that build a label and pass the control to
+#: ``set_spoken_name`` themselves, keyed to the position of the control among
+#: their arguments. ``labelled_row`` (quill/ui/wordpress_dialogs.py) also moves
+#: the label in front of the control in z-order.
+SPEAKING_ROW_HELPERS: dict[str, int] = {"labelled_row": 3}
+
 LABELLED = "labelled"
 NAMED_ONLY = "named-only"
 UNLABELLED = "unlabelled"
@@ -338,6 +344,13 @@ class _ControlVisitor(ast.NodeVisitor):
             self._record_named(func.value)
         elif isinstance(func, ast.Name) and func.id in NAMING_HELPERS and node.args:
             self._record_named(node.args[0])
+        elif (
+            isinstance(func, ast.Name)
+            and func.id in SPEAKING_ROW_HELPERS
+            and len(node.args) > SPEAKING_ROW_HELPERS[func.id]
+        ):
+            target = node.args[SPEAKING_ROW_HELPERS[func.id]]
+            self.spoken.setdefault(self._key, set()).add(ast.unparse(target))
         elif isinstance(func, ast.Name) and func.id in SPEAKING_HELPERS and node.args:
             try:
                 self.spoken.setdefault(self._key, set()).add(ast.unparse(node.args[0]))

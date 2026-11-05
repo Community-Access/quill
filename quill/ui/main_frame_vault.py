@@ -837,7 +837,7 @@ class VaultMixin:
         self._announce(result.message)
 
     def publish_current_note(self) -> None:
-        """Publish the current note (GATED behind future.publishing; hidden while locked)."""
+        """Publish the current note (GATED behind core.wordpress, the WordPress feature)."""
         from quill.core.vault.publish import prepare_note_publish
         from quill.io.export import render_preview_body
 
@@ -853,7 +853,7 @@ class VaultMixin:
             self._vault_resolver,
             rel,
             markdown_to_html=lambda t: render_preview_body(t, "markdown"),
-            feature_enabled=bool(self.features.is_enabled("future.publishing")),
+            feature_enabled=bool(self.features.is_enabled("core.wordpress")),
         )
         if payload is None:
             self._set_status("Publishing notes is not enabled yet")
@@ -978,12 +978,12 @@ class VaultMixin:
             self.configure_vault_settings,
             self._binding_for("vault.settings"),
         )
-        # Publishing (the send path) is gated behind future.publishing (locked_off), so
-        # this command stays hidden from the menu and palette until it is unlocked.
+        # Publishing (the send path) is gated behind core.wordpress, so this command
+        # is hidden from the menu and palette in a profile without WordPress.
         self.commands.try_register(
             "vault.publish_note",
             "Publish Note",
             self.publish_current_note,
             self._binding_for("vault.publish_note"),
-            feature_id="future.publishing",
+            feature_id="core.wordpress",
         )

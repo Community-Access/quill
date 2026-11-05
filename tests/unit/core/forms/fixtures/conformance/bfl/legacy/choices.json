@@ -1,0 +1,148 @@
+{
+    "version": 1,
+    "title": "Choices",
+    "pages": [
+        {
+            "id": "page_1",
+            "items": [
+                {
+                    "id": "dept",
+                    "type": "select",
+                    "label": "Department",
+                    "choices": [
+                        {
+                            "value": "sales",
+                            "label": "Sales"
+                        },
+                        {
+                            "value": "support",
+                            "label": "Support"
+                        },
+                        {
+                            "value": "engineering",
+                            "label": "Engineering"
+                        }
+                    ]
+                },
+                {
+                    "id": "dept2",
+                    "type": "select",
+                    "label": "Department (braces)",
+                    "choices": [
+                        {
+                            "value": "sales",
+                            "label": "Sales"
+                        },
+                        {
+                            "value": "customer-support",
+                            "label": "Customer Support"
+                        }
+                    ]
+                },
+                {
+                    "id": "dept3",
+                    "type": "select",
+                    "label": "Department (brackets)",
+                    "choices": [
+                        {
+                            "value": "sales",
+                            "label": "Sales"
+                        },
+                        {
+                            "value": "support",
+                            "label": "Support"
+                        }
+                    ]
+                },
+                {
+                    "id": "payment",
+                    "type": "radio",
+                    "label": "Payment",
+                    "choices": [
+                        {
+                            "value": "card",
+                            "label": "Credit Card"
+                        },
+                        {
+                            "value": "paypal",
+                            "label": "PayPal"
+                        },
+                        {
+                            "value": "bank",
+                            "label": "Bank Transfer"
+                        }
+                    ]
+                },
+                {
+                    "id": "size",
+                    "type": "select",
+                    "label": "Size",
+                    "choices": [
+                        {
+                            "value": "small",
+                            "label": "Small",
+                            "price": 10
+                        },
+                        {
+                            "value": "medium",
+                            "label": "Medium",
+                            "price": 15.5
+                        },
+                        {
+                            "value": "large",
+                            "label": "Large",
+                            "price": 20
+                        }
+                    ]
+                },
+                {
+                    "id": "when",
+                    "type": "select",
+                    "label": "Time",
+                    "choices": [
+                        {
+                            "value": "time-morning",
+                            "label": "Time: morning"
+                        }
+                    ]
+                },
+                {
+                    "id": "country",
+                    "type": "select",
+                    "label": "Country",
+                    "choice_library": "countries"
+                },
+                {
+                    "id": "state",
+                    "type": "select",
+                    "label": "State",
+                    "cascade": {
+                        "from": "country",
+                        "library": "us_states",
+                        "empty_message": "Please select a country first"
+                    }
+                },
+                {
+                    "id": "newsletter",
+                    "type": "checkbox",
+                    "label": "Subscribe to newsletter",
+                    "choices": [
+                        {
+                            "value": "yes",
+                            "label": "Yes"
+                        }
+                    ]
+                },
+                {
+                    "id": "langs",
+                    "type": "multiselect",
+                    "label": "Languages",
+                    "choice_library": "languages",
+                    "props": {
+                        "searchable": true
+                    }
+                }
+            ]
+        }
+    ]
+}

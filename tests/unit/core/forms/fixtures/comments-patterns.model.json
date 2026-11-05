@@ -1,0 +1,42 @@
+{
+ "version": 1,
+ "title": "Registration",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "zip",
+     "type": "text",
+     "label": "ZIP Code",
+     "help": "Enter a valid US ZIP code",
+     "placeholder": "12345 or 12345-6789",
+     "validation": {
+      "pattern": "[0-9]{5}(-[0-9]{4})?"
+     }
+    },
+    {
+     "id": "product_code",
+     "type": "text",
+     "label": "Product Code",
+     "help": "Format: 3 letters, dash, 4 numbers",
+     "placeholder": "ABC-1234",
+     "validation": {
+      "pattern": "[A-Z]{3}-[0-9]{4}"
+     }
+    },
+    {
+     "id": "username",
+     "type": "text",
+     "label": "Username",
+     "help": "Letters, numbers, and underscores only",
+     "validation": {
+      "pattern": "[a-zA-Z0-9_]{3,20}",
+      "min_length": 3,
+      "max_length": 20
+     }
+    }
+   ]
+  }
+ ]
+}

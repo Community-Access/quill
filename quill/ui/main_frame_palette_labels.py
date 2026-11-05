@@ -8,6 +8,10 @@ had the same defect, so this is the general fix rather than one more label.
 
 ``_refresh_palette_toggle_titles`` runs once each time the palette opens, so no
 individual toggle handler has to remember to retitle itself.
+
+``_register_menu_palette_rows`` runs at the same moment and adds every menu
+item no registered command owns (:mod:`quill.ui.palette_menu_reach`), so the
+palette finds everything the menus have.
 """
 
 from __future__ import annotations
@@ -89,3 +93,43 @@ class PaletteToggleLabelsMixin:
                 continue
             base = self._palette_base_title(command.title)
             self.commands.set_title(command_id, f"{base} (currently {'On' if state else 'Off'})")
+
+    def _register_menu_palette_rows(self) -> None:
+        """Every menu item is a palette row, rebuilt from the bar as it is now.
+
+        See :mod:`quill.ui.palette_menu_reach`: items no registered command
+        owns are added under their menu path and run by posting their own
+        menu event, so the palette finds everything the menus have.
+        """
+        from quill.ui.palette_menu_reach import register_menu_items
+
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is None:
+            return
+        register_menu_items(
+            self.commands,
+            menu_bar,
+            covered_ids=self._command_to_menu_id_map().values(),
+            post_menu_event=self._post_menu_item_from_palette,
+        )
+
+    def _post_menu_item_from_palette(self, item_id: int) -> None:
+        wx = self._wx
+        menu_bar = self.frame.GetMenuBar()
+        item = menu_bar.FindItemById(item_id) if menu_bar is not None else None
+        if item is None:
+            self._announce("That menu item is no longer in the menu")
+            return
+        if not item.IsEnabled():
+            from quill.ui.palette_menu_reach import plain_menu_text
+
+            name = plain_menu_text(item.GetItemLabel())
+            help_text = (item.GetHelp() or "").strip()
+            self._announce(f"{name} is not available right now. {help_text}".strip())
+            return
+        event = wx.CommandEvent(wx.wxEVT_MENU, item_id)
+        if item.IsCheckable():
+            item.Check(not item.IsChecked())
+            event.SetInt(1 if item.IsChecked() else 0)
+        event.SetEventObject(self.frame)
+        wx.PostEvent(self.frame, event)

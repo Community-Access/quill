@@ -76,11 +76,10 @@ _QUILLLITE_OFF: tuple[str, ...] = (
     "core.third_party_plugins",
     "core.voice_commands",
     "core.watch_folder",
+    "core.wordpress",
     "future.ai",
     "future.ai_menu_top_level",
     "future.cleanup",
-    "future.publishing",
-    "future.publishing_read",
     "future.quillins_menu",
     "future.spotify",
     "future.youtube_oauth",
@@ -152,11 +151,10 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "future.character_inspector": FEATURE_STATE_OFF,
             "future.cleanup": FEATURE_STATE_OFF,
             "future.ai": FEATURE_STATE_QUIET,
-            # Publishing is writer-tier-and-above only (Writer, Author or
-            # Student, Developer, Full Quill); off by default
-            # here, but any user can still enable it individually.
-            "future.publishing": FEATURE_STATE_OFF,
-            "future.publishing_read": FEATURE_STATE_OFF,
+            # WordPress is on in every profile but this one (wordpress.md 15).
+            "core.wordpress": FEATURE_STATE_OFF,
+            # Forms too, as QUILL Lite's smallest profiles leave them out (17a.10).
+            "core.forms": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_WRITER: FeatureProfile(
@@ -204,10 +202,6 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.notebook": FEATURE_STATE_OFF,
             "future.ai": FEATURE_STATE_OFF,
             "future.ai_menu_top_level": FEATURE_STATE_OFF,
-            # Writer is one of the writer-tier-and-above profiles with publishing
-            # ("send") access (see PROFILE_ESSENTIAL's comment above).
-            "future.publishing": FEATURE_STATE_ON,
-            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_AUTHOR_STUDENT: FeatureProfile(
@@ -237,10 +231,6 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
             "future.ai": FEATURE_STATE_QUIET,
-            # Author or Student is one of the writer-tier-and-above profiles
-            # with publishing access (see PROFILE_ESSENTIAL's comment above).
-            "future.publishing": FEATURE_STATE_ON,
-            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "reader_and_student": FeatureProfile(
@@ -262,8 +252,6 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_OFF,
             "future.cleanup": FEATURE_STATE_OFF,
-            "future.publishing": FEATURE_STATE_OFF,
-            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "office_and_admin": FeatureProfile(
@@ -285,8 +273,6 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.publishing": FEATURE_STATE_OFF,
-            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_DEVELOPER_POWER_TEXT: FeatureProfile(
@@ -316,11 +302,6 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            # Developer is one of the writer-tier-and-above
-            # profiles with publishing access (see PROFILE_ESSENTIAL's
-            # comment above).
-            "future.publishing": FEATURE_STATE_ON,
-            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "low_vision": FeatureProfile(
@@ -344,8 +325,6 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.publishing": FEATURE_STATE_OFF,
-            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "braille_screen_reader_power_user": FeatureProfile(
@@ -369,8 +348,6 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.publishing": FEATURE_STATE_OFF,
-            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_ACCESSIBILITY_PROFESSIONAL: FeatureProfile(
@@ -392,8 +369,6 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.publishing": FEATURE_STATE_OFF,
-            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_FULL_QUILL: FeatureProfile(
@@ -468,6 +443,10 @@ def feature_for_command(command_id: str) -> str:
         return "core.shell"
     if command_id.startswith("tools."):
         return "core.help"
+    if command_id.startswith("wordpress."):
+        return "core.wordpress"
+    if command_id.startswith("forms."):
+        return "core.forms"
     if command_id.startswith("format.") or command_id.startswith("edit.sort_"):
         return "core.format"
     if command_id.startswith("edit."):

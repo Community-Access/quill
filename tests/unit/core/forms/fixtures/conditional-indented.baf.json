@@ -1,0 +1,33 @@
+{
+ "origin": "ParserTest.php:test_parse_conditional_with_indentation",
+ "parse": {
+  "form": {
+   "title": "Test",
+   "description": "",
+   "fields": [
+    {
+     "id": "contact",
+     "type": "radio",
+     "label": "Contact Method",
+     "choices": [
+      {
+       "value": "phone",
+       "label": "Phone"
+      }
+     ],
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"Test\"\n\n  radio #contact \"Contact Method\"\n    + Phone"
+}

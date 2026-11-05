@@ -1,0 +1,18 @@
+{
+ "version": 1,
+ "title": "",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "field_1",
+     "type": "text",
+     "label": "Your Name",
+     "placeholder": "Jane Doe",
+     "required": true
+    }
+   ]
+  }
+ ]
+}

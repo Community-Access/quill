@@ -2855,21 +2855,6 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("experimental", "glow", "accessibility", "audit", "fix", "review"),
     ),
     SettingSpec(
-        "publishing_experimental_enabled",
-        "WordPress publishing connections (experimental)",
-        "experimental",
-        "bool",
-        (
-            "Adds the read-only publishing tools to the File menu: save WordPress "
-            "connections, verify them, browse your site's posts and pages, and open "
-            "a remote item in the editor. Strictly inbound for now — the send/publish "
-            "half stays locked while the providers framework is reviewed, so nothing "
-            "can be published from QUILL. Requires the master switch above. Takes "
-            "effect as soon as you apply Settings — no restart."
-        ),
-        keywords=("experimental", "wordpress", "publishing", "connections", "read"),
-    ),
-    SettingSpec(
         "table_studio_experimental_enabled",
         "Table Studio — accessible table and CSV editing (experimental)",
         "experimental",

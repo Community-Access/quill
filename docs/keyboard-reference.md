@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 529.
+Editor commands with default bindings: 551.
 
 ## The QUILL editor
 
@@ -555,6 +555,28 @@ Editor commands with default bindings: 529.
 | Ctrl+Alt+Shift+Backspace | Delete paragraph | `power.delete_paragraph` |
 | Ctrl+Alt+Shift+Delete | Delete to line end | `power.delete_to_line_end` |
 | Ctrl+Alt+Shift+F3 | Count occurrences | `power.count_occurrences` |
+| Ctrl+Alt+Shift+Grave, A | Connect a Site... | `wordpress.connect` |
+| Ctrl+Alt+Shift+Grave, B | WordPress Blocks... | `wordpress.blocks` |
+| Ctrl+Alt+Shift+Grave, C | Compare with Site | `wordpress.compare` |
+| Ctrl+Alt+Shift+Grave, D | Save Draft to Site | `wordpress.save_draft` |
+| Ctrl+Alt+Shift+Grave, E | Schedule Publish... | `wordpress.schedule` |
+| Ctrl+Alt+Shift+Grave, G | New Page... | `wordpress.new_page` |
+| Ctrl+Alt+Shift+Grave, I | Open on Site | `wordpress.open_on_site` |
+| Ctrl+Alt+Shift+Grave, K | Check Before Publishing... | `wordpress.check` |
+| Ctrl+Alt+Shift+Grave, L | Open Local Draft... | `wordpress.open_local_draft` |
+| Ctrl+Alt+Shift+Grave, M | Media Library... | `wordpress.media_library` |
+| Ctrl+Alt+Shift+Grave, N | New Post... | `wordpress.new_post` |
+| Ctrl+Alt+Shift+Grave, O | Open Page or Post... | `wordpress.open` |
+| Ctrl+Alt+Shift+Grave, P | Publish or Update... | `wordpress.publish` |
+| Ctrl+Alt+Shift+Grave, R | Properties... | `wordpress.properties` |
+| Ctrl+Alt+Shift+Grave, S | Switch Site... | `wordpress.switch_site` |
+| Ctrl+Alt+Shift+Grave, Shift+S | Sites... | `wordpress.sites` |
+| Ctrl+Alt+Shift+Grave, T | Move to Trash... | `wordpress.trash` |
+| Ctrl+Alt+Shift+Grave, U | Upload Files... | `wordpress.upload_files` |
+| Ctrl+Alt+Shift+Grave, V | Previous Versions... | `wordpress.versions` |
+| Ctrl+Alt+Shift+Grave, W | Open by Web Address... | `wordpress.open_by_address` |
+| Ctrl+Alt+Shift+Grave, X | Alt Text Review... | `wordpress.alt_text_review` |
+| Ctrl+Alt+Shift+Grave, Y | Copy Address | `wordpress.copy_address` |
 | Ctrl+Alt+Up | Table: Cell Above | `table.cell_above` |
 | Ctrl+Alt+W | Compute line statistics | `power.compute_line_statistics` |
 | Ctrl+Shift+Backspace | Delete to line start | `power.delete_to_line_start` |

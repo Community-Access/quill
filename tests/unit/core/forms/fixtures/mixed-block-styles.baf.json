@@ -1,0 +1,51 @@
+{
+ "origin": "ParserTest.php:test_parse_mixed_block_styles",
+ "parse": {
+  "form": {
+   "title": "Test",
+   "description": "",
+   "fields": [
+    {
+     "id": "field1",
+     "type": "text",
+     "label": "Field 1",
+     "required": true,
+     "page": "page_1"
+    },
+    {
+     "id": "field2",
+     "type": "text",
+     "label": "Field 2",
+     "required": true,
+     "placeholder": "Test",
+     "page": "page_1"
+    },
+    {
+     "id": "field3",
+     "type": "text",
+     "label": "Field 3",
+     "required": true,
+     "max_length": "50",
+     "page": "page_1"
+    },
+    {
+     "id": "field4",
+     "type": "text",
+     "label": "Field 4",
+     "required": true,
+     "page": "page_1"
+    }
+   ],
+   "pages": [
+    {
+     "id": "page_1",
+     "title": ""
+    }
+   ],
+   "settings": [],
+   "conditional_logic": []
+  },
+  "errors": []
+ },
+ "format": "form \"Test\"\n\n  text #field1 \"Field 1\"\n    @required\n  text #field2 \"Field 2\"\n    @required\n    @placeholder \"Test\"\n  text #field3 \"Field 3\"\n    @required\n    @maxlength 50\n  text #field4 \"Field 4\"\n    @required"
+}

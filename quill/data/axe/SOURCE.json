@@ -1,0 +1,15 @@
+{
+  "name": "axe-core",
+  "version": "4.14.0",
+  "released": "2026-10-05",
+  "source": "https://registry.npmjs.org/axe-core/-/axe-core-4.14.0.tgz",
+  "npm_integrity": "sha512-9WTZxEjsZ7b13TH8JPmbV2z8CHbl80/2hm3XPEG4JgNdQLK81IBRXmSxHfMAOkSqQeRxT/0dwNDz2GOm3zzpcQ==",
+  "files": {
+    "axe.min.js": {
+      "sha256": "20c09fe157a8a34a30e241aaa1fcdade657734f08ab379ecfbeb7d45cc46e878",
+      "bytes": 652140
+    }
+  },
+  "license": "MPL-2.0 (LICENSE.txt); bundled third-party code under MIT and others (LICENSE-3RD-PARTY.txt)",
+  "used_by": "File > WordPress: Tools > WordPress > Check This Page (quill/core/wordpress/page_audit.py)"
+}

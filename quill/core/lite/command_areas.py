@@ -24,7 +24,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.forms import menu as forms_menu
 from quill.core.lite.commands import _MENU_ORDER, COMMANDS, SUBMENU_SEP, CommandRow
+from quill.core.wordpress import menu as wordpress_menu
 
 __all__ = ["COMMAND_AREA", "MENU_AREA", "area_for", "visible_commands"]
 
@@ -49,6 +51,10 @@ __all__ = ["COMMAND_AREA", "MENU_AREA", "area_for", "visible_commands"]
 
 #: Menus and submenus that belong entirely to one area.
 MENU_AREA: dict[str, str] = {
+    # Every WordPress submenu (File, Format, Edit and Tools > WordPress and the
+    # ones inside them), spelled out by the shared table that builds them.
+    **dict.fromkeys(wordpress_menu.submenu_paths(), "wordpress"),
+    **dict.fromkeys(forms_menu.submenu_paths(), "forms"),  # Tools > Forms (forms/menu.py)
     "F&ormat": "rich_text",
     # Spelled out rather than inherited from the parent: a submenu's rows are
     # looked up by their *own* path, so a submenu left out of this map is a
@@ -88,6 +94,10 @@ MENU_AREA: dict[str, str] = {
 
 #: Individual handlers whose area is not their menu's.
 COMMAND_AREA: dict[str, str] = {
+    # WordPress rows straight in Insert and View, not in a submenu of their own.
+    **dict.fromkeys(wordpress_menu.direct_handlers(), "wordpress"),
+    # Forms rows straight in File, Insert, View and Format (wordpress.md 17a.10).
+    **dict.fromkeys(forms_menu.direct_handlers(), "forms"),
     "cmd_page_setup": "printing",
     "cmd_print": "printing",
     # With the rest of the spelling submenu, which is one switchable area.
@@ -256,10 +266,16 @@ def visible_commands(is_enabled: Callable[[str], bool]) -> list[CommandRow]:
     # not: the first tidy is what decides whether the submenu has anything left,
     # and only then can a title with nothing behind it be dropped -- which may
     # in turn leave the separator that framed it doubled, hence the second.
+    # Repeated until nothing changes, because submenus nest (File > WordPress >
+    # Blocks): dropping an empty inner title can empty the menu that held it.
     tidied = _tidy(kept)
-    live = {row[0] for row in tidied}
-    pruned = [r for r in tidied if r[4] != "sub" or f"{r[0]}{SUBMENU_SEP}{r[1]}" in live]
-    return _tidy(pruned)
+    while True:
+        live = {row[0] for row in tidied}
+        pruned = [r for r in tidied if r[4] != "sub" or f"{r[0]}{SUBMENU_SEP}{r[1]}" in live]
+        pruned = _tidy(pruned)
+        if pruned == tidied:
+            return pruned
+        tidied = pruned
 
 
 def _tidy(rows: list[CommandRow]) -> list[CommandRow]:

@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "title": "Shipping Address",
+ "pages": [
+  {
+   "id": "page_1",
+   "items": [
+    {
+     "id": "country",
+     "type": "select",
+     "label": "Country",
+     "placeholder": "Select your country",
+     "required": true,
+     "choice_library": "countries"
+    },
+    {
+     "id": "state",
+     "type": "select",
+     "label": "State/Province",
+     "required": true,
+     "cascade": {
+      "from": "country",
+      "library": "states",
+      "empty_message": "Please select a country first",
+      "loading_message": "Loading states..."
+     }
+    }
+   ]
+  }
+ ]
+}

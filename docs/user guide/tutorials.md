@@ -1,6 +1,6 @@
 # QUILL Tutorials
 
-Welcome. There are 31 short lessons here, about 164 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 45 short lessons here, about 236 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in QUILL. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -44,6 +44,22 @@ The keys here are the ones QUILL comes with. If you have changed a key, the less
   - Open anything, save as anything (5 minutes)
   - Braille files, page by page (6 minutes)
   - QUILL and the apps around it (4 minutes)
+- **WordPress**: Connect your site, write and publish a post, fix a page you found by its address, pictures with alternative text, the check before you publish, earlier versions, and comments.
+  - Connect your WordPress site (5 minutes)
+  - Write a post and publish it (6 minutes)
+  - Open a page by its address and fix a sentence (5 minutes)
+  - Pictures with alternative text (6 minutes)
+  - Check Before Publishing (5 minutes)
+  - Go back to a previous version (5 minutes)
+  - Answer comments (5 minutes)
+- **Forms**: Start a form from a template, add questions and a rule, check it, fill it in yourself, save it in large print or braille, and publish it to your site and read the responses.
+  - Start a form from a template (5 minutes)
+  - Add questions (5 minutes)
+  - Add a rule and hear it as a sentence (5 minutes)
+  - Check This Form (4 minutes)
+  - Fill It In Yourself (5 minutes)
+  - Save it as large print or braille-ready text (4 minutes)
+  - Publish it and read the responses (7 minutes)
 - **Coding, in the Developer profile**: Work on a folder of code with an AI: ask for a change, review every edit, allow the commands it runs, hear the test results, and undo a whole turn.
   - Your first project task (12 minutes)
 
@@ -951,6 +967,434 @@ The radio, the podcasts, the weather and the rest -- what lives inside QUILL, wh
    - You should hear: What the file holds, named, before anything is written.
 
 One editor that can do everything, and four small apps for the days you want one thing. They share their data and never fight over it.
+
+## WordPress
+
+Connect your site, write and publish a post, fix a page you found by its address, pictures with alternative text, the check before you publish, earlier versions, and comments.
+
+### Connect your WordPress site
+
+Connect QUILL to a WordPress site with an application password, hear which role you have there, and learn the WordPress keys.
+
+*7 steps, about 5 minutes.*
+
+1. **Know what you need first.** You need three things: the site's address, your WordPress username, and an application password. An application password is a separate password WordPress makes for one app. It is not the password you sign in with, and you can take it away again at any time.
+   - Worth knowing: These lessons use the QUILL WordPress Test Site, at https://lp.csedesigns.com/wordpress/, as the example. On your own site, use your own pages wherever a lesson names one.
+
+2. **Open Connect a Site.** In the File menu, open WordPress and choose Connect a Site. It is a short form, and nothing is saved until the site has said yes.
+   - Keys: Ctrl+Alt+Shift+Grave, A
+   - You should hear: The Connect a WordPress Site dialog, on Kind of site.
+
+3. **Type the site's address.** Leave Kind of site on My own WordPress site. Tab to Site address and type it, for example https://lp.csedesigns.com/wordpress/. QUILL only connects over HTTPS, so your password never travels in the clear.
+   - You should hear: Site address, edit, and the letters as you type them.
+
+4. **Get the password with your browser.** Press Get Password with My Browser. Your browser opens the site's own approval page. Sign in there if it asks, then choose Approve. On a newer site the password comes back to QUILL by itself.
+   - You should hear: "Connected to QUILL WordPress Test Site as" and your role, such as Editor.
+   - Worth knowing: On an older site, WordPress shows you the password instead. Copy it, come back, and paste it into the box that is waiting for it.
+
+5. **Or paste one from your profile.** If you would rather do it by hand, make an application password in your WordPress profile, under Application Passwords, and copy it. Type your username, paste the password into Application password, and press Connect.
+   - You should hear: "Connected to QUILL WordPress Test Site as" and your role.
+   - Worth knowing: Your password is kept in Windows' own Credential Manager, never in a settings file. Never paste it into an email or a chat.
+
+6. **Choose which site comes first.** With more than one site, Switch Site, in File, WordPress, chooses your default. New and Open start there, and a document always stays with the site it came from.
+   - Keys: Ctrl+Alt+Shift+Grave, S
+   - You should hear: "Default site:" and its name, or that it is your only site.
+
+7. **Learn the WordPress keys.** The WordPress key layer gives the commands one letter each. Press the layer key, let go, then press a letter. The six you will use most are O for Open Page or Post, P for Publish or Update, M for Media Library, S for Switch Site, W for Open by Web Address, or D for Save Draft to Site. Escape leaves the layer without doing anything.
+   - Keys: Ctrl+Alt+Shift+Grave, then a letter
+   - You should hear: Whatever the letter runs. After Escape, nothing at all.
+   - Worth knowing: The whole layer: G New Page, N New Post, O Open Page or Post, W Open by Web Address, L Open Local Draft, D Save Draft to Site, P Publish or Update, E Schedule Publish, I Open on Site, Y Copy Address, R Properties, V Previous Versions, C Compare with Site, T Move to Trash, S Switch Site, Shift+S Sites, A Connect a Site, M Media Library, B WordPress Blocks, K Check Before Publishing, U Upload Files, X Alt Text Review. Every WordPress command is also in the Command Palette: type WordPress, or part of the command's name.
+
+You are connected, and the site has told you what your account may do. Next, write something and send it.
+
+Next: Write a post and publish it.
+
+### Write a post and publish it
+
+Start a new post, write it in the editor you already know, keep it on your computer, send it as a draft, and then publish it.
+
+*6 steps, about 6 minutes.*
+
+1. **Start a new post.** In the File menu, open WordPress and choose New Post. A post is a dated article, the kind that goes in a blog or a news list. A page is the lasting kind, like About or Contact.
+   - Keys: Ctrl+Alt+Shift+Grave, N
+   - You should hear: The New Post dialog, on Site, with your default site chosen.
+
+2. **Give it a title and a format.** Tab to Title and type one. The slug, which is the end of the web address, fills itself in as you type. Choose Markdown or HTML under Write in, check a category or two, and press Create.
+   - You should hear: "New post for" the site, and that nothing is sent until you choose Save Draft to Site or Publish.
+   - Worth knowing: Markdown is the easier one to write by ear. The format cannot change later.
+
+3. **Write, and save on this computer.** Write a few sentences the way you write anything else. Find, spelling and dictation all work here. Save as you always do: it keeps the post on this computer and sends nothing.
+   - Keys: Ctrl+S
+   - You should hear: The usual saved message. The site has not changed.
+
+4. **Send it as a draft.** Save Draft to Site, in File, WordPress, puts your post on the site where only you and your editors can see it. It is the safe way to see how it looks before anybody else does.
+   - Keys: Ctrl+Alt+Shift+Grave, D
+   - You should hear: "Draft saved to QUILL WordPress Test Site. It is not public."
+
+5. **Publish it.** Choose Publish or Update. Before anything goes, a question names the post and the site, and says what Check Before Publishing found. Press Publish if you are happy, or Escape to stop.
+   - Keys: Ctrl+Alt+Shift+Grave, P
+   - You should hear: "Publish on" the site, the title, and "Ready to publish: no problems found", or how many things there are to look at.
+   - Worth knowing: If your role cannot publish, the same command sends the post for review instead, and says so.
+
+6. **Hear where it went.** Once it is published, the post's web address is put on the clipboard, ready to paste into an email. Open on Site, in File, WordPress, opens it in your browser if you want to hear it the way a visitor will.
+   - Keys: Ctrl+Alt+Shift+Grave, I
+   - You should hear: "Published on QUILL WordPress Test Site. The address is on the clipboard."
+
+Saving keeps it here, Save Draft to Site sends it quietly, and Publish asks first. Closing a document never publishes anything.
+
+Next: Open a page by its address and fix a sentence; Check Before Publishing.
+
+### Open a page by its address and fix a sentence
+
+Open a post you found in your browser straight from its web address, change one sentence, and send the change back.
+
+*5 steps, about 5 minutes.*
+
+1. **Copy the address.** In your browser, copy the address of the post you want to change. On the test site, use the welcome post, at https://lp.csedesigns.com/wordpress/welcome/. Copy it from the address bar.
+   - You should hear: Your browser's own word that the address was copied, if it says one.
+
+2. **Open it by its address.** Choose Open by Web Address, in File, WordPress. When there is an address on the clipboard it is used straight away; when there is not, a box asks you for one.
+   - Keys: Ctrl+Alt+Shift+Grave, W
+   - You should hear: Open Welcome to the test site, and the Open as list.
+
+3. **Open it as Markdown.** Choose Markdown. It reads more easily than HTML, and anything Markdown cannot show is kept exactly on a short line of its own, so nothing on the page is lost.
+   - You should hear: "Opened Welcome to the test site from QUILL WordPress Test Site."
+
+4. **Fix one sentence.** Find the sentence that says Open me by web address, and rewrite it in your own words. Arrow over it first if you like; this is an ordinary document now.
+   - You should hear: Your new sentence, read back as you arrow over it.
+
+5. **Send the change.** Choose Publish or Update. A post that is already public is updated rather than published again, and the question says Update. Press Update.
+   - Keys: Ctrl+Alt+Shift+Grave, P
+   - You should hear: "Update on QUILL WordPress Test Site", then "Published on QUILL WordPress Test Site."
+   - Worth knowing: If somebody changed the post on the site after you opened it, nothing is sent. You are told what changed, and offered Compare the two, Open the site's copy, or Send mine anyway.
+
+Any address on one of your sites opens this way. Next time, try Open Page or Post for a page you know by name rather than by address.
+
+Next: Go back to a previous version.
+
+### Pictures with alternative text
+
+Put a picture from the site's Media Library into a post with good alternative text, and fix a picture in the library that has none.
+
+*7 steps, about 6 minutes.*
+
+1. **Open a post to put a picture in.** Choose Open Page or Post and pick Posts. Type part of a title in Find by title or status and press Enter, then Enter again on the one you want. The post you wrote earlier is a good one.
+   - Keys: Ctrl+Alt+Shift+Grave, O
+   - You should hear: Each row's title, its status, and when it last changed.
+
+2. **Choose a picture from the library.** Put the cursor where the picture should go. In the Insert menu, choose Picture from the Media Library, and pick photo-volunteers from the list.
+   - You should hear: Insert from Media Library, and the Files list, newest first.
+
+3. **Listen to the alternative text.** A picture dialog opens on Alternative text. That is what a screen reader says in place of the picture, so it should say what the picture shows and why it is there. This one already has some, from the library.
+   - You should hear: Alternative text, "Volunteers sorting donations at the spring fair".
+   - Worth knowing: Suggest Alternative Text asks your chosen AI for a first try. Check the Decorative box for a picture that adds nothing a visitor needs, like a divider.
+
+4. **Insert it.** Change the text if you can say it better for this post, then press Insert. The text belongs to this placement, so the same picture can say something different in another post.
+   - You should hear: "Picture inserted:" and its alternative text.
+
+5. **Find a picture with none.** Open the Media Library, in Tools, WordPress. Type banner in Find and press Enter. The wide-banner picture has no alternative text, and its row says so.
+   - Keys: Ctrl+Alt+Shift+Grave, M
+   - You should hear: Each file's title, type, size, alternative text and date.
+
+6. **Give it alternative text.** With wide-banner selected, press Edit Alternative Text, write a short description, and press OK. This changes the library's own text, which new placements start from.
+   - You should hear: "Alternative text saved on QUILL WordPress Test Site."
+
+7. **Review every picture in the post.** Back in your post, Alt Text Review, in Tools, WordPress, lists every picture with its text, so the empty ones and the weak ones are easy to find and fix.
+   - Keys: Ctrl+Alt+Shift+Grave, X
+   - You should hear: How many pictures there are, and how many to look at.
+
+Every picture now says something to somebody who cannot see it. Check Before Publishing finds any you missed.
+
+Next: Check Before Publishing.
+
+### Check Before Publishing
+
+Have a post checked for the problems that trip up visitors, go to each one, and fix it before anybody else meets it.
+
+*5 steps, about 5 minutes.*
+
+1. **Open the post with problems.** Choose Open Page or Post and pick Posts. Type draft in Find by title or status and press Enter. On the test site, open Things to check before publishing. It was made with one problem of each kind.
+   - Keys: Ctrl+Alt+Shift+Grave, O
+   - You should hear: Things to check before publishing, Draft, and when it last changed.
+
+2. **Run the check.** In the Tools menu, open WordPress and choose Check Before Publishing. It reads the whole post the way a careful visitor would, and nothing on the site changes.
+   - Keys: Ctrl+Alt+Shift+Grave, K
+   - You should hear: How many things there are to look at, with the problems and the things to check counted separately.
+
+3. **Listen to the list.** Arrow down Things to look at. Each one says what to look at and why: a heading 1 in the body, a skipped heading level, link text that does not say where it goes, a picture with no alternative text, a table with no header row, and a few more.
+   - You should hear: One finding a line, each with its reason.
+
+4. **Go to one.** Press Go to It on the finding you want to fix. The list closes and the cursor lands on that place in the post, so you can fix it there and then.
+   - You should hear: The line of the post the finding is about.
+
+5. **Fix it, and check again.** Make the fix, then run Check Before Publishing again. Work down the list until it is empty, or until what is left is something you chose on purpose.
+   - Keys: Ctrl+Alt+Shift+Grave, K
+   - You should hear: One fewer each time, and at the end, "Ready to publish: no problems found".
+   - Worth knowing: None of the findings stops you publishing. Publish runs the same check and reads you the summary in its question.
+
+The check is the second pair of eyes a sighted editor has by default. Run it before every publish; it costs a few seconds.
+
+Next: Go back to a previous version.
+
+### Go back to a previous version
+
+Hear the earlier versions of a post, the ones kept on this computer and the site's own history, read one, and put it back.
+
+*5 steps, about 5 minutes.*
+
+1. **Open a post with a history.** Open the welcome post again with Open by Web Address. The test site changed it three times when it was set up, so it has a history to look through.
+   - Keys: Ctrl+Alt+Shift+Grave, W
+   - You should hear: Opened Welcome to the test site, or your working copy of it.
+
+2. **Open Previous Versions.** In the File menu, open WordPress and choose Previous Versions. It lists the versions QUILL kept, newest first, and then the site's own history.
+   - Keys: Ctrl+Alt+Shift+Grave, V
+   - You should hear: Each row's date, title, and why it was kept, such as On the site.
+
+3. **Read one before choosing.** Select a version and press View. The whole text opens in a window of its own, where you can read it or copy a paragraph out of it. Escape brings you back to the list.
+   - You should hear: The Version window, with the title and then the text.
+
+4. **Put it back.** Press Restore on the version you want. It goes into the editor in place of your text, and nothing is sent to the site until you choose to.
+   - You should hear: "Version put in the editor. Nothing was sent; your text before is in Previous Versions."
+
+5. **Hear what is different.** Compare with Site, in File, WordPress, lists the differences between the site's copy and yours, a line at a time. It is the check worth making before you send a restored version.
+   - Keys: Ctrl+Alt+Shift+Grave, C
+   - You should hear: Lines starting Site: for the site's copy, and Yours: for yours.
+   - Worth knowing: Changed your mind? Your text from before the restore is the newest row in Previous Versions, marked Before restore.
+
+Nothing you send is ever lost: the site's copy is kept before every update. Restore is the way back, and it never publishes.
+
+Next: Answer comments.
+
+### Answer comments
+
+Hear the comments waiting for you, reply to one, approve it, and deal with the spam.
+
+*5 steps, about 5 minutes.*
+
+1. **Open Comments.** In the Tools menu, open WordPress and choose Comments. It starts with the ones waiting for you, because those are the ones nobody else can see yet.
+   - You should hear: Comments: Waiting, and the site's name, then the list. On the test site, Alex asks when the next session starts.
+
+2. **Read the whole comment.** Each row says who wrote it, on which post, when, and its first words. Tab to Details to read the whole comment before you decide what to do.
+   - You should hear: The comment's full text.
+
+3. **Reply to it.** Tab back to the list and press Reply. Write your answer and press OK. It is published under your name, under the comment it answers.
+   - You should hear: "Reply to Alex published on QUILL WordPress Test Site."
+
+4. **Approve it.** Press Approve on the comment. It goes on the site for everybody to read, and leaves this list of waiting ones.
+   - You should hear: "Comment from Alex approved."
+   - Worth knowing: Spam and Trash are beside Approve, for the comments that should never be seen.
+
+5. **Look in the spam.** Press Show and choose Spam. WordPress catches most junk by itself, but now and then a real comment lands here, and Not Spam sends it back to Waiting.
+   - You should hear: Comments: Spam, and the comments in it.
+
+Waiting Count on First Use, in the same window, has the number of waiting comments said to you the first time you use the site in a session, so they never pile up unnoticed.
+
+## Forms
+
+Start a form from a template, add questions and a rule, check it, fill it in yourself, save it in large print or braille, and publish it to your site and read the responses.
+
+### Start a form from a template
+
+Start a contact form from a template, save it, and read it through, first as text and then as an outline of its questions.
+
+*6 steps, about 5 minutes.*
+
+1. **Know what a form is here.** A form in QUILL is a short plain text document: a title, some questions, their choices and a few rules, written in BITS Accessible Forms' form language. You never have to learn the language, because the Forms commands write it for you.
+   - You should hear: Nothing yet. This step is the idea the rest build on.
+   - Worth knowing: Forms is on in every feature profile except Essential. If there is no New Form in the File menu, switch Forms on in Profiles and Features.
+
+2. **Open New Form.** In the File menu, choose New Form. It sits with the other New commands. Nothing is written anywhere until you have chosen where to save it.
+   - You should hear: The New Form dialog, on Title.
+   - Worth knowing: No Forms command has a shortcut key, because you will not write forms every day. The Command Palette finds every one of them: type form.
+
+3. **Give it a title and a template.** Type Ask us anything in Title. That is the name your visitors will see. Tab to Template and arrow down to Contact form. There are seven templates, and each one is a few questions you can change.
+   - You should hear: Template, and Contact form: Name, email address and a message.
+
+4. **Save the new form.** Press Next. The ordinary Save As window opens with a file name made from your title, Ask us anything.bfl. Choose a folder you will find again and press Save. The new form opens straight away.
+   - You should hear: "Saved Ask us anything.bfl, a contact form with 3 questions."
+   - Worth knowing: A form file ends in .bfl. It is ordinary text, so you can open it in any text editor too.
+
+5. **Read it through as text.** Arrow down through the form from the top. Each question starts on a line of its own: its kind, its id after a number sign, and its label in quotes. The indented lines under it are its settings, such as required.
+   - You should hear: "text #name", then "Your name" in quotes, then "@required".
+   - Worth knowing: Because it is text, Find, spelling, copy and paste all work here, and you can type a question yourself if you would rather.
+
+6. **Hear it as an outline.** In the View menu, choose Form Outline. It lists every page and question in order, each one read like a sentence, so you can hear the shape of the form without the form language.
+   - You should hear: "Page 1, 3 questions", then "Your name, text field, required, with an autofill hint, page 1".
+   - Worth knowing: Enter takes you to the selected question in the document. Escape closes the outline.
+
+You have a real form, saved on this computer, and you have heard it two ways. Next, give it a question of your own.
+
+Next: Add questions.
+
+### Add questions
+
+Add a choose-one question and a phone number question to your form, each from a short window that asks only what that kind needs.
+
+*6 steps, about 5 minutes.*
+
+1. **Put the cursor where it goes.** Move to the line that says Your message. A new question goes in straight after the one your cursor is on, so this one will come last in the form.
+   - You should hear: "textarea #message", then "Your message" in quotes.
+
+2. **Open Form Field.** In the Insert menu, choose Form Field. A list of every kind of question opens, each row saying what a visitor meets. Section and Page break are at the top.
+   - You should hear: The Insert Form Field dialog, and the Kind of question list.
+
+3. **Find the kind you want.** Tab to Search, type choose, and press Enter to narrow the list. Arrow to Choose one and press Enter. A visitor meets it as a group of buttons, and picks only one.
+   - You should hear: Choose one: Choose one from a group of buttons.
+
+4. **Write the question and its choices.** In the next window, type Best way to reply in Label. Tab to Choices, one per line, and type Email, press Enter, then type Phone. Press Insert.
+   - You should hear: "Inserted Best way to reply, choose one."
+   - Worth knowing: Help text is a sentence a screen reader reads with the question. Leave Id empty and the id is made from the label.
+
+5. **Add a phone number question.** With the cursor still on Best way to reply, choose Form Field again. This time pick Phone number, type Phone number in Label, and press Insert. Leave Required unchecked: only some people will want a call.
+   - You should hear: "Inserted Phone number, phone number."
+
+6. **Save your work.** Save as you always do. A form saves like any other document, on this computer, and nothing is sent anywhere. Each insert is also one step that Undo takes back.
+   - Keys: Ctrl+S
+   - You should hear: The usual saved message.
+
+The form now asks five questions. The phone number is asked of everybody, which is not quite right. A rule fixes that.
+
+Next: Add a rule and hear it as a sentence.
+
+### Add a rule and hear it as a sentence
+
+Make the phone number appear only for somebody who asked to be phoned, built from three choices and read back to you as a sentence.
+
+*5 steps, about 5 minutes.*
+
+1. **Open Form Rules.** In the Format menu, choose Form Rules. It lists every rule in the form as a sentence. This form has none yet, so the list is empty.
+   - You should hear: The Form Rules window, and the Rules list.
+
+2. **Say which question it listens to.** Press Add Rule. In When this question, choose Best way to reply. Leave Is on is. In This answer, type Phone, the choice's own words; capitals do not matter.
+   - You should hear: When this question, and Best way to reply.
+   - Worth knowing: A choice is stored as its words in small letters, with a hyphen for each space: Large print is large-print. QUILL turns what you type into that, so the rule matches however you write it.
+
+3. **Say what it does.** Tab to Then and leave it on Show. In To this question or page, choose Phone number. Read that back to yourself: when Best way to reply is Phone, show Phone number.
+   - You should hear: To this question or page, and Phone number.
+   - Worth knowing: Then can also hide, require, make optional, enable, disable, or skip to a page.
+
+4. **Add it, and hear the sentence.** Press Add Rule. The rule is written into the form for you, and QUILL reads it back as the sentence it is, so you can hear whether it says what you meant.
+   - You should hear: "Show Phone number when Best way to reply is Phone."
+   - Worth knowing: If you know the form language, Or write the condition yourself takes a whole condition instead. It is checked before anything is written, and you are told what is wrong if it does not read.
+
+5. **Find it in the form.** The new rule is in the Rules list. Press Go to It to close the window and land on Phone number. The line under it, starting @when, is your rule in the form language.
+   - You should hear: "phone #phone", then "Phone number" in quotes.
+   - Worth knowing: Edit changes a rule's condition, and Remove takes one out after asking. Undo in the document takes back either.
+
+Rules are the part of a form that is hardest to see on a web page. Here every one is a sentence you can read. Next, let the form be checked.
+
+Next: Check This Form.
+
+### Check This Form
+
+Find what would make the form hard to fill in, go straight to it, fix it, and check again.
+
+*5 steps, about 4 minutes.*
+
+1. **Run the check.** In the Tools menu, open Forms and choose Check This Form. It looks for anything that would make the form hard to fill in, such as a question with no label, and lists the most serious first.
+   - You should hear: "Phone number has no autofill hint, so the browser cannot fill it in. The hint is tel."
+   - Worth knowing: An autofill hint lets a visitor's browser fill in their own phone number, which saves typing and mistakes.
+
+2. **Know the On the site today lines.** Arrow down the Findings list. A line that starts On the site today is not a mistake in your form. It says where the forms plugin on a website reads your form differently today, so you know before you publish.
+   - You should hear: Lines starting "On the site today", if there are any.
+
+3. **Go to the finding.** Arrow back to the autofill finding and press Go to It. The window closes and your cursor is on the Phone number question, ready to fix.
+   - You should hear: "phone #phone", then "Phone number" in quotes.
+
+4. **Fix it.** Go to the end of the last indented line under Phone number and press Enter. Type two spaces, then @autocomplete "tel", with the quotes. That is the hint the finding asked for.
+   - You should hear: Your new line read back: "@autocomplete", then "tel" in quotes.
+   - Worth knowing: Suggest Autofill Hints, in Tools, Forms, asks your chosen AI to suggest them all at once. It says what it sends first.
+
+5. **Check again.** Choose Check This Form once more, in Tools, Forms. The autofill finding has gone. When there is nothing to fix at all, there is no list, just one sentence.
+   - You should hear: Only On the site today lines, or, with none of those, "Check This Form found nothing to fix."
+
+Check This Form is worth running every time you change a form, and always before you publish one. Next, fill it in yourself.
+
+Next: Fill It In Yourself.
+
+### Fill It In Yourself
+
+Open your form as a real window and fill it in with your screen reader, the way a visitor will, before anybody else sees it.
+
+*6 steps, about 5 minutes.*
+
+1. **Open the form as a visitor meets it.** In the Tools menu, open Forms and choose Fill It In Yourself. QUILL builds a real window from the same text, with ordinary edit boxes, buttons and lists, so you meet what a visitor meets.
+   - You should hear: Fill It In Yourself: Ask us anything, and the first question.
+
+2. **Tab through the questions.** Press Tab to move from question to question. Listen for each label, and for the word required on the ones that must be answered. Type a name and an email address as you go.
+   - You should hear: Your name (required), edit. Then Email address (required), edit.
+   - Worth knowing: If a question is hard to understand by ear here, it will be hard on the website too. That is the point of this window.
+
+3. **Watch the rule work.** Tab to the Best way to reply group and arrow to Phone. Your rule runs as you answer, and you are told about the question it brings in, because nothing else would say so.
+   - You should hear: "Phone number appears."
+
+4. **Change your mind.** Arrow back to Email. The phone number question goes away again, exactly as it will for a visitor who chooses Email on the site.
+   - You should hear: "Phone number is hidden."
+
+5. **Submit, which sends nothing.** Press Submit. Nothing is sent anywhere. Instead, a window shows what would have been sent, one question and its answer to a line, and anything that still needs an answer.
+   - You should hear: What Would Be Sent: "Nothing was sent. This is what the form would send:", then each question and your answer.
+   - Worth knowing: On a form with more than one page, Next first checks this page and names any required question still empty, then puts you on it.
+
+6. **Close it.** Press Escape to close What Would Be Sent, and Escape again to close the form. Nothing you typed is kept, so you can try it as many times as you like.
+   - You should hear: Your form document again, where you left it.
+
+You have filled in your own form the way your visitors will. Next, make a copy for people who would rather have it on paper or in braille.
+
+Next: Save it as large print or braille-ready text.
+
+### Save it as large print or braille-ready text
+
+Make a large-print copy and a braille-ready copy of your form, from the same text, without a website.
+
+*4 steps, about 4 minutes.*
+
+1. **Know why there are other copies.** Not everybody fills in a form on a website. Some people want it on paper in large print, and some want it in braille. Every copy comes from the same form, so it always asks the same questions.
+   - You should hear: Nothing yet. This step is the reason for the next two.
+   - Worth knowing: These work without a site and even in Safe Mode. If the form has a problem it cannot be read past, you are told to run Check This Form first, and nothing is saved.
+
+2. **Save a large-print copy.** In the Tools menu, open Forms and choose Save As Large Print. The ordinary Save As window opens with a name ending in large print. Choose a folder and press Save.
+   - You should hear: "Saved Ask us anything large print.docx, a large-print Word document, 18 point and up, with 5 questions, lines to write on and boxes to check."
+
+3. **Save a braille-ready copy.** Choose Save As Braille-Ready Text, in Tools, Forms. It writes one question to a block, with the choices lettered a, b, c, 40 cells to a line, ready to emboss or read on a display.
+   - You should hear: "Saved Ask us anything.txt, braille-ready text with 5 questions, one a block."
+   - Worth knowing: With the braille pack installed, you are first asked whether to save it as it is or as a braille file in UEB contracted braille.
+
+4. **Read the braille copy back.** Open the .txt file you just saved, as you open any document. Arrow through it to hear one question to a block, so you know what the person reading it will find.
+   - You should hear: The form's title, then each question, numbered, with its choices lettered.
+   - Worth knowing: Save As Web Page and Save As Word Document, beside these in Tools, Forms, make the other two copies the same way.
+
+One form, and a copy for whoever needs one. The last lesson puts the form on your website.
+
+Next: Publish it and read the responses.
+
+### Publish it and read the responses
+
+Publish your form to a WordPress site running BITS Accessible Forms, put it on a page, try it there, and read what people send.
+
+*6 steps, about 7 minutes.*
+
+1. **Know what the site needs.** Publishing needs a WordPress site you have connected, with the BITS Accessible Forms plugin installed and switched on. The WordPress lessons show how to connect a site.
+   - You should hear: Nothing yet. This step is what the rest need.
+   - Worth knowing: Without the plugin you hear that the command needs BITS Accessible Forms on the site, and to install and activate it there. Publishing and Responses are off in Safe Mode.
+
+2. **Publish the form.** With Ask us anything in front, open Forms in the Tools menu and choose Publish Form. With more than one site, you choose which one first.
+   - You should hear: Publish Form, and Publish as, on Live.
+
+3. **Choose live or draft, then say yes.** Live means people can fill it in wherever it is placed. Draft puts it on the site where nobody can use it yet. Press Enter on Live, and then on Publish when the question asks.
+   - You should hear: "Published Ask us anything on" your site, its form number, "live. Insert Form Into Page puts it on a page."
+   - Worth knowing: Publishing again later updates the same form. If somebody changed it on the site since, you are asked first, and the site's copy is kept on this computer.
+
+4. **Put it on a page.** Open a page with Open Page or Post, in File, WordPress, and put the cursor where the form goes. Choose Insert Form Into Page in Tools, Forms, pick your form, then Publish or Update the page.
+   - You should hear: "Inserted the Ask us anything form", and that it shows on the page once the page is sent.
+
+5. **Try it on the site.** Back in your form, choose Test on Site, in Tools, Forms. It opens the page that shows your form in your web browser, so you can fill it in for real and send yourself a response.
+   - You should hear: "Opened" the page's name "on" your site, "where the form is."
+
+6. **Read what people sent.** Choose Responses, in Tools, Forms. With your published form in front it goes straight to that form's responses, newest first. Press Enter on one to read it, a question and its answer a line.
+   - You should hear: Responses to Ask us anything, and each response: its number, when it was sent, and who sent it.
+   - Worth knowing: Responses are people's personal details. They are read only while this window is open and saved only where you choose, with Export to CSV or Export to Word.
+
+Your form is live, and you can hear every answer it brings in. The first time you use a site in a session, you are also told how many new responses are waiting.
 
 ## Coding, in the Developer profile
 

@@ -161,95 +161,13 @@ def test_insert_link_is_not_duplicated_in_edit_menu() -> None:
     assert insert_link_appends == ["insert_menu"], insert_link_appends
 
 
-def test_publishing_actions_live_in_file_menu_not_top_level_publishing_menu() -> None:
+def test_old_publish_submenu_is_retired_in_favour_of_file_wordpress() -> None:
+    # File > WordPress (wordpress.md 15) replaced the older Publish submenu and
+    # its future.publishing / future.publishing_read flags.
     source = _menu_source()
-    assert 'menu_bar.Append(publishing_menu, "P&ublishing")' not in source
-    # No mnemonic since the 2026-09-18 sweep (bad.md H5): the File menu claims
-    # twenty-one of twenty-six letters and every letter in "Publish" was taken.
-    # GATE-14's rule decides it -- a duplicate advertises a key that may not
-    # work, while silence is merely silent and Tab still arrives.
-    assert 'file_menu.AppendSubMenu(self._publishing_file_menu, _("Publish"))' in source
-    assert (
-        "self._publishing_file_menu.Append(\n                self._id_publishing_connections,"
-        in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_verify_connection," in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_browse_content," in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_create_draft," in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_publish_current," in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_create_page_draft," in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_publish_current_page," in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_compare_remote_item," in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_update_remote_item," in source
-    )
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_publish_remote_item," in source
-    )
-    assert "lambda _e: self._publish_open_remote_item()" in source
-    assert (
-        "self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_schedule_publish," in source
-    )
-    assert "lambda _e: self._schedule_publishing_publish()" in source
-    assert "lambda _e: self._compare_publishing_remote_item()" in source
-
-
-def test_publishing_menu_is_split_into_read_and_locked_send_halves() -> None:
-    # The Publish submenu is gated in two independent halves so the read-only
-    # inbound tools can ship while the content-send half stays locked off:
-    #   - future.publishing_read (not locked): connections, verify, browse.
-    #   - future.publishing (locked off, quill/core/feature_catalog.py): the
-    #     create/update/publish/schedule send commands.
-    # Construction (not just Command Palette filtering) must honor the split,
-    # mirroring the core.glow pattern (ids stay unconditional; only .Append()
-    # is gated).
-    source = _menu_source()
-    assert 'publishing_read_enabled = self._feature_enabled("future.publishing_read")' in source
-    assert 'publishing_send_enabled = self._feature_enabled("future.publishing")' in source
-    assert (
-        "if publishing_read_enabled or publishing_send_enabled:\n"
-        "            self._publishing_file_menu = wx.Menu()" in source
-    )
-    # Inbound items are gated by the read flag; send items by the locked flag.
-    assert (
-        "if publishing_read_enabled:\n"
-        "            self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_connections," in source
-    )
-    assert (
-        "if publishing_send_enabled:\n"
-        "            self._publishing_file_menu.Append(\n"
-        "                self._id_publishing_create_draft," in source
-    )
-    assert (
-        "        if publishing_read_enabled or publishing_send_enabled:\n"
-        "            file_menu.AppendSeparator()\n"
-        '            file_menu.AppendSubMenu(self._publishing_file_menu, _("Publish"))' in source
-    )
+    assert "_publishing_file_menu" not in source
+    assert "future.publishing" not in source
+    assert "self._append_wordpress_file_menu(file_menu)" in source
 
 
 def test_menu_builder_only_calls_power_tools_helpers_that_exist() -> None:

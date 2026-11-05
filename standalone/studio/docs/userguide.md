@@ -482,6 +482,12 @@ All publishing is unavailable in Safe Mode.
 
 **Book Tools > ACX Compliance Check...** measures any audio file - not just books built here - against the ACX submission window: integrated loudness (target -20 LUFS plus or minus 3), true peak (max -3 dBFS), and noise floor (max -60 dBFS). A passing file is told so plainly; a failing one gets a concrete recommendation per criterion ("make the recording 5.8 dB quieter"). The measurement runs in the background and needs ffmpeg; if ffmpeg is missing the app points you at **Voices > Get FFmpeg...** first.
 
+### Post an Episode to WordPress
+
+If you look after a WordPress website, **WordPress > Post an Episode to WordPress...** (**Ctrl+Shift+W**) posts a finished recording there. Choose the finished audio file. Studio uploads it to your site's Media Library, or uses the copy already there if you say so, reads its chapters, and offers to make a transcript on this computer when there is none. It then writes a post with a player, the chapters with their times, and the transcript folded away under the player.
+
+Nothing is published. The post is a draft on this computer, and Studio opens QUILL with it, so you can read it through and publish it from the WordPress submenu of QUILL's File menu. If QUILL cannot start, the draft waits for you, in QUILL and in QUILL Lite: choose Open Local Draft in the WordPress submenu of their File menu. You connect your site once, in QUILL or QUILL Lite, with Connect a Site in that same submenu.
+
 ## Job files
 
 A `.quilljob` file pins an entire run - folder, voices, rotation and casting, chapters, output, mastering, and book details - in a small, portable, hand-editable text file.

@@ -244,6 +244,318 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="wordpress-in-quill-and-quill-lite-2026-11-04-in-progress">WordPress,
+in QUILL and QUILL Lite (2026-11-04, in progress)</h3>
+<ul>
+<li><strong>File &gt; WordPress.</strong> Write, open and publish the
+pages and posts of your WordPress sites without leaving QUILL. You can
+connect as many sites as you like. Connect a Site checks your
+application password before saving it, or fetches one with your browser.
+The password is kept in Windows’ Credential Manager.</li>
+<li><strong>Three kinds of save.</strong> Ctrl+S saves on this computer,
+Save Draft to Site sends an unpublished draft, and Publish or Update
+publishes after a confirmation that names the page and the site. Closing
+a document never publishes it.</li>
+<li><strong>Nothing is overwritten.</strong> If someone else changed the
+page while you worked, nothing is sent; you can compare, open their
+copy, or send yours anyway. Previous Versions keeps your earlier text
+and lists the site’s own history.</li>
+<li><strong>Open what is there:</strong> from a list, by its web
+address, or from your local drafts, as HTML or as Markdown. Anything
+Markdown cannot show is kept exactly.</li>
+<li><strong>Pictures.</strong> The Media Library and Insert Picture from
+This Computer, with alternative text, decorative pictures, captions,
+width and featured image. Check Before Publishing points out missing
+alternative text, vague links and skipped headings, and never stops you
+publishing.</li>
+<li><strong>Comments, categories and tags,</strong> managed from
+QUILL.</li>
+<li><strong>Tested against a real WordPress 7.1 site.</strong> Two
+things it taught us: WordPress 7.1 no longer gives its version in the
+REST index, so QUILL reads it from the site’s feed, which is how it
+knows the password can come back by itself; and several changes at once
+(merging categories, bulk fixes) are found where 7.1 really lists
+them.</li>
+<li><strong>One WordPress feature replaces the two Publishing
+features.</strong> It is on in every profile except Essential.</li>
+<li><strong>The old Publish submenu is gone.</strong> Publishing
+Connections, Browse Publishing Content and the rest are replaced by File
+&gt; WordPress. Your saved connections and their passwords carry over
+the first time you open it, and the Experimental tab’s “WordPress
+publishing connections” checkbox is gone with them.</li>
+<li><strong>Scheduling, autosaves and working offline.</strong> Schedule
+Publish asks for a date, a time and a time zone (the site’s own first),
+and on a scheduled item offers Change the Schedule or Publish Now. While
+a WordPress document is open it is autosaved every two minutes, on this
+computer and as your account’s autosave on the site, and Open offers an
+autosave newer than the site’s copy. Restore from Trash is in the Open
+list. After a new page is published, QUILL offers once to add it to a
+menu. A send that gets no answer re-reads the site before offering Try
+Again, so nothing is created twice, and a site that cannot be reached
+gets your sends queued, retried every two minutes and announced when
+they go through.</li>
+<li><strong>Running the site.</strong> Tools &gt; WordPress, with its
+Manage submenu: Comments with every status, replies under the comment
+they answer, Edit and Approve All, and the number waiting spoken the
+first time you use a site in a session; Menus and Navigation as a
+readable tree; Widgets, Site Map and Template Outline; Site Check and
+Site Settings, including the site icon; Users and Application Passwords;
+Plugins, Themes, Fonts and Synced Patterns; Bulk Edit with Undo, and
+Page Order; categories and tags you can convert, tidy when unused, and
+make the default. Sign Out This Site takes QUILL’s password away on the
+site itself. Every window knows your role first and says what it cannot
+do, instead of offering a button the site would refuse.</li>
+<li><strong>Check This Page works out of the box.</strong> axe-core
+4.14.0 ships with QUILL, so the visitor’s-eye check runs without
+downloading anything.</li>
+<li><strong>Media for listening.</strong> Tools &gt; WordPress &gt; More
+Media: Captions for Video, Transcript for Audio, Make a Listening
+Version, Name Embeds, and Publish a Document as a Page for a PDF or Word
+file.</li>
+<li><strong>Post This Episode, from QUILL Cast and Audio Studio, and
+Upload to WordPress, in Quill Converter.</strong> Each writes a
+WordPress draft with the audio, its transcript and show notes, and opens
+it in QUILL to finish and publish.</li>
+<li><strong>Listen and watch.</strong> Play a sound or video file
+straight from the Media Library, streamed from the site, with the same
+player keys as Quill Media Player, and captions read on request. View
+&gt; Play Media Here plays the one at the caret.</li>
+<li><strong>Enter works in the WordPress lists.</strong> In Open, Enter
+opens the selected page or post; in the Media Library it plays a sound
+or video file and inserts anything else.</li>
+<li><strong>The Media Library, all of it.</strong> Insert, and Tools
+&gt; WordPress with its More Media submenu: Insert from Media Library,
+Paste Image (a picture on the clipboard is uploaded and inserted),
+Upload Files (many at once, with duplicates caught first and progress
+spoken), Upload from Web Address, Image Size with Back to Earlier Size,
+Make a Smaller Copy (the original is never replaced), and the Alt Text
+Review for every picture in the page. The Media Library window gained
+Used In, Attach to This Page or Post, Set as Featured Image, Suggest Alt
+Text and Describe Image. A suggestion only fills the field; you decide
+what is saved.</li>
+<li><strong>Blocks, made plain.</strong> Insert, Format, View and Edit:
+Insert Block, with your site’s patterns and synced patterns and a short
+form for each block; Next Block, Previous Block and Where Am I, which
+say each block’s kind, place and first words; a Blocks window that
+moves, duplicates, removes, changes and groups blocks, one Undo step
+each, without touching the rest of the page; Block Settings, with the
+theme’s own colours and sizes by name and the contrast of each colour;
+and Preview Blocks, which reads what your site makes of its blocks
+without saving anything.</li>
+<li><strong>Checking the site the visitor’s way.</strong> Tools &gt;
+WordPress: Check This Page runs the published page through axe-core in a
+hidden Edge or Chrome, with plain explanations and Go to It. Check the
+Whole Site checks every page and post, groups the problems with counts,
+and offers Fix in Bulk for the safe fixes, with a preview, one
+confirmation and Undo Site Fix. Also: Site-wide Find and Replace, Write
+an Accessibility Statement, Palette Report, Mark Language, In Short, and
+a reading-level line in Properties.</li>
+<li><strong>The Picture Maker, the site logo and Visual Review.</strong>
+The Picture Maker, shared with QUILL Studio, makes a picture from a
+description, can suggest one from the page, and inserts it with an
+upload. Site Logo replaces the logo or icon with a named confirmation
+and Restore Earlier. Visual Review describes what a sighted visitor sees
+on the published page, on a desktop and a phone, and says what it will
+send to the AI before it sends it. Preview and Review tries a picture or
+logo width on a copy of the page.</li>
+<li><strong>WordPress commands are where Word keeps them.</strong> File
+&gt; WordPress holds what is about the whole page or the site. Inside a
+page, Insert has WordPress Block, the two Picture rows, Link to a Page
+on This Site and Make a Picture; Format &gt; WordPress has Block
+Settings, Image Size and Mark Language; View has WordPress Blocks and
+Preview Blocks; Edit &gt; WordPress has Next Block, Previous Block and
+Where Am I. The checks and the site’s upkeep are in Tools &gt;
+WordPress. The page commands are dimmed unless a WordPress page or post
+is in front of you.</li>
+<li><strong>Forms.</strong> Write accessible forms in BFL, the language
+of BITS Accessible Forms: File &gt; New Form, Insert &gt; Form Field,
+View &gt; Form Outline, Format &gt; Form Rules (each rule read as a
+sentence), and Tools &gt; Forms with Check This Form and Fill It In
+Yourself, which walks you through the form as a visitor would, in each
+of its languages. One form definition is shared with BITS Accessible
+Forms.</li>
+<li><strong>Forms read back exactly as written.</strong> Very large and
+very small numbers in rules and calculations are written in plain
+digits, rounding matches the site to the last digit, and priced choices
+use the short form.</li>
+<li><strong>Seven guided Forms lessons</strong> in Help &gt; Tutorials,
+from starting a form to reading its responses on your site.</li>
+<li><strong>A rule’s answer matches however you type it.</strong>
+“Phone”, “phone” or “PHONE” all name the Phone choice.</li>
+<li><strong>Forms on your site and on paper.</strong> Publish Form,
+Insert Form Into Page, Test on Site and Responses work with sites
+running BITS Accessible Forms. Save a form as a web page, a Word
+document, large print or braille-ready text. Draft a Form, Plain
+Language and Suggest Autofill Hints help with the wording, and Summarise
+Responses asks before it sends anything.</li>
+<li><strong>Forms: nothing you add is lost.</strong> A question added at
+the top of a page is kept when the form is saved, and choice lists from
+a library show in Fill It In Yourself.</li>
+<li><strong>WordPress keys.</strong> Ctrl+Alt+Shift+Grave, then one
+letter: O Open, P Publish or Update, M Media Library, S Switch Site, W
+Open by Web Address, D Save Draft to Site, and the File &gt; WordPress
+letters for the rest. The menus show each key.</li>
+<li><strong>Your site’s look and plugins.</strong> Tools &gt; WordPress
+&gt; Design has Style Variations, with each look’s colour check, and
+Site Styles. Insert Block searches WordPress.org’s free patterns. The
+Events Calendar, WooCommerce and SEO plugins get small, plain extras,
+and Site Check runs every Site Health test. AI Abilities are off until
+you turn each one on.</li>
+<li><strong>More from your site.</strong> Hear Where a Link Goes and Fix
+Link Text (Edit &gt; WordPress), dead links in Check This Page, Insert
+&gt; WordPress Icon, large uploads in pieces and Regenerate Sizes,
+Previous Looks and Menu History, Space Used and a copy of the site’s
+design, and Coming Up and What Changed on My Sites across every site.
+File &gt; WordPress &gt; Send and Copy sends any document to WordPress,
+publishes to another site, duplicates, downloads your writing, and sends
+a folder as drafts.</li>
+<li><strong>Block notes, custom fields and picture sizes.</strong> View
+&gt; Block Notes and Insert &gt; Note on This Block join in the block
+editor’s notes. Properties shows the custom fields your site’s plugins
+register, and File &gt; WordPress &gt; Custom Fields opens them. The
+picture window offers the library’s own sizes, and Tools &gt; WordPress
+&gt; More Media &gt; Edit a Picture on the Site turns or crops a picture
+into a new one.</li>
+<li><strong>Sites says which password QUILL uses,</strong> and Sign Out
+This Site takes away exactly that one.</li>
+<li><strong>Many comments at once,</strong> and <strong>Alt Text for the
+Whole Library</strong>.</li>
+<li><strong>Seven guided WordPress lessons</strong> in Help &gt;
+Tutorials: connecting your site, writing and publishing a post, opening
+a page by its web address to fix a sentence, pictures with alternative
+text, Check Before Publishing, previous versions, and comments.</li>
+<li><strong>Open in Quill Media Player</strong> from the WordPress
+player now plays the file in the Player, and a single file says “End of
+file” rather than “End of book”.</li>
+<li><strong>Open lists your site’s own kinds too.</strong> Events,
+recipes, or whatever your theme or plugins add, beside Posts and
+Pages.</li>
+<li><strong>New: Insert &gt; Link to a Page on This Site.</strong> Pick
+one of the site’s published pages or posts, and the link goes in, named
+by what you selected or by the page’s title.</li>
+<li><strong>Every WordPress field is read by its own label.</strong> The
+label used to come after its field, so a screen reader could read a
+field with the label meant for the next one.</li>
+<li><strong>Category and tag lists say whether each one is
+checked.</strong> They are separate check boxes now, so your screen
+reader announces the state as you move.</li>
+<li><strong>Fixed: a new page lost track of itself when first
+sent.</strong> The first Save Draft to Site or Publish on a page started
+in QUILL moved its file out from under the editor, so the next command
+said it was not a WordPress document. It now stays where it is.</li>
+</ul>
+<h3
+id="everything-in-the-menus-is-in-the-command-palette-2026-11-04">Everything
+in the menus is in the Command Palette (2026-11-04)</h3>
+<ul>
+<li><strong>The palette now finds every menu item.</strong> A few dozen
+items were in the menus and on their keys but had never been added to
+the palette. Among them were your recent files, your open documents and
+some of the braille tools, so typing their names found nothing. The
+palette now reads them from the menus each time it opens, named by the
+menus they sit in. A test checks that nothing in the menu bar is left
+out.</li>
+</ul>
+<h3 id="agentic-coding-project-tasks-2026-11-04">Agentic coding: project
+tasks (2026-11-04)</h3>
+<p>Project tasks with an AI, in the Developer profile. QUILL Lite gets
+every one of these in the same change.</p>
+<ul>
+<li><p><strong>The Claude engine really runs with no tools of its
+own.</strong> The Claude Agent SDK pack asked for
+<code>allowed_tools=[]</code>, which only pre-approves nothing: the
+model could still see Claude Code’s file and shell tools. It now passes
+<code>disallowed_tools=["*"]</code> in <code>default</code> permission
+mode, so every built-in tool is removed, and a test with a stand-in SDK
+checks the options.</p></li>
+<li><p><strong>The shared project-task core is checked and
+tested.</strong> A project is a folder; the agent may read inside it,
+never outside, and never sees secret files. Edits wait in a change set
+until you review them, every turn has a private checkpoint for Undo Last
+Turn, commands run in a process tree that Stop ends whole, and test
+output comes back as one sentence. Over a hundred tests cover it. Fixed
+on the way: a command with quotes in it (a program under
+<code>Program Files</code>, say) reached <code>cmd</code> with its
+quotes mangled; the program’s own path set off the “runs outside the
+project” warning, which also hid Always Allow; the closing summary left
+out the commands a turn ran; and test results said “1 errors”.</p></li>
+<li><p><strong>A Developer profile, and the only place coding
+lives.</strong> The profile that was called Developer and Power Text is
+now <strong>Developer</strong>. It keeps its regular-expression, cleanup
+and analysis tools, and it is now the only profile, with Full Quill,
+that turns on developer tools: project tasks, local Git and GitHub, the
+Developer Console, word prediction and the agent validator. In every
+other profile they are off, not just quiet. One feature, Developer
+Tools, sits under all of them; turning it on in Manage Individual
+Features is the way to get one tool without the whole profile.</p></li>
+<li><p><strong>Do a Project Task.</strong> Open a folder as a project
+and Ctrl+3 works on the whole project instead of one document. The agent
+reads, searches and plans without asking; every change it proposes waits
+in <strong>Review Changes</strong>, a list of files over one change at a
+time, with line numbers first and indentation said as a count. Nothing
+is written until you accept it. Every command it wants to run asks
+first, in <strong>Run This Command?</strong>, with the exact command to
+arrow through and a warning when QUILL sees one. Test results come back
+as one sentence. <strong>Undo Last Agent Turn</strong> puts every file
+back, and refuses, naming the file, if you have edited it since.
+<strong>Stop Agent</strong> stops the task and its command from any
+window. The window also has Plan, Changes, Output, Transcript, Explain
+Last Turn and <strong>Coach mode</strong>, where the agent teaches and
+you type.</p></li>
+<li><p><strong>Commands Allowed in This Project</strong> is your own
+list of commands that run without asking, kept in QUILL and never in the
+project, with a deliberate <strong>Run commands without asking</strong>
+switch that is off until you check it and confirm.</p></li>
+<li><p><strong>Engine Tools for This Project</strong> shows the engine’s
+own tools (Copilot’s shell and editor, say). All are off until you check
+them, they still ask before each use, and a turn that has any on says
+so.</p></li>
+<li><p><strong>Agent notes in a project</strong> are read the way the
+tools that write them expect: <code>AGENTS.md</code> at the root and in
+folders, Copilot’s instruction files, <code>CLAUDE.md</code>,
+<code>GEMINI.md</code> and Cursor’s rules. QUILL asks once per project
+whether to use them, and nothing in them can approve anything.</p></li>
+<li><p><strong>Each Developer command is where you would look for
+it,</strong> in both editors: Open Project Folder and Close Project in
+File; Undo Last Agent Turn and Stop Agent in Edit, under Agent Work; the
+task’s transcript and command output in View; Commands Allowed in This
+Project in Tools; and Do a Project Task, Explain Last Turn and Engine
+Tools in the AI menu, after Do a Document Task. None of them appears
+outside the Developer profile.</p></li>
+<li><p><strong>Undo says what it would lose, and offers a look.</strong>
+When Undo Last Agent Turn refuses because you edited a file since the
+agent’s turn, it names the file and offers to open the file as it was
+before the turn, so you can compare. Your file is not changed.</p></li>
+<li><p><strong>Project tasks are off in Safe Mode,</strong> like the AI
+engines.</p></li>
+<li><p><strong>More engines for project tasks.</strong> GitHub Copilot
+and Codex as before, and now on My own key: <strong>Claude</strong> (the
+Claude Agent SDK on your own Anthropic key, with QUILL’s tools and none
+of Claude Code’s own unless you turn them on), and <strong>Ollama
+practice mode</strong>, a model on this computer: nothing is sent, and
+it is slower and less capable, which the window says.</p></li>
+<li><p><strong>A Project cell in the status bar</strong> says the open
+project and its git branch, and “waiting for you” when the task has a
+question you have not seen. Enter on it opens the task. It appears the
+first time you open a project.</p></li>
+<li><p><strong>F1 in every project window</strong> says what the window
+is for, then what the control you are on does, and the F1 help reference
+and the keyboard reference list them.</p></li>
+<li><p><strong>A tutorial: Your first project task,</strong> in a Coding
+track that appears only in the Developer profile. Twelve minutes, from
+opening a practice folder to undoing the whole turn.</p></li>
+<li><p><strong>Documented:</strong> a user guide chapter, “Project
+tasks: coding with an AI”, PRD section 36, the release notes and the
+announcement, and thirteen screen-reader checks for NVDA, JAWS and
+Narrator.</p></li>
+<li><p><strong>Practice mode’s call to Ollama goes through QUILL’s one
+network check,</strong> like every other address QUILL opens.</p></li>
+<li><p><strong>Changed files reload in place.</strong> When a turn
+changes a document you have open, it reloads with your cursor where it
+was, and QUILL says so once. A document with unsaved edits is left alone
+and named.</p></li>
+</ul>
 <h3 id="page-breaks-with-ctrlenter-2026-11-03">Page breaks with
 Ctrl+Enter (2026-11-03)</h3>
 <ul>

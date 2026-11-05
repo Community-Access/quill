@@ -1,0 +1,17 @@
+{
+ "version": 1,
+ "title": "Third Form",
+ "description": "Multi-step form with anti-spam",
+ "settings": {
+  "ajax_submission": true,
+  "enable_honeypot": true,
+  "enable_captcha": true,
+  "captcha_type": "recaptcha3"
+ },
+ "pages": [
+  {
+   "id": "page_1",
+   "items": []
+  }
+ ]
+}

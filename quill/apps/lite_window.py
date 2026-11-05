@@ -50,6 +50,7 @@ from quill.apps.lite_window_dictation import DocumentDictationMixin
 from quill.apps.lite_window_file import DocumentFileMixin
 from quill.apps.lite_window_folding import DocumentFoldingMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
+from quill.apps.lite_window_forms import DocumentFormsMixin
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_history import DocumentHistoryMixin
 from quill.apps.lite_window_import import DocumentImportMixin
@@ -74,6 +75,7 @@ from quill.apps.lite_window_tools import DocumentToolsMixin
 from quill.apps.lite_window_typing import DocumentTypingMixin
 from quill.apps.lite_window_view import DocumentViewCommandsMixin
 from quill.apps.lite_window_watch import DocumentDiskWatchMixin
+from quill.apps.lite_window_wordpress import DocumentWordPressMixin
 from quill.apps.lite_window_words import DocumentWordsMixin
 from quill.core.document_text import DocumentText
 from quill.core.lite import APP_NAME
@@ -117,9 +119,8 @@ class DocumentFrame(
     DocumentDictationMixin,
     DocumentCommandsMixin,
     DocumentFormatCommandsMixin,
-    # The outline commands: Select Section, Move Section Up/Down, Move
-    # Section To. Split from the Format mixin (GATE-11) because a section is
-    # a different idea from a run of bold text.
+    # The outline commands, split from Format (GATE-11): a section is a
+    # different idea from a run of bold text.
     DocumentSectionCommandsMixin,
     DocumentViewCommandsMixin,
     DocumentPrintMixin,
@@ -136,9 +137,10 @@ class DocumentFrame(
     DocumentClipboardMixin,
     DocumentTypingMixin,
     DocumentSpellingMixin,
+    DocumentWordPressMixin,
+    DocumentFormsMixin,
     DocumentFileMixin,
-    # Open from URL and the clipboard, drops, Reopen with Encoding and the
-    # save-time disk check, shared with QUILL (2026-10-04).
+    # Open from URL/clipboard, drops, Reopen with Encoding, disk check: QUILL's.
     DocumentSourcesMixin,
     # Watching the file for other programs' changes, QUILL's code (2026-10-04).
     DocumentDiskWatchMixin,
@@ -152,10 +154,8 @@ class DocumentFrame(
     DocumentMenuMixin,
     DocumentAppearanceMixin,
     DocumentModeMixin,
-    # Folding over Markdown sections, 2026-09-17 (bad.md P3.6, Tier 3).
-    # QUILL Lite already parsed heading blocks for its outline; collapsing
-    # to headings is how a listener skims a long document without the
-    # scroll-and-glance a sighted reader gets for free.
+    # Folding over Markdown sections, 2026-09-17 (bad.md P3.6, Tier 3): collapsing
+    # to headings is how a listener skims, without a sighted reader's glance.
     DocumentFoldingMixin,
     # Extend Selection Mode, 2026-09-17 (bad.md P2.13, Tier 2).
     # QUILL Lite deleted its own attempt at this in d20fabe and has had

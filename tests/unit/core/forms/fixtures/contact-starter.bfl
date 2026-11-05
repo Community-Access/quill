@@ -1,0 +1,15 @@
+form "Contact Us" @description "A simple starter form"
+
+text "Your Name"
+  @required
+  @placeholder "Jane Doe"
+
+email "Email Address"
+  @required
+  @placeholder "jane@example.com"
+
+textarea "Message"
+  @required
+  @rows 6
+
+submit "Send"

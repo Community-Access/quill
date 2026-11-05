@@ -685,7 +685,6 @@
             "braille_editor_hide_border": "bool",
             "experimental_acknowledged": "bool",
             "glow_experimental_enabled": "bool",
-            "publishing_experimental_enabled": "bool",
             "table_studio_experimental_enabled": "bool",
             "edge_read_aloud_enabled": "bool",
             "plain_text_with_formatting": "str",
@@ -1097,7 +1096,6 @@
           "braille_editor_hide_border": "braille",
           "experimental_acknowledged": "experimental",
           "glow_experimental_enabled": "experimental",
-          "publishing_experimental_enabled": "experimental",
           "table_studio_experimental_enabled": "experimental",
           "edge_read_aloud_enabled": "experimental",
           "plain_text_with_formatting": "editing",
@@ -1327,7 +1325,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "drops publishing_experimental_enabled, the retired Publishing opt-in; older builds read a missing key as off and newer builds drop it on load"
     },
     "radio.favorites": {
       "current": 1,

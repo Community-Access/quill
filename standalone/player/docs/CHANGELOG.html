@@ -254,6 +254,19 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>standalone/player</code> carries only the wrapper, launcher and
 docs.</p>
 <h2 id="unreleased">Unreleased</h2>
+<h3 id="opening">Opening</h3>
+<ul>
+<li><strong>Play a web address.</strong> Give Quill Media Player an
+https address, on the command line or from QUILL’s WordPress player
+(Open in Quill Media Player), and it streams it straight away; nothing
+is downloaded. Plain http addresses are refused with the reason.</li>
+<li><strong>A second launch hands over its file.</strong> Opening a file
+or address while the Player is already running now plays it in the
+running window. Before, the second launch did nothing.</li>
+<li><strong>A single file says “file”, not “book”.</strong> “End of
+file” and “in the file” for a file with no chapters; audiobooks keep
+their book wording. Go to Position also works on a stream now.</li>
+</ul>
 <h3 id="sound">Sound</h3>
 <ul>
 <li><strong>A second sound scheme: VS Code Signals</strong>

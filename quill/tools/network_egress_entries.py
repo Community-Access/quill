@@ -16,6 +16,7 @@ from quill.tools.network_egress_entries_agents import AGENT_EGRESS, AGENT_HTTP_E
 from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
+from quill.tools.network_egress_entries_wordpress import WORDPRESS_EGRESS
 
 _REVIEWED_EGRESS: dict[str, str] = {
     # Quill Radio's, split out under GATE-11 -- see the module beside this one.
@@ -23,6 +24,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     # The cloud dictation providers (D-31 to D-37), split out the same way.
     **SPEECH_EGRESS,
     **CAST_EXTRAS_EGRESS,
+    **WORDPRESS_EGRESS,
     **AGENT_HTTP_EGRESS,  # Ollama practice mode, loopback only
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
@@ -534,19 +536,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Dictionary and Datamuse; #897: Wikipedia's keyless REST summary endpoint). "
         "Only runs when the user enables online lexical lookups; HTTPS with a "
         "verified TLS context, no API key, graceful offline fallback."
-    ),
-    "core/publishing_clients.py::verify_connection": (
-        "User-initiated publishing connection verification from the Publishing "
-        "Connections dialog. Runs only when the user explicitly verifies a saved "
-        "connection; remote endpoints are HTTPS-enforced and HTTPS uses a verified "
-        "TLS context."
-    ),
-    "core/publishing_clients.py::_request_json": (
-        "User-initiated publishing browse, open, create, update, and schedule "
-        "requests from the Publish menu and publishing dialogs. Runs only when "
-        "the user explicitly loads, sends, or schedules content through a saved "
-        "connection; remote endpoints are HTTPS-enforced and HTTPS uses a "
-        "verified TLS context."
     ),
     "apps/beacon/feeds.py::fetch_feed": (
         "Quill Radio/Beacon podcast subscribe + refresh: fetches one feed's raw "

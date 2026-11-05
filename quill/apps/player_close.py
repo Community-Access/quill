@@ -20,7 +20,13 @@ def on_player_close(app: Any, event: Any) -> None:
         app._save_resume()
     except Exception:  # noqa: BLE001 - closing must never be blocked by a save
         pass
-    for name in ("_resume_timer", "_sleep_timer", "_status_timer", "_listen_timer"):
+    for name in (
+        "_resume_timer",
+        "_sleep_timer",
+        "_status_timer",
+        "_listen_timer",
+        "_handover_timer",
+    ):
         timer = getattr(app, name, None)
         if timer is None:
             continue

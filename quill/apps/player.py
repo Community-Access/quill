@@ -25,10 +25,12 @@ from typing import Any
 import wx
 
 from quill.apps import player_close
+from quill.apps.player_address import PlayerAddressMixin, hand_over, launch_arguments
 from quill.apps.player_ai import PlayerAiMixin
+from quill.apps.player_bookmarks import PlayerBookmarksMixin
 from quill.apps.player_menus import MediaPlayerMenuMixin
 from quill.core.media import DspSettings, build_audio_filters, format_spoken
-from quill.core.media.bookmarks import BookmarkStore, MediaBookmark
+from quill.core.media.bookmarks import BookmarkStore
 from quill.core.net import configure_ssl_trust
 from quill.core.speech.chapter_io import format_timestamp
 from quill.ui.accessible_names import set_accessible_name
@@ -60,6 +62,8 @@ _OPEN_WILDCARD = (
 
 class QuillMediaPlayerFrame(
     MediaPlayerMenuMixin,
+    PlayerAddressMixin,
+    PlayerBookmarksMixin,
     MediaListenMixin,
     NoteCuesMixin,
     MediaWinampKeysMixin,
@@ -70,7 +74,9 @@ class QuillMediaPlayerFrame(
 
     _STATUS_LABELS = ("State", "Position", "Chapter", "Sleep", "Backend")
 
-    def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
+    def __init__(
+        self, *, safe_mode: bool = False, initial_paths: list[Path | str] | None = None
+    ) -> None:
         self._init_app_shell(
             _TITLE, safe_mode=safe_mode, size=dip_size(None, 620, 520), app_id="player"
         )
@@ -121,10 +127,10 @@ class QuillMediaPlayerFrame(
         self.frame.Bind(wx.EVT_TIMER, lambda _e: self._on_sleep_fired(), self._sleep_timer)
         # Closing saves the place and stops the clocks (qc.md F-12).
         self.frame.Bind(wx.EVT_CLOSE, lambda e: player_close.on_player_close(self, e))
-        for raw in initial_paths or []:
-            if raw.exists() and raw.is_file():
-                self._load_book(raw)
-                break
+        # A file path or an https address (player_address.py); a second launch
+        # hands its own over through the same door.
+        self._open_launch_arguments(str(raw) for raw in initial_paths or [])
+        self._start_handover_poll()
 
     # -- menu bar --------------------------------------------------------------
 
@@ -566,7 +572,7 @@ class QuillMediaPlayerFrame(
             title, payload = self._playlist[self._playlist_index]
             self._play_payload(payload, title, autoplay=True)
             self._announce(f"Next: {title}.")
-        else:
+        elif self._playlist:  # the panel has already said the file ended
             self._announce("End of book.")
 
     def _play_payload(self, payload: tuple, title: str, *, autoplay: bool) -> None:
@@ -757,7 +763,7 @@ class QuillMediaPlayerFrame(
     # -- go to position --------------------------------------------------------
 
     def _on_go_to_position(self, _event: Any) -> None:
-        if self._book_path is None:
+        if not self._book_key:  # a streamed address has a length too
             self._show_message_box("Open a file first.", _TITLE)
             return
         dialog = GoToPositionDialog(
@@ -778,100 +784,11 @@ class QuillMediaPlayerFrame(
         finally:
             dialog.Destroy()
 
-    # -- bookmarks -------------------------------------------------------------
-
-    def _on_add_bookmark(self, _event: Any) -> None:
-        if not self._book_key:
-            self._show_message_box("Open a file first.", _TITLE)
-            return
-        position = self._player.playhead_ms()
-        self._bookmarks.add(self._book_key, position)
-        self._refresh_bookmarks()
-        self._announce(f"Bookmark added at {format_spoken(position)}.")
-
-    def _on_add_bookmark_note(self, _event: Any) -> None:
-        if not self._book_key:
-            self._show_message_box("Open a file first.", _TITLE)
-            return
-        note = self._prompt_text("Add Bookmark", "Note for this bookmark:", "")
-        if note is None:
-            return
-        position = self._player.playhead_ms()
-        self._bookmarks.add(self._book_key, position, note=note)
-        self._refresh_bookmarks()
-        self._announce(f"Bookmark added at {format_spoken(position)}.")
-
-    def _on_edit_bookmark(self, _event: Any) -> None:
-        mark = self._selected_bookmark()
-        if mark is None:
-            return
-        note = self._prompt_text("Edit Bookmark", "Note:", mark.note)
-        if note is None:
-            return
-        self._bookmarks.add(self._book_key, mark.position_ms, label=mark.label, note=note)
-        self._refresh_bookmarks()
-        self._announce("Bookmark note updated.")
-
     def _prompt_text(self, title: str, prompt: str, default: str) -> str | None:
         with wx.TextEntryDialog(self.frame, prompt, title, default) as dialog:
             if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
                 return None
             return dialog.GetValue().strip()
-
-    def _on_copy_bookmark(self, _event: Any) -> None:
-        mark = self._selected_bookmark()
-        if mark is None:
-            return
-        from quill.ui.media.bookmark_actions import copy_bookmark_to_clipboard
-
-        copy_bookmark_to_clipboard(self, mark, self._now_playing.GetValue())
-
-    def _on_export_bookmarks(self, _event: Any) -> None:
-        if not self._book_key:
-            self._show_message_box("Open a book first.", _TITLE)
-            return
-        from quill.ui.media.bookmark_actions import export_bookmarks_markdown
-
-        export_bookmarks_markdown(
-            self, self._now_playing.GetValue(), self._bookmarks.list(self._book_key)
-        )
-
-    def _on_export_sync(self, _event: Any) -> None:
-        from quill.ui.media.bookmark_actions import export_sync_bundle
-
-        export_sync_bundle(self, self._bookmarks)
-
-    def _on_import_sync(self, _event: Any) -> None:
-        from quill.ui.media.bookmark_actions import import_sync_bundle
-
-        import_sync_bundle(self, self._bookmarks, self._refresh_bookmarks)
-
-    def _on_remove_bookmark(self, _event: Any) -> None:
-        mark = self._selected_bookmark()
-        if mark is None:
-            return
-        self._bookmarks.remove(self._book_key, mark.position_ms)
-        self._refresh_bookmarks()
-        self._announce("Bookmark removed.")
-
-    def _on_bookmark_activate(self, _control: object) -> None:
-        mark = self._selected_bookmark()
-        if mark is not None:
-            self._player.seek_to(mark.position_ms)
-
-    def _selected_bookmark(self) -> MediaBookmark | None:
-        index = self._bookmarks_list.GetSelection()
-        marks = self._bookmarks.list(self._book_key) if self._book_key else []
-        if index == wx.NOT_FOUND or not (0 <= index < len(marks)):
-            return None
-        return marks[index]
-
-    def _refresh_bookmarks(self) -> None:
-        self._bookmarks_list.Clear()
-        for mark in self._bookmarks.list(self._book_key) if self._book_key else []:
-            when = format_spoken(mark.position_ms)
-            note = mark.note or mark.label
-            self._bookmarks_list.Append(f"{note} ({when})" if note else when)
 
     # -- misc ------------------------------------------------------------------
 
@@ -883,7 +800,7 @@ def main() -> int:
     apply_pending_at_launch()  # queued Data Folder move, before any data read
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
     start_in_tray = "--tray" in sys.argv
-    initial_paths = [Path(arg) for arg in sys.argv[1:] if not arg.startswith("-")]
+    initial_paths: list[Path | str] = list(launch_arguments(sys.argv[1:]))  # https kept whole
     from quill.core.ipc import (
         enqueue_open_request,
         release_primary_instance,
@@ -891,7 +808,7 @@ def main() -> int:
     )
 
     if not try_claim_primary_instance(slot=_IPC_SLOT):
-        enqueue_open_request(None, slot=_IPC_SLOT)
+        hand_over(launch_arguments(sys.argv[1:]), enqueue_open_request, slot=_IPC_SLOT)
         return 0
 
     from quill.core import components

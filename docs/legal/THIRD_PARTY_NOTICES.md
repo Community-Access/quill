@@ -33,7 +33,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 - GNU General Public License, version 3: 7 components
 - Python Software Foundation License, version 2: 6 components
 - GNU Lesser General Public License, version 2.1: 5 components
-- Mozilla Public License, version 2.0: 4 components
+- Mozilla Public License, version 2.0: 5 components
 - The Unlicense (public domain dedication): 4 components
 - BSD 2-Clause License: 3 components
 - Public domain: 3 components
@@ -1419,6 +1419,17 @@ Speech engines, voices and recognition models.
 ## Data and dictionaries
 
 Word lists, dictionaries, directories and other data files.
+
+### axe-core
+
+- **What it is:** The accessibility rules Check This Page runs inside a hidden Edge or Chrome, on this computer.
+- **Included in:** QUILL for All, QUILL Lite.
+- **Version:** 4.14.0
+- **Licence:** Mozilla Public License 2.0; its bundled helpers are MIT and similar (quill/data/axe/LICENSE-3RD-PARTY.txt)
+- **Copyright:** Copyright (c) 2015 - 2026 Deque Systems, Inc.
+- **Upstream:** https://github.com/dequelabs/axe-core
+- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
+- **What the licence asks of us:** Ship the licence text. Make the source of the MPL-covered files available (we ship them unmodified; the upstream source is public) and keep their notices. Our own code is not affected.
 
 ### Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data)
 
@@ -6593,7 +6604,7 @@ freely, subject to the following restrictions:
 
 ### Mozilla Public License, version 2.0
 
-Used by: certifi, Prism (prismatoid), tqdm, Hunspell dictionaries.
+Used by: certifi, Prism (prismatoid), tqdm, axe-core, Hunspell dictionaries.
 
 What it asks of us: Ship the licence text. Make the source of the MPL-covered files available (we ship them unmodified; the upstream source is public) and keep their notices. Our own code is not affected.
 

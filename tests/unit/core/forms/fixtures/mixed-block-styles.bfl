@@ -1,0 +1,15 @@
+form "Test"
+
+text #field1 "Field 1"
+  @required
+
+text #field2 "Field 2" { @required @placeholder "Test" }
+
+text #field3 "Field 3" [
+  @required
+  @maxlength 50
+]
+
+text #field4 "Field 4" begin
+  @required
+end

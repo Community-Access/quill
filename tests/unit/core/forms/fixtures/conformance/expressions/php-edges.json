@@ -1,0 +1,666 @@
+{
+    "about": "More expression cases, for implementations other than PHP: byte-wise text (only A to Z change case; text orders by code point), PHP number formatting and rounding, numeric text, dates with a trailing newline or a time, composite answers held as objects, and error offsets counted in UTF-8 bytes. Numbers compare numerically.",
+    "labels": {
+        "name": "Name",
+        "price": "Price",
+        "qty": "Quantity",
+        "when": "Arrival",
+        "city": "City",
+        "tags": "Tags"
+    },
+    "choices": {
+        "city": {
+            "mtl": "Montréal",
+            "nyc": "New York"
+        }
+    },
+    "context": {
+        "today": "2026-11-04",
+        "values": {
+            "name": "Émile Zola",
+            "price": "19.99",
+            "qty": 3,
+            "when": "2026-11-20\n",
+            "city": "mtl",
+            "tags": {
+                "a": "red",
+                "b": ""
+            },
+            "big": 100000000000000000,
+            "neg": "-0",
+            "spaced": " \f12 ",
+            "dot": "3.",
+            "half": ".5",
+            "stamp": "2026-11-20T09:30:00",
+            "emoji": "😀",
+            "repl": "�",
+            "flag": true,
+            "off": false,
+            "nested": [
+                [],
+                [
+                    ""
+                ]
+            ]
+        }
+    },
+    "parse": [
+        {
+            "text": "1.0",
+            "canonical": "1.0",
+            "sentence": "1"
+        },
+        {
+            "text": "-0.5 * #qty",
+            "canonical": "-0.5 * #qty",
+            "sentence": "-0.5 times Quantity"
+        },
+        {
+            "text": "100000000000000000",
+            "canonical": "100000000000000000.0",
+            "sentence": "100000000000000000"
+        },
+        {
+            "text": "0.00001",
+            "canonical": "0.00001",
+            "sentence": "0.00001"
+        },
+        {
+            "text": "0.0001",
+            "canonical": "0.0001",
+            "sentence": "0.0001"
+        },
+        {
+            "text": "12345678901234567",
+            "canonical": "12345678901234568.0",
+            "sentence": "12345678901234568"
+        },
+        {
+            "text": "-0.0",
+            "canonical": "-0.0",
+            "sentence": "-0"
+        },
+        {
+            "text": "not not #name",
+            "canonical": "not not #name",
+            "sentence": "not (not Name)"
+        },
+        {
+            "text": "#name is filled in",
+            "canonical": "#name is not empty",
+            "sentence": "Name is filled in"
+        },
+        {
+            "text": "#when is within 7 days of #when",
+            "canonical": "#when is within 7 days of #when",
+            "sentence": "Arrival is within 7 days of Arrival"
+        },
+        {
+            "text": "(#price + #qty) * 2",
+            "canonical": "(#price + #qty) * 2",
+            "sentence": "(Price plus Quantity) times 2"
+        },
+        {
+            "text": "#price - (#qty - 1)",
+            "canonical": "#price - (#qty - 1)",
+            "sentence": "Price minus (Quantity minus 1)"
+        },
+        {
+            "text": "#price - #qty - 1",
+            "canonical": "#price - #qty - 1",
+            "sentence": "Price minus Quantity minus 1"
+        },
+        {
+            "text": "#price / (#qty * 2)",
+            "canonical": "#price / (#qty * 2)",
+            "sentence": "Price divided by (Quantity times 2)"
+        },
+        {
+            "text": "-(#price + 1)",
+            "canonical": "-(#price + 1)",
+            "sentence": "minus Price plus 1"
+        },
+        {
+            "text": "#price * -2",
+            "canonical": "#price * -2",
+            "sentence": "Price times -2"
+        },
+        {
+            "text": "{qty} * 2",
+            "canonical": "#qty * 2",
+            "sentence": "Quantity times 2"
+        },
+        {
+            "text": "'it\\'s'",
+            "canonical": "\"it's\"",
+            "sentence": "it's"
+        },
+        {
+            "text": "\"caf\\u{e9}\"",
+            "canonical": "\"cafu{e9}\"",
+            "sentence": "cafu{e9}"
+        },
+        {
+            "text": "\"\\u00e9t\\u00e9\"",
+            "canonical": "\"été\"",
+            "sentence": "été"
+        },
+        {
+            "text": "\"tab\\there\"",
+            "canonical": "\"tab\\there\"",
+            "sentence": "tab\there"
+        },
+        {
+            "text": "\"a/b\"",
+            "canonical": "\"a/b\"",
+            "sentence": "a/b"
+        },
+        {
+            "text": "TODAY() is before #when",
+            "canonical": "today() is before #when",
+            "sentence": "today is before Arrival"
+        },
+        {
+            "text": "Today is before #when",
+            "canonical": "today() is before #when",
+            "sentence": "today is before Arrival"
+        },
+        {
+            "text": "score >= 5 and score(#qty) < 2",
+            "canonical": "score >= 5 and score(#qty) < 2",
+            "sentence": "the score is at least 5 and the score for Quantity is less than 2"
+        },
+        {
+            "text": "user(\"display_name\") contains \"jeff\"",
+            "canonical": "user(\"display_name\") contains \"jeff\"",
+            "sentence": "the signed-in user's display name contains jeff"
+        },
+        {
+            "text": "if(#qty > 2, \"many\", \"few\")",
+            "canonical": "if(#qty > 2, \"many\", \"few\")",
+            "sentence": "many if Quantity is greater than 2, otherwise few"
+        },
+        {
+            "text": "#city is one of [\"mtl\", \"nyc\"]",
+            "canonical": "#city is one of [\"mtl\", \"nyc\"]",
+            "sentence": "City is one of Montréal or New York"
+        },
+        {
+            "text": "not #city is \"mtl\"",
+            "canonical": "not #city is \"mtl\"",
+            "sentence": "City is not Montréal"
+        },
+        {
+            "text": "not (#qty > 1 and #qty < 5)",
+            "canonical": "not (#qty > 1 and #qty < 5)",
+            "sentence": "not (Quantity is greater than 1 and Quantity is less than 5)"
+        },
+        {
+            "text": "#qty is at least 1 or #qty is at most 0 and #name is empty",
+            "canonical": "#qty >= 1 or #qty <= 0 and #name is empty",
+            "sentence": "Quantity is at least 1 or (Quantity is at most 0 and Name is empty)"
+        },
+        {
+            "text": "#city IS NOT \"nyc\"",
+            "canonical": "#city is not \"nyc\"",
+            "sentence": "City is not New York"
+        },
+        {
+            "text": "round(#price * #qty, 2)",
+            "canonical": "round(#price * #qty, 2)",
+            "sentence": "Price times Quantity rounded to 2 places"
+        },
+        {
+            "text": "days_between(today, #when)",
+            "canonical": "days_between(today(), #when)",
+            "sentence": "the days from today to Arrival"
+        },
+        {
+            "text": "#name starts with \"é\"",
+            "canonical": "#name starts with \"é\"",
+            "sentence": "Name starts with é"
+        },
+        {
+            "text": "#tags is [\"red\"]",
+            "canonical": "#tags is [\"red\"]",
+            "sentence": "Tags is red"
+        },
+        {
+            "text": "#name does not contain \"x\"",
+            "canonical": "#name does not contain \"x\"",
+            "sentence": "Name does not contain x"
+        }
+    ],
+    "errors": [
+        {
+            "text": "\"é\" ? 1",
+            "offset": 5
+        },
+        {
+            "text": "\"café",
+            "offset": 0
+        },
+        {
+            "text": "#name is \"Zoë\" and",
+            "offset": 19
+        },
+        {
+            "text": "nope(1)",
+            "offset": 0
+        },
+        {
+            "text": "#qty is one of [1, 2",
+            "offset": 15
+        },
+        {
+            "text": "round(1, 2, 3)",
+            "offset": 0
+        },
+        {
+            "text": "#name is \"é\" #qty",
+            "offset": 14
+        },
+        {
+            "text": "{qty",
+            "offset": 0
+        },
+        {
+            "text": "# qty",
+            "offset": 0
+        },
+        {
+            "text": "\"\\u00e9\" + @",
+            "offset": 11
+        }
+    ],
+    "evaluate": [
+        {
+            "text": "\"É\" contains \"é\"",
+            "result": false
+        },
+        {
+            "text": "#name contains \"émile\"",
+            "result": false
+        },
+        {
+            "text": "#name contains \"zola\"",
+            "result": true
+        },
+        {
+            "text": "#name starts with \"É\"",
+            "result": true
+        },
+        {
+            "text": "\"é\" > \"z\"",
+            "result": true
+        },
+        {
+            "text": "#repl > #emoji",
+            "result": false
+        },
+        {
+            "text": "#emoji > #repl",
+            "result": true
+        },
+        {
+            "text": "\"B\" < \"a\"",
+            "result": true
+        },
+        {
+            "text": "\"10\" > \"9\"",
+            "result": true
+        },
+        {
+            "text": "\"abc\" < \"abd\"",
+            "result": true
+        },
+        {
+            "text": "#when is after \"2026-11-19\"",
+            "result": true
+        },
+        {
+            "text": "#when - today()",
+            "result": 16
+        },
+        {
+            "text": "#stamp is before \"2026-11-21\"",
+            "result": true
+        },
+        {
+            "text": "#stamp is \"2026-11-20T09:30:00\"",
+            "result": true
+        },
+        {
+            "text": "date(#stamp)",
+            "result": "2026-11-20"
+        },
+        {
+            "text": "\"2026-11-04\" + 0.5",
+            "result": "2026-11-05"
+        },
+        {
+            "text": "\"2026-11-04\" + 1.5",
+            "result": "2026-11-06"
+        },
+        {
+            "text": "\"2026-11-04\" - 2.5",
+            "result": "2026-11-01"
+        },
+        {
+            "text": "\"2024-02-29\" + 365",
+            "result": "2025-02-28"
+        },
+        {
+            "text": "date(\"2024-02-29\")",
+            "result": "2024-02-29"
+        },
+        {
+            "text": "date(\"1900-02-29\")",
+            "result": null
+        },
+        {
+            "text": "\"2000-02-29\" + 1",
+            "result": "2000-03-01"
+        },
+        {
+            "text": "days_between(\"1969-12-31\", \"1970-01-02\")",
+            "result": 2
+        },
+        {
+            "text": "date(\"0001-01-01\") + 0",
+            "result": "0001-01-01"
+        },
+        {
+            "text": "age(\"2000-11-04\")",
+            "result": 26
+        },
+        {
+            "text": "age(\"2000-11-05\")",
+            "result": 25
+        },
+        {
+            "text": "age(\"2000-02-29\")",
+            "result": 26
+        },
+        {
+            "text": "round(1.005, 2)",
+            "result": 1.01
+        },
+        {
+            "text": "round(2.675, 2)",
+            "result": 2.68
+        },
+        {
+            "text": "round(1234.5678, -2)",
+            "result": 1200
+        },
+        {
+            "text": "round(-0.5)",
+            "result": -1
+        },
+        {
+            "text": "round(0.49999999999999994)",
+            "result": 1
+        },
+        {
+            "text": "round(5.055, 2)",
+            "result": 5.06
+        },
+        {
+            "text": "round(#price * #qty, 1)",
+            "result": 60
+        },
+        {
+            "text": "-7 % 3",
+            "result": -1
+        },
+        {
+            "text": "7.5 % 2",
+            "result": 1.5
+        },
+        {
+            "text": "1 / 3",
+            "result": 0.3333333333333333
+        },
+        {
+            "text": "0.1 + 0.2",
+            "result": 0.30000000000000004
+        },
+        {
+            "text": "#price * #qty",
+            "result": 59.97
+        },
+        {
+            "text": "#big + 0",
+            "result": 100000000000000000
+        },
+        {
+            "text": "1.5 + 1 contains \".5\"",
+            "result": true
+        },
+        {
+            "text": "#big contains \"1000\"",
+            "result": true
+        },
+        {
+            "text": "#neg is 0",
+            "result": true
+        },
+        {
+            "text": "#neg + 1",
+            "result": 1
+        },
+        {
+            "text": "#spaced + 1",
+            "result": 13
+        },
+        {
+            "text": "#spaced is 12",
+            "result": true
+        },
+        {
+            "text": "#dot + 1",
+            "result": 4
+        },
+        {
+            "text": "#half * 2",
+            "result": 1
+        },
+        {
+            "text": "\"-.5\" + 1",
+            "result": 0.5
+        },
+        {
+            "text": "\" 7 \" is 7",
+            "result": true
+        },
+        {
+            "text": "\"1e3\" + 1",
+            "result": 1
+        },
+        {
+            "text": "\"0x1A\" + 1",
+            "result": 1
+        },
+        {
+            "text": "\"+5\" + 1",
+            "result": 1
+        },
+        {
+            "text": "#flag + 1",
+            "result": 2
+        },
+        {
+            "text": "#off + 1",
+            "result": 1
+        },
+        {
+            "text": "#flag is \"true\"",
+            "result": true
+        },
+        {
+            "text": "#flag is 1",
+            "result": false
+        },
+        {
+            "text": "#off is empty",
+            "result": false
+        },
+        {
+            "text": "not #off",
+            "result": true
+        },
+        {
+            "text": "#tags is empty",
+            "result": false
+        },
+        {
+            "text": "count(#tags)",
+            "result": 1
+        },
+        {
+            "text": "#tags contains \"red\"",
+            "result": true
+        },
+        {
+            "text": "#tags is \"red\"",
+            "result": true
+        },
+        {
+            "text": "sum(#tags, 2)",
+            "result": 2
+        },
+        {
+            "text": "#nested is empty",
+            "result": true
+        },
+        {
+            "text": "count(#nested)",
+            "result": 0
+        },
+        {
+            "text": "not #nested",
+            "result": false
+        },
+        {
+            "text": "length(#emoji)",
+            "result": 1
+        },
+        {
+            "text": "length(#name)",
+            "result": 10
+        },
+        {
+            "text": "length(#tags)",
+            "result": 5
+        },
+        {
+            "text": "length(#flag)",
+            "result": 4
+        },
+        {
+            "text": "max(1, \"2\", [3, \"x\"], #missing)",
+            "result": 3
+        },
+        {
+            "text": "min(\"\", 4)",
+            "result": 4
+        },
+        {
+            "text": "sum([])",
+            "result": 0
+        },
+        {
+            "text": "abs(-0.0) is 0",
+            "result": true
+        },
+        {
+            "text": "floor(-0.5)",
+            "result": -1
+        },
+        {
+            "text": "ceil(-0.5)",
+            "result": 0
+        },
+        {
+            "text": "if(#missing, 1, 2)",
+            "result": 2
+        },
+        {
+            "text": "if(\"0\", 1, 2)",
+            "result": 1
+        },
+        {
+            "text": "if(0.0, 1, 2)",
+            "result": 2
+        },
+        {
+            "text": "if([], 1, 2)",
+            "result": 2
+        },
+        {
+            "text": "[1, 2] is [2, 1]",
+            "result": true
+        },
+        {
+            "text": "[1, 2] is [1, 1, 2]",
+            "result": false
+        },
+        {
+            "text": "[] is []",
+            "result": true
+        },
+        {
+            "text": "#qty is within 1 days",
+            "result": false
+        },
+        {
+            "text": "\"x\" is within 1 days",
+            "result": false
+        },
+        {
+            "text": "#when is within -1 days",
+            "result": false
+        },
+        {
+            "text": "user(\"x\") is null",
+            "result": true
+        },
+        {
+            "text": "null is \"\"",
+            "result": true
+        },
+        {
+            "text": "null is 0",
+            "result": false
+        },
+        {
+            "text": "\"\" is 0",
+            "result": false
+        },
+        {
+            "text": "#qty / \"0.0\"",
+            "result": null
+        },
+        {
+            "text": "#qty % 0",
+            "result": null
+        },
+        {
+            "text": "-#name",
+            "result": 0
+        },
+        {
+            "text": "#name + 1",
+            "result": 1
+        },
+        {
+            "text": "score",
+            "result": 0
+        },
+        {
+            "text": "score(#nothing)",
+            "result": 0
+        }
+    ]
+}

@@ -23,6 +23,7 @@ this without a display.
 
 from __future__ import annotations
 
+from quill.core.forms import menu as forms_menu
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands_ai import (
     AI_MENU_ROWS,
@@ -35,6 +36,7 @@ from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
+from quill.core.wordpress import menu as wordpress_menu
 
 __all__ = [
     "COMMANDS",
@@ -115,6 +117,7 @@ COMMANDS: list[CommandRow] = [
     # it would have left that row with no keyboard route at all.
     ("&File", "New &Rich Text Document", "Alt+Shift+T", "cmd_new_rich", ""),
     ("&File", "New P&lain Text Document", "Ctrl+Alt+N", "cmd_new_plain", ""),
+    *forms_menu.lite_rows("file"),  # New Form, QUILL's own table (forms/menu.py)
     ("&File", "&Open...", "Ctrl+O", "cmd_open", ""),
     ("&File", "Open from Clip&board", "Ctrl+Alt+Shift+Enter", "cmd_open_from_clipboard", ""),
     ("&File", "Open &from URL...", "", "cmd_open_from_url", ""),  # no key, as in QUILL
@@ -139,6 +142,7 @@ COMMANDS: list[CommandRow] = [
     # past F9 are where a once-in-a-while command goes).
     ("&File", "Reopen Last S&ession...", "Alt+Shift+F12", "cmd_reopen_last_session", ""),
     *EXPORT_ROWS,  # Export as HTML, shared with QUILL (commands_review.py)
+    *wordpress_menu.lite_rows(),  # File > WordPress, QUILL's own table (wordpress/menu.py)
     ("&File", "", "", "", "sep"),
     # Ctrl+Alt+P, not the Ctrl+Alt+U it used to hold: that key is Check
     # for Updates in the eight other QuillVille apps, and P suits Page Setup.
@@ -149,7 +153,7 @@ COMMANDS: list[CommandRow] = [
     # what paper, with what margins, and what is at the top of each one.
     # Not &V: Earlier &Versions has it in this menu, and Windows cycles focus between
     # duplicates instead of pressing, so one silently cannot be reached (GATE-14).
-    ("&File", "Print Previe&w...", "Ctrl+Alt+Shift+P", "cmd_print_preview", ""),
+    ("&File", "Print Preview...", "Ctrl+Alt+Shift+P", "cmd_print_preview", ""),
     ("&File", "&Print...", "Ctrl+P", "cmd_print", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Close Window", "Ctrl+W", "cmd_close", ""),
@@ -161,7 +165,8 @@ COMMANDS: list[CommandRow] = [
     # ours to rebind; Ctrl+F4 closes this document, and now says so. Bound as
     # its own row rather than an alias because the table gives one key to one
     # handler -- the same arrangement Ctrl+Tab and Ctrl+F6 already have.
-    ("&File", "Close Window (&MDI)", "Ctrl+F4", "cmd_close_mdi", ""),
+    # No letter since 2026-11-04: New For&m needed the M, and Ctrl+F4 is this row's route.
+    ("&File", "Close Window (MDI)", "Ctrl+F4", "cmd_close_mdi", ""),
     ("&File", "E&xit QUILL Lite", "Ctrl+Q", "cmd_exit", ""),
     # -- Edit ---------------------------------------------------------------
     # Notepad's Edit menu is the top of this one, in Notepad's order, and then
@@ -507,9 +512,6 @@ COMMANDS: list[CommandRow] = [
     # how big it is (bad.md 4.2, Tier 2). On Ctrl+Alt+W, which is the chord its
     # sibling vacated on the same day: one letter, two scopes.
     ("&View", "Li&ne Statistics", "Ctrl+Alt+W", "cmd_line_statistics", ""),
-    # A menu bar answers "what is under Format?"; a palette answers "how do I
-    # sort lines?", which is the question somebody actually has.
-    ("&View", "Command Pa&lette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
     *PROJECT_VIEW_ROWS,  # the task's transcript and output: Developer only
     # -- Insert -------------------------------------------------------------
     # Everything that puts something into the document that is not typing. The
@@ -613,7 +615,8 @@ COMMANDS: list[CommandRow] = [
     # QUILL's chord for that and an editing-loop verb besides (bad.md 3.3).
     # Alt+Shift+F is free in both editors and F is for Format, which is the menu
     # this row lives in.
-    ("F&ormat", "Switch Document &Mode", "Alt+Shift+F", "cmd_switch_document_kind", ""),
+    # No letter since 2026-11-04: For&m Rules needed the M; Alt+Shift+F is its route.
+    ("F&ormat", "Switch Document Mode", "Alt+Shift+F", "cmd_switch_document_kind", ""),
     # Which markup a *plain* document is written in -- Markdown, HTML, or none.
     # Next to Switch Document Mode because they are the same kind of decision one
     # size down: that one chooses between plain and rich, this one chooses what
@@ -822,6 +825,9 @@ COMMANDS: list[CommandRow] = [
     # files-and-formats dialog, abbreviations, and the two ways to change what QUILL Lite itself is.
     # Tools > Options is where Windows applications have kept their settings since Word 6, which is
     # why Preferences and Customize Features are here rather than in View.
+    # First in Tools, as in QUILL. No access key: all its letters are taken (GATE-14).
+    ("&Tools", "Command Palette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
+    ("&Tools", "", "", "", "sep"),
     ("&Tools", "&Spelling", "", "", "sub"),
     *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
     ("&Tools", "&Change Case", "", "", "sub"),
@@ -1013,6 +1019,8 @@ COMMANDS: list[CommandRow] = [
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
     *HELP_ROWS,  # the Help menu (commands_help.py)
+    *wordpress_menu.lite_placed_rows(),  # WordPress, at the foot of Edit to Tools
+    *forms_menu.lite_placed_rows(),  # Forms, at the foot of Insert to Tools
 ]
 
 #: Menu-bar labels, in bar order, deduplicated by first appearance.
@@ -1069,7 +1077,7 @@ def shortcut_text(keymap: dict[str, str] | None = None) -> str:
             parent, child = split_menu(menu)
             lines.append("")
             lines.append(
-                f"{_plain(parent)} menu, {_plain(child)} submenu"
+                f"{_plain(parent)} menu, {_plain(child).replace(SUBMENU_SEP, ' > ')} submenu"
                 if child
                 else f"{_plain(parent)} menu"
             )
