@@ -870,6 +870,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_file import DocumentFileMixin
     from quill.apps.lite_window_folding import DocumentFoldingMixin
     from quill.apps.lite_window_format import DocumentFormatCommandsMixin
+    from quill.apps.lite_window_forms import DocumentFormsMixin
     from quill.apps.lite_window_headings import DocumentHeadingsMixin
     from quill.apps.lite_window_history import DocumentHistoryMixin
     from quill.apps.lite_window_import import DocumentImportMixin
@@ -888,6 +889,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_tools import DocumentToolsMixin
     from quill.apps.lite_window_typing import DocumentTypingMixin
     from quill.apps.lite_window_view import DocumentViewCommandsMixin
+    from quill.apps.lite_window_wordpress import DocumentWordPressMixin
     from quill.apps.lite_window_words import DocumentWordsMixin
     from quill.ui.highlight_commands import HighlightCommandsMixin
     from quill.ui.hosted_ai_commands import HostedAiMixin
@@ -986,6 +988,9 @@ def lite_window(tmp_path, lite_settings):
         # Ctrl+B rather than on anything to do with markup.
         DocumentMarkupMixin,
         DocumentCommandsMixin,
+        # File > WordPress and Forms: each row hands off to the shared commands.
+        DocumentWordPressMixin,
+        DocumentFormsMixin,
     ):
         """A document window with wx removed and every output recorded."""
 
