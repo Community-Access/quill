@@ -39,7 +39,6 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 
 - **Ctrl+Enter** inserts a page break, as in Word. Word documents keep their page breaks now.
 - **The Command Palette (Ctrl+Shift+P)** finds every menu item, recent files and open documents included.
-- **Filtered lists** take `&`, `|`, `!`, `*` and quotes. Try `#chapter !draft` in Go to Anything (Ctrl+Alt+Shift+A).
 - **Tables** you can read cell by cell, and Insert Table (Ctrl+Alt+T). **Find in Open Documents** (Ctrl+Shift+F10).
 
 ## More
