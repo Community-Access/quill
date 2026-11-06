@@ -4,6 +4,18 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 
 ## WordPress
 
+### Stripe and PayPal form setup
+
+- Tools > Forms adds Insert Payment Field, Form Payments Setup and Verify
+  Payment Setup. Stripe is the default; PayPal is also available. New settings
+  use test mode, with confirmation before saving live mode.
+- Paid-form publication checks plugin readiness and matching mode. Test on
+  Site refuses published live-payment forms. Responses show and export payment
+  metadata, with a confirmed Refresh Payment Status action.
+- Checkout requires QAF payment contract version 1 on WordPress. Provider
+  credentials and money movement stay on the site; no plugin deployment or
+  live acceptance is implied by this desktop update.
+
 - **File > WordPress** writes, opens and publishes your sites' pages and posts. Connect a Site fetches the password with your browser and keeps it in Windows Credential Manager.
 - **Ctrl+S saves on this computer only.** Save Draft to Site and Publish or Update are separate, Publish checks the page first, and nothing someone else changed is overwritten.
 - **Blocks, made plain:** Insert > WordPress Block, and Next Block, Previous Block and Where Am I in Edit > WordPress. A block QUILL does not know goes back untouched.

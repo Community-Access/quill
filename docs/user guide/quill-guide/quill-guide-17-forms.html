@@ -243,6 +243,25 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="chapter-17-forms">Chapter 17: Forms</h1>
+<h2 id="payments-and-donations">Payments and donations</h2>
+<p>Tools &gt; Forms &gt; Insert Payment Field adds a fixed amount, a
+<code>#field_id</code> amount reference, or a donation with optional
+bounds. Form Payments Setup chooses Stripe and/or PayPal, currency,
+capture mode and test mode. New settings start in test mode; all edits
+remain local until Publish Form.</p>
+<p>Configure provider sandbox credentials and webhooks in WordPress,
+then use Verify Payment Setup. Publishing requires a QAF plugin
+implementing payment contract version 1, ready selected
+providers/webhooks and matching payment mode. Test on Site checks the
+published form and refuses live-payment checkout. Responses show payment
+metadata; Refresh Payment Status rereads the site after confirmation.
+CSV and Word exports include the metadata. Actual charging, manual
+capture and refunds stay on the site or in the provider dashboard.</p>
+<p>For the complete sandbox-first workflow, read the payment section in
+<a
+href="../wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.html">Forms
+on the web and paper</a>.</p>
+<h2 id="writing-a-form">Writing a form</h2>
 <p>A form is a contact form, an event sign-up, a membership renewal, a
 survey or a feedback page. Making one usually means dragging boxes
 around a web page, which is one of the hardest things on the web to do

@@ -1,5 +1,18 @@
 # QUILL Lite 2.0
 
+## Stripe and PayPal form setup
+
+Tools > Forms now includes Insert Payment Field, Form Payments Setup and
+Verify Payment Setup, shared with QUILL. Configure fixed payments or donations,
+choose Stripe and/or PayPal, and keep test mode on while checking your form.
+Publishing requires matching site mode and ready providers/webhooks; Test on
+Site refuses a published live-payment form. Responses show payment metadata
+and include it in CSV/Word exports; Refresh Payment Status rereads the site.
+
+Checkout needs the separately installed QAF WordPress plugin to implement
+payment contract version 1. Provider credentials, charging and webhooks stay
+in WordPress. This update does not deploy that plugin or certify live checkout.
+
 *Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1); the last
 published version is 1.1.2.*
 

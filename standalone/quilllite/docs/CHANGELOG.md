@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### Form payment integration (2026-11-06)
+
+- Shared with QUILL: Insert Payment Field, Form Payments Setup and Verify
+  Payment Setup, with Stripe default, optional PayPal, and test mode initially on.
+- Publishing checks the site's payment capability, provider/webhook readiness
+  and matching mode. Test on Site refuses live-payment checkout. Responses
+  display payment metadata, refresh site status on confirmation and export to
+  CSV/Word. Credentials and charging remain in WordPress.
+- Requires the separate QAF plugin to implement payment contract version 1;
+  plugin deployment and live checkout acceptance are not part of this update.
+
 Testing build: **2.0.0 (build 1)**. It has not been published yet; the last
 published version is 1.1.2.
 

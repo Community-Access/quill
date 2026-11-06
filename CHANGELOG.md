@@ -2,6 +2,20 @@
 
 ## 1.0.0
 
+### Form payment authoring and reporting (2026-11-06)
+
+- QUILL and QUILL Lite share Insert Payment Field, Form Payments Setup and
+  Verify Payment Setup. Stripe is the default; PayPal is also supported in
+  the configuration. New forms start in test mode.
+- Paid-form publication checks the site's versioned payment capability,
+  provider and webhook readiness, and test/live mode. Test on Site refuses a
+  published live-payment form. Responses and deliberate CSV/Word exports
+  include payment metadata; Refresh Payment Status reads updated site entries.
+- Checkout requires a separately installed QAF WordPress plugin implementing
+  payment contract version 1. This desktop change does not deploy payment
+  processing, store provider secrets, or certify live checkout accessibility.
+
+
 ### WordPress, in QUILL and QUILL Lite (2026-11-05)
 
 If you look after a WordPress website, QUILL now writes, opens, checks and

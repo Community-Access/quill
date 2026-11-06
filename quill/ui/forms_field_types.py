@@ -49,13 +49,14 @@ DESCRIPTIONS: dict[str, str] = {
     "signature": "A signature.",
     "calculation": "A number worked out from other answers.",
     "repeater": "A group of questions they can fill in more than once.",
+    "payment": "Stripe or PayPal checkout on a compatible WordPress site; starts in test mode.",
     "html": "Text or information shown on the form, not a question.",
 }
 
-#: Types Insert Field leaves out: payment stays in WordPress (17a.3), and the
-#: buttons and post fields are the site's to place.
+#: Advanced commerce components can be authored in source; buttons and post
+#: fields remain the site's to place. Payment uses its dedicated guided dialog.
 LEFT_OUT: frozenset[str] = frozenset({
-    "payment", "product", "quantity", "price", "total", "coupon", "submit", "save",
+    "product", "quantity", "price", "total", "coupon", "submit", "save",
     "post_title", "post_content", "post_excerpt", "post_category", "post_tags", "post_image",
     "post_custom", "user_login", "user_email", "user_password", "captcha", "social",
 })  # fmt: skip

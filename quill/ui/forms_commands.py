@@ -28,6 +28,7 @@ from quill.ui import forms_fill_window as ffw
 from quill.ui import wordpress_block_dialogs as wbd
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui.forms_outline_commands import FormsOutlineCommands
+from quill.ui.forms_payments_commands import FormsPaymentsCommands
 from quill.ui.forms_publish_commands import FormsPublishCommands
 from quill.ui.forms_templates import TEMPLATES
 
@@ -39,7 +40,7 @@ def not_a_form(command: str) -> str:
     )
 
 
-class FormsCommands(FormsPublishCommands, FormsOutlineCommands):
+class FormsCommands(FormsPublishCommands, FormsOutlineCommands, FormsPaymentsCommands):
     def __init__(self, host: Any) -> None:
         self.host = host
 
@@ -142,6 +143,9 @@ class FormsCommands(FormsPublishCommands, FormsOutlineCommands):
         if index is None:
             return
         kind = kinds[index]
+        if kind == "payment":
+            self.cmd_insert_payment()
+            return
         answers = wbd.ask_fields(
             self.host.parent,
             self.host.show_modal,

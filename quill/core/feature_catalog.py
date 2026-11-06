@@ -9,44 +9,10 @@ semantics are unchanged.
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
 
-from quill.core.app_launcher import is_dev_build
+from quill.core.feature_definition import FeatureDefinition as FeatureDefinition
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass(frozen=True, slots=True)
-class FeatureDefinition:
-    id: str
-    name: str
-    description: str = ""
-    aliases: tuple[str, ...] = ()
-    dependencies: tuple[str, ...] = ()
-    maturity: str = "stable"
-    privacy: str = "local only"
-    locked_on: bool = False
-    locked_off: bool = False
-    category: str = ""
-    #: False for a feature that is built but held back from the public
-    #: release: locked off in a public build, normal in a developer build
-    #: (``QUILL_DEV_BUILD=1``) -- the same one switch that reveals the gated
-    #: companion apps (``app_launcher.RELEASED_APPS``). Use ``locked_off``
-    #: instead for a feature that is off in *every* build.
-    released: bool = True
-    #: Off in every profile that does not name it, where an unlisted feature
-    #: is otherwise on. Only ``core.developer`` uses it: coding features are
-    #: the Developer profile's to turn on (code.md 6.4), and a new profile
-    #: must not switch them on by forgetting to mention them.
-    default_off: bool = False
-
-    @property
-    def is_locked_off(self) -> bool:
-        """Locked off in *this* build: permanently, or merely unreleased.
-
-        The question every caller wants; read this, not the raw field.
-        """
-        return self.locked_off or not (self.released or is_dev_build())
 
 
 FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
@@ -511,6 +477,26 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "except Essential."
         ),
         category="writing",
+    ),
+    "core.forms_payments": FeatureDefinition(
+        "core.forms_payments",
+        "Form Payments",
+        aliases=("payments", "payment", "stripe", "paypal", "donations", "checkout"),
+        description=(
+            "Configure a published form to take payment -- an order, a donation, a "
+            "registration fee -- through Stripe or PayPal on the WordPress site "
+            "that hosts it, with a compatible QAF payment plugin "
+            "(Tools > Forms > Form Payments Setup). QUILL writes "
+            "the configuration and reads payment status; cards are entered on "
+            "the site, inside the provider's own accessible checkout, and money "
+            "moves only there. Payment readiness and status requests confirm "
+            "the destination site; provider credentials stay in WordPress. "
+            "Off in the Essential profile."
+        ),
+        maturity="advanced",
+        privacy="network after confirmation",
+        category="writing",
+        dependencies=("core.forms", "core.wordpress"),
     ),
     "future.youtube_oauth": FeatureDefinition(
         "future.youtube_oauth",

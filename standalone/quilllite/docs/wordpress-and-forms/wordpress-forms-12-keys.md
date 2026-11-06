@@ -121,6 +121,12 @@ page or a form:
 - In **Fill It In Yourself**, Tab moves from question to question, as on a
   web page.
 
+Payment authoring uses Tools > Forms > Form Payments Setup, Insert Payment
+Field and Verify Payment Setup. These occasional commands use their menu
+access letters and the Command Palette, with no dedicated default chord.
+Responses adds Refresh Payment Status, with its P access key. F1 explains
+each focused setup field; Enter accepts and Escape cancels the setup dialog.
+
 ## Keys in the other apps
 
 - **QUILL Cast:** Episode > Post This Episode to WordPress.

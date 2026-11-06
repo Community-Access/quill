@@ -1,5 +1,10 @@
 # WordPress regression testing for QUILL and QUILL Lite
 
+Payment checkout has an additional [acceptance checklist](forms-payments-acceptance.html).
+Do not assume the test site's QAF plugin implements the payment contract;
+Verify Payment Setup must report version-1 readiness before testing checkout.
+No live payment acceptance is implied by the ordinary WordPress regression run.
+
 A real WordPress site exists for testing every WordPress feature in QUILL and
 QUILL Lite, with known content, so a test always starts from the same place
 and its results can be compared from one build to the next.

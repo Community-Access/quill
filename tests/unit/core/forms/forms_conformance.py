@@ -36,7 +36,18 @@ from quill.core.forms.bfl_write import to_bfl
 from quill.core.forms.errors import ExpressionError
 from quill.core.forms.expr_eval import evaluate
 from quill.core.forms.expr_sentence import sentence
-from quill.core.forms.schema_check import SCHEMA_PATH
+from quill.core.forms.schema_check import SCHEMA_PATH, schema_problems
+
+
+def validate_base(model: M.Model) -> list[dict[str, str]]:
+    """Compare the external v1 contract, before QUILL's payment extension.
+
+    QAF's all-field-types fixture deliberately contains a bare checkout
+    placeholder. Payment authoring/publish requirements are tested separately
+    in test_forms_payments; they must not rewrite the upstream oracle.
+    """
+    return schema_problems(model) or M.base_semantic_errors(model)
+
 
 #: The renamed layout first, then the one from before the rename.
 QAF_BRANCHES = ("chore/rename-qaf", "feat/json-form-model")
@@ -175,15 +186,15 @@ class Suite:
 
     def check_valid_models(self, suite: dict[str, Any]) -> list[str]:
         return [
-            f"{f}: {M.validate(self.load(f))[:2]}"
+            f"{f}: {validate_base(self.load(f))[:2]}"
             for f in suite["files"]
-            if M.validate(self.load(f))
+            if validate_base(self.load(f))
         ]
 
     def check_invalid_models(self, suite: dict[str, Any]) -> list[str]:
         out = []
         for c in self.load(suite["file"])["cases"]:
-            found = M.validate(c["model"])
+            found = validate_base(c["model"])
             if not any(e["path"] == c["path"] for e in found):
                 out.append(f"{c['name']}: no error at {c['path']} ({found[:2]})")
         return out
@@ -223,7 +234,7 @@ class Suite:
                 out.append(
                     f"{name}: does not read back to the model ({result.errors[:1]}{result.warnings[:1]})"  # noqa: E501
                 )
-            if M.validate(model):
+            if validate_base(model):
                 out.append(f"{c['model']}: not valid")
         return out
 

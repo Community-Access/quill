@@ -259,18 +259,30 @@ Alt+Shift+. (period), Collect Selection Alt+Shift+C, Trim Trailing
 Spaces Ctrl+Alt+R.</li>
 </ul>
 <h2 id="wordpress">WordPress</h2>
+<h3 id="stripe-and-paypal-form-setup">Stripe and PayPal form setup</h3>
 <ul>
-<li><strong>File &gt; WordPress</strong> writes, opens and publishes
+<li><p>The same Forms commands as QUILL insert payment fields, configure
+Stripe and/or PayPal, and read site readiness. New settings start in
+test mode.</p></li>
+<li><p>Paid-form publication checks provider/webhook readiness and mode.
+Test on Site refuses a published live-payment checkout. Responses
+include payment status and exports, with Refresh Payment Status after
+confirming the site.</p></li>
+<li><p>Checkout requires a separate QAF WordPress plugin implementing
+payment contract version 1. Provider credentials and charging remain on
+the site; the desktop update does not deploy or certify that
+checkout.</p></li>
+<li><p><strong>File &gt; WordPress</strong> writes, opens and publishes
 your sites’ pages and posts. Connect by approving QUILL in your browser,
 or paste an application password. Ctrl+S only saves on this computer;
 Publish checks the page first. Scheduling, earlier versions and working
-offline are there too.</li>
-<li><strong>Blocks read as plain text</strong>, and Next Block and Where
-Am I say where you are. <strong>Tools &gt; WordPress</strong> checks a
-page the way a visitor meets it and looks after media, comments, menus
-and users.</li>
-<li><strong>Ctrl+Alt+Shift+Grave, then a letter:</strong> O Open, P
-Publish, D Save Draft, M Media Library.</li>
+offline are there too.</p></li>
+<li><p><strong>Blocks read as plain text</strong>, and Next Block and
+Where Am I say where you are. <strong>Tools &gt; WordPress</strong>
+checks a page the way a visitor meets it and looks after media,
+comments, menus and users.</p></li>
+<li><p><strong>Ctrl+Alt+Shift+Grave, then a letter:</strong> O Open, P
+Publish, D Save Draft, M Media Library.</p></li>
 </ul>
 <h2 id="forms">Forms</h2>
 <ul>

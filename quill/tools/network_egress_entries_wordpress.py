@@ -44,7 +44,11 @@ WORDPRESS_EGRESS: dict[str, str] = {
         "deleting one moves it to QAF's Trash, after a confirmation with the "
         "count), and a search of wp/v2/pages and wp/v2/posts for the page that "
         "shows a form (Test on Site). Responses are never logged and leave only to "
-        "a file the person chooses. Off in Safe Mode."
+        "a file the person chooses. Payment setup reads qaf/v1/payments/settings "
+        "after Verify Payment Setup consent, paid-form Publish consent, or Test "
+        "on Site consent. Refresh Payment Status rereads entries after naming "
+        "the site in its confirmation. These carry no provider secrets, card "
+        "details or money-movement requests; the plugin owns checkout. Off in Safe Mode."
     ),
     "core/wordpress/cdp.py::__init__": (
         "Check This Page and Visual Review: QUILL starts Edge or Chrome hidden, from "

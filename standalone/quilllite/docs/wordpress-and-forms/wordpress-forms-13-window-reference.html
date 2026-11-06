@@ -914,6 +914,24 @@ Sites</h2>
 <li><strong>What Changed on My Sites…:</strong> the list window,
 <strong>Changes</strong>, with <strong>Open in Browser</strong>.</li>
 </ul>
+<h2 id="form-payment-windows">Form payment windows</h2>
+<p><strong>Form Payments Setup</strong> uses the native fields dialog:
+Providers, Currency, Mode, Capture, Test mode and Statement descriptor.
+Each field has F1 help. Save in Form changes the local document; Escape
+cancels. Turning off Test mode requires a second confirmation about real
+charges after publication.</p>
+<p><strong>Insert Payment Field</strong> asks for Label, Amount and
+optional donation minimum and maximum. Amount accepts a positive number,
+<code>#field_id</code> or <code>donation</code>. Invalid values leave
+the source unchanged; a second payment field is refused.</p>
+<p><strong>Verify Payment Setup</strong> confirms the site before
+reading. The report shows test/live mode, configured providers and
+webhook readiness. Set credentials in WordPress. An old plugin produces
+an update-required message.</p>
+<p><strong>Responses</strong> adds payment information to list rows and
+Read, and includes it in CSV and Word exports. Refresh Payment Status
+confirms the destination and opens the updated responses. It reads
+stored site status and never captures or refunds a payment.</p>
 <h2 id="where-to-next">Where to next</h2>
 <ul>
 <li>Previous: <a href="wordpress-forms-12-keys.html">Chapter 12: Every

@@ -678,6 +678,13 @@ the site does not offer it.”</td>
 </tr>
 </tbody>
 </table>
+<p>Payments additionally require <code>qaf/v1/payments/settings</code>
+with <code>contract_version: 1</code>. Verify Payment Setup reads
+provider and webhook readiness; paid-form publication checks the same
+capability and mode. An older plugin is refused with an update-required
+message. The optional <code>payment</code> object on entries supplies
+status and export metadata. Provider credentials and checkout are
+managed by WordPress, not the desktop.</p>
 <h2 id="across-all-your-sites">Across all your sites</h2>
 <p>Coming Up and What Changed on My Sites (Tools &gt; WordPress &gt;
 Your Sites) read the routes above from every connected site. A site that

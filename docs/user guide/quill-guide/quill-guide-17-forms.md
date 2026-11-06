@@ -1,5 +1,25 @@
 # Chapter 17: Forms
 
+## Payments and donations
+
+Tools > Forms > Insert Payment Field adds a fixed amount, a `#field_id`
+amount reference, or a donation with optional bounds. Form Payments Setup
+chooses Stripe and/or PayPal, currency, capture mode and test mode. New settings
+start in test mode; all edits remain local until Publish Form.
+
+Configure provider sandbox credentials and webhooks in WordPress, then use
+Verify Payment Setup. Publishing requires a QAF plugin implementing payment
+contract version 1, ready selected providers/webhooks and matching payment mode.
+Test on Site checks the published form and refuses live-payment checkout.
+Responses show payment metadata; Refresh Payment Status rereads the site after
+confirmation. CSV and Word exports include the metadata. Actual charging,
+manual capture and refunds stay on the site or in the provider dashboard.
+
+For the complete sandbox-first workflow, read the payment section in
+[Forms on the web and paper](../wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.html).
+
+## Writing a form
+
 A form is a contact form, an event sign-up, a membership renewal, a survey or
 a feedback page. Making one usually means dragging boxes around a web page,
 which is one of the hardest things on the web to do with a screen reader. But

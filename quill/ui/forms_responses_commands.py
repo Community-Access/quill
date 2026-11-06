@@ -228,7 +228,28 @@ class FormsResponsesCommands:
             )
             return None
 
+        def refresh_payments(_index: int | None) -> object:
+            if self.offline_only("Refresh Payment Status"):  # type: ignore[attr-defined]
+                return None
+            if not dlg.confirm(
+                self.host.parent,
+                self.host.show_modal,
+                title="Refresh Payment Status",
+                message=f"Read the latest responses and payment status from {profile.name}? "
+                "This reads the site's webhook-confirmed state; it never captures a payment.",
+                yes_label="Refresh",
+            ):
+                return None
+            self._load_responses(profile, form.id)
+            return dlg.CLOSE
+
         actions = [
+            dlg.Action(
+                "Refresh &Payment Status",
+                "Read updated payment status from the site.",
+                refresh_payments,
+                needs_row=False,
+            ),
             dlg.Action("&Read", "Read the selected response, one answer a line.", read),
             dlg.Action("&View...", "List, or group by date or by place.", view, needs_row=False),
             dlg.Action(

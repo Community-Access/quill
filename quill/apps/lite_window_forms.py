@@ -68,6 +68,18 @@ class DocumentFormsMixin:
         """Tools > Forms > Form Properties."""
         self._forms().cmd_properties()
 
+    def cmd_forms_payments_setup(self) -> None:
+        """Tools > Forms > Form Payments Setup."""
+        self._forms().cmd_payments_setup()
+
+    def cmd_forms_insert_payment(self) -> None:
+        """Tools > Forms > Insert Payment Field."""
+        self._forms().cmd_insert_payment()
+
+    def cmd_forms_verify_payments(self) -> None:
+        """Tools > Forms > Verify Payment Setup."""
+        self._forms().cmd_verify_payments()
+
     def cmd_forms_responses(self) -> None:
         """Tools > Forms > Responses."""
         self._forms().cmd_form_responses()

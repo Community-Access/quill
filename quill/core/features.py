@@ -155,6 +155,8 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.wordpress": FEATURE_STATE_OFF,
             # Forms too, as QUILL Lite's smallest profiles leave them out (17a.10).
             "core.forms": FEATURE_STATE_OFF,
+            # Payments ride on Forms and WordPress, both off here.
+            "core.forms_payments": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_WRITER: FeatureProfile(

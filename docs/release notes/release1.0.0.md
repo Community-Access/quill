@@ -2,6 +2,21 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Form payment setup and reporting
+
+QUILL and QUILL Lite now share **Tools > Forms > Insert Payment Field**,
+**Form Payments Setup**, and **Verify Payment Setup**. Choose Stripe, PayPal,
+or both; author a fixed, calculated or donation amount; and start in test mode.
+Publishing verifies the site's payment contract, provider/webhook readiness
+and matching test/live mode. Test on Site refuses published live-payment forms.
+Responses show payment metadata and can refresh it from the site or export it
+to CSV and Word.
+
+Checkout requires a QAF WordPress plugin implementing payment contract
+version 1. Provider credentials, charging and webhooks stay on WordPress;
+this desktop update does not deploy the plugin or establish live checkout
+acceptance. The WordPress and Forms guide covers the sandbox-first workflow.
+
 **Unreleased correction:** The shared Radio code retires the built-in SomaFM
 source in response to its published third-party-client terms; known catalogue
 entries and direct playback and recording paths are filtered or blocked.

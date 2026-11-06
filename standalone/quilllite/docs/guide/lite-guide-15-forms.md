@@ -1,5 +1,25 @@
 # Chapter 15: Forms
 
+## Payments and donations
+
+QUILL Lite uses the same payment commands as QUILL. Tools > Forms > Insert
+Payment Field adds a fixed amount, `#field_id` reference or bounded donation.
+Form Payments Setup chooses Stripe and/or PayPal, currency and capture mode.
+New settings start in test mode. Setup changes only the local form.
+
+Configure sandbox credentials and webhooks in WordPress, then use Verify
+Payment Setup. Publishing requires a QAF plugin implementing payment contract
+version 1, ready selected providers/webhooks and matching test/live mode.
+Test on Site checks the published form and refuses live-payment checkout.
+Responses include payment metadata in Read, CSV and Word exports; Refresh
+Payment Status confirms the site before rereading entries. QUILL Lite stores
+no provider credentials and never captures or refunds payments.
+
+Follow the full payment walkthrough in
+[Forms on the web and paper](../wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.html).
+
+## Writing a form
+
 A form is a contact form, an event sign-up, a membership renewal, a survey or
 a feedback page. Making one usually means dragging boxes around a web page,
 which is one of the hardest things on the web to do with a screen reader. But

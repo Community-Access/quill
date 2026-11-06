@@ -525,6 +525,26 @@ Across every connected site.
 - **What Changed on My Sites...:** the list window, **Changes**, with **Open
   in Browser**.
 
+## Form payment windows
+
+**Form Payments Setup** uses the native fields dialog: Providers, Currency,
+Mode, Capture, Test mode and Statement descriptor. Each field has F1 help.
+Save in Form changes the local document; Escape cancels. Turning off Test mode
+requires a second confirmation about real charges after publication.
+
+**Insert Payment Field** asks for Label, Amount and optional donation minimum
+and maximum. Amount accepts a positive number, `#field_id` or `donation`.
+Invalid values leave the source unchanged; a second payment field is refused.
+
+**Verify Payment Setup** confirms the site before reading. The report shows
+test/live mode, configured providers and webhook readiness. Set credentials
+in WordPress. An old plugin produces an update-required message.
+
+**Responses** adds payment information to list rows and Read, and includes it
+in CSV and Word exports. Refresh Payment Status confirms the destination and
+opens the updated responses. It reads stored site status and never captures
+or refunds a payment.
+
 ## Where to next
 
 - Previous: [Chapter 12: Every WordPress and Forms key](wordpress-forms-12-keys.html)

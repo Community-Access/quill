@@ -105,6 +105,13 @@ plugin's own routes are on the site, and Site Check names it.
 | WooCommerce: `wc/v3` | Plugin Extras > Shop Orders; Plugin Fields | - | As above. |
 | Yoast SEO and Rank Math (their registered fields) | Plugin Fields; Properties | - | As above. |
 
+Payments additionally require `qaf/v1/payments/settings` with
+`contract_version: 1`. Verify Payment Setup reads provider and webhook
+readiness; paid-form publication checks the same capability and mode.
+An older plugin is refused with an update-required message. The optional
+`payment` object on entries supplies status and export metadata. Provider
+credentials and checkout are managed by WordPress, not the desktop.
+
 ## Across all your sites
 
 Coming Up and What Changed on My Sites (Tools > WordPress > Your Sites) read

@@ -1,5 +1,10 @@
 # Chapter 14: WordPress
 
+Payment forms use this same WordPress connection. Tools > Forms configures
+Stripe/PayPal payments and reads provider/webhook readiness; the QAF plugin
+must implement payment contract version 1. Provider credentials and checkout
+stay on the site. See [Forms](lite-guide-15-forms.html) for setup and testing.
+
 If you look after a WordPress website, QUILL Lite can write its pages and posts,
 open the ones already there, and publish your changes. You work in the same
 editor you use for everything else, with Find, spelling, dictation and all

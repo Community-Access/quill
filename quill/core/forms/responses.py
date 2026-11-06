@@ -96,6 +96,13 @@ def row_text(response: Response, labels: dict[str, str], form_title: str) -> str
     parts = [f"Response {response.id}", sent_at(response), who(response, labels), form_title]
     if response.is_starred:
         parts.append("starred")
+    if response.payment:
+        parts.append(
+            "Payment: "
+            + ", ".join(
+                response.payment.get(k, "") for k in ("status", "amount", "currency", "provider")
+            )
+        )
     return ", ".join(p for p in parts if p)
 
 
@@ -112,6 +119,9 @@ def pairs(response: Response, labels: dict[str, str]) -> list[tuple[str, str]]:
     for key, value in response.answers.items():
         if key not in labels:
             out.append((key, answer_text(value) or "no answer"))
+    out.extend(
+        (f"Payment {key.replace('_', ' ')}", value) for key, value in response.payment.items()
+    )
     return out
 
 
@@ -211,11 +221,26 @@ def csv_text(responses: Iterable[Response], labels: dict[str, str]) -> str:
         keys += [k for k in response.answers if k not in keys]
     out = io.StringIO()
     writer = csv.writer(out, lineterminator="\r\n")
-    writer.writerow(["Response", "Sent", *(labels.get(k, k) for k in keys)])
+    payment_keys = (
+        ("provider", "status", "amount", "currency", "receipt_url", "transaction_id")
+        if any(r.payment for r in rows)
+        else ()
+    )
+    writer.writerow([
+        "Response",
+        "Sent",
+        *(labels.get(k, k) for k in keys),
+        *(f"Payment {k.replace('_', ' ')}" for k in payment_keys),
+    ])
     for response in rows:
         when = parse_time(response.created_at)
         stamp = when.strftime("%Y-%m-%d %H:%M") if when else response.created_at
-        writer.writerow([response.id, stamp, *(answer_text(response.answers.get(k)) for k in keys)])
+        writer.writerow([
+            response.id,
+            stamp,
+            *(answer_text(response.answers.get(k)) for k in keys),
+            *(response.payment.get(k, "") for k in payment_keys),
+        ])
     return out.getvalue()
 
 
