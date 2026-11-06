@@ -136,7 +136,7 @@ def cast_menus(quill_data_dir: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr("quill.ui.updates.started.confirm_for_shell", lambda *_a, **_k: None)
     # A public build's release gates, not the developer build the test session
     # runs as: an unreleased feature's rows are not on a new user's menus.
-    monkeypatch.setattr("quill.core.feature_catalog.is_dev_build", lambda: False)
+    monkeypatch.setattr("quill.core.feature_definition.is_dev_build", lambda: False)
     monkeypatch.setattr("quill.core.app_launcher.is_dev_build", lambda: False)
 
     previous_loop = wx.EventLoop.GetActive()
