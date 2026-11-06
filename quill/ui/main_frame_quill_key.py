@@ -19,6 +19,7 @@ except ImportError:  # pragma: no cover - non-Windows fallback
     _winsound = None  # type: ignore[assignment]
 
 from quill.core.feature_catalog import FEATURE_DEFINITIONS
+from quill.core.grave_key import is_grave_key
 from quill.core.quill_key_help import (
     MODE_BROWSE,
     MODE_PREFIX,
@@ -516,33 +517,26 @@ class QuillKeyMixin:
         return False
 
     def _event_matches_grave_key(self, event: object) -> bool:
-        """Multi-strategy detection for the physical grave/backtick key.
+        """True when the event is the physical grave key, on any layout.
 
-        wxPython on Windows commonly reports VK_OEM_3 (0xC0 = 192) rather than
-        ord("`") = 96 for Ctrl+Shift+`.  Three independent strategies are tried
-        so the key is recognised on any driver or keyboard layout:
-        1. wxPython key code or Unicode key == ord("`") or ord("~")
-        2. Windows virtual-key VK_OEM_3 via GetRawKeyCode()
-        3. Physical scan code 0x29 (the key below Esc / above Tab on PC
-           keyboards) via bits 16-23 of GetRawKeyFlags() — reliable on
-           international layouts that do not call this key a backtick.
+        The rules (character, Windows VK_OEM_3 and scan code 0x29, and the
+        macOS virtual key codes for ANSI and ISO keyboards, #1753) live in
+        :func:`quill.core.grave_key.is_grave_key`, shared with QUILL Lite.
         """
-        kc = event.GetKeyCode()
-        if kc in (ord("`"), ord("~")):
-            return True
-        unicode_key_fn = getattr(event, "GetUnicodeKey", None)
-        if callable(unicode_key_fn) and int(unicode_key_fn()) in (ord("`"), ord("~")):
-            return True
-        VK_OEM_3 = 0xC0
-        raw_kc_fn = getattr(event, "GetRawKeyCode", None)
-        raw_kc = int(raw_kc_fn()) if callable(raw_kc_fn) else 0
-        if raw_kc == VK_OEM_3 or kc == VK_OEM_3:
-            return True
-        raw_flags_fn = getattr(event, "GetRawKeyFlags", None)
-        raw_flags = int(raw_flags_fn()) if callable(raw_flags_fn) else 0
-        if raw_flags and ((raw_flags >> 16) & 0xFF) == 0x29:
-            return True
-        return False
+
+        def _read(name: str) -> int:
+            fn = getattr(event, name, None)
+            try:
+                return int(fn()) if callable(fn) else 0
+            except (TypeError, ValueError):
+                return 0
+
+        return is_grave_key(
+            key_code=int(event.GetKeyCode()),
+            unicode_key=_read("GetUnicodeKey"),
+            raw_key_code=_read("GetRawKeyCode"),
+            raw_key_flags=_read("GetRawKeyFlags"),
+        )
 
     def _chord_command_available(self, command_id: str) -> bool:
         """Whether a chord may resolve to (and the cheat sheet may list) this command.

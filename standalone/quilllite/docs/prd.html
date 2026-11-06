@@ -3288,10 +3288,18 @@ a wx accelerator on its own, so the layer is run from the key-down
 handler (<code>_wordpress_key_down</code> in
 <code>quill/apps/lite_window_wordpress.py</code>) by the same
 <code>WordPressKeyLayer</code> object QUILL’s char hook asks, and never
-by an accelerator table. It says “WordPress keys” when it starts,
-because the prefix changes nothing on screen; “Left WordPress keys” on
-Escape; “No WordPress command on X.” for an unbound letter; and gives up
-after four seconds. A command that runs speaks for itself (GATE-13).</p>
+by an accelerator table. The grave key is recognised by position, not
+character, through the shared
+<code>quill.core.grave_key.is_grave_key</code> that QUILL’s QUILL key
+also uses (#1753): the back-tick or tilde character; on Windows
+<code>VK_OEM_3</code> or hardware scan code 0x29; on macOS the virtual
+key code 0x32 (<code>kVK_ANSI_Grave</code>) or 0x0A
+(<code>kVK_ISO_Section</code>, the key above Tab on ISO keyboards). So
+the layer starts on a German, French or Nordic layout too. It says
+“WordPress keys” when it starts, because the prefix changes nothing on
+screen; “Left WordPress keys” on Escape; “No WordPress command on X.”
+for an unbound letter; and gives up after four seconds. A command that
+runs speaks for itself (GATE-13).</p>
 <table>
 <thead>
 <tr>

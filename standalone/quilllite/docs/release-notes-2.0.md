@@ -1,5 +1,13 @@
 # QUILL Lite 2.0
 
+## The WordPress key on any keyboard layout
+
+The WordPress key, `Ctrl+Alt+Shift+Grave`, now finds the grave key by where it
+sits, the key just above Tab, rather than by what it types. On a German,
+French or Nordic layout that key types `^`, `²` or `§`, and the WordPress key
+used to need a US layout there. Now it works on any layout, and you hear
+"WordPress keys" just as before. QUILL makes the same check for its QUILL key.
+
 ## Stripe and PayPal form setup
 
 Tools > Forms now includes Insert Payment Field, Form Payments Setup and

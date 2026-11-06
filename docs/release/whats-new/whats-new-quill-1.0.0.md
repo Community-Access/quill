@@ -2,6 +2,10 @@
 
 QUILL 1.0 is the first general release. These are the newest parts; the full release notes cover everything else.
 
+## The QUILL key on any keyboard
+
+- **No more switching to US English.** The QUILL key is found by where it sits, the key above Tab, not by what it types, so it works on a German Mac where that key types `^`, and on every other layout. The WordPress key works the same way.
+
 ## WordPress
 
 ### Stripe and PayPal form setup

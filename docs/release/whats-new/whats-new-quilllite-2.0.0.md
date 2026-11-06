@@ -22,7 +22,7 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 
 - **File > WordPress** writes, opens and publishes your sites' pages and posts. Connect by approving QUILL in your browser, or paste an application password. Ctrl+S only saves on this computer; Publish checks the page first. Scheduling, earlier versions and working offline are there too.
 - **Blocks read as plain text**, and Next Block and Where Am I say where you are. **Tools > WordPress** checks a page the way a visitor meets it and looks after media, comments, menus and users.
-- **Ctrl+Alt+Shift+Grave, then a letter:** O Open, P Publish, D Save Draft, M Media Library.
+- **Ctrl+Alt+Shift+Grave, then a letter:** O Open, P Publish, D Save Draft, M Media Library. The grave key is the one above Tab on any layout, even where it types `^` or `§`, so you never need to switch to US English for it.
 
 ## Forms
 

@@ -244,6 +244,19 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="the-quill-key-on-every-keyboard-layout-2026-11-06">The QUILL key
+on every keyboard layout (2026-11-06)</h3>
+<ul>
+<li>On a Mac with a German keyboard layout the QUILL key did nothing
+until you switched to US English (#1753). The grave key types
+<code>^</code> there, and on macOS QUILL looked only for the back-tick
+character. QUILL now finds the key by where it sits, the key above Tab,
+using the Mac’s own key code. On the ISO keyboards sold across Europe
+the key beside the left Shift key counts too, because macOS swaps the
+two. Windows already worked this way and is unchanged.</li>
+<li>The WordPress key, <code>Ctrl+Alt+Shift+Grave</code>, uses the same
+check in QUILL and QUILL Lite, so it works on any layout as well.</li>
+</ul>
 <h3 id="form-payment-authoring-and-reporting-2026-11-06">Form payment
 authoring and reporting (2026-11-06)</h3>
 <ul>
