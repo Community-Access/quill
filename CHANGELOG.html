@@ -244,6 +244,28 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="smaller-editing-fixes-2026-11-06">Smaller editing fixes
+(2026-11-06)</h3>
+<ul>
+<li><strong>Translation that did not translate.</strong> When AI
+Translate hands back the same text you gave it (ignoring spacing and
+capital letters), the dialog now says “The translation came back the
+same as the original. The text may already be in the target language.”
+in the result box, which takes focus, and leaves Copy, Replace Original
+and Open as New Document unavailable. Before, the unchanged text was
+presented as a finished translation.</li>
+<li><strong>Describe Formatting names the text colour in rich
+documents.</strong> <code>Ctrl+Shift+D</code> now says “Calibri, 11
+point, red, yellow highlight” where it used to leave the colour out.
+Colours from Format &gt; Text Color are named as you chose them; other
+colours by the nearest common name. Uncoloured text, black text and a
+dark theme’s page colour say nothing. QUILL Lite shares the same code
+and gets the same answer.</li>
+<li><strong>The Open dialog follows the file you opened.</strong> A file
+opened from File Explorer, the command line, Open Recent or an existing
+tab now sets the folder the next <code>Ctrl+O</code> starts in, the way
+the Open and Save As dialogs always did.</li>
+</ul>
 <h3 id="form-payment-authoring-and-reporting-2026-11-06">Form payment
 authoring and reporting (2026-11-06)</h3>
 <ul>

@@ -166,6 +166,29 @@ QuillVille family has it on its Help menu now.
 
 **Try this:** press Alt+H, then W, and use your screen reader's heading keys to jump from one change to the next.
 
+## New in this build: three smaller fixes
+
+- **Describe Formatting names the colour.** In a rich text document,
+  **Ctrl+Shift+D** (Format > Describe Formatting at Cursor) now names the
+  text colour, just before any highlight: "Calibri, 11 point, red, yellow
+  highlight". A colour from **Format > Text Color** comes back under the name
+  you chose; any other shade is named after the nearest common colour.
+  Uncoloured text, black text and a dark theme's page colour say nothing
+  about colour. QUILL Lite gives the same answer.
+- **AI Translate says when nothing was translated.** If the result is the
+  same as your text, ignoring spacing and capital letters, the result box
+  says "The translation came back the same as the original. The text may
+  already be in the target language." and takes focus, and the Copy, Replace
+  and New Document buttons stay unavailable. Try another language or the
+  other provider.
+- **Ctrl+O starts where you last opened a file.** Opening a file from File
+  Explorer, the command line, Open Recent or a tab that already had it now
+  sets the folder the next Open dialog starts in, just as the Open and Save
+  As dialogs always did.
+
+**Try this:** double-click a document in File Explorer to open it in QUILL,
+then press Ctrl+O. The dialog is already in that document's folder.
+
 ## Try this first
 
 1. Open QUILL. The first time, a short welcome asks what kind of writing you

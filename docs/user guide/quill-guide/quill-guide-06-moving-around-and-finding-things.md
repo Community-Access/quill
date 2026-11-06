@@ -685,6 +685,16 @@ highlight in a rich document:
 "Calibri, 11 point, yellow highlight". Before this it said nothing about
 highlighting there.
 
+It names the **text colour** too, just before the highlight: red text on a
+yellow highlight reads "Calibri, 11 point, red, yellow highlight". A colour you
+chose from **Format > Text Color** comes back under the name you chose it by,
+so green is "green" and orange is "orange". Any other colour, such as one that
+came in with a Word document, is named after the nearest colour in the list
+below, so you hear a word rather than a number. Text nobody has coloured,
+plain black, and the light text a dark theme paints on the page say nothing
+about colour at all, which keeps the description short for ordinary body text.
+QUILL Lite gives the same answer, from the same code, on the same key.
+
 **Colours.** QUILL knows all fifteen of Word's highlight colours by name:
 yellow, green, turquoise, pink, blue, red and gray, and the darker dark blue,
 teal, dark green, violet, dark red, dark yellow, dark gray and black. Saving a

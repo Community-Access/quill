@@ -1548,6 +1548,18 @@ reports the formatting of the character *before* it, so standing at the start of
 a heading described the paragraph above it. `caret_format_description` now probes
 the character *after* the caret, which is what a screen reader describes.
 
+**The text colour was never spoken (2026-11-06).** Describe Formatting at
+Cursor (`Ctrl+Shift+D`) in a rich document named the highlight but not the text
+colour, although the Markdown path always spoke it. The shared surface now reads
+`ITextFont.ForeColor` through `quill.core.highlights.text_colour_from_colorref`
+and says the colour just before the highlight: "Calibri, 11 point, red, yellow
+highlight". Common colours are named exactly; other shades by the nearest
+highlight-palette name. Automatic colour, black, and the colour a theme painted
+over the whole story say nothing. That last case matters most here: QUILL Lite's
+dark theme recolours every run light grey through `set_document_color`, which
+now records the colour so the description treats it as the default instead of
+saying "gray" on every character. QUILL gets the same answer from the same code.
+
 ### 7.1 The spell checker, and the exception that makes it usable
 
 QUILL Lite ships a spell checker because the products it is measured against

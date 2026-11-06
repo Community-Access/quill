@@ -2,6 +2,25 @@
 
 ## 1.0.0
 
+### Smaller editing fixes (2026-11-06)
+
+- **Translation that did not translate.** When AI Translate hands back the
+  same text you gave it (ignoring spacing and capital letters), the dialog
+  now says "The translation came back the same as the original. The text may
+  already be in the target language." in the result box, which takes focus,
+  and leaves Copy, Replace Original and Open as New Document unavailable.
+  Before, the unchanged text was presented as a finished translation.
+- **Describe Formatting names the text colour in rich documents.**
+  `Ctrl+Shift+D` now says "Calibri, 11 point, red, yellow highlight" where it
+  used to leave the colour out. Colours from Format > Text Color are named as
+  you chose them; other colours by the nearest common name. Uncoloured text,
+  black text and a dark theme's page colour say nothing. QUILL Lite shares the
+  same code and gets the same answer.
+- **The Open dialog follows the file you opened.** A file opened from File
+  Explorer, the command line, Open Recent or an existing tab now sets the
+  folder the next `Ctrl+O` starts in, the way the Open and Save As dialogs
+  always did.
+
 ### Form payment authoring and reporting (2026-11-06)
 
 - QUILL and QUILL Lite share Insert Payment Field, Form Payments Setup and
