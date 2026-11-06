@@ -244,6 +244,19 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="word-headers-on-the-first-page-or-even-pages-are-named-before-a-rich-edit-2026-11-06">Word
+headers on the first page or even pages are named before a rich edit
+(2026-11-06)</h3>
+<ul>
+<li>A Word document whose only header or footer is a first-page one
+(Different First Page) or an even-page one (Different Odd and Even
+Pages) now gets the same question as one with an ordinary header: QUILL
+and QUILL Lite name “headers” or “footers” in the list of things a rich
+edit cannot keep, and the first rich save writes the backup. Before,
+those files opened with no warning and lost the header silently on save.
+Every section is checked (#1756).</li>
+</ul>
 <h3 id="form-payment-authoring-and-reporting-2026-11-06">Form payment
 authoring and reporting (2026-11-06)</h3>
 <ul>

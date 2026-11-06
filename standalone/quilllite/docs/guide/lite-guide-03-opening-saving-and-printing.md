@@ -547,7 +547,10 @@ says "Row 2: Ann".
 
 - Pictures, comments, tracked changes, headers, footers, footnotes, endnotes,
   extra sections and table formatting are not kept by a save. You are always
-  told before you start (see *The question*).
+  told before you start (see *The question*). A header or footer that only
+  appears on the first page, or only on even pages, counts too: the question
+  names it as "headers" or "footers", and the first save still writes the
+  backup, just as it does for an ordinary header.
 - Styles other than the headings and the four named above become normal
   paragraphs with the formatting you can see.
 - A `.docm`, `.dotx` or `.dotm` cannot be saved; QUILL Lite says so and writes

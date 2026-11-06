@@ -2678,11 +2678,14 @@ and table navigation (2026-10-17)</h2>
 decisions left <code>quill/ui/main_frame_rich_mode.py</code> for the
 shared <code>quill/core/docx_open.py</code>, and QUILL calls them in the
 same change: the fidelity scan (<code>fidelity_findings</code>, over
-<code>scan_docx_features</code>), the question and its three rows
-(<code>fidelity_question</code>, <code>fidelity_choices</code>,
-<code>choice_for_selection</code>; Cancel is <code>text</code>), the
-one-time backup (<code>backup_path_for</code>,
-<code>backup_original</code>, <code>needs_backup</code>:
+<code>scan_docx_features</code>, whose “headers” and “footers” include
+first-page parts under <code>w:titlePg</code> and even-page parts under
+<code>w:evenAndOddHeaders</code> in every section since #1756), the
+question and its three rows (<code>fidelity_question</code>,
+<code>fidelity_choices</code>, <code>choice_for_selection</code>; Cancel
+is <code>text</code>), the one-time backup
+(<code>backup_path_for</code>, <code>backup_original</code>,
+<code>needs_backup</code>:
 <code>name.backup-YYYYMMDD-HHMMSS.docx</code>, once per session, only
 for a flagged original that exists), read-to-RTF
 (<code>read_docx_as_rtf</code>) and RTF-to-Word
