@@ -3696,6 +3696,29 @@ breaks.</li>
 page break needs a Word, Rich Text or Markdown document”. It never
 writes a form feed.</li>
 </ul>
+<h2 id="math-as-mathml-in-export-as-html-2026-11-06">Math as MathML in
+Export as HTML (2026-11-06)</h2>
+<ul>
+<li><strong>File &gt; Export as HTML…</strong> (Ctrl+Alt+Shift+End)
+renders a Markdown document through the shared
+<code>render_preview_body</code>, which now hands TeX math
+(<code>\(...\)</code>, <code>\[...\]</code>, <code>$$...$$</code> and
+fenced <code>math</code>) to
+<code>quill/core/math/preview_math.py</code>: the math is lifted out
+before the Markdown renderer runs, so <code>a_1</code> is never read as
+emphasis, and comes back as MathML from the shared
+<code>latex_to_mathml</code>. Code spans and fenced code are left
+alone.</li>
+<li>The page carries no script and makes no network request for math.
+Before this, QUILL’s preview and HTML export loaded MathJax from a CDN;
+QUILL Lite’s page had no math rendering at all, so this is the same
+capability reaching both editors from one module in the same change, not
+Lite getting ahead.</li>
+<li>A formula <code>latex2mathml</code> cannot convert is written as its
+escaped TeX source, so nothing is lost. QUILL Lite has no Pandoc path,
+so the picture embedding QUILL’s Pandoc export gained the same day does
+not apply here: QUILL Lite’s page links its pictures as before.</li>
+</ul>
 </main>
 </body>
 </html>

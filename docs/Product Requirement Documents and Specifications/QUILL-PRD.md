@@ -1857,6 +1857,8 @@ A general action under the AI menu (**AI > More > Improve Reading Order…**) an
 - `File > Preview Markdown as HTML` renders via `markdown-it-py` and opens the browser.
 - `File > Export Markdown as HTML` saves a standalone HTML file.
 - `File > Export Markdown as Word` produces a `.docx` via `python-docx`, preserving headings, lists, links, tables, code blocks.
+- **Math is MathML everywhere HTML is made (2026-11-06).** Preview, Browser Preview and both HTML export paths write TeX math as MathML (`quill/core/math/preview_math.py`); no page loads MathJax or any other script from a CDN, so math shows offline and screen readers with a math engine read it natively. Pandoc HTML output carries `--mathml`.
+- **Export as HTML keeps its pictures (2026-11-06).** Pandoc runs on a temporary copy of the document, so `pandoc_html_args` (`quill/io/html_page.py`) passes `--resource-path=<the document's folder>`, and, from the installed Pandoc's version, `--embed-resources` (Pandoc 3) or `--self-contained` (Pandoc 2); an unreadable version embeds nothing. A document that shows a picture from the web (`![...](https://...)`, `<img src="//...">`) is never embedded, because embedding would download it: no export makes a network request. Pandoc's standalone template already gives the page a `<header>` for the title block and a `<nav>` for a table of contents; QUILL's own renderer wraps the body in `<main>`.
 
 ### 5.8 Find and replace
 
@@ -2101,6 +2103,30 @@ Quill's audience is exactly the audience that needs to _produce_ accessible docu
   - **Alt-text catalog** (`Ctrl+Alt+I`): every image with its current alt text, edit in place for editable formats, jump-to-source.
   - **Link inventory** (`Ctrl+Alt+L`): every link with target and accessible name; flags duplicates and internal-vs-external; copy URLs.
 - Audit completes in under 200 ms for documents up to 100 KB; up to 5 s for documents up to 5 MB.
+
+#### 5.20.1 Mermaid diagrams in the Accessibility Tune-Up (2026-11-06)
+
+A rendered Mermaid diagram is an SVG picture, and without an accessible name
+and description it reaches a screen reader as an unlabelled graphic. The
+Tune-Up (**AI > Accessibility Tune-Up...**, `quill/core/accessibility_agent.py`)
+has a **diagrams** category, filled by `quill/core/mermaid_a11y.py`, for every
+fenced `mermaid` block (backtick or tilde fence) in a Markdown document:
+
+- no `accTitle:` line -- the diagram has no accessible name;
+- no `accDescr:` (single line) or `accDescr {` (multi-line) -- no text
+  alternative;
+- an init directive (`%%{init: ...}%%`) that sets `theme` -- it overrides the
+  reader's light or dark choice and can break contrast;
+- `style`, `classDef` or `linkStyle` with `fill`, `color` or `stroke` -- advise
+  checking a 4.5 to 1 contrast ratio and that colour is not the only cue;
+- more than one diagram on the page and the nearest non-blank line above a
+  fence is not a heading (ATX or setext) -- each diagram should be reachable by
+  heading navigation.
+
+Every finding carries a 1-based line number (the opening fence, or the line of
+the theme or colour statement) and is advisory: it needs human judgement, so
+the Tune-Up never rewrites a diagram. The category is Markdown-only. QUILL Lite
+has no Tune-Up, so it is not behind here.
 
 ### 5.21 Table mode for Markdown and HTML tables
 
@@ -3469,6 +3495,7 @@ A dedicated menu surfacing transforms that are otherwise reachable via Tools or 
 - Supported placeholders in snippet bodies: `${input:name}`, `${choice:a|b}`, `${date}`, `${time}`, `${cursor}`.
 - Trigger expansion can run while typing (for example `;meeting` plus a delimiter), and remains user-controllable via General Preferences.
 - Starter packs are installable from Preferences and snippet management so onboarding can begin with practical templates.
+- The **mermaid-diagrams** starter pack (2026-11-06) has eight fenced Mermaid diagrams: flowchart, sequence, class, state, entity relationship, Gantt, mind map and timeline (triggers `;mmflowchart` ... `;mmtimeline`). Each body puts `accTitle: ${input:accessible title}` and `accDescr: ${input:accessible description}` straight after the diagram type, so the snippet form asks for the title and description before anything else, and a filled-in diagram passes the Tune-Up's diagram checks (5.20.1).
 
 ### 5.29c Word prediction and tag IntelliSense
 
@@ -7595,6 +7622,21 @@ opt-in specifically to avoid colliding with prose), so switching the
 Quillin's own delimiters to MathJax's defaults made both surfaces render
 correctly with **zero template changes**. Verified empirically (headless
 browser screenshot), not assumed.
+
+**Rendering, superseded (2026-11-06): MathML, no CDN.** The MathJax include is
+gone from both surfaces. `quill/core/math/preview_math.py` lifts every math
+span (`\(...\)`, `\[...\]`, `$$...$$`, fenced `math`) out of the Markdown
+before the renderer runs, so `a_1` is never read as emphasis, and puts
+`latex_to_mathml` output (`quill/core/math/latex_bridge.py`) back where it
+was. Code spans and fenced code are untouched, and the line count is kept so
+the side preview's `data-src` source map still points at the right line. A
+formula that will not convert, or a build without `latex2mathml`, shows its
+TeX source as text. Pandoc HTML output carries `--mathml` (Export as HTML,
+`convert_with_pandoc` to HTML, the Accessible HTML Page profile), and
+`prepare_for_pandoc` rewrites the delimiters to dollars, because Pandoc's GFM
+reader does not know `\(...\)`. Result: preview and export make no network
+request for math, work offline, and hand the screen reader real MathML (NVDA's
+MathCAT, JAWS).
 
 **Word export and round-trip (`quill/io/docx_math.py`).** The native
 python-docx writer (`quill/io/docx_writer.py`) had no math model; math spans

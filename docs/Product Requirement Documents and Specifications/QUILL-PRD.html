@@ -4078,6 +4078,26 @@ HTML file.</li>
 <li><code>File &gt; Export Markdown as Word</code> produces a
 <code>.docx</code> via <code>python-docx</code>, preserving headings,
 lists, links, tables, code blocks.</li>
+<li><strong>Math is MathML everywhere HTML is made
+(2026-11-06).</strong> Preview, Browser Preview and both HTML export
+paths write TeX math as MathML
+(<code>quill/core/math/preview_math.py</code>); no page loads MathJax or
+any other script from a CDN, so math shows offline and screen readers
+with a math engine read it natively. Pandoc HTML output carries
+<code>--mathml</code>.</li>
+<li><strong>Export as HTML keeps its pictures (2026-11-06).</strong>
+Pandoc runs on a temporary copy of the document, so
+<code>pandoc_html_args</code> (<code>quill/io/html_page.py</code>)
+passes <code>--resource-path=&lt;the document's folder&gt;</code>, and,
+from the installed Pandoc’s version, <code>--embed-resources</code>
+(Pandoc 3) or <code>--self-contained</code> (Pandoc 2); an unreadable
+version embeds nothing. A document that shows a picture from the web
+(<code>![...](https://...)</code>, <code>&lt;img src="//..."&gt;</code>)
+is never embedded, because embedding would download it: no export makes
+a network request. Pandoc’s standalone template already gives the page a
+<code>&lt;header&gt;</code> for the title block and a
+<code>&lt;nav&gt;</code> for a table of contents; QUILL’s own renderer
+wraps the body in <code>&lt;main&gt;</code>.</li>
 </ul>
 <h3 id="58-find-and-replace">5.8 Find and replace</h3>
 <p>Find in Quill is designed to feel like Microsoft editors and Visual
@@ -4905,6 +4925,38 @@ internal-vs-external; copy URLs.</li>
 <li>Audit completes in under 200 ms for documents up to 100 KB; up to
 5 s for documents up to 5 MB.</li>
 </ul>
+<h4
+id="5201-mermaid-diagrams-in-the-accessibility-tune-up-2026-11-06">5.20.1
+Mermaid diagrams in the Accessibility Tune-Up (2026-11-06)</h4>
+<p>A rendered Mermaid diagram is an SVG picture, and without an
+accessible name and description it reaches a screen reader as an
+unlabelled graphic. The Tune-Up (<strong>AI &gt; Accessibility
+Tune-Up…</strong>, <code>quill/core/accessibility_agent.py</code>) has a
+<strong>diagrams</strong> category, filled by
+<code>quill/core/mermaid_a11y.py</code>, for every fenced
+<code>mermaid</code> block (backtick or tilde fence) in a Markdown
+document:</p>
+<ul>
+<li>no <code>accTitle:</code> line – the diagram has no accessible
+name;</li>
+<li>no <code>accDescr:</code> (single line) or <code>accDescr {</code>
+(multi-line) – no text alternative;</li>
+<li>an init directive (<code>%%{init: ...}%%</code>) that sets
+<code>theme</code> – it overrides the reader’s light or dark choice and
+can break contrast;</li>
+<li><code>style</code>, <code>classDef</code> or <code>linkStyle</code>
+with <code>fill</code>, <code>color</code> or <code>stroke</code> –
+advise checking a 4.5 to 1 contrast ratio and that colour is not the
+only cue;</li>
+<li>more than one diagram on the page and the nearest non-blank line
+above a fence is not a heading (ATX or setext) – each diagram should be
+reachable by heading navigation.</li>
+</ul>
+<p>Every finding carries a 1-based line number (the opening fence, or
+the line of the theme or colour statement) and is advisory: it needs
+human judgement, so the Tune-Up never rewrites a diagram. The category
+is Markdown-only. QUILL Lite has no Tune-Up, so it is not behind
+here.</p>
 <h3 id="521-table-mode-for-markdown-and-html-tables">5.21 Table mode for
 Markdown and HTML tables</h3>
 <p>When the editor cursor enters a Markdown pipe table, a Markdown grid
@@ -7545,6 +7597,15 @@ searchable picker pattern used across Quill insertion flows.</li>
 via General Preferences.</li>
 <li>Starter packs are installable from Preferences and snippet
 management so onboarding can begin with practical templates.</li>
+<li>The <strong>mermaid-diagrams</strong> starter pack (2026-11-06) has
+eight fenced Mermaid diagrams: flowchart, sequence, class, state, entity
+relationship, Gantt, mind map and timeline (triggers
+<code>;mmflowchart</code> … <code>;mmtimeline</code>). Each body puts
+<code>accTitle: ${input:accessible title}</code> and
+<code>accDescr: ${input:accessible description}</code> straight after
+the diagram type, so the snippet form asks for the title and description
+before anything else, and a filled-in diagram passes the Tune-Up’s
+diagram checks (5.20.1).</li>
 </ul>
 <h3 id="529c-word-prediction-and-tag-intellisense">5.29c Word prediction
 and tag IntelliSense</h3>
@@ -13388,6 +13449,21 @@ opt-in specifically to avoid colliding with prose), so switching the
 Quillin&#39;s own delimiters to MathJax&#39;s defaults made both surfaces render
 correctly with **zero template changes**. Verified empirically (headless
 browser screenshot), not assumed.
+
+**Rendering, superseded (2026-11-06): MathML, no CDN.** The MathJax include is
+gone from both surfaces. `quill/core/math/preview_math.py` lifts every math
+span (`\(...\)`, `\[...\]`, `$$...$$`, fenced `math`) out of the Markdown
+before the renderer runs, so `a_1` is never read as emphasis, and puts
+`latex_to_mathml` output (`quill/core/math/latex_bridge.py`) back where it
+was. Code spans and fenced code are untouched, and the line count is kept so
+the side preview&#39;s `data-src` source map still points at the right line. A
+formula that will not convert, or a build without `latex2mathml`, shows its
+TeX source as text. Pandoc HTML output carries `--mathml` (Export as HTML,
+`convert_with_pandoc` to HTML, the Accessible HTML Page profile), and
+`prepare_for_pandoc` rewrites the delimiters to dollars, because Pandoc&#39;s GFM
+reader does not know `\(...\)`. Result: preview and export make no network
+request for math, work offline, and hand the screen reader real MathML (NVDA&#39;s
+MathCAT, JAWS).
 
 **Word export and round-trip (`quill/io/docx_math.py`).** The native
 python-docx writer (`quill/io/docx_writer.py`) had no math model; math spans

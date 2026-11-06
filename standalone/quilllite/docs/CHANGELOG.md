@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+### Math as MathML in exported pages (2026-11-06)
+
+- **File > Export as HTML...** (Ctrl+Alt+Shift+End) now writes equations in a
+  Markdown document as MathML, from the same code QUILL uses. The page needs
+  no script and nothing from the internet to show its math, and NVDA and JAWS
+  read and navigate the equations with their own math support. Underscores
+  inside an equation stay part of the equation instead of turning into
+  emphasis. A formula that cannot be converted is left as its source text.
+
 ### Form payment integration (2026-11-06)
 
 - Shared with QUILL: Insert Payment Field, Form Payments Setup and Verify

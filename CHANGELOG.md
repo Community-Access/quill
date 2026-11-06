@@ -2,6 +2,37 @@
 
 ## 1.0.0
 
+### Diagrams, math and pictures in Markdown pages (2026-11-06)
+
+- **Mermaid diagrams in the Accessibility Tune-Up.** **AI > Accessibility
+  Tune-Up...** now looks inside every fenced `mermaid` block in a Markdown
+  document. It tells you, with the line number, when a diagram has no
+  accessible title (`accTitle`) or description (`accDescr`), when an init
+  block forces a theme, and when the diagram sets its own fill or text
+  colours, so you can check the contrast. When a document has more than one
+  diagram, it asks for a heading before each so a listener can jump between
+  them. These are review steps: nothing is changed for you.
+- **Mermaid snippets.** A new starter pack, **mermaid-diagrams**, has eight
+  diagram snippets: flowchart, sequence, class, state, entity relationship,
+  Gantt, mind map and timeline. Each one asks for the diagram's accessible
+  title and description first and writes them as `accTitle` and `accDescr`.
+  Install it from **More Preferences > Install Starter Snippet Packs**; the
+  triggers are `;mmflowchart`, `;mmsequence`, `;mmclass`, `;mmstate`, `;mmer`,
+  `;mmgantt`, `;mmmindmap` and `;mmtimeline`.
+- **Math as MathML, with nothing downloaded.** Browser Preview, the side
+  preview and **File > Export > HTML...** now write equations as MathML
+  instead of loading MathJax from the internet. Pages show their math offline,
+  and NVDA and JAWS read and navigate it with their own math support. Pandoc's
+  HTML output (Export as HTML, opening a conversion as HTML, and the
+  Accessible HTML Page profile) asks for MathML too. QUILL Lite's Export as
+  HTML gets the same change from the same code.
+- **Exported pages keep their pictures.** When Pandoc writes **File > Export >
+  HTML...**, a picture with a relative path is found beside your document
+  rather than lost, and with Pandoc 3 (or 2) the picture is put inside the
+  page, so it still shows when the page is emailed or moved on its own. A page
+  that shows a picture from the web links it instead, so exporting never
+  downloads anything.
+
 ### Form payment authoring and reporting (2026-11-06)
 
 - QUILL and QUILL Lite share Insert Payment Field, Form Payments Setup and

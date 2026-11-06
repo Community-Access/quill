@@ -244,6 +244,47 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="diagrams-math-and-pictures-in-markdown-pages-2026-11-06">Diagrams,
+math and pictures in Markdown pages (2026-11-06)</h3>
+<ul>
+<li><strong>Mermaid diagrams in the Accessibility Tune-Up.</strong>
+<strong>AI &gt; Accessibility Tune-Up…</strong> now looks inside every
+fenced <code>mermaid</code> block in a Markdown document. It tells you,
+with the line number, when a diagram has no accessible title
+(<code>accTitle</code>) or description (<code>accDescr</code>), when an
+init block forces a theme, and when the diagram sets its own fill or
+text colours, so you can check the contrast. When a document has more
+than one diagram, it asks for a heading before each so a listener can
+jump between them. These are review steps: nothing is changed for
+you.</li>
+<li><strong>Mermaid snippets.</strong> A new starter pack,
+<strong>mermaid-diagrams</strong>, has eight diagram snippets:
+flowchart, sequence, class, state, entity relationship, Gantt, mind map
+and timeline. Each one asks for the diagram’s accessible title and
+description first and writes them as <code>accTitle</code> and
+<code>accDescr</code>. Install it from <strong>More Preferences &gt;
+Install Starter Snippet Packs</strong>; the triggers are
+<code>;mmflowchart</code>, <code>;mmsequence</code>,
+<code>;mmclass</code>, <code>;mmstate</code>, <code>;mmer</code>,
+<code>;mmgantt</code>, <code>;mmmindmap</code> and
+<code>;mmtimeline</code>.</li>
+<li><strong>Math as MathML, with nothing downloaded.</strong> Browser
+Preview, the side preview and <strong>File &gt; Export &gt;
+HTML…</strong> now write equations as MathML instead of loading MathJax
+from the internet. Pages show their math offline, and NVDA and JAWS read
+and navigate it with their own math support. Pandoc’s HTML output
+(Export as HTML, opening a conversion as HTML, and the Accessible HTML
+Page profile) asks for MathML too. QUILL Lite’s Export as HTML gets the
+same change from the same code.</li>
+<li><strong>Exported pages keep their pictures.</strong> When Pandoc
+writes <strong>File &gt; Export &gt; HTML…</strong>, a picture with a
+relative path is found beside your document rather than lost, and with
+Pandoc 3 (or 2) the picture is put inside the page, so it still shows
+when the page is emailed or moved on its own. A page that shows a
+picture from the web links it instead, so exporting never downloads
+anything.</li>
+</ul>
 <h3 id="form-payment-authoring-and-reporting-2026-11-06">Form payment
 authoring and reporting (2026-11-06)</h3>
 <ul>

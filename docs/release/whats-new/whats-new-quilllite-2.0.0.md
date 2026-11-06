@@ -44,6 +44,7 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 - **Insert > Table (Ctrl+Alt+T)** in any document; the arrows read a table cell by cell.
 - **Find in Open Documents (Ctrl+Alt+Shift+F8)**, Search in Files and Replace Across Files.
 - **Spell check reads only what you wrote**, skipping web addresses, file names and code.
+- **Export as HTML (Ctrl+Alt+Shift+End) writes equations as MathML**, so the page needs nothing from the internet and your screen reader reads the math itself.
 
 ## Knowing what happened
 

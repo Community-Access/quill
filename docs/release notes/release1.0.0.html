@@ -244,6 +244,24 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-10">QUILL 1.0</h1>
 <p><em>Version 1.0.0. From Community Access. Free.</em></p>
+<h2 id="diagrams-math-and-pictures-in-markdown-pages">Diagrams, math and
+pictures in Markdown pages</h2>
+<p><strong>AI &gt; Accessibility Tune-Up…</strong> now checks Mermaid
+diagrams in Markdown. For each fenced <code>mermaid</code> block it
+tells you, by line number, when the diagram has no accessible title
+(<code>accTitle</code>) or description (<code>accDescr</code>), when an
+init block forces a theme, and when it sets its own colours so you
+should check the contrast. With more than one diagram on a page, it asks
+for a heading before each. A new starter snippet pack,
+<strong>mermaid-diagrams</strong>, has eight diagram types, and every
+one asks for the title and description before anything else.</p>
+<p>Equations in Browser Preview, the side preview and <strong>File &gt;
+Export &gt; HTML…</strong> are now MathML. Nothing is downloaded from
+the internet to show them, and NVDA and JAWS read them with their own
+math support. When Pandoc writes the page, pictures are found beside
+your document and, with Pandoc 2 or 3, carried inside the page so it can
+be emailed on its own. QUILL Lite’s Export as HTML writes math as MathML
+too.</p>
 <h2 id="form-payment-setup-and-reporting">Form payment setup and
 reporting</h2>
 <p>QUILL and QUILL Lite now share <strong>Tools &gt; Forms &gt; Insert
@@ -1514,7 +1532,7 @@ location in the editor</strong>, which puts your cursor on that block’s
 line in the source. The key opens a menu instead of doing something
 straight away, which is what screen reader users expect from it. There
 is also a browser preview that shows the document as a web page, with
-MathJax for equations.</p>
+equations shown as MathML.</p>
 <h3 id="insert-emoji">Insert Emoji</h3>
 <p>Insert Special Character is for when you know the code point you
 want. Emoji are the opposite: you don’t know the code point, you may not
@@ -1603,10 +1621,12 @@ an equation (numerator, exponent, radicand) instead of reading it as one
 long string.</p>
 <p>Typing math as text works well by ear: it is all keyboard, you can
 review it character by character, and screen readers that speak math can
-read it. The preview and HTML export show it through MathJax. Word
-export writes real Word equations you can edit, and they turn back into
-text when you reopen the file. With the optional MathCAT engine
-installed, “read this part aloud” speaks math the way NVDA does.</p>
+read it. The preview and HTML export show it as MathML, which needs
+nothing from the internet and which NVDA and JAWS read with their own
+math support. Word export writes real Word equations you can edit, and
+they turn back into text when you reopen the file. With the optional
+MathCAT engine installed, “read this part aloud” speaks math the way
+NVDA does.</p>
 <p>Insert Equation writes <code>\(...\)</code> around an equation in the
 line and <code>$$...$$</code> around a block, the same marks the Math
 Equations Quillin uses, so the preview and Word export both pick it up.

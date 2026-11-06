@@ -682,6 +682,11 @@ several tasks to check them together. **Ctrl+Z** takes it back.
 document as one web page, ready to email or put on a website. Task lists
 show as check boxes. Your document stays as it was.
 
+Equations in a Markdown document go into the page as MathML. The page shows
+them without any script or internet connection, and NVDA and JAWS read them
+as maths, so you can move through a fraction part by part with your screen
+reader's own math commands. QUILL writes its pages the same way.
+
 ## Find in Open Documents, folder search and the clipboard collector
 
 Press **Ctrl+Alt+Shift+F8** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL has it too, on Ctrl+Shift+F10. Thanks to Chris Nova for asking.
