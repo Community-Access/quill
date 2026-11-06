@@ -44,7 +44,6 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 - **Insert > Table (Ctrl+Alt+T)** in any document; the arrows read a table cell by cell.
 - **Find in Open Documents (Ctrl+Alt+Shift+F8)**, Search in Files and Replace Across Files.
 - **Spell check reads only what you wrote**, skipping web addresses, file names and code.
-- **Describe Formatting (Ctrl+Shift+D)** names the text colour in rich documents: "Calibri, 11 point, red, yellow highlight".
 
 ## Knowing what happened
 

@@ -40,9 +40,6 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 - **Ctrl+Enter** inserts a page break, as in Word. Word documents keep their page breaks now.
 - **The Command Palette (Ctrl+Shift+P)** finds every menu item, recent files and open documents included.
 - **Tables** you can read cell by cell, and Insert Table (Ctrl+Alt+T). **Find in Open Documents** (Ctrl+Shift+F10).
-- **Describe Formatting (Ctrl+Shift+D)** names the text colour in rich documents: "Calibri, 11 point, red, yellow highlight".
-- **AI Translate says when nothing was translated**, because the text was already in the language you picked.
-- **Ctrl+O starts beside the last file you opened**, even one you opened from File Explorer.
 
 ## More
 
