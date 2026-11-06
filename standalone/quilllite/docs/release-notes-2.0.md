@@ -13,6 +13,14 @@ Checkout needs the separately installed QAF WordPress plugin to implement
 payment contract version 1. Provider credentials, charging and webhooks stay
 in WordPress. This update does not deploy that plugin or certify live checkout.
 
+## Document Statistics, pressed twice
+
+View > Document Statistics (Ctrl+Shift+G) still says words, lines and
+characters straight away. Press it twice quickly to hear paragraphs,
+sentences, how many sentences run over 30 words, the reading time and the
+reading grade as well. Select some text first and it counts just that. QUILL
+says the same words on the same key.
+
 *Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1); the last
 published version is 1.1.2.*
 

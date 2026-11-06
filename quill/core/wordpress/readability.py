@@ -8,10 +8,14 @@ no network, stdlib only.
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from html import unescape
 from html.parser import HTMLParser
+
+# The counting is shared with Document Statistics in both editors.
+from quill.core.readability import WORD_RE as _WORD_RE
+from quill.core.readability import count_syllables, flesch_kincaid_grade, grade_phrase
+from quill.core.readability import split_sentences as _split_sentences
 
 __all__ = [
     "PlainText",
@@ -160,58 +164,6 @@ class ReadingLevel:
     longest: tuple[Sentence, ...]
 
 
-_WORD_RE = re.compile(r"[A-Za-zÀ-ɏ]+(?:['’][A-Za-z]+)*|\d+(?:[.,]\d+)*")
-# A sentence ends at terminal punctuation (with any closing quote or bracket)
-# followed by space, or at a line break left by a block boundary.
-_SENTENCE_END_RE = re.compile(r"[.!?…]+[\"'”’)\]]*(?=\s|$)|\n+")
-_VOWEL_GROUP_RE = re.compile(r"[aeiouy]+")
-
-
-def count_syllables(word: str) -> int:
-    """A vowel-group estimate of a word's syllables (at least 1)."""
-    w = word.lower().strip("'’")
-    if not w:
-        return 0
-    if w.isdigit():
-        return max(1, len(w))  # numbers are read digit-ish; a rough cost
-    if len(w) <= 3:
-        return 1
-    if w.endswith("e") and not w.endswith(("le", "ee", "ye")):
-        w = w[:-1]
-    elif w.endswith(("es", "ed")) and not w.endswith((
-        "ted",
-        "ded",
-        "ses",
-        "zes",
-        "ces",
-        "ges",
-        "xes",
-        "shes",
-        "ches",
-    )):
-        w = w[:-2]
-    groups = len(_VOWEL_GROUP_RE.findall(w))
-    return max(1, groups)
-
-
-def _split_sentences(text: str) -> list[tuple[str, int]]:
-    pieces: list[tuple[str, int]] = []
-    start = 0
-    for match in _SENTENCE_END_RE.finditer(text):
-        end = match.end()
-        pieces.append((text[start:end], start))
-        start = end
-    pieces.append((text[start:], start))
-    result: list[tuple[str, int]] = []
-    for piece, offset in pieces:
-        stripped = piece.strip()
-        if not stripped or not _WORD_RE.search(stripped):
-            continue
-        lead = len(piece) - len(piece.lstrip())
-        result.append((stripped, offset + lead))
-    return result
-
-
 def reading_level(text: str, *, is_html: bool = False) -> ReadingLevel:
     """The Flesch-Kincaid grade of ``text``.
 
@@ -233,7 +185,7 @@ def reading_level(text: str, *, is_html: bool = False) -> ReadingLevel:
         return ReadingLevel(0.0, 0, 0, 0, 0.0, ())
     count = len(sentences)
     per_sentence = total_words / count
-    grade = 0.39 * per_sentence + 11.8 * (total_syllables / total_words) - 15.59
+    grade = flesch_kincaid_grade(total_words, count, total_syllables)
     longest = tuple(sorted(sentences, key=lambda s: (-s.word_count, s.offset))[:LONGEST_COUNT])
     return ReadingLevel(
         grade=grade,
@@ -245,23 +197,11 @@ def reading_level(text: str, *, is_html: bool = False) -> ReadingLevel:
     )
 
 
-def _ordinal(n: int) -> str:
-    if 10 <= n % 100 <= 20:
-        suffix = "th"
-    else:
-        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
-    return f"{n}{suffix}"
-
-
 def describe(level: ReadingLevel) -> str:
     """ "Reading level: about 9th grade, 14 words per sentence"."""
     if not level.words:
         return "Reading level: not enough text to judge"
-    grade = round(level.grade)
-    if grade >= 13:
-        where = "college level"
-    else:
-        where = f"about {_ordinal(max(1, grade))} grade"
+    where = grade_phrase(level.grade)
     per = round(level.words_per_sentence)
     unit = "word" if per == 1 else "words"
     return f"Reading level: {where}, {per} {unit} per sentence"

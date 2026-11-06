@@ -3696,6 +3696,32 @@ breaks.</li>
 page break needs a Word, Rich Text or Markdown document”. It never
 writes a form feed.</li>
 </ul>
+<h2 id="document-statistics-pressed-twice-2026-11-06">Document
+Statistics, pressed twice (2026-11-06)</h2>
+<p><strong>View &gt; Document Statistics</strong>
+(<strong>Ctrl+Shift+G</strong>, <code>cmd_statistics</code>) still
+answers a first press at once with words, lines and characters. A second
+press within 400 milliseconds (<code>multi_press_window_ms</code> where
+the settings carry it) speaks the whole writing report: the same counts,
+then paragraphs, sentences, sentences over 30 words, reading time at 200
+words a minute, and the Flesch-Kincaid reading grade. QUILL’s Document
+Statistics has the same two presses on the same key and says the same
+words, because both editors call
+<code>quill.core.metrics.statistics_report</code> (family rule 2: the
+command both products have keeps the chord, and no second
+implementation).</p>
+<ul>
+<li>DS-L1. The first press is never delayed waiting to see whether a
+second one comes; <code>RepeatPress</code> only looks back.</li>
+<li>DS-L2. With a selection, both presses count the selection and say
+“Selection:” first.</li>
+<li>DS-L3. Paragraphs are blank-line blocks when the text has a blank
+line between paragraphs, otherwise non-blank lines.</li>
+<li>DS-L4. The sentence splitter and the grade are the ones the
+WordPress reading-level check uses, moved to
+<code>quill/core/readability.py</code> so the two can never
+disagree.</li>
+</ul>
 </main>
 </body>
 </html>

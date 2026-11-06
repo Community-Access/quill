@@ -2087,6 +2087,22 @@ Local, instant, never sends content anywhere.
 - If a selection exists, statistics report on the selection and the title says so explicitly.
 - Status bar shows running word count for the current document or selection.
 
+**As shipped in 1.0.0 (2026-11-06).** Document Statistics is spoken, not a
+dialog: **Tools > Writing and Language > Document Statistics...**
+(`Ctrl+Shift+G`, `tools.word_count`, Word's Word Count key) says words, lines
+and characters at once. A second press within the multi-press window
+(`multi_press_window_ms`, default 400 ms) adds paragraphs, sentences, the
+number of sentences over 30 words, reading time at the status bar's 200 words a
+minute, and the Flesch-Kincaid grade ("reading grade about 9th grade", or
+"college level" from grade 13). Both presses report on the selection when there
+is one and start with "Selection:". The long report is spoken even when
+`announce_counts` is off. QUILL Lite has the same two presses on the same key,
+and both editors build the sentence with `quill.core.metrics.statistics_report`.
+The sentence and grade logic lives in `quill/core/readability.py`, shared with
+the WordPress reading-level check. Not yet built from the list above: speaking
+time, the other readability scores, per-level heading counts and the
+longest-sentence jump.
+
 ### 5.20 Accessibility auditor
 
 Quill's audience is exactly the audience that needs to _produce_ accessible documents. v1.0 ships a first-class auditor.

@@ -289,7 +289,9 @@ saved in the file.
 ### What is in this document, in numbers
 
 - **Document Statistics** (**Ctrl+Shift+G**) tells you the size of the whole
-  document: characters, words, lines and paragraphs.
+  document, or of the selection: words, lines and characters. Press it twice
+  quickly to add paragraphs, sentences, long sentences, the reading time and
+  the reading grade. Chapter 8 has the details.
 - **Line Statistics** (**Ctrl+Alt+W**) tells you about line widths. It is useful
   when you are writing to fit something, like a braille display, a narrow
   window, or a line limit in code.

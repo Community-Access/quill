@@ -17,6 +17,15 @@ version 1. Provider credentials, charging and webhooks stay on WordPress;
 this desktop update does not deploy the plugin or establish live checkout
 acceptance. The WordPress and Forms guide covers the sandbox-first workflow.
 
+## Document Statistics, pressed twice
+
+**Tools > Writing and Language > Document Statistics...** (`Ctrl+Shift+G`)
+still tells you words, lines and characters straight away. Press it twice
+quickly and you hear the full writing report too: paragraphs, sentences, how
+many sentences run over 30 words, the reading time and the reading grade, for
+example "about 7 minutes to read, reading grade about 9th grade". Select some
+text first and it counts just that. QUILL Lite does the same on the same key.
+
 **Unreleased correction:** The shared Radio code retires the built-in SomaFM
 source in response to its published third-party-client terms; known catalogue
 entries and direct playback and recording paths are filtered or blocked.

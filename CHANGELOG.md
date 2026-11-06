@@ -2,6 +2,19 @@
 
 ## 1.0.0
 
+### Document Statistics, pressed twice (2026-11-06)
+
+- Document Statistics (`Ctrl+Shift+G`) still says words, lines and characters
+  at once. Press it twice quickly and it adds paragraphs, sentences, how many
+  sentences run over 30 words, the reading time and the reading grade
+  (Flesch-Kincaid). Both presses count the selection when there is one and
+  start with "Selection:". The second press uses the Multi-press time window
+  setting, and the long report is spoken even when spoken counts are off.
+- The reading time is the status bar's, 200 words a minute, and the grade is
+  the one the WordPress reading-level check gives, now shared from
+  `quill/core/readability.py`. QUILL Lite has the same two presses on the same
+  key and says the same words.
+
 ### Form payment authoring and reporting (2026-11-06)
 
 - QUILL and QUILL Lite share Insert Payment Field, Form Payments Setup and
