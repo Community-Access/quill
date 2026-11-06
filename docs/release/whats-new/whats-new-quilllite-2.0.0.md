@@ -39,9 +39,6 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 
 ## Words, tables and documents
 
-- **Replace all puts in what you typed.** In Normal and Extended search, `C:\new` in Replace with goes in as `C:\new`, not a line break; `\1` and `\2` still work in Regular expression mode.
-- **A backup that fails is said.** With timestamped backups on, you hear "Saved notes.txt, but could not write a backup", and the file is still saved.
-
 - **Thesaurus (Shift+F7)**, **Look Up Word (Alt+F10)** without the internet, and an AI dictionary.
 - **Word documents open and save as Word**, and **Ctrl+Enter** is a page break. PDFs open as text, with OCR on this computer.
 - **Insert > Table (Ctrl+Alt+T)** in any document; the arrows read a table cell by cell.
