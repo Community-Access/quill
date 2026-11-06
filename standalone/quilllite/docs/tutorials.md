@@ -1,5 +1,10 @@
 # QUILL Lite Tutorials
 
+For GitHub issues and pull requests, use the shared
+[GitHub inside QUILL and QUILL Lite tutorial](../../../docs/tutorials/08-github-inside-quill.md).
+It covers the expandable PR outline, Tab and arrow navigation, Ctrl+R replies,
+and every context menu. This is a separate guide from the 31 in-app lessons.
+
 Welcome. There are 31 short lessons here, about 158 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials... (Ctrl+Alt+F1)** in QUILL Lite. It does a step for you when you ask, and moves on by itself once it hears you have done one.

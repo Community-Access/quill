@@ -50,6 +50,7 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
     # Tools
     "cmd_preferences",
     "cmd_keyboard_manager",
+    "cmd_github_workbench",
     "cmd_sound_scheme",
     "cmd_backup_settings",
     "cmd_restore_settings",

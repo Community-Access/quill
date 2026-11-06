@@ -153,6 +153,40 @@ With **GitHub Remote Access** on (it needs Developer Tools):
   use the GitHub CLI, `gh`. Creating a Codespace may cost money, and QUILL
   says so and asks first.
 
+The **GitHub Items...** viewer accepts an `owner/repo`, a GitHub repository
+address, or a `git@github.com:` remote. If the current document is in a clone
+with a GitHub origin, QUILL fills in the repository. **Issues & PRs** is the
+combined inbox for the loaded repository; Search queries GitHub with its own
+qualifiers, while Quick Filter narrows only the rows already loaded. Branches,
+commits, tags, releases, workflow definitions, and workflow runs have their
+own views. Compare Branches and the PR Diff reader use QUILL's spoken difference
+navigation.
+
+On any Items row or its details field, **Shift+F10** or the Applications key
+opens a contextual action menu. PRs offer Review and Diff, branches Compare,
+and runs their artifacts. Each selected item offers its GitHub link, a copyable
+link and details, and a favorite action; signed-in sessions add the relevant
+write actions. This menu is shared with QUILL Lite.
+
+Select a PR and press **Review...** to read merge readiness, the latest review
+decision, check runs, and each line comment with its replies. The native PR
+outline expands from PR to changed files, review threads, and checks. Arrow to
+an item, then Tab into its readable details; Shift+Tab returns. Ctrl+R replies
+to the selected thread, and Shift+F10 opens actions for the selected PR, file,
+thread, or check. Enter on a file opens its differences; Enter on a check opens
+its GitHub job. A signed-in account can submit a review, reply to
+the selected review thread, request reviewers, mark a PR draft or ready, and
+update its branch. Closed PRs cannot take those review actions. Public PRs can
+be read without a token. QUILL identifies outdated review hunks, but it does
+not yet show resolved thread state or resolve and reopen threads. The
+[GitHub tutorial](../../tutorials/08-github-inside-quill.md) walks through
+these controls, while the [workbench plan](../../planning/github-workbench.md)
+tracks the remaining GHManage-inspired features.
+
+QUILL Lite opens this same Items viewer and PR review outline from **Tools >
+GitHub Workbench...** (**Ctrl+Alt+Shift+F6**). Its menu offers the same actions
+because both apps instantiate the same viewer.
+
 ## Editing over SSH, in QUILL
 
 **File > Open over SSH > Quick Connect...** and **Site Manager...** open and

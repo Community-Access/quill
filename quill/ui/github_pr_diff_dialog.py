@@ -40,6 +40,7 @@ class GitHubPullDiffDialog:
         diff: GitHubPullDiff,
         *,
         announce_cb: Callable[[str], None] | None = None,
+        initial_file: str = "",
     ) -> None:
         import wx
 
@@ -48,6 +49,7 @@ class GitHubPullDiffDialog:
         self._repo = repo
         self._diff = diff
         self._announce = announce_cb or (lambda _m: None)
+        self._initial_file = initial_file
         self._load_token = 0  # invalidates stale content workers on reselect
 
         self.dialog = wx.Dialog(
@@ -93,7 +95,15 @@ class GitHubPullDiffDialog:
     def show(self) -> None:
         wx = self._wx
         if self._diff.files:
-            self._files.SetSelection(0)
+            first = next(
+                (
+                    index
+                    for index, file in enumerate(self._diff.files)
+                    if file.filename == self._initial_file
+                ),
+                0,
+            )
+            self._files.SetSelection(first)
             self._on_select(None)
         self.dialog.CentreOnParent()
         apply_modal_ids(

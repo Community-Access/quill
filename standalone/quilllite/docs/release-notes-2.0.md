@@ -1,5 +1,14 @@
 # QUILL Lite 2.0
 
+## GitHub workbench
+
+**Tools > GitHub Workbench...** (**Ctrl+Alt+Shift+F6**) opens the shared QUILL
+GitHub Items viewer. A PR expands into changed files, review threads, general
+conversations, and checks. Arrow to an item and Tab into its detail; Ctrl+R
+replies to a selected thread. Shift+F10 opens a context menu that fits the
+selected item. Public repositories can be read anonymously; posting needs a
+token. See the [full GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md).
+
 *Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1); the last
 published version is 1.1.2.*
 

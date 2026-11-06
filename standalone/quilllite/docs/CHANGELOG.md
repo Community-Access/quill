@@ -2,6 +2,16 @@
 
 ## 2.0.0
 
+### GitHub workbench (2026-11-05)
+
+- Tools > GitHub Workbench... (Ctrl+Alt+Shift+F6) opens the same GitHub Items
+  viewer as QUILL, with the same consent, token store, and review actions.
+- Pull requests have an expandable file, conversation, and checks outline.
+  Ctrl+R replies to a selected thread; Shift+F10 opens node-specific actions.
+- The Items list and details field have context menus for review, diff,
+  comparison, copy, favorites, and relevant write actions.
+- The complete interaction model is in the [GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md).
+
 Testing build: **2.0.0 (build 1)**. It has not been published yet; the last
 published version is 1.1.2.
 

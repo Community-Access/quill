@@ -876,6 +876,7 @@ COMMANDS: list[CommandRow] = [
     # decade.
     ("&Tools", "&Preferences...", "Ctrl+,", "cmd_preferences", ""),
     *PROJECT_TOOLS_ROWS,  # Commands Allowed in This Project: Developer only
+    ("&Tools", "GitHub Workbench...", "Ctrl+Alt+Shift+F6", "cmd_github_workbench", ""),
     # Back up the configuration, and put it back on the next machine (#1501).
     # Beside Preferences because that is what it is a copy of. Neither carries
     # anything that describes *this* computer -- no recent files, no window

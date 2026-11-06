@@ -154,6 +154,53 @@ def test_actions_menu_requires_authentication(dlg) -> None:
     assert "signed-in" in dlg.announcements[-1]
 
 
+def test_review_selected_pr_opens_review_reader(dlg, monkeypatch: pytest.MonkeyPatch) -> None:
+    pr = GitHubItem(number=5, title="Fix it", state="open", url="", is_pr=True)
+    dlg._rows = [pr]
+    dlg._list.InsertItem(0, "Fix it")
+    dlg._list.Select(0)
+    opened: list[tuple[str, int]] = []
+
+    class _ReviewDialog:
+        def __init__(self, _parent, _provider, repo: str, number: int, **_kwargs) -> None:
+            opened.append((repo, number))
+
+        def show(self) -> None:
+            return None
+
+    monkeypatch.setattr("quill.ui.github_pr_review_dialog.GitHubPullReviewDialog", _ReviewDialog)
+
+    dlg._on_review()
+
+    assert opened == [("owner/repo", 5)]
+
+
+def test_pr_context_menu_exposes_review_and_copy_actions(dlg, monkeypatch) -> None:
+    pr = GitHubItem(
+        number=5,
+        title="Fix it",
+        state="open",
+        url="https://github.com/owner/repo/pull/5",
+        is_pr=True,
+    )
+    dlg._rows = [pr]
+    dlg._list.InsertItem(0, "Fix it")
+    dlg._list.Select(0)
+    labels: list[str] = []
+    monkeypatch.setattr(
+        wx.ListCtrl,
+        "PopupMenu",
+        lambda _self, menu: labels.extend(item.GetItemLabelText() for item in menu.GetMenuItems()),
+    )
+
+    dlg._on_item_context_menu(None)
+
+    assert "Open Review..." in labels
+    assert "Open File Differences..." in labels
+    assert "Copy Link" in labels
+    assert "Copy Details" in labels
+
+
 # ---------------------------------------------------------------------------
 # New issue / new pull request
 # ---------------------------------------------------------------------------

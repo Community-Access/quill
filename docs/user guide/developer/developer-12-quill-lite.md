@@ -79,9 +79,17 @@ files in place; QUILL Lite reloads any plain text window.
 
 ## What QUILL Lite does not have
 
+QUILL Lite shares QUILL's GitHub Items viewer through **Tools > GitHub
+Workbench...** (**Ctrl+Alt+Shift+F6**). The same repository lists, PR review
+outline, review actions, checks, and context menus are available there after
+the same network consent. The current document's GitHub checkout prefills the
+repository. See [Tutorial 8](../../tutorials/08-github-inside-quill.md) for the
+full keyboard interaction model. The standalone Lite installer includes the
+GitHub dependency.
+
 QUILL Lite is the editor-only sibling, so the developer tools that are not
-about editing are QUILL's alone: Local Git and worktrees, GitHub and
-Codespaces, editing over SSH, the Developer Console, Word Prediction, shell
+about editing are QUILL's alone: Local Git and worktrees, Codespaces,
+editing over SSH, the Developer Console, Word Prediction, shell
 integration and Validate Agents. QUILL Lite has the folder search, encodings
 and line endings, document language, folding, line comments and the
 indentation tools (Chapter 11).

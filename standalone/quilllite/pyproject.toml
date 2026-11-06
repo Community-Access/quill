@@ -20,7 +20,7 @@ classifiers = [
 # The whole app lives in the quill package (quill.apps.lite); this project is
 # the thin product wrapper: entry point, docs, installer. Nothing here imports
 # wx or comtypes directly -- both arrive with quill[ui].
-dependencies = ["quill[ui] @ git+https://github.com/Community-Access/quill.git"]
+dependencies = ["quill[ui,github] @ git+https://github.com/Community-Access/quill.git"]
 
 [project.gui-scripts]
 quill-lite = "quill_lite:main"

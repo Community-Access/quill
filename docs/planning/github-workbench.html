@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GHManage + Quill Developer Experience Plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="ghmanage--quill-developer-experience-plan">GHManage + Quill
+Developer Experience Plan</h1>
+<blockquote>
+<p><strong>Implementation status (2026-11-05):</strong> QUILL and QUILL
+Lite share the GitHub Items viewer. Its PR review reader uses an
+expandable native outline: PR, changed files with review threads,
+general conversations, and checks. The selected node drives a readable
+detail field, and context menus expose relevant actions. Ctrl+R replies
+to a selected thread. Thread resolution, exact-hunk navigation, and the
+broader GHManage capabilities listed below remain planned; their
+presence in this design is not a shipped-feature claim.</p>
+</blockquote>
+<p>This document is the pre-implementation design plan for making GitHub
+a native, first-class part of the QUILL developer experience. It is
+intentionally ambitious: we want to make GitHub work feel as integrated
+as writing code, reviewing diffs, navigating branches, and shipping
+changes — not bolted on as a separate tool.</p>
+<p>The north star is simple:</p>
+<ul>
+<li>GitHub should feel like an extension of the editor’s mental
+model</li>
+<li>PRs, issues, diffs, threads, and commits should become readable in
+context</li>
+<li>Human decisions should stay human, while AI accelerates
+comprehension and execution</li>
+<li>Developer profile gating should be explicit, safe, and respectful of
+consent</li>
+<li>We should build something that is more than “GHManage in QUILL” — we
+should generalize the real patterns that make repository work feel
+magical and trustworthy</li>
+</ul>
+<h2 id="1-why-this-matters">1. Why this matters</h2>
+<p>GitHub is no longer a sidecar. It is central to the developer
+workflow:</p>
+<ul>
+<li>reading code and reviewing change history</li>
+<li>understanding work in progress</li>
+<li>triaging issues and pull requests</li>
+<li>following threads and deciding what to do next</li>
+<li>preparing a patch or PR from a local working state</li>
+<li>explaining the state of a project to a teammate or AI assistant</li>
+</ul>
+<p>The current QUILL experience already has the right instincts:</p>
+<ul>
+<li>read-only GitHub items browsing exists in
+<code>quill.ui.main_frame_github_items</code></li>
+<li>the GitHub consent and safe-mode gates are already enforced</li>
+<li>developer profile gating is built around the <code>coding</code>
+capability</li>
+<li>the architecture already separates UX, permissions, and
+source-of-truth logic</li>
+</ul>
+<p>That means we are not starting from zero. We are turning a useful
+surface into a cohesive GitHub operating system for developers.</p>
+<h2 id="2-product-vision">2. Product vision</h2>
+<h3 id="the-magical-experience">The magical experience</h3>
+<p>We want a developer to be able to do the following without context
+switching or mental overhead:</p>
+<ul>
+<li>open a repo and immediately see the working state, outstanding PRs,
+and open issues</li>
+<li>click a PR or issue and get a context-rich summary in plain
+language</li>
+<li>review a diff beside the file currently open in the editor</li>
+<li>follow a review thread without losing the code context</li>
+<li>ask: “What changed since the last review, and what do I need to know
+before I ship?”</li>
+<li>ask AI to summarize, explain, or compare threads and commits</li>
+<li>prepare a patch or branch update from local work with a single,
+guided flow</li>
+<li>move from issue to branch to patch to PR without leaving the
+app</li>
+</ul>
+<h3 id="the-trustworthy-experience">The trustworthy experience</h3>
+<p>Magic must not come at the cost of safety. We need:</p>
+<ul>
+<li>consent before network access</li>
+<li>safe mode refusal for GitHub operations</li>
+<li>explicit repository prefill from the current working repo</li>
+<li>local-only trust boundaries for secrets and tokens</li>
+<li>read-only functionality first, then write flows behind stronger
+guards</li>
+<li>AI summarization that is optional, clearly scoped, and clearly
+explainable</li>
+</ul>
+<h2 id="3-design-principles">3. Design principles</h2>
+<h3 id="31-make-github-a-native-workspace-surface">3.1 Make GitHub a
+native workspace surface</h3>
+<p>GitHub features should live in the same conceptual layer as file
+management and project tasks, not as a second-class dialog.</p>
+<p>The base patterns already in QUILL are a good blueprint:</p>
+<ul>
+<li><code>main_frame_github_items.py</code> is a read-only GitHub
+browser entry point</li>
+<li><code>project_task_commands.py</code> is a developer-profile gate
+for coding features</li>
+<li><code>feature_catalog.py</code> defines the shared feature model and
+default-off behavior</li>
+</ul>
+<p>We should extend this pattern: GitHub operations should be
+first-class capabilities of the developer profile, not arbitrary one-off
+commands.</p>
+<h3 id="32-keep-the-model-explicit">3.2 Keep the model explicit</h3>
+<p>A productive GitHub integration needs clear boundary layers:</p>
+<ol type="1">
+<li>Repository discovery and link mapping</li>
+<li>Auth and token handling</li>
+<li>GitHub API/provider access</li>
+<li>Diff and thread analytics</li>
+<li>AI summarization / explanation</li>
+<li>UI presentation and action orchestration</li>
+<li>Safe mode, consent, and profile enforcement</li>
+</ol>
+<p>This makes transformations safer and easier to test.</p>
+<h3 id="33-prefer-context-rich-actions-over-raw-api-exposure">3.3 Prefer
+context-rich actions over raw API exposure</h3>
+<p>The biggest product win is not “the app can call GitHub.” It is:</p>
+<ul>
+<li>open repo</li>
+<li>understand the state</li>
+<li>explain what matters</li>
+<li>recommend next actions</li>
+</ul>
+<p>This means we should prefer:</p>
+<ul>
+<li>diff summaries over raw JSON dumps</li>
+<li>issue PR context over API-driven searching alone</li>
+<li>commit-story over commit-list only</li>
+<li>threaded review awareness over disconnected comments</li>
+</ul>
+<h3
+id="34-treat-ghmanage-as-an-inspiration-not-a-template-to-copy-blindly">3.4
+Treat GHManage as an inspiration, not a template to copy blindly</h3>
+<p>GHManage is a useful reference because it models GitHub as a real
+developer workflow surface. But QUILL should go beyond GHManage by
+layering in:</p>
+<ul>
+<li>stronger local repo context</li>
+<li>developer profile gating</li>
+<li>safe mode integration</li>
+<li>AI summarization and issue triage in the editor itself</li>
+<li>parity with the QUILL Lite and QUILL app model</li>
+<li>release documentation, onboarding, and feature visibility</li>
+</ul>
+<p>This is not just “import GHManage”; it is “turn the repo-native
+GitHub workflow into a native QUILL capability.”</p>
+<h2 id="4-core-feature-set-for-the-developer-experience">4. Core feature
+set for the developer experience</h2>
+<h3 id="41-repository-workbench">4.1 Repository workbench</h3>
+<p>Add a <code>GitHub Workbench</code> surface accessible from the
+editor.</p>
+<p>Capabilities:</p>
+<ul>
+<li>repo selection from current document or active git checkout</li>
+<li>recent repos</li>
+<li>repo health summary</li>
+<li>open issues, PRs, draft PRs, branch status, commits, releases,
+workflow runs</li>
+<li>filter by owner, repo, label, status, reviewer, assignee</li>
+<li>one-click open in the editor or as a detail panel</li>
+</ul>
+<p>This should be the umbrella surface that most GitHub actions flow
+through.</p>
+<h3 id="42-diff-and-review-context">4.2 Diff and review context</h3>
+<p>When a PR or commit is selected, render a context-aware review
+view:</p>
+<ul>
+<li>file list</li>
+<li>changed hunks</li>
+<li>side-by-side or inline summary view</li>
+<li>summary of intent and risk</li>
+<li>links back to the local repo state</li>
+<li>“compare with current branch” mode</li>
+</ul>
+<p>This is dramatically more useful than a raw list of PRs.</p>
+<h3
+id="421-pr-review-ux-rich-access-to-comments-checks-and-review-flow">4.2.1
+PR review UX: rich access to comments, checks, and review flow</h3>
+<p>The PR review experience must be first-class, not an afterthought. A
+reviewer should be able to get to the right conversation, code, and
+decision state in one or two actions without hunting through menus or
+tabs.</p>
+<p>The default review layout should be a three-part native QUILL
+experience:</p>
+<ul>
+<li>left: PR summary, metadata, status chips, reviewer state, and file
+list</li>
+<li>center: diff pane with inline hunk navigation and review
+markers</li>
+<li>right: conversation panel with review comments, replies, checks, and
+action rail</li>
+</ul>
+<h4 id="review-surface-behaviors">Review surface behaviors</h4>
+<ul>
+<li>Every PR row should expose a single, obvious review entry point:
+“Open Review”, “Comments”, or “Files” from the row action menu and the
+detail toolbar.</li>
+<li>The details pane should include a full review toolbar with buttons
+for:
+<ul>
+<li>Open Thread</li>
+<li>Show Files</li>
+<li>Show Comments</li>
+<li>Show Checks</li>
+<li>Open in Browser</li>
+<li>Copy PR Link</li>
+<li>Copy Review Summary</li>
+<li>Resolve / Reopen Thread</li>
+</ul></li>
+<li>Review thread count, unresolved count, review requested count, and
+approval state should be visible at all times in the header bar.</li>
+<li>Thread headers should show whether they are outdated, resolved,
+pending, or awaiting a reply.</li>
+</ul>
+<h4 id="comment-access-should-feel-effortless">Comment access should
+feel effortless</h4>
+<p>Comments are not a side channel; they are part of the code review
+process.</p>
+<ul>
+<li>selecting a file should immediately show that file’s comments and
+review decisions</li>
+<li>clicking a comment should jump to its exact hunk or changed line in
+the diff</li>
+<li>pressing Enter on a comment row should open the full thread in
+context</li>
+<li>the thread panel should show all replies, nested conversations, and
+metadata in readable order</li>
+<li>the UI should clearly separate “review comment”, “general
+conversation”, and “system status” messages</li>
+<li>users should be able to expand/collapse thread groups without losing
+place</li>
+</ul>
+<h4 id="native-quill-action-model">Native QUILL action model</h4>
+<p>We should implement review actions as native controls instead of
+browser-like overlays:</p>
+<ul>
+<li>context menu on a PR item: Review, Open Thread, Open Files, Open
+Checks, Copy URL, Mark as Read, Request Reviewers, Reopen/Close</li>
+<li>context menu on a comment: Reply, Quote, Copy Text, Copy Link, Open
+File, Jump to Hunk, Resolve/Unresolve</li>
+<li>context menu on a changed file: Open Diff, Show Comments, Review
+File, Open in GitHub</li>
+<li>buttons in the detail toolbar for the most frequent operations</li>
+<li>keyboard accelerators for the high-frequency flows such as comments,
+thread navigation, and file jump</li>
+<li>screen-reader-friendly labels for every action and status chip so
+keyboard and assistive tech users get the same power as mouse users</li>
+</ul>
+<h4 id="review-intelligence-and-summaries">Review intelligence and
+summaries</h4>
+<p>Beyond raw comment access, we need review understanding:</p>
+<ul>
+<li>collapse repeated or noisy feedback into a summarized action
+list</li>
+<li>extract unresolved concerns and required follow-ups from all review
+threads</li>
+<li>highlight approval state and blocked status in plain language</li>
+<li>show a “what needs attention” summary for the selected PR</li>
+<li>surface likely review hotspots before the user reads every comment
+in the thread</li>
+</ul>
+<p>This should be optional AI assistance, not the only path to
+actionable review context.</p>
+<h4 id="checks-approvals-and-merge-ready-status">Checks, approvals, and
+merge-ready status</h4>
+<p>The review experience should bridge discussion and merge
+readiness:</p>
+<ul>
+<li>show CI status, check runs, and failed job summaries in the review
+panel</li>
+<li>surface whether the PR is draft, ready, blocked, approved, or
+changes requested</li>
+<li>expose “approve”, “request changes”, “comment”, and “merge” actions
+from the same review surface</li>
+<li>show when the branch is stale or out of date and turn that into a
+clear warning ribbon</li>
+<li>allow users to open the exact check or job log directly from the
+review panel</li>
+</ul>
+<h4 id="pr-review-data-model-and-ux-contract">PR review data model and
+UX contract</h4>
+<p>The underlying model should expose all of this explicitly:</p>
+<ul>
+<li>PR metadata: status, mergeability, review state, author, requested
+reviewers</li>
+<li>comments: thread id, user, path, line, reply depth, resolved state,
+outdated state</li>
+<li>file-level review insight: changed files, comments by file, risk
+summary, changed-line hotspots</li>
+<li>checks: status, conclusion, failing jobs, links to logs</li>
+<li>merge actions: ready/draft toggle, merge method, rebase/merge/squash
+choices</li>
+</ul>
+<p>This keeps the experience rich, consistent, and testable while still
+feeling immediate and native in QUILL.</p>
+<h3 id="43-thread-and-conversation-intelligence">4.3 Thread and
+conversation intelligence</h3>
+<p>Turn review threads and issue discussions into structured, readable
+updates:</p>
+<ul>
+<li>summarize thread intent</li>
+<li>extract action items</li>
+<li>identify blocking questions</li>
+<li>highlight unresolved concerns</li>
+<li>surface reviewer approval state</li>
+</ul>
+<p>This should be optional AI-augmented behavior, never required for
+access.</p>
+<h3 id="44-issue-to-branch-to-pr-workflow">4.4 Issue-to-branch-to-PR
+workflow</h3>
+<p>We need a complete loop:</p>
+<ul>
+<li>choose an issue or draft task</li>
+<li>create or open a branch</li>
+<li>generate a patch plan</li>
+<li>make changes in local repo</li>
+<li>review diff</li>
+<li>optionally generate PR text</li>
+<li>publish a PR from the app</li>
+</ul>
+<p>This is the real productivity win.</p>
+<h3 id="45-local-repo-awareness">4.5 Local repo awareness</h3>
+<p>The biggest differentiator is tying GitHub state back to the local
+repo state:</p>
+<ul>
+<li>repo prefill from Git remotes</li>
+<li>current document repo detection</li>
+<li>branch comparison against GitHub default branch</li>
+<li>local dirty-state awareness</li>
+<li>PR branch tracking from remote branch metadata</li>
+<li>warnings when local work is not in sync with remote</li>
+</ul>
+<h3 id="46-ai-assisted-understanding">4.6 AI-assisted understanding</h3>
+<p>We need a lightweight, explainable AI layer:</p>
+<ul>
+<li>“Summarize this PR”</li>
+<li>“What changed in this review thread?”</li>
+<li>“What are the risks of merging this?”</li>
+<li>“What should I look at first?”</li>
+<li>“What changed since my last review?”</li>
+</ul>
+<p>This should call into the same AI connection model already used
+elsewhere in QUILL, not a bespoke parallel mechanism.</p>
+<h3 id="47-developer-profile-gating-and-safe-mode-integrity">4.7
+Developer profile gating and safe mode integrity</h3>
+<p>GitHub features must respect the same developer profile and safe-mode
+semantics as the rest of the product:</p>
+<ul>
+<li><code>core.developer</code> / <code>coding</code> feature flag is
+required for full GitHub workflow surfaces</li>
+<li>safe mode refuses network-operated GitHub actions</li>
+<li>feature gating should be handled by the host, not by a special-case
+dialog</li>
+<li>the developer profile should expose “GitHub Workbench” as a
+first-class capability, not a hidden coder mode</li>
+</ul>
+<p>This is essential for trust and product coherence.</p>
+<h2 id="5-proposed-ux-model">5. Proposed UX model</h2>
+<h3 id="51-surfaces">5.1 surfaces</h3>
+<p>We should add these user-facing surfaces:</p>
+<ul>
+<li>GitHub Workbench</li>
+<li>Repo Summary Panel</li>
+<li>PR / Issue Detail pane</li>
+<li>Review Thread Reader</li>
+<li>Branch / Commit Explorer</li>
+<li>AI Summary Panel</li>
+<li>PR Draft Composer</li>
+</ul>
+<p>These are not disconnected windows. They should behave like the rest
+of QUILL: one core UI shell, contextual actions, and consistent keyboard
+support.</p>
+<h3 id="52-interactions">5.2 interactions</h3>
+<p>The user interaction model should feel natural:</p>
+<ul>
+<li>open repo from current file or repo root</li>
+<li>select issue/PR/commit</li>
+<li>inspect summary, diff, and thread state in context</li>
+<li>click “Open in Local Repo” or “Compare with Current Branch”</li>
+<li>generate a summary or action plan</li>
+<li>prepare PR or patch without manual copy-pasting</li>
+</ul>
+<p>This is the “GitHub as a second brain” pattern, and it is much more
+valuable than a plain list of API objects.</p>
+<h2 id="6-architecture-plan">6. Architecture plan</h2>
+<h3 id="61-layered-design">6.1 Layered design</h3>
+<p>We should implement the integration in the same layered pattern QUILL
+already uses.</p>
+<h4 id="core-domain-models">Core domain models</h4>
+<p>New or extended domain areas:</p>
+<ul>
+<li>repo metadata</li>
+<li>issue / PR models</li>
+<li>review thread models</li>
+<li>commit / branch state models</li>
+<li>summary and risk models</li>
+<li>action plan / patch-plan models</li>
+</ul>
+<p>These should live in <code>quill/core/github</code> or a parallel
+core package and avoid UI dependencies.</p>
+<h4 id="provider-layer">Provider layer</h4>
+<p>A provider abstraction should handle GitHub API interactions:</p>
+<ul>
+<li>authentication and token resolution</li>
+<li>repository lookup</li>
+<li>issue/PR fetching</li>
+<li>thread and comment retrieval</li>
+<li>diff fetch and render metadata</li>
+<li>branch and commit queries</li>
+</ul>
+<p>This should sit under the UI and remain generic and testable.</p>
+<h4 id="ui-orchestration-layer">UI orchestration layer</h4>
+<p>The UI should handle:</p>
+<ul>
+<li>window creation</li>
+<li>show/hide panels</li>
+<li>input and keyboard navigation</li>
+<li>thread selection updates</li>
+<li>context menu and launcher actions</li>
+<li>AI-summarize calls on demand</li>
+</ul>
+<p>This is where the actual “magic” becomes visible.</p>
+<h3 id="62-relevant-quill-patterns-to-follow">6.2 Relevant QUILL
+patterns to follow</h3>
+<p>We should align with the existing repo patterns:</p>
+<ul>
+<li>feature gating via <code>FeatureDefinition</code> and
+<code>default_off</code></li>
+<li>safe mode refusal patterns in GitHub-related commands</li>
+<li>document-origin and repo detection from local git metadata</li>
+<li>AI availability checks via the same connection gate used
+elsewhere</li>
+<li>layered UI mixins rather than monolithic widget code</li>
+</ul>
+<p>The existing files provide a strong foundation:</p>
+<ul>
+<li><code>quill/ui/main_frame_github_items.py</code></li>
+<li><code>quill/ui/project_task_commands.py</code></li>
+<li><code>quill/core/feature_catalog.py</code></li>
+<li><code>quill/core/github/*.py</code> (existing GitHub layer)</li>
+</ul>
+<h2 id="7-implementation-roadmap">7. Implementation roadmap</h2>
+<h3 id="phase-1-complete-the-github-workspace-foundation">Phase 1:
+complete the GitHub workspace foundation</h3>
+<p>Objectives:</p>
+<ul>
+<li>finalize the GitHub provider abstraction</li>
+<li>standardize repo detection and origin mapping</li>
+<li>clean up the read-only GitHub browser to be a stable entry
+point</li>
+<li>enforce safe mode and consent gates consistently</li>
+</ul>
+<p>Deliverables:</p>
+<ul>
+<li>repo detection + current-file prefill is reliable</li>
+<li>GitHub browser works as a documented entry surface</li>
+<li>issue/PR browse path is consistent across app flows</li>
+</ul>
+<h3 id="phase-2-add-review--diff-intelligence">Phase 2: add review +
+diff intelligence</h3>
+<p>Objectives:</p>
+<ul>
+<li>make PRs and issues readable in context</li>
+<li>show diff summaries, changed files, and branch comparison</li>
+<li>surface blocking comments and unresolved threads</li>
+</ul>
+<p>Deliverables:</p>
+<ul>
+<li>PR detail panel</li>
+<li>commit and branch comparison views</li>
+<li>thread summary and action-item extraction</li>
+</ul>
+<h3 id="phase-3-connect-the-local-repo-lifecycle">Phase 3: connect the
+local repo lifecycle</h3>
+<p>Objectives:</p>
+<ul>
+<li>bind local repo state to remote review state</li>
+<li>add branch status and merge-risk awareness</li>
+<li>align GitHub work with the current project state</li>
+</ul>
+<p>Deliverables:</p>
+<ul>
+<li>local repo to remote repo mapping</li>
+<li>branch mismatch warnings</li>
+<li>commit story summarization</li>
+<li>dirty-state warnings around GitHub actions</li>
+</ul>
+<h3 id="phase-4-add-ai-workflow-automation">Phase 4: add AI workflow
+automation</h3>
+<p>Objectives:</p>
+<ul>
+<li>add contextual summarization for issues, PRs, diffs, and review
+threads</li>
+<li>offer “what changed”, “what matters”, and “what should I do next?”
+flows</li>
+<li>generate PR descriptions from the actual diff and thread data</li>
+</ul>
+<p>Deliverables:</p>
+<ul>
+<li>summary actions in the GitHub UI</li>
+<li>AI-generated PR text draft</li>
+<li>issue triage summary / reviewer brief</li>
+</ul>
+<h3 id="phase-5-production-polish-and-release-documentation">Phase 5:
+production polish and release documentation</h3>
+<p>Objectives:</p>
+<ul>
+<li>add release notes, changelog entries, developer guide updates, and
+user-facing guidance</li>
+<li>ensure both QUILL and QUILL Lite are documented appropriately</li>
+<li>include attribution for the GHManage inspiration as part of product
+credits and design docs</li>
+</ul>
+<p>Deliverables:</p>
+<ul>
+<li>release notes and changelog updates</li>
+<li>developer guide coverage</li>
+<li>announcement text and feature documentation</li>
+<li>attribution documentation</li>
+</ul>
+<h2 id="8-documentation-and-release-plan">8. Documentation and release
+plan</h2>
+<p>We need this feature to be not just code, but a visible part of the
+developer story.</p>
+<h3 id="developer-guide-updates">Developer guide updates</h3>
+<p>Add a section describing:</p>
+<ul>
+<li>how GitHub features are accessed in the app</li>
+<li>the role of safe mode and consent</li>
+<li>how developer profile gating works</li>
+<li>how GitHub browser and repo-aware workflows are intended to
+behave</li>
+</ul>
+<h3 id="announcements-and-release-notes">Announcements and release
+notes</h3>
+<p>Feature narrative should explain:</p>
+<ul>
+<li>GitHub has become part of the editor’s developer surface</li>
+<li>the app now understands repo context, issue/PR state, and review
+threads</li>
+<li>this is not a raw API crawler; it is the editor’s GitHub
+workbench</li>
+</ul>
+<h3 id="changelog">Changelog</h3>
+<p>Entry should include:</p>
+<ul>
+<li>GHManage-inspired GitHub experience integration</li>
+<li>repo-aware issue / PR browsing</li>
+<li>AI summaries and diff-aware review context</li>
+<li>developer profile gating and safety architecture</li>
+<li>improvement of the overall coding workflow</li>
+</ul>
+<h3 id="attribution">Attribution</h3>
+<p>This should be properly credited, with attribution to Kelly Ford and
+GHManage as inspiration for the product patterns, while being explicit
+that the final QUILL implementation is a purpose-built adaptation of
+those ideas into the QUILL architecture and safety model.</p>
+<h2 id="9-feature-gating-safety-and-trust">9. Feature-gating, safety,
+and trust</h2>
+<p>This is a core requirement. We must hold the line on safe
+behavior:</p>
+<ul>
+<li>no GitHub access in safe mode</li>
+<li>no secret handling in UI code</li>
+<li>provider access is isolated to the trusted layer</li>
+<li>AI summarization is optional and dimensioned to the same connection
+autonomy as other AI features</li>
+<li>the developer profile is the gate for coding-level GitHub
+features</li>
+</ul>
+<p>This is not a footnote; it is the product guarantee.</p>
+<h2 id="10-success-criteria">10. Success criteria</h2>
+<p>The feature is successful when a developer can:</p>
+<ul>
+<li>start from the active repo or file and open the GitHub surface</li>
+<li>understand repo state quickly</li>
+<li>review issues and PRs without leaving context</li>
+<li>get useful summaries of threads, diffs, and changes</li>
+<li>move from repo state to patch generation to PR drafting without
+friction</li>
+<li>trust that the experience respects safe mode, consent, and developer
+profile gates</li>
+</ul>
+<h2 id="11-execution-strategy">11. Execution strategy</h2>
+<p>The work should be shipped in narrow, reviewable slices:</p>
+<ol type="1">
+<li>repo-aware GitHub browser and gating cleanup</li>
+<li>diff and thread overview panels</li>
+<li>local/remote repo comparison and branch awareness</li>
+<li>AI summarization and action extraction</li>
+<li>PR draft / branch flow orchestration</li>
+<li>release docs, onboarding, and product narrative</li>
+</ol>
+<p>This keeps the work grounded, testable, and useful throughout the
+rollout.</p>
+<h2 id="12-final-strategic-statement">12. Final strategic statement</h2>
+<p>This should not just be “GitHub inside an editor.”</p>
+<p>It should be “the developer workflow is complete in the editor.”</p>
+<p>That means the repository becomes a first-class object in the app,
+GitHub becomes a readable and actionable part of the workspace, and the
+developer can move from code to comprehension to action without hitting
+the ceiling of a disconnected toolchain.</p>
+<p>The goal is not merely to imitate GHManage. The goal is to make the
+world better by turning repository intelligence into the default
+experience of a modern developer toolchain.</p>
+<h2 id="13-ghmanage-feature-audit-and-product-lessons">13. GHManage
+feature audit and product lessons</h2>
+<p>The GHManage codebase is materially broader and more mature than a
+basic GitHub viewer. It is not merely a repo list with some issue
+browsing. It is a complete GitHub workbench designed around a veteran
+developer workflow.</p>
+<h3 id="131-feature-inventory-from-the-actual-ghmanage-product">13.1
+Feature inventory from the actual GHManage product</h3>
+<p>Based on the code and product docs, the most important capabilities
+to preserve as inspiration are:</p>
+<ul>
+<li>Repository chooser with favorites, activity, starred repos, watched
+repos, notifications, My Work, and saved searches</li>
+<li>Notifications inbox with read/done workflow and direct issue/PR
+opening</li>
+<li>Search across GitHub using GH CLI qualifiers with saved-search
+persistence</li>
+<li>“My Work” aggregation for assigned work, review requests, mentions,
+authored work, and repo-level needs</li>
+<li>Open any GitHub address: repo, issue, PR, commit, release, workflow
+run, or branch</li>
+<li>Issue creation from the app, using the current repo or selected
+context</li>
+<li>Pull request controls: checks, review, draft/ready toggles, merge,
+request reviewers, update branch</li>
+<li>Copy actions for links, markdown links, titles, numbers, SHAs, and
+details</li>
+<li>GitHub account switching and per-repo watch settings</li>
+<li>Activity feed from followed users and watched repos</li>
+<li>People view including following/followers, repo ownership, stars,
+forks, watchers, and activity traversal</li>
+<li>Combined issues/PRs inbox view with filters and sort rules</li>
+<li>Git metadata views: branches, commits, tags, releases, workflow
+runs, and GitHub Pages</li>
+<li>Release visibility including download counts and per-file asset
+breakdowns</li>
+<li>Label management and label-driven filtering</li>
+<li>Branch-specific commit browsing and file history access</li>
+<li>File and diff review, with inline patch context and repo file
+browsing</li>
+<li>Security alerts for Dependabot, code scanning, and secret scanning
+with classification logic</li>
+<li>Discussions support and comment reading</li>
+<li>Contextual actions menu that answers “what can I do here?” without
+guesswork</li>
+<li>Keyboard-first interface with screen-reader-friendly detail
+modes</li>
+</ul>
+<p>This is the historical landscape that matters. GHManage wasn’t just a
+side app; it was a full developer-facing GitHub work surface with a
+strong opinion about developer flow.</p>
+<h3 id="132-product-lessons-we-should-carry-into-quill">13.2 Product
+lessons we should carry into QUILL</h3>
+<p>The biggest product lessons are not cosmetic. They are operational
+and architectural:</p>
+<ol type="1">
+<li><p>GitHub should be repository-first</p>
+<ul>
+<li>The app should begin from the current repo, file, or branch context,
+not from a stand-alone empty canvas.</li>
+<li>QUILL should make the repo the anchor for GitHub work.</li>
+</ul></li>
+<li><p>The experience should be context-rich, not raw-API-driven</p>
+<ul>
+<li>GHManage’s value comes from turning API data into meaningful views:
+issue inbox, repo activity, thread context, branch comparisons, diff
+summaries, and workflow status.</li>
+<li>QUILL should do the same with a tighter local-repo context
+model.</li>
+</ul></li>
+<li><p>The action menu matters as much as the content list</p>
+<ul>
+<li>GHManage’s actions menu is a smart design choice: it transparently
+tells the user what actions apply to the selected item and blocks
+irrelevant operations.</li>
+<li>This creates trust and reduces accidental misuse.</li>
+</ul></li>
+<li><p>Accessibility is a product feature, not a luxury</p>
+<ul>
+<li>The full-mode views, status announcements, comment navigation, and
+keyboard-first interaction are part of the strength of the app.</li>
+<li>QUILL should carry these patterns forward, especially in the
+developer profile and editor surfaces.</li>
+</ul></li>
+<li><p>Reader-first design scales better than write-heavy design</p>
+<ul>
+<li>The easiest wins are in monitoring repo state, reading diffs,
+reviewing issues, and surfacing review context.</li>
+<li>Write flows should follow after the read surface is mature and
+safe.</li>
+</ul></li>
+<li><p>Feature limits and safe mode are not optional</p>
+<ul>
+<li>GHManage is careful about auth, permissions, and GitHub capability
+boundaries. QUILL should take that seriously and keep its
+developer-profile gating explicit.</li>
+</ul></li>
+</ol>
+<h3 id="133-how-this-should-map-to-quill-and-quill-lite">13.3 How this
+should map to QUILL and QUILL Lite</h3>
+<p>The GHManage patterns should be adapted into the QUILL ecosystem as a
+native feature set rather than a direct port.</p>
+<p>For QUILL:</p>
+<ul>
+<li>full GitHub workbench</li>
+<li>issue/PR detail and diff review surfaces</li>
+<li>repo context from active project</li>
+<li>AI-powered summary and triage</li>
+<li>branch/commit/repository state awareness</li>
+<li>fuller developer profile integration</li>
+</ul>
+<p>For QUILL Lite:</p>
+<ul>
+<li>the same GitHub Items viewer and PR review outline as QUILL</li>
+<li>the same context menus and available read/write review actions</li>
+<li>the same consent, token store, and network boundary</li>
+<li>the same newly added workbench capabilities by default; any
+exception must be explicit in the product requirements and user
+documentation</li>
+</ul>
+<p>The first shared entry point is <strong>Tools &gt; GitHub
+Workbench…</strong> in Lite. Other GitHub commands still need their own
+Lite entry points and parity verification.</p>
+<h3 id="134-attribution-and-design-integrity">13.4 Attribution and
+design integrity</h3>
+<p>This work should be explicitly credited as inspired by the GHManage
+ecosystem and by the product maturity and UX thinking of Kelly Ford,
+while remaining a QUILL-native implementation.</p>
+<p>The right framing is:</p>
+<ul>
+<li>“GHManage provided a high-quality historical model for GitHub
+workbench design and interaction patterns.”</li>
+<li>“QUILL adapts those patterns to the editor architecture, local repo
+context, and developer profile safety model.”</li>
+<li>“This is not a blind copy; it is a purpose-built integration for the
+QUILL platform.”</li>
+</ul>
+<p>This is both more respectful and more commercially and technically
+credible.</p>
+<h2 id="14-documentation-release-and-developer-profile-rollout">14.
+Documentation, release, and developer-profile rollout</h2>
+<p>We need the feature to be visible everywhere the user sees the
+product story:</p>
+<h3 id="developer-guide">Developer guide</h3>
+<p>Add a dedicated section covering:</p>
+<ul>
+<li>GitHub access as a first-class developer surface</li>
+<li>repo-detection and prefill behavior</li>
+<li>safe mode and consent behavior</li>
+<li>issue/PR workflow entry points</li>
+<li>developer profile gates and feature availability</li>
+<li>how to reach each shared GitHub feature in QUILL and QUILL Lite</li>
+</ul>
+<h3 id="announcements-and-release-notes-1">Announcements and release
+notes</h3>
+<p>Document the launch as:</p>
+<ul>
+<li>GitHub is native to the Quill workspace</li>
+<li>repository context now feeds issue/PR review flows</li>
+<li>GHManage-inspired GitHub workbench patterns are now part of the
+developer experience</li>
+<li>AI assistance is layered on top of the same trusted repo view, not
+bolted on separately</li>
+</ul>
+<h3 id="changelog-1">Changelog</h3>
+<p>Add release notes entries covering:</p>
+<ul>
+<li>GitHub workbench launch and developer-profile gating</li>
+<li>repo-aware issue and PR browsing</li>
+<li>branch and commit awareness</li>
+<li>AI summary and diff review support</li>
+<li>GitHub accessibility and keyboard-first developer workflows</li>
+<li>attribution to GHManage and Kelly Ford’s design influence</li>
+</ul>
+<h3 id="documentation-strategy">Documentation strategy</h3>
+<p>This should be documented as a top-level product narrative, not only
+as a technical implementation note. Developers need to understand that
+GitHub is now a core part of the workspace, not an occasional side
+panel.</p>
+<h2 id="15-implementation-notes-for-follow-up-work">15. Implementation
+notes for follow-up work</h2>
+<p>Planned technical touchpoints in this repo:</p>
+<ul>
+<li><code>quill/ui/main_frame_github_items.py</code> — main GitHub
+viewer entry point</li>
+<li><code>quill/core/github/*</code> — provider and repo logic</li>
+<li><code>quill/ui/project_task_commands.py</code> — developer profile
+gating pattern</li>
+<li><code>quill/core/feature_catalog.py</code> — feature model and
+default-off behavior</li>
+<li>docs and release materials under <code>docs/</code> and
+release-facing markdown files</li>
+</ul>
+<h2 id="16-implementation-audit-2026-11-05">16. Implementation audit
+(2026-11-05)</h2>
+<p>This is a status check against the local GHManage reference at
+<code>S:\code\ghmanage</code>. The earlier sections describe a product
+plan; they must not be read as a claim that every item has shipped.
+QUILL uses PyGithub and its own consent, token, and safe-mode gates;
+GHManage’s <code>gh</code> transport and standalone app shell are not
+directly copied.</p>
+<table>
+<thead>
+<tr>
+<th>GHManage capability</th>
+<th>QUILL status</th>
+<th>Current surface or remaining work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Issues and PRs, search, filtering, sorting, columns, details,
+comments</td>
+<td>Implemented</td>
+<td>GitHub Items viewer; repository-scoped search and local quick
+filter</td>
+</tr>
+<tr>
+<td>Branches, commits, tags, releases, workflow definitions and
+runs</td>
+<td>Implemented</td>
+<td>GitHub Items viewer and workflow actions</td>
+</tr>
+<tr>
+<td>PR changed files and branch comparison</td>
+<td>Implemented</td>
+<td>Accessible diff and compare dialogs</td>
+</tr>
+<tr>
+<td>PR reviews, threads, checks, reviewers, draft/ready, update
+branch</td>
+<td>Implemented in this worktree</td>
+<td>Shared QUILL and QUILL Lite reader; native PR outline and contextual
+menus; manual screen-reader acceptance and merge remain pending</td>
+</tr>
+<tr>
+<td>Issue and PR writes, batch actions, repository administration</td>
+<td>Implemented in separate flows</td>
+<td>GitHub Items viewer and GitHub administration commands</td>
+</tr>
+<tr>
+<td>Pinned repositories and favorites</td>
+<td>Implemented in a simpler form</td>
+<td>GitHub Items viewer saved items; no GHManage-style unified
+chooser</td>
+</tr>
+<tr>
+<td>Notifications and security alerts</td>
+<td>Partial</td>
+<td>Separate commands; not the full inbox and alert navigation in
+GHManage</td>
+</tr>
+<tr>
+<td>Account management and local repository context</td>
+<td>Implemented in QUILL form</td>
+<td>Account/token management and checkout-derived repository
+prefill</td>
+</tr>
+<tr>
+<td>Global saved searches, My Work, activity feed, people traversal</td>
+<td>Missing</td>
+<td>Need provider models, navigation, persistence, and accessible
+UI</td>
+</tr>
+<tr>
+<td>Starred/watched repository discovery and per-repository watch
+settings</td>
+<td>Missing</td>
+<td>Need repository discovery and watch controls</td>
+</tr>
+<tr>
+<td>GitHub Pages browsing and publish history</td>
+<td>Missing</td>
+<td>Need Pages provider and accessible view</td>
+</tr>
+<tr>
+<td>Label management and label-driven issue navigation</td>
+<td>Missing</td>
+<td>Issue label writes exist; dedicated label view and management do
+not</td>
+</tr>
+<tr>
+<td>Gists, release download counts, workflow job logs and artifacts</td>
+<td>Partial</td>
+<td>Release assets and workflow actions exist; GHManage’s full detail
+and drill-down need verification and completion</td>
+</tr>
+<tr>
+<td>Open any GitHub address, contextual copy actions, and unified
+Actions menu</td>
+<td>Partial</td>
+<td>Repository URL parsing and item actions exist; address routing and
+copy options are narrower</td>
+</tr>
+</tbody>
+</table>
+<p>The remaining rows are feature gaps, not green checks. Do not
+describe this work as full GHManage parity until those capabilities are
+built and verified. Keep this audit synchronized with the product
+requirements and user-facing GitHub guide as each surface lands.</p>
+<p>This plan is intentionally written to be reviewed before
+implementation, so that the feature is shaped as a coherent QUILL
+product story rather than a collection of API wrappers.</p>
+</main>
+</body>
+</html>

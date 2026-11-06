@@ -1,9 +1,15 @@
-# Tutorial 8: GitHub inside QUILL
+# Tutorial 8: GitHub inside QUILL and QUILL Lite
 
 **Goal:** learn what QUILL can do with GitHub and with Git on your own
 computer: browse and save files, work with issues and pull requests, manage a
 repository, and sort out a merge conflict, without opening a browser or a
 terminal.
+
+QUILL Lite opens the same GitHub Items viewer through **Tools > GitHub
+Workbench...** (**Ctrl+Alt+Shift+F6**). Sections about that viewer, including
+PR review, apply to both apps. QUILL's file opening, repository administration,
+and Local Git commands described elsewhere in this tutorial are not yet in
+Lite.
 
 There are three parts, and you can use any of them on its own:
 
@@ -69,6 +75,17 @@ browser for screen reader users, and we are grateful for it.
 4. Press **M** to toggle **List mode** between Quick (compact) and Full (every
    cell spoken as `field: value`).
 
+On a selected row, **Shift+F10**, the **Applications** key, or right-click
+opens a context menu at the row. Every item offers **Open on GitHub**, **Copy
+Link**, **Copy Details**, and **Add to or Remove from Favorites**. PRs add
+**Open Review** and **Open File Differences**; branches add **Compare
+Branches**; workflow runs add **View Artifacts**. Issues and PRs offer
+**Summarize Discussion** when AI is available. A signed-in session also offers
+**More Write Actions**. With no row selected, the menu offers **Refresh** and,
+in Issues & PRs when signed in, **New Issue** and **New Pull Request**. The
+same menu works from the details field, so reading a long item does not force
+you to return to the row before opening its actions.
+
 **Search** (Ctrl+F) takes full GitHub search syntax for the loaded repo: try
 `label:bug is:open`. **Quick filter** (Ctrl+Shift+F) is different. It narrows
 the list you already have as you type, without going online. Escape clears it.
@@ -93,6 +110,58 @@ Select a PR row and press **Diff...**. QUILL fetches both sides of every
 changed file and runs them through the same compare tool as **Compare
 Documents**. You move through the changes one at a time, hearing things like
 "Difference 2 of 5, text changed at line 41", instead of reading a raw patch.
+
+### Reading and responding to a pull request review
+
+In **Issues & PRs**, select a pull request and choose **Review...**. The header
+states merge readiness, the current approval decision, check status, and the
+number of review threads. The main control is a native **Pull request outline**.
+It is a tree: the PR contains **Changed files**, optional **General
+conversations**, and **Checks**. Each file contains its review threads. A thread
+announces its line, author, reply count, and whether GitHub marks its original
+hunk outdated. Files without comments still appear when GitHub supplies the
+changed-file inventory.
+
+1. Start on the PR node. Press **Right Arrow** to expand or **Left Arrow** to
+   collapse a branch. **Up Arrow** and **Down Arrow** move among visible nodes.
+   Expanding a file exposes its threads. The outline is the place to navigate;
+   the adjacent, read-only details field follows the selection.
+2. Select a thread, then press **Tab** to read its complete conversation in
+   order. Use your screen reader's normal text reading keys. **Shift+Tab**
+   returns to the outline. The detail field is copyable and never posts merely
+   because you read it. **Enter** on a thread moves focus into that field.
+3. **Ctrl+R** on a selected thread or in its details opens a reply prompt.
+   Type your reply and accept to post it. **Shift+F10**, the **Applications**
+   key, or right-click opens the same context menu: **Reply to Thread**,
+   **Copy Conversation**, **Copy Thread Link**, **Open File Differences**, and
+   **Open Thread on GitHub**. Reply is unavailable
+   when you are signed out or the PR is closed or merged.
+4. Select a file and press **Enter** or use its context menu's **Open File
+   Differences** action. That opens the accessible compare window for the PR's
+   changed files. **Copy File Name** is also in the file menu. A thread's file
+   and line are announced in the outline and details; opening the diff starts
+   the file comparison rather than jumping to that exact hunk.
+5. Expand **Checks**, select a check, and read its state and summary in the
+   details field. **Enter** or **Open Check on GitHub** in its context menu
+   opens the job when GitHub provides a link. **Copy Check Details** copies
+   the selected detail text. The separate Checks list also offers the runs.
+6. On the PR or a category node, the context menu offers **Submit Review**,
+   **Request Reviewers**, **Convert to Draft** or **Mark Ready**, **Update
+   Branch**, **Copy Review Summary**, **Copy Pull Request Link**, and **Open
+   Pull Request on GitHub**. The visible buttons offer these review actions
+   as well. The summary field remains separately
+   readable and copyable.
+
+**Submit Review** asks you to choose Approve, Request changes, or Comment.
+Changes requested and comment reviews need a message. Updating a branch merges
+the base branch into the PR branch after confirmation; check the destination
+before accepting. Review actions are disabled for a closed or merged PR.
+
+The reader shows whether a comment's original hunk is outdated. It does not
+show GitHub's resolved/unresolved thread state or offer Resolve/Reopen Thread;
+the REST review transport does not supply that status. It also does not yet
+place a review marker inside the exact diff hunk. These gaps are tracked in
+[the GitHub workbench plan](../planning/github-workbench.md).
 
 ### Comparing two branches
 

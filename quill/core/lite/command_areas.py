@@ -94,6 +94,7 @@ MENU_AREA: dict[str, str] = {
 
 #: Individual handlers whose area is not their menu's.
 COMMAND_AREA: dict[str, str] = {
+    "cmd_github_workbench": "",
     # WordPress rows straight in Insert and View, not in a submenu of their own.
     **dict.fromkeys(wordpress_menu.direct_handlers(), "wordpress"),
     # Forms rows straight in File, Insert, View and Format (wordpress.md 17a.10).

@@ -11202,13 +11202,26 @@ MinGit's own top-level entries (`cmd/`, `etc/`, `mingw64/`, `usr/`,
 `LICENSE.txt`) individually; `gh`'s remove path deletes only its own flat
 executable file. Removing one never touches the other's installed files.
 
-### §25.18 GitHub Items: GHManage Parity Completion (0.9.0 Beta 3)
+### §25.18 GitHub Items: GHManage-Inspired Viewer Enhancements (0.9.0 Beta 3)
 
-**Attribution.** This section closes out the GHManage/fastgh unification
-review named throughout §25.12–§25.16: every remaining feature GHManage
-(Kelly Ford, `github.com/kellylford/GHManage`) has that QUILL's Items
-viewer did not yet match. As with the rest of the GHManage-derived work in
-this PRD, each feature is not a straight port — it is extended to fit
+**Shared interaction requirement (2026-11-05).** QUILL and QUILL Lite use the
+same GitHub Items viewer. The PR review surface is a native expandable outline:
+PR → changed files → review threads, plus general conversations and checks.
+Arrow keys navigate and expand it; Tab enters the selected item's readable
+details and Shift+Tab returns. Ctrl+R replies to a thread. The context menu
+and keyboard action for each node expose the same available actions. Selection
+survives refresh. Every subsequent GitHub workbench capability must be
+evaluated for both apps; a QUILL-only capability requires an explicit product
+exception in this specification. Exact-hunk jump and resolved-thread state
+remain open requirements, not shipped behavior.
+
+**Attribution and scope.** This section covers the GHManage/fastgh viewer
+enhancements named throughout §25.12–§25.16. It does not establish full
+feature parity with GHManage (Kelly Ford, `github.com/kellylford/GHManage`):
+the unified repository chooser, global saved searches, My Work, activity and
+people navigation, Pages, and dedicated label management remain separate
+work. As with the rest of the GHManage-derived work in this PRD, each feature
+is not a straight port — it is extended to fit
 QUILL's own architecture and to go further where QUILL already has the
 infrastructure to do so (most visibly: Compare Branches routes its file
 diffs through QUILL's own compare engine instead of a raw patch, and Quick

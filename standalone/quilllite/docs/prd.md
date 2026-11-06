@@ -1,5 +1,15 @@
 # QUILL Lite — Product Requirements
 
+## GitHub workbench parity (2026-11-05)
+
+QUILL Lite must expose each GitHub workbench capability shipped in QUILL unless
+this PRD records an explicit exception. The shared Items viewer is reached at
+Tools > GitHub Workbench... (Ctrl+Alt+Shift+F6). Its native PR outline,
+selection details, context menus, thread replies, review submission, and checks
+have identical behavior in both products. Other QUILL GitHub entry points,
+including repository administration and local Git, remain parity work; this
+requirement does not claim they are already present in Lite.
+
 **Version 2.0.0 (build 1) · Windows · MIT · part of the QuillVille family**
 
 Status, 2026-10-31: 2.0.0 (prepared as 1.2.0 through six testing builds) is

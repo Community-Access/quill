@@ -1,5 +1,12 @@
 # QUILL Lite: free AI help, in an editor that talks to you
 
+**GitHub workbench update (November 2026):** QUILL Lite now opens QUILL's
+shared GitHub Items viewer from **Tools > GitHub Workbench...**. Review a pull
+request through an expandable outline of changed files, conversations, and
+checks. **Ctrl+R** replies to a selected thread and **Shift+F10** reveals
+actions for the selected item. The [GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md)
+explains every step for a screen reader.
+
 **September 25, 2026, from Community Access**
 
 **Select a paragraph. Press two keys. Hear it summarized, rewritten, proofread
