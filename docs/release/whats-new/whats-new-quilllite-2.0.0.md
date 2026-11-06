@@ -42,8 +42,7 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 - **Thesaurus (Shift+F7)**, **Look Up Word (Alt+F10)** without the internet, and an AI dictionary.
 - **Word documents open and save as Word**, and **Ctrl+Enter** is a page break. PDFs open as text, with OCR on this computer.
 - **Insert > Table (Ctrl+Alt+T)** in any document; the arrows read a table cell by cell.
-- **Find in Open Documents (Ctrl+Alt+Shift+F8)**, Search in Files and Replace Across Files.
-- **Searches that say more:** in Go To Anything, the tag pickers and Move Section To, `&` needs both words, `|` takes either, `!` leaves one out, `*` and `?` stand for letters, and quotes match exact text. Search in Files takes `*.md | *.txt` as its file pattern.
+- **Find in Open Documents (Ctrl+Alt+Shift+F8)**, Search in Files and Replace Across Files. Filtered lists take `&`, `|` and `!`.
 - **Spell check reads only what you wrote**, skipping web addresses, file names and code.
 
 ## Knowing what happened
