@@ -7,10 +7,6 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 - **Using the portable QUILL Lite 1.1.2? Update by hand this once.** Its Install and restart can delete its data folder. Close QUILL Lite, copy the data folder next to QuillLite.exe somewhere safe, unzip the new zip into a new folder, and copy your data folder into it.
 - **Keys that moved:** Keyboard Manager Ctrl+Alt+Shift+Space, Snippets Ctrl+Alt+Shift+Home, Remove Quote Marks Alt+Shift+. (period), Collect Selection Alt+Shift+C, Trim Trailing Spaces Ctrl+Alt+R.
 
-## Writing
-
-- **Document Statistics, pressed twice.** Ctrl+Shift+G gives the counts; press it twice quickly for paragraphs, sentences, long sentences, reading time and the reading grade. It counts the selection when there is one, and QUILL says the same.
-
 ## WordPress
 
 ### Stripe and PayPal form setup

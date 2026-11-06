@@ -2,10 +2,6 @@
 
 QUILL 1.0 is the first general release. These are the newest parts; the full release notes cover everything else.
 
-## Writing
-
-- **Document Statistics, pressed twice.** `Ctrl+Shift+G` gives the counts; press it twice quickly for paragraphs, sentences, long sentences, reading time and the reading grade. It counts the selection when there is one.
-
 ## WordPress
 
 ### Stripe and PayPal form setup
