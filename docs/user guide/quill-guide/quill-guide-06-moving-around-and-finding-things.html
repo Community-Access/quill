@@ -312,6 +312,19 @@ lines around it. Replace Across Files adds a
 <strong>Replacement</strong> box and <strong>Preview before
 replacing</strong>, which shows you every change in a tab of its own and
 asks before it writes anything.</p>
+<p>The <strong>File pattern</strong> can name more than one kind of
+file. Put <code>|</code> between two patterns to take either,
+<code>&amp;</code> to need both, and <code>!</code> before one to leave
+it out; double quotes around a name mean that one exact file.
+<code>*.md | *.txt</code> searches your Markdown and text files
+together, <code>* !*.bak</code> searches everything except backups, and
+<code>*.md !drafts/*</code> skips the Markdown files in a
+<code>drafts</code> folder (a pattern with a slash is matched against
+the path inside the starting folder). Capitals do not matter. A pattern
+without <code>|</code>, <code>&amp;</code>, <code>!</code> or quotes,
+such as <code>*.md</code>, works exactly as before. These rules apply
+only to the file pattern: the <strong>Search text</strong> still follows
+the Match mode you chose.</p>
 <p><strong>An example.</strong> You want every note in your
 <code>Clients</code> folder that mentions Rosa Diaz. Press
 <code>Ctrl+Alt+Shift+F</code>, check that the starting folder is
@@ -443,6 +456,57 @@ takes you forward again.</p>
 <li><strong>Forward Location</strong>: <code>Alt+Right</code> on
 Windows, <code>Cmd+]</code> on macOS.</li>
 </ul>
+<h3 id="searching-a-list-with-more-than-one-word">Searching a list with
+more than one word</h3>
+<p>Go to Anything is one search box for the headings in your document
+and every command. It has no menu row of its own: press
+<code>Ctrl+Alt+Shift+A</code>, or type “go to anything” in the Command
+Palette. Start your search with <code>#</code> to see headings only, or
+<code>&gt;</code> to see commands only. Type part of a heading and the
+list narrows as you type; arrow to the one you want and press Enter to
+go there. QUILL says how many results there are and which is on top, for
+example “3 result(s). Top: [heading] Chapter two”.</p>
+<p>That box, and every other list in QUILL that you narrow by typing,
+understands a few characters that let one search say more:</p>
+<ul>
+<li><strong>Words</strong> match anywhere in a row, and capitals do not
+matter, just as before.</li>
+<li><strong><code>&amp;</code></strong> needs both words:
+<code>#budget &amp; 2026</code> finds only headings with both. Two words
+side by side mean the same thing, so a search with an operator in it
+reads <code>budget 2026 !draft</code> as “budget and 2026 and not
+draft”.</li>
+<li><strong><code>|</code></strong> takes either:
+<code>#introduction | summary</code> lists both kinds of heading at
+once.</li>
+<li><strong><code>!</code></strong> leaves a word out:
+<code>#chapter !draft</code> finds every chapter except the drafts.</li>
+<li><strong><code>*</code></strong> stands for any run of letters inside
+a word, and <strong><code>?</code></strong> for exactly one:
+<code>#chap*</code> finds Chapter and Chapters, and <code>#r?ad</code>
+finds read and road. Neither reaches past a space.</li>
+<li><strong>Double quotes</strong> match exact text, spaces included,
+with nothing inside taken as an operator: <code>#"to do"</code> finds
+“To do this week” but not “Do this today too”.</li>
+</ul>
+<p><code>!</code> is read first, then <code>&amp;</code>, then
+<code>|</code>, so <code>#draft | notes !old</code> means “draft, or
+notes that are not old”. A search with none of these characters works
+exactly as it always has, so nothing you already type changes. You never
+get an error for a half-finished search: <code>#notes |</code> is simply
+read as <code>#notes</code> until you type the next word.</p>
+<p>The same rules work in <strong>Insert Snippet</strong>,
+<strong>Insert HTML Tag</strong>, <strong>Insert Markdown Tag</strong>,
+both lists of <strong>Move Section To</strong>
+(<code>Ctrl+Alt+Shift+F5</code>), the abbreviation manager and the Copy
+Tray search. In Insert HTML Tag, for example, <code>h? !h1</code> lists
+every heading tag except the top one. The <strong>File pattern</strong>
+of Search in Files takes them too, described in “Searching a whole
+folder of files” above. Press <code>F1</code> in any of those search
+boxes to hear a short reminder of the rules. The Command Palette
+(<code>Ctrl+Shift+P</code>) keeps its own looser search and its
+<code>:</code>, <code>?</code> and <code>~</code> prefixes, and so do
+those prefixes in Go to Anything.</p>
 <h3 id="moving-by-heading-and-structure">Moving by heading and
 structure</h3>
 <p>Headings are the table of contents of a document, and moving by them

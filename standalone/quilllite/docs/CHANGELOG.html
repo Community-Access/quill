@@ -244,6 +244,23 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="200">2.0.0</h2>
+<h3 id="searches-that-say-more-2026-11-06">Searches that say more
+(2026-11-06)</h3>
+<ul>
+<li>Shared with QUILL: Go To Anything (Ctrl+Alt+Shift+A), including its
+<code>#</code> heading search, Insert &gt; Markdown Tag, Insert &gt;
+HTML Tag and both lists of Move Section To now understand a small query.
+<code>&amp;</code> needs both words (two words side by side mean the
+same), <code>|</code> takes either, <code>!</code> leaves a word out,
+<code>*</code> and <code>?</code> stand for letters inside a word, and
+double quotes match exact text. <code>!</code> is read first, then
+<code>&amp;</code>, then <code>|</code>.</li>
+<li>The File pattern of Search in Files and Replace Across Files
+combines patterns: <code>*.md | *.txt</code>, <code>* !*.bak</code>. The
+search text is unchanged.</li>
+<li>A search without any of <code>* ? &amp; | ! "</code> works exactly
+as before. F1 in each search box gives a short reminder.</li>
+</ul>
 <h3 id="form-payment-integration-2026-11-06">Form payment integration
 (2026-11-06)</h3>
 <ul>

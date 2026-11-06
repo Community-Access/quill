@@ -465,7 +465,15 @@ and type the file name it gave you to open the one you want.</p>
 folder of the document you are in.</li>
 <li><strong>File pattern</strong>: which files, such as
 <code>*.txt</code> or <code>*.md</code>. A star on its own means every
-file.</li>
+file. To name more than one kind, put <code>|</code> between patterns to
+take either, <code>&amp;</code> to need both, and <code>!</code> before
+one to leave it out: <code>*.md | *.txt</code> searches Markdown and
+text files together, and <code>* !*.bak</code> searches everything
+except backups. Double quotes around a name mean that one exact file,
+and a pattern with a slash, such as <code>!drafts/*</code>, is matched
+against the path inside the starting folder. A pattern without these
+characters works exactly as before, and the search text still follows
+the Match mode.</li>
 <li><strong>Search text</strong>, and for Replace Across Files,
 <strong>Replacement</strong>.</li>
 <li><strong>Match mode</strong>: Plain text, Wildcard (<code>*</code>
