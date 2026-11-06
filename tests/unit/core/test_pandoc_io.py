@@ -42,16 +42,26 @@ def _fake_status(installed: bool = True, path: str = "C:/pandoc/pandoc.exe") -> 
     )
 
 
+def _pandoc_writes(data: bytes, completed: subprocess.CompletedProcess[str]):  # type: ignore[no-untyped-def]
+    """A fake Pandoc run that writes *data* wherever ``-o`` points, then exits."""
+
+    def _run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        Path(command[command.index("-o") + 1]).write_bytes(data)
+        return completed
+
+    return _run
+
+
 def test_convert_file_with_pandoc_happy_path(tmp_path: Path) -> None:
     source = tmp_path / "in.md"
     target = tmp_path / "out.html"
     source.write_text("# Hello", encoding="utf-8")
-    target.write_bytes(b"fake-html")  # simulate Pandoc producing the file
     fake_completed = subprocess.CompletedProcess(
         args=[], returncode=0, stdout="<h1>Hello</h1>", stderr=""
     )
     with mock.patch(
-        "quill.io.pandoc.run_subprocess_safely", return_value=fake_completed
+        "quill.io.pandoc.run_subprocess_safely",
+        side_effect=_pandoc_writes(b"fake-html", fake_completed),
     ) as patched:
         result = pandoc_io.convert_file_with_pandoc(
             source,
@@ -70,7 +80,14 @@ def test_convert_file_with_pandoc_happy_path(tmp_path: Path) -> None:
     assert "--to" in args
     assert "html5" in args  # legacy html -> html5 mapping
     assert "-o" in args
-    assert str(target) in args
+    # Pandoc writes beside the target, with the target's extension, and the
+    # finished file is moved into place.
+    staged = Path(args[args.index("-o") + 1])
+    assert staged.parent == target.parent
+    assert staged.suffix == target.suffix
+    assert staged != target
+    assert not staged.exists()
+    assert target.read_bytes() == b"fake-html"
     assert str(source) in args[-1] or str(source) in args
 
 
@@ -78,9 +95,11 @@ def test_convert_file_with_pandoc_writes_target_file(tmp_path: Path) -> None:
     source = tmp_path / "in.md"
     target = tmp_path / "out.docx"
     source.write_text("# Hello", encoding="utf-8")
-    target.write_bytes(b"fake-docx")  # simulate Pandoc creating the file
     fake_completed = subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
-    with mock.patch("quill.io.pandoc.run_subprocess_safely", return_value=fake_completed):
+    with mock.patch(
+        "quill.io.pandoc.run_subprocess_safely",
+        side_effect=_pandoc_writes(b"fake-docx", fake_completed),
+    ):
         result = pandoc_io.convert_file_with_pandoc(
             source,
             target,
@@ -159,10 +178,10 @@ def test_convert_file_with_pandoc_extra_args(tmp_path: Path) -> None:
     source = tmp_path / "in.md"
     target = tmp_path / "out.epub"
     source.write_text("# Hello", encoding="utf-8")
-    target.write_bytes(b"fake-epub")
     fake_completed = subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
     with mock.patch(
-        "quill.io.pandoc.run_subprocess_safely", return_value=fake_completed
+        "quill.io.pandoc.run_subprocess_safely",
+        side_effect=_pandoc_writes(b"fake-epub", fake_completed),
     ) as patched:
         pandoc_io.convert_file_with_pandoc(
             source,

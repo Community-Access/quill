@@ -2,6 +2,27 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Replace, export and backups you can trust
+
+Three things that should never surprise you now do not.
+
+**Replace puts in what you typed.** Unless you are searching with a regular
+expression, the Replace box is taken exactly as typed. Replace a folder name
+with `C:\new\reports` and that is what lands in your document, not a line
+break where the `\n` was. With a regular expression, `\1` and `\2` still bring
+back the parts of the match. This holds for Replace All and Replace Across
+Files (`Ctrl+Shift+R`).
+
+**Exporting over an earlier file is safe.** File > Export, Convert File and
+every other Pandoc conversion now build the new file under a hidden temporary
+name and swap it in only when it is finished. If the export fails, times out
+or is cancelled, the file you exported yesterday is still there, untouched.
+
+**A backup that fails is on the record.** When a backup cannot be written
+before a save, QUILL still says "Could not write a backup; saving anyway" and
+saves, and now it writes the reason to its log as well, so **Help > Save
+Diagnostics...** can explain a missing backup later.
+
 ## Form payment setup and reporting
 
 QUILL and QUILL Lite now share **Tools > Forms > Insert Payment Field**,

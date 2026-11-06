@@ -33,12 +33,15 @@ exactly one reader and one writer.
 
 from __future__ import annotations
 
+import logging
 from datetime import UTC, datetime
 from hashlib import sha1
 from pathlib import Path
 
 from quill.core.lite.paths import data_dir
 from quill.core.storage import write_text_atomic
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "backup_root",
@@ -76,7 +79,8 @@ def write_backup(path: Path, text: str) -> Path | None:
 
     Never raises: a backup that fails must not be able to fail the save it was
     taken alongside. That is the whole reliability argument for doing it *after*
-    the real write rather than before.
+    the real write rather than before. A failure is logged here; telling the
+    user is the window's job, because only it knows a save just landed.
     """
     try:
         root = backup_root(path)
@@ -90,7 +94,10 @@ def write_backup(path: Path, text: str) -> Path | None:
         write_text_atomic(target, text, encoding="utf-8", newline="")
         prune_backups(path)
         return target
-    except OSError:
+    except OSError as error:
+        logger.warning(
+            "Could not write a backup of %s: %s", path.name, error.strerror or str(error)
+        )
         return None
 
 

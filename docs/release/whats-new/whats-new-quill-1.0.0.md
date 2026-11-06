@@ -37,6 +37,10 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 
 ## Writing
 
+- **Replace puts in what you typed.** Outside regular-expression searches, `C:\new` in the Replace box goes in as `C:\new`, not a line break; `\1` and `\2` still work with a regular expression.
+- **Exporting over an earlier file is safe.** A failed or cancelled File > Export leaves the earlier file untouched.
+- **A failed backup is logged** as well as spoken, so Help > Save Diagnostics... can explain it later.
+
 - **Ctrl+Enter** inserts a page break, as in Word. Word documents keep their page breaks now.
 - **The Command Palette (Ctrl+Shift+P)** finds every menu item, recent files and open documents included.
 - **Tables** you can read cell by cell, and Insert Table (Ctrl+Alt+T). **Find in Open Documents** (Ctrl+Shift+F10).
