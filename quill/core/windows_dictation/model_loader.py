@@ -61,7 +61,11 @@ __all__ = [
 _PROVIDER = "cpu"
 #: Nemotron 3.5's feature size (128 mel bins, not the 80 of older transducers).
 _NEMOTRON_FEATURES = 128
-_TAIL_SECONDS = 0.4
+#: Quiet fed after a phrase so Nemotron's 1.12-second chunks flush the last
+#: word. 0.4 lost it on 60 of 335 short B-1c commands ("choose one" came back
+#: "Choose."; design record section 41); 0.8 recovered 39 of those 60, and
+#: 1.2 and 1.6 recovered no more.
+_TAIL_SECONDS = 0.8
 #: The longest piece Moonshine base is handed (it fails past about 8.5 s).
 _MOONSHINE_V2_MAX_SECONDS = 8.0
 

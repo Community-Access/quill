@@ -30,6 +30,31 @@
   Three have no key because no chord was free in both editors and they are
   occasional; they are on their menus.
 
+### Dictation: Nemotron keeps its last word, the old engines retire, the extras measured (2026-11-06)
+
+- **Nemotron no longer drops the last word of a short phrase.** It needs a
+  little quiet after you stop to finish its last word, and it was given too
+  little: "choose one" came back as "Choose." on 60 of 335 short commands. It
+  now gets twice as much, which recovered most of them. This is in QUILL,
+  QUILL Lite and QUILL Transcribe.
+- **Locked Dictation's own Nemotron and Parakeet engines are retired**, in
+  favour of the one QUILL speech models engine they had already moved to.
+  QUILL now says so once, a moment after it starts and never over a dialog.
+  If the older Nemotron model's files are still on your computer, it asks
+  instead: "Delete the older files to free 650 MB? No keeps them." No is the
+  default. Yes deletes only those old folders and says the space actually
+  freed. You are never asked again.
+- **The Dictation command (QUILL Key + D)** now opens Windows' own dictation
+  panel the same way the Windows voice typing engine does. Nothing you hear
+  changed. The older module behind it is deprecated and goes in QUILL 1.2.
+- **Measured, not switched on:** a keyword spotter for command words, hotwords
+  for hard names, punctuation and speaker-label passes, and Kokoro through
+  sherpa-onnx. Speaker labels came close enough to offer later (about nine
+  turns in ten right); the others did not, or need a person to listen first.
+  The developer tools and every figure are in section 41 of the dictation
+  plan.
+- The hey-QUILL keyword file no longer fails to load because of the space in
+  the phrase.
 ### Code navigation and Check This File, in QUILL and QUILL Lite (2026-11-06)
 
 A new **Navigate > Code** submenu, the same in both editors, on the same keys.

@@ -1,5 +1,10 @@
 # QUILL Lite 2.0
 
+## Nemotron keeps its last word
+
+If you dictate with Nemotron, short phrases no longer lose their last word.
+Saying "choose one" used to give you just "Choose." It now waits for a little
+more quiet before it finishes, the same as in QUILL.
 ## Moving by block and indentation, and checking a document
 
 **Navigate > Code** is new, and it is the same submenu QUILL has, on the same keys.

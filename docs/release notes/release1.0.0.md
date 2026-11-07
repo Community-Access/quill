@@ -2,6 +2,21 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Dictation: Nemotron keeps its last word
+
+If you dictate with **Nemotron**, short phrases no longer lose their last
+word. Before, saying "choose one" could give you just "Choose." Nemotron now
+gets enough quiet after you stop to finish the word. This is the same in
+QUILL Lite and QUILL Transcribe.
+
+Locked Dictation's own **Nemotron and Parakeet** engines are retired; they
+became the one **QUILL speech models** engine, and your choice moved with
+them. QUILL tells you once, a moment after it starts. If an older Nemotron
+model is still taking space on your computer, the message asks: "Delete the
+older files to free 650 MB? No keeps them." Press Enter to keep them, or
+choose Yes, and QUILL says how much it freed. The **Dictation** command
+(QUILL Key + D) works as before, and now opens Windows' panel the same way
+the Windows voice typing engine does.
 ## New in this build: moving through code, and Check This File
 
 A new **Navigate > Code** submenu helps anyone who writes code or edits data files.

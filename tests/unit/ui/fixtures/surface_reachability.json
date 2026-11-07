@@ -412,6 +412,7 @@
   "quill.ui.setup_transfer_ui": "reachable",
   "quill.ui.setup_wizard": "reachable",
   "quill.ui.setup_wizard_pages": "reachable",
+  "quill.ui.sherpa_migration_notice": "reachable",
   "quill.ui.show_hide_key_picker": "reachable",
   "quill.ui.simple_open_dialog": "reachable",
   "quill.ui.single_convert_dialog": "reachable",
