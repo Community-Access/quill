@@ -104,3 +104,42 @@ def test_sounds_are_recorded_not_played() -> None:
     before = len(guard.SOUNDS)
     winsound.PlaySound("SystemAsterisk", winsound.SND_ALIAS)
     assert guard.SOUNDS[before:] == ["SystemAsterisk"]
+
+
+def test_an_unfaked_update_check_never_reaches_github() -> None:
+    """2026-11-06: a real check timed out on CI and its error box failed a
+    later, unrelated test. The fetch every app's check goes through is refused."""
+    from urllib.error import URLError
+
+    from quill.core import updates
+
+    with pytest.raises(URLError):
+        updates.fetch_app_releases("Quill-Radio-", "https://api.github.com/repos/x/y/releases")
+    with pytest.raises(URLError):
+        updates.fetch_releases("https://api.github.com/repos/x/y/releases")
+    reached = guard.take_violations()
+    assert len(reached) == 2
+    assert all("update-check download" in item for item in reached)
+
+
+def test_the_update_check_refusal_holds_on_a_background_thread() -> None:
+    """The checks run on a worker thread, often outliving the test that began
+    them -- so the refusal is session-wide, not a per-test monkeypatch."""
+    import threading
+
+    from quill.core import updates
+
+    failures: list[BaseException] = []
+
+    def _check() -> None:
+        try:
+            updates.fetch_app_releases("Quill-Lite-", "https://api.github.com/repos/x/y/releases")
+        except BaseException as error:  # noqa: BLE001 - recorded for the assert
+            failures.append(error)
+
+    worker = threading.Thread(target=_check)
+    worker.start()
+    worker.join(10)
+    assert len(failures) == 1
+    assert "never reaches the network" in str(failures[0])
+    assert any("update-check download" in item for item in guard.take_violations())

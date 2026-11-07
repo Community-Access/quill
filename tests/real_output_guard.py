@@ -157,6 +157,7 @@ def install() -> None:
     _install_message_box()
     _install_audio()
     _install_keyboard_hook()
+    _install_update_check_network()
 
 
 def _install_speech() -> None:
@@ -253,6 +254,44 @@ def _install_keyboard_hook() -> None:
         self._hook_handle = "test-suite hook (not installed)"
 
     _patch(expansion_hook.ExpansionHook, "start", start_without_hooking)
+
+
+def _install_update_check_network() -> None:
+    """Every app's update check fetches GitHub through ``quill.core.updates``.
+
+    A test that let a real check run passed wherever the network was quick. On
+    CI the GitHub read sometimes timed out seconds later, and the failure box
+    the app then posted -- "Could not check for updates: The read operation
+    timed out" -- landed in the teardown of an unrelated test (2026-11-06). So
+    the fetch is refused for the whole process, background threads included:
+    it trips at once, naming the running test, and fails the way an offline
+    machine does, so the app's own failure path is what runs. Tests of the
+    fetch patch ``updates.urlopen`` themselves.
+    """
+    from urllib.error import URLError
+
+    updates = _optional("quill.core.updates")
+    if updates is None:
+        return
+
+    def urlopen_refused(request: Any, *args: Any, **kwargs: Any) -> Any:
+        url = getattr(request, "full_url", request)
+        _trip(f"a real update-check download ({str(url)[:80]!r})")
+        raise URLError("the test suite never reaches the network")
+
+    _patch(updates, "urlopen", urlopen_refused)
+
+    # The signed release feed is read first. ``tests/conftest.py`` fakes it per
+    # test; this covers a check whose thread outlives the test that began it.
+    feed_fetch = _optional("quill.core.updater.feed_fetch")
+    if feed_fetch is None:
+        return
+
+    def feed_refused(url: str, timeout: int = 15) -> bytes:
+        _trip(f"a real release-feed download ({str(url)[:80]!r})")
+        raise feed_fetch.FeedMissing(url)
+
+    _patch(feed_fetch, "http_get", feed_refused)
 
 
 def drop_real_voice() -> None:
