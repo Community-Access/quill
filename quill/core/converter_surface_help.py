@@ -89,6 +89,32 @@ PURPOSES: dict[str, str] = {
         "for them and saves the results; Dismiss forgets one here, and it stays "
         "in your Auphonic account."
     ),
+    "Tags, Cover and Chapter Marks": (
+        "What your Auphonic productions carry besides their sound: an artist and "
+        "an album that replace the files' own tags, a JPEG or PNG cover image "
+        "uploaded with each production, and, for one production, its chapter "
+        "marks typed one a line. OK keeps them for this submission; nothing is "
+        "sent from here."
+    ),
+    "More Auphonic Options": (
+        "Custom processing's own values -- loudness target, peak limit, leveling, "
+        "filtering and noise reduction -- used when Processing is set to Custom, "
+        "plus a second output format and captions with a transcript. OK keeps "
+        "them for this submission; nothing is sent from here."
+    ),
+    "Auphonic Production History": (
+        "Every production Quill Converter sent to Auphonic, newest first, kept on "
+        "this computer: its status, its files and where its results went. Refresh "
+        "from Auphonic brings the statuses up to date, Download Again fetches the "
+        "results once more without replacing a file, and Remove from List forgets "
+        "one here only."
+    ),
+    "Auphonic Account": (
+        "Whether an Auphonic token is stored on this computer, and on Check "
+        "Account, who the account is, the credits left and the plan. Sign In "
+        "stores a token only after Auphonic accepts it; Sign Out removes it, for "
+        "the Audio Studio too. Nothing is uploaded from here."
+    ),
     "Convert Audio": (
         "The full conversion dialog, seeded with your queue: every format the "
         "main window offers, video included, plus exact settings -- bit rate, "
