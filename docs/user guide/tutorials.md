@@ -1199,7 +1199,7 @@ Start a contact form from a template, save it, and read it through, first as tex
 
 *6 steps, about 5 minutes.*
 
-1. **Know what a form is here.** A form in QUILL is a short plain text document: a title, some questions, their choices and a few rules, written in BITS Accessible Forms' form language. You never have to learn the language, because the Forms commands write it for you.
+1. **Know what a form is here.** A form in QUILL is a short plain text document: a title, some questions, their choices and a few rules, written in the QAF form language. You never have to learn the language, because the Forms commands write it for you.
    - You should hear: Nothing yet. This step is the idea the rest build on.
    - Worth knowing: Forms is on in every feature profile except Essential. If there is no New Form in the File menu, switch Forms on in Profiles and Features.
 
@@ -1210,9 +1210,9 @@ Start a contact form from a template, save it, and read it through, first as tex
 3. **Give it a title and a template.** Type Ask us anything in Title. That is the name your visitors will see. Tab to Template and arrow down to Contact form. There are seven templates, and each one is a few questions you can change.
    - You should hear: Template, and Contact form: Name, email address and a message.
 
-4. **Save the new form.** Press Next. The ordinary Save As window opens with a file name made from your title, Ask us anything.bfl. Choose a folder you will find again and press Save. The new form opens straight away.
-   - You should hear: "Saved Ask us anything.bfl, a contact form with 3 questions."
-   - Worth knowing: A form file ends in .bfl. It is ordinary text, so you can open it in any text editor too.
+4. **Save the new form.** Press Next. The ordinary Save As window opens with a file name made from your title, Ask us anything.qaf. Choose a folder you will find again and press Save. The new form opens straight away.
+   - You should hear: "Saved Ask us anything.qaf, a contact form with 3 questions."
+   - Worth knowing: A form file ends in .qaf. It is ordinary text, so you can open it in any text editor too.
 
 5. **Read it through as text.** Arrow down through the form from the top. Each question starts on a line of its own: its kind, its id after a number sign, and its label in quotes. The indented lines under it are its settings, such as required.
    - You should hear: "text #name", then "Your name" in quotes, then "@required".
@@ -1369,13 +1369,13 @@ Next: Publish it and read the responses.
 
 ### Publish it and read the responses
 
-Publish your form to a WordPress site running BITS Accessible Forms, put it on a page, try it there, and read what people send.
+Publish your form to a WordPress site running QUILL Accessible Forms, put it on a page, try it there, and read what people send.
 
 *6 steps, about 7 minutes.*
 
-1. **Know what the site needs.** Publishing needs a WordPress site you have connected, with the BITS Accessible Forms plugin installed and switched on. The WordPress lessons show how to connect a site.
+1. **Know what the site needs.** Publishing needs a WordPress site you have connected, with the QUILL Accessible Forms plugin installed and switched on. The WordPress lessons show how to connect a site.
    - You should hear: Nothing yet. This step is what the rest need.
-   - Worth knowing: Without the plugin you hear that the command needs BITS Accessible Forms on the site, and to install and activate it there. Publishing and Responses are off in Safe Mode.
+   - Worth knowing: Without the plugin you hear that the command needs QUILL Accessible Forms on the site, and to install and activate it there. Publishing and Responses are off in Safe Mode.
 
 2. **Publish the form.** With Ask us anything in front, open Forms in the Tools menu and choose Publish Form. With more than one site, you choose which one first.
    - You should hear: Publish Form, and Publish as, on Live.

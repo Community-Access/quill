@@ -130,6 +130,25 @@ def _fresh_dictation(monkeypatch):
             pass
 
 
+@pytest.fixture(autouse=True)
+def _no_real_update_check(monkeypatch) -> list[str]:
+    """Check for Updates says "Checking for updates" and stops there.
+
+    Unfaked, ``cmd_check_updates`` handed the real GitHub fetch to a real
+    thread. This case passed on the announcement long before the answer came
+    back; when the read timed out on CI, the error box it then posted through
+    the real ``wx.CallAfter`` failed whichever unrelated test was running
+    (2026-11-06). The background work is recorded, never run.
+    """
+    from quill.ui import update_download
+
+    submitted: list[str] = []
+    monkeypatch.setattr(
+        update_download, "thread_submit", lambda name, *_a, **_k: submitted.append(name)
+    )
+    return submitted
+
+
 @pytest.fixture
 def opened_windows(monkeypatch, wx_session_app, wx_call_after) -> list[str]:
     """Every wx window a command tried to show, by class name."""
@@ -223,3 +242,14 @@ def test_the_unreachable_list_only_shrinks(
     assert not (reached or lite_dialogs.names() or opened_windows), (
         f"{handler} now runs to an outcome under the stub: take it off STUB_CANNOT_REACH."
     )
+
+
+def test_the_sweeps_check_for_updates_never_starts_a_real_fetch(
+    lite_window, lite_dialogs, opened_windows, _no_real_update_check
+) -> None:
+    """The sweep's Check for Updates is handed to the recorder, not a thread."""
+    from tests import real_output_guard
+
+    lite_window("").cmd_check_updates()
+    assert _no_real_update_check == ["app-update-check"]
+    assert real_output_guard.take_violations() == []

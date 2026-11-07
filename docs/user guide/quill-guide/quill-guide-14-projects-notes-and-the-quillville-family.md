@@ -327,7 +327,10 @@ braille, has the details.
   copy alike (*Office files at a glance* in Chapter 3 lists what every other
   Office file does). If the file holds things QUILL's
   editor cannot keep (images, comments, tracked changes, headers and
-  footers), QUILL asks first. You can open it for reading and plain editing
+  footers), QUILL asks first. That includes a header or footer that only
+  appears on the first page, or only on even pages: Word keeps those
+  separately from the ordinary ones, and QUILL names them as "headers" or
+  "footers" all the same, in any section of the document. You can open it for reading and plain editing
   (the safe default), edit it as Rich Text with those losses named one by
   one, or edit a copy. The first rich save over such a file writes a
   timestamped backup next to it automatically. **Tables are preserved** when

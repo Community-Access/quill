@@ -1085,6 +1085,7 @@ class MenuBuilderMixin:
         navigate_menu.AppendSubMenu(bookmarks_menu, _("Bookmarks"))
         self._append_highlight_submenu(navigate_menu)  # main_frame_highlights
         self._append_table_submenu(navigate_menu)  # main_frame_table_nav, as in QUILL Lite
+        self._append_code_submenu(navigate_menu)  # main_frame_code_nav, as in QUILL Lite
         navigate_menu.AppendSeparator()
         notebook_nav_menu = wx.Menu()
         notebook_nav_menu.Append(

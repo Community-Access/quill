@@ -8,9 +8,15 @@ up against on macOS (#4), and the set of system chords no pack may steal.
 
 from __future__ import annotations
 
+import logging
+from collections.abc import Mapping
+
 from quill.core.keymap_query import canonical_binding
 
+logger = logging.getLogger("quill.core.keymap")
+
 __all__ = [
+    "apply_darwin_pack_overrides",
     "MACOS_RESERVED_RUNTIME_CHORDS",
     "darwin_runtime_chord",
     "is_macos_reserved_runtime_chord",
@@ -65,3 +71,56 @@ def is_macos_reserved_runtime_chord(runtime_chord: str) -> bool:
         if len(key) == 1 and key.isalpha():
             return True
     return False
+
+
+def apply_darwin_pack_overrides(
+    merged: dict[str, str], pack_bindings: Mapping[str, str], *, quill_key_prefix: str
+) -> None:
+    """Apply a keyboard pack's bindings on macOS with collision review (#4).
+
+    Drops a pack override (keeping the darwin-aware DEFAULT_KEYMAP value for that
+    command) when it would land on a macOS system-reserved chord or collide with a
+    binding already present in *merged* once both are viewed at Mac runtime
+    (Ctrl->Cmd). A user who wants the Windows app's exact chord can still rebind it
+    explicitly via the keymap editor, which runs the full conflict review in
+    :func:`quill.core.keymap.merge_keymaps`.
+    """
+    runtime_merged: dict[str, str | None] = {
+        command: darwin_runtime_chord(chord, quill_key_prefix=quill_key_prefix)
+        for command, chord in merged.items()
+    }
+    for command_id, raw_chord in pack_bindings.items():
+        chord = raw_chord.strip()
+        if not chord:
+            # Empty pack binding means "use the default"; keep DEFAULT_KEYMAP.
+            continue
+        runtime = darwin_runtime_chord(chord, quill_key_prefix=quill_key_prefix)
+        if runtime is None:
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: unparseable chord (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        if is_macos_reserved_runtime_chord(runtime):
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: system-reserved chord (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        collides = any(
+            other != command_id and other_runtime == runtime
+            for other, other_runtime in runtime_merged.items()
+            if other_runtime is not None
+        )
+        if collides:
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: collides with a "
+                "darwin-aware default (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        merged[command_id] = chord
+        runtime_merged[command_id] = runtime

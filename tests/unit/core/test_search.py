@@ -31,3 +31,20 @@ def test_replace_all_returns_updated_text_and_count() -> None:
     updated, count = replace_all("red blue red", "red", "green")
     assert updated == "green blue green"
     assert count == 2
+
+
+def test_replace_all_inserts_a_literal_backslash_outside_regex_mode() -> None:
+    updated, count = replace_all("old and old", "old", "C:\new")
+    assert (updated, count) == ("C:\new and C:\new", 2)
+    updated, count = replace_all("x x", "x", "\1")
+    assert (updated, count) == ("\1 \1", 2)
+
+
+def test_replace_all_wildcard_replacement_is_literal_too() -> None:
+    updated, count = replace_all("cat cot", "c*t", "\n", SearchOptions(wildcard=True))
+    assert (updated, count) == ("\n \n", 2)
+
+
+def test_replace_all_regex_replacement_is_still_a_template() -> None:
+    updated, count = replace_all("ab", r"(a)(b)", r"\2\1", SearchOptions(use_regex=True))
+    assert (updated, count) == ("ba", 1)

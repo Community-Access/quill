@@ -864,6 +864,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_updates import DocumentUpdatesMixin
     from quill.apps.lite_window_activity import DocumentActivityMixin
     from quill.apps.lite_window_clipboard import DocumentClipboardMixin
+    from quill.apps.lite_window_code_nav import DocumentCodeNavMixin
     from quill.apps.lite_window_commands import DocumentCommandsMixin
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
     from quill.apps.lite_window_dictation import DocumentDictationMixin
@@ -980,6 +981,7 @@ def lite_window(tmp_path, lite_settings):
         # than a stand-in, because a stub that only moved a flag is exactly
         # what let extend mode ship never having worked from the keyboard.
         DocumentFoldingMixin,
+        DocumentCodeNavMixin,
         ExtendSelectionMixin,
         # The Insert menu, the document's markup language and the list cue,
         # added 2026-09-15. Here rather than in a stub of its own because the

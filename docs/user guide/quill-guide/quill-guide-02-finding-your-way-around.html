@@ -419,14 +419,37 @@ sounds like nothing else, so you know it is ready before any speech
 arrives. The sound is in every sound pack that comes with QUILL, and you
 can switch it off on its own in <strong>Tools &gt; Reading and Dictation
 &gt; Sound Scheme…</strong> (this used to be called Sound Events).</p>
-<p>Some keyboards and drivers report the grave key in unusual ways.
-QUILL checks for it three different ways, so it recognises the key on
-any layout.</p>
-<p>On macOS, use the physical <strong>Control</strong> key for the QUILL
-key, not Cmd. <code>Cmd+Shift+Grave</code> is macOS’s own shortcut for
+<h4 id="the-quill-key-on-keyboards-that-are-not-us-english">The QUILL
+key on keyboards that are not US English</h4>
+<p>Only a US layout calls the grave key a backtick. On a German layout
+the same key types <code>^</code>, on French it types <code>²</code>,
+and on many Nordic layouts it types <code>§</code>. QUILL does not care
+what the key types. It looks for the key by where it sits on the
+keyboard: the key just above Tab, to the left of <code>1</code>. So on
+any layout, the QUILL key is Control, Shift and that key, and you never
+need to switch to a US layout to use it.</p>
+<p>On Windows, QUILL recognises the key from the keyboard’s own hardware
+code, which is the same on every layout.</p>
+<p>On macOS, QUILL reads the Mac’s key code, which also names a position
+rather than a character. On the keyboards sold in Germany, the UK and
+most of Europe (Apple calls them ISO keyboards), the key above Tab and
+the extra key beside the left Shift key (<code>&lt;</code> on a German
+keyboard) both count as the grave key, so whichever of the two your Mac
+reports, <code>Control+Shift</code> with it is the QUILL key. You hear
+the same double ping as on a US keyboard.</p>
+<p>Use the physical <strong>Control</strong> key for the QUILL key on
+macOS, not Cmd. <code>Cmd+Shift+Grave</code> is macOS’s own shortcut for
 cycling windows, and QUILL never sees it. If you would rather use Cmd,
 change that system shortcut first in <strong>System Settings &gt;
 Keyboard &gt; Keyboard Shortcuts &gt; Mission Control</strong>.</p>
+<p>If the QUILL key still does nothing on your keyboard, you can move
+it. Open the Keymap Editor (<strong>Tools &gt; Customize and Support
+&gt; Keymap Editor…</strong>, <code>Ctrl+Alt+Shift+Space</code>), press
+the <strong>Change QUILL Key…</strong> button and type the chord you
+want. Every QUILL key chord moves with it, so <code>QUILL Key + G</code>
+is still <code>G</code> after your new key. Then write to support with
+your keyboard layout and your Mac or PC model, so the key can be made to
+work for the next person.</p>
 <h4 id="moving-a-quill-key-chord">Moving a QUILL key chord</h4>
 <ol type="1">
 <li>Open the Keymap Editor, from <strong>Tools &gt; Customize and

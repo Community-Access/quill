@@ -107,6 +107,30 @@ def translate_text(
     return _translate_ai(text, target_name, connection, api_key, markdown=markdown)
 
 
+UNCHANGED_TRANSLATION_MESSAGE = (
+    "The translation came back the same as the original. "
+    "The text may already be in the target language."
+)
+
+
+def _comparable(text: str) -> str:
+    return " ".join(text.split()).casefold()
+
+
+def translation_unchanged(original: str, translated: str) -> bool:
+    """True when *translated* is just *original* handed back.
+
+    Whitespace runs collapse and case is ignored, so a result that differs only
+    in line wrapping or capitalisation still counts as the same text. That is
+    what comes back when the source was already in the target language, and
+    calling it a translation would hide that nothing was translated. Empty text
+    on either side is never "unchanged": that is a failure, reported elsewhere.
+    """
+    a = _comparable(original)
+    b = _comparable(translated)
+    return bool(a) and a == b
+
+
 def _resolve_target_name(target: str) -> str:
     """Accept either a language name or ISO code, return the display name."""
     if target in SUPPORTED_LANGUAGES:

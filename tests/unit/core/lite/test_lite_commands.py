@@ -58,6 +58,12 @@ def _items() -> list[tuple[str, str, str, str]]:
 #: reason). The route is the menu's own Alt path, which the access-key checks
 #: below keep unique. Shrink this, never grow it without an argument.
 KEYLESS_WITH_REASON: dict[str, str] = {
+    **{
+        handler: "As in QUILL (rule 2), where Next and Previous Block have no chord either: "
+        "every chord near them is taken in one editor or the other, and Navigate > Code "
+        "reaches both (Alt+N, C, then N or P)."
+        for handler in ("cmd_next_block", "cmd_previous_block")
+    },
     "cmd_open_project_folder": "As in QUILL (rule 2), where it has no plain key either: "
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "

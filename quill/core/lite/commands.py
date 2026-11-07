@@ -6,19 +6,16 @@ in one menu bar claim the same key.** Walking a menu to discover there is no
 shortcut is a cost a screen-reader user pays on every visit, and a key claimed
 twice means one of the pair silently never fires.
 
-A table rather than fifty ``menu.Append`` calls, because the table is checkable.
-:mod:`tests.unit.core.lite.test_lite_commands` asserts, mechanically, that every
-item carries a key, that no key is claimed twice, that no ``&`` mnemonic is
-claimed twice *within one menu*, and that every key string is one
-``wx.AcceleratorEntry`` can actually parse -- the last of which matters because
-wx silently drops what it cannot parse, leaving the menu advertising a key that
-does nothing.
+A table rather than fifty ``menu.Append`` calls, because a table is checkable:
+:mod:`tests.unit.core.lite.test_lite_commands` asserts that every item carries a
+key, that no key (nor, *within one menu*, ``&`` mnemonic) is claimed twice, and
+that every key parses as a ``wx.AcceleratorEntry`` -- wx silently drops what it
+cannot parse, leaving the menu advertising a key that does nothing.
 
 The same table generates the Keyboard Shortcuts window, so the list a user reads
 is the list that is bound. There is no third place for the two to disagree.
 
-wx-free on purpose: the tests, the shortcut text and the F1 answer all import
-this without a display.
+wx-free on purpose: the tests, the shortcut text and F1 import it without a display.
 """
 
 from __future__ import annotations
@@ -754,6 +751,7 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate", "", "", "", "sep"),
     ("&Navigate", "&Table", "", "", "sub"),
     ("&Navigate", "&Bookmarks", "", "", "sub"),
+    ("&Navigate", "&Code", "", "", "sub"),
     ("&Navigate", "", "", "", "sep"),
     # F6 is the region key every Windows app uses, and the one QUILL's own
     # status bar answers. The menu item exists so the key is discoverable
@@ -782,6 +780,22 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Table", "&Delete Row", "", "cmd_table_delete_row", ""),
     ("&Navigate|&Table", "Delete Col&umn", "", "cmd_table_delete_column", ""),
     ("&Navigate|&Table", "&Tidy Table", "", "cmd_table_tidy", ""),
+    # -- Navigate > Code (2026-11-06) ----------------------------------------
+    # QUILL's Navigate > Code, on QUILL's keys (rule 2; keymap.py says why
+    # these), over the shared quill.core.navigation and quill.core.problems.
+    # Next and Previous Block have no key in either editor: see
+    # KEYLESS_WITH_REASON. Blocks in Markdown are paragraphs and in HTML are
+    # headings and landmarks, as in QUILL; Check This File checks the two
+    # languages QUILL Lite knows, Markdown and HTML, where QUILL checks many.
+    ("&Navigate|&Code", "&Next Block", "", "cmd_next_block", ""),
+    ("&Navigate|&Code", "&Previous Block", "", "cmd_previous_block", ""),
+    ("&Navigate|&Code", "", "", "", "sep"),
+    ("&Navigate|&Code", "Next &Indent Change", "Alt+Shift+PageDown", "cmd_next_indent", ""),
+    ("&Navigate|&Code", "Previous In&dent Change", "Alt+Shift+PageUp", "cmd_previous_indent", ""),
+    ("&Navigate|&Code", "", "", "", "sep"),
+    ("&Navigate|&Code", "&Check This File...", "Ctrl+Alt+/", "cmd_check_this_file", ""),
+    ("&Navigate|&Code", "Next P&roblem", "Ctrl+Alt+.", "cmd_next_problem", ""),
+    ("&Navigate|&Code", "Previous Pro&blem", "Ctrl+Alt+,", "cmd_previous_problem", ""),
     # -- Navigate > Bookmarks ------------------------------------------------
     # A place you meant to come back to. There is no scrollbar thumb to remember
     # the position of and no glance that finds the place again, so a bookmark is

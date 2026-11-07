@@ -157,3 +157,37 @@ def test_autosave_says_it_has_paused_once_after_repeated_failures() -> None:
     frame._note_autosave_failure(error)
     frame._note_autosave_failure(error)
     assert len(spoken) == 1  # said once, not per attempt
+
+
+def test_backup_failure_is_logged_as_well_as_spoken(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture, tmp_path: Path
+) -> None:
+    """The status line is gone by the time anyone asks why there is no backup."""
+    frame = _frame()
+    statuses: list[str] = []
+    frame._set_status = statuses.append  # type: ignore[method-assign]
+
+    def _explode(_document: object) -> None:
+        raise OSError(errno.ENOSPC, "No space left on device")
+
+    monkeypatch.setattr("quill.ui.main_frame_write_safety.backup_document", _explode)
+    with caplog.at_level("WARNING", logger="quill.ui.main_frame_write_safety"):
+        frame._backup_before_save(Document(text="x", path=tmp_path / "notes.md"))
+    assert statuses and "saving anyway" in statuses[0]
+    messages = [record.getMessage() for record in caplog.records]
+    assert any("notes.md" in m and "No space left on device" in m for m in messages)
+
+
+def test_an_unexpected_backup_failure_is_logged_with_its_traceback(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    frame = _frame()
+    frame._set_status = lambda _message: None  # type: ignore[method-assign]
+
+    def _explode(_document: object) -> None:
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr("quill.ui.main_frame_write_safety.backup_document", _explode)
+    with caplog.at_level("WARNING", logger="quill.ui.main_frame_write_safety"):
+        frame._backup_before_save(Document(text="x"))
+    assert any(record.exc_info for record in caplog.records)

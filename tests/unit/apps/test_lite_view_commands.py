@@ -142,6 +142,39 @@ def test_statistics_on_an_empty_document_says_zero_rather_than_nothing(lite_wind
     assert "0 words" in win.announcements[-1]
 
 
+def test_statistics_pressed_twice_quickly_adds_the_writing_report(lite_window):
+    """The second press is the long answer; the first stays short and instant."""
+    win = lite_window("The cat sat.\n\nThe dog ran far away. It was fast.\n")
+    win.app.settings.multi_press_window_ms = 60_000
+    win.cmd_statistics()
+    first = win.announcements[-1]
+    assert "paragraph" not in first
+    win.cmd_statistics()
+    second = win.announcements[-1]
+    assert second.startswith("11 words, ")
+    assert "2 paragraphs" in second
+    assert "3 sentences" in second
+    assert "0 long sentences over 30 words" in second
+    assert "under a minute to read" in second
+    assert "reading grade" in second
+
+
+def test_statistics_pressed_slowly_repeats_the_short_answer(lite_window):
+    win = lite_window("one two three")
+    win.app.settings.multi_press_window_ms = 0
+    win.cmd_statistics()
+    win._statistics_presses._last = -1e9  # long ago
+    win.cmd_statistics()
+    assert "sentence" not in win.announcements[-1]
+
+
+def test_statistics_counts_the_selection_when_there_is_one(lite_window):
+    win = lite_window("one two three four five")
+    win.control.SetSelection(0, 7)
+    win.cmd_statistics()
+    assert win.announcements[-1] == "Selection: 2 words, 1 line, 7 characters"
+
+
 # --------------------------------------------------------------------------- #
 # F6
 # --------------------------------------------------------------------------- #

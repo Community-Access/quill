@@ -78,10 +78,23 @@ class DocumentWordPressMixin:
             return outcome.consumed
         if not (held("ControlDown") and held("AltDown") and held("ShiftDown")):
             return False
-        # The grave key: wx reports VK_OEM_3 (192) on Windows, "`" elsewhere.
-        raw = getattr(event, "GetRawKeyCode", None)
-        raw_code = int(raw()) if callable(raw) else 0
-        if code not in {ord("`"), ord("~"), 0xC0} and raw_code != 0xC0:
+        # The grave key, matched by where it sits so it works on any layout
+        # (#1753): the same shared check QUILL uses for its QUILL key.
+        from quill.core.grave_key import is_grave_key
+
+        def raw(name: str) -> int:
+            query = getattr(event, name, None)
+            try:
+                return int(query()) if callable(query) else 0
+            except (TypeError, ValueError):
+                return 0
+
+        if not is_grave_key(
+            key_code=code,
+            unicode_key=raw("GetUnicodeKey"),
+            raw_key_code=raw("GetRawKeyCode"),
+            raw_key_flags=raw("GetRawKeyFlags"),
+        ):
             return False
         if not self._wordpress_key_bindings():
             return False  # the WordPress area is switched off: not our key

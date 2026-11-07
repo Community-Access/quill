@@ -44,6 +44,7 @@ from quill.apps.lite_printing import DocumentPrintMixin
 from quill.apps.lite_updates import DocumentUpdatesMixin
 from quill.apps.lite_window_activity import DocumentActivityMixin
 from quill.apps.lite_window_clipboard import DocumentClipboardMixin
+from quill.apps.lite_window_code_nav import DocumentCodeNavMixin
 from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
 from quill.apps.lite_window_dictation import DocumentDictationMixin
@@ -154,13 +155,12 @@ class DocumentFrame(
     DocumentMenuMixin,
     DocumentAppearanceMixin,
     DocumentModeMixin,
-    # Folding over Markdown sections, 2026-09-17 (bad.md P3.6, Tier 3): collapsing
-    # to headings is how a listener skims, without a sighted reader's glance.
+    # Folding (bad.md P3.6) and Navigate > Code (2026-11-06): skimming by structure.
     DocumentFoldingMixin,
-    # Extend Selection Mode, 2026-09-17 (bad.md P2.13, Tier 2).
-    # QUILL Lite deleted its own attempt at this in d20fabe and has had
-    # nothing since; QUILL's is the mechanism that works on wxMSW, so it
-    # was extracted rather than written a third time.
+    DocumentCodeNavMixin,
+    # Extend Selection Mode, 2026-09-17 (bad.md P2.13, Tier 2). QUILL Lite deleted
+    # its own attempt in d20fabe; QUILL's is the mechanism that works on wxMSW, so
+    # it was extracted rather than written a third time.
     ExtendSelectionMixin,
     DocumentStatusMixin,
     DocumentHeadingsMixin,

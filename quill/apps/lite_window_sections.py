@@ -27,6 +27,7 @@ capability becoming two that drift.
 
 from __future__ import annotations
 
+from quill.core.list_search import SearchTerms
 from quill.core.lite.keymap import spoken_key_for
 from quill.core.markdown_sections import (
     MoveResult,
@@ -261,9 +262,9 @@ def _matching_rows(rows: list[str], query: str) -> list[str]:
 
     Word-wise rather than substring: the rows lead with a position ("3 of 7,
     level 2 - Bread"), and somebody who types "bread 2" means both halves of
-    what they typed. The order is the document's own, never re-ranked.
+    what they typed. The order is the document's own, never re-ranked. The
+    shared filter (quill.core.list_search) also takes a query: ``bread | rolls``,
+    ``!draft``, ``"level 2"``.
     """
-    words = query.lower().split()
-    if not words:
-        return list(rows)
-    return [row for row in rows if all(word in row.lower() for word in words)]
+    terms = SearchTerms(query)
+    return [row for row in rows if terms.found_in(row.casefold())]

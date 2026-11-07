@@ -433,6 +433,7 @@
   "quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin.export_proofing_report::wx.FileDialog": "native",
   "quill/ui/main_frame_classic_editor.py::ClassicEditorMixin.restore_deletion::wx.SingleChoiceDialog": "native",
   "quill/ui/main_frame_clip_library.py::ClipLibraryMixin._promote_clip_to_tray::wx.TextEntryDialog": "native",
+  "quill/ui/main_frame_code_nav.py::CodeNavMixin._problems_choose::wx.SingleChoiceDialog": "native",
   "quill/ui/main_frame_compare.py::CompareMixin.compare_start_with_file::wx.FileDialog": "native",
   "quill/ui/main_frame_compare.py::CompareMixin.compare_with_file::wx.FileDialog": "native",
   "quill/ui/main_frame_compare.py::CompareMixin.open_compare_difference_list::wx.SingleChoiceDialog": "native",

@@ -139,9 +139,11 @@ from quill.core.menu_customization import (
     MenuCustomization,
     load_menu_customization,
 )
-from quill.core.metrics import compute_document_stats
+from quill.core.metrics import RepeatPress, compute_document_stats, statistics_report
 from quill.core.multi_press import MultiPressDispatcher
 from quill.core.navigation import (
+    block_line_text,
+    language_block_starts,
     next_block_start,
     next_heading_start,
     previous_block_start,
@@ -326,6 +328,7 @@ from quill.ui.main_frame_bw import BwSpeechMixin
 from quill.ui.main_frame_classic_editor import ClassicEditorMixin
 from quill.ui.main_frame_clip_library import ClipLibraryMixin
 from quill.ui.main_frame_close_others import CloseOthersMixin
+from quill.ui.main_frame_code_nav import CodeNavMixin
 from quill.ui.main_frame_commands import CommandRegistryMixin
 from quill.ui.main_frame_compare import CompareMixin
 from quill.ui.main_frame_convert_file import ConvertFileMixin
@@ -698,8 +701,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
-    # Moved whole out of this class on 2026-10-17, so listed first: they keep
-    # the precedence the methods had while they were defined here.
+    # Moved whole out of this class on 2026-10-17; listed first to keep their old precedence.
     BookmarksFoldsMixin,
     ReadAloudMixin,
     SpeechHubMixin,
@@ -763,6 +765,7 @@ class MainFrame(
     MenuBindingsMixin,
     MastodonSocialMixin,
     TableNavMixin,
+    CodeNavMixin,
     StructureAnnounceMixin,
     NotebookUIMixin,
     QuillKeyMixin,
@@ -790,8 +793,7 @@ class MainFrame(
     DocConvertMixin,
     PdfOpenOcrMixin,
     DictationHotkeysMixin,
-    # QUILL's own free AI: the shared hosted-AI commands, wired to QUILL's
-    # frame and editor. Five commands, no implementation of its own.
+    # QUILL's own free AI: the shared hosted-AI commands, five, none implemented here.
     MainFrameActivityMixin,
     HostedAiCommandsMixin,
     TextEditorMixin,
@@ -5917,6 +5919,7 @@ class MainFrame(
         existing_index = self._find_tab_index(selected_path)
         if existing_index >= 0 and not refresh_existing:
             self._select_tab(existing_index)
+            self._remember_open_folder(selected_path)
             if record_recent:
                 self._record_recent(selected_path)
             self._position_editor_at(line=line, column=column)
@@ -6077,6 +6080,7 @@ class MainFrame(
                 incorrect=encrypted_retry,
             )
             return
+        self._remember_open_folder(selected_path)
         illuminated = self._maybe_apply_illumination(loaded, selected_path, suffix)
         self._epub_book = epub_book if suffix == ".epub" else None
         linkage_entry = get_publishing_linkage(selected_path)
@@ -8319,15 +8323,18 @@ class MainFrame(
         self._navigate_block(reverse=True)
 
     def _navigate_block(self, reverse: bool) -> None:
+        # The language's own units when its profile has a block pattern
+        # (main_frame_code_nav), else paragraphs.
         cursor = self.editor.GetInsertionPoint()
+        text, pattern = self.editor.GetValue(), self._block_pattern()
         if reverse:
-            target = previous_block_start(self.editor.GetValue(), cursor)
+            target = previous_block_start(text, cursor, pattern)
             if target is None:
                 self._set_status("No previous block")
                 return
             label = "previous block"
         else:
-            target = next_block_start(self.editor.GetValue(), cursor)
+            target = next_block_start(text, cursor, pattern)
             if target is None:
                 self._set_status("No next block")
                 return
@@ -8337,7 +8344,8 @@ class MainFrame(
         self.editor.SetSelection(target, target)
         self.editor.SetFocus()
         self._location_ring.record(target)
-        self._announce_navigation_move(f"Moved to {label}", target)
+        named = block_line_text(text, target) if language_block_starts(text, pattern) else ""
+        self._announce_navigation_move(named or f"Moved to {label}", target)
 
     def _announce_navigation_move(
         self, prefix: str, target: int, *, latch_structure: bool = False
@@ -9523,13 +9531,19 @@ class MainFrame(
         sentence does not need a window. QUILL Lite has always spoken this, and
         a modal for a readout is a modal you close on every single use.
 
-        All three numbers are in the sentence now rather than only the words,
-        because the box was the only place the lines and the characters
-        appeared at all.
+        A quick second press adds paragraphs, sentences, long sentences,
+        reading time and the reading grade. Both presses count the selection
+        when there is one. The wording is shared with QUILL Lite
+        (:func:`quill.core.metrics.statistics_report`).
         """
-        stats = compute_document_stats(self.editor.GetValue())
-        summary = f"{stats.words:,} words, {stats.lines:,} lines, {stats.characters:,} characters"
-        if getattr(self.settings, "announce_counts", True):
+        if not hasattr(self, "_word_count_presses"):
+            self._word_count_presses = RepeatPress()
+        window = int(getattr(self.settings, "multi_press_window_ms", 400))
+        detailed = self._word_count_presses.press(window) == 2
+        selected = getattr(self.editor, "GetStringSelection", str)()
+        summary = statistics_report(self.editor.GetValue(), selected, detailed=detailed)
+        # The long report is always spoken: a second press is asking for it.
+        if detailed or getattr(self.settings, "announce_counts", True):
             self._set_status(summary)
         else:
             self._set_status_quiet(summary)

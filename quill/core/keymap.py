@@ -5,7 +5,11 @@ import sys
 from collections.abc import Mapping
 from pathlib import Path
 
-from quill.core.keymap_darwin import darwin_runtime_chord, is_macos_reserved_runtime_chord
+from quill.core.keymap_darwin import (
+    apply_darwin_pack_overrides,
+    darwin_runtime_chord,
+    is_macos_reserved_runtime_chord,
+)
 from quill.core.keymap_format import (
     format_binding_for_display,
     format_quill_key_chord,
@@ -1047,6 +1051,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "table.delete_row": "",
     "table.delete_column": "",
     "table.tidy": "",
+    # Navigate > Code, Lite's keys too (rule 2). F8 / Shift+F8 are Word's selection
+    # pair (rule 1): Compare's Ctrl+Alt+Shift+. and , lose a modifier ("/" is "?").
+    "navigate.next_block": "",
+    "navigate.previous_block": "",
+    "navigate.next_indent": "Alt+Shift+PageDown",
+    "navigate.previous_indent": "Alt+Shift+PageUp",
+    "tools.check_this_file": "Ctrl+Alt+/",
+    "navigate.next_problem": "Ctrl+Alt+.",
+    "navigate.previous_problem": "Ctrl+Alt+,",
     # Announce Headings, on the family's function-key range. Ctrl+Alt+F1 is
     # Tutorials and Ctrl+Alt+F2 is Get Help from Support; F3 joins them, and the
     # same reasoning exempts it from the Ctrl+Alt policy (menu_lint.py): the
@@ -1515,53 +1528,8 @@ _is_macos_reserved_runtime_chord = is_macos_reserved_runtime_chord
 
 
 def _apply_darwin_pack_overrides(merged: dict[str, str], pack_bindings: Mapping[str, str]) -> None:
-    """Apply a keyboard pack's bindings on macOS with collision review (#4).
-
-    Drops a pack override (keeping the darwin-aware DEFAULT_KEYMAP value for that
-    command) when it would land on a macOS system-reserved chord or collide with a
-    binding already present in *merged* once both are viewed at Mac runtime
-    (Ctrl->Cmd). A user who wants the Windows app's exact chord can still rebind it
-    explicitly via the keymap editor, which runs the full conflict review in
-    :func:`merge_keymaps`.
-    """
-    runtime_merged: dict[str, str | None] = {
-        command: _darwin_runtime_chord(chord) for command, chord in merged.items()
-    }
-    for command_id, raw_chord in pack_bindings.items():
-        chord = raw_chord.strip()
-        if not chord:
-            # Empty pack binding means "use the default"; keep DEFAULT_KEYMAP.
-            continue
-        runtime = _darwin_runtime_chord(chord)
-        if runtime is None:
-            logger.debug(
-                "Pack override %r -> %r dropped on macOS: unparseable chord (#4).",
-                command_id,
-                raw_chord,
-            )
-            continue
-        if _is_macos_reserved_runtime_chord(runtime):
-            logger.debug(
-                "Pack override %r -> %r dropped on macOS: system-reserved chord (#4).",
-                command_id,
-                raw_chord,
-            )
-            continue
-        collides = any(
-            other != command_id and other_runtime == runtime
-            for other, other_runtime in runtime_merged.items()
-            if other_runtime is not None
-        )
-        if collides:
-            logger.debug(
-                "Pack override %r -> %r dropped on macOS: collides with a "
-                "darwin-aware default (#4).",
-                command_id,
-                raw_chord,
-            )
-            continue
-        merged[command_id] = chord
-        runtime_merged[command_id] = runtime
+    """Apply a keyboard pack's bindings on macOS with collision review (#4; keymap_darwin)."""
+    apply_darwin_pack_overrides(merged, pack_bindings, quill_key_prefix=_QUILL_LEADER_PREFIX)
 
 
 def merge_keymaps(raw: object) -> dict[str, str]:

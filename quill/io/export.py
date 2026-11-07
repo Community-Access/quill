@@ -16,7 +16,7 @@ import html
 import re
 from pathlib import Path
 
-from quill.core.browser_preview import contains_math, render_preview_body
+from quill.core.browser_preview import render_preview_body
 from quill.core.document import Document
 from quill.core.error_codes import CodedError
 from quill.core.storage import write_text_atomic
@@ -249,16 +249,9 @@ def markdown_to_html(markdown: str, title: str, *, charset: str = "utf-8") -> st
     document: a file read as cp1252 or UTF-16 was re-encoded on the way out
     with nothing said (bad.md F4).
     """
+    # Math arrives from the renderer as MathML, so the page loads no script and
+    # needs no network to show the math or have it read.
     body = render_preview_body(markdown, "markdown")
-    # Only include the remote MathJax CDN when the document actually contains
-    # math, so exporting a plain document produces HTML with no third-party
-    # script/network dependency (privacy/egress).
-    mathjax = (
-        '<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"'
-        " async></script>\n"
-        if contains_math(markdown)
-        else ""
-    )
     return (
         "<!doctype html>\n"
         '<html lang="en">\n'
@@ -266,7 +259,6 @@ def markdown_to_html(markdown: str, title: str, *, charset: str = "utf-8") -> st
         f'<meta charset="{html.escape(charset)}">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{html.escape(title)}</title>\n"
-        f"{mathjax}"
         "</head>\n"
         f"<body>\n{body}\n</body>\n"
         "</html>\n"

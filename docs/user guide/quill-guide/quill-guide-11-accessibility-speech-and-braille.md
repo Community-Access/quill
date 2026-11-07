@@ -865,6 +865,39 @@ In the editor, GLOW checks plain text, Markdown and HTML for:
 The optional GLOW engine adds Word, PowerPoint, Excel, PDF and EPUB files
 (DOCX, PPTX, XLSX, PDF, EPUB), with a scored and graded report.
 
+### Checking diagrams with the Accessibility Tune-Up
+
+A Mermaid diagram is written as text in a fenced `mermaid` block, and becomes
+a picture when the page is shown in a browser or on a site such as GitHub.
+Without a name and a description, that picture reaches a screen reader as an
+unlabelled graphic. **AI > Accessibility Tune-Up...** (shown once **AI > Show
+advanced AI features** is checked) checks every diagram in a Markdown
+document and lists what it finds with the other Tune-Up steps, each with its
+line number:
+
+- **No accessible title.** Add a line such as `accTitle: Order flow` just
+  after the diagram type.
+- **No accessible description.** Add `accDescr:` and a sentence or two
+  saying what the diagram shows. For a longer description, write
+  `accDescr {`, the text on the lines that follow, and `}`.
+- **A theme set in an init block.** A line such as
+  `%%{init: {'theme': 'dark'}}%%` overrides the reader's own light or dark
+  setting and can leave text hard to read. Leave the theme out unless you
+  have checked it.
+- **Colours set by hand.** A `style`, `classDef` or `linkStyle` line with a
+  fill, text or stroke colour. Check that text on those colours has a contrast
+  ratio of at least 4.5 to 1, and that colour is not the only thing that tells
+  two parts of the diagram apart.
+- **No heading before a diagram,** when the document has more than one. A
+  heading just above each diagram lets a listener jump to it with heading
+  navigation and know which one they are on.
+
+These are review steps, marked as needing your review: the Tune-Up never
+rewrites a diagram for you, and accepting one changes nothing. Fix them in the
+document, then run the Tune-Up again. The **mermaid-diagrams** starter
+snippet pack, in the writing chapter, starts each new diagram with its title
+and description already asked for.
+
 ### The GLOW engine and updates
 
 The in-editor checks are always there. Checking and fixing those other file

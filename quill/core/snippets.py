@@ -65,6 +65,31 @@ _PLACEHOLDER_PATTERN = re.compile(r"\$\{((?:[^{}]|\{[^{}]*\})*)\}")
 _DEFAULT_LIBRARY_VERSION = 1
 _SNIPPETS_RELATIVE_PATH = Path("snippets") / "snippets.json"
 
+
+def _mermaid_snippet(key: str, name: str, header: str, body: str) -> Snippet:
+    """A fenced Mermaid diagram that opens with accTitle and accDescr.
+
+    The title and description fields come straight after the diagram type, so
+    they are the first two things the snippet form asks for.
+    """
+
+    text = (
+        f"```mermaid\n{header}\n"
+        "    accTitle: ${input:accessible title}\n"
+        "    accDescr: ${input:accessible description}\n"
+        f"{body}\n```\n"
+    )
+    return Snippet(
+        id=f"mermaid-{key}",
+        name=f"Mermaid {name}",
+        trigger=f";mm{key}",
+        body=text,
+        description=f"A Mermaid {name.lower()} with an accessible title and description.",
+        tags=["mermaid", "diagram", "accessibility"],
+        source="starter-pack",
+    )
+
+
 _STARTER_PACKS: dict[str, list[Snippet]] = {
     "daily-writing": [
         Snippet(
@@ -125,6 +150,64 @@ _STARTER_PACKS: dict[str, list[Snippet]] = {
             description="Capture screen-reader validation notes quickly.",
             tags=["accessibility", "qa"],
             source="starter-pack",
+        ),
+    ],
+    # Every diagram asks for its accessible title and description first, so the
+    # rendered picture is never an unnamed graphic to a screen reader.
+    "mermaid-diagrams": [
+        _mermaid_snippet(
+            "flowchart",
+            "Flowchart",
+            "flowchart TD",
+            "    A[${input:first step}] --> B[${cursor}]",
+        ),
+        _mermaid_snippet(
+            "sequence",
+            "Sequence Diagram",
+            "sequenceDiagram",
+            "    participant ${input:first participant}\n"
+            "    participant ${input:second participant}\n"
+            "    ${cursor}",
+        ),
+        _mermaid_snippet(
+            "class",
+            "Class Diagram",
+            "classDiagram",
+            "    class ${input:class name} {\n        ${cursor}\n    }",
+        ),
+        _mermaid_snippet(
+            "state",
+            "State Diagram",
+            "stateDiagram-v2",
+            "    [*] --> ${input:first state}\n    ${cursor}",
+        ),
+        _mermaid_snippet(
+            "er",
+            "Entity Relationship Diagram",
+            "erDiagram",
+            "    ${input:first entity} ||--o{ ${input:second entity} : ${input:relationship}\n"
+            "    ${cursor}",
+        ),
+        _mermaid_snippet(
+            "gantt",
+            "Gantt Chart",
+            "gantt",
+            "    dateFormat YYYY-MM-DD\n"
+            "    section ${input:section name}\n"
+            "    ${input:first task} :${date}, 7d\n"
+            "    ${cursor}",
+        ),
+        _mermaid_snippet(
+            "mindmap",
+            "Mind Map",
+            "mindmap",
+            "    root((${input:central idea}))\n        ${cursor}",
+        ),
+        _mermaid_snippet(
+            "timeline",
+            "Timeline",
+            "timeline",
+            "    ${input:first period} : ${input:first event}\n    ${cursor}",
         ),
     ],
 }

@@ -11,6 +11,7 @@ from pathlib import Path
 
 from quill.core.inline_notes_file import NOTE_LINE_MARK, mark_notes_for_render
 from quill.core.markdown_breaks import line_ends_with_hard_break, strip_hard_break
+from quill.core.math.preview_math import protect_math, restore_math
 from quill.core.navigation import previous_heading_start
 from quill.core.task_lists import task_item_html
 
@@ -161,7 +162,12 @@ def render_preview_body(
     if kind in {"markdown", "html"} and "quill-note:" in text:
         text = mark_notes_for_render(text, kind, notes)
     if kind == "markdown":
-        return _maybe_dark(_render_markdown(text, source_map=source_map), dark)
+        if not contains_math(text):
+            return _maybe_dark(_render_markdown(text, source_map=source_map), dark)
+        # Math as MathML: nothing fetched, and read by the screen reader itself.
+        math = protect_math(text)
+        rendered = _render_markdown(math.text, source_map=source_map)
+        return _maybe_dark(restore_math(rendered, math), dark)
     if kind == "html":
         return _maybe_dark(_render_html(text), dark)
     return _maybe_dark(f"<pre>{html.escape(text)}</pre>", dark)
@@ -258,9 +264,6 @@ def render_preview_html(title: str, text: str, kind: str, start_anchor: str | No
         "th,td{border-color:#555;}"
         "}"
         "</style>"
-        # Only pull the remote MathJax CDN when the document actually has math,
-        # so a plain document makes no third-party network request on preview.
-        f"{_MATHJAX_SCRIPT if contains_math(text) else ''}"
         f"{anchor_script}</head><body>{body}</body></html>"
     )
 
@@ -342,19 +345,14 @@ def _slugify(value: str) -> str:
     return normalized or "preview"
 
 
-# MathJax's default delimiters: ``\( \)`` inline, ``$$`` and ``\[ \]`` display,
-# plus a fenced ```` ```math ```` block. Detecting these lets the preview and HTML
-# export gate the remote MathJax CDN include on a document actually containing
-# math, so a doc with none never triggers the network fetch (privacy/egress).
+# TeX math delimiters: ``\( \)`` inline, ``$$`` and ``\[ \]`` display, plus a
+# fenced ```` ```math ```` block. A document with none skips the MathML pass
+# (quill.core.math.preview_math) entirely.
 _MATH_DELIMITERS_RE = re.compile(r"\\\(|\\\[|\$\$|`{3,}\s*math|~{3,}\s*math", re.IGNORECASE)
-
-_MATHJAX_SCRIPT = (
-    '<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>'
-)
 
 
 def contains_math(text: str) -> bool:
-    """Return ``True`` when *text* contains TeX math MathJax would render."""
+    """Return ``True`` when *text* contains TeX math the renderer turns into MathML."""
     return bool(_MATH_DELIMITERS_RE.search(text))
 
 

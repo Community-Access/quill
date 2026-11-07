@@ -683,8 +683,10 @@ text you have selected, and that is saved in the file.</p>
 in numbers</h3>
 <ul>
 <li><strong>Document Statistics</strong> (<strong>Ctrl+Shift+G</strong>)
-tells you the size of the whole document: characters, words, lines and
-paragraphs.</li>
+tells you the size of the whole document, or of the selection: words,
+lines and characters. Press it twice quickly to add paragraphs,
+sentences, long sentences, the reading time and the reading grade.
+Chapter 8 has the details.</li>
 <li><strong>Line Statistics</strong> (<strong>Ctrl+Alt+W</strong>) tells
 you about line widths. It is useful when you are writing to fit
 something, like a braille display, a narrow window, or a line limit in
@@ -740,6 +742,42 @@ three, turn it on in <strong>Tools &gt; Customize Features</strong>
 <p>Headings only show up here in a <strong>rich text</strong> document.
 In a Markdown or HTML file, use the headings list on Ctrl+Alt+L
 instead.</p>
+<h3 id="saying-more-in-one-search">Saying more in one search</h3>
+<p>Start a Go To Anything search with <code>#</code> to see headings
+only, or <code>&gt;</code> to see commands only. The search box, and the
+other lists you narrow by typing, also understand a few characters that
+let one search say more:</p>
+<ul>
+<li><strong>Words</strong> match anywhere in a row, and capitals do not
+matter.</li>
+<li><strong><code>&amp;</code></strong> needs both words:
+<code>#budget &amp; 2026</code> finds only headings with both. Two words
+side by side mean the same, so <code>budget 2026 !draft</code> is
+“budget and 2026 and not draft”.</li>
+<li><strong><code>|</code></strong> takes either:
+<code>#introduction | summary</code> lists both kinds of heading.</li>
+<li><strong><code>!</code></strong> leaves a word out:
+<code>#chapter !draft</code> skips the drafts.</li>
+<li><strong><code>*</code></strong> stands for any run of letters inside
+a word, and <strong><code>?</code></strong> for exactly one:
+<code>#chap*</code> finds Chapter and Chapters. Neither reaches past a
+space.</li>
+<li><strong>Double quotes</strong> match exact text, spaces and all:
+<code>#"to do"</code>.</li>
+</ul>
+<p><code>!</code> is read first, then <code>&amp;</code>, then
+<code>|</code>, so <code>draft | notes !old</code> means “draft, or
+notes that are not old”. A search with none of these characters works
+exactly as before, and a half-finished one such as <code>notes |</code>
+is just read as <code>notes</code> until you type the next word.</p>
+<p>The same rules work in <strong>Insert &gt; Markdown Tag…</strong>
+(<strong>Ctrl+Alt+I</strong>), <strong>Insert &gt; HTML Tag…</strong>
+(<strong>Ctrl+Alt+O</strong>), where <code>h? !h1</code> lists every
+heading tag except the top one, and in both lists of <strong>Move
+Section To…</strong> (<strong>Ctrl+Alt+Shift+F5</strong>). The
+<strong>File pattern</strong> of Search in Files takes them too; chapter
+4 has the details. Press <strong>F1</strong> in any of these search
+boxes to hear a short reminder.</p>
 <h2 id="what-you-learned-and-where-to-go-next">What you learned, and
 where to go next</h2>
 <p>Your documents share one window, and each has a number, so

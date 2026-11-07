@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 558.
+Editor commands with default bindings: 565.
 
 ## The QUILL editor
 
@@ -227,6 +227,8 @@ Editor commands with default bindings: 558.
 | Key | Command | Command id |
 | --- | --- | --- |
 | (unbound by default) | Go To Page... | `navigate.go_to_page` |
+| (unbound by default) | Next Block | `navigate.next_block` |
+| (unbound by default) | Previous Block | `navigate.previous_block` |
 | Alt+Down | Next Structure | `navigate.next_structure` |
 | Alt+Left | Back Location | `navigate.back_location` |
 | Alt+PageDown | Next Highlighted Passage | `navigate.next_highlight` |
@@ -234,10 +236,14 @@ Editor commands with default bindings: 558.
 | Alt+Right | Forward Location | `navigate.forward_location` |
 | Alt+Shift+G or Ctrl+Shift+F5 | List Bookmarks... | `navigate.list_bookmarks` |
 | Alt+Shift+O | Heading Organizer... | `navigate.heading_organizer` |
+| Alt+Shift+PageDown | Next Indent Change | `navigate.next_indent` |
+| Alt+Shift+PageUp | Previous Indent Change | `navigate.previous_indent` |
 | Alt+Shift+Space | Say Time and Date | `navigate.say_time` |
 | Alt+Shift+[ | Previous Fold | `navigate.previous_fold` |
 | Alt+Shift+] | Next Fold | `navigate.next_fold` |
 | Alt+Up | Previous Structure | `navigate.previous_structure` |
+| Ctrl+Alt+, | Previous Problem | `navigate.previous_problem` |
+| Ctrl+Alt+. | Next Problem | `navigate.next_problem` |
 | Ctrl+Alt+B | Clear All Bookmarks | `navigate.clear_numbered_bookmarks` |
 | Ctrl+Alt+F6 | Set Document Language... | `navigate.set_language` |
 | Ctrl+Alt+H | Next Heading | `navigate.next_heading` |
@@ -335,6 +341,7 @@ Editor commands with default bindings: 558.
 | Ctrl+7 | Prompt Library... | `tools.hosted_ai_prompt_library` |
 | Ctrl+8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+9 | Web Searches Left | `tools.hosted_ai_web_searches` |
+| Ctrl+Alt+/ | Check This File... | `tools.check_this_file` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
 | Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
 | Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |

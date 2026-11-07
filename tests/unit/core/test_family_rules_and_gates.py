@@ -222,6 +222,11 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "help.whats_new": "Reached another way: Help > What's New, in both editors. No chord "
     "is free in both -- Ctrl+Shift+F1, the standalone apps' What's New, is the User "
     "Guide here -- and rule 9 asks a once-per-update read for a way in, not a chord.",
+    **{
+        command: "Reached another way: Quick Nav's Tab and Shift+Tab, and Navigate > Code in "
+        "both editors. No chord near them is free in both, and the Keyboard Manager binds one."
+        for command in ("navigate.next_block", "navigate.previous_block")
+    },
 }
 
 

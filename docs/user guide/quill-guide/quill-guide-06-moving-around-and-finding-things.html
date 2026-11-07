@@ -278,6 +278,19 @@ Expression Helper (<strong>Tools &gt; Advanced &gt; Regular Expression
 Helper…</strong>) explains the syntax when you need it. QUILL also keeps
 your search history, so a search you run often is there waiting for you
 next time.</p>
+<p><strong>What you type in Replace with is what goes in.</strong>
+Unless you are searching with a regular expression, the Replace box is
+taken exactly as typed, in plain and wildcard searches alike. A
+backslash is just a backslash: replacing a folder name with
+<code>C:\new\reports</code> puts exactly that into every match, and
+<code>\1</code> goes in as the two characters you typed. With a regular
+expression, <strong>Replace All</strong> (<code>Ctrl+Shift+Grave</code>
+then <code>X</code>) and <strong>Edit &gt; Replace Across
+Files…</strong> (<code>Ctrl+Shift+R</code>) can refer back to the match:
+<code>\1</code> is the first part you wrapped in brackets and
+<code>\2</code> the second, so searching for <code>(\w+), (\w+)</code>
+and replacing all with <code>\2 \1</code> turns “Bishop, Jeff” into
+“Jeff Bishop”.</p>
 <h3 id="searching-a-whole-folder-of-files">Searching a whole folder of
 files</h3>
 <p>QUILL no longer has a top-level Search menu. Its commands now live on
@@ -312,6 +325,19 @@ lines around it. Replace Across Files adds a
 <strong>Replacement</strong> box and <strong>Preview before
 replacing</strong>, which shows you every change in a tab of its own and
 asks before it writes anything.</p>
+<p>The <strong>File pattern</strong> can name more than one kind of
+file. Put <code>|</code> between two patterns to take either,
+<code>&amp;</code> to need both, and <code>!</code> before one to leave
+it out; double quotes around a name mean that one exact file.
+<code>*.md | *.txt</code> searches your Markdown and text files
+together, <code>* !*.bak</code> searches everything except backups, and
+<code>*.md !drafts/*</code> skips the Markdown files in a
+<code>drafts</code> folder (a pattern with a slash is matched against
+the path inside the starting folder). Capitals do not matter. A pattern
+without <code>|</code>, <code>&amp;</code>, <code>!</code> or quotes,
+such as <code>*.md</code>, works exactly as before. These rules apply
+only to the file pattern: the <strong>Search text</strong> still follows
+the Match mode you chose.</p>
 <p><strong>An example.</strong> You want every note in your
 <code>Clients</code> folder that mentions Rosa Diaz. Press
 <code>Ctrl+Alt+Shift+F</code>, check that the starting folder is
@@ -443,6 +469,57 @@ takes you forward again.</p>
 <li><strong>Forward Location</strong>: <code>Alt+Right</code> on
 Windows, <code>Cmd+]</code> on macOS.</li>
 </ul>
+<h3 id="searching-a-list-with-more-than-one-word">Searching a list with
+more than one word</h3>
+<p>Go to Anything is one search box for the headings in your document
+and every command. It has no menu row of its own: press
+<code>Ctrl+Alt+Shift+A</code>, or type “go to anything” in the Command
+Palette. Start your search with <code>#</code> to see headings only, or
+<code>&gt;</code> to see commands only. Type part of a heading and the
+list narrows as you type; arrow to the one you want and press Enter to
+go there. QUILL says how many results there are and which is on top, for
+example “3 result(s). Top: [heading] Chapter two”.</p>
+<p>That box, and every other list in QUILL that you narrow by typing,
+understands a few characters that let one search say more:</p>
+<ul>
+<li><strong>Words</strong> match anywhere in a row, and capitals do not
+matter, just as before.</li>
+<li><strong><code>&amp;</code></strong> needs both words:
+<code>#budget &amp; 2026</code> finds only headings with both. Two words
+side by side mean the same thing, so a search with an operator in it
+reads <code>budget 2026 !draft</code> as “budget and 2026 and not
+draft”.</li>
+<li><strong><code>|</code></strong> takes either:
+<code>#introduction | summary</code> lists both kinds of heading at
+once.</li>
+<li><strong><code>!</code></strong> leaves a word out:
+<code>#chapter !draft</code> finds every chapter except the drafts.</li>
+<li><strong><code>*</code></strong> stands for any run of letters inside
+a word, and <strong><code>?</code></strong> for exactly one:
+<code>#chap*</code> finds Chapter and Chapters, and <code>#r?ad</code>
+finds read and road. Neither reaches past a space.</li>
+<li><strong>Double quotes</strong> match exact text, spaces included,
+with nothing inside taken as an operator: <code>#"to do"</code> finds
+“To do this week” but not “Do this today too”.</li>
+</ul>
+<p><code>!</code> is read first, then <code>&amp;</code>, then
+<code>|</code>, so <code>#draft | notes !old</code> means “draft, or
+notes that are not old”. A search with none of these characters works
+exactly as it always has, so nothing you already type changes. You never
+get an error for a half-finished search: <code>#notes |</code> is simply
+read as <code>#notes</code> until you type the next word.</p>
+<p>The same rules work in <strong>Insert Snippet</strong>,
+<strong>Insert HTML Tag</strong>, <strong>Insert Markdown Tag</strong>,
+both lists of <strong>Move Section To</strong>
+(<code>Ctrl+Alt+Shift+F5</code>), the abbreviation manager and the Copy
+Tray search. In Insert HTML Tag, for example, <code>h? !h1</code> lists
+every heading tag except the top one. The <strong>File pattern</strong>
+of Search in Files takes them too, described in “Searching a whole
+folder of files” above. Press <code>F1</code> in any of those search
+boxes to hear a short reminder of the rules. The Command Palette
+(<code>Ctrl+Shift+P</code>) keeps its own looser search and its
+<code>:</code>, <code>?</code> and <code>~</code> prefixes, and so do
+those prefixes in Go to Anything.</p>
 <h3 id="moving-by-heading-and-structure">Moving by heading and
 structure</h3>
 <p>Headings are the table of contents of a document, and moving by them
@@ -470,7 +547,11 @@ lists the document’s outline so you can jump to any part of it.</li>
 for changing heading levels, moving whole sections, and checking that
 your headings are in a sensible order.</li>
 <li><strong>Next Block</strong> and <strong>Previous Block</strong> move
-by block.</li>
+by block. In prose a block is a paragraph. In code it is whatever that
+language is built from, so you jump from one function to the next and
+hear its first line; see <a href="#moving-by-block-in-code">Moving by
+block in code</a>. They are also on <strong>Navigate &gt;
+Code</strong>.</li>
 <li><strong>Match Bracket</strong> (<code>Ctrl+Shift+\</code>) jumps to
 the bracket that pairs with the one at the cursor.</li>
 <li><strong>First Non-Blank</strong> and <strong>Last Non-Blank</strong>
@@ -1031,6 +1112,17 @@ passage’s words, that passage is left out rather than guessed at.</li>
 (<code>Ctrl+Shift+D</code>) now also names the highlight in a rich
 document: “Calibri, 11 point, yellow highlight”. Before this it said
 nothing about highlighting there.</p>
+<p>It names the <strong>text colour</strong> too, just before the
+highlight: red text on a yellow highlight reads “Calibri, 11 point, red,
+yellow highlight”. A colour you chose from <strong>Format &gt; Text
+Color</strong> comes back under the name you chose it by, so green is
+“green” and orange is “orange”. Any other colour, such as one that came
+in with a Word document, is named after the nearest colour in the list
+below, so you hear a word rather than a number. Text nobody has
+coloured, plain black, and the light text a dark theme paints on the
+page say nothing about colour at all, which keeps the description short
+for ordinary body text. QUILL Lite gives the same answer, from the same
+code, on the same key.</p>
 <p><strong>Colours.</strong> QUILL knows all fifteen of Word’s highlight
 colours by name: yellow, green, turquoise, pink, blue, red and gray, and
 the darker dark blue, teal, dark green, violet, dark red, dark yellow,
@@ -1269,10 +1361,11 @@ here; they stay yours.</p>
 <h3 id="code-aware-editing">Code-aware editing</h3>
 <p>When you open a source file, QUILL loads a language profile based on
 the file extension. It knows HTML, Markdown, CSS, Python, JavaScript,
-TypeScript, C, C++, C#, PHP, Go, Rust, Kotlin, Shell, YAML, JSON, TOML
-and SQL, and treats anything else as plain text. The profile tells QUILL
-how the language is put together, so moving and announcements make sense
-for code.</p>
+TypeScript, C, C++, C#, Java, PHP, Go, Rust, Kotlin, Ruby, Perl, Shell,
+PowerShell, batch files, LaTeX, XML, YAML, JSON, TOML, INI, CSV and SQL,
+and treats anything else as plain text. The profile tells QUILL how the
+language is put together, so moving and announcements make sense for
+code.</p>
 <ul>
 <li><strong>Next Token</strong> and <strong>Previous Token</strong>, on
 the Navigate menu, move by code token instead of by word. You land on
@@ -1344,6 +1437,254 @@ real file extension or a language you set yourself. It also learns a
 little from the languages you use during a session. In every mode you
 either stay in control or hear what changed. Braille files and pasted
 braille are not affected, because braille has its own Braille Mode.</p>
+<h3 id="moving-by-block-in-code">Moving by block in code</h3>
+<p><strong>Next Block</strong> and <strong>Previous Block</strong> are
+on the Navigate menu and on <strong>Navigate &gt; Code</strong>. They
+have no key of their own, because every chord near them is already
+taken; in Quick Nav, <code>Tab</code> and <code>Shift+Tab</code> do the
+same thing, and you can give them a key in the Keyboard Manager.</p>
+<p>What a block is depends on the document’s language:</p>
+<ul>
+<li><strong>Python:</strong> each <code>def</code>,
+<code>async def</code> and <code>class</code>. A decorator counts as the
+start of the function it decorates.</li>
+<li><strong>C#, Java and Kotlin:</strong> class, interface, struct,
+enum, record and namespace declarations, and methods (a line with a
+modifier such as <code>public</code> or <code>static</code>, a name and
+an opening parenthesis).</li>
+<li><strong>JavaScript and TypeScript:</strong> functions, classes,
+functions assigned to a name
+(<code>const add = (a, b) =&gt; ...</code>), methods inside a class and,
+in TypeScript, interfaces, enums, namespaces and type aliases.</li>
+<li><strong>C and C++:</strong> function definitions at the left margin,
+and class, struct, union, enum and namespace blocks.</li>
+<li><strong>Go, Rust, PHP, Ruby, Perl, Shell, PowerShell and
+SQL:</strong> functions and the language’s type or package declarations
+(<code>func</code> and <code>type</code>; <code>fn</code>,
+<code>struct</code>, <code>impl</code> and <code>mod</code>;
+<code>sub</code> and <code>package</code>; <code>CREATE</code>,
+<code>ALTER</code> and <code>DROP</code>).</li>
+<li><strong>INI and TOML:</strong> each <code>[section]</code>, and
+TOML’s <code>[[array of tables]]</code>.</li>
+<li><strong>Batch files</strong> (<code>.bat</code> and
+<code>.cmd</code>): each <code>:label</code>. A line starting with
+<code>::</code> is a comment, not a label, and is skipped.</li>
+<li><strong>LaTeX:</strong> <code>\part</code>, <code>\chapter</code>,
+<code>\section</code>, <code>\subsection</code>,
+<code>\subsubsection</code> and <code>\paragraph</code>, starred or
+not.</li>
+<li><strong>HTML:</strong> headings, the landmark elements
+(<code>header</code>, <code>nav</code>, <code>main</code>,
+<code>aside</code>, <code>section</code>, <code>article</code>,
+<code>footer</code> and <code>form</code>), and any element with a
+landmark <code>role</code>.</li>
+<li><strong>Markdown, plain text and anything else:</strong> paragraphs,
+as before.</li>
+</ul>
+<p>When you land on a block in a language like these, QUILL says the
+line you landed on, such as “def save_file(path):, line 42”, so you know
+where you are without reading further. If a file has none of these at
+all, a Python script with no functions for instance, the commands fall
+back to moving by paragraph rather than doing nothing. The language is
+the one QUILL picked from the file extension, or the one you set with
+<strong>Set Document Language</strong>.</p>
+<h3 id="moving-by-indentation">Moving by indentation</h3>
+<p>In Python, YAML and any other indented text, the indentation is the
+structure. Two commands follow it:</p>
+<ul>
+<li><strong>Next Indent Change</strong>
+(<code>Alt+Shift+PageDown</code>) moves down to the next line whose
+indentation is different from the line you are on: the first line inside
+a block, or the first line after it.</li>
+<li><strong>Previous Indent Change</strong>
+(<code>Alt+Shift+PageUp</code>) does the same going up, which is how you
+get back to the <code>if</code> or <code>def</code> a block belongs
+to.</li>
+</ul>
+<p>Blank lines are skipped. The caret lands on the first character that
+is not a space, and you hear how the line is indented, for example “8
+spaces”, “1 tab” or “No indent”, followed by the line and column. A tab
+counts as the language’s indent width, so a tab and four spaces in a
+Python file are the same depth. At the top or bottom of the file you
+hear “No change of indent above” or “No change of indent below”. Both
+commands are on <strong>Navigate &gt; Code</strong>.</p>
+<h3 id="checking-a-file-for-problems">Checking a file for problems</h3>
+<p><strong>Check This File</strong> looks through the whole document for
+mistakes in how it is written, the kind that stop a program reading it:
+a missing comma in JSON, a tag that is never closed, a Python line that
+will not compile. It is on <strong>Navigate &gt; Code &gt; Check This
+File…</strong>, and its key is <code>Ctrl+Alt+/</code> (the
+question-mark key: “what is wrong here?”).</p>
+<p>If nothing is wrong you hear “No problems found.” Otherwise the
+<strong>Problems</strong> list opens. Its first line says how many there
+are, such as “3 problems: 2 errors, 1 warning”, and then each problem is
+one row, place first: “Line 12, column 5, error: Expecting ‘,’ delimiter
+(JSON)”. Arrow to one and press Enter to go straight to it, or press
+Escape to close the list where you are.</p>
+<p>You do not need the list to work through problems:</p>
+<ul>
+<li><strong>Next Problem</strong> (<code>Ctrl+Alt+.</code>) moves the
+caret to the next problem after it and says the problem, for example
+“Problem 2 of 3, line 12, column 5, error: Expecting ‘,’
+delimiter”.</li>
+<li><strong>Previous Problem</strong> (<code>Ctrl+Alt+,</code>) goes the
+other way.</li>
+</ul>
+<p>Both go round from the last problem to the first, and the numbers
+tell you when they have. If you have changed the document since the last
+check, they check again first, so the line numbers are always right. A
+code editor would use F8 for these, but in QUILL <code>F8</code> and
+<code>Shift+F8</code> are Word’s extend-selection keys, so the problem
+keys sit beside Compare’s next and previous difference keys instead. You
+can change all three in the Keyboard Manager.</p>
+<h4 id="what-quill-can-check">What QUILL can check</h4>
+<p>Some languages are checked by QUILL itself, with nothing else
+installed:</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>What is checked</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JSON</td>
+<td>That it reads as JSON</td>
+</tr>
+<tr>
+<td>JSON with comments</td>
+<td>The same, allowing <code>//</code> and <code>/* */</code> comments
+and trailing commas (<code>.jsonc</code>, and VS Code’s settings, tasks
+and <code>tsconfig.json</code> files)</td>
+</tr>
+<tr>
+<td>XML</td>
+<td>That it is well formed. Entity declarations are refused, not
+expanded</td>
+</tr>
+<tr>
+<td>HTML</td>
+<td>Tags closed in the wrong order or never closed, closing tags with
+nothing open, duplicate <code>id</code> values, and pictures without alt
+text</td>
+</tr>
+<tr>
+<td>TOML</td>
+<td>That it reads as TOML</td>
+</tr>
+<tr>
+<td>YAML</td>
+<td>That it reads as YAML</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>Syntax errors, mistakes Python finds when compiling (such as
+<code>return</code> outside a function), and warnings such as an invalid
+escape sequence. The code is never run</td>
+</tr>
+<tr>
+<td>INI and CFG</td>
+<td>Settings before any section, sections or settings given twice, and
+lines that are neither</td>
+</tr>
+<tr>
+<td>CSV</td>
+<td>Rows with a different number of fields from the first row, and badly
+placed quotes</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>Heading levels that skip, pictures without alt text, links with no
+text or no address, and relative links to files that are not there</td>
+</tr>
+</tbody>
+</table>
+<p>Other languages are checked with a tool you already have installed,
+if QUILL can find it on your PATH. QUILL never downloads or installs
+one:</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Tool QUILL uses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JavaScript</td>
+<td>Node.js (<code>node --check</code>), and ESLint if you have it</td>
+</tr>
+<tr>
+<td>TypeScript</td>
+<td>The TypeScript compiler (<code>tsc --noEmit</code>), and ESLint if
+you have it</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>Ruff, if you have it, as well as the built-in check; this adds names
+that are never defined and imports that are never used</td>
+</tr>
+<tr>
+<td>PHP</td>
+<td><code>php -l</code></td>
+</tr>
+<tr>
+<td>Ruby</td>
+<td><code>ruby -c</code></td>
+</tr>
+<tr>
+<td>Perl</td>
+<td><code>perl -c</code></td>
+</tr>
+<tr>
+<td>Shell scripts</td>
+<td>ShellCheck</td>
+</tr>
+<tr>
+<td>C and C++</td>
+<td>GCC, or Clang if you do not have GCC
+(<code>-fsyntax-only</code>)</td>
+</tr>
+<tr>
+<td>Go</td>
+<td><code>gofmt -e</code></td>
+</tr>
+<tr>
+<td>Rust</td>
+<td><code>rustc</code>, which writes nothing you keep</td>
+</tr>
+<tr>
+<td>C#</td>
+<td><code>csc</code>, the C# compiler, for a single file. A whole
+project needs <code>dotnet build</code>, which QUILL does not run</td>
+</tr>
+<tr>
+<td>XML</td>
+<td><code>xmllint</code>, as well as the built-in check</td>
+</tr>
+</tbody>
+</table>
+<p>When a language needs a tool and none is installed, you hear “No
+checker installed for Ruby” (or whichever language it is). When QUILL
+has its own check for a language, that check always runs, tool or
+not.</p>
+<p>A few things are worth knowing about the tools:</p>
+<ul>
+<li>They run on your computer only. Nothing is sent anywhere.</li>
+<li>QUILL checks what is in the window, not what is on disk. If the
+document is unsaved or changed, QUILL checks a temporary copy with the
+same name, then deletes it.</li>
+<li>Each tool runs in the file’s own folder, so it finds your project’s
+settings the way it would from a command prompt.</li>
+<li>A tool gets 15 seconds. If it takes longer it is stopped, and you
+hear that it was. While a tool runs you hear “Checking this file”, and
+QUILL stays usable.</li>
+<li><code>perl -c</code> runs a script’s <code>BEGIN</code> blocks and
+<code>use</code> statements, as it always does, and ESLint loads your
+project’s ESLint configuration, which is itself JavaScript. Only check
+files you trust with those two.</li>
+</ul>
 <h3 id="abbreviation-expansion">Abbreviation expansion</h3>
 <p>If you write HTML or CSS, three commands on the <strong>Edit</strong>
 menu turn short Emmet-style abbreviations into full markup. You can type
