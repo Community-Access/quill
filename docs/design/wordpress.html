@@ -5833,8 +5833,10 @@ secrets stay in WordPress</td>
 </tr>
 <tr>
 <td>Stripe, PayPal, payment fields</td>
-<td><strong>No.</strong> Payment keys and settings stay in WordPress. A
-payment field shows as an island QUILL keeps intact</td>
+<td><strong>The form’s side only</strong> (2026-11-06/07): the payment
+field and the form’s payment settings, test mode first, under payment
+contract version 1. Keys, checkout and webhooks stay in WordPress
+(<code>forms-payments-design.md</code>)</td>
 <td>Never handle payment secrets</td>
 </tr>
 <tr>
@@ -7705,6 +7707,41 @@ in Node. Not tried in a real WordPress.</li>
 <li>QUILL’s side of the rename follows in a pull request after
 #1762.</li>
 </ul>
+<h3 id="2026-11-07-payments-both-sides-contract-version-1">2026-11-07:
+payments, both sides (contract version 1)</h3>
+<ul>
+<li><strong>The plugin.</strong> New local branch
+<code>feat/qaf-payments</code> in the plugin repository (worktree
+<code>S:\wt\baf-payments</code>), cut from <code>chore/rename-qaf</code>
+beb3e2c; not pushed. <code>includes/payments/</code> implements every
+clause of <code>forms-payments-plugin-contract.md</code>: the readiness
+route (verified, not merely typed, keys and webhooks, per mode),
+validation in <code>QAF_Form::set_model</code> and again at checkout,
+server-side amounts in integer minor units (fixed, donation with bounds,
+number fields, totals from products, linked quantities, coupons,
+shipping, tax and calculations), Stripe Payment Intents and PayPal
+Orders v2 with idempotency keys, verified webhooks recorded once and
+applied through a transition table with compare-and-set writes,
+<code>qaf_payment_paid</code> once per entry, the entries’
+<code>payment</code> object, and QAF Forms &gt; Payments in wp-admin
+(write-only secrets, test and live mode, Check Connection, Create
+Webhook, a report with totals). Its admin guide is
+<code>docs/payments-admin-guide.md</code> there.</li>
+<li><strong>The desktop.</strong> The rest of the payment plan that fits
+the boundary in <code>forms-payments-design.md</code>: Test on Site says
+the test card or sandbox account; Insert Payment Field lists the form’s
+amount fields; the plugin’s precision and statement-descriptor rules are
+checked before publishing; Responses say payments in words; redaction
+covers <code>rk_live_</code>, <code>rk_test_</code>, <code>whsec_</code>
+and PayPal tokens.</li>
+<li><strong>Docs.</strong> “Taking payments with your forms”, Chapter 18
+of QUILL’s guide and Chapter 16 of QUILL Lite’s; the Forms chapters
+point to it.</li>
+<li>Checked: the plugin’s 103 payment tests, run under a stand-in for
+PHPUnit because this machine has PHP 8.1 and no PHPUnit or Composer; the
+plugin’s 476 Node conformance checks. Not tried in a real WordPress, nor
+against Stripe’s or PayPal’s sandboxes.</li>
+</ul>
 <h2 id="19-remaining-tasks">19. Remaining tasks</h2>
 <p><strong>wp-admin parity (9.18), Jeff 2026-11-04, “we should have all
 of this”:</strong></p>
@@ -7775,6 +7812,13 @@ rewriting conditions); the QAF rename on both sides <em>(in
 progress)</em>. <strong>Waiting on Jeff:</strong> the BAF changes tried
 in a real WordPress with NVDA and JAWS (this machine has no
 WordPress).</p></li>
+<li><p><strong>Payments, waiting on Jeff:</strong> the plugin’s
+<code>feat/qaf-payments</code> run with real PHPUnit and the WordPress
+test suite; installed on a test site with Stripe test keys and a PayPal
+sandbox app; and the live checks in
+<code>docs/qa/forms-payments-acceptance.md</code>, including a
+screen-reader pass through Stripe’s Payment Element and PayPal’s
+buttons. Pushing the branch is his call.</p></li>
 <li><p><strong>Waiting on Jeff:</strong> the three questions in 17a.13
 (the file extension, answered in 17a.17: <code>.qaf</code>; the shared
 conformance suite, built in BAF’s repository so either answer works;

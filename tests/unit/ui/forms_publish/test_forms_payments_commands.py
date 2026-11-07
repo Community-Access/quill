@@ -128,3 +128,69 @@ def test_published_live_form_never_opens_in_test_flow(
     fp.cmd_test_on_site()
     assert not pub_host.browsed
     assert "not in payment test mode" in pub_host.said
+
+
+def test_a_test_mode_payment_form_opens_with_the_test_card_said(
+    fp, pub_site, pub_dialogs, pub_host, make_form
+):
+    remote = add_payment(pub_host, test_mode=True)
+    fp.published().set_link(pub_host.path, pub.Link("radio", 12, "Fee", "now", "active"))
+    pub_site.on("GET", f"{QAF}/forms/12", make_form(config={"form_model": remote}))
+    pub_site.on(
+        "GET",
+        f"{QAF}/payments/settings",
+        {
+            "contract_version": 1,
+            "test_mode": True,
+            "providers": {"stripe": {"configured": True, "webhook_ready": True}},
+        },
+    )
+    page = {
+        "id": 5,
+        "link": "https://radio.example/fee/",
+        "status": "publish",
+        "title": {"raw": "Fee"},
+        "content": {"raw": '<!-- wp:qaf/form {"formId":12} /-->'},
+    }
+    pub_site.on("GET", "/wp-json/wp/v2/pages", [page])
+    pub_site.on("GET", "/wp-json/wp/v2/posts", [])
+    pub_dialogs.answer("confirm", True)
+    fp.cmd_test_on_site()
+    assert pub_host.browsed == ["https://radio.example/fee/"]
+    assert "4242 4242 4242 4242" in pub_host.said
+    assert "Never a real card" in pub_host.said
+    assert "PayPal" not in pub_host.said, "the form offers Stripe only"
+
+
+def test_insert_payment_names_the_forms_amount_fields(payments, pub_host, monkeypatch):
+    from quill.ui import wordpress_block_dialogs as dialogs
+
+    model = fd.read(pub_host.text).model
+    model["pages"][0]["items"].append({
+        "id": "order_total",
+        "type": "total",
+        "label": "Order total",
+    })
+    pub_host.text = fd.canonical(model)
+    seen = {}
+
+    def ask(*args, **kwargs):
+        seen.update({f.key: f.help for f in kwargs["fields"]})
+        return {"label": "Pay", "amount": "#order_total"}
+
+    monkeypatch.setattr(dialogs, "ask_fields", ask)
+    payments.cmd_insert_payment()
+    assert "#order_total (Order total)" in seen["amount"]
+    [entry] = P.payment_fields(fd.read(pub_host.text).model)
+    assert entry["item"]["props"]["amount"] == "#order_total"
+
+
+@pytest.mark.parametrize("amount", ["10.005", "0.001"])
+def test_an_amount_finer_than_cents_is_refused_before_the_site_sees_it(
+    payments, pub_host, monkeypatch, amount
+):
+    setup(monkeypatch, {"amount": amount})
+    before = pub_host.text
+    payments.cmd_insert_payment()
+    assert pub_host.text == before
+    assert "decimal places" in pub_host.said

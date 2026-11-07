@@ -28788,6 +28788,14 @@ commands of its own, and a test asserts it.</p>
 </tr>
 <tr>
 <td>Tools &gt; Forms</td>
+<td>Form Payments Setup…, Insert Payment Field…, Verify Payment
+Setup…</td>
+<td><code>forms.payments_setup</code>,
+<code>forms.insert_payment</code>,
+<code>forms.verify_payments</code></td>
+</tr>
+<tr>
+<td>Tools &gt; Forms</td>
 <td>Publish Form…, Insert Form Into Page…, Test on Site, Responses…</td>
 <td><code>forms.publish</code>, <code>forms.insert_into_page</code>,
 <code>forms.test_on_site</code>, <code>forms.responses</code></td>
@@ -28871,7 +28879,42 @@ Responses asks every time and gives the count.</li>
 <li><strong>Safe Mode</strong> turns off publishing, responses and the
 AI; writing, checking, Fill It In Yourself and exports still work.</li>
 <li><strong>Payment, CAPTCHA and address-lookup keys never reach
-QUILL.</strong> A payment field is an island.</li>
+QUILL.</strong> QUILL has no setting, store or route for one.</li>
+<li><strong>Payments (2026-11-07).</strong> A form takes a fixed amount,
+a donation with optional bounds, or the amount in a total, price,
+calculation, number or currency field, through Stripe, PayPal or both,
+with the QAF plugin doing the charging (payment contract version 1,
+<code>docs/design/forms-payments-plugin-contract.md</code>).
+<ul>
+<li>The configuration is <code>model.extensions.payments</code> and the
+payment field’s <code>props</code>; no new syntax and no schema change
+(<code>quill/core/forms/payments.py</code>). One payment field per form;
+providers ordered, Stripe first by default; test mode on by default.
+QUILL applies the plugin’s rules before it publishes, so the site’s
+refusals are rare: amounts by the currency’s decimal places (an amount
+finer than the currency is refused, never rounded) and the statement
+descriptor (5 to 22 printable ASCII characters with a letter).</li>
+<li>Insert Payment Field, Form Payments Setup and Verify Payment Setup
+are shared commands (<code>quill/ui/forms_payments_commands.py</code>),
+reached by QUILL Lite through the same handlers. Insert Payment Field
+names the form’s amount fields in its Amount help. Turning test mode off
+needs a second, explicit Use Live Mode.</li>
+<li>Publish Form names the payment mode, currency and providers in its
+confirmation and refuses, with a sentence per cause, a site without the
+contract, an unready provider or webhook, or a different test/live mode
+(<code>payment_site.require_ready</code>). Test on Site refuses a
+published form that is not in test mode and, when it opens one, says the
+providers’ published test card and sandbox account.</li>
+<li>Responses say each payment in words (“partly refunded”, “PayPal”);
+CSV keeps the plugin’s codes. Refresh Payment Status rereads the site
+after confirming it. Refunds and capture happen in the provider
+dashboards.</li>
+<li>Feature <code>core.forms_payments</code>, advanced, off in
+Essential; QUILL Lite follows its Forms area. Safe Mode turns off every
+payment network step.</li>
+<li>Taught in Chapter 18 of the QUILL guide and Chapter 16 of QUILL
+Lite’s, “Taking payments with your forms”.</li>
+</ul></li>
 </ul>
 <p><strong>Where it is taught.</strong> The guide WordPress and Forms in
 QUILL, the Forms chapters of both user guides, seven guided lessons in

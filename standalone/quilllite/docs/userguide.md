@@ -231,7 +231,24 @@ filling it in yourself before anyone else sees it. The full story is in the
 WordPress and Forms manual.
 
 - [Where everything is](guide/lite-guide-15-forms.html#where-everything-is)
+- [Payments and donations](guide/lite-guide-15-forms.html#payments-and-donations)
 - [Keys](guide/lite-guide-15-forms.html#keys)
+
+### [Chapter 16: Taking payments with your forms](guide/lite-guide-16-taking-payments.html)
+
+A form can take a fee, an order total or a donation through Stripe or PayPal.
+This chapter goes from what you need before you start to going live:
+test mode, adding a payment field, choosing providers, publishing and what
+each refusal means, what the person paying hears with a screen reader,
+receipts, refunds, and seeing who paid.
+
+- [What you need before you start](guide/lite-guide-16-taking-payments.html#what-you-need-before-you-start)
+- [Adding a payment field](guide/lite-guide-16-taking-payments.html#adding-a-payment-field)
+- [Publishing, and what each refusal means](guide/lite-guide-16-taking-payments.html#publishing-and-what-each-refusal-means)
+- [What the person paying hears and does](guide/lite-guide-16-taking-payments.html#what-the-person-paying-hears-and-does)
+- [Seeing who paid: Responses](guide/lite-guide-16-taking-payments.html#seeing-who-paid-responses)
+- [Moving from test to live](guide/lite-guide-16-taking-payments.html#moving-from-test-to-live)
+- [Troubleshooting](guide/lite-guide-16-taking-payments.html#troubleshooting)
 
 ## Reference
 

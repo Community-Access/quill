@@ -507,6 +507,32 @@ edit cannot keep, and the first rich save writes the backup. Before,
 those files opened with no warning and lost the header silently on save.
 Every section is checked (#1756).</li>
 </ul>
+<h3 id="taking-payments-with-your-forms-2026-11-07">Taking payments with
+your forms (2026-11-07)</h3>
+<ul>
+<li>A new chapter in both user guides, “Taking payments with your forms”
+(Chapter 18 in QUILL’s, Chapter 16 in QUILL Lite’s), goes through the
+whole process: what you need, test mode, the three kinds of amount,
+providers, publishing and what each refusal means, what the person
+paying hears with a screen reader, receipts, refunds, reporting and
+going live.</li>
+<li>Insert Payment Field’s Amount help lists the form’s own total, price
+and calculation fields, so you do not have to remember their ids.</li>
+<li>QUILL now refuses, before publishing, the two things the QAF plugin
+would refuse: an amount with more decimal places than its currency
+(10.005 dollars, 2000.5 yen), and a statement descriptor shorter than 5
+characters, with no letter, or with characters a card statement cannot
+print.</li>
+<li>Test on Site says the test card or sandbox account to use, for the
+providers the form offers, when it opens a test-mode payment form.</li>
+<li>Responses say payments in words (“partly refunded”, “PayPal”); CSV
+keeps the plugin’s codes.</li>
+<li>Diagnostics redact Stripe restricted keys and webhook signing
+secrets and PayPal access tokens, should a pasted site error ever carry
+one.</li>
+<li>The QAF plugin side of payment contract version 1 now exists on the
+plugin’s branch, not yet released or tried on a live site.</li>
+</ul>
 <h3 id="form-payment-authoring-and-reporting-2026-11-06">Form payment
 authoring and reporting (2026-11-06)</h3>
 <ul>

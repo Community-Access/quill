@@ -2620,7 +2620,7 @@ over everything from BAF that makes sense on a computer rather than a server
 | PDF from entries | **Yes:** through QUILL's own export of one response, or all of them | |
 | Email notifications, confirmations, redirects, submission limits, scheduling | **Yes, as form settings** in a Form Properties window, written to BAF | They are form settings, not code |
 | Webhooks, Google Sheets | **Settings only,** shown and edited by name; the secrets stay in WordPress | |
-| Stripe, PayPal, payment fields | **No.** Payment keys and settings stay in WordPress. A payment field shows as an island QUILL keeps intact | Never handle payment secrets |
+| Stripe, PayPal, payment fields | **The form's side only** (2026-11-06/07): the payment field and the form's payment settings, test mode first, under payment contract version 1. Keys, checkout and webhooks stay in WordPress (`forms-payments-design.md`) | Never handle payment secrets |
 | CAPTCHA, honeypot, rate limiting, CSRF | **No; server-side.** QUILL shows whether each is on, read-only | |
 | Google Places address autocomplete | **No; server-side** | It needs the site's key |
 | Drag-and-drop builder | **No.** The text document is the builder | |
@@ -4095,6 +4095,36 @@ request. Each entry says what is done and how it was checked.
   Node. Not tried in a real WordPress.
 - QUILL's side of the rename follows in a pull request after #1762.
 
+### 2026-11-07: payments, both sides (contract version 1)
+
+- **The plugin.** New local branch `feat/qaf-payments` in the plugin
+  repository (worktree `S:\wt\baf-payments`), cut from `chore/rename-qaf`
+  beb3e2c; not pushed. `includes/payments/` implements every clause of
+  `forms-payments-plugin-contract.md`: the readiness route (verified, not
+  merely typed, keys and webhooks, per mode), validation in
+  `QAF_Form::set_model` and again at checkout, server-side amounts in
+  integer minor units (fixed, donation with bounds, number fields, totals
+  from products, linked quantities, coupons, shipping, tax and
+  calculations), Stripe Payment Intents and PayPal Orders v2 with
+  idempotency keys, verified webhooks recorded once and applied through a
+  transition table with compare-and-set writes, `qaf_payment_paid` once per
+  entry, the entries' `payment` object, and QAF Forms > Payments in
+  wp-admin (write-only secrets, test and live mode, Check Connection, Create
+  Webhook, a report with totals). Its admin guide is
+  `docs/payments-admin-guide.md` there.
+- **The desktop.** The rest of the payment plan that fits the boundary in
+  `forms-payments-design.md`: Test on Site says the test card or sandbox
+  account; Insert Payment Field lists the form's amount fields; the plugin's
+  precision and statement-descriptor rules are checked before publishing;
+  Responses say payments in words; redaction covers `rk_live_`,
+  `rk_test_`, `whsec_` and PayPal tokens.
+- **Docs.** "Taking payments with your forms", Chapter 18 of QUILL's guide
+  and Chapter 16 of QUILL Lite's; the Forms chapters point to it.
+- Checked: the plugin's 103 payment tests, run under a stand-in for PHPUnit
+  because this machine has PHP 8.1 and no PHPUnit or Composer; the plugin's
+  476 Node conformance checks. Not tried in a real WordPress, nor against
+  Stripe's or PayPal's sandboxes.
+
 ## 19. Remaining tasks
 
 **wp-admin parity (9.18), Jeff 2026-11-04, "we should have all of this":**
@@ -4142,6 +4172,12 @@ built.
   conditions); the QAF rename on both sides *(in progress)*.
   **Waiting on Jeff:** the BAF changes tried in a real
   WordPress with NVDA and JAWS (this machine has no WordPress).
+- **Payments, waiting on Jeff:** the plugin's `feat/qaf-payments` run with
+  real PHPUnit and the WordPress test suite; installed on a test site with
+  Stripe test keys and a PayPal sandbox app; and the live checks in
+  `docs/qa/forms-payments-acceptance.md`, including a screen-reader pass
+  through Stripe's Payment Element and PayPal's buttons. Pushing the
+  branch is his call.
 
 - **Waiting on Jeff:** the three questions in 17a.13 (the file extension,
   answered in 17a.17: `.qaf`; the shared conformance
