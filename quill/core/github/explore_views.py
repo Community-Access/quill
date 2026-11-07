@@ -36,6 +36,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("pages", "GitHub Pages and builds"),
     ("discussions", "Repository Discussions"),
     ("security", "Repository security alerts"),
+    ("security_closed", "Dismissed and resolved security alerts"),
 )
 
 REPO_VIEWS = frozenset({
@@ -50,6 +51,7 @@ REPO_VIEWS = frozenset({
     "pages",
     "discussions",
     "security",
+    "security_closed",
 })
 PERSON_VIEWS = frozenset({
     "person_repos",

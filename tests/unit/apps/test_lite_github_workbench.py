@@ -14,6 +14,7 @@ def test_lite_github_workbench_uses_shared_viewer_and_closes_provider(monkeypatc
         app=SimpleNamespace(safe_mode=False),
         path=Path("notes.md"),
         _announce=lambda message: calls.append(("announce", message)),
+        _open_github_file_reference=lambda _url: None,
     )
 
     class _Provider:

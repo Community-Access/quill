@@ -414,6 +414,67 @@ status cannot be re-requested and QUILL says so. Each change asks first
 and reports GitHub’s confirmed result. Known refusals, such as
 auto-merge being turned off for the repository, are said as what to do
 next.</p>
+<h2 id="repository-files-blame-and-history">Repository files, blame and
+history</h2>
+<p><strong>Files</strong> (Alt+F) in Items, or <strong>Browse Repository
+Files</strong> on its context menu, opens Repository Files: a real tree
+of the repository at a branch, tag or commit typed or picked in
+<strong>Branch, tag or commit</strong> (Alt+B). Right arrow or Enter
+opens a folder (fetched the first time), Left closes it, and each file
+says its size. Enter on a file or <strong>View File</strong> (Alt+V)
+shows it read-only in <strong>Contents</strong>. <strong>Open in
+Editor</strong> (Alt+E) opens it for editing: QUILL uses the same path
+as a GitHub file link, so Save to GitHub works afterwards; QUILL Lite
+opens the text as a new untitled document. <strong>README</strong>
+(Alt+R) shows the selected folder’s or the repository’s README. Binary
+files and files over GitHub’s 1 MB contents limit say so instead of
+showing text.</p>
+<p><strong>History</strong> (Alt+H) lists the commits that changed the
+selected path. <strong>Blame</strong> (Alt+L) lists the file in runs,
+neighbouring ranges from one commit joined into one: “Lines 10 to 14:
+author, date, short SHA, commit title”. In both lists Alt+N and Alt+P
+move to the next and previous row from anywhere in the window, and Enter
+or <strong>Open Commit</strong> (Alt+O) opens the commit on GitHub.
+Blame uses GraphQL <code>blame(path:)</code> on the commit and needs a
+signed-in account.</p>
+<h2 id="milestones-and-batch-changes">Milestones and batch changes</h2>
+<p><strong>Milestones</strong> in Items (no access key; Tab to it, or
+use the context menu) lists milestones as words: “Release 2.0: 61
+percent done, 5 open, 8 closed, due 12 December”. <strong>Show</strong>
+(Alt+S) picks open, closed or all. <strong>New</strong> (Alt+N) and
+<strong>Edit</strong> (Alt+E) take a title, description and a
+year-month-day due date; <strong>Close Milestone</strong> or
+<strong>Reopen Milestone</strong> (Alt+L) asks first. Every change is
+reported from GitHub’s reply.</p>
+<p>The <strong>Batch</strong> menu adds <strong>Set milestone</strong>
+(the open milestones, or clear it) and <strong>Add assignees</strong>
+(usernames separated by commas) beside Close, Reopen and Add label. The
+confirmation names the items; the result counts what GitHub confirmed,
+and names anyone GitHub did not assign.</p>
+<h2 id="discussions-and-security-triage">Discussions and security
+triage</h2>
+<p>In Explore’s Discussions view, Enter (or <strong>Open Discussion
+Thread</strong> on the context menu) opens a thread window: the
+discussion, then each comment followed by its replies. It says “Answered
+by” and the name, and reads a poll one option to a line (“Option A: 12
+votes, 40 percent”). <strong>Reply</strong> (Alt+R) comments on the
+discussion or replies under the selected comment; <strong>Mark as
+Answer</strong> (Alt+M) marks or unmarks the selected comment after
+asking, when the category takes answers and GitHub says you may.
+<strong>New Discussion</strong> on the view’s context menu picks a
+category and takes a title and body.</p>
+<p>In the security views, <strong>Dismiss Alert</strong> on the context
+menu offers GitHub’s own reasons for that alert kind (Dependabot:
+<code>fix_started</code>, <code>inaccurate</code>,
+<code>no_bandwidth</code>, <code>not_used</code>,
+<code>tolerable_risk</code>; code scanning: <code>false positive</code>,
+<code>won't fix</code>, <code>used in tests</code>; secret scanning:
+<code>false_positive</code>, <code>wont_fix</code>,
+<code>revoked</code>, <code>used_in_tests</code>), an optional comment
+of up to 280 characters, and a confirmation. <strong>Dismissed and
+resolved security alerts</strong> is its own view, where <strong>Reopen
+Alert</strong> asks and then reopens. QUILL reports a change only when
+the alert’s new state comes back from GitHub.</p>
 <h2 id="line-comments-the-timeline-and-reactions">Line comments, the
 timeline and reactions</h2>
 <table>
@@ -508,7 +569,11 @@ each require a deliberate command and confirmation where appropriate.
 Actions are disabled if the PR is closed, the account is signed out, or
 GitHub denies that permission. If the review-thread state cannot be
 retrieved, threads remain readable while resolution controls are
-unavailable. Refresh to observe changes made elsewhere.</p>
+unavailable. Refresh to observe changes made elsewhere. If the review’s
+diff cannot be loaded, the threads and checks still appear and QUILL
+says “Could not load the diff” with the reason. A refresh that finishes
+after a newer one started is dropped, so it can never overwrite newer
+data.</p>
 <p>The Items <strong>Batch</strong> menu operates on checked issue or PR
 rows. Its confirmation names the targeted items. Repository deletion,
 visibility changes, merges, and branch deletion have stronger typed
@@ -530,9 +595,13 @@ use <code>saved_items.py</code>. Notifications triage is
 <code>explore_notifications.py</code>; the failure digest is
 <code>run_failure_digest.py</code>; run, check and deployment actions
 are <code>run_actions.py</code>; auto-merge and the merge queue are
-<code>merge_automation.py</code>. The REST calls PyGithub lacks go
-through <code>rest_transport.py</code>, which refuses redirects so the
-token stays on api.github.com. The shared UI modules are under
+<code>merge_automation.py</code>. Wave 3 adds <code>repo_files.py</code>
+(folders, files, README, history, blame), <code>milestones.py</code>,
+<code>discussion_actions.py</code>, <code>alert_triage.py</code> and
+<code>github_graphql.py</code>, whose GraphQL calls go through the same
+REST transport. The REST calls PyGithub lacks go through
+<code>rest_transport.py</code>, which refuses redirects so the token
+stays on api.github.com. The shared UI modules are under
 <code>quill/ui/</code>. Network calls are made off the UI thread. Tests
 exercise provider mapping, pagination, diff-line matching, redirect
 token handling, and action routing. Manual Windows screen-reader

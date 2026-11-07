@@ -32,6 +32,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.lite_github_open import GitHubFileOpenMixin  # GitHub Workbench's Open in Editor
 from quill.core.speakable import speakable_controls
 
 __all__ = ["NO_DOCUMENT_COMMANDS", "ShellMenuMixin"]
@@ -70,7 +71,7 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
 _SHELL_OWN = frozenset({"cmd_open"})
 
 
-class ShellMenuMixin:
+class ShellMenuMixin(GitHubFileOpenMixin):
     """The empty-window bar, and the few attributes its borrowed handlers read."""
 
     app: Any

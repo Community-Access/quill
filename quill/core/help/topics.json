@@ -1891,6 +1891,42 @@
     "user_guide_section": "auto-merge-and-the-merge-queue"
   },
   {
+    "id": "github.repository_files",
+    "title": "GitHub Repository Files",
+    "body": "In the GitHub Items viewer, Files (Alt+F, or Browse Repository Files on the list's context menu) shows the repository as a tree at any branch, tag or commit. Type or pick one in Branch, tag or commit (Alt+B) and press Enter. Right arrow or Enter opens a folder and Left closes it. Enter on a file, or View File (Alt+V), shows its text read-only in Contents. Open in Editor (Alt+E) opens it for editing: in QUILL through the same path as opening a GitHub file link, and in QUILL Lite as a new untitled document. README (Alt+R) shows the README of the selected folder or of the repository.",
+    "user_guide_section": "repository-files"
+  },
+  {
+    "id": "github.blame_and_history",
+    "title": "Blame and File History",
+    "body": "In Repository Files, History (Alt+H) lists the commits that changed the selected file or folder, newest first. Blame (Alt+L) lists the file in runs of lines, each read as Lines 10 to 14, then the author, date, short SHA and commit title. Alt+N and Alt+P move to the next and previous run from anywhere in the window, and Enter opens that commit on GitHub. Blame needs a signed-in account.",
+    "user_guide_section": "blame-and-file-history"
+  },
+  {
+    "id": "github.milestones",
+    "title": "GitHub Milestones",
+    "body": "Milestones in the GitHub Items viewer lists a repository's milestones, each read as one line such as Release 2.0: 61 percent done, 5 open, 8 closed, due 12 December. Show (Alt+S) picks open, closed or all. New (Alt+N) and Edit (Alt+E) take a title, a description and a due date typed as year-month-day; Close Milestone or Reopen Milestone (Alt+L) asks first. QUILL reports a change only once GitHub confirms it.",
+    "user_guide_section": "github-milestones"
+  },
+  {
+    "id": "github.batch_milestone_assignees",
+    "title": "Batch Milestone and Assignees",
+    "body": "In the GitHub Items viewer's Issues and PRs view, select several rows and open Batch (Alt+B). Beside Close, Reopen and Add Label are Set Milestone, which lists the open milestones and a choice to clear it, and Add Assignees, which takes usernames separated by commas. QUILL names the exact issues and asks first, then says how many GitHub confirmed and names anyone GitHub did not assign.",
+    "user_guide_section": "batch-operations"
+  },
+  {
+    "id": "github.discussion_threads",
+    "title": "GitHub Discussion Threads",
+    "body": "In Explore GitHub's Discussions view, Enter on a discussion (or Open Discussion Thread on the context menu) opens it as a thread: the discussion, then each comment followed by its replies. It says Answered by and the name when there is an answer, and reads a poll as text, one option to a line with its votes and percent. Reply (Alt+R) answers the discussion or the selected comment. Mark as Answer (Alt+M) marks the selected comment as the answer, or unmarks it, after asking. New Discussion on the context menu starts one in a category you choose.",
+    "user_guide_section": "discussion-threads"
+  },
+  {
+    "id": "github.security_alert_triage",
+    "title": "Security Alert Triage",
+    "body": "In Explore GitHub's Repository security alerts view, Dismiss Alert on the context menu asks why, offering GitHub's own reasons for that kind of alert: Dependabot, code scanning or secret scanning. Then it takes an optional comment and asks you to confirm. The Dismissed and resolved security alerts view lists closed alerts, and Reopen Alert there opens one again after asking. QUILL reports the change only when GitHub's reply shows it.",
+    "user_guide_section": "security-alert-triage"
+  },
+  {
     "id": "github.line_comments",
     "title": "Line Comments on a Pull Request",
     "body": "In a pull request's diff, Patch lines lists the selected file's changes one line per row. Comment on This Line (Alt+L) or Comment on Lines (Alt+S, for a selected run or a start and end you type) opens the comment. Suggest a Change (Alt+S in the comment) writes a suggestion block holding the lines' text for you to edit. Add to Review (Alt+A) keeps it on this device until Compose Review sends it with your review; Post Now (Alt+P) posts it on its own. Line marks (Alt+M) reads lines as words or symbols; symbols need punctuation reading on. Copy Diff (Alt+C) and Open Diff in Default App (Alt+O) hand over the whole pull request as a .diff.",

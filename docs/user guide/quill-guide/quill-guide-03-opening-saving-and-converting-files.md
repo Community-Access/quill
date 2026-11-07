@@ -1761,11 +1761,71 @@ it. Comment details read the counts in words, such as "Reactions: 3 thumbs up,
 #### Batch operations
 
 The list lets you select several rows: hold Shift or Ctrl to select issues or
-pull requests, then press **Batch...** and choose Close, Reopen or Add label.
-You must be signed in, because browsing without an account only ever reads. A
+pull requests, then press **Batch...** and choose Close, Reopen, Add label,
+**Set milestone** or **Add assignees**. Set milestone lists the repository's
+open milestones, with a last choice to clear the milestone. Add assignees takes
+GitHub usernames separated by commas; GitHub quietly skips anyone who can't be
+assigned in that repository, so QUILL checks each reply and names them. You must
+be signed in, because browsing without an account only ever reads. A
 confirmation names the exact action and the exact item numbers, and nothing
 changes on GitHub until you confirm. If some items fail, QUILL tells you which,
 and the rest still go through.
+
+#### Repository files
+
+**Files...** (`Alt+F`) in the GitHub Items viewer, or **Browse Repository
+Files...** on the list's context menu, opens the repository as a tree. It starts
+on the default branch, or on the branch whose commits you are looking at. To see
+another version, type a branch, a tag or a commit SHA in **Branch, tag or
+commit** (`Alt+B`), or pick a branch or tag from its list, and press Enter.
+
+- In the tree, Right arrow or Enter opens a folder and Left closes it. Each file
+  says its size. QUILL fetches a folder the first time you open it.
+- Enter on a file, or **View File** (`Alt+V`), shows its text read-only in
+  **Contents**, where you can arrow through it and copy from it.
+- **Open in Editor** (`Alt+E`) opens the file for editing, the same way as
+  **File > Open from Remote > GitHub File URL...**, so
+  **File > Open from Remote > Save to GitHub...** works on it afterwards.
+- **README** (`Alt+R`) shows the README of the selected folder, or of the
+  repository when nothing is selected, in **Contents**.
+- **History...** (`Alt+H`) and **Blame...** (`Alt+L`) are described next.
+
+A binary file, or one larger than the 1 MB GitHub sends this way, says so
+instead of showing text; open it on GitHub.
+
+#### Blame and file history
+
+**History...** in Repository Files lists the commits that changed the selected
+file or folder, newest first. Each reads as the commit title, then the author,
+the date and the short SHA.
+
+**Blame...** shows who last changed each part of the selected file. GitHub
+reports blame in small ranges, and QUILL joins neighbouring ranges from the same
+commit into one run, so each line of the list reads like "Lines 10 to 14: Jeff
+Bishop, 3 November, 1a2b3c4, Fix the diff". `Alt+N` and `Alt+P` move to the
+next and previous run from anywhere in the window, so you can stay in
+**Details** and still step through the file. Enter on a run, or **Open Commit**
+(`Alt+O`), opens that commit on GitHub. Blame needs you to be signed in, because
+GitHub only answers it for an account.
+
+#### GitHub milestones
+
+**Milestones...** in the GitHub Items viewer (it has no access key, so Tab to it
+or use **Milestones...** on the list's context menu) lists a repository's
+milestones. Each reads as one line, such as "Release 2.0: 61 percent done, 5
+open, 8 closed, due 12 December". The percentage is rounded down, the way GitHub
+shows it, and the year is said only when it is not this year.
+
+- **Show** (`Alt+S`) picks open, closed or all milestones.
+- **New...** (`Alt+N`) and **Edit...** (`Alt+E`) take a title, a description
+  and a due date typed as year-month-day, such as 2026-12-12. Leave the date
+  empty for none.
+- **Close Milestone...** (`Alt+L`) asks first and then closes it. On a closed
+  milestone the same button is **Reopen Milestone...**.
+- Enter on a milestone, or **Open on GitHub** (`Alt+O`), opens its page.
+
+To put issues in a milestone, select them in the list and use **Batch... > Set
+milestone**, described under Batch operations above.
 
 #### Keys in the Items viewer
 
@@ -1925,6 +1985,43 @@ read, then why you got it in words ("review requested", "you were mentioned",
 GitHub asks apps not to check notifications more often than it says, usually
 once a minute. If you refresh sooner, QUILL keeps the list it has and tells you
 how many seconds to wait.
+
+#### Discussion threads
+
+In **Explore...**, the **Repository Discussions** view lists a repository's
+discussions. Enter on one, or **Open Discussion Thread...** on the context
+menu, opens it as a thread. The first row is the discussion itself; then come
+its comments, each followed by its replies. The text box reads whichever row is
+selected. The discussion row says "Answered by" and the name when someone's
+comment is the answer, and reads a poll as text, one option to a line, such as
+"Option A: 12 votes, 40 percent".
+
+- **Reply...** (`Alt+R`) on the discussion row adds a comment. On a comment or a
+  reply it replies under that comment, since GitHub nests replies one level deep.
+- **Mark as Answer...** (`Alt+M`) marks the selected comment as the answer, in a
+  category that takes answers, after asking. On the answer it reads **Unmark
+  Answer...** and takes it back.
+- **New Discussion...** on the context menu in the Discussions view asks for a
+  category, a title and a body, then starts the discussion.
+
+QUILL reports each change only when GitHub's reply shows it, and when GitHub
+refuses (a locked discussion, say), QUILL says why.
+
+#### Security alert triage
+
+The **Repository security alerts** view in **Explore...** lists open Dependabot,
+code-scanning and secret-scanning alerts. **Dismiss Alert...** on an alert's
+context menu asks why, offering GitHub's own reasons for that kind of alert.
+For Dependabot those are that a fix has already started, the alert is
+inaccurate, there is no time to fix it, the vulnerable code is not used, or the
+risk is tolerable. Code scanning offers false positive, won't fix and used in
+tests. Secret scanning offers false positive, won't fix, revoked and used in
+tests. Then you can add a comment of up to 280 characters, and QUILL asks you to
+confirm before it sends anything.
+
+The **Dismissed and resolved security alerts** view lists the closed ones, with
+who closed them and why. **Reopen Alert...** there opens one again after asking.
+Secret values are never read: QUILL asks GitHub to leave them out.
 
 #### Codespaces
 
