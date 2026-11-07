@@ -47,7 +47,9 @@ def _self_attributes(fn: ast.FunctionDef) -> set[str]:
 
 
 def _shell_provides() -> set[str]:
-    return {name for name in vars(ShellMenuMixin) if not name.startswith("__")} | {"app"}
+    # Inherited mixins count: the shell has every method on its ancestors too.
+    owners = [cls for cls in ShellMenuMixin.__mro__ if cls is not object]
+    return {name for cls in owners for name in vars(cls) if not name.startswith("__")} | {"app"}
 
 
 def test_every_borrowed_handler_reads_only_what_the_shell_has() -> None:
