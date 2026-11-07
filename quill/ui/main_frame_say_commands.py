@@ -179,7 +179,10 @@ class SayCommandsAdapterMixin(SayCommandsMixin):
             label = wx.StaticText(dialog, label="Clipboard &text:")
             sizer.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
             field = wx.TextCtrl(
-                dialog, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL
+                dialog,
+                value=text,
+                style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL,
+                name="Clipboard text",
             )
             field.SetHelpText(
                 "What is on the clipboard, to read with the arrow keys. Nothing here "
