@@ -2,6 +2,37 @@
 
 ## 1.0.0
 
+### GitHub search, releases, housekeeping and rate limits (2026-11-07)
+
+- **Search beyond issues.** Explore has Code search, Commit search and
+  Repository search. A code result reads as the path, the matching line and the
+  words that matched; commit and repository results read as one line each.
+- **Insights and the community profile.** Explore's Insights view says a
+  repository's last 14 days of traffic in one sentence, then lists daily views
+  and clones, referring sites, popular pages and contributors' commits, one
+  figure set per line. It says plainly when traffic needs push access. The
+  Community profile checklist says which standard files are present or missing.
+- **Repository actions.** A Repository Actions submenu in Explore's context
+  menu syncs a fork with its upstream ("Merged 3 commits" or "Already up to
+  date"), sets topics, changes the watch level, archives and unarchives, makes
+  a repository from a template, and deletes a repository once you type its full
+  name. Explore also lists Actions caches (Delete Cache) and secret and
+  variable names, never values, for the repository and each environment.
+  People rows have Follow and Unfollow.
+- **Releases.** Edit Release changes the name, notes, draft and prerelease
+  state, and publishes a draft after asking. Upload Asset sends a file and says
+  25, 50 and 75 percent on the way. Delete Asset removes a release's file after
+  asking.
+- **Issue housekeeping.** A Housekeeping submenu on an issue locks and unlocks
+  the conversation with a reason, transfers, pins and unpins the issue, sets its
+  issue type, and reorders its sub-issues (Move Up, Alt+U; Move Down, Alt+D).
+- **Rate limits.** Ctrl+Shift+L in GitHub Items or Explore says how much of the
+  hourly allowance is left and when it resets. Repeated reads send the last
+  ETag, so an unchanged refresh costs nothing and Explore says "No changes since
+  the last load". Notification checks slow down when the allowance runs low, and
+  a secondary limit is said once ("GitHub asked QUILL to wait 60 seconds")
+  instead of as a string of failures.
+
 ### GitHub repository files, milestones, discussions and security triage (2026-11-07)
 
 - **Repository Files.** Files... (Alt+F) in GitHub Items browses a repository as a

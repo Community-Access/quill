@@ -54,21 +54,22 @@ def test_expired_token_on_a_rest_read(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.mark.parametrize(
-    ("code", "headers"),
+    ("code", "headers", "expected"),
     [
-        (403, {"X-RateLimit-Remaining": "0"}),
-        (429, {"Retry-After": "30"}),
+        (403, {"X-RateLimit-Remaining": "0"}, "rate-limited"),
+        # A secondary limit is said as the wait GitHub asked for (rate_limits.py).
+        (429, {"Retry-After": "30"}, "GitHub asked QUILL to wait 30 seconds."),
     ],
 )
 def test_rate_limited_rest_read(
-    monkeypatch: pytest.MonkeyPatch, code: int, headers: dict[str, str]
+    monkeypatch: pytest.MonkeyPatch, code: int, headers: dict[str, str], expected: str
 ) -> None:
     error = _http_error(code, b'{"message": "API rate limit exceeded"}', headers)
     provider = _provider(monkeypatch, error)
     with pytest.raises(GitHubItemsError) as caught:
         provider.fetch_repo_folder("o/r", "main")
     message = str(caught.value)
-    assert "rate-limited" in message
+    assert expected in message
     assert SECRET not in message
 
 

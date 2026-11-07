@@ -284,7 +284,7 @@ def test_pages_site_and_builds_are_readable(monkeypatch) -> None:
         (401, {}, "invalid or expired"),
         (403, {}, "permissions"),
         (403, {"X-RateLimit-Remaining": "0", "Retry-After": "60"}, "rate limit"),
-        (429, {"Retry-After": "60"}, "rate limit"),
+        (429, {"Retry-After": "60"}, "asked QUILL to wait 60 seconds"),
     ],
 )
 def test_pages_api_reports_auth_permission_and_rate_limit_errors(

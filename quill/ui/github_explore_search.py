@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from quill.core.github.explore_views import QUERY_VIEWS
+
 
 class GitHubExploreSearchMixin:
     """Saved search commands for the Explore dialog."""
@@ -32,7 +34,8 @@ class GitHubExploreSearchMixin:
 
     def _run_saved(self, query: str) -> None:
         self._query.SetValue(query)
-        self._view.SetSelection(0)
+        if self._view_key() not in QUERY_VIEWS:
+            self._view.SetSelection(0)
         self._load(None)
 
     def _remove_search(self, query: str) -> None:

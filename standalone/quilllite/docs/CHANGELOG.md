@@ -2,6 +2,21 @@
 
 ## 2.0.0
 
+### GitHub search, releases, housekeeping and rate limits (2026-11-07)
+
+- Explore searches code, commits and repositories, reads a repository's
+  Insights and community profile as sentences, and lists Actions caches and
+  secret and variable names (never values).
+- A Repository Actions submenu syncs a fork, sets topics, changes the watch
+  level, archives, makes a repository from a template and deletes one once you
+  type its name. People rows have Follow and Unfollow.
+- Releases can be edited and published, and files uploaded (with progress at
+  25, 50 and 75 percent) or deleted.
+- An issue's Housekeeping submenu locks, transfers, pins, sets the issue type
+  and reorders sub-issues (Alt+U, Alt+D).
+- Ctrl+Shift+L says GitHub's remaining allowance. Unchanged refreshes say so and
+  cost nothing, and a request to slow down is said once.
+
 ### GitHub repository files, milestones, discussions and security triage (2026-11-07)
 
 - Files... (Alt+F) in the GitHub Items viewer browses a repository at any
