@@ -1155,6 +1155,31 @@ resolved security alerts** view reopens one. The [QUILL guide's GitHub
 section](https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html)
 covers each of these in full.
 
+### Reviewing a pull request line by line
+
+The top of the Review window says the pull request in one sentence, such as
+"Approved, 2 checks failing, 1 open thread, 3 commits behind main", and QUILL
+Lite says it once when the review opens. When something it needs is missing,
+it says "merge readiness unknown" rather than guessing.
+
+In **Diff...**, **Patch lines** (Alt+P) lists the selected file's changes one
+line per row. **Comment on This Line...** (Alt+L) and **Comment on Lines...**
+(Alt+S) open a comment on the selected line or run of lines. **Suggest a
+change** writes a suggestion block for you to edit. **Add to Review** keeps
+the comment on this computer until **Compose Review...** sends it with your
+review. **Post Now** posts it at once. **Line marks** (Alt+M) reads lines as
+words or as + and - symbols; symbols need punctuation reading turned up.
+**Copy Diff** (Alt+C) and **Open Diff in Default App** (Alt+O) hand over the
+whole pull request as a `.diff`.
+
+Back in Review, **Changed since my last review** (Alt+L) shows only the files
+that changed since the commit you last reviewed, and says how many.
+**Timeline...** (Alt+T) is the conversation's history, one line per event, newest
+last. The context menus add **React...**, which adds or removes one of GitHub's
+eight reactions chosen by name. The
+[QUILL guide's pull request section](https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html)
+has the details; the windows are the same in both apps.
+
 ## Opening something you worked on recently
 
 

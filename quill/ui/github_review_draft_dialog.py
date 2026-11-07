@@ -33,6 +33,7 @@ class GitHubReviewDraftDialog:
         number: int,
         current_head_sha: str,
         announce_cb: Callable[[str], None] | None = None,
+        pending_comment_count: int = 0,
     ) -> None:
         import wx
 
@@ -42,6 +43,7 @@ class GitHubReviewDraftDialog:
         self._repository = repository
         self._number = number
         self._current_head_sha = current_head_sha
+        self._pending = max(pending_comment_count, 0)
         self._save_timer = None
         self._draft_suppressed = False
         self._result: GitHubReviewDraft | None = None
@@ -76,6 +78,16 @@ class GitHubReviewDraftDialog:
             "This review is saved on this device and is not sent until Submit Review is activated."
         )
         root.Add(self._notice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        if self._pending:
+            plural = "s go" if self._pending != 1 else " goes"
+            pending = wx.StaticText(
+                panel, label=f"{self._pending} pending line comment{plural} with this review."
+            )
+            pending.SetName("Pending line comments sent with this review")
+            pending.SetHelpText(
+                "Line comments you added from the diff are sent in the same request as the review."
+            )
+            root.Add(pending, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         event_label = wx.StaticText(panel, label="Review action:")
         event_label.SetName("Review action label")
@@ -218,7 +230,7 @@ class GitHubReviewDraftDialog:
             return
         event = self._EVENTS[event_index]
         body = self._body.GetValue().strip()
-        if event in {"comment", "request changes"} and not body:
+        if not body and (event == "request changes" or (event == "comment" and not self._pending)):
             self._say(self._status, "Enter a message for this review action.")
             self._body.SetFocus()
             return

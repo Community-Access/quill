@@ -48,6 +48,7 @@ from quill.core.github.github_provider import _get_gh_module, require_pygithub
 from quill.core.github.issue_comments import list_comments as _list_issue_comments
 from quill.core.github.items_errors import GitHubItemsError
 from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
+from quill.core.github.items_provider_review import GitHubPullReviewExtrasMixin
 from quill.core.github.items_provider_supplement import GitHubItemsSupplementMixin
 from quill.core.github.milestones import GitHubMilestonesMixin
 from quill.core.github.notification_triage import GitHubNotificationTriageMixin
@@ -414,6 +415,7 @@ class GitHubItemsProvider(
     GitHubMilestonesMixin,
     GitHubDiscussionActionsMixin,
     GitHubAlertTriageMixin,
+    GitHubPullReviewExtrasMixin,
 ):
     """Read-only GitHub items fetcher backed by PyGithub.
 

@@ -128,6 +128,18 @@ class GitHubItemsMenusMixin:
                 add(
                     "Summarize Discussion", self._on_summarize, enabled=self._ai_acquire is not None
                 )
+                add("View Timeline...", self._view_timeline_for_selected)
+                add(
+                    "React...",
+                    self._react_to_selected_item,
+                    enabled=self._provider.is_authenticated,
+                )
+                if self._current_comment >= 0:
+                    add(
+                        "React to This Comment...",
+                        self._react_to_current_comment,
+                        enabled=self._provider.is_authenticated,
+                    )
                 if self._start_issue_worktree_cb is not None:
                     kind = "pull request" if model.is_pr else "issue"
                     add(

@@ -1681,6 +1681,83 @@ QUILL says the outcome in plain words. When GitHub refuses, for example because
 auto-merge is turned off for the repository, QUILL says that and where to turn
 it on.
 
+#### The one-sentence summary
+
+The top line of a pull request's **Review** window says the whole pull request
+in one sentence, for example "Approved, 2 checks failing, 1 open thread, 3
+commits behind main". QUILL says it once when the review opens. It comes
+from a single request to GitHub covering the review decision, the checks on the newest
+commit, unresolved conversations, auto-merge and how far the branch is behind.
+For a branch from a fork, QUILL can't count the commits behind, so it says
+only "behind main" when GitHub reports that. QUILL never calls a pull request
+ready when part of that data is missing. It says "merge readiness unknown"
+instead. The summary needs you to be signed in.
+
+#### Line comments on a pull request
+
+In the **Diff...** window, below the file comparison, **Patch lines** (`Alt+P`)
+lists the selected file's changes one line per row, such as "Added line 42:
+return total" or "Removed line 40: return sum". Select a line, or hold Shift
+and arrow to select a run of lines, then:
+
+- **Comment on This Line...** (`Alt+L`), or press Enter on one line.
+- **Comment on Lines...** (`Alt+S`), or press Enter on a run of lines. With only
+  one line selected, QUILL asks for a start and end, such as `42-45`. GitHub
+  takes a comment on several lines only inside one run of changes, and QUILL
+  says so if the lines are further apart.
+
+The comment window reads back the lines you chose. Check **Suggest a change**
+(`Alt+S`) to put a suggestion block holding those lines' text into the
+comment, then edit the code inside it. The author can accept it on GitHub
+with one click. Then choose:
+
+- **Add to Review** (`Alt+A`, or Enter). The comment stays on this computer,
+  listed under **Pending line comments** in the Review outline, until you
+  submit your review with **Compose Review...**. The review and all its line
+  comments go to GitHub in one request. A pending comment can be edited or
+  deleted from its context menu first. If the pull request has changed since you
+  wrote them, QUILL won't send them. Check them first.
+- **Post Now** (`Alt+P`) posts this one comment straight away, outside a review.
+
+**Line marks** (`Alt+M`) chooses how lines are marked: words ("Added line",
+"Removed line") or symbols ("+", "-"). Symbols are shorter, but your screen
+reader only says them when punctuation reading is turned up. QUILL reminds you
+when you choose them. The choice is kept for both QUILL and QUILL Lite.
+
+**Copy Diff** (`Alt+C`) copies the whole pull request as a unified diff, and
+**Open Diff in Default App** (`Alt+O`) saves it as a `.diff` file and opens it
+in whatever your computer uses for `.diff` files.
+
+#### Changed since my last review
+
+When you come back to a pull request, check **Changed since my last review**
+(`Alt+L`) above the Review outline. QUILL finds the commit you last reviewed,
+compares it with the newest one, and shows only the files that changed, saying
+something like "4 files changed since your review on 2026-11-03". If that commit
+is gone because the branch was force-pushed, QUILL says so plainly and leaves
+every file showing. Uncheck the box to see them all again.
+
+#### Reading the timeline
+
+**Timeline...** (`Alt+T`) in Review, or **View Timeline...** in the GitHub Items
+context menu for an issue or pull request, opens the conversation's history as
+one read-only text, one line per event with the date and who did it, newest
+last: labels, assignments, review requests, reviews, commits, force-pushes,
+mentions from elsewhere, closing, reopening and merging. The last line says
+whether that is the whole history. For a very long conversation QUILL reads the
+first 500 events and tells you there are more. **Copy All** (`Alt+A`) copies it.
+
+#### Reacting to issues and comments
+
+To react, choose **React...** on an issue or pull request in the GitHub Items
+context menu, **React to This Comment...** when you have moved to a comment
+with `Alt+N`, or **React to Pull Request...** and **React to a Comment...** in
+the Review outline's context menus. Pick one of GitHub's eight reactions by
+name: thumbs up, thumbs down, laugh, hooray, confused, heart, rocket or eyes.
+The list says which ones are already yours, and choosing one of yours removes
+it. Comment details read the counts in words, such as "Reactions: 3 thumbs up,
+1 heart".
+
 #### Batch operations
 
 The list lets you select several rows: hold Shift or Ctrl to select issues or

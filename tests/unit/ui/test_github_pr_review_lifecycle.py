@@ -43,14 +43,19 @@ class _Stub:
 
         self._client = SimpleNamespace(
             fetch_review_threads=lambda *_a: SimpleNamespace(items=()),
-            fetch_review_state=lambda *_a, **_k: "state",
+            fetch_review_state=lambda *_a, **_k: SimpleNamespace(head_ref="h"),
             _provider=SimpleNamespace(fetch_pull_diff=diff),
         )
 
     def _announce(self, message: str) -> None:
         self.spoken.append(message)
 
-    def _refresh_ready(self, state: object, threads: object, diff: object) -> None:
+    def _fetch_summary(self, _ref: str) -> None:
+        return None
+
+    def _refresh_ready(
+        self, state: object, threads: object, diff: object, summary: object = None
+    ) -> None:
         self._loading = False
         self.rendered.append(diff)
         self._status.SetLabel("Review loaded.")

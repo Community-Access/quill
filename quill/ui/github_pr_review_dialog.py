@@ -17,6 +17,7 @@ from quill.core.github.pr_review import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
 from quill.ui.dpi import dip_size
+from quill.ui.github_pr_review_extras import GitHubPullReviewExtrasMixin
 from quill.ui.github_pr_review_menus import GitHubPullReviewMenusMixin
 from quill.ui.github_pr_review_merge import GitHubPullReviewMergeMixin
 from quill.ui.github_pr_review_policy import GitHubPullReviewPolicyMixin
@@ -30,6 +31,7 @@ if TYPE_CHECKING:
 
 
 class GitHubPullReviewDialog(
+    GitHubPullReviewExtrasMixin,
     GitHubPullReviewPolicyMixin,
     GitHubPullReviewRenderMixin,
     GitHubPullReviewMenusMixin,
@@ -66,6 +68,7 @@ class GitHubPullReviewDialog(
         # Bumped by every refresh; a reply carrying an older number is dropped, so a
         # slow refresh can never overwrite the one that started after it.
         self._refresh_generation = 0
+        self._init_review_extras()
 
         self.dialog = wx.Dialog(
             parent,
@@ -76,6 +79,14 @@ class GitHubPullReviewDialog(
         self.dialog.SetSize(dip_size(self.dialog, 1180, 740))
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
+
+        self._one_line = wx.StaticText(panel, label="Loading the one-line summary…")
+        self._one_line.SetName("Pull request in one sentence")
+        self._one_line.SetHelpText(
+            "Review decision, failing checks, open threads, auto-merge and how far behind "
+            "the base branch it is. Said once when the review opens."
+        )
+        root.Add(self._one_line, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
         self._header = wx.StaticText(panel, label="Loading review state…")
         self._header.SetName("Pull request review status")
@@ -101,6 +112,13 @@ class GitHubPullReviewDialog(
         )
         set_spoken_name(self._outline, "Pull request outline")
         thread_sizer.Add(thread_label, 0, wx.ALL, 6)
+        self._since_check = wx.CheckBox(thread_panel, label="Changed since my &last review")
+        self._since_check.SetHelpText(
+            "Show only the files that changed since the commit you last reviewed, and hear "
+            "how many. Says plainly when that commit was force-pushed away."
+        )
+        self._since_check.Enable(False)
+        thread_sizer.Add(self._since_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
         thread_sizer.Add(self._outline, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
         thread_panel.SetSizer(thread_sizer)
 
@@ -170,6 +188,11 @@ class GitHubPullReviewDialog(
         self._copy_btn = wx.Button(panel, label="Copy Review &Summary")
         self._copy_btn.SetName("Copy the pull request review summary")
         self._copy_btn.SetHelpText("Copy the loaded review summary to the clipboard.")
+        self._timeline_btn = wx.Button(panel, label="&Timeline…")
+        self._timeline_btn.SetName("Read this pull request's timeline")
+        self._timeline_btn.SetHelpText(
+            "One line per event, newest last: labels, reviews, commits, force-pushes and merges."
+        )
         self._submit_btn = wx.Button(panel, label="&Compose Review…")
         self._submit_btn.SetName("Compose, save locally, or submit a review for this pull request")
         self._submit_btn.SetHelpText(
@@ -211,6 +234,7 @@ class GitHubPullReviewDialog(
             self._next_unvisited_btn,
             self._browser_btn,
             self._copy_btn,
+            self._timeline_btn,
             *self._write_buttons,
         ):
             buttons.Add(button, 0, wx.RIGHT, 6)
@@ -224,6 +248,8 @@ class GitHubPullReviewDialog(
 
         self._browser_btn.Bind(wx.EVT_BUTTON, self._open_pr)
         self._copy_btn.Bind(wx.EVT_BUTTON, self._copy_summary)
+        self._timeline_btn.Bind(wx.EVT_BUTTON, self._open_timeline)
+        self._since_check.Bind(wx.EVT_CHECKBOX, self._toggle_since_filter)
         self._policy_btn.Bind(wx.EVT_BUTTON, self._load_merge_policy)
         self._next_unresolved_btn.Bind(
             wx.EVT_BUTTON, lambda _event: self._next_thread(unresolved_only=True)
@@ -288,10 +314,13 @@ class GitHubPullReviewDialog(
                     diff = self._client._provider.fetch_pull_diff(self._repo, self._number)
                 except GitHubItemsError as exc:
                     diff, diff_error = None, str(exc.args[0]) if exc.args else str(exc)
+                summary = self._fetch_summary(state.head_ref)
             except GitHubReviewError as exc:
                 wx.CallAfter(self._refresh_failed, str(exc), generation)
                 return
-            wx.CallAfter(self._refresh_landed, generation, state, threads, diff, diff_error)
+            wx.CallAfter(
+                self._refresh_landed, generation, state, threads, diff, diff_error, summary
+            )
 
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: review data fetch.
 
@@ -302,10 +331,11 @@ class GitHubPullReviewDialog(
         threads: tuple[GitHubReviewThread, ...],
         diff: GitHubPullDiff | None,
         diff_error: str,
+        summary: object = None,
     ) -> None:
         if generation != self._refresh_generation or not dialog_alive(self.dialog):
             return
-        self._refresh_ready(state, threads, diff)
+        self._refresh_ready(state, threads, diff, summary)
         if diff_error:
             # The threads and checks loaded; say plainly that the changed files did not.
             message = f"Could not load the diff: {diff_error}"
@@ -349,6 +379,11 @@ class GitHubPullReviewDialog(
                 else f"{path}\nReview comments are available; file diff unavailable."
             )
             return
+        if kind == "pending" and (comment := self._selected_pending()) is not None:
+            self._thread_detail.SetValue(
+                f"Pending, not sent yet: {comment.anchor.describe()}\n\n{comment.body}"
+            )
+            return
         if kind == "checks":
             self._thread_detail.SetValue(self._state.checks_summary if self._state else "")
             return
@@ -378,6 +413,7 @@ class GitHubPullReviewDialog(
             lines.extend([
                 f"{comment.author}{when}",
                 comment.body,
+                *([f"Reactions: {comment.reactions}"] if comment.reactions else []),
                 "",
             ])
         self._thread_detail.SetValue("\n".join(lines).rstrip())
@@ -394,7 +430,11 @@ class GitHubPullReviewDialog(
             return
         kind, current = self._node_kind()
         start = current if kind == "thread" else -1
-        order = [*range(start + 1, len(self._threads)), *range(0, start + 1)]
+        order = [
+            index
+            for index in (*range(start + 1, len(self._threads)), *range(0, start + 1))
+            if index in self._thread_items  # a filtered-out file's threads are not shown
+        ]
         if unresolved_only:
             candidates = [index for index in order if self._threads[index].resolved is False]
             if not candidates:
@@ -525,6 +565,8 @@ class GitHubPullReviewDialog(
             self._open_selected_check(None)
         elif kind == "thread":
             self._thread_detail.SetFocus()
+        elif kind == "pending":
+            self._edit_pending(None)
         else:
             item = self._outline.GetSelection()
             if self._outline.IsExpanded(item):

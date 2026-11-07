@@ -214,6 +214,44 @@ confirmation. **Dismissed and resolved security alerts** is its own view, where
 **Reopen Alert** asks and then reopens. QUILL reports a change only when the
 alert's new state comes back from GitHub.
 
+## Line comments, the timeline and reactions
+
+| Where | Key | What it does |
+| --- | --- | --- |
+| Review, top line | none | The pull request in one sentence, said once on open |
+| Review | Alt+L | Changed since my last review: only files changed since your reviewed commit |
+| Review | Alt+T | Timeline: one line per event, newest last |
+| Diff | Alt+P | Patch lines, one row per line; Shift with arrows selects a run |
+| Diff | Alt+L | Comment on This Line (Enter on one line) |
+| Diff | Alt+S | Comment on Lines (Enter on a run, or type a start and end) |
+| Diff | Alt+M | Line marks: words or symbols |
+| Diff | Alt+C, Alt+O | Copy Diff; Open Diff in Default App |
+| Comment | Alt+S, Alt+A, Alt+P | Suggest a change; Add to Review; Post Now |
+
+The summary comes from one GraphQL query (`reviewDecision`,
+`statusCheckRollup`, unresolved `reviewThreads`, `autoMergeRequest`,
+`mergeStateStatus`, and `baseRef.compare` for a same-repository branch). Its
+readiness phrase goes through the same rules as the review header, so partial
+or unknown data reads as "merge readiness unknown", never as ready. The
+query takes aliases, so several pull requests can share one request.
+
+A line comment posts through `POST /pulls/{n}/comments` with `commit_id`,
+`path`, `line`, `side` and, for a range, `start_line` and `start_side`. Add to
+Review keeps it in a per-account local file, pinned to the head it was written
+on. Compose Review sends the review and every pending comment in one
+`POST /pulls/{n}/reviews`, and refuses when the head has moved since. The
+outline lists pending comments, each with Edit and Delete (Delete asks first).
+
+Changed since my last review reads the account's latest review `commit_id`
+and compares it with the head (`GET /compare/{reviewed}...{head}`). A missing
+commit, after a force-push, is said plainly and the filter shows every file.
+
+The timeline reads `GET /issues/{n}/timeline`, up to five pages of 100, and
+says when it stopped early. Reactions list, add and remove through the REST
+reactions endpoints for issues, issue comments and review comments; removal
+deletes only the signed-in account's own reaction. Counts read in words in
+comment details ("3 thumbs up, 1 heart").
+
 ## Review and write safety
 
 The review tree announces reply counts, outdated positions, resolved state,

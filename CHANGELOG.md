@@ -23,6 +23,27 @@
 - **Review.** A diff that fails to load is now said aloud as "Could not load the
   diff" with the reason, and a slow refresh can no longer overwrite a newer one.
 
+### GitHub pull request review, line by line (2026-11-07)
+
+- **The pull request in one sentence.** The top of Review says, for example,
+  "Approved, 2 checks failing, 1 open thread, 3 commits behind main", and QUILL
+  says it once on open. Missing or partial data reads as "merge readiness
+  unknown", never as ready.
+- **Line comments.** Diff's Patch lines (Alt+P) list each changed line, marked
+  with words or symbols (Line marks, Alt+M). Comment on This Line (Alt+L) and
+  Comment on Lines (Alt+S) add a comment to your pending review or post it now.
+  Suggest a Change writes a suggestion block. Pending comments are kept on this
+  computer and go with the review from Compose Review.
+- **Copy Diff and Open Diff in Default App** hand over the whole pull request
+  as a `.diff`.
+- **Changed since my last review** (Alt+L in Review) shows only the files that
+  changed since the commit you reviewed, and says plainly when that commit was
+  force-pushed away.
+- **Timeline** (Alt+T in Review, View Timeline in Items) reads an issue's or
+  pull request's history one line per event, newest last.
+- **Reactions.** Add or remove one of GitHub's eight reactions by name on an
+  issue, pull request or comment. Comment details read counts in words.
+
 ### GitHub notifications, failed runs and merge automation (2026-11-07)
 
 - **Triage your GitHub notifications.** Tools > Git and GitHub > GitHub >

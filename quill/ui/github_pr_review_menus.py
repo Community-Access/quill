@@ -6,6 +6,7 @@ import threading
 import webbrowser
 from typing import TYPE_CHECKING
 
+from quill.core.github.items_errors import GitHubItemsError
 from quill.core.github.pr_review import GitHubReviewError
 from quill.ui.dialog_contract import dialog_alive
 
@@ -61,6 +62,11 @@ class GitHubPullReviewMenusMixin:
                 enabled=bool(thread.node_id)
                 and (thread.can_unresolve if thread.resolved else thread.can_resolve),
             )
+            add(
+                "React to a Comment...",
+                self._react_to_thread_comment,
+                enabled=self._client.can_write,
+            )
             add("Copy Conversation", self._copy_thread)
             add(
                 "Copy Thread Link",
@@ -77,6 +83,9 @@ class GitHubPullReviewMenusMixin:
                 self._open_thread,
                 enabled=bool(self._threads[index].root.url),
             )
+        elif kind == "pending":
+            add("Edit Pending Comment...", self._edit_pending)
+            add("Delete Pending Comment...", self._delete_pending)
         elif kind == "file":
             add("Open File Differences", self._open_file_diff, enabled=self._diff is not None)
             add("Copy File Name", self._copy_file_name)
@@ -106,6 +115,8 @@ class GitHubPullReviewMenusMixin:
             )
             add("Update Branch...", self._update_branch, enabled=self._update_btn.IsEnabled())
             self._append_merge_entries(add)
+            add("React to Pull Request...", self._react_to_pull, enabled=self._client.can_write)
+            add("View Timeline...", self._open_timeline)
             add("Copy Review Summary", self._copy_summary, enabled=self._state is not None)
             add(
                 "Copy Pull Request Link",
@@ -182,6 +193,7 @@ class GitHubPullReviewMenusMixin:
             initial_file=path,
             initial_line=line,
             initial_side=side,
+            on_pending_changed=self._on_pending_changed,
         )
         dialog.show()
 
@@ -273,7 +285,7 @@ class GitHubPullReviewMenusMixin:
             wx = self._wx
             try:
                 extra_message = action()
-            except GitHubReviewError as exc:
+            except (GitHubReviewError, GitHubItemsError) as exc:
                 wx.CallAfter(self._action_finished, None, str(exc))
                 return
             except Exception as exc:  # noqa: BLE001 - unexpected provider errors must be visible
@@ -293,13 +305,25 @@ class GitHubPullReviewMenusMixin:
             return
         from quill.ui.github_review_draft_dialog import GitHubReviewDraftDialog
 
+        self._on_pending_changed()  # pick up comments the diff viewer added
+        pending = self._pending_comments()
+        current_sha = self._state.head_sha if self._state else ""
+        stale = [comment for comment in pending if comment.head_sha != current_sha]
+        if stale:
+            self._announce(
+                f"{len(stale)} pending line comment(s) were written on an older revision. "
+                "Delete or rewrite them under Pending line comments, then compose the review."
+            )
+            return
+        extra = {"pending_comment_count": len(pending)} if pending else {}
         draft = GitHubReviewDraftDialog(
             self.dialog,
             draft_store=self._review_draft_store,
             repository=self._repo,
             number=self._number,
-            current_head_sha=self._state.head_sha if self._state else "",
+            current_head_sha=current_sha,
             announce_cb=self._announce,
+            **extra,
         ).show()
         if draft is None:
             return
@@ -316,10 +340,25 @@ class GitHubPullReviewMenusMixin:
                     "The pull request head changed while you were composing. "
                     "No review was submitted; reopen the draft against the current diff."
                 )
-            self._client.submit_review(self._repo, self._number, draft.event, draft.body)
+            sent = ""
+            if pending and current_head != current_sha:
+                raise GitHubReviewError(
+                    "The pull request head changed after your line comments were written. "
+                    "No review was submitted; refresh and check the pending comments."
+                )
+            if pending:
+                self._client._provider.submit_review_with_comments(
+                    self._repo, self._number, draft.event, draft.body, pending, current_head
+                )
+                plural = "s" if len(pending) != 1 else ""
+                sent = f" GitHub took its {len(pending)} line comment{plural} with it."
+                if not self._line_comment_store.clear(self._repo, self._number):
+                    sent += " They could not be cleared from this device; delete them there."
+            else:
+                self._client.submit_review(self._repo, self._number, draft.event, draft.body)
             if not self._review_draft_store.delete_review(self._repo, self._number):
-                return " The review was submitted, but its local draft could not be cleared."
-            return ""
+                sent += " The review was submitted, but its local draft could not be cleared."
+            return sent
 
         self._run_action(
             _submit,
