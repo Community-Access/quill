@@ -1042,6 +1042,14 @@ If the document has notes written into the file, QUILL Lite asks whether to
 include them in the page, marked as notes. No is the default, so a note never
 ends up in a page by accident. QUILL has the same command on the same key.
 
+Equations in a Markdown document, written as `\(...\)` inside a line or as
+`$$...$$` or a fenced `math` block on their own, go into the page as MathML,
+the web's own format for maths. The page needs no script and nothing from the
+internet to show them, and NVDA and JAWS read them as maths, so you hear
+"a sub 1" rather than "a underscore 1" and can move through a fraction part
+by part. A formula with a mistake in it stays in the page as its source text,
+so nothing is lost.
+
 ## Opening what you copied, a link, or a file you drag in
 
 Documents reach you in all sorts of ways: a file in File Explorer, a path

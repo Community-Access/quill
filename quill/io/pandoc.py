@@ -137,7 +137,8 @@ def convert_document_with_pandoc(
         "--wrap=none",
     ]
     if output_kind == "html":
-        command.append("--standalone")
+        # Math as MathML: a page that needs no script for a screen reader to read it.
+        command.extend(("--standalone", "--mathml"))
     try:
         completed = run_subprocess_safely(
             command, timeout_seconds=60.0, cwd=str(source_path.parent)

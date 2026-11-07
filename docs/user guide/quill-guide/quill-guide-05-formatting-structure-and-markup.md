@@ -604,8 +604,7 @@ command, so it does not matter which one you use.
     above and below. `\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}` becomes
     `$$\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$` on a single line.
 
-  Both are delimiters MathJax recognizes without any setup, and `\(...\)`
-  cannot be confused with a dollar amount in your prose the way a bare
+  Both are standard TeX delimiters, and `\(...\)` cannot be confused with a dollar amount in your prose the way a bare
   `$...$` could.
 - **MathML** is an XML format used in web publishing and accessible
   documents. If what you type starts with `<math`, QUILL inserts it as it is
@@ -617,15 +616,20 @@ command, so it does not matter which one you use.
 
 #### Seeing equations rendered
 
-Browser Preview (`Ctrl+Shift+Grave, V`) and HTML export add MathJax 3, so
-equations appear typeset in any browser. QUILL adds it only for documents
-that contain maths. The document itself always keeps the raw LaTeX or MathML,
-which is what your screen reader reads.
+Browser Preview (`Ctrl+Shift+Grave, V`), the side preview and
+**File > Export > HTML...** turn your LaTeX into MathML, the web's own format for maths.
+Browsers draw it as typeset maths, and NVDA (with MathCAT, built in) and JAWS
+read it as maths: you can hear "a sub 1" rather than "a underscore 1", and
+move through a fraction or a root part by part with your screen reader's own
+math commands. Nothing is fetched from the internet, so it all works offline,
+and the page you export carries its maths inside it.
 
-MathJax is loaded from a public CDN by your browser, so the visual rendering
-needs an internet connection. The LaTeX or MathML, and everything your screen
-reader says, is always there offline. If you are offline, equations show as
-their source instead of typeset maths. Nothing is lost.
+QUILL converts inline equations (`\(...\)`), display equations (`$$...$$` or
+`\[...\]`, on one line or on lines of their own) and fenced `math` blocks.
+Anything inside code, such as a `` `\(x\)` `` code span or a fenced code
+block, is left alone. If a formula has a mistake QUILL cannot convert, the
+page shows its LaTeX as plain text instead, so nothing is lost. The document
+itself always keeps the raw LaTeX or MathML.
 
 ### Common Formulas gallery
 

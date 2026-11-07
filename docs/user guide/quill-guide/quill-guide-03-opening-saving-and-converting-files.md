@@ -897,6 +897,17 @@ If notes are written into the file, QUILL asks whether to include them in the
 page, marked as notes; No is the default, so a note never ends up in a page by
 accident.
 
+Equations are written into the page as MathML, so the page needs no script and
+nothing from the internet to show them, and NVDA and JAWS read them as maths.
+When Pandoc is installed it writes the page from a Markdown document, and
+pictures come with it: a picture with a relative path, such as
+`![Floor plan](images/plan.png)`, is found beside your document, and with
+Pandoc 2 or 3 the picture itself is put inside the page, so it still shows
+when you email the page or move it on its own. Save the document first, so
+QUILL knows which folder its pictures are in. A picture from the web, such as
+`![Logo](https://example.com/logo.png)`, stays a link to the web, because
+exporting never downloads anything.
+
 **Getting there by keyboard.** `File > Import` and `File > Export` are ordinary
 menus: open the menu, arrow down and press Enter. There is no single key for the
 whole list, because choosing the format is the point of the command. The

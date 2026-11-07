@@ -2,6 +2,22 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Diagrams, math and pictures in Markdown pages
+
+**AI > Accessibility Tune-Up...** now checks Mermaid diagrams in Markdown. For
+each fenced `mermaid` block it tells you, by line number, when the diagram has
+no accessible title (`accTitle`) or description (`accDescr`), when an init
+block forces a theme, and when it sets its own colours so you should check the
+contrast. With more than one diagram on a page, it asks for a heading before
+each. A new starter snippet pack, **mermaid-diagrams**, has eight diagram
+types, and every one asks for the title and description before anything else.
+
+Equations in Browser Preview, the side preview and **File > Export > HTML...**
+are now MathML. Nothing is downloaded from the internet to show them, and NVDA
+and JAWS read them with their own math support. When Pandoc writes the page,
+pictures are found beside your document and, with Pandoc 2 or 3, carried
+inside the page so it can be emailed on its own. QUILL Lite's Export as HTML
+writes math as MathML too.
 ## Replace, export and backups you can trust
 
 Three things that should never surprise you now do not.
@@ -1071,7 +1087,7 @@ key, **Shift+F10** or a right-click) offers **Go to this location in the
 editor**, which puts your cursor on that block's line in the source. The key
 opens a menu instead of doing something straight away, which is what screen
 reader users expect from it. There is also a browser preview that shows the
-document as a web page, with MathJax for equations.
+document as a web page, with equations shown as MathML.
 
 ### Insert Emoji
 
@@ -1130,7 +1146,8 @@ radicand) instead of reading it as one long string.
 
 Typing math as text works well by ear: it is all keyboard, you can review it
 character by character, and screen readers that speak math can read it. The
-preview and HTML export show it through MathJax. Word export writes real Word
+preview and HTML export show it as MathML, which needs nothing from the
+internet and which NVDA and JAWS read with their own math support. Word export writes real Word
 equations you can edit, and they turn back into text when you reopen the
 file. With the optional MathCAT engine installed, "read this part aloud"
 speaks math the way NVDA does.
