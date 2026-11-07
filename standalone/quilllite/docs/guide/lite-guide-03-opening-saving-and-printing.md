@@ -1085,7 +1085,30 @@ it.
 
 QUILL has the same three, on the same key.
 
+## GitHub issues and pull requests
+
+**File > GitHub Workbench...** (**Alt+F**, then **G**) opens QUILL's shared
+GitHub Items viewer in QUILL Lite. The first use asks whether you want to
+connect to GitHub. Public repositories can be read without a token; posting
+reviews, replying, and other write actions need a GitHub token in the operating
+system's credential store. If the current document is in a checkout with a
+GitHub origin, the repository field starts with that repository.
+On an Items row or its details field, Shift+F10 opens actions for the selected
+item: review a PR, compare a branch, inspect a run, copy its link or details,
+or favorite it. Signed-in sessions add relevant write actions.
+
+For a pull request, choose **Review...**. Its native outline expands from the
+PR into changed files, each file's conversations, general conversations, and
+checks. Arrow among nodes, Right and Left expand or collapse, Tab enters the
+selected details, and Shift+Tab returns to the outline. **Ctrl+R** replies to
+a selected review thread. **Shift+F10**, the Applications key, or right-click
+opens actions suited to the node: reply and copy links on threads, open the
+selected file's differences, inspect a check, or submit a review from the PR.
+The [complete GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
+walks through the viewer's other lists and controls in both apps.
+
 ## Opening something you worked on recently
+
 
 QUILL Lite remembers the documents you open, newest first, so getting back to
 one never means hunting through folders.

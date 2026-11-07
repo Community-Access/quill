@@ -13,11 +13,9 @@ sibling-mixin-sharing-self pattern already used throughout this codebase
 ``_ensure_github_ready``).
 
 Organizations deliberately stop at browsing (Teams are out of scope --
-``docs/planning/github.md`` section 1). Discussions, Projects (v2), and
-Packages are not implemented here: PyGithub has no REST wrapper for
-Discussions' or Projects v2's GraphQL-only surface, and no Packages support
-at all -- shipping against a `gh api`/GraphQL passthrough was explicitly
-ruled out for this batch.
+``docs/planning/github.md`` section 1). Discussions and Packages are not
+implemented here. Projects v2 is handled by the separate authenticated
+GraphQL workbench; it does not shell out to ``gh`` or accept arbitrary queries.
 """
 
 from __future__ import annotations
@@ -92,27 +90,6 @@ class GitHubExtrasMixin:
             full_name = dialog.GetStringSelection()
         self.open_github_items_viewer_for(full_name)
 
-    def open_github_items_viewer_for(self, full_name: str) -> None:
-        """Open the GitHub Items viewer pre-filled with *full_name*."""
-        token = load_github_token()
-        try:
-            from quill.core.github.items_provider import GitHubItemsProvider
-
-            provider = GitHubItemsProvider(token=token or None)
-        except Exception as exc:  # noqa: BLE001
-            self._set_status(f"Could not open {full_name}: {exc}")
-            return
-        from quill.ui.github_items_dialog import GitHubItemsDialog
-
-        GitHubItemsDialog(
-            self.frame, provider, initial_repo=full_name, announce_cb=self._announce
-        ).show()
-        try:
-            provider.close()
-        except Exception:  # noqa: BLE001 - close is best-effort cleanup
-            pass
-
-    # ------------------------------------------------------------------
     # Releases, authored
 
     def github_create_release(self) -> None:

@@ -1,5 +1,14 @@
 # QUILL Lite 2.0
 
+## GitHub workbench
+
+**File > GitHub Workbench...** (**Alt+F**, then **G**) opens the shared QUILL
+GitHub Items viewer. A PR expands into changed files, review threads, general
+conversations, and checks. Arrow to an item and Tab into its detail; Ctrl+R
+replies to a selected thread. Shift+F10 opens a context menu that fits the
+selected item. Public repositories can be read anonymously; posting needs a
+token. See the [full GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html).
+
 ## Nemotron keeps its last word
 
 If you dictate with Nemotron, short phrases no longer lose their last word.
@@ -1473,3 +1482,10 @@ profile one for project tasks, if you would like a guided start.
 If you get stuck, choose **Help > Get Help from Support** (**Ctrl+Alt+F2**),
 or write to support@community-access.org. A person at Community Access reads
 every message.
+# GitHub Workbench update (release acceptance pending)
+
+The shared GitHub Items and Explore windows add global saved search, My Work,
+activity, account and repository views, PR thread resolve/reopen, exact current
+diff-line targeting, Pages and labels, and workflow jobs and logs. See the
+[workbench reference](https://www.quillforall.org/docs/workbench-reference.html). Native
+screen-reader acceptance and integration into the destination branch are pending.

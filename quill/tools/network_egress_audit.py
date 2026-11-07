@@ -27,25 +27,14 @@ from quill.tools.source_cache import read as source_text
 
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 
-# Egress function names. A call whose function is one of these (by attribute or
-# bare name) counts as a network call for inventory purposes.
+# Egress call names and SDK/helper boundaries that hand off to network clients.
 _EGRESS_CALLEES = frozenset({
     "urlopen",
     "urlretrieve",
-    # SDKs and sockets with no urlopen at the call site: constructing the
-    # ElevenLabs client, and websocket-client's opener (OpenAI dictation's live
-    # transcription), are each the one point QUILL hands off to the network.
+    "build_opener",
     "ElevenLabs",
     "create_connection",
-    # Private/authenticated podcast feeds fetch through this single wrapper
-    # (quill/core/podcasts/feed_auth.py) instead of a bare urlopen, so it builds
-    # its own opener (opener.open) and no plain ``urlopen`` name appears at the
-    # call site. Treat the wrapper as the reviewable egress marker so every
-    # private-feed fetch site is still inventoried below.
     "urlopen_auth_safe",
-    # yt-dlp (URL import, Radio's YouTube) and chat-downloader (Radio's Live Chat) do
-    # their HTTP internally; constructing ``YoutubeDL`` / ``ChatDownloader`` is where
-    # QUILL enters each path, so those are the reviewable markers (as ElevenLabs).
     "YoutubeDL",
     "ChatDownloader",
 })
@@ -387,6 +376,9 @@ def _scan_egress() -> dict[str, EgressSite]:
             ):
                 rel = path.relative_to(_PACKAGE_ROOT).as_posix()
                 func_name = _enclosing_function_name(tree, node)
+                # Wrappers such as urlopen_auth_safe are inventoried at callers.
+                if _callee_name(node) == "build_opener" and func_name in _EGRESS_CALLEES:
+                    continue
                 site = f"{rel}::{func_name}"
                 # Same-site duplicates collapse; cross-function duplicates with
                 # the same enclosing function are not possible by construction

@@ -11336,13 +11336,26 @@ MinGit's own top-level entries (`cmd/`, `etc/`, `mingw64/`, `usr/`,
 `LICENSE.txt`) individually; `gh`'s remove path deletes only its own flat
 executable file. Removing one never touches the other's installed files.
 
-### §25.18 GitHub Items: GHManage Parity Completion (0.9.0 Beta 3)
+### §25.18 GitHub Items: GHManage-Inspired Viewer Enhancements (0.9.0 Beta 3)
 
-**Attribution.** This section closes out the GHManage/fastgh unification
-review named throughout §25.12–§25.16: every remaining feature GHManage
-(Kelly Ford, `github.com/kellylford/GHManage`) has that QUILL's Items
-viewer did not yet match. As with the rest of the GHManage-derived work in
-this PRD, each feature is not a straight port — it is extended to fit
+**Shared interaction requirement (2026-11-05).** QUILL and QUILL Lite use the
+same GitHub Items viewer. The PR review surface is a native expandable outline:
+PR → changed files → review threads, plus general conversations and checks.
+Arrow keys navigate and expand it; Tab enters the selected item's readable
+details and Shift+Tab returns. Ctrl+R replies to a thread. The context menu
+and keyboard action for each node expose the same available actions. Selection
+survives refresh. Every subsequent GitHub workbench capability must be
+evaluated for both apps; a QUILL-only capability requires an explicit product
+exception in this specification. Exact-hunk jump and resolved-thread state
+remain open requirements, not shipped behavior.
+
+**Attribution and scope.** This section covers the GHManage/fastgh viewer
+enhancements named throughout §25.12–§25.16. It does not establish full
+feature parity with GHManage (Kelly Ford, `github.com/kellylford/GHManage`):
+the unified repository chooser, global saved searches, My Work, activity and
+people navigation, Pages, and dedicated label management remain separate
+work. As with the rest of the GHManage-derived work in this PRD, each feature
+is not a straight port — it is extended to fit
 QUILL's own architecture and to go further where QUILL already has the
 infrastructure to do so (most visibly: Compare Branches routes its file
 diffs through QUILL's own compare engine instead of a raw patch, and Quick
@@ -17283,3 +17296,12 @@ industry built for the eye, and make QUILL the place where they finally speak.
 **One retry ladder for every AI provider (`quill/core/ai/retry_ladder.py`).** The free hosted service (`gateway_client._urlopen_json`), the user's own OpenAI-compatible key (`assistant_ai` chat, streamed chat and model listing, and `ai/vision.py`), the user's own Gemini key (`own_key_gemini.stream_answer`) and a ChatGPT plan (`chatgpt_http`: GETs, and the stream before its first event) all ask `wait_before_retry(status, headers, attempt)`. Three attempts on 408, 409, 429, 500, 502, 503 and 504; linear backoff of 1 s then 2 s; `Retry-After` in seconds or as an HTTP date honoured up to 20 s, a longer request reported at once. **Never twice when the API says no:** `x-should-retry: false`, a hosted reply with `"charged": true` or `"retry": false`, a hosted 429 that is an allowance rather than throttling, and a ChatGPT `subscription_sharing_usage_*` refusal are final, and a sign-in POST and a stream that has delivered an event are never repeated. Retries are silent; only the final failure reaches the caller (GATE-13). Each route keeps its one reviewed egress site, so the network egress audit is unchanged. A failure with no answer at all (a timeout, a local server still starting) climbs the same steps through `wait_after_failure`.
 
 **A cue when the caret enters a line with an inline note (both editors).** `quill/core/inline_note_cue.py`: `noted_spans` (a note covers the lines from its first character's to its last's; overlapping notes merge, neighbouring lines stay separate), `NoteLineCue` (cues on arrival only; `settle` for Next/Previous Inline Note, which say the note; `forget` for another document) and `cue_channels`. Setting `inline_note_line_cue`, shared, `sound` (default) / `speech` / `off`; a sound with no clip speaks "note" (the `action_feedback` rule), and a sound also writes "note" to braille only. Sound event `inline_note_line`, Ink clip `inline_note_line.wav`. Driven from `InlineNotesCommandsMixin.cue_inline_note_line` on every caret move; the noted stretches are rebuilt only when the document, its length or its private notes change.
+# GitHub Workbench implementation note (2026-11-05)
+
+The shared QUILL and QUILL Lite workbench includes native list/detail browsing,
+an expandable PR review tree, context menus, thread replies and resolution,
+exact changed-line navigation where GitHub provides a current patch, global
+saved searches, My Work, account and repository discovery, labels, Pages,
+activity, notifications, and workflow job logs. The [workbench reference](../github/workbench-reference.md)
+defines the current interaction model and the [audit](../planning/github-workbench.md)
+records remaining gaps and release verification.

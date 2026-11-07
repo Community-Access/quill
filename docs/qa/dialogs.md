@@ -87,6 +87,17 @@ or the command palette (`Ctrl+Shift+P`).
   - [ ] Site list (saved FTP, SFTP, WebDAV, S3 sites) and directory browser
   - [ ] New site / Edit site / Delete site buttons
   - [ ] Open button enabled only when a file is selected
+- [ ] GitHub Items...: File > Open Remote > GitHub Items...
+  - [ ] Select a pull request and choose Review... to open the review reader
+  - [ ] Review reader: merge readiness, approvals, checks, review threads and replies
+   - [ ] PR outline: arrow/expand/collapse PR, files, threads and checks; Tab to detail and Shift+Tab back
+   - [ ] Shift+F10, Applications key and right-click open actions for the selected node
+   - [ ] File Enter opens its own diff; check Enter opens its job; Ctrl+R replies only on a thread
+   - [ ] Refresh preserves the selected thread and focus; screen reader announces labels and state
+   - [ ] Repeat the Items viewer and PR outline checks in QUILL Lite
+   - [ ] Items row and details context menus: PR Review and Diff, branch Compare, link/details copy, favorite, and available write actions
+  - [ ] Reply to the selected review thread; closed PRs disable review actions
+  - [ ] Check-run rows open their GitHub job; review actions are available only when signed in
 - [ ] Save to Remote...: QUILL key, then `W` (issues #154, #155, #156, #157)
   - [ ] Site list and remote directory browser
   - [ ] Save button enabled only when a target file is selected

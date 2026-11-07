@@ -33,6 +33,7 @@ class GitHubQuickFilterMixin:
     def _on_quick_filter_changed(self, _event: object) -> None:
         self._quick_filter_query = self._quick_filter_ctrl.GetValue().strip()
         self._apply_quick_filter(move_focus=False, announce=False)
+        self._schedule_navigation_record()
 
     def _quick_filter_has_focus(self) -> bool:
         return self._wx.Window.FindFocus() is self._quick_filter_ctrl

@@ -65,6 +65,48 @@ _IndentOp = Callable[[str, int, int], tuple[str, int, int]]
 class DocumentToolsMixin(DocumentBackupsMixin):
     """Line tools, case tools, and the file-format dialog."""
 
+    def cmd_github_workbench(self) -> None:
+        """Open the shared repository viewer in QUILL Lite."""
+        from quill.core.github.consent import (
+            load_github_consent_complete,
+            save_github_consent_complete,
+        )
+        from quill.core.github.github_provider import GitHubDependencyError, require_pygithub
+        from quill.core.github.items_provider import (
+            GitHubItemsError,
+            GitHubItemsProvider,
+            refuse_in_safe_mode,
+        )
+        from quill.core.github.local_repo import detect_github_repo
+        from quill.core.github.token_store import load_github_token
+        from quill.ui.github_dialogs import GitHubConsentDialog
+        from quill.ui.github_items_dialog import GitHubItemsDialog
+
+        try:
+            refuse_in_safe_mode(bool(getattr(self.app, "safe_mode", False)))
+            require_pygithub()
+        except (GitHubItemsError, GitHubDependencyError) as exc:
+            show_message_box(str(exc), "GitHub Workbench", wx.OK | wx.ICON_INFORMATION, self)
+            return
+        if not load_github_consent_complete():
+            if not GitHubConsentDialog(self).show():
+                return
+            save_github_consent_complete()
+        try:
+            provider = GitHubItemsProvider(token=load_github_token() or None)
+        except GitHubItemsError as exc:
+            show_message_box(str(exc), "GitHub Workbench", wx.OK | wx.ICON_INFORMATION, self)
+            return
+        try:
+            GitHubItemsDialog(
+                self,
+                provider,
+                initial_repo=detect_github_repo(self.path),
+                announce_cb=self._announce,
+            ).show()
+        finally:
+            provider.close()
+
     def cmd_open_studio(self) -> None:
         """Open the Studio companion without sending this document anywhere."""
         from quill.core.app_launcher import is_app_released, launch_app

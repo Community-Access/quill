@@ -74,6 +74,12 @@ def _clear_safe_mode(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture(autouse=True)
 def _gh_available(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("quill.core.git_binaries.resolve_gh", lambda: "/usr/bin/gh")
+    # The CLI's signed-in account is checked against QUILL's before any
+    # codespace call; the fake CLI is signed in as the account QUILL uses.
+    monkeypatch.setattr(
+        "quill.core.github.gh_bridge.authenticated_login", lambda **_kwargs: "octocat"
+    )
+    monkeypatch.setattr("quill.core.github.accounts.active_github_account", lambda: None)
 
 
 class _FakeChoiceDialog:

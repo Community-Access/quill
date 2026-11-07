@@ -533,15 +533,6 @@
     "user_guide_section": "writing-and-editing"
   },
   {
-    "id": "edit.find_in_open_documents",
-    "title": "Find in Open Documents...",
-    "body": "Find and replace across every document you have open, not just the one in front of you. It searches the text as it is in each window, so unsaved changes and documents you have never saved are found too. Find Next and Find Previous move from document to document and say each document's name; Find All lists every match, and Enter goes there; Replace All tells you how many first, gives each document its own undo, and saves nothing. After the window closes, F3 and Shift+F3 keep searching across documents until you start an ordinary Find.",
-    "keystrokes": [
-      "Ctrl+Shift+F10"
-    ],
-    "user_guide_section": "search-and-replace"
-  },
-  {
     "id": "edit.find_all_matches",
     "title": "Find All Matches",
     "body": "List every match for your search in a navigable panel, so you can review all occurrences at once and jump to any of them.",
@@ -549,6 +540,15 @@
       "Ctrl+Shift+F3"
     ],
     "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "edit.find_in_open_documents",
+    "title": "Find in Open Documents...",
+    "body": "Find and replace across every document you have open, not just the one in front of you. It searches the text as it is in each window, so unsaved changes and documents you have never saved are found too. Find Next and Find Previous move from document to document and say each document's name; Find All lists every match, and Enter goes there; Replace All tells you how many first, gives each document its own undo, and saves nothing. After the window closes, F3 and Shift+F3 keep searching across documents until you start an ordinary Find.",
+    "keystrokes": [
+      "Ctrl+Shift+F10"
+    ],
+    "user_guide_section": "search-and-replace"
   },
   {
     "id": "edit.find_next",
@@ -1104,6 +1104,12 @@
     "id": "file.open_github_items",
     "title": "GitHub Items",
     "body": "A keyboard-first, read-only view of one repository's issues, pull requests, branches, commits, tags, releases and workflow runs, pre-filled with the repository the current file belongs to. You can ask QUILL's AI to summarise a long thread. Like every GitHub command it needs a signed-in account and is refused in Safe Mode."
+  },
+  {
+    "id": "file.open_github_reference",
+    "title": "Open GitHub Reference...",
+    "body": "Paste any GitHub link, or type owner/repo, and QUILL opens it in its own accessible view: a file opens in the editor, and a repository, issue, pull request, discussion, commit, branch, release or workflow run opens in the GitHub Items viewer at that item. A link QUILL has no view for opens in your browser instead, and QUILL says so.",
+    "user_guide_section": "opening-and-saving-github-files"
   },
   {
     "id": "file.open_github_repository",
@@ -2158,6 +2164,15 @@
     "user_guide_section": "navigation"
   },
   {
+    "id": "navigate.list_highlights",
+    "title": "List Highlighted Passages",
+    "body": "Every highlighted passage in the document in one list, in order: the passage's words, its highlight colour, and the paragraph around it. The list opens on the passage you are in or the next one. Enter goes to the passage; Escape closes the list and leaves the cursor where it was.",
+    "keystrokes": [
+      "Ctrl+F2"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
     "id": "navigate.match_bracket",
     "title": "Match Bracket",
     "body": "Jump between a bracket and its matching partner, so you can check that brackets, parentheses, and braces are balanced.",
@@ -2186,6 +2201,15 @@
     "body": "Move the cursor to the next heading, so you can skim a document by its structure.",
     "keystrokes": [
       "Ctrl+Alt+H"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
+    "id": "navigate.next_highlight",
+    "title": "Next Highlighted Passage",
+    "body": "Move to the next highlighted passage in a Word document, a rich text document or a Markdown document, and hear its highlight colour, where it is in the count, and its words: \"Yellow highlight, 2 of 5: budget is final\". After the last passage it wraps to the first. In a Word document opened as text, the highlights are read from the file itself. Alt+Left comes back.",
+    "keystrokes": [
+      "Alt+PageDown"
     ],
     "user_guide_section": "navigation"
   },
@@ -2242,6 +2266,15 @@
     "body": "Move the cursor to the previous heading.",
     "keystrokes": [
       "Ctrl+Alt+Shift+H"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
+    "id": "navigate.previous_highlight",
+    "title": "Previous Highlighted Passage",
+    "body": "Move to the previous highlighted passage and hear its colour, its place in the count and its words. Before the first passage it wraps to the last.",
+    "keystrokes": [
+      "Alt+PageUp"
     ],
     "user_guide_section": "navigation"
   },
@@ -2330,47 +2363,11 @@
     "user_guide_section": "navigation"
   },
   {
-    "id": "navigate.next_highlight",
-    "title": "Next Highlighted Passage",
-    "body": "Move to the next highlighted passage in a Word document, a rich text document or a Markdown document, and hear its highlight colour, where it is in the count, and its words: \"Yellow highlight, 2 of 5: budget is final\". After the last passage it wraps to the first. In a Word document opened as text, the highlights are read from the file itself. Alt+Left comes back.",
+    "id": "notes.add_inline_note",
+    "title": "Add Inline Note",
+    "body": "Write a note about the selection, or about the line you are on. The Note on line shows the start of that text so you can check the place before saving. A note follows its text as you edit. In Markdown and HTML documents you can check Write this note into the file, and the note is kept in the document as a hidden comment that a colleague or an AI assistant can read; otherwise it stays private to you.",
     "keystrokes": [
-      "Alt+PageDown"
-    ],
-    "user_guide_section": "navigation"
-  },
-  {
-    "id": "navigate.previous_highlight",
-    "title": "Previous Highlighted Passage",
-    "body": "Move to the previous highlighted passage and hear its colour, its place in the count and its words. Before the first passage it wraps to the last.",
-    "keystrokes": [
-      "Alt+PageUp"
-    ],
-    "user_guide_section": "navigation"
-  },
-  {
-    "id": "navigate.list_highlights",
-    "title": "List Highlighted Passages",
-    "body": "Every highlighted passage in the document in one list, in order: the passage's words, its highlight colour, and the paragraph around it. The list opens on the passage you are in or the next one. Enter goes to the passage; Escape closes the list and leaves the cursor where it was.",
-    "keystrokes": [
-      "Ctrl+F2"
-    ],
-    "user_guide_section": "navigation"
-  },
-  {
-    "id": "tools.find_recording_chapters",
-    "title": "Find Chapters in a Recording",
-    "body": "Pick any recording -- a lecture, a meeting, an MP3 you were sent -- and the Chapter Workbench opens on it and proposes chapters where it falls silent, titled Proposed chapter 1, 2 and so on. If the recording already has chapters you choose whether to keep them and add only new boundaries, or replace them. Press the button again to stop the scan. Hear each boundary, move it to the playhead, rename it, and Save; Restore original undoes the proposal.",
-    "keystrokes": [
-      "QUILL Key + Shift+O"
-    ],
-    "user_guide_section": "navigation"
-  },
-  {
-    "id": "notes.list_inline_notes",
-    "title": "List Inline Notes",
-    "body": "Every note in this document in one window: the note, its line, the text it is about, and whether it is private or written into the file. A note whose text was deleted is listed last. Enter goes to a note, Delete deletes one, F2 edits one, and the buttons remove all, copy all, or export the notes as Markdown or JSON.",
-    "keystrokes": [
-      "Alt+Shift+Enter"
+      "Alt+Shift+I"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -2384,11 +2381,11 @@
     "user_guide_section": "writing-and-editing"
   },
   {
-    "id": "notes.add_inline_note",
-    "title": "Add Inline Note",
-    "body": "Write a note about the selection, or about the line you are on. The Note on line shows the start of that text so you can check the place before saving. A note follows its text as you edit. In Markdown and HTML documents you can check Write this note into the file, and the note is kept in the document as a hidden comment that a colleague or an AI assistant can read; otherwise it stays private to you.",
+    "id": "notes.list_inline_notes",
+    "title": "List Inline Notes",
+    "body": "Every note in this document in one window: the note, its line, the text it is about, and whether it is private or written into the file. A note whose text was deleted is listed last. Enter goes to a note, Delete deletes one, F2 edits one, and the buttons remove all, copy all, or export the notes as Markdown or JSON.",
     "keystrokes": [
-      "Alt+Shift+I"
+      "Alt+Shift+Enter"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -3198,65 +3195,20 @@
     "user_guide_section": "tools"
   },
   {
-    "id": "tools.dictation_toggle",
-    "title": "Dictation",
-    "body": "Start or stop dictation, turning your speech into text at the cursor using the on-device speech engine.",
-    "keystrokes": [
-      "QUILL Key + D"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_toggle",
-    "title": "Dictation On",
-    "body": "Live dictation: speak and each phrase is written when you pause. Press Ctrl+F11 to start dictating and press it again to stop; the last phrase is always kept. If you prefer to hold the key while you talk, turn on Hold the dictation key to talk in More Dictation Settings. Escape throws away the phrase being heard. In a text field such as Find or the AI Conversation window's message box, Ctrl+F11 dictates into that field. With Nemotron or OpenAI, the words heard so far show in the status bar and on a braille display while you speak.",
-    "keystrokes": [
-      "Ctrl+F11"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_settings",
-    "title": "Dictation Settings",
-    "body": "Choose the speech engine, the microphone, the dictation language and what you hear after each phrase. The Speech engine list has the built-in Moonshine (the default) and Whisper, Windows speech recognition and voice typing, every model you downloaded with its tier (Lightweight, Balanced or High accuracy), OpenAI with your own key, and any speech provider you set up. Better Accuracy: Speech Models (Alt+B) downloads larger models and recommends one for this computer; Recommended for this computer names it here. Speech Providers (Alt+V) sets up twelve cloud speech services with your own account; choosing one asks before anything is sent. More Dictation Settings holds hold-to-talk, the live preview, Talking to the AI, OpenAI with your own key, and My Dictation Instructions.",
-    "keystrokes": [
-      "Alt+Shift+F6"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_recent",
-    "title": "Recent Phrases",
-    "body": "The last twenty phrases you dictated this session, newest first, then words kept from before: phrases that were not written because dictation was paused or typing stopped, a review that did not finish, and, with Keep a dictation history on in More Dictation Settings, earlier phrases. Enter writes the chosen phrase at the cursor again, and kept words are deleted once written; Copy puts it on the clipboard; Discard deletes kept words unwritten; Clear History deletes the history after asking.",
-    "keystrokes": [
-      "Shift+F11"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_words",
-    "title": "My Words and Phrases",
-    "body": "Teach dictation your words: names and jargon spelled your way, your own spoken phrases, and corrections for what the engine keeps hearing wrong. With OpenAI dictation your words are also sent as words to expect.",
-    "keystrokes": [
-      "Alt+Shift+F10"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_transcribe_file",
-    "title": "Transcribe a Recording",
-    "body": "Turns a recording into text in the background while you keep working: MP3, M4A, AAC, WAV, Ogg, Opus, FLAC or WMA. Choose the file, the speech model (the most accurate one on this computer is chosen for you, with an estimate of how long it will take), the language, and whether the text goes into a new document or at the cursor. Paragraphs start where the recording pauses. Timestamps, like [00:01:23], are off unless you check Add timestamps. You hear the percentage at each quarter and one sentence when it is done. Press Shift+F5 again to see how far it has got, or to stop it. OpenAI is offered only with your own key, and asks before the recording is sent.",
-    "keystrokes": [
-      "Shift+F5"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
     "id": "tools.dictation_tidy",
     "title": "Tidy Dictated Text",
     "body": "Sends the selection, or the paragraph the cursor is in, to the AI to fix what speech recognition misheard, with your own My Dictation Instructions if you wrote any. Needs a ChatGPT subscription or your own AI key. Nothing changes until you choose Replace My Selection.",
     "keystrokes": [
       "Ctrl+F3"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.dictation_toggle",
+    "title": "Dictation",
+    "body": "Start or stop dictation, turning your speech into text at the cursor using the on-device speech engine.",
+    "keystrokes": [
+      "QUILL Key + D"
     ],
     "user_guide_section": "tools"
   },
@@ -3289,6 +3241,15 @@
     "title": "External Tools and Format Support...",
     "body": "Manage the optional external tools and format converters QUILL can use, and see which are installed.",
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.find_recording_chapters",
+    "title": "Find Chapters in a Recording",
+    "body": "Pick any recording -- a lecture, a meeting, an MP3 you were sent -- and the Chapter Workbench opens on it and proposes chapters where it falls silent, titled Proposed chapter 1, 2 and so on. If the recording already has chapters you choose whether to keep them and add only new boundaries, or replace them. Press the button again to stop the scan. Hear each boundary, move it to the playhead, rename it, and Save; Restore original undoes the proposal.",
+    "keystrokes": [
+      "QUILL Key + Shift+O"
+    ],
+    "user_guide_section": "navigation"
   },
   {
     "id": "tools.glow_audit_document",
@@ -3755,6 +3716,96 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.windows_dictation_command",
+    "title": "Speak a Command",
+    "body": "The keyboard way to give dictation a command. Press it, and the next thing you say is a command, as if you had said the command word, QUILL, first: press F11, then say scratch that. Press it twice and you are in command mode, where everything you say is a command until you say dictation mode, press it again, or give no command for eight seconds; a falling tone says it has ended. If dictation is off, it starts dictation here first. Anything that is not a command is never typed: you hear Not a command, and saying QUILL type that writes it after all. The command word, strict mode and how long command mode lasts are in More Dictation Settings.",
+    "keystrokes": [
+      "F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_context",
+    "title": "Dictation Context for This Document",
+    "body": "Tell dictation what this document is, in a sentence: a formal letter to a client, notes to a friend, technical writing. It is remembered for this document. OpenAI dictation uses it to get names, titles and style right, and Tidy Dictated Text follows it with your instructions. The engines on this computer cannot be given a context. You can save a context under a name and pick it again later, or say dictation context and the name while dictating.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+PageUp"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_live_transcript",
+    "title": "Start or Stop Live Transcript",
+    "body": "For a lecture, a talk or a meeting. Opens a new, untitled document and writes everything it hears into it, quietly: no tone and no read-back for each phrase, and voice commands are written as words, except the stop phrase. A pause of four seconds starts a new paragraph, and Time stamps in live transcripts (More Dictation Settings) puts the time at the start of each one. You can keep working in other documents while it writes; the status bar shows how long it has run and how many words it has written, and Dictation Status says the same. Press this key again, or Ctrl+F11, to stop; the document stays open for you to save. Please record other people only when they have agreed.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+PageDown"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_recent",
+    "title": "Recent Phrases",
+    "body": "The last twenty phrases you dictated this session, newest first, then words kept from before: phrases that were not written because dictation was paused or typing stopped, a review that did not finish, and, with Keep a dictation history on in More Dictation Settings, earlier phrases. Enter writes the chosen phrase at the cursor again, and kept words are deleted once written; Copy puts it on the clipboard; Discard deletes kept words unwritten; Clear History deletes the history after asking.",
+    "keystrokes": [
+      "Shift+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_review",
+    "title": "Review Dictation",
+    "body": "Hold dictated words in a window before they go in. Press it while dictating and the last phrase is taken back out and opened for review; with nothing to take, the window opens empty, or with the words kept from a review that did not finish. Read the words with the arrow keys, type or keep dictating to change them, and with AI help on and your ChatGPT subscription or your own AI key, ask the AI to change them: type the instruction, or say QUILL make it shorter. What changed is said in two sentences at most. Control Enter inserts the words once, as one undo step; Escape discards them. Saying QUILL review that does the same as the key.",
+    "keystrokes": [
+      "Shift+F4"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_settings",
+    "title": "Dictation Settings",
+    "body": "Choose the speech engine, the microphone, the dictation language and what you hear after each phrase. The Speech engine list has the built-in Moonshine (the default) and Whisper, Windows speech recognition and voice typing, every model you downloaded with its tier (Lightweight, Balanced or High accuracy), OpenAI with your own key, and any speech provider you set up. Better Accuracy: Speech Models (Alt+B) downloads larger models and recommends one for this computer; Recommended for this computer names it here. Speech Providers (Alt+V) sets up twelve cloud speech services with your own account; choosing one asks before anything is sent. More Dictation Settings holds hold-to-talk, the live preview, Talking to the AI, OpenAI with your own key, and My Dictation Instructions.",
+    "keystrokes": [
+      "Alt+Shift+F6"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_switch_language",
+    "title": "Switch Dictation Language",
+    "body": "Switches dictation between English and Spanish without opening Dictation Settings, and remembers the choice, so the next time you dictate it starts in the language you used last. You hear English or Español. While you are dictating you can also say switch to Spanish, and in Spanish say cambiar a inglés to come back. The engine is reopened in the new language; if a model has to load the first time, there is a short wait.",
+    "keystrokes": [
+      "Ctrl+Shift+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_toggle",
+    "title": "Dictation On",
+    "body": "Live dictation: speak and each phrase is written when you pause. Press Ctrl+F11 to start dictating and press it again to stop; the last phrase is always kept. If you prefer to hold the key while you talk, turn on Hold the dictation key to talk in More Dictation Settings. Escape throws away the phrase being heard. In a text field such as Find or the AI Conversation window's message box, Ctrl+F11 dictates into that field. With Nemotron or OpenAI, the words heard so far show in the status bar and on a braille display while you speak.",
+    "keystrokes": [
+      "Ctrl+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_transcribe_file",
+    "title": "Transcribe a Recording",
+    "body": "Turns a recording into text in the background while you keep working: MP3, M4A, AAC, WAV, Ogg, Opus, FLAC or WMA. Choose the file, the speech model (the most accurate one on this computer is chosen for you, with an estimate of how long it will take), the language, and whether the text goes into a new document or at the cursor. Paragraphs start where the recording pauses. Timestamps, like [00:01:23], are off unless you check Add timestamps. You hear the percentage at each quarter and one sentence when it is done. Press Shift+F5 again to see how far it has got, or to stop it. OpenAI is offered only with your own key, and asks before the recording is sent.",
+    "keystrokes": [
+      "Shift+F5"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_words",
+    "title": "My Words and Phrases",
+    "body": "Teach dictation your words: names and jargon spelled your way, your own spoken phrases, and corrections for what the engine keeps hearing wrong. With OpenAI dictation your words are also sent as words to expect.",
+    "keystrokes": [
+      "Alt+Shift+F10"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
     "id": "tools.word_count",
     "title": "Word Count...",
     "body": "Show word, character, line, and paragraph counts for the document or the selection.",
@@ -4126,50 +4177,5 @@
       "Ctrl+Shift+G - Open Word Count"
     ],
     "user_guide_section": "tools-for-reading-review-and-inspection"
-  },
-  {
-    "id": "tools.windows_dictation_switch_language",
-    "title": "Switch Dictation Language",
-    "body": "Switches dictation between English and Spanish without opening Dictation Settings, and remembers the choice, so the next time you dictate it starts in the language you used last. You hear English or Español. While you are dictating you can also say switch to Spanish, and in Spanish say cambiar a inglés to come back. The engine is reopened in the new language; if a model has to load the first time, there is a short wait.",
-    "keystrokes": [
-      "Ctrl+Shift+F11"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_live_transcript",
-    "title": "Start or Stop Live Transcript",
-    "body": "For a lecture, a talk or a meeting. Opens a new, untitled document and writes everything it hears into it, quietly: no tone and no read-back for each phrase, and voice commands are written as words, except the stop phrase. A pause of four seconds starts a new paragraph, and Time stamps in live transcripts (More Dictation Settings) puts the time at the start of each one. You can keep working in other documents while it writes; the status bar shows how long it has run and how many words it has written, and Dictation Status says the same. Press this key again, or Ctrl+F11, to stop; the document stays open for you to save. Please record other people only when they have agreed.",
-    "keystrokes": [
-      "Ctrl+Alt+Shift+PageDown"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_context",
-    "title": "Dictation Context for This Document",
-    "body": "Tell dictation what this document is, in a sentence: a formal letter to a client, notes to a friend, technical writing. It is remembered for this document. OpenAI dictation uses it to get names, titles and style right, and Tidy Dictated Text follows it with your instructions. The engines on this computer cannot be given a context. You can save a context under a name and pick it again later, or say dictation context and the name while dictating.",
-    "keystrokes": [
-      "Ctrl+Alt+Shift+PageUp"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_command",
-    "title": "Speak a Command",
-    "body": "The keyboard way to give dictation a command. Press it, and the next thing you say is a command, as if you had said the command word, QUILL, first: press F11, then say scratch that. Press it twice and you are in command mode, where everything you say is a command until you say dictation mode, press it again, or give no command for eight seconds; a falling tone says it has ended. If dictation is off, it starts dictation here first. Anything that is not a command is never typed: you hear Not a command, and saying QUILL type that writes it after all. The command word, strict mode and how long command mode lasts are in More Dictation Settings.",
-    "keystrokes": [
-      "F11"
-    ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.windows_dictation_review",
-    "title": "Review Dictation",
-    "body": "Hold dictated words in a window before they go in. Press it while dictating and the last phrase is taken back out and opened for review; with nothing to take, the window opens empty, or with the words kept from a review that did not finish. Read the words with the arrow keys, type or keep dictating to change them, and with AI help on and your ChatGPT subscription or your own AI key, ask the AI to change them: type the instruction, or say QUILL make it shorter. What changed is said in two sentences at most. Control Enter inserts the words once, as one undo step; Escape discards them. Saying QUILL review that does the same as the key.",
-    "keystrokes": [
-      "Shift+F4"
-    ],
-    "user_guide_section": "tools"
   }
 ]

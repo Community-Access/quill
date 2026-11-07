@@ -17,6 +17,7 @@ from typing import Any
 import pytest
 import wx
 
+from quill.core.github.issue_templates import GitHubIssueTemplate
 from quill.core.github.items_provider import (
     GitHubItem,
     GitHubItemsError,
@@ -34,6 +35,7 @@ class _FakeProvider:
         self._authenticated = authenticated
         self._token = token
         self.created_issues: list[tuple[str, str, str]] = []
+        self.created_issue_options: list[tuple[tuple[str, ...], tuple[str, ...]]] = []
         self.created_pulls: list[tuple[str, str, str, str, str]] = []
         self.merged: list[tuple[str, int]] = []
         self.reran: list[tuple[str, int]] = []
@@ -52,8 +54,20 @@ class _FakeProvider:
     def token(self) -> str:
         return self._token
 
-    def create_issue(self, repo: str, title: str, body: str) -> GitHubItem:
+    def fetch_issue_templates(self, _repo: str) -> tuple[GitHubIssueTemplate, ...]:
+        return ()
+
+    def create_issue(
+        self,
+        repo: str,
+        title: str,
+        body: str,
+        *,
+        labels: tuple[str, ...] = (),
+        assignees: tuple[str, ...] = (),
+    ) -> GitHubItem:
         self.created_issues.append((repo, title, body))
+        self.created_issue_options.append((labels, assignees))
         return GitHubItem(number=101, title=title, state="open", url="", is_pr=False)
 
     def create_pull_request(
@@ -61,6 +75,9 @@ class _FakeProvider:
     ) -> GitHubItem:
         self.created_pulls.append((repo, title, body, head, base))
         return GitHubItem(number=102, title=title, state="open", url="", is_pr=True)
+
+    def search_items(self, _repo: str, _query: str, *, limit: int) -> list[GitHubItem]:
+        return []
 
     def merge_pull_request(self, repo: str, number: int, **_kw: Any) -> str:
         if self.raise_on_merge:
@@ -117,8 +134,9 @@ class _SyncThread:
 
 
 @pytest.fixture
-def dlg(wx_app, monkeypatch: pytest.MonkeyPatch):
+def dlg(wx_app, monkeypatch: pytest.MonkeyPatch, tmp_path):
     monkeypatch.setattr("quill.ui.github_items_dialog.threading.Thread", _SyncThread)
+    monkeypatch.setattr("quill.core.github.local_drafts.app_data_dir", lambda: tmp_path)
     patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     frame = wx.Frame(None)
     provider = _FakeProvider()
@@ -148,10 +166,112 @@ def test_actions_menu_requires_a_loaded_repo(dlg) -> None:
     assert "Load a repository" in dlg.announcements[-1]
 
 
+def test_back_forward_navigation_controls_are_named_and_stateful(dlg) -> None:
+    from quill.core.github.navigation_state import GitHubItemsContext
+
+    assert dlg._back_btn.GetName() == "Return to the previous GitHub repository or item"
+    assert dlg._forward_btn.GetName() == "Move forward to the next GitHub repository or item"
+    assert not dlg._back_btn.IsEnabled()
+    assert not dlg._forward_btn.IsEnabled()
+    dlg._navigation_state.record(
+        GitHubItemsContext(repository="owner/repo", selected_key="issue:1")
+    )
+    dlg._navigation_state.record(
+        GitHubItemsContext(repository="owner/repo", selected_key="issue:2")
+    )
+    dlg._update_navigation_buttons()
+    assert dlg._back_btn.IsEnabled()
+    assert not dlg._forward_btn.IsEnabled()
+    dlg._navigation_state.back()
+    dlg._update_navigation_buttons()
+    assert not dlg._back_btn.IsEnabled()
+    assert dlg._forward_btn.IsEnabled()
+
+
 def test_actions_menu_requires_authentication(dlg) -> None:
     dlg._provider = _FakeProvider(authenticated=False)
     dlg._on_actions_menu(None)
     assert "signed-in" in dlg.announcements[-1]
+
+
+def test_review_selected_pr_opens_review_reader(dlg, monkeypatch: pytest.MonkeyPatch) -> None:
+    pr = GitHubItem(number=5, title="Fix it", state="open", url="", is_pr=True)
+    dlg._rows = [pr]
+    dlg._list.InsertItem(0, "Fix it")
+    dlg._list.Select(0)
+    opened: list[tuple[str, int]] = []
+
+    class _ReviewDialog:
+        def __init__(self, _parent, _provider, repo: str, number: int, **_kwargs) -> None:
+            opened.append((repo, number))
+
+        def show(self) -> None:
+            return None
+
+    monkeypatch.setattr("quill.ui.github_pr_review_dialog.GitHubPullReviewDialog", _ReviewDialog)
+
+    dlg._on_review()
+
+    assert opened == [("owner/repo", 5)]
+
+
+def test_pr_context_menu_exposes_review_and_copy_actions(dlg, monkeypatch) -> None:
+    pr = GitHubItem(
+        number=5,
+        title="Fix it",
+        state="open",
+        url="https://github.com/owner/repo/pull/5",
+        is_pr=True,
+    )
+    dlg._rows = [pr]
+    dlg._list.InsertItem(0, "Fix it")
+    dlg._list.Select(0)
+    labels: list[str] = []
+    monkeypatch.setattr(
+        wx.ListCtrl,
+        "PopupMenu",
+        lambda _self, menu: labels.extend(item.GetItemLabelText() for item in menu.GetMenuItems()),
+    )
+
+    dlg._on_item_context_menu(None)
+
+    assert "Open Review..." in labels
+    assert "Open File Differences..." in labels
+    assert "Copy Link" in labels
+    assert "Copy Details" in labels
+
+
+def test_codespaces_handoff_discloses_billing_and_preserves_selected_branch(
+    dlg, monkeypatch
+) -> None:
+    from quill.core.github.items_provider import GitHubBranch
+
+    class _ConfirmDialog:
+        def __init__(self, _parent, message: str, *_args, **_kwargs) -> None:
+            self.message = message
+
+        def Destroy(self) -> None:
+            return None
+
+    monkeypatch.setattr(wx, "MessageDialog", _ConfirmDialog)
+    urls: list[str] = []
+    monkeypatch.setattr(
+        "quill.ui.github_items_dialog_menus.webbrowser.open",
+        lambda url, **_kwargs: urls.append(url) or True,
+    )
+    confirmed = []
+
+    def _confirm(dialog, title):
+        confirmed.append((dialog.message, title))
+        return wx.ID_YES
+
+    dlg._show_modal = _confirm
+    dlg._open_in_codespaces(GitHubBranch(name="feature/demo", commit_sha="abc"))
+
+    assert urls == ["https://codespaces.new/owner/repo/tree/feature%2Fdemo"]
+    assert "can incur charges" in confirmed[0][0]
+    assert "will not create a Codespace" in confirmed[0][0]
+    assert "attach your GitHub token" in confirmed[0][0]
 
 
 # ---------------------------------------------------------------------------
@@ -160,17 +280,207 @@ def test_actions_menu_requires_authentication(dlg) -> None:
 
 
 def test_new_issue_creates_via_provider(dlg, monkeypatch: pytest.MonkeyPatch) -> None:
-    values = iter(["Bug title", "steps to repro"])
-    monkeypatch.setattr(wx, "TextEntryDialog", lambda *a, **k: _FakeTextEntry(next(values, "")))
+    from quill.ui.github_issue_draft_dialog import GitHubIssueDraft
+
+    class _FakeIssueDraftDialog:
+        def __init__(self, *_args, **_kwargs) -> None:
+            return None
+
+        def show(self):
+            return GitHubIssueDraft("Bug title", "steps to repro", (), ())
+
+    monkeypatch.setattr(
+        "quill.ui.github_issue_draft_dialog.GitHubIssueDraftDialog",
+        _FakeIssueDraftDialog,
+    )
+    monkeypatch.setattr(
+        "quill.ui.github_items_dialog_issue_templates.threading.Thread", _SyncThread
+    )
     dlg._new_issue()
     assert dlg._provider.created_issues == [("owner/repo", "Bug title", "steps to repro")]
     assert "Created ISSUE #101" in dlg.statuses[-1]
 
 
+def test_new_issue_uses_the_selected_repository_template(dlg, monkeypatch) -> None:
+    template = GitHubIssueTemplate(
+        name="Bug report",
+        filename="bug.md",
+        about="Report a bug",
+        title="[Bug] ",
+        body="## Steps\nDescribe the steps.",
+        labels=("bug",),
+        assignees=("alice",),
+    )
+    monkeypatch.setattr(dlg._provider, "fetch_issue_templates", lambda _repo: (template,))
+
+    class _ChoiceDialog:
+        def __init__(self, *_args, **_kwargs) -> None:
+            return None
+
+        def SetName(self, _name: str) -> None:
+            return None
+
+        def GetSelection(self) -> int:
+            return 1
+
+        def Destroy(self) -> None:
+            return None
+
+    monkeypatch.setattr(wx, "SingleChoiceDialog", _ChoiceDialog)
+    selected: list[dict[str, object]] = []
+    monkeypatch.setattr(dlg, "_prompt_and_create", lambda **kwargs: selected.append(kwargs))
+
+    dlg._new_issue()
+
+    assert selected == [{"kind": "issue", "template": template}]
+
+
+def test_new_issue_form_hands_off_to_browser_with_explanation(dlg, monkeypatch) -> None:
+    template = GitHubIssueTemplate(
+        name="Feature request",
+        filename="feature.yml",
+        about="Structured request",
+        url="https://github.com/owner/repo/blob/main/.github/ISSUE_TEMPLATE/feature.yml",
+        supported=False,
+    )
+    monkeypatch.setattr(dlg._provider, "fetch_issue_templates", lambda _repo: (template,))
+
+    class _ChoiceDialog:
+        def __init__(self, *_args, **_kwargs) -> None:
+            return None
+
+        def SetName(self, _name: str) -> None:
+            return None
+
+        def GetSelection(self) -> int:
+            return 1
+
+        def Destroy(self) -> None:
+            return None
+
+    monkeypatch.setattr(wx, "SingleChoiceDialog", _ChoiceDialog)
+    opened: list[tuple[GitHubIssueTemplate, str]] = []
+    monkeypatch.setattr(
+        dlg,
+        "_open_template_in_browser",
+        lambda selected, reason: opened.append((selected, reason)),
+    )
+
+    dlg._new_issue()
+
+    assert opened == [(template, "This structured issue form is completed on GitHub.")]
+
+
+def test_new_issue_warns_about_similar_issues_before_creating(dlg, monkeypatch) -> None:
+    from quill.ui.github_issue_draft_dialog import GitHubIssueDraft
+
+    class _FakeIssueDraftDialog:
+        def __init__(self, *_args, **_kwargs) -> None:
+            return None
+
+        def show(self):
+            return GitHubIssueDraft("Existing bug title", "Reproduction steps", (), ())
+
+    monkeypatch.setattr(
+        "quill.ui.github_issue_draft_dialog.GitHubIssueDraftDialog",
+        _FakeIssueDraftDialog,
+    )
+    dlg._provider.search_items = lambda *_args, **_kwargs: [
+        GitHubItem(
+            number=77,
+            title="Existing bug title",
+            state="open",
+            url="https://github.com/owner/repo/issues/77",
+            is_pr=False,
+        )
+    ]
+
+    class _FakeMessageDialog:
+        def __init__(self, _parent, message: str, *_args, **_kwargs) -> None:
+            self.message = message
+
+        def Destroy(self) -> None:
+            return None
+
+    monkeypatch.setattr(wx, "MessageDialog", _FakeMessageDialog)
+    monkeypatch.setattr(
+        "quill.ui.github_items_dialog_issue_templates.threading.Thread", _SyncThread
+    )
+
+    def _confirm(dialog, _title):
+        if isinstance(dialog, _FakeMessageDialog):
+            assert "#77: Existing bug title" in dialog.message
+            return wx.ID_NO
+        return wx.ID_OK
+
+    dlg._show_modal = _confirm
+    dlg._new_issue()
+
+    assert dlg._provider.created_issues == []
+    assert "cancelled after duplicate suggestions" in dlg.announcements[-1]
+
+
 def test_new_issue_cancelled_at_title_does_nothing(dlg, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(wx, "TextEntryDialog", lambda *a, **k: _FakeTextEntry("", ok=False))
+    class _CancelledIssueDraftDialog:
+        def __init__(self, *_args, **_kwargs) -> None:
+            return None
+
+        def show(self):
+            return None
+
+    monkeypatch.setattr(
+        "quill.ui.github_issue_draft_dialog.GitHubIssueDraftDialog",
+        _CancelledIssueDraftDialog,
+    )
     dlg._new_issue()
     assert dlg._provider.created_issues == []
+
+
+def test_new_issue_submits_edited_template_metadata(dlg, monkeypatch) -> None:
+    from quill.ui.github_issue_draft_dialog import GitHubIssueDraft
+
+    template = GitHubIssueTemplate(
+        name="Bug report",
+        filename="bug.md",
+        title="[Bug] ",
+        body="Template body",
+        labels=("bug",),
+        assignees=("alice",),
+    )
+    monkeypatch.setattr(dlg._provider, "fetch_issue_templates", lambda _repo: (template,))
+
+    class _FakeDraftDialog:
+        def __init__(self, _parent, selected_template, **_kwargs) -> None:
+            assert selected_template is template
+
+        def show(self):
+            return GitHubIssueDraft("[Bug] edited", "Edited body", ("bug",), ("alice",))
+
+    class _ChoiceDialog:
+        def __init__(self, *_args, **_kwargs) -> None:
+            return None
+
+        def SetName(self, _name: str) -> None:
+            return None
+
+        def GetSelection(self) -> int:
+            return 1
+
+        def Destroy(self) -> None:
+            return None
+
+    monkeypatch.setattr(wx, "SingleChoiceDialog", _ChoiceDialog)
+    monkeypatch.setattr(
+        "quill.ui.github_issue_draft_dialog.GitHubIssueDraftDialog", _FakeDraftDialog
+    )
+    monkeypatch.setattr(
+        "quill.ui.github_items_dialog_issue_templates.threading.Thread", _SyncThread
+    )
+
+    dlg._new_issue()
+
+    assert dlg._provider.created_issues == [("owner/repo", "[Bug] edited", "Edited body")]
+    assert dlg._provider.created_issue_options == [(("bug",), ("alice",))]
 
 
 def test_new_pull_request_requires_head_and_base(dlg, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -264,18 +574,18 @@ def test_delete_selected_branch(dlg, monkeypatch: pytest.MonkeyPatch) -> None:
 def test_rerun_selected_workflow(dlg) -> None:
     from quill.core.github.items_provider import GitHubWorkflowRun
 
-    run = GitHubWorkflowRun(name="CI", status="completed", run_number=7)
+    run = GitHubWorkflowRun(name="CI", status="completed", run_number=7, id=700)
     dlg._rows = [run]
     dlg._selected_indices = lambda: [0]
     dlg._confirm_action = lambda message, title: True
     dlg._rerun_selected_workflow()
-    assert dlg._provider.reran == [("owner/repo", 7)]
+    assert dlg._provider.reran == [("owner/repo", 700)]
 
 
 def test_rerun_declined(dlg) -> None:
     from quill.core.github.items_provider import GitHubWorkflowRun
 
-    run = GitHubWorkflowRun(name="CI", status="completed", run_number=7)
+    run = GitHubWorkflowRun(name="CI", status="completed", run_number=7, id=700)
     dlg._rows = [run]
     dlg._selected_indices = lambda: [0]
     dlg._confirm_action = lambda message, title: False
@@ -297,6 +607,7 @@ def test_view_artifacts_opens_the_dialog_for_the_selected_run(
         name="CI",
         status="completed",
         run_number=7,
+        id=700,
         url="https://github.com/owner/repo/actions/runs/7",
     )
     dlg._rows = [run]
@@ -317,7 +628,7 @@ def test_view_artifacts_opens_the_dialog_for_the_selected_run(
     assert opened == [
         {
             "repo": "owner/repo",
-            "run_id": 7,
+            "run_id": 700,
             "run_label": "#7 - CI",
             "run_url": "https://github.com/owner/repo/actions/runs/7",
             "announce_cb": dlg._announce,

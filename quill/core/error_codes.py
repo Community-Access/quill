@@ -106,6 +106,10 @@ USER_HINTS: dict[str, str] = {
         "Install git from Help > Download Optional Components, then open "
         "Tools > Local Git > Worktrees... again."
     ),
+    "QUILL-GITHUB-PROJECTS-ERROR": (
+        "Check the GitHub token, organization SSO, and repository/project permissions, then "
+        "retry from File > Open from Remote > GitHub Items > Projects."
+    ),
 }
 
 

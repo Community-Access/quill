@@ -127,17 +127,12 @@ class CommandRegistryMixin:
             None,
         )
         self.commands.register(
-            "file.github_manage_accounts",
-            "Manage GitHub Accounts...",
-            self.manage_github_accounts,
-            None,
-        )
-        self.commands.register(
             "file.open_github_items",
             "Open GitHub Items...",
             self.open_github_items_viewer,
             None,
         )
+        self._register_github_reference_command()
         self.commands.register(
             "tools.open_python_console",
             "Open Python Console...",

@@ -21,6 +21,7 @@ shipping "needs on-device confirmation").
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 
 from quill.core.error_codes import CodedError
@@ -61,33 +62,105 @@ class CodespaceInfo:
     git_status_ahead: int = 0
     git_status_behind: int = 0
     created_at: str = ""
+    last_used_at: str = ""
+    machine_display_name: str = ""
+    location: str = ""
 
 
-_CODESPACE_JSON_FIELDS = "name,displayName,repository,state,gitStatus,createdAt"
+_CODESPACE_JSON_FIELDS = (
+    "name,displayName,repository,state,gitStatus,createdAt,lastUsedAt,machineDisplayName,location"
+)
+_CODESPACE_NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,78}[a-z0-9])?$")
+_LOGIN_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$")
+
+
+def _codespace_name(value: str) -> str:
+    name = value.strip().casefold()
+    if not _CODESPACE_NAME_RE.fullmatch(name):
+        raise GhBridgeError("GitHub returned an invalid codespace name.")
+    return name
+
+
+def _codespace_info(row: object) -> CodespaceInfo:
+    if not isinstance(row, dict):
+        raise GhBridgeError("GitHub returned an invalid codespace record.")
+    git_status = row.get("gitStatus")
+    if not isinstance(git_status, dict):
+        git_status = {}
+    try:
+        ahead = max(0, int(git_status.get("ahead", 0) or 0))
+        behind = max(0, int(git_status.get("behind", 0) or 0))
+    except (TypeError, ValueError) as exc:
+        raise GhBridgeError("GitHub returned invalid codespace Git status.") from exc
+    return CodespaceInfo(
+        name=_codespace_name(str(row.get("name", ""))),
+        display_name=str(row.get("displayName", ""))[:128],
+        repository=str(row.get("repository", ""))[:256],
+        state=str(row.get("state", ""))[:64],
+        git_status_ahead=ahead,
+        git_status_behind=behind,
+        created_at=str(row.get("createdAt", ""))[:64],
+        last_used_at=str(row.get("lastUsedAt", ""))[:64],
+        machine_display_name=str(row.get("machineDisplayName", ""))[:128],
+        location=str(row.get("location", ""))[:64],
+    )
 
 
 def list_codespaces(*, gh_path: str, runner: Runner) -> list[CodespaceInfo]:
     """List the authenticated account's codespaces, across every repository."""
-    output = _run_ok(gh_path, runner, "codespace", "list", "--json", _CODESPACE_JSON_FIELDS)
+    output = _run_ok(
+        gh_path,
+        runner,
+        "codespace",
+        "list",
+        "--limit",
+        "50",
+        "--json",
+        _CODESPACE_JSON_FIELDS,
+    )
     try:
         rows = json.loads(output) if output.strip() else []
     except json.JSONDecodeError as exc:
         raise GhBridgeError(f"Could not parse codespace list: {exc}") from exc
-    out: list[CodespaceInfo] = []
-    for row in rows:
-        git_status = row.get("gitStatus") or {}
-        out.append(
-            CodespaceInfo(
-                name=str(row.get("name", "")),
-                display_name=str(row.get("displayName", "")),
-                repository=str(row.get("repository", "")),
-                state=str(row.get("state", "")),
-                git_status_ahead=int(git_status.get("ahead", 0) or 0),
-                git_status_behind=int(git_status.get("behind", 0) or 0),
-                created_at=str(row.get("createdAt", "")),
-            )
-        )
-    return out
+    if not isinstance(rows, list):
+        raise GhBridgeError("GitHub returned an invalid codespace list.")
+    return [_codespace_info(row) for row in rows[:50]]
+
+
+def authenticated_login(*, gh_path: str, runner: Runner) -> str:
+    """Return the account selected in ``gh`` without exposing its token."""
+    login = _run_ok(gh_path, runner, "api", "user", "--jq", ".login").strip()
+    if not _LOGIN_RE.fullmatch(login):
+        raise GhBridgeError("GitHub CLI did not report a valid signed-in account.")
+    return login
+
+
+def view_codespace(name: str, *, gh_path: str, runner: Runner) -> CodespaceInfo:
+    """Refresh health and repository status for one existing codespace."""
+    target = _codespace_name(name)
+    output = _run_ok(
+        gh_path,
+        runner,
+        "codespace",
+        "view",
+        "--codespace",
+        target,
+        "--json",
+        _CODESPACE_JSON_FIELDS,
+    )
+    try:
+        row = json.loads(output)
+    except json.JSONDecodeError as exc:
+        raise GhBridgeError(f"Could not parse codespace details: {exc}") from exc
+    return _codespace_info(row)
+
+
+def open_codespace(name: str, *, gh_path: str, runner: Runner, web: bool = True) -> None:
+    """Open a named codespace in VS Code Web or desktop VS Code."""
+    args = ["codespace", "code", "--codespace", _codespace_name(name)]
+    if web:
+        args.append("--web")
+    _run_ok(gh_path, runner, *args, timeout_seconds=60.0)
 
 
 def create_codespace(
@@ -100,6 +173,8 @@ def create_codespace(
     action in this codebase; this function itself does not gate on
     anything beyond the `gh` call succeeding.
     """
+    if not repo or len(repo) > 256 or "/" not in repo or any(ch.isspace() for ch in repo):
+        raise GhBridgeError("Enter a repository as owner/repo for the codespace.")
     args = ["codespace", "create", "--repo", repo, "--json", "name"]
     if branch:
         args.extend(["--branch", branch])
@@ -108,9 +183,10 @@ def create_codespace(
         parsed = json.loads(output) if output.strip() else {}
     except json.JSONDecodeError as exc:
         raise GhBridgeError(f"Could not parse codespace create result: {exc}") from exc
-    name = str(parsed.get("name", "")) if isinstance(parsed, dict) else str(output).strip()
-    if not name:
+    raw_name = str(parsed.get("name", "")).strip() if isinstance(parsed, dict) else ""
+    if not raw_name:
         raise GhBridgeError("gh codespace create did not report a codespace name.")
+    name = _codespace_name(raw_name)
     matches = [c for c in list_codespaces(gh_path=gh_path, runner=runner) if c.name == name]
     if matches:
         return matches[0]
@@ -118,11 +194,19 @@ def create_codespace(
 
 
 def stop_codespace(name: str, *, gh_path: str, runner: Runner) -> None:
-    _run_ok(gh_path, runner, "codespace", "stop", "--codespace", name)
+    _run_ok(gh_path, runner, "codespace", "stop", "--codespace", _codespace_name(name))
 
 
 def delete_codespace(name: str, *, gh_path: str, runner: Runner) -> None:
-    _run_ok(gh_path, runner, "codespace", "delete", "--codespace", name, "--force")
+    _run_ok(
+        gh_path,
+        runner,
+        "codespace",
+        "delete",
+        "--codespace",
+        _codespace_name(name),
+        "--force",
+    )
 
 
 def codespace_ssh_config(name: str, *, gh_path: str, runner: Runner) -> str:
@@ -134,15 +218,26 @@ def codespace_ssh_config(name: str, *, gh_path: str, runner: Runner) -> str:
     Returned verbatim; parsing it into a structured connection descriptor is
     a follow-up, not yet needed by anything in this codebase.
     """
-    return _run_ok(gh_path, runner, "codespace", "ssh", "--codespace", name, "--config")
+    return _run_ok(
+        gh_path,
+        runner,
+        "codespace",
+        "ssh",
+        "--codespace",
+        _codespace_name(name),
+        "--config",
+    )
 
 
 __all__ = [
     "CodespaceInfo",
     "GhBridgeError",
+    "authenticated_login",
     "codespace_ssh_config",
     "create_codespace",
     "delete_codespace",
     "list_codespaces",
+    "open_codespace",
     "stop_codespace",
+    "view_codespace",
 ]

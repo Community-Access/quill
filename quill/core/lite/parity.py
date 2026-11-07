@@ -316,6 +316,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_find": "edit.find",
     "cmd_find_all": "edit.find_all_matches",
     "cmd_find_open_docs": "edit.find_in_open_documents",
+    "cmd_github_workbench": "file.open_github_items",
     "cmd_find_next": "edit.find_next",
     "cmd_find_previous": "edit.find_previous",
     "cmd_focus_status_bar": "navigate.next_region",

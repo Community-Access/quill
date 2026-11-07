@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from quill.core.github.local_repo import detect_github_repo, parse_github_remote_url
+from quill.core.github.local_repo import (
+    detect_github_remotes,
+    detect_github_repo,
+    parse_github_remote_url,
+)
 
 
 def test_parse_github_remote_url_covers_the_three_shapes() -> None:
@@ -60,3 +64,22 @@ def test_worktree_gitdir_pointer_is_followed(tmp_path: Path) -> None:
     linked.mkdir(parents=True)
     (worktree / ".git").write_text(f"gitdir: {linked}\n", encoding="utf-8")
     assert detect_github_repo(worktree / "file.md") == "o/r"
+
+
+def test_detect_github_remotes_includes_fork_upstream_without_exposing_urls(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "fork"
+    config = repo / ".git" / "config"
+    config.parent.mkdir(parents=True)
+    config.write_text(
+        '[remote "origin"]\n\turl = https://github.com/alice/quill.git\n'
+        + '[remote "upstream"]\n\turl = https://github.com/Community-Access/quill.git\n'
+        + '[remote "private"]\n\turl = https://secret@github.com/private/repo.git\n',
+        encoding="utf-8",
+    )
+
+    assert detect_github_remotes(repo / "README.md") == (
+        "alice/quill",
+        "Community-Access/quill",
+    )
