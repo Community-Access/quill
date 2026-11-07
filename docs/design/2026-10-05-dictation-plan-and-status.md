@@ -3573,6 +3573,63 @@ coherent fix and changes at least one recommendation (the quickest Spanish
 model), so it is a decision for Jeff, not taken here; until then the weekly run
 reports it.
 
+## 40. Report reconciliation: paired hotword measurements, not adoption
+
+The preserved dictation worktree is an older experiment, not the current
+dictation implementation. Its `SplitLongPhrases` is superseded by the shared
+`ChunkedOffline` implementation with overlap and seam de-duplication. Do not
+copy the old decoder, re-enable experimental flags, or replace this record
+with the old draft.
+
+`scripts/bench_hotwords_compare.py` adds a bounded, developer-only D-28
+comparison. It reads four existing `dictbench --json` reports: a names set and
+a held-out B-1 set, each decoded with and without hotwords, plus the same
+one-name-per-line vocabulary used by the experiment. It does not run models,
+change decoding settings, download anything, play audio or modify adoption
+flags. Prepare paired runs using the same model, source audio, language,
+normalization and decoding settings except for hotwords; separately record
+the exact model hashes/licences and machine configuration.
+
+```powershell
+python scripts\bench_hotwords_compare.py --names S:\bench\names.txt --names-without S:\bench\names-without.json --names-with S:\bench\names-with.json --b1-without S:\bench\b1-without.json --b1-with S:\bench\b1-with.json --real-heldout --out S:\bench\hotwords-comparison.json
+```
+
+Only give `--real-heldout` when the two sets really are consented, real speech
+held out from training; the tool records the operator's attestation, not proof.
+Without it the result is `insufficient_evidence`, even if the numeric comparison
+looks good. Synthetic test inputs validate the tool, never recognition quality.
+
+The measurement reports distinct names recognized at least once in their
+corresponding reference clips; it is not per-occurrence recall. For this
+comparison, "50 percent better" means at least 1.5 times the baseline's distinct
+name count, across a vocabulary of at least 20 names. A zero-hit baseline is
+inconclusive because that relative increase is undefined. B-1 WER must not
+increase, using the shared word-error scorer and raw integer counts rather
+than rounded report summaries. Missing clips, changed references/durations,
+failed recognition, unused vocabulary names and malformed reports are errors,
+not passing or zero-error rows.
+
+The aggregate JSON contains counts, limitations and SHA-256 hashes of all
+five input files, not transcript text or personal vocabulary entries. Exit 0
+means the measurement criteria were met; exit 1 means they were not met or
+evidence was insufficient; invalid input or a failed write exits 2. Output is
+atomic and must not overwrite an input. Reports cannot prove identical source
+audio or model provenance from filenames and durations alone.
+Run comparisons separately for each language, speaker cohort and condition:
+an aggregate pass cannot establish non-regression for every group. If an
+invocation fails, any existing output is unchanged and the CLI explicitly
+warns that no new result was written; do not treat an older report as that run.
+
+**Still open:** real paired runs, hotword-capable model selection and
+pinning, licensing, CPU/RAM/latency and screen-reader acceptance. The
+keyword-spotting, punctuation, speaker and TTS runners shipped in
+`scripts/bench_post_passes.py` (section 41).
+`HOTWORDS_ENABLED`, `PUNCTUATION_ADOPTED` and `SPEAKERS_ADOPTED` remain
+off. A `measurement_pass` is not a product-adoption or release decision,
+and Sherpa Kokoro still requires model/voice licensing and human listening.
+The legacy-engine notice and the consented, containment-safe cleanup of the
+old model folders are no longer open: both shipped in section 41 (PR 1772).
+
 ## 41. Measured 2026-10-17, landed 2026-11-06: the extras benchmarks, two deprecations, and Nemotron's last word
 
 Work measured and written on 2026-10-17 and paused before it was merged. It

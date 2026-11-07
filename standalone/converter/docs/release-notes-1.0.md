@@ -307,6 +307,20 @@ gets file details, never folders or the sound, and Safe Mode turns the menu off.
   Ctrl+Alt+Shift+F11). Quill Converter does not transcribe; the user guide
   points to QUILL Transcribe and QUILL for that.
 
+### More from Auphonic
+
+- **Production History** (Ctrl+Alt+H) lists every production you have sent,
+  with its status and folder. Press Enter on one to download its results
+  again, never over a file you already have. Refresh from Auphonic brings the
+  statuses up to date and adds productions you made elsewhere.
+- **Auphonic Account** (Ctrl+Alt+Shift+A) shows your credits and plan, and
+  signs you in or out. If Windows will not store or remove the token, it
+  says so instead of claiming it worked.
+- In Process with Auphonic, **Tags, Cover and Chapter Marks** sets an artist,
+  album, cover picture and chapter marks, and **More Options** sets your own
+  loudness and noise reduction, a second format, and captions with a
+  transcript. The confirmation lists all of it before anything is uploaded.
+
 ## Fixes since the July build
 
 - **AIFF output works.** AIFF and AU are written in the byte order those formats
