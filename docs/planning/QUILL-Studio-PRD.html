@@ -248,12 +248,13 @@ Studio — Accessible Media Creation and Verification</h1>
 <h2
 id="consolidated-product-requirements-document-planning">Consolidated
 Product Requirements Document (planning)</h2>
-<p><strong>Version:</strong> 1.1 consolidated plan ·
-<strong>Date:</strong> 2026-10-26 · <strong>Status:</strong> Design
-specification for work not yet built. What QUILL Studio already does is
-specified in its shipped-features PRD, <a
+<p><strong>Version:</strong> 1.2 consolidated plan ·
+<strong>Status:</strong> Requirements and remaining work, reconciled
+against the current source. Implemented behavior is specified in <a
 href="../../standalone/studio/docs/prd.md"><code>standalone/studio/docs/prd.md</code></a>;
-a requirement moves there when it ships and leaves one line here.</p>
+implemented, automatically tested, manually accepted and publicly
+released are separate states. A source implementation alone does not
+close an acceptance gate.</p>
 <p><strong>Product decision:</strong> Rename <strong>QUILL Audio
 Studio</strong> to <strong>QUILL Studio</strong>, maintaining the
 <em>same</em> application, shared source implementation, library,
@@ -271,10 +272,13 @@ confirmation. Deterministically provable properties must be
 machine-tested; uncertain visual/semantic judgments must be labeled and
 escalated rather than represented as guarantees.</p>
 </blockquote>
-<p><strong>Next to build:</strong> the recorded demonstration in <a
-href="#7a-record-a-demonstration-version-1-next-to-build">section
-7A</a>: one window or the whole desktop, with chosen sounds, saved as
-one video file.</p>
+<p><strong>Current delivery priority:</strong> finish acceptance and
+documented gaps in the implemented recorded-demonstration workflow in <a
+href="#7a-record-a-demonstration-version-1">section 7A</a>. Do not
+rebuild it from the old snapshot. The full private/program/stem routing
+engine, multitrack editing and complete live-production environment
+remain separate expansion work; the Windows session mixer is not that
+engine.</p>
 <h2 id="1-decisions-and-evidence-hierarchy">1. Decisions and evidence
 hierarchy</h2>
 <ol type="1">
@@ -314,12 +318,13 @@ describes QUILL Studio functionality in its own terms. VB-CABLE is the
 only named optional external tool/integration. Existing internal
 implementation dependencies are governed by engineering and license
 compliance, not presented as recommended companion products.</li>
-<li><strong>Supersedes:</strong> the committed copy of the earlier
-consolidated proposal, <a
-href="../design/quill-studio-prd.md"><code>docs/design/quill-studio-prd.md</code></a>,
-and its coverage audit <a
+<li><strong>Supersedes:</strong> the earlier consolidated proposal
+(historical filename <code>docs/design/quill-studio-prd.md</code>, no
+longer a live document), and its coverage audit <a
 href="../design/quill-studio-screenshot-coverage.md"><code>docs/design/quill-studio-screenshot-coverage.md</code></a>,
-which predates the capture work in commit <code>5cc0023f</code>.</li>
+which predates the capture work in commit <code>5cc0023f</code>. The
+preserved root-level PRD drafts are historical inputs, not competing
+specifications.</li>
 <li><strong>Cart Wall withdrawn:</strong> Cart Wall (CW-001 to CW-009)
 withdrawn 2026-10-31 at the owner’s decision. The running order (PL-001
 to PL-007) and the Drop Deck engineering evidence in section 10C stay.
@@ -333,13 +338,14 @@ wording to copy into the app. A technical name here does not make it an
 appropriate button, menu item, announcement or help message. Section 3.1
 sets the language and simplicity requirements for the actual
 experience.</li>
-<li><strong>Delivered.</strong> A requirement the code now satisfies is
-replaced by one line, <em>Delivered: …</em>, naming the shipped
-requirement in <code>standalone/studio/docs/prd.md</code> (cited as
-<em>Studio PRD AS-n</em>). A requirement the code satisfies only in part
-keeps its full text, followed by a <em>Delivered so far</em> line and a
-<em>Remaining</em> line, so the planning text always says what is still
-to build.</li>
+<li><strong>Delivered in code.</strong> A fully implemented requirement
+points to its implementation requirement in
+<code>standalone/studio/docs/prd.md</code> (cited as <em>Studio PRD
+AS-n</em>). This is not a public-release or human-acceptance claim. A
+partial requirement keeps its full text, followed by <em>Delivered so
+far</em> and <em>Remaining</em> lines. Missing hardware, listening,
+installed-build or screen-reader evidence keeps the corresponding
+acceptance gate open.</li>
 <li><strong>IDs.</strong> This document’s own IDs are unchanged. Merged
 requirements take the prefix of the section they joined: the expanded
 audio-engine requirements MX-010 to MX-083 become MX-110 to MX-183 (add
@@ -385,27 +391,117 @@ services can be delivered at zero operating cost.</li>
 <li>Reproducing any other product’s source, UI text, branding or
 proprietary assets (LIC-006).</li>
 </ul>
+<h3 id="14-family-applicability-and-execution-baseline">1.4 Family
+applicability and execution baseline</h3>
+<p>The approved expansion is a phased program in the shared
+<code>quill</code> package, not a merge of the preserved Studio or
+dictation worktrees. Apply these boundaries to every increment:</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>QUILL Studio</th>
+<th>QUILL</th>
+<th>QUILL Lite</th>
+<th>Quill Radio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Narration, book assembly and Chapter Workbench</td>
+<td>Native journeys</td>
+<td>Existing embedded Audio Studio uses the same wizard/pipeline</td>
+<td>Not a second audiobook application</td>
+<td>Not an authoring application</td>
+</tr>
+<tr>
+<td>Dictation and recording transcription</td>
+<td>Shared speech services where offered</td>
+<td>Shared dictation/transcription</td>
+<td>Same shared dictation/transcription, not an old long-phrase
+decoder</td>
+<td>Dictate Here hands off to QUILL Transcribe; no duplicate
+recognizer</td>
+</tr>
+<tr>
+<td>Picture Maker</td>
+<td>Shared core and dialog</td>
+<td>Same implementation through WordPress Media and Files</td>
+<td>Same implementation through WordPress Media and Files</td>
+<td>Not applicable to station playback</td>
+</tr>
+<tr>
+<td>Screenshot/video recording, Windows session mixer, broadcast source
+client</td>
+<td>Native Studio commands</td>
+<td>Companion handoff through QuillVille while Studio is allowed in the
+build</td>
+<td>Tools &gt; Open QUILL Studio (<code>Alt+T</code>, then
+<code>Q</code>), also with no document open, while Studio is allowed in
+the build</td>
+<td>Companion handoff through QuillVille while Studio is allowed in the
+build; Radio’s output-device chooser remains native</td>
+</tr>
+<tr>
+<td>Speech models, audio backends, credentials and feedback</td>
+<td>Reuse shared services</td>
+<td>Reuse shared services</td>
+<td>Reuse shared services, preserving portable isolation and the
+own/shared word-list choice</td>
+<td>Reuse applicable playback/announcement services</td>
+</tr>
+</tbody>
+</table>
+<p>Studio remains release-gated. Fixing a developer-build launcher must
+not advertise or release it in public builds. Preserve its installed
+<code>QuillAudioStudio.exe</code> and portable
+<code>QuillAudioStudio</code> identities while displaying <strong>QUILL
+Studio</strong>; retain the newer launcher aliases for compatibility. Do
+not automatically launch, capture, record or send data during a handoff.
+Lite uses the shared launcher without sending the open document or
+offering an automatic download. Its existing editing keys are preserved;
+Keyboard Manager can assign a personal shortcut. A failed launch reports
+that Studio could not be opened instead of claiming success.</p>
+<p>The baseline already includes demonstration recording, camera
+controls, Windows session/device mixing, picture-and-sound video
+creation, video-frame questions and an Icecast/SHOUTcast source client
+(Studio PRD section 4.15). These implementations do not establish full
+DAW/NLE, routing or live-service acceptance. The detailed REC
+requirements and section 7A.7 limitations remain authoritative; no
+requirement in Appendix A is discarded by this reconciliation.</p>
+<p>The dictation program’s authority remains <a
+href="../design/2026-10-05-dictation-plan-and-status.md"><code>2026-10-05-dictation-plan-and-status.md</code></a>.
+The older <code>SplitLongPhrases</code> prototype is superseded by
+<code>ChunkedOffline</code>. Hotwords, keyword spotting, punctuation,
+speaker labels and Sherpa Kokoro remain experimental until their own
+measurements, licensing and listening gates pass. Sharing a service
+never enables an unaccepted experiment in another app.</p>
 <h2 id="2-preserve-the-existing-applications-layout-and-behavior">2.
 Preserve the existing application’s layout and behavior</h2>
 <h3 id="21-existing-shell-evolution-not-replacement">2.1 Existing shell:
 evolution, not replacement</h3>
-<p>Keep the startup <strong>book/library tree with initial
-focus</strong>, Favorites, In Progress, Recently Played, Inbox, existing
-folders, accessible status bar (F6 and arrow navigation), full menu bar,
-application tray, command palette (<code>Ctrl+Shift+P</code>), F1 help,
-existing preferences and shared voices, the narration/build wizard,
-Chapter Workbench, Book Tools, Sleep Timer, Play Queue, and
-converter/publisher. Do not displace current keyboard expectations.</p>
-<p><strong>Home design:</strong> One application main frame with a
-default <strong>Library</strong> workspace and a simple
-<strong>Create</strong> task menu/button. Add, in sensible order: Record
-audio, Mix audio, Record a demonstration, Capture or inspect screen,
-Edit audio/video, Create an image, Run a live show, Convert, Publish and
-Verify. The original three journeys—<strong>Narrate Documents, Build
-From Recordings, Edit a Book</strong>—remain first-class, identically
-named entry points. Users may pin their most-used workflows; startup may
-reopen the last workspace but should not silently change existing
-defaults.</p>
+<p>Keep the current <strong>quiet home with focus on its reviewable
+activity text</strong> and the separate <strong>Library Window</strong>
+(Studio PRD AS-1, AS-2), rather than restoring the older startup library
+tree. Preserve the Library Window’s Favorites, In Progress, Recently
+Played, Inbox and existing folders, the accessible status bar (F6 and
+arrow navigation), full menu bar, application tray, command palette
+(<code>Ctrl+Shift+P</code>), F1 help, preferences and shared voices,
+narration/build wizard, Chapter Workbench, Book Tools, Sleep Timer, Play
+Queue, and converter/publisher. Do not displace current keyboard
+expectations.</p>
+<p><strong>Home design:</strong> preserve the quiet main frame and
+explicit Library Window; the older proposal for a default Library
+workspace is superseded by Studio PRD AS-1 and AS-2. New Create/task
+entry points must not make books or a complex production surface
+mandatory at launch. Add remaining task entry points in sensible order
+without duplicating commands already present: Record audio, Mix audio,
+Record a demonstration, Capture or inspect screen, Edit audio/video,
+Create an image, Run a live show, Convert, Publish and Verify. The
+original three journeys—<strong>Narrate Documents, Build From
+Recordings, Edit a Book</strong>—remain first-class, identically named
+entry points. Any future pinned-workflow or workspace restoration must
+be explicit and preserve current startup defaults.</p>
 <p><strong>Menus:</strong> File (projects/library/import/export), Create
 (old and new journeys), Capture, Audio, Video, AI &amp; Visual
 Inspector, Tools, View, Help. <strong>Do not steal existing Alt menu
@@ -1709,8 +1805,9 @@ Studio capabilities with one command registry, one accessibility model
 and shared project state. <em>Delivered so far:</em> region snipping,
 zoom, annotation, timers, OCR, inspection, resizing, format conversion,
 command palette coverage, registration-failure reporting for global
-keys, and saved capture setups (Studio PRD AS-93 to AS-111).
-<em>Remaining:</em> screen recording (section 7A), clipboard
+keys, saved capture setups (Studio PRD AS-93 to AS-111), and
+demonstration recording (AS-120 to AS-125). <em>Remaining:</em> section
+7A.7’s recording limitations and manual acceptance, clipboard
 transformations beyond copying the image, and conflict detection against
 screen readers and the rest of the family.</p>
 <p><strong>CAP-005</strong> Offer <strong>Capture and Dictate</strong>:
@@ -1744,18 +1841,20 @@ geometric portion. Guided portions (Studio PRD AS-98) are geometry and
 cannot promise that a toolbar or dialog is wholly inside them; a
 semantic region must say how it was found and fail rather than guess
 when the landmark is ambiguous.</p>
-<h2 id="7a-record-a-demonstration-version-1-next-to-build">7A. Record a
-Demonstration, version 1 (next to build)</h2>
-<p><strong>Status:</strong> built 2026-10-29 on branch
-<code>feat/studio-demo-recording</code>, not yet released; see section
-7A.7 for what differs from this specification and what is still
-unverified. <strong>Priority:</strong> next. It is the first vertical
-slice of DEMO-001 and DEMO-002 (a screen-and-audio demonstration), the
-<em>screen recording</em> part of CAP-004, the first recording items of
-TRAY-001, and VERIFY-005 for one file. It reuses the capture picker,
-target identity rules, evidence reports, F1 help and hotkey services
-that shipped in 2.0.0 (Studio PRD section 4.14), and the shared
-FFmpeg.</p>
+<h2 id="7a-record-a-demonstration-version-1">7A. Record a Demonstration,
+version 1</h2>
+<p><strong>Status:</strong> implemented in the current shared source,
+originally built 2026-10-29 on branch
+<code>feat/studio-demo-recording</code>, not yet released; Studio PRD
+AS-120 to AS-125 summarize the implementation. See section 7A.7 for
+deviations and unverified acceptance. <strong>Priority:</strong> close
+those gaps, not another implementation of the same journey. It is the
+first vertical slice of DEMO-001 and DEMO-002 (a screen-and-audio
+demonstration), the <em>screen recording</em> part of CAP-004, the first
+recording items of TRAY-001, and VERIFY-005 for one file. It reuses the
+capture picker, target identity rules, evidence reports, F1 help and
+hotkey services in the 2.0.0 source baseline (Studio PRD section 4.14),
+and the shared FFmpeg.</p>
 <p><strong>User story.</strong> <em>I am a blind presenter. I choose
 Edge from the same list I use for screenshots, turn on “Edge’s sound”
 and “my microphone”, leave my screen reader out, hear one spoken summary
@@ -2508,8 +2607,8 @@ and at 200 percent text scaling. 15. On an 8 GB machine without a
 discrete GPU, a 30-minute 1080p30 display recording drops under 1
 percent of frames and stays within REC-008’s alignment target.</p>
 <h3 id="7a7-as-built-2026-10-29">7A.7 As built (2026-10-29)</h3>
-<p>The journey above is what ships, with these differences, each
-deliberate:</p>
+<p>The journey above is implemented, not publicly released, with these
+differences:</p>
 <ul>
 <li><strong>Window targets record the window’s screen area</strong>,
 through desktop duplication cropped to the window (or the GDI grabber
@@ -2574,17 +2673,43 @@ summary, naming, persistence), <code>demo_recording_ffmpeg.py</code>
 API added to <code>process_loopback.py</code> (the dictation gate is
 unchanged); <code>quill/apps/studio_demo.py</code>;
 <code>quill/ui/studio_demo_*.py</code>.</p>
-<p>Verified on the build machine: a 5-second display recording with a
+<p>Earlier build-machine evidence: a 5-second display recording with a
 tone-playing process as application sound, paused and resumed, came back
 Verified (one H.264 and one AAC stream, length and frame count within
 tolerance, the tone present); the camera overlay, offsets, mixing,
 concat and recovery paths run against the real FFmpeg on synthetic
-inputs (<code>tests/integration/test_demo_recording_finish.py</code>);
-the face detector runs on live camera frames. Not yet verified: a
-positive face detection with a person in front of the camera, a live
-microphone or camera recording, acceptance tests 12 to 15 (screen
-readers, braille, high contrast, 8 GB hardware), and spike S5’s
-30-minute alignment.</p>
+inputs
+(<code>tests/integration/test_demo_recording_finish.py</code>).</p>
+<p><strong>2026-11-05, explicitly authorized short device
+checks:</strong> a real Logi USB Headset microphone and Surface Camera
+Front were recorded locally, with no desktop capture or upload. The
+first run exposed a real defect: session persistence correctly omitted
+microphone enablement, but finalization then dropped its recorded audio.
+Finalization now recovers existing microphone stems without persisting
+an on state or opening a device. Six real-FFmpeg synthetic regressions
+first failed, then passed for sound-only, screen and camera-only output,
+including absent start metadata; a seventh ensures no microphone is
+enabled without a recorded stem.</p>
+<p>The subsequent live result was independently
+<strong>Verified</strong>: 11.52 seconds, 1280 by 720, one H.264 and one
+AAC stream, microphone samples preserved, mute exercised, clean decoding
+and BT.709 tags. The microphone was quiet (peak -55.2 dBFS); this does
+not establish intelligibility. Its measured short-run drift was 0.056 ms
+with no filled frames, discontinuities, overflows or stalls. Both
+devices were released and all temporary media deleted. Windows face
+detection processed 21 frames without an engine error and reported no
+face; positive live-person detection remains open. The camera output
+included 162 duplicated frames out of 343, so file-frame-count success
+does not prove native 30-fps motion. The initial short pause/resume run
+also reported <strong>Needs review</strong> for frame count (133 versus
+140 expected); the later single-segment pass does not close that
+hardware scenario.</p>
+<p><strong>Still open:</strong> positive live-person detection;
+paused-camera/native-cadence, speech intelligibility and
+sustained-device acceptance; tests 12 to 15 (screen readers, braille,
+high contrast, 8 GB hardware); and spike S5’s 30-minute alignment. Human
+accessibility acceptance was explicitly deferred by the user, not passed
+by automation.</p>
 <h2 id="8-ai-visual-inspector-and-blind-first-visual-confidence">8. AI
 Visual Inspector and blind-first visual confidence</h2>
 <p><strong>VIS-001</strong> Dedicated <strong>Understand What Is On
@@ -4346,8 +4471,8 @@ installed-upgrade acceptance open (scenario D)</td>
 <tr>
 <td>STUDIO-SHELL</td>
 <td style="text-align: right;">0</td>
-<td>Legacy library initial focus, F6/status, menu and command palette
-stable</td>
+<td>Quiet home/activity focus and separate Library Window preserved;
+F6/status, menu and command palette stable</td>
 </tr>
 <tr>
 <td>STUDIO-KEYS</td>
@@ -4392,9 +4517,9 @@ acceptance open</td>
 <tr>
 <td>STUDIO-DEMO-REC</td>
 <td style="text-align: right;">2</td>
-<td><strong>Next.</strong> Section 7A: one window or the desktop with
-chosen sounds to one verified MP4; REC-001 to REC-018 and the 7A.6 tests
-pass</td>
+<td>Implemented vertical slice (Studio PRD AS-120 to AS-125); close
+section 7A.7 deviations and the remaining REC-001 to REC-018 / 7A.6
+acceptance, including real devices and assistive technology</td>
 </tr>
 <tr>
 <td>STUDIO-VISION</td>
@@ -4431,7 +4556,8 @@ service/plug-in safety gates pass</td>
 <td>STUDIO-MEDIA-FINISH</td>
 <td style="text-align: right;">2–4</td>
 <td>FIN-001 to FIN-007 shared conversion, accessible review, opt-in AI
-and acceptance; section 7A remains the next milestone</td>
+and acceptance; section 7A is implemented but has open acceptance
+gates</td>
 </tr>
 <tr>
 <td>STUDIO-VIDEO</td>
@@ -4892,11 +5018,9 @@ href="../design/quill-studio-capture-milestone.md"><code>docs/design/quill-studi
 the screenshot milestone’s implementation and verification ledger,
 including the acceptance runs still owed</li>
 <li><a
-href="../design/quill-studio-screenshot-coverage.md"><code>docs/design/quill-studio-screenshot-coverage.md</code></a>
-and <a
-href="../design/quill-studio-prd.md"><code>docs/design/quill-studio-prd.md</code></a>:
-the earlier coverage audit and consolidated proposal this document
-supersedes</li>
+href="../design/quill-studio-screenshot-coverage.md"><code>docs/design/quill-studio-screenshot-coverage.md</code></a>:
+the earlier coverage audit; the earlier consolidated proposal is
+historical, not a live document</li>
 <li><a
 href="../qa/screen-reader-checks-2026-10.md"><code>docs/qa/screen-reader-checks-2026-10.md</code></a>:
 the family’s open screen-reader checks</li>

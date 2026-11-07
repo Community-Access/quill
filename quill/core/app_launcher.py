@@ -26,7 +26,11 @@ _APPS: dict[str, tuple[str, tuple[str, ...]]] = {
     "radio": ("quill.apps.radio", ("QuillRadio.exe", "Quill Radio.exe")),
     "weather": ("quill.apps.weather", ("QuillWeather.exe", "Quill Weather.exe")),
     "cast": ("quill.apps.podcasts", ("QuillCast.exe", "QUILLCast.exe", "Quill Cast.exe")),
-    "studio": ("quill.apps.studio", ("QuillStudio.exe", "Quill Studio.exe")),
+    # The display rename does not rename the installed launcher.
+    "studio": (
+        "quill.apps.studio",
+        ("QuillAudioStudio.exe", "QuillStudio.exe", "Quill Studio.exe"),
+    ),
     "converter": (
         "quill.apps.converter",
         ("QuillConverter.exe", "Quill Converter.exe"),
@@ -46,12 +50,14 @@ _PORTABLE_DIRNAMES: dict[str, str] = {
     "radio": "QuillRadio",
     "weather": "QuillWeather",
     "cast": "QuillCast",
-    "studio": "QuillStudio",
+    "studio": "QuillAudioStudio",
     "converter": "QuillConverter",
     "player": "QuillMediaPlayer",
     "inkwell": "QuillInkwell",
     "transcribe": "QuillTranscribe",
 }
+
+_PORTABLE_DIR_ALIASES: dict[str, tuple[str, ...]] = {"studio": ("QuillStudio",)}
 
 
 def portable_sibling_dirname(app_key: str) -> str | None:
@@ -65,7 +71,7 @@ APP_NAMES: dict[str, str] = {
     "radio": "Quill Radio",
     "weather": "Quill Weather",
     "cast": "Quill Cast",
-    "studio": "Audio Studio",
+    "studio": "QUILL Studio",
     "converter": "Quill Converter",
     "player": "Quill Media Player",
     "inkwell": "Quill Inkwell",
@@ -152,6 +158,7 @@ def build_launch_argv(app_key: str) -> list[str] | None:
         sibling_dir = _PORTABLE_DIRNAMES.get(app_key)
         if sibling_dir:
             search_dirs.append(here.parent / sibling_dir)
+        search_dirs.extend(here.parent / name for name in _PORTABLE_DIR_ALIASES.get(app_key, ()))
         for folder in search_dirs:
             for name in exe_names:
                 candidate = folder / name

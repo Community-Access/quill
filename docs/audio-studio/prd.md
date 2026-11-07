@@ -2,6 +2,17 @@
 
 Version 2.0.0 (QUILL Studio; see CHANGELOG.md)
 
+> **Historical requirements copy, not an active specification.** Current
+> implemented behavior is maintained in the
+> [QUILL Studio product requirements](../../standalone/studio/docs/prd.md);
+> remaining expansion and acceptance are maintained in the
+> [consolidated Studio plan](../planning/QUILL-Studio-PRD.md).
+> All requirement IDs in this copy also exist in the implemented baseline.
+> In conflicts, use that baseline and the consolidated plan: in particular the
+> quiet home/separate Library Window, current licensing decisions and recording
+> status supersede older wording below. Retain this copy for historical trace,
+> not as a second place to edit requirements.
+
 ## 1. Product overview and mission
 
 QUILL Audio Studio is a standalone Windows desktop application for audiobook

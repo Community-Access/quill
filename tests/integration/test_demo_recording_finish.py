@@ -10,6 +10,7 @@ crashed session folder is found and finalized.
 
 from __future__ import annotations
 
+import json
 import math
 import struct
 import time
@@ -100,6 +101,7 @@ def _session(
     sound: bool = True,
     sound_format: str = "m4a",
     silent_track: bool = True,
+    microphone: bool = False,
 ) -> Path:
     plan = DemoPlan(
         screen=screen,
@@ -111,7 +113,9 @@ def _session(
         folder=str(tmp_path),
         fps=30,
         sources=(
-            SoundSource("application", "Tone sound", "app-tone", enabled=sound, level_db=-3.0),
+            SoundSource("microphone", "Microphone", "microphone", enabled=sound, level_db=-3.0)
+            if microphone
+            else SoundSource("application", "Tone sound", "app-tone", enabled=sound, level_db=-3.0),
         ),
         camera=CameraSetup(enabled=camera, device="Test camera", position="bottom left"),
     )
@@ -127,14 +131,15 @@ def _session(
             _video(folder / "video.mkv", 3, "640x360")
         if camera:
             _video(folder / "camera.mkv", 3, "320x240")
-        _tone(folder / "app-tone.wav", 3.2)
+        source_id = plan.sources[0].source_id
+        _tone(folder / f"{source_id}.wav", 3.2)
         session.segments.append(
             SegmentRecord(
                 index,
                 str(folder),
                 video_start=now,
                 camera_start=now + 0.2,
-                audio_starts={"app-tone": now - 0.2},
+                audio_starts={source_id: now - 0.2},
                 duration=3.0,
                 closed=True,
             )
@@ -162,6 +167,55 @@ def test_finalize_joins_mixes_and_verifies(tmp_path, camera, segments):
     assert not work.exists()
     assert (tmp_path / "Demo - Display 1 - test.verification.md").is_file()
     assert find_unfinished([tmp_path]) == []
+
+
+@pytest.mark.parametrize(
+    ("screen", "camera"), [(False, False), (True, False), (False, True), (True, True)]
+)
+@pytest.mark.parametrize("recorded_start", [False, True])
+def test_finalization_preserves_microphone_audio_without_saving_its_on_state(
+    tmp_path, screen, camera, recorded_start
+):
+    from quill.platform.windows.demo_audio import level_from_wav
+    from quill.platform.windows.screen_recorder_finish import finalize
+
+    work = _session(tmp_path, screen=screen, camera=camera, segments=2, microphone=True)
+    session = SessionRecord.load(work)
+    assert "enabled" not in session.plan["sources"][0]
+    if not recorded_start:
+        for segment in session.segments:
+            segment.audio_starts.clear()
+        session.save(work)
+    verification = finalize(work, ffmpeg=FFMPEG, caps=_caps())
+    assert verification.state == "Verified", verification.sentence
+    assert "Microphone present" in verification.sentence
+    assert "No sound sources were chosen" not in verification.sentence
+    report = json.loads(
+        Path(verification.path).with_suffix(".verification.json").read_text(encoding="utf-8")
+    )
+    assert report["sources"] == ["Microphone"]
+    decoded = tmp_path / "decoded.wav"
+    result = run_subprocess_safely(
+        [FFMPEG, "-v", "error", "-i", verification.path, "-vn", "-c:a", "pcm_s16le", str(decoded)],
+        timeout_seconds=30,
+    )
+    assert result.returncode == 0, result.stderr
+    assert not level_from_wav(decoded, "Decoded microphone").digital_silence
+    assert not work.exists()
+
+
+def test_finalization_does_not_enable_a_microphone_without_a_recorded_stem(tmp_path):
+    from quill.platform.windows.screen_recorder_finish import finalize
+
+    work = _session(tmp_path, camera=False, segments=1, sound=False, microphone=True)
+    (work / "seg-001" / "microphone.wav").unlink()
+    session = SessionRecord.load(work)
+    session.segments[0].audio_starts.clear()
+    session.save(work)
+    verification = finalize(work, ffmpeg=FFMPEG, caps=_caps())
+    assert verification.state == "Verified", verification.sentence
+    assert "Microphone present" not in verification.sentence
+    assert "No sound sources were chosen" in verification.sentence
 
 
 @pytest.mark.parametrize(

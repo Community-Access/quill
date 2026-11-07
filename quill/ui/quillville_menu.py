@@ -78,7 +78,7 @@ MENU_NAMES: dict[str, str] = {
     "radio": "Quill &Radio",
     "weather": "Quill &Weather",
     "cast": "Quill &Cast",
-    "studio": "&Audio Studio",
+    "studio": "QUILL &Studio",
     "converter": "Quill Con&verter",
     "inkwell": "Quill &Inkwell",
     "transcribe": "QUILL &Transcribe",

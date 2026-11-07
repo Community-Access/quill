@@ -181,6 +181,7 @@
   "cmd_open_from_url": "covered",
   "cmd_open_project_folder": "covered",
   "cmd_open_review_buffer": "covered",
+  "cmd_open_studio": "covered",
   "cmd_outdent": "covered",
   "cmd_page_setup": "covered",
   "cmd_paste": "covered",

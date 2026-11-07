@@ -77,6 +77,15 @@ document windows use, including any you have changed, and a feature you
 switched off in Customize Features is off here too. Activity and Repeat Last
 Result need a document window.
 
+### Opening QUILL Studio
+
+When Studio is available in your build, **Tools > Open QUILL Studio**
+(**Alt+T**, then **Q**) opens it in its own window. This also works with every
+document closed. It does not send your document to Studio, start recording, or
+download anything. If Studio cannot be opened, QUILL Lite tells you; your
+document stays unchanged. You can assign a personal shortcut in Keyboard
+Manager. Studio is currently limited to developer builds, not public releases.
+
 ### When there is a new version
 
 If there is something newer, the window opens on the release notes for that
