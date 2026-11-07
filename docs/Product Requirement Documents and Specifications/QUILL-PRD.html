@@ -1659,7 +1659,14 @@ place. For rendered/extracted formats, opens Save As.</li>
 current session, then <strong>Settings &gt; General &gt; Default
 document folder</strong> (the <code>startup_folder</code> setting), then
 the Windows Documents folder when that setting is blank. A saved
-document keeps its existing location for ordinary saves.</li>
+document keeps its existing location for ordinary saves. “Most recently
+used” means the folder of the last file <em>opened by any route</em>,
+not only through a dialog: <code>_finish_open_document</code> (and the
+already-open-tab branch of <code>open_file</code>) call
+<code>SimpleOpenMixin._remember_open_folder</code>, so a file arriving
+from File Explorer, the command line, Open Recent or a link steers the
+next <code>Ctrl+O</code> (2026-11-06;
+<code>tests/unit/ui/test_open_folder_follows_opened_file.py</code>).</li>
 <li>Recent files: last N (default 10, range 5 to 50). If empty, announce
 “No recent files.”</li>
 <li>File Explorer integration: settings panel lets the user register
@@ -1998,6 +2005,19 @@ editable in QUILL (Markdown, CommonMark, GFM, HTML, plain text, CSV /
 TSV) the editor asks whether to open the new file in a new window. PDF,
 DOCX, EPUB, ODT, and RTF do not prompt; the file path is on the
 clipboard for pasting into File Explorer.</p>
+<p><strong>An export never destroys the file it replaces
+(2026-11-06).</strong> <code>convert_file_with_pandoc</code>, the one
+function through which every Pandoc conversion writes a file (File &gt;
+Export, Convert File, batch conversion, braille, review, the docx
+fallback), points Pandoc’s <code>-o</code> at a hidden sibling of the
+target (<code>.&lt;stem&gt;.&lt;uuid&gt;.partial&lt;suffix&gt;</code>:
+same folder, so the final move is a same-volume <code>os.replace</code>;
+same suffix, because Pandoc picks some outputs such as PDF by extension)
+and replaces the target only after a zero exit and an output that
+exists. A non-zero exit, a timeout, a launch failure, a cancel or a
+failed <code>os.replace</code> leaves the previous target byte-for-byte
+as it was, and the staging file is removed in a <code>finally</code>.
+Tests: <code>tests/unit/io/test_pandoc.py</code>.</p>
 <h5
 id="53a11a-save-as-conversion-pipeline-and-format-truthfulness-shipped-090-beta-1">5.3a.1.1a
 Save As conversion pipeline and format truthfulness (shipped 0.9.0 Beta
@@ -4078,12 +4098,50 @@ HTML file.</li>
 <li><code>File &gt; Export Markdown as Word</code> produces a
 <code>.docx</code> via <code>python-docx</code>, preserving headings,
 lists, links, tables, code blocks.</li>
+<li><strong>Math is MathML everywhere HTML is made
+(2026-11-06).</strong> Preview, Browser Preview and both HTML export
+paths write TeX math as MathML
+(<code>quill/core/math/preview_math.py</code>); no page loads MathJax or
+any other script from a CDN, so math shows offline and screen readers
+with a math engine read it natively. Pandoc HTML output carries
+<code>--mathml</code>.</li>
+<li><strong>Export as HTML keeps its pictures (2026-11-06).</strong>
+Pandoc runs on a temporary copy of the document, so
+<code>pandoc_html_args</code> (<code>quill/io/html_page.py</code>)
+passes <code>--resource-path=&lt;the document's folder&gt;</code>, and,
+from the installed Pandoc’s version, <code>--embed-resources</code>
+(Pandoc 3) or <code>--self-contained</code> (Pandoc 2); an unreadable
+version embeds nothing. A document that shows a picture from the web
+(<code>![...](https://...)</code>, <code>&lt;img src="//..."&gt;</code>)
+is never embedded, because embedding would download it: no export makes
+a network request. Pandoc’s standalone template already gives the page a
+<code>&lt;header&gt;</code> for the title block and a
+<code>&lt;nav&gt;</code> for a table of contents; QUILL’s own renderer
+wraps the body in <code>&lt;main&gt;</code>.</li>
 </ul>
 <h3 id="58-find-and-replace">5.8 Find and replace</h3>
 <p>Find in Quill is designed to feel like Microsoft editors and Visual
 Studio Code at the same time: F3 just works once a term is known, the
 search term is remembered everywhere it makes sense, and everything is
 announced.</p>
+<p><strong>The replacement is literal unless the search is a regular
+expression (2026-11-06).</strong>
+<code>quill.core.search.replace_all</code> (Replace All, and Replace
+Across Files through <code>core/file_search.py</code>) hands
+<code>re.subn</code>/<code>safe_subn</code> a <em>function</em>
+returning the replacement in plain and wildcard modes, because a string
+replacement is a template there too: <code>C:\new</code> gained a line
+break and <code>\1</code> raised “invalid group reference” in a search
+that never asked for a regular expression. Only <code>use_regex</code>
+passes the string, so <code>\1</code>/<code>\g&lt;name&gt;</code> keep
+working. QUILL Lite’s Replace All
+(<code>lite_window_find._replace_every_match</code>) follows the same
+rule by search mode, and a regex replacement naming a group the pattern
+lacks is announced (“Nothing replaced: …”) with the document unchanged.
+The shared <code>find_model.replace_all</code>/<code>replace_next</code>
+were already literal. Tests:
+<code>tests/unit/core/test_search.py</code>,
+<code>tests/unit/apps/test_lite_find_modes.py</code>.</p>
 <p><strong>The search term, the central concept.</strong> Quill
 maintains a single “current search term” per editor. The term is set by
 any of:</p>
@@ -4570,6 +4628,18 @@ read-only family
 sentences naming what to do; everything else keeps the errno text. Raw
 errno strings are not an acceptable user-facing message for a save
 failure.</li>
+<li><strong>A failed backup is logged, not only spoken
+(2026-11-06).</strong> <code>_backup_before_save</code> logs a warning
+with the document’s name and the OS reason (an unexpected exception is
+logged with its traceback) alongside the spoken status line, because the
+status line is gone by the time anyone asks why there is no backup, and
+the log is what a diagnostics bundle carries. QUILL Lite’s equivalent:
+<code>core/lite/backups.write_backup</code> logs the failure and returns
+<code>None</code>, and <code>DocumentFileMixin._back_up_saved</code>
+turns that into the one save announcement, “Saved <name>, but could not
+write a backup”, through the window’s voice so braille mirrors it, for
+plain, rich and Word saves alike. The save itself is never
+affected.</li>
 <li>Retention: default keep last 50 per document, prune older than 90
 days, never delete the most recent 5.</li>
 <li>Crash recovery: autosave snapshot every 30 seconds while a document
@@ -4905,6 +4975,38 @@ internal-vs-external; copy URLs.</li>
 <li>Audit completes in under 200 ms for documents up to 100 KB; up to
 5 s for documents up to 5 MB.</li>
 </ul>
+<h4
+id="5201-mermaid-diagrams-in-the-accessibility-tune-up-2026-11-06">5.20.1
+Mermaid diagrams in the Accessibility Tune-Up (2026-11-06)</h4>
+<p>A rendered Mermaid diagram is an SVG picture, and without an
+accessible name and description it reaches a screen reader as an
+unlabelled graphic. The Tune-Up (<strong>AI &gt; Accessibility
+Tune-Up…</strong>, <code>quill/core/accessibility_agent.py</code>) has a
+<strong>diagrams</strong> category, filled by
+<code>quill/core/mermaid_a11y.py</code>, for every fenced
+<code>mermaid</code> block (backtick or tilde fence) in a Markdown
+document:</p>
+<ul>
+<li>no <code>accTitle:</code> line – the diagram has no accessible
+name;</li>
+<li>no <code>accDescr:</code> (single line) or <code>accDescr {</code>
+(multi-line) – no text alternative;</li>
+<li>an init directive (<code>%%{init: ...}%%</code>) that sets
+<code>theme</code> – it overrides the reader’s light or dark choice and
+can break contrast;</li>
+<li><code>style</code>, <code>classDef</code> or <code>linkStyle</code>
+with <code>fill</code>, <code>color</code> or <code>stroke</code> –
+advise checking a 4.5 to 1 contrast ratio and that colour is not the
+only cue;</li>
+<li>more than one diagram on the page and the nearest non-blank line
+above a fence is not a heading (ATX or setext) – each diagram should be
+reachable by heading navigation.</li>
+</ul>
+<p>Every finding carries a 1-based line number (the opening fence, or
+the line of the theme or colour statement) and is advisory: it needs
+human judgement, so the Tune-Up never rewrites a diagram. The category
+is Markdown-only. QUILL Lite has no Tune-Up, so it is not behind
+here.</p>
 <h3 id="521-table-mode-for-markdown-and-html-tables">5.21 Table mode for
 Markdown and HTML tables</h3>
 <p>When the editor cursor enters a Markdown pipe table, a Markdown grid
@@ -7577,6 +7679,15 @@ searchable picker pattern used across Quill insertion flows.</li>
 via General Preferences.</li>
 <li>Starter packs are installable from Preferences and snippet
 management so onboarding can begin with practical templates.</li>
+<li>The <strong>mermaid-diagrams</strong> starter pack (2026-11-06) has
+eight fenced Mermaid diagrams: flowchart, sequence, class, state, entity
+relationship, Gantt, mind map and timeline (triggers
+<code>;mmflowchart</code> … <code>;mmtimeline</code>). Each body puts
+<code>accTitle: ${input:accessible title}</code> and
+<code>accDescr: ${input:accessible description}</code> straight after
+the diagram type, so the snippet form asks for the title and description
+before anything else, and a filled-in diagram passes the Tune-Up’s
+diagram checks (5.20.1).</li>
 </ul>
 <h3 id="529c-word-prediction-and-tag-intellisense">5.29c Word prediction
 and tag IntelliSense</h3>
@@ -12867,6 +12978,19 @@ user_prompt != default_prompt .reset_to_default() -&gt; user_prompt =
 | Read with AI Voice | — | `core/ai/cloud_tts.py` (dispatch), `core/ai/tts.py` (OpenAI), `core/ai/gemini_tts.py` (Gemini), `core/ai/elevenlabs_tts.py` (ElevenLabs SDK gateway, audio export only — roadmap §4.1), `core/ai/tts_chunk.py` (boundary-safe split) | inline in `main_frame.py` |
 | Ask Quill chat | Alt+Q | `core/ai_chat.py` | `ui/ai_chat_dialog.py` |
 
+**Translate: an unchanged result is not a translation (2026-11-06).** The
+source language is always auto-detected, so text already in the target
+language comes back as itself, and a provider can &quot;translate&quot; Spanish into
+Spanish without complaint. `core/ai/translation.py::translation_unchanged`
+compares the input and the result with whitespace runs collapsed and case
+folded (empty text is never &quot;unchanged&quot;; that is a failure reported
+elsewhere). When it holds, the dialog puts `UNCHANGED_TRANSLATION_MESSAGE`
+(&quot;The translation came back the same as the original. The text may already be
+in the target language.&quot;) in the read-only result box and focuses it, so the
+screen reader speaks it without a separate announcement (GATE-13), and leaves
+Copy, Replace Original and Open as New Document disabled. QUILL Lite has no
+translation command, so this is QUILL-only.
+
 #### 5.90.5 Agentic task architecture
 
 Four commands (Rewrite, Summarize, Expand, Generate TOC) share a common agent session architecture in `quill/core/ai/agent_session.py`:
@@ -13420,6 +13544,21 @@ opt-in specifically to avoid colliding with prose), so switching the
 Quillin&#39;s own delimiters to MathJax&#39;s defaults made both surfaces render
 correctly with **zero template changes**. Verified empirically (headless
 browser screenshot), not assumed.
+
+**Rendering, superseded (2026-11-06): MathML, no CDN.** The MathJax include is
+gone from both surfaces. `quill/core/math/preview_math.py` lifts every math
+span (`\(...\)`, `\[...\]`, `$$...$$`, fenced `math`) out of the Markdown
+before the renderer runs, so `a_1` is never read as emphasis, and puts
+`latex_to_mathml` output (`quill/core/math/latex_bridge.py`) back where it
+was. Code spans and fenced code are untouched, and the line count is kept so
+the side preview&#39;s `data-src` source map still points at the right line. A
+formula that will not convert, or a build without `latex2mathml`, shows its
+TeX source as text. Pandoc HTML output carries `--mathml` (Export as HTML,
+`convert_with_pandoc` to HTML, the Accessible HTML Page profile), and
+`prepare_for_pandoc` rewrites the delimiters to dollars, because Pandoc&#39;s GFM
+reader does not know `\(...\)`. Result: preview and export make no network
+request for math, work offline, and hand the screen reader real MathML (NVDA&#39;s
+MathCAT, JAWS).
 
 **Word export and round-trip (`quill/io/docx_math.py`).** The native
 python-docx writer (`quill/io/docx_writer.py`) had no math model; math spans
@@ -26260,6 +26399,20 @@ transition prompt). Native Ctrl+B/I/U are intercepted in rich mode and
 routed through QUILL’s commands so formatting is announced,
 dirty-marked, and remappable. Describe Formatting at Cursor reads the
 live TOM in rich mode.</p>
+<p><strong>Text colour in Describe Formatting (2026-11-06).</strong> The
+rich description named the highlight but never the text colour, which
+the Markdown path always spoke. <code>caret_format_description</code>
+now reads <code>ITextFont.ForeColor</code> through
+<code>quill.core.highlights.text_colour_from_colorref</code> and speaks
+it just before the highlight (“Calibri, 11 point, red, yellow
+highlight”). Names: an exact match to a Format &gt; Text Color name (the
+RTF writer’s own table, so green is “green”, not the highlight palette’s
+“dark green”), otherwise the nearest of Word’s fifteen highlight-palette
+names. Silent for <code>tomAutoColor</code>, black, and the colour a
+theme painted over the whole story (<code>set_document_color</code>
+records it as <code>_theme_colorref</code>), so a dark theme does not
+make every character “gray”. QUILL Lite calls the same surface method,
+so both editors answer the same way.</p>
 <p><strong>Paragraph formatting completed (2026-09-08, via QUILL
 Lite).</strong> The surface has always been able to justify a paragraph,
 set a list type and set a line-spacing rule; nothing in QUILL was bound
@@ -26347,6 +26500,18 @@ previously dropped entirely now survives, reads correctly, and is
 reachable by single-key table navigation (<code>T</code>).
 <code>scan_docx_features</code> still lists tables so the format change
 is disclosed before a rich edit.</p>
+<p><strong>Alternate headers and footers (#1756, 2026-11-06).</strong>
+“headers” and “footers” cover every header/footer the rich bridge drops,
+not only the default one: in each section, the first-page part when the
+section sets <code>w:titlePg</code>, and the even-page part when
+<code>settings.xml</code> sets <code>w:evenAndOddHeaders</code>. Those
+two are checked through python-docx’s link resolution, because a section
+can switch on its title page while inheriting a first-page header an
+earlier section defined but never showed; the ordinary part keeps its
+skip-if-linked rule, since a linked default header repeats one already
+checked. A blank part is not a finding. Without this, a title-page-only
+header opened with no question, <code>needs_backup</code> was false, and
+the first save removed it silently.</p>
 <p><strong>Shared with QUILL Lite (2026-10-17).</strong> The wx-free
 half of this path lives in <code>quill/core/docx_open.py</code>, and
 <code>main_frame_rich_mode.py</code> calls it: the scan

@@ -11,8 +11,10 @@ Done in **Insert > List** beside Task, and gives Export as HTML a Pandoc path.
   Pandoc without ``--standalone`` (a fragment, not a page) and had no key.
 
 Pandoc, when installed, renders Markdown with ``--standalone``, the document's
-title and language, and the shared stylesheet; without it, or for HTML and
-plain text, QUILL's own renderer writes the page, as it does in QUILL Lite.
+title and language, the shared stylesheet, math as MathML, and the document's
+own folder for its pictures, which are embedded in the page when the installed
+Pandoc can do it; without it, or for HTML and plain text, QUILL's own renderer
+writes the page, as it does in QUILL Lite.
 """
 
 from __future__ import annotations
@@ -84,24 +86,42 @@ class ReviewToolsMixin(
     ) -> None:
         """Pandoc for Markdown when it is installed; QUILL's renderer otherwise."""
         from quill.core.external_tools import get_external_tool_status
-        from quill.io.html_page import pandoc_html_args, prepare_for_pandoc, style_block
+        from quill.io.html_page import (
+            has_remote_resources,
+            pandoc_html_args,
+            pandoc_version,
+            prepare_for_pandoc,
+            style_block,
+        )
         from quill.io.pandoc import PandocConversionError, convert_file_with_pandoc
 
-        if kind != "markdown" or not get_external_tool_status("pandoc").installed:
+        status = get_external_tool_status("pandoc")
+        if kind != "markdown" or not status.installed:
             super()._write_html_export(target, text, kind, title, include_notes)
             return
+        # Pandoc reads a temporary copy, so pictures are looked up beside the
+        # document itself, and embedded unless one would have to be downloaded.
+        source_path = self._host_path()
         with tempfile.TemporaryDirectory(prefix="quill-html-") as folder:
             source = Path(folder) / "document.md"
             header = Path(folder) / "style.html"
             source.write_text(prepare_for_pandoc(text, include_notes), encoding="utf-8")
             header.write_text(style_block(), encoding="utf-8")
+            args = pandoc_html_args(
+                title,
+                self._host_language(),
+                str(header),
+                resource_dir=str(source_path.parent) if source_path is not None else None,
+                version=pandoc_version(status.version),
+                embed=not has_remote_resources(text),
+            )
             try:
                 convert_file_with_pandoc(
                     source,
                     target,
                     from_format="gfm+hard_line_breaks",
                     to_format="html",
-                    extra_args=pandoc_html_args(title, self._host_language(), str(header)),
+                    extra_args=args,
                 )
             except PandocConversionError:
                 # Pandoc refused this document; the page still gets written.

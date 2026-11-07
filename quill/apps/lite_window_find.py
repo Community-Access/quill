@@ -24,6 +24,7 @@ the words in every mode, because it is the record rather than the feedback.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 import wx
@@ -384,11 +385,22 @@ class DocumentFindMixin(DocumentFileSearchMixin):  # and across a folder of file
         text = self.control.GetValue()
         count = len(list(pattern.finditer(text)))
         if count:
-            self._replace_every_match(pattern, replacement, text)
+            try:
+                self._replace_every_match(
+                    pattern, replacement, text, as_template=compiled.query.mode == "regex"
+                )
+            except re.error as error:
+                # A regular-expression replacement can name a group the pattern
+                # does not have (``\3`` with two). Nothing has changed yet: the
+                # whole new text is built before the one edit is made.
+                self._announce(f"Nothing replaced: {error}")
+                return
             self._set_modified(True)
         self._announce(f"Replaced {count} occurrence{'s' if count != 1 else ''}")
 
-    def _replace_every_match(self, pattern: Any, replacement: str, text: str) -> None:
+    def _replace_every_match(
+        self, pattern: Any, replacement: str, text: str, *, as_template: bool = False
+    ) -> None:
         """Apply every replacement -- in **one** undo step where that is possible.
 
         Plain text takes a single ``Replace`` over the whole document, so
@@ -413,6 +425,11 @@ class DocumentFindMixin(DocumentFileSearchMixin):  # and across a folder of file
             for match in reversed(list(pattern.finditer(text))):
                 replace_as_one_undo(self.control, match.start(), match.end(), replacement)
             return
+        # Only a regular-expression search reads the replacement as a template
+        # (``\1``, ``\g<name>``). Otherwise it is exactly what was typed: handed
+        # to ``sub`` as a string, ``C:\new`` would gain a line break and ``\1``
+        # would raise, so it goes in through a function, which is never expanded.
+        template: Any = replacement if as_template else (lambda _match: replacement)
         replace_as_one_undo(
-            self.control, 0, self.control.GetLastPosition(), pattern.sub(replacement, text)
+            self.control, 0, self.control.GetLastPosition(), pattern.sub(template, text)
         )

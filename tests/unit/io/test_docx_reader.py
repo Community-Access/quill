@@ -119,6 +119,68 @@ def test_scan_never_raises_on_junk(tmp_path: Path) -> None:
     assert scan_docx_features(junk) == []
 
 
+def _header_variant_docx(tmp_path: Path, variant: str, part: str = "header") -> Path:
+    """The issue #1756 reproduction: one marker in one kind of header/footer."""
+    import docx
+
+    document = docx.Document()
+    document.add_paragraph("Body stays intact.")
+    section = document.sections[0]
+    if variant == "first":
+        section.different_first_page_header_footer = True
+        target = getattr(section, f"first_page_{part}")
+    elif variant == "even":
+        document.settings.odd_and_even_pages_header_footer = True
+        target = getattr(section, f"even_page_{part}")
+    else:
+        target = getattr(section, part)
+    target.paragraphs[0].text = "Reference ABC123"
+    path = tmp_path / f"{variant}-{part}.docx"
+    document.save(str(path))
+    return path
+
+
+@pytest.mark.parametrize("variant", ["first", "even", "ordinary"])
+@pytest.mark.parametrize("part", ["header", "footer"])
+def test_scan_flags_first_even_and_ordinary_headers_and_footers(
+    tmp_path: Path, variant: str, part: str
+) -> None:
+    # Issue #1756: a first-page-only or even-page-only header was dropped by
+    # the rich bridge without a warning, so no backup was taken on save.
+    from quill.core.docx_open import fidelity_findings, needs_backup
+
+    source = _header_variant_docx(tmp_path, variant, part)
+    findings = fidelity_findings(source)
+    assert f"{part}s" in findings
+    assert needs_backup(flagged=bool(findings), backup_done=False, target=source)
+
+
+def test_scan_flags_a_first_page_header_in_a_later_section(tmp_path: Path) -> None:
+    import docx
+
+    document = docx.Document()
+    document.add_paragraph("Section one.")
+    later = document.add_section()
+    later.different_first_page_header_footer = True
+    later.first_page_header.paragraphs[0].text = "Second section title page"
+    path = tmp_path / "two_sections.docx"
+    document.save(str(path))
+    assert "headers" in scan_docx_features(path)
+
+
+def test_scan_ignores_an_empty_first_page_header(tmp_path: Path) -> None:
+    import docx
+
+    document = docx.Document()
+    document.add_paragraph("Body.")
+    section = document.sections[0]
+    section.different_first_page_header_footer = True
+    section.first_page_header.paragraphs[0].text = "   "
+    path = tmp_path / "blank_first.docx"
+    document.save(str(path))
+    assert scan_docx_features(path) == []
+
+
 def test_tables_are_preserved_inline_as_markdown_not_dropped(tmp_path: Path) -> None:
     # A Word table used to vanish entirely on rich read (its cells were lost).
     # It now appears inline, in document order, as a GFM Markdown table so the

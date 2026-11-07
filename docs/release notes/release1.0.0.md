@@ -2,6 +2,43 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Diagrams, math and pictures in Markdown pages
+
+**AI > Accessibility Tune-Up...** now checks Mermaid diagrams in Markdown. For
+each fenced `mermaid` block it tells you, by line number, when the diagram has
+no accessible title (`accTitle`) or description (`accDescr`), when an init
+block forces a theme, and when it sets its own colours so you should check the
+contrast. With more than one diagram on a page, it asks for a heading before
+each. A new starter snippet pack, **mermaid-diagrams**, has eight diagram
+types, and every one asks for the title and description before anything else.
+
+Equations in Browser Preview, the side preview and **File > Export > HTML...**
+are now MathML. Nothing is downloaded from the internet to show them, and NVDA
+and JAWS read them with their own math support. When Pandoc writes the page,
+pictures are found beside your document and, with Pandoc 2 or 3, carried
+inside the page so it can be emailed on its own. QUILL Lite's Export as HTML
+writes math as MathML too.
+## Replace, export and backups you can trust
+
+Three things that should never surprise you now do not.
+
+**Replace puts in what you typed.** Unless you are searching with a regular
+expression, the Replace box is taken exactly as typed. Replace a folder name
+with `C:\new\reports` and that is what lands in your document, not a line
+break where the `\n` was. With a regular expression, `\1` and `\2` still bring
+back the parts of the match. This holds for Replace All and Replace Across
+Files (`Ctrl+Shift+R`).
+
+**Exporting over an earlier file is safe.** File > Export, Convert File and
+every other Pandoc conversion now build the new file under a hidden temporary
+name and swap it in only when it is finished. If the export fails, times out
+or is cancelled, the file you exported yesterday is still there, untouched.
+
+**A backup that fails is on the record.** When a backup cannot be written
+before a save, QUILL still says "Could not write a backup; saving anyway" and
+saves, and now it writes the reason to its log as well, so **Help > Save
+Diagnostics...** can explain a missing backup later.
+
 ## Form payment setup and reporting
 
 QUILL and QUILL Lite now share **Tools > Forms > Insert Payment Field**,
@@ -94,6 +131,11 @@ Every list you narrow by typing now understands a small query, so one search can
 It works in Go to Anything (**Ctrl+Alt+Shift+A**), including its `#` search for headings, and in Insert Snippet, Insert HTML Tag, Insert Markdown Tag, both lists of Move Section To (**Ctrl+Alt+Shift+F5**), the abbreviation manager and the Copy Tray search. The File pattern of Search in Files (**Ctrl+Alt+Shift+F**) combines patterns the same way: `*.md | *.txt` takes both kinds, and `* !*.bak` leaves the backups out. QUILL Lite has it in the same lists, from the same code. A search with none of those characters works exactly as before, and you never hear an error for a half-typed one. Press F1 in any of these search boxes for a short reminder.
 
 **Try this:** open a long document, press **Ctrl+Alt+Shift+A**, and type `#chapter !draft`. The list holds every chapter heading except the drafts; press Enter to go to the one on top.
+## Fixed in this build: first-page and even-page Word headers
+
+When you open a Word document for rich editing, QUILL tells you what the editor cannot keep, and makes a backup before your first save over the file. Headers and footers have always been on that list, but only the ordinary ones. A header set to appear on the first page only (Word's Different First Page), or on even pages only (Different Odd and Even Pages), slipped past: the file opened with no question, and saving it removed the header without a word. Now those count as headers and footers too, in every section of the document, so you hear them named in the **Open Word document** question and the backup is made. QUILL Lite has the same fix.
+
+**Try this:** in Word, make a title page with its own first-page header and save it. Open it in QUILL and choose the normal text editor. The question lists "headers".
 
 ## New in this build: every menu item in the Command Palette
 
@@ -173,6 +215,29 @@ changed, in your web browser. Press **Alt+H**, then **W**. Every app in the
 QuillVille family has it on its Help menu now.
 
 **Try this:** press Alt+H, then W, and use your screen reader's heading keys to jump from one change to the next.
+
+## New in this build: three smaller fixes
+
+- **Describe Formatting names the colour.** In a rich text document,
+  **Ctrl+Shift+D** (Format > Describe Formatting at Cursor) now names the
+  text colour, just before any highlight: "Calibri, 11 point, red, yellow
+  highlight". A colour from **Format > Text Color** comes back under the name
+  you chose; any other shade is named after the nearest common colour.
+  Uncoloured text, black text and a dark theme's page colour say nothing
+  about colour. QUILL Lite gives the same answer.
+- **AI Translate says when nothing was translated.** If the result is the
+  same as your text, ignoring spacing and capital letters, the result box
+  says "The translation came back the same as the original. The text may
+  already be in the target language." and takes focus, and the Copy, Replace
+  and New Document buttons stay unavailable. Try another language or the
+  other provider.
+- **Ctrl+O starts where you last opened a file.** Opening a file from File
+  Explorer, the command line, Open Recent or a tab that already had it now
+  sets the folder the next Open dialog starts in, just as the Open and Save
+  As dialogs always did.
+
+**Try this:** double-click a document in File Explorer to open it in QUILL,
+then press Ctrl+O. The dialog is already in that document's folder.
 
 ## Try this first
 
@@ -1029,7 +1094,7 @@ key, **Shift+F10** or a right-click) offers **Go to this location in the
 editor**, which puts your cursor on that block's line in the source. The key
 opens a menu instead of doing something straight away, which is what screen
 reader users expect from it. There is also a browser preview that shows the
-document as a web page, with MathJax for equations.
+document as a web page, with equations shown as MathML.
 
 ### Insert Emoji
 
@@ -1088,7 +1153,8 @@ radicand) instead of reading it as one long string.
 
 Typing math as text works well by ear: it is all keyboard, you can review it
 character by character, and screen readers that speak math can read it. The
-preview and HTML export show it through MathJax. Word export writes real Word
+preview and HTML export show it as MathML, which needs nothing from the
+internet and which NVDA and JAWS read with their own math support. Word export writes real Word
 equations you can edit, and they turn back into text when you reopen the
 file. With the optional MathCAT engine installed, "read this part aloud"
 speaks math the way NVDA does.
