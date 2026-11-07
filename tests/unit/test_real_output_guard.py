@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+from quill.apps.studio import StudioAppFrame
 from tests import real_output_guard as guard
 from tests.wx_session import shared_wx_app
 
@@ -143,3 +144,17 @@ def test_the_update_check_refusal_holds_on_a_background_thread() -> None:
     assert len(failures) == 1
     assert "never reaches the network" in str(failures[0])
     assert any("update-check download" in item for item in guard.take_violations())
+
+
+def test_a_frames_launch_update_check_is_quiet_in_every_test() -> None:
+    """2026-11-07: Studio frames built in tests ran their deferred launch check
+    for real, 120 times across the suite. It is a no-op unless a test asks."""
+    from types import SimpleNamespace
+
+    checks: list[object] = []
+    host = SimpleNamespace(check_for_app_updates=lambda **kw: checks.append(kw))
+    StudioAppFrame._maybe_check_updates_on_startup(host)
+    assert checks == []
+    real = guard.real_launch_update_check(StudioAppFrame)
+    assert real is not StudioAppFrame._maybe_check_updates_on_startup
+    assert real.__name__ == "_maybe_check_updates_on_startup"

@@ -843,6 +843,8 @@ def _real_outputs_only_for_machine_global(
     reaches one fails, naming what it reached."""
     from tests import real_output_guard
 
+    # A frame's launch-time update check is a quiet no-op in every test.
+    real_output_guard.quiet_launch_update_checks(monkeypatch)
     if request.node.get_closest_marker("machine_global") is not None:
         real_output_guard.restore_originals(monkeypatch)
         yield

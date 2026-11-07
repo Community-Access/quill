@@ -294,6 +294,42 @@ def _install_update_check_network() -> None:
     _patch(feed_fetch, "http_get", feed_refused)
 
 
+#: The app frames that run a quiet update check at launch, through a CallAfter.
+_LAUNCH_CHECKS = (
+    ("quill.apps.studio", "StudioAppFrame"),
+    ("quill.apps.radio", "RadioAppFrame"),
+    ("quill.apps.podcasts", "PodcastsAppFrame"),
+)
+_LAUNCH_CHECK = "_maybe_check_updates_on_startup"
+_REAL_LAUNCH_CHECKS: dict[type, Any] = {}
+
+
+def quiet_launch_update_checks(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A frame built in a test skips its launch-time update check, for this test.
+
+    The check is deferred onto the event loop, so the first test to pump it
+    -- often not the one that built the frame -- fetched GitHub for real (120
+    Studio hits on 2026-11-07, once the network tripwire above could see them).
+    Only frames whose module is already imported are patched, so this never
+    imports an app; one imported later still meets the tripwire. A test of the
+    launch check itself puts it back with :func:`real_launch_update_check`.
+    """
+    import sys
+
+    for module_name, class_name in _LAUNCH_CHECKS:
+        module = sys.modules.get(module_name)
+        frame_class = getattr(module, class_name, None) if module is not None else None
+        if frame_class is None or _LAUNCH_CHECK not in vars(frame_class):
+            continue
+        _REAL_LAUNCH_CHECKS.setdefault(frame_class, vars(frame_class)[_LAUNCH_CHECK])
+        monkeypatch.setattr(frame_class, _LAUNCH_CHECK, lambda self: None)
+
+
+def real_launch_update_check(frame_class: type) -> Any:
+    """The unpatched launch check of *frame_class*, for a test that exercises it."""
+    return _REAL_LAUNCH_CHECKS.get(frame_class, getattr(frame_class, _LAUNCH_CHECK))
+
+
 def drop_real_voice() -> None:
     """Forget a SAPI voice a machine_global test left cached on the worker."""
     prism_bridge = _optional("quill.platform.windows.prism_bridge")
@@ -340,6 +376,8 @@ __all__ = [
     "drop_real_voice",
     "flush_speech",
     "install",
+    "quiet_launch_update_checks",
+    "real_launch_update_check",
     "restore_originals",
     "spoken_during",
     "take_violations",
