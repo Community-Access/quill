@@ -244,6 +244,16 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite--product-requirements">QUILL Lite — Product
 Requirements</h1>
+<h2 id="github-workbench-parity-2026-11-05">GitHub workbench parity
+(2026-11-05)</h2>
+<p>QUILL Lite must expose each GitHub workbench capability shipped in
+QUILL unless this PRD records an explicit exception. The shared Items
+viewer is reached at File &gt; GitHub Workbench… (Alt+F, then G). Its
+native PR outline, selection details, context menus, thread replies,
+review submission, and checks have identical behavior in both products.
+Other QUILL GitHub entry points, including repository administration and
+local Git, remain parity work; this requirement does not claim they are
+already present in Lite.</p>
 <p><strong>Version 2.0.0 (build 1) · Windows · MIT · part of the
 QuillVille family</strong></p>
 <p>Status, 2026-10-31: 2.0.0 (prepared as 1.2.0 through six testing
@@ -2119,6 +2129,20 @@ collapsed TOM range reports the formatting of the character
 paragraph above it. <code>caret_format_description</code> now probes the
 character <em>after</em> the caret, which is what a screen reader
 describes.</p>
+<p><strong>The text colour was never spoken (2026-11-06).</strong>
+Describe Formatting at Cursor (<code>Ctrl+Shift+D</code>) in a rich
+document named the highlight but not the text colour, although the
+Markdown path always spoke it. The shared surface now reads
+<code>ITextFont.ForeColor</code> through
+<code>quill.core.highlights.text_colour_from_colorref</code> and says
+the colour just before the highlight: “Calibri, 11 point, red, yellow
+highlight”. Common colours are named exactly; other shades by the
+nearest highlight-palette name. Automatic colour, black, and the colour
+a theme painted over the whole story say nothing. That last case matters
+most here: QUILL Lite’s dark theme recolours every run light grey
+through <code>set_document_color</code>, which now records the colour so
+the description treats it as the default instead of saying “gray” on
+every character. QUILL gets the same answer from the same code.</p>
 <h3 id="71-the-spell-checker-and-the-exception-that-makes-it-usable">7.1
 The spell checker, and the exception that makes it usable</h3>
 <p>QUILL Lite ships a spell checker because the products it is measured
@@ -2432,6 +2456,49 @@ a generated tab. Handlers <code>cmd_search_in_files</code> and
 <code>cmd_replace_in_files</code>, parity
 <code>tools.search_in_files</code> and
 <code>tools.replace_in_files</code>.</p>
+<h2 id="one-query-syntax-for-every-filtered-list-2026-11-06">One query
+syntax for every filtered list (2026-11-06)</h2>
+<p>QUILL’s filter, from the same module, so neither editor is ahead:
+<code>quill/core/list_search.py</code> gained a small pure parser
+(<code>parse_query</code>, <code>has_query_syntax</code>), and
+<code>SearchTerms</code> uses it whenever a search holds any of
+<code>* ? &amp; | ! "</code>. A word matches anywhere, case ignored;
+<code>*</code> is any run of non-space characters and <code>?</code>
+exactly one; <code>&amp;</code> (or adjacency) is all, <code>|</code> is
+any, <code>!</code> is not; double quotes are exact text with no
+operators inside. <code>!</code> binds tightest, then
+<code>&amp;</code>, then <code>|</code>. The parser never raises:
+dangling operators and an unclosed quote are read as far as they go, and
+a query of operators alone matches everything. A search with none of
+those characters never reaches the parser, so every plain search answers
+exactly as before.</p>
+<p>Where QUILL Lite reaches it: Go To Anything
+(<strong>Ctrl+Alt+Shift+A</strong>), whose <code>#</code> heading search
+goes through <code>quill.ui.palette.heading_filter</code> (plain
+searches stay a whole-text substring) and whose commands go through
+<code>go_to_commands</code> (a query filters titles in usage order; the
+palette’s <code>?</code>, <code>:</code> and <code>~</code> prefixes are
+untouched); <strong>Insert &gt; Markdown Tag…</strong> and
+<strong>Insert &gt; HTML Tag…</strong> through
+<code>quill.core.tagging._rank_choices</code>, which filters names and
+aliases in the picker’s own order when given a query; and both lists of
+<strong>Move Section To…</strong> through
+<code>lite_window_sections._matching_rows</code>, now
+<code>SearchTerms</code> (identical for plain searches, which were
+already every word). The shared <strong>Search in Files</strong>
+window’s File pattern (<code>quill.core.file_search</code>) treats
+<code>&amp; | ! "</code> as operators over whole-name globs, case
+ignored, with a slash term matched against the path under the starting
+folder; <code>*</code> and <code>?</code> keep their glob meaning, a
+pattern without operators still goes straight to
+<code>Path.rglob</code>, and the search text’s Plain, Wildcard and
+Regular expression modes are unchanged. F1 help on
+<code>choose_searchable</code>’s search box, Go To Anything’s and the
+File pattern box states the rules. No new command, key or setting. Not
+done: F3 and Shift+F3 continuing a heading search, because F3 belongs to
+the text find in both editors, each with its own last-search state, and
+a heading memory would need a mode switch inside both find paths. Tests:
+<code>tests/unit/core/test_list_query_syntax.py</code>.</p>
 <h2 id="the-clipboard-collector-2026-10-15">The clipboard collector
 (2026-10-15)</h2>
 <p>QUILL’s system-wide collector (#964), on QUILL’s key, from QUILL’s
@@ -2672,17 +2739,52 @@ paragraph; a rich text document’s come from the control. Arrival says
 colour, count and words; the list’s rows are words, colour and
 paragraph, Enter goes there and Escape stays. Not listed: headers,
 footers, footnotes, text boxes, shading.</p>
+<h2
+id="navigate--code-blocks-indentation-and-check-this-file-2026-11-06">Navigate
+&gt; Code: blocks, indentation and Check This File (2026-11-06)</h2>
+<p>QUILL’s Navigate &gt; Code, in QUILL Lite with the same rows, letters
+and keys (family rule 2), from the same code
+(<code>quill/apps/lite_window_code_nav.py</code> over
+<code>quill/core/navigation.py</code>, <code>quill/core/problems/</code>
+and <code>quill/ui/problems_commands.py</code>).</p>
+<ul>
+<li><strong>Next Block / Previous Block</strong>
+(<code>cmd_next_block</code>, <code>cmd_previous_block</code>; no key,
+as in QUILL, recorded in the keyless table): paragraphs in plain text
+and Markdown; in HTML, headings, landmark elements and landmark roles,
+from the HTML language profile’s block pattern. The screen reader reads
+the line landed on, so nothing else is announced.</li>
+<li><strong>Next / Previous Indent Change</strong>
+(<code>cmd_next_indent</code> Alt+Shift+PageDown,
+<code>cmd_previous_indent</code> Alt+Shift+PageUp): the next line,
+skipping blanks, indented differently; the depth is announced after the
+move.</li>
+<li><strong>Check This File</strong> (<code>cmd_check_this_file</code>
+Ctrl+Alt+/), <strong>Next Problem</strong>
+(<code>cmd_next_problem</code> Ctrl+Alt+.), <strong>Previous
+Problem</strong> (<code>cmd_previous_problem</code> Ctrl+Alt+,): every
+problem in a Markdown or HTML document, in the Problems list
+(<code>choose_from_rows</code>) or one at a time with “Problem n of m,
+line, column, severity: message”. Built-in checkers only: QUILL Lite
+never starts an outside tool. In plain text or rich text it says
+“Nothing to check: QUILL Lite checks Markdown and HTML documents.” QUILL
+checks the same two languages and many more (rule 10: Lite level with
+QUILL, not ahead).</li>
+</ul>
 <h2 id="word-documents-and-table-navigation-2026-10-17">Word documents
 and table navigation (2026-10-17)</h2>
 <p><strong>One implementation, moved.</strong> QUILL’s wx-free Word
 decisions left <code>quill/ui/main_frame_rich_mode.py</code> for the
 shared <code>quill/core/docx_open.py</code>, and QUILL calls them in the
 same change: the fidelity scan (<code>fidelity_findings</code>, over
-<code>scan_docx_features</code>), the question and its three rows
-(<code>fidelity_question</code>, <code>fidelity_choices</code>,
-<code>choice_for_selection</code>; Cancel is <code>text</code>), the
-one-time backup (<code>backup_path_for</code>,
-<code>backup_original</code>, <code>needs_backup</code>:
+<code>scan_docx_features</code>, whose “headers” and “footers” include
+first-page parts under <code>w:titlePg</code> and even-page parts under
+<code>w:evenAndOddHeaders</code> in every section since #1756), the
+question and its three rows (<code>fidelity_question</code>,
+<code>fidelity_choices</code>, <code>choice_for_selection</code>; Cancel
+is <code>text</code>), the one-time backup
+(<code>backup_path_for</code>, <code>backup_original</code>,
+<code>needs_backup</code>:
 <code>name.backup-YYYYMMDD-HHMMSS.docx</code>, once per session, only
 for a flagged original that exists), read-to-RTF
 (<code>read_docx_as_rtf</code>) and RTF-to-Word
@@ -3288,10 +3390,18 @@ a wx accelerator on its own, so the layer is run from the key-down
 handler (<code>_wordpress_key_down</code> in
 <code>quill/apps/lite_window_wordpress.py</code>) by the same
 <code>WordPressKeyLayer</code> object QUILL’s char hook asks, and never
-by an accelerator table. It says “WordPress keys” when it starts,
-because the prefix changes nothing on screen; “Left WordPress keys” on
-Escape; “No WordPress command on X.” for an unbound letter; and gives up
-after four seconds. A command that runs speaks for itself (GATE-13).</p>
+by an accelerator table. The grave key is recognised by position, not
+character, through the shared
+<code>quill.core.grave_key.is_grave_key</code> that QUILL’s QUILL key
+also uses (#1753): the backtick or tilde character; on Windows
+<code>VK_OEM_3</code> or hardware scan code 0x29; on macOS the virtual
+key code 0x32 (<code>kVK_ANSI_Grave</code>) or 0x0A
+(<code>kVK_ISO_Section</code>, the key above Tab on ISO keyboards). So
+the layer starts on a German, French or Nordic layout too. It says
+“WordPress keys” when it starts, because the prefix changes nothing on
+screen; “Left WordPress keys” on Escape; “No WordPress command on X.”
+for an unbound letter; and gives up after four seconds. A command that
+runs speaks for itself (GATE-13).</p>
 <table>
 <thead>
 <tr>
@@ -3696,6 +3806,168 @@ breaks.</li>
 page break needs a Word, Rich Text or Markdown document”. It never
 writes a form feed.</li>
 </ul>
+<h1 id="github-workbench-parity-note-2026-11-05">GitHub Workbench parity
+note (2026-11-05)</h1>
+<p>QUILL Lite shares QUILL’s GitHub Items, Explore, PR review, and diff
+windows. These include the native review tree, thread reply and
+resolution, saved global search, My Work, activity, repository
+discovery, and workflow job logs. The separate QUILL repository
+administration and Local Git menus remain a tracked parity gap. The
+shared <a
+href="https://www.quillforall.org/docs/workbench-reference.html">workbench
+reference</a> documents keyboard actions and permissions.</p>
+<h2
+id="say-commands-the-clipboard-the-time-the-open-documents-and-the-log-2026-11-06">Say
+commands: the clipboard, the time, the open documents and the log
+(2026-11-06)</h2>
+<p>Seven commands that answer what a sighted user settles with a glance.
+QUILL has the same seven: one set of handlers
+(<code>quill/ui/say_commands.py</code>), one set of words
+(<code>quill/core/say_commands.py</code>, wx-free), the same keys,
+mapped in <code>COMMAND_EQUIVALENTS</code> (family rule 10). QUILL
+Lite’s adapter is <code>quill/apps/lite_window_say.py</code> and its
+menu rows are <code>quill/core/lite/commands_say.py</code>. Each speaks
+a result the screen reader cannot know, which is what GATE-13 allows,
+through the announcement service, so it is brailled too.</p>
+<p>Repeated presses answer at once. <code>PressStreak</code>
+(<code>quill/core/multi_press.py</code>) counts quick repeats of the
+same command within half a second (<code>PRESS_WINDOW_SECONDS</code>)
+and every press is answered immediately; a quick further press
+supersedes the last answer. Waiting out the window, as
+<code>MultiPressDispatcher</code> does, would put a pause in front of
+the answer people press for most.</p>
+<ul>
+<li><strong>Say Clipboard</strong> (<code>cmd_say_clipboard</code>,
+<strong>Alt+Shift+Home</strong>, first row of Edit &gt; Clipboard).
+Once: the text, up to 2,000 characters and then “and N more characters.
+Press three times quickly to read it all”; for files on the clipboard,
+“N files on the clipboard:” and up to ten names, then “and N more”.
+Twice: the first 200 characters spelled, capitals as “cap”; for files,
+each full path. Three times: a read-only window titled Clipboard, Escape
+to close, one path a line for files. “The clipboard is empty” and “The
+clipboard holds something that is not text, such as a picture” cover the
+rest.</li>
+<li><strong>Append Selection to Clipboard</strong>
+(<code>cmd_append_to_clipboard</code>, <strong>Alt+Shift+End</strong>).
+The selection goes on a new line after the clipboard’s text, with no
+blank line invented; an empty clipboard becomes the selection; files on
+the clipboard are replaced. “Appended N characters to the clipboard,
+which now holds M characters”. No selection: “Select text first to
+append it to the clipboard”.</li>
+<li><strong>Save Clipboard to File…</strong>
+(<code>cmd_save_clipboard</code>, no key, Alt+E, B, F). A Save dialog
+offering <code>clipboard YYYY-MM-DD HHMM.txt</code>; UTF-8, line breaks
+normalised, written atomically. “Saved N characters to name”. Files on
+the clipboard: “The clipboard holds files, not text, so there is nothing
+to save”.</li>
+<li><strong>Clear Clipboard</strong> (<code>cmd_clear_clipboard</code>,
+no key, Alt+E, B, B). “Cleared the clipboard” or “The clipboard was
+already empty”.</li>
+<li><strong>Say Time and Date</strong> (<code>cmd_say_time</code>,
+<strong>Alt+Shift+Space</strong>, Tools, no access letter). Once: “2:05
+PM”. Twice: “Friday, November 6, 2026”.</li>
+<li><strong>Say Windows Open</strong>
+(<code>cmd_say_windows_open</code>, <strong>Ctrl+Shift+Space</strong>,
+Window, Alt+W, S). Once: “N documents open”. Twice: the document
+windows’ names in order, the one in front marked “(current)”. QUILL
+counts its tabs.</li>
+<li><strong>Copy Log</strong> (<code>cmd_copy_log</code>, no key, Help,
+Alt+H, L). Puts this session’s <code>quill.log</code> on the clipboard
+as a file and as its path, so an email attaches it and a document or
+support form gets its location. No log yet: “No log has been written
+yet”.</li>
+</ul>
+<p>Keys: measured on 2026-11-06, four plain chords were free in both
+editors, and the four commands people press went to them, plainly rather
+than on QUILL’s leader because QUILL Lite has none (rule 6). Save
+Clipboard to File and Copy Log are occasional (rule 9) and no chord was
+left; Clear Clipboard stays menu-only on purpose too, because a stray
+key would lose what was on the clipboard (rule 4).</p>
+<h2 id="document-statistics-pressed-twice-2026-11-06">Document
+Statistics, pressed twice (2026-11-06)</h2>
+<p><strong>View &gt; Document Statistics</strong>
+(<strong>Ctrl+Shift+G</strong>, <code>cmd_statistics</code>) still
+answers a first press at once with words, lines and characters. A second
+press within 400 milliseconds (<code>multi_press_window_ms</code> where
+the settings carry it) speaks the whole writing report: the same counts,
+then paragraphs, sentences, sentences over 30 words, reading time at 200
+words a minute, and the Flesch-Kincaid reading grade. QUILL’s Document
+Statistics has the same two presses on the same key and says the same
+words, because both editors call
+<code>quill.core.metrics.statistics_report</code> (family rule 2: the
+command both products have keeps the chord, and no second
+implementation).</p>
+<ul>
+<li>DS-L1. The first press is never delayed waiting to see whether a
+second one comes; <code>RepeatPress</code> only looks back.</li>
+<li>DS-L2. With a selection, both presses count the selection and say
+“Selection:” first.</li>
+<li>DS-L3. Paragraphs are blank-line blocks when the text has a blank
+line between paragraphs, otherwise non-blank lines.</li>
+<li>DS-L4. The sentence splitter and the grade are the ones the
+WordPress reading-level check uses, moved to
+<code>quill/core/readability.py</code> so the two can never
+disagree.</li>
+</ul>
+<h2 id="math-as-mathml-in-export-as-html-2026-11-06">Math as MathML in
+Export as HTML (2026-11-06)</h2>
+<ul>
+<li><strong>File &gt; Export as HTML…</strong> (Ctrl+Alt+Shift+End)
+renders a Markdown document through the shared
+<code>render_preview_body</code>, which now hands TeX math
+(<code>\(...\)</code>, <code>\[...\]</code>, <code>$$...$$</code> and
+fenced <code>math</code>) to
+<code>quill/core/math/preview_math.py</code>: the math is lifted out
+before the Markdown renderer runs, so <code>a_1</code> is never read as
+emphasis, and comes back as MathML from the shared
+<code>latex_to_mathml</code>. Code spans and fenced code are left
+alone.</li>
+<li>The page carries no script and makes no network request for math.
+Before this, QUILL’s preview and HTML export loaded MathJax from a CDN;
+QUILL Lite’s page had no math rendering at all, so this is the same
+capability reaching both editors from one module in the same change, not
+Lite getting ahead.</li>
+<li>A formula <code>latex2mathml</code> cannot convert is written as its
+escaped TeX source, so nothing is lost. QUILL Lite has no Pandoc path,
+so the picture embedding QUILL’s Pandoc export gained the same day does
+not apply here: QUILL Lite’s page links its pictures as before.</li>
+</ul>
+<h2
+id="replace-all-takes-what-was-typed-and-a-failed-backup-is-said-2026-11-06">Replace
+All takes what was typed, and a failed backup is said (2026-11-06)</h2>
+<p><strong>Replace All.</strong>
+<code>lite_window_find._replace_every_match</code> built the whole new
+text with <code>pattern.sub(replacement, text)</code>, and
+<code>re.sub</code> reads a string replacement as a template in every
+mode. So in Normal and Extended search <code>C:\new</code> gained a line
+break and <code>\1</code> raised out of the command. The replacement now
+goes in through a function unless the search mode is <code>regex</code>,
+which keeps <code>\1</code> and <code>\g&lt;name&gt;</code>; a regex
+replacement naming a group the pattern does not have is caught,
+announced (“Nothing replaced: …”) and changes nothing, because the new
+text is built before the single edit. Rich mode’s per-match loop was
+already literal. QUILL had the same fault in
+<code>quill/core/search.replace_all</code> (Replace All and Replace
+Across Files) and the same fix (rule 10: value flows both ways). Tests:
+<code>tests/unit/apps/test_lite_find_modes.py</code>,
+<code>tests/unit/core/test_search.py</code>.</p>
+<p><strong>Backups.</strong> <code>core/lite/backups.write_backup</code>
+never raises and returned <code>None</code> on failure, which both save
+paths ignored, so a full or read-only backups folder went unnoticed
+until the day the backup was wanted. It now logs the reason, and
+<code>DocumentFileMixin._back_up_saved</code> (used by Save and by the
+Word save’s finish, <code>_finish_word_save</code>) folds the failure
+into the one save announcement: “Saved notes.txt, but could not write a
+backup”, through the window’s voice so braille mirrors it
+(GATE-BRAILLE). One announcement rather than two, so the second does not
+cut off the first. QUILL already spoke its backup failure and now logs
+it too. Tests:
+<code>tests/unit/apps/test_lite_file_commands.py</code>.</p>
+<p><strong>Export.</strong> QUILL Lite writes no file through Pandoc:
+Word saves go through <code>docx_open.write_docx_from_rtf</code> and
+HTML export through <code>write_text_atomic</code>, both already atomic.
+QUILL’s Pandoc writer now stages beside the target and replaces it only
+on success (QUILL PRD 5.3a.1.1).</p>
 </main>
 </body>
 </html>

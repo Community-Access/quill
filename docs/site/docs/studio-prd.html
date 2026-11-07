@@ -245,6 +245,13 @@
 <h1 id="quill-studio--product-requirements">QUILL Studio – Product
 Requirements</h1>
 <p>Version 2.0.0 (QUILL Studio; see CHANGELOG.md)</p>
+<p><strong>Evidence status:</strong> this is the implemented-source
+baseline, not a claim that the current build is publicly released or
+that every workflow has passed installed-build and human accessibility
+acceptance. The consolidated <a
+href="https://github.com/Community-Access/quill/blob/main/docs/planning/QUILL-Studio-PRD.md">Studio
+planning PRD</a> owns remaining requirements and acceptance gates;
+historical root-level drafts are superseded.</p>
 <p>Runtime update in 2.0.0: Windows OCR and Media use the shared PyWinRT
 4.0.3 runtime and Windows SDK 10.0.28000.2705 projections; Windows Media
 releases device references and event handlers on shutdown. DECtalk is
@@ -281,10 +288,11 @@ play it, fix chapters and tags, run the ACX check, publish.</li>
 screenshots (section 4.14): a named window, a display, the whole
 desktop, a guided portion of one of them, or one accessible element
 inside a window, each saved with a verification report that separates
-what was measured from what an AI only suggested. Recording video is not
-yet part of the product; it is specified as the next thing to build in
-the QUILL Studio planning PRD
-(<code>docs/planning/QUILL-Studio-PRD.md</code>, section 7A).</p>
+what was measured from what an AI only suggested. Demonstration
+recording and related production commands are also implemented (section
+4.15). Their presence is not full media-studio acceptance: the planning
+PRD’s section 7A.7 records recording limitations and the remaining
+real-device, screen-reader, braille and performance checks.</p>
 <p>The wizard, Chapter Workbench, batch narration pipeline, and publish
 surfaces are the exact same code QUILL ships. This app supplies what a
 standalone product needs around them: a home window, menu bar, status
@@ -585,6 +593,37 @@ prior chapter.</li>
 (minimum 1-second parts), set chapter start to playhead, merge into
 previous, and Restore original (from the snapshot taken at open). Audio
 bytes are never altered by chapter surgery.</li>
+<li>AS-38a. Chapter editing must also include <strong>add</strong> (a
+marker at the playhead or a typed time, named on the way in; past the
+last chapter’s end it appends rather than refusing),
+<strong>delete</strong> (the marker only – the audio joins its
+neighbour, and unlike merge it is defined for the first and last
+chapters), <strong>edit</strong> (a window taking the title and the
+exact start and end, plus the Podcasting 2.0 link and image), and
+<strong>preview</strong> (play this chapter and stop at its end).</li>
+<li>AS-38b. A chapter marker must be movable <strong>by ear</strong>:
+Nudge back and Nudge forward move the highlighted chapter’s start by one
+step, Alt with Left or Right does the same from the chapter list and
+Shift with them moves ten steps, and “Hear boundary” plays three seconds
+before the marker and two after it. The step is chosen from 100 ms to 10
+s and remembered between sessions in
+<code>audio_studio_chapter_nudge_ms</code> (default 500 ms, clamped 10
+to 60000). A nudge that runs a marker into its neighbour must stop there
+and say so once per run, not refuse. Each nudge must speak the bare new
+time only, with the full “title starts X, runs Y” sentence following
+once the run goes quiet – a sentence repeated at key-repeat speed is
+unusable.</li>
+<li>AS-38c. “All tags…” must open the Tag Editor: every tag the file can
+carry over five pages – main, details, publishing, sort order, cover art
+– built from the field table shared byte-identically with podHarvest, so
+a file edited in either app reads back unchanged in the other. The
+Workbench’s five quick fields and the editor’s twenty-six must stay in
+step in both directions. The editor must also be openable on its own,
+without the Workbench, from the Studio wizard’s Open a book page.</li>
+<li>AS-38d. Saving must follow what actually changed: an MP3 saves in
+place; an M4B with only tag edits saves in place too (mutagen rewrites
+the atoms, no re-mux); an M4B with chapter edits still saves as a new
+file, losslessly.</li>
 <li>AS-39. “Propose chapters from silences” must run ffmpeg silence
 detection with adjustable noise floor (-60..-10 dB, default -30) and
 minimum silence (0.1..5.0 s, default 0.8), place boundaries at silence
@@ -1115,6 +1154,84 @@ picture is fitted to 2048 pixels for OpenAI and 1568 for Claude. These
 features follow the approach of Kelly Ford’s Image Description Toolkit
 (MIT), credited in the third-party notices and the user guide.</p></li>
 </ul>
+<h3
+id="415-implemented-recording-and-production-baseline-acceptance-open">4.15
+Implemented recording and production baseline; acceptance open</h3>
+<p>These requirements record the current shared implementation. They do
+not supersede the detailed REC requirements or close the planning PRD’s
+gaps.</p>
+<ul>
+<li>AS-120. Capture, the command palette and the tray expose the same
+demonstration-recording commands from
+<code>quill/apps/studio_demo.py</code>. Record or stop uses the Studio
+app key Ctrl+Alt+Shift+V, not Radio’s show/hide key. System-wide
+recording keys remain opt-in with no defaults.</li>
+<li>AS-121. Recording setup uses shared target identities and explicit
+sound sources/levels. Microphone and screen-reader recording are off
+initially; enabling sensitive sources requires approval. The shared
+microphone lock, preflight results, test recording and independent
+source state remain in effect. System sound’s exclusion of a detected
+screen reader must be explained, not treated as proof that no private
+speech can leak.</li>
+<li>AS-122. Named-window video currently records its screen rectangle,
+not Windows.Graphics.Capture. Covering content is included and moving
+windows are not followed. The preflight warning and evidence must
+disclose this. Display capture chooses desktop duplication or GDI
+according to the actual display/backend capability; never silently
+broaden the selected area.</li>
+<li>AS-123. Pause/resume, markers, microphone mute, status, emergency
+stop, explicit discard and unfinished-session recovery share one
+recording session. Worker callbacks honor the UI lifetime. Recovery
+remains an explicit action rather than an unsolicited modal at
+startup.</li>
+<li>AS-124. Finalization uses the shared FFmpeg builders and independent
+verification code (<code>demo_recording_ffmpeg.py</code>,
+<code>demo_recording_verify.py</code>). Verification distinguishes
+failed or unknown checks from passed ones. Finalization/recovery
+includes an existing recorded microphone stem even though microphone
+enablement is deliberately absent from the saved plan. It never opens a
+microphone or persists its on state to do so. Regression tests decode
+the finished audio, not just check for an audio stream that might
+contain generated silence. Synthetic FFmpeg integration is not a live
+microphone, camera, long-run alignment or private-audio-leakage
+acceptance test.</li>
+<li>AS-125. Camera-only and camera-overlay recording are implemented,
+with chosen framing, corner/width, mirroring and local Windows
+face-framing advice. No-face/uncertain results are not a guarantee of
+correct framing. Positive live-person detection and accessible
+live-camera acceptance remain explicit checks in planning section
+7A.7.</li>
+<li>AS-126. Studio Mixer uses Windows audio sessions and playback/input
+devices for per-program level/mute/output-card and device-default/level
+controls. Programmatic selection refresh must not run user setters
+(<code>SyncGuard</code>). This dialog is not a private/program/stem
+production graph and does not satisfy the remaining multibus-routing
+requirements.</li>
+<li>AS-127. Make a video from a picture and sound is implemented through
+the shared picture-video plan and worker, with cancellation and result
+verification. This is not a multitrack nonlinear video editor.</li>
+<li>AS-128. Ask AI about a video extracts selected frames and optional
+nearby captions in a worker and opens the existing Screenshot Inspector
+conversation. The existing per-request approval, capability and Safe
+Mode gates apply. Sampled frames cannot prove the whole video’s
+correctness.</li>
+<li>AS-129. Broadcast live implements Icecast/SHOUTcast source-client
+setup, source inclusion and levels, preflight/test, stop and emergency
+public mute. Passwords stay in Windows Credential Manager, not saved
+stream settings. This does not imply YouTube/Teams/Zoom ingest, audience
+chat or full independent private/program/stem routing is accepted.</li>
+<li>AS-130. Picture Maker reuses
+<code>quill/core/ai/picture_maker.py</code> and the same dialog as QUILL
+and QUILL Lite’s WordPress Media and Files entry points. Picture
+generation remains an explicit, approved own-key action; it does not
+upload or publish the result automatically.</li>
+</ul>
+<p>Family applicability and open companion-discovery work are specified
+in planning section 1.4. The shared launcher must find the installed
+legacy <code>QuillAudioStudio.exe</code> and adjacent portable
+<code>QuillAudioStudio</code> folder while displaying QUILL Studio and
+retaining rename aliases. Public release gating must remain closed until
+the release decision.</p>
 <h2 id="5-non-functional-requirements">5. Non-functional
 requirements</h2>
 <ul>
@@ -1130,7 +1247,8 @@ component and voice downloads (Ed25519-signed where supported), the
 app’s own GitHub update check, and explicit user actions – consented
 metadata lookup, consented cover fetch, user-initiated SFTP/Auphonic
 publishing, and configured AI/cloud-TTS/translation calls
-(cost-confirmed when paid), including screenshot inspection only after
+(cost-confirmed when paid), explicitly approved live-broadcast audio and
+server handshakes (AS-129), including screenshot inspection only after
 per-request approval or the separately approved automatic mode (AS-106,
 AS-107), on a ChatGPT plan through the family’s existing plan client
 (AS-114). No other outbound calls; capture, OCR, editing, notes and

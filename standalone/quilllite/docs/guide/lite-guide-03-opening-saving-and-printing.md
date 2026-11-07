@@ -1104,7 +1104,7 @@ selected details, and Shift+Tab returns to the outline. **Ctrl+R** replies to
 a selected review thread. **Shift+F10**, the Applications key, or right-click
 opens actions suited to the node: reply and copy links on threads, open the
 selected file's differences, inspect a check, or submit a review from the PR.
-The [complete GitHub tutorial](https://community-access.github.io/quill/docs/tutorials/08-github-inside-quill.html)
+The [complete GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
 walks through the viewer's other lists and controls in both apps.
 
 ### Notifications, failed runs and merging

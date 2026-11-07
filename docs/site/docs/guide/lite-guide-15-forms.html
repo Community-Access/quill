@@ -243,6 +243,24 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="chapter-15-forms">Chapter 15: Forms</h1>
+<h2 id="payments-and-donations">Payments and donations</h2>
+<p>QUILL Lite uses the same payment commands as QUILL. Tools &gt; Forms
+&gt; Insert Payment Field adds a fixed amount, <code>#field_id</code>
+reference or bounded donation. Form Payments Setup chooses Stripe and/or
+PayPal, currency and capture mode. New settings start in test mode.
+Setup changes only the local form.</p>
+<p>Configure sandbox credentials and webhooks in WordPress, then use
+Verify Payment Setup. Publishing requires a QAF plugin implementing
+payment contract version 1, ready selected providers/webhooks and
+matching test/live mode. Test on Site checks the published form and
+refuses live-payment checkout. Responses include payment metadata in
+Read, CSV and Word exports; Refresh Payment Status confirms the site
+before rereading entries. QUILL Lite stores no provider credentials and
+never captures or refunds payments.</p>
+<p>Follow the full payment walkthrough in <a
+href="../wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.html">Forms
+on the web and paper</a>.</p>
+<h2 id="writing-a-form">Writing a form</h2>
 <p>A form is a contact form, an event sign-up, a membership renewal, a
 survey or a feedback page. Making one usually means dragging boxes
 around a web page, which is one of the hardest things on the web to do

@@ -18,7 +18,7 @@ GitHub Items viewer. A PR expands into changed files, review threads, general
 conversations, and checks. Arrow to an item and Tab into its detail; Ctrl+R
 replies to a selected thread. Shift+F10 opens a context menu that fits the
 selected item. Public repositories can be read anonymously; posting needs a
-token. See the [full GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md).
+token. See the [full GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html).
 
 ## Nemotron keeps its last word
 
@@ -1489,5 +1489,5 @@ every message.
 The shared GitHub Items and Explore windows add global saved search, My Work,
 activity, account and repository views, PR thread resolve/reopen, exact current
 diff-line targeting, Pages and labels, and workflow jobs and logs. See the
-[workbench reference](../../../docs/github/workbench-reference.md). Native
+[workbench reference](https://www.quillforall.org/docs/workbench-reference.html). Native
 screen-reader acceptance and integration into the destination branch are pending.

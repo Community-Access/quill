@@ -25,7 +25,7 @@
   Ctrl+R replies to a selected thread; Shift+F10 opens node-specific actions.
 - The Items list and details field have context menus for review, diff,
   comparison, copy, favorites, and relevant write actions.
-- The complete interaction model is in the [GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md).
+- The complete interaction model is in the [GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html).
 
 ### Hear the clipboard, the time and what is open (2026-11-06)
 
@@ -3814,5 +3814,5 @@ with its reason.
 QUILL Lite's shared GitHub Items window now includes Explore, saved global
 searches, My Work, repository discovery, PR thread resolution and exact diff
 line targeting, and workflow job logs. The same keyboard and context-menu
-patterns are described in the QUILL [workbench reference](../../../docs/github/workbench-reference.md).
+patterns are described in the QUILL [workbench reference](https://www.quillforall.org/docs/workbench-reference.html).
 Native screen-reader acceptance and destination-branch integration are pending.

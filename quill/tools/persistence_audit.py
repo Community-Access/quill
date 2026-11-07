@@ -32,6 +32,7 @@ import ast
 from pathlib import Path
 
 from quill.tools.persistence_entries_ai import AI_ENTRIES
+from quill.tools.persistence_entries_converter import CONVERTER_ENTRIES
 from quill.tools.persistence_entries_dictation import DICTATION_ENTRIES
 from quill.tools.persistence_entries_family import FAMILY_ENTRIES
 from quill.tools.persistence_entries_github import GITHUB_ENTRIES
@@ -113,8 +114,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # expressed a preference -- taken directly rather than through the
     # migration machinery, which has nothing to migrate from at 1.0.0.
     "core/lite/settings.py::save": "versioned",
-    "core/converter_settings.py::save": "versioned",
-    "core/publish/auphonic_plan.py::save_pending": "versioned",  # Converter Auphonic resume
+    **CONVERTER_ENTRIES,  # Quill Converter and its Auphonic stores
     "core/speech/dictation/recovery.py::save_metadata": "framework",
     # --- export / output (user picks the file) ---
     # "Move my setup to another machine" (11.10): the import writes each store

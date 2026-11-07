@@ -8,7 +8,7 @@ the one inferred from the current document's checkout. Select a PR and choose
 **Review...**. Arrow through the expandable PR, files, conversations, and
 checks. Tab into the selected details; Shift+Tab returns. Ctrl+R replies to a
 selected review thread, and Shift+F10 opens its context menu. The
-[GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md) explains
+[GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html) explains
 the complete interaction model.
 
 *For QUILL Lite 2.0.0 (build 1), the beta for testers, October 2026. 2.0.0
@@ -276,4 +276,4 @@ reader is an expandable tree, with files and threads under the pull request;
 Tab reads the selected node's detail. Ctrl+R replies and Ctrl+Shift+R toggles
 thread resolution where allowed. **Explore** reaches global search, My Work,
 activity, account and repository discovery, and workflow job logs. See the
-[complete keyboard reference](../../../docs/github/workbench-reference.md).
+[complete keyboard reference](https://www.quillforall.org/docs/workbench-reference.html).

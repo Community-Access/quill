@@ -2467,7 +2467,7 @@ QUILL Lite shares QUILL's GitHub Items, Explore, PR review, and diff windows.
 These include the native review tree, thread reply and resolution, saved global
 search, My Work, activity, repository discovery, and workflow job logs. The
 separate QUILL repository administration and Local Git menus remain a tracked
-parity gap. The shared [workbench reference](../../../docs/github/workbench-reference.md)
+parity gap. The shared [workbench reference](https://www.quillforall.org/docs/workbench-reference.html)
 documents keyboard actions and permissions.
 
 ## Say commands: the clipboard, the time, the open documents and the log (2026-11-06)

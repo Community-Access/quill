@@ -29,6 +29,8 @@ from typing import Any
 
 from quill.core.error_codes import CodedError
 from quill.core.publish.auphonic import AuphonicCancelled, AuphonicError
+from quill.core.publish.auphonic_history import record_outcome, record_sent
+from quill.core.publish.auphonic_options import COVER_FIELD
 from quill.core.publish.auphonic_plan import (
     MULTITRACK,
     SEPARATE,
@@ -40,6 +42,7 @@ from quill.core.publish.auphonic_plan import (
     remove_pending,
     result_folder,
     track_ids,
+    uploads_for,
 )
 
 SAVED = "saved"
@@ -62,6 +65,7 @@ class Outcome:
     message: str
     files: list[Path] = field(default_factory=list)
     left_out: int = 0
+    uuid: str = ""  # the Auphonic production, once there is one (Production History)
 
 
 @dataclass(slots=True)
@@ -129,6 +133,11 @@ class Runner:
     clock: Callable[[], float] | None = None
     poll_seconds: float = 10.0
     timeout_seconds: float = 4 * 3600.0
+    #: Production History's file; every started production and its outcome
+    #: is recorded there when it is given (post-MVP, auphonic_history).
+    history: Path | None = None
+    #: Where a person fetches a result later, said when one is left behind.
+    waiting_door: str = _WAITING_DOOR
     _last: tuple[str, int] = ("", -1)
 
     def __post_init__(self) -> None:
@@ -161,7 +170,7 @@ class Runner:
                 name=title,
                 title=title,
                 body=production_body(choices, title=title, tracks=ids),
-                uploads=list(zip(ids, eligible, strict=True)),
+                uploads=uploads_for(choices, list(zip(ids, eligible, strict=True))),
                 folder=result_folder(dest, title),
                 place=(0, 1),
             )
@@ -181,7 +190,7 @@ class Runner:
                     name=path.name,
                     title=title,
                     body=production_body(choices, title=title, details=found),
-                    uploads=[("input_file", path)],
+                    uploads=uploads_for(choices, [("input_file", path)]),
                     folder=result_folder(dest, path.stem),
                     place=(index, total),
                 )
@@ -203,6 +212,13 @@ class Runner:
 
     def _record(self, result: RunResult, outcome: Outcome, index: int, total: int) -> None:
         result.outcomes.append(outcome)
+        if self.history is not None and outcome.uuid:
+            try:
+                record_outcome(
+                    self.history, outcome.uuid, outcome.state, outcome.message, outcome.files
+                )
+            except OSError:
+                pass  # the history line keeps its last state
         if self.on_outcome is not None:
             self.on_outcome(outcome, index, total)
 
@@ -255,30 +271,49 @@ class Runner:
                 )
         if self.is_cancelled():
             return Outcome(name, STOPPED, f"Stopped before {name} started. {unstarted}")
+        sounds = [path for field_name, path in uploads if field_name != COVER_FIELD]
+        record = PendingProduction(
+            uuid=production,
+            mode=MULTITRACK if len(sounds) > 1 or choices.mode == MULTITRACK else SEPARATE,
+            title=title,
+            inputs=[path.name for path in sounds],
+            preset_label=choices.preset_label or "your account's default preset",
+            out_dir=str(folder),
+        )
         try:
             self.client.start_created(self.token, production)
         except AuphonicError as error:
+            self._history_sent(record)  # Refresh from Auphonic can settle what happened
             return Outcome(
                 name,
                 FAILED,
                 f"Auphonic did not confirm that {name} started: {said(error)} It may have started "
                 "anyway, so check your Auphonic account before sending it again.",
+                uuid=production,
             )
-        record = PendingProduction(
-            uuid=production,
-            mode=MULTITRACK if len(uploads) > 1 or choices.mode == MULTITRACK else SEPARATE,
-            title=title,
-            inputs=[path.name for _field, path in uploads],
-            preset_label=choices.preset_label or "your account's default preset",
-            out_dir=str(folder),
-        )
         try:
             add_pending(self.store, record)
         except OSError:
             pass  # the run goes on; only a later Resume is lost
+        self._history_sent(record)
         return self._finish(record, place, name=name)
 
+    def _history_sent(self, record: PendingProduction) -> None:
+        if self.history is not None:
+            try:
+                record_sent(self.history, record)
+            except OSError:
+                pass  # the run goes on; only the history line is lost
+
     def _finish(
+        self, record: PendingProduction, place: tuple[int, int], *, name: str = ""
+    ) -> Outcome:
+        """Wait for a started production, then save its files; the outcome names it."""
+        outcome = self._await(record, place, name=name)
+        outcome.uuid = record.uuid
+        return outcome
+
+    def _await(
         self, record: PendingProduction, place: tuple[int, int], *, name: str = ""
     ) -> Outcome:
         """Wait for a started production, then save its sound files."""
@@ -292,7 +327,7 @@ class Runner:
                     name,
                     WAITING,
                     f"Stopped waiting for {name}. Auphonic keeps processing it in your "
-                    f"account; {_WAITING_DOOR}.",
+                    f"account; {self.waiting_door}.",
                 )
             try:
                 status = self.client.production_status(self.token, record.uuid)
@@ -304,7 +339,7 @@ class Runner:
                         name,
                         WAITING,
                         f"Lost touch with Auphonic while it processed {name}: {said(error)} It had "
-                        f"already started and may still finish; {_WAITING_DOOR}.",
+                        f"already started and may still finish; {self.waiting_door}.",
                     )
                 self._pause()
                 continue
@@ -323,7 +358,8 @@ class Runner:
                 return Outcome(
                     name,
                     WAITING,
-                    f"Auphonic was still processing {name} after {hours:g} hours. {_WAITING_DOOR}.",
+                    f"Auphonic was still processing {name} after {hours:g} hours. "
+                    f"{self.waiting_door}.",
                 )
             self._pause()
         return self._download(record, status, place, name)
@@ -355,14 +391,14 @@ class Runner:
                 name,
                 WAITING,
                 f"Stopped while downloading {name}; no partial file was kept. The result "
-                f"stays in your Auphonic account; {_WAITING_DOOR}.",
+                f"stays in your Auphonic account; {self.waiting_door}.",
             )
         except (AuphonicError, OSError) as error:
             return Outcome(
                 name,
                 WAITING,
                 f"Downloading {name} failed: {said(error)} The result stays in your Auphonic "
-                f"account; {_WAITING_DOOR}.",
+                f"account; {self.waiting_door}.",
             )
         self._forget(record)
         noun = "file" if len(files) == 1 else "files"

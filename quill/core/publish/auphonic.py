@@ -444,6 +444,10 @@ _AUDIO_RESULT_FORMATS = frozenset({
     "wav-24bit",
 })
 _AUDIO_RESULT_ENDINGS = frozenset({"mp3", "ogg", "oga", "opus", "m4a", "aac", "flac", "wav"})
+#: Captions and a transcript (post-MVP): plain-text results kept beside the
+#: sound, by format and ending; speech data, statistics and images are not.
+_TEXT_RESULT_FORMATS = frozenset({"subtitle", "transcript"})
+_TEXT_RESULT_ENDINGS = frozenset({"srt", "vtt", "webvtt", "txt", "html"})
 #: The host every result is downloaded from.
 _RESULT_HOST = "auphonic.com"
 
@@ -508,7 +512,11 @@ def is_result_url(url: str) -> bool:
 
 
 def audio_results(status: ProductionStatus) -> tuple[ProductionStatus, int]:
-    """*status* keeping only sound files on Auphonic's host, and how many were left out."""
+    """*status* keeping only sound files on Auphonic's host, and how many were left out.
+
+    Captions and a plain-text transcript are kept too (``subtitle`` and
+    ``transcript`` results ending in .srt, .vtt, .txt or .html).
+    """
     kept: list[dict[str, object]] = []
     for output in status.output_files:
         fmt = str(output.get("format", "")).lower()
@@ -517,7 +525,8 @@ def audio_results(status: ProductionStatus) -> tuple[ProductionStatus, int]:
             name = str(output.get("filename", ""))
             ending = name.rsplit(".", 1)[-1].lower() if "." in name else ""
         audio = fmt in _AUDIO_RESULT_FORMATS if fmt else ending in _AUDIO_RESULT_ENDINGS
-        if audio and is_result_url(str(output.get("download_url", ""))):
+        text = fmt in _TEXT_RESULT_FORMATS and ending in _TEXT_RESULT_ENDINGS
+        if (audio or text) and is_result_url(str(output.get("download_url", ""))):
             kept.append(output)
     left_out = len(status.output_files) - len(kept)
     return ProductionStatus(status.uuid, status.status, status.status_string, kept), left_out
