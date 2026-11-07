@@ -254,7 +254,6 @@
   ["QUILL Lite", "core/lite/commands.py Toggle Selection Marker", "Ctrl+Alt+F8"],
   ["QUILL Lite", "core/lite/commands.py Tools", "Alt+Shift+9"],
   ["QUILL Lite", "core/lite/commands.py Tools", "Alt+Shift+M"],
-  ["QUILL Lite", "core/lite/commands.py Tools", "Ctrl+Alt+Shift+F6"],
   ["QUILL Lite", "core/lite/commands.py Tools", "Ctrl+Shift+P"],
   ["QUILL Lite", "core/lite/commands.py Trim Trailing Spaces", "Ctrl+Alt+R"],
   ["QUILL Lite", "core/lite/commands.py UPPERCASE", "Ctrl+Shift+U"],

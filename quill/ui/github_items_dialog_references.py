@@ -127,8 +127,7 @@ class GitHubReferenceMixin:
         try:
             reference = parse_github_reference(value)
         except GitHubReferenceError as exc:
-            self._set_status(str(exc))
-            self._announce(str(exc))
+            self._set_status(str(exc))  # also announces
             return
 
         if reference.kind == "file" and self._open_file_reference_cb is not None:

@@ -1,7 +1,7 @@
 # QUILL Lite: free AI help, in an editor that talks to you
 
 **GitHub workbench update (November 2026):** QUILL Lite now opens QUILL's
-shared GitHub Items viewer from **Tools > GitHub Workbench...**. Review a pull
+shared GitHub Items viewer from **File > GitHub Workbench...** (**Alt+F**, then **G**). Review a pull
 request through an expandable outline of changed files, conversations, and
 checks. **Ctrl+R** replies to a selected thread and **Shift+F10** reveals
 actions for the selected item. The [GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md)

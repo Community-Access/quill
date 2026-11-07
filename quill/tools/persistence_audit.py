@@ -34,6 +34,7 @@ from pathlib import Path
 from quill.tools.persistence_entries_ai import AI_ENTRIES
 from quill.tools.persistence_entries_dictation import DICTATION_ENTRIES
 from quill.tools.persistence_entries_family import FAMILY_ENTRIES
+from quill.tools.persistence_entries_github import GITHUB_ENTRIES
 from quill.tools.persistence_entries_radio import RADIO_LISTENER_ENTRIES
 from quill.tools.persistence_entries_studio import STUDIO_ENTRIES
 from quill.tools.persistence_entries_wordpress import WORDPRESS_ENTRIES
@@ -62,8 +63,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     **DICTATION_ENTRIES,
     "core/transcribe/settings.py::save_settings": "versioned",  # QUILL Transcribe
     "core/dictation_owner.py::claim": "marker",  # who owns Dictate Anywhere; lock-backed
-    # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;
-    # an unreadable file reads as nothing on and nothing shared.
+    # qc.md X-03/X-05: small, "version": 1 stamped; unreadable reads as nothing on.
     "core/settings_recipes.py::save_state": "marker",
     "core/family_preferences.py::_write": "marker",
     # Release channels (plan 6.2, 5.1): which channel each app is on, one small
@@ -81,8 +81,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # installer, ageing) are regenerable -- losing them costs one undo.
     "core/data_format_ledger.py::lower": "framework",
     "core/updater/apply.py::_write": "cache",
-    # ear.md B3: what this device last shared (fingerprints, first-seen times,
-    # tombstones, carried fields). Version-stamped; losing it re-sends once.
+    # ear.md B3: what this device last shared. Version-stamped; losing it re-sends once.
     "core/sync/subscriptions_sync.py::_save_state": "cache",
     "core/keymap.py::save_keymap": "versioned",
     # QUILL Lite's own keys. Same contract and the same reason: a schema stamp
@@ -175,6 +174,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # hardware on one computer and nothing on the next.
     "ui/media/output_device_apps.py::save_device_pref": "marker",
     **FAMILY_ENTRIES,  # App Sounds and Slider Keys: persistence_entries_family
+    **GITHUB_ENTRIES,  # the GitHub workbench: persistence_entries_github
     **STUDIO_ENTRIES,  # QUILL Studio's capture files: persistence_entries_studio
     **WORDPRESS_ENTRIES,  # File > WordPress and Forms
     "core/radio/download_prefs.py::save": "content",

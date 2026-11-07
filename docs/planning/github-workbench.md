@@ -632,7 +632,7 @@ For QUILL Lite:
 - the same newly added workbench capabilities by default; any exception must
   be explicit in the product requirements and user documentation
 
-The first shared entry point is **Tools > GitHub Workbench...** in Lite. Other
+The first shared entry point is **File > GitHub Workbench...** in Lite. Other
 GitHub commands still need their own Lite entry points and parity verification.
 
 ### 13.4 Attribution and design integrity

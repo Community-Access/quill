@@ -26,7 +26,7 @@ through six testing builds and renumbered 2.0.0 on 2026-10-31.
 - **Bookmarks, structural selection, a copy tray, a clip library, abbreviations,
   and the tools** you actually need to do things to text.
 - **Every window answers F1** with what it is for and what you are on.
-- **The shared GitHub Items workbench** opens from Tools > GitHub Workbench...
+- **The shared GitHub Items workbench** opens from File > GitHub Workbench... (Alt+F, then G)
   (Ctrl+Alt+Shift+F6). Its expandable PR outline, context menus, checks,
   review conversations, and review actions are the same as QUILL's.
 - **Speech to NVDA and JAWS only**, saying only what your screen reader will

@@ -1087,7 +1087,7 @@ QUILL has the same three, on the same key.
 
 ## GitHub issues and pull requests
 
-**Tools > GitHub Workbench...** (**Ctrl+Alt+Shift+F6**) opens QUILL's shared
+**File > GitHub Workbench...** (**Alt+F**, then **G**) opens QUILL's shared
 GitHub Items viewer in QUILL Lite. The first use asks whether you want to
 connect to GitHub. Public repositories can be read without a token; posting
 reviews, replying, and other write actions need a GitHub token in the operating

@@ -5,8 +5,8 @@ computer: browse and save files, work with issues and pull requests, manage a
 repository, and sort out a merge conflict, without opening a browser or a
 terminal.
 
-QUILL Lite opens the same GitHub Items viewer through **Tools > GitHub
-Workbench...** (**Ctrl+Alt+Shift+F6**). Sections about that viewer, including
+QUILL Lite opens the same GitHub Items viewer through **File > GitHub
+Workbench...** (**Alt+F**, then **G**). Sections about that viewer, including
 PR review, apply to both apps. QUILL's file opening, repository administration,
 and Local Git commands described elsewhere in this tutorial are not yet in
 Lite.

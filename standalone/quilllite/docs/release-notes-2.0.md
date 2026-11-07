@@ -2,7 +2,7 @@
 
 ## GitHub workbench
 
-**Tools > GitHub Workbench...** (**Ctrl+Alt+Shift+F6**) opens the shared QUILL
+**File > GitHub Workbench...** (**Alt+F**, then **G**) opens the shared QUILL
 GitHub Items viewer. A PR expands into changed files, review threads, general
 conversations, and checks. Arrow to an item and Tab into its detail; Ctrl+R
 replies to a selected thread. Shift+F10 opens a context menu that fits the

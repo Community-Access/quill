@@ -4,7 +4,7 @@
 
 QUILL Lite must expose each GitHub workbench capability shipped in QUILL unless
 this PRD records an explicit exception. The shared Items viewer is reached at
-Tools > GitHub Workbench... (Ctrl+Alt+Shift+F6). Its native PR outline,
+File > GitHub Workbench... (Alt+F, then G). Its native PR outline,
 selection details, context menus, thread replies, review submission, and checks
 have identical behavior in both products. Other QUILL GitHub entry points,
 including repository administration and local Git, remain parity work; this

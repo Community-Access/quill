@@ -72,6 +72,11 @@ def _sensitive_query(query: str) -> bool:
     return False
 
 
+def _int_or_none(value: object) -> int | None:
+    """*value* when it is a real int (not a bool), else None: route values are untyped."""
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+
 def _object_route(parts: list[str], fragment: str) -> dict[str, object]:
     result: dict[str, object] = {"kind": "repository"}
     if len(parts) < 3:
@@ -123,9 +128,10 @@ def _object_route(parts: list[str], fragment: str) -> dict[str, object]:
 
     line_match = _LINE_FRAGMENT.fullmatch(fragment)
     if line_match:
-        result["line"] = int(line_match.group("first"))
-        result["line_end"] = int(line_match.group("last") or line_match.group("first"))
-        if result["line_end"] < result["line"]:
+        first = int(line_match.group("first"))
+        last = int(line_match.group("last") or line_match.group("first"))
+        result["line"], result["line_end"] = first, last
+        if last < first:
             raise GitHubReferenceError("The GitHub line range ends before it starts.")
     elif fragment.startswith("L") and any(char.isdecimal() for char in fragment[1:]):
         raise GitHubReferenceError("The GitHub line anchor is malformed.")
@@ -187,11 +193,11 @@ def parse_github_reference(text: str) -> GitHubReference:
         repo=repo,
         kind=str(route["kind"]),
         url=safe_url,
-        number=route.get("number") if isinstance(route.get("number"), int) else None,
+        number=_int_or_none(route.get("number")),
         ref=str(route.get("ref", "")),
         path=str(route.get("path", "")),
-        line=int(route.get("line", 0)),
-        line_end=int(route.get("line_end", 0)),
+        line=_int_or_none(route.get("line")) or 0,
+        line_end=_int_or_none(route.get("line_end")) or 0,
         section=str(route.get("section", "")),
     )
 
