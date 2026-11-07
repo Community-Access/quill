@@ -16,9 +16,8 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 - Paid-form publication checks provider/webhook readiness and mode. Test on
   Site refuses a published live-payment checkout. Responses include payment
   status and exports, with Refresh Payment Status after confirming the site.
-- Checkout requires a separate QAF WordPress plugin implementing payment
-  contract version 1. Provider credentials and charging remain on the site;
-  the desktop update does not deploy or certify that checkout.
+- Chapter 16 of the guide walks through taking payments from start to
+  finish. Checkout needs the QAF plugin's payment support on your site.
 
 - **File > WordPress** writes, opens and publishes your sites' pages and posts. Connect by approving QUILL in your browser, or paste an application password. Ctrl+S only saves on this computer; Publish checks the page first. Scheduling, earlier versions and working offline are there too.
 - **Blocks read as plain text**, and Next Block and Where Am I say where you are. **Tools > WordPress** checks a page the way a visitor meets it and looks after media, comments, menus and users.

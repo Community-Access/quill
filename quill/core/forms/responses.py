@@ -97,13 +97,41 @@ def row_text(response: Response, labels: dict[str, str], form_title: str) -> str
     if response.is_starred:
         parts.append("starred")
     if response.payment:
+        pay = spoken_payment(response.payment)
         parts.append(
             "Payment: "
             + ", ".join(
-                response.payment.get(k, "") for k in ("status", "amount", "currency", "provider")
+                v
+                for v in (pay.get(k, "") for k in ("status", "amount", "currency", "provider"))
+                if v
             )
         )
     return ", ".join(p for p in parts if p)
+
+
+#: What a listener hears for the plugin's payment states and providers. The
+#: codes stay as they are in CSV, where a spreadsheet sorts and filters them;
+#: in a list row "partially_refunded" would be read out with its underscore.
+PAYMENT_STATUS_WORDS = {
+    "pending": "waiting for payment",
+    "authorized": "authorized, not yet captured",
+    "paid": "paid",
+    "failed": "payment failed",
+    "cancelled": "cancelled",
+    "partially_refunded": "partly refunded",
+    "refunded": "refunded",
+}
+PAYMENT_PROVIDER_NAMES = {"stripe": "Stripe", "paypal": "PayPal"}
+
+
+def spoken_payment(payment: dict[str, str]) -> dict[str, str]:
+    """The payment metadata with its status and provider in words."""
+    out = dict(payment)
+    if "status" in out:
+        out["status"] = PAYMENT_STATUS_WORDS.get(out["status"], out["status"])
+    if "provider" in out:
+        out["provider"] = PAYMENT_PROVIDER_NAMES.get(out["provider"], out["provider"])
+    return out
 
 
 def list_rows(responses: Iterable[Response], labels: dict[str, str], title: str) -> list[Row]:
@@ -120,7 +148,8 @@ def pairs(response: Response, labels: dict[str, str]) -> list[tuple[str, str]]:
         if key not in labels:
             out.append((key, answer_text(value) or "no answer"))
     out.extend(
-        (f"Payment {key.replace('_', ' ')}", value) for key, value in response.payment.items()
+        (f"Payment {key.replace('_', ' ')}", value)
+        for key, value in spoken_payment(response.payment).items()
     )
     return out
 

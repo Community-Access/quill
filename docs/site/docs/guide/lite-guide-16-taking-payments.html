@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 16: Taking payments with your forms</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-16-taking-payments-with-your-forms">Chapter 16: Taking
+payments with your forms</h1>
+<p>A form can take money: a registration fee, a membership renewal, an
+order for T-shirts, a donation where the giver picks the amount. You
+write the payment into the form in QUILL Lite, publish it to your
+WordPress site, and the QUILL Accessible Forms plugin (QAF) on the site
+takes the payment through Stripe, PayPal, or both.</p>
+<p>QUILL Lite never touches the money and never sees a card number or a
+secret key. Its job is to describe what the form charges, to check that
+the site is ready before it publishes, and to show you afterwards who
+paid. Everything that moves money happens on the site, between the
+person paying and Stripe or PayPal.</p>
+<p>This chapter goes through the whole process in order: what you need,
+test mode, adding the payment field, choosing providers, publishing,
+what the person paying hears, receipts, refunds, reporting, going live,
+and what to do when something goes wrong.</p>
+<h2 id="what-you-need-before-you-start">What you need before you
+start</h2>
+<ul>
+<li><strong>A form.</strong> Any form you have written in QUILL Lite,
+saved as a <code>.qaf</code> file. Chapter 15 and the <a
+href="https://community-access.github.io/quill/docs/wordpress-forms-guide.html">WordPress
+and Forms manual</a> cover writing one. QUILL Lite has the same payment
+commands as QUILL, in the same menu, so a form set up in one works in
+the other.</li>
+<li><strong>Forms turned on.</strong> In QUILL Lite the payment commands
+come with Forms. Forms is on in the Recommended and Everything profiles;
+if you do not see <strong>Tools &gt; Forms</strong>, check Forms in
+<strong>Tools &gt; Customize Features</strong>.</li>
+<li><strong>A WordPress site connected to QUILL Lite,</strong> with the
+QAF plugin installed. The plugin has to be a version that supports
+payments: one that answers the payment check QUILL Lite and QUILL both
+make, which the plugin calls payment contract version 1. You find out
+with Verify Payment Setup, below; an older plugin says so plainly.</li>
+<li><strong>A Stripe account, a PayPal business account, or
+both.</strong> Each has a test side (Stripe’s test mode, PayPal’s
+sandbox) that you use first.</li>
+<li><strong>The site’s payment keys set up in WordPress.</strong>
+Whoever runs the site enters them under <strong>QAF Forms &gt;
+Payments</strong> in wp-admin, presses Check Connection and Create
+Webhook for each provider, and leaves the site in test mode. The
+plugin’s own guide, <em>Taking payments: a guide for site owners</em>,
+walks through it. QUILL Lite never asks for these keys and has nowhere
+to put them.</li>
+</ul>
+<p>If you run the site yourself, do the WordPress part first. It takes
+about ten minutes per provider.</p>
+<h2 id="test-mode-twice">Test mode, twice</h2>
+<p>There are two test mode switches, and they have to agree.</p>
+<ul>
+<li><strong>The site’s mode,</strong> set in wp-admin under QAF Forms
+&gt; Payments. A new site starts in test mode.</li>
+<li><strong>The form’s mode,</strong> the <strong>Test mode</strong>
+check box in Form Payments Setup. A new payment form starts with it
+checked.</li>
+</ul>
+<p>In test mode no real money moves. Stripe takes only its test card
+numbers and PayPal only its sandbox accounts. Keep both switches on test
+until you have tried every path, including a declined card and a
+refund.</p>
+<p>If the two disagree, nothing is charged by mistake: QUILL Lite will
+not publish a test form to a live site or a live form to a test site,
+and the site itself refuses to take payment for a form in the other
+mode.</p>
+<h2 id="adding-a-payment-field">Adding a payment field</h2>
+<p>Open the form and choose <strong>Tools &gt; Forms &gt; Insert Payment
+Field…</strong>. A form has one payment field at most; if it already has
+one, QUILL Lite says so and you edit that field’s source instead.</p>
+<p>The dialog has four boxes:</p>
+<ul>
+<li><strong>Label:</strong> what the person paying hears for the field,
+such as “Registration fee” or “Your gift”.</li>
+<li><strong>Amount:</strong> where the amount comes from, in one of
+three ways described below.</li>
+<li><strong>Donation minimum</strong> and <strong>Donation
+maximum:</strong> only for a donation. Leave them empty for other
+amounts.</li>
+</ul>
+<p>Press <strong>Insert</strong>. The field goes at the end of the last
+page, and the form gets payment settings with Stripe in test mode, in US
+dollars, if it had none. You can change those next, in Form Payments
+Setup. The whole change is one step, so Undo takes it back. Cancel
+changes nothing.</p>
+<h3 id="a-fixed-amount">A fixed amount</h3>
+<p>Type the amount as a plain number in the main unit of the currency:
+<code>25</code> for 25 dollars, <code>19.99</code> for 19 dollars 99. No
+currency sign, no thousands separator.</p>
+<p>On the page, the field says “Amount due: 25.00 USD.” There is nothing
+for the person paying to type.</p>
+<h3 id="a-donation-with-a-smallest-and-largest-gift">A donation, with a
+smallest and largest gift</h3>
+<p>Type <code>donation</code> in Amount. If you want limits, put them in
+Donation minimum and Donation maximum, again as plain numbers:
+<code>5</code> and <code>500</code>. Leave either one empty for no limit
+on that side.</p>
+<p>On the page, the field becomes a box labelled with your label and the
+currency (“Your gift, in USD”), and the limits are read with it: “Give
+from 5.00 USD to 500.00 USD.” The site checks the amount again when the
+form is sent, so a gift below the minimum is refused with “The smallest
+gift this form takes is 5.00 USD.”</p>
+<p>Inserting a donation also sets the form’s payment mode to
+Donation.</p>
+<h3 id="an-amount-from-a-total-field">An amount from a total field</h3>
+<p>For an order form, the amount is usually the order total. Type
+<code>#</code> and the total field’s id, such as
+<code>#order_total</code>. To save you remembering ids, the Amount box’s
+help lists every field in the form that can be used: totals, prices,
+calculations, number fields and currency fields, as “#order_total (Order
+total)”. Press F1 on the Amount box to hear the list.</p>
+<p>Whatever the page shows while someone fills in the form, the site
+works the total out again from the form itself when the form is sent:
+the product they chose and its price, how many (from a quantity field
+linked to the product), any coupon code, and the total field’s own
+shipping and tax settings; or the total’s calculation, if it has one. A
+price or total typed into the page by someone trying their luck is
+ignored. If the amount names a number or currency field, the person
+paying types the amount there themselves, and the site reads it exactly,
+like a donation.</p>
+<p>Here is a small order form, as it looks in the document:</p>
+<pre><code>product #shirt &quot;T-shirt&quot;
+  + &quot;s&quot; | &quot;Small&quot; @price 15
+  + &quot;l&quot; | &quot;Large&quot; @price 17.5
+
+quantity #how_many &quot;How many?&quot;
+  @min 1
+  @max 10
+  @linked_product &quot;shirt&quot;
+
+total #order_total &quot;Order total&quot;
+
+payment #pay &quot;Payment&quot;
+  @amount &quot;#order_total&quot;</code></pre>
+<h3 id="amounts-the-site-will-refuse">Amounts the site will refuse</h3>
+<p>QUILL Lite checks these before it publishes, and Check This Form
+lists them too:</p>
+<ul>
+<li>An amount of zero or less, or one that is not a number,
+<code>donation</code> or <code>#</code> followed by an id.</li>
+<li><code>#</code> naming a field that is not there, or one that is not
+an amount field (a text box, say).</li>
+<li>More decimal places than the currency has: <code>10.005</code>
+dollars, or <code>2000.5</code> yen. The site refuses these rather than
+round someone’s price, so QUILL Lite says “This currency takes at most 2
+decimal places.”</li>
+<li>A donation minimum larger than the maximum, or limits on an amount
+that is not a donation.</li>
+</ul>
+<h2 id="choosing-providers-and-the-other-settings">Choosing providers
+and the other settings</h2>
+<p>Choose <strong>Tools &gt; Forms &gt; Form Payments Setup…</strong>.
+These settings belong to this form; another form can use different
+ones.</p>
+<ul>
+<li><strong>Providers:</strong> Stripe; Stripe, then PayPal; PayPal; or
+PayPal, then Stripe. With two, the person paying chooses, and the first
+is chosen for them to start with.</li>
+<li><strong>Currency:</strong> three letters, such as <code>usd</code>,
+<code>eur</code>, <code>gbp</code> or <code>cad</code>. The site must
+take that currency through every provider you chose. PayPal takes fewer
+currencies than Stripe; Indian rupees, for example, work through Stripe
+only.</li>
+<li><strong>Mode:</strong> Payment, for a fixed or calculated amount, or
+Donation.</li>
+<li><strong>Capture:</strong> Automatic takes the money when the person
+pays. Manual only authorizes it, so you can check the order first and
+take the money later in the Stripe or PayPal dashboard.</li>
+<li><strong>Test mode:</strong> checked while you test. Unchecking it
+and pressing Save in Form asks “Save live payment mode in this form?”,
+and you have to say Use Live Mode.</li>
+<li><strong>Statement descriptor:</strong> optional. The text on the
+payer’s card statement, 5 to 22 plain letters, digits and spaces, with
+at least one letter, such as <code>BITS CONFERENCE</code>. Leave it
+empty to use the account’s own.</li>
+</ul>
+<p>Press <strong>Save in Form</strong>. Like everything else in a form,
+this changes only the document until you publish.</p>
+<h2 id="checking-the-site-verify-payment-setup">Checking the site:
+Verify Payment Setup</h2>
+<p>Choose <strong>Tools &gt; Forms &gt; Verify Payment Setup…</strong>,
+pick the site if QUILL Lite asks, and confirm with <strong>Read
+Setup</strong>. QUILL Lite asks the site, over your ordinary WordPress
+connection, what it is ready for. It shows a short report:</p>
+<pre><code>Test mode
+stripe: configured, webhook ready
+paypal: not configured, webhook not ready</code></pre>
+<ul>
+<li><strong>Test mode</strong> or <strong>Live mode</strong> is the
+site’s mode.</li>
+<li><strong>configured</strong> means the site checked its keys with the
+provider for that mode. Keys typed in but never checked do not
+count.</li>
+<li><strong>webhook ready</strong> means the provider can tell the site
+when a payment succeeds, fails or is refunded, and the site has verified
+that.</li>
+</ul>
+<p>Nothing is charged and nothing is changed by this check.</p>
+<h2 id="publishing-and-what-each-refusal-means">Publishing, and what
+each refusal means</h2>
+<p>Choose <strong>Tools &gt; Forms &gt; Publish Form…</strong> as for
+any form. For a paid form the confirmation says what kind of payments it
+will take: “Payment mode: test payments only, USD, stripe” or “LIVE
+payments: real money”. Before it sends anything, QUILL Lite reads the
+site’s payment setup again and refuses if the site is not ready.
+Publishing a form as Live means people can see it; it has nothing to do
+with test or live payments.</p>
+<p>When QUILL Lite refuses, it says why. Here is what each message means
+and what to do:</p>
+<ul>
+<li><strong>“Update the site’s QAF plugin to a version supporting
+payments.”</strong> The site answered with the plugin’s old name (BITS
+Accessible Forms). Update the plugin.</li>
+<li><strong>“The site’s QAF plugin does not support payments yet. Update
+the plugin.”</strong> The plugin is QAF, but a version from before
+payments. Update it.</li>
+<li><strong>“The site did not return a supported payment settings
+contract.”</strong> The site answered, but not in a way QUILL Lite
+recognises. This usually means a newer or older contract than QUILL Lite
+knows; update QUILL Lite or the plugin so they match.</li>
+<li><strong>“The form and site must use the same payment test/live
+mode.”</strong> Either check Test mode in Form Payments Setup, or ask
+the site owner to switch the site’s mode.</li>
+<li><strong>“Configure stripe and verify its webhook in WordPress before
+publishing.”</strong> (or paypal) A provider this form uses is not ready
+on the site. In wp-admin, under QAF Forms &gt; Payments, use Check
+Connection and Create Webhook for it, or remove it from Providers in
+Form Payments Setup.</li>
+<li><strong>“Set up this form’s payments before publishing it.”</strong>
+The form has a payment field but no payment settings. Use Form Payments
+Setup.</li>
+<li><strong>“The form’s payment settings are not valid.”</strong> QUILL
+Lite’s checks passed but the site’s did not, and the rest of the message
+says which rule. The most common is a currency one of your providers
+does not take.</li>
+<li><strong>A message about permission or signing in.</strong> Your
+WordPress account on that site cannot read payment settings. Only
+administrators, or users the site owner has given the payment-management
+permission, can.</li>
+<li><strong>“Publish Form is off in Safe Mode…”</strong> Safe Mode stops
+everything that reaches a site. Writing and checking the form still
+work.</li>
+</ul>
+<h2 id="trying-it-on-the-site-test-on-site">Trying it on the site: Test
+on Site</h2>
+<p>Put the form on a page with <strong>Insert Form Into Page…</strong>,
+publish the page, then choose <strong>Tools &gt; Forms &gt; Test on
+Site</strong> with the form in front of you. For a paid form QUILL Lite
+asks first, then reads the form as published. If the published form is
+not in test mode, it refuses with “The published form is not in payment
+test mode”, and opens nothing: your own document saying test mode is not
+good enough, because the site’s copy is what takes money.</p>
+<p>When it opens the page, QUILL Lite tells you what to pay with: “To
+pay in test mode, use Stripe’s test card 4242 4242 4242 4242 with any
+future date and any three-digit code, or a PayPal sandbox buyer account.
+Never a real card.”</p>
+<p>A few more Stripe test cards are worth trying:
+<code>4000 0000 0000 0002</code> is declined, and
+<code>4000 0025 0000 3155</code> asks for an extra bank check. Stripe
+lists the rest in <a href="https://docs.stripe.com/testing">its testing
+guide</a>. For PayPal, sign in with a sandbox personal account from the
+PayPal Developer Dashboard, never your own account.</p>
+<h2 id="what-the-person-paying-hears-and-does">What the person paying
+hears and does</h2>
+<p>This is the published form with NVDA or JAWS, in browse mode, from
+the top. The wording is the plugin’s own.</p>
+<ol type="1">
+<li><strong>The questions.</strong> They fill in the form as usual. The
+payment field reads as its label followed by what it costs:
+“Registration fee. Amount due: 25.00 USD. You pay by card (through
+Stripe) or PayPal after you send the form.” In test mode it adds “Test
+mode: no real money is taken. Use a test card from the provider, never a
+real one.”</li>
+<li><strong>A donation.</strong> The field is an edit box, “Your gift,
+in USD, required”, with the hint “Give from 5.00 USD to 500.00 USD.”
+read with it. They type the amount: <code>20</code>, or
+<code>20.50</code>.</li>
+<li><strong>Sending.</strong> They press the Submit button. If something
+needs fixing, the problem is announced and focus goes to the first field
+at fault, with its message read as the field’s description: “The
+smallest gift this form takes is 5.00 USD.”</li>
+<li><strong>The answers are saved.</strong> The site says “Your answers
+are saved. To finish, pay 25.00 USD below.” Nothing has been charged
+yet.</li>
+<li><strong>The payment panel.</strong> Focus moves to a new heading,
+“Pay 25.00 USD”, so the screen reader announces it straight away. Below
+it: “Your answers are saved. Your payment is not taken until you finish
+here.”</li>
+<li><strong>Choosing how to pay.</strong> With two providers there is a
+group of radio buttons, “How do you want to pay?”, with “Card, through
+Stripe” and “PayPal”. The first is already chosen. Arrow keys change
+it.</li>
+<li><strong>Paying by card.</strong> “Loading the payment form.” and
+then “The payment form is ready.” are announced. Tab moves into the card
+group, which is Stripe’s own fields: card number, expiry date, security
+code, and sometimes country and postcode. Each has a label and reads its
+own errors. After the last field comes the button “Pay 25.00 USD”.
+Pressing it announces “Sending your payment. Please wait.”</li>
+<li><strong>An extra bank check.</strong> Some cards ask the bank to
+confirm, the step called 3-D Secure. It opens as a dialog on the same
+page, or as the bank’s own page; when they come back, the panel says
+“Welcome back. Checking your payment.”</li>
+<li><strong>Paying with PayPal.</strong> “The PayPal button is ready. It
+opens PayPal in a new window.” They press the PayPal button, sign in and
+approve in the PayPal window, and are brought back. The panel says
+“Checking your payment with the site.” Approving in PayPal is not
+payment on its own; the site takes the payment and then reports the
+result.</li>
+<li><strong>The result.</strong> Success is “Payment complete. Thank
+you.”, with focus back on the panel’s heading, and a link “View your
+receipt” when Stripe has one. A manual-capture form says “Payment
+authorized. You will be charged when the site owner confirms.”</li>
+<li><strong>When it fails.</strong> An alert says what happened, in
+words: “The payment did not go through. You can try again. Your card was
+declined.” A “Try again” button follows. It is the same entry; trying
+again does not send the form a second time.</li>
+<li><strong>When PayPal is closed early.</strong> “PayPal was closed
+before the payment finished. You can try again.”</li>
+<li><strong>When the result is not known yet.</strong> Some payments
+take a moment. The panel says “Your payment is not complete yet.” and
+offers a “Check payment again” button rather than a second payment.</li>
+</ol>
+<p>Two more things they might hear:</p>
+<ul>
+<li><strong>“Your answers were already saved.”</strong> They sent the
+same form twice, by a double press or a slow connection. The first entry
+stands and nothing is charged twice.</li>
+<li><strong>“This form cannot take payment right now, so your answers
+were not sent.”</strong> The site is not ready for this form’s payments:
+the wrong mode, or a provider not set up. Nothing was saved. This is the
+message to report to the site owner.</li>
+</ul>
+<p>Everything works from the keyboard. Nothing is shown by colour alone.
+The card fields and the PayPal button are Stripe’s and PayPal’s own,
+which both companies build for screen readers, but they are not QUILL
+Lite’s, so try them with your own screen reader before you go live.</p>
+<h2 id="receipts">Receipts</h2>
+<ul>
+<li><strong>Stripe</strong> makes a receipt for each card payment. The
+person paying gets a “View your receipt” link at the end, and Stripe
+emails a receipt too if receipts are turned on in the Stripe Dashboard.
+The receipt address also appears in the response in QUILL Lite, as
+“Payment receipt url”.</li>
+<li><strong>PayPal</strong> emails its own receipt to the person paying.
+There is no receipt link in the response.</li>
+<li>QUILL Lite shows a receipt address as text and never opens it by
+itself.</li>
+</ul>
+<p>If the form sends its own confirmation email, it goes when the
+answers are saved, before payment. Word it so it does not promise that
+payment has been received.</p>
+<h2 id="seeing-who-paid-responses">Seeing who paid: Responses</h2>
+<p>Choose <strong>Tools &gt; Forms &gt; Responses…</strong>. Each
+response in the list ends with its payment, in words: “Response 41, 3
+November, 2:10 PM, Jane Smith, Event registration, Payment: paid, 25.00,
+USD, Stripe”.</p>
+<p>The payment can be:</p>
+<ul>
+<li><strong>waiting for payment:</strong> the answers came in, but
+nothing has been paid.</li>
+<li><strong>authorized, not yet captured:</strong> a manual-capture
+payment you have not taken yet.</li>
+<li><strong>paid</strong></li>
+<li><strong>payment failed:</strong> declined, or given up. The person
+may still try again.</li>
+<li><strong>cancelled:</strong> stopped, or an authorization that was
+voided or ran out.</li>
+<li><strong>partly refunded</strong> and <strong>refunded</strong></li>
+</ul>
+<p>A response with no payment at all means the site has no payment
+record for it, which is not the same as paid.</p>
+<ul>
+<li><strong>Read</strong> gives the whole response one line at a time,
+with the payment’s provider, status, amount, currency, receipt address
+and transaction ID at the end.</li>
+<li><strong>Refresh Payment Status</strong> asks the site again, after
+confirming which site. It reads what the site knows; it never takes,
+captures or refunds money.</li>
+<li><strong>Export to CSV…</strong> and <strong>Export to Word…</strong>
+include the payment details. In CSV the status stays as the plugin’s own
+code (<code>partially_refunded</code>, for instance), which sorts and
+filters well in a spreadsheet.</li>
+</ul>
+<p>The site’s own report, under QAF Forms &gt; Payments in wp-admin,
+lists recent payments with totals per currency: taken, refunded, kept,
+and authorized but not yet captured.</p>
+<h2 id="refunds">Refunds</h2>
+<p>Refunds are made in the Stripe or PayPal dashboard, not in QUILL Lite
+and not in wp-admin. The provider tells the site, the response becomes
+<strong>partly refunded</strong> or <strong>refunded</strong>, and
+Refresh Payment Status shows it. A partial refund is never shown as a
+full one, and a refunded payment never goes back to paid.</p>
+<h2 id="manual-capture">Manual capture</h2>
+<p>With Capture set to Manual, a payment stops at <strong>authorized,
+not yet captured</strong>. Take the money in the Stripe or PayPal
+dashboard when you are ready, and the response becomes paid. If you void
+it, or the authorization runs out, it becomes cancelled. How long an
+authorization lasts depends on the provider and the card: about a week
+for most cards through Stripe, and PayPal sets its own limits. Do not
+leave one waiting for long.</p>
+<h2 id="moving-from-test-to-live">Moving from test to live</h2>
+<p>When every test has worked, including a decline and a refund:</p>
+<ol type="1">
+<li>The site owner adds the live keys under QAF Forms &gt; Payments,
+uses Check Connection and Create Webhook for live, and switches the site
+to Live, which needs its own confirming check box.</li>
+<li>In QUILL Lite, open the form, choose Form Payments Setup, uncheck
+Test mode, press Save in Form and confirm Use Live Mode.</li>
+<li>Run Verify Payment Setup. It should say Live mode, and configured
+and webhook ready for each provider the form uses.</li>
+<li>Publish the form again. The confirmation says “LIVE payments: real
+money”.</li>
+<li>Test on Site now refuses this form, on purpose. To check the live
+form, open its page in your browser yourself, and make one small real
+payment you then refund.</li>
+</ol>
+<p>Any of your forms still in test mode stop taking payment once the
+site is live. Switch them too, or take them down.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>There is no Form Payments Setup in Tools &gt;
+Forms.</strong> Check Forms in Tools
+<blockquote>
+<p>Customize Features. The commands are dimmed until a form is open.</p>
+</blockquote></li>
+<li><strong>“Fix the form’s source errors with Check This Form
+first.”</strong> The form has mistakes elsewhere; payment commands wait
+until it reads cleanly.</li>
+<li><strong>“Payment field was not inserted”</strong> or
+<strong>“Payment setup was not saved”</strong>, followed by a reason.
+Nothing changed; fix what the reason says and try again.</li>
+<li><strong>Publishing is refused.</strong> See the list under
+“Publishing, and what each refusal means”.</li>
+<li><strong>Test on Site says the published form is not in test
+mode.</strong> Your document may say test mode, but the site’s copy does
+not. Publish again.</li>
+<li><strong>People can send the form, but every payment stays “waiting
+for payment”.</strong> The provider cannot reach the site’s webhook. Ask
+the site owner to check the Readiness table in QAF Forms &gt; Payments
+and run Create Webhook again.</li>
+<li><strong>A response has no payment at all.</strong> It was sent
+before the form took payment, or its payment field was hidden by a
+condition, so nothing was owed.</li>
+<li><strong>The amount is not what the page showed.</strong> The site’s
+working wins. Check the products’ prices and the quantity field’s link
+to its product (<code>@linked_product</code>), and any calculation on
+the total.</li>
+</ul>
+<h2 id="privacy-and-safety">Privacy and safety</h2>
+<ul>
+<li>QUILL Lite never stores, sends or asks for a payment key, and has no
+setting for one. The plugin keeps them on the site, and its screens
+never show a secret again once saved.</li>
+<li>Card numbers go from the person’s browser straight to Stripe or
+PayPal. They never reach the site or QUILL Lite.</li>
+<li>Every network step in QUILL Lite asks first and names the site:
+Verify Payment Setup, Publish Form, Test on Site and Refresh Payment
+Status. Safe Mode turns all of them off.</li>
+<li>Responses are personal data, payments included. Exports go where you
+put them, and nowhere else.</li>
+</ul>
+<hr />
+<ul>
+<li>Previous: <a href="lite-guide-15-forms.html">Chapter 15:
+Forms</a></li>
+<li>Next: <a href="lite-guide-licences-and-notices.html">Licences and
+notices</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

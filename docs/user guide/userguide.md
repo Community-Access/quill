@@ -329,7 +329,24 @@ filling it in yourself before anyone else sees it. The full story is in the
 WordPress and Forms manual.
 
 - [Where everything is](quill-guide/quill-guide-17-forms.html#where-everything-is)
+- [Payments and donations](quill-guide/quill-guide-17-forms.html#payments-and-donations)
 - [Keys](quill-guide/quill-guide-17-forms.html#keys)
+
+### [Chapter 18: Taking payments with your forms](quill-guide/quill-guide-18-taking-payments.html)
+
+A form can take a fee, an order total or a donation through Stripe or PayPal.
+This chapter goes from what you need before you start to going live:
+test mode, adding a payment field, choosing providers, publishing and what
+each refusal means, what the person paying hears with a screen reader,
+receipts, refunds, and seeing who paid.
+
+- [What you need before you start](quill-guide/quill-guide-18-taking-payments.html#what-you-need-before-you-start)
+- [Adding a payment field](quill-guide/quill-guide-18-taking-payments.html#adding-a-payment-field)
+- [Publishing, and what each refusal means](quill-guide/quill-guide-18-taking-payments.html#publishing-and-what-each-refusal-means)
+- [What the person paying hears and does](quill-guide/quill-guide-18-taking-payments.html#what-the-person-paying-hears-and-does)
+- [Seeing who paid: Responses](quill-guide/quill-guide-18-taking-payments.html#seeing-who-paid-responses)
+- [Moving from test to live](quill-guide/quill-guide-18-taking-payments.html#moving-from-test-to-live)
+- [Troubleshooting](quill-guide/quill-guide-18-taking-payments.html#troubleshooting)
 
 ### [A last word](quill-guide/quill-guide-a-last-word.html)
 

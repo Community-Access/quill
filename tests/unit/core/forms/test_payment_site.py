@@ -120,3 +120,26 @@ def test_payment_metadata_read_and_export_without_unknown_fields():
 def test_malformed_payment_metadata_is_ignored():
     assert qs.response_from_payload({"payment": []}).payment == {}
     assert qs.response_from_payload({"payment": {"status": {}, "amount": False}}).payment == {}
+
+
+@pytest.mark.parametrize(
+    ("status", "heard"),
+    [
+        ("pending", "waiting for payment"),
+        ("authorized", "authorized, not yet captured"),
+        ("partially_refunded", "partly refunded"),
+        ("refunded", "refunded"),
+    ],
+)
+def test_the_list_row_says_the_payment_in_words_and_csv_keeps_the_code(status, heard):
+    row = qs.response_from_payload({
+        "id": 2,
+        "fields": {},
+        "payment": {"provider": "paypal", "status": status, "amount": "25.00", "currency": "USD"},
+    })
+    text = rs.row_text(row, {}, "Dues")
+    assert f"Payment: {heard}, 25.00, USD, PayPal" in text
+    assert "_" not in text
+    assert f"Payment status: {heard}" in rs.one_at_a_time(row, {}, "Dues")
+    output = list(csv.reader(io.StringIO(rs.csv_text([row], {}))))
+    assert output[1][output[0].index("Payment status")] == status

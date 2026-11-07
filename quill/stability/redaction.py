@@ -63,8 +63,14 @@ _TOKEN_RE = re.compile(r"\b[A-Fa-f0-9_\-]{32,}\b")
 # AWS access keys (AKIA), Slack (xoxb-/xoxp-), generic long alphanumeric keys.
 # 2026-10-16 (D-31): the cloud speech providers' key shapes -- Groq (gsk_),
 # ElevenLabs (sk_), AWS temporary keys (ASIA).
+# 2026-11-07 (Forms payments): Stripe's restricted keys (rk_live_/rk_test_)
+# and webhook signing secrets (whsec_), and PayPal's OAuth access tokens
+# (A21AA...). QUILL never holds any of them -- the QAF plugin keeps them on
+# the site -- but a WordPress error pasted into a report could carry one.
+# Stripe's secret keys are sk_, already covered.
 _PREFIXED_KEY_RE = re.compile(
-    r"(?:ghp_|gho_|ghu_|ghs_|ghr_|github_pat_|sk-|sk_|gsk_|AKIA|ASIA)[A-Za-z0-9_\-]{16,}"
+    r"(?:ghp_|gho_|ghu_|ghs_|ghr_|github_pat_|sk-|sk_|rk_live_|rk_test_|whsec_|gsk_|AKIA|ASIA|A21AA)"
+    r"[A-Za-z0-9_\-]{16,}"
     r"|"
     r"xox[bp]-[A-Za-z0-9_\-]{20,}"
     r"|"

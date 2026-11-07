@@ -244,38 +244,6 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
-<h3 id="github-pull-request-review-reader-2026-11-05">GitHub pull
-request review reader (2026-11-05)</h3>
-<ul>
-<li><strong>Review a PR from the GitHub Items viewer.</strong> Select a
-pull request and choose <strong>Review…</strong> to read merge
-readiness, approval state, check runs, requested reviewers, and
-line-based review threads with every reply. A native expandable PR
-outline groups threads under changed files and includes checks. Tab
-reads the selected node’s details; Ctrl+R replies to a thread; Shift+F10
-opens node-specific actions. <strong>Copy Review Summary</strong>
-produces a plain-text status brief.</li>
-<li><strong>Take review actions when signed in.</strong> Approve,
-request changes, or leave a comment; reply to the selected review
-thread; request reviewers; switch between draft and ready; or update the
-PR branch. Closed and merged PRs disable these actions. Public review
-reading remains available without a token. (Historical entry: resolved
-thread state and Resolve/Reopen were outstanding at that point; see the
-update dated 2026-11-05.)</li>
-<li><strong>The shared Items viewer is in QUILL Lite.</strong> Tools
-&gt; GitHub Workbench… opens the same lists, PR outline, context menus,
-and review actions as QUILL, after the same consent and authentication
-checks.</li>
-<li><strong>Row context menus in the Items viewer.</strong> Shift+F10 or
-right-click opens review, diff, comparison, copy, favorite, browser, and
-available write actions for the selected issue, PR, branch, release, or
-workflow run.</li>
-<li><strong>GHManage scope is documented explicitly.</strong> The
-tracked <a href="docs/planning/github-workbench.md">workbench plan</a>
-inventories the capabilities QUILL has, the partial surfaces, and the
-remaining gaps. GHManage remains the design reference; full feature
-parity has not been claimed for this release.</li>
-</ul>
 <h3
 id="github-notifications-failed-runs-and-merge-automation-2026-11-07">GitHub
 notifications, failed runs and merge automation (2026-11-07)</h3>
@@ -684,6 +652,32 @@ and QUILL Lite name “headers” or “footers” in the list of things a rich
 edit cannot keep, and the first rich save writes the backup. Before,
 those files opened with no warning and lost the header silently on save.
 Every section is checked (#1756).</li>
+</ul>
+<h3 id="taking-payments-with-your-forms-2026-11-07">Taking payments with
+your forms (2026-11-07)</h3>
+<ul>
+<li>A new chapter in both user guides, “Taking payments with your forms”
+(Chapter 18 in QUILL’s, Chapter 16 in QUILL Lite’s), goes through the
+whole process: what you need, test mode, the three kinds of amount,
+providers, publishing and what each refusal means, what the person
+paying hears with a screen reader, receipts, refunds, reporting and
+going live.</li>
+<li>Insert Payment Field’s Amount help lists the form’s own total, price
+and calculation fields, so you do not have to remember their ids.</li>
+<li>QUILL now refuses, before publishing, the two things the QAF plugin
+would refuse: an amount with more decimal places than its currency
+(10.005 dollars, 2000.5 yen), and a statement descriptor shorter than 5
+characters, with no letter, or with characters a card statement cannot
+print.</li>
+<li>Test on Site says the test card or sandbox account to use, for the
+providers the form offers, when it opens a test-mode payment form.</li>
+<li>Responses say payments in words (“partly refunded”, “PayPal”); CSV
+keeps the plugin’s codes.</li>
+<li>Diagnostics redact Stripe restricted keys and webhook signing
+secrets and PayPal access tokens, should a pasted site error ever carry
+one.</li>
+<li>The QAF plugin side of payment contract version 1 now exists on the
+plugin’s branch, not yet released or tried on a live site.</li>
 </ul>
 <h3 id="form-payment-authoring-and-reporting-2026-11-06">Form payment
 authoring and reporting (2026-11-06)</h3>

@@ -97,6 +97,20 @@ before a save, QUILL still says "Could not write a backup; saving anyway" and
 saves, and now it writes the reason to its log as well, so **Help > Save
 Diagnostics...** can explain a missing backup later.
 
+## Taking payments with your forms
+
+Both user guides have a new chapter, "Taking payments with your forms", that
+walks through a paid form from start to finish: what you need, test mode,
+fixed amounts, donations and totals, choosing Stripe or PayPal, publishing and
+what each refusal means, what the person paying hears with a screen reader,
+receipts, refunds, seeing who paid, and going live.
+
+Alongside it, a few things got easier. Insert Payment Field tells you which
+total and price fields the form has. QUILL catches an amount finer than its
+currency, or a statement descriptor the site would refuse, before it
+publishes. Test on Site tells you which test card or sandbox account to use.
+Responses say "partly refunded" and "PayPal" rather than reading out codes.
+
 ## Form payment setup and reporting
 
 QUILL and QUILL Lite now share **Tools > Forms > Insert Payment Field**,
