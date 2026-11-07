@@ -64,10 +64,11 @@ PROFILES: tuple[ConvertProfile, ...] = (
         description=(
             "Produce a single self-contained HTML page with semantic heading "
             "levels, alt text preserved on images, and table headers marked "
-            "up for screen readers. Use this when you want one HTML file you "
-            "can email or post online."
+            "up for screen readers, and math written as MathML so a screen "
+            "reader reads it without any script. Use this when you want one "
+            "HTML file you can email or post online."
         ),
-        flags=("--standalone", "--html-q-tags"),
+        flags=("--standalone", "--html-q-tags", "--mathml"),
         target_format="html",
     ),
     ConvertProfile(

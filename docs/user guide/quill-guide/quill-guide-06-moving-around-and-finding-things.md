@@ -35,6 +35,16 @@ If regular expressions are new to you, the Regular Expression Helper
 when you need it. QUILL also keeps your search history, so a search you run
 often is there waiting for you next time.
 
+**What you type in Replace with is what goes in.** Unless you are searching
+with a regular expression, the Replace box is taken exactly as typed, in plain
+and wildcard searches alike. A backslash is just a backslash: replacing a
+folder name with `C:\new\reports` puts exactly that into every match, and `\1`
+goes in as the two characters you typed. With a regular expression, **Replace
+All** (`Ctrl+Shift+Grave` then `X`) and **Edit > Replace Across Files...**
+(`Ctrl+Shift+R`) can refer back to the match: `\1` is the first part you
+wrapped in brackets and `\2` the second, so searching for `(\w+), (\w+)` and
+replacing all with `\2 \1` turns "Bishop, Jeff" into "Jeff Bishop".
+
 ### Searching a whole folder of files
 
 QUILL no longer has a top-level Search menu. Its commands now live on the
@@ -61,6 +71,16 @@ tell you: filenames only, filenames with line numbers and counts, counts only,
 or each filename with the matching lines around it. Replace Across Files adds a
 **Replacement** box and **Preview before replacing**, which shows you every
 change in a tab of its own and asks before it writes anything.
+
+The **File pattern** can name more than one kind of file. Put `|` between two
+patterns to take either, `&` to need both, and `!` before one to leave it out;
+double quotes around a name mean that one exact file. `*.md | *.txt` searches
+your Markdown and text files together, `* !*.bak` searches everything except
+backups, and `*.md !drafts/*` skips the Markdown files in a `drafts` folder
+(a pattern with a slash is matched against the path inside the starting
+folder). Capitals do not matter. A pattern without `|`, `&`, `!` or quotes, such
+as `*.md`, works exactly as before. These rules apply only to the file pattern:
+the **Search text** still follows the Match mode you chose.
 
 **An example.** You want every note in your `Clients` folder that mentions
 Rosa Diaz. Press `Ctrl+Alt+Shift+F`, check that the starting folder is
@@ -179,6 +199,51 @@ before, and **Forward Location** takes you forward again.
 
 - **Back Location**: `Alt+Left` on Windows, `Cmd+[` on macOS.
 - **Forward Location**: `Alt+Right` on Windows, `Cmd+]` on macOS.
+
+### Searching a list with more than one word
+
+Go to Anything is one search box for the headings in your document and every
+command. It has no menu row of its own: press `Ctrl+Alt+Shift+A`, or type "go
+to anything" in the Command Palette. Start your search with `#` to
+see headings only, or `>` to see commands only. Type part of a heading and the
+list narrows as you type; arrow to the one you want and press Enter to go
+there. QUILL says how many results there are and which is on top, for example
+"3 result(s). Top: [heading] Chapter two".
+
+That box, and every other list in QUILL that you narrow by typing, understands
+a few characters that let one search say more:
+
+- **Words** match anywhere in a row, and capitals do not matter, just as
+  before.
+- **`&`** needs both words: `#budget & 2026` finds only headings with both.
+  Two words side by side mean the same thing, so a search with an operator in
+  it reads `budget 2026 !draft` as "budget and 2026 and not draft".
+- **`|`** takes either: `#introduction | summary` lists both kinds of heading
+  at once.
+- **`!`** leaves a word out: `#chapter !draft` finds every chapter except the
+  drafts.
+- **`*`** stands for any run of letters inside a word, and **`?`** for exactly
+  one: `#chap*` finds Chapter and Chapters, and `#r?ad` finds read and road.
+  Neither reaches past a space.
+- **Double quotes** match exact text, spaces included, with nothing inside
+  taken as an operator: `#"to do"` finds "To do this week" but not "Do this
+  today too".
+
+`!` is read first, then `&`, then `|`, so `#draft | notes !old` means "draft,
+or notes that are not old". A search with none of these characters works
+exactly as it always has, so nothing you already type changes. You never get
+an error for a half-finished search: `#notes |` is simply read as `#notes`
+until you type the next word.
+
+The same rules work in **Insert Snippet**, **Insert HTML Tag**, **Insert
+Markdown Tag**, both lists of **Move Section To** (`Ctrl+Alt+Shift+F5`), the
+abbreviation manager and the Copy Tray search. In Insert HTML Tag, for
+example, `h? !h1` lists every heading tag except the top one. The **File
+pattern** of Search in Files takes them too, described in "Searching a whole
+folder of files" above. Press `F1` in any of those search boxes to hear a short
+reminder of the rules. The Command Palette (`Ctrl+Shift+P`) keeps its own
+looser search and its `:`, `?` and `~` prefixes, and so do those prefixes in
+Go to Anything.
 
 ### Moving by heading and structure
 
@@ -688,6 +753,16 @@ you to the wrong place.
 highlight in a rich document:
 "Calibri, 11 point, yellow highlight". Before this it said nothing about
 highlighting there.
+
+It names the **text colour** too, just before the highlight: red text on a
+yellow highlight reads "Calibri, 11 point, red, yellow highlight". A colour you
+chose from **Format > Text Color** comes back under the name you chose it by,
+so green is "green" and orange is "orange". Any other colour, such as one that
+came in with a Word document, is named after the nearest colour in the list
+below, so you hear a word rather than a number. Text nobody has coloured,
+plain black, and the light text a dark theme paints on the page say nothing
+about colour at all, which keeps the description short for ordinary body text.
+QUILL Lite gives the same answer, from the same code, on the same key.
 
 **Colours.** QUILL knows all fifteen of Word's highlight colours by name:
 yellow, green, turquoise, pink, blue, red and gray, and the darker dark blue,

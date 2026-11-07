@@ -139,7 +139,7 @@ from quill.core.menu_customization import (
     MenuCustomization,
     load_menu_customization,
 )
-from quill.core.metrics import compute_document_stats
+from quill.core.metrics import RepeatPress, compute_document_stats, statistics_report
 from quill.core.multi_press import MultiPressDispatcher
 from quill.core.navigation import (
     block_line_text,
@@ -5919,6 +5919,7 @@ class MainFrame(
         existing_index = self._find_tab_index(selected_path)
         if existing_index >= 0 and not refresh_existing:
             self._select_tab(existing_index)
+            self._remember_open_folder(selected_path)
             if record_recent:
                 self._record_recent(selected_path)
             self._position_editor_at(line=line, column=column)
@@ -6079,6 +6080,7 @@ class MainFrame(
                 incorrect=encrypted_retry,
             )
             return
+        self._remember_open_folder(selected_path)
         illuminated = self._maybe_apply_illumination(loaded, selected_path, suffix)
         self._epub_book = epub_book if suffix == ".epub" else None
         linkage_entry = get_publishing_linkage(selected_path)
@@ -9529,13 +9531,19 @@ class MainFrame(
         sentence does not need a window. QUILL Lite has always spoken this, and
         a modal for a readout is a modal you close on every single use.
 
-        All three numbers are in the sentence now rather than only the words,
-        because the box was the only place the lines and the characters
-        appeared at all.
+        A quick second press adds paragraphs, sentences, long sentences,
+        reading time and the reading grade. Both presses count the selection
+        when there is one. The wording is shared with QUILL Lite
+        (:func:`quill.core.metrics.statistics_report`).
         """
-        stats = compute_document_stats(self.editor.GetValue())
-        summary = f"{stats.words:,} words, {stats.lines:,} lines, {stats.characters:,} characters"
-        if getattr(self.settings, "announce_counts", True):
+        if not hasattr(self, "_word_count_presses"):
+            self._word_count_presses = RepeatPress()
+        window = int(getattr(self.settings, "multi_press_window_ms", 400))
+        detailed = self._word_count_presses.press(window) == 2
+        selected = getattr(self.editor, "GetStringSelection", str)()
+        summary = statistics_report(self.editor.GetValue(), selected, detailed=detailed)
+        # The long report is always spoken: a second press is asking for it.
+        if detailed or getattr(self.settings, "announce_counts", True):
             self._set_status(summary)
         else:
             self._set_status_quiet(summary)

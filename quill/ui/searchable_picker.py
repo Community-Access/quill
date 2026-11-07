@@ -84,8 +84,10 @@ def choose_searchable_option(
         search.SetDescriptiveText(prompt)
         set_accessible_name(search, prompt)
         search.SetHelpText(
-            "Type any part of a name, spaces included, to narrow the list. Down Arrow "
-            "moves to the list; Enter chooses the top match; Escape cancels."
+            "Type any part of a name, spaces included, to narrow the list. Words can "
+            "be combined: & needs both, | takes either, ! leaves a word out, * and ? "
+            "stand for letters, and quotes match exact text. Down Arrow moves to the "
+            "list; Enter chooses the top match; Escape cancels."
         )
         root.Add(search, 0, wx.EXPAND | wx.ALL, 8)
 

@@ -332,13 +332,26 @@ changing anything.</li>
 <li><strong>Replace</strong>, which changes the match you are on and
 moves on to the next one, so you can decide one at a time.</li>
 <li><strong>Replace all</strong>, which changes every match in the
-document at once and tells you how many it changed.</li>
+document at once and tells you how many it changed, for example
+“Replaced 12 occurrences”.</li>
 <li><strong>Close</strong>. Anything you have already replaced stays
 replaced, and <strong>Ctrl+Z</strong> takes it back if you change your
 mind.</li>
 </ul>
 <p>Both windows stay open while you work, so you can go back to your
 document and return to them.</p>
+<p><strong>What you type in Replace with is what goes in.</strong> A
+backslash is just a backslash. Replace a folder name with
+<code>C:\new\reports</code> and that is exactly what lands in every
+match, and <code>\1</code> goes in as the two characters you typed. Only
+one thing reads the box differently: <strong>Replace all</strong> with
+the <strong>Regular expression</strong> search mode. There,
+<code>\1</code> puts back the first part of the match you wrapped in
+brackets and <code>\2</code> the second, so searching for
+<code>(\w+), (\w+)</code> and replacing all with <code>\2 \1</code>
+turns “Bishop, Jeff” into “Jeff Bishop”. If the box names a part the
+search does not have, such as <code>\3</code> when there are only two,
+nothing is changed and you hear “Nothing replaced”, with the reason.</p>
 <h3 id="how-many-are-there">How many are there?</h3>
 <p>The Find window counts as you type. Type three letters and it tells
 you how many matches there are. Type a fourth and the number changes.
@@ -465,7 +478,15 @@ and type the file name it gave you to open the one you want.</p>
 folder of the document you are in.</li>
 <li><strong>File pattern</strong>: which files, such as
 <code>*.txt</code> or <code>*.md</code>. A star on its own means every
-file.</li>
+file. To name more than one kind, put <code>|</code> between patterns to
+take either, <code>&amp;</code> to need both, and <code>!</code> before
+one to leave it out: <code>*.md | *.txt</code> searches Markdown and
+text files together, and <code>* !*.bak</code> searches everything
+except backups. Double quotes around a name mean that one exact file,
+and a pattern with a slash, such as <code>!drafts/*</code>, is matched
+against the path inside the starting folder. A pattern without these
+characters works exactly as before, and the search text still follows
+the Match mode.</li>
 <li><strong>Search text</strong>, and for Replace Across Files,
 <strong>Replacement</strong>.</li>
 <li><strong>Match mode</strong>: Plain text, Wildcard (<code>*</code>
@@ -717,14 +738,15 @@ have no key, as in QUILL; press <strong>Alt+N</strong>,
 give them a key in the Keyboard Manager. At either end you hear “No next
 block” or “No previous block”.</p>
 <h3 id="moving-by-indentation">Moving by indentation</h3>
-<p><strong>Next Indent Change</strong> (<strong>Alt+Shift+Page
-Down</strong>) moves down to the next line whose indentation is
-different from the line you are on, skipping blank lines.
-<strong>Previous Indent Change</strong> (<strong>Alt+Shift+Page
-Up</strong>) goes up. The caret lands on the first character that is not
-a space, your screen reader reads the line, and QUILL Lite adds how far
-in it is, such as “4 spaces” or “No indent”. This is the quick way out
-of a long nested list or a block of indented notes.</p>
+<p><strong>Next Indent Change</strong>
+(<strong>Alt+Shift+PageDown</strong>) moves down to the next line whose
+indentation is different from the line you are on, skipping blank lines.
+<strong>Previous Indent Change</strong>
+(<strong>Alt+Shift+PageUp</strong>) goes up. The caret lands on the
+first character that is not a space, your screen reader reads the line,
+and QUILL Lite adds how far in it is, such as “4 spaces” or “No indent”.
+This is the quick way out of a long nested list or a block of indented
+notes.</p>
 <h3 id="checking-a-markdown-or-html-document">Checking a Markdown or
 HTML document</h3>
 <p><strong>Check This File…</strong> (<strong>Ctrl+Alt+/</strong>) looks

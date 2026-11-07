@@ -103,6 +103,24 @@ def test_no_two_commands_in_one_keymap_claim_the_same_key(wx_app) -> None:
         assert duplicated == {}, f"{name} claims a key twice: {duplicated}"
 
 
+def test_the_support_chord_keeps_its_modifiers_apart_from_bare_f2(wx_app) -> None:
+    """#1703: Ctrl+Alt+F2 and F2 become two different accelerator entries.
+
+    On the CI runner a sent Ctrl+Alt+F2 once ran Next Bookmark (F2). The
+    parser that builds QUILL's accelerator table is the one place that could
+    drop the modifiers, so pin what it produces for both chords.
+    """
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.ui.keybinding_parse import KeybindingParseMixin
+
+    parser = KeybindingParseMixin()
+    parser._wx = wx  # type: ignore[attr-defined]
+    support = parser._parse_keybinding(DEFAULT_KEYMAP["help.report_bug"])
+    bookmark = parser._parse_keybinding(DEFAULT_KEYMAP["navigate.next_bookmark"])
+    assert support == (wx.ACCEL_CTRL | wx.ACCEL_ALT, wx.WXK_F2)
+    assert bookmark == (0, wx.WXK_F2)
+
+
 def test_the_sibling_launcher_keys_are_free_in_every_app(wx_app) -> None:
     """A QuillVille launcher must not sit on a command's key in any app.
 

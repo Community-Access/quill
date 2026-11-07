@@ -2471,6 +2471,19 @@ When the translation is ready, you choose what to do with it:
 - **Replace Original** puts it in place of the selection or the document.
 - **Open as New Document** opens it in a new, unsaved document tab.
 
+**When nothing was translated.** Sometimes the text comes back exactly as you
+sent it. That usually means it was already in the language you picked: you
+asked for English and the passage was English all along, or the provider
+quietly turned Spanish into Spanish. QUILL does not dress that up as a
+translation. The result box says "The translation came back the same as the
+original. The text may already be in the target language." and takes focus,
+so your screen reader reads the sentence to you. Copy to Clipboard, Replace
+Original and Open as New Document stay unavailable, because there is nothing
+new to use. Spacing, line breaks and capital letters do not count as a
+difference, so a result that only rewrapped your lines gets the same message.
+Pick another language, or the other provider, and press **Translate Now**
+again.
+
 ### AI Thesaurus
 
 **AI > More > AI Thesaurus...** finds synonyms for a word using your AI provider. A

@@ -2484,7 +2484,7 @@ Control coverage: 278 audited sites (278 helped).
 - `encoding_choice`: How characters are stored. UTF-8 is the right answer for anything new. UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the old Western European encoding a lot of existing .txt files are in. A 'keep as is' row means this file arrived in something else, which QUILL Lite reads and writes back but does not offer as a new choice.
 - `newline_choice`: CRLF is what Windows programs write. LF is what Unix, macOS and most build tools expect. QUILL Lite writes back whichever the file arrived with unless you change it here.
 - `close_btn`: Close this window and go back to your document.
-- `entry`: Type part of a name to narrow the list below. Leave it empty to see everything. Press Enter or Down Arrow to move to the list.
+- `entry`: Type part of a name to narrow the list below. Leave it empty to see everything. Words can be combined: & needs both, | takes either, ! leaves a word out, * and ? stand for letters, and quotes match exact text. Press Enter or Down Arrow to move to the list.
 - `listbox`: Markdown makes Bold write two asterisks and the heading keys write hashes. HTML makes them write <strong> and <h2>, and offers the HTML tag picker. Plain text writes no markup at all and is right for a letter, a log or a script. The choice lasts as long as this window is open; the file itself is not changed.
 - `reopen_button`: Read this file again from disk as an encoding you choose, for a file whose letters came out wrong. Unsaved changes are discarded and nothing on disk changes. Afterwards it saves in that encoding, or choose UTF-8 here to convert it when you save.
 - `licences`: Open the licences of QUILL Lite and what it includes, as text.

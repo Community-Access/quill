@@ -550,7 +550,8 @@ up to two steps.
 If a LaTeX equation is already selected when you open Insert Equation, QUILL
 takes off its delimiters and puts the bare formula in the box for you. MathML
 (anything starting with `<math`) goes in exactly as typed, with no second
-step. Browser Preview and HTML export show equations using MathJax 3. Math
+step. Browser Preview and HTML export show equations as MathML, which needs
+nothing from the internet and which your screen reader can read. Math
 Equations, later in this guide, has the formula gallery, symbol
 abbreviations, exploring an equation part by part, and Word export.
 
@@ -570,7 +571,8 @@ To set up and look after snippets:
 - Press `Ctrl+Shift+Grave, Shift+S` for **Manage Snippets** (create, edit,
   delete, import, export, and starter packs).
 - Open **More Preferences > Install Starter Snippet Packs** for sample sets for
-  everyday writing, developer work, and support and accessibility notes.
+  everyday writing, developer work, support and accessibility notes, and
+  Mermaid diagrams.
 - In **General Preferences**, turn **Word prediction and tag IntelliSense** or
   **Expand snippet triggers while typing** on or off as you like.
 
@@ -593,6 +595,21 @@ snippet is still reachable: type a little more of its name. QUILL also waits
 until you pause typing before it refills a long list, so typing a whole name
 fills it once instead of after every letter. Enter never acts on an
 out-of-date list.
+
+**Diagram snippets.** The **mermaid-diagrams** starter pack has eight Mermaid
+diagrams for Markdown documents: a flowchart, a sequence diagram, a class
+diagram, a state diagram, an entity relationship diagram, a Gantt chart, a
+mind map and a timeline. Install it from **More Preferences > Install Starter
+Snippet Packs**: arrow to mermaid-diagrams and press Enter. Then open **Insert
+Snippet** (`Ctrl+Shift+Grave, S`) and type `mermaid`, or type a trigger such
+as `;mmflowchart` or `;mmsequence` in your document. Every one asks you two
+questions before anything else: the accessible title and the accessible
+description. Say what the diagram is called and, in a sentence or two, what
+it shows. They are written into the diagram as `accTitle` and `accDescr`,
+which is what a screen reader gets when the diagram is shown as a picture in
+a web page. The remaining questions fill in the first parts of the diagram,
+and the cursor is left where you carry on typing. The Accessibility Tune-Up,
+in the accessibility chapter, checks diagrams you write yourself.
 
 **Typing a name in a list.** In lists you arrow through, such as Copy Tray,
 Open Recent, bookmarks and most other pick-one lists, you can type the start of
@@ -1283,7 +1300,8 @@ feature itself is. These are the rest:
 - **Multi-press time window (ms)** is how long QUILL waits for a second or
   third press of the same key before it treats the first as a single press.
   It matters for the Copy Tray and Command Palette keys that do something
-  different when pressed twice. The default is 400. Fast typists may like
+  different when pressed twice, and for Document Statistics (`Ctrl+Shift+G`),
+  whose second press adds the full writing report. The default is 400. Fast typists may like
   300, and 500 gives you more time.
 
 ## What you learned, and where to go next

@@ -2294,8 +2294,8 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "int",
         "How long QUILL waits for a second or third keypress before treating "
         "the first as a single press. Applies to Copy Tray and Command Palette "
-        "multi-press actions. 300 ms suits fast typists; 500 ms helps users "
-        "with motor control differences. Default: 400.",
+        "multi-press actions, and Document Statistics' second press. 300 ms "
+        "suits fast typists; 500 ms helps motor control differences. Default: 400.",
         keywords=("multi press", "double press", "copy tray", "keyboard", "timer"),
     ),
     # --- Administration: developer tools, security, updates, and settings management ---

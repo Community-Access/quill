@@ -294,3 +294,38 @@ def test_quill_leaves_the_prefix_to_a_quill_key_moved_onto_it() -> None:
     target = _quill_frame()
     target.settings.quill_key_binding = "Ctrl+Alt+Shift+Grave"
     assert not _press(target, _prefix())
+
+
+@pytest.mark.parametrize("editor", sorted(_EDITORS))
+@pytest.mark.parametrize(
+    ("platform", "code", "raw"),
+    [
+        ("darwin", ord("^"), 0x0A),  # German Mac, ISO key above Tab
+        ("darwin", ord("<"), 0x32),  # German Mac, ISO key beside left Shift
+        ("darwin", 0, 0x32),  # US Mac, no character reported
+    ],
+)
+def test_the_prefix_is_found_by_position_on_any_layout(
+    editor: str, platform: str, code: int, raw: int, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # #1753: on a German layout the grave key types "^", not a back-tick.
+    pytest.importorskip("wx")
+    import quill.core.grave_key as grave_key
+
+    monkeypatch.setattr(grave_key, "_current_platform", lambda: platform)
+    target = _EDITORS[editor]()
+    assert _press(target, _Event(code, ctrl=True, alt=True, shift=True, raw=raw))
+    assert target.spoken == ["WordPress keys"]
+
+
+@pytest.mark.parametrize("editor", sorted(_EDITORS))
+def test_windows_ctrl_alt_shift_2_is_not_the_prefix(
+    editor: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # 0x32 is the Mac back-tick code but the Windows virtual key for "2".
+    pytest.importorskip("wx")
+    import quill.core.grave_key as grave_key
+
+    monkeypatch.setattr(grave_key, "_current_platform", lambda: "win32")
+    target = _EDITORS[editor]()
+    assert not _press(target, _Event(ord("2"), ctrl=True, alt=True, shift=True, raw=0x32))

@@ -3,8 +3,10 @@ from __future__ import annotations
 from bisect import bisect_right
 from collections.abc import Callable
 from dataclasses import dataclass
+from fnmatch import fnmatchcase
 from pathlib import Path
 
+from quill.core.list_search import QueryNode, QueryTerm, parse_query
 from quill.core.search import SearchOptions, find_matches, replace_all
 
 
@@ -230,7 +232,49 @@ def _iter_matching_files(root: Path, pattern: str) -> list[Path]:
         return [root]
     if not root.exists():
         raise FileNotFoundError(f"Starting folder not found: {root}")
-    return [path for path in root.rglob(wildcard) if path.is_file()]
+    if not uses_file_pattern_query(wildcard):
+        return [path for path in root.rglob(wildcard) if path.is_file()]
+    query = parse_query(wildcard)
+    if query is None:
+        return [path for path in root.rglob("*") if path.is_file()]
+    found: list[Path] = []
+    for path in root.rglob("*"):
+        if path.is_file() and file_pattern_matches(query, path, root):
+            found.append(path)
+    return found
+
+
+#: The file pattern is already a glob, so ``*`` and ``?`` keep their glob
+#: meaning; only these turn it into a query of globs (quill.core.list_search).
+_FILE_PATTERN_QUERY_CHARACTERS = frozenset('&|!"')
+
+
+def uses_file_pattern_query(pattern: str) -> bool:
+    """True when a file pattern combines globs (``*.md | *.txt``, ``!*.bak``)."""
+    return any(char in _FILE_PATTERN_QUERY_CHARACTERS for char in pattern)
+
+
+def file_pattern_matches(query: QueryNode, path: Path, root: Path) -> bool:
+    """Does *path* satisfy a file-pattern query? Each term is a whole-name glob.
+
+    Case is ignored. A term holding a slash is matched against the path below
+    *root* instead of the bare name (``docs/*.md``); a quoted term is one exact
+    file name, with ``*`` and ``?`` taken literally.
+    """
+    name = path.name.casefold()
+    try:
+        relative = path.relative_to(root).as_posix().casefold()
+    except ValueError:
+        relative = name
+
+    def term_test(term: QueryTerm) -> bool:
+        text = term.text.replace("\\", "/")
+        target = relative if "/" in text else name
+        if term.exact:
+            return target == text
+        return fnmatchcase(target, text)
+
+    return query.test(term_test)
 
 
 def _read_text(path: Path, encoding: str) -> tuple[str, str]:
