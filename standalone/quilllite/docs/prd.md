@@ -2350,7 +2350,7 @@ the same place in both, and every row names one shared handler on
 | Insert | Form Field... |
 | View | Form Outline... |
 | Format | Form Rules... |
-| Tools > Forms | Check This Form..., Fill It In Yourself..., Form Properties...; Publish Form..., Insert Form Into Page..., Test on Site, Responses...; Save As Web Page..., Save As Word Document..., Save As Large Print..., Save As Braille-Ready Text...; Draft a Form..., Plain Language..., Suggest Autofill Hints... |
+| Tools > Forms | Check This Form..., Fill It In Yourself..., Form Properties..., Form Payments Setup..., Insert Payment Field..., Verify Payment Setup...; Publish Form..., Insert Form Into Page..., Test on Site, Responses...; Save As Web Page..., Save As Word Document..., Save As Large Print..., Save As Braille-Ready Text...; Draft a Form..., Plain Language..., Suggest Autofill Hints... |
 
 Every row but New Form, Insert Form Into Page, Responses and Draft a Form is
 in `DOCUMENT_ONLY`: dimmed unless a form document is in front, and the
@@ -2402,8 +2402,20 @@ one open option, and waits on Jeff (`wordpress.md` 19).
 - FM-L8. Seven guided lessons, written once in
   `quill/core/tutorials/forms_lessons.py`, the same seven QUILL has.
 - FM-L9. Every handler has a behavioural test (GATE-LITE-COVER).
+- FM-L10. Payments (2026-11-07), the same as QUILL's and from the same
+  code: Insert Payment Field (a fixed amount, a donation with optional
+  bounds, or `#id` of an amount field, which the Amount help lists), Form
+  Payments Setup (providers, currency, mode, capture, test mode, statement
+  descriptor) and Verify Payment Setup, handled by
+  `quill/ui/forms_payments_commands.py` through `lite_window_forms.py`.
+  Publish Form and Test on Site refuse a site that cannot take the form's
+  payments, or a published form not in test mode; Responses say payments in
+  words. No payment key reaches QUILL Lite. The QAF plugin's side is payment
+  contract version 1 (`docs/design/forms-payments-plugin-contract.md` in
+  QUILL's tree).
 
-**Where it is taught.** Chapter 15 of the user guide, the shared WordPress and
+**Where it is taught.** Chapter 15 of the user guide, Chapter 16 ("Taking
+payments with your forms"), the shared WordPress and
 Forms guide (`docs/user guide/wordpress-and-forms/wordpress-forms-guide.md`,
 on the site as `wordpress-forms-guide.html`), and the Forms rows of
 `docs/qa/wordpress-regression-testing.md`.
@@ -2467,7 +2479,7 @@ QUILL Lite shares QUILL's GitHub Items, Explore, PR review, and diff windows.
 These include the native review tree, thread reply and resolution, saved global
 search, My Work, activity, repository discovery, and workflow job logs. The
 separate QUILL repository administration and Local Git menus remain a tracked
-parity gap. The shared [workbench reference](../../../docs/github/workbench-reference.md)
+parity gap. The shared [workbench reference](https://www.quillforall.org/docs/workbench-reference.html)
 documents keyboard actions and permissions.
 
 ## Say commands: the clipboard, the time, the open documents and the log (2026-11-06)

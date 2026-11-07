@@ -4,7 +4,7 @@
 shared GitHub Items viewer from **File > GitHub Workbench...** (**Alt+F**, then **G**). Review a pull
 request through an expandable outline of changed files, conversations, and
 checks. **Ctrl+R** replies to a selected thread and **Shift+F10** reveals
-actions for the selected item. The [GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md)
+actions for the selected item. The [GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
 explains every step for a screen reader.
 
 ## November 2026 update: payment form authoring
@@ -662,6 +662,6 @@ made for somebody else? Please send them this.
 
 QUILL Lite's shared GitHub workbench adds the same PR review tree, conversation
 reply and resolution commands, exact diff-line targeting, and Explore views as
-QUILL. The [guided tutorial](../../../docs/tutorials/08-github-inside-quill.md)
+QUILL. The [guided tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
 explains arrow keys, Tab, Ctrl+R, Ctrl+Shift+R, and context menus. Native
 screen-reader acceptance remains pending.

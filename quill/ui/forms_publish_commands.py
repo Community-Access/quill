@@ -268,7 +268,9 @@ class FormsPublishCommands(
                         "form to a test-configured site before trying checkout."
                     )
                 require_ready(api, remote)
-            return form, bs.pages_showing(api, link.form_id), bs.plugin_prefix(api)
+            remote_config = payment_config(remote) if payment_fields(remote) else None
+            paid = remote_config.providers if remote_config else ()
+            return form, bs.pages_showing(api, link.form_id), bs.plugin_prefix(api), paid
 
         self.with_qaf(
             command,
@@ -278,14 +280,26 @@ class FormsPublishCommands(
             lambda found: self._open_test(profile, *found),
         )
 
+    #: Said after Test on Site opens a test-mode payment form, per provider:
+    #: the published test numbers, so nobody reaches for a real card.
+    TEST_PAYMENT_HINTS = {
+        "stripe": "Stripe's test card 4242 4242 4242 4242 with any future date and any "
+        "three-digit code",
+        "paypal": "a PayPal sandbox buyer account",
+    }
+
     def _open_test(
         self,
         profile: Any,
         form: bs.SiteForm,
         pages: list[tuple[str, str, str]],
         prefix: str = "qaf",
+        paid: tuple[str, ...] = (),
     ) -> None:
         draft = "" if form.live else " It is a draft, so only you can see it there."
+        hints = [self.TEST_PAYMENT_HINTS[p] for p in paid if p in self.TEST_PAYMENT_HINTS]
+        if hints:
+            draft += " To pay in test mode, use " + ", or ".join(hints) + ". Never a real card."
         live = [p for p in pages if p[1]]
         if live:
             name, link, status = live[0]

@@ -7,7 +7,7 @@ GitHub Items viewer. A PR expands into changed files, review threads, general
 conversations, and checks. Arrow to an item and Tab into its detail; Ctrl+R
 replies to a selected thread. Shift+F10 opens a context menu that fits the
 selected item. Public repositories can be read anonymously; posting needs a
-token. See the [full GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md).
+token. See the [full GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html).
 
 ## Nemotron keeps its last word
 
@@ -43,6 +43,15 @@ tells you why.
 **Tools > Customize Features**, a save whose backup could not be written now
 says "Saved notes.txt, but could not write a backup", and your braille display
 shows the same. Your file is saved either way.
+
+## Taking payments with your forms
+
+Chapter 16 of the guide is new: "Taking payments with your forms", the whole
+process from what you need to going live, including what the person paying
+hears with a screen reader. Insert Payment Field now names the form's amount
+fields, QUILL Lite catches amounts and statement descriptors the site would
+refuse before publishing, Test on Site tells you which test card to use, and
+Responses say payment states in words.
 
 ## Stripe and PayPal form setup
 
@@ -1478,5 +1487,5 @@ every message.
 The shared GitHub Items and Explore windows add global saved search, My Work,
 activity, account and repository views, PR thread resolve/reopen, exact current
 diff-line targeting, Pages and labels, and workflow jobs and logs. See the
-[workbench reference](../../../docs/github/workbench-reference.md). Native
+[workbench reference](https://www.quillforall.org/docs/workbench-reference.html). Native
 screen-reader acceptance and integration into the destination branch are pending.

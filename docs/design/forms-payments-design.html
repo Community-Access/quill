@@ -258,25 +258,41 @@ payment settings without a schema version change. The upstream QAF
 conformance suite checks the original base contract; dedicated payment
 tests check stricter authoring rules, including the rejection of
 incomplete payment placeholders.</li>
+<li>The authoring rules match the plugin’s, so a site refusal after a
+clean Check This Form is rare. Since 2026-11-07 that includes amounts
+with more decimal places than the currency has (refused, never rounded:
+<code>10.005</code> USD, <code>2000.5</code> JPY) and the statement
+descriptor’s floor and character set (5 to 22 printable ASCII characters
+with at least one letter).</li>
 <li>The shared Forms commands expose Insert Payment Field, Form Payments
 Setup, and Verify Payment Setup. They use the existing accessible native
 field and report dialogs; each field has a label and F1 help. Edits
 remain local and replace the document once, for one undo step.
-Cancellation preserves it.</li>
+Cancellation preserves it. Insert Payment Field’s Amount help lists the
+form’s own amount fields (<code>payments.amount_sources</code>), so an
+author need not remember an id.</li>
 <li>Publish Form names payment mode, currency and providers in its
 confirmation. Before sending a paid form it verifies the plugin
 contract, selected provider readiness, webhook readiness and matching
 test/live mode.</li>
 <li>Test on Site checks the <strong>published</strong> configuration and
 refuses live payment forms. Local test mode is never evidence that the
-published form is safe to test.</li>
+published form is safe to test. When it opens a test-mode payment form
+it says the published test card for Stripe and the sandbox account for
+PayPal, for the providers that form uses.</li>
 <li>Responses show payment status, amount, currency and provider in
-their accessible list rows. Read, CSV and Word exports include the
-available payment metadata. Refresh Payment Status confirms the
-destination and rereads site entries.</li>
+their accessible list rows, in words (“partly refunded”, “PayPal”)
+rather than the plugin’s codes. Read and Word exports use the same
+words; CSV keeps the codes, which sort and filter. Refresh Payment
+Status confirms the destination and rereads site entries.</li>
 <li>Network commands use the existing WordPress worker/transport, error
 reporting, credentials and Safe Mode refusal. Local form editing remains
 available offline.</li>
+<li>The diagnostic redaction rules cover the payment secrets a pasted
+site error could carry (Stripe <code>sk_</code>,
+<code>rk_live_</code>/<code>rk_test_</code>, <code>whsec_</code>; PayPal
+<code>A21AA</code> access tokens), although QUILL holds none of
+them.</li>
 </ul>
 <h2 id="decisions-replacing-the-initial-proposal">Decisions replacing
 the initial proposal</h2>
@@ -294,14 +310,57 @@ dialogs provide the setup flow; no new custom window class or duplicated
 Lite implementation is needed. The Form Payments feature is advanced,
 depends on Forms and WordPress, and is off in Essential. Lite follows
 its existing Forms area visibility.</p>
+<p>With that boundary, the plan’s remaining desktop items were closed on
+2026-11-07: the test-card guidance from Test on Site (plan 4.8, item 3),
+the redaction patterns (plan 4.6), the plugin’s precision and descriptor
+rules on the desktop, and payment status in words. The plan’s adapters,
+key store and egress entries are not built, by the decision above.</p>
+<h2 id="the-plugin-side">The plugin side</h2>
+<p>The QAF plugin implements contract version 1 on its branch
+<code>feat/qaf-payments</code> (local to the plugin repository; not yet
+released or tried on a live site):</p>
+<ul>
+<li><code>GET qaf/v1/payments/settings</code>, administrators or
+<code>qaf_manage_payments</code> only, booleans and the mode, never a
+key. A provider counts as configured only after Check Connection
+succeeded for the exact keys stored now (the check is tied to a hash of
+them), and its webhook as ready only after the site created the endpoint
+or verified a signed event.</li>
+<li>Payment settings validated in <code>QAF_Form::set_model</code>, so
+every way a model reaches the site is checked, and again at
+checkout.</li>
+<li>Amounts worked out on the server from the model: fixed amounts,
+donations with bounds, number fields, and totals from products, linked
+quantities, coupons, shipping, tax and calculations, ignoring any
+submitted total, price, currency or paid flag. Integer minor units;
+extra precision refused.</li>
+<li>Stripe Payment Intents with the Payment Element, PayPal Orders v2
+with server-side capture or authorization, both over REST with
+idempotency keys per attempt. A resent page reuses its entry and
+attempt.</li>
+<li>Webhooks verified (Stripe signing secret with a five-minute window;
+PayPal verify-webhook-signature over the exact bytes), recorded once,
+matched to the attempt’s environment, amount and currency, and applied
+through a transition table with compare-and-set writes. Late or replayed
+events cannot downgrade paid or refunded entries; partial refunds stay
+partial.</li>
+<li><code>qaf_payment_paid</code> fires once per paid entry, for
+fulfilment.</li>
+<li>wp-admin QAF Forms &gt; Payments: write-only secrets (or constants
+in <code>wp-config.php</code>), test and live mode with a confirming
+check box, Check Connection, Create Webhook, readiness, and a payments
+report with totals.</li>
+<li>The plugin’s own admin guide is
+<code>docs/payments-admin-guide.md</code> in its repository.</li>
+</ul>
 <h2 id="external-requirements-and-limits">External requirements and
 limits</h2>
-<p>The QAF PHP plugin must implement the <a
-href="forms-payments-plugin-contract.md">versioned contract</a>. This
-repository does not implement or deploy its checkout, provider APIs or
-webhooks. Missing capability is an explicit refusal, not a successful
-publish. Live sandbox and assistive-technology acceptance remain
-required on a compatible site; unit tests cannot establish that a
+<p>This repository does not implement or deploy the checkout, provider
+APIs or webhooks; the plugin does, under the <a
+href="forms-payments-plugin-contract.md">versioned contract</a>. Missing
+capability is an explicit refusal, not a successful publish. Live
+sandbox and assistive-technology acceptance remain required on a
+compatible site; unit tests on either side cannot establish that a
 payment was collected or a hosted field is accessible. See the <a
 href="../qa/forms-payments-acceptance.md">acceptance checklist</a>.</p>
 <p>Recurring payments, refunds issued from QUILL, multiple checkout
@@ -312,10 +371,15 @@ version.</p>
 adapter tests; then run Ruff, scoped mypy, the network-egress and
 error-code audits, the Forms/menu/accessibility gates,
 generated-reference checks, and documentation artifact checks. Tests use
-injected sites and do not charge accounts.</p>
-<p>The <a
-href="../user%20guide/wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.md">user
-guide</a> describes authoring, test mode and entry review.</p>
+injected sites and do not charge accounts. The plugin’s payment tests
+(<code>tests/unit/Payments/</code> in its repository) use fake provider
+transports and never reach Stripe or PayPal.</p>
+<p>Chapter 18 of the <a
+href="../user%20guide/quill-guide/quill-guide-18-taking-payments.md">QUILL
+user guide</a>, “Taking payments with your forms”, and Chapter 16 of
+QUILL Lite’s teach the whole process. The shorter <a
+href="../user%20guide/wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.md">manual
+section</a> describes authoring, test mode and entry review.</p>
 </main>
 </body>
 </html>

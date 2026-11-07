@@ -15,6 +15,8 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 - Checkout requires QAF payment contract version 1 on WordPress. Provider
   credentials and money movement stay on the site; no plugin deployment or
   live acceptance is implied by this desktop update.
+- Chapter 18 of the guide, "Taking payments with your forms", walks through
+  it from start to finish, including what the person paying hears.
 
 - **File > WordPress** writes, opens and publishes your sites' pages and posts. Connect a Site fetches the password with your browser and keeps it in Windows Credential Manager.
 - **Ctrl+S saves on this computer only.** Save Draft to Site and Publish or Update are separate, Publish checks the page first, and nothing someone else changed is overwritten.

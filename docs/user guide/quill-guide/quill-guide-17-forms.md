@@ -1,23 +1,5 @@
 # Chapter 17: Forms
 
-## Payments and donations
-
-Tools > Forms > Insert Payment Field adds a fixed amount, a `#field_id`
-amount reference, or a donation with optional bounds. Form Payments Setup
-chooses Stripe and/or PayPal, currency, capture mode and test mode. New settings
-start in test mode; all edits remain local until Publish Form.
-
-Configure provider sandbox credentials and webhooks in WordPress, then use
-Verify Payment Setup. Publishing requires a QAF plugin implementing payment
-contract version 1, ready selected providers/webhooks and matching payment mode.
-Test on Site checks the published form and refuses live-payment checkout.
-Responses show payment metadata; Refresh Payment Status rereads the site after
-confirmation. CSV and Word exports include the metadata. Actual charging,
-manual capture and refunds stay on the site or in the provider dashboard.
-
-For the complete sandbox-first workflow, read the payment section in
-[Forms on the web and paper](../wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.html).
-
 ## Writing a form
 
 A form is a contact form, an event sign-up, a membership renewal, a survey or
@@ -51,6 +33,16 @@ To start, choose **File > New Form...**, give the form a title, pick a
 template, and save it. Apart from New Form and Responses, the Forms commands
 are dimmed until a form is open.
 
+## Payments and donations
+
+A form can take a fee, an order total or a donation through Stripe or PayPal,
+with the QUILL Accessible Forms plugin on your site doing the charging.
+**Tools > Forms** has Insert Payment Field, Form Payments Setup and Verify
+Payment Setup. Everything starts in test mode, and QUILL never sees a card
+number or a payment key. [Chapter 18: Taking payments with your
+forms](quill-guide-18-taking-payments.html) goes through it from start to
+finish.
+
 ## Keys
 
 None of the Forms commands has a shortcut key. Every useful key is already
@@ -61,5 +53,5 @@ command from the list.
 ---
 
 - Previous: [Chapter 16: WordPress](quill-guide-16-wordpress.html)
-- Next: [A last word](quill-guide-a-last-word.html)
+- Next: [Chapter 18: Taking payments with your forms](quill-guide-18-taking-payments.html)
 - [Contents](../userguide.html)

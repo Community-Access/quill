@@ -855,7 +855,7 @@ post to Mastodon, and handle conflicts, rebases and worktrees in Local Git.
 To practise, open **Help > Tutorials...** (`Ctrl+Alt+F1`) and try "QUILL and
 the apps around it". On the website, read
 [Start an Accessible Vault](https://www.quillforall.org/tutorials/05-start-a-vault.html),
-[GitHub inside QUILL](https://www.quillforall.org/tutorials/08-github-inside-quill.html),
+[GitHub inside QUILL](https://www.quillforall.org/docs/08-github-inside-quill.html),
 [Internet Radio with Quill Radio](https://www.quillforall.org/tutorials/09-internet-radio.html)
 and
 [Podcasts with QUILL Cast](https://www.quillforall.org/tutorials/10-podcasts.html).

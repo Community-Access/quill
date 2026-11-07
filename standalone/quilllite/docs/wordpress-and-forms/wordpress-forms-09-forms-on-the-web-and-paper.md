@@ -248,6 +248,13 @@ webhook processing. Fill It In Yourself and saved static web pages do not
 process payments. Safe Mode blocks payment network operations while allowing
 local authoring. The same commands and behavior are available in QUILL Lite.
 
+The whole process, including what the person paying hears with a screen
+reader, receipts, reporting and going live, is a chapter of its own in each
+user guide: "Taking payments with your forms", Chapter 18 in QUILL's and
+Chapter 16 in QUILL Lite's. The site owner's side (keys, webhooks, test and
+live mode) is in the plugin's guide, *Taking payments: a guide for site
+owners*.
+
 ## Where to next
 
 - Previous: [Chapter 8: Writing a form](wordpress-forms-08-writing-forms.html)

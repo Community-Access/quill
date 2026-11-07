@@ -8,7 +8,7 @@ the one inferred from the current document's checkout. Select a PR and choose
 **Review...**. Arrow through the expandable PR, files, conversations, and
 checks. Tab into the selected details; Shift+Tab returns. Ctrl+R replies to a
 selected review thread, and Shift+F10 opens its context menu. The
-[GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md) explains
+[GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html) explains
 the complete interaction model.
 
 *For QUILL Lite 2.0.0 (build 1), the beta for testers, October 2026. 2.0.0
@@ -242,7 +242,24 @@ filling it in yourself before anyone else sees it. The full story is in the
 WordPress and Forms manual.
 
 - [Where everything is](guide/lite-guide-15-forms.html#where-everything-is)
+- [Payments and donations](guide/lite-guide-15-forms.html#payments-and-donations)
 - [Keys](guide/lite-guide-15-forms.html#keys)
+
+### [Chapter 16: Taking payments with your forms](guide/lite-guide-16-taking-payments.html)
+
+A form can take a fee, an order total or a donation through Stripe or PayPal.
+This chapter goes from what you need before you start to going live:
+test mode, adding a payment field, choosing providers, publishing and what
+each refusal means, what the person paying hears with a screen reader,
+receipts, refunds, and seeing who paid.
+
+- [What you need before you start](guide/lite-guide-16-taking-payments.html#what-you-need-before-you-start)
+- [Adding a payment field](guide/lite-guide-16-taking-payments.html#adding-a-payment-field)
+- [Publishing, and what each refusal means](guide/lite-guide-16-taking-payments.html#publishing-and-what-each-refusal-means)
+- [What the person paying hears and does](guide/lite-guide-16-taking-payments.html#what-the-person-paying-hears-and-does)
+- [Seeing who paid: Responses](guide/lite-guide-16-taking-payments.html#seeing-who-paid-responses)
+- [Moving from test to live](guide/lite-guide-16-taking-payments.html#moving-from-test-to-live)
+- [Troubleshooting](guide/lite-guide-16-taking-payments.html#troubleshooting)
 
 ## Reference
 
@@ -276,4 +293,4 @@ reader is an expandable tree, with files and threads under the pull request;
 Tab reads the selected node's detail. Ctrl+R replies and Ctrl+Shift+R toggles
 thread resolution where allowed. **Explore** reaches global search, My Work,
 activity, account and repository discovery, and workflow job logs. See the
-[complete keyboard reference](../../../docs/github/workbench-reference.md).
+[complete keyboard reference](https://www.quillforall.org/docs/workbench-reference.html).

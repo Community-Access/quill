@@ -5,7 +5,7 @@ Version 2.0.0 (QUILL Studio; see CHANGELOG.md)
 **Evidence status:** this is the implemented-source baseline, not a claim that
 the current build is publicly released or that every workflow has passed
 installed-build and human accessibility acceptance. The consolidated
-[Studio planning PRD](../../../docs/planning/QUILL-Studio-PRD.md) owns remaining
+[Studio planning PRD](https://github.com/Community-Access/quill/blob/main/docs/planning/QUILL-Studio-PRD.md) owns remaining
 requirements and acceptance gates; historical root-level drafts are superseded.
 
 Runtime update in 2.0.0: Windows OCR and Media use the shared PyWinRT 4.0.3

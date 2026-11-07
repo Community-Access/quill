@@ -1839,7 +1839,7 @@ PDF](https://www.quillforall.org/tutorials/03-rescue-a-scanned-pdf.html), [From
 document to published
 audiobook](https://www.quillforall.org/tutorials/04-document-to-audiobook.html)
 and [GitHub inside
-QUILL](https://www.quillforall.org/tutorials/08-github-inside-quill.html) walk
+QUILL](https://www.quillforall.org/docs/08-github-inside-quill.html) walk
 through the longer jobs.
 
 Next, Chapter 4, Writing and editing, is where you start shaping the words

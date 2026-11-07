@@ -244,11 +244,35 @@
 <main id="main-content" tabindex="-1">
 <h1 id="forms-payment-acceptance-checklist">Forms payment acceptance
 checklist</h1>
-<p>Status: automated desktop coverage exists; the live checks below are
-<strong>not recorded as passed</strong>. Run against a QAF plugin
-implementing payment contract version 1, using Stripe and PayPal sandbox
-credentials. Record plugin version, provider environment, browser,
-screen reader, date, tester and evidence.</p>
+<p>Status: automated desktop coverage exists, and the QAF plugin’s
+branch <code>feat/qaf-payments</code> has automated coverage of every
+contract clause against fake provider transports. The live checks below
+are <strong>not recorded as passed</strong>: no WordPress site has run
+that branch yet. Run against a QAF plugin implementing payment contract
+version 1, using Stripe and PayPal sandbox credentials. Record plugin
+version, provider environment, browser, screen reader, date, tester and
+evidence.</p>
+<h2 id="on-the-site-before-any-form">On the site, before any form</h2>
+<ul>
+<li>In wp-admin, QAF Forms &gt; Payments: every key field has a visible
+label and its hint is read with it; each provider and environment is a
+fieldset with a legend; the readiness table has a caption and header
+cells; the notice after Save, Check Connection or Create Webhook takes
+focus and is read.</li>
+<li>Save a secret, reload, and confirm the page says only “Saved”, with
+no part of the secret in the field, the page source or the REST replies.
+Remove it with its Remove check box.</li>
+<li>Check Connection with a live key saved under test (and the reverse)
+says the key belongs to the other environment. Choosing Live without the
+confirming check box changes nothing.</li>
+<li>Create Webhook for each provider in sandbox; confirm the endpoint
+appears in the provider’s dashboard with this site’s address, and that
+the readiness table and Verify Payment Setup then say ready.</li>
+<li>A user without <code>manage_options</code> or
+<code>qaf_manage_payments</code> gets a refusal from
+<code>GET /wp-json/qaf/v1/payments/settings</code> and cannot open the
+page.</li>
+</ul>
 <h2 id="desktop-in-both-quill-and-quill-lite">Desktop, in both QUILL and
 QUILL Lite</h2>
 <ul>
@@ -268,6 +292,14 @@ mismatched test/live mode produce useful refusals. Live-mode
 confirmation names real money.</li>
 <li>Change only the local document to test mode while the site remains
 live; Test on Site must refuse to open checkout.</li>
+<li>Test on Site on a test-mode form says the test card (Stripe) and
+sandbox account (PayPal) for the providers that form uses, and no
+others.</li>
+<li>Insert Payment Field’s Amount help (F1) names the form’s amount
+fields. An amount finer than the currency (<code>10.005</code> USD) is
+refused with a reason.</li>
+<li>Responses read each payment in words (“partly refunded”, “PayPal”),
+and CSV keeps the plugin’s codes.</li>
 </ul>
 <h2 id="published-checkout-each-provider">Published checkout, each
 provider</h2>
@@ -292,6 +324,21 @@ flags.</li>
 <li>Export responses to CSV and Word; inspect metadata and confirm no
 provider secrets or card details appear in responses, exports, logs or
 error reports.</li>
+<li>With a screen reader, from the keyboard alone: the payment field
+reads its amount and currency; a donation box reads its limits; after
+sending, focus lands on the “Pay” heading; progress comes from the
+status line, failures from the alert, each once; the provider radio
+buttons and the Pay, Try again and Check payment again buttons work with
+Space and Enter; nothing is conveyed by colour alone. Repeat in Windows
+high contrast.</li>
+<li>Return from a 3-D Secure redirect and confirm the panel says
+“Welcome back. Checking your payment.” and then the result.</li>
+<li>A donation below the minimum, a coupon code the form does not take
+and a quantity above its maximum are each refused before saving, with
+the message on the field.</li>
+<li>Switch from card to PayPal after starting a card payment: the Stripe
+intent is cancelled in the dashboard before the PayPal order is
+made.</li>
 </ul>
 <p>Only after both provider flows and the assistive-technology checks
 pass should a site administrator configure live credentials and publish

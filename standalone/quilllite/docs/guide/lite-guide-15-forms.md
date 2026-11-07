@@ -1,23 +1,5 @@
 # Chapter 15: Forms
 
-## Payments and donations
-
-QUILL Lite uses the same payment commands as QUILL. Tools > Forms > Insert
-Payment Field adds a fixed amount, `#field_id` reference or bounded donation.
-Form Payments Setup chooses Stripe and/or PayPal, currency and capture mode.
-New settings start in test mode. Setup changes only the local form.
-
-Configure sandbox credentials and webhooks in WordPress, then use Verify
-Payment Setup. Publishing requires a QAF plugin implementing payment contract
-version 1, ready selected providers/webhooks and matching test/live mode.
-Test on Site checks the published form and refuses live-payment checkout.
-Responses include payment metadata in Read, CSV and Word exports; Refresh
-Payment Status confirms the site before rereading entries. QUILL Lite stores
-no provider credentials and never captures or refunds payments.
-
-Follow the full payment walkthrough in
-[Forms on the web and paper](../wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.html).
-
 ## Writing a form
 
 A form is a contact form, an event sign-up, a membership renewal, a survey or
@@ -51,6 +33,16 @@ To start, choose **File > New Form...**, give the form a title, pick a
 template, and save it. Apart from New Form and Responses, the Forms commands
 are dimmed until a form is open.
 
+## Payments and donations
+
+A form can take a fee, an order total or a donation through Stripe or PayPal,
+with the QUILL Accessible Forms plugin on your site doing the charging.
+**Tools > Forms** has Insert Payment Field, Form Payments Setup and Verify
+Payment Setup, the same commands QUILL has. Everything starts in test mode,
+and QUILL Lite never sees a card number or a payment key. [Chapter 16: Taking
+payments with your forms](lite-guide-16-taking-payments.html) goes through it
+from start to finish.
+
 ## Keys
 
 None of the Forms commands has a shortcut key. Every useful key is already
@@ -61,5 +53,5 @@ command from the list.
 ---
 
 - Previous: [Chapter 14: WordPress](lite-guide-14-wordpress.html)
-- Next: [Licences and notices](lite-guide-licences-and-notices.html)
+- Next: [Chapter 16: Taking payments with your forms](lite-guide-16-taking-payments.html)
 - [Contents](../userguide.html)

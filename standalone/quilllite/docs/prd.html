@@ -3679,7 +3679,8 @@ Lite through <code>quill/apps/lite_window_forms.py</code>.</p>
 </tr>
 <tr>
 <td>Tools &gt; Forms</td>
-<td>Check This Form…, Fill It In Yourself…, Form Properties…; Publish
+<td>Check This Form…, Fill It In Yourself…, Form Properties…, Form
+Payments Setup…, Insert Payment Field…, Verify Payment Setup…; Publish
 Form…, Insert Form Into Page…, Test on Site, Responses…; Save As Web
 Page…, Save As Word Document…, Save As Large Print…, Save As
 Braille-Ready Text…; Draft a Form…, Plain Language…, Suggest Autofill
@@ -3740,9 +3741,22 @@ Choose Your AI, through the same gates as every other AI command.</li>
 <code>quill/core/tutorials/forms_lessons.py</code>, the same seven QUILL
 has.</li>
 <li>FM-L9. Every handler has a behavioural test (GATE-LITE-COVER).</li>
+<li>FM-L10. Payments (2026-11-07), the same as QUILL’s and from the same
+code: Insert Payment Field (a fixed amount, a donation with optional
+bounds, or <code>#id</code> of an amount field, which the Amount help
+lists), Form Payments Setup (providers, currency, mode, capture, test
+mode, statement descriptor) and Verify Payment Setup, handled by
+<code>quill/ui/forms_payments_commands.py</code> through
+<code>lite_window_forms.py</code>. Publish Form and Test on Site refuse
+a site that cannot take the form’s payments, or a published form not in
+test mode; Responses say payments in words. No payment key reaches QUILL
+Lite. The QAF plugin’s side is payment contract version 1
+(<code>docs/design/forms-payments-plugin-contract.md</code> in QUILL’s
+tree).</li>
 </ul>
 <p><strong>Where it is taught.</strong> Chapter 15 of the user guide,
-the shared WordPress and Forms guide
+Chapter 16 (“Taking payments with your forms”), the shared WordPress and
+Forms guide
 (<code>docs/user guide/wordpress-and-forms/wordpress-forms-guide.md</code>,
 on the site as <code>wordpress-forms-guide.html</code>), and the Forms
 rows of <code>docs/qa/wordpress-regression-testing.md</code>.</p>
@@ -3813,7 +3827,8 @@ windows. These include the native review tree, thread reply and
 resolution, saved global search, My Work, activity, repository
 discovery, and workflow job logs. The separate QUILL repository
 administration and Local Git menus remain a tracked parity gap. The
-shared <a href="../../../docs/github/workbench-reference.md">workbench
+shared <a
+href="https://www.quillforall.org/docs/workbench-reference.html">workbench
 reference</a> documents keyboard actions and permissions.</p>
 <h2
 id="say-commands-the-clipboard-the-time-the-open-documents-and-the-log-2026-11-06">Say
