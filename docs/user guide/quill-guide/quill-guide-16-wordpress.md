@@ -62,7 +62,7 @@ QUILL Lite use the same letters, so moving between them costs you nothing.
 
 QUILL finds the grave key by where it sits, the key above Tab, not by what it
 types. So the WordPress key works on a German, French, Nordic or any other
-layout, where that key types `^`, `²` or `§` rather than a back-tick. The
+layout, where that key types `^`, `²` or `§` rather than a backtick. The
 QUILL key works the same way; Chapter 2 has the details.
 
 ---

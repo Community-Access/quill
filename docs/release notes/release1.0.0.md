@@ -7,7 +7,7 @@
 The QUILL key is Control, Shift and the grave key, the key just above Tab. On a
 Mac with a German layout it used to do nothing until you switched to US
 English, because that key types `^` there and QUILL was listening for a
-back-tick. QUILL now finds the key by where it sits, so the QUILL key works on
+backtick. QUILL now finds the key by where it sits, so the QUILL key works on
 German, French, Nordic and every other layout, on Windows and on macOS. On a
 European (ISO) Mac keyboard, the key beside the left Shift key works too. You
 hear the same double ping as always. The WordPress key, `Ctrl+Alt+Shift+Grave`,

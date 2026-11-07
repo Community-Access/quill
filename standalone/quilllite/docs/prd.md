@@ -2169,7 +2169,7 @@ layer is run from the key-down handler (`_wordpress_key_down` in
 QUILL's char hook asks, and never by an accelerator table. The grave key is
 recognised by position, not character, through the shared
 `quill.core.grave_key.is_grave_key` that QUILL's QUILL key also uses (#1753):
-the back-tick or tilde character; on Windows `VK_OEM_3` or hardware scan code
+the backtick or tilde character; on Windows `VK_OEM_3` or hardware scan code
 0x29; on macOS the virtual key code 0x32 (`kVK_ANSI_Grave`) or 0x0A
 (`kVK_ISO_Section`, the key above Tab on ISO keyboards). So the layer starts on
 a German, French or Nordic layout too. It says "WordPress

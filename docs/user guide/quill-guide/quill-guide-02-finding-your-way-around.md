@@ -172,7 +172,7 @@ Sound Events).
 
 #### The QUILL key on keyboards that are not US English
 
-Only a US layout calls the grave key a back-tick. On a German layout the same
+Only a US layout calls the grave key a backtick. On a German layout the same
 key types `^`, on French it types `²`, and on many Nordic layouts it types `§`.
 QUILL does not care what the key types. It looks for the key by where it sits
 on the keyboard: the key just above Tab, to the left of `1`. So on any layout,

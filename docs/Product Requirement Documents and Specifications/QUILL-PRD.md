@@ -8664,7 +8664,7 @@ The QUILL key (`Ctrl+Shift+Grave` by default) operates as a two-layer prefix sys
 
 **Layer 2 — Chord command dispatch.** Any key pressed while the prefix is armed that is not a mode gate is dispatched via a data-driven lookup: `_chord_command_for_event` scans the live keymap for entries whose binding matches `<prefix>, <second-key>` and runs the matching command via `_run_command`. This means every chord command (read aloud, snippets, headings, copy tray, etc.) is fully reassignable in the Keymap Editor without any code change.
 
-**Key detection.** The grave key is recognised by its position, not by the character it types, because only a US layout calls it a back-tick (German types `^`, French `²`, Nordic layouts `§`). The rules live in one wx-free function, `quill.core.grave_key.is_grave_key`, which QUILL's QUILL key and WordPress key and QUILL Lite's WordPress key all call. Any one of these is enough:
+**Key detection.** The grave key is recognised by its position, not by the character it types, because only a US layout calls it a backtick (German types `^`, French `²`, Nordic layouts `§`). The rules live in one wx-free function, `quill.core.grave_key.is_grave_key`, which QUILL's QUILL key and WordPress key and QUILL Lite's WordPress key all call. Any one of these is enough:
 1. wxPython key code or Unicode key equals `ord("`")` or `ord("~")` (every platform)
 2. Windows virtual-key `VK_OEM_3` (0xC0) via `GetRawKeyCode()`
 3. Windows physical scan code `0x29` (key below Esc / above Tab on PC keyboards) via bits 16–23 of `GetRawKeyFlags()`
