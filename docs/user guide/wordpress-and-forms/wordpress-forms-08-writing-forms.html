@@ -507,9 +507,15 @@ address in parts.</li>
 worked out from other answers; a group of questions they can fill in
 more than once; and text shown on the form that is not a question.</li>
 </ul>
-<p>Payment fields, and the fields some sites use to make posts or
-register users, are left to the site. If a form you open has one, QUILL
-keeps it exactly as it is, as a protected line.</p>
+<p>Payment opens a guided dialog for a fixed amount,
+<code>#field_id</code> amount reference or donation. Tools &gt; Forms
+&gt; Form Payments Setup chooses Stripe and/or PayPal and starts in test
+mode. Advanced product, quantity, price, total and coupon components can
+be written in the form source. Actual checkout requires a compatible QAF
+WordPress plugin; see <a
+href="wordpress-forms-09-forms-on-the-web-and-paper.html#payments-stripe-and-paypal">Payments</a>.
+Fields some sites use to make posts or register users remain
+site-managed.</p>
 <h2 id="the-form-outline">The form outline</h2>
 <p><strong>View &gt; Form Outline…</strong> lists every page, section
 and question in order. Each row reads like a sentence, for example

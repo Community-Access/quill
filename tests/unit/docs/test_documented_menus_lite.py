@@ -49,6 +49,9 @@ ALLOW: dict[str, str] = {
     ),
     "path:file > file": "QUILL's File > File Encoding window, named as the same window",
     "path:tools > writing": "history: QUILL's Tools menu as it was named in that release",
+    "path:tools > open quill studio": (
+        "release-gated: shown only once Studio is released, which the paragraph says"
+    ),
     # Keys of the Review Dictation window, not of the menu bar: they work only
     # while that window has focus, and the guide's table says so.
     "key:back to the words exactly as you said them": (

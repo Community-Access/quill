@@ -10,6 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core import language_blocks as _blocks
+
 
 @dataclass(frozen=True, slots=True)
 class LanguageProfile:
@@ -29,12 +31,17 @@ class LanguageProfile:
     # heading/table/tag menu items, heading navigation, Emmet, and live preview)
     # so a pinned profile gives those characteristics regardless of file name.
     markup_kind: str = "plain"
+    # Where Next Block and Previous Block stop in this language: a regular
+    # expression matched per line (``quill.core.language_blocks``). Empty means
+    # blocks are paragraphs, as they always were.
+    block_pattern: str = ""
 
 
 _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "Python",
         (".py", ".pyw", ".pyi"),
+        block_pattern=_blocks.PYTHON,
         indent_unit=4,
         comment_prefix="# ",
         keywords=(
@@ -78,6 +85,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "JavaScript",
         (".js", ".mjs", ".cjs"),
+        block_pattern=_blocks.JAVASCRIPT,
         indent_unit=2,
         comment_prefix="// ",
         block_comment_start="/*",
@@ -128,6 +136,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "TypeScript",
         (".ts", ".tsx", ".mts", ".cts"),
+        block_pattern=_blocks.TYPESCRIPT,
         indent_unit=2,
         comment_prefix="// ",
         block_comment_start="/*",
@@ -201,6 +210,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "HTML",
         (".html", ".htm", ".xhtml"),
+        block_pattern=_blocks.HTML,
         indent_unit=2,
         block_comment_start="<!--",
         block_comment_end="-->",
@@ -210,6 +220,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "CSS",
         (".css", ".scss", ".sass", ".less"),
+        block_pattern=_blocks.CSS,
         indent_unit=2,
         block_comment_start="/*",
         block_comment_end="*/",
@@ -224,6 +235,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "Go",
         (".go",),
+        block_pattern=_blocks.GO,
         indent_unit=1,
         uses_tabs=True,
         comment_prefix="// ",
@@ -260,6 +272,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "C",
         (".c", ".h"),
+        block_pattern=_blocks.C_LIKE,
         indent_unit=4,
         comment_prefix="// ",
         block_comment_start="/*",
@@ -303,6 +316,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "C++",
         (".cpp", ".cc", ".cxx", ".hpp", ".hxx"),
+        block_pattern=_blocks.C_LIKE,
         indent_unit=4,
         comment_prefix="// ",
         block_comment_start="/*",
@@ -376,6 +390,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "C#",
         (".cs", ".csx"),
+        block_pattern=_blocks.C_FAMILY,
         indent_unit=4,
         comment_prefix="// ",
         block_comment_start="/*",
@@ -456,6 +471,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "PHP",
         (".php", ".phtml", ".php5", ".phps"),
+        block_pattern=_blocks.PHP,
         indent_unit=4,
         comment_prefix="// ",
         block_comment_start="/*",
@@ -530,6 +546,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "Rust",
         (".rs",),
+        block_pattern=_blocks.RUST,
         indent_unit=4,
         comment_prefix="// ",
         block_comment_start="/*",
@@ -578,6 +595,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "Kotlin",
         (".kt", ".kts"),
+        block_pattern=_blocks.KOTLIN,
         indent_unit=4,
         comment_prefix="// ",
         block_comment_start="/*",
@@ -662,6 +680,7 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "Shell",
         (".sh", ".bash", ".zsh", ".fish", ".ksh"),
+        block_pattern=_blocks.SHELL,
         indent_unit=4,
         comment_prefix="# ",
         keywords=(
@@ -700,12 +719,14 @@ _PROFILES: tuple[LanguageProfile, ...] = (
     LanguageProfile(
         "TOML",
         (".toml",),
+        block_pattern=_blocks.SECTIONS,
         indent_unit=4,
         comment_prefix="# ",
     ),
     LanguageProfile(
         "SQL",
         (".sql",),
+        block_pattern=_blocks.SQL,
         indent_unit=4,
         comment_prefix="-- ",
         block_comment_start="/*",
@@ -767,6 +788,72 @@ _PROFILES: tuple[LanguageProfile, ...] = (
             "WHERE",
             "WITH",
         ),
+    ),
+    # Added with language-aware blocks and Check This File: files people edit
+    # in a text editor that had no profile, so neither feature could see them.
+    LanguageProfile(
+        "Java",
+        (".java",),
+        comment_prefix="// ",
+        block_comment_start="/*",
+        block_comment_end="*/",
+        block_pattern=_blocks.C_FAMILY,
+    ),
+    LanguageProfile(
+        "XML",
+        (".xml", ".xsd", ".xsl", ".xslt", ".svg", ".xaml", ".csproj", ".vbproj", ".props", ".resx"),
+        indent_unit=2,
+        block_comment_start="<!--",
+        block_comment_end="-->",
+        bracket_pairs=(("<", ">"),),
+    ),
+    LanguageProfile(
+        "INI",
+        (".ini", ".cfg", ".inf"),
+        comment_prefix="; ",
+        bracket_pairs=(("[", "]"),),
+        block_pattern=_blocks.SECTIONS,
+    ),
+    LanguageProfile(
+        "Batch",
+        (".bat", ".cmd"),
+        comment_prefix="REM ",
+        bracket_pairs=(("(", ")"),),
+        block_pattern=_blocks.BATCH,
+    ),
+    LanguageProfile(
+        "PowerShell",
+        (".ps1", ".psm1", ".psd1"),
+        comment_prefix="# ",
+        block_comment_start="<#",
+        block_comment_end="#>",
+        block_pattern=_blocks.POWERSHELL,
+    ),
+    LanguageProfile(
+        "LaTeX",
+        (".tex", ".ltx", ".sty", ".cls"),
+        indent_unit=2,
+        comment_prefix="% ",
+        bracket_pairs=(("{", "}"), ("[", "]")),
+        block_pattern=_blocks.LATEX,
+    ),
+    LanguageProfile(
+        "Ruby",
+        (".rb", ".rake", ".gemspec"),
+        indent_unit=2,
+        comment_prefix="# ",
+        block_pattern=_blocks.RUBY,
+    ),
+    LanguageProfile(
+        "Perl",
+        (".pl", ".pm", ".t"),
+        comment_prefix="# ",
+        block_pattern=_blocks.PERL,
+    ),
+    LanguageProfile(
+        "CSV",
+        (".csv", ".tsv"),
+        bracket_pairs=(),
     ),
 )
 

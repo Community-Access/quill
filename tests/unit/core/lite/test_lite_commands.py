@@ -31,7 +31,8 @@ import pytest
 
 from quill.core.forms.menu import all_rows as forms_rows
 from quill.core.forms.menu import lite_handler as forms_handler
-from quill.core.lite.commands import COMMANDS, SUBMENU_SEP, menu_titles, shortcut_text
+from quill.core.lite.commands import COMMANDS, SUBMENU_SEP, menu_titles
+from quill.core.lite.shortcut_text import shortcut_text
 from quill.core.wordpress.keys import is_sequence
 from quill.core.wordpress.menu import LAYER_KEYS, lite_handler
 from quill.core.wordpress.menu import all_rows as wordpress_rows
@@ -58,6 +59,16 @@ def _items() -> list[tuple[str, str, str, str]]:
 #: reason). The route is the menu's own Alt path, which the access-key checks
 #: below keep unique. Shrink this, never grow it without an argument.
 KEYLESS_WITH_REASON: dict[str, str] = {
+    **{
+        handler: "As in QUILL (rule 2), where Next and Previous Block have no chord either: "
+        "every chord near them is taken in one editor or the other, and Navigate > Code "
+        "reaches both (Alt+N, C, then N or P)."
+        for handler in ("cmd_next_block", "cmd_previous_block")
+    },
+    "cmd_open_studio": "Rule 7: launching another app does not take an editor chord. "
+    "Lite already uses QUILL's positional QuillVille keys for editing commands. "
+    "Alt+T, Q reaches Studio when the shared release gate permits it; the user can "
+    "assign a chord in Keyboard Manager.",
     "cmd_open_project_folder": "As in QUILL (rule 2), where it has no plain key either: "
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "
@@ -121,6 +132,15 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "cmd_import_convert": "As in QUILL, where Import / Convert Document has no key either "
     "(rule 2; rule 9 for an occasional command): the next thing it does is ask which "
     "file, so a chord saves nothing. Alt+F, I reaches it.",
+    "cmd_save_clipboard": "As in QUILL (rule 2), where it has no key either: no chord was "
+    "free in both editors (measured 2026-11-06, commands_say.py), and saving the clipboard "
+    "is occasional and asks for a file name next (rule 9). Alt+E, B, F.",
+    "cmd_clear_clipboard": "As in QUILL (rule 2), where it has no key either: no chord was "
+    "free in both editors (measured 2026-11-06), and a key that empties the clipboard "
+    "by accident costs what was on it (rule 4). Alt+E, B, B.",
+    "cmd_copy_log": "As in QUILL (rule 2), where it has no key either: no chord was free "
+    "in both editors (measured 2026-11-06), and it is pressed when writing to support, "
+    "not in the editing loop (rule 9). Alt+H, L.",
     **{
         handler: "As in QUILL (rule 2), and as in Word, which has no keys for these either: "
         "the table's own submenu reaches them (Alt+N, T), and Tab in a table's last cell "
@@ -332,9 +352,13 @@ def test_every_key_is_one_wx_can_actually_parse() -> None:
 
 
 def test_the_shortcut_window_lists_what_is_actually_bound() -> None:
-    """The key list is generated from the table, so it cannot drift from it."""
+    """The key list follows the same release gate as the menu and palette."""
+    from quill.core.lite.command_areas import visible_commands
+
     text = shortcut_text()
-    for _menu, label, key, _handler in _items():
+    for _menu, label, key, _handler, kind in visible_commands(lambda _area: True):
+        if kind in {"sep", "sub"}:
+            continue
         assert key in text, f"{key} ({label}) is bound but not listed"
         assert label.replace("&", "") in text, f"{label} is bound but not listed"
     # The two things the table cannot carry, because they are built per window.

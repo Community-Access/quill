@@ -69,7 +69,14 @@ reader would see at a glance.
 What you hear depends on the kind of document:
 
 - In a **rich text** document you hear the real formatting, for example
-  *"Arial, 14 point, bold, centred."*
+  *"Arial, 14 point, bold, centred."* Coloured text names its colour too,
+  just before any highlight: *"Calibri, 11 point, red, yellow highlight."*
+  Common colours such as red, green, blue and orange are named exactly, and
+  any other colour, such as an unusual shade from a Word document, is named
+  after the nearest one, so you hear a word and never a number.
+  Ordinary text says nothing about colour: not when nobody coloured it, not
+  when it is plain black, and not for the light text that the dark theme
+  paints on the page.
 - In a **Markdown** document it reads the markup around your cursor. Inside
   `**bold**` it says bold, and on a `##` line it says Heading 2.
 - In a **plain text** document it tells you it is plain text, because there is
@@ -86,13 +93,57 @@ What you hear depends on the kind of document:
 ### How big is this document?
 
 Press **Ctrl+Shift+G** (**View > Document Statistics**) to hear the size of the
-whole document, for example *"1,240 words, 7,315 characters, 96 lines."*
+whole document, for example *"1,240 words, 96 lines, 7,315 characters."*
 
 The same numbers are in the status bar, but this is quicker than going there to
 find them.
 
+Press it twice quickly for the full writing report. After the counts you hear
+paragraphs, sentences, how many sentences run over 30 words, the reading time
+and the reading grade, for example *"... 31 paragraphs, 84 sentences, 3 long
+sentences over 30 words, about 7 minutes to read, reading grade about 9th
+grade."*
+
+- **Select some text first** and both presses count only what you selected.
+  You hear *"Selection:"* at the start, so you know which you got.
+- **Paragraphs** are the blocks between blank lines when your text has blank
+  lines between paragraphs, as Markdown does. Otherwise each line counts as one.
+- **Reading time** assumes 200 words a minute.
+- **Reading grade** is the Flesch-Kincaid grade level, roughly the school year
+  a reader needs to follow the text easily. From grade 13 up it says *"college
+  level"*.
+- The second press has to follow the first within 400 milliseconds. Press
+  more slowly and you just hear the counts again.
+
+QUILL says exactly the same on the same key.
+
 **Ctrl+Alt+W** (**Line Statistics**) does the same for just the line you are on,
 or for what you have selected.
+
+### What time is it?
+
+Press **Alt+Shift+Space** (**Tools > Say Time and Date**) and QUILL Lite says
+the time, the way a clock reads it: *"2:05 PM."* Press it twice, quickly,
+within half a second, and you hear the date in full: *"Friday, November 6,
+2026."* The first press is answered straight away, so you never wait for it.
+It is quicker than finding the clock in the system tray, and you stay in your
+document. The row has no access letter on the Tools menu; the key is the way
+to reach it.
+
+### How many documents are open?
+
+Press **Ctrl+Shift+Space** (**Window > Say Windows Open**, or
+**Alt+W**, then **S**) to hear how many documents you have open: *"3 documents
+open."* Press it twice, quickly, and you hear their names, in order, with the
+one you are in marked: *"3 documents: notes.txt (current), chapter 2.docx,
+letter.md."* It is a fast check before you close QUILL Lite, without walking
+the Window menu.
+
+QUILL has both of these, on the same keys.
+
+One more key of the same kind is about the clipboard: **Alt+Shift+Home**
+(**Say Clipboard**) reads what you copied without pasting it. Chapter 5 has
+the details.
 
 ## Sounds
 

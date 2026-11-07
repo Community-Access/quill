@@ -168,7 +168,7 @@ def sentence(model: Model, text: str) -> str:
 # -- the rules beyond the schema --------------------------------------------------------
 
 
-def semantic_errors(model: Model) -> list[dict[str, str]]:  # noqa: C901 - one rule per block
+def base_semantic_errors(model: Model) -> list[dict[str, str]]:  # noqa: C901 - one rule per block
     """What a schema cannot say: unique IDs, expressions naming real fields..."""
     errors: list[dict[str, str]] = []
     ids: dict[str, str] = {}
@@ -275,6 +275,17 @@ def semantic_errors(model: Model) -> list[dict[str, str]]:  # noqa: C901 - one r
                     f"The translation names page #{pid}, which is not in this form.",
                 )
     return errors
+
+
+def semantic_errors(model: Model) -> list[dict[str, str]]:
+    """QAF's base rules plus QUILL's payment-extension requirements.
+
+    The external QAF v1 oracle predates the payment extension and checks
+    ``base_semantic_errors`` separately. Authoring and publishing use all rules.
+    """
+    from quill.core.forms.payments import semantic_errors as payment_errors
+
+    return base_semantic_errors(model) + payment_errors(model)
 
 
 def validate(model: Model) -> list[dict[str, str]]:

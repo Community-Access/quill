@@ -240,9 +240,13 @@ the new page.
   answers; a group of questions they can fill in more than once; and text
   shown on the form that is not a question.
 
-Payment fields, and the fields some sites use to make posts or register
-users, are left to the site. If a form you open has one, QUILL keeps it
-exactly as it is, as a protected line.
+Payment opens a guided dialog for a fixed amount, `#field_id` amount
+reference or donation. Tools > Forms > Form Payments Setup chooses Stripe
+and/or PayPal and starts in test mode. Advanced product, quantity, price,
+total and coupon components can be written in the form source. Actual
+checkout requires a compatible QAF WordPress plugin; see
+[Payments](wordpress-forms-09-forms-on-the-web-and-paper.html#payments-stripe-and-paypal).
+Fields some sites use to make posts or register users remain site-managed.
 
 ## The form outline
 

@@ -1,5 +1,11 @@
 # WordPress in QUILL and QUILL Lite
 
+Payment integration is specified by the current
+[implementation notes](forms-payments-design.html) and
+[QAF plugin contract](forms-payments-plugin-contract.html). These supersede
+the initial payment proposal: desktop authoring and reporting share the
+WordPress transport; provider credentials and checkout remain plugin-owned.
+
 Product requirements, draft 0.1, 2026-11-03. Status: proposed, nothing built
 beyond what section 2 says already exists.
 

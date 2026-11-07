@@ -145,6 +145,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 
 | Key | Command |
 |---|---|
+| **Alt+Shift+Home** | Say Clipboard |
+| **Alt+Shift+End** | Append Selection to Clipboard |
 | **Ctrl+Alt+Y** | Copy to Tray |
 | **Alt+Shift+Y** | Copy to Tray Slot... |
 | **Ctrl+Alt+V** | Paste from Tray... |
@@ -271,6 +273,16 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Home** | First Cell |
 | **Ctrl+Alt+End** | Last Cell |
 
+### Code (in Navigate)
+
+| Key | Command |
+|---|---|
+| **Alt+Shift+PageDown** | Next Indent Change |
+| **Alt+Shift+PageUp** | Previous Indent Change |
+| **Ctrl+Alt+/** | Check This File... |
+| **Ctrl+Alt+.** | Next Problem |
+| **Ctrl+Alt+,** | Previous Problem |
+
 ### Bookmarks (in Navigate)
 
 | Key | Command |
@@ -308,6 +320,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+F10** | Look Up Word... |
 | **Shift+F7** | Thesaurus... |
 | **Ctrl+Alt+Shift+[** | Say Word Summary |
+| **Alt+Shift+Space** | Say Time and Date |
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
 | **Ctrl+Alt+Backspace** | Read-Only Guard |
 | **Ctrl+Alt+Shift+Home** | Snippets... |
@@ -315,6 +328,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+A** | Expand Abbreviations |
 | **Alt+Shift+9** | AutoCorrect Entries... |
 | **Ctrl+,** | Preferences... |
+| **Ctrl+Alt+Shift+F6** | GitHub Workbench... |
 | **Ctrl+Alt+F11** | Back Up Settings... |
 | **Ctrl+Alt+F12** | Restore Settings... |
 | **Ctrl+Alt+F10** | Customize Features... |
@@ -448,6 +462,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+F6** | Next Window (MDI) |
 | **Ctrl+Shift+Tab** | Previous Window |
 | **Ctrl+Shift+F4** | Close Other Documents |
+| **Ctrl+Shift+Space** | Say Windows Open |
 
 ## Help
 

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 551.
+Editor commands with default bindings: 565.
 
 ## The QUILL editor
 
@@ -54,8 +54,10 @@ Editor commands with default bindings: 551.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | Clear Clipboard | `edit.clear_clipboard` |
 | (unbound by default) | Follow Link | `edit.follow_link` |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
+| (unbound by default) | Save Clipboard to File... | `edit.save_clipboard_to_file` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
 | Alt+. | Insert Emoji... | `edit.insert_emoji` |
@@ -65,10 +67,12 @@ Editor commands with default bindings: 551.
 | Alt+M | List Marks | `edit.list_marks` |
 | Alt+Shift+. | Unquote Lines | `edit.unquote_lines` |
 | Alt+Shift+C | Copy With Source | `edit.copy_with_source` |
+| Alt+Shift+End | Append Selection to Clipboard | `edit.append_to_clipboard` |
 | Alt+Shift+F3 | Undo and Say What Changed | `edit.undo_and_say` |
 | Alt+Shift+F5 | Select Section | `edit.select_section` |
 | Alt+Shift+F8 | Go to Start of Selection | `edit.go_to_start_of_selection` |
 | Alt+Shift+F9 | Toggle Extend Selection Mode | `edit.toggle_extend_selection_mode` |
+| Alt+Shift+Home | Say Clipboard | `edit.say_clipboard` |
 | Alt+Shift+U | Open Review Buffer | `edit.open_review_buffer` |
 | Alt+Shift+Y | Copy to tray slot | `edit.copy_to_tray_slot` |
 | Alt+Shift+Z | Reverse Lines | `edit.reverse_lines` |
@@ -223,6 +227,8 @@ Editor commands with default bindings: 551.
 | Key | Command | Command id |
 | --- | --- | --- |
 | (unbound by default) | Go To Page... | `navigate.go_to_page` |
+| (unbound by default) | Next Block | `navigate.next_block` |
+| (unbound by default) | Previous Block | `navigate.previous_block` |
 | Alt+Down | Next Structure | `navigate.next_structure` |
 | Alt+Left | Back Location | `navigate.back_location` |
 | Alt+PageDown | Next Highlighted Passage | `navigate.next_highlight` |
@@ -230,9 +236,14 @@ Editor commands with default bindings: 551.
 | Alt+Right | Forward Location | `navigate.forward_location` |
 | Alt+Shift+G or Ctrl+Shift+F5 | List Bookmarks... | `navigate.list_bookmarks` |
 | Alt+Shift+O | Heading Organizer... | `navigate.heading_organizer` |
+| Alt+Shift+PageDown | Next Indent Change | `navigate.next_indent` |
+| Alt+Shift+PageUp | Previous Indent Change | `navigate.previous_indent` |
+| Alt+Shift+Space | Say Time and Date | `navigate.say_time` |
 | Alt+Shift+[ | Previous Fold | `navigate.previous_fold` |
 | Alt+Shift+] | Next Fold | `navigate.next_fold` |
 | Alt+Up | Previous Structure | `navigate.previous_structure` |
+| Ctrl+Alt+, | Previous Problem | `navigate.previous_problem` |
+| Ctrl+Alt+. | Next Problem | `navigate.next_problem` |
 | Ctrl+Alt+B | Clear All Bookmarks | `navigate.clear_numbered_bookmarks` |
 | Ctrl+Alt+F6 | Set Document Language... | `navigate.set_language` |
 | Ctrl+Alt+H | Next Heading | `navigate.next_heading` |
@@ -330,6 +341,7 @@ Editor commands with default bindings: 551.
 | Ctrl+7 | Prompt Library... | `tools.hosted_ai_prompt_library` |
 | Ctrl+8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+9 | Web Searches Left | `tools.hosted_ai_web_searches` |
+| Ctrl+Alt+/ | Check This File... | `tools.check_this_file` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
 | Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
 | Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |
@@ -404,6 +416,7 @@ Editor commands with default bindings: 551.
 | Alt+8 | Go to document 8 | `window.go_to_document_8` |
 | Alt+9 | Go to document 9 | `window.go_to_document_9` |
 | Ctrl+Shift+F4 | Close Other Documents | `window.close_other_documents` |
+| Ctrl+Shift+Space | Say Windows Open | `window.say_windows_open` |
 | Ctrl+Shift+Tab or Ctrl+Shift+F6 | Previous Document | `window.previous_document` |
 | Ctrl+T | New Tab | `window.new_document_tab` |
 | Ctrl+Tab or Ctrl+F6 | Next Document | `window.next_document` |
@@ -426,6 +439,7 @@ Editor commands with default bindings: 551.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | Copy Log | `help.copy_log` |
 | (unbound by default) | Release Channel... | `help.release_channel` |
 | (unbound by default) | What's New | `help.whats_new` |
 | Alt+F1 | Why Is This Unavailable? | `help.why_unavailable` |

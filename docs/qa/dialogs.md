@@ -1,5 +1,11 @@
 # QUILL dialog regression checklist
 
+Payment authoring reuses the native fields dialog in both editors. Check
+Form Payments Setup, Insert Payment Field, the live-mode confirmation,
+Verify Payment Setup's consent/report and Refresh Payment Status using the
+[payment acceptance checklist](forms-payments-acceptance.html). Manual
+screen-reader acceptance remains unrecorded until that checklist is executed.
+
 This is the master manual regression checklist for every user-facing dialog in
 QUILL. Use it to verify that each dialog opens, is fully keyboard and
 screen-reader operable, has a working Escape and an explicit default, and

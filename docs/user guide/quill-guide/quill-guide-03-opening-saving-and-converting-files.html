@@ -283,6 +283,17 @@ there.</li>
 <p>Files on a server or on GitHub have their own commands. They are
 covered later in this chapter, under Remote access and GitHub remote
 files.</p>
+<p><strong>Where the Open dialog starts.</strong> Press
+<code>Ctrl+O</code> and the dialog, the standard one or the Simple File
+Open dialog, starts in the folder of the last file you opened, however
+you opened it. That includes a file you double-clicked in File Explorer,
+one passed to QUILL on the command line, one from Open Recent, and one
+you went back to because it was already open in a tab. So if you open
+<code>Minutes.docx</code> from your Board folder in Explorer, the next
+<code>Ctrl+O</code> is already in the Board folder, ready for the agenda
+beside it. Saving with <strong>Save As</strong> moves it too. Until
+something has been opened, the dialog starts in your <strong>Startup
+folder</strong> from Settings, or in Documents.</p>
 <h3 id="opening-what-you-copied-a-link-or-a-file-you-drag-in">Opening
 what you copied, a link, or a file you drag in</h3>
 <p>Documents reach you in all sorts of ways: a file in File Explorer, a
@@ -1436,6 +1447,17 @@ it on a website as it is. Task lists show as check boxes and
 stays the document you are editing. If notes are written into the file,
 QUILL asks whether to include them in the page, marked as notes; No is
 the default, so a note never ends up in a page by accident.</p>
+<p>Equations are written into the page as MathML, so the page needs no
+script and nothing from the internet to show them, and NVDA and JAWS
+read them as maths. When Pandoc is installed it writes the page from a
+Markdown document, and pictures come with it: a picture with a relative
+path, such as <code>![Floor plan](images/plan.png)</code>, is found
+beside your document, and with Pandoc 2 or 3 the picture itself is put
+inside the page, so it still shows when you email the page or move it on
+its own. Save the document first, so QUILL knows which folder its
+pictures are in. A picture from the web, such as
+<code>![Logo](https://example.com/logo.png)</code>, stays a link to the
+web, because exporting never downloads anything.</p>
 <p><strong>Getting there by keyboard.</strong>
 <code>File &gt; Import</code> and <code>File &gt; Export</code> are
 ordinary menus: open the menu, arrow down and press Enter. There is no
@@ -1451,6 +1473,16 @@ where you were. PDF, DOCX, EPUB, ODT and RTF don’t ask, because QUILL
 cannot edit those directly. Instead a message tells you where the file
 was saved and copies the path to the clipboard, so you can paste it into
 File Explorer.</p>
+<p><strong>Exporting over an earlier file is safe.</strong> Say you
+exported <code>report.docx</code> yesterday and export again today to
+the same name. Pandoc builds the new file under a temporary hidden name
+in the same folder, and only when it has finished successfully does
+QUILL swap it in over yesterday’s. If the export fails, times out or you
+cancel it, yesterday’s <code>report.docx</code> is exactly as it was, no
+half-written file is left behind, and you hear “Pandoc export failed”
+with the reason. The same holds for every conversion that writes a file
+through Pandoc: Convert File, batch conversion, braille and review
+exports.</p>
 <p><strong>Other formats.</strong> Both menus end with <strong>Other
 Pandoc Format…</strong>. It shows a list of every other format Pandoc
 can read (on Import) or write (on Export), such as CommonMark and

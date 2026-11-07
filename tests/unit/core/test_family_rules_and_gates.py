@@ -188,6 +188,15 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "file.import_convert": "Reached another way: File > Import / Convert Document (OCR)..., "
     "in both editors (QUILL Lite since 2026-10-17). Rule 9: converting a Word file or a "
     "scanned page is occasional, and the box that follows asks which file anyway.",
+    "edit.save_clipboard_to_file": "Reached another way: Edit > Clipboard > Save Clipboard "
+    "to File..., in both editors. No chord was free in both (measured 2026-11-06), and it "
+    "asks for a file name next, so a chord would save little (rule 9).",
+    "edit.clear_clipboard": "Reached another way: Edit > Clipboard > Clear Clipboard, in "
+    "both editors. No chord was free in both (measured 2026-11-06), and a key that empties "
+    "the clipboard by accident loses what was on it (rule 4).",
+    "help.copy_log": "Reached another way: Help > Copy Log, in both editors. No chord was "
+    "free in both (measured 2026-11-06), and it is pressed when writing to support, not "
+    "in the editing loop (rule 9).",
     "help.release_channel": "Deliberately vacated 2026-10-03 in all four channel apps. "
     "Alt+Shift+F4 closed the window it was pressed in wherever Windows read it as "
     "Alt+F4 -- a dialog, a separate Quill Radio window -- and rule 4 fixes "
@@ -213,6 +222,11 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "help.whats_new": "Reached another way: Help > What's New, in both editors. No chord "
     "is free in both -- Ctrl+Shift+F1, the standalone apps' What's New, is the User "
     "Guide here -- and rule 9 asks a once-per-update read for a way in, not a chord.",
+    **{
+        command: "Reached another way: Quick Nav's Tab and Shift+Tab, and Navigate > Code in "
+        "both editors. No chord near them is free in both, and the Keyboard Manager binds one."
+        for command in ("navigate.next_block", "navigate.previous_block")
+    },
 }
 
 

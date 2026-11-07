@@ -13,8 +13,14 @@ from quill.core.github.explore_views import PERSON_VIEWS, REPO_VIEWS, VIEWS
 from quill.core.github.fetch_results import GitHubFetchResult
 from quill.core.github.navigation_state import account_key_for_token
 from quill.core.github.saved_items import GitHubSavedItems
-from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
+from quill.ui.dialog_contract import (
+    apply_listbox_activation,
+    apply_modal_ids,
+    dialog_alive,
+    show_modal_dialog,
+)
 from quill.ui.dpi import dip_size
+from quill.ui.github_explore_context_menu import GitHubExploreContextMenuMixin
 from quill.ui.github_explore_queue import GitHubExploreQueueMixin
 from quill.ui.github_explore_queue import queue_item_key as _queue_item_key
 from quill.ui.github_explore_search import GitHubExploreSearchMixin
@@ -26,7 +32,9 @@ if TYPE_CHECKING:
     from quill.core.github.items_provider import GitHubItemsProvider
 
 
-class GitHubExploreDialog(GitHubExploreQueueMixin, GitHubExploreSearchMixin):
+class GitHubExploreDialog(
+    GitHubExploreContextMenuMixin, GitHubExploreQueueMixin, GitHubExploreSearchMixin
+):
     """Shared QUILL/Lite account and repository views with selected-row actions."""
 
     def __init__(
@@ -161,7 +169,7 @@ class GitHubExploreDialog(GitHubExploreQueueMixin, GitHubExploreSearchMixin):
         self._saved_btn.Bind(wx.EVT_BUTTON, self._saved_searches_menu)
         self._queue_options_btn.Bind(wx.EVT_BUTTON, self._attention_options_menu)
         self._list.Bind(wx.EVT_LISTBOX, self._select)
-        self._list.Bind(wx.EVT_LISTBOX_DCLICK, self._activate)
+        apply_listbox_activation(self._list, self._activate)
         self._list.Bind(wx.EVT_CONTEXT_MENU, self._context_menu)
         self._detail.Bind(wx.EVT_CONTEXT_MENU, self._context_menu)
         self._open_btn.Bind(wx.EVT_BUTTON, self._open)
@@ -403,78 +411,6 @@ class GitHubExploreDialog(GitHubExploreQueueMixin, GitHubExploreSearchMixin):
         finally:
             wx.TheClipboard.Close()
         self._announce(f"Copied {what}." if copied else f"Could not copy {what}.")
-
-    def _context_menu(self, event: object) -> None:
-        wx = self._wx
-        if event is not None and event.GetEventObject() is self._list:
-            position = event.GetPosition()
-            if position != wx.DefaultPosition:
-                index = self._list.HitTest(self._list.ScreenToClient(position))
-                if index != wx.NOT_FOUND:
-                    self._list.SetSelection(index)
-                    self._select(None)
-        menu = wx.Menu()
-
-        def add(label: str, action: object, enabled: bool = True) -> None:
-            item_id = wx.NewIdRef()
-            menu.Append(item_id, label)
-            menu.Enable(item_id, enabled)
-            menu.Bind(wx.EVT_MENU, lambda _event, callback=action: callback(), id=item_id)
-
-        row = self._selected()
-        if row:
-            add("Open on GitHub", lambda: self._open(None), bool(row.url))
-            add("Copy Link", lambda: self._copy(row.url, "link"), bool(row.url))
-            add("Copy Details", lambda: self._copy(row.detail, "details"))
-            add("Use Repository", lambda: self._use_repo(None), bool(row.repo))
-            if row.kind == "repo" and self._client._provider.is_authenticated:
-                add("Watch Repository", lambda: self._change_repo(row.repo, watched=True))
-                add("Unwatch Repository", lambda: self._change_repo(row.repo, watched=False))
-                add("Star Repository", lambda: self._change_repo(row.repo, starred=True))
-                add("Unstar Repository", lambda: self._change_repo(row.repo, starred=False))
-            if row.kind == "person":
-                add("Explore Person's Activity", lambda: self._explore_person(row.key))
-            if row.kind == "notification" and row.key:
-                add("Mark Notification Read", lambda: self._mark_notification_read(row.key))
-            if (
-                row.kind in {"issue", "pr"}
-                and row.key.isdecimal()
-                and self._on_start_issue_worktree is not None
-            ):
-                add(
-                    "Start in Local Worktree...",
-                    lambda item=row: self._on_start_issue_worktree(
-                        self.dialog,
-                        item.repo,
-                        int(item.key),
-                        item.title or item.label,
-                        item.kind == "pr",
-                    ),
-                )
-            if row.kind == "label" and self._client._provider.is_authenticated:
-                add("Edit Label...", lambda: self._edit_label(row))
-                add("Delete Label...", lambda: self._delete_label(row))
-            if row.kind == "label":
-                add("Find Issues with Label", lambda: self._find_label_issues(row))
-            if self._view_key() == "attention" and self._attention_state is not None:
-                key = _queue_item_key(row)
-                if self._attention_state.is_snoozed(key):
-                    add("Unsnooze Locally", lambda: self._unsnooze_attention_item(key))
-                else:
-                    add("Snooze for One Day", lambda: self._snooze_attention_item(key))
-        if self._view_key() == "labels" and self._client._provider.is_authenticated:
-            add("Create Label...", self._create_label)
-        if self._view_key() == "search" and self._query.GetValue().strip():
-            query = self._query.GetValue().strip()
-            add("Save Search", lambda: self._save_search(None))
-            add("Remove Saved Search", lambda: self._remove_search(query))
-        if self._view_key() == "attention" and self._attention_state is not None:
-            add("Queue Options...", lambda: self._attention_options_menu(None))
-        add("Refresh", lambda: self._load(None))
-        try:
-            self._list.PopupMenu(menu)
-        finally:
-            menu.Destroy()
 
     def _explore_person(self, login: str) -> None:
         self._person.SetValue(login)

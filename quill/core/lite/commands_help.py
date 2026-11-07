@@ -26,6 +26,11 @@ HELP_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&Help", "&Repeat Last Result", "F9", "cmd_repeat_last_result", ""),
     # The family item and key: Lite's users least know where else to write.
     ("&Help", "&Get Help from Support...", "Ctrl+Alt+F2", "cmd_get_help_from_support", ""),
+    # This session's log on the clipboard, as a file and as its path, for a
+    # support email (quill/ui/say_commands.py, shared). No key, as in QUILL: no
+    # chord is free in both editors and it is pressed when something has gone
+    # wrong, not in the editing loop (rule 9). Alt+H, L. See KEYLESS_WITH_REASON.
+    ("&Help", "Copy &Log", "", "cmd_copy_log", ""),
     ("&Help", "Check for &Updates...", "Ctrl+Alt+U", "cmd_check_updates", ""),
     # No key (rules 4 and 9; keymap.py): Alt+H, C. See KEYLESS_WITH_REASON.
     ("&Help", "Release &Channel...", "", "cmd_release_channel", ""),

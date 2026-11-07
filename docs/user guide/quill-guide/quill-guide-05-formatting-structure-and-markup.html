@@ -897,9 +897,9 @@ own line, with a blank line above and below.
 <code>$$\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</code> on a single
 line.</li>
 </ul>
-<p>Both are delimiters MathJax recognizes without any setup, and
-<code>\(...\)</code> cannot be confused with a dollar amount in your
-prose the way a bare <code>$...$</code> could.</p></li>
+<p>Both are standard TeX delimiters, and <code>\(...\)</code> cannot be
+confused with a dollar amount in your prose the way a bare
+<code>$...$</code> could.</p></li>
 <li><p><strong>MathML</strong> is an XML format used in web publishing
 and accessible documents. If what you type starts with
 <code>&lt;math</code>, QUILL inserts it as it is and skips the display
@@ -909,15 +909,21 @@ the delimiters, fills in the bare formula, and puts the display mode it
 detected first in the list, so one keypress confirms it.</p></li>
 </ul>
 <h4 id="seeing-equations-rendered">Seeing equations rendered</h4>
-<p>Browser Preview (<code>Ctrl+Shift+Grave, V</code>) and HTML export
-add MathJax 3, so equations appear typeset in any browser. QUILL adds it
-only for documents that contain maths. The document itself always keeps
-the raw LaTeX or MathML, which is what your screen reader reads.</p>
-<p>MathJax is loaded from a public CDN by your browser, so the visual
-rendering needs an internet connection. The LaTeX or MathML, and
-everything your screen reader says, is always there offline. If you are
-offline, equations show as their source instead of typeset maths.
-Nothing is lost.</p>
+<p>Browser Preview (<code>Ctrl+Shift+Grave, V</code>), the side preview
+and <strong>File &gt; Export &gt; HTML…</strong> turn your LaTeX into
+MathML, the web’s own format for maths. Browsers draw it as typeset
+maths, and NVDA (with MathCAT, built in) and JAWS read it as maths: you
+can hear “a sub 1” rather than “a underscore 1”, and move through a
+fraction or a root part by part with your screen reader’s own math
+commands. Nothing is fetched from the internet, so it all works offline,
+and the page you export carries its maths inside it.</p>
+<p>QUILL converts inline equations (<code>\(...\)</code>), display
+equations (<code>$$...$$</code> or <code>\[...\]</code>, on one line or
+on lines of their own) and fenced <code>math</code> blocks. Anything
+inside code, such as a <code>`\(x\)`</code> code span or a fenced code
+block, is left alone. If a formula has a mistake QUILL cannot convert,
+the page shows its LaTeX as plain text instead, so nothing is lost. The
+document itself always keeps the raw LaTeX or MathML.</p>
 <h3 id="common-formulas-gallery">Common Formulas gallery</h3>
 <p>You do not have to type a common formula at all. <strong>Insert &gt;
 Snippet Gallery…</strong> lists ten ready-made formulas from the Math

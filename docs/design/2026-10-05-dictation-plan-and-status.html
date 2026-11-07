@@ -180,6 +180,71 @@ left</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -4925,9 +4990,11 @@ Parakeet” as deferred</td>
 <td>About 632 to 670 MB <strong>twice</strong> when both stacks have
 downloaded it</td>
 <td>None, if the files are moved rather than downloaded again</td>
-<td><strong>Deprecate the duplicate path</strong>: merge into the shared
-store in D-26 S1 (move or hard-link the files), then delete the second
-providers in QUILL 1.2. The models stay</td>
+<td><strong>Deprecated 2026-10-17 (QUILL 1.1).</strong> The providers
+were already replaced and the files merged by hard link or move in D-26
+S1 (section 22); the move is now said once and the older Nemotron
+offered for deletion, No by default (section 41). The adoption code goes
+in QUILL 1.2. The models stay</td>
 </tr>
 <tr>
 <td><strong>Moonshine tiny</strong> (bundled) and <strong>Moonshine
@@ -5016,8 +5083,10 @@ docstring says it is “retained only as the OS-panel fallback”</td>
 “inert”</td>
 <td>None</td>
 <td>None, if its callers are pointed at <code>voice_typing</code></td>
-<td><strong>Deprecate</strong>: fold into <code>voice_typing</code>,
-remove in QUILL 1.2 (callers <strong>not yet traced</strong>)</td>
+<td><strong>Deprecated 2026-10-17 (QUILL 1.1).</strong> Callers traced:
+two, both in QUILL’s main window (the Dictation command and its Escape
+key), now on the voice typing route; nothing in the app imports the
+module, and a test keeps it so (section 41). Removed in QUILL 1.2</td>
 </tr>
 <tr>
 <td><strong>Kokoro TTS</strong> (kokoro-onnx, patched wheel)</td>
@@ -5172,17 +5241,18 @@ Cast</td>
 </tr>
 <tr>
 <td>Duplicate Parakeet and Nemotron providers and folder</td>
-<td>QUILL 1.1 (files merged into the shared store in D-26 S1)</td>
+<td><strong>Done 2026-10-17</strong>: QUILL 1.1 (files merged in D-26
+S1; the one-time notice and the leftover offer in section 41)</td>
 <td>QUILL 1.2</td>
-<td>The migration is verified to move files without downloading them
-again</td>
+<td>Met: <code>adopt_legacy_models</code> hard-links or moves, never
+downloads (section 22 and its tests)</td>
 </tr>
 <tr>
 <td>Legacy Win+H shim (<code>quill/core/dictation.py</code>)</td>
-<td>QUILL 1.1</td>
+<td><strong>Done 2026-10-17</strong>: QUILL 1.1</td>
 <td>QUILL 1.2</td>
-<td>Its callers are traced and pointed at <code>voice_typing</code> (not
-yet traced)</td>
+<td>Met: callers traced and pointed at the voice typing route (section
+41)</td>
 </tr>
 <tr>
 <td>whisper.cpp as the <strong>default</strong> (the engine itself stays
@@ -5981,6 +6051,219 @@ ten seconds. Re-measuring them all at dictated-sentence length is the
 coherent fix and changes at least one recommendation (the quickest
 Spanish model), so it is a decision for Jeff, not taken here; until then
 the weekly run reports it.</p>
+<h2
+id="40-report-reconciliation-paired-hotword-measurements-not-adoption">40.
+Report reconciliation: paired hotword measurements, not adoption</h2>
+<p>The preserved dictation worktree is an older experiment, not the
+current dictation implementation. Its <code>SplitLongPhrases</code> is
+superseded by the shared <code>ChunkedOffline</code> implementation with
+overlap and seam de-duplication. Do not copy the old decoder, re-enable
+experimental flags, or replace this record with the old draft.</p>
+<p><code>scripts/bench_hotwords_compare.py</code> adds a bounded,
+developer-only D-28 comparison. It reads four existing
+<code>dictbench --json</code> reports: a names set and a held-out B-1
+set, each decoded with and without hotwords, plus the same
+one-name-per-line vocabulary used by the experiment. It does not run
+models, change decoding settings, download anything, play audio or
+modify adoption flags. Prepare paired runs using the same model, source
+audio, language, normalization and decoding settings except for
+hotwords; separately record the exact model hashes/licences and machine
+configuration.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python scripts\bench_hotwords_compare<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>names S<span class="op">:</span>\bench\names<span class="op">.</span><span class="fu">txt</span> <span class="op">--</span>names-without S<span class="op">:</span>\bench\names-without<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>names-with S<span class="op">:</span>\bench\names-with<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>b1-without S<span class="op">:</span>\bench\b1-without<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>b1-with S<span class="op">:</span>\bench\b1-with<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>real-heldout <span class="op">--</span>out S<span class="op">:</span>\bench\hotwords-comparison<span class="op">.</span><span class="fu">json</span></span></code></pre></div>
+<p>Only give <code>--real-heldout</code> when the two sets really are
+consented, real speech held out from training; the tool records the
+operator’s attestation, not proof. Without it the result is
+<code>insufficient_evidence</code>, even if the numeric comparison looks
+good. Synthetic test inputs validate the tool, never recognition
+quality.</p>
+<p>The measurement reports distinct names recognized at least once in
+their corresponding reference clips; it is not per-occurrence recall.
+For this comparison, “50 percent better” means at least 1.5 times the
+baseline’s distinct name count, across a vocabulary of at least 20
+names. A zero-hit baseline is inconclusive because that relative
+increase is undefined. B-1 WER must not increase, using the shared
+word-error scorer and raw integer counts rather than rounded report
+summaries. Missing clips, changed references/durations, failed
+recognition, unused vocabulary names and malformed reports are errors,
+not passing or zero-error rows.</p>
+<p>The aggregate JSON contains counts, limitations and SHA-256 hashes of
+all five input files, not transcript text or personal vocabulary
+entries. Exit 0 means the measurement criteria were met; exit 1 means
+they were not met or evidence was insufficient; invalid input or a
+failed write exits 2. Output is atomic and must not overwrite an input.
+Reports cannot prove identical source audio or model provenance from
+filenames and durations alone. Run comparisons separately for each
+language, speaker cohort and condition: an aggregate pass cannot
+establish non-regression for every group. If an invocation fails, any
+existing output is unchanged and the CLI explicitly warns that no new
+result was written; do not treat an older report as that run.</p>
+<p><strong>Still open:</strong> real paired runs, hotword-capable model
+selection and pinning, licensing, CPU/RAM/latency and screen-reader
+acceptance. The keyword-spotting, punctuation, speaker and TTS runners
+shipped in <code>scripts/bench_post_passes.py</code> (section 41).
+<code>HOTWORDS_ENABLED</code>, <code>PUNCTUATION_ADOPTED</code> and
+<code>SPEAKERS_ADOPTED</code> remain off. A
+<code>measurement_pass</code> is not a product-adoption or release
+decision, and Sherpa Kokoro still requires model/voice licensing and
+human listening. The legacy-engine notice and the consented,
+containment-safe cleanup of the old model folders are no longer open:
+both shipped in section 41 (PR 1772).</p>
+<h2
+id="41-measured-2026-10-17-landed-2026-11-06-the-extras-benchmarks-two-deprecations-and-nemotrons-last-word">41.
+Measured 2026-10-17, landed 2026-11-06: the extras benchmarks, two
+deprecations, and Nemotron’s last word</h2>
+<p>Work measured and written on 2026-10-17 and paused before it was
+merged. It landed on 2026-11-06 on top of sections 36 to 39, which had
+moved on in the meantime. Its own record was to have been “section 35”,
+a number main gave to the acceptance coverage, so the code that cites it
+now cites this section. Where main had already done the same thing
+better, main’s version stayed and the paused one was dropped; the list
+is at the end.</p>
+<p><strong>The benchmark tools</strong> (developer-only, never shipped,
+never run by the app or a test, no download and no connection of their
+own):</p>
+<ul>
+<li><code>scripts/bench_post_passes.py</code> measures the sherpa-onnx
+extras that D-27 to D-30 gate on numbers, one subcommand each:
+<code>kws</code> (false triggers an hour, detection after a pause,
+processor per thread), <code>hotwords</code> (names recognised with and
+without hotwords, and word errors), <code>punct</code> (punctuation
+restored to unpunctuated references), <code>speakers</code> (who spoke
+when, on conversations built from read speech) and <code>tts</code>
+(sherpa-onnx Kokoro against kokoro-onnx). <code>vocab</code> writes a
+sentencepiece model’s vocabulary as sherpa-onnx’s <code>bpe.vocab</code>
+without the sentencepiece package.</li>
+<li><code>scripts/bench_librivox.py</code> dates a project by the
+<code>_YYMM_librivox</code> month in its archive.org identifier, because
+the API has no catalogue-date field; fetches each chosen chapter’s own
+MP3 rather than the whole book; and caps how much one long chapter
+counts towards a reader’s share
+(<code>--max-section-minutes</code>).</li>
+<li><code>scripts/bench_librivox_sets.json</code> records the two
+held-out selections (English and Spanish) built that day, with their
+readers, so a set can be rebuilt.
+<code>scripts/bench_subsets.json</code> pins the <code>b1</code> and
+<code>quick</code> names for LibriSpeech clean and other, FLEURS Spanish
+and both LibriVox sets.</li>
+<li><code>scripts/bench_datasets.json</code> gains SHA-256 pins for
+LibriSpeech test-clean and test-other and for FLEURS Spanish, which is
+pinned to a dataset revision. Parakeet’s and Nemotron’s training cutoffs
+are filled in as upper bounds from the Hugging Face API (2026-04-27 and
+2026-06-11).</li>
+<li><code>scripts/fetch_bench_audio.py</code> resumes a download after a
+dropped connection; the SHA-256 check afterwards is what proves the file
+is whole. <code>bench_machine_run.py</code> and
+<code>dictbench.py</code> take and record <code>--threads</code>; one
+thread stays the budget’s measure.</li>
+</ul>
+<p><strong>What was measured, and what it decided.</strong> Nothing here
+was switched on.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Result</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-27 keyword spotter (GigaSpeech 3.3M, Apache 2.0)</td>
+<td>1 false trigger in 60 minutes of LibriSpeech; the command word heard
+after a pause in 90 percent of 72 synthetic clips; 0.031 of one thread.
+Every criterion missed (2 an hour, 92 percent, 0.032)</td>
+<td>Not adopted (<code>kws_keywords.py</code>)</td>
+</tr>
+<tr>
+<td>D-28 hotwords (GigaSpeech Zipformer transducer)</td>
+<td>20 hard names: 16 to 42 recognised in 120 clips; word errors 2.6
+against 2.7 percent on LibriSpeech test-clean</td>
+<td>Still off: that model writes upper case with no punctuation
+(<code>hotwords.py</code>)</td>
+</tr>
+<tr>
+<td>D-29 punctuation (CT-Transformer; the English cased model)</td>
+<td>The CT-Transformer writes Chinese full-width marks into English;
+neither came near the engines’ own punctuation</td>
+<td>Not adopted (<code>post_passes.py</code>)</td>
+</tr>
+<tr>
+<td>D-29 speaker labels (pyannote 3.0, NeMo TitaNet small)</td>
+<td>Threshold 0.8: 91.7 and 88.6 percent of turns right for two and
+three voices, about a fifth of one thread, under 400 MB. 0.5 over-split
+every conversation</td>
+<td>The default threshold is now 0.8. Still off until the models are
+pinned and wired in</td>
+</tr>
+<tr>
+<td>D-30 Kokoro through sherpa-onnx</td>
+<td>Its multi-language export carries all 41 of QUILL’s Kokoro voices
+and spoke all seven languages, once the language is passed per call and
+French is named <code>fr</code> (<code>fr-fr</code> gave no audio)</td>
+<td>Built and tested with fakes, <code>SHERPA_TTS_ADOPTED = False</code>
+(<code>quill/core/sherpa_kokoro.py</code>): switching needs a listening
+comparison by a person and a decision on the new download</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Two fixes found by the first real runs.</strong></p>
+<ul>
+<li><strong>Nemotron’s last word.</strong> The quiet fed after a phrase
+so Nemotron’s 1.12-second chunks flush was 0.4 seconds, and it lost the
+last word of 60 of 335 short commands (“choose one” came back
+“Choose.”). 0.8 seconds recovered 39 of the 60; 1.2 and 1.6 recovered no
+more. <code>model_loader._TAIL_SECONDS</code> is now 0.8, for QUILL,
+QUILL Lite and QUILL Transcribe alike.</li>
+<li><strong>The keyword file.</strong> sherpa-onnx splits a keyword line
+on spaces, so a label of <code>@HEY QUILL</code> made it look for a
+token called <code>QUILL</code> and refuse the whole file. The label’s
+spaces are now underscores (<code>keyword_lines</code>).</li>
+</ul>
+<p><strong>Two deprecations</strong> (section 32.6’s table and timetable
+now say done):</p>
+<ul>
+<li><strong>The duplicate Parakeet and Nemotron path.</strong> Saved
+settings already load <code>nemotron</code> and <code>parakeet</code> as
+<code>sherpa</code> (section 22). The policy says no engine moves
+silently, so <code>sherpa_migration_notice</code> (<code>pending</code>,
+then <code>done</code>) records that one sentence is owed, and
+<code>quill/ui/sherpa_migration_notice.py</code> says it once, after the
+Vosk notice’s delay and never over a modal window. When the older
+Nemotron’s files (80 mel features, never adopted) are still on disk, the
+sentence becomes a Yes/No question with No the default; on Yes,
+<code>sherpa_migration.remove_leftovers</code> deletes only folders
+inside the old <code>speech-models/nemotron</code> and
+<code>parakeet</code> folders and says the bytes actually freed. It
+never follows a link or junction out of those folders, and an adopted
+Parakeet’s folder, whose files are hard links into the shared store, is
+never offered because deleting it would free nothing. QUILL only: Locked
+Dictation is QUILL’s.</li>
+<li><strong>The legacy Win+H shim</strong>
+(<code>quill/core/dictation.py</code>). Its two callers, the Dictation
+command (QUILL Key + D) and its Escape key in the main window, now open
+Windows’ panel through <code>launch_windows_dictation</code>, as the
+Windows voice typing engine does. Nothing a person hears changed. A test
+fails if anything in the app imports the module again; it goes in QUILL
+1.2.</li>
+</ul>
+<p><strong>Dropped, because main had done it since.</strong></p>
+<ul>
+<li><code>long_phrases.SplitLongPhrases</code>, Moonshine base fed in
+pieces: main’s <code>chunked_offline.ChunkedOffline</code> does the same
+with overlap and seam de-duplication (sections 37 and 38).</li>
+<li>The <code>Measured</code> docstring and figures, and the
+Spanish-aware advice in <code>model_advice.py</code>: main’s 2026-10-22
+real-speech figures and Spanish advice (section 36) replace the
+2026-10-17 ones.</li>
+<li>The English FLEURS archive pins: main pinned them first, to the same
+files.</li>
+</ul>
+<p><strong>Still open:</strong> the speaker-label models’ catalogue pins
+and wiring; a person comparing sherpa-onnx Kokoro by ear; whether the
+selection in <code>bench_librivox_sets.json</code> is exactly the one
+behind section 36’s figures (section 36 counts 101 English recordings;
+this file’s <code>b1</code> subset names 50).</p>
 </main>
 </body>
 </html>

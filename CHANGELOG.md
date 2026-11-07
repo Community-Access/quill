@@ -29,6 +29,233 @@
   GHManage remains the design reference; full feature parity has not been
   claimed for this release.
 
+### Dictation: a fair test for hotwords (2026-11-07)
+
+- **For developers, nothing changes in the app.**
+  `scripts/bench_hotwords_compare.py` compares two pairs of existing
+  `dictbench --json` reports, a set of names and a held-out set each decoded
+  with and without hotwords, and says whether hotwords recognised at least
+  half as many names again without adding word errors. It runs no model and
+  switches nothing on, and it writes counts and file hashes, never transcripts
+  or the names themselves. Section 40 of the dictation plan says how to use it
+  and what a pass does not prove.
+
+### Hear the clipboard, the time and what is open (2026-11-06)
+
+- **Say Clipboard** (`Alt+Shift+Home`, Edit > Clipboard) reads what is on the
+  Windows clipboard without pasting it: the text itself (the first 2,000
+  characters of a long piece, then how many more), or, for files copied in File
+  Explorer, how many and their names. A quick second press spells the text
+  letter by letter, or gives each file's full path; a quick third press opens a
+  read-only Clipboard window to read it line by line. Empty clipboards and
+  pictures are said plainly.
+- **Append Selection to Clipboard** (`Alt+Shift+End`, Edit > Clipboard) adds
+  the selection to the end of the clipboard's text on a new line and says how
+  much it now holds.
+- **Save Clipboard to File...** and **Clear Clipboard** (Edit > Clipboard, no
+  key) save the clipboard's text as a UTF-8 file under a dated name, written
+  safely, and empty the clipboard, for instance after copying a password.
+- **Say Time and Date** (`Alt+Shift+Space`, Navigate menu): the time, and on
+  a quick second press the date in full.
+- **Say Windows Open** (`Ctrl+Shift+Space`, Window menu): how many
+  documents are open, and on a quick second press their names, with the one
+  in front marked "(current)".
+- **Help > Copy Log** (no key) puts this session's `quill.log` on the clipboard
+  as a file and as its path, so it pastes into an email as an attachment and
+  into a document or support form as its location.
+- Every press answers at once; a quick press is one within half a second of
+  the last. QUILL Lite has all seven, from the same code, on the same keys.
+  Three have no key because no chord was free in both editors and they are
+  occasional; they are on their menus.
+
+### Dictation: Nemotron keeps its last word, the old engines retire, the extras measured (2026-11-06)
+
+- **Nemotron no longer drops the last word of a short phrase.** It needs a
+  little quiet after you stop to finish its last word, and it was given too
+  little: "choose one" came back as "Choose." on 60 of 335 short commands. It
+  now gets twice as much, which recovered most of them. This is in QUILL,
+  QUILL Lite and QUILL Transcribe.
+- **Locked Dictation's own Nemotron and Parakeet engines are retired**, in
+  favour of the one QUILL speech models engine they had already moved to.
+  QUILL now says so once, a moment after it starts and never over a dialog.
+  If the older Nemotron model's files are still on your computer, it asks
+  instead: "Delete the older files to free 650 MB? No keeps them." No is the
+  default. Yes deletes only those old folders and says the space actually
+  freed. You are never asked again.
+- **The Dictation command (QUILL Key + D)** now opens Windows' own dictation
+  panel the same way the Windows voice typing engine does. Nothing you hear
+  changed. The older module behind it is deprecated and goes in QUILL 1.2.
+- **Measured, not switched on:** a keyword spotter for command words, hotwords
+  for hard names, punctuation and speaker-label passes, and Kokoro through
+  sherpa-onnx. Speaker labels came close enough to offer later (about nine
+  turns in ten right); the others did not, or need a person to listen first.
+  The developer tools and every figure are in section 41 of the dictation
+  plan.
+- The hey-QUILL keyword file no longer fails to load because of the space in
+  the phrase.
+### Code navigation and Check This File, in QUILL and QUILL Lite (2026-11-06)
+
+A new **Navigate > Code** submenu, the same in both editors, on the same keys.
+
+- **Next Block and Previous Block understand code.** In a Python file they
+  move from one `def` or `class` to the next; in C#, Java, JavaScript and
+  TypeScript, between declarations and methods; in INI and TOML, between
+  `[sections]`; in batch files, between `:labels`; in LaTeX, between
+  `\chapter`, `\section` and `\subsection`; and in HTML, between headings and
+  landmarks such as `nav` and `main`. QUILL says the line you land on. Markdown,
+  plain text and any language without a pattern still move by paragraph. QUILL
+  Lite moves by heading and landmark in HTML and by paragraph elsewhere.
+- **Next Indent Change** (Alt+Shift+PageDown) and **Previous Indent Change**
+  (Alt+Shift+PageUp) jump to the next line, skipping blank ones, whose
+  indentation differs from the line you are on, and say how deep it is ("8
+  spaces"). The quick way in and out of a Python block or a YAML mapping.
+- **Check This File...** (Ctrl+Alt+/) lists every problem in the document, with
+  its line, column and severity, in a Problems list; Enter goes to the one you
+  choose. **Next Problem** (Ctrl+Alt+.) and **Previous Problem** (Ctrl+Alt+,)
+  walk them from the document and say each one. F8 would be a code editor's
+  key, but F8 and Shift+F8 are Word's extend-selection keys in both editors.
+- QUILL checks JSON, JSON with comments, XML, HTML, TOML, YAML, Python, INI,
+  CSV and Markdown with nothing installed, and JavaScript, TypeScript, PHP,
+  Ruby, Perl, shell scripts, C, C++, Go, Rust and C# with a tool you already
+  have (Node.js, tsc, ESLint, Ruff, php, ruby, perl, ShellCheck, GCC or Clang,
+  gofmt, rustc, csc, xmllint). Tools are found on your PATH, never downloaded,
+  run on your computer only with a 15-second limit, and an unsaved document is
+  checked as a temporary copy. When a language needs a tool you do not have,
+  you hear "No checker installed for" that language.
+- QUILL Lite checks Markdown and HTML documents, with the built-in checks.
+- New language profiles for Java, XML, INI, batch files, PowerShell, LaTeX,
+  Ruby, Perl and CSV, so these files get comment toggling and the new
+  navigation too.
+### The QUILL key on every keyboard layout (2026-11-06)
+
+- On a Mac with a German keyboard layout the QUILL key did nothing until you
+  switched to US English (#1753). The grave key types `^` there, and on macOS
+  QUILL looked only for the back-tick character. QUILL now finds the key by
+  where it sits, the key above Tab, using the Mac's own key code. On the ISO
+  keyboards sold across Europe the key beside the left Shift key counts too,
+  because macOS swaps the two. Windows already worked this way and is
+  unchanged.
+- The WordPress key, `Ctrl+Alt+Shift+Grave`, uses the same check in QUILL and
+  QUILL Lite, so it works on any layout as well.
+### Document Statistics, pressed twice (2026-11-06)
+
+- Document Statistics (`Ctrl+Shift+G`) still says words, lines and characters
+  at once. Press it twice quickly and it adds paragraphs, sentences, how many
+  sentences run over 30 words, the reading time and the reading grade
+  (Flesch-Kincaid). Both presses count the selection when there is one and
+  start with "Selection:". The second press uses the Multi-press time window
+  setting, and the long report is spoken even when spoken counts are off.
+- The reading time is the status bar's, 200 words a minute, and the grade is
+  the one the WordPress reading-level check gives, now shared from
+  `quill/core/readability.py`. QUILL Lite has the same two presses on the same
+  key and says the same words.
+### Searches that say more, in every filtered list (2026-11-06)
+
+- Go to Anything (`Ctrl+Alt+Shift+A`), including its `#` heading search, and
+  every list you narrow by typing now understand a small query: `&` needs both
+  words (two words side by side mean the same), `|` takes either, `!` leaves a
+  word out, `*` and `?` stand for letters inside a word, and double quotes
+  match exact text. `!` is read first, then `&`, then `|`. Example:
+  `#introduction | summary`, or `#chapter !draft`.
+- The same rules reach Insert Snippet, Insert HTML Tag, Insert Markdown Tag,
+  both lists of Move Section To, the abbreviation manager and the Copy Tray
+  search, from one shared filter, so QUILL Lite's Go To Anything, tag pickers
+  and Move Section To lists answer the same way.
+- The File pattern of Search in Files and Replace Across Files combines
+  patterns: `*.md | *.txt`, `* !*.bak`, `*.md !drafts/*`. The search text and
+  its match modes are unchanged.
+- A search without any of `* ? & | ! "` works exactly as before. F1 in each of
+  these search boxes gives a short reminder of the rules.
+### Diagrams, math and pictures in Markdown pages (2026-11-06)
+
+- **Mermaid diagrams in the Accessibility Tune-Up.** **AI > Accessibility
+  Tune-Up...** now looks inside every fenced `mermaid` block in a Markdown
+  document. It tells you, with the line number, when a diagram has no
+  accessible title (`accTitle`) or description (`accDescr`), when an init
+  block forces a theme, and when the diagram sets its own fill or text
+  colours, so you can check the contrast. When a document has more than one
+  diagram, it asks for a heading before each so a listener can jump between
+  them. These are review steps: nothing is changed for you.
+- **Mermaid snippets.** A new starter pack, **mermaid-diagrams**, has eight
+  diagram snippets: flowchart, sequence, class, state, entity relationship,
+  Gantt, mind map and timeline. Each one asks for the diagram's accessible
+  title and description first and writes them as `accTitle` and `accDescr`.
+  Install it from **More Preferences > Install Starter Snippet Packs**; the
+  triggers are `;mmflowchart`, `;mmsequence`, `;mmclass`, `;mmstate`, `;mmer`,
+  `;mmgantt`, `;mmmindmap` and `;mmtimeline`.
+- **Math as MathML, with nothing downloaded.** Browser Preview, the side
+  preview and **File > Export > HTML...** now write equations as MathML
+  instead of loading MathJax from the internet. Pages show their math offline,
+  and NVDA and JAWS read and navigate it with their own math support. Pandoc's
+  HTML output (Export as HTML, opening a conversion as HTML, and the
+  Accessible HTML Page profile) asks for MathML too. QUILL Lite's Export as
+  HTML gets the same change from the same code.
+- **Exported pages keep their pictures.** When Pandoc writes **File > Export >
+  HTML...**, a picture with a relative path is found beside your document
+  rather than lost, and with Pandoc 3 (or 2) the picture is put inside the
+  page, so it still shows when the page is emailed or moved on its own. A page
+  that shows a picture from the web links it instead, so exporting never
+  downloads anything.
+### Smaller editing fixes (2026-11-06)
+
+- **Translation that did not translate.** When AI Translate hands back the
+  same text you gave it (ignoring spacing and capital letters), the dialog
+  now says "The translation came back the same as the original. The text may
+  already be in the target language." in the result box, which takes focus,
+  and leaves Copy, Replace Original and Open as New Document unavailable.
+  Before, the unchanged text was presented as a finished translation.
+- **Describe Formatting names the text colour in rich documents.**
+  `Ctrl+Shift+D` now says "Calibri, 11 point, red, yellow highlight" where it
+  used to leave the colour out. Colours from Format > Text Color are named as
+  you chose them; other colours by the nearest common name. Uncoloured text,
+  black text and a dark theme's page colour say nothing. QUILL Lite shares the
+  same code and gets the same answer.
+- **The Open dialog follows the file you opened.** A file opened from File
+  Explorer, the command line, Open Recent or an existing tab now sets the
+  folder the next `Ctrl+O` starts in, the way the Open and Save As dialogs
+  always did.
+### Replace, export and backups you can trust (2026-11-06)
+
+- **Replace takes what you typed.** In a plain or wildcard search, the Replace
+  box goes in exactly as typed. Replacing with `C:\new\reports` used to put a
+  line break where `\n` was, and `\1` stopped Replace All with an error about a
+  group. A regular-expression search still reads `\1` and `\2` as the parts of
+  the match. The same fix covers Replace Across Files.
+- **An export never loses the file it was replacing.** Every Pandoc conversion
+  that writes a file (File > Export, Convert File, batch conversion, braille
+  and review exports) now writes to a hidden temporary file beside the target
+  and moves it into place only when it finished. A failed, timed-out or
+  cancelled export leaves the earlier file exactly as it was, and leaves no
+  half-written file behind.
+- **A backup that cannot be written is logged as well as spoken.** QUILL
+  already said "Could not write a backup; saving anyway"; the reason and the
+  document's name now go to the log too, so a missing backup can be explained
+  later from a diagnostics bundle.
+
+### Word headers on the first page or even pages are named before a rich edit (2026-11-06)
+
+- A Word document whose only header or footer is a first-page one (Different
+  First Page) or an even-page one (Different Odd and Even Pages) now gets the
+  same question as one with an ordinary header: QUILL and QUILL Lite name
+  "headers" or "footers" in the list of things a rich edit cannot keep, and the
+  first rich save writes the backup. Before, those files opened with no
+  warning and lost the header silently on save. Every section is checked
+  (#1756).
+
+### Form payment authoring and reporting (2026-11-06)
+
+- QUILL and QUILL Lite share Insert Payment Field, Form Payments Setup and
+  Verify Payment Setup. Stripe is the default; PayPal is also supported in
+  the configuration. New forms start in test mode.
+- Paid-form publication checks the site's versioned payment capability,
+  provider and webhook readiness, and test/live mode. Test on Site refuses a
+  published live-payment form. Responses and deliberate CSV/Word exports
+  include payment metadata; Refresh Payment Status reads updated site entries.
+- Checkout requires a separately installed QAF WordPress plugin implementing
+  payment contract version 1. This desktop change does not deploy payment
+  processing, store provider secrets, or certify live checkout accessibility.
+
+
 ### WordPress, in QUILL and QUILL Lite (2026-11-05)
 
 If you look after a WordPress website, QUILL now writes, opens, checks and

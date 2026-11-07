@@ -29,7 +29,9 @@ Safety:
 from __future__ import annotations
 
 import logging
+import os
 import threading
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -135,7 +137,8 @@ def convert_document_with_pandoc(
         "--wrap=none",
     ]
     if output_kind == "html":
-        command.append("--standalone")
+        # Math as MathML: a page that needs no script for a screen reader to read it.
+        command.extend(("--standalone", "--mathml"))
     try:
         completed = run_subprocess_safely(
             command, timeout_seconds=60.0, cwd=str(source_path.parent)
@@ -206,6 +209,10 @@ def convert_file_with_pandoc(
     Pandoc tokens (e.g. ``"markdown"`` for Pandoc-flavoured Markdown) and must
     not have them remapped (``markdown`` -> ``gfm``). An empty ``from_format``
     lets Pandoc infer the reader from the input file extension.
+
+    An existing ``target_path`` is replaced only by a finished conversion: on a
+    failure, a timeout or a cancel it is left exactly as it was, and no
+    half-written file is left beside it.
     """
 
     status = tool_status or get_external_tool_status("pandoc")
@@ -233,30 +240,53 @@ def convert_file_with_pandoc(
     # that are not in the curated reader map.
     if from_format.strip():
         command += ["--from", from_format]
+    # Pandoc writes to a temporary file beside the target, and only a finished,
+    # successful conversion is moved over the target. Writing straight to the
+    # target meant a failed, cancelled or timed-out export had already
+    # truncated the file it was replacing -- the earlier export was gone before
+    # anyone knew the new one would not arrive. Beside the target, so the final
+    # move is an ``os.replace`` on one volume; the target's own extension kept
+    # last, because Pandoc chooses some outputs (PDF) by the file name.
+    staging_path = _staging_path_for(target_path)
     command += [
         "--to",
         writer,
         "-o",
-        str(target_path),
+        str(staging_path),
         *extra_args,
         str(source_path),
     ]
     try:
-        completed = run_subprocess_safely(
-            command, timeout_seconds=timeout_seconds, cwd=str(source_path.parent)
-        )
-    except Exception as exc:  # noqa: BLE001
-        raise _map_exception(exc) from exc
+        try:
+            completed = run_subprocess_safely(
+                command, timeout_seconds=timeout_seconds, cwd=str(source_path.parent)
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise _map_exception(exc) from exc
 
-    if cancel is not None and cancel.is_set():
-        raise PandocCancelledError("Cancelled during run.")
+        if cancel is not None and cancel.is_set():
+            raise PandocCancelledError("Cancelled during run.")
 
-    if completed.returncode != 0:
-        details = completed.stderr.strip() or completed.stdout.strip() or str(completed.returncode)
-        raise PandocConversionError(details)
+        if completed.returncode != 0:
+            details = (
+                completed.stderr.strip() or completed.stdout.strip() or str(completed.returncode)
+            )
+            raise PandocConversionError(details)
 
-    if not target_path.exists():
-        raise PandocConversionError(f"Pandoc reported success but did not produce {target_path}.")
+        if not staging_path.exists():
+            raise PandocConversionError(
+                f"Pandoc reported success but did not produce {target_path}."
+            )
+
+        try:
+            os.replace(staging_path, target_path)
+        except OSError as exc:
+            raise PandocConversionError(f"Could not replace {target_path}: {exc}") from exc
+    finally:
+        try:
+            staging_path.unlink(missing_ok=True)
+        except OSError:
+            logger.warning("Could not remove Pandoc staging file %s", staging_path)
 
     if progress is not None:
         try:
@@ -270,6 +300,14 @@ def convert_file_with_pandoc(
 # ---------------------------------------------------------------------------
 # Internals
 # ---------------------------------------------------------------------------
+
+
+def _staging_path_for(target_path: Path) -> Path:
+    """A hidden, unique sibling of ``target_path`` that ends in its extension."""
+
+    return target_path.with_name(
+        f".{target_path.stem}.{uuid.uuid4().hex}.partial{target_path.suffix}"
+    )
 
 
 def _resolve_writer(output_kind: str) -> str:

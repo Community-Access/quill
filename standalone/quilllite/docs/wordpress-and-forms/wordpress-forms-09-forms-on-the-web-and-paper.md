@@ -208,6 +208,46 @@ have read the proposal and said yes. Undo takes it all out in one step.
 6. **Tools > Forms > Responses...**. Your test response is at the top. Read
    it, then Mark it and Delete it.
 
+## Payments: Stripe and PayPal
+
+Payment collection requires a QAF WordPress plugin implementing payment
+contract version 1. An older plugin can still host ordinary forms; paid-form
+publication will ask you to update it. QUILL configures the form and reads
+entry status. The site handles checkout and keeps provider credentials.
+
+1. Open a form and choose **Tools > Forms > Insert Payment Field...**.
+   Enter a positive amount, `#id` of a total or amount field, or `donation`.
+   Donation minimum and maximum are optional. One payment field is allowed.
+2. Choose **Form Payments Setup...**. Select Stripe, PayPal, or both in your
+   preferred order, currency, payment/donation mode and automatic/manual capture.
+   Keep **Test mode** checked. Saving changes only the document, as one undo step.
+3. In your site's WordPress administration, configure provider sandbox
+   credentials and verified webhooks. QUILL never asks for these secrets.
+4. Choose **Verify Payment Setup...** and confirm the site. This reads the
+   site's readiness; it does not conduct a test charge. Then **Publish Form**.
+   Both form and site must agree on test mode, and every selected provider and
+   webhook must be ready. Publication status "Live" means the form is visible;
+   it is separate from payment test/live mode.
+5. Place the form on a published page, then use **Test on Site**. QUILL checks
+   the published configuration and refuses a live-payment checkout. With Stripe
+   test keys, use `4242 4242 4242 4242`, a future expiry and any three-digit CVC
+   in Stripe's hosted field. Use a sandbox buyer for PayPal. Never use real card
+   details for testing. See [Stripe's testing guide](https://docs.stripe.com/testing)
+   and [PayPal's Orders integration](https://developer.paypal.com/api/rest/integration/orders-api).
+6. Open **Responses**. Payment status, amount, currency and provider are part
+   of each response row. **Read** includes the transaction and receipt text.
+   **Refresh Payment Status** confirms the site and reloads its recorded state.
+   CSV and Word exports include the available payment metadata. An absent
+   status is unknown, not proof of payment; an authorization is not a capture.
+
+Only after successful sandbox and accessibility checks should the site
+administrator configure live credentials and you deliberately clear Test mode
+and republish. QUILL asks you to confirm real-money mode. Refunds and manual
+capture take place in the provider dashboard. Status depends on the site's
+webhook processing. Fill It In Yourself and saved static web pages do not
+process payments. Safe Mode blocks payment network operations while allowing
+local authoring. The same commands and behavior are available in QUILL Lite.
+
 ## Where to next
 
 - Previous: [Chapter 8: Writing a form](wordpress-forms-08-writing-forms.html)

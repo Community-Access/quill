@@ -68,6 +68,13 @@ class GitHubRemoteMixin(GitHubAccountsMixin):
         menu.AppendSeparator()
 
     def _register_github_reference_command(self) -> None:
+        """Register Manage GitHub Accounts and Open GitHub Reference (main_frame_commands)."""
+        self.commands.register(
+            "file.github_manage_accounts",
+            "Manage GitHub Accounts...",
+            self.manage_github_accounts,
+            None,
+        )
         self.commands.register(
             "file.open_github_reference",
             "Open GitHub Reference...",

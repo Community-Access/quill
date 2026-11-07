@@ -56,12 +56,22 @@ delete the matches. Its buttons are:
 - **Replace**, which changes the match you are on and moves on to the next
   one, so you can decide one at a time.
 - **Replace all**, which changes every match in the document at once and
-  tells you how many it changed.
+  tells you how many it changed, for example "Replaced 12 occurrences".
 - **Close**. Anything you have already replaced stays replaced, and
   **Ctrl+Z** takes it back if you change your mind.
 
 Both windows stay open while you work, so you can go back to your document
 and return to them.
+
+**What you type in Replace with is what goes in.** A backslash is just a
+backslash. Replace a folder name with `C:\new\reports` and that is exactly
+what lands in every match, and `\1` goes in as the two characters you typed.
+Only one thing reads the box differently: **Replace all** with the **Regular
+expression** search mode. There, `\1` puts back the first part of the match
+you wrapped in brackets and `\2` the second, so searching for `(\w+), (\w+)`
+and replacing all with `\2 \1` turns "Bishop, Jeff" into "Jeff Bishop". If the
+box names a part the search does not have, such as `\3` when there are only
+two, nothing is changed and you hear "Nothing replaced", with the reason.
 
 ### How many are there?
 
@@ -176,7 +186,14 @@ Both open the same window, which asks for:
 - **Starting folder**: where to look. It starts at the folder of the document
   you are in.
 - **File pattern**: which files, such as `*.txt` or `*.md`. A star on its own
-  means every file.
+  means every file. To name more than one kind, put `|` between patterns to
+  take either, `&` to need both, and `!` before one to leave it out:
+  `*.md | *.txt` searches Markdown and text files together, and `* !*.bak`
+  searches everything except backups. Double quotes around a name mean that one
+  exact file, and a pattern with a slash, such as `!drafts/*`, is matched
+  against the path inside the starting folder. A pattern without these
+  characters works exactly as before, and the search text still follows the
+  Match mode.
 - **Search text**, and for Replace Across Files, **Replacement**.
 - **Match mode**: Plain text, Wildcard (`*` and `?`) or Regular expression.
 - **Output format**: how the results are written out, from just the file names
@@ -365,6 +382,59 @@ first row marked as the header row, and in a Word document the same way. A
 `|` table in a Markdown document you switch to rich text becomes a real table,
 and switching back to Markdown or plain text turns a real table into `|` rows.
 
+## Blocks, indentation and problems: Navigate > Code
+
+The **Code** submenu of the Navigate menu (**Alt+N**, then **C**) holds a few
+commands that help most in HTML, Markdown and anything indented. They are the
+same commands, on the same keys, as in QUILL.
+
+### Moving by block
+
+**Next Block** and **Previous Block** move a paragraph at a time in Markdown
+and plain text. In an HTML document they move between headings and landmarks:
+`header`, `nav`, `main`, `aside`, `section`, `article`, `footer` and `form`
+elements, and anything with a landmark `role`. Your screen reader reads the
+line you land on. They have no key, as in QUILL; press **Alt+N**, **C**, then
+**N** or **P**, or give them a key in the Keyboard Manager. At either end you
+hear "No next block" or "No previous block".
+
+### Moving by indentation
+
+**Next Indent Change** (**Alt+Shift+PageDown**) moves down to the next line
+whose indentation is different from the line you are on, skipping blank lines.
+**Previous Indent Change** (**Alt+Shift+PageUp**) goes up. The caret lands on
+the first character that is not a space, your screen reader reads the line,
+and QUILL Lite adds how far in it is, such as "4 spaces" or "No indent". This
+is the quick way out of a long nested list or a block of indented notes.
+
+### Checking a Markdown or HTML document
+
+**Check This File...** (**Ctrl+Alt+/**) looks through the whole document for
+problems:
+
+- in **Markdown**: heading levels that skip (a level 3 heading straight after
+  a level 1), pictures without alt text, links with no text or no address, and
+  links to files next to the document that are not there;
+- in **HTML**: tags closed in the wrong order or never closed, closing tags
+  with nothing open, the same `id` used twice, and pictures without alt text.
+
+If nothing is wrong you hear "No problems found." Otherwise the **Problems**
+list opens. It starts by saying how many problems there are, then lists them
+one to a row, place first: "Line 4, column 1, error: Markdown image is missing
+alternative text." Press **Enter** on one to go to it, or **Escape** to stay
+where you are.
+
+**Next Problem** (**Ctrl+Alt+.**) and **Previous Problem** (**Ctrl+Alt+,**)
+take you to the next or previous problem without the list, and say it: "Problem
+2 of 3, line 9, column 1, warning: Heading levels jump by more than one level."
+They go round from the last to the first, and check the document again first
+if you have changed it.
+
+QUILL Lite checks the two kinds of document it knows. In a plain text document
+you hear "Nothing to check: QUILL Lite checks Markdown and HTML documents."
+QUILL checks those too, and also code and data files such as JSON, XML, Python
+and CSV, using tools you already have installed for languages like JavaScript.
+
 ## Reading without changing anything: the Read-Only Guard
 
 When you open a long reference document only to read it, such as a manual, a
@@ -505,7 +575,9 @@ You can find text with **Ctrl+F**, narrow it with Match case and Whole word
 only, replace one match at a time or all at once with **Ctrl+H**, hear how
 many matches there are, see them all in one list, and search for characters
 you cannot type. **Ctrl+G** takes
-you to a line, a bookmark or a heading from one window. Numbered bookmarks
+you to a line, a bookmark or a heading from one window. **Navigate > Code**
+moves by block and by indentation, and **Ctrl+Alt+/** checks a Markdown or
+HTML document for problems. Numbered bookmarks
 are still there after you close the document, the temporary bookmark is there
 for a quick trip, and **Alt+Left** takes you back after any jump.
 

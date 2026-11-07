@@ -1,5 +1,18 @@
 # QUILL 1.0.0 is here
 
+## Payment forms, prepared in the editor
+
+The Forms tools in QUILL and QUILL Lite now prepare Stripe and PayPal
+payment fields, including donations, from the same keyboard-friendly commands.
+New settings start in test mode. Before publishing, QUILL checks that the
+site's providers, webhooks and payment mode are ready. Entry review and
+CSV/Word exports include payment status, amount and provider.
+
+Actual checkout requires the separately installed QAF WordPress plugin to
+implement payment contract version 1. Credentials and payment processing stay
+on the site. This announcement describes the desktop integration; it does not
+claim the plugin has been deployed or live checkout acceptance has passed.
+
 ## A writing suite for people who work by ear and by touch
 
 *From Community Access. Free. AI only if you want it. Your documents stay on your

@@ -248,6 +248,12 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "tools.hosted_ai_which": "Which AI Am I Using",
     "tools.hosted_ai_choose": "Choose Your AI",
     "tools.hosted_ai_task": "Do a Document Task",
+    # The Say commands (quill/ui/say_commands.py), by their menu names, so the
+    # Key Describer says what the menu says rather than a name made from the id.
+    "edit.say_clipboard": "Say Clipboard",
+    "edit.append_to_clipboard": "Append Selection to Clipboard",
+    "navigate.say_time": "Say Time and Date",
+    "window.say_windows_open": "Say Windows Open",
     # Project tasks (code.md 6.4): the two leader keys, by their menu names.
     "project.stop_agent": "Stop Agent",
     "project.undo_turn": "Undo Last Agent Turn",

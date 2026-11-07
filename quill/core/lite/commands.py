@@ -6,25 +6,21 @@ in one menu bar claim the same key.** Walking a menu to discover there is no
 shortcut is a cost a screen-reader user pays on every visit, and a key claimed
 twice means one of the pair silently never fires.
 
-A table rather than fifty ``menu.Append`` calls, because the table is checkable.
-:mod:`tests.unit.core.lite.test_lite_commands` asserts, mechanically, that every
-item carries a key, that no key is claimed twice, that no ``&`` mnemonic is
-claimed twice *within one menu*, and that every key string is one
-``wx.AcceleratorEntry`` can actually parse -- the last of which matters because
-wx silently drops what it cannot parse, leaving the menu advertising a key that
-does nothing.
+A table rather than fifty ``menu.Append`` calls, because a table is checkable:
+:mod:`tests.unit.core.lite.test_lite_commands` asserts that every item carries a
+key, that no key (nor, *within one menu*, ``&`` mnemonic) is claimed twice, and
+that every key parses as a ``wx.AcceleratorEntry`` -- wx silently drops what it
+cannot parse, leaving the menu advertising a key that does nothing.
 
 The same table generates the Keyboard Shortcuts window, so the list a user reads
 is the list that is bound. There is no third place for the two to disagree.
 
-wx-free on purpose: the tests, the shortcut text and the F1 answer all import
-this without a display.
+wx-free on purpose: the tests, the shortcut text and F1 import it without a display.
 """
 
 from __future__ import annotations
 
 from quill.core.forms import menu as forms_menu
-from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands_ai import (
     AI_MENU_ROWS,
     PROJECT_EDIT_ROWS,
@@ -35,6 +31,7 @@ from quill.core.lite.commands_ai import (
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
+from quill.core.lite.commands_say import CLIPBOARD_SAY_ROWS, TIME_SAY_ROWS, WINDOW_SAY_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
 from quill.core.wordpress import menu as wordpress_menu
 
@@ -46,7 +43,6 @@ __all__ = [
     "CommandRow",
     "menu_titles",
     "plain_label",
-    "shortcut_text",
     "split_menu",
 ]
 #: One row: ``(menu, label, key, handler, kind)``.
@@ -416,6 +412,7 @@ COMMANDS: list[CommandRow] = [
     # application ever written. It was top-level so that the whole idea could be
     # switched off in one checkbox -- which a submenu does just as well, because
     # a submenu with nothing left in it is removed along with its title.
+    *CLIPBOARD_SAY_ROWS,  # Say Clipboard and its three siblings (commands_say.py)
     ("&Edit|Clip&board", "&Copy to Tray", "Ctrl+Alt+Y", "cmd_copy_to_tray", ""),
     # The next free slot is the right default and the wrong only option: a tray
     # filled in order is a tray whose numbers mean nothing, and the value of a
@@ -752,6 +749,7 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate", "", "", "", "sep"),
     ("&Navigate", "&Table", "", "", "sub"),
     ("&Navigate", "&Bookmarks", "", "", "sub"),
+    ("&Navigate", "&Code", "", "", "sub"),
     ("&Navigate", "", "", "", "sep"),
     # F6 is the region key every Windows app uses, and the one QUILL's own
     # status bar answers. The menu item exists so the key is discoverable
@@ -780,6 +778,22 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Table", "&Delete Row", "", "cmd_table_delete_row", ""),
     ("&Navigate|&Table", "Delete Col&umn", "", "cmd_table_delete_column", ""),
     ("&Navigate|&Table", "&Tidy Table", "", "cmd_table_tidy", ""),
+    # -- Navigate > Code (2026-11-06) ----------------------------------------
+    # QUILL's Navigate > Code, on QUILL's keys (rule 2; keymap.py says why
+    # these), over the shared quill.core.navigation and quill.core.problems.
+    # Next and Previous Block have no key in either editor: see
+    # KEYLESS_WITH_REASON. Blocks in Markdown are paragraphs and in HTML are
+    # headings and landmarks, as in QUILL; Check This File checks the two
+    # languages QUILL Lite knows, Markdown and HTML, where QUILL checks many.
+    ("&Navigate|&Code", "&Next Block", "", "cmd_next_block", ""),
+    ("&Navigate|&Code", "&Previous Block", "", "cmd_previous_block", ""),
+    ("&Navigate|&Code", "", "", "", "sep"),
+    ("&Navigate|&Code", "Next &Indent Change", "Alt+Shift+PageDown", "cmd_next_indent", ""),
+    ("&Navigate|&Code", "Previous In&dent Change", "Alt+Shift+PageUp", "cmd_previous_indent", ""),
+    ("&Navigate|&Code", "", "", "", "sep"),
+    ("&Navigate|&Code", "&Check This File...", "Ctrl+Alt+/", "cmd_check_this_file", ""),
+    ("&Navigate|&Code", "Next P&roblem", "Ctrl+Alt+.", "cmd_next_problem", ""),
+    ("&Navigate|&Code", "Previous Pro&blem", "Ctrl+Alt+,", "cmd_previous_problem", ""),
     # -- Navigate > Bookmarks ------------------------------------------------
     # A place you meant to come back to. There is no scrollbar thumb to remember
     # the position of and no glance that finds the place again, so a bookmark is
@@ -830,6 +844,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "", "", "", "sep"),
     ("&Tools", "&Spelling", "", "", "sub"),
     *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
+    *TIME_SAY_ROWS,  # Say Time and Date (commands_say.py)
     ("&Tools", "&Change Case", "", "", "sub"),
     ("&Tools", "Indentin&g", "", "", "sub"),
     # A submenu, not a tenth top-level menu: Clipboard and Spelling were demoted
@@ -973,6 +988,9 @@ COMMANDS: list[CommandRow] = [
     *NOTE_ROWS,  # QUILL's six inline-note chords (rule 2; commands_review.py)
     # Tools > Dictation, shared with QUILL; each key's reason is in commands_dictation.py.
     *DICTATION_ROWS,
+    # Companion launch, not an editing chord (family rules 7 and 9).
+    # Alt+T, Q reaches it without stealing a QuillVille key already used here.
+    ("&Tools", "Open &QUILL Studio", "", "cmd_open_studio", ""),
     ("&Tools|&Change Case", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools|&Change Case", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
     # Ctrl+Shift+T since 2026-09-16: Ctrl+Shift+G is Word Count in Word, and
@@ -1019,6 +1037,7 @@ COMMANDS: list[CommandRow] = [
     # route back to one document was Ctrl+W sixty-eight times, with a save
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
+    *WINDOW_SAY_ROWS,  # Say Windows Open (commands_say.py)
     *HELP_ROWS,  # the Help menu (commands_help.py)
     *wordpress_menu.lite_placed_rows(),  # WordPress, at the foot of Edit to Tools
     *forms_menu.lite_placed_rows(),  # Forms, at the foot of Insert to Tools
@@ -1050,57 +1069,6 @@ def split_menu(menu: str) -> tuple[str, str]:
 def _plain(label: str) -> str:
     """*label* with its mnemonic ampersands removed, for reading aloud."""
     return label.replace("&&", "\0").replace("&", "").replace("\0", "&")
-
-
-def shortcut_text(keymap: dict[str, str] | None = None) -> str:
-    """The Keyboard Shortcuts window's body, generated from the same table.
-
-    *keymap* is the resolved binding per handler
-    (:func:`quill.core.lite.keymap.load_keymap`). Passing None gives the shipped
-    keys, which is what a test that predates rebinding is asking for -- but the
-    app always passes its own, because a shortcut list that shows the key a
-    command *used* to have is the one surface where a wrong key gets learned.
-
-    Two things are appended that the table cannot carry: the Alt+digit window
-    switches (built per window, from however many are open) and the heading
-    ladder, which is the one fact about rich mode that saves a support email.
-    """
-    lines = [f"{APP_NAME} {APP_VERSION} keyboard shortcuts", ""]
-    current = ""
-    for menu, label, default_key, handler, kind in COMMANDS:
-        key = (keymap or {}).get(handler, default_key)
-        # A submenu's title row is not a shortcut; the submenu gets its own
-        # heading below, from the rows that carry the keys.
-        if kind in {"sep", "sub"}:
-            continue
-        if menu != current:
-            current = menu
-            parent, child = split_menu(menu)
-            lines.append("")
-            lines.append(
-                f"{_plain(parent)} menu, {_plain(child).replace(SUBMENU_SEP, ' > ')} submenu"
-                if child
-                else f"{_plain(parent)} menu"
-            )
-        lines.append(f"  {key}: {_plain(label)}" if key else f"  No key: {_plain(label)}")
-    lines += [
-        "",
-        "Window menu",
-        "  Alt+1 to Alt+9: switch to that open window",
-        "",
-        "File menu, Open Recent",
-        "  Alt+Shift+1 to Alt+Shift+8: reopen that recent file",
-        "",
-        "Status bar (F6)",
-        "  Left and Right, Home and End: move between cells",
-        "  Enter: act on the cell -- go to a line, switch mode, list headings, save",
-        "  Escape: back to the document",
-        "",
-        "Headings in rich text are bold plus a point size: 20, 16, 14, 12, 11.5",
-        "and 10.5 point for levels 1 to 6, and 11 point for body text. That is",
-        "QUILL's own ladder, so a document saved here reads as headings in Word.",
-    ]
-    return "\n".join(lines)
 
 
 def plain_label(label: str) -> str:

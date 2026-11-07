@@ -1,5 +1,10 @@
 # Chapter 16: WordPress
 
+Payment forms use this same WordPress connection. Tools > Forms configures
+Stripe/PayPal payments and reads provider/webhook readiness; the QAF plugin
+must implement payment contract version 1. Provider credentials and checkout
+stay on the site. See [Forms](quill-guide-17-forms.html) for setup and testing.
+
 If you look after a WordPress website, QUILL can write its pages and posts,
 open the ones already there, and publish your changes. You work in the same
 editor you use for everything else, with Find, spelling, dictation and all
@@ -54,6 +59,11 @@ says "WordPress keys". Then press one letter:
 **Escape** after the WordPress key leaves it again. The menus show every
 command's letter beside its row, and the manual has the full table. QUILL and
 QUILL Lite use the same letters, so moving between them costs you nothing.
+
+QUILL finds the grave key by where it sits, the key above Tab, not by what it
+types. So the WordPress key works on a German, French, Nordic or any other
+layout, where that key types `^`, `²` or `§` rather than a backtick. The
+QUILL key works the same way; Chapter 2 has the details.
 
 ---
 

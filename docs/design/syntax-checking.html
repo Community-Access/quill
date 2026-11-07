@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Check This File: syntax checking in both editors</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="check-this-file-syntax-checking-in-both-editors">Check This
+File: syntax checking in both editors</h1>
+<p>Status: shipped 2026-11-06. This note is the record of what was
+built, how each checker is run, and the security model the user
+approved. The user guide (QUILL chapter 6, “Checking a file for
+problems”; QUILL Lite chapter 4, “Navigate &gt; Code”) is the reader’s
+version.</p>
+<h2 id="what-the-user-gets">What the user gets</h2>
+<ul>
+<li><strong>Check This File…</strong> (<code>Ctrl+Alt+/</code>, Navigate
+&gt; Code) checks the whole document and reports every problem a checker
+can find, each with a line, a column, a severity (error, warning or
+info) and a message. With problems it opens the
+<strong>Problems</strong> list, one row per problem, place first; Enter
+goes to the one chosen. With none it says “No problems found.”</li>
+<li><strong>Next Problem</strong> (<code>Ctrl+Alt+.</code>) and
+<strong>Previous Problem</strong> (<code>Ctrl+Alt+,</code>) move the
+caret to the next or previous problem and say “Problem 2 of 5, line 12,
+column 5, error: …”. They wrap, and they check again whenever the text
+has changed since the last check.</li>
+<li>QUILL checks every language below. QUILL Lite checks Markdown and
+HTML, the two languages it knows, with the built-in checkers only, and
+never starts an outside tool. That keeps Lite level with QUILL, not
+ahead (family rule 10).</li>
+</ul>
+<h3 id="why-these-keys">Why these keys</h3>
+<p>A code editor’s own are F8 and Shift+F8. Both are taken in both
+editors by Word’s extend-selection pair (Start Selection and Complete
+Selection), which family rule 1 keeps. The problem keys take the shape
+of Compare’s <code>Ctrl+Alt+Shift+.</code> and
+<code>Ctrl+Alt+Shift+,</code> with one modifier fewer, and Check This
+File sits on the question-mark key beside them. All three were free in
+both editors. They are in <code>menu_lint._CTRL_ALT_DOCUMENTED</code>
+with the AltGr cost stated: on a few layouts AltGr with comma or period
+types a character.</p>
+<h2 id="code">Code</h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill/core/problems/model.py</code></td>
+<td><code>Problem</code>, <code>CheckReport</code>, the sentences,
+offsets, Next/Previous</td>
+</tr>
+<tr>
+<td><code>quill/core/problems/builtin.py</code></td>
+<td>Tier 1, built-in checkers</td>
+</tr>
+<tr>
+<td><code>quill/core/problems/outside.py</code></td>
+<td>Tiers 2 and 3: the allowlist, runner and parsers</td>
+</tr>
+<tr>
+<td><code>quill/core/problems/registry.py</code></td>
+<td><code>language_key</code>, <code>check_document</code>, the one call
+both editors make</td>
+</tr>
+<tr>
+<td><code>quill/ui/problems_commands.py</code></td>
+<td>The shared commands, over editor hooks</td>
+</tr>
+<tr>
+<td><code>quill/ui/main_frame_code_nav.py</code></td>
+<td>QUILL’s Navigate &gt; Code</td>
+</tr>
+<tr>
+<td><code>quill/apps/lite_window_code_nav.py</code></td>
+<td>QUILL Lite’s Navigate &gt; Code</td>
+</tr>
+</tbody>
+</table>
+<p>Checkers are keyed by language: the language profile’s name in lower
+case, refined by file name (<code>.jsonc</code> and VS Code’s settings
+files are JSONC; an <code>.xhtml</code> file is checked as XML and as
+HTML).</p>
+<h2 id="tier-1-built-in">Tier 1: built in</h2>
+<p>No outside tool and no new dependency.</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Checker</th>
+<th>Finds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JSON</td>
+<td><code>json</code></td>
+<td>The first parse error</td>
+</tr>
+<tr>
+<td>JSONC</td>
+<td>comments and trailing commas blanked, positions kept, then
+<code>json</code></td>
+<td>The first parse error; an unclosed comment</td>
+</tr>
+<tr>
+<td>XML</td>
+<td><code>quill.core.safe_xml</code> (defusedxml)</td>
+<td>The first well-formedness error; entity declarations are
+refused</td>
+</tr>
+<tr>
+<td>HTML</td>
+<td><code>html.parser</code> subclass</td>
+<td>Every unclosed and mismatched tag (optional end tags and void
+elements allowed), closing tags with nothing open, duplicate ids,
+<code>img</code> without <code>alt</code></td>
+</tr>
+<tr>
+<td>TOML</td>
+<td><code>tomllib</code></td>
+<td>The first parse error</td>
+</tr>
+<tr>
+<td>YAML</td>
+<td>PyYAML <code>safe_load_all</code>, when importable (it arrives with
+the speech packages)</td>
+<td>The first parse error</td>
+</tr>
+<tr>
+<td>Python</td>
+<td><code>compile(..., "exec")</code>, warnings recorded</td>
+<td>Syntax errors, compile-time errors, <code>SyntaxWarning</code>s. The
+code object is discarded; nothing runs</td>
+</tr>
+<tr>
+<td>INI, CFG</td>
+<td><code>configparser</code> (strict, no interpolation)</td>
+<td>Missing section header, duplicate sections and options, every
+unparsable line</td>
+</tr>
+<tr>
+<td>CSV, TSV</td>
+<td><code>csv</code> (strict), delimiter sniffed</td>
+<td>Ragged rows (up to 200) and quote errors</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>GLOW’s heading-jump and image-alt rules, plus link checks</td>
+<td>Heading skips, images without alt, empty links, relative links to
+missing files</td>
+</tr>
+</tbody>
+</table>
+<p>pyflakes is not a dependency, so undefined names in Python come from
+Ruff when it is installed (tier 3). The repository has no
+<code>.reg</code>, PowerShell or SQL parser to reuse, so those languages
+have no checker.</p>
+<h2 id="tiers-2-and-3-tools-the-user-already-has">Tiers 2 and 3: tools
+the user already has</h2>
+<p>Tier 2 is JavaScript through Node.js; tier 3 is everything else. They
+share one mechanism and one allowlist, <code>CHECKER_TOOLS</code> in
+<code>quill/core/problems/outside.py</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Languages</th>
+<th>Arguments</th>
+<th>Parser</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node</code></td>
+<td>JavaScript</td>
+<td><code>--check FILE</code></td>
+<td><code>file:line</code> header, caret column,
+<code>SyntaxError: message</code></td>
+</tr>
+<tr>
+<td><code>tsc</code></td>
+<td>TypeScript</td>
+<td><code>--noEmit --pretty false FILE</code></td>
+<td><code>file(line,col): error TS1234: message</code></td>
+</tr>
+<tr>
+<td><code>eslint</code></td>
+<td>JavaScript, TypeScript</td>
+<td><code>--format json FILE</code></td>
+<td>ESLint JSON results</td>
+</tr>
+<tr>
+<td><code>ruff</code></td>
+<td>Python</td>
+<td><code>check --output-format json --no-cache FILE</code></td>
+<td>Ruff JSON; syntax and undefined-name codes are errors, the rest
+warnings</td>
+</tr>
+<tr>
+<td><code>php</code></td>
+<td>PHP</td>
+<td><code>-l FILE</code></td>
+<td><code>Parse error: message in FILE on line N</code></td>
+</tr>
+<tr>
+<td><code>ruby</code></td>
+<td>Ruby</td>
+<td><code>-c FILE</code></td>
+<td><code>file:line: message</code>, or Prism’s framed source with a
+caret</td>
+</tr>
+<tr>
+<td><code>perl</code></td>
+<td>Perl</td>
+<td><code>-c FILE</code></td>
+<td><code>message at FILE line N, near "..."</code></td>
+</tr>
+<tr>
+<td><code>shellcheck</code></td>
+<td>Shell</td>
+<td><code>-f gcc FILE</code></td>
+<td>gcc style</td>
+</tr>
+<tr>
+<td><code>gcc</code></td>
+<td>C, C++</td>
+<td><code>-fsyntax-only FILE</code></td>
+<td>gcc style</td>
+</tr>
+<tr>
+<td><code>clang</code></td>
+<td>C, C++</td>
+<td><code>-fsyntax-only FILE</code></td>
+<td>gcc style (runs only when gcc is not found)</td>
+</tr>
+<tr>
+<td><code>gofmt</code></td>
+<td>Go</td>
+<td><code>-e -l FILE</code></td>
+<td>gcc style without severity</td>
+</tr>
+<tr>
+<td><code>rustc</code></td>
+<td>Rust</td>
+<td><code>--error-format=json --emit=metadata --out-dir TEMP FILE</code></td>
+<td>rustc JSON diagnostics, primary span</td>
+</tr>
+<tr>
+<td><code>csc</code></td>
+<td>C#</td>
+<td><code>-nologo -target:library -out:TEMP/check.dll FILE</code></td>
+<td><code>file(line,col): error CS1234: message</code></td>
+</tr>
+<tr>
+<td><code>xmllint</code></td>
+<td>XML</td>
+<td><code>--noout FILE</code></td>
+<td><code>file:line: parser error : message</code>, caret column</td>
+</tr>
+</tbody>
+</table>
+<p>Notes per tool:</p>
+<ul>
+<li><strong>go vet</strong> needs a module, so the single-file check is
+<code>gofmt -e</code>.</li>
+<li><strong>rustc</strong> has no stable no-codegen switch;
+<code>--emit=metadata</code> into a throwaway folder is the cheapest
+stable equivalent.</li>
+<li><strong>dotnet build</strong> checks C# only as part of a project.
+<code>csc</code> checks one file; without it the user hears “No checker
+installed for C#” with that reason.</li>
+<li><strong>eslint</strong> loads the project’s own configuration, which
+is JavaScript, and <strong>perl -c</strong> runs the file’s
+<code>BEGIN</code> blocks and <code>use</code> statements. The guide
+says so in plain words.</li>
+<li>A tool that exits with an error and no output the parser understands
+(an ESLint with no configuration, say) is reported as “eslint could not
+check this file: <its first line>” rather than silently passing.</li>
+</ul>
+<h2 id="security-model">Security model</h2>
+<p>Approved by the user on 2026-11-06. CLAUDE.md records it as the
+“Syntax-checker allowlist” invariant.</p>
+<ul>
+<li><strong>A fixed, frozen allowlist.</strong>
+<code>CHECKER_TOOLS</code> is a <code>MappingProxyType</code>; each
+entry is an executable name, fixed arguments and a parser. Nothing from
+the document or from settings reaches the argument list except the file
+path. <code>tests/unit/core/test_problems_outside.py</code> freezes the
+table, so a new executable or a changed argument is a deliberate change
+in two places.</li>
+<li><strong>Not the external-engine allowlist.</strong>
+<code>_ENGINE_EXECUTABLE_BASENAMES</code> in
+<code>quill/core/ai/external_engine.py</code> answers a different
+question (which AI engine processes may be configured) and was not
+widened; a test checks that.</li>
+<li><strong>Found, never fetched.</strong> Tools are found with
+<code>shutil.which</code> only. Nothing is downloaded or installed. A
+missing tool is a sentence, not a prompt.</li>
+<li><strong>Run safely.</strong> Every run goes through
+<code>quill.stability.safe_subprocess.run_subprocess_safely</code>: an
+argv list, no shell, a 15-second timeout, output decoded as UTF-8, the
+environment unchanged, and the working directory set to the file’s own
+folder (or the temporary folder for an untitled document).</li>
+<li><strong>What is checked is what is on screen.</strong> A saved,
+unchanged file is checked in place. An unsaved or modified one is
+written to a temporary copy with the same name in a fresh temporary
+folder, which is deleted afterwards; the copy’s path is replaced by the
+file name in every message.</li>
+<li><strong>Off the UI thread.</strong> When a language has an outside
+tool, QUILL runs the check on its task manager and says “Checking this
+file”; the built-in tier is fast enough to run inline. QUILL Lite runs
+no outside tools at all.</li>
+<li><strong>Local only, so no egress entry.</strong> The checkers start
+local processes and open no network connection. The network egress audit
+(<code>quill/tools/network_egress_audit.py</code>) inventories outbound
+network calls, and this feature adds none, so it has no row there. (A
+tool the user has installed could itself go online, as it would from a
+terminal; QUILL passes no option that asks it to.)</li>
+</ul>
+<h2 id="tests">Tests</h2>
+<ul>
+<li><code>tests/unit/core/test_problems_builtin.py</code>: every
+built-in checker against small good and bad samples, including that
+<code>compile</code> runs nothing.</li>
+<li><code>tests/unit/core/test_problems_outside.py</code>: the frozen
+allowlist; every parser against output captured from the real tool
+(node, ruff, php, perl, gofmt and rustc were captured on this machine;
+the others from their documented formats); the runner’s temporary copy,
+working directory, timeout and missing tools, with a fake
+<code>which</code> and <code>run</code>. No test needs a tool
+installed.</li>
+<li><code>tests/unit/core/test_problems_model.py</code>: offsets,
+wrap-around, the sentences.</li>
+<li><code>tests/unit/ui/test_main_frame_code_nav.py</code> and
+<code>tests/unit/apps/test_lite_code_nav.py</code>: the commands in each
+editor.</li>
+</ul>
+<h2 id="possible-later-work">Possible later work</h2>
+<ul>
+<li>A language server client would give problems as you type. It is a
+much larger surface (a long-running process per language, a protocol)
+and was not part of this change.</li>
+<li>A setting to turn the outside tools off, if anybody wants the
+built-in tier only in QUILL.</li>
+</ul>
+</main>
+</body>
+</html>

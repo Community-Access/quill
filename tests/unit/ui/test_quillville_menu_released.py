@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+import pytest
+
 from quill.ui import quillville_menu as qv
 
 
@@ -45,6 +47,28 @@ def test_unreleased_apps_are_not_offered() -> None:
     joined = " ".join(labels)
     assert "Quill Cast" not in joined
     assert "Audio Studio" not in joined
+    assert "QUILL Studio" not in joined
+
+
+@pytest.mark.parametrize("exclude", ["quill", "radio"])
+def test_studio_developer_handoff_is_named_registered_and_callable(monkeypatch, exclude) -> None:
+    monkeypatch.setenv("QUILL_DEV_BUILD", "1")
+    host = _Host()
+    launched: list[str] = []
+    menu = qv.build_quillville_menu(
+        _FakeWx(),
+        SimpleNamespace(Bind=lambda *a, **k: None),
+        launched.append,
+        exclude=exclude,
+        retain=lambda _i: None,
+        host=host,
+    )
+    assert any(label.startswith("Open QUILL &Studio") for label in menu.labels)
+    command = host.commands.get(qv.command_id("studio"))
+    assert command is not None
+    assert command.title == "QuillVille: Open QUILL Studio"
+    command.handler()
+    assert launched == ["studio"]
 
 
 def test_released_siblings_are_offered_and_self_is_excluded() -> None:

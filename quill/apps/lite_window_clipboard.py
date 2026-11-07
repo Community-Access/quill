@@ -36,6 +36,7 @@ import wx
 
 from quill.apps.lite_clipboard_collector import DocumentClipboardCollectorMixin
 from quill.apps.lite_dialogs import choose_from_rows
+from quill.apps.lite_window_say import DocumentSayMixin
 from quill.core.clipboard_collector import DEFAULT_DIVIDER, append_collected
 from quill.core.fragment import Fragment
 from quill.core.lite import APP_NAME
@@ -49,7 +50,8 @@ __all__ = ["DocumentClipboardMixin"]
 _PREVIEW_CHARS = 60
 
 
-class DocumentClipboardMixin(DocumentClipboardCollectorMixin):  # and the collector
+# The collector, and the shared Say commands (quill/ui/say_commands.py).
+class DocumentClipboardMixin(DocumentClipboardCollectorMixin, DocumentSayMixin):
     """Paste-plain, the Copy Tray, the collector and the clip library."""
 
     # ------------------------------------------------------------------ #

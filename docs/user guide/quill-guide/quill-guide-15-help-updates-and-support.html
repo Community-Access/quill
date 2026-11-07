@@ -387,6 +387,10 @@ describes it.</li>
 <li><strong>Save Diagnostics…</strong> writes a diagnostics bundle on
 this computer. You can look through it before you share it with
 anyone.</li>
+<li><strong>Copy Log</strong> puts this session’s log file,
+<code>quill.log</code>, on the clipboard, ready to send to support. <a
+href="#sending-your-log-to-support">Sending your log to support</a>
+explains how to use it.</li>
 <li><strong>Feature Profiles</strong> gathers the profile commands:
 <ul>
 <li><strong>Switch Profile…</strong> (<code>Alt+Shift+P</code>) chooses
@@ -708,6 +712,34 @@ yourself always works just as well.</li>
 <p>Want to share more detail? <strong>Help &gt; Save
 Diagnostics…</strong> writes a bundle with private details removed,
 which you review and can attach to the email.</p>
+<h3 id="sending-your-log-to-support">Sending your log to support</h3>
+<p>Sometimes support asks for QUILL’s log: the running record QUILL
+keeps of what it did while you were working. Finding that file by hand
+means knowing where QUILL keeps its data, which nobody should have to
+remember. <strong>Help &gt; Copy Log</strong> (just after Save
+Diagnostics) does it for you. It has no key, because you will only want
+it now and then.</p>
+<p>Choose it and QUILL puts this session’s log, <code>quill.log</code>,
+on the clipboard in two ways at once, and says “Copied the log,
+quill.log, to the clipboard. Paste it into an email to attach the file,
+or into a document for its location”.</p>
+<ul>
+<li><strong>Paste into an email</strong> (in Outlook, Thunderbird or
+most other mail programs) and the log goes in as an attachment, as if
+you had dragged the file in.</li>
+<li><strong>Paste into a document, a web form or a plain text
+box</strong> and you get the file’s full path instead, so you can tell
+support where it is, or open the folder yourself.</li>
+</ul>
+<p>So the usual steps are: choose <strong>Help &gt; Get Help from
+Support…</strong>, press Send to open the message in your mail program,
+then choose <strong>Help &gt; Copy Log</strong> and paste with
+<code>Ctrl+V</code> into the message before you send it.</p>
+<p>If QUILL has not written a log yet in this session, you hear “No log
+has been written yet”, and the clipboard is left as it was. The log is
+plain text, and it can name the files you worked on, so have a read of
+it first if you like: paste the path into <strong>File &gt;
+Open</strong> and it opens in QUILL like any other text file.</p>
 <h3 id="no-more-github-reports">No more GitHub reports</h3>
 <p>QUILL no longer files GitHub issues for you, and no copy of QUILL
 carries a built-in GitHub “reporting token”. Your own GitHub sign-in,

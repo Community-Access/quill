@@ -9,6 +9,17 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 
 ## WordPress
 
+### Stripe and PayPal form setup
+
+- The same Forms commands as QUILL insert payment fields, configure Stripe
+  and/or PayPal, and read site readiness. New settings start in test mode.
+- Paid-form publication checks provider/webhook readiness and mode. Test on
+  Site refuses a published live-payment checkout. Responses include payment
+  status and exports, with Refresh Payment Status after confirming the site.
+- Checkout requires a separate QAF WordPress plugin implementing payment
+  contract version 1. Provider credentials and charging remain on the site;
+  the desktop update does not deploy or certify that checkout.
+
 - **File > WordPress** writes, opens and publishes your sites' pages and posts. Connect by approving QUILL in your browser, or paste an application password. Ctrl+S only saves on this computer; Publish checks the page first. Scheduling, earlier versions and working offline are there too.
 - **Blocks read as plain text**, and Next Block and Where Am I say where you are. **Tools > WordPress** checks a page the way a visitor meets it and looks after media, comments, menus and users.
 - **Ctrl+Alt+Shift+Grave, then a letter:** O Open, P Publish, D Save Draft, M Media Library.

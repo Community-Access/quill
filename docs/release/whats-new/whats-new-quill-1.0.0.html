@@ -246,24 +246,37 @@
 <p>QUILL 1.0 is the first general release. These are the newest parts;
 the full release notes cover everything else.</p>
 <h2 id="wordpress">WordPress</h2>
+<h3 id="stripe-and-paypal-form-setup">Stripe and PayPal form setup</h3>
 <ul>
-<li><strong>File &gt; WordPress</strong> writes, opens and publishes
+<li><p>Tools &gt; Forms adds Insert Payment Field, Form Payments Setup
+and Verify Payment Setup. Stripe is the default; PayPal is also
+available. New settings use test mode, with confirmation before saving
+live mode.</p></li>
+<li><p>Paid-form publication checks plugin readiness and matching mode.
+Test on Site refuses published live-payment forms. Responses show and
+export payment metadata, with a confirmed Refresh Payment Status
+action.</p></li>
+<li><p>Checkout requires QAF payment contract version 1 on WordPress.
+Provider credentials and money movement stay on the site; no plugin
+deployment or live acceptance is implied by this desktop
+update.</p></li>
+<li><p><strong>File &gt; WordPress</strong> writes, opens and publishes
 your sites’ pages and posts. Connect a Site fetches the password with
-your browser and keeps it in Windows Credential Manager.</li>
-<li><strong>Ctrl+S saves on this computer only.</strong> Save Draft to
-Site and Publish or Update are separate, Publish checks the page first,
-and nothing someone else changed is overwritten.</li>
-<li><strong>Blocks, made plain:</strong> Insert &gt; WordPress Block,
+your browser and keeps it in Windows Credential Manager.</p></li>
+<li><p><strong>Ctrl+S saves on this computer only.</strong> Save Draft
+to Site and Publish or Update are separate, Publish checks the page
+first, and nothing someone else changed is overwritten.</p></li>
+<li><p><strong>Blocks, made plain:</strong> Insert &gt; WordPress Block,
 and Next Block, Previous Block and Where Am I in Edit &gt; WordPress. A
-block QUILL does not know goes back untouched.</li>
-<li><strong>Tools &gt; WordPress</strong> has the Media Library, Check
-This Page with axe-core, Check the Whole Site with safe fixes in bulk,
-comments, menus, users and settings.</li>
-<li><strong>Keys:</strong> Ctrl+Alt+Shift+Grave, then O to open, P to
+block QUILL does not know goes back untouched.</p></li>
+<li><p><strong>Tools &gt; WordPress</strong> has the Media Library,
+Check This Page with axe-core, Check the Whole Site with safe fixes in
+bulk, comments, menus, users and settings.</p></li>
+<li><p><strong>Keys:</strong> Ctrl+Alt+Shift+Grave, then O to open, P to
 publish, D for a draft, M for the Media Library. The menus show every
-letter.</li>
-<li>File &gt; Publish is gone; your saved connections come across by
-themselves.</li>
+letter.</p></li>
+<li><p>File &gt; Publish is gone; your saved connections come across by
+themselves.</p></li>
 </ul>
 <h2 id="forms">Forms</h2>
 <ul>

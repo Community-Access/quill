@@ -114,7 +114,7 @@ class FormsPublishCommands(
             self.host.parent,
             self.host.show_modal,
             title="Publish Form",
-            message=message,
+            message=message + self._payment_publish_notice(model),
             yes_label=yes,
         ):
             return
@@ -124,6 +124,9 @@ class FormsPublishCommands(
         store = self.published()
 
         def send() -> bs.SiteForm:
+            from quill.core.forms.payment_site import require_ready
+
+            require_ready(api, model)
             if existing is None:
                 return bs.create_form(api, bs.publish_body(model, bfl, status=status))
             store.keep_version(profile.id, existing.id, existing.bfl_source)
@@ -146,6 +149,19 @@ class FormsPublishCommands(
             )
 
         self.site_work(f"publishing to {profile.name}", send, sent)
+
+    @staticmethod
+    def _payment_publish_notice(model: dict[str, Any]) -> str:
+        from quill.core.forms.payments import payment_config, payment_fields
+
+        config = payment_config(model)
+        if config is None or not payment_fields(model):
+            return ""
+        mode = "test payments only" if config.test_mode else "LIVE payments: real money"
+        return (
+            f" Payment mode: {mode}, {config.currency.upper()}, {', '.join(config.providers)}. "
+            "QUILL will first read the site's payment and webhook readiness."
+        )
 
     # ------------------------------------------------------------------ #
     # Tools > Forms > Insert Form Into Page (a WordPress page in front)
@@ -226,8 +242,32 @@ class FormsPublishCommands(
             )
             return
 
+        from quill.core.forms.payments import payment_fields
+
+        if payment_fields(_doc.model) and not dlg.confirm(
+            self.host.parent,
+            self.host.show_modal,
+            title="Test Payment on Site",
+            message=f"Read the published payment form on {profile.name} and open its checkout "
+            "in your browser? QUILL will refuse if the published form is not in test mode.",
+            yes_label="Test Payment",
+        ):
+            return
+
         def work(api: Any) -> tuple[bs.SiteForm, list[tuple[str, str, str]], str]:
             form = bs.get_form(api, link.form_id)
+            from quill.core.forms.payment_site import PaymentSiteError, require_ready
+            from quill.core.forms.payments import payment_config
+
+            remote = form.model() or {}
+            if payment_fields(remote) or payment_fields(_doc.model):
+                config = payment_config(remote)
+                if config is None or not config.test_mode:
+                    raise PaymentSiteError(
+                        "The published form is not in payment test mode. Publish a test-mode "
+                        "form to a test-configured site before trying checkout."
+                    )
+                require_ready(api, remote)
             return form, bs.pages_showing(api, link.form_id), bs.plugin_prefix(api)
 
         self.with_qaf(

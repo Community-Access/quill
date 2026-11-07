@@ -7,6 +7,16 @@ checks. **Ctrl+R** replies to a selected thread and **Shift+F10** reveals
 actions for the selected item. The [GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md)
 explains every step for a screen reader.
 
+## November 2026 update: payment form authoring
+
+The 2.0 testing line adds Stripe and PayPal payment setup through the same
+Forms commands as QUILL. Insert a payment or donation field, keep test mode
+on, verify the site's readiness and publish. Responses include payment status
+and exports. A separate QAF WordPress plugin implementing payment contract
+version 1 is required to collect money; provider credentials and checkout stay
+on the site. This desktop update does not deploy or certify that plugin.
+The September announcement below remains the history of the earlier AI release.
+
 **September 25, 2026, from Community Access**
 
 **Select a paragraph. Press two keys. Hear it summarized, rewritten, proofread

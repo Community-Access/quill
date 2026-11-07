@@ -127,12 +127,6 @@ class CommandRegistryMixin:
             None,
         )
         self.commands.register(
-            "file.github_manage_accounts",
-            "Manage GitHub Accounts...",
-            self.manage_github_accounts,
-            None,
-        )
-        self.commands.register(
             "file.open_github_items",
             "Open GitHub Items...",
             self.open_github_items_viewer,
@@ -833,6 +827,7 @@ class CommandRegistryMixin:
             ("table.last_cell", "Table: Last Cell", self.table_last_cell),
         ):
             self.commands.register(command_id, label, handler, self._binding_for(command_id))
+        self._register_code_commands()  # Navigate > Code (main_frame_code_nav)
         self.commands.register(
             "navigate.set_bookmark",
             "Set Bookmark...",

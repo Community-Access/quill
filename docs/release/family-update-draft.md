@@ -4,6 +4,15 @@
 working tree or are plans; product packages and release dates must be verified
 before this text is published.
 
+## QUILL and QUILL Lite: payment form authoring
+
+Both editors share Stripe/PayPal payment setup, insertion and site readiness
+checks. New forms start in test mode; paid-form publication checks mode and
+provider/webhook readiness. Responses display, refresh and export payment
+metadata. Actual checkout requires QAF payment contract version 1 on WordPress.
+Provider credentials and money movement stay there. No plugin deployment,
+live payment acceptance or published package is implied by this draft.
+
 ## QUILL and Quill Radio
 
 The shared Radio code retires its built-in SomaFM source in response to

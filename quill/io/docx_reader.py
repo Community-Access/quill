@@ -296,6 +296,23 @@ def read_docx_rich(path: Path) -> RichDocument:
     return rich
 
 
+def _has_text(part: Any, *, follow_links: bool = False) -> bool:
+    """True when a header/footer part holds any text.
+
+    An ordinary header that is linked to the previous section repeats one
+    already checked, so it is skipped. A first-page or even-page header is
+    checked with *follow_links*: a section can switch on its title page while
+    inheriting the first-page header an earlier section defined but never
+    showed, and python-docx resolves a linked part to that inherited
+    definition (in memory only; the scan never saves).
+    """
+    if part is None:
+        return False
+    if part.is_linked_to_previous and not follow_links:
+        return False
+    return any(p.text.strip() for p in part.paragraphs)
+
+
 def scan_docx_features(path: Path) -> list[str]:
     """Inventory the out-of-vocabulary features a rich edit would drop on save.
 
@@ -321,25 +338,27 @@ def scan_docx_features(path: Path) -> list[str]:
             findings.append(f"images ({len(source.inline_shapes)})")
         if len(source.sections) > 1:
             findings.append(f"multiple sections ({len(source.sections)})")
-        for section in source.sections:
-            header = section.header
-            footer = section.footer
-            if (
-                header is not None
-                and not header.is_linked_to_previous
-                and any(p.text.strip() for p in header.paragraphs)
-            ):
-                findings.append("headers")
-                break
-        for section in source.sections:
-            footer = section.footer
-            if (
-                footer is not None
-                and not footer.is_linked_to_previous
-                and any(p.text.strip() for p in footer.paragraphs)
-            ):
-                findings.append("footers")
-                break
+        # Word shows a section's first-page header/footer only when the
+        # section sets w:titlePg, and its even-page ones only when settings.xml
+        # sets w:evenAndOddHeaders. Content in either is dropped by the rich
+        # bridge just like an ordinary header, so it must be flagged too
+        # (issue #1756).
+        try:
+            even_pages = bool(source.settings.odd_and_even_pages_header_footer)
+        except Exception:  # noqa: BLE001 - a missing settings part means "off"
+            even_pages = False
+        for kind, attr in (("headers", "header"), ("footers", "footer")):
+            for section in source.sections:
+                alternates = []
+                if section.different_first_page_header_footer:
+                    alternates.append(getattr(section, f"first_page_{attr}"))
+                if even_pages:
+                    alternates.append(getattr(section, f"even_page_{attr}"))
+                if _has_text(getattr(section, attr)) or any(
+                    _has_text(part, follow_links=True) for part in alternates
+                ):
+                    findings.append(kind)
+                    break
         body_xml = source.element.body.xml
         if "<w:ins " in body_xml or "<w:del " in body_xml:
             findings.append("tracked changes")

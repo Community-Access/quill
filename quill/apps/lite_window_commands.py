@@ -34,7 +34,6 @@ from quill.apps.lite_window_settings_backup import DocumentSettingsBackupMixin
 from quill.apps.lite_window_special_character import DocumentSpecialCharacterMixin
 from quill.core.datetime_insert import NOTEPAD_DATETIME_FORMAT
 from quill.core.lite import APP_NAME, version_label
-from quill.core.lite.commands import shortcut_text
 from quill.core.lite.filetypes import (
     OPEN_WILDCARD,
     SAVE_WILDCARD_PLAIN,
@@ -42,6 +41,7 @@ from quill.core.lite.filetypes import (
     is_rich_path,
 )
 from quill.core.lite.keymap import key_for, spoken_key_for
+from quill.core.lite.shortcut_text import shortcut_text
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import (

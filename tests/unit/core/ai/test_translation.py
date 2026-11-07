@@ -7,11 +7,54 @@ import pytest
 from quill.core.ai.translation import (
     LANGUAGE_NAMES,
     SUPPORTED_LANGUAGES,
+    UNCHANGED_TRANSLATION_MESSAGE,
     TranslationAuthError,
     TranslationError,
     _parse_translation_response,
     _resolve_target_name,
+    translation_unchanged,
 )
+
+# ---------------------------------------------------------------------------
+# translation_unchanged
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("original", "translated"),
+    [
+        ("Hola, mundo.", "Hola, mundo."),
+        ("Hola, mundo.", "  hola,   MUNDO. \n"),
+        ("Line one\nline two", "line one line two"),
+        ("Tab\there", "tab here"),
+    ],
+)
+def test_translation_unchanged_ignores_case_and_whitespace(original: str, translated: str) -> None:
+    assert translation_unchanged(original, translated)
+
+
+@pytest.mark.parametrize(
+    ("original", "translated"),
+    [
+        ("Hola, mundo.", "Hello, world."),
+        ("Hola, mundo.", "Hola mundo"),
+        ("", ""),
+        ("   ", "  "),
+        ("Hola", ""),
+    ],
+)
+def test_translation_unchanged_false_for_real_or_empty_results(
+    original: str, translated: str
+) -> None:
+    assert not translation_unchanged(original, translated)
+
+
+def test_unchanged_message_wording() -> None:
+    assert UNCHANGED_TRANSLATION_MESSAGE == (
+        "The translation came back the same as the original. "
+        "The text may already be in the target language."
+    )
+
 
 # ---------------------------------------------------------------------------
 # SUPPORTED_LANGUAGES / LANGUAGE_NAMES

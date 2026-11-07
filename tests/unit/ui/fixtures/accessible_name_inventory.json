@@ -672,6 +672,7 @@
   "quill/ui/main_frame_quillins.py::QuillinsMenuMixin.open_quillins_manager::wx.ListBox": "named",
   "quill/ui/main_frame_quillins.py::QuillinsMenuMixin.open_quillins_manager::wx.TextCtrl": "named",
   "quill/ui/main_frame_restore_points.py::RestorePointsMixin.restore_previous_version::wx.ListBox": "named",
+  "quill/ui/main_frame_say_commands.py::SayCommandsAdapterMixin._say_show_text::wx.TextCtrl": "named",
   "quill/ui/main_frame_selection.py::SelectionMarksMixin.open_review_buffer::wx.TextCtrl": "named",
   "quill/ui/main_frame_statusbar.py::StatusBarMixin.open_status_bar_settings::wx.CheckListBox": "named",
   "quill/ui/main_frame_updates.py::UpdatesMixin._offer_post_download_actions::wx.TextCtrl": "named",

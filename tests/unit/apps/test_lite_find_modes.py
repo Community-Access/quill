@@ -270,3 +270,38 @@ def test_replace_all_honours_the_mode() -> None:
     win._do_replace_all(_options(r"\d+", mode="regex", replacement="#"))  # noqa: SLF001
     assert win.control.GetValue() == "a#b#c"
     assert any("Replaced 2" in message for message in win.announcements)
+
+
+def test_replace_all_puts_a_backslash_in_literally_outside_regex_mode() -> None:
+    r"""A path typed as the replacement arrives as typed.
+
+    Handed to ``re.sub`` as a string, ``C:\new`` gained a line break where the
+    ``\n`` was, and ``\1`` raised "invalid group reference" -- in a search that
+    never asked for a regular expression.
+    """
+    win = _Window("old path and old path")
+    win._do_replace_all(_options("old", replacement="C:\new"))  # noqa: SLF001
+    assert win.control.GetValue() == "C:\new path and C:\new path"
+
+    win = _Window("x and x")
+    win._do_replace_all(_options("x", replacement="\1"))  # noqa: SLF001
+    assert win.control.GetValue() == "\1 and \1"
+    assert any("Replaced 2" in message for message in win.announcements)
+
+
+def test_replace_all_still_expands_groups_in_regex_mode() -> None:
+    win = _Window("ab cd")
+    win._do_replace_all(  # noqa: SLF001
+        _options(r"(\w)(\w)", mode="regex", replacement=r"\2\1")
+    )
+    assert win.control.GetValue() == "ba dc"
+
+
+def test_a_regex_replacement_naming_a_missing_group_changes_nothing() -> None:
+    win = _Window("ab cd")
+    win._do_replace_all(  # noqa: SLF001
+        _options(r"(\w)(\w)", mode="regex", replacement=r"\3")
+    )
+    assert win.control.GetValue() == "ab cd"
+    assert win.modified is False
+    assert win.announcements[-1].startswith("Nothing replaced:")

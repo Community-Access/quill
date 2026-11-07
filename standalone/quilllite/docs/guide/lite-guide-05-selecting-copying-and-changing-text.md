@@ -156,6 +156,87 @@ is still there.
 
 You will also find it at **Edit > Selection > Review Buffer...**.
 
+## Hearing what is on the clipboard
+
+You copy something in a web page, come back to QUILL Lite, and wonder: did
+that copy actually work, and what exactly did I get? You no longer have to
+paste it somewhere to find out. The first four rows of **Edit > Clipboard**
+(**Alt+E**, then **B**) let you hear the Windows clipboard, add to it, keep it
+and empty it, without pasting a thing. QUILL has the same four, on the same
+keys.
+
+### Say Clipboard (Alt+Shift+Home)
+
+Press **Alt+Shift+Home** and QUILL Lite reads you what is on the clipboard.
+Press it again quickly, within half a second, and it does more. Every press is
+answered straight away, so you never wait to find out whether a second press
+is coming.
+
+- **Once:** you hear it. Short text is read in full. A long piece is read up
+  to its first 2,000 characters, and then you hear how much is left: "and
+  4,312 more characters. Press three times quickly to read it all."
+- **Twice:** you hear it spelled, letter by letter. Capital letters are said
+  as "cap". It is the way to check a web address, a code or a name before you
+  type it into a form. Spelling stops after the first 200 characters.
+- **Three times:** a small window opens, titled **Clipboard**, with all of it
+  inside. Read it line by line with the arrow keys; nothing you do there
+  changes the clipboard. Press **Escape** and you are back in your document,
+  where you were.
+
+When there is nothing to read, it says so plainly:
+
+- Nothing copied: "The clipboard is empty".
+- A picture, or anything else that is not text: "The clipboard holds something
+  that is not text, such as a picture".
+- Files you copied in File Explorer: how many, and their names, such as "2
+  files on the clipboard: report.docx, notes.txt". After ten names you hear
+  how many more there are. Press twice to hear each file's full path, and
+  three times to see the paths in the window, one to a line.
+
+### Append Selection to Clipboard (Alt+Shift+End)
+
+Copying throws away whatever was on the clipboard before. Sometimes you want
+to add to it instead. Select the next piece and press **Alt+Shift+End**. It
+goes on the end of the clipboard's text, on a new line, and you hear where
+things stand: "Appended 5 characters to the clipboard, which now holds 11
+characters."
+
+- No blank line is put between the pieces.
+- If the clipboard was empty, it now holds just your selection.
+- If nothing is selected, you hear "Select text first to append it to the
+  clipboard", and the clipboard is left alone.
+- If the clipboard held files, your selection replaces them.
+
+Gather a name from here, an address from further down and a phone number from
+the end, then paste the lot with **Ctrl+V**, here or in any other program.
+
+The collector, further down this chapter, does something similar inside QUILL
+Lite. The difference is that Append Selection to Clipboard builds up the real
+Windows clipboard, so you can paste the result anywhere.
+
+### Save Clipboard to File and Clear Clipboard
+
+These two have no key. You reach them from the menu.
+
+- **Edit > Clipboard > Save Clipboard to File...** (**Alt+E**, **B**, **F**)
+  saves the clipboard's text in a file of its own, without making a new
+  document first. The Save window suggests a name made from the date and time,
+  such as "clipboard 2026-11-06 1405.txt". Keep it or type your own, and press
+  **Enter**. It is saved as UTF-8 text, written safely so a full disk cannot
+  leave half a file behind, and you hear "Saved 1,204 characters to clipboard
+  2026-11-06 1405.txt". If the clipboard holds files, you hear "The clipboard
+  holds files, not text, so there is nothing to save".
+- **Edit > Clipboard > Clear Clipboard** (**Alt+E**, **B**, **B**) empties the
+  Windows clipboard, for every program. You hear "Cleared the clipboard", or
+  "The clipboard was already empty". Do it after you copy a password, so the
+  next paste, wherever it is, cannot put it somewhere it should not go.
+
+Why no keys? When these were added there was no key left that was free in
+both QUILL Lite and QUILL, and they are things you do now and then. Clear
+Clipboard has a second reason: a key you could press by accident would throw
+away what you had just copied. If you want one anyway, the Keyboard Manager
+(**Ctrl+Alt+Shift+Space**) can give it a key.
+
 ## Copying and pasting more than one thing
 
 The Windows clipboard holds one thing at a time. QUILL Lite gives you three

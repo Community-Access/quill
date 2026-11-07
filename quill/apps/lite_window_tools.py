@@ -107,6 +107,19 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         finally:
             provider.close()
 
+    def cmd_open_studio(self) -> None:
+        """Open the Studio companion without sending this document anywhere."""
+        from quill.core.app_launcher import is_app_released, launch_app
+
+        if not is_app_released("studio"):
+            self._announce("QUILL Studio is not available in this build.")
+            return
+        self._announce(
+            "Opening QUILL Studio."
+            if launch_app("studio")
+            else "QUILL Studio could not be opened; it may not be installed."
+        )
+
     # ------------------------------------------------------------------ #
     # Running a tool
     # ------------------------------------------------------------------ #

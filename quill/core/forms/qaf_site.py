@@ -193,11 +193,20 @@ class Response:
     is_read: bool = False
     is_starred: bool = False
     status: str = "active"
+    payment: dict[str, str] = field(default_factory=dict, repr=False)
 
 
 def response_from_payload(raw: Any) -> Response:
     data = raw if isinstance(raw, dict) else {}
     answers = data.get("fields")
+    payment = data.get("payment")
+    metadata = {
+        key: str(payment[key])
+        for key in ("provider", "status", "amount", "currency", "receipt_url", "transaction_id")
+        if isinstance(payment, dict)
+        and isinstance(payment.get(key), (str, int, float))
+        and not isinstance(payment.get(key), bool)
+    }
     return Response(
         id=_int(data.get("id")),
         form_id=_int(data.get("form_id")),
@@ -206,6 +215,7 @@ def response_from_payload(raw: Any) -> Response:
         is_read=bool(_int(data.get("is_read"))),
         is_starred=bool(_int(data.get("is_starred"))),
         status=str(data.get("status") or "active"),
+        payment=metadata,
     )
 
 

@@ -147,6 +147,20 @@ models if it has none. With **QUILL speech models** chosen, every one of them
 works with nothing downloaded, because the built-in Moonshine and Whisper
 count as its models. Whisper.cpp stays the default for now.
 
+**If you used Nemotron or Parakeet in an earlier QUILL.** Locked Dictation
+used to have its own Nemotron and Parakeet engines, with their own copy of the
+models. They are now one engine, QUILL speech models, and your choice moved
+with it; a Parakeet you had was moved, not downloaded again. QUILL tells you
+once, a moment after it starts, and never over an open dialog. You hear:
+"Locked Dictation's Nemotron and Parakeet engines are now one engine, QUILL
+speech models..." If the older Nemotron model's files are still on your
+computer, nothing uses them any more, so the same message asks a question
+instead: "Delete the older files to free 650 MB? No keeps them." No is the
+default, so pressing Enter keeps them. Choose **Yes** and QUILL deletes only
+those old folders and tells you how much space it actually freed, for example
+"Freed 650 MB." Either way you are not asked again. To dictate with Nemotron
+after that, download Nemotron 3.5 in **Manage Speech Models**.
+
 **To switch:** open **Tools > Speech > Speech and Dictation...**. On the
 **Dictation (Offline)** tab, choose the **Speech Engine**, choose a model, and
 press **Set as Default**. Or use the guided setup, which takes you through

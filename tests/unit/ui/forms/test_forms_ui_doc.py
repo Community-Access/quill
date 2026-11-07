@@ -92,5 +92,5 @@ def test_insert_field_offers_every_type_but_payment_and_site_parts() -> None:
     kinds = ft.kinds()
     assert kinds[:2] == [ft.SECTION, ft.PAGE_BREAK]
     assert set(kinds[2:]) == set(M.FIELD_TYPES) - ft.LEFT_OUT
-    assert "payment" not in kinds
+    assert "payment" in kinds  # opens the guided payment field dialog
     assert all(ft.describe(k).endswith(".") for k in kinds)
