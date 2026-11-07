@@ -33,6 +33,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.converter_auphonic_history import ConverterAuphonicHistoryMixin
 from quill.core.audio.convert import CancelToken
 from quill.core.publish.auphonic_plan import (
     AuphonicChoices,
@@ -48,8 +49,13 @@ _log = logging.getLogger(__name__)
 _STATE_WORDS = {"waiting": "still at Auphonic"}
 
 
-class ConverterAuphonicMixin:
-    """Process with Auphonic and Auphonic Work Waiting. Mixed into the Converter window."""
+class ConverterAuphonicMixin(ConverterAuphonicHistoryMixin):
+    """Process with Auphonic and Auphonic Work Waiting. Mixed into the Converter window.
+
+    Production History and the account view come from the base class
+    (:mod:`quill.apps.converter_auphonic_history`), so the Converter window's
+    own module does not grow.
+    """
 
     # -- Process with Auphonic --------------------------------------------------------
 
@@ -88,6 +94,7 @@ class ConverterAuphonicMixin:
                 return "Type or paste your Auphonic API token first."
             return problem(choices, eligible)
 
+        single = details.get(eligible[0]) if len(eligible) == 1 else None
         answer = ask_choices(
             self,
             eligible,
@@ -96,6 +103,7 @@ class ConverterAuphonicMixin:
             token=load_token(),
             check=start_account_check,
             problem=why_not,
+            source_chapters=single.chapters if single is not None else (),
         )
         if answer is None:
             self._set_status("Nothing was sent to Auphonic.")
@@ -109,8 +117,11 @@ class ConverterAuphonicMixin:
         if not confirm(self, text):
             self._announce("Nothing was sent to Auphonic.")
             return
-        if remember:
-            save_token(token)
+        if remember and not save_token(token):
+            self._announce(
+                "Your Auphonic token could not be stored on this computer, so it is "
+                "used for this run only."
+            )
         count = len(eligible)
         label = (
             f"Sending {choices.title} to Auphonic as one multitrack production"
@@ -210,7 +221,9 @@ class ConverterAuphonicMixin:
         *,
         skipped: list[Skipped] | tuple[Skipped, ...] = (),
         heading: str = "",
+        door: str = "",
     ) -> None:
+        from quill.core.publish.auphonic_history import history_path
         from quill.core.publish.auphonic_plan import pending_path
         from quill.core.publish.auphonic_run import FAILED, Runner, RunResult
 
@@ -231,7 +244,10 @@ class ConverterAuphonicMixin:
             ),
             on_outcome=on_outcome,
             is_cancelled=cancel.is_cancelled,
+            history=history_path(),  # Production History (Ctrl+Alt+H) records each one
         )
+        if door:
+            runner.waiting_door = door
 
         def worker() -> None:
             try:
@@ -361,12 +377,20 @@ def load_token() -> str:
     return (credential.secret or "").strip() if credential is not None else ""
 
 
-def save_token(token: str) -> None:
-    """Store *token* where the Audio Studio keeps it too (never in settings or logs)."""
+def save_token(token: str) -> bool:
+    """Store *token* where the Audio Studio keeps it too (never in settings or logs).
+
+    ``True`` only when the credential store took it. ``save_generic_credential``
+    returns nothing and raises on every failure (``OSError`` from CredWriteW,
+    ``RuntimeError`` off Windows, ``ValueError`` for a bad target), so any
+    exception means nothing was stored and the caller must not say it was.
+    """
     try:
         from quill.core.publish.auphonic import CREDENTIAL_TARGET
         from quill.platform.windows.credential_manager import save_generic_credential
 
         save_generic_credential(CREDENTIAL_TARGET, token, user_name="auphonic")
-    except Exception:  # noqa: BLE001 - the run goes on; the token is just not remembered
+    except Exception:  # noqa: BLE001 - reported to the caller as False
         _log.warning("Could not store the Auphonic token in the credential manager")
+        return False
+    return True
