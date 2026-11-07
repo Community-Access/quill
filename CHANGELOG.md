@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### GitHub notifications, failed runs and merge automation (2026-11-07)
+
+- **Triage your GitHub notifications.** Tools > Git and GitHub > GitHub >
+  Notifications... now opens Explore's notifications view instead of a one-shot
+  list. QUILL says the unread count once after a load, each row says why it
+  arrived in words, and Enter marks it read and opens a pull request in Review
+  or an issue in GitHub Items. Mark Done (Alt+D, or Delete), Unsubscribe
+  (Alt+U), Mark All Read (Alt+A, after asking) and Include read notifications
+  (Alt+I). Done and Unsubscribe leave the cursor on the next row. GitHub's poll
+  interval is honoured on refresh.
+- **What Failed.** Ctrl+Shift+W on a workflow run, or What Failed (Alt+F) in
+  Jobs and Logs, opens one read-only text: failed jobs, failed steps,
+  annotations with file and line, and the last 40 log lines of each failed
+  step, with timestamps and colour codes removed.
+- **Run and check actions.** Re-run Failed Jobs Only, Cancel Run, Delete Run
+  (the question names the run, branch and result), Approve Run from a Fork,
+  Review Pending Deployments (approve or reject with a comment), Re-request
+  Check, and a one-line Combined Check Status such as "3 of 4 checks pass".
+- **Auto-merge and the merge queue.** Review's Auto-Merge and Queue button
+  (Alt+A) enables auto-merge with a merge method, disables it, and adds a pull
+  request to the merge queue or removes it. QUILL says what GitHub confirmed,
+  and why when GitHub refuses.
+
 ### GitHub pull request review reader (2026-11-05)
 
 - **Review a PR from the GitHub Items viewer.** Select a pull request and

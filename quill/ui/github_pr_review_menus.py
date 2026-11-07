@@ -87,6 +87,11 @@ class GitHubPullReviewMenusMixin:
                 enabled=bool(self._checks[index].url),
             )
             add("Copy Check Details", self._copy_detail)
+            add(
+                "Re-request Check...",
+                self._rerequest_selected_check,
+                enabled=self._client.can_write and self._checks[index].check_run_id > 0,
+            )
         else:
             add("Compose Review...", self._submit_review, enabled=self._submit_btn.IsEnabled())
             add(
@@ -100,6 +105,7 @@ class GitHubPullReviewMenusMixin:
                 enabled=self._draft_btn.IsEnabled(),
             )
             add("Update Branch...", self._update_branch, enabled=self._update_btn.IsEnabled())
+            self._append_merge_entries(add)
             add("Copy Review Summary", self._copy_summary, enabled=self._state is not None)
             add(
                 "Copy Pull Request Link",

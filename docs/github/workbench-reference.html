@@ -1,3 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GitHub Workbench: keyboard and screen reader reference</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1 id="github-workbench-keyboard-and-screen-reader-reference">GitHub
 Workbench: keyboard and screen reader reference</h1>
 <p>QUILL and QUILL Lite share the GitHub Items and Explore windows.
@@ -6,6 +250,16 @@ Workbench</strong>. In QUILL, use <strong>File &gt; Open from Remote
 &gt; GitHub Items</strong>. Public repository reading works without an
 account. Account views and writes require a signed-in GitHub account.
 Safe Mode and the first-use network consent still apply.</p>
+<p>In QUILL, <strong>File &gt; Open from Remote &gt; Open GitHub
+Reference</strong> accepts a pasted repository or GitHub URL. The Items
+window also has <strong>Open Link…</strong> in both QUILL and QUILL
+Lite. Repository links open Items; issue links select the exact issue;
+pull-request links open its review reader; branch links select that
+branch; and GitHub file links open in QUILL at the linked line. QUILL
+Lite opens file and other unsupported object links in the browser after
+explaining that the workbench has no native view for that object.
+Browser fallback never attaches QUILL’s GitHub token. Malformed or
+credential-bearing URLs are refused.</p>
 <h2 id="the-interaction-pattern">The interaction pattern</h2>
 <p>The Items window is a repository list with a read-only detail field.
 Choose a view, arrow through its rows, then Tab to read the selected
@@ -19,6 +273,10 @@ in an issue or PR’s details. <strong>Ctrl+F</strong> searches GitHub in
 the loaded repository; <strong>Ctrl+Shift+F</strong> filters the already
 loaded rows locally. <strong>Ctrl+D</strong> saves the selected item as
 a favorite.</p>
+<p>When you reopen Items, QUILL restores the last repository, view,
+filters, and selected row for the same GitHub account. This is local
+resume state; it stores no token and never submits a draft or changes
+GitHub.</p>
 <p>The PR review window uses an actual expandable tree. The root PR
 contains Changed files, General conversations when present, and Checks.
 Files contain review threads. Left and Right collapse or expand; Up and
@@ -30,7 +288,11 @@ also contains these commands, copy actions, and Open File Differences. A
 thread’s file and line select the matching file and exact changed line
 when its patch still contains that line. If the line is outdated or
 absent, the diff explains the missing location. No action is triggered
-merely by reading or expanding.</p>
+merely by reading or expanding. <strong>Next Unresolved</strong> moves
+among threads with a known unresolved state; <strong>Next
+Unvisited</strong> tracks only the threads you selected in this review
+session. It is local navigation and never marks GitHub notifications or
+threads read.</p>
 <p>The Explore window uses a list and detail field for flat results. Its
 <strong>View</strong> chooser switches between global search, My Work,
 the attention queue, activity, repositories, people, notifications,
@@ -68,6 +330,13 @@ remote. QUILL shows the starting local branch and any uncommitted
 changes first. Those changes stay in the existing folder; the new
 worktree starts from the local commit and does not fetch, push, or
 change the GitHub repository.</p>
+<p>Workflow diagnostics show each job’s steps, the selected attempt, and
+the head SHA. Choose an earlier attempt from the attempt list;
+<strong>Load Annotations</strong> reads the check-run annotations when
+GitHub grants access, and reports permission errors instead of treating
+them as no findings. Annotation output is capped at 100 entries with a
+truncation message. Job logs are limited to 4 MB and mark truncation.
+The run and job links open their exact GitHub pages.</p>
 <p><strong>Projects</strong> opens the selected repository’s GitHub
 Projects v2 boards in a list/detail view. Project rows show the fields
 available to your account; issue details include blockers, sub-issues,
@@ -83,7 +352,67 @@ repositories and activity, repository activity and people, forks,
 labels, Pages site and build history, notifications, and security
 alerts. Private information and certain actions depend on the GitHub
 token’s permissions and repository access. An API failure appears as a
-status message; empty results are distinguished from errors.</p>
+status message; empty results are distinguished from errors. The
+Security view combines Dependabot, code-scanning, and secret-scanning
+alerts. Secret values are never loaded into the view. If the account
+cannot read a category or the feature is disabled, the view labels that
+category unavailable instead of presenting it as having no findings.</p>
+<h2 id="notifications-triage">Notifications triage</h2>
+<p>Explore’s <strong>GitHub notifications</strong> view is the account’s
+whole inbox. In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub
+&gt; Notifications</strong> opens Explore straight at it; in QUILL Lite,
+choose <strong>Explore</strong> in Items and pick the view. After each
+load QUILL says the unread count once, for example “12 unread”. Each row
+reads its state, then why it arrived in words (“review requested”, “you
+were mentioned”, “your team was mentioned”), then the repository and
+title.</p>
+<p>Under the list, shown only in this view: <strong>Include read
+notifications</strong> (Alt+I), <strong>Mark Done</strong> (Alt+D),
+<strong>Unsubscribe</strong> (Alt+U) and <strong>Mark All Read</strong>
+(Alt+A). Delete in the list is Mark Done. Done and Unsubscribe take the
+row out of the list and select the next row, so triage keeps its place.
+Mark All Read asks first and marks only what arrived before the list
+loaded. Enter marks the row read, then opens a pull request in the
+review window, an issue in Items at that issue, and anything else in the
+browser. The context menu offers the same actions.</p>
+<p>QUILL honours GitHub’s <code>X-Poll-Interval</code>: a refresh sooner
+than GitHub allows keeps the current list and says how long to wait. A
+refresh after that sends <code>If-Modified-Since</code>, so an unchanged
+inbox costs no rate limit.</p>
+<h2 id="what-failed-and-run-actions">What failed, and run actions</h2>
+<p>On a Workflow Runs row, <strong>What Failed</strong> (Ctrl+Shift+W in
+that view, the Actions menu or the context menu) opens a read-only text
+field holding one digest: each failed job, its failed steps, the
+annotations with <code>file:line</code>, then the last 40 meaningful log
+lines of each failed step with timestamps and ANSI codes removed. A
+step’s lines are the ones stamped inside its start and finish times; if
+GitHub gave no times, the digest says so and uses the end of the job’s
+log. <strong>Jobs and Logs</strong> has the same digest as <strong>What
+Failed</strong> (Alt+F), for the attempt you chose, and
+<strong>Re-request Check</strong> (Alt+C) for the selected job.</p>
+<p>The same menus add <strong>Re-run Failed Jobs Only</strong>,
+<strong>Cancel Run</strong> (GitHub answers “accepted”, so QUILL says it
+is stopping the run), <strong>Delete Run</strong> (the confirmation
+names the run, branch and result, and says logs and artifacts go with
+it), <strong>Approve Run from a Fork</strong>, <strong>Review Pending
+Deployments</strong> (a window listing waiting environments as check
+boxes, a required comment, and Approve and Reject) and <strong>Combined
+Check Status</strong>, a single line such as “3 of 4 checks pass;
+failing: test.”</p>
+<h2 id="auto-merge-and-the-merge-queue">Auto-merge and the merge
+queue</h2>
+<p>The review window’s <strong>Auto-Merge and Queue</strong> button
+(Alt+A) and the pull request’s context menu hold <strong>Enable
+Auto-Merge</strong> (with a merge-method chooser), <strong>Disable
+Auto-Merge</strong>, <strong>Add to Merge Queue</strong>, <strong>Remove
+from Merge Queue</strong> and <strong>Combined Check Status</strong>.
+After <strong>Check Merge Policy</strong>, the combined status counts
+only required checks (“3 of 4 required checks pass”). A check node’s
+context menu has <strong>Re-request Check</strong>; a legacy commit
+status cannot be re-requested and QUILL says so. Each change asks first
+and reports GitHub’s confirmed result. Known refusals, such as
+auto-merge being turned off for the repository, are said as what to do
+next.</p>
 <h2 id="review-and-write-safety">Review and write safety</h2>
 <p>The review tree announces reply counts, outdated positions, resolved
 state, and check status. Selecting a thread never resolves it. Reply,
@@ -109,7 +438,14 @@ verification</h2>
 <code>diff_hunks.py</code>, and job log retrieval uses
 <code>workflow_job_logs.py</code>. Explore uses <code>explore.py</code>;
 pinned repositories, favorites, recent repositories, and saved queries
-use <code>saved_items.py</code>. The shared UI modules are under
+use <code>saved_items.py</code>. Notifications triage is
+<code>notification_triage.py</code> and
+<code>explore_notifications.py</code>; the failure digest is
+<code>run_failure_digest.py</code>; run, check and deployment actions
+are <code>run_actions.py</code>; auto-merge and the merge queue are
+<code>merge_automation.py</code>. The REST calls PyGithub lacks go
+through <code>rest_transport.py</code>, which refuses redirects so the
+token stays on api.github.com. The shared UI modules are under
 <code>quill/ui/</code>. Network calls are made off the UI thread. Tests
 exercise provider mapping, pagination, diff-line matching, redirect
 token handling, and action routing. Manual Windows screen-reader
@@ -118,3 +454,6 @@ reference does not claim a macOS assistive-technology acceptance
 matrix.</p>
 <p>For a guided walkthrough, read <a
 href="../tutorials/08-github-inside-quill.md">Tutorial 8</a>.</p>
+</main>
+</body>
+</html>

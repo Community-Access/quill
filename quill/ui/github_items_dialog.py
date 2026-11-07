@@ -78,6 +78,7 @@ from quill.ui.github_items_dialog_navigation import GitHubNavigationMixin
 from quill.ui.github_items_dialog_references import GitHubReferenceMixin
 from quill.ui.github_items_dialog_releases import GitHubItemsReleaseMixin
 from quill.ui.github_items_dialog_review import GitHubItemsReviewMixin
+from quill.ui.github_items_dialog_run_actions import GitHubRunActionsUiMixin
 from quill.ui.github_items_dialog_workflows import GitHubWorkflowsMixin
 from quill.ui.github_items_view import (
     SORT_ORDERS,
@@ -116,6 +117,7 @@ class GitHubItemsDialog(
     GitHubBranchActionsMixin,
     GitHubQuickFilterMixin,
     GitHubWorkflowsMixin,
+    GitHubRunActionsUiMixin,
     GitHubItemsMenusMixin,
 ):
     """Modal list-over-detail viewer for a repository's GitHub items."""
@@ -1096,6 +1098,7 @@ class GitHubItemsDialog(
                 _add("Re-run Workflow", self._rerun_selected_workflow)
                 _add("View Jobs and Logs...", self._view_jobs_for_selected)
                 _add("View Artifacts...", self._view_artifacts_for_selected)
+                self._add_run_actions(_add)
         elif self._view == VIEW_RELEASES:
             _add("Draft Release Notes...", self._draft_release_notes)
 
@@ -1359,6 +1362,8 @@ class GitHubItemsDialog(
             self._on_compare_branches()
         elif key == ord("F") and mod == (wx.MOD_CONTROL | wx.MOD_SHIFT):
             self._quick_filter_ctrl.SetFocus()
+        elif key == ord("W") and mod == (wx.MOD_CONTROL | wx.MOD_SHIFT) and self._view == VIEW_RUNS:
+            self._show_failure_digest()
         elif key == wx.WXK_ESCAPE and self._quick_filter_query and self._quick_filter_has_focus():
             # ChangeValue (not SetValue) so this doesn't also fire EVT_TEXT
             # and re-run the filter a second time, silently, with announce=False.

@@ -123,9 +123,11 @@ def _object_route(parts: list[str], fragment: str) -> dict[str, object]:
 
     line_match = _LINE_FRAGMENT.fullmatch(fragment)
     if line_match:
-        result["line"] = int(line_match.group("first"))
-        result["line_end"] = int(line_match.group("last") or line_match.group("first"))
-        if result["line_end"] < result["line"]:
+        first_line = int(line_match.group("first"))
+        last_line = int(line_match.group("last") or line_match.group("first"))
+        result["line"] = first_line
+        result["line_end"] = last_line
+        if last_line < first_line:
             raise GitHubReferenceError("The GitHub line range ends before it starts.")
     elif fragment.startswith("L") and any(char.isdecimal() for char in fragment[1:]):
         raise GitHubReferenceError("The GitHub line anchor is malformed.")
@@ -181,17 +183,20 @@ def parse_github_reference(text: str) -> GitHubReference:
     netloc = host if port is None else f"{host}:{port}"
     safe_path = "/" + "/".join(parts)
     safe_url = urlunsplit(("https", netloc, safe_path, parsed.query, parsed.fragment))
+    number = route.get("number")
+    line = route.get("line", 0)
+    line_end = route.get("line_end", 0)
     return GitHubReference(
         host=host,
         owner=owner,
         repo=repo,
         kind=str(route["kind"]),
         url=safe_url,
-        number=route.get("number") if isinstance(route.get("number"), int) else None,
+        number=number if isinstance(number, int) else None,
         ref=str(route.get("ref", "")),
         path=str(route.get("path", "")),
-        line=int(route.get("line", 0)),
-        line_end=int(route.get("line_end", 0)),
+        line=line if isinstance(line, int) else 0,
+        line_end=line_end if isinstance(line_end, int) else 0,
         section=str(route.get("section", "")),
     )
 

@@ -65,6 +65,7 @@ class GitHubCheckRun:
     conclusion: str  # "" until completed; then "success" / "failure" / ...
     url: str = ""
     summary: str = ""
+    check_run_id: int = 0  # 0 for a legacy commit status, which cannot be re-requested
 
     @property
     def state_display(self) -> str:
@@ -221,6 +222,7 @@ def _map_check_run(row: Any) -> GitHubCheckRun:
         conclusion=_text(getattr(row, "conclusion", "") or ""),
         url=_text(getattr(row, "html_url", "") or ""),
         summary=_text(getattr(output, "title", "") or "") if output is not None else "",
+        check_run_id=int(getattr(row, "id", 0) or 0),
     )
 
 

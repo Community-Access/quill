@@ -1852,12 +1852,43 @@
   {
     "id": "github.view_notifications",
     "title": "GitHub: Notifications",
-    "body": "Lists your GitHub notifications, each saying whether it is unread, which repository it came from, its subject and why you received it. Choosing one marks it read and opens GitHub's notifications page in your browser -- GitHub does not tell QUILL the address of the individual conversation, so it cannot take you straight to the thread. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Opens your GitHub notifications inbox in Explore GitHub. QUILL says the unread count once when it loads, and each row says why you got it in words, such as review requested or you were mentioned. Enter marks a row read and opens it in QUILL: a pull request in Review, an issue in the GitHub Items viewer, anything else in your browser. Mark Done (or Delete) and Unsubscribe take the row out of the list and leave you on the next one. Mark All Read asks first, and Include read notifications shows the ones you have already read. QUILL waits as long as GitHub asks between checks. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), runs without freezing the window, and is refused in Safe Mode.",
+    "user_guide_section": "github-notifications"
   },
   {
     "id": "github.view_security_alerts",
     "title": "GitHub: Security Alerts",
     "body": "Lists a repository's open security alerts with their severity, the package affected and a summary; choosing one opens that alert in your browser. It needs an account with permission to see the repository's alerts, and says so plainly when the repository has none open. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.notifications_triage",
+    "title": "GitHub Notifications Triage",
+    "body": "In Explore GitHub's notifications view, Mark Done (Alt+D, or Delete in the list) takes a notification off your GitHub inbox, Unsubscribe (Alt+U) stops the thread notifying you until you comment or are mentioned, and Mark All Read (Alt+A) marks everything read up to the moment the list loaded, after asking. Done and Unsubscribe leave the cursor on the next row. Include read notifications (Alt+I) shows read ones too. QUILL Lite reaches the same view from GitHub Items, Explore.",
+    "user_guide_section": "github-notifications"
+  },
+  {
+    "id": "github.what_failed",
+    "title": "What Failed in a Workflow Run",
+    "body": "One read-only text for a failed workflow run: each failed job, then its failed steps, then annotations with file and line, then the last 40 log lines of each failed step, with timestamps and colour codes removed. Open it from a Workflow Runs row (the Actions button, the context menu, or Ctrl+Shift+W in that view) or with What Failed (Alt+F) in Jobs and Logs. Arrow through it like a document; Copy All copies it.",
+    "user_guide_section": "what-failed-in-a-workflow-run"
+  },
+  {
+    "id": "github.workflow_run_actions",
+    "title": "Workflow Run Actions",
+    "body": "On a Workflow Runs row: Re-run Failed Jobs Only, Cancel Run, Delete Run (which says exactly which run, branch and result it will delete), Approve Run from a Fork, Review Pending Deployments and Combined Check Status, which says something like 3 of 4 checks pass. In Jobs and Logs, Re-request Check (Alt+C) runs the selected job's check again. Every write asks first and reports only what GitHub confirmed.",
+    "user_guide_section": "workflow-run-actions"
+  },
+  {
+    "id": "github.pending_deployments",
+    "title": "Pending Deployments",
+    "body": "Lists the environments a workflow run is waiting on, with the ones you may approve already checked. Write the comment GitHub requires, then press Approve or Reject. QUILL asks first and names the environments GitHub confirmed.",
+    "user_guide_section": "workflow-run-actions"
+  },
+  {
+    "id": "github.auto_merge_and_queue",
+    "title": "Auto-Merge and the Merge Queue",
+    "body": "In pull request Review, the Auto-Merge and Queue button (Alt+A) and the pull request's context menu turn auto-merge on with the merge method you choose, turn it off, add the pull request to the merge queue or take it out, and give the combined check status, counting only the required checks once the merge policy is known. Each asks first and says what GitHub confirmed, or why GitHub refused.",
+    "user_guide_section": "auto-merge-and-the-merge-queue"
   },
   {
     "id": "glow_audit.detail_text",

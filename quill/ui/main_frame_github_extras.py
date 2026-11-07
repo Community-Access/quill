@@ -178,60 +178,32 @@ class GitHubExtrasMixin:
     # Notifications
 
     def github_view_notifications(self) -> None:
-        """Tools > GitHub > Notifications..."""
+        """Tools > GitHub > Notifications...: the shared Explore notifications view.
+
+        The same triage surface QUILL Lite reaches from GitHub Items > Explore:
+        Mark Done, Unsubscribe, Mark All Read, Include Read, and Enter opening a
+        pull request in Review or an issue in the GitHub Items viewer.
+        """
         token = self._gh_admin_ready()
         if token is None:
             return
+        from quill.core.github.items_provider import GitHubItemsProvider
+        from quill.ui.github_explore_dialog import GitHubExploreDialog
 
-        def work(_progress: object) -> object:
-            from quill.core.github.items_provider import GitHubItemsProvider
-
-            provider = GitHubItemsProvider(token=token)
-            try:
-                return provider.fetch_notifications()
-            finally:
-                provider.close()
-
-        self._gh_admin_run("Loading notifications", work, self._on_github_notifications_loaded)
-
-    def _on_github_notifications_loaded(self, notifications: list[Any]) -> None:
-        if not notifications:
-            self._set_status("No notifications")
-            return
-        wx = self._wx
-        labels = [
-            f"{'Unread' if n.unread else 'Read'}: {n.repository} — {n.subject_title} ({n.reason})"
-            for n in notifications
-        ]
-        with wx.SingleChoiceDialog(
-            self.frame, "Notification:", "GitHub Notifications", labels
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "GitHub Notifications") != wx.ID_OK:
-                return
-            index = dialog.GetSelection()
-        chosen = notifications[index]
-        if chosen.url:
-            import webbrowser
-
-            # Notification.url is the API URL; the html-viewable thread lives
-            # on github.com/notifications -- open that landing page, since a
-            # per-thread web URL isn't part of the REST payload.
-            webbrowser.open("https://github.com/notifications")
-        token = load_github_token()
-        if token and chosen.unread:
-            from quill.core.github.items_provider import GitHubItemsProvider
-
-            def work(_progress: object) -> object:
-                provider = GitHubItemsProvider(token=token)
-                try:
-                    provider.mark_notification_read(chosen.id)
-                    return None
-                finally:
-                    provider.close()
-
-            self._run_background_task(
-                "Marking as read", work, lambda _r: self._set_status("Marked as read")
-            )
+        provider = GitHubItemsProvider(token=token)
+        chosen: list[Any] = []
+        try:
+            GitHubExploreDialog(
+                self.frame,
+                provider,
+                initial_view="notifications",
+                announce_cb=self._announce,
+                on_open_reference=chosen.append,
+            ).show()
+        finally:
+            provider.close()
+        if chosen:
+            self.open_github_items_viewer_for(chosen[0].repository, initial_reference=chosen[0])
 
     # ------------------------------------------------------------------
     # Security alerts

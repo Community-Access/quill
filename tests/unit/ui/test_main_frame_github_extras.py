@@ -206,37 +206,32 @@ def test_dispatch_workflow_declined(monkeypatch: pytest.MonkeyPatch) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_notifications_none() -> None:
-    host = _Host()
-    host._on_github_notifications_loaded([])
-    assert host.statuses == ["No notifications"]
-
-
-def test_notifications_selection_marks_read(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_notifications_open_the_shared_explore_triage_view(monkeypatch) -> None:
     _fake_token_store(monkeypatch, "tok")
     host = _Host()
-    notification = SimpleNamespace(
-        id="1",
-        repository="owner/repo",
-        subject_title="Bug",
-        reason="mention",
-        unread=True,
-        url="x",
-    )
-    host._wx = SimpleNamespace(
-        SingleChoiceDialog=lambda *a, **k: _FakeChoiceDialog(a[3][0]), ID_OK="OK"
-    )
-    host._show_modal_dialog = lambda dialog, title: dialog.result
-    monkeypatch.setattr("webbrowser.open", lambda url: None)
-    marked: list[str] = []
+    host._gh_admin_ready = lambda: "tok"
+    calls: list[object] = []
+    reference = SimpleNamespace(repository="owner/repo", kind="issue", number=3)
+
+    class _Explore:
+        def __init__(self, _parent, _provider, **kwargs) -> None:
+            calls.append(kwargs["initial_view"])
+            self._open = kwargs["on_open_reference"]
+
+        def show(self) -> None:
+            self._open(reference)
+
+    monkeypatch.setattr("quill.ui.github_explore_dialog.GitHubExploreDialog", _Explore)
     monkeypatch.setattr(
         "quill.core.github.items_provider.GitHubItemsProvider",
-        lambda token: SimpleNamespace(
-            mark_notification_read=lambda nid: marked.append(nid), close=lambda: None
-        ),
+        lambda token: SimpleNamespace(close=lambda: calls.append("closed")),
     )
-    host._on_github_notifications_loaded([notification])
-    assert marked == ["1"]
+    host.open_github_items_viewer_for = lambda repo, *, initial_reference: calls.append((
+        repo,
+        initial_reference,
+    ))
+    host.github_view_notifications()
+    assert calls == ["notifications", "closed", ("owner/repo", reference)]
 
 
 # ---------------------------------------------------------------------------

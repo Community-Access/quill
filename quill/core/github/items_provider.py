@@ -47,12 +47,14 @@ from quill.core.github.issue_comments import list_comments as _list_issue_commen
 from quill.core.github.items_errors import GitHubItemsError
 from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
 from quill.core.github.items_provider_supplement import GitHubItemsSupplementMixin
+from quill.core.github.notification_triage import GitHubNotificationTriageMixin
 from quill.core.github.notifications import (
     GitHubNotification,
     GitHubSecurityAlert,
     list_notifications,
 )
 from quill.core.github.notifications import mark_notification_read as _mark_notification_read_raw
+from quill.core.github.run_actions import GitHubRunActionsMixin
 from quill.core.github.workflow_annotations import list_annotations
 from quill.core.github.workflow_jobs import list_jobs
 from quill.core.github.workflow_models import (
@@ -400,7 +402,9 @@ def _take(iterable: Any, limit: int) -> list[Any]:
 # ---------------------------------------------------------------------------
 
 
-class GitHubItemsProvider(GitHubItemsSupplementMixin):
+class GitHubItemsProvider(
+    GitHubItemsSupplementMixin, GitHubNotificationTriageMixin, GitHubRunActionsMixin
+):
     """Read-only GitHub items fetcher backed by PyGithub.
 
     Construct with a token (authenticated) or ``None`` (anonymous, public repos

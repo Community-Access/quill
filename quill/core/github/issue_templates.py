@@ -113,6 +113,7 @@ def list_issue_templates(repo: Any, *, limit: int = 20) -> tuple[GitHubIssueTemp
             except (TypeError, ValueError):
                 declared_size = 0
             truncated = declared_size > 50_000
+            metadata: dict[str, str | list[str]]
             if truncated:
                 metadata, body = {}, ""
             else:

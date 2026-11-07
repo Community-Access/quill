@@ -118,12 +118,25 @@ class WorkflowJobsDialog:
         self._open_btn.SetName("Open selected workflow job in browser")
         self._open_run_btn = wx.Button(panel, label="Open &Run on GitHub")
         self._open_run_btn.SetName("Open this workflow run in browser")
+        self._digest_btn = wx.Button(panel, label="What &Failed...")
+        self._digest_btn.SetName("Read what failed in this run as one text")
+        self._digest_btn.SetHelpText(
+            "Opens a read-only text of every failed job, its failed steps, annotations "
+            "and the last 40 log lines of each failed step."
+        )
+        self._rerequest_btn = wx.Button(panel, label="Re-request &Check")
+        self._rerequest_btn.SetName("Ask GitHub to run the selected job's check again")
+        self._rerequest_btn.SetHelpText(
+            "Re-requests the selected job's check run. QUILL asks first; needs a signed-in account."
+        )
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close workflow jobs")
         actions.Add(self._log_btn, 0, wx.RIGHT, 6)
         actions.Add(self._annotations_btn, 0, wx.RIGHT, 6)
         actions.Add(self._open_btn, 0, wx.RIGHT, 6)
         actions.Add(self._open_run_btn, 0, wx.RIGHT, 6)
+        actions.Add(self._digest_btn, 0, wx.RIGHT, 6)
+        actions.Add(self._rerequest_btn, 0, wx.RIGHT, 6)
         actions.AddStretchSpacer()
         actions.Add(close_btn)
         root.Add(actions, 0, wx.EXPAND | wx.ALL, 8)
@@ -138,6 +151,9 @@ class WorkflowJobsDialog:
         self._annotations_btn.Bind(wx.EVT_BUTTON, self._load_annotations)
         self._open_btn.Bind(wx.EVT_BUTTON, self._open_job)
         self._open_run_btn.Bind(wx.EVT_BUTTON, self._open_run)
+        self._digest_btn.Bind(wx.EVT_BUTTON, self._show_digest)
+        self._rerequest_btn.Bind(wx.EVT_BUTTON, self._rerequest_check)
+        self._rerequest_btn.Enable(False)
         self._log_btn.Enable(False)
         self._annotations_btn.Enable(False)
         self._open_btn.Enable(False)
@@ -225,6 +241,9 @@ class WorkflowJobsDialog:
         self._log_btn.Enable(job.id > 0)
         self._annotations_btn.Enable((job.check_run_id or job.id) > 0)
         self._open_btn.Enable(bool(job.url))
+        self._rerequest_btn.Enable(
+            self._provider.is_authenticated and (job.check_run_id or job.id) > 0
+        )
 
     def _load_log(self, _event: object) -> None:
         job = self._selected()
@@ -318,6 +337,59 @@ class WorkflowJobsDialog:
                 if webbrowser.open(job.url)
                 else "Could not open workflow job in browser."
             )
+
+    def _show_digest(self, _event: object) -> None:
+        from quill.ui.github_run_digest_dialog import RunFailureDigestDialog
+
+        attempt = (
+            self._selected_attempt
+            if self._selected_attempt > 0 and self._selected_attempt != self._run_attempt
+            else None
+        )
+        RunFailureDigestDialog(
+            self.dialog,
+            self._provider,
+            repo=self._repo,
+            run_id=self._run_id,
+            run_label=self._run_label + (f", attempt {attempt}" if attempt else ""),
+            attempt_number=attempt,
+            announce_cb=self._announce,
+        ).show()
+
+    def _rerequest_check(self, _event: object) -> None:
+        job = self._selected()
+        check_run_id = (job.check_run_id or job.id) if job is not None else 0
+        if job is None or check_run_id <= 0:
+            self._announce("Select a workflow job with a check run first.")
+            return
+        wx = self._wx
+        title = "Re-request Check"
+        with wx.MessageDialog(
+            self.dialog,
+            f"Ask GitHub to run the check for job {job.name} again?",
+            title,
+            wx.YES_NO | wx.NO_DEFAULT,
+        ) as box:
+            if show_modal_dialog(box, title, announce=self._announce) != wx.ID_YES:
+                return
+        self._status.SetLabel(f"Re-requesting the check for {job.name}...")
+        name = job.name
+
+        def worker() -> None:
+            try:
+                self._provider.rerequest_check_run(self._repo, check_run_id)
+            except GitHubItemsError as exc:
+                message = str(exc.args[0]) if exc.args else str(exc)
+                wx.CallAfter(self._rerequested, message)
+                return
+            wx.CallAfter(self._rerequested, f"GitHub queued the check for {name} to run again.")
+
+        threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: consented rerequest.
+
+    def _rerequested(self, message: str) -> None:
+        if dialog_alive(self.dialog):
+            self._status.SetLabel(message)
+            self._announce(message)
 
     def _open_run(self, _event: object) -> None:
         if self._run_url:

@@ -80,9 +80,12 @@ class _Provider:
             open_issues_count=4,
         )
 
-    def fetch_notifications(self, *, limit: int):
-        return [
-            SimpleNamespace(
+    def fetch_notification_inbox(self, *, include_read: bool, limit: int, if_modified_since=""):
+        from quill.core.github.notification_triage import NotificationInbox
+        from quill.core.github.notifications import GitHubNotification
+
+        return NotificationInbox((
+            GitHubNotification(
                 id="N1",
                 repository="o/r",
                 reason="review_requested",
@@ -91,8 +94,8 @@ class _Provider:
                 unread=True,
                 updated_at="2026-11-05",
                 subject_url="https://github.com/o/r/pull/7",
-            )
-        ]
+            ),
+        ))
 
     def mark_notification_read(self, notification_id: str) -> None:
         self.notifications_read.append(notification_id)

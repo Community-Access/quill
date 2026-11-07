@@ -46,7 +46,11 @@ class GitHubExploreContextMenuMixin:
             if row.kind == "person":
                 add("Explore Person's Activity", lambda: self._explore_person(row.key))
             if row.kind == "notification" and row.key:
-                add("Mark Notification Read", lambda: self._mark_notification_read(row.key))
+                add("Mark Notification Read", lambda: self._mark_seen(row.key))
+                add("Mark Done\tDelete", lambda: self._triage_notification(False))
+                add("Unsubscribe from Thread", lambda: self._triage_notification(True))
+        if self._view_key() == "notifications" and self._rows:
+            add("Mark All Read...", self._mark_all_read)
             if (
                 row.kind in {"issue", "pr"}
                 and row.key.isdecimal()

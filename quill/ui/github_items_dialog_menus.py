@@ -23,11 +23,17 @@ class GitHubItemsMenusMixin:
         from quill.ui.github_explore_dialog import GitHubExploreDialog
 
         chosen = False
+        reference: object = None
 
         def use_repo(repo: str) -> None:
             nonlocal chosen
             chosen = True
             self._repo_ctrl.SetValue(repo)
+
+        def open_reference(target: object) -> None:
+            # A notification's issue opens here, at that issue (Explore closes first).
+            nonlocal reference
+            reference = target
 
         dialog = GitHubExploreDialog(
             self.dialog,
@@ -36,9 +42,12 @@ class GitHubItemsMenusMixin:
             on_repo_select=use_repo,
             announce_cb=self._announce,
             on_start_issue_worktree=self._start_issue_worktree_cb,
+            on_open_reference=open_reference,
         )
         dialog.show()
-        if chosen:
+        if reference is not None:
+            self._apply_initial_reference(reference)
+        elif chosen:
             self._on_load(None)
 
     def _on_projects(self, _event: object) -> None:
@@ -101,6 +110,7 @@ class GitHubItemsMenusMixin:
             elif self._view == VIEW_RUNS:
                 add("View Jobs and Logs...", self._view_jobs_for_selected)
                 add("View Artifacts...", self._view_artifacts_for_selected)
+                self._add_run_actions(add)
             elif self._view == VIEW_WORKFLOWS:
                 add(
                     "Run Workflow on Branch...",

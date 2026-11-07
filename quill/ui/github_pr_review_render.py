@@ -111,6 +111,7 @@ class GitHubPullReviewRenderMixin:
         self._reviewers_btn.Enable(can_change)
         self._draft_btn.Enable(can_change)
         self._update_btn.Enable(can_change and not state.draft)
+        self._merge_btn.Enable(can_change)
         self._next_unresolved_btn.Enable(bool(threads))
         self._next_unvisited_btn.Enable(bool(threads))
         self._select_node(None)
