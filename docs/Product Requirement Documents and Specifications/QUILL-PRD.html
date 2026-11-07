@@ -26315,6 +26315,18 @@ previously dropped entirely now survives, reads correctly, and is
 reachable by single-key table navigation (<code>T</code>).
 <code>scan_docx_features</code> still lists tables so the format change
 is disclosed before a rich edit.</p>
+<p><strong>Alternate headers and footers (#1756, 2026-11-06).</strong>
+“headers” and “footers” cover every header/footer the rich bridge drops,
+not only the default one: in each section, the first-page part when the
+section sets <code>w:titlePg</code>, and the even-page part when
+<code>settings.xml</code> sets <code>w:evenAndOddHeaders</code>. Those
+two are checked through python-docx’s link resolution, because a section
+can switch on its title page while inheriting a first-page header an
+earlier section defined but never showed; the ordinary part keeps its
+skip-if-linked rule, since a linked default header repeats one already
+checked. A blank part is not a finding. Without this, a title-page-only
+header opened with no question, <code>needs_backup</code> was false, and
+the first save removed it silently.</p>
 <p><strong>Shared with QUILL Lite (2026-10-17).</strong> The wx-free
 half of this path lives in <code>quill/core/docx_open.py</code>, and
 <code>main_frame_rich_mode.py</code> calls it: the scan

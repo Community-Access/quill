@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### First-page and even-page Word headers are named before a rich edit (2026-11-06)
+
+- Shared with QUILL: a `.docx` whose header or footer appears only on the
+  first page or only on even pages is now listed as "headers" or "footers" in
+  the question QUILL Lite asks when it opens, and the first save writes the
+  backup. Before, the file opened without a word and the header was gone after
+  saving (#1756).
+
 ### Form payment integration (2026-11-06)
 
 - Shared with QUILL: Insert Payment Field, Form Payments Setup and Verify
