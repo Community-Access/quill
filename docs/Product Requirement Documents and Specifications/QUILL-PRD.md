@@ -8746,10 +8746,13 @@ The QUILL key (`Ctrl+Shift+Grave` by default) operates as a two-layer prefix sys
 
 **Layer 2 — Chord command dispatch.** Any key pressed while the prefix is armed that is not a mode gate is dispatched via a data-driven lookup: `_chord_command_for_event` scans the live keymap for entries whose binding matches `<prefix>, <second-key>` and runs the matching command via `_run_command`. This means every chord command (read aloud, snippets, headings, copy tray, etc.) is fully reassignable in the Keymap Editor without any code change.
 
-**Key detection.** The QUILL prefix key is recognized by three independent strategies so it works on any keyboard layout and Windows driver:
-1. wxPython key code or Unicode key equals `ord("`")` or `ord("~")`
+**Key detection.** The grave key is recognised by its position, not by the character it types, because only a US layout calls it a backtick (German types `^`, French `²`, Nordic layouts `§`). The rules live in one wx-free function, `quill.core.grave_key.is_grave_key`, which QUILL's QUILL key and WordPress key and QUILL Lite's WordPress key all call. Any one of these is enough:
+1. wxPython key code or Unicode key equals `ord("`")` or `ord("~")` (every platform)
 2. Windows virtual-key `VK_OEM_3` (0xC0) via `GetRawKeyCode()`
-3. Physical scan code `0x29` (key below Esc / above Tab on PC keyboards) via bits 16–23 of `GetRawKeyFlags()`
+3. Windows physical scan code `0x29` (key below Esc / above Tab on PC keyboards) via bits 16–23 of `GetRawKeyFlags()`
+4. macOS (#1753): `GetRawKeyCode()` is the Mac virtual key code, which names a physical key and never changes with the layout. `0x32` (`kVK_ANSI_Grave`) is the back-tick key on an ANSI keyboard; on an ISO keyboard macOS reports the key above Tab as `0x0A` (`kVK_ISO_Section`) and the extra key beside left Shift as `0x32`. Both are accepted. These codes are tested only on macOS, because on Windows `0x32` is the virtual key for the digit 2.
+
+Before #1753 the macOS path had only strategy 1, so on a German Mac layout the QUILL key did nothing until the user switched to US. Unit tests (`tests/unit/core/test_grave_key_layouts.py`, `tests/unit/ui/test_main_frame_quill_key.py`) simulate US ANSI and German ISO key events on a mocked macOS, and pin that Ctrl+Shift+2 on Windows is not the QUILL key. Confirmation on real Mac hardware with a German layout is pending with the reporter.
 
 **Keymap Editor validation.** Chord bindings (containing `, `) are validated separately from simple bindings: the prefix part must be a known modifier+key combination and the second-key part must be a parseable single key or modifier+key.
 

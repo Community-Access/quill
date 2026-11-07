@@ -2186,7 +2186,13 @@ editors: free in QUILL, in QUILL Lite and in every family app's system-wide
 key (the 2026-11 survey). Grave cannot be a wx accelerator on its own, so the
 layer is run from the key-down handler (`_wordpress_key_down` in
 `quill/apps/lite_window_wordpress.py`) by the same `WordPressKeyLayer` object
-QUILL's char hook asks, and never by an accelerator table. It says "WordPress
+QUILL's char hook asks, and never by an accelerator table. The grave key is
+recognised by position, not character, through the shared
+`quill.core.grave_key.is_grave_key` that QUILL's QUILL key also uses (#1753):
+the backtick or tilde character; on Windows `VK_OEM_3` or hardware scan code
+0x29; on macOS the virtual key code 0x32 (`kVK_ANSI_Grave`) or 0x0A
+(`kVK_ISO_Section`, the key above Tab on ISO keyboards). So the layer starts on
+a German, French or Nordic layout too. It says "WordPress
 keys" when it starts, because the prefix changes nothing on screen; "Left
 WordPress keys" on Escape; "No WordPress command on X." for an unbound
 letter; and gives up after four seconds. A command that runs speaks for

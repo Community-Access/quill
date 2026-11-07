@@ -60,6 +60,20 @@ class _MacEvent(_Event):
         return bool(self._raw_ctrl)
 
 
+class _MacLayoutEvent(_MacEvent):
+    """A macOS key press that also carries the Mac virtual key code (#1753)."""
+
+    def __init__(self, key_code: int, *, raw_key_code: int, **kwargs: object) -> None:
+        super().__init__(key_code, **kwargs)  # type: ignore[arg-type]
+        self._raw_key_code = raw_key_code
+
+    def GetRawKeyCode(self) -> int:
+        return self._raw_key_code
+
+    def GetRawKeyFlags(self) -> int:
+        return 0
+
+
 _BACKTICK = ord("`")
 
 
@@ -612,3 +626,74 @@ def test_browse_mode_instant_preset_times_out_immediately() -> None:
     frame._enter_quill_key_mode()
     frame._quill_key_mode_started_at = time.monotonic() - 0.05
     assert frame._browse_mode_timed_out() is True
+
+
+@pytest.fixture
+def on_macos(monkeypatch: pytest.MonkeyPatch) -> None:
+    import quill.core.grave_key as grave_key
+
+    monkeypatch.setattr(grave_key, "_current_platform", lambda: "darwin")
+
+
+@pytest.mark.parametrize(
+    ("label", "key_code", "unicode_key", "raw_key_code"),
+    [
+        ("US ANSI", ord("`"), ord("~"), 0x32),
+        ("US ANSI, no character", 0, 0, 0x32),
+        ("German ISO, key above Tab", ord("^"), ord("°"), 0x0A),
+        ("German ISO, key beside left Shift", ord("<"), ord(">"), 0x32),
+    ],
+)
+@pytest.mark.usefixtures("on_macos")
+def test_mac_quill_key_works_on_any_layout(
+    label: str, key_code: int, unicode_key: int, raw_key_code: int
+) -> None:
+    # #1753: on a German Mac layout the key above Tab types "^", so the
+    # QUILL key must be found by the key's position, not its character.
+    frame = _build_frame()
+    event = _MacLayoutEvent(
+        key_code,
+        shift=True,
+        raw_ctrl=True,
+        unicode_key=unicode_key,
+        raw_key_code=raw_key_code,
+    )
+    assert frame._handle_quill_key_mode_event(event) is True, label
+    assert frame._quill_key_prefix_pending is True, label
+
+
+@pytest.mark.usefixtures("on_macos")
+def test_mac_german_quill_key_twice_locks_browse_mode() -> None:
+    frame = _build_frame()
+
+    def press() -> bool:
+        return frame._handle_quill_key_mode_event(
+            _MacLayoutEvent(
+                ord("^"), shift=True, raw_ctrl=True, unicode_key=ord("°"), raw_key_code=0x0A
+            )
+        )
+
+    assert press() is True
+    assert press() is True
+    assert frame._quill_key_mode_active is True
+    assert frame._quill_key_mode_sticky is True
+
+
+@pytest.mark.usefixtures("on_macos")
+def test_mac_ctrl_shift_letter_is_not_the_quill_key() -> None:
+    frame = _build_frame()
+    # kVK_ANSI_Z is 0x06; Ctrl+Shift+Y on a German layout.
+    event = _MacLayoutEvent(ord("Y"), shift=True, raw_ctrl=True, raw_key_code=0x06)
+    frame._handle_quill_key_mode_event(event)
+    assert frame._quill_key_prefix_pending is False
+
+
+def test_windows_ctrl_shift_2_is_not_the_quill_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    # 0x32 is the Mac back-tick code, but on Windows it is the virtual key "2".
+    import quill.core.grave_key as grave_key
+
+    monkeypatch.setattr(grave_key, "_current_platform", lambda: "win32")
+    frame = _build_frame()
+    event = _MacLayoutEvent(ord("2"), ctrl=True, shift=True, raw_key_code=0x32)
+    frame._handle_quill_key_mode_event(event)
+    assert frame._quill_key_prefix_pending is False

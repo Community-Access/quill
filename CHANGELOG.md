@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### The QUILL key on every keyboard layout (2026-11-06)
+
+- On a Mac with a German keyboard layout the QUILL key did nothing until you
+  switched to US English (#1753). The grave key types `^` there, and on macOS
+  QUILL looked only for the back-tick character. QUILL now finds the key by
+  where it sits, the key above Tab, using the Mac's own key code. On the ISO
+  keyboards sold across Europe the key beside the left Shift key counts too,
+  because macOS swaps the two. Windows already worked this way and is
+  unchanged.
+- The WordPress key, `Ctrl+Alt+Shift+Grave`, uses the same check in QUILL and
+  QUILL Lite, so it works on any layout as well.
 ### Document Statistics, pressed twice (2026-11-06)
 
 - Document Statistics (`Ctrl+Shift+G`) still says words, lines and characters

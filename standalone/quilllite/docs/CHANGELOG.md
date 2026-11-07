@@ -2,6 +2,13 @@
 
 ## 2.0.0
 
+### The WordPress key on every keyboard layout (2026-11-06)
+
+- `Ctrl+Alt+Shift+Grave` now finds the grave key by where it sits, the key
+  above Tab, not by the character it types. On a German, French or Nordic
+  layout that key types `^`, `²` or `§`, and the WordPress key used to need a
+  US layout there. It is the same shared check QUILL uses for its QUILL key
+  (#1753).
 ### Document Statistics, pressed twice (2026-11-06)
 
 - View > Document Statistics (Ctrl+Shift+G) still says words, lines and
