@@ -25,6 +25,13 @@ model in the one store. This module moves what people already have:
   Nemotron 3.5 (80 mel features, not 128), so it is not adopted; a person who
   chose it gets the most accurate model they have until they download
   Nemotron 3.5 in Dictation Settings, Speech Models.
+* **Deprecated, and said once (2026-10-17).** The duplicate path is deprecated
+  in QUILL 1.1 and this adoption code goes in QUILL 1.2 (design record sections
+  32.6 and 41). :func:`migration_notice` marks a moved engine choice as owed a
+  sentence, and :func:`legacy_leftovers` finds old folders nothing uses (the
+  older Nemotron above), which :mod:`quill.ui.sherpa_migration_notice` offers
+  once to delete, No by default; :func:`remove_leftovers` reports the bytes it
+  actually freed. Nothing is ever deleted without that Yes.
 
 wx-free.
 """
@@ -42,8 +49,18 @@ __all__ = [
     "LEGACY_PROVIDER_IDS",
     "SHARED_PROVIDER_ID",
     "adopt_legacy_models",
+    "legacy_leftovers",
     "migrate_choice",
+    "migration_notice",
+    "remove_leftovers",
 ]
+
+#: The deprecation (design record sections 32.6 and 41): the duplicate path is
+#: deprecated in QUILL 1.1 and its adoption code goes in QUILL 1.2. A saved
+#: ``nemotron`` or ``parakeet`` keeps loading as ``sherpa`` after that.
+DEPRECATED_IN = "QUILL 1.1"
+REMOVED_IN = "QUILL 1.2"
+_NOTICE_STATES = frozenset({"", "pending", "done"})
 
 SHARED_PROVIDER_ID = "sherpa"
 LEGACY_PROVIDER_IDS = frozenset({"nemotron", "parakeet"})
@@ -68,6 +85,141 @@ def migrate_choice(data: Mapping[str, object]) -> tuple[str, str]:
     if provider not in ACCEPTED_PROVIDERS:
         provider = ""
     return provider, LEGACY_MODEL_IDS.get(model, model)
+
+
+def migration_notice(data: Mapping[str, object]) -> str:
+    """``sherpa_migration_notice`` for saved *data*: ``"pending"`` when a saved
+    engine of ``nemotron`` or ``parakeet`` is being moved to ``sherpa`` now and
+    the person has not been told, else what was saved (``""`` or ``"done"``).
+    The policy's "never silently" (section 32.6): the move is said once, by
+    :mod:`quill.ui.sherpa_migration_notice`."""
+    saved = str(data.get("sherpa_migration_notice", "") or "").strip().lower()
+    if saved not in _NOTICE_STATES:
+        saved = ""
+    provider = str(data.get("speech_provider", "") or "").strip().lower()
+    if provider in LEGACY_PROVIDER_IDS and saved != "done":
+        return "pending"
+    return saved
+
+
+def _is_link(path: Path) -> bool:
+    """A symbolic link or an NTFS junction: something that may point outside
+    the folder, so it is never walked into or counted, only unlinked."""
+    try:
+        return path.is_symlink() or path.is_junction()
+    except OSError:
+        return True
+
+
+def _walk_files(folder: Path) -> list[Path]:
+    """Every file under *folder*, never through a link or junction."""
+    files: list[Path] = []
+    try:
+        entries = list(folder.iterdir())
+    except OSError:
+        return files
+    for entry in entries:
+        if _is_link(entry):
+            continue
+        if entry.is_dir():
+            files.extend(_walk_files(entry))
+        elif entry.is_file():
+            files.append(entry)
+    return files
+
+
+def _bytes_only_here(folder: Path) -> int:
+    """Bytes under *folder* that deleting it would free: files with no other
+    hard link (an adopted Parakeet's files are links into the store, so
+    deleting the old folder frees nothing and is not worth offering). Links
+    and junctions are not followed."""
+    total = 0
+    for path in _walk_files(folder):
+        try:
+            info = path.stat()
+        except OSError:
+            continue
+        if info.st_nlink <= 1:
+            total += info.st_size
+    return total
+
+
+def _remove_tree(folder: Path) -> int:
+    """Delete *folder*'s contents, bottom up, and return the bytes freed. A
+    link or junction inside is removed as a link; what it points at is never
+    touched."""
+    freed = 0
+    try:
+        entries = list(folder.iterdir())
+    except OSError:
+        return 0
+    for entry in entries:
+        try:
+            if _is_link(entry):
+                if entry.is_dir():
+                    os.rmdir(entry)  # removes a directory link or junction itself
+                else:
+                    entry.unlink()
+            elif entry.is_dir():
+                freed += _remove_tree(entry)
+                entry.rmdir()
+            else:
+                info = entry.stat()
+                entry.unlink()
+                if info.st_nlink <= 1:
+                    freed += info.st_size
+        except OSError:
+            continue
+    return freed
+
+
+def legacy_leftovers(legacy_root: Path | None = None) -> list[tuple[Path, int]]:
+    """Old-style model folders nothing uses any more, with the bytes deleting
+    each would free: the older Nemotron (never adopted, section 22) and any old
+    Parakeet copy whose files are not links into the shared store. Folders that
+    would free nothing are left out. Never raises."""
+    try:
+        if legacy_root is None:
+            from quill.core.speech.models import models_root
+
+            legacy_root = models_root()
+        found: list[tuple[Path, int]] = []
+        for engine in sorted(LEGACY_PROVIDER_IDS):
+            parent = legacy_root / engine
+            if not parent.is_dir():
+                continue
+            for folder in sorted(p for p in parent.iterdir() if p.is_dir()):
+                size = _bytes_only_here(folder)
+                if size > 0:
+                    found.append((folder, size))
+        return found
+    except OSError:
+        return []
+
+
+def remove_leftovers(folders: list[Path], legacy_root: Path | None = None) -> int:
+    """Delete *folders* (only ever ones :func:`legacy_leftovers` named, inside
+    the old ``speech-models/nemotron`` or ``parakeet`` folders) and return the
+    bytes actually freed, measured file by file as each is removed -- never an
+    estimate. Called only after the person answered Yes."""
+    if legacy_root is None:
+        from quill.core.speech.models import models_root
+
+        legacy_root = models_root()
+    allowed = [(legacy_root / engine).resolve() for engine in LEGACY_PROVIDER_IDS]
+    freed = 0
+    for folder in folders:
+        if _is_link(folder):
+            continue  # a link named as the folder: never followed
+        target = folder.resolve()
+        if not any(parent in target.parents for parent in allowed):
+            continue  # never outside the old engines' own folders
+        freed += _remove_tree(target)
+        try:
+            target.rmdir()
+        except OSError:
+            pass
+    return freed
 
 
 def _find(root: Path, name: str, size: int) -> Path | None:

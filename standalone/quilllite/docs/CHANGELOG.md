@@ -2,6 +2,11 @@
 
 ## 2.0.0
 
+### Nemotron keeps its last word (2026-11-06)
+
+- Shared with QUILL: Nemotron gets twice as much quiet after you stop
+  speaking, so a short phrase no longer loses its last word ("choose one"
+  came back "Choose." on 60 of 335 short commands; most now come back whole).
 ### Navigate > Code: blocks, indentation and Check This File (2026-11-06)
 
 QUILL's new Navigate > Code submenu, with the same rows, letters and keys, from

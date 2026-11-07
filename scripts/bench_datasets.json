@@ -66,7 +66,7 @@
       "contaminated_models": ["*"],
       "layout": "librispeech",
       "archives": [
-        {"url": "https://www.openslr.org/resources/12/test-clean.tar.gz", "sha256": null, "bytes": null}
+        {"url": "https://www.openslr.org/resources/12/test-clean.tar.gz", "sha256": "39fde525e59672dc6d1551919b1478f724438a95aa55f874b576be21967e6c23", "bytes": null}
       ],
       "notes": "In Moonshine's training data and a standard set for everyone. Reported, flagged, for comparison only."
     },
@@ -90,7 +90,7 @@
       "contaminated_models": ["*"],
       "layout": "librispeech",
       "archives": [
-        {"url": "https://www.openslr.org/resources/12/test-other.tar.gz", "sha256": null, "bytes": null}
+        {"url": "https://www.openslr.org/resources/12/test-other.tar.gz", "sha256": "d09c181bba5cf717b3dee7d4d592af11a3ee3a09e08ae025c5506f6ebe961c29", "bytes": null}
       ],
       "notes": "As test-clean, with harder speakers."
     },
@@ -139,8 +139,8 @@
       "contaminated_models": ["moonshine"],
       "layout": "fleurs",
       "archives": [
-        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/es_419/audio/test.tar.gz", "sha256": null, "bytes": null},
-        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/es_419/test.tsv", "sha256": null, "bytes": null}
+        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/es_419/audio/test.tar.gz", "sha256": "981802f6c828fd214fcf8bfc1036d80c9184b6eeb5650b3f7882f8affec046c9", "bytes": null},
+        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/es_419/test.tsv", "sha256": "d107a93a4f54a18ac25cd470bb4cdadce14fb075b0c1d1542258e274d209ec09", "bytes": null}
       ],
       "notes": "Latin American Spanish (es_419), the variant FLEURS publishes. Paths unverified until first pinned."
     },
@@ -437,8 +437,8 @@
     "_about": "The upper-bound date of each model's training data, for B-1a's held-out rule: a LibriVox recording is held out for a model only if it was catalogued after this date. None is published; each is the safe assumption dict.md section 8 names. null means no date is known yet, so nothing counts as held out for that model until one is filled in.",
     "whisper": {"date": "2024-10-01", "basis": "assumption: a safe upper bound for large-v3-turbo; Whisper's own cutoff is unpublished"},
     "moonshine": {"date": "2024-10-21", "basis": "the Moonshine paper's date (arXiv 2410.15608)"},
-    "parakeet": {"date": null, "basis": "fill in the Hugging Face commit date pinned in model_catalog.py"},
-    "nemotron": {"date": null, "basis": "fill in the Hugging Face commit date pinned in model_catalog.py"},
+    "parakeet": {"date": "2026-04-27", "basis": "upper bound for both catalogue Parakeets (checked 2026-10-17 on the Hugging Face API): the unified English export was created 2026-04-27, TDT v3's 2025-08-16 (NVIDIA's own v3 card 2025-08-04); the later date covers both"},
+    "nemotron": {"date": "2026-06-11", "basis": "the date in the pinned sherpa-onnx export's repository name (nemotron-3.5-asr-streaming-0.6b-1120ms-int8-2026-06-11); NVIDIA's training cutoff is unpublished"},
     "vosk": {"date": null, "basis": "fill in the archive dates from alphacephei.com"},
     "canary": {"date": null, "basis": "fill in the release date of the sherpa-onnx export"}
   }

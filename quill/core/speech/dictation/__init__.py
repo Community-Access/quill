@@ -10,7 +10,8 @@ the wx shell injects those as a small :class:`DictationServices` callback bundle
 so the controller stays deterministic and unit-testable.
 
 The companion module ``quill.core.dictation`` is a *different*, older feature
-(it launches the Windows Win+H dictation panel); do not confuse the two.
+(it launches the Windows Win+H dictation panel); do not confuse the two. It is
+deprecated, has no caller in the app, and goes in QUILL 1.2.
 """
 
 from __future__ import annotations

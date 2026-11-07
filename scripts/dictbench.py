@@ -583,6 +583,7 @@ def main(argv: list[str] | None = None) -> int:
         size = bench_whispercpp.model_path(bench_whispercpp.model_id(engine)).stat().st_size
         overall["model_size"] = megabytes(size)
     overall["execution_provider"] = "cpu"
+    overall["threads"] = None if args.latency else args.threads  # live: the recogniser's own
     overall["engine"], overall["language"] = model.id, language
     overall["normalizer"] = normalizer(language)[0]
     overall["date"] = time.strftime("%Y-%m-%d")
