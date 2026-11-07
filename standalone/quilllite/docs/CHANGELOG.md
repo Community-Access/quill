@@ -2,6 +2,21 @@
 
 ## 2.0.0
 
+### GitHub notifications, failed runs and merge automation (2026-11-07)
+
+- The shared GitHub windows triage notifications: Explore's notifications view
+  says the unread count, says why each one arrived, and has Mark Done (Alt+D,
+  or Delete), Unsubscribe (Alt+U), Mark All Read (Alt+A) and Include read
+  notifications (Alt+I). Enter opens a pull request in Review or an issue in
+  Items and marks it read.
+- What Failed (Ctrl+Shift+W on a workflow run, Alt+F in Jobs and Logs) is one
+  plain text of failed jobs, steps, annotations and last log lines.
+- Workflow runs can re-run only failed jobs, be cancelled, deleted, approved
+  from a fork, and have pending deployments approved or rejected. Jobs and
+  Logs re-requests a check (Alt+C).
+- Review's Auto-Merge and Queue button (Alt+A) turns auto-merge on or off and
+  adds a pull request to the merge queue or takes it out.
+
 ### GitHub workbench (2026-11-05)
 
 - File > GitHub Workbench... (Alt+F, then G) opens the same GitHub Items

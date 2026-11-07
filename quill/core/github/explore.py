@@ -26,6 +26,7 @@ from quill.core.github.explore_models import (
     _rows,
     _text,
 )
+from quill.core.github.explore_notifications import ExploreNotificationsMixin
 from quill.core.github.explore_views import AUTH_VIEWS, PERSON_VIEWS
 from quill.core.github.fetch_results import GitHubFetchResult
 from quill.core.github.repository_views import (
@@ -44,11 +45,12 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
-class GitHubExploreClient:
+class GitHubExploreClient(ExploreNotificationsMixin):
     """Bounded reads and explicit writes using the workbench's existing session."""
 
     def __init__(self, provider: GitHubItemsProvider) -> None:
         self._provider = provider
+        self._notification_init()
 
     def _user(self) -> Any:
         if not self._provider.is_authenticated:
@@ -117,6 +119,7 @@ class GitHubExploreClient:
         repositories: tuple[str, ...] | list[str] = (),
         categories: tuple[str, ...] | list[str] = (),
         limit: int = 50,
+        include_read: bool = False,
     ) -> GitHubFetchResult[ExploreRow]:
         """Fetch one view and retain any page errors or row-cap warnings."""
         if view in AUTH_VIEWS and not self._provider.is_authenticated:
@@ -134,6 +137,7 @@ class GitHubExploreClient:
                 person=person,
                 limit=max(1, min(limit, 100)),
                 warnings=warnings,
+                include_read=include_read,
             )
         except GitHubExploreError:
             raise
@@ -150,6 +154,7 @@ class GitHubExploreClient:
         person: str,
         limit: int,
         warnings: list[str],
+        include_read: bool = False,
     ) -> list[ExploreRow]:
         gh = self._provider._gh  # noqa: SLF001
         if view == "search":
@@ -234,20 +239,7 @@ class GitHubExploreClient:
                 )
             return result
         if view == "notifications":
-            result = []
-            for row in self._provider.fetch_notifications(limit=limit):
-                url = row.subject_url
-                label = (
-                    f"{'Unread' if row.unread else 'Read'}: {row.repository} — {row.subject_title}"
-                )
-                detail = (
-                    f"{row.subject_type}: {row.subject_title}\nRepository: {row.repository}\n"
-                    f"Reason: {row.reason}\nUpdated: {row.updated_at}\n{url}"
-                )
-                result.append(
-                    ExploreRow(label, detail, url, row.repository, "notification", row.id)
-                )
-            return result
+            return self._fetch_notification_rows(include_read=include_read, limit=limit)
         if view == "chooser":
             if not self._provider.is_authenticated:
                 return []

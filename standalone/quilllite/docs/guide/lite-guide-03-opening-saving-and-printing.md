@@ -1107,6 +1107,27 @@ selected file's differences, inspect a check, or submit a review from the PR.
 The [complete GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
 walks through the viewer's other lists and controls in both apps.
 
+### Notifications, failed runs and merging
+
+Choose **Explore...** in the Items viewer and pick the **GitHub notifications**
+view for your whole GitHub inbox. QUILL Lite says how many are unread when it
+loads, and each row says why it arrived, such as "review requested" or "you
+were mentioned". Enter marks it read and opens a pull request in Review or an
+issue in the Items viewer. **Mark Done** (Alt+D, or Delete in the list) and
+**Unsubscribe** (Alt+U) take the row out and leave you on the next one.
+**Mark All Read** (Alt+A) asks first. **Include read notifications** (Alt+I)
+shows the ones you have read.
+
+On a failed workflow run, press **Ctrl+Shift+W** for **What Failed**: one
+read-only text of the failed jobs, their failed steps, the annotations with
+file and line, and the last 40 lines of each failed step's log, without
+timestamps or colour codes. The run's **Actions...** menu also re-runs only the
+failed jobs, cancels or deletes the run, approves a run from a fork, and
+reviews deployments waiting for you. In Review, **Auto-Merge and Queue...**
+(Alt+A) turns auto-merge on with a merge method or off, and adds the pull
+request to the merge queue or takes it out. Each change asks first and says
+what GitHub did.
+
 ## Opening something you worked on recently
 
 

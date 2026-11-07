@@ -1,5 +1,16 @@
 # QUILL Lite 2.0
 
+## GitHub: notifications, what failed, and merge automation
+
+The GitHub windows Lite shares with QUILL now triage your notifications. In
+Explore's notifications view you hear how many are unread, each row says why
+it arrived, Enter opens it in Review or Items, and Delete marks it done and
+moves you to the next. On a failed workflow run, **Ctrl+Shift+W** opens
+**What Failed**: the failed jobs, steps, annotations and last log lines in one
+plain text. Runs can re-run only their failed jobs, be cancelled or deleted,
+and have deployments approved. In Review, **Auto-Merge and Queue...** (Alt+A)
+handles auto-merge and the merge queue.
+
 ## GitHub workbench
 
 **File > GitHub Workbench...** (**Alt+F**, then **G**) opens the shared QUILL

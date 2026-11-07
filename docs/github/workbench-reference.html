@@ -358,6 +358,62 @@ Security view combines Dependabot, code-scanning, and secret-scanning
 alerts. Secret values are never loaded into the view. If the account
 cannot read a category or the feature is disabled, the view labels that
 category unavailable instead of presenting it as having no findings.</p>
+<h2 id="notifications-triage">Notifications triage</h2>
+<p>Explore’s <strong>GitHub notifications</strong> view is the account’s
+whole inbox. In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub
+&gt; Notifications</strong> opens Explore straight at it; in QUILL Lite,
+choose <strong>Explore</strong> in Items and pick the view. After each
+load QUILL says the unread count once, for example “12 unread”. Each row
+reads its state, then why it arrived in words (“review requested”, “you
+were mentioned”, “your team was mentioned”), then the repository and
+title.</p>
+<p>Under the list, shown only in this view: <strong>Include read
+notifications</strong> (Alt+I), <strong>Mark Done</strong> (Alt+D),
+<strong>Unsubscribe</strong> (Alt+U) and <strong>Mark All Read</strong>
+(Alt+A). Delete in the list is Mark Done. Done and Unsubscribe take the
+row out of the list and select the next row, so triage keeps its place.
+Mark All Read asks first and marks only what arrived before the list
+loaded. Enter marks the row read, then opens a pull request in the
+review window, an issue in Items at that issue, and anything else in the
+browser. The context menu offers the same actions.</p>
+<p>QUILL honours GitHub’s <code>X-Poll-Interval</code>: a refresh sooner
+than GitHub allows keeps the current list and says how long to wait. A
+refresh after that sends <code>If-Modified-Since</code>, so an unchanged
+inbox costs no rate limit.</p>
+<h2 id="what-failed-and-run-actions">What failed, and run actions</h2>
+<p>On a Workflow Runs row, <strong>What Failed</strong> (Ctrl+Shift+W in
+that view, the Actions menu or the context menu) opens a read-only text
+field holding one digest: each failed job, its failed steps, the
+annotations with <code>file:line</code>, then the last 40 meaningful log
+lines of each failed step with timestamps and ANSI codes removed. A
+step’s lines are the ones stamped inside its start and finish times; if
+GitHub gave no times, the digest says so and uses the end of the job’s
+log. <strong>Jobs and Logs</strong> has the same digest as <strong>What
+Failed</strong> (Alt+F), for the attempt you chose, and
+<strong>Re-request Check</strong> (Alt+C) for the selected job.</p>
+<p>The same menus add <strong>Re-run Failed Jobs Only</strong>,
+<strong>Cancel Run</strong> (GitHub answers “accepted”, so QUILL says it
+is stopping the run), <strong>Delete Run</strong> (the confirmation
+names the run, branch and result, and says logs and artifacts go with
+it), <strong>Approve Run from a Fork</strong>, <strong>Review Pending
+Deployments</strong> (a window listing waiting environments as check
+boxes, a required comment, and Approve and Reject) and <strong>Combined
+Check Status</strong>, a single line such as “3 of 4 checks pass;
+failing: test.”</p>
+<h2 id="auto-merge-and-the-merge-queue">Auto-merge and the merge
+queue</h2>
+<p>The review window’s <strong>Auto-Merge and Queue</strong> button
+(Alt+A) and the pull request’s context menu hold <strong>Enable
+Auto-Merge</strong> (with a merge-method chooser), <strong>Disable
+Auto-Merge</strong>, <strong>Add to Merge Queue</strong>, <strong>Remove
+from Merge Queue</strong> and <strong>Combined Check Status</strong>.
+After <strong>Check Merge Policy</strong>, the combined status counts
+only required checks (“3 of 4 required checks pass”). A check node’s
+context menu has <strong>Re-request Check</strong>; a legacy commit
+status cannot be re-requested and QUILL says so. Each change asks first
+and reports GitHub’s confirmed result. Known refusals, such as
+auto-merge being turned off for the repository, are said as what to do
+next.</p>
 <h2 id="review-and-write-safety">Review and write safety</h2>
 <p>The review tree announces reply counts, outdated positions, resolved
 state, and check status. Selecting a thread never resolves it. Reply,
@@ -383,7 +439,14 @@ verification</h2>
 <code>diff_hunks.py</code>, and job log retrieval uses
 <code>workflow_job_logs.py</code>. Explore uses <code>explore.py</code>;
 pinned repositories, favorites, recent repositories, and saved queries
-use <code>saved_items.py</code>. The shared UI modules are under
+use <code>saved_items.py</code>. Notifications triage is
+<code>notification_triage.py</code> and
+<code>explore_notifications.py</code>; the failure digest is
+<code>run_failure_digest.py</code>; run, check and deployment actions
+are <code>run_actions.py</code>; auto-merge and the merge queue are
+<code>merge_automation.py</code>. The REST calls PyGithub lacks go
+through <code>rest_transport.py</code>, which refuses redirects so the
+token stays on api.github.com. The shared UI modules are under
 <code>quill/ui/</code>. Network calls are made off the UI thread. Tests
 exercise provider mapping, pagination, diff-line matching, redirect
 token handling, and action routing. Manual Windows screen-reader

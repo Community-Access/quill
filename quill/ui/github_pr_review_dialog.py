@@ -18,6 +18,7 @@ from quill.core.github.pr_review import (
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_pr_review_menus import GitHubPullReviewMenusMixin
+from quill.ui.github_pr_review_merge import GitHubPullReviewMergeMixin
 from quill.ui.github_pr_review_policy import GitHubPullReviewPolicyMixin
 from quill.ui.github_pr_review_render import GitHubPullReviewRenderMixin
 from quill.ui.spoken_name import set_spoken_name
@@ -32,6 +33,7 @@ class GitHubPullReviewDialog(
     GitHubPullReviewPolicyMixin,
     GitHubPullReviewRenderMixin,
     GitHubPullReviewMenusMixin,
+    GitHubPullReviewMergeMixin,
 ):
     """Three-pane reader for one PR's state, review threads, and check runs."""
 
@@ -184,6 +186,12 @@ class GitHubPullReviewDialog(
         self._update_btn = wx.Button(panel, label="Update &Branch…")
         self._update_btn.SetName("Update the pull request branch from its base branch")
         self._update_btn.SetHelpText("Merge the base branch into this pull request's branch.")
+        self._merge_btn = wx.Button(panel, label="&Auto-Merge and Queue…")
+        self._merge_btn.SetName("Auto-merge, merge queue and combined check status")
+        self._merge_btn.SetHelpText(
+            "Turn auto-merge on with a merge method or off, add the pull request to the "
+            "merge queue or take it out, or hear how many required checks pass."
+        )
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close pull request review")
         close_btn.SetHelpText("Close the review window.")
@@ -193,6 +201,7 @@ class GitHubPullReviewDialog(
             self._reviewers_btn,
             self._draft_btn,
             self._update_btn,
+            self._merge_btn,
         )
         for button in (
             self._next_unresolved_btn,
@@ -224,6 +233,7 @@ class GitHubPullReviewDialog(
         self._reviewers_btn.Bind(wx.EVT_BUTTON, self._request_reviewers)
         self._draft_btn.Bind(wx.EVT_BUTTON, self._toggle_draft)
         self._update_btn.Bind(wx.EVT_BUTTON, self._update_branch)
+        self._merge_btn.Bind(wx.EVT_BUTTON, self._show_merge_menu)
         self._outline.Bind(wx.EVT_TREE_SEL_CHANGED, self._select_node)
         self._outline.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._activate_node)
         self._outline.Bind(wx.EVT_CONTEXT_MENU, self._show_node_menu)

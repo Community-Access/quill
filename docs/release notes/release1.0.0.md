@@ -2,6 +2,28 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## GitHub: notifications, what failed, and merge automation
+
+Your GitHub notifications are now something you can work through rather than
+just read. **Tools > Git and GitHub > GitHub > Notifications...** opens the
+inbox in Explore and says how many are unread. Each one says why you got it,
+in words: "review requested", "you were mentioned". Press Enter and QUILL marks
+it read and opens it in its own view, a pull request in Review and an issue in
+GitHub Items. Press Delete for Done, or Alt+U to unsubscribe, and you land on
+the next one, so you never lose your place.
+
+When a workflow run fails, select it and press **Ctrl+Shift+W**. **What Failed**
+gives you one plain text to arrow through: the failed jobs, the steps that
+failed, the annotations with file and line, and the last 40 lines of each
+failed step's log, without the timestamps and colour codes. You can re-run
+only the failed jobs, cancel or delete a run, approve a run from a fork, and
+approve or reject a deployment that is waiting for you.
+
+In pull request Review, **Auto-Merge and Queue...** (Alt+A) turns on
+auto-merge with the merge method you choose, or adds the pull request to the
+merge queue, and tells you plainly what GitHub did. QUILL Lite has all of this
+in the same windows.
+
 ## Dictation: Nemotron keeps its last word
 
 If you dictate with **Nemotron**, short phrases no longer lose their last

@@ -21,6 +21,7 @@ from quill.ui.dialog_contract import (
 )
 from quill.ui.dpi import dip_size
 from quill.ui.github_explore_context_menu import GitHubExploreContextMenuMixin
+from quill.ui.github_explore_notifications import GitHubExploreNotificationsMixin
 from quill.ui.github_explore_queue import GitHubExploreQueueMixin
 from quill.ui.github_explore_queue import queue_item_key as _queue_item_key
 from quill.ui.github_explore_search import GitHubExploreSearchMixin
@@ -33,7 +34,10 @@ if TYPE_CHECKING:
 
 
 class GitHubExploreDialog(
-    GitHubExploreContextMenuMixin, GitHubExploreQueueMixin, GitHubExploreSearchMixin
+    GitHubExploreContextMenuMixin,
+    GitHubExploreNotificationsMixin,
+    GitHubExploreQueueMixin,
+    GitHubExploreSearchMixin,
 ):
     """Shared QUILL/Lite account and repository views with selected-row actions."""
 
@@ -48,6 +52,7 @@ class GitHubExploreDialog(
         on_repo_select: Callable[[str], None] | None = None,
         announce_cb: Callable[[str], None] | None = None,
         on_start_issue_worktree: Callable[[object, str, int, str, bool], None] | None = None,
+        on_open_reference: Callable[[object], None] | None = None,
     ) -> None:
         import wx
 
@@ -60,6 +65,7 @@ class GitHubExploreDialog(
         self._announce = announce_cb or (lambda _message: None)
         self._on_repo_select = on_repo_select
         self._on_start_issue_worktree = on_start_issue_worktree
+        self._on_open_reference = on_open_reference
         self._rows: list[ExploreRow] = []
         self._attention_state: GitHubAttentionQueue | None = None
         self._selected_keys: dict[str, str] = {}
@@ -136,6 +142,7 @@ class GitHubExploreDialog(
         self._list.SetName("GitHub exploration results; arrow to select, Tab to read details")
         set_spoken_name(self._list, "GitHub exploration results")
         root.Add(self._list, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        self._build_notification_controls(panel, root)
         root.Add(wx.StaticText(panel, label="Selected result"), 0, wx.LEFT | wx.TOP, 8)
         self._detail = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP)
         self._detail.SetName("Selected GitHub result details")
@@ -177,6 +184,7 @@ class GitHubExploreDialog(
         self._open_btn.Enable(False)
         self._use_btn.Enable(False)
         self._queue_options_btn.Enable(False)
+        self._update_notification_controls()
 
     def show(self) -> None:
         wx = self._wx
@@ -207,6 +215,7 @@ class GitHubExploreDialog(
             )
         else:
             self._view_note.SetLabel("")
+        self._update_notification_controls()
 
     def _load(self, _event: object) -> None:
         view = self._view_key()
@@ -230,6 +239,11 @@ class GitHubExploreDialog(
         token = self._load_token
         selected_key = self._selected_keys.get(view, "")
         discussion_number = self._initial_discussion
+        if view == "notifications" and self._notification_poll_blocks(token, selected_key):
+            return
+        include_read = (
+            {"include_read": self._include_read_value()} if view == "notifications" else {}
+        )
         self._status.SetLabel(f"Loading {dict(VIEWS)[view]}...")
 
         def worker() -> None:
@@ -254,6 +268,7 @@ class GitHubExploreDialog(
                         person=person,
                         repositories=repositories,
                         categories=categories,
+                        **include_read,
                     )
             except GitHubExploreError as exc:
                 wx.CallAfter(self._loaded, token, None, str(exc), None, view, selected_key)
@@ -336,6 +351,8 @@ class GitHubExploreDialog(
             message = f"Could not load view: {error}"
         elif result is not None and not result.complete:
             message = f"{len(self._rows)} results loaded; this view is incomplete. {result.warning}"
+        elif view == "notifications" and result is not None:
+            message = self._notifications_loaded_message()
         else:
             message = f"{len(self._rows)} results loaded."
         if view == "attention" and not error:
@@ -367,6 +384,7 @@ class GitHubExploreDialog(
             )
             self._list.SetSelection(restore)
             self._select(None)
+        self._update_notification_controls()
 
     def _selected(self) -> ExploreRow | None:
         index = self._list.GetSelection()
@@ -379,10 +397,13 @@ class GitHubExploreDialog(
         self._detail.SetValue(row.detail if row else "")
         self._open_btn.Enable(bool(row and row.url))
         self._use_btn.Enable(bool(row and row.repo))
+        self._update_notification_controls()
 
     def _activate(self, _event: object) -> None:
         row = self._selected()
-        if row and row.repo and row.kind == "repo":
+        if row and row.kind == "notification":
+            self._activate_notification(row)
+        elif row and row.repo and row.kind == "repo":
             self._use_repo(None)
         else:
             self._open(None)

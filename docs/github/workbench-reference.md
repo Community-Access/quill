@@ -107,6 +107,59 @@ alerts. Secret values are never loaded into the view. If the account cannot
 read a category or the feature is disabled, the view labels that category
 unavailable instead of presenting it as having no findings.
 
+## Notifications triage
+
+Explore's **GitHub notifications** view is the account's whole inbox. In QUILL,
+**Tools > Git and GitHub > GitHub > Notifications** opens Explore straight at
+it; in QUILL Lite, choose **Explore** in Items and pick the view. After each
+load QUILL says the unread count once, for example "12 unread". Each row reads
+its state, then why it arrived in words ("review requested", "you were
+mentioned", "your team was mentioned"), then the repository and title.
+
+Under the list, shown only in this view: **Include read notifications**
+(Alt+I), **Mark Done** (Alt+D), **Unsubscribe** (Alt+U) and **Mark All Read**
+(Alt+A). Delete in the list is Mark Done. Done and Unsubscribe take the row out
+of the list and select the next row, so triage keeps its place. Mark All Read
+asks first and marks only what arrived before the list loaded. Enter marks the
+row read, then opens a pull request in the review window, an issue in Items at
+that issue, and anything else in the browser. The context menu offers the same
+actions.
+
+QUILL honours GitHub's `X-Poll-Interval`: a refresh sooner than GitHub allows
+keeps the current list and says how long to wait. A refresh after that sends
+`If-Modified-Since`, so an unchanged inbox costs no rate limit.
+
+## What failed, and run actions
+
+On a Workflow Runs row, **What Failed** (Ctrl+Shift+W in that view, the Actions
+menu or the context menu) opens a read-only text field holding one digest: each
+failed job, its failed steps, the annotations with `file:line`, then the last 40
+meaningful log lines of each failed step with timestamps and ANSI codes removed.
+A step's lines are the ones stamped inside its start and finish times; if
+GitHub gave no times, the digest says so and uses the end of the job's log.
+**Jobs and Logs** has the same digest as **What Failed** (Alt+F), for the
+attempt you chose, and **Re-request Check** (Alt+C) for the selected job.
+
+The same menus add **Re-run Failed Jobs Only**, **Cancel Run** (GitHub answers
+"accepted", so QUILL says it is stopping the run), **Delete Run** (the
+confirmation names the run, branch and result, and says logs and artifacts go
+with it), **Approve Run from a Fork**, **Review Pending Deployments** (a window
+listing waiting environments as check boxes, a required comment, and Approve
+and Reject) and **Combined Check Status**, a single line such as "3 of 4 checks
+pass; failing: test."
+
+## Auto-merge and the merge queue
+
+The review window's **Auto-Merge and Queue** button (Alt+A) and the pull
+request's context menu hold **Enable Auto-Merge** (with a merge-method chooser),
+**Disable Auto-Merge**, **Add to Merge Queue**, **Remove from Merge Queue** and
+**Combined Check Status**. After **Check Merge Policy**, the combined status
+counts only required checks ("3 of 4 required checks pass"). A check node's
+context menu has **Re-request Check**; a legacy commit status cannot be
+re-requested and QUILL says so. Each change asks first and reports GitHub's
+confirmed result. Known refusals, such as auto-merge being turned off for the
+repository, are said as what to do next.
+
 ## Review and write safety
 
 The review tree announces reply counts, outdated positions, resolved state,
@@ -130,7 +183,12 @@ The Items and review windows use `quill/core/github/items_provider.py` and
 `pr_review.py`; review resolution uses `review_graphql.py`, line mapping uses
 `diff_hunks.py`, and job log retrieval uses `workflow_job_logs.py`. Explore
 uses `explore.py`; pinned repositories, favorites, recent repositories, and
-saved queries use `saved_items.py`. The shared UI modules are under `quill/ui/`.
+saved queries use `saved_items.py`. Notifications triage is
+`notification_triage.py` and `explore_notifications.py`; the failure digest is
+`run_failure_digest.py`; run, check and deployment actions are `run_actions.py`;
+auto-merge and the merge queue are `merge_automation.py`. The REST calls
+PyGithub lacks go through `rest_transport.py`, which refuses redirects so the
+token stays on api.github.com. The shared UI modules are under `quill/ui/`.
 Network calls are made off the UI thread. Tests exercise provider mapping,
 pagination, diff-line matching, redirect token handling, and action routing.
 Manual Windows screen-reader acceptance with NVDA, JAWS, and Narrator is

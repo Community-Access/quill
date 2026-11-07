@@ -2207,6 +2207,77 @@ Branch…</strong>, to run it: QUILL asks for a branch, confirms, and
 tells you whether GitHub accepted the run. You need to be signed in. If
 the workflow does not accept manual runs, QUILL shows GitHub’s own
 explanation.</p>
+<h4 id="what-failed-in-a-workflow-run">What failed in a workflow
+run</h4>
+<p>When a run fails, the question is nearly always “what broke?”, and on
+GitHub the answer is spread over collapsed log groups and a side panel
+of annotations. Select the run in <strong>Workflow Runs</strong> and
+press <code>Ctrl+Shift+W</code>, or choose <strong>What Failed…</strong>
+from the <strong>Actions…</strong> button or the row’s context menu
+(<code>Shift+F10</code>). It is also a button, <strong>What
+Failed…</strong> (<code>Alt+F</code>), in <strong>Jobs and
+Logs</strong>.</p>
+<p>You get one read-only text you can arrow through and copy. It lists
+each failed job, then the steps in it that failed, then GitHub’s
+annotations with the file and line, then the last 40 lines of each
+failed step’s log. QUILL takes out the timestamps and colour codes, and
+drops blank lines and debug chatter, so what is left is what a person
+would read. If one job’s log or annotations can’t be fetched, the text
+says so for that job and carries on with the others. <strong>Copy
+All</strong> copies the lot, ready to paste into an issue or a
+message.</p>
+<h4 id="workflow-run-actions">Workflow run actions</h4>
+<p>Select one run in <strong>Workflow Runs</strong>. The
+<strong>Actions…</strong> button and the context menu offer:</p>
+<ul>
+<li><strong>Re-run Failed Jobs Only</strong>, which starts again just
+the jobs that failed, not the whole run.</li>
+<li><strong>Cancel Run…</strong>. GitHub accepts a cancel and finishes
+it in the background, so QUILL says it is stopping the run, not that it
+has stopped. Refresh to check.</li>
+<li><strong>Delete Run…</strong>. The question names the run, its branch
+and its result, and says its logs and artifacts go with it. This cannot
+be undone.</li>
+<li><strong>Approve Run from a Fork…</strong> for a pull request from
+someone outside the repository, whose run waits for a maintainer. Only
+approve code you have read: it runs with your repository’s workflow
+permissions.</li>
+<li><strong>Review Pending Deployments…</strong> when a run waits for a
+reviewer before it deploys to a protected environment. The window lists
+the environments, with the ones you may approve already checked. Write a
+comment (GitHub requires one), then press <strong>Approve</strong> or
+<strong>Reject</strong>. QUILL names the environments GitHub
+confirmed.</li>
+<li><strong>Combined Check Status</strong> reads the run’s commit and
+says one line, such as “3 of 4 checks pass; failing: test.”</li>
+</ul>
+<p>In <strong>Jobs and Logs</strong>, <strong>Re-request Check</strong>
+(<code>Alt+C</code>) asks GitHub to run the selected job’s check again.
+Everything that changes something on GitHub asks first, needs you to be
+signed in, and reports only what GitHub confirmed. When GitHub refuses,
+QUILL says why and what to do, for example that your token lacks
+permission or that the run has already finished.</p>
+<h4 id="auto-merge-and-the-merge-queue">Auto-merge and the merge
+queue</h4>
+<p>In a pull request’s <strong>Review</strong> window, the
+<strong>Auto-Merge and Queue…</strong> button (<code>Alt+A</code>) and
+the pull request’s context menu in the outline offer:</p>
+<ul>
+<li><strong>Enable Auto-Merge…</strong>, which asks for the merge method
+(a merge commit, squash or rebase). GitHub then merges the pull request
+by itself once its required reviews and checks pass.</li>
+<li><strong>Disable Auto-Merge…</strong>.</li>
+<li><strong>Add to Merge Queue…</strong> and <strong>Remove from Merge
+Queue…</strong> for a branch that uses a merge queue. When it joins,
+QUILL tells you its place in the queue.</li>
+<li><strong>Combined Check Status</strong>, which counts only the
+required checks once you have pressed <strong>Check Merge
+Policy</strong>, for example “3 of 4 required checks pass; not reported
+yet: deploy.”</li>
+</ul>
+<p>QUILL says the outcome in plain words. When GitHub refuses, for
+example because auto-merge is turned off for the repository, QUILL says
+that and where to turn it on.</p>
 <h4 id="batch-operations">Batch operations</h4>
 <p>The list lets you select several rows: hold Shift or Ctrl to select
 issues or pull requests, then press <strong>Batch…</strong> and choose
@@ -2262,7 +2333,9 @@ and needs no sign-in.</li>
 <li>In <strong>Workflows</strong>: select one workflow and <strong>Run
 “name” on Branch…</strong> appears, the same as pressing Enter.</li>
 <li>In <strong>Workflow Runs</strong>: select one run and <strong>Re-run
-Workflow</strong> and <strong>View Artifacts…</strong> both appear.</li>
+Workflow</strong>, <strong>View Jobs and Logs…</strong>, <strong>View
+Artifacts…</strong>, <strong>What Failed…</strong> and the run actions
+described under Workflow run actions appear.</li>
 </ul>
 <p>All of these need you to be signed in. Without an account, the viewer
 only reads.</p>
@@ -2359,15 +2432,41 @@ save it as a draft or publish it straight away.</li>
 <li><strong>Dispatch Workflow…</strong> runs a GitHub Actions workflow
 on a branch or tag you choose, the same as “Run workflow” on github.com.
 It is useful for workflows set up to be started by hand.</li>
-<li><strong>Notifications…</strong> is a real inbox: every notification
-for your account, across every repository, not just the one you have
-loaded. Each tells you whether it is read or unread, which repository it
-is from and why you got it. Choosing one opens your GitHub notifications
-page and marks it read.</li>
+<li><strong>Notifications…</strong> opens your notifications inbox in
+Explore GitHub, described under GitHub notifications below.</li>
 <li><strong>Security Alerts…</strong> lists a repository’s open
 Dependabot alerts (severity, the package affected and a summary), so you
 can see what needs attention without opening a browser.</li>
 </ul>
+<h4 id="github-notifications">GitHub notifications</h4>
+<p><strong>Tools &gt; Git and GitHub &gt; GitHub &gt;
+Notifications…</strong>, or the <strong>GitHub notifications</strong>
+view in <strong>Explore…</strong> in the GitHub Items viewer, is your
+whole GitHub inbox, across every repository. When it loads, QUILL says
+the unread count once, such as “12 unread”. Each row starts with whether
+it is read, then why you got it in words (“review requested”, “you were
+mentioned”, “you are watching the repository”), then the repository and
+title.</p>
+<ul>
+<li><strong>Enter</strong> marks the notification read and opens it in
+QUILL when QUILL has a view for it: a pull request opens in
+<strong>Review</strong>, an issue in the GitHub Items viewer at that
+issue. Anything else opens in your browser.</li>
+<li><strong>Mark Done</strong> (<code>Alt+D</code>, or Delete in the
+list) takes it off your inbox, as the Done button on github.com does.
+<strong>Unsubscribe</strong> (<code>Alt+U</code>) stops that thread
+notifying you until you comment or are mentioned. Either way the row
+leaves the list and you land on the next one, so you keep your
+place.</li>
+<li><strong>Mark All Read</strong> (<code>Alt+A</code>) asks first, then
+marks everything read up to the moment the list was loaded. Anything
+that arrived since stays unread.</li>
+<li><strong>Include read notifications</strong> (<code>Alt+I</code>)
+adds the ones you have already read.</li>
+</ul>
+<p>GitHub asks apps not to check notifications more often than it says,
+usually once a minute. If you refresh sooner, QUILL keeps the list it
+has and tells you how many seconds to wait.</p>
 <h4 id="codespaces">Codespaces</h4>
 <p>Two more commands on <strong>Tools &gt; Git and GitHub &gt;
 GitHub</strong> use the <code>gh</code> command-line tool installed on

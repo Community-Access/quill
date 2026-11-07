@@ -9,6 +9,7 @@ from urllib.error import HTTPError
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
 from quill.core.error_codes import CodedError
+from quill.core.github.auth_diagnostics import github_exception_hint
 from quill.core.github.merge_policy import GitHubPullQueueState
 from quill.core.net import verified_ssl_context
 
@@ -88,8 +89,9 @@ def _request(token: str, query: str, variables: dict[str, object]) -> dict[str, 
             raise ReviewGraphQLError(
                 "GitHub redirected the GraphQL request; credentials were not forwarded."
             ) from exc
+        hint = github_exception_hint(exc)
         raise ReviewGraphQLError(
-            f"GitHub returned HTTP {exc.code} for the review-thread request."
+            hint or f"GitHub returned HTTP {exc.code} for the GraphQL request."
         ) from exc
     except Exception as exc:  # noqa: BLE001 - retain a usable REST review on failure
         raise ReviewGraphQLError(f"GitHub review-thread request failed: {exc}") from exc
