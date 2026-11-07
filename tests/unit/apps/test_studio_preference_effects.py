@@ -18,6 +18,7 @@ import wx
 import quill.apps.studio as studio
 from quill.apps.studio import _PREFS_DEFAULTS, StudioAppFrame
 from quill.apps.studio_preferences import apply_asio_preference
+from tests.real_output_guard import real_launch_update_check
 from tests.wx_session import patch_call_after
 
 #: Every key in Studio's preferences file, and the test below that proves it is read.
@@ -43,7 +44,8 @@ def test_check_updates_on_startup(on, monkeypatch):
     asked, checks = [], []
     host._app_update_check_due = lambda last: asked.append(last) or True
     host.check_for_app_updates = lambda **kwargs: checks.append(kwargs)
-    StudioAppFrame._maybe_check_updates_on_startup(host)
+    # The suite quiets every launch check (tests/real_output_guard.py); this one is the subject.
+    real_launch_update_check(StudioAppFrame)(host)
     assert len(checks) == (1 if on else 0)
     # last_update_check is what the throttle is given, so it is read too.
     assert asked == (["2026-10-30T00:00:00+00:00"] if on else [])

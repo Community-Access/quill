@@ -424,8 +424,9 @@ _SUGGESTIONS = (
     "Ctrl+Alt+PageUp",
     "Ctrl+Alt+PageDown",
     # Inkwell has three keys to choose, so the picker needs more than two to offer.
-    "Alt+Shift+PageUp",
-    "Alt+Shift+PageDown",
+    # Not Alt+Shift+PageUp/PageDown: Next and Previous Indent Change took both
+    # in 2026-11. Ctrl+Alt+F4 is the one plain chord still free family-wide.
+    "Ctrl+Alt+F4",
 )
 
 
