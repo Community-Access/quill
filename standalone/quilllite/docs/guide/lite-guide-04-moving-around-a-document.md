@@ -56,12 +56,22 @@ delete the matches. Its buttons are:
 - **Replace**, which changes the match you are on and moves on to the next
   one, so you can decide one at a time.
 - **Replace all**, which changes every match in the document at once and
-  tells you how many it changed.
+  tells you how many it changed, for example "Replaced 12 occurrences".
 - **Close**. Anything you have already replaced stays replaced, and
   **Ctrl+Z** takes it back if you change your mind.
 
 Both windows stay open while you work, so you can go back to your document
 and return to them.
+
+**What you type in Replace with is what goes in.** A backslash is just a
+backslash. Replace a folder name with `C:\new\reports` and that is exactly
+what lands in every match, and `\1` goes in as the two characters you typed.
+Only one thing reads the box differently: **Replace all** with the **Regular
+expression** search mode. There, `\1` puts back the first part of the match
+you wrapped in brackets and `\2` the second, so searching for `(\w+), (\w+)`
+and replacing all with `\2 \1` turns "Bishop, Jeff" into "Jeff Bishop". If the
+box names a part the search does not have, such as `\3` when there are only
+two, nothing is changed and you hear "Nothing replaced", with the reason.
 
 ### How many are there?
 

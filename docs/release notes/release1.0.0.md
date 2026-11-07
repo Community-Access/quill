@@ -2,6 +2,27 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Replace, export and backups you can trust
+
+Three things that should never surprise you now do not.
+
+**Replace puts in what you typed.** Unless you are searching with a regular
+expression, the Replace box is taken exactly as typed. Replace a folder name
+with `C:\new\reports` and that is what lands in your document, not a line
+break where the `\n` was. With a regular expression, `\1` and `\2` still bring
+back the parts of the match. This holds for Replace All and Replace Across
+Files (`Ctrl+Shift+R`).
+
+**Exporting over an earlier file is safe.** File > Export, Convert File and
+every other Pandoc conversion now build the new file under a hidden temporary
+name and swap it in only when it is finished. If the export fails, times out
+or is cancelled, the file you exported yesterday is still there, untouched.
+
+**A backup that fails is on the record.** When a backup cannot be written
+before a save, QUILL still says "Could not write a backup; saving anyway" and
+saves, and now it writes the reason to its log as well, so **Help > Save
+Diagnostics...** can explain a missing backup later.
+
 ## Form payment setup and reporting
 
 QUILL and QUILL Lite now share **Tools > Forms > Insert Payment Field**,
@@ -86,6 +107,12 @@ QUILL writes accessible forms: contact forms, event sign-ups, membership renewal
 **Keys.** The Forms commands have no keys of their own. Writing a form is occasional, so each command is on its menu, by its access letters, and in the Command Palette (**Ctrl+Shift+P**): type "form". The Forms feature is on in every profile except Essential.
 
 **Try this:** choose File > New Form..., pick the contact template, then Tools > Forms > Fill It In Yourself... and tab through your own form. Each required question says so. Answer them and press Submit: the What Would Be Sent window lists each question with its answer, and nothing has gone anywhere.
+
+## Fixed in this build: first-page and even-page Word headers
+
+When you open a Word document for rich editing, QUILL tells you what the editor cannot keep, and makes a backup before your first save over the file. Headers and footers have always been on that list, but only the ordinary ones. A header set to appear on the first page only (Word's Different First Page), or on even pages only (Different Odd and Even Pages), slipped past: the file opened with no question, and saving it removed the header without a word. Now those count as headers and footers too, in every section of the document, so you hear them named in the **Open Word document** question and the backup is made. QUILL Lite has the same fix.
+
+**Try this:** in Word, make a title page with its own first-page header and save it. Open it in QUILL and choose the normal text editor. The question lists "headers".
 
 ## New in this build: every menu item in the Command Palette
 

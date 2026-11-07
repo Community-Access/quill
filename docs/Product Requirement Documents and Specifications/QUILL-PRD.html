@@ -2005,6 +2005,19 @@ editable in QUILL (Markdown, CommonMark, GFM, HTML, plain text, CSV /
 TSV) the editor asks whether to open the new file in a new window. PDF,
 DOCX, EPUB, ODT, and RTF do not prompt; the file path is on the
 clipboard for pasting into File Explorer.</p>
+<p><strong>An export never destroys the file it replaces
+(2026-11-06).</strong> <code>convert_file_with_pandoc</code>, the one
+function through which every Pandoc conversion writes a file (File &gt;
+Export, Convert File, batch conversion, braille, review, the docx
+fallback), points Pandoc’s <code>-o</code> at a hidden sibling of the
+target (<code>.&lt;stem&gt;.&lt;uuid&gt;.partial&lt;suffix&gt;</code>:
+same folder, so the final move is a same-volume <code>os.replace</code>;
+same suffix, because Pandoc picks some outputs such as PDF by extension)
+and replaces the target only after a zero exit and an output that
+exists. A non-zero exit, a timeout, a launch failure, a cancel or a
+failed <code>os.replace</code> leaves the previous target byte-for-byte
+as it was, and the staging file is removed in a <code>finally</code>.
+Tests: <code>tests/unit/io/test_pandoc.py</code>.</p>
 <h5
 id="53a11a-save-as-conversion-pipeline-and-format-truthfulness-shipped-090-beta-1">5.3a.1.1a
 Save As conversion pipeline and format truthfulness (shipped 0.9.0 Beta
@@ -4091,6 +4104,24 @@ lists, links, tables, code blocks.</li>
 Studio Code at the same time: F3 just works once a term is known, the
 search term is remembered everywhere it makes sense, and everything is
 announced.</p>
+<p><strong>The replacement is literal unless the search is a regular
+expression (2026-11-06).</strong>
+<code>quill.core.search.replace_all</code> (Replace All, and Replace
+Across Files through <code>core/file_search.py</code>) hands
+<code>re.subn</code>/<code>safe_subn</code> a <em>function</em>
+returning the replacement in plain and wildcard modes, because a string
+replacement is a template there too: <code>C:\new</code> gained a line
+break and <code>\1</code> raised “invalid group reference” in a search
+that never asked for a regular expression. Only <code>use_regex</code>
+passes the string, so <code>\1</code>/<code>\g&lt;name&gt;</code> keep
+working. QUILL Lite’s Replace All
+(<code>lite_window_find._replace_every_match</code>) follows the same
+rule by search mode, and a regex replacement naming a group the pattern
+lacks is announced (“Nothing replaced: …”) with the document unchanged.
+The shared <code>find_model.replace_all</code>/<code>replace_next</code>
+were already literal. Tests:
+<code>tests/unit/core/test_search.py</code>,
+<code>tests/unit/apps/test_lite_find_modes.py</code>.</p>
 <p><strong>The search term, the central concept.</strong> Quill
 maintains a single “current search term” per editor. The term is set by
 any of:</p>
@@ -4577,6 +4608,18 @@ read-only family
 sentences naming what to do; everything else keeps the errno text. Raw
 errno strings are not an acceptable user-facing message for a save
 failure.</li>
+<li><strong>A failed backup is logged, not only spoken
+(2026-11-06).</strong> <code>_backup_before_save</code> logs a warning
+with the document’s name and the OS reason (an unexpected exception is
+logged with its traceback) alongside the spoken status line, because the
+status line is gone by the time anyone asks why there is no backup, and
+the log is what a diagnostics bundle carries. QUILL Lite’s equivalent:
+<code>core/lite/backups.write_backup</code> logs the failure and returns
+<code>None</code>, and <code>DocumentFileMixin._back_up_saved</code>
+turns that into the one save announcement, “Saved <name>, but could not
+write a backup”, through the window’s voice so braille mirrors it, for
+plain, rich and Word saves alike. The save itself is never
+affected.</li>
 <li>Retention: default keep last 50 per document, prune older than 90
 days, never delete the most recent 5.</li>
 <li>Crash recovery: autosave snapshot every 30 seconds while a document
@@ -26349,6 +26392,18 @@ previously dropped entirely now survives, reads correctly, and is
 reachable by single-key table navigation (<code>T</code>).
 <code>scan_docx_features</code> still lists tables so the format change
 is disclosed before a rich edit.</p>
+<p><strong>Alternate headers and footers (#1756, 2026-11-06).</strong>
+“headers” and “footers” cover every header/footer the rich bridge drops,
+not only the default one: in each section, the first-page part when the
+section sets <code>w:titlePg</code>, and the even-page part when
+<code>settings.xml</code> sets <code>w:evenAndOddHeaders</code>. Those
+two are checked through python-docx’s link resolution, because a section
+can switch on its title page while inheriting a first-page header an
+earlier section defined but never showed; the ordinary part keeps its
+skip-if-linked rule, since a linked default header repeats one already
+checked. A blank part is not a finding. Without this, a title-page-only
+header opened with no question, <code>needs_backup</code> was false, and
+the first save removed it silently.</p>
 <p><strong>Shared with QUILL Lite (2026-10-17).</strong> The wx-free
 half of this path lives in <code>quill/core/docx_open.py</code>, and
 <code>main_frame_rich_mode.py</code> calls it: the scan

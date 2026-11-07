@@ -278,6 +278,19 @@ Expression Helper (<strong>Tools &gt; Advanced &gt; Regular Expression
 Helper…</strong>) explains the syntax when you need it. QUILL also keeps
 your search history, so a search you run often is there waiting for you
 next time.</p>
+<p><strong>What you type in Replace with is what goes in.</strong>
+Unless you are searching with a regular expression, the Replace box is
+taken exactly as typed, in plain and wildcard searches alike. A
+backslash is just a backslash: replacing a folder name with
+<code>C:\new\reports</code> puts exactly that into every match, and
+<code>\1</code> goes in as the two characters you typed. With a regular
+expression, <strong>Replace All</strong> (<code>Ctrl+Shift+Grave</code>
+then <code>X</code>) and <strong>Edit &gt; Replace Across
+Files…</strong> (<code>Ctrl+Shift+R</code>) can refer back to the match:
+<code>\1</code> is the first part you wrapped in brackets and
+<code>\2</code> the second, so searching for <code>(\w+), (\w+)</code>
+and replacing all with <code>\2 \1</code> turns “Bishop, Jeff” into
+“Jeff Bishop”.</p>
 <h3 id="searching-a-whole-folder-of-files">Searching a whole folder of
 files</h3>
 <p>QUILL no longer has a top-level Search menu. Its commands now live on

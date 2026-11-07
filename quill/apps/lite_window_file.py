@@ -319,16 +319,31 @@ class DocumentFileMixin(DocumentWordMixin):
         except (OSError, RichEditRtfError) as exc:
             self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
             return False
-        if self.app.feature_enabled("backups"):
-            # After the real write, never before: a backup that fails must not
-            # be able to fail the save it was taken alongside.
-            from quill.core.lite.backups import write_backup
-
-            write_backup(destination, self.control.GetValue())
+        saved = self._back_up_saved(destination, self.control.GetValue())
         self._settle_saved(destination)
         self._cue(SoundEvent.DOCUMENT_SAVED)
-        self._announce(f"Saved {destination.name}")
+        self._announce(saved)
         return True
+
+    def _back_up_saved(self, destination: Path, text: str) -> str:
+        """Keep a backup of what was just saved; the sentence that reports the save.
+
+        After the real write, never before: a backup that fails must not be able
+        to fail the save it was taken alongside. But it must not fail silently
+        either -- someone who turned backups on is relying on one being there
+        the day they need it, and a full or read-only backups folder would
+        otherwise go unnoticed until then. So the save is reported as done, in
+        the same sentence that says the backup was not, through the window's
+        voice so braille gets it too. ``write_backup`` has already logged why.
+        """
+        saved = f"Saved {destination.name}"
+        if not self.app.feature_enabled("backups"):
+            return saved
+        from quill.core.lite.backups import write_backup
+
+        if write_backup(destination, text) is None:
+            return f"{saved}, but could not write a backup"
+        return saved
 
     def refuse_word_target(self, destination: Path) -> bool:
         """A Word name from a window that cannot write it: refuse rather than write text.

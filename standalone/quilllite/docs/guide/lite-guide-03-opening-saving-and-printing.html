@@ -866,7 +866,11 @@ Mode), or choose another kind of file.</li>
 <ul>
 <li>Pictures, comments, tracked changes, headers, footers, footnotes,
 endnotes, extra sections and table formatting are not kept by a save.
-You are always told before you start (see <em>The question</em>).</li>
+You are always told before you start (see <em>The question</em>). A
+header or footer that only appears on the first page, or only on even
+pages, counts too: the question names it as “headers” or “footers”, and
+the first save still writes the backup, just as it does for an ordinary
+header.</li>
 <li>Styles other than the headings and the four named above become
 normal paragraphs with the formatting you can see.</li>
 <li>A <code>.docm</code>, <code>.dotx</code> or <code>.dotm</code>
@@ -1366,6 +1370,15 @@ switched off, because it does fill up a folder over time.</p>
 (<strong>Ctrl+Alt+Shift+E</strong>) lists your saved copies, newest
 first, like “Today at 4:12 PM, 2,341 words”. Up to twenty are kept for
 each document. After that, the oldest go.</p>
+<p>The copy is made just after your file is saved, so a copy that cannot
+be made never stops the save. It is not kept quiet, though. If the
+backups folder is full or cannot be written to, you hear “Saved
+notes.txt, but could not write a backup” instead of the usual “Saved
+notes.txt”, and your braille display shows the same. Your file is saved
+either way. The reason, such as a full disk or a folder you do not have
+permission to write to, is written to QUILL Lite’s log in its
+<code>logs</code> folder, so support can find it later if you ask why a
+backup is missing.</p>
 <p>The word count helps you tell copies apart. Two saves a minute apart
 sound almost the same, but a version that is suddenly two thousand words
 shorter is usually the one you are looking for.</p>

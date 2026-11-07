@@ -35,6 +35,16 @@ If regular expressions are new to you, the Regular Expression Helper
 when you need it. QUILL also keeps your search history, so a search you run
 often is there waiting for you next time.
 
+**What you type in Replace with is what goes in.** Unless you are searching
+with a regular expression, the Replace box is taken exactly as typed, in plain
+and wildcard searches alike. A backslash is just a backslash: replacing a
+folder name with `C:\new\reports` puts exactly that into every match, and `\1`
+goes in as the two characters you typed. With a regular expression, **Replace
+All** (`Ctrl+Shift+Grave` then `X`) and **Edit > Replace Across Files...**
+(`Ctrl+Shift+R`) can refer back to the match: `\1` is the first part you
+wrapped in brackets and `\2` the second, so searching for `(\w+), (\w+)` and
+replacing all with `\2 \1` turns "Bishop, Jeff" into "Jeff Bishop".
+
 ### Searching a whole folder of files
 
 QUILL no longer has a top-level Search menu. Its commands now live on the

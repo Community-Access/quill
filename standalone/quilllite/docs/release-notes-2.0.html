@@ -243,6 +243,20 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-20">QUILL Lite 2.0</h1>
+<h2 id="replace-all-and-backups-you-can-trust">Replace all and backups
+you can trust</h2>
+<p><strong>Replace all puts in what you typed.</strong> In Normal and
+Extended search, a backslash in <strong>Replace with</strong> is just a
+backslash, so replacing with <code>C:\new\reports</code> puts exactly
+that into every match. With the <strong>Regular expression</strong>
+search mode, <code>\1</code> and <code>\2</code> still bring back the
+parts of the match, and asking for a part the search does not have
+changes nothing and tells you why.</p>
+<p><strong>A backup that fails is said.</strong> With timestamped
+backups switched on in <strong>Tools &gt; Customize Features</strong>, a
+save whose backup could not be written now says “Saved notes.txt, but
+could not write a backup”, and your braille display shows the same. Your
+file is saved either way.</p>
 <h2 id="stripe-and-paypal-form-setup">Stripe and PayPal form setup</h2>
 <p>Tools &gt; Forms now includes Insert Payment Field, Form Payments
 Setup and Verify Payment Setup, shared with QUILL. Configure fixed
@@ -280,7 +294,10 @@ recording into text.</li>
 <li><strong>Spell check that reads only what you wrote</strong>, not web
 addresses, file names or code.</li>
 <li><strong>Word documents</strong> that open and save as Word, and PDFs
-opened as text.</li>
+opened as text. A header or footer that only appears on the first page,
+or only on even pages, is now named in the question you are asked when
+the document opens, and the first save backs up the original, just as
+for an ordinary header.</li>
 <li><strong>Find in Open Documents</strong> and folder search, across
 everything at once.</li>
 <li><strong>WordPress.</strong> Write, check and publish your website’s

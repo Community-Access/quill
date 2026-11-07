@@ -517,3 +517,52 @@ def test_rich_text_trusts_the_event_once_there_is_text(lite_window) -> None:
     win = lite_window("words", mode="rich")
     win._remember_clean_text()
     assert win._text_event_changed_nothing() is False
+
+
+# --------------------------------------------------------------------------- #
+# A backup that cannot be written is said, and the save still happens
+# --------------------------------------------------------------------------- #
+
+
+def _backups_folder_unwritable(monkeypatch):
+    def _refuse(_path):
+        raise PermissionError(13, "Access is denied")
+
+    monkeypatch.setattr("quill.core.lite.backups.backup_root", _refuse)
+
+
+def test_a_failed_backup_is_said_and_the_save_still_lands(
+    lite_window, tmp_path, monkeypatch, caplog
+):
+    _backups_folder_unwritable(monkeypatch)
+    target = tmp_path / "note.txt"
+    win = lite_window("hello")
+    win.path = target
+
+    with caplog.at_level("WARNING", logger="quill.core.lite.backups"):
+        win.cmd_save()
+
+    assert target.read_text(encoding="utf-8") == "hello"
+    assert win.modified is False
+    # Through the window's voice, which is the path braille mirrors.
+    assert win.app.voice.said[-1] == "Saved note.txt, but could not write a backup"
+    assert any(
+        "Could not write a backup of note.txt" in record.getMessage() for record in caplog.records
+    )
+
+
+def test_a_backup_that_was_written_is_not_mentioned(lite_window, tmp_path):
+    target = tmp_path / "note.txt"
+    win = lite_window("hello")
+    win.path = target
+    win.cmd_save()
+    assert win.app.voice.said[-1] == "Saved note.txt"
+
+
+def test_a_failed_backup_after_a_word_save_is_said_too(lite_window, tmp_path, monkeypatch):
+    _backups_folder_unwritable(monkeypatch)
+    target = tmp_path / "report.docx"
+    target.write_bytes(b"docx")
+    win = lite_window("body", mode="rich")
+    win._finish_word_save(target, win.control.GetValue())  # noqa: SLF001
+    assert win.app.voice.said[-1] == "Saved report.docx, but could not write a backup"
