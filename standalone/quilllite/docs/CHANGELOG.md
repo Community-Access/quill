@@ -19,7 +19,7 @@
 
 ### GitHub workbench (2026-11-05)
 
-- Tools > GitHub Workbench... (Ctrl+Alt+Shift+F6) opens the same GitHub Items
+- File > GitHub Workbench... (Alt+F, then G) opens the same GitHub Items
   viewer as QUILL, with the same consent, token store, and review actions.
 - Pull requests have an expandable file, conversation, and checks outline.
   Ctrl+R replies to a selected thread; Shift+F10 opens node-specific actions.

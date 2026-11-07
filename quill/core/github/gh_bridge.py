@@ -183,9 +183,10 @@ def create_codespace(
         parsed = json.loads(output) if output.strip() else {}
     except json.JSONDecodeError as exc:
         raise GhBridgeError(f"Could not parse codespace create result: {exc}") from exc
-    name = _codespace_name(str(parsed.get("name", ""))) if isinstance(parsed, dict) else ""
-    if not name:
+    raw_name = str(parsed.get("name", "")).strip() if isinstance(parsed, dict) else ""
+    if not raw_name:
         raise GhBridgeError("gh codespace create did not report a codespace name.")
+    name = _codespace_name(raw_name)
     matches = [c for c in list_codespaces(gh_path=gh_path, runner=runner) if c.name == name]
     if matches:
         return matches[0]

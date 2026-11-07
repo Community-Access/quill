@@ -1,7 +1,7 @@
 # GitHub Workbench: keyboard and screen reader reference
 
 QUILL and QUILL Lite share the GitHub Items and Explore windows. QUILL Lite
-opens the workbench from **Tools > GitHub Workbench**. In QUILL, use **File >
+opens the workbench from **File > GitHub Workbench** (**Alt+F**, then **G**). In QUILL, use **File >
 Open from Remote > GitHub Items**. Public repository reading works without an
 account. Account views and writes require a signed-in GitHub account. Safe Mode
 and the first-use network consent still apply.

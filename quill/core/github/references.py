@@ -72,6 +72,11 @@ def _sensitive_query(query: str) -> bool:
     return False
 
 
+def _int_or_none(value: object) -> int | None:
+    """*value* when it is a real int (not a bool), else None: route values are untyped."""
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+
 def _object_route(parts: list[str], fragment: str) -> dict[str, object]:
     result: dict[str, object] = {"kind": "repository"}
     if len(parts) < 3:
@@ -123,11 +128,10 @@ def _object_route(parts: list[str], fragment: str) -> dict[str, object]:
 
     line_match = _LINE_FRAGMENT.fullmatch(fragment)
     if line_match:
-        first_line = int(line_match.group("first"))
-        last_line = int(line_match.group("last") or line_match.group("first"))
-        result["line"] = first_line
-        result["line_end"] = last_line
-        if last_line < first_line:
+        first = int(line_match.group("first"))
+        last = int(line_match.group("last") or line_match.group("first"))
+        result["line"], result["line_end"] = first, last
+        if last < first:
             raise GitHubReferenceError("The GitHub line range ends before it starts.")
     elif fragment.startswith("L") and any(char.isdecimal() for char in fragment[1:]):
         raise GitHubReferenceError("The GitHub line anchor is malformed.")
@@ -183,20 +187,17 @@ def parse_github_reference(text: str) -> GitHubReference:
     netloc = host if port is None else f"{host}:{port}"
     safe_path = "/" + "/".join(parts)
     safe_url = urlunsplit(("https", netloc, safe_path, parsed.query, parsed.fragment))
-    number = route.get("number")
-    line = route.get("line", 0)
-    line_end = route.get("line_end", 0)
     return GitHubReference(
         host=host,
         owner=owner,
         repo=repo,
         kind=str(route["kind"]),
         url=safe_url,
-        number=number if isinstance(number, int) else None,
+        number=_int_or_none(route.get("number")),
         ref=str(route.get("ref", "")),
         path=str(route.get("path", "")),
-        line=line if isinstance(line, int) else 0,
-        line_end=line_end if isinstance(line_end, int) else 0,
+        line=_int_or_none(route.get("line")) or 0,
+        line_end=_int_or_none(route.get("line_end")) or 0,
         section=str(route.get("section", "")),
     )
 

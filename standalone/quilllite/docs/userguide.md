@@ -2,7 +2,7 @@
 
 ## GitHub workbench
 
-Choose **Tools > GitHub Workbench...** (**Ctrl+Alt+Shift+F6**) to use the same
+Choose **File > GitHub Workbench...** (**Alt+F**, then **G**) to use the same
 GitHub Items viewer as QUILL. After network consent, enter a repository or use
 the one inferred from the current document's checkout. Select a PR and choose
 **Review...**. Arrow through the expandable PR, files, conversations, and
@@ -271,7 +271,7 @@ drift from what is actually bound.
 - [Second keys](guide/lite-guide-keyboard-reference.html#second-keys)
 # GitHub Workbench
 
-**Tools > GitHub Workbench** opens the shared repository viewer. The review
+**File > GitHub Workbench** opens the shared repository viewer. The review
 reader is an expandable tree, with files and threads under the pull request;
 Tab reads the selected node's detail. Ctrl+R replies and Ctrl+Shift+R toggles
 thread resolution where allowed. **Explore** reaches global search, My Work,

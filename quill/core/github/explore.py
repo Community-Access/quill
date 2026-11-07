@@ -344,6 +344,7 @@ class GitHubExploreClient(ExploreNotificationsMixin):
         if view == "deployments":
             return fetch_deployments(target, repo, limit=limit, warnings=warnings)
         if view == "metrics":
+            security_alerts: list[Any]
             try:
                 security_alerts = self._provider.fetch_security_alerts(repo, limit=limit)
             except Exception as exc:  # noqa: BLE001 - metrics must retain permission gaps

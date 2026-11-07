@@ -9,7 +9,7 @@ import wx
 
 from quill.core.github.release_notes import GitHubReleaseNotesDraft
 from quill.ui.github_release_notes_dialog import GitHubReleaseNotesDialog
-from tests.wx_session import shared_wx_app
+from tests.wx_session import patch_call_after, shared_wx_app
 
 
 @pytest.fixture(scope="module")
@@ -44,7 +44,7 @@ def test_release_notes_preview_uses_explicit_range_and_stays_local(wx_app, monke
             self._target()
 
     monkeypatch.setattr("quill.ui.github_release_notes_dialog.threading.Thread", _SyncThread)
-    monkeypatch.setattr(wx, "CallAfter", lambda callback, *args: callback(*args))
+    patch_call_after(monkeypatch)
     try:
         dialog._target.SetValue("v2.0")
         dialog._target_commitish.SetValue("main")

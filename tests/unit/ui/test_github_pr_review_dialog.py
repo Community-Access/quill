@@ -19,7 +19,7 @@ from quill.core.github.pr_review import (
 )
 from quill.ui.github_pr_review_dialog import GitHubPullReviewDialog
 from quill.ui.github_review_draft_dialog import GitHubReviewDraft
-from tests.wx_session import shared_wx_app
+from tests.wx_session import patch_call_after, shared_wx_app
 
 
 class _FakeProvider:
@@ -165,7 +165,7 @@ def test_merge_policy_button_loads_policy_for_the_current_head(review_dialog, mo
         return policy, queue
 
     monkeypatch.setattr(review_dialog._client, "fetch_merge_policy_context", _fetch)
-    monkeypatch.setattr(wx, "CallAfter", lambda callback, *args: callback(*args))
+    patch_call_after(monkeypatch)
 
     class _SyncThread:
         def __init__(self, *, target, daemon):

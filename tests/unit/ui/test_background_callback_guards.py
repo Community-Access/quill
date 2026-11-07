@@ -37,9 +37,9 @@ _GUARDED = [
     ("ai_setup_wizard.py", "_on_model_pulled"),
     ("ai_setup_wizard.py", "_on_models_listed"),
     ("ai_setup_wizard.py", "_on_model_verified"),
-    ("github_dialogs.py", "_on_repo_loaded"),
-    ("github_dialogs.py", "_on_dir_loaded"),
-    ("github_dialogs.py", "_on_load_error"),
+    ("github_repository_browser_dialog.py", "_on_repo_loaded"),
+    ("github_repository_browser_dialog.py", "_on_dir_loaded"),
+    ("github_repository_browser_dialog.py", "_on_load_error"),
 ]
 
 

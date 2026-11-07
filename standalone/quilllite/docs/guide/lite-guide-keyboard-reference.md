@@ -328,7 +328,6 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+A** | Expand Abbreviations |
 | **Alt+Shift+9** | AutoCorrect Entries... |
 | **Ctrl+,** | Preferences... |
-| **Ctrl+Alt+Shift+F6** | GitHub Workbench... |
 | **Ctrl+Alt+F11** | Back Up Settings... |
 | **Ctrl+Alt+F12** | Restore Settings... |
 | **Ctrl+Alt+F10** | Customize Features... |

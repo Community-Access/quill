@@ -2499,7 +2499,7 @@ requires one and confirms changes to the PR state. The reader identifies
 outdated comments; resolved and unresolved review-thread state is not yet
 available, and resolving a thread still requires GitHub's own interface.
 The same GitHub Items viewer and PR review controls are available in QUILL Lite
-through **Tools > GitHub Workbench...** (**Ctrl+Alt+Shift+F6**).
+through **File > GitHub Workbench...** (**Alt+F**, then **G**).
 The Items list and details field now have contextual menus for opening,
 copying, favoriting, reviewing a PR, comparing branches, inspecting runs, and
 available write actions.

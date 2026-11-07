@@ -65,6 +65,9 @@ KEYLESS_WITH_REASON: dict[str, str] = {
         "reaches both (Alt+N, C, then N or P)."
         for handler in ("cmd_next_block", "cmd_previous_block")
     },
+    "cmd_github_workbench": "As in QUILL (rule 2), where GitHub Items has no chord either; "
+    "it sits in File, as QUILL's does, and Alt+F, G reaches it. Ctrl+Alt+Shift+F6 is "
+    "Spelling Announcements in QUILL.",
     "cmd_open_studio": "Rule 7: launching another app does not take an editor chord. "
     "Lite already uses QUILL's positional QuillVille keys for editing commands. "
     "Alt+T, Q reaches Studio when the shared release gate permits it; the user can "
