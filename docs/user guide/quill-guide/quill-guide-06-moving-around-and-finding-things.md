@@ -204,7 +204,11 @@ A few more commands on the same menu:
 - **Heading Organizer...** (`Alt+Shift+O`) is for changing heading levels,
   moving whole sections, and checking that your headings are in a sensible
   order.
-- **Next Block** and **Previous Block** move by block.
+- **Next Block** and **Previous Block** move by block. In prose a block is a
+  paragraph. In code it is whatever that language is built from, so you jump
+  from one function to the next and hear its first line; see
+  [Moving by block in code](#moving-by-block-in-code). They are also on
+  **Navigate > Code**.
 - **Match Bracket** (`Ctrl+Shift+\`) jumps to the bracket that pairs with the
   one at the cursor.
 - **First Non-Blank** and **Last Non-Blank** move to the first or last
@@ -914,8 +918,9 @@ notes are never shown here; they stay yours.
 
 When you open a source file, QUILL loads a language profile based on the file
 extension. It knows HTML, Markdown, CSS, Python, JavaScript, TypeScript, C,
-C++, C#, PHP, Go, Rust, Kotlin, Shell, YAML, JSON, TOML and SQL, and treats
-anything else as plain text. The profile tells QUILL how the language is put
+C++, C#, Java, PHP, Go, Rust, Kotlin, Ruby, Perl, Shell, PowerShell, batch
+files, LaTeX, XML, YAML, JSON, TOML, INI, CSV and SQL, and treats anything else
+as plain text. The profile tells QUILL how the language is put
 together, so moving and announcements make sense for code.
 
 - **Next Token** and **Previous Token**, on the Navigate menu, move by code
@@ -978,6 +983,144 @@ extension or a language you set yourself. It also learns a little from the
 languages you use during a session. In every mode you either stay in control
 or hear what changed. Braille files and pasted braille are not affected,
 because braille has its own Braille Mode.
+
+### Moving by block in code
+
+**Next Block** and **Previous Block** are on the Navigate menu and on
+**Navigate > Code**. They have no key of their own, because every chord near
+them is already taken; in Quick Nav, `Tab` and `Shift+Tab` do the same thing,
+and you can give them a key in the Keyboard Manager.
+
+What a block is depends on the document's language:
+
+- **Python:** each `def`, `async def` and `class`. A decorator counts as the
+  start of the function it decorates.
+- **C#, Java and Kotlin:** class, interface, struct, enum, record and namespace
+  declarations, and methods (a line with a modifier such as `public` or
+  `static`, a name and an opening parenthesis).
+- **JavaScript and TypeScript:** functions, classes, functions assigned to a
+  name (`const add = (a, b) => ...`), methods inside a class and, in
+  TypeScript, interfaces, enums, namespaces and type aliases.
+- **C and C++:** function definitions at the left margin, and class, struct,
+  union, enum and namespace blocks.
+- **Go, Rust, PHP, Ruby, Perl, Shell, PowerShell and SQL:** functions and the
+  language's type or package declarations (`func` and `type`; `fn`, `struct`,
+  `impl` and `mod`; `sub` and `package`; `CREATE`, `ALTER` and `DROP`).
+- **INI and TOML:** each `[section]`, and TOML's `[[array of tables]]`.
+- **Batch files** (`.bat` and `.cmd`): each `:label`. A line starting with `::`
+  is a comment, not a label, and is skipped.
+- **LaTeX:** `\part`, `\chapter`, `\section`, `\subsection`,
+  `\subsubsection` and `\paragraph`, starred or not.
+- **HTML:** headings, the landmark elements (`header`, `nav`, `main`, `aside`,
+  `section`, `article`, `footer` and `form`), and any element with a landmark
+  `role`.
+- **Markdown, plain text and anything else:** paragraphs, as before.
+
+When you land on a block in a language like these, QUILL says the line you
+landed on, such as "def save_file(path):, line 42", so you know where you are
+without reading further. If a file has none of these at all, a Python script
+with no functions for instance, the commands fall back to moving by paragraph
+rather than doing nothing. The language is the one QUILL picked from the file
+extension, or the one you set with **Set Document Language**.
+
+### Moving by indentation
+
+In Python, YAML and any other indented text, the indentation is the structure.
+Two commands follow it:
+
+- **Next Indent Change** (`Alt+Shift+PageDown`) moves down to the next line
+  whose indentation is different from the line you are on: the first line
+  inside a block, or the first line after it.
+- **Previous Indent Change** (`Alt+Shift+PageUp`) does the same going up,
+  which is how you get back to the `if` or `def` a block belongs to.
+
+Blank lines are skipped. The caret lands on the first character that is not a
+space, and you hear how the line is indented, for example "8 spaces", "1 tab"
+or "No indent", followed by the line and column. A tab counts as the
+language's indent width, so a tab and four spaces in a Python file are the same
+depth. At the top or bottom of the file you hear "No change of indent above" or
+"No change of indent below". Both commands are on **Navigate > Code**.
+
+### Checking a file for problems
+
+**Check This File** looks through the whole document for mistakes in how it is
+written, the kind that stop a program reading it: a missing comma in JSON, a
+tag that is never closed, a Python line that will not compile. It is on
+**Navigate > Code > Check This File...**, and its key is `Ctrl+Alt+/` (the
+question-mark key: "what is wrong here?").
+
+If nothing is wrong you hear "No problems found." Otherwise the **Problems**
+list opens. Its first line says how many there are, such as "3 problems: 2
+errors, 1 warning", and then each problem is one row, place first: "Line 12,
+column 5, error: Expecting ',' delimiter (JSON)". Arrow to one and press Enter
+to go straight to it, or press Escape to close the list where you are.
+
+You do not need the list to work through problems:
+
+- **Next Problem** (`Ctrl+Alt+.`) moves the caret to the next problem after it
+  and says the problem, for example "Problem 2 of 3, line 12, column 5, error:
+  Expecting ',' delimiter".
+- **Previous Problem** (`Ctrl+Alt+,`) goes the other way.
+
+Both go round from the last problem to the first, and the numbers tell you
+when they have. If you have changed the document since the last check, they
+check again first, so the line numbers are always right. A code editor would
+use F8 for these, but in QUILL `F8` and `Shift+F8` are Word's extend-selection
+keys, so the problem keys sit beside Compare's next and previous difference
+keys instead. You can change all three in the Keyboard Manager.
+
+#### What QUILL can check
+
+Some languages are checked by QUILL itself, with nothing else installed:
+
+| Language | What is checked |
+| --- | --- |
+| JSON | That it reads as JSON |
+| JSON with comments | The same, allowing `//` and `/* */` comments and trailing commas (`.jsonc`, and VS Code's settings, tasks and `tsconfig.json` files) |
+| XML | That it is well formed. Entity declarations are refused, not expanded |
+| HTML | Tags closed in the wrong order or never closed, closing tags with nothing open, duplicate `id` values, and pictures without alt text |
+| TOML | That it reads as TOML |
+| YAML | That it reads as YAML |
+| Python | Syntax errors, mistakes Python finds when compiling (such as `return` outside a function), and warnings such as an invalid escape sequence. The code is never run |
+| INI and CFG | Settings before any section, sections or settings given twice, and lines that are neither |
+| CSV | Rows with a different number of fields from the first row, and badly placed quotes |
+| Markdown | Heading levels that skip, pictures without alt text, links with no text or no address, and relative links to files that are not there |
+
+Other languages are checked with a tool you already have installed, if QUILL
+can find it on your PATH. QUILL never downloads or installs one:
+
+| Language | Tool QUILL uses |
+| --- | --- |
+| JavaScript | Node.js (`node --check`), and ESLint if you have it |
+| TypeScript | The TypeScript compiler (`tsc --noEmit`), and ESLint if you have it |
+| Python | Ruff, if you have it, as well as the built-in check; this adds names that are never defined and imports that are never used |
+| PHP | `php -l` |
+| Ruby | `ruby -c` |
+| Perl | `perl -c` |
+| Shell scripts | ShellCheck |
+| C and C++ | GCC, or Clang if you do not have GCC (`-fsyntax-only`) |
+| Go | `gofmt -e` |
+| Rust | `rustc`, which writes nothing you keep |
+| C# | `csc`, the C# compiler, for a single file. A whole project needs `dotnet build`, which QUILL does not run |
+| XML | `xmllint`, as well as the built-in check |
+
+When a language needs a tool and none is installed, you hear "No checker
+installed for Ruby" (or whichever language it is). When QUILL has its own check
+for a language, that check always runs, tool or not.
+
+A few things are worth knowing about the tools:
+
+- They run on your computer only. Nothing is sent anywhere.
+- QUILL checks what is in the window, not what is on disk. If the document is
+  unsaved or changed, QUILL checks a temporary copy with the same name, then
+  deletes it.
+- Each tool runs in the file's own folder, so it finds your project's settings
+  the way it would from a command prompt.
+- A tool gets 15 seconds. If it takes longer it is stopped, and you hear that it
+  was. While a tool runs you hear "Checking this file", and QUILL stays usable.
+- `perl -c` runs a script's `BEGIN` blocks and `use` statements, as it always
+  does, and ESLint loads your project's ESLint configuration, which is itself
+  JavaScript. Only check files you trust with those two.
 
 ### Abbreviation expansion
 

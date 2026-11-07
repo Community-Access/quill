@@ -1848,6 +1848,14 @@ Arrival says colour, count and words; the list's rows are words, colour and
 paragraph, Enter goes there and Escape stays. Not listed: headers, footers,
 footnotes, text boxes, shading.
 
+## Navigate > Code: blocks, indentation and Check This File (2026-11-06)
+
+QUILL's Navigate > Code, in QUILL Lite with the same rows, letters and keys (family rule 2), from the same code (`quill/apps/lite_window_code_nav.py` over `quill/core/navigation.py`, `quill/core/problems/` and `quill/ui/problems_commands.py`).
+
+- **Next Block / Previous Block** (`cmd_next_block`, `cmd_previous_block`; no key, as in QUILL, recorded in the keyless table): paragraphs in plain text and Markdown; in HTML, headings, landmark elements and landmark roles, from the HTML language profile's block pattern. The screen reader reads the line landed on, so nothing else is announced.
+- **Next / Previous Indent Change** (`cmd_next_indent` Alt+Shift+PageDown, `cmd_previous_indent` Alt+Shift+PageUp): the next line, skipping blanks, indented differently; the depth is announced after the move.
+- **Check This File** (`cmd_check_this_file` Ctrl+Alt+/), **Next Problem** (`cmd_next_problem` Ctrl+Alt+.), **Previous Problem** (`cmd_previous_problem` Ctrl+Alt+,): every problem in a Markdown or HTML document, in the Problems list (`choose_from_rows`) or one at a time with "Problem n of m, line, column, severity: message". Built-in checkers only: QUILL Lite never starts an outside tool. In plain text or rich text it says "Nothing to check: QUILL Lite checks Markdown and HTML documents." QUILL checks the same two languages and many more (rule 10: Lite level with QUILL, not ahead).
+
 ## Word documents and table navigation (2026-10-17)
 
 **One implementation, moved.** QUILL's wx-free Word decisions left

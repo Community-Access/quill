@@ -2,6 +2,25 @@
 
 ## 2.0.0
 
+### Navigate > Code: blocks, indentation and Check This File (2026-11-06)
+
+QUILL's new Navigate > Code submenu, with the same rows, letters and keys, from
+the same code.
+
+- **Next Block** and **Previous Block** move a paragraph at a time, and in an
+  HTML document between headings and landmarks (`header`, `nav`, `main`,
+  `aside`, `section`, `article`, `footer`, `form`, and anything with a landmark
+  role). No key, as in QUILL.
+- **Next Indent Change** (Alt+Shift+PageDown) and **Previous Indent Change**
+  (Alt+Shift+PageUp) jump to the next line, skipping blank ones, indented
+  differently from yours, and say how far in it is.
+- **Check This File...** (Ctrl+Alt+/) checks a Markdown or HTML document and
+  lists every problem with its line and column: heading levels that skip,
+  pictures without alt text, empty links and links to missing files in
+  Markdown; unclosed and mismatched tags and duplicate ids in HTML. **Next
+  Problem** (Ctrl+Alt+.) and **Previous Problem** (Ctrl+Alt+,) step through
+  them and say each one. QUILL checks code and data files as well.
+
 ### Form payment integration (2026-11-06)
 
 - Shared with QUILL: Insert Payment Field, Form Payments Setup and Verify

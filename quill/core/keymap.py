@@ -1038,6 +1038,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "table.delete_row": "",
     "table.delete_column": "",
     "table.tidy": "",
+    # Navigate > Code, Lite's keys too (rule 2). F8 / Shift+F8 are Word's selection
+    # pair (rule 1): Compare's Ctrl+Alt+Shift+. and , lose a modifier ("/" is "?").
+    "navigate.next_block": "",
+    "navigate.previous_block": "",
+    "navigate.next_indent": "Alt+Shift+PageDown",
+    "navigate.previous_indent": "Alt+Shift+PageUp",
+    "tools.check_this_file": "Ctrl+Alt+/",
+    "navigate.next_problem": "Ctrl+Alt+.",
+    "navigate.previous_problem": "Ctrl+Alt+,",
     # Announce Headings, on the family's function-key range. Ctrl+Alt+F1 is
     # Tutorials and Ctrl+Alt+F2 is Get Help from Support; F3 joins them, and the
     # same reasoning exempts it from the Ctrl+Alt policy (menu_lint.py): the

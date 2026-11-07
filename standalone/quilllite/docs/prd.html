@@ -2672,6 +2672,38 @@ paragraph; a rich text document’s come from the control. Arrival says
 colour, count and words; the list’s rows are words, colour and
 paragraph, Enter goes there and Escape stays. Not listed: headers,
 footers, footnotes, text boxes, shading.</p>
+<h2
+id="navigate--code-blocks-indentation-and-check-this-file-2026-11-06">Navigate
+&gt; Code: blocks, indentation and Check This File (2026-11-06)</h2>
+<p>QUILL’s Navigate &gt; Code, in QUILL Lite with the same rows, letters
+and keys (family rule 2), from the same code
+(<code>quill/apps/lite_window_code_nav.py</code> over
+<code>quill/core/navigation.py</code>, <code>quill/core/problems/</code>
+and <code>quill/ui/problems_commands.py</code>).</p>
+<ul>
+<li><strong>Next Block / Previous Block</strong>
+(<code>cmd_next_block</code>, <code>cmd_previous_block</code>; no key,
+as in QUILL, recorded in the keyless table): paragraphs in plain text
+and Markdown; in HTML, headings, landmark elements and landmark roles,
+from the HTML language profile’s block pattern. The screen reader reads
+the line landed on, so nothing else is announced.</li>
+<li><strong>Next / Previous Indent Change</strong>
+(<code>cmd_next_indent</code> Alt+Shift+PageDown,
+<code>cmd_previous_indent</code> Alt+Shift+PageUp): the next line,
+skipping blanks, indented differently; the depth is announced after the
+move.</li>
+<li><strong>Check This File</strong> (<code>cmd_check_this_file</code>
+Ctrl+Alt+/), <strong>Next Problem</strong>
+(<code>cmd_next_problem</code> Ctrl+Alt+.), <strong>Previous
+Problem</strong> (<code>cmd_previous_problem</code> Ctrl+Alt+,): every
+problem in a Markdown or HTML document, in the Problems list
+(<code>choose_from_rows</code>) or one at a time with “Problem n of m,
+line, column, severity: message”. Built-in checkers only: QUILL Lite
+never starts an outside tool. In plain text or rich text it says
+“Nothing to check: QUILL Lite checks Markdown and HTML documents.” QUILL
+checks the same two languages and many more (rule 10: Lite level with
+QUILL, not ahead).</li>
+</ul>
 <h2 id="word-documents-and-table-navigation-2026-10-17">Word documents
 and table navigation (2026-10-17)</h2>
 <p><strong>One implementation, moved.</strong> QUILL’s wx-free Word

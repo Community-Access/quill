@@ -244,6 +244,39 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-10">QUILL 1.0</h1>
 <p><em>Version 1.0.0. From Community Access. Free.</em></p>
+<h2 id="new-in-this-build-moving-through-code-and-check-this-file">New
+in this build: moving through code, and Check This File</h2>
+<p>A new <strong>Navigate &gt; Code</strong> submenu helps anyone who
+writes code or edits data files.</p>
+<p><strong>Next Block</strong> and <strong>Previous Block</strong> now
+move by what a block means in the language you are in: from one Python
+<code>def</code> or <code>class</code> to the next, between C#, Java,
+JavaScript and TypeScript declarations and methods, between
+<code>[sections]</code> in INI and TOML files, between
+<code>:labels</code> in batch files, between <code>\section</code>
+commands in LaTeX, and between headings and landmarks in HTML. QUILL
+says the line you land on. Prose still moves by paragraph.</p>
+<p><strong>Next Indent Change</strong>
+(<strong>Alt+Shift+PageDown</strong>) and <strong>Previous Indent
+Change</strong> (<strong>Alt+Shift+PageUp</strong>) jump to the next
+line whose indentation differs from yours, skipping blank lines, and say
+how deep it is. It is the quickest way in and out of a block in Python
+or YAML.</p>
+<p><strong>Check This File…</strong> (<strong>Ctrl+Alt+/</strong>) finds
+every problem in the document and lists them in a Problems list, line
+and column first; Enter takes you to one. <strong>Next Problem</strong>
+(<strong>Ctrl+Alt+.</strong>) and <strong>Previous Problem</strong>
+(<strong>Ctrl+Alt+,</strong>) step through them from the document and
+say each one, such as “Problem 2 of 3, line 12, column 5, error:
+Expecting ‘,’ delimiter”. QUILL checks JSON, XML, HTML, TOML, YAML,
+Python, INI, CSV and Markdown by itself, and JavaScript, TypeScript,
+PHP, Ruby, Perl, shell scripts, C, C++, Go, Rust and C# with a tool you
+already have installed, such as Node.js or GCC. It never downloads one,
+and nothing leaves your computer. QUILL Lite has the same submenu and
+keys, and checks Markdown and HTML.</p>
+<p><strong>Try this:</strong> open a JSON file, delete a comma, and
+press <strong>Ctrl+Alt+.</strong>. QUILL takes you to the line and tells
+you what is wrong.</p>
 <h2 id="form-payment-setup-and-reporting">Form payment setup and
 reporting</h2>
 <p>QUILL and QUILL Lite now share <strong>Tools &gt; Forms &gt; Insert

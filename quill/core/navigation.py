@@ -156,16 +156,18 @@ def previous_heading_start(text: str, cursor: int, markup_kind: str) -> int | No
     return previous
 
 
-def next_block_start(text: str, cursor: int) -> int | None:
-    blocks = _block_starts(text)
+def next_block_start(text: str, cursor: int, pattern: str = "") -> int | None:
+    """Next Block from *cursor*; *pattern* is the language's (see :func:`block_starts`)."""
+    blocks = block_starts(text, pattern)
     for start in blocks:
         if start > cursor:
             return start
     return None
 
 
-def previous_block_start(text: str, cursor: int) -> int | None:
-    blocks = _block_starts(text)
+def previous_block_start(text: str, cursor: int, pattern: str = "") -> int | None:
+    """Previous Block from *cursor*; *pattern* as for :func:`next_block_start`."""
+    blocks = block_starts(text, pattern)
     previous: int | None = None
     for start in blocks:
         if start >= cursor:
@@ -200,3 +202,117 @@ def _block_starts(text: str) -> list[int]:
             in_block = False
         offset += len(line)
     return starts
+
+
+# -- language-aware blocks ---------------------------------------------------- #
+
+
+def language_block_starts(text: str, pattern: str) -> list[int]:
+    """Offsets where *pattern* (a profile's ``block_pattern``) begins a block.
+
+    Each start is the beginning of the matching line, so the caret lands where
+    the line is read from. Empty when there is no pattern, the pattern is not
+    valid, or nothing in *text* matches it.
+    """
+    if not pattern:
+        return []
+    try:
+        compiled = re.compile(pattern, re.MULTILINE)
+    except re.error:
+        return []
+    starts: list[int] = []
+    for match in compiled.finditer(text):
+        start = text.rfind("\n", 0, match.start()) + 1
+        if not starts or starts[-1] != start:
+            starts.append(start)
+    return starts
+
+
+def block_starts(text: str, pattern: str = "") -> list[int]:
+    """Where Next and Previous Block stop: the language's units, else paragraphs.
+
+    A file in a language with a pattern and nothing that matches it -- a Python
+    script with no functions -- still moves by paragraph rather than not at all.
+    """
+    return language_block_starts(text, pattern) or _block_starts(text)
+
+
+def block_line_text(text: str, start: int, limit: int = 80) -> str:
+    """The trimmed text of the line beginning at *start*, for saying on arrival."""
+    end = text.find("\n", start)
+    line = text[start : end if end != -1 else len(text)].strip()
+    return line if len(line) <= limit else line[: limit - 3].rstrip() + "..."
+
+
+# -- indentation -------------------------------------------------------------- #
+
+
+def _line_spans(text: str) -> list[tuple[int, int]]:
+    spans: list[tuple[int, int]] = []
+    offset = 0
+    for line in text.splitlines(keepends=True):
+        body = line.rstrip("\r\n")
+        spans.append((offset, offset + len(body)))
+        offset += len(line)
+    if not spans or text.endswith(("\n", "\r")):
+        spans.append((offset, offset))
+    return spans
+
+
+def _indent_of(line: str, tab_size: int) -> int:
+    width = 0
+    for char in line:
+        if char == " ":
+            width += 1
+        elif char == "\t":
+            width += tab_size - width % tab_size
+        else:
+            break
+    return width
+
+
+def indent_change_target(text: str, cursor: int, *, forward: bool, tab_size: int = 4) -> int | None:
+    """Next or Previous Indent: the first line whose indentation differs.
+
+    Blank lines are skipped, and the answer is the offset of the first
+    non-blank character on that line -- where code is read from. Measured in
+    columns, with tabs expanded to *tab_size*, so a tab and four spaces are the
+    same depth. When the caret's own line is blank, the nearest non-blank line
+    in that direction is the answer. ``None`` when nothing differs.
+    """
+    spans = _line_spans(text)
+    cursor = max(0, min(cursor, len(text)))
+    index = 0
+    for number, (start, end) in enumerate(spans):
+        if start <= cursor <= end:
+            index = number
+            break
+    current_line = text[spans[index][0] : spans[index][1]]
+    current = None if not current_line.strip() else _indent_of(current_line, tab_size)
+    step = 1 if forward else -1
+    number = index + step
+    while 0 <= number < len(spans):
+        start, end = spans[number]
+        line = text[start:end]
+        if line.strip():
+            if current is None or _indent_of(line, tab_size) != current:
+                return start + (len(line) - len(line.lstrip(" \t")))
+        number += step
+    return None
+
+
+def describe_indent(text: str, offset: int) -> str:
+    """How the line at *offset* is indented, in words: "8 spaces", "1 tab", "no indent"."""
+    start = text.rfind("\n", 0, offset) + 1
+    end = text.find("\n", start)
+    line = text[start : end if end != -1 else len(text)]
+    lead = line[: len(line) - len(line.lstrip(" \t"))]
+    if not lead:
+        return "no indent"
+    tabs, spaces = lead.count("\t"), lead.count(" ")
+    parts = []
+    if tabs:
+        parts.append(f"{tabs} tab" + ("s" if tabs != 1 else ""))
+    if spaces:
+        parts.append(f"{spaces} space" + ("s" if spaces != 1 else ""))
+    return " and ".join(parts)

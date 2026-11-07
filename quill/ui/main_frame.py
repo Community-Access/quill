@@ -142,6 +142,8 @@ from quill.core.menu_customization import (
 from quill.core.metrics import compute_document_stats
 from quill.core.multi_press import MultiPressDispatcher
 from quill.core.navigation import (
+    block_line_text,
+    language_block_starts,
     next_block_start,
     next_heading_start,
     previous_block_start,
@@ -326,6 +328,7 @@ from quill.ui.main_frame_bw import BwSpeechMixin
 from quill.ui.main_frame_classic_editor import ClassicEditorMixin
 from quill.ui.main_frame_clip_library import ClipLibraryMixin
 from quill.ui.main_frame_close_others import CloseOthersMixin
+from quill.ui.main_frame_code_nav import CodeNavMixin
 from quill.ui.main_frame_commands import CommandRegistryMixin
 from quill.ui.main_frame_compare import CompareMixin
 from quill.ui.main_frame_convert_file import ConvertFileMixin
@@ -761,6 +764,7 @@ class MainFrame(
     MenuBindingsMixin,
     MastodonSocialMixin,
     TableNavMixin,
+    CodeNavMixin,
     StructureAnnounceMixin,
     NotebookUIMixin,
     QuillKeyMixin,
@@ -8317,15 +8321,18 @@ class MainFrame(
         self._navigate_block(reverse=True)
 
     def _navigate_block(self, reverse: bool) -> None:
+        # The language's own units when its profile has a block pattern
+        # (main_frame_code_nav), else paragraphs.
         cursor = self.editor.GetInsertionPoint()
+        text, pattern = self.editor.GetValue(), self._block_pattern()
         if reverse:
-            target = previous_block_start(self.editor.GetValue(), cursor)
+            target = previous_block_start(text, cursor, pattern)
             if target is None:
                 self._set_status("No previous block")
                 return
             label = "previous block"
         else:
-            target = next_block_start(self.editor.GetValue(), cursor)
+            target = next_block_start(text, cursor, pattern)
             if target is None:
                 self._set_status("No next block")
                 return
@@ -8335,7 +8342,8 @@ class MainFrame(
         self.editor.SetSelection(target, target)
         self.editor.SetFocus()
         self._location_ring.record(target)
-        self._announce_navigation_move(f"Moved to {label}", target)
+        named = block_line_text(text, target) if language_block_starts(text, pattern) else ""
+        self._announce_navigation_move(named or f"Moved to {label}", target)
 
     def _announce_navigation_move(
         self, prefix: str, target: int, *, latch_structure: bool = False

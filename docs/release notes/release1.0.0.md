@@ -2,6 +2,18 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## New in this build: moving through code, and Check This File
+
+A new **Navigate > Code** submenu helps anyone who writes code or edits data files.
+
+**Next Block** and **Previous Block** now move by what a block means in the language you are in: from one Python `def` or `class` to the next, between C#, Java, JavaScript and TypeScript declarations and methods, between `[sections]` in INI and TOML files, between `:labels` in batch files, between `\section` commands in LaTeX, and between headings and landmarks in HTML. QUILL says the line you land on. Prose still moves by paragraph.
+
+**Next Indent Change** (**Alt+Shift+PageDown**) and **Previous Indent Change** (**Alt+Shift+PageUp**) jump to the next line whose indentation differs from yours, skipping blank lines, and say how deep it is. It is the quickest way in and out of a block in Python or YAML.
+
+**Check This File...** (**Ctrl+Alt+/**) finds every problem in the document and lists them in a Problems list, line and column first; Enter takes you to one. **Next Problem** (**Ctrl+Alt+.**) and **Previous Problem** (**Ctrl+Alt+,**) step through them from the document and say each one, such as "Problem 2 of 3, line 12, column 5, error: Expecting ',' delimiter". QUILL checks JSON, XML, HTML, TOML, YAML, Python, INI, CSV and Markdown by itself, and JavaScript, TypeScript, PHP, Ruby, Perl, shell scripts, C, C++, Go, Rust and C# with a tool you already have installed, such as Node.js or GCC. It never downloads one, and nothing leaves your computer. QUILL Lite has the same submenu and keys, and checks Markdown and HTML.
+
+**Try this:** open a JSON file, delete a comma, and press **Ctrl+Alt+.**. QUILL takes you to the line and tells you what is wrong.
+
 ## Form payment setup and reporting
 
 QUILL and QUILL Lite now share **Tools > Forms > Insert Payment Field**,
