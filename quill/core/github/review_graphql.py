@@ -67,7 +67,14 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def _request(token: str, query: str, variables: dict[str, object]) -> dict[str, Any]:
+def _request(
+    token: str,
+    query: str,
+    variables: dict[str, object],
+    *,
+    errors_out: list[str] | None = None,
+) -> dict[str, Any]:
+    """POST one GraphQL document; *errors_out* collects field errors beside partial data."""
     payload = json.dumps({"query": query, "variables": variables}).encode("utf-8")
     request = Request(
         "https://api.github.com/graphql",
@@ -98,12 +105,14 @@ def _request(token: str, query: str, variables: dict[str, object]) -> dict[str, 
     if not isinstance(result, dict):
         raise ReviewGraphQLError("GitHub returned an invalid review-thread response.")
     errors = result.get("errors")
+    data = result.get("data")
     if errors:
         message = "; ".join(
             str(row.get("message", "error")) for row in errors if isinstance(row, dict)
         )
-        raise ReviewGraphQLError(message or "GitHub rejected the review-thread request.")
-    data = result.get("data")
+        if errors_out is None or not isinstance(data, dict):
+            raise ReviewGraphQLError(message or "GitHub rejected the review-thread request.")
+        errors_out.append(message or "GitHub reported an error for part of the request.")
     if not isinstance(data, dict):
         raise ReviewGraphQLError("GitHub returned no review-thread data.")
     return data

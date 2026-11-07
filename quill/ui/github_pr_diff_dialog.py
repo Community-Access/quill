@@ -28,6 +28,7 @@ from quill.core.github.items_provider import GitHubItemsError, GitHubPullDiff
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_items_view import pull_diff_file_label, render_pull_file_diff
+from quill.ui.github_pr_diff_comments import GitHubPullDiffCommentsMixin
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -35,7 +36,7 @@ if TYPE_CHECKING:
     from quill.core.github.items_provider import GitHubItemsProvider
 
 
-class GitHubPullDiffDialog:
+class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
     """Modal viewer for one PR's changed files, compared accessibly."""
 
     def __init__(
@@ -50,6 +51,7 @@ class GitHubPullDiffDialog:
         initial_line: int = 0,
         initial_side: str = "RIGHT",
         ai_acquire: Callable[[], Callable[[str], str] | None] | None = None,
+        on_pending_changed: Callable[[], None] | None = None,
     ) -> None:
         import wx
 
@@ -62,6 +64,7 @@ class GitHubPullDiffDialog:
         self._initial_line = initial_line
         self._initial_side = initial_side
         self._ai_acquire = ai_acquire
+        self._on_pending_changed = on_pending_changed
         self._load_token = 0  # invalidates stale content workers on reselect
         self._current_file = None
         self._last_diff_text = ""
@@ -105,6 +108,7 @@ class GitHubPullDiffDialog:
         )
         self._hunk.SetHelpText("Read the changed line and its surrounding patch context.")
         root.Add(self._hunk, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        self._build_line_controls(panel, root)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
@@ -166,6 +170,7 @@ class GitHubPullDiffDialog:
         self._current_file = pull_file
         self._last_diff_text = ""
         self._explain_btn.Enable(False)
+        self._fill_patch_lines(pull_file)
         if self._initial_line and pull_file.filename == self._initial_file:
             target = find_line(pull_file.patch, self._initial_line, side=self._initial_side)
             if target is None:

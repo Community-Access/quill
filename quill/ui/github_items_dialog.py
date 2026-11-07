@@ -75,6 +75,7 @@ from quill.ui.github_items_dialog_filter import GitHubQuickFilterMixin
 from quill.ui.github_items_dialog_issue_templates import GitHubIssueTemplatesMixin
 from quill.ui.github_items_dialog_menus import GitHubItemsMenusMixin
 from quill.ui.github_items_dialog_navigation import GitHubNavigationMixin
+from quill.ui.github_items_dialog_reactions import GitHubItemsReactionsMixin
 from quill.ui.github_items_dialog_references import GitHubReferenceMixin
 from quill.ui.github_items_dialog_releases import GitHubItemsReleaseMixin
 from quill.ui.github_items_dialog_review import GitHubItemsReviewMixin
@@ -119,6 +120,7 @@ class GitHubItemsDialog(
     GitHubWorkflowsMixin,
     GitHubRunActionsUiMixin,
     GitHubItemsMenusMixin,
+    GitHubItemsReactionsMixin,
 ):
     """Modal list-over-detail viewer for a repository's GitHub items."""
 
@@ -1077,6 +1079,7 @@ class GitHubItemsDialog(
             if self._current_comment >= 0:
                 _add("Edit This Comment...", self._edit_current_comment)
                 _add("Delete This Comment...", self._delete_current_comment)
+                _add("React to This Comment...", self._react_to_current_comment)
             if self._comment_target is not None:
                 _add("Reply to Thread...", self._reply_to_thread)
         elif self._view == VIEW_BRANCHES:
