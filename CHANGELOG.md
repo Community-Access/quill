@@ -20,6 +20,15 @@
   document's name now go to the log too, so a missing backup can be explained
   later from a diagnostics bundle.
 
+### Word headers on the first page or even pages are named before a rich edit (2026-11-06)
+
+- A Word document whose only header or footer is a first-page one (Different
+  First Page) or an even-page one (Different Odd and Even Pages) now gets the
+  same question as one with an ordinary header: QUILL and QUILL Lite name
+  "headers" or "footers" in the list of things a rich edit cannot keep, and the
+  first rich save writes the backup. Before, those files opened with no
+  warning and lost the header silently on save. Every section is checked
+  (#1756).
 
 ### Form payment authoring and reporting (2026-11-06)
 

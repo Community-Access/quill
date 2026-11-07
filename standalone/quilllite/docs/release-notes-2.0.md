@@ -49,6 +49,9 @@ yet. Here is what is new.
 - **Spell check that reads only what you wrote**, not web addresses, file
   names or code.
 - **Word documents** that open and save as Word, and PDFs opened as text.
+  A header or footer that only appears on the first page, or only on even
+  pages, is now named in the question you are asked when the document opens,
+  and the first save backs up the original, just as for an ordinary header.
 - **Find in Open Documents** and folder search, across everything at once.
 - **WordPress.** Write, check and publish your website's pages and posts, and
   look after the site, from the editor you already use.

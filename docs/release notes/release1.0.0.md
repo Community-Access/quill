@@ -108,6 +108,12 @@ QUILL writes accessible forms: contact forms, event sign-ups, membership renewal
 
 **Try this:** choose File > New Form..., pick the contact template, then Tools > Forms > Fill It In Yourself... and tab through your own form. Each required question says so. Answer them and press Submit: the What Would Be Sent window lists each question with its answer, and nothing has gone anywhere.
 
+## Fixed in this build: first-page and even-page Word headers
+
+When you open a Word document for rich editing, QUILL tells you what the editor cannot keep, and makes a backup before your first save over the file. Headers and footers have always been on that list, but only the ordinary ones. A header set to appear on the first page only (Word's Different First Page), or on even pages only (Different Odd and Even Pages), slipped past: the file opened with no question, and saving it removed the header without a word. Now those count as headers and footers too, in every section of the document, so you hear them named in the **Open Word document** question and the backup is made. QUILL Lite has the same fix.
+
+**Try this:** in Word, make a title page with its own first-page header and save it. Open it in QUILL and choose the normal text editor. The question lists "headers".
+
 ## New in this build: every menu item in the Command Palette
 
 The Command Palette (**Ctrl+Shift+P**, first in the Tools menu) now finds everything in the menus, not just the registered commands. A few dozen menu items were never in it before, among them your recent files, your open documents and some of the braille tools, so typing their names found nothing. Now the palette reads the menus each time it opens, names each item by the menu it sits in, and runs it exactly as the menu would. A dimmed item tells you why it is not available instead of doing nothing. QUILL Lite's palette does the same, sits first in its Tools menu, and is there in every profile, WordPad and Notepad included.

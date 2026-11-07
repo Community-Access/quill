@@ -1853,7 +1853,9 @@ footnotes, text boxes, shading.
 **One implementation, moved.** QUILL's wx-free Word decisions left
 `quill/ui/main_frame_rich_mode.py` for the shared `quill/core/docx_open.py`, and
 QUILL calls them in the same change: the fidelity scan (`fidelity_findings`,
-over `scan_docx_features`), the question and its three rows
+over `scan_docx_features`, whose "headers" and "footers" include first-page
+parts under `w:titlePg` and even-page parts under `w:evenAndOddHeaders` in
+every section since #1756), the question and its three rows
 (`fidelity_question`, `fidelity_choices`, `choice_for_selection`; Cancel is
 `text`), the one-time backup (`backup_path_for`, `backup_original`,
 `needs_backup`: `name.backup-YYYYMMDD-HHMMSS.docx`, once per session, only for
