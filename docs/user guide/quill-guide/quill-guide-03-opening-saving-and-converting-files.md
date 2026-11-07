@@ -34,6 +34,16 @@ menu has a few other ways in, and each one is handy at the right moment:
 Files on a server or on GitHub have their own commands. They are covered later
 in this chapter, under Remote access and GitHub remote files.
 
+**Where the Open dialog starts.** Press `Ctrl+O` and the dialog, the standard
+one or the Simple File Open dialog, starts in the folder of the last file you
+opened, however you opened it. That includes a file you double-clicked in
+File Explorer, one passed to QUILL on the command line, one from Open Recent,
+and one you went back to because it was already open in a tab. So if you open
+`Minutes.docx` from your Board folder in Explorer, the next `Ctrl+O` is already
+in the Board folder, ready for the agenda beside it. Saving with **Save As**
+moves it too. Until something has been opened, the dialog starts in your
+**Startup folder** from Settings, or in Documents.
+
 ### Opening what you copied, a link, or a file you drag in
 
 Documents reach you in all sorts of ways: a file in File Explorer, a path

@@ -519,6 +519,17 @@ The same table work as in QUILL, on the same keys.
   them.
 - A blank row is no longer skipped by the table keys.
 
+## Describe Formatting names the colour
+
+In a rich text document, **Ctrl+Shift+D** (Format > Describe Formatting at
+Cursor) now names coloured text, just before any highlight: "Calibri, 11
+point, red, yellow highlight". Common colours such as red, green and orange
+are named exactly; any other shade is named after the nearest one, so you
+hear a word rather than a number. Ordinary text says nothing about colour:
+not when nobody coloured it, not when it is black, and not for the light text
+the dark theme paints on the page. QUILL gives the same answer, from the same
+code.
+
 ## Spell check, recovery and sharp text
 
 - **Spell check skips web addresses, email addresses, file paths and file

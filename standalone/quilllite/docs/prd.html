@@ -2119,6 +2119,20 @@ collapsed TOM range reports the formatting of the character
 paragraph above it. <code>caret_format_description</code> now probes the
 character <em>after</em> the caret, which is what a screen reader
 describes.</p>
+<p><strong>The text colour was never spoken (2026-11-06).</strong>
+Describe Formatting at Cursor (<code>Ctrl+Shift+D</code>) in a rich
+document named the highlight but not the text colour, although the
+Markdown path always spoke it. The shared surface now reads
+<code>ITextFont.ForeColor</code> through
+<code>quill.core.highlights.text_colour_from_colorref</code> and says
+the colour just before the highlight: “Calibri, 11 point, red, yellow
+highlight”. Common colours are named exactly; other shades by the
+nearest highlight-palette name. Automatic colour, black, and the colour
+a theme painted over the whole story say nothing. That last case matters
+most here: QUILL Lite’s dark theme recolours every run light grey
+through <code>set_document_color</code>, which now records the colour so
+the description treats it as the default instead of saying “gray” on
+every character. QUILL gets the same answer from the same code.</p>
 <h3 id="71-the-spell-checker-and-the-exception-that-makes-it-usable">7.1
 The spell checker, and the exception that makes it usable</h3>
 <p>QUILL Lite ships a spell checker because the products it is measured

@@ -235,6 +235,42 @@ def test_rich_describe_formatting_now_says_the_highlight(rich_control) -> None:
     assert "highlight" not in wrapper.caret_format_description()
 
 
+def test_rich_describe_formatting_says_the_text_colour(rich_control) -> None:
+    """Say Formatting names a text colour set with Format > Text Color, and
+    says nothing about colour for text nobody coloured. Both editors call this
+    one surface method."""
+    control, wrapper = rich_control
+    _load_word_shape(wrapper)
+    text = control.GetValue()
+    before = text.index("before")
+    control.SetSelection(before, before)
+    assert "green" not in wrapper.caret_format_description()
+    control.SetSelection(before, before + len("before"))
+    wrapper.set_color("green")
+    control.SetSelection(before + 1, before + 1)
+    assert "green" in wrapper.caret_format_description().split(", ")
+    control.SetSelection(text.index("deposit") + 1, text.index("deposit") + 1)
+    assert wrapper.caret_format_description().split(", ")[-1] == "yellow highlight"
+
+
+def test_rich_describe_formatting_ignores_the_theme_colour(rich_control) -> None:
+    """A dark theme paints the whole story light grey; that is the window's
+    colour, not the document's, so Say Formatting must not name it."""
+    control, wrapper = rich_control
+    _load_word_shape(wrapper)
+    text = control.GetValue()
+    before = text.index("before")
+    wrapper.set_document_color((230, 230, 230))
+    control.SetSelection(before + 1, before + 1)
+    assert "gray" not in wrapper.caret_format_description().split(", ")
+    control.SetSelection(before, before + len("before"))
+    wrapper.set_color("red")
+    control.SetSelection(before + 1, before + 1)
+    assert "red" in wrapper.caret_format_description().split(", ")
+    wrapper.set_document_color(None)
+    assert wrapper._theme_colorref is None
+
+
 def test_the_list_dialog_goes_to_the_selected_row_or_nowhere(rich_control) -> None:
     from quill.core.highlights import HighlightPassage
     from quill.ui.highlight_list_dialog import TITLE, show_highlight_list

@@ -2,6 +2,13 @@
 
 ## 2.0.0
 
+### Describe Formatting names the text colour (2026-11-06)
+
+- In a rich text document, **Ctrl+Shift+D** (Format > Describe Formatting at
+  Cursor) now names coloured text: "Calibri, 11 point, red, yellow
+  highlight". Common colours are named exactly and other shades by the
+  nearest common name. Uncoloured text, black text and the dark theme's page
+  colour say nothing. The description is shared with QUILL.
 ### Replace All takes what you typed, and a missed backup is said (2026-11-06)
 
 - **Replace all puts in exactly what you typed.** In Normal and Extended

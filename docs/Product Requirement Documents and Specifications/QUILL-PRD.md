@@ -539,7 +539,12 @@ Customization:
   session, then **Settings > General > Default document folder** (the
   `startup_folder` setting), then the Windows Documents folder when that
   setting is blank. A saved document keeps its existing location for ordinary
-  saves.
+  saves. "Most recently used" means the folder of the last file *opened by
+  any route*, not only through a dialog: `_finish_open_document` (and the
+  already-open-tab branch of `open_file`) call
+  `SimpleOpenMixin._remember_open_folder`, so a file arriving from File
+  Explorer, the command line, Open Recent or a link steers the next `Ctrl+O`
+  (2026-11-06; `tests/unit/ui/test_open_folder_follows_opened_file.py`).
 - Recent files: last N (default 10, range 5 to 50). If empty, announce "No recent files."
 - File Explorer integration: settings panel lets the user register Quill with Windows for chosen extensions and add an "Open with Quill" verb.
 
@@ -7046,6 +7051,19 @@ InstructionSet(task_id, title, default_prompt, user_prompt="", enabled=True)
 | Transcribe Audio | — | `core/ai/transcription.py` | `ui/ai_transcribe_dialog.py` |
 | Read with AI Voice | — | `core/ai/cloud_tts.py` (dispatch), `core/ai/tts.py` (OpenAI), `core/ai/gemini_tts.py` (Gemini), `core/ai/elevenlabs_tts.py` (ElevenLabs SDK gateway, audio export only — roadmap §4.1), `core/ai/tts_chunk.py` (boundary-safe split) | inline in `main_frame.py` |
 | Ask Quill chat | Alt+Q | `core/ai_chat.py` | `ui/ai_chat_dialog.py` |
+
+**Translate: an unchanged result is not a translation (2026-11-06).** The
+source language is always auto-detected, so text already in the target
+language comes back as itself, and a provider can "translate" Spanish into
+Spanish without complaint. `core/ai/translation.py::translation_unchanged`
+compares the input and the result with whitespace runs collapsed and case
+folded (empty text is never "unchanged"; that is a failure reported
+elsewhere). When it holds, the dialog puts `UNCHANGED_TRANSLATION_MESSAGE`
+("The translation came back the same as the original. The text may already be
+in the target language.") in the read-only result box and focuses it, so the
+screen reader speaks it without a separate announcement (GATE-13), and leaves
+Copy, Replace Original and Open as New Document disabled. QUILL Lite has no
+translation command, so this is QUILL-only.
 
 #### 5.90.5 Agentic task architecture
 
@@ -15381,6 +15399,19 @@ plain text → a once-per-document transition prompt). Native Ctrl+B/I/U are
 intercepted in rich mode and routed through QUILL's commands so formatting is
 announced, dirty-marked, and remappable. Describe Formatting at Cursor reads
 the live TOM in rich mode.
+
+**Text colour in Describe Formatting (2026-11-06).** The rich description
+named the highlight but never the text colour, which the Markdown path always
+spoke. `caret_format_description` now reads `ITextFont.ForeColor` through
+`quill.core.highlights.text_colour_from_colorref` and speaks it just before the
+highlight ("Calibri, 11 point, red, yellow highlight"). Names: an exact match
+to a Format > Text Color name (the RTF writer's own table, so green is
+"green", not the highlight palette's "dark green"), otherwise the nearest of
+Word's fifteen highlight-palette names. Silent for `tomAutoColor`, black, and
+the colour a theme painted over the whole story (`set_document_color`
+records it as `_theme_colorref`), so a dark theme does not make every
+character "gray". QUILL Lite calls the same surface method, so both editors
+answer the same way.
 
 **Paragraph formatting completed (2026-09-08, via QUILL Lite).** The surface has
 always been able to justify a paragraph, set a list type and set a line-spacing
