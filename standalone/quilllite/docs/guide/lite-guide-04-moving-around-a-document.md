@@ -382,6 +382,59 @@ first row marked as the header row, and in a Word document the same way. A
 `|` table in a Markdown document you switch to rich text becomes a real table,
 and switching back to Markdown or plain text turns a real table into `|` rows.
 
+## Blocks, indentation and problems: Navigate > Code
+
+The **Code** submenu of the Navigate menu (**Alt+N**, then **C**) holds a few
+commands that help most in HTML, Markdown and anything indented. They are the
+same commands, on the same keys, as in QUILL.
+
+### Moving by block
+
+**Next Block** and **Previous Block** move a paragraph at a time in Markdown
+and plain text. In an HTML document they move between headings and landmarks:
+`header`, `nav`, `main`, `aside`, `section`, `article`, `footer` and `form`
+elements, and anything with a landmark `role`. Your screen reader reads the
+line you land on. They have no key, as in QUILL; press **Alt+N**, **C**, then
+**N** or **P**, or give them a key in the Keyboard Manager. At either end you
+hear "No next block" or "No previous block".
+
+### Moving by indentation
+
+**Next Indent Change** (**Alt+Shift+PageDown**) moves down to the next line
+whose indentation is different from the line you are on, skipping blank lines.
+**Previous Indent Change** (**Alt+Shift+PageUp**) goes up. The caret lands on
+the first character that is not a space, your screen reader reads the line,
+and QUILL Lite adds how far in it is, such as "4 spaces" or "No indent". This
+is the quick way out of a long nested list or a block of indented notes.
+
+### Checking a Markdown or HTML document
+
+**Check This File...** (**Ctrl+Alt+/**) looks through the whole document for
+problems:
+
+- in **Markdown**: heading levels that skip (a level 3 heading straight after
+  a level 1), pictures without alt text, links with no text or no address, and
+  links to files next to the document that are not there;
+- in **HTML**: tags closed in the wrong order or never closed, closing tags
+  with nothing open, the same `id` used twice, and pictures without alt text.
+
+If nothing is wrong you hear "No problems found." Otherwise the **Problems**
+list opens. It starts by saying how many problems there are, then lists them
+one to a row, place first: "Line 4, column 1, error: Markdown image is missing
+alternative text." Press **Enter** on one to go to it, or **Escape** to stay
+where you are.
+
+**Next Problem** (**Ctrl+Alt+.**) and **Previous Problem** (**Ctrl+Alt+,**)
+take you to the next or previous problem without the list, and say it: "Problem
+2 of 3, line 9, column 1, warning: Heading levels jump by more than one level."
+They go round from the last to the first, and check the document again first
+if you have changed it.
+
+QUILL Lite checks the two kinds of document it knows. In a plain text document
+you hear "Nothing to check: QUILL Lite checks Markdown and HTML documents."
+QUILL checks those too, and also code and data files such as JSON, XML, Python
+and CSV, using tools you already have installed for languages like JavaScript.
+
 ## Reading without changing anything: the Read-Only Guard
 
 When you open a long reference document only to read it, such as a manual, a
@@ -522,7 +575,9 @@ You can find text with **Ctrl+F**, narrow it with Match case and Whole word
 only, replace one match at a time or all at once with **Ctrl+H**, hear how
 many matches there are, see them all in one list, and search for characters
 you cannot type. **Ctrl+G** takes
-you to a line, a bookmark or a heading from one window. Numbered bookmarks
+you to a line, a bookmark or a heading from one window. **Navigate > Code**
+moves by block and by indentation, and **Ctrl+Alt+/** checks a Markdown or
+HTML document for problems. Numbered bookmarks
 are still there after you close the document, the temporary bookmark is there
 for a quick trip, and **Alt+Left** takes you back after any jump.
 

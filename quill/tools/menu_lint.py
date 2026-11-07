@@ -192,6 +192,10 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     # neighbour, and Space is not a letter any screen reader claims with
     # Ctrl+Alt -- the §10.8 concern is the letter rows.
     "edit.select_chunk",
+    # Navigate > Code (keymap.py): no reader claims these; AltGr cost as above.
+    "tools.check_this_file",  # Ctrl+Alt+/
+    "navigate.next_problem",  # Ctrl+Alt+.
+    "navigate.previous_problem",  # Ctrl+Alt+,
 })
 
 # §10.3 binding-spec cluster labels that must appear as the label argument

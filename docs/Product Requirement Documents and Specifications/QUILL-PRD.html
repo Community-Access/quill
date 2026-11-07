@@ -7548,8 +7548,11 @@ programming/markup language: extensions, indent convention, comment
 syntax, brackets, keyword set, and a <code>markup_kind</code>
 (<code>"html"</code>, <code>"markdown"</code>, or <code>"plain"</code>).
 Recognised languages: HTML, Markdown, CSS, Python, JavaScript,
-TypeScript, C, C++, C#, PHP, Go, Rust, Kotlin, Shell, YAML, JSON, TOML,
-SQL, plus a plain-text fallback. The profile is wx-free, pure data.</p>
+TypeScript, C, C++, C#, Java, PHP, Go, Rust, Kotlin, Ruby, Perl, Shell,
+PowerShell, Batch, LaTeX, XML, YAML, JSON, TOML, INI, CSV, SQL, plus a
+plain-text fallback (Java, XML, INI, Batch, PowerShell, LaTeX, Ruby,
+Perl and CSV added 2026-11-06, section 5.28b). The profile is wx-free,
+pure data.</p>
 <ul>
 <li><strong>Auto-assignment.</strong> On open and on tab creation the
 profile is set from the file extension
@@ -7605,6 +7608,71 @@ and announces the change. A screen-reader user is informed in every mode
 (no silent or visual-only switch). Braille content is out of scope —
 Braille Mode owns it.</li>
 </ul>
+<h3
+id="528b-navigate--code-language-aware-blocks-indent-changes-and-check-this-file-2026-11-06">5.28b
+Navigate &gt; Code: language-aware blocks, indent changes and Check This
+File (2026-11-06)</h3>
+<p>One submenu, <strong>Navigate &gt; Code</strong>, with the same rows,
+access letters and keys in QUILL and QUILL Lite (family rule 2), over
+shared code: <code>quill/core/navigation.py</code> and
+<code>quill/core/language_blocks.py</code> for movement,
+<code>quill/core/problems/</code> for checking,
+<code>quill/ui/problems_commands.py</code> for the commands. QUILL’s
+side is <code>quill/ui/main_frame_code_nav.py</code>; QUILL Lite’s is
+<code>quill/apps/lite_window_code_nav.py</code>.</p>
+<p><strong>Language-aware blocks.</strong> <code>LanguageProfile</code>
+gains an optional <code>block_pattern</code>, a regular expression
+matched per line whose matches begin a block. Next / Previous Block
+(<code>navigate.next_block</code> / <code>previous_block</code>, no
+default chord; Quick Nav <code>Tab</code> / <code>Shift+Tab</code>) stop
+there when the document’s profile has one and the text matches it, and
+otherwise move by paragraph exactly as before. Patterns: Python
+<code>def</code>/<code>class</code> (decorators included); C#, Java and
+Kotlin type and method declarations; JavaScript and TypeScript
+functions, classes, arrow functions assigned to a name, class methods,
+and TypeScript interfaces, enums, namespaces and type aliases; C and C++
+definitions at the margin; Go, Rust, PHP, Ruby, Perl, Shell, PowerShell
+and SQL declarations; INI and TOML <code>[sections]</code>; batch
+<code>:labels</code> (not <code>::</code> comments); LaTeX
+<code>\part</code> to <code>\paragraph</code>; HTML headings, landmark
+elements and landmark roles. On arrival QUILL speaks the line landed on
+instead of “Moved to next block”. QUILL Lite reaches the same core for
+the languages it knows: paragraphs in plain text and Markdown, HTML’s
+pattern in HTML.</p>
+<p><strong>Next / Previous Indent Change</strong>
+(<code>navigate.next_indent</code> Alt+Shift+PageDown,
+<code>navigate.previous_indent</code> Alt+Shift+PageUp, free in both
+editors): the next line, skipping blank lines, whose indentation in
+columns (tabs expanded to the profile’s indent unit) differs from the
+caret’s line; the caret lands on its first non-blank character and the
+depth is spoken (“8 spaces”, “1 tab”, “No indent”).
+<code>indent_change_target</code> and <code>describe_indent</code> in
+<code>quill/core/navigation.py</code>.</p>
+<p><strong>Check This File</strong> (<code>tools.check_this_file</code>
+Ctrl+Alt+/), <strong>Next Problem</strong>
+(<code>navigate.next_problem</code> Ctrl+Alt+.) and <strong>Previous
+Problem</strong> (<code>navigate.previous_problem</code> Ctrl+Alt+,). F8
+/ Shift+F8 are Start / Complete Selection in both editors (rule 1), so
+the problem keys mirror Compare’s Ctrl+Alt+Shift+. and , with one
+modifier fewer; the AltGr cost is recorded in <code>menu_lint</code>. A
+pluggable registry keyed by language returns every problem as (line,
+column, severity, message, source). Check This File opens the Problems
+list (a single-choice list, place first) when there are problems and
+speaks “No problems found.” otherwise; Next / Previous Problem move the
+caret, speak “Problem n of m, line, column, severity: message”, wrap,
+and re-check when the text has changed. Tier 1 is built in (JSON, JSONC,
+XML via defusedxml, HTML well-formedness via <code>html.parser</code>,
+TOML, YAML when PyYAML is importable, Python via <code>compile</code>,
+INI, CSV, Markdown via GLOW’s rules plus link checks). Tiers 2 and 3 run
+outside tools the user already has, from one frozen allowlist
+(<code>CHECKER_TOOLS</code>): node, tsc, eslint, ruff, php, ruby, perl,
+shellcheck, gcc, clang, gofmt, rustc, csc and xmllint. Found with
+<code>shutil.which</code> only, run through <code>safe_subprocess</code>
+with a 15-second timeout in the file’s folder, on a temporary copy when
+the buffer is unsaved; local only, so no network egress entry. QUILL
+runs outside checks on its task manager. QUILL Lite checks Markdown and
+HTML with the built-in tier only. The record of the tool table and the
+security model is <code>docs/design/syntax-checking.md</code>.</p>
 <h3 id="529-format-menu-text-transforms-no-styling">5.29 Format menu
 (text transforms, no styling)</h3>
 <p>A dedicated menu surfacing transforms that are otherwise reachable

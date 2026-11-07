@@ -345,6 +345,15 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_table_delete_row": "table.delete_row",
     "cmd_table_delete_column": "table.delete_column",
     "cmd_table_tidy": "table.tidy",
+    # Navigate > Code (2026-11-06): the shared quill.ui.problems_commands and
+    # quill.core.navigation, on the same keys in both.
+    "cmd_next_block": "navigate.next_block",
+    "cmd_previous_block": "navigate.previous_block",
+    "cmd_next_indent": "navigate.next_indent",
+    "cmd_previous_indent": "navigate.previous_indent",
+    "cmd_check_this_file": "tools.check_this_file",
+    "cmd_next_problem": "navigate.next_problem",
+    "cmd_previous_problem": "navigate.previous_problem",
     "cmd_insert_markdown_tag": "format.insert_markdown_tag",
     "cmd_insert_special_character": "power.insert_special_character",
     "cmd_italic": "format.italic",

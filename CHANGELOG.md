@@ -2,6 +2,39 @@
 
 ## 1.0.0
 
+### Code navigation and Check This File, in QUILL and QUILL Lite (2026-11-06)
+
+A new **Navigate > Code** submenu, the same in both editors, on the same keys.
+
+- **Next Block and Previous Block understand code.** In a Python file they
+  move from one `def` or `class` to the next; in C#, Java, JavaScript and
+  TypeScript, between declarations and methods; in INI and TOML, between
+  `[sections]`; in batch files, between `:labels`; in LaTeX, between
+  `\chapter`, `\section` and `\subsection`; and in HTML, between headings and
+  landmarks such as `nav` and `main`. QUILL says the line you land on. Markdown,
+  plain text and any language without a pattern still move by paragraph. QUILL
+  Lite moves by heading and landmark in HTML and by paragraph elsewhere.
+- **Next Indent Change** (Alt+Shift+PageDown) and **Previous Indent Change**
+  (Alt+Shift+PageUp) jump to the next line, skipping blank ones, whose
+  indentation differs from the line you are on, and say how deep it is ("8
+  spaces"). The quick way in and out of a Python block or a YAML mapping.
+- **Check This File...** (Ctrl+Alt+/) lists every problem in the document, with
+  its line, column and severity, in a Problems list; Enter goes to the one you
+  choose. **Next Problem** (Ctrl+Alt+.) and **Previous Problem** (Ctrl+Alt+,)
+  walk them from the document and say each one. F8 would be a code editor's
+  key, but F8 and Shift+F8 are Word's extend-selection keys in both editors.
+- QUILL checks JSON, JSON with comments, XML, HTML, TOML, YAML, Python, INI,
+  CSV and Markdown with nothing installed, and JavaScript, TypeScript, PHP,
+  Ruby, Perl, shell scripts, C, C++, Go, Rust and C# with a tool you already
+  have (Node.js, tsc, ESLint, Ruff, php, ruby, perl, ShellCheck, GCC or Clang,
+  gofmt, rustc, csc, xmllint). Tools are found on your PATH, never downloaded,
+  run on your computer only with a 15-second limit, and an unsaved document is
+  checked as a temporary copy. When a language needs a tool you do not have,
+  you hear "No checker installed for" that language.
+- QUILL Lite checks Markdown and HTML documents, with the built-in checks.
+- New language profiles for Java, XML, INI, batch files, PowerShell, LaTeX,
+  Ruby, Perl and CSV, so these files get comment toggling and the new
+  navigation too.
 ### The QUILL key on every keyboard layout (2026-11-06)
 
 - On a Mac with a German keyboard layout the QUILL key did nothing until you

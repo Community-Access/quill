@@ -719,6 +719,64 @@ in a Word document the same way. A <code>|</code> table in a Markdown
 document you switch to rich text becomes a real table, and switching
 back to Markdown or plain text turns a real table into <code>|</code>
 rows.</p>
+<h2 id="blocks-indentation-and-problems-navigate--code">Blocks,
+indentation and problems: Navigate &gt; Code</h2>
+<p>The <strong>Code</strong> submenu of the Navigate menu
+(<strong>Alt+N</strong>, then <strong>C</strong>) holds a few commands
+that help most in HTML, Markdown and anything indented. They are the
+same commands, on the same keys, as in QUILL.</p>
+<h3 id="moving-by-block">Moving by block</h3>
+<p><strong>Next Block</strong> and <strong>Previous Block</strong> move
+a paragraph at a time in Markdown and plain text. In an HTML document
+they move between headings and landmarks: <code>header</code>,
+<code>nav</code>, <code>main</code>, <code>aside</code>,
+<code>section</code>, <code>article</code>, <code>footer</code> and
+<code>form</code> elements, and anything with a landmark
+<code>role</code>. Your screen reader reads the line you land on. They
+have no key, as in QUILL; press <strong>Alt+N</strong>,
+<strong>C</strong>, then <strong>N</strong> or <strong>P</strong>, or
+give them a key in the Keyboard Manager. At either end you hear “No next
+block” or “No previous block”.</p>
+<h3 id="moving-by-indentation">Moving by indentation</h3>
+<p><strong>Next Indent Change</strong>
+(<strong>Alt+Shift+PageDown</strong>) moves down to the next line whose
+indentation is different from the line you are on, skipping blank lines.
+<strong>Previous Indent Change</strong>
+(<strong>Alt+Shift+PageUp</strong>) goes up. The caret lands on the
+first character that is not a space, your screen reader reads the line,
+and QUILL Lite adds how far in it is, such as “4 spaces” or “No indent”.
+This is the quick way out of a long nested list or a block of indented
+notes.</p>
+<h3 id="checking-a-markdown-or-html-document">Checking a Markdown or
+HTML document</h3>
+<p><strong>Check This File…</strong> (<strong>Ctrl+Alt+/</strong>) looks
+through the whole document for problems:</p>
+<ul>
+<li>in <strong>Markdown</strong>: heading levels that skip (a level 3
+heading straight after a level 1), pictures without alt text, links with
+no text or no address, and links to files next to the document that are
+not there;</li>
+<li>in <strong>HTML</strong>: tags closed in the wrong order or never
+closed, closing tags with nothing open, the same <code>id</code> used
+twice, and pictures without alt text.</li>
+</ul>
+<p>If nothing is wrong you hear “No problems found.” Otherwise the
+<strong>Problems</strong> list opens. It starts by saying how many
+problems there are, then lists them one to a row, place first: “Line 4,
+column 1, error: Markdown image is missing alternative text.” Press
+<strong>Enter</strong> on one to go to it, or <strong>Escape</strong> to
+stay where you are.</p>
+<p><strong>Next Problem</strong> (<strong>Ctrl+Alt+.</strong>) and
+<strong>Previous Problem</strong> (<strong>Ctrl+Alt+,</strong>) take you
+to the next or previous problem without the list, and say it: “Problem 2
+of 3, line 9, column 1, warning: Heading levels jump by more than one
+level.” They go round from the last to the first, and check the document
+again first if you have changed it.</p>
+<p>QUILL Lite checks the two kinds of document it knows. In a plain text
+document you hear “Nothing to check: QUILL Lite checks Markdown and HTML
+documents.” QUILL checks those too, and also code and data files such as
+JSON, XML, Python and CSV, using tools you already have installed for
+languages like JavaScript.</p>
 <h2 id="reading-without-changing-anything-the-read-only-guard">Reading
 without changing anything: the Read-Only Guard</h2>
 <p>When you open a long reference document only to read it, such as a
@@ -906,9 +964,11 @@ case and Whole word only, replace one match at a time or all at once
 with <strong>Ctrl+H</strong>, hear how many matches there are, see them
 all in one list, and search for characters you cannot type.
 <strong>Ctrl+G</strong> takes you to a line, a bookmark or a heading
-from one window. Numbered bookmarks are still there after you close the
-document, the temporary bookmark is there for a quick trip, and
-<strong>Alt+Left</strong> takes you back after any jump.</p>
+from one window. <strong>Navigate &gt; Code</strong> moves by block and
+by indentation, and <strong>Ctrl+Alt+/</strong> checks a Markdown or
+HTML document for problems. Numbered bookmarks are still there after you
+close the document, the temporary bookmark is there for a quick trip,
+and <strong>Alt+Left</strong> takes you back after any jump.</p>
 <p>The tutorial <em>Finding your way back</em> lets you practise
 bookmarks, the temporary bookmark and Go Back with the app guiding
 you.</p>

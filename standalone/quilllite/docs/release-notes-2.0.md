@@ -1,5 +1,14 @@
 # QUILL Lite 2.0
 
+## Moving by block and indentation, and checking a document
+
+**Navigate > Code** is new, and it is the same submenu QUILL has, on the same keys.
+
+**Next Block** and **Previous Block** move a paragraph at a time. In an HTML document they move between headings and landmarks such as `nav`, `main` and `footer`, which is how you skim a web page you are writing. They have no key, as in QUILL: press **Alt+N**, **C**, then **N** or **P**.
+
+**Next Indent Change** (**Alt+Shift+PageDown**) and **Previous Indent Change** (**Alt+Shift+PageUp**) jump to the next line whose indentation differs from yours, skipping blank lines, and say how far in it is, such as "4 spaces".
+
+**Check This File...** (**Ctrl+Alt+/**) looks through a Markdown or HTML document and lists every problem it finds, with the line and column first: a heading level that skips, a picture with no alt text, a link with no text or no address, a link to a file that is not there, a tag closed in the wrong order or never closed, or the same `id` used twice. Press Enter on one to go to it. **Next Problem** (**Ctrl+Alt+.**) and **Previous Problem** (**Ctrl+Alt+,**) go to the next or previous one without the list and say what it is. QUILL checks code and data files too.
 ## The WordPress key on any keyboard layout
 
 The WordPress key, `Ctrl+Alt+Shift+Grave`, now finds the grave key by where it
