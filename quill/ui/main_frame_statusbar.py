@@ -18,6 +18,7 @@ from quill.core.braille_statusbar import page_break_mode, short_form_from_resolv
 from quill.core.document_text import DocumentText
 from quill.core.links import infer_markup_kind
 from quill.core.markdown_sections import current_section_at, parse_heading_blocks
+from quill.core.metrics import READING_WORDS_PER_MINUTE, reading_minutes
 from quill.core.navigation import estimate_page_count, estimate_page_for_position, page_position
 from quill.core.palette import load_palette_usage, top_suggestion
 from quill.core.settings import STATUS_BAR_ITEMS, Settings, save_settings
@@ -264,11 +265,10 @@ class StatusBarMixin:
                 return f"{stats.characters:,} chars"
             if item == "line_count":
                 return f"{stats.lines:,} lines"
-            # reading_time: ~200 words per minute, rounded up to a whole minute.
-            if stats.words == 0:
+            if stats.words == 0:  # reading_time: Document Statistics' speed, rounded up
                 return "0 min read"
-            minutes = (stats.words + 199) // 200
-            return "<1 min read" if stats.words < 200 else f"{minutes} min read"
+            short = stats.words < READING_WORDS_PER_MINUTE
+            return "<1 min read" if short else f"{reading_minutes(stats.words)} min read"
         if item == "document_progress":
             editor = getattr(self, "editor", None)
             if editor is None:

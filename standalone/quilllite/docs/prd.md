@@ -2438,6 +2438,27 @@ the same way.
   break needs a Word, Rich Text or Markdown document". It never writes a form
   feed.
 
+## Document Statistics, pressed twice (2026-11-06)
+
+**View > Document Statistics** (**Ctrl+Shift+G**, `cmd_statistics`) still
+answers a first press at once with words, lines and characters. A second press
+within 400 milliseconds (`multi_press_window_ms` where the settings carry it)
+speaks the whole writing report: the same counts, then paragraphs, sentences,
+sentences over 30 words, reading time at 200 words a minute, and the
+Flesch-Kincaid reading grade. QUILL's Document Statistics has the same two
+presses on the same key and says the same words, because both editors call
+`quill.core.metrics.statistics_report` (family rule 2: the command both
+products have keeps the chord, and no second implementation).
+
+- DS-L1. The first press is never delayed waiting to see whether a second one
+  comes; `RepeatPress` only looks back.
+- DS-L2. With a selection, both presses count the selection and say
+  "Selection:" first.
+- DS-L3. Paragraphs are blank-line blocks when the text has a blank line
+  between paragraphs, otherwise non-blank lines.
+- DS-L4. The sentence splitter and the grade are the ones the WordPress
+  reading-level check uses, moved to `quill/core/readability.py` so the two
+  can never disagree.
 ## Math as MathML in Export as HTML (2026-11-06)
 
 - **File > Export as HTML...** (Ctrl+Alt+Shift+End) renders a Markdown

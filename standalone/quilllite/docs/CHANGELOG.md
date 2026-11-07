@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### Document Statistics, pressed twice (2026-11-06)
+
+- View > Document Statistics (Ctrl+Shift+G) still says words, lines and
+  characters at once. Press it twice quickly to add paragraphs, sentences,
+  sentences over 30 words, the reading time and the reading grade. Both
+  presses count the selection when there is one. Shared with QUILL, which says
+  the same words on the same key. The first press now gives lines before
+  characters, as QUILL always has.
 ### Searches that say more (2026-11-06)
 
 - Shared with QUILL: Go To Anything (Ctrl+Alt+Shift+A), including its `#`

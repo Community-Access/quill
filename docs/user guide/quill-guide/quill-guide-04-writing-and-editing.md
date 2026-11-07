@@ -1300,7 +1300,8 @@ feature itself is. These are the rest:
 - **Multi-press time window (ms)** is how long QUILL waits for a second or
   third press of the same key before it treats the first as a single press.
   It matters for the Copy Tray and Command Palette keys that do something
-  different when pressed twice. The default is 400. Fast typists may like
+  different when pressed twice, and for Document Statistics (`Ctrl+Shift+G`),
+  whose second press adds the full writing report. The default is 400. Fast typists may like
   300, and 500 gives you more time.
 
 ## What you learned, and where to go next
