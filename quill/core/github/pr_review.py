@@ -16,22 +16,26 @@ the provider, so :class:`PullReviewClient` takes the already-constructed
 its ``_repo`` resolver and auth state as a deliberate friend module -- one
 repo-resolution path, one error style, no second PyGithub session.
 
-Honesty note on thread resolution: GitHub only exposes a review thread's
-resolved/unresolved state over GraphQL, and QUILL's GitHub transport is
-PyGithub's REST client (the ``gh`` bridge is deliberately Codespaces-only).
-So threads here carry the *outdated* flag (REST reports a comment whose hunk
-has moved on as ``position = None``) but not a resolved bit; the UI says
-"outdated", never guesses "resolved".
+Thread resolution is fetched through the small authenticated GraphQL bridge;
+anonymous sessions retain REST review access and label resolution unavailable.
 
 No ``wx`` imports. Strict-typed (``mypy quill/core`` scope).
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Any
 
-from quill.core.error_codes import CodedError
+from quill.core.github.fetch_results import GitHubFetchResult
+from quill.core.github.review_errors import GitHubReviewError
+from quill.core.github.review_graphql import (
+    ReviewGraphQLError,
+    fetch_thread_states,
+    set_thread_resolved,
+)
+from quill.core.github.review_models import GitHubPullReviewState
+from quill.core.github.review_policy_client import PullReviewPolicyMixin
 
 if TYPE_CHECKING:
     from quill.core.github.items_provider import GitHubItemsProvider
@@ -45,12 +49,6 @@ REVIEW_EVENTS: dict[str, str] = {
 
 _THREAD_PAGE_LIMIT = 200  # review comments fetched per PR (flat, pre-grouping)
 _CHECKS_PAGE_LIMIT = 100
-
-
-class GitHubReviewError(CodedError):
-    """A PR review fetch or action failed (network, auth, API, or refusal)."""
-
-    code = "QUILL-GITHUB-REVIEW-ERROR"
 
 
 # ---------------------------------------------------------------------------
@@ -99,6 +97,7 @@ class GitHubReviewComment:
     url: str = ""
     outdated: bool = False
     in_reply_to: int = 0  # 0 for a thread root
+    side: str = "RIGHT"
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,6 +105,11 @@ class GitHubReviewThread:
     """A thread: one root review comment plus its replies, in posted order."""
 
     comments: tuple[GitHubReviewComment, ...]
+    node_id: str = ""
+    resolved: bool | None = None
+    can_resolve: bool = False
+    can_unresolve: bool = False
+    resolution_error: str = ""
 
     @property
     def root(self) -> GitHubReviewComment:
@@ -138,103 +142,14 @@ class GitHubReviewThread:
             parts.append(f"{self.reply_count} repl{'y' if self.reply_count == 1 else 'ies'}")
         if self.outdated:
             parts.append("outdated")
+        parts.append(
+            "resolution unavailable"
+            if self.resolved is None
+            else "resolved"
+            if self.resolved
+            else "unresolved"
+        )
         return " — ".join(part for part in parts if part)
-
-
-@dataclass(frozen=True, slots=True)
-class GitHubPullReviewState:
-    """Everything the review header bar shows, in one fetch."""
-
-    number: int
-    title: str
-    state: str  # "open" / "closed"
-    draft: bool
-    merged: bool
-    mergeable: bool | None  # None while GitHub is still computing it
-    mergeable_state: str  # "clean" / "dirty" / "behind" / "blocked" / ...
-    base_ref: str
-    head_ref: str
-    head_sha: str
-    author: str = ""
-    url: str = ""
-    requested_reviewers: tuple[str, ...] = ()
-    reviews: tuple[GitHubReview, ...] = ()
-    checks: tuple[GitHubCheckRun, ...] = ()
-    thread_count: int = 0
-    outdated_thread_count: int = 0
-
-    @property
-    def review_decision(self) -> str:
-        """The latest standing review per reviewer, folded to one phrase."""
-        latest: dict[str, str] = {}
-        for review in self.reviews:  # chronological; later entries win
-            if review.state in ("APPROVED", "CHANGES_REQUESTED"):
-                latest[review.reviewer] = review.state
-            elif review.state == "DISMISSED":
-                latest.pop(review.reviewer, None)
-        approvals = sum(1 for state in latest.values() if state == "APPROVED")
-        blocks = sum(1 for state in latest.values() if state == "CHANGES_REQUESTED")
-        if blocks:
-            return f"changes requested by {blocks}"
-        if approvals:
-            return f"approved by {approvals}"
-        return "review pending"
-
-    @property
-    def checks_summary(self) -> str:
-        """ "3 passed, 1 failed, 2 running" — or "no checks"."""
-        if not self.checks:
-            return "no checks"
-        passed = sum(1 for c in self.checks if c.conclusion == "success")
-        failed = sum(1 for c in self.checks if c.conclusion in ("failure", "timed_out"))
-        running = sum(1 for c in self.checks if c.status != "completed")
-        other = len(self.checks) - passed - failed - running
-        parts = []
-        if passed:
-            parts.append(f"{passed} passed")
-        if failed:
-            parts.append(f"{failed} failed")
-        if running:
-            parts.append(f"{running} running")
-        if other:
-            parts.append(f"{other} other")
-        return ", ".join(parts)
-
-    @property
-    def merge_readiness(self) -> str:
-        """Plain language for the header ribbon (plan 4.2.1: no raw states)."""
-        if self.merged:
-            return "Merged."
-        if self.state != "open":
-            return "Closed without merging."
-        if self.draft:
-            return "Draft — not ready for review."
-        if self.mergeable_state == "behind":
-            return "Branch is behind the base branch; update it before merging."
-        if self.mergeable is False or self.mergeable_state == "dirty":
-            return "Merge conflicts with the base branch."
-        if self.mergeable_state == "blocked":
-            return "Blocked — required reviews or checks are not satisfied."
-        if self.mergeable is None:
-            return "GitHub is still computing mergeability."
-        return "Ready to merge."
-
-    def summary_text(self) -> str:
-        """The Copy Review Summary text: one readable paragraph block."""
-        lines = [
-            f"PR #{self.number}: {self.title}",
-            f"{self.head_ref} into {self.base_ref}, by {self.author}",
-            self.merge_readiness,
-            f"Reviews: {self.review_decision}",
-            f"Checks: {self.checks_summary}",
-            f"Review threads: {self.thread_count}"
-            + (f" ({self.outdated_thread_count} outdated)" if self.outdated_thread_count else ""),
-        ]
-        if self.requested_reviewers:
-            lines.append("Awaiting review from: " + ", ".join(self.requested_reviewers))
-        if self.url:
-            lines.append(self.url)
-        return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
@@ -263,16 +178,39 @@ def _login(obj: object) -> str:
     return _text(getattr(obj, "login", None))
 
 
-def _rows(iterable: Any, limit: int) -> list[Any]:
+def _rows(iterable: Any, limit: int) -> GitHubFetchResult[Any]:
     out: list[Any] = []
     try:
-        for item in iterable or ():
-            out.append(item)
-            if len(out) >= limit:
-                break
-    except Exception:  # noqa: BLE001 - a partial page beats a blank pane
-        pass
-    return out
+        iterator = iter(() if iterable is None else iterable)
+        while len(out) < limit:
+            try:
+                out.append(next(iterator))
+            except StopIteration:
+                return GitHubFetchResult(tuple(out))
+        try:
+            next(iterator)
+        except StopIteration:
+            return GitHubFetchResult(tuple(out))
+        except Exception as exc:  # noqa: BLE001 - preserve rows and report partial data
+            return GitHubFetchResult(tuple(out), complete=False, warning=str(exc))
+        return GitHubFetchResult(tuple(out), complete=False, truncated=True)
+    except Exception as exc:  # noqa: BLE001 - preserve rows and report partial data
+        return GitHubFetchResult(tuple(out), complete=False, warning=str(exc))
+
+
+def _fetch_warning(label: str, result: GitHubFetchResult[Any], limit: int) -> str:
+    if result.complete:
+        return ""
+    details: list[str] = []
+    if result.truncated:
+        details.append(
+            f"showing the first {len(result.items)} items; more may exist (limit {limit})"
+        )
+    if result.warning:
+        details.append(result.warning)
+    if not details:
+        details.append("results may be incomplete")
+    return f"{label}: " + "; ".join(details) + "."
 
 
 def _map_check_run(row: Any) -> GitHubCheckRun:
@@ -283,6 +221,19 @@ def _map_check_run(row: Any) -> GitHubCheckRun:
         conclusion=_text(getattr(row, "conclusion", "") or ""),
         url=_text(getattr(row, "html_url", "") or ""),
         summary=_text(getattr(output, "title", "") or "") if output is not None else "",
+    )
+
+
+def _map_commit_status(row: Any) -> GitHubCheckRun:
+    """Map a legacy commit-status context onto the shared check-run display."""
+    state = _text(getattr(row, "state", "")).casefold()
+    pending = state == "pending"
+    return GitHubCheckRun(
+        name=_text(getattr(row, "context", "")),
+        status="in_progress" if pending else "completed",
+        conclusion="" if pending else state or "unknown",
+        url=_text(getattr(row, "target_url", "") or ""),
+        summary=_text(getattr(row, "description", "") or ""),
     )
 
 
@@ -309,6 +260,7 @@ def _map_review_comment(row: Any) -> GitHubReviewComment:
         url=_text(getattr(row, "html_url", "") or ""),
         outdated=position is None,
         in_reply_to=int(reply_to or 0),
+        side=_text(getattr(row, "side", "RIGHT") or "RIGHT"),
     )
 
 
@@ -339,7 +291,7 @@ def group_review_threads(
 # ---------------------------------------------------------------------------
 
 
-class PullReviewClient:
+class PullReviewClient(PullReviewPolicyMixin):
     """Review reads and review actions for one provider session.
 
     Wraps the viewer's :class:`GitHubItemsProvider` rather than opening a
@@ -380,6 +332,7 @@ class PullReviewClient:
         number: int,
         *,
         threads: tuple[GitHubReviewThread, ...] | None = None,
+        thread_result: GitHubFetchResult[GitHubReviewThread] | None = None,
     ) -> GitHubPullReviewState:
         """One call for the whole header: PR status, reviews, checks, counts.
 
@@ -389,14 +342,32 @@ class PullReviewClient:
         """
         pull = self._pull(full_name, number)
         try:
-            review_rows = _rows(pull.get_reviews(), _THREAD_PAGE_LIMIT)
+            review_result = _rows(pull.get_reviews(), _THREAD_PAGE_LIMIT)
         except Exception as exc:  # noqa: BLE001
-            raise GitHubReviewError(f"Could not load reviews for #{number}: {exc}") from exc
+            review_result = GitHubFetchResult((), complete=False, warning=str(exc))
         head = getattr(pull, "head", None)
         head_sha = _text(getattr(head, "sha", "")) if head is not None else ""
-        checks = self._checks_for_sha(full_name, head_sha) if head_sha else ()
-        if threads is None:
-            threads = self.fetch_review_threads(full_name, number, pull=pull)
+        checks_result = (
+            self._checks_for_sha(full_name, head_sha)
+            if head_sha
+            else GitHubFetchResult(
+                (), complete=False, warning="The pull request does not include a head commit SHA."
+            )
+        )
+        if thread_result is None:
+            if threads is not None:
+                thread_result = GitHubFetchResult(tuple(threads))
+            else:
+                thread_result = self.fetch_review_threads(full_name, number, pull=pull)
+        warnings = tuple(
+            warning
+            for warning in (
+                _fetch_warning("Reviews", review_result, _THREAD_PAGE_LIMIT),
+                _fetch_warning("Checks", checks_result, _CHECKS_PAGE_LIMIT),
+                _fetch_warning("Review threads", thread_result, _THREAD_PAGE_LIMIT),
+            )
+            if warning
+        )
         base = getattr(pull, "base", None)
         return GitHubPullReviewState(
             number=number,
@@ -414,39 +385,127 @@ class PullReviewClient:
             requested_reviewers=tuple(
                 _login(user) for user in getattr(pull, "requested_reviewers", ()) or ()
             ),
-            reviews=tuple(_map_review(row) for row in review_rows),
-            checks=checks,
-            thread_count=len(threads),
-            outdated_thread_count=sum(1 for thread in threads if thread.outdated),
+            reviews=tuple(_map_review(row) for row in review_result.items),
+            checks=checks_result.items,
+            thread_count=len(thread_result.items),
+            outdated_thread_count=sum(1 for thread in thread_result.items if thread.outdated),
+            unresolved_thread_count=sum(
+                1 for thread in thread_result.items if thread.resolved is False
+            ),
+            reviews_complete=review_result.complete,
+            checks_complete=checks_result.complete,
+            threads_complete=thread_result.complete,
+            data_warnings=warnings,
         )
 
     def fetch_review_threads(
         self, full_name: str, number: int, *, pull: Any = None
-    ) -> tuple[GitHubReviewThread, ...]:
+    ) -> GitHubFetchResult[GitHubReviewThread]:
         """The PR's review threads, grouped root-plus-replies per file/line."""
         pull = pull if pull is not None else self._pull(full_name, number)
         try:
-            rows = _rows(pull.get_review_comments(), _THREAD_PAGE_LIMIT)
+            comment_result = _rows(pull.get_review_comments(), _THREAD_PAGE_LIMIT)
         except Exception as exc:  # noqa: BLE001
-            raise GitHubReviewError(f"Could not load review comments: {exc}") from exc
-        return group_review_threads([_map_review_comment(row) for row in rows])
-
-    def _checks_for_sha(self, full_name: str, sha: str) -> tuple[GitHubCheckRun, ...]:
-        repo = self._provider._repo(full_name)  # noqa: SLF001
+            comment_result = GitHubFetchResult((), complete=False, warning=str(exc))
+        threads = group_review_threads([_map_review_comment(row) for row in comment_result.items])
+        warnings = [
+            warning
+            for warning in (_fetch_warning("Review comments", comment_result, _THREAD_PAGE_LIMIT),)
+            if warning
+        ]
+        token = getattr(self._provider, "token", None)
+        if not token:
+            if threads:
+                warnings.append("Thread resolution status is unavailable without a GitHub token")
+                threads = tuple(
+                    replace(thread, resolution_error="Sign in to load thread resolution status.")
+                    for thread in threads
+                )
+            return GitHubFetchResult(
+                threads,
+                complete=not warnings,
+                truncated=comment_result.truncated,
+                warning="; ".join(warnings),
+            )
+        if not threads:
+            return GitHubFetchResult(
+                threads,
+                complete=not warnings,
+                truncated=comment_result.truncated,
+                warning="; ".join(warnings),
+            )
         try:
-            commit = repo.get_commit(sha)
-            rows = _rows(commit.get_check_runs(), _CHECKS_PAGE_LIMIT)
-        except Exception as exc:  # noqa: BLE001
-            raise GitHubReviewError(f"Could not load checks for {sha[:12]}: {exc}") from exc
-        return tuple(_map_check_run(row) for row in rows)
+            states = fetch_thread_states(token, full_name, number)
+        except ReviewGraphQLError as exc:
+            warnings.append(f"Thread resolution status could not be loaded: {exc}")
+            threads = tuple(replace(thread, resolution_error=str(exc)) for thread in threads)
+            return GitHubFetchResult(
+                threads,
+                complete=False,
+                truncated=comment_result.truncated,
+                warning="; ".join(warnings),
+            )
+        resolved_threads = tuple(
+            replace(
+                thread,
+                node_id=states[thread.root.id].node_id,
+                resolved=states[thread.root.id].resolved,
+                can_resolve=states[thread.root.id].can_resolve,
+                can_unresolve=states[thread.root.id].can_unresolve,
+            )
+            if thread.root.id in states
+            else thread
+            for thread in threads
+        )
+        missing = sum(1 for thread in threads if thread.root.id not in states)
+        if missing:
+            warnings.append(f"Resolution status is missing for {missing} review thread(s)")
+            resolved_threads = tuple(
+                replace(
+                    thread,
+                    resolution_error="GitHub did not return resolution status for this thread.",
+                )
+                if thread.root.id not in states
+                else thread
+                for thread in resolved_threads
+            )
+        return GitHubFetchResult(
+            resolved_threads,
+            complete=not warnings,
+            truncated=comment_result.truncated,
+            warning="; ".join(warnings),
+        )
 
-    def fetch_check_runs(self, full_name: str, number: int) -> tuple[GitHubCheckRun, ...]:
+    def _checks_for_sha(self, full_name: str, sha: str) -> GitHubFetchResult[GitHubCheckRun]:
+        try:
+            repo = self._provider._repo(full_name)  # noqa: SLF001
+            commit = repo.get_commit(sha)
+            check_rows = _rows(commit.get_check_runs(), _CHECKS_PAGE_LIMIT)
+            status_rows = _rows(commit.get_statuses(), _CHECKS_PAGE_LIMIT)
+        except Exception as exc:  # noqa: BLE001
+            return GitHubFetchResult(
+                (), complete=False, warning=f"Could not load checks for {sha[:12]}: {exc}"
+            )
+        warnings = tuple(
+            warning for warning in (check_rows.warning, status_rows.warning) if warning
+        )
+        return GitHubFetchResult(
+            tuple(_map_check_run(row) for row in check_rows.items)
+            + tuple(_map_commit_status(row) for row in status_rows.items),
+            complete=check_rows.complete and status_rows.complete,
+            truncated=check_rows.truncated or status_rows.truncated,
+            warning="; ".join(warnings),
+        )
+
+    def fetch_check_runs(self, full_name: str, number: int) -> GitHubFetchResult[GitHubCheckRun]:
         """Check runs on the PR's current head commit."""
         pull = self._pull(full_name, number)
         head = getattr(pull, "head", None)
         sha = _text(getattr(head, "sha", "")) if head is not None else ""
         if not sha:
-            return ()
+            return GitHubFetchResult(
+                (), complete=False, warning="The pull request does not include a head commit SHA."
+            )
         return self._checks_for_sha(full_name, sha)
 
     # -- actions -------------------------------------------------------
@@ -477,6 +536,17 @@ class PullReviewClient:
             pull.create_review_comment_reply(comment_id, body)
         except Exception as exc:  # noqa: BLE001
             raise GitHubReviewError(f"Could not post the reply: {exc}") from exc
+
+    def change_thread_resolution(self, node_id: str, *, resolved: bool) -> None:
+        """Resolve or reopen an authenticated review thread."""
+        self._require_write("change a review thread's resolution")
+        token = getattr(self._provider, "token", None)
+        if not token:
+            raise GitHubReviewError("No GitHub token is available for thread resolution.")
+        try:
+            set_thread_resolved(token, node_id, resolved)
+        except ReviewGraphQLError as exc:
+            raise GitHubReviewError(f"Could not update review thread: {exc}") from exc
 
     def request_reviewers(self, full_name: str, number: int, logins: list[str]) -> None:
         """Ask the listed users for review."""

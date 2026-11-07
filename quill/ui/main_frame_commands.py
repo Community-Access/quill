@@ -138,6 +138,7 @@ class CommandRegistryMixin:
             self.open_github_items_viewer,
             None,
         )
+        self._register_github_reference_command()
         self.commands.register(
             "tools.open_python_console",
             "Open Python Console...",

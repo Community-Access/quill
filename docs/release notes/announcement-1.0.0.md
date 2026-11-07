@@ -330,3 +330,12 @@ that says it does not.
 
 The full QUILL 1.0.0 release notes go through the editor feature by feature, and
 cover the companion apps that come with it too.
+# GitHub Workbench update (release acceptance pending)
+
+QUILL and QUILL Lite now share a keyboard-first GitHub workbench. The PR review
+tree keeps files and conversations together, supports replies and thread
+resolution, and points to the exact changed line when GitHub can provide one.
+Explore brings saved searches, My Work, activity, repositories, people, Pages,
+labels, notifications, and workflow jobs into a native list and detail window.
+Read the [guided tutorial](../tutorials/08-github-inside-quill.md) for the
+screen reader interaction model. Native accessibility acceptance is pending.

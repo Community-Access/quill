@@ -1327,3 +1327,10 @@ profile one for project tasks, if you would like a guided start.
 If you get stuck, choose **Help > Get Help from Support** (**Ctrl+Alt+F2**),
 or write to support@community-access.org. A person at Community Access reads
 every message.
+# GitHub Workbench update (release acceptance pending)
+
+The shared GitHub Items and Explore windows add global saved search, My Work,
+activity, account and repository views, PR thread resolve/reopen, exact current
+diff-line targeting, Pages and labels, and workflow jobs and logs. See the
+[workbench reference](../../../docs/github/workbench-reference.md). Native
+screen-reader acceptance and integration into the destination branch are pending.

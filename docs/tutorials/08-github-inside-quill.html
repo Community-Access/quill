@@ -399,14 +399,20 @@ a reply prompt. Type your reply and accept to post it.
 right-click opens the same context menu: <strong>Reply to
 Thread</strong>, <strong>Copy Conversation</strong>, <strong>Copy Thread
 Link</strong>, <strong>Open File Differences</strong>, and <strong>Open
-Thread on GitHub</strong>. Reply is unavailable when you are signed out
-or the PR is closed or merged.</li>
+Thread on GitHub</strong>, and <strong>Resolve Thread</strong> or
+<strong>Reopen Thread</strong> when GitHub grants permission.
+<strong>Ctrl+Shift+R</strong> toggles the selected thread’s resolution
+after confirmation. Reply is unavailable when you are signed out or the
+PR is closed or merged.</li>
 <li>Select a file and press <strong>Enter</strong> or use its context
 menu’s <strong>Open File Differences</strong> action. That opens the
 accessible compare window for the PR’s changed files. <strong>Copy File
 Name</strong> is also in the file menu. A thread’s file and line are
-announced in the outline and details; opening the diff starts the file
-comparison rather than jumping to that exact hunk.</li>
+announced in the outline and details. From a thread, <strong>Open File
+Differences</strong> selects its file and points to that exact changed
+line when GitHub supplies a current patch position. For an outdated or
+missing position, QUILL says it cannot locate the line and leaves the
+file readable.</li>
 <li>Expand <strong>Checks</strong>, select a check, and read its state
 and summary in the details field. <strong>Enter</strong> or <strong>Open
 Check on GitHub</strong> in its context menu opens the job when GitHub
@@ -425,13 +431,44 @@ changes, or Comment. Changes requested and comment reviews need a
 message. Updating a branch merges the base branch into the PR branch
 after confirmation; check the destination before accepting. Review
 actions are disabled for a closed or merged PR.</p>
-<p>The reader shows whether a comment’s original hunk is outdated. It
-does not show GitHub’s resolved/unresolved thread state or offer
-Resolve/Reopen Thread; the REST review transport does not supply that
-status. It also does not yet place a review marker inside the exact diff
-hunk. These gaps are tracked in <a
-href="../planning/github-workbench.md">the GitHub workbench
-plan</a>.</p>
+<p>The outline announces whether each thread is resolved or unresolved.
+QUILL loads that state through GitHub’s review-thread API for signed-in
+accounts. When the API cannot supply it, the conversation remains
+readable and the details explain why its resolution actions are
+unavailable. Refresh after a teammate changes a thread on GitHub.</p>
+<h3 id="explore-github-across-repositories">Explore GitHub across
+repositories</h3>
+<p>From <strong>GitHub Items</strong>, choose <strong>Explore…</strong>.
+This second native window uses a results list above a copyable detail
+field. Arrow through results, Tab into details, and Shift+Tab back to
+the list. Enter or <strong>Open on GitHub</strong> opens a result in
+your browser; <strong>Use Repository</strong> loads a selected
+repository into the Items viewer. Shift+F10, the Applications key, or
+right-click exposes actions for the selected row.</p>
+<p>Choose <strong>Global issue and PR search</strong> and enter GitHub
+search terms such as <code>is:open review-requested:@me</code>.
+<strong>Save Search</strong> stores that query on this computer;
+<strong>Saved Searches…</strong> lets you run or remove one. <strong>My
+Work</strong> brings together items you authored, are assigned, were
+asked to review, or were mentioned in. <strong>My activity feed</strong>
+lists recent account events. <strong>Repository chooser</strong> starts
+with pinned and recent repositories; other views show your repositories,
+starred and watched repositories, people, gists, notifications, and a
+person’s public activity and connections.</p>
+<p>For a repository, choose <strong>Overview</strong>,
+<strong>Activity</strong>, <strong>People</strong>,
+<strong>Forks</strong>, <strong>Labels</strong>, <strong>GitHub Pages
+and builds</strong>, or <strong>Security Alerts</strong> and type its
+<code>owner/repo</code>. The context menu offers star/watch changes and
+label management when you are signed in and GitHub allows them.
+Notifications can be marked read. GitHub Pages and security views may be
+unavailable for a repository; the status field reports the API error
+instead of inventing data.</p>
+<p>In <strong>Workflow Runs</strong>, open <strong>Jobs and
+Logs</strong> for a selected run to inspect each job and read its text
+log. <strong>View Artifacts</strong> shows available downloads. These
+commands use GitHub’s run ID even when the displayed run number
+differs.</p>
 <h3 id="comparing-two-branches">Comparing two branches</h3>
 <p>Switch to the <strong>Branches</strong> view, select one, and press
 <strong>Compare…</strong> (or <strong>Ctrl+Shift+B</strong>). This works

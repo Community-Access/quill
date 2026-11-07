@@ -105,6 +105,7 @@
   "cmd_forms_test_on_site": "covered",
   "cmd_forward_location": "covered",
   "cmd_get_help_from_support": "covered",
+  "cmd_github_workbench": "covered",
   "cmd_go_to_anything": "covered",
   "cmd_go_to_selection_start": "covered",
   "cmd_go_to_temp_bookmark": "covered",

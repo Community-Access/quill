@@ -18,6 +18,12 @@ from __future__ import annotations
 import threading
 from typing import TYPE_CHECKING
 
+from quill.core.github.diff_explanation import (
+    GitHubDiffExplanationRequest,
+    build_diff_explanation_request,
+    format_diff_explanation,
+)
+from quill.core.github.diff_hunks import find_line
 from quill.core.github.items_provider import GitHubItemsError, GitHubPullDiff
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
@@ -41,6 +47,9 @@ class GitHubPullDiffDialog:
         *,
         announce_cb: Callable[[str], None] | None = None,
         initial_file: str = "",
+        initial_line: int = 0,
+        initial_side: str = "RIGHT",
+        ai_acquire: Callable[[], Callable[[str], str] | None] | None = None,
     ) -> None:
         import wx
 
@@ -50,7 +59,13 @@ class GitHubPullDiffDialog:
         self._diff = diff
         self._announce = announce_cb or (lambda _m: None)
         self._initial_file = initial_file
+        self._initial_line = initial_line
+        self._initial_side = initial_side
+        self._ai_acquire = ai_acquire
         self._load_token = 0  # invalidates stale content workers on reselect
+        self._current_file = None
+        self._last_diff_text = ""
+        self._ai_in_flight = False
 
         self.dialog = wx.Dialog(
             parent,
@@ -81,9 +96,29 @@ class GitHubPullDiffDialog:
         self._detail.SetName("Differences for the selected file, spoken the Compare Documents way")
         root.Add(self._detail, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
+        root.Add(wx.StaticText(panel, label="Selected review hunk"), 0, wx.LEFT | wx.TOP, 8)
+        self._hunk = wx.TextCtrl(
+            panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_RICH2
+        )
+        self._hunk.SetName(
+            "Exact changed line and surrounding hunk for the selected review comment"
+        )
+        self._hunk.SetHelpText("Read the changed line and its surrounding patch context.")
+        root.Add(self._hunk, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close diff viewer")
+        self._explain_btn = wx.Button(panel, wx.ID_ANY, label="Explain Selected Change with AI")
+        self._explain_btn.SetName(
+            "Explain the selected pull-request change using the configured AI provider"
+        )
+        self._explain_btn.SetHelpText(
+            "Send this selected file's bounded diff to the configured AI provider after consent. "
+            "The output includes the source file and head SHA."
+        )
+        self._explain_btn.Enable(False)
+        btn_row.Add(self._explain_btn, 0, wx.RIGHT, 8)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 8)
@@ -91,6 +126,7 @@ class GitHubPullDiffDialog:
         panel.SetSizer(root)
         self.dialog.SetSizer(root)
         self._files.Bind(wx.EVT_LISTBOX, self._on_select)
+        self._explain_btn.Bind(wx.EVT_BUTTON, self._explain_selected_change)
 
     def show(self) -> None:
         wx = self._wx
@@ -126,6 +162,28 @@ class GitHubPullDiffDialog:
         if index < 0 or index >= len(self._diff.files):
             return
         pull_file = self._diff.files[index]
+        self._ai_in_flight = False
+        self._current_file = pull_file
+        self._last_diff_text = ""
+        self._explain_btn.Enable(False)
+        if self._initial_line and pull_file.filename == self._initial_file:
+            target = find_line(pull_file.patch, self._initial_line, side=self._initial_side)
+            if target is None:
+                self._hunk.SetValue(
+                    f"Line {self._initial_line} is not in the current patch. "
+                    "The thread may be outdated; read the file comparison below."
+                )
+                self._announce(self._hunk.GetValue())
+            else:
+                hunk_text, offset = target
+                self._hunk.SetValue(hunk_text)
+                self._hunk.SetInsertionPoint(offset)
+                self._hunk.SetFocus()
+                self._announce(
+                    f"Review comment at {pull_file.filename}, line {self._initial_line}."
+                )
+        else:
+            self._hunk.SetValue("Select a review conversation to jump to an exact hunk.")
         self._load_token += 1
         token = self._load_token
         self._detail.SetValue(f"Comparing {pull_file.filename}...")
@@ -176,9 +234,81 @@ class GitHubPullDiffDialog:
     def _on_diff_ready(self, token: int, text: str) -> None:
         if token != self._load_token:
             return  # the user already moved to a different file
+        self._last_diff_text = text
+        self._explain_btn.Enable(self._ai_acquire is not None)
         self._detail.SetValue(text)
         first_line = text.splitlines()[0] if text else "No differences"
         self._announce(first_line)
+
+    def _explain_selected_change(self, _event: object) -> None:
+        if self._ai_in_flight:
+            self._announce("Please wait for the current AI explanation to finish.")
+            return
+        pull_file = self._current_file
+        diff_text = self._last_diff_text
+        if pull_file is None or not diff_text:
+            self._announce("Load a changed file before asking AI to explain it.")
+            return
+        if self._ai_acquire is None:
+            self._announce("AI explanation is unavailable here.")
+            return
+        explain = self._ai_acquire()
+        if explain is None:
+            self._announce("AI is not configured; explanation cancelled.")
+            return
+        self._ai_in_flight = True
+        load_token = self._load_token
+        request = build_diff_explanation_request(
+            self._repo,
+            self._diff,
+            pull_file,
+            diff_text,
+        )
+        self._explain_btn.Enable(False)
+        self._detail.SetValue(f"Explaining {pull_file.filename} with the configured AI provider…")
+
+        def worker() -> None:
+            try:
+                summary = explain(request.prompt)
+            except Exception as exc:  # noqa: BLE001 - preserve diff and report failure
+                self._wx.CallAfter(
+                    self._explanation_failed, load_token, pull_file.filename, str(exc)
+                )
+                return
+            self._wx.CallAfter(
+                self._explanation_ready,
+                load_token,
+                pull_file.filename,
+                summary,
+                request,
+            )
+
+        threading.Thread(
+            target=worker, daemon=True
+        ).start()  # GATE-40-OK: explicit diff explanation.
+
+    def _explanation_failed(self, token: int, filename: str, error: str) -> None:
+        if token != self._load_token:
+            return
+        self._ai_in_flight = False
+        self._explain_btn.Enable(self._ai_acquire is not None and bool(self._last_diff_text))
+        self._detail.SetValue(self._last_diff_text)
+        self._announce(f"AI explanation failed for {filename}: {error}")
+
+    def _explanation_ready(
+        self,
+        token: int,
+        filename: str,
+        summary: str,
+        request: GitHubDiffExplanationRequest,
+    ) -> None:
+        if token != self._load_token:
+            return
+        self._ai_in_flight = False
+        self._explain_btn.Enable(self._ai_acquire is not None)
+        self._detail.SetValue(format_diff_explanation(summary, request))
+        self._detail.SetInsertionPoint(0)
+        self._announce(f"AI explanation ready for {filename}. {summary}")
 
 
 __all__ = ["GitHubPullDiffDialog"]

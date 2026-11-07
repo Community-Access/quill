@@ -269,3 +269,11 @@ drift from what is actually bound.
 - [Help](guide/lite-guide-keyboard-reference.html#help)
 - [Built per window](guide/lite-guide-keyboard-reference.html#built-per-window)
 - [Second keys](guide/lite-guide-keyboard-reference.html#second-keys)
+# GitHub Workbench
+
+**Tools > GitHub Workbench** opens the shared repository viewer. The review
+reader is an expandable tree, with files and threads under the pull request;
+Tab reads the selected node's detail. Ctrl+R replies and Ctrl+Shift+R toggles
+thread resolution where allowed. **Explore** reaches global search, My Work,
+activity, account and repository discovery, and workflow job logs. See the
+[complete keyboard reference](../../../docs/github/workbench-reference.md).

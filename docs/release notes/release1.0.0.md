@@ -3284,3 +3284,11 @@ perfectly" helps as much as one that says it does not.
 
 Thank you for trying QUILL 1.0.0. I hope it becomes the place you like to
 write, and I look forward to hearing what you make with it.
+# GitHub Workbench update (release acceptance pending)
+
+The shared QUILL and QUILL Lite GitHub windows add PR thread resolve/reopen,
+exact changed-line navigation when a patch position is current, global saved
+searches, My Work, activity and people views, repository discovery and watch
+controls, Pages builds, labels, gists, and workflow job logs. Run actions now
+use GitHub's actual run ID. See the [workbench reference](../github/workbench-reference.md)
+for keys, context menus, account requirements, and current limitations.

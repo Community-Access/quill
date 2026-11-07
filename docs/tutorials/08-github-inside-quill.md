@@ -134,13 +134,17 @@ changed-file inventory.
    Type your reply and accept to post it. **Shift+F10**, the **Applications**
    key, or right-click opens the same context menu: **Reply to Thread**,
    **Copy Conversation**, **Copy Thread Link**, **Open File Differences**, and
-   **Open Thread on GitHub**. Reply is unavailable
+   **Open Thread on GitHub**, and **Resolve Thread** or **Reopen Thread** when
+   GitHub grants permission. **Ctrl+Shift+R** toggles the selected thread's
+   resolution after confirmation. Reply is unavailable
    when you are signed out or the PR is closed or merged.
 4. Select a file and press **Enter** or use its context menu's **Open File
    Differences** action. That opens the accessible compare window for the PR's
    changed files. **Copy File Name** is also in the file menu. A thread's file
-   and line are announced in the outline and details; opening the diff starts
-   the file comparison rather than jumping to that exact hunk.
+   and line are announced in the outline and details. From a thread, **Open
+   File Differences** selects its file and points to that exact changed line
+   when GitHub supplies a current patch position. For an outdated or missing
+   position, QUILL says it cannot locate the line and leaves the file readable.
 5. Expand **Checks**, select a check, and read its state and summary in the
    details field. **Enter** or **Open Check on GitHub** in its context menu
    opens the job when GitHub provides a link. **Copy Check Details** copies
@@ -157,11 +161,40 @@ Changes requested and comment reviews need a message. Updating a branch merges
 the base branch into the PR branch after confirmation; check the destination
 before accepting. Review actions are disabled for a closed or merged PR.
 
-The reader shows whether a comment's original hunk is outdated. It does not
-show GitHub's resolved/unresolved thread state or offer Resolve/Reopen Thread;
-the REST review transport does not supply that status. It also does not yet
-place a review marker inside the exact diff hunk. These gaps are tracked in
-[the GitHub workbench plan](../planning/github-workbench.md).
+The outline announces whether each thread is resolved or unresolved. QUILL
+loads that state through GitHub's review-thread API for signed-in accounts.
+When the API cannot supply it, the conversation remains readable and the
+details explain why its resolution actions are unavailable. Refresh after a
+teammate changes a thread on GitHub.
+
+### Explore GitHub across repositories
+
+From **GitHub Items**, choose **Explore...**. This second native window uses a
+results list above a copyable detail field. Arrow through results, Tab into
+details, and Shift+Tab back to the list. Enter or **Open on GitHub** opens a
+result in your browser; **Use Repository** loads a selected repository into
+the Items viewer. Shift+F10, the Applications key, or right-click exposes
+actions for the selected row.
+
+Choose **Global issue and PR search** and enter GitHub search terms such as
+`is:open review-requested:@me`. **Save Search** stores that query on this
+computer; **Saved Searches...** lets you run or remove one. **My Work** brings
+together items you authored, are assigned, were asked to review, or were
+mentioned in. **My activity feed** lists recent account events. **Repository
+chooser** starts with pinned and recent repositories; other views show your
+repositories, starred and watched repositories, people, gists, notifications,
+and a person's public activity and connections.
+
+For a repository, choose **Overview**, **Activity**, **People**, **Forks**,
+**Labels**, **GitHub Pages and builds**, or **Security Alerts** and type its
+`owner/repo`. The context menu offers star/watch changes and label management
+when you are signed in and GitHub allows them. Notifications can be marked
+read. GitHub Pages and security views may be unavailable for a repository;
+the status field reports the API error instead of inventing data.
+
+In **Workflow Runs**, open **Jobs and Logs** for a selected run to inspect
+each job and read its text log. **View Artifacts** shows available downloads.
+These commands use GitHub's run ID even when the displayed run number differs.
 
 ### Comparing two branches
 

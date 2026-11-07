@@ -7,8 +7,11 @@ touched.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
+import quill.core.github.accounts as account_store
 import quill.core.github.token_store as token_store
 from quill.core.secrets import SecretsManager
 
@@ -31,9 +34,10 @@ class FakeBackend:
 
 
 @pytest.fixture
-def fake_manager(monkeypatch: pytest.MonkeyPatch) -> SecretsManager:
+def fake_manager(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> SecretsManager:
     manager = SecretsManager(backend=FakeBackend())
     monkeypatch.setattr(token_store, "default_secrets_manager", lambda: manager)
+    monkeypatch.setattr(account_store, "accounts_path", lambda: tmp_path / "github-accounts.json")
     return manager
 
 

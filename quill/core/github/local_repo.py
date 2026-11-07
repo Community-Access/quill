@@ -18,7 +18,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-__all__ = ["detect_github_repo", "parse_github_remote_url"]
+__all__ = ["detect_github_remotes", "detect_github_repo", "parse_github_remote_url"]
 
 _URL_PATTERNS = (
     re.compile(
@@ -89,3 +89,38 @@ def detect_github_repo(path: Path | str | None) -> str:
     except OSError:
         return ""
     return ""
+
+
+def detect_github_remotes(path: Path | str | None) -> tuple[str, ...]:
+    """Return GitHub ``owner/repo`` names from every remote in *path*'s checkout.
+
+    Only normalized repository names are returned. Remote URLs, which may
+    contain credentials on misconfigured checkouts, are never returned or
+    logged. This lets GitHub issue handoffs recognize a fork's ``upstream``
+    remote as well as its ``origin`` without making a network request.
+    """
+    if not path:
+        return ()
+    try:
+        config = _git_config_for(Path(path))
+        if config is None:
+            return ()
+        repositories: list[str] = []
+        in_remote = False
+        for raw_line in config.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = raw_line.strip()
+            if line.startswith("["):
+                in_remote = line.replace(" ", "").startswith('[remote"')
+                continue
+            if not in_remote or not line.casefold().startswith("url"):
+                continue
+            _key, separator, value = line.partition("=")
+            if separator:
+                repository = parse_github_remote_url(value)
+                if repository and repository.casefold() not in {
+                    item.casefold() for item in repositories
+                }:
+                    repositories.append(repository)
+        return tuple(repositories)
+    except OSError:
+        return ()

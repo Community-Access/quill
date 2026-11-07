@@ -13,6 +13,11 @@ from typing import Any
 
 import pytest
 
+from quill.core.github.merge_policy import (
+    GitHubMergePolicy,
+    GitHubPullQueueState,
+    GitHubRuleSetPolicy,
+)
 from quill.core.github.pr_review import (
     GitHubCheckRun,
     GitHubPullReviewState,
@@ -20,8 +25,10 @@ from quill.core.github.pr_review import (
     GitHubReviewComment,
     GitHubReviewError,
     PullReviewClient,
+    _rows,
     group_review_threads,
 )
+from quill.core.github.review_graphql import ReviewThreadState
 
 # ---------------------------------------------------------------------------
 # Fakes
@@ -61,17 +68,27 @@ class _FakePull:
 
 
 class _FakeCommit:
-    def __init__(self, check_runs: list[Any]) -> None:
+    def __init__(self, check_runs: list[Any], statuses: list[Any]) -> None:
         self._check_runs = check_runs
+        self._statuses = statuses
 
     def get_check_runs(self) -> list[Any]:
         return self._check_runs
 
+    def get_statuses(self) -> list[Any]:
+        return self._statuses
+
 
 class _FakeRepo:
-    def __init__(self, pull: _FakePull, check_runs: list[Any] | None = None) -> None:
+    def __init__(
+        self,
+        pull: _FakePull,
+        check_runs: list[Any] | None = None,
+        statuses: list[Any] | None = None,
+    ) -> None:
         self._pull = pull
         self._check_runs = check_runs or []
+        self._statuses = statuses or []
         self.commit_shas: list[str] = []
 
     def get_pull(self, number: int) -> _FakePull:
@@ -79,7 +96,7 @@ class _FakeRepo:
 
     def get_commit(self, sha: str) -> _FakeCommit:
         self.commit_shas.append(sha)
-        return _FakeCommit(self._check_runs)
+        return _FakeCommit(self._check_runs, self._statuses)
 
 
 class _FakeProvider:
@@ -144,11 +161,20 @@ def _full_pull(**overrides: Any) -> _FakePull:
 
 
 def _client(
-    pull: _FakePull, *, check_runs: list[Any] | None = None, authenticated: bool = True
+    pull: _FakePull,
+    *,
+    check_runs: list[Any] | None = None,
+    statuses: list[Any] | None = None,
+    authenticated: bool = True,
 ) -> tuple[PullReviewClient, _FakeRepo]:
-    repo = _FakeRepo(pull, check_runs)
+    repo = _FakeRepo(pull, check_runs, statuses)
     provider = _FakeProvider(repo, authenticated=authenticated)
     return PullReviewClient(provider), repo  # type: ignore[arg-type]
+
+
+def _failing_page(rows: list[Any], message: str = "rate limited") -> Any:
+    yield from rows
+    raise RuntimeError(message)
 
 
 # ---------------------------------------------------------------------------
@@ -181,7 +207,28 @@ def test_thread_header_carries_place_author_replies_and_outdated() -> None:
         GitHubReviewComment(id=1, author="alice", body="x", path="a.py", line=12, outdated=True),
         GitHubReviewComment(id=2, author="bob", body="y", in_reply_to=1),
     ])[0]
-    assert thread.header == "a.py:12 — alice — 1 reply — outdated"
+    assert thread.header == "a.py:12 — alice — 1 reply — outdated — resolution unavailable"
+
+
+def test_rows_reports_later_page_failure_and_preserves_loaded_rows() -> None:
+    result = _rows(_failing_page(["first", "second"], "later page failed"), 5)
+
+    assert result.items == ("first", "second")
+    assert not result.complete
+    assert not result.truncated
+    assert "later page failed" in result.warning
+
+
+def test_rows_distinguishes_exact_limit_from_truncation() -> None:
+    exact = _rows(["first", "second"], 2)
+    truncated = _rows(["first", "second", "third"], 2)
+
+    assert exact.items == ("first", "second")
+    assert exact.complete
+    assert not exact.truncated
+    assert truncated.items == ("first", "second")
+    assert not truncated.complete
+    assert truncated.truncated
 
 
 # ---------------------------------------------------------------------------
@@ -224,6 +271,35 @@ def test_fetch_review_state_maps_everything() -> None:
     assert repo.commit_shas == ["a" * 40]
 
 
+def test_fetch_head_sha_reads_latest_pull_request_commit() -> None:
+    client, _repo = _client(_full_pull())
+
+    assert client.fetch_head_sha("o/r", 7) == "a" * 40
+
+    pull = _full_pull(head=SimpleNamespace(ref="feature", sha=""))
+    client, _repo = _client(pull)
+    with pytest.raises(GitHubReviewError, match="current head SHA"):
+        client.fetch_head_sha("o/r", 7)
+
+
+def test_fetch_review_state_marks_partial_reviews_and_withholds_readiness() -> None:
+    pull = _full_pull(
+        reviews=_failing_page([
+            SimpleNamespace(user=_user("bob"), state="APPROVED", body="", submitted_at=None)
+        ])
+    )
+    client, _repo = _client(pull)
+
+    state = client.fetch_review_state("o/r", 7)
+
+    assert not state.reviews_complete
+    assert state.review_decision == "unknown (review data incomplete)"
+    assert any(
+        "Reviews" in warning and "rate limited" in warning for warning in state.data_warnings
+    )
+    assert state.merge_readiness.startswith("Merge readiness unknown:")
+
+
 def test_fetch_review_threads_maps_outdated_from_missing_position() -> None:
     pull = _full_pull(
         review_comments=[
@@ -232,16 +308,102 @@ def test_fetch_review_threads_maps_outdated_from_missing_position() -> None:
         ]
     )
     client, _repo = _client(pull)
-    threads = client.fetch_review_threads("o/r", 7)
-    assert len(threads) == 1
-    assert threads[0].outdated is True
-    assert threads[0].comments[1].in_reply_to == 1
+    result = client.fetch_review_threads("o/r", 7)
+    assert len(result.items) == 1
+    assert result.items[0].outdated is True
+    assert result.items[0].comments[1].in_reply_to == 1
+
+
+def test_fetch_review_threads_keeps_rows_and_reports_failed_later_page() -> None:
+    pull = _full_pull(review_comments=_failing_page([_review_comment_row(1)]))
+    client, _repo = _client(pull)
+
+    result = client.fetch_review_threads("o/r", 7)
+
+    assert len(result.items) == 1
+    assert not result.complete
+    assert "rate limited" in result.warning
+
+
+def test_fetch_review_threads_joins_graphql_resolution_by_root_id(monkeypatch) -> None:
+    from quill.core.github import pr_review
+
+    pull = _full_pull(review_comments=[_review_comment_row(11)])
+    client, _repo = _client(pull)
+    client._provider.token = "secret"  # type: ignore[attr-defined]
+    monkeypatch.setattr(
+        pr_review,
+        "fetch_thread_states",
+        lambda *_args: {11: ReviewThreadState("THREAD_11", True, False, True, False, 10, 10)},
+    )
+    thread = client.fetch_review_threads("o/r", 7).items[0]
+    assert thread.node_id == "THREAD_11"
+    assert thread.resolved and thread.can_unresolve
+    assert "resolved" in thread.header
 
 
 def test_fetch_check_runs_returns_empty_without_head_sha() -> None:
     pull = _full_pull(head=SimpleNamespace(ref="feature", sha=""))
     client, _repo = _client(pull)
-    assert client.fetch_check_runs("o/r", 7) == ()
+    result = client.fetch_check_runs("o/r", 7)
+    assert result.items == ()
+    assert not result.complete
+
+
+def test_fetch_review_state_includes_legacy_commit_status_contexts() -> None:
+    status = SimpleNamespace(
+        context="legacy-ci",
+        state="success",
+        target_url="https://ci.example/run/12",
+        description="All legacy checks passed",
+    )
+    pending = SimpleNamespace(
+        context="release-build",
+        state="pending",
+        target_url="",
+        description="Waiting for a runner",
+    )
+    client, _repo = _client(_full_pull(), statuses=[status, pending])
+
+    state = client.fetch_review_state("o/r", 7)
+
+    assert [(check.name, check.status, check.conclusion) for check in state.checks] == [
+        ("legacy-ci", "completed", "success"),
+        ("release-build", "in_progress", ""),
+    ]
+    assert "All legacy checks passed" in state.checks[0].summary
+
+
+def test_policy_readiness_checks_legacy_status_contexts() -> None:
+    status = SimpleNamespace(
+        context="legacy-ci",
+        state="success",
+        target_url="",
+        description="passed",
+    )
+    client, _repo = _client(_full_pull(), statuses=[status])
+    state = client.fetch_review_state("o/r", 7)
+    policy = GitHubMergePolicy(
+        base_branch="main",
+        branch_protection_available=True,
+        branch_protection_enabled=True,
+        required_checks=("legacy-ci",),
+    )
+
+    assert _state(merge_policy=policy, checks=state.checks).merge_readiness.startswith(
+        "GitHub reports no merge conflict;"
+    )
+    pending = SimpleNamespace(
+        context="legacy-ci",
+        state="pending",
+        target_url="",
+        description="still running",
+    )
+    client, _repo = _client(_full_pull(), statuses=[pending])
+    pending_state = client.fetch_review_state("o/r", 7)
+    assert _state(merge_policy=policy, checks=pending_state.checks).merge_readiness == (
+        "Required checks need attention: legacy-ci."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -271,21 +433,81 @@ def _state(**overrides: Any) -> GitHubPullReviewState:
 @pytest.mark.parametrize(
     ("overrides", "expected"),
     [
-        ({"merged": True}, "Merged."),
-        ({"state": "closed"}, "Closed without merging."),
-        ({"draft": True}, "Draft — not ready for review."),
+        ({"merged": True}, "Merged (reported by GitHub)."),
+        ({"state": "closed"}, "Closed without merging (reported by GitHub)."),
+        ({"draft": True}, "Draft — not ready for review (reported by GitHub)."),
         (
             {"mergeable_state": "behind"},
-            "Branch is behind the base branch; update it before merging.",
+            "GitHub reports that this branch is behind its base branch.",
         ),
-        ({"mergeable": False, "mergeable_state": "dirty"}, "Merge conflicts with the base branch."),
-        ({"mergeable_state": "blocked"}, "Blocked — required reviews or checks are not satisfied."),
-        ({"mergeable": None, "mergeable_state": ""}, "GitHub is still computing mergeability."),
-        ({}, "Ready to merge."),
+        (
+            {"mergeable": False, "mergeable_state": "dirty"},
+            "GitHub reports merge conflicts with the base branch.",
+        ),
+        (
+            {"mergeable_state": "blocked"},
+            "GitHub reports this pull request is blocked by repository policy.",
+        ),
+        (
+            {"mergeable": None, "mergeable_state": ""},
+            "Merge readiness unknown: GitHub has not reported a stable clean state.",
+        ),
+        (
+            {},
+            "GitHub reports no merge conflict; required reviews and branch protection rules "
+            "are not verified here.",
+        ),
     ],
 )
 def test_merge_readiness_phrases(overrides: dict[str, Any], expected: str) -> None:
     assert _state(**overrides).merge_readiness == expected
+
+
+def test_unknown_merge_state_is_never_reported_as_ready() -> None:
+    state = _state(mergeable=True, mergeable_state="unexpected")
+
+    assert (
+        state.merge_readiness
+        == "Merge readiness unknown: GitHub has not reported a stable clean state."
+    )
+
+
+def test_unstable_merge_state_is_not_reported_as_ready() -> None:
+    state = _state(mergeable=True, mergeable_state="unstable")
+
+    assert state.merge_readiness == (
+        "GitHub reports an unstable merge state; check results need attention."
+    )
+
+
+@pytest.mark.parametrize("conclusion", ["failure", "timed_out", "cancelled", "action_required"])
+def test_non_success_check_cannot_be_reported_as_ready(conclusion: str) -> None:
+    state = _state(checks=(GitHubCheckRun("CI", "completed", conclusion),))
+
+    assert state.merge_readiness == (
+        "One or more check runs are pending or not successful; "
+        "GitHub determines which checks are required."
+    )
+
+
+def test_pending_check_cannot_be_reported_as_ready() -> None:
+    state = _state(checks=(GitHubCheckRun("CI", "in_progress", ""),))
+
+    assert state.merge_readiness == (
+        "One or more check runs are pending or not successful; "
+        "GitHub determines which checks are required."
+    )
+
+
+def test_partial_thread_data_is_visible_and_withholds_readiness() -> None:
+    state = _state(
+        threads_complete=False,
+        data_warnings=("Review threads: results may be incomplete.",),
+    )
+
+    assert state.merge_readiness.startswith("Merge readiness unknown:")
+    assert "Data status: incomplete" in state.summary_text()
+    assert "Data note: Review threads: results may be incomplete." in state.summary_text()
 
 
 def test_review_decision_latest_review_per_reviewer_wins() -> None:
@@ -337,6 +559,117 @@ def test_summary_text_is_the_copyable_brief() -> None:
     assert "feature into main, by author" in text
     assert "Review threads: 3 (1 outdated)" in text
     assert "https://github.com/o/r/pull/7" in text
+
+
+def test_policy_readiness_requires_the_observed_approval_count() -> None:
+    state = _state(
+        merge_policy=GitHubMergePolicy(
+            base_branch="main",
+            branch_protection_available=True,
+            branch_protection_enabled=True,
+            required_approvals=2,
+        ),
+        reviews=(GitHubReview(reviewer="alice", state="APPROVED"),),
+    )
+
+    assert state.merge_readiness == "Repository policy requires 1 more approval(s)."
+
+
+def test_policy_readiness_ignores_nonrequired_failed_checks() -> None:
+    state = _state(
+        merge_policy=GitHubMergePolicy(
+            base_branch="main",
+            branch_protection_available=True,
+            branch_protection_enabled=True,
+        ),
+        checks=(GitHubCheckRun("Optional preview", "completed", "failure"),),
+    )
+
+    assert state.merge_readiness.startswith("GitHub reports no merge conflict;")
+
+
+def test_policy_readiness_only_requires_configured_check_names() -> None:
+    policy = GitHubMergePolicy(
+        base_branch="main",
+        branch_protection_available=True,
+        branch_protection_enabled=True,
+        required_checks=("build",),
+    )
+    state = _state(
+        merge_policy=policy,
+        checks=(
+            GitHubCheckRun("build", "completed", "success"),
+            GitHubCheckRun("lint", "completed", "failure"),
+        ),
+    )
+
+    assert state.merge_readiness.startswith("GitHub reports no merge conflict;")
+
+
+def test_policy_readiness_does_not_assume_codeowner_approval() -> None:
+    state = _state(
+        merge_policy=GitHubMergePolicy(
+            base_branch="main",
+            branch_protection_available=True,
+            branch_protection_enabled=True,
+            codeowners_review_required=True,
+            codeowners_path=".github/CODEOWNERS",
+        )
+    )
+
+    assert state.merge_readiness == (
+        "Merge readiness unknown: CODEOWNERS approval is required, but "
+        "the required owners' review has not been verified."
+    )
+
+
+def test_policy_readiness_requires_the_merge_queue_when_configured() -> None:
+    policy = GitHubMergePolicy(
+        base_branch="main",
+        branch_protection_available=True,
+        branch_protection_enabled=True,
+        rulesets=(
+            GitHubRuleSetPolicy(
+                ruleset_id=1,
+                name="Queue main",
+                enforcement="active",
+                merge_queue_required=True,
+            ),
+        ),
+    )
+    state = _state(
+        merge_policy=policy,
+        merge_queue_state=GitHubPullQueueState(
+            merge_queue_enabled=True,
+            in_merge_queue=False,
+            auto_merge_enabled=False,
+            head_sha="a" * 40,
+        ),
+    )
+
+    assert state.merge_readiness == (
+        "Repository policy requires this pull request to enter the merge queue."
+    )
+
+
+def test_policy_readiness_rejects_stale_merge_queue_evidence() -> None:
+    state = _state(
+        merge_policy=GitHubMergePolicy(
+            base_branch="main",
+            branch_protection_available=True,
+            branch_protection_enabled=True,
+        ),
+        merge_queue_state=GitHubPullQueueState(
+            merge_queue_enabled=False,
+            in_merge_queue=False,
+            auto_merge_enabled=False,
+            head_sha="b" * 40,
+        ),
+    )
+
+    assert state.merge_readiness == (
+        "Merge readiness unknown: the pull request head changed; refresh the review."
+    )
 
 
 def test_check_run_state_display() -> None:

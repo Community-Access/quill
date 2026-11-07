@@ -1,12 +1,25 @@
 # GHManage + Quill Developer Experience Plan
 
-> **Implementation status (2026-11-05):** QUILL and QUILL Lite share the GitHub
+> **Implementation status (2026-11-06):** QUILL and QUILL Lite share the GitHub
 > Items viewer. Its PR review reader uses an expandable native outline: PR,
 > changed files with review threads, general conversations, and checks. The
 > selected node drives a readable detail field, and context menus expose
-> relevant actions. Ctrl+R replies to a selected thread. Thread resolution,
-> exact-hunk navigation, and the broader GHManage capabilities listed below
-> remain planned; their presence in this design is not a shipped-feature claim.
+> relevant actions. Ctrl+R replies; Ctrl+Shift+R resolves or reopens a thread
+> when GitHub permits. Exact patch-line targeting, Explore views, global saved
+> searches, My Work, the account-scoped attention queue, Pages, labels,
+> activity, workflow job logs, and issue-to-worktree handoff are now
+> implemented in this worktree. Open GitHub Reference... routes repository,
+> issue, pull-request, branch, and file links; direct pull requests open the
+> review reader. QUILL Lite has the shared Open Link... entry, with an explicit
+> browser fallback for file links until its editor can open remote files
+> directly. Workflow job details include steps, the selected attempt, head SHA,
+> bounded annotations, and bounded log output. Review adds next-unresolved and
+> local next-unvisited navigation. Items restores the last repository, view,
+> filters, and selected row per local account key. The user accepted the complete GX01–GX15
+> expansion; its durable scope and acceptance live in
+> [the GitHub Workbench Roadmap](./github-roadmap.md). Manual Windows
+> assistive-technology acceptance is user-owned and separate from engineering
+> completion and merge.
 
 This document is the pre-implementation design plan for making GitHub a native, first-class part of the QUILL developer experience. It is intentionally ambitious: we want to make GitHub work feel as integrated as writing code, reviewing diffs, navigating branches, and shipping changes — not bolted on as a separate tool.
 
@@ -696,21 +709,25 @@ directly copied.
 | Issues and PRs, search, filtering, sorting, columns, details, comments | Implemented | GitHub Items viewer; repository-scoped search and local quick filter |
 | Branches, commits, tags, releases, workflow definitions and runs | Implemented | GitHub Items viewer and workflow actions |
 | PR changed files and branch comparison | Implemented | Accessible diff and compare dialogs |
-| PR reviews, threads, checks, reviewers, draft/ready, update branch | Implemented in this worktree | Shared QUILL and QUILL Lite reader; native PR outline and contextual menus; manual screen-reader acceptance and merge remain pending |
+| PR reviews, threads, checks, reviewers, draft/ready, update branch | Implemented in this worktree | Shared QUILL and QUILL Lite reader; native PR outline and contextual menus; manual screen-reader acceptance remains pending |
 | Issue and PR writes, batch actions, repository administration | Implemented in separate flows | GitHub Items viewer and GitHub administration commands |
-| Pinned repositories and favorites | Implemented in a simpler form | GitHub Items viewer saved items; no GHManage-style unified chooser |
-| Notifications and security alerts | Partial | Separate commands; not the full inbox and alert navigation in GHManage |
+| Pinned repositories and favorites | Implemented | Items saved items; Explore repository chooser includes pinned and recent repositories |
+| Notifications and security alerts | Implemented | Existing commands and Explore views; notifications can be marked read |
 | Account management and local repository context | Implemented in QUILL form | Account/token management and checkout-derived repository prefill |
-| Global saved searches, My Work, activity feed, people traversal | Missing | Need provider models, navigation, persistence, and accessible UI |
-| Starred/watched repository discovery and per-repository watch settings | Missing | Need repository discovery and watch controls |
-| GitHub Pages browsing and publish history | Missing | Need Pages provider and accessible view |
-| Label management and label-driven issue navigation | Missing | Issue label writes exist; dedicated label view and management do not |
-| Gists, release download counts, workflow job logs and artifacts | Partial | Release assets and workflow actions exist; GHManage's full detail and drill-down need verification and completion |
-| Open any GitHub address, contextual copy actions, and unified Actions menu | Partial | Repository URL parsing and item actions exist; address routing and copy options are narrower |
+| Global saved searches, My Work, activity feed, people traversal | Implemented in this worktree | Explore list/detail views and local saved-query store |
+| Personal attention queue | Implemented in this worktree | Combines assignments, review requests, mentions, and failed-check PRs; saved repository/category filters and snoozes are local and account-scoped; partial data stays visible |
+| GitHub issue or PR to local worktree | Implemented in this worktree | Verifies a matching GitHub remote, names a local branch, shows the starting ref and dirty-file count, then creates a separate worktree without fetching or writing remotely |
+| Projects and issue dependencies | Implemented in this worktree | Lists Projects v2 items and fields, blockers, sub-issues, and parent progress; supports confirmed field and relationship changes and a next-unblocked action |
+| Starred/watched repository discovery and per-repository watch settings | Implemented in this worktree | Explore discovery and star/watch context actions |
+| GitHub Pages browsing and publish history | Implemented in this worktree | Explore Pages view shows site and builds where API access permits |
+| Label management and label-driven issue navigation | Implemented in this worktree | Explore label view, label create/edit/delete, issue search from label |
+| Gists, release download counts, workflow job logs and artifacts | Implemented in this worktree | Explore gists, release assets, run jobs/logs/artifacts |
+| Open any GitHub address, contextual copy actions, and unified Actions menu | Partial | Repository URL parsing and contextual copy/actions exist; deep routing of every GitHub URL remains open |
 
-The remaining rows are feature gaps, not green checks. Do not describe this work
-as full GHManage parity until those capabilities are built and verified. Keep
-this audit synchronized with the product requirements and user-facing GitHub
-guide as each surface lands.
+Address routing and the other accepted GX roadmap items remain feature gaps
+until they are built and verified. Keep the audit synchronized with the
+product requirements, [GitHub Workbench Roadmap](./github-roadmap.md), and
+user-facing [workbench reference](../github/workbench-reference.md). The user
+will perform the manual Windows assistive-technology acceptance separately.
 
 This plan is intentionally written to be reviewed before implementation, so that the feature is shaped as a coherent QUILL product story rather than a collection of API wrappers.

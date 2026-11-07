@@ -1,0 +1,120 @@
+<h1 id="github-workbench-keyboard-and-screen-reader-reference">GitHub
+Workbench: keyboard and screen reader reference</h1>
+<p>QUILL and QUILL Lite share the GitHub Items and Explore windows.
+QUILL Lite opens the workbench from <strong>Tools &gt; GitHub
+Workbench</strong>. In QUILL, use <strong>File &gt; Open from Remote
+&gt; GitHub Items</strong>. Public repository reading works without an
+account. Account views and writes require a signed-in GitHub account.
+Safe Mode and the first-use network consent still apply.</p>
+<h2 id="the-interaction-pattern">The interaction pattern</h2>
+<p>The Items window is a repository list with a read-only detail field.
+Choose a view, arrow through its rows, then Tab to read the selected
+item in full. Shift+Tab returns to the list. The
+<strong>Actions</strong> button and the selected row’s context menu
+expose commands relevant to that item. Open the context menu with
+Shift+F10, the Applications key, or right-click. <strong>M</strong>
+switches between compact and fully labelled list speech.
+<strong>Alt+N</strong> and <strong>Alt+P</strong> move between comments
+in an issue or PR’s details. <strong>Ctrl+F</strong> searches GitHub in
+the loaded repository; <strong>Ctrl+Shift+F</strong> filters the already
+loaded rows locally. <strong>Ctrl+D</strong> saves the selected item as
+a favorite.</p>
+<p>The PR review window uses an actual expandable tree. The root PR
+contains Changed files, General conversations when present, and Checks.
+Files contain review threads. Left and Right collapse or expand; Up and
+Down move between visible nodes. Tab reads the selected node’s complete
+detail, then Shift+Tab returns to the tree. On a thread,
+<strong>Ctrl+R</strong> replies; <strong>Ctrl+Shift+R</strong> resolves
+or reopens it after confirmation, if GitHub permits. The context menu
+also contains these commands, copy actions, and Open File Differences. A
+thread’s file and line select the matching file and exact changed line
+when its patch still contains that line. If the line is outdated or
+absent, the diff explains the missing location. No action is triggered
+merely by reading or expanding.</p>
+<p>The Explore window uses a list and detail field for flat results. Its
+<strong>View</strong> chooser switches between global search, My Work,
+the attention queue, activity, repositories, people, notifications,
+gists, and repository-specific views. Enter opens the selected result on
+GitHub; <strong>Use Repository</strong> sends a repository back to
+Items. The context menu offers actions for the current result. Search
+queries saved with <strong>Save Search</strong> stay on this computer
+and can be reopened or removed with <strong>Saved Searches</strong>. The
+repository chooser places pinned and recent entries first. A selected
+label can lead into a repository-scoped issue search. Star, watch,
+notification-read, and label changes require a signed-in account.</p>
+<p>The attention queue combines work assigned to you, requested reviews,
+mentions, and pull requests with failed checks. <strong>Queue
+Options</strong> chooses up to ten repositories and the categories to
+include, saves and reopens local filters, and shows locally snoozed
+items. Snoozes and filters are stored separately for each signed-in
+account and do not change GitHub. Each result names its source and last
+update; duplicate results are combined. The status reports partial loads
+instead of presenting them as a complete queue. A complete load records
+the visit time so later visits can identify changed items. Opening the
+queue never marks remote notifications as read.</p>
+<h2 id="repository-and-workflow-views">Repository and workflow
+views</h2>
+<p>Items includes issues and PRs, branches, commits, tags, releases and
+assets, workflow definitions, and workflow runs. Enter on a branch opens
+its commits; Backspace returns to branches. Enter on a release opens its
+assets and download counts. A workflow definition can be dispatched on a
+chosen branch. On a run, <strong>Jobs and Logs</strong> lists its jobs
+and loads a selected job’s text log. <strong>View Artifacts</strong>
+lists downloads. The context menu exposes the same applicable commands
+as the buttons, including copy and browser actions. On an issue or PR,
+<strong>Start in Local Worktree</strong> can prepare a separate local
+branch and folder when the current checkout has a matching GitHub
+remote. QUILL shows the starting local branch and any uncommitted
+changes first. Those changes stay in the existing folder; the new
+worktree starts from the local commit and does not fetch, push, or
+change the GitHub repository.</p>
+<p><strong>Projects</strong> opens the selected repository’s GitHub
+Projects v2 boards in a list/detail view. Project rows show the fields
+available to your account; issue details include blockers, sub-issues,
+and parent progress. <strong>Next Unblocked</strong> moves to the next
+open issue or pull request without an open blocker. The Actions menu can
+update supported text, number, date, single- or multi-select, and
+iteration fields, or add/remove blocker and sub-issue links. Each remote
+change names its target and effect in a confirmation. Permission errors
+and incomplete project pages remain visible in the status.</p>
+<p>Explore adds your repositories and work, starred and watched
+repositories, people you follow and followers, a person’s public
+repositories and activity, repository activity and people, forks,
+labels, Pages site and build history, notifications, and security
+alerts. Private information and certain actions depend on the GitHub
+token’s permissions and repository access. An API failure appears as a
+status message; empty results are distinguished from errors.</p>
+<h2 id="review-and-write-safety">Review and write safety</h2>
+<p>The review tree announces reply counts, outdated positions, resolved
+state, and check status. Selecting a thread never resolves it. Reply,
+resolve, reopen, review submission, branch updates, and other writes
+each require a deliberate command and confirmation where appropriate.
+Actions are disabled if the PR is closed, the account is signed out, or
+GitHub denies that permission. If the review-thread state cannot be
+retrieved, threads remain readable while resolution controls are
+unavailable. Refresh to observe changes made elsewhere.</p>
+<p>The Items <strong>Batch</strong> menu operates on checked issue or PR
+rows. Its confirmation names the targeted items. Repository deletion,
+visibility changes, merges, and branch deletion have stronger typed
+confirmations in QUILL’s administration flows. QUILL Lite currently
+shares the Items, Explore, diff, and review surfaces; the separate
+repository administration and Local Git menus still belong to QUILL.
+This product difference is tracked in the workbench plan.</p>
+<h2 id="architecture-and-verification">Architecture and
+verification</h2>
+<p>The Items and review windows use
+<code>quill/core/github/items_provider.py</code> and
+<code>pr_review.py</code>; review resolution uses
+<code>review_graphql.py</code>, line mapping uses
+<code>diff_hunks.py</code>, and job log retrieval uses
+<code>workflow_job_logs.py</code>. Explore uses <code>explore.py</code>;
+pinned repositories, favorites, recent repositories, and saved queries
+use <code>saved_items.py</code>. The shared UI modules are under
+<code>quill/ui/</code>. Network calls are made off the UI thread. Tests
+exercise provider mapping, pagination, diff-line matching, redirect
+token handling, and action routing. Manual Windows screen-reader
+acceptance with NVDA, JAWS, and Narrator is user-owned follow-up. This
+reference does not claim a macOS assistive-technology acceptance
+matrix.</p>
+<p>For a guided walkthrough, read <a
+href="../tutorials/08-github-inside-quill.md">Tutorial 8</a>.</p>

@@ -199,7 +199,8 @@ class GitHubBranchActionsMixin:
             return
         model = self._rows[selected[0]]
         run_number = getattr(model, "run_number", 0)
-        if not run_number:
+        run_id = getattr(model, "id", 0)
+        if not run_id:
             self._announce("Select a workflow run first.")
             return
         if not self._confirm_action(
@@ -212,7 +213,7 @@ class GitHubBranchActionsMixin:
         def worker() -> None:
             wx = self._wx
             try:
-                self._provider.rerun_workflow_run(self._repo, run_number)
+                self._provider.rerun_workflow_run(self._repo, run_id)
             except GitHubItemsError as exc:
                 wx.CallAfter(self._set_status, f"Error: {exc}")
                 return
@@ -226,7 +227,8 @@ class GitHubBranchActionsMixin:
             return
         model = self._rows[selected[0]]
         run_number = getattr(model, "run_number", 0)
-        if not run_number:
+        run_id = getattr(model, "id", 0)
+        if not run_id:
             self._announce("Select a workflow run first.")
             return
         run_name = getattr(model, "name", "")
@@ -237,12 +239,37 @@ class GitHubBranchActionsMixin:
             self.dialog,
             self._provider,
             repo=self._repo,
-            run_id=run_number,
+            run_id=run_id,
             run_label=f"#{run_number} - {run_name}" if run_name else f"#{run_number}",
             run_url=run_url,
             announce_cb=self._announce,
         )
         dlg.show()
+
+    def _view_jobs_for_selected(self) -> None:
+        selected = self._selected_indices()
+        if len(selected) != 1:
+            self._announce("Select one workflow run first.")
+            return
+        model = self._rows[selected[0]]
+        run_id = getattr(model, "id", 0)
+        if not run_id:
+            self._announce("This workflow run has no GitHub run ID.")
+            return
+        from quill.ui.github_workflow_jobs_dialog import WorkflowJobsDialog
+
+        dialog = WorkflowJobsDialog(
+            self.dialog,
+            self._provider,
+            repo=self._repo,
+            run_id=run_id,
+            run_label=f"#{getattr(model, 'run_number', 0)} {getattr(model, 'name', '')}",
+            run_attempt=getattr(model, "run_attempt", 0),
+            head_sha=getattr(model, "head_sha", ""),
+            run_url=getattr(model, "url", ""),
+            announce_cb=self._announce,
+        )
+        dialog.show()
 
 
 __all__ = ["GitHubBranchActionsMixin"]

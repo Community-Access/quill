@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import quill.core.github.saved_items as saved_items_module
 from quill.core.github.saved_items import FavoriteItem, GitHubSavedItems
 
 
@@ -72,3 +73,50 @@ def test_column_prefs_ignore_malformed_entries(tmp_path: Path) -> None:
     assert store.get_columns("branches", ["name", "protected"]) == ["name"]
     assert store.get_columns("bad", ["x"]) == ["x"]
     assert store.get_columns("empty", ["x"]) == ["x"]
+
+
+def test_global_searches_and_recent_repositories_round_trip(tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    assert store.save_search("is:pr review-requested:me")
+    assert not store.save_search(" IS:PR REVIEW-REQUESTED:ME ")
+    store.remember_repo("owner/first")
+    store.remember_repo("owner/second")
+    store.remember_repo("OWNER/first")
+    loaded = _store(tmp_path)
+    assert loaded.searches == ["is:pr review-requested:me"]
+    assert loaded.recent == ["OWNER/first", "owner/second"]
+    assert loaded.remove_search("IS:PR REVIEW-REQUESTED:ME")
+    assert _store(tmp_path).searches == []
+
+
+def test_saved_items_are_isolated_per_account_after_one_time_migration(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setattr(saved_items_module, "app_data_dir", lambda: tmp_path)
+    legacy = tmp_path / "github_saved_items.json"
+    legacy.write_text('{"pinned": ["owner/legacy"]}', encoding="utf-8")
+
+    anonymous = GitHubSavedItems.load(account_key="anonymous")
+    assert anonymous.pinned == []
+
+    first = GitHubSavedItems.load(account_key="account-one")
+    assert first.pinned == ["owner/legacy"]
+    first.pin_repo("owner/first-only")
+
+    second = GitHubSavedItems.load(account_key="account-two")
+    assert second.pinned == []
+    assert GitHubSavedItems.load(account_key="account-one").pinned == [
+        "owner/legacy",
+        "owner/first-only",
+    ]
+    assert legacy.exists()  # migration leaves a local recovery copy
+
+
+def test_legacy_saved_items_are_assigned_to_only_the_first_authenticated_account(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setattr(saved_items_module, "app_data_dir", lambda: tmp_path)
+    (tmp_path / "github_saved_items.json").write_text('{"searches": ["is:pr"]}', encoding="utf-8")
+
+    assert GitHubSavedItems.load(account_key="first-account").searches == ["is:pr"]
+    assert GitHubSavedItems.load(account_key="second-account").searches == []

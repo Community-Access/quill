@@ -15,7 +15,8 @@
   comment; reply to the selected review thread; request reviewers; switch
   between draft and ready; or update the PR branch. Closed and merged PRs
   disable these actions. Public review reading remains available without a
-  token. Resolved thread state and Resolve/Reopen are still outstanding.
+  token. (Historical entry: resolved thread state and Resolve/Reopen were
+  outstanding at that point; see the update dated 2026-11-05.)
 - **The shared Items viewer is in QUILL Lite.** Tools > GitHub Workbench...
   opens the same lists, PR outline, context menus, and review actions as QUILL,
   after the same consent and authentication checks.
@@ -12342,3 +12343,15 @@ Quill 0.1.1 Beta uses a unified Help-menu support flow. `Help -> Report a Bug...
 ### Notes
 
 This is a beta release. The product direction is aligned with the Quill 1.0 PRD, while some workflows are still evolving toward that fuller 1.0 target.
+# GitHub Workbench update (2026-11-05, pending release acceptance)
+
+- QUILL and QUILL Lite share an expandable PR review outline with thread replies,
+  resolve/reopen actions, and exact changed-line navigation when a current patch
+  position is available.
+- Explore GitHub adds global saved searches, My Work, activity, repository and
+  people discovery, notifications, gists, labels, Pages builds, and security
+  views. The repository chooser includes pinned and recent repositories.
+- Workflow runs now expose jobs and text logs; run actions use the actual API
+  run ID. Redirected job-log downloads do not forward the account token.
+- Native screen-reader acceptance and destination-branch integration are pending.
+  See [the workbench reference](docs/github/workbench-reference.md).

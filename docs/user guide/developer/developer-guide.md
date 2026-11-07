@@ -296,3 +296,13 @@ This manual describes the Developer profile as it ships in the current QUILL
 and QUILL Lite. The plan of record for the coding features is
 `docs/design/code.md` in QUILL's source. If something here does not match what
 you hear, tell us through **Help > Get Help from Support**.
+# GitHub Workbench update
+
+QUILL and QUILL Lite share the GitHub Items, Explore, diff, and PR review
+surfaces. The review reader is a native tree: expand a PR, arrow to a file and
+thread, then Tab to read its detail. Ctrl+R replies and Ctrl+Shift+R resolves or
+reopens when permitted. Global search, My Work, activity, repository and people
+views, Pages, labels, notifications, and workflow job logs live in Explore or
+Items. See the [complete keyboard and screen reader reference](../../github/workbench-reference.md)
+and [Tutorial 8](../../tutorials/08-github-inside-quill.md). Separate repository
+administration and Local Git commands are currently available in QUILL.

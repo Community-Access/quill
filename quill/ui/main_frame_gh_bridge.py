@@ -53,6 +53,20 @@ class GhBridgeMixin:
 
         return run_subprocess_safely
 
+    def _gh_bridge_account(self, gh_path: str) -> str:
+        """Resolve the CLI account and refuse a mismatch with QUILL's selection."""
+        from quill.core.github.accounts import active_github_account
+        from quill.core.github.gh_bridge import authenticated_login
+
+        login = authenticated_login(gh_path=gh_path, runner=self._gh_bridge_runner())
+        active = active_github_account()
+        if active is not None and active.login.casefold() != login.casefold():
+            raise RuntimeError(
+                f"GitHub CLI is signed in as {login}, but QUILL is using {active.login}. "
+                "Switch GitHub accounts in QUILL or gh before using Codespaces."
+            )
+        return login
+
     def _gh_bridge_confirm(self, message: str, title: str) -> bool:
         wx = self._wx
         dialog = wx.MessageDialog(
@@ -83,39 +97,111 @@ class GhBridgeMixin:
         def work(_progress: object) -> object:
             from quill.core.github.gh_bridge import list_codespaces
 
-            return list_codespaces(gh_path=gh_path, runner=self._gh_bridge_runner())
+            login = self._gh_bridge_account(gh_path)
+            codespaces = list_codespaces(gh_path=gh_path, runner=self._gh_bridge_runner())
+            return login, codespaces
 
         self._run_background_task("Loading codespaces", work, self._on_gh_bridge_codespaces_loaded)
 
-    def _on_gh_bridge_codespaces_loaded(self, codespaces: list[Any]) -> None:
+    def _on_gh_bridge_codespaces_loaded(self, result: tuple[str, list[Any]]) -> None:
+        login, codespaces = result
         if not codespaces:
-            self._set_status("No codespaces. Use GitHub: Create Codespace... to start one.")
+            self._set_status(
+                f"No codespaces for {login}. Use GitHub: Create Codespace... to start one."
+            )
             return
         wx = self._wx
-        labels = [f"{c.display_name} ({c.repository}) — {c.state}" for c in codespaces]
+        labels = [
+            f"{c.display_name or c.name} ({c.repository}) — {c.state}; "
+            f"{c.git_status_ahead} ahead, {c.git_status_behind} behind"
+            for c in codespaces
+        ]
         with wx.SingleChoiceDialog(self.frame, "Codespace:", "Codespaces", labels) as dialog:
             if self._show_modal_dialog(dialog, "Codespaces") != wx.ID_OK:
                 return
             index = dialog.GetSelection()
         chosen = codespaces[index]
+        choices = [
+            "Open in Browser (may start the codespace)",
+            "View Codespace Health",
+            "Stop",
+            "Delete",
+        ]
+        with wx.SingleChoiceDialog(
+            self.frame,
+            f"Choose an action for {chosen.display_name or chosen.name} ({login}):",
+            "Codespace Actions",
+            choices,
+        ) as dialog:
+            if self._show_modal_dialog(dialog, "Codespace Actions") != wx.ID_OK:
+                return
+            action = dialog.GetStringSelection()
+        if action.startswith("Open in Browser"):
+            self._gh_bridge_open_codespace(chosen)
+        elif action == "View Codespace Health":
+            self._gh_bridge_view_codespace(chosen)
+        elif action == "Stop":
+            self._gh_bridge_stop_codespace(chosen.name)
+        elif action == "Delete":
+            self._gh_bridge_delete_codespace(chosen.name)
 
-        menu = wx.Menu()
-        stop_id, delete_id = wx.NewIdRef(), wx.NewIdRef()
-        menu.Append(stop_id, "Stop")
-        menu.Append(delete_id, "Delete")
+    def _gh_bridge_open_codespace(self, info: Any) -> None:
+        if not self._gh_bridge_confirm(
+            f"Open {info.display_name or info.name} for {info.repository}?\n\n"
+            "Opening a stopped codespace may start GitHub compute. While it runs, "
+            "GitHub may count compute and storage minutes toward your plan.",
+            "Confirm Open Codespace",
+        ):
+            self._set_status("Codespace open cancelled")
+            return
+        gh_path = self._gh_bridge_ready()
+        if gh_path is None:
+            return
 
-        def on_pick(event: object) -> None:
-            picked = int(event.GetId())
-            if picked == int(stop_id):
-                self._gh_bridge_stop_codespace(chosen.name)
-            elif picked == int(delete_id):
-                self._gh_bridge_delete_codespace(chosen.name)
+        def work(_progress: object) -> object:
+            from quill.core.github.gh_bridge import open_codespace
 
-        menu.Bind(wx.EVT_MENU, on_pick)
-        try:
-            self.frame.PopupMenu(menu)
-        finally:
-            menu.Destroy()
+            self._gh_bridge_account(gh_path)
+            open_codespace(info.name, gh_path=gh_path, runner=self._gh_bridge_runner())
+            return None
+
+        self._run_background_task(
+            f"Opening {info.display_name or info.name}",
+            work,
+            lambda _r: self._set_status(f"Opened codespace {info.name} in the browser"),
+        )
+
+    def _gh_bridge_view_codespace(self, info: Any) -> None:
+        gh_path = self._gh_bridge_ready()
+        if gh_path is None:
+            return
+
+        def work(_progress: object) -> object:
+            from quill.core.github.gh_bridge import view_codespace
+
+            self._gh_bridge_account(gh_path)
+            return view_codespace(info.name, gh_path=gh_path, runner=self._gh_bridge_runner())
+
+        self._run_background_task(
+            f"Checking {info.display_name or info.name}",
+            work,
+            self._gh_bridge_show_codespace_health,
+        )
+
+    def _gh_bridge_show_codespace_health(self, info: Any) -> None:
+        details = [
+            f"Codespace: {info.display_name or info.name}",
+            f"Repository: {info.repository or 'not reported'}",
+            f"State: {info.state or 'not reported'}",
+            f"Machine: {info.machine_display_name or 'not reported'}",
+            f"Location: {info.location or 'not reported'}",
+            f"Last used: {info.last_used_at or 'not reported'}",
+            f"Created: {info.created_at or 'not reported'}",
+            f"Git status: {info.git_status_ahead} ahead, {info.git_status_behind} behind",
+        ]
+        self._show_message_box(
+            "\n".join(details), "Codespace Health", self._wx.ICON_INFORMATION | self._wx.OK
+        )
 
     def _gh_bridge_stop_codespace(self, name: str) -> None:
         gh_path = self._gh_bridge_ready()
@@ -125,6 +211,7 @@ class GhBridgeMixin:
         def work(_progress: object) -> object:
             from quill.core.github.gh_bridge import stop_codespace
 
+            self._gh_bridge_account(gh_path)
             stop_codespace(name, gh_path=gh_path, runner=self._gh_bridge_runner())
             return None
 
@@ -145,6 +232,7 @@ class GhBridgeMixin:
         def work(_progress: object) -> object:
             from quill.core.github.gh_bridge import delete_codespace
 
+            self._gh_bridge_account(gh_path)
             delete_codespace(name, gh_path=gh_path, runner=self._gh_bridge_runner())
             return None
 
@@ -164,12 +252,25 @@ class GhBridgeMixin:
             "Create Codespace", "Branch (optional, blank = default branch):"
         )
         branch = branch or ""
+
+        def work(_progress: object) -> object:
+            return self._gh_bridge_account(gh_path)
+
+        self._run_background_task(
+            "Checking GitHub CLI account",
+            work,
+            lambda login: self._on_gh_bridge_create_account(gh_path, full_name, branch, login),
+        )
+
+    def _on_gh_bridge_create_account(
+        self, gh_path: str, full_name: str, branch: str, login: str
+    ) -> None:
         if not self._gh_bridge_confirm(
             f"Create a new codespace for {full_name}"
             + (f" on {branch!r}" if branch else "")
-            + "?\n\nCodespaces use GitHub compute and storage minutes and may cost "
-            "money depending on your account's plan and usage — this is not a free "
-            "action the way most QUILL commands are.",
+            + f" using GitHub CLI account {login}?\n\n"
+            "Codespaces use GitHub compute and storage minutes and may cost "
+            "money depending on your account's plan and usage.",
             "Confirm Create Codespace (uses paid GitHub compute)",
         ):
             self._set_status("Codespace creation cancelled")
@@ -178,12 +279,19 @@ class GhBridgeMixin:
         def work(_progress: object) -> object:
             from quill.core.github.gh_bridge import create_codespace
 
+            current_login = self._gh_bridge_account(gh_path)
+            if current_login.casefold() != login.casefold():
+                raise RuntimeError(
+                    "The GitHub CLI account changed. Review the target and try again."
+                )
             return create_codespace(
                 full_name, branch=branch, gh_path=gh_path, runner=self._gh_bridge_runner()
             )
 
         def on_done(info: Any) -> None:
-            self._set_status(f"Created codespace {info.display_name} ({info.state})")
+            self._set_status(
+                f"Created codespace {info.display_name or info.name} for {login} ({info.state})"
+            )
 
         self._run_background_task(f"Creating codespace for {full_name}", work, on_done)
 

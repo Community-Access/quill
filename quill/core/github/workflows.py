@@ -28,21 +28,23 @@ class GitHubWorkflow:
     badge_url: str = ""
 
 
+def map_workflow(row: Any) -> GitHubWorkflow:
+    """Map one workflow definition for list and direct-reference lookups."""
+    return GitHubWorkflow(
+        id=int(getattr(row, "id", 0) or 0),
+        name=str(getattr(row, "name", "") or ""),
+        path=str(getattr(row, "path", "") or ""),
+        state=str(getattr(row, "state", "") or ""),
+        url=str(getattr(row, "html_url", "") or ""),
+        badge_url=str(getattr(row, "badge_url", "") or ""),
+    )
+
+
 def list_workflows(
     repo: Any, *, limit: int, take: Callable[[Any, int], list[Any]]
 ) -> list[GitHubWorkflow]:
     rows = take(repo.get_workflows(), limit)
-    return [
-        GitHubWorkflow(
-            id=int(getattr(row, "id", 0) or 0),
-            name=str(getattr(row, "name", "") or ""),
-            path=str(getattr(row, "path", "") or ""),
-            state=str(getattr(row, "state", "") or ""),
-            url=str(getattr(row, "html_url", "") or ""),
-            badge_url=str(getattr(row, "badge_url", "") or ""),
-        )
-        for row in rows
-    ]
+    return [map_workflow(row) for row in rows]
 
 
-__all__ = ["GitHubWorkflow", "list_workflows"]
+__all__ = ["GitHubWorkflow", "list_workflows", "map_workflow"]

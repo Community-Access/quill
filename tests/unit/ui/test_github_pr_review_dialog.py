@@ -7,14 +7,18 @@ from typing import Any
 import pytest
 import wx
 
+from quill.core.github import local_drafts
 from quill.core.github.items_provider import GitHubPullDiff, GitHubPullFile
+from quill.core.github.merge_policy import GitHubMergePolicy, GitHubPullQueueState
 from quill.core.github.pr_review import (
     GitHubCheckRun,
     GitHubPullReviewState,
     GitHubReviewComment,
+    GitHubReviewError,
     GitHubReviewThread,
 )
 from quill.ui.github_pr_review_dialog import GitHubPullReviewDialog
+from quill.ui.github_review_draft_dialog import GitHubReviewDraft
 from tests.wx_session import shared_wx_app
 
 
@@ -34,7 +38,8 @@ def wx_app():
 
 
 @pytest.fixture
-def review_dialog(wx_app):
+def review_dialog(wx_app, tmp_path, monkeypatch):
+    monkeypatch.setattr(local_drafts, "app_data_dir", lambda: tmp_path)
     frame = wx.Frame(None)
     dialog = GitHubPullReviewDialog(
         frame,
@@ -98,7 +103,11 @@ def _thread() -> GitHubReviewThread:
 def test_review_reader_shows_header_threads_checks_and_replies(review_dialog) -> None:
     review_dialog._refresh_ready(_state(), (_thread(),))
 
-    assert "Ready to merge" in review_dialog._header.GetLabel()
+    assert (
+        "required reviews and branch protection rules are not verified"
+        in review_dialog._header.GetLabel()
+    )
+    assert "Ready to merge" not in review_dialog._header.GetLabel()
     assert "approved" not in review_dialog._header.GetLabel()
     root = review_dialog._outline.GetRootItem()
     assert review_dialog._outline.GetItemText(root).startswith("PR #7")
@@ -122,7 +131,8 @@ def test_review_reader_shows_header_threads_checks_and_replies(review_dialog) ->
     assert review_dialog._summary.GetValue().startswith("PR #7: Add feature")
 
 
-def test_review_actions_are_disabled_for_anonymous_viewer(wx_app) -> None:
+def test_review_actions_are_disabled_for_anonymous_viewer(wx_app, tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(local_drafts, "app_data_dir", lambda: tmp_path)
     frame = wx.Frame(None)
     dialog = GitHubPullReviewDialog(frame, _FakeProvider(authenticated=False), "owner/repo", 7)
     try:
@@ -132,6 +142,134 @@ def test_review_actions_are_disabled_for_anonymous_viewer(wx_app) -> None:
     finally:
         dialog.dialog.Destroy()
         frame.Destroy()
+
+
+def test_merge_policy_button_loads_policy_for_the_current_head(review_dialog, monkeypatch) -> None:
+    policy = GitHubMergePolicy(
+        base_branch="main",
+        branch_protection_available=True,
+        branch_protection_enabled=True,
+        required_checks=("CI",),
+    )
+    queue = GitHubPullQueueState(
+        merge_queue_enabled=False,
+        in_merge_queue=False,
+        auto_merge_enabled=False,
+        head_sha="a" * 40,
+    )
+    review_dialog._refresh_ready(_state(), (_thread(),))
+    calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+    def _fetch(*args, **kwargs):
+        calls.append((args, kwargs))
+        return policy, queue
+
+    monkeypatch.setattr(review_dialog._client, "fetch_merge_policy_context", _fetch)
+    monkeypatch.setattr(wx, "CallAfter", lambda callback, *args: callback(*args))
+
+    class _SyncThread:
+        def __init__(self, *, target, daemon):
+            self._target = target
+
+        def start(self):
+            self._target()
+
+    monkeypatch.setattr("quill.ui.github_pr_review_dialog.threading.Thread", _SyncThread)
+    review_dialog._load_merge_policy(None)
+
+    assert calls[0][0] == ("owner/repo", 7, "main")
+    assert calls[0][1] == {"expected_head_sha": "a" * 40}
+    assert review_dialog._state.merge_policy is policy
+    assert review_dialog._state.merge_queue_state is queue
+    assert "Head revision: " + "a" * 40 in review_dialog._summary.GetValue()
+    assert "Required checks observed: CI" in review_dialog._summary.GetValue()
+    assert "refresh the review to recheck" in review_dialog._status.GetLabel()
+
+
+def test_review_submission_clears_the_local_draft_only_after_submit(
+    review_dialog, monkeypatch
+) -> None:
+    store = review_dialog._review_draft_store
+    assert store.save_review(
+        "owner/repo",
+        7,
+        event="comment",
+        body="Review body",
+        head_sha="a" * 40,
+    )
+    submitted: list[tuple[str, int, str, str]] = []
+
+    class _Composer:
+        def __init__(
+            self, _parent, *, draft_store, repository, number, current_head_sha, announce_cb
+        ) -> None:
+            assert callable(announce_cb)
+            assert draft_store is store
+            assert repository == "owner/repo" and number == 7
+            assert current_head_sha == "a" * 40
+
+        def show(self):
+            return GitHubReviewDraft("comment", "Review body", "a" * 40)
+
+    monkeypatch.setattr("quill.ui.github_review_draft_dialog.GitHubReviewDraftDialog", _Composer)
+    monkeypatch.setattr(
+        review_dialog._client,
+        "fetch_head_sha",
+        lambda _repo, _number: "a" * 40,
+    )
+    monkeypatch.setattr(
+        review_dialog._client,
+        "submit_review",
+        lambda repo, number, event, body: submitted.append((repo, number, event, body)),
+    )
+    monkeypatch.setattr(review_dialog, "_run_action", lambda action, _message: action())
+    review_dialog._refresh_ready(_state(), ())
+
+    review_dialog._submit_review(None)
+
+    assert submitted == [("owner/repo", 7, "comment", "Review body")]
+    assert store.get_review("owner/repo", 7) is None
+
+
+def test_review_submission_stops_if_head_changes_after_composing(
+    review_dialog, monkeypatch
+) -> None:
+    store = review_dialog._review_draft_store
+    assert store.save_review(
+        "owner/repo",
+        7,
+        event="comment",
+        body="Draft text",
+        head_sha="a" * 40,
+    )
+
+    class _Composer:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        def show(self):
+            return GitHubReviewDraft("comment", "Draft text", "a" * 40)
+
+    monkeypatch.setattr("quill.ui.github_review_draft_dialog.GitHubReviewDraftDialog", _Composer)
+    monkeypatch.setattr(
+        review_dialog._client,
+        "fetch_head_sha",
+        lambda _repo, _number: "b" * 40,
+    )
+    monkeypatch.setattr(review_dialog, "_run_action", lambda action, _message: action())
+    review_dialog._refresh_ready(_state(), ())
+    submitted: list[object] = []
+    monkeypatch.setattr(
+        review_dialog._client,
+        "submit_review",
+        lambda *_args: submitted.append("submitted"),
+    )
+
+    with pytest.raises(GitHubReviewError, match="head changed"):
+        review_dialog._submit_review(None)
+
+    assert submitted == []
+    assert store.get_review("owner/repo", 7).head_sha == "a" * 40
 
 
 def test_empty_review_threads_are_explained(review_dialog) -> None:
@@ -264,11 +402,39 @@ def test_review_context_menu_offers_node_actions(review_dialog) -> None:
     menu.Destroy()
     del refs
 
+
+def test_resolved_thread_can_be_reopened_from_context_menu(review_dialog, monkeypatch) -> None:
+    from dataclasses import replace
+
+    thread = replace(_thread(), node_id="THREAD_11", resolved=True, can_unresolve=True)
+    review_dialog._refresh_ready(_state(), (thread,))
+    root = review_dialog._outline.GetRootItem()
+    files, _ = review_dialog._outline.GetFirstChild(root)
+    file_node, _ = review_dialog._outline.GetFirstChild(files)
+    thread_node, _ = review_dialog._outline.GetFirstChild(file_node)
+    review_dialog._outline.SelectItem(thread_node)
+    review_dialog._select_node(None)
+    menu, refs = review_dialog._build_node_menu()
+    labels = [item.GetItemLabelText() for item in menu.GetMenuItems()]
+    assert "Reopen Thread..." in labels
+    menu.Destroy()
+    del refs
+    calls: list[tuple[str, bool]] = []
+    monkeypatch.setattr(review_dialog, "_confirm", lambda *_args: True)
+    monkeypatch.setattr(review_dialog, "_run_action", lambda action, _message: action())
+    monkeypatch.setattr(
+        review_dialog._client,
+        "change_thread_resolution",
+        lambda node_id, *, resolved: calls.append((node_id, resolved)),
+    )
+    review_dialog._change_thread_resolution(None)
+    assert calls == [("THREAD_11", False)]
+
     review_dialog._outline.SelectItem(root)
     review_dialog._select_node(None)
     menu, refs = review_dialog._build_node_menu()
     labels = [item.GetItemLabelText() for item in menu.GetMenuItems()]
-    assert "Submit Review..." in labels
+    assert "Compose Review..." in labels
     assert "Request Reviewers..." in labels
     assert "Copy Pull Request Link" in labels
     menu.Destroy()

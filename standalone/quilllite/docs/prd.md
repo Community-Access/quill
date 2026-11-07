@@ -2427,3 +2427,11 @@ the same way.
 - In a plain text or HTML document it inserts nothing and says why: "A page
   break needs a Word, Rich Text or Markdown document". It never writes a form
   feed.
+# GitHub Workbench parity note (2026-11-05)
+
+QUILL Lite shares QUILL's GitHub Items, Explore, PR review, and diff windows.
+These include the native review tree, thread reply and resolution, saved global
+search, My Work, activity, repository discovery, and workflow job logs. The
+separate QUILL repository administration and Local Git menus remain a tracked
+parity gap. The shared [workbench reference](../../../docs/github/workbench-reference.md)
+documents keyboard actions and permissions.

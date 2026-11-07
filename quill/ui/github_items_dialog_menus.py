@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import webbrowser
+from urllib.parse import quote
 
 from quill.core.github.items_provider import GitHubBranch, GitHubItem
 from quill.ui.github_items_view import (
@@ -17,6 +18,41 @@ from quill.ui.github_items_view import (
 
 class GitHubItemsMenusMixin:
     """Native menus for selected items and saved navigation."""
+
+    def _on_explore(self, _event: object) -> None:
+        from quill.ui.github_explore_dialog import GitHubExploreDialog
+
+        chosen = False
+
+        def use_repo(repo: str) -> None:
+            nonlocal chosen
+            chosen = True
+            self._repo_ctrl.SetValue(repo)
+
+        dialog = GitHubExploreDialog(
+            self.dialog,
+            self._provider,
+            initial_repo=self._repo,
+            on_repo_select=use_repo,
+            announce_cb=self._announce,
+            on_start_issue_worktree=self._start_issue_worktree_cb,
+        )
+        dialog.show()
+        if chosen:
+            self._on_load(None)
+
+    def _on_projects(self, _event: object) -> None:
+        if not self._provider.is_authenticated:
+            self._announce("Sign in to GitHub to view and update Projects.")
+            return
+        from quill.ui.github_projects_dialog import GitHubProjectsDialog
+
+        GitHubProjectsDialog(
+            self.dialog,
+            self._provider,
+            initial_repo=self._repo,
+            announce_cb=self._announce,
+        ).show()
 
     def _copy_item_text(self, value: str, label: str) -> None:
         wx = self._wx
@@ -53,12 +89,17 @@ class GitHubItemsMenusMixin:
             menu.Bind(wx.EVT_MENU, lambda _event, callback=action: callback(), id=item_id)
 
         if model is not None:
+            add(
+                "Open in GitHub Codespaces...",
+                lambda selected=model: self._open_in_codespaces(selected),
+            )
             if isinstance(model, GitHubItem) and model.is_pr:
                 add("Open Review...", self._on_review)
                 add("Open File Differences...", self._on_diff)
             elif isinstance(model, GitHubBranch):
                 add("Compare Branches...", self._on_compare_branches)
             elif self._view == VIEW_RUNS:
+                add("View Jobs and Logs...", self._view_jobs_for_selected)
                 add("View Artifacts...", self._view_artifacts_for_selected)
             elif self._view == VIEW_WORKFLOWS:
                 add(
@@ -75,6 +116,14 @@ class GitHubItemsMenusMixin:
                 add(
                     "Summarize Discussion", self._on_summarize, enabled=self._ai_acquire is not None
                 )
+                if self._start_issue_worktree_cb is not None:
+                    kind = "pull request" if model.is_pr else "issue"
+                    add(
+                        f"Start {kind} #{model.number} in Local Worktree...",
+                        lambda item=model: self._start_issue_worktree_cb(
+                            self.dialog, self._repo, item.number, item.title, item.is_pr
+                        ),
+                    )
             if self._provider.is_authenticated:
                 if isinstance(model, GitHubItem) and model.is_pr and not model.is_merged:
                     add(f"Merge Pull Request #{model.number}...", self._merge_selected_pr)
@@ -93,6 +142,35 @@ class GitHubItemsMenusMixin:
             self._list.PopupMenu(menu)
         finally:
             menu.Destroy()
+
+    def _open_in_codespaces(self, model: object) -> None:
+        if not self._repo or "/" not in self._repo:
+            self._announce("Load a repository before opening Codespaces.")
+            return
+        url = f"https://codespaces.new/{self._repo}"
+        branch_text = ""
+        if isinstance(model, GitHubBranch):
+            url += f"/tree/{quote(model.name, safe='')}"
+            branch_text = f"\nBranch: {model.name}"
+        wx = self._wx
+        dialog = wx.MessageDialog(
+            self.dialog,
+            f"Open GitHub Codespaces for {self._repo}?{branch_text}\n\n"
+            "Starting a Codespace can incur charges. QUILL will open GitHub's "
+            "page only; it will not create a Codespace or attach your GitHub token.",
+            "Open GitHub Codespaces",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
+        )
+        try:
+            if self._show_modal(dialog, "Open GitHub Codespaces") != wx.ID_YES:
+                return
+        finally:
+            dialog.Destroy()
+        self._announce(
+            "Opened the GitHub Codespaces page. Review the billing and configuration choices there."
+            if webbrowser.open(url, new=2)
+            else "Could not open GitHub Codespaces in a browser."
+        )
 
     def _on_pinned_menu(self, _event: object) -> None:
         """Pinned repositories: pick one to load, pin/unpin the current one."""

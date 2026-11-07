@@ -17,7 +17,16 @@ _REF = SecretRef("github", "token")
 
 
 def load_github_token() -> str | None:
-    """Return the stored token, or None if none is stored or no secure store."""
+    """Return the active account token, or the pre-multi-account legacy token."""
+    from quill.core.github.accounts import (
+        active_github_account_id,
+        has_account_registry,
+        load_github_account_token,
+    )
+
+    if has_account_registry():
+        account_id = active_github_account_id()
+        return load_github_account_token(account_id) if account_id else None
     return default_secrets_manager().get(_REF)
 
 
@@ -31,5 +40,19 @@ def save_github_token(token: str) -> bool:
 
 
 def delete_github_token() -> bool:
-    """Remove any stored GitHub token. Returns True if a token was deleted."""
+    """Remove the active GitHub account, or the legacy token if not migrated."""
+    from quill.core.github.accounts import (
+        active_github_account_id,
+        has_account_registry,
+        remove_github_account,
+    )
+
+    if has_account_registry():
+        account_id = active_github_account_id()
+        return remove_github_account(account_id) if account_id else False
+    return default_secrets_manager().delete(_REF)
+
+
+def delete_legacy_github_token() -> bool:
+    """Remove only the pre-multi-account GitHub token during migration."""
     return default_secrets_manager().delete(_REF)

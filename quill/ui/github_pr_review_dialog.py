@@ -7,6 +7,7 @@ import webbrowser
 from typing import TYPE_CHECKING
 
 from quill.core.github.items_provider import GitHubItemsError, GitHubPullDiff
+from quill.core.github.local_drafts import GitHubIssueDraftStore
 from quill.core.github.pr_review import (
     GitHubCheckRun,
     GitHubPullReviewState,
@@ -17,6 +18,8 @@ from quill.core.github.pr_review import (
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_pr_review_menus import GitHubPullReviewMenusMixin
+from quill.ui.github_pr_review_policy import GitHubPullReviewPolicyMixin
+from quill.ui.github_pr_review_render import GitHubPullReviewRenderMixin
 from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
@@ -25,7 +28,11 @@ if TYPE_CHECKING:
     from quill.core.github.items_provider import GitHubItemsProvider
 
 
-class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
+class GitHubPullReviewDialog(
+    GitHubPullReviewPolicyMixin,
+    GitHubPullReviewRenderMixin,
+    GitHubPullReviewMenusMixin,
+):
     """Three-pane reader for one PR's state, review threads, and check runs."""
 
     def __init__(
@@ -41,6 +48,7 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
 
         self._wx = wx
         self._client = PullReviewClient(provider)
+        self._review_draft_store = GitHubIssueDraftStore.load(getattr(provider, "token", None))
         self._repo = repo
         self._number = number
         self._announce = announce_cb or (lambda _message: None)
@@ -49,7 +57,10 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
         self._checks: tuple[GitHubCheckRun, ...] = ()
         self._diff: GitHubPullDiff | None = None
         self._nodes: dict[int, tuple[str, int]] = {}
+        self._thread_items: dict[int, object] = {}
+        self._visited_thread_ids: set[str] = set()
         self._loading = False
+        self._policy_loading = False
 
         self.dialog = wx.Dialog(
             parent,
@@ -94,7 +105,7 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
             detail_splitter,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         )
-        self._thread_detail.SetName("Selected review thread, including all replies")
+        set_spoken_name(self._thread_detail, "Selected review thread, including all replies")
         self._thread_detail.SetHelpText(
             "The selected review conversation, including file and line context."
         )
@@ -105,6 +116,13 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
         summary_label.SetName("Review summary")
         summary_label.SetHelpText("Plain-language pull request status and reviewer summary.")
         side_sizer.Add(summary_label, 0, wx.ALL, 6)
+        self._policy_btn = wx.Button(side_panel, label="Check Merge Policy")
+        self._policy_btn.SetName("Read merge policy for the pull request base branch")
+        self._policy_btn.SetHelpText(
+            "Read branch protection, applicable rulesets, CODEOWNERS location, "
+            "merge-queue status, and the pull request head revision."
+        )
+        side_sizer.Add(self._policy_btn, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
         self._summary = wx.TextCtrl(
             side_panel,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
@@ -135,27 +153,35 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
+        self._next_unresolved_btn = wx.Button(panel, label="Next &Unresolved")
+        self._next_unresolved_btn.SetName("Move to the next known unresolved review thread")
+        self._next_unvisited_btn = wx.Button(panel, label="Next Un&visited")
+        self._next_unvisited_btn.SetName(
+            "Move to the next review thread not yet visited in this session"
+        )
         self._browser_btn = wx.Button(panel, label="Open on &GitHub")
         self._browser_btn.SetName("Open this pull request on GitHub in a browser")
         self._browser_btn.SetHelpText("Open the pull request page in your default browser.")
         self._copy_btn = wx.Button(panel, label="Copy Review &Summary")
         self._copy_btn.SetName("Copy the pull request review summary")
         self._copy_btn.SetHelpText("Copy the loaded review summary to the clipboard.")
-        self._submit_btn = wx.Button(panel, label="Submit Re&view…")
-        self._submit_btn.SetName("Approve, request changes, or comment on this pull request")
-        self._submit_btn.SetHelpText("Submit one of GitHub's three review decisions.")
+        self._submit_btn = wx.Button(panel, label="&Compose Review…")
+        self._submit_btn.SetName("Compose, save locally, or submit a review for this pull request")
+        self._submit_btn.SetHelpText(
+            "Review drafts save locally. Submitting is a separate explicit action in the composer."
+        )
         self._reply_btn = wx.Button(panel, label="&Reply to Thread…")
         self._reply_btn.SetName("Reply to the selected pull request review thread")
         self._reply_btn.SetHelpText("Post a reply to the selected review conversation.")
         self._reviewers_btn = wx.Button(panel, label="Request Revie&wers…")
         self._reviewers_btn.SetName("Request reviewers for this pull request")
         self._reviewers_btn.SetHelpText("Request reviews from one or more GitHub usernames.")
-        self._draft_btn = wx.Button(panel, label="Mark &Ready")
+        self._draft_btn = wx.Button(panel, label="&Mark Ready")
         self._draft_btn.SetName("Change this pull request between draft and ready for review")
         self._draft_btn.SetHelpText(
             "Toggle whether the pull request is a draft or ready for review."
         )
-        self._update_btn = wx.Button(panel, label="&Update Branch…")
+        self._update_btn = wx.Button(panel, label="Update &Branch…")
         self._update_btn.SetName("Update the pull request branch from its base branch")
         self._update_btn.SetHelpText("Merge the base branch into this pull request's branch.")
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
@@ -169,6 +195,8 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
             self._update_btn,
         )
         for button in (
+            self._next_unresolved_btn,
+            self._next_unvisited_btn,
             self._browser_btn,
             self._copy_btn,
             *self._write_buttons,
@@ -184,6 +212,13 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
 
         self._browser_btn.Bind(wx.EVT_BUTTON, self._open_pr)
         self._copy_btn.Bind(wx.EVT_BUTTON, self._copy_summary)
+        self._policy_btn.Bind(wx.EVT_BUTTON, self._load_merge_policy)
+        self._next_unresolved_btn.Bind(
+            wx.EVT_BUTTON, lambda _event: self._next_thread(unresolved_only=True)
+        )
+        self._next_unvisited_btn.Bind(
+            wx.EVT_BUTTON, lambda _event: self._next_thread(unresolved_only=False)
+        )
         self._submit_btn.Bind(wx.EVT_BUTTON, self._submit_review)
         self._reply_btn.Bind(wx.EVT_BUTTON, self._reply_to_thread)
         self._reviewers_btn.Bind(wx.EVT_BUTTON, self._request_reviewers)
@@ -225,8 +260,14 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
         def worker() -> None:
             wx = self._wx
             try:
-                threads = self._client.fetch_review_threads(self._repo, self._number)
-                state = self._client.fetch_review_state(self._repo, self._number, threads=threads)
+                thread_result = self._client.fetch_review_threads(self._repo, self._number)
+                threads = thread_result.items
+                state = self._client.fetch_review_state(
+                    self._repo,
+                    self._number,
+                    threads=threads,
+                    thread_result=thread_result,
+                )
                 try:
                     diff = self._client._provider.fetch_pull_diff(self._repo, self._number)
                 except GitHubItemsError:
@@ -244,97 +285,6 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
         self._loading = False
         self._status.SetLabel(f"Could not load review: {message}")
         self._announce(f"Could not load pull request review: {message}")
-
-    def _refresh_ready(
-        self,
-        state: GitHubPullReviewState,
-        threads: tuple[GitHubReviewThread, ...],
-        diff: GitHubPullDiff | None = None,
-    ) -> None:
-        if not dialog_alive(self.dialog):
-            return
-        previous = self._node_kind()
-        previous_id = (
-            self._threads[previous[1]].root.id
-            if previous[0] == "thread" and 0 <= previous[1] < len(self._threads)
-            else None
-        )
-        self._loading = False
-        self._state = state
-        self._threads = threads
-        self._checks = state.checks
-        self._diff = diff
-        self._header.SetLabel(
-            f"PR #{state.number}: {state.merge_readiness} "
-            f"Reviews: {state.review_decision}. Checks: {state.checks_summary}. "
-            f"{state.thread_count} review thread(s), "
-            f"{state.outdated_thread_count} outdated."
-        )
-        self._summary.SetValue(state.summary_text())
-        self._outline.DeleteAllItems()
-        self._nodes.clear()
-        root = self._outline.AddRoot(f"PR #{state.number}: {state.title}")
-        self._nodes[int(root.GetID())] = ("pr", 0)
-        files_root = self._outline.AppendItem(root, "Changed files")
-        self._nodes[int(files_root.GetID())] = ("files", 0)
-        file_names = list(dict.fromkeys([file.filename for file in diff.files] if diff else []))
-        file_names.extend(
-            path
-            for path in dict.fromkeys(thread.root.path for thread in threads)
-            if path and path not in file_names
-        )
-        selected = None
-        for file_index, path in enumerate(file_names):
-            file_node = self._outline.AppendItem(files_root, path)
-            self._nodes[int(file_node.GetID())] = ("file", file_index)
-            for index, thread in enumerate(threads):
-                if thread.root.path != path:
-                    continue
-                label = (
-                    f"Line {thread.root.line or 'unknown'}, {thread.root.author}, "
-                    f"{thread.reply_count} replies" + (", outdated" if thread.outdated else "")
-                )
-                node = self._outline.AppendItem(file_node, label)
-                self._nodes[int(node.GetID())] = ("thread", index)
-                if thread.root.id == previous_id:
-                    selected = node
-            if self._outline.ItemHasChildren(file_node):
-                self._outline.Expand(file_node)
-        general = [(index, thread) for index, thread in enumerate(threads) if not thread.root.path]
-        if general:
-            general_node = self._outline.AppendItem(root, "General conversations")
-            self._nodes[int(general_node.GetID())] = ("threads", 0)
-            for index, thread in general:
-                node = self._outline.AppendItem(
-                    general_node, f"{thread.root.author}, {thread.reply_count} replies"
-                )
-                self._nodes[int(node.GetID())] = ("thread", index)
-                if thread.root.id == previous_id:
-                    selected = node
-            self._outline.Expand(general_node)
-        checks_root = self._outline.AppendItem(root, f"Checks ({len(self._checks)})")
-        self._nodes[int(checks_root.GetID())] = ("checks", 0)
-        for index, check in enumerate(self._checks):
-            node = self._outline.AppendItem(checks_root, f"{check.state_display}: {check.name}")
-            self._nodes[int(node.GetID())] = ("check", index)
-        self._outline.Expand(root)
-        self._outline.Expand(files_root)
-        self._outline.Expand(checks_root)
-        self._outline.SelectItem(selected or root)
-        self._check_list.Set([
-            f"{check.state_display}: {check.name}"
-            + (f" — {check.summary}" if check.summary else "")
-            for check in self._checks
-        ])
-        self._draft_btn.SetLabel("Mark &Ready" if state.draft else "Convert to &Draft")
-        can_change = self._client.can_write and state.state == "open" and not state.merged
-        self._submit_btn.Enable(can_change)
-        self._reviewers_btn.Enable(can_change)
-        self._draft_btn.Enable(can_change)
-        self._update_btn.Enable(can_change and not state.draft)
-        self._select_node(None)
-        self._status.SetLabel("Review loaded.")
-        self._announce(f"Review loaded for pull request #{state.number}. {state.merge_readiness}")
 
     def _node_kind(self) -> tuple[str, int]:
         item = self._outline.GetSelection()
@@ -377,6 +327,7 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
             self._thread_detail.SetValue("No review threads." if not self._threads else "")
             return
         thread = self._threads[index]
+        self._visited_thread_ids.add(self._thread_visit_key(index))
         self._reply_btn.Enable(
             self._client.can_write
             and self._state is not None
@@ -385,6 +336,8 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
             and thread.root.id > 0
         )
         lines = [thread.header, ""]
+        if thread.resolution_error:
+            lines.extend([f"Resolution status could not be loaded: {thread.resolution_error}", ""])
         for comment in thread.comments:
             when = f" — {comment.created_at}" if comment.created_at else ""
             lines.extend([
@@ -393,6 +346,52 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
                 "",
             ])
         self._thread_detail.SetValue("\n".join(lines).rstrip())
+
+    def _thread_visit_key(self, index: int) -> str:
+        thread = self._threads[index]
+        return (
+            thread.root.id or f"{thread.root.path}:{thread.root.line}:{thread.root.author}:{index}"
+        )
+
+    def _next_thread(self, *, unresolved_only: bool) -> None:
+        if not self._threads:
+            self._announce("No review threads are loaded.")
+            return
+        kind, current = self._node_kind()
+        start = current if kind == "thread" else -1
+        order = [*range(start + 1, len(self._threads)), *range(0, start + 1)]
+        if unresolved_only:
+            candidates = [index for index in order if self._threads[index].resolved is False]
+            if not candidates:
+                unknown = any(thread.resolved is None for thread in self._threads)
+                self._announce(
+                    "No known unresolved threads; resolution data is unavailable for some threads."
+                    if unknown
+                    else "No unresolved review threads."
+                )
+                return
+            if len(candidates) == 1 and candidates[0] == current:
+                self._announce("This is the only unresolved review thread.")
+                return
+        else:
+            candidates = [
+                index
+                for index in order
+                if self._thread_visit_key(index) not in self._visited_thread_ids
+            ]
+            if not candidates:
+                self._announce("You have visited every loaded review thread in this session.")
+                return
+        index = candidates[0]
+        self._visited_thread_ids.add(self._thread_visit_key(index))
+        self._outline.SelectItem(self._thread_items[index])
+        self._outline.SetFocus()
+        thread = self._threads[index]
+        label = "unresolved" if unresolved_only else "unvisited"
+        self._announce(
+            f"Moved to {label} thread by {thread.root.author}, "
+            f"line {thread.root.line or 'unknown'}."
+        )
 
     def _open_pr(self, _event: object) -> None:
         if self._state is not None and self._state.url:
@@ -447,41 +446,6 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
         finally:
             dialog.Destroy()
 
-    def _submit_review(self, _event: object) -> None:
-        if not self._client.can_write:
-            self._announce("Sign in to GitHub to submit a review.")
-            return
-        wx = self._wx
-        choices = ["Approve", "Request changes", "Comment"]
-        dialog = wx.SingleChoiceDialog(
-            self.dialog, "Choose a review action:", "Submit Review", choices
-        )
-        try:
-            if self._show_native(dialog, "Submit Review") != wx.ID_OK:
-                return
-            choice = dialog.GetSelection()
-        finally:
-            dialog.Destroy()
-        if choice not in (0, 1, 2):
-            self._announce("Choose a review action first.")
-            return
-        event = ("approve", "request changes", "comment")[choice]
-        body = ""
-        if event != "approve":
-            body = self._text_entry("Review message:", "Submit Review") or ""
-            if not body:
-                self._announce("Review cancelled; a message is required.")
-                return
-        if event == "request changes" and not self._confirm(
-            "Submit a changes-requested review for this pull request?",
-            "Request Changes",
-        ):
-            return
-        self._run_action(
-            lambda: self._client.submit_review(self._repo, self._number, event, body),
-            f"Review submitted on pull request #{self._number}.",
-        )
-
     def _request_reviewers(self, _event: object) -> None:
         value = self._text_entry("GitHub usernames, separated by commas:", "Request Reviewers")
         if value is None:
@@ -511,7 +475,10 @@ class GitHubPullReviewDialog(GitHubPullReviewMenusMixin):
 
     def _on_review_key(self, event: object) -> None:
         if event.ControlDown() and event.GetKeyCode() in (ord("R"), ord("r")):
-            self._reply_to_thread(None)
+            if getattr(event, "ShiftDown", lambda: False)():
+                self._change_thread_resolution(None)
+            else:
+                self._reply_to_thread(None)
             return
         event.Skip()
 

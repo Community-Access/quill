@@ -66,11 +66,18 @@ from quill.core.github.items_provider import (
     GitHubReleaseAsset,
     GitHubRepoForkInfo,
 )
+from quill.core.github.references import GitHubReference
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
+from quill.ui.github_items_dialog_ai import GitHubItemsAiMixin
 from quill.ui.github_items_dialog_branches import GitHubBranchActionsMixin
 from quill.ui.github_items_dialog_filter import GitHubQuickFilterMixin
+from quill.ui.github_items_dialog_issue_templates import GitHubIssueTemplatesMixin
 from quill.ui.github_items_dialog_menus import GitHubItemsMenusMixin
+from quill.ui.github_items_dialog_navigation import GitHubNavigationMixin
+from quill.ui.github_items_dialog_references import GitHubReferenceMixin
+from quill.ui.github_items_dialog_releases import GitHubItemsReleaseMixin
+from quill.ui.github_items_dialog_review import GitHubItemsReviewMixin
 from quill.ui.github_items_dialog_workflows import GitHubWorkflowsMixin
 from quill.ui.github_items_view import (
     SORT_ORDERS,
@@ -100,7 +107,16 @@ if TYPE_CHECKING:
 
 
 class GitHubItemsDialog(
-    GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHubWorkflowsMixin, GitHubItemsMenusMixin
+    GitHubReferenceMixin,
+    GitHubIssueTemplatesMixin,
+    GitHubItemsReleaseMixin,
+    GitHubItemsReviewMixin,
+    GitHubItemsAiMixin,
+    GitHubNavigationMixin,
+    GitHubBranchActionsMixin,
+    GitHubQuickFilterMixin,
+    GitHubWorkflowsMixin,
+    GitHubItemsMenusMixin,
 ):
     """Modal list-over-detail viewer for a repository's GitHub items."""
 
@@ -110,21 +126,37 @@ class GitHubItemsDialog(
         provider: GitHubItemsProvider,
         *,
         initial_repo: str = "",
+        initial_reference: GitHubReference | None = None,
+        open_file_reference_cb: Callable[[str], None] | None = None,
         announce_cb: Callable[[str], None] | None = None,
         ai_acquire_cb: Callable[[], Callable[[str], str] | None] | None = None,
+        start_issue_worktree_cb: Callable[[object, str, int, str, bool], None] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._provider = provider
+        self._open_file_reference_cb = open_file_reference_cb
         self._announce = announce_cb or (lambda _m: None)
+        self._start_issue_worktree_cb = start_issue_worktree_cb
         # Resolves QUILL's AI connection on demand (may prompt; UI thread) and
         # returns a summarize(text) callable safe to run off-thread, or None.
         self._ai_acquire = ai_acquire_cb
         self._repo = initial_repo.strip()
-        self._view = VIEW_ISSUES
+        self._initial_reference = initial_reference
+        self._view = (
+            VIEW_BRANCHES
+            if initial_reference is not None and initial_reference.kind == "branch"
+            else VIEW_ISSUES
+        )
         self._show = "both"  # issues / prs / both (issues view only)
         self._state = "open"  # open / closed / all (issues view only)
+        if initial_reference is not None and initial_reference.kind == "issue":
+            self._show = "issues"
+            self._state = "all"
+        elif initial_reference is not None and initial_reference.kind == "pull_request":
+            self._show = "prs"
+            self._state = "all"
         self._sort = "number_desc"
         self._list_mode = "quick"  # "quick" or "full" (GHManage parity)
         # Pinned repos + favorites + column choices (GHManage parity),
@@ -149,6 +181,7 @@ class GitHubItemsDialog(
         # the Releases view slot since assets belong to a specific release.
         self._drill_release: GitHubRelease | None = None
         self._search_query = ""  # non-empty = issues view shows search results
+        self._restore_navigation(provider, initial_reference)
         # Per-selection comment thread + positions for Alt+N/Alt+P navigation.
         self._comments: list[dict[str, str]] = []
         self._comment_positions: list[tuple[int, int]] = []
@@ -185,6 +218,12 @@ class GitHubItemsDialog(
         self._pinned_btn.SetName("Pinned repositories menu")
         self._favorites_btn = wx.Button(panel, label="Fa&vorites...")
         self._favorites_btn.SetName("Favorited items menu")
+        self._explore_btn = wx.Button(panel, label="&Explore...")
+        self._explore_btn.SetName(
+            "Explore My Work, activity, people, repositories, labels, and Pages"
+        )
+        self._projects_btn = wx.Button(panel, label="Pro&jects...")
+        self._projects_btn.SetName("Browse and edit GitHub Projects, blockers, and sub-issues")
         self._upstream_btn = wx.Button(panel, label="View &Upstream")
         self._upstream_btn.SetName(
             "Open the repository this fork was forked from; enabled only for forks"
@@ -194,6 +233,8 @@ class GitHubItemsDialog(
         repo_row.Add(self._load_btn, 0, wx.RIGHT, 6)
         repo_row.Add(self._pinned_btn, 0, wx.RIGHT, 6)
         repo_row.Add(self._favorites_btn, 0, wx.RIGHT, 6)
+        repo_row.Add(self._explore_btn, 0, wx.RIGHT, 6)
+        repo_row.Add(self._projects_btn, 0, wx.RIGHT, 6)
         repo_row.Add(self._upstream_btn)
         root.Add(repo_row, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -206,13 +247,15 @@ class GitHubItemsDialog(
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._search_ctrl = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
+        self._search_ctrl = wx.TextCtrl(panel, value=self._search_query, style=wx.TE_PROCESS_ENTER)
         self._search_ctrl.SetName(
             "Search issues and pull requests with full GitHub search syntax; "
             "empty search restores the normal list"
         )
         self._search_btn = wx.Button(panel, label="Search")
         self._search_btn.SetName("Run search")
+        self._reference_btn = wx.Button(panel, label="Open Link...")
+        self._reference_btn.SetName("Open a GitHub URL or repository reference")
         search_row.Add(self._search_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         search_row.Add(self._search_btn, 0, wx.RIGHT, 12)
         search_row.Add(
@@ -221,12 +264,15 @@ class GitHubItemsDialog(
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._quick_filter_ctrl = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
+        self._quick_filter_ctrl = wx.TextCtrl(
+            panel, value=self._quick_filter_query, style=wx.TE_PROCESS_ENTER
+        )
         self._quick_filter_ctrl.SetName(
             "Quick filter; narrows the currently loaded list as you type, no network "
             "request -- Escape clears it"
         )
         search_row.Add(self._quick_filter_ctrl, 1, wx.EXPAND)
+        search_row.Add(self._reference_btn, 0, wx.LEFT, 6)
         root.Add(search_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # Filter row: View / Show / State / Sort / List mode
@@ -234,25 +280,29 @@ class GitHubItemsDialog(
         filt.Add(wx.StaticText(panel, label="V&iew:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._view_choice = wx.Choice(panel, choices=[label for _, label in VIEWS])
         self._view_choice.SetName("View")
-        self._view_choice.SetSelection(0)
+        self._view_choice.SetSelection(
+            next(i for i, (key, _) in enumerate(VIEWS) if key == self._view)
+        )
         filt.Add(self._view_choice, 0, wx.RIGHT, 10)
 
         filt.Add(wx.StaticText(panel, label="&Show:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._show_choice = wx.Choice(panel, choices=["Both", "Issues", "PRs"])
         self._show_choice.SetName("Show issues PRs or both")
-        self._show_choice.SetSelection(0)
+        self._show_choice.SetSelection({"both": 0, "issues": 1, "prs": 2}[self._show])
         filt.Add(self._show_choice, 0, wx.RIGHT, 10)
 
         filt.Add(wx.StaticText(panel, label="S&tate:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._state_choice = wx.Choice(panel, choices=["Open", "Closed", "All"])
         self._state_choice.SetName("State filter")
-        self._state_choice.SetSelection(0)
+        self._state_choice.SetSelection({"open": 0, "closed": 1, "all": 2}[self._state])
         filt.Add(self._state_choice, 0, wx.RIGHT, 10)
 
         filt.Add(wx.StaticText(panel, label="S&ort:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._sort_choice = wx.Choice(panel, choices=[label for _, label in SORT_ORDERS])
         self._sort_choice.SetName("Sort order")
-        self._sort_choice.SetSelection(0)
+        self._sort_choice.SetSelection(
+            next(index for index, (key, _label) in enumerate(SORT_ORDERS) if key == self._sort)
+        )
         filt.Add(self._sort_choice, 0, wx.RIGHT, 10)
 
         filt.Add(
@@ -270,6 +320,24 @@ class GitHubItemsDialog(
         self._columns_btn.SetName("Choose which columns are shown in the list for this view")
         filt.Add(self._columns_btn, 0)
         root.Add(filt, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        history_row = wx.BoxSizer(wx.HORIZONTAL)
+        self._back_btn = wx.Button(panel, label="Back")
+        self._back_btn.SetName("Return to the previous GitHub repository or item")
+        self._back_btn.SetHelpText(
+            "Restore the previous repository, view, filters, and selected row."
+        )
+        self._forward_btn = wx.Button(panel, label="Forward")
+        self._forward_btn.SetName("Move forward to the next GitHub repository or item")
+        self._forward_btn.SetHelpText(
+            "Restore the next repository, view, filters, and selected row."
+        )
+        self._back_btn.Enable(False)
+        self._forward_btn.Enable(False)
+        history_row.Add(self._back_btn, 0, wx.RIGHT, 6)
+        history_row.Add(self._forward_btn, 0)
+        history_row.AddStretchSpacer()
+        root.Add(history_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
 
         # List. Multi-select so batch actions can operate on several checked
         # rows at once (Unified GitHub Management "Batch Operations"); the
@@ -361,6 +429,8 @@ class GitHubItemsDialog(
         self._state_choice.Bind(wx.EVT_CHOICE, lambda _e: self._reload())
         self._sort_choice.Bind(wx.EVT_CHOICE, lambda _e: self._reload())
         self._mode_choice.Bind(wx.EVT_CHOICE, self._on_mode_changed)
+        self._back_btn.Bind(wx.EVT_BUTTON, self._go_back)
+        self._forward_btn.Bind(wx.EVT_BUTTON, self._go_forward)
         self._list.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_select)
         self._list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_activate)
         self._list.Bind(wx.EVT_LIST_KEY_DOWN, self._on_list_key)
@@ -372,8 +442,11 @@ class GitHubItemsDialog(
         self._goto_btn.Bind(wx.EVT_BUTTON, self._on_goto)
         self._pinned_btn.Bind(wx.EVT_BUTTON, self._on_pinned_menu)
         self._favorites_btn.Bind(wx.EVT_BUTTON, self._on_favorites_menu)
+        self._explore_btn.Bind(wx.EVT_BUTTON, self._on_explore)
+        self._projects_btn.Bind(wx.EVT_BUTTON, self._on_projects)
         self._upstream_btn.Bind(wx.EVT_BUTTON, self._on_view_upstream)
         self._search_btn.Bind(wx.EVT_BUTTON, self._on_search)
+        self._reference_btn.Bind(wx.EVT_BUTTON, self._on_open_reference)
         self._search_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
         # Emptying the search box drops back to the normal list right away,
         # exactly as running an empty search does (search_reset.py).
@@ -394,6 +467,7 @@ class GitHubItemsDialog(
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._apply_filter_enablement()
         self._rebuild_columns()
+        self._update_navigation_buttons()
 
     # ------------------------------------------------------------------
     # Public entry point
@@ -416,6 +490,7 @@ class GitHubItemsDialog(
         try:
             show_modal_dialog(self.dialog, "GitHub Items", announce=self._announce)
         finally:
+            self._save_navigation_state()
             self.dialog.Destroy()
 
     # ------------------------------------------------------------------
@@ -500,7 +575,11 @@ class GitHubItemsDialog(
     def _load_worker(self, repo: str, view: str, show: str, state: str, limit: int) -> None:
         wx = self._wx
         try:
-            rows = self._fetch(repo, view, show, state, limit)
+            rows = self._load_reference_rows(
+                repo,
+                view,
+                self._fetch(repo, view, show, state, limit),
+            )
         except GitHubItemsError as exc:
             wx.CallAfter(self._on_load_error, str(exc))
             return
@@ -539,8 +618,16 @@ class GitHubItemsDialog(
         if view != self._view:
             return  # a stale worker for a view the user already left
         self._unfiltered_rows = rows
+        if self._repo:
+            self._saved.remember_repo(self._repo)
         self._set_loading(False)
         self._apply_quick_filter(move_focus=True)
+        self._restore_saved_selection()
+        self._select_initial_reference()
+        if self._resume_selection_missing:
+            self._update_navigation_buttons()
+            return
+        self._record_navigation_location()
 
     def _on_load_error(self, message: str) -> None:
         self._set_loading(False)
@@ -592,6 +679,8 @@ class GitHubItemsDialog(
     def _on_select(self, event: object) -> None:
         idx = getattr(event, "GetIndex", lambda: -1)()
         self._show_detail(idx)
+        if not self._quick_filter_has_focus():
+            self._record_navigation_location()
         if self._list_mode == "full" and 0 <= idx < len(self._rows):
             cells = row_cells(self._rows[idx], self._current_columns(), full=True)
             self._announce(", ".join(c for c in cells if c))
@@ -840,77 +929,6 @@ class GitHubItemsDialog(
             target=worker, daemon=True
         ).start()
 
-    def _on_review(self) -> None:
-        """Open the selected PR's threads, checks, and review actions."""
-        idx = self._list.GetFirstSelected()
-        model = self._rows[idx] if 0 <= idx < len(self._rows) else None
-        if not isinstance(model, GitHubItem) or not model.is_pr:
-            self._announce("Select a pull request row first; Review works on PRs.")
-            return
-        from quill.ui.github_pr_review_dialog import GitHubPullReviewDialog
-
-        GitHubPullReviewDialog(
-            self.dialog,
-            self._provider,
-            self._repo,
-            model.number,
-            announce_cb=self._announce,
-        ).show()
-
-    def _show_diff_dialog(self, diff: object) -> None:
-        from quill.ui.github_pr_diff_dialog import GitHubPullDiffDialog
-
-        if not getattr(diff, "files", ()):
-            self._set_status("This pull request has no changed files to compare.")
-            return
-        self._set_status(f"{len(diff.files)} changed files.")
-        GitHubPullDiffDialog(
-            self.dialog, self._provider, self._repo, diff, announce_cb=self._announce
-        ).show()
-
-    def _on_summarize(self) -> None:
-        """TL;DR the selected issue/PR thread through QUILL's AI."""
-        idx = self._list.GetFirstSelected()
-        model = self._rows[idx] if 0 <= idx < len(self._rows) else None
-        if not isinstance(model, GitHubItem):
-            self._announce("Select an issue or pull request to summarize.")
-            return
-        if self._ai_acquire is None:
-            self._announce("AI summaries are unavailable here.")
-            return
-        summarize = self._ai_acquire()  # may prompt for AI setup (UI thread)
-        if summarize is None:
-            self._announce("AI is not configured; summary cancelled.")
-            return
-        self._set_status(f"Summarizing #{model.number} with AI...")
-
-        def worker() -> None:
-            wx = self._wx
-            from quill.core.github.thread_summary import compose_thread_text
-
-            try:
-                comments = self._provider.fetch_issue_comments(self._repo, model.number)
-            except GitHubItemsError:
-                comments = list(self._comments)
-            thread_text = compose_thread_text(model.title, model.author, model.body, comments)
-            try:
-                summary = summarize(thread_text)
-            except Exception as exc:  # noqa: BLE001 - surface, never crash
-                wx.CallAfter(self._set_status, f"Summary failed: {exc}")
-                return
-            wx.CallAfter(self._on_summary_ready, model.number, summary)
-
-        threading.Thread(  # GATE-40-OK: one bounded completion per request.
-            target=worker, daemon=True
-        ).start()
-
-    def _on_summary_ready(self, number: int, summary: str) -> None:
-        existing = self._details.GetValue()
-        self._details.SetValue(f"AI SUMMARY of #{number}:\n{summary}\n\n{'-' * 40}\n{existing}")
-        self._details.SetFocus()
-        self._details.SetInsertionPoint(0)
-        self._announce(f"Summary ready for #{number}. {summary}")
-
     def _on_batch_menu(self, _event: object) -> None:
         """Batch close / reopen / label over the selected rows, behind consent."""
         wx = self._wx
@@ -1076,7 +1094,10 @@ class GitHubItemsDialog(
             selected = self._selected_indices()
             if len(selected) == 1:
                 _add("Re-run Workflow", self._rerun_selected_workflow)
+                _add("View Jobs and Logs...", self._view_jobs_for_selected)
                 _add("View Artifacts...", self._view_artifacts_for_selected)
+        elif self._view == VIEW_RELEASES:
+            _add("Draft Release Notes...", self._draft_release_notes)
 
         if not entries:
             menu.Destroy()
@@ -1095,66 +1116,6 @@ class GitHubItemsDialog(
             self._actions_btn.PopupMenu(menu)
         finally:
             menu.Destroy()
-
-    def _new_issue(self) -> None:
-        self._prompt_and_create(kind="issue")
-
-    def _new_pull_request(self) -> None:
-        self._prompt_and_create(kind="pr")
-
-    def _prompt_and_create(self, *, kind: str) -> None:
-        wx = self._wx
-        title_prompt = "New Issue" if kind == "issue" else "New Pull Request"
-        with wx.TextEntryDialog(self.dialog, "Title:", title_prompt) as dlg:
-            if self._show_modal(dlg, title_prompt) != wx.ID_OK:
-                return
-            title = dlg.GetValue().strip()
-        if not title:
-            return
-        with wx.TextEntryDialog(
-            self.dialog,
-            "Body (optional):",
-            title_prompt,
-            style=wx.OK | wx.CANCEL | wx.CENTRE | wx.TE_MULTILINE,
-        ) as dlg:
-            self._show_modal(dlg, title_prompt)
-            body = dlg.GetValue().strip()
-        head = ""
-        base = ""
-        if kind == "pr":
-            with wx.TextEntryDialog(
-                self.dialog, "Head branch (your changes):", title_prompt
-            ) as dlg:
-                if self._show_modal(dlg, title_prompt) != wx.ID_OK:
-                    return
-                head = dlg.GetValue().strip()
-            with wx.TextEntryDialog(
-                self.dialog, "Base branch (merge into):", title_prompt, value="main"
-            ) as dlg:
-                if self._show_modal(dlg, title_prompt) != wx.ID_OK:
-                    return
-                base = dlg.GetValue().strip()
-            if not head or not base:
-                self._announce("Head and base branches are required for a pull request.")
-                return
-        self._set_status(f"Creating {'issue' if kind == 'issue' else 'pull request'}...")
-
-        def worker() -> None:
-            try:
-                if kind == "issue":
-                    item = self._provider.create_issue(self._repo, title, body)
-                else:
-                    item = self._provider.create_pull_request(self._repo, title, body, head, base)
-            except GitHubItemsError as exc:
-                wx.CallAfter(self._set_status, f"Error: {exc}")
-                return
-            wx.CallAfter(self._on_item_created, item)
-
-        threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: consented create.
-
-    def _on_item_created(self, item: GitHubItem) -> None:
-        self._set_status(f"Created {item.kind} #{item.number}: {item.title}")
-        self._reload()
 
     def _merge_selected_pr(self) -> None:
         selected = self._selected_indices()

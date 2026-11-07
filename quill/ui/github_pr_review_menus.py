@@ -45,10 +45,21 @@ class GitHubPullReviewMenusMixin:
             menu.Bind(wx.EVT_MENU, handler, id=item_id)
 
         if kind == "thread" and 0 <= index < len(self._threads):
+            thread = self._threads[index]
             add(
                 "Reply to Thread...\tCtrl+R",
                 self._reply_to_thread,
                 enabled=self._reply_btn.IsEnabled(),
+            )
+            add(
+                (
+                    "Reopen Thread...\tCtrl+Shift+R"
+                    if thread.resolved
+                    else "Resolve Thread...\tCtrl+Shift+R"
+                ),
+                self._change_thread_resolution,
+                enabled=bool(thread.node_id)
+                and (thread.can_unresolve if thread.resolved else thread.can_resolve),
             )
             add("Copy Conversation", self._copy_thread)
             add(
@@ -77,7 +88,7 @@ class GitHubPullReviewMenusMixin:
             )
             add("Copy Check Details", self._copy_detail)
         else:
-            add("Submit Review...", self._submit_review, enabled=self._submit_btn.IsEnabled())
+            add("Compose Review...", self._submit_review, enabled=self._submit_btn.IsEnabled())
             add(
                 "Request Reviewers...",
                 self._request_reviewers,
@@ -148,9 +159,10 @@ class GitHubPullReviewMenusMixin:
     def _open_thread_file_diff(self, _event: object) -> None:
         kind, index = self._node_kind()
         if kind == "thread" and 0 <= index < len(self._threads):
-            self._show_file_diff(self._threads[index].root.path)
+            root = self._threads[index].root
+            self._show_file_diff(root.path, line=root.line, side=root.side)
 
-    def _show_file_diff(self, path: str) -> None:
+    def _show_file_diff(self, path: str, *, line: int = 0, side: str = "RIGHT") -> None:
         if self._diff is None or not path:
             return
         from quill.ui.github_pr_diff_dialog import GitHubPullDiffDialog
@@ -162,6 +174,8 @@ class GitHubPullReviewMenusMixin:
             self._diff,
             announce_cb=self._announce,
             initial_file=path,
+            initial_line=line,
+            initial_side=side,
         )
         dialog.show()
 
@@ -188,6 +202,26 @@ class GitHubPullReviewMenusMixin:
                 if webbrowser.open(url)
                 else "Could not open the review thread in a browser."
             )
+
+    def _change_thread_resolution(self, _event: object) -> None:
+        kind, index = self._node_kind()
+        if kind != "thread" or not 0 <= index < len(self._threads):
+            self._announce("Select a review conversation first.")
+            return
+        thread = self._threads[index]
+        target = not thread.resolved
+        if not thread.node_id or not (thread.can_resolve if target else thread.can_unresolve):
+            self._announce("GitHub does not allow changing this thread's resolution.")
+            return
+        action = "resolve" if target else "reopen"
+        if not self._confirm(
+            f"{action.capitalize()} the selected review conversation?", "Review Thread"
+        ):
+            return
+        self._run_action(
+            lambda: self._client.change_thread_resolution(thread.node_id, resolved=target),
+            "Review conversation resolved." if target else "Review conversation reopened.",
+        )
 
     def _toggle_draft(self, _event: object) -> None:
         if self._state is None:
@@ -222,7 +256,7 @@ class GitHubPullReviewMenusMixin:
             else:
                 self._announce(f"Could not open check {check.name} in a browser.")
 
-    def _run_action(self, action: Callable[[], None], success_message: str) -> None:
+    def _run_action(self, action: Callable[[], str | None], success_message: str) -> None:
         if self._loading:
             self._announce("Please wait for the current review operation to finish.")
             return
@@ -232,16 +266,59 @@ class GitHubPullReviewMenusMixin:
         def worker() -> None:
             wx = self._wx
             try:
-                action()
+                extra_message = action()
             except GitHubReviewError as exc:
                 wx.CallAfter(self._action_finished, None, str(exc))
                 return
             except Exception as exc:  # noqa: BLE001 - unexpected provider errors must be visible
                 wx.CallAfter(self._action_finished, None, f"Unexpected error: {exc}")
                 return
-            wx.CallAfter(self._action_finished, success_message, None)
+            wx.CallAfter(
+                self._action_finished,
+                success_message + (extra_message or ""),
+                None,
+            )
 
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: review write action.
+
+    def _submit_review(self, _event: object) -> None:
+        if not self._client.can_write:
+            self._announce("Sign in to GitHub to submit a review.")
+            return
+        from quill.ui.github_review_draft_dialog import GitHubReviewDraftDialog
+
+        draft = GitHubReviewDraftDialog(
+            self.dialog,
+            draft_store=self._review_draft_store,
+            repository=self._repo,
+            number=self._number,
+            current_head_sha=self._state.head_sha if self._state else "",
+            announce_cb=self._announce,
+        ).show()
+        if draft is None:
+            return
+        if draft.event == "request changes" and not self._confirm(
+            "Submit a changes-requested review for this pull request?",
+            "Request Changes",
+        ):
+            return
+
+        def _submit() -> str:
+            current_head = self._client.fetch_head_sha(self._repo, self._number)
+            if draft.saved_head_sha and current_head != draft.saved_head_sha:
+                raise GitHubReviewError(
+                    "The pull request head changed while you were composing. "
+                    "No review was submitted; reopen the draft against the current diff."
+                )
+            self._client.submit_review(self._repo, self._number, draft.event, draft.body)
+            if not self._review_draft_store.delete_review(self._repo, self._number):
+                return " The review was submitted, but its local draft could not be cleared."
+            return ""
+
+        self._run_action(
+            _submit,
+            f"Review submitted on pull request #{self._number}.",
+        )
 
     def _action_finished(self, success: str | None, error: str | None) -> None:
         if not dialog_alive(self.dialog):

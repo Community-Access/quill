@@ -648,3 +648,10 @@ tries again when you next open Preferences.
 Do you know someone who puts up with an editor that does not talk to them? Or
 someone who was told AI is not for them, because every AI tool they tried was
 made for somebody else? Please send them this.
+# GitHub Workbench update (release acceptance pending)
+
+QUILL Lite's shared GitHub workbench adds the same PR review tree, conversation
+reply and resolution commands, exact diff-line targeting, and Explore views as
+QUILL. The [guided tutorial](../../../docs/tutorials/08-github-inside-quill.md)
+explains arrow keys, Tab, Ctrl+R, Ctrl+Shift+R, and context menus. Native
+screen-reader acceptance remains pending.

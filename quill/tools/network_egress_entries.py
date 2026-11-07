@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from quill.tools.network_egress_entries_agents import AGENT_EGRESS, AGENT_HTTP_EGRESS
 from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
+from quill.tools.network_egress_entries_github import GITHUB_WORKBENCH_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
 from quill.tools.network_egress_entries_wordpress import WORDPRESS_EGRESS
@@ -24,6 +25,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     # The cloud dictation providers (D-31 to D-37), split out the same way.
     **SPEECH_EGRESS,
     **CAST_EXTRAS_EGRESS,
+    **GITHUB_WORKBENCH_EGRESS,
     **WORDPRESS_EGRESS,
     **AGENT_HTTP_EGRESS,  # Ollama practice mode, loopback only
     "core/audio/url_import.py::_default_download": (
