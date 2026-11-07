@@ -145,6 +145,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 
 | Key | Command |
 |---|---|
+| **Alt+Shift+Home** | Say Clipboard |
+| **Alt+Shift+End** | Append Selection to Clipboard |
 | **Ctrl+Alt+Y** | Copy to Tray |
 | **Alt+Shift+Y** | Copy to Tray Slot... |
 | **Ctrl+Alt+V** | Paste from Tray... |
@@ -308,6 +310,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+F10** | Look Up Word... |
 | **Shift+F7** | Thesaurus... |
 | **Ctrl+Alt+Shift+[** | Say Word Summary |
+| **Alt+Shift+Space** | Say Time and Date |
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
 | **Ctrl+Alt+Backspace** | Read-Only Guard |
 | **Ctrl+Alt+Shift+Home** | Snippets... |
@@ -448,6 +451,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+F6** | Next Window (MDI) |
 | **Ctrl+Shift+Tab** | Previous Window |
 | **Ctrl+Shift+F4** | Close Other Documents |
+| **Ctrl+Shift+Space** | Say Windows Open |
 
 ## Help
 

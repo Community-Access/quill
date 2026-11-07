@@ -70,6 +70,9 @@ do the same thing in QUILL Lite, Quill Radio and QUILL Cast.
   Application Status page topic in this guide describes it.
 - **Save Diagnostics...** writes a diagnostics bundle on this computer. You can
   look through it before you share it with anyone.
+- **Copy Log** puts this session's log file, `quill.log`, on the clipboard,
+  ready to send to support. [Sending your log to
+  support](#sending-your-log-to-support) explains how to use it.
 - **Feature Profiles** gathers the profile commands:
   - **Switch Profile...** (`Alt+Shift+P`) chooses another profile.
   - **Profile Health Check...** gives a short report on your profile: which
@@ -345,6 +348,35 @@ the same form QUILL Lite and Quill Radio use, and it reaches a person at
 
 Want to share more detail? **Help > Save Diagnostics...** writes a bundle with
 private details removed, which you review and can attach to the email.
+
+### Sending your log to support
+
+Sometimes support asks for QUILL's log: the running record QUILL keeps of what
+it did while you were working. Finding that file by hand means knowing where
+QUILL keeps its data, which nobody should have to remember. **Help > Copy Log**
+(just after Save Diagnostics) does it for you. It has no key, because you will
+only want it now and then.
+
+Choose it and QUILL puts this session's log, `quill.log`, on the clipboard in
+two ways at once, and says "Copied the log, quill.log, to the clipboard. Paste
+it into an email to attach the file, or into a document for its location".
+
+- **Paste into an email** (in Outlook, Thunderbird or most other mail
+  programs) and the log goes in as an attachment, as if you had dragged the
+  file in.
+- **Paste into a document, a web form or a plain text box** and you get the
+  file's full path instead, so you can tell support where it is, or open the
+  folder yourself.
+
+So the usual steps are: choose **Help > Get Help from Support...**, press
+Send to open the message in your mail program, then choose **Help > Copy
+Log** and paste with `Ctrl+V` into the message before you send it.
+
+If QUILL has not written a log yet in this session, you hear "No log has been
+written yet", and the clipboard is left as it was. The log is plain text, and
+it can name the files you worked on, so have a read of it first if you like:
+paste the path into **File > Open** and it opens in QUILL like any other text
+file.
 
 ### No more GitHub reports
 
