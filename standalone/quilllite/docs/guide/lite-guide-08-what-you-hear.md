@@ -120,6 +120,31 @@ QUILL says exactly the same on the same key.
 **Ctrl+Alt+W** (**Line Statistics**) does the same for just the line you are on,
 or for what you have selected.
 
+### What time is it?
+
+Press **Alt+Shift+Space** (**Tools > Say Time and Date**) and QUILL Lite says
+the time, the way a clock reads it: *"2:05 PM."* Press it twice, quickly,
+within half a second, and you hear the date in full: *"Friday, November 6,
+2026."* The first press is answered straight away, so you never wait for it.
+It is quicker than finding the clock in the system tray, and you stay in your
+document. The row has no access letter on the Tools menu; the key is the way
+to reach it.
+
+### How many documents are open?
+
+Press **Ctrl+Shift+Space** (**Window > Say Windows Open**, or
+**Alt+W**, then **S**) to hear how many documents you have open: *"3 documents
+open."* Press it twice, quickly, and you hear their names, in order, with the
+one you are in marked: *"3 documents: notes.txt (current), chapter 2.docx,
+letter.md."* It is a fast check before you close QUILL Lite, without walking
+the Window menu.
+
+QUILL has both of these, on the same keys.
+
+One more key of the same kind is about the clipboard: **Alt+Shift+Home**
+(**Say Clipboard**) reads what you copied without pasting it. Chapter 5 has
+the details.
+
 ## Sounds
 
 QUILL Lite plays small sounds to let you know things happened. You can silence

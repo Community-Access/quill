@@ -523,6 +523,9 @@ The **Window** menu is small but handy.
   Xcode.
 - **Close Other Documents** (`Ctrl+Shift+F4`) closes every document except the
   one you are in.
+- **Say Windows Open** (`Ctrl+Shift+Space`) tells you how many documents
+  are open: "3 documents open". Press it twice, quickly, to hear their names in
+  tab order, with the one you are in marked "(current)". Chapter 6 has more.
 - **Send to System Tray** (`QUILL Key + T`) tucks QUILL into the notification
   area without closing it.
 - After those come your open documents, numbered, such as

@@ -6,19 +6,16 @@ in one menu bar claim the same key.** Walking a menu to discover there is no
 shortcut is a cost a screen-reader user pays on every visit, and a key claimed
 twice means one of the pair silently never fires.
 
-A table rather than fifty ``menu.Append`` calls, because the table is checkable.
-:mod:`tests.unit.core.lite.test_lite_commands` asserts, mechanically, that every
-item carries a key, that no key is claimed twice, that no ``&`` mnemonic is
-claimed twice *within one menu*, and that every key string is one
-``wx.AcceleratorEntry`` can actually parse -- the last of which matters because
-wx silently drops what it cannot parse, leaving the menu advertising a key that
-does nothing.
+A table rather than fifty ``menu.Append`` calls, because a table is checkable:
+:mod:`tests.unit.core.lite.test_lite_commands` asserts that every item carries a
+key, that no key (nor, *within one menu*, ``&`` mnemonic) is claimed twice, and
+that every key parses as a ``wx.AcceleratorEntry`` -- wx silently drops what it
+cannot parse, leaving the menu advertising a key that does nothing.
 
 The same table generates the Keyboard Shortcuts window, so the list a user reads
 is the list that is bound. There is no third place for the two to disagree.
 
-wx-free on purpose: the tests, the shortcut text and the F1 answer all import
-this without a display.
+wx-free on purpose: the tests, the shortcut text and F1 import it without a display.
 """
 
 from __future__ import annotations
@@ -34,6 +31,7 @@ from quill.core.lite.commands_ai import (
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
+from quill.core.lite.commands_say import CLIPBOARD_SAY_ROWS, TIME_SAY_ROWS, WINDOW_SAY_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
 from quill.core.wordpress import menu as wordpress_menu
 
@@ -414,6 +412,7 @@ COMMANDS: list[CommandRow] = [
     # application ever written. It was top-level so that the whole idea could be
     # switched off in one checkbox -- which a submenu does just as well, because
     # a submenu with nothing left in it is removed along with its title.
+    *CLIPBOARD_SAY_ROWS,  # Say Clipboard and its three siblings (commands_say.py)
     ("&Edit|Clip&board", "&Copy to Tray", "Ctrl+Alt+Y", "cmd_copy_to_tray", ""),
     # The next free slot is the right default and the wrong only option: a tray
     # filled in order is a tray whose numbers mean nothing, and the value of a
@@ -845,6 +844,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "", "", "", "sep"),
     ("&Tools", "&Spelling", "", "", "sub"),
     *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
+    *TIME_SAY_ROWS,  # Say Time and Date (commands_say.py)
     ("&Tools", "&Change Case", "", "", "sub"),
     ("&Tools", "Indentin&g", "", "", "sub"),
     # A submenu, not a tenth top-level menu: Clipboard and Spelling were demoted
@@ -1036,6 +1036,7 @@ COMMANDS: list[CommandRow] = [
     # route back to one document was Ctrl+W sixty-eight times, with a save
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
+    *WINDOW_SAY_ROWS,  # Say Windows Open (commands_say.py)
     *HELP_ROWS,  # the Help menu (commands_help.py)
     *wordpress_menu.lite_placed_rows(),  # WordPress, at the foot of Edit to Tools
     *forms_menu.lite_placed_rows(),  # Forms, at the foot of Insert to Tools

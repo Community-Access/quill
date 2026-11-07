@@ -407,6 +407,7 @@ from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_review import ReviewToolsMixin
 from quill.ui.main_frame_rich_mode import RichModeMixin
 from quill.ui.main_frame_rich_paragraph import RichParagraphMixin
+from quill.ui.main_frame_say_commands import SayCommandsAdapterMixin
 from quill.ui.main_frame_search import SearchCommandsMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
 from quill.ui.main_frame_selection import SelectionMarksMixin
@@ -697,13 +698,13 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
-    # Moved whole out of this class on 2026-10-17, so listed first: they keep
-    # the precedence the methods had while they were defined here.
+    # Moved whole out of this class on 2026-10-17; listed first to keep their old precedence.
     BookmarksFoldsMixin,
     ReadAloudMixin,
     SpeechHubMixin,
     OpenDocumentsFindMixin,  # ahead of SearchCommandsMixin: its F3 wins
     CloseOthersMixin,
+    SayCommandsAdapterMixin,  # Say Clipboard and the rest, shared with QUILL Lite
     RecentDocumentsMixin,
     SessionRestoreMixin,
     MagicalTierMixin,
@@ -789,8 +790,7 @@ class MainFrame(
     DocConvertMixin,
     PdfOpenOcrMixin,
     DictationHotkeysMixin,
-    # QUILL's own free AI: the shared hosted-AI commands, wired to QUILL's
-    # frame and editor. Five commands, no implementation of its own.
+    # QUILL's own free AI: the shared hosted-AI commands, five, none implemented here.
     MainFrameActivityMixin,
     HostedAiCommandsMixin,
     TextEditorMixin,

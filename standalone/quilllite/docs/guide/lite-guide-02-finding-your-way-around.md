@@ -32,6 +32,11 @@ there.
 **Ctrl+N** makes a new document. **Ctrl+W** closes the one you are in.
 **Ctrl+Q** closes everything, and asks you about anything you have not saved.
 
+Lost count? Press **Ctrl+Shift+Space** (**Window > Say Windows
+Open**) and you hear "3 documents open". Press it twice, quickly, to hear
+their names in order, with the one you are in marked "(current)". Chapter 8
+has more.
+
 If you would like to practise this with the app guiding you, the tutorial
 *Your documents are numbered* opens a second file and walks you between them.
 

@@ -241,6 +241,29 @@ your data is kept.
 Paste those lines into your email to support. They answer the first questions
 support would ask, so you get help faster.
 
+#### Sending your log
+
+Sometimes support asks for QUILL Lite's log, the running record it keeps of
+what it did while you were working. You do not need to know where that file
+lives. Choose **Help > Copy Log** (**Alt+H**, then **L**). It has no key,
+because you will only want it now and then.
+
+QUILL Lite puts this session's log, `quill.log`, on the clipboard in two ways
+at once, and says "Copied the log, quill.log, to the clipboard. Paste it into
+an email to attach the file, or into a document for its location".
+
+- **Paste it into an email**, in Outlook, Thunderbird or most other mail
+  programs, and the log goes in as an attachment.
+- **Paste it into a document, a web form or a plain text box**, and you get
+  the file's full path instead.
+
+So: open your message to support, with **Ctrl+Alt+F2** or from your own mail
+program, then choose **Help > Copy Log** and press **Ctrl+V** in the message
+before you send it. If nothing has been written to the log yet, you hear "No
+log has been written yet", and the clipboard is left as it was. The log is
+plain text and can name the files you worked on, so read it first if you
+like.
+
 #### Other ways to start QUILL Lite
 
 There are three more options for the same command line. **`--rich`** and

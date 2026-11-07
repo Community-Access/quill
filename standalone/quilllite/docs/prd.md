@@ -2452,6 +2452,63 @@ the same way.
   break needs a Word, Rich Text or Markdown document". It never writes a form
   feed.
 
+## Say commands: the clipboard, the time, the open documents and the log (2026-11-06)
+
+Seven commands that answer what a sighted user settles with a glance. QUILL
+has the same seven: one set of handlers (`quill/ui/say_commands.py`), one set
+of words (`quill/core/say_commands.py`, wx-free), the same keys, mapped in
+`COMMAND_EQUIVALENTS` (family rule 10). QUILL Lite's adapter is
+`quill/apps/lite_window_say.py` and its menu rows are
+`quill/core/lite/commands_say.py`. Each speaks a result the screen reader cannot
+know, which is what GATE-13 allows, through the announcement service, so it is
+brailled too.
+
+Repeated presses answer at once. `PressStreak` (`quill/core/multi_press.py`)
+counts quick repeats of the same command within half a second
+(`PRESS_WINDOW_SECONDS`) and every press is answered immediately; a quick
+further press supersedes the last answer. Waiting out the window, as
+`MultiPressDispatcher` does, would put a pause in front of the answer people
+press for most.
+
+- **Say Clipboard** (`cmd_say_clipboard`, **Alt+Shift+Home**, first row of
+  Edit > Clipboard). Once: the text, up to 2,000 characters and then "and N
+  more characters. Press three times quickly to read it all"; for files on the
+  clipboard, "N files on the clipboard:" and up to ten names, then "and N
+  more". Twice: the first 200 characters spelled, capitals as "cap"; for
+  files, each full path. Three times: a read-only window titled Clipboard,
+  Escape to close, one path a line for files. "The clipboard is empty" and
+  "The clipboard holds something that is not text, such as a picture" cover
+  the rest.
+- **Append Selection to Clipboard** (`cmd_append_to_clipboard`,
+  **Alt+Shift+End**). The selection goes on a new line after the clipboard's
+  text, with no blank line invented; an empty clipboard becomes the
+  selection; files on the clipboard are replaced. "Appended N characters to
+  the clipboard, which now holds M characters". No selection: "Select text
+  first to append it to the clipboard".
+- **Save Clipboard to File...** (`cmd_save_clipboard`, no key, Alt+E, B, F).
+  A Save dialog offering `clipboard YYYY-MM-DD HHMM.txt`; UTF-8, line breaks
+  normalised, written atomically. "Saved N characters to name". Files on the
+  clipboard: "The clipboard holds files, not text, so there is nothing to
+  save".
+- **Clear Clipboard** (`cmd_clear_clipboard`, no key, Alt+E, B, B). "Cleared
+  the clipboard" or "The clipboard was already empty".
+- **Say Time and Date** (`cmd_say_time`, **Alt+Shift+Space**, Tools, no
+  access letter). Once: "2:05 PM". Twice: "Friday, November 6, 2026".
+- **Say Windows Open** (`cmd_say_windows_open`, **Ctrl+Shift+Space**, Window,
+  Alt+W, S). Once: "N documents open". Twice: the document windows' names in
+  order, the one in front marked "(current)". QUILL counts its tabs.
+- **Copy Log** (`cmd_copy_log`, no key, Help, Alt+H, L). Puts this session's
+  `quill.log` on the clipboard as a file and as its path, so an email attaches
+  it and a document or support form gets its location. No log yet: "No log
+  has been written yet".
+
+Keys: measured on 2026-11-06, four plain chords were free in both editors, and
+the four commands people press went to them, plainly rather than on QUILL's
+leader because QUILL Lite has none (rule 6). Save Clipboard to File and Copy
+Log are occasional (rule 9) and no chord was left; Clear Clipboard stays
+menu-only on purpose too, because a stray key would lose what was on the
+clipboard (rule 4).
+
 ## Document Statistics, pressed twice (2026-11-06)
 
 **View > Document Statistics** (**Ctrl+Shift+G**, `cmd_statistics`) still

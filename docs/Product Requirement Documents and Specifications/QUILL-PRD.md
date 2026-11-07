@@ -4335,6 +4335,30 @@ The paste bindings use the number row directly for maximum speed. The copy bindi
 
 ---
 
+### 5.77a Say commands — the clipboard, the time, the open documents and the log (shipped 2026-11-06)
+
+Seven small commands that answer questions a sighted user settles with a glance: what did I just copy, what time is it, how many documents do I have open, and where is the log support wants. Each speaks a result the screen reader cannot know, so speaking it is what GATE-13 allows. QUILL and QUILL Lite share the handlers, the wording and the keys (family rule 10).
+
+**Repeated presses answer at once.** The readout commands count quick repeats with `PressStreak` (`quill/core/multi_press.py`) rather than `MultiPressDispatcher`: every press is answered immediately and a quick further press supersedes it, because waiting out the window would put a pause in front of the answer people press for most. A quick press is one within `PRESS_WINDOW_SECONDS` (half a second, the family's window) of the last press of the same command; a press past the last level starts again at the first.
+
+| Command | Id | Key | Menu (QUILL) | What it says |
+| --- | --- | --- | --- | --- |
+| Say Clipboard | `edit.say_clipboard` | `Alt+Shift+Home` | Edit > Clipboard | Once: the text (first 2,000 characters, then "and N more characters. Press three times quickly to read it all"), or "N files on the clipboard: names" (ten names, then "and N more"). Twice: the text spelled, first 200 characters, capitals as "cap"; for files, each full path. Three times: a read-only Clipboard window, one path a line for files. Empty and non-text clipboards are said plainly. |
+| Append Selection to Clipboard | `edit.append_to_clipboard` | `Alt+Shift+End` | Edit > Clipboard | "Appended N characters to the clipboard, which now holds M characters". The selection goes on a new line; no blank line is invented, an empty clipboard becomes the selection, and files on the clipboard are replaced. No selection: "Select text first to append it to the clipboard". |
+| Save Clipboard to File... | `edit.save_clipboard_to_file` | none | Edit > Clipboard | Save dialog offering `clipboard YYYY-MM-DD HHMM.txt`; UTF-8, line breaks normalised, written atomically (`write_text_atomic`). "Saved N characters to name". Files on the clipboard: "The clipboard holds files, not text, so there is nothing to save". |
+| Clear Clipboard | `edit.clear_clipboard` | none | Edit > Clipboard | "Cleared the clipboard" or "The clipboard was already empty". |
+| Say Time and Date | `navigate.say_time` | `Alt+Shift+Space` | Navigate, after Speak Status Summary | Once: "2:05 PM". Twice: "Friday, November 6, 2026". |
+| Say Windows Open | `window.say_windows_open` | `Ctrl+Shift+Space` | Window, after Close Other Documents | Once: "N documents open". Twice: their names in order, the one in front marked "(current)". Tabs in QUILL, document windows in QUILL Lite. |
+| Copy Log | `help.copy_log` | none | Help, after Save Diagnostics | Puts this session's `quill.log` on the clipboard as a file and as its path: an email attaches it, a document or form gets its location. No log yet: "No log has been written yet". |
+
+**Keys.** Measured on 2026-11-06, four plain chords were free in both editors once the system-wide show and hide keys, the picker's paging keys, the screen-reader profile's arrows, Word's Redo and the AltGr range were excluded; the four commands people press went to them. They are plain chords, not the QUILL key, because QUILL Lite has no leader and reaches them plainly (rule 6). Save Clipboard to File and Copy Log are occasional (rule 9) and no chord was left; Clear Clipboard is menu-only on purpose as well, because a stray key would lose what was on the clipboard (rule 4). The reasons are comments in `keymap.py`.
+
+**QUILL Lite.** Edit > Clipboard gains the four clipboard rows at its top (the submenu's access letter is B; Save Clipboard to File is F and Clear Clipboard is B inside it), Tools gains Say Time and Date, Window gains Say Windows Open (S) and Help gains Copy Log (L).
+
+**Implementation map.** `quill/core/say_commands.py` (wx-free wording, limits, append and save logic), `quill/ui/say_commands.py` (the shared handlers and clipboard access), `quill/ui/main_frame_say_commands.py` (QUILL's adapter), `quill/apps/lite_window_say.py` and `quill/core/lite/commands_say.py` (QUILL Lite's adapter and menu rows).
+
+---
+
 ### 5.78 Abbreviation Expansion — TextExpander-style bare-word shortcuts
 
 Abbreviation Expansion replaces short trigger words with longer text automatically as you type, **when enabled** (it ships **off by default** so nothing changes under the user's hands unannounced). It complements the snippet system (which requires an explicit trigger prefix) by firing on any bare word followed by a delimiter.
