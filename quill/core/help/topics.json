@@ -1921,6 +1921,42 @@
     "user_guide_section": "the-one-sentence-summary"
   },
   {
+    "id": "github.search_code_commits_repositories",
+    "title": "Searching Code, Commits and Repositories",
+    "body": "In Explore GitHub, choose Code search, Commit search or Repository search in View (Alt+V), type in Global search (Alt+G) and press Enter. GitHub qualifiers such as repo: and language: work. A code result reads as the path, the line of the excerpt the match is on, and the words that matched; Tab to the details for the whole excerpt. Code search needs a signed-in account. When there are more matches than the list shows, the status line says how many.",
+    "user_guide_section": "searching-code-commits-and-repositories"
+  },
+  {
+    "id": "github.insights",
+    "title": "Insights and the Community Profile",
+    "body": "Explore's Insights view starts with one sentence, such as 1,234 views (210 unique) and 56 clones (12 unique) in the last 14 days, 12 contributors, then lists each figure on its own line: daily views and clones, referring sites, popular pages and each contributor's commits. Traffic needs push access; when GitHub refuses it QUILL says so and still lists the contributors. The Community profile checklist view says GitHub's health percentage and which of README, license, contributing guide, code of conduct, issue templates and pull request template are present or missing.",
+    "user_guide_section": "insights-and-the-community-profile"
+  },
+  {
+    "id": "github.repository_actions",
+    "title": "Repository Actions in Explore",
+    "body": "On a repository row in Explore, or a repository typed in a repository view, the context menu's Repository Actions submenu has Sync Fork with Upstream (QUILL says Already up to date or Merged 3 commits), Set Topics, Watch Level, Archive and Unarchive, Create Repository from This Template, and Delete Repository, which asks you to type the repository's full name first. The Actions caches view lists caches and Delete Cache removes one; the Secret and variable names view lists names only, never values. A person's row has Follow and Unfollow. Each write asks first and says what GitHub confirmed.",
+    "user_guide_section": "repository-actions-in-explore"
+  },
+  {
+    "id": "github.manage_release",
+    "title": "Managing a Release",
+    "body": "In the GitHub Items viewer's Releases view, Edit Release opens the release's name, notes, Draft (Alt+D) and Pre-release (Alt+P); clearing Draft publishes it after QUILL asks. Upload Asset sends a file you choose, saying 25, 50 and 75 percent on the way and then the file GitHub stored. Delete Asset, on a release's file list, asks first. QUILL says only what GitHub confirmed.",
+    "user_guide_section": "managing-a-release"
+  },
+  {
+    "id": "github.issue_housekeeping",
+    "title": "Issue Housekeeping",
+    "body": "On an issue or pull request in the GitHub Items viewer, the context menu's Housekeeping submenu has Lock Conversation (with a reason) and Unlock Conversation. On an issue it also has Transfer Issue, which asks first and says the new address; Pin Issue and Unpin Issue; Set Issue Type, for repositories whose organization has types; and Reorder Sub-issues, where Move Up (Alt+U) and Move Down (Alt+D) change the order on GitHub and QUILL says where the sub-issue landed.",
+    "user_guide_section": "issue-housekeeping"
+  },
+  {
+    "id": "github.rate_limit",
+    "title": "GitHub API Rate Limit",
+    "body": "Ctrl+Shift+L in the GitHub Items viewer or Explore, or GitHub API Rate Limit in either context menu, says how much of GitHub's hourly allowance is left and when it resets, such as GitHub API: 4,212 of 5,000 left, resets at 3:40 PM, with GraphQL and search too. QUILL sends GitHub what it already has when it reads again, so an unchanged refresh costs nothing and Explore says No changes since the last load. It checks notifications less often when the allowance runs low, and when GitHub asks it to wait it says so once, such as GitHub asked QUILL to wait 60 seconds.",
+    "user_guide_section": "rate-limits-and-quiet-refreshes"
+  },
+  {
     "id": "glow_audit.detail_text",
     "title": "Issue Detail",
     "body": "Shows the full description of the selected GLOW issue: what was found, why it matters, and what the automatic fix will do. Read this before applying a fix to understand the change.",

@@ -24,6 +24,11 @@ def github_auth_hint(
     """Return a credential-safe action for GitHub 401/403/rate-limit errors."""
     if status == 401:
         return "The GitHub token is invalid or expired. Add a valid token or switch accounts."
+    from quill.core.github.rate_limits import secondary_wait_seconds, wait_message
+
+    seconds = secondary_wait_seconds(status, headers, message)
+    if seconds is not None and _header(headers, "X-RateLimit-Remaining") != "0":
+        return wait_message(seconds)
     if status == 429 or (
         status == 403
         and (

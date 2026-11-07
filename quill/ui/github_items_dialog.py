@@ -72,6 +72,7 @@ from quill.ui.dpi import dip_size
 from quill.ui.github_items_dialog_ai import GitHubItemsAiMixin
 from quill.ui.github_items_dialog_branches import GitHubBranchActionsMixin
 from quill.ui.github_items_dialog_filter import GitHubQuickFilterMixin
+from quill.ui.github_items_dialog_housekeeping import GitHubItemsHousekeepingMixin
 from quill.ui.github_items_dialog_issue_templates import GitHubIssueTemplatesMixin
 from quill.ui.github_items_dialog_menus import GitHubItemsMenusMixin
 from quill.ui.github_items_dialog_navigation import GitHubNavigationMixin
@@ -109,6 +110,7 @@ if TYPE_CHECKING:
 
 
 class GitHubItemsDialog(
+    GitHubItemsHousekeepingMixin,
     GitHubReferenceMixin,
     GitHubIssueTemplatesMixin,
     GitHubItemsReleaseMixin,
@@ -1103,7 +1105,7 @@ class GitHubItemsDialog(
                 _add("View Artifacts...", self._view_artifacts_for_selected)
                 self._add_run_actions(_add)
         elif self._view == VIEW_RELEASES:
-            _add("Draft Release Notes...", self._draft_release_notes)
+            self._add_release_actions(_add)
 
         if not entries:
             menu.Destroy()
@@ -1367,6 +1369,8 @@ class GitHubItemsDialog(
             self._quick_filter_ctrl.SetFocus()
         elif key == ord("W") and mod == (wx.MOD_CONTROL | wx.MOD_SHIFT) and self._view == VIEW_RUNS:
             self._show_failure_digest()
+        elif key == ord("L") and mod == (wx.MOD_CONTROL | wx.MOD_SHIFT):
+            self._show_api_rate_limit()
         elif key == wx.WXK_ESCAPE and self._quick_filter_query and self._quick_filter_has_focus():
             # ChangeValue (not SetValue) so this doesn't also fire EVT_TEXT
             # and re-run the filter a second time, silently, with announce=False.

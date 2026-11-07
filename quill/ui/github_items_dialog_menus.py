@@ -9,6 +9,7 @@ from quill.core.github.items_provider import GitHubBranch, GitHubItem
 from quill.ui.github_items_view import (
     VIEW_BRANCHES,
     VIEW_ISSUES,
+    VIEW_RELEASES,
     VIEW_RUNS,
     VIEW_WORKFLOWS,
     model_label,
@@ -117,6 +118,8 @@ class GitHubItemsMenusMixin:
                     lambda: self._run_selected_workflow(model),
                     enabled=self._provider.is_authenticated,
                 )
+            elif self._view == VIEW_RELEASES:
+                self._add_release_actions(add)
             url = model_url(model)
             add("Open on GitHub", self._open_selected, enabled=bool(url))
             add("Copy Link", lambda: self._copy_item_text(url, "item link"), enabled=bool(url))
@@ -138,6 +141,7 @@ class GitHubItemsMenusMixin:
                         self._react_to_current_comment,
                         enabled=self._provider.is_authenticated,
                     )
+                self._add_issue_housekeeping(menu, model)
                 if self._start_issue_worktree_cb is not None:
                     kind = "pull request" if model.is_pr else "issue"
                     add(
@@ -160,6 +164,7 @@ class GitHubItemsMenusMixin:
             if self._provider.is_authenticated and self._repo and self._view == VIEW_ISSUES:
                 add("New Issue...", self._new_issue)
                 add("New Pull Request...", self._new_pull_request)
+        add("GitHub API Rate Limit\tCtrl+Shift+L", self._show_api_rate_limit)
         try:
             self._list.PopupMenu(menu)
         finally:

@@ -500,6 +500,142 @@ remove through the REST reactions endpoints for issues, issue comments
 and review comments; removal deletes only the signed-in account’s own
 reaction. Counts read in words in comment details (“3 thumbs up, 1
 heart”).</p>
+<h2 id="search-insights-and-repository-actions">Search, insights and
+repository actions</h2>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explore, View</td>
+<td>Alt+V</td>
+<td>Code search, Commit search, Repository search</td>
+</tr>
+<tr>
+<td>Explore</td>
+<td>Alt+G</td>
+<td>The query; GitHub qualifiers such as <code>repo:</code> work</td>
+</tr>
+<tr>
+<td>Explore, repository views</td>
+<td>Alt+R</td>
+<td>Insights, Community profile checklist, Actions caches, Secret and
+variable names</td>
+</tr>
+<tr>
+<td>Explore, context menu</td>
+<td>Shift+F10</td>
+<td>Repository Actions submenu; Follow, Unfollow; Delete Cache</td>
+</tr>
+<tr>
+<td>Items or Explore</td>
+<td>Ctrl+Shift+L</td>
+<td>GitHub API Rate Limit, said as one sentence</td>
+</tr>
+</tbody>
+</table>
+<p>Searches go to <code>/search/code</code> (with the text-match media
+type), <code>/search/commits</code> and
+<code>/search/repositories</code>. A code row reads as the path, the
+line of the excerpt holding the match and the matched words; the detail
+holds each excerpt. GitHub gives no file line number, so none is
+claimed.</p>
+<p>Insights reads <code>traffic/views</code>,
+<code>traffic/clones</code>, <code>traffic/popular/referrers</code>,
+<code>traffic/popular/paths</code> and <code>contributors</code>. The
+first row is the whole picture in one sentence; every other row is one
+figure set (“Views on 2026-11-01: 120 views, 30 unique visitors”), so
+the list is the numbers table. A 403 on traffic is said as needing push
+access, and the contributors still load. The community profile reads
+<code>community/profile</code> as present or missing for each checklist
+item, after the health percentage.</p>
+<p>Repository Actions: Sync Fork with Upstream
+(<code>POST /merge-upstream</code>, with the upstream’s lead counted
+first through <code>compare</code> so the result can say “Merged 3
+commits”; “Already up to date” when GitHub reports no merge), Set Topics
+(<code>PUT /topics</code>, checked locally first), Watch Level
+(<code>/subscription</code>; Releases only is not in GitHub’s API, so it
+opens the repository page), Archive and Unarchive (<code>PATCH</code>
+with <code>archived</code>, refused if the reply disagrees), Create
+Repository from This Template (<code>POST /generate</code>) and Delete
+Repository, which needs the full name typed exactly. Secret and variable
+names come from the repository and each environment; values are dropped
+as the reply is read.</p>
+<h2 id="releases-and-issue-housekeeping">Releases and issue
+housekeeping</h2>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Items, Releases</td>
+<td>Actions or Shift+F10</td>
+<td>Edit Release, Upload Asset, Delete Asset (inside a release)</td>
+</tr>
+<tr>
+<td>Edit Release</td>
+<td>Alt+N, Alt+O</td>
+<td>Name; notes</td>
+</tr>
+<tr>
+<td>Edit Release</td>
+<td>Alt+D, Alt+P</td>
+<td>Draft (clear it to publish); Pre-release</td>
+</tr>
+<tr>
+<td>Items, issue or PR</td>
+<td>Shift+F10</td>
+<td>Housekeeping submenu</td>
+</tr>
+<tr>
+<td>Reorder Sub-issues</td>
+<td>Alt+U, Alt+D</td>
+<td>Move Up; Move Down</td>
+</tr>
+</tbody>
+</table>
+<p>Edit Release finds the release again by tag (drafts have no tag URL)
+and sends <code>PATCH /releases/{id}</code>; the sentence it says is
+built from GitHub’s reply, and a publish GitHub did not perform is
+reported as such. Upload Asset posts to
+<code>uploads.github.com/.../releases/{id}/assets?name=</code> with
+redirects refused, reading the file in blocks so progress is said at 25,
+50 and 75 percent. Delete Asset sends
+<code>DELETE /releases/assets/{id}</code> after a confirmation.</p>
+<p>Housekeeping: Lock (<code>PUT /issues/{n}/lock</code> with the
+reason) and Unlock; Transfer (<code>transferIssue</code>), Pin and Unpin
+(<code>pinIssue</code>, <code>unpinIssue</code>) and Set Issue Type
+(<code>issueTypes</code>, <code>updateIssueIssueType</code>) through
+GraphQL; Reorder Sub-issues sends
+<code>PATCH /sub_issues/priority</code> with the neighbour’s ID and
+reads the order back, so the list shows what GitHub holds.</p>
+<h2 id="rate-limits-and-conditional-requests">Rate limits and
+conditional requests</h2>
+<p><code>rate_limits.py</code> keeps the latest
+<code>X-RateLimit-*</code> headers from every REST reply. The readout
+reads <code>GET /rate_limit</code> (free) and GraphQL
+<code>rateLimit</code>. Notification polling doubles its interval under
+a quarter of the allowance, quadruples it under a tenth, and waits for
+the reset at zero. A secondary limit (<code>Retry-After</code>, or a 403
+or 429 naming one) is recorded once; until it passes, every request
+stops before the network with “GitHub asked QUILL to wait 60 seconds”,
+and Explore folds the warnings it caused into that one sentence.</p>
+<p><code>conditional_requests.py</code> keeps the last ETag and body of
+each repeated read per account (64 reads, 256 KB each, in
+<code>github_etag_cache.json</code>) and sends
+<code>If-None-Match</code>; a 304 shows the stored body and costs no
+rate limit. Explore says “No changes since the last load” when a reload
+found the same rows.</p>
 <h2 id="review-and-write-safety">Review and write safety</h2>
 <p>The review tree announces reply counts, outdated positions, resolved
 state, and check status. Selecting a thread never resolves it. Reply,
@@ -510,12 +646,13 @@ GitHub denies that permission. If the review-thread state cannot be
 retrieved, threads remain readable while resolution controls are
 unavailable. Refresh to observe changes made elsewhere.</p>
 <p>The Items <strong>Batch</strong> menu operates on checked issue or PR
-rows. Its confirmation names the targeted items. Repository deletion,
-visibility changes, merges, and branch deletion have stronger typed
-confirmations in QUILL’s administration flows. QUILL Lite currently
-shares the Items, Explore, diff, and review surfaces; the separate
-repository administration and Local Git menus still belong to QUILL.
-This product difference is tracked in the workbench plan.</p>
+rows. Its confirmation names the targeted items. Visibility changes,
+merges and branch deletion have stronger typed confirmations in QUILL’s
+administration flows, and Delete Repository in Explore (both apps) needs
+the repository’s full name typed. QUILL Lite currently shares the Items,
+Explore, diff, and review surfaces; the separate repository
+administration and Local Git menus still belong to QUILL. This product
+difference is tracked in the workbench plan.</p>
 <h2 id="architecture-and-verification">Architecture and
 verification</h2>
 <p>The Items and review windows use
@@ -530,7 +667,12 @@ use <code>saved_items.py</code>. Notifications triage is
 <code>explore_notifications.py</code>; the failure digest is
 <code>run_failure_digest.py</code>; run, check and deployment actions
 are <code>run_actions.py</code>; auto-merge and the merge queue are
-<code>merge_automation.py</code>. The REST calls PyGithub lacks go
+<code>merge_automation.py</code>. Wave 4 adds
+<code>search_views.py</code>, <code>repo_insights.py</code>,
+<code>repo_actions.py</code>, <code>release_admin.py</code>,
+<code>issue_housekeeping.py</code>, <code>rate_limits.py</code> and
+<code>conditional_requests.py</code>, with Explore’s routing in
+<code>explore_extra_views.py</code>. The REST calls PyGithub lacks go
 through <code>rest_transport.py</code>, which refuses redirects so the
 token stays on api.github.com. The shared UI modules are under
 <code>quill/ui/</code>. Network calls are made off the UI thread. Tests

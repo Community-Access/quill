@@ -1,5 +1,14 @@
 # QUILL Lite 2.0
 
+## GitHub: search, releases, housekeeping and rate limits
+
+QUILL Lite's GitHub windows are QUILL's, so it gains the same things: code,
+commit and repository search; Insights and the community profile read as
+sentences; repository actions from Explore's context menu, including deleting a
+repository after typing its name; release editing, uploads and deletions;
+issue housekeeping; and Ctrl+Shift+L for the rate limit, with quieter
+refreshes.
+
 ## GitHub: reviewing a pull request line by line
 
 Review now opens with the pull request in one sentence, such as "Approved, 2

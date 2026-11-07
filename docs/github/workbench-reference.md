@@ -198,6 +198,77 @@ reactions endpoints for issues, issue comments and review comments; removal
 deletes only the signed-in account's own reaction. Counts read in words in
 comment details ("3 thumbs up, 1 heart").
 
+## Search, insights and repository actions
+
+| Where | Key | What it does |
+| --- | --- | --- |
+| Explore, View | Alt+V | Code search, Commit search, Repository search |
+| Explore | Alt+G | The query; GitHub qualifiers such as `repo:` work |
+| Explore, repository views | Alt+R | Insights, Community profile checklist, Actions caches, Secret and variable names |
+| Explore, context menu | Shift+F10 | Repository Actions submenu; Follow, Unfollow; Delete Cache |
+| Items or Explore | Ctrl+Shift+L | GitHub API Rate Limit, said as one sentence |
+
+Searches go to `/search/code` (with the text-match media type),
+`/search/commits` and `/search/repositories`. A code row reads as the path, the
+line of the excerpt holding the match and the matched words; the detail holds
+each excerpt. GitHub gives no file line number, so none is claimed.
+
+Insights reads `traffic/views`, `traffic/clones`, `traffic/popular/referrers`,
+`traffic/popular/paths` and `contributors`. The first row is the whole picture
+in one sentence; every other row is one figure set ("Views on 2026-11-01: 120
+views, 30 unique visitors"), so the list is the numbers table. A 403 on
+traffic is said as needing push access, and the contributors still load. The
+community profile reads `community/profile` as present or missing for each
+checklist item, after the health percentage.
+
+Repository Actions: Sync Fork with Upstream (`POST /merge-upstream`, with the
+upstream's lead counted first through `compare` so the result can say "Merged
+3 commits"; "Already up to date" when GitHub reports no merge), Set Topics
+(`PUT /topics`, checked locally first), Watch Level (`/subscription`; Releases
+only is not in GitHub's API, so it opens the repository page), Archive and
+Unarchive (`PATCH` with `archived`, refused if the reply disagrees), Create
+Repository from This Template (`POST /generate`) and Delete Repository, which
+needs the full name typed exactly. Secret and variable names come from the
+repository and each environment; values are dropped as the reply is read.
+
+## Releases and issue housekeeping
+
+| Where | Key | What it does |
+| --- | --- | --- |
+| Items, Releases | Actions or Shift+F10 | Edit Release, Upload Asset, Delete Asset (inside a release) |
+| Edit Release | Alt+N, Alt+O | Name; notes |
+| Edit Release | Alt+D, Alt+P | Draft (clear it to publish); Pre-release |
+| Items, issue or PR | Shift+F10 | Housekeeping submenu |
+| Reorder Sub-issues | Alt+U, Alt+D | Move Up; Move Down |
+
+Edit Release finds the release again by tag (drafts have no tag URL) and sends
+`PATCH /releases/{id}`; the sentence it says is built from GitHub's reply, and a
+publish GitHub did not perform is reported as such. Upload Asset posts to
+`uploads.github.com/.../releases/{id}/assets?name=` with redirects refused,
+reading the file in blocks so progress is said at 25, 50 and 75 percent.
+Delete Asset sends `DELETE /releases/assets/{id}` after a confirmation.
+
+Housekeeping: Lock (`PUT /issues/{n}/lock` with the reason) and Unlock;
+Transfer (`transferIssue`), Pin and Unpin (`pinIssue`, `unpinIssue`) and Set
+Issue Type (`issueTypes`, `updateIssueIssueType`) through GraphQL; Reorder
+Sub-issues sends `PATCH /sub_issues/priority` with the neighbour's ID and reads
+the order back, so the list shows what GitHub holds.
+
+## Rate limits and conditional requests
+
+`rate_limits.py` keeps the latest `X-RateLimit-*` headers from every REST reply.
+The readout reads `GET /rate_limit` (free) and GraphQL `rateLimit`. Notification
+polling doubles its interval under a quarter of the allowance, quadruples it
+under a tenth, and waits for the reset at zero. A secondary limit (`Retry-After`,
+or a 403 or 429 naming one) is recorded once; until it passes, every request
+stops before the network with "GitHub asked QUILL to wait 60 seconds", and
+Explore folds the warnings it caused into that one sentence.
+
+`conditional_requests.py` keeps the last ETag and body of each repeated read
+per account (64 reads, 256 KB each, in `github_etag_cache.json`) and sends
+`If-None-Match`; a 304 shows the stored body and costs no rate limit. Explore
+says "No changes since the last load" when a reload found the same rows.
+
 ## Review and write safety
 
 The review tree announces reply counts, outdated positions, resolved state,
@@ -209,9 +280,9 @@ review-thread state cannot be retrieved, threads remain readable while
 resolution controls are unavailable. Refresh to observe changes made elsewhere.
 
 The Items **Batch** menu operates on checked issue or PR rows. Its confirmation
-names the targeted items. Repository deletion, visibility changes, merges,
-and branch deletion have stronger typed confirmations in QUILL's administration
-flows. QUILL Lite currently shares the Items, Explore, diff, and review surfaces;
+names the targeted items. Visibility changes, merges and branch deletion have
+stronger typed confirmations in QUILL's administration flows, and Delete
+Repository in Explore (both apps) needs the repository's full name typed. QUILL Lite currently shares the Items, Explore, diff, and review surfaces;
 the separate repository administration and Local Git menus still belong to
 QUILL. This product difference is tracked in the workbench plan.
 
@@ -224,7 +295,10 @@ uses `explore.py`; pinned repositories, favorites, recent repositories, and
 saved queries use `saved_items.py`. Notifications triage is
 `notification_triage.py` and `explore_notifications.py`; the failure digest is
 `run_failure_digest.py`; run, check and deployment actions are `run_actions.py`;
-auto-merge and the merge queue are `merge_automation.py`. The REST calls
+auto-merge and the merge queue are `merge_automation.py`. Wave 4 adds
+`search_views.py`, `repo_insights.py`, `repo_actions.py`, `release_admin.py`,
+`issue_housekeeping.py`, `rate_limits.py` and `conditional_requests.py`, with
+Explore's routing in `explore_extra_views.py`. The REST calls
 PyGithub lacks go through `rest_transport.py`, which refuses redirects so the
 token stays on api.github.com. The shared UI modules are under `quill/ui/`.
 Network calls are made off the UI thread. Tests exercise provider mapping,

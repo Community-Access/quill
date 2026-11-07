@@ -2,6 +2,24 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## GitHub: search, releases, housekeeping and rate limits
+
+The GitHub windows now search code, commits and repositories, and read a
+repository's Insights (traffic and contributors) and community profile as
+plain sentences. Explore's context menu has Repository Actions: sync a fork,
+set topics, choose a watch level, archive, create from a template, and delete
+a repository after typing its name. It lists Actions caches and secret and
+variable names, never values, and people rows have Follow and Unfollow.
+
+In GitHub Items, releases can be edited and published, and files uploaded with
+progress said at quarter steps, or deleted. An issue's Housekeeping submenu
+locks, transfers, pins, sets the type and reorders sub-issues.
+
+Ctrl+Shift+L says how much of GitHub's hourly allowance is left. QUILL now asks
+GitHub only for what changed, says "No changes since the last load" when
+nothing did, checks notifications less often when the allowance runs low, and
+says a request to wait once instead of failing repeatedly.
+
 ## GitHub: reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

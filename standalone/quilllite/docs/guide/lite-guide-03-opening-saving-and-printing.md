@@ -1153,6 +1153,42 @@ eight reactions chosen by name. The
 [QUILL guide's pull request section](https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html)
 has the details; the windows are the same in both apps.
 
+### Searching, repositories, releases and housekeeping
+
+Explore also searches code, commits and repositories. Pick **Code search**,
+**Commit search** or **Repository search** in **View** (Alt+V), type in
+**Global search** (Alt+G) and press Enter. A code result reads as the file's
+path, the matching line and the words that matched. **Insights** reads a
+repository's last 14 days of views and clones, the sites and pages behind them
+and each contributor's commits, as sentences one line at a time; it needs push
+access for the traffic and says so when GitHub refuses. **Community profile
+checklist** says which of README, license, contributing guide, code of conduct
+and templates the repository has.
+
+On a repository row, the context menu's **Repository Actions** submenu syncs a
+fork with its upstream ("Merged 3 commits" or "Already up to date"), sets
+topics, changes how you watch it, archives or unarchives it, makes a new
+repository from a template, and deletes a repository once you have typed its
+full name. Explore also lists **Actions caches**, which you can delete, and
+**Secret and variable names**, which never shows a value. A person's row has
+**Follow** and **Unfollow**.
+
+In the Items viewer's Releases view, **Edit Release...** changes a release's
+name, notes, **Draft** (Alt+D, clear it to publish) and **Pre-release** (Alt+P).
+**Upload Asset...** sends a file you choose and says 25, 50 and 75 percent on
+the way; **Delete Asset...** removes one of a release's files after asking. On
+an issue, the context menu's **Housekeeping** submenu locks or unlocks the
+conversation, transfers, pins or unpins the issue, sets its issue type, and
+reorders its sub-issues with **Move Up** (Alt+U) and **Move Down** (Alt+D).
+
+**Ctrl+Shift+L** in the Items viewer or Explore says how much of GitHub's
+hourly allowance is left, such as "GitHub API: 4,212 of 5,000 left, resets at
+3:40 PM". A refresh that found nothing new says "No changes since the last
+load", and if GitHub asks QUILL Lite to slow down you hear it once, such as
+"GitHub asked QUILL to wait 60 seconds". The
+[QUILL guide's GitHub section](https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html)
+has the details; the windows are the same in both apps.
+
 ## Opening something you worked on recently
 
 

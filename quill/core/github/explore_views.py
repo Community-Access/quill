@@ -6,10 +6,13 @@ the dialog reads it to build its view list, and the client to route a fetch.
 
 from __future__ import annotations
 
-__all__ = ["AUTH_VIEWS", "PERSON_VIEWS", "REPO_VIEWS", "VIEWS"]
+__all__ = ["AUTH_VIEWS", "PERSON_VIEWS", "QUERY_VIEWS", "REPO_VIEWS", "VIEWS", "VIEW_NOTES"]
 
 VIEWS: tuple[tuple[str, str], ...] = (
     ("search", "Global issue and PR search"),
+    ("code_search", "Code search"),
+    ("commit_search", "Commit search"),
+    ("repo_search", "Repository search"),
     ("my_work", "My Work"),
     ("attention", "Attention queue"),
     ("activity", "My activity feed"),
@@ -36,6 +39,10 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("pages", "GitHub Pages and builds"),
     ("discussions", "Repository Discussions"),
     ("security", "Repository security alerts"),
+    ("insights", "Insights: traffic and contributors"),
+    ("community", "Community profile checklist"),
+    ("actions_caches", "Actions caches"),
+    ("secrets", "Secret and variable names"),
 )
 
 REPO_VIEWS = frozenset({
@@ -50,7 +57,13 @@ REPO_VIEWS = frozenset({
     "pages",
     "discussions",
     "security",
+    "insights",
+    "community",
+    "actions_caches",
+    "secrets",
 })
+QUERY_VIEWS = frozenset({"search", "code_search", "commit_search", "repo_search"})
+"""Views that run the query typed in the search box."""
 PERSON_VIEWS = frozenset({
     "person_repos",
     "person_activity",
@@ -70,4 +83,21 @@ AUTH_VIEWS = frozenset({
     "repo_access",
     "deployments",
     "metrics",
+    "code_search",
+    "insights",
+    "actions_caches",
+    "secrets",
 })
+
+VIEW_NOTES: dict[str, str] = {
+    "metrics": (
+        "Opt-in snapshot: loads repository health counts from GitHub. "
+        "The results stay on this device and do not rank contributors."
+    ),
+    "code_search": "Searches code on GitHub. Needs a signed-in account; try repo:owner/name.",
+    "insights": (
+        "Traffic needs push access to the repository; contributors are listed for anyone."
+    ),
+    "secrets": "Names only. QUILL never reads a secret's or variable's value.",
+}
+"""The line shown under the view chooser for views that need explaining."""

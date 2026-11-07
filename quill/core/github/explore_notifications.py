@@ -20,6 +20,7 @@ from quill.core.github.notification_triage import (
     unread_summary,
 )
 from quill.core.github.notifications import GitHubNotification
+from quill.core.github.rate_limits import RATE_LIMITS
 
 
 def _query_key(include_read: bool) -> str:
@@ -49,7 +50,8 @@ class ExploreNotificationsMixin:
         inbox = self._provider.fetch_notification_inbox(
             include_read=include_read, limit=limit, if_modified_since=since
         )
-        self.notification_poll.record(key, inbox.poll_interval)
+        # Slower still when the hourly allowance runs low (rate_limits.py).
+        self.notification_poll.record(key, RATE_LIMITS.slowed(inbox.poll_interval))
         with self._notification_lock:
             if not inbox.not_modified:
                 self._inbox[key] = list(inbox.items)

@@ -24,6 +24,13 @@ from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_ope
 
 from quill.core.error_codes import CodedError
 from quill.core.github.auth_diagnostics import github_exception_hint
+from quill.core.github.rate_limits import (
+    RATE_LIMITS,
+    RateLimitTracker,
+    is_wait_message,
+    secondary_wait_seconds,
+    wait_message,
+)
 from quill.core.net import verified_ssl_context
 
 API_ROOT = "https://api.github.com"
@@ -102,15 +109,23 @@ def request_json(
     query: dict[str, str] | None = None,
     extra_headers: dict[str, str] | None = None,
     opener: Any = None,
+    tracker: RateLimitTracker | None = None,
 ) -> RestResponse:
     """Send one request to ``api.github.com`` + *path* and return its reply.
 
     A 304 (Not Modified) is returned, not raised, so a caller polling with
-    ``If-Modified-Since`` can keep what it already shows. Every other non-2xx
-    status raises :class:`GitHubRestError`.
+    ``If-Modified-Since`` or ``If-None-Match`` can keep what it already shows.
+    Every other non-2xx status raises :class:`GitHubRestError`.
+
+    Rate-limit headers go to *tracker* (the process-wide one unless a test
+    passes its own). While GitHub's secondary-limit wait lasts, the request
+    stops here with the one sentence that says so, before the network.
     """
     if not path.startswith("/") or "//" in path or "\\" in path:
         raise GitHubRestError("Refusing a GitHub API path that is not a plain absolute path.")
+    limits = tracker if tracker is not None else RATE_LIMITS
+    if wait := limits.wait_seconds():
+        raise GitHubRestError(wait_message(wait), status=429, headers={"retry-after": str(wait)})
     url = API_ROOT + path + (f"?{urlencode(query)}" if query else "")
     headers = {
         "Accept": "application/vnd.github+json",
@@ -134,6 +149,7 @@ def request_json(
             response_headers = _headers_of(getattr(response, "headers", None))
     except HTTPError as exc:
         error_headers = _headers_of(exc.headers)
+        limits.observe(error_headers)
         if exc.code == 304:
             return RestResponse(304, error_headers, None)
         if exc.code in (301, 302, 303, 307, 308):
@@ -149,6 +165,12 @@ def request_json(
             error_body = b""
         data = _decode(error_body)
         message = data.get("message", "") if isinstance(data, dict) else ""
+        seconds = secondary_wait_seconds(exc.code, error_headers, str(message))
+        if seconds is not None:
+            limits.observe_secondary(seconds)
+            raise GitHubRestError(
+                wait_message(seconds), status=exc.code, headers=error_headers, data=data
+            ) from exc
         raise GitHubRestError(
             str(message) or f"GitHub returned HTTP {exc.code}.",
             status=exc.code,
@@ -159,13 +181,19 @@ def request_json(
         raise
     except Exception as exc:  # noqa: BLE001 - network failures become visible
         raise GitHubRestError(f"Could not reach GitHub: {exc}") from exc
+    limits.observe(response_headers)
     if len(raw) > _MAX_RESPONSE_BYTES:
         raise GitHubRestError("GitHub's reply was larger than QUILL reads in one request.")
     return RestResponse(status, response_headers, _decode(raw))
 
 
 def rest_failure_message(action: str, exc: GitHubRestError) -> str:
-    """Say what failed and what to do next, without any credential text."""
+    """Say what failed and what to do next, without any credential text.
+
+    A secondary-limit wait is said on its own: it is the whole story.
+    """
+    if is_wait_message(str(exc.args[0]) if exc.args else ""):
+        return str(exc.args[0])
     hint = github_exception_hint(exc)
     detail = str(exc.data.get("message", "")) if isinstance(exc.data, dict) else ""
     if hint:

@@ -1779,6 +1779,8 @@ and the rest still go through.
 - `Ctrl+F` moves to the GitHub search box, and `Ctrl+Shift+F` to the Quick
   filter box. `Ctrl+Shift+B` compares two branches (Branches view). `Ctrl+D`
   adds the selected row to your favorites.
+- `Ctrl+Shift+L` says how much of GitHub's hourly allowance is left. It works
+  in Explore too.
 
 The Items viewer follows the same rules as the other GitHub commands: it is off
 in Safe Mode, asks for your consent the first time, and works without an account
@@ -1925,6 +1927,143 @@ read, then why you got it in words ("review requested", "you were mentioned",
 GitHub asks apps not to check notifications more often than it says, usually
 once a minute. If you refresh sooner, QUILL keeps the list it has and tells you
 how many seconds to wait.
+
+#### Searching code, commits and repositories
+
+**Explore...** in the GitHub Items viewer has three more searches beside the
+issue and pull request search. Choose **Code search**, **Commit search** or
+**Repository search** in **View** (`Alt+V`), type your search in **Global
+search** (`Alt+G`) and press Enter. GitHub's own qualifiers work, so
+`repo:owner/name`, `language:python` or `author:someone` narrow it the same
+way they do on github.com.
+
+- A code result reads as the file's path, the line of the excerpt the match is
+  on, and the words that matched, such as "quill/core/paths.py: def
+  app_data_dir() -> Path: (matched app_data_dir)". Tab to the details for the
+  whole excerpt. GitHub's search gives an excerpt rather than a line number, so
+  QUILL says the line's text instead. Code search needs you to be signed in.
+- A commit result reads as the repository, the short commit ID, the first line
+  of the message, who wrote it and when.
+- A repository result reads as its name and description, then its stars,
+  language, and whether it is archived or a fork. The context menu then offers
+  everything a repository row does elsewhere in Explore.
+
+GitHub returns at most 1,000 results for a search and allows only a few
+searches a minute. When there are more matches than the list shows, the status
+line says how many there were.
+
+#### Insights and the community profile
+
+Two repository views in Explore read a repository's numbers as sentences.
+Type the repository in **Repository** (`Alt+R`) first.
+
+**Insights: traffic and contributors** starts with one sentence for the whole
+picture, such as "owner/name: 1,234 views (210 unique) and 56 clones (12
+unique) in the last 14 days, 12 contributors." Below it, each row is one line
+of the table: the 14-day totals, each day's views and clones, the sites people
+came from, the pages they read most, and each contributor with their commits on
+the default branch. GitHub only shows traffic to people with push access. If
+yours is refused, QUILL says so in that first sentence and still lists the
+contributors.
+
+**Community profile checklist** says GitHub's health percentage, then which of
+these the repository has and which it is missing: README, license,
+contributing guide, code of conduct, issue templates and pull request template.
+Enter on a present item opens it.
+
+#### Repository actions in Explore
+
+Select a repository row in Explore, or type a repository and choose a
+repository view, and the context menu (`Shift+F10` or the Applications key) has
+a **Repository Actions** submenu. All of them need you to be signed in, and each
+one asks before it changes anything:
+
+- **Sync Fork with Upstream...** brings your fork's default branch up to date
+  with the repository it was forked from. QUILL says what happened, such as
+  "Merged 3 commits from owner:main" or "Already up to date".
+- **Set Topics...** shows the current topics for you to change. Separate them
+  with spaces or commas. Topics are lower-case letters, numbers and hyphens.
+- **Watch Level...** says how you watch the repository now and lets you choose
+  watching, ignoring or not watching. GitHub does not let apps set "Releases
+  only", so choosing it opens the repository page for you to use its Watch
+  button.
+- **Archive Repository...** makes it read-only. **Unarchive Repository...**
+  undoes that.
+- **Create Repository from This Template...** asks for a name, description,
+  visibility and an optional organization, then makes a new repository from
+  the template.
+- **Delete Repository...** asks you to type the repository's full name, exactly
+  as github.com does, before it deletes anything. There is no undo. Deleting
+  needs your token to have the `delete_repo` permission, and QUILL tells you if
+  it doesn't.
+
+Two more views list what Actions keeps for a repository. **Actions caches**
+lists each cache with its size, branch and when it was last used; **Delete
+Cache...** in the context menu removes one. **Secret and variable names** lists
+the repository's secrets and variables, then each environment's. QUILL only
+ever reads the names. Values never come back from GitHub for secrets, and
+QUILL throws away a variable's value before it gets as far as the list.
+
+A person's row in any people view has **Follow** and **Unfollow** in its
+context menu.
+
+#### Managing a release
+
+In the GitHub Items viewer's Releases view, the **Actions...** button and the
+row's context menu have:
+
+- **Edit Release...** opens the release as GitHub holds it now: its name, its
+  notes, and **Draft** (`Alt+D`) and **Pre-release** (`Alt+P`) check boxes.
+  Clearing Draft publishes it. QUILL asks first, because people watching the
+  repository are notified. When you save, QUILL says what changed according to
+  GitHub's reply, such as "Release 2.0: published, notes updated."
+- **Upload Asset...** asks you to choose a file, says its size and asks before
+  sending it. While it uploads, QUILL says how far it has got at 25, 50 and 75
+  percent, then says the file GitHub stored.
+- **Delete Asset...** appears when you have opened a release's files (Enter on
+  a release) and selected one. It asks first, because the file and its download
+  count go for good.
+
+#### Issue housekeeping
+
+On an issue or pull request in the GitHub Items viewer, the context menu has a
+**Housekeeping** submenu:
+
+- **Lock Conversation...** asks for the reason GitHub shows (off-topic, too
+  heated, resolved, spam or none), after which only collaborators can comment.
+  **Unlock Conversation** opens it again.
+- **Transfer Issue...** moves an issue to another repository with the same
+  owner. It asks first, and then says where the issue went and its new number.
+- **Pin Issue** and **Unpin Issue** put an issue at the top of the repository's
+  issues list, or take it off. GitHub allows three pinned issues.
+- **Set Issue Type...** lists the types the repository has, such as Bug or
+  Feature, with No type first. Types are set up by an organization, so a
+  personal repository has none, and QUILL says so.
+- **Reorder Sub-issues...** lists an issue's sub-issues in order. **Move Up**
+  (`Alt+U`) and **Move Down** (`Alt+D`) change the selected one's place on
+  GitHub, and QUILL says where it landed, such as "#12 is now 2 of 5". Enter
+  opens a sub-issue in your browser.
+
+Transfer, pin and the type and sub-issue commands are for issues. A pull request
+gets only Lock and Unlock.
+
+#### Rate limits and quiet refreshes
+
+GitHub allows each account a number of requests an hour. **GitHub API Rate
+Limit** (`Ctrl+Shift+L` in the GitHub Items viewer or in Explore, and in both
+context menus) says how much is left, such as "GitHub API: 4,212 of 5,000 left,
+resets at 3:40 PM", with the same for GraphQL and search.
+
+QUILL tries to use as little of that as it can. When it reads something again,
+it tells GitHub what it already has, and if nothing has changed GitHub says so
+without counting it. A refresh of an Explore view that found nothing new says
+"No changes since the last load" rather than reading the whole count again. When
+less than a quarter of the hour's allowance is left, QUILL checks notifications
+less often.
+
+Sometimes GitHub asks an app to slow down for a minute. When that happens QUILL
+says it once, such as "GitHub asked QUILL to wait 60 seconds", and doesn't send
+anything more until the time is up, so you don't get a pile of failures.
 
 #### Codespaces
 
