@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Dictation: a fair test for hotwords (2026-11-07)
+
+- **For developers, nothing changes in the app.**
+  `scripts/bench_hotwords_compare.py` compares two pairs of existing
+  `dictbench --json` reports, a set of names and a held-out set each decoded
+  with and without hotwords, and says whether hotwords recognised at least
+  half as many names again without adding word errors. It runs no model and
+  switches nothing on, and it writes counts and file hashes, never transcripts
+  or the names themselves. Section 40 of the dictation plan says how to use it
+  and what a pass does not prove.
+
 ### Hear the clipboard, the time and what is open (2026-11-06)
 
 - **Say Clipboard** (`Alt+Shift+Home`, Edit > Clipboard) reads what is on the
