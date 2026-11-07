@@ -243,6 +243,86 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-20">QUILL Lite 2.0</h1>
+<h2 id="nemotron-keeps-its-last-word">Nemotron keeps its last word</h2>
+<p>If you dictate with Nemotron, short phrases no longer lose their last
+word. Saying “choose one” used to give you just “Choose.” It now waits
+for a little more quiet before it finishes, the same as in QUILL.</p>
+<h2 id="moving-by-block-and-indentation-and-checking-a-document">Moving
+by block and indentation, and checking a document</h2>
+<p><strong>Navigate &gt; Code</strong> is new, and it is the same
+submenu QUILL has, on the same keys.</p>
+<p><strong>Next Block</strong> and <strong>Previous Block</strong> move
+a paragraph at a time. In an HTML document they move between headings
+and landmarks such as <code>nav</code>, <code>main</code> and
+<code>footer</code>, which is how you skim a web page you are writing.
+They have no key, as in QUILL: press <strong>Alt+N</strong>,
+<strong>C</strong>, then <strong>N</strong> or <strong>P</strong>.</p>
+<p><strong>Next Indent Change</strong>
+(<strong>Alt+Shift+PageDown</strong>) and <strong>Previous Indent
+Change</strong> (<strong>Alt+Shift+PageUp</strong>) jump to the next
+line whose indentation differs from yours, skipping blank lines, and say
+how far in it is, such as “4 spaces”.</p>
+<p><strong>Check This File…</strong> (<strong>Ctrl+Alt+/</strong>) looks
+through a Markdown or HTML document and lists every problem it finds,
+with the line and column first: a heading level that skips, a picture
+with no alt text, a link with no text or no address, a link to a file
+that is not there, a tag closed in the wrong order or never closed, or
+the same <code>id</code> used twice. Press Enter on one to go to it.
+<strong>Next Problem</strong> (<strong>Ctrl+Alt+.</strong>) and
+<strong>Previous Problem</strong> (<strong>Ctrl+Alt+,</strong>) go to
+the next or previous one without the list and say what it is. QUILL
+checks code and data files too.</p>
+<h2 id="the-wordpress-key-on-any-keyboard-layout">The WordPress key on
+any keyboard layout</h2>
+<p>The WordPress key, <code>Ctrl+Alt+Shift+Grave</code>, now finds the
+grave key by where it sits, the key just above Tab, rather than by what
+it types. On a German, French or Nordic layout that key types
+<code>^</code>, <code>²</code> or <code>§</code>, and the WordPress key
+used to need a US layout there. Now it works on any layout, and you hear
+“WordPress keys” just as before. QUILL makes the same check for its
+QUILL key.</p>
+<h2 id="replace-all-and-backups-you-can-trust">Replace all and backups
+you can trust</h2>
+<p><strong>Replace all puts in what you typed.</strong> In Normal and
+Extended search, a backslash in <strong>Replace with</strong> is just a
+backslash, so replacing with <code>C:\new\reports</code> puts exactly
+that into every match. With the <strong>Regular expression</strong>
+search mode, <code>\1</code> and <code>\2</code> still bring back the
+parts of the match, and asking for a part the search does not have
+changes nothing and tells you why.</p>
+<p><strong>A backup that fails is said.</strong> With timestamped
+backups switched on in <strong>Tools &gt; Customize Features</strong>, a
+save whose backup could not be written now says “Saved notes.txt, but
+could not write a backup”, and your braille display shows the same. Your
+file is saved either way.</p>
+<h2 id="taking-payments-with-your-forms">Taking payments with your
+forms</h2>
+<p>Chapter 16 of the guide is new: “Taking payments with your forms”,
+the whole process from what you need to going live, including what the
+person paying hears with a screen reader. Insert Payment Field now names
+the form’s amount fields, QUILL Lite catches amounts and statement
+descriptors the site would refuse before publishing, Test on Site tells
+you which test card to use, and Responses say payment states in
+words.</p>
+<h2 id="stripe-and-paypal-form-setup">Stripe and PayPal form setup</h2>
+<p>Tools &gt; Forms now includes Insert Payment Field, Form Payments
+Setup and Verify Payment Setup, shared with QUILL. Configure fixed
+payments or donations, choose Stripe and/or PayPal, and keep test mode
+on while checking your form. Publishing requires matching site mode and
+ready providers/webhooks; Test on Site refuses a published live-payment
+form. Responses show payment metadata and include it in CSV/Word
+exports; Refresh Payment Status rereads the site.</p>
+<p>Checkout needs the separately installed QAF WordPress plugin to
+implement payment contract version 1. Provider credentials, charging and
+webhooks stay in WordPress. This update does not deploy that plugin or
+certify live checkout.</p>
+<h2 id="document-statistics-pressed-twice">Document Statistics, pressed
+twice</h2>
+<p>View &gt; Document Statistics (Ctrl+Shift+G) still says words, lines
+and characters straight away. Press it twice quickly to hear paragraphs,
+sentences, how many sentences run over 30 words, the reading time and
+the reading grade as well. Select some text first and it counts just
+that. QUILL says the same words on the same key.</p>
 <p><em>Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1);
 the last published version is 1.1.2.</em></p>
 <p>Welcome to QUILL Lite 2.0, the first release since 1.1.2, and the
@@ -268,7 +348,10 @@ recording into text.</li>
 <li><strong>Spell check that reads only what you wrote</strong>, not web
 addresses, file names or code.</li>
 <li><strong>Word documents</strong> that open and save as Word, and PDFs
-opened as text.</li>
+opened as text. A header or footer that only appears on the first page,
+or only on even pages, is now named in the question you are asked when
+the document opens, and the first save backs up the original, just as
+for an ordinary header.</li>
 <li><strong>Find in Open Documents</strong> and folder search, across
 everything at once.</li>
 <li><strong>WordPress.</strong> Write, check and publish your website’s
@@ -283,6 +366,9 @@ read it.</li>
 <li><strong>The Command Palette in every profile</strong>, reaching
 every command and menu item, now in Tools as in QUILL.</li>
 <li><strong>Ctrl+Enter for a page break</strong>, as in Word.</li>
+<li><strong>Hear the clipboard without pasting it</strong>, add to it,
+save it or clear it, and ask the time or how many documents you have
+open.</li>
 </ul>
 <p>Everything works from the keyboard and tells you how it went, the way
 the rest of QUILL Lite does.</p>
@@ -586,6 +672,35 @@ there.</li>
 <li><strong>It is in Tools now</strong>, first in the menu, where QUILL
 keeps it.</li>
 </ul>
+<h2 id="searches-that-say-more">Searches that say more</h2>
+<p>The lists you narrow by typing now understand a small query, the same
+one QUILL uses, from the same code:</p>
+<ul>
+<li><strong><code>&amp;</code> needs both words</strong>, and two words
+side by side mean the same: <code>#budget &amp; 2026</code>.</li>
+<li><strong><code>|</code> takes either:</strong>
+<code>#introduction | summary</code> lists both kinds of heading.</li>
+<li><strong><code>!</code> leaves a word out:</strong>
+<code>#chapter !draft</code> skips the drafts.</li>
+<li><strong><code>*</code> and <code>?</code> stand for letters</strong>
+inside a word, any number or exactly one: <code>#chap*</code> finds
+Chapter and Chapters.</li>
+<li><strong>Double quotes match exact text</strong>, spaces included:
+<code>#"to do"</code>.</li>
+</ul>
+<p><code>!</code> is read first, then <code>&amp;</code>, then
+<code>|</code>. It works in Go To Anything
+(<strong>Ctrl+Alt+Shift+A</strong>), including its <code>#</code> search
+for headings, in <strong>Insert &gt; Markdown Tag…</strong>
+(<strong>Ctrl+Alt+I</strong>) and <strong>Insert &gt; HTML Tag…</strong>
+(<strong>Ctrl+Alt+O</strong>), and in both lists of <strong>Move Section
+To…</strong> (<strong>Ctrl+Alt+Shift+F5</strong>). The <strong>File
+pattern</strong> of Search in Files (<strong>Ctrl+Alt+Shift+F</strong>)
+combines patterns the same way, so <code>*.md | *.txt</code> searches
+both kinds of file and <code>* !*.bak</code> leaves the backups out. A
+search with none of those characters works exactly as before, and F1 in
+any of these search boxes gives a short reminder. Chapters 2 and 4 of
+the user guide have the details.</p>
 <h2 id="project-tasks-in-the-developer-profile">Project tasks, in the
 Developer profile</h2>
 <ul>
@@ -831,6 +946,16 @@ In a real table they keep the text in the cells, but not bold or other
 formatting inside them.</li>
 <li>A blank row is no longer skipped by the table keys.</li>
 </ul>
+<h2 id="describe-formatting-names-the-colour">Describe Formatting names
+the colour</h2>
+<p>In a rich text document, <strong>Ctrl+Shift+D</strong> (Format &gt;
+Describe Formatting at Cursor) now names coloured text, just before any
+highlight: “Calibri, 11 point, red, yellow highlight”. Common colours
+such as red, green and orange are named exactly; any other shade is
+named after the nearest one, so you hear a word rather than a number.
+Ordinary text says nothing about colour: not when nobody coloured it,
+not when it is black, and not for the light text the dark theme paints
+on the page. QUILL gives the same answer, from the same code.</p>
 <h2 id="spell-check-recovery-and-sharp-text">Spell check, recovery and
 sharp text</h2>
 <ul>
@@ -1032,6 +1157,11 @@ check them together. <strong>Ctrl+Z</strong> takes it back.</p>
 (<strong>Ctrl+Alt+Shift+End</strong>) saves a copy of your document as
 one web page, ready to email or put on a website. Task lists show as
 check boxes. Your document stays as it was.</p>
+<p>Equations in a Markdown document go into the page as MathML. The page
+shows them without any script or internet connection, and NVDA and JAWS
+read them as maths, so you can move through a fraction part by part with
+your screen reader’s own math commands. QUILL writes its pages the same
+way.</p>
 <h2
 id="find-in-open-documents-folder-search-and-the-clipboard-collector">Find
 in Open Documents, folder search and the clipboard collector</h2>
@@ -1083,6 +1213,44 @@ the first eight straight away, and pinned documents now come first there
 too. QUILL has the same window on the same key, and the same quick keys
 on its Open Recent menu. The user guide’s “Opening something you worked
 on recently” has the details.</p>
+<h2 id="hear-the-clipboard-the-time-and-what-is-open">Hear the
+clipboard, the time and what is open</h2>
+<p>You copied something, but did it work, and what did you get? Press
+<strong>Alt+Shift+Home</strong> (<strong>Edit &gt; Clipboard &gt; Say
+Clipboard</strong>) and QUILL Lite reads you the clipboard without
+pasting it. Long text is read up to its first 2,000 characters, and then
+you hear how many more there are. Files copied in File Explorer are
+counted and named: “2 files on the clipboard: report.docx, notes.txt”.
+Press it twice, quickly, to hear the text spelled letter by letter, with
+capitals said as “cap”, or each file’s full path. Press it three times
+to open a read-only window titled Clipboard and read it line by line
+with the arrow keys; Escape closes it. An empty clipboard says “The
+clipboard is empty”, and a picture says so too.</p>
+<p><strong>Alt+Shift+End</strong> (<strong>Append Selection to
+Clipboard</strong>) adds what you selected to the end of the clipboard’s
+text, on a new line, and tells you the total: “Appended 5 characters to
+the clipboard, which now holds 11 characters”. Gather a name, an address
+and a phone number from three places, then paste them once.</p>
+<p><strong>Save Clipboard to File…</strong> (Alt+E, B, F) saves the
+clipboard’s text as a UTF-8 file, offering a name such as “clipboard
+2026-11-06 1405.txt”, and <strong>Clear Clipboard</strong> (Alt+E, B, B)
+empties it, which is worth doing after you copy a password. Neither has
+a key: no chord was free in both editors, and a key that could clear the
+clipboard by accident would be a trap.</p>
+<p>Two more quick questions. <strong>Alt+Shift+Space</strong>
+(<strong>Tools &gt; Say Time and Date</strong>) says the time, “2:05
+PM”, and on a quick second press the date, “Friday, November 6, 2026”.
+<strong>Ctrl+Shift+Space</strong> (<strong>Window &gt; Say Windows
+Open</strong>, Alt+W, S) says “3 documents open”, and on a quick second
+press names your document windows in order, marking the one you are in
+“(current)”.</p>
+<p>When support asks for your log, <strong>Help &gt; Copy Log</strong>
+(Alt+H, L) puts this session’s <code>quill.log</code> on the clipboard
+as a file and as its path. Paste into an email and it is attached; paste
+into a document or a form and you get where it is.</p>
+<p>Every press answers straight away, and a quick press is one within
+half a second of the last. QUILL has all seven commands, from the same
+code, on the same keys.</p>
 <h2 id="knowing-what-happened">Knowing what happened</h2>
 <h3 id="activity-and-repeat-last-result">Activity and Repeat Last
 Result</h3>
@@ -1880,6 +2048,22 @@ same echo and is fixed too.</li>
 <tr>
 <td><strong>Ctrl+Enter</strong></td>
 <td>Page Break</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Home</strong></td>
+<td>Say Clipboard</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+End</strong></td>
+<td>Append Selection to Clipboard</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Space</strong></td>
+<td>Say Time and Date</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Space</strong></td>
+<td>Say Windows Open</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+Grave</strong>, then a letter</td>
