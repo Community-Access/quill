@@ -45,6 +45,8 @@ yet. Here is what is new.
 - **The Command Palette in every profile**, reaching every command and menu
   item, now in Tools as in QUILL.
 - **Ctrl+Enter for a page break**, as in Word.
+- **Hear the clipboard without pasting it**, add to it, save it or clear it,
+  and ask the time or how many documents you have open.
 
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
@@ -710,6 +712,47 @@ and pinned documents now come first there too. QUILL has the same window on
 the same key, and the same quick keys on its Open Recent menu. The user
 guide's "Opening something you worked on recently" has the details.
 
+## Hear the clipboard, the time and what is open
+
+You copied something, but did it work, and what did you get? Press
+**Alt+Shift+Home** (**Edit > Clipboard > Say Clipboard**) and QUILL Lite reads
+you the clipboard without pasting it. Long text is read up to its first 2,000
+characters, and then you hear how many more there are. Files copied in File
+Explorer are counted and named: "2 files on the clipboard: report.docx,
+notes.txt". Press it twice, quickly, to hear the text spelled letter by
+letter, with capitals said as "cap", or each file's full path. Press it three
+times to open a read-only window titled Clipboard and read it line by line
+with the arrow keys; Escape closes it. An empty clipboard says "The clipboard
+is empty", and a picture says so too.
+
+**Alt+Shift+End** (**Append Selection to Clipboard**) adds what you selected
+to the end of the clipboard's text, on a new line, and tells you the total:
+"Appended 5 characters to the clipboard, which now holds 11 characters".
+Gather a name, an address and a phone number from three places, then paste
+them once.
+
+**Save Clipboard to File...** (Alt+E, B, F) saves the clipboard's text as a
+UTF-8 file, offering a name such as "clipboard 2026-11-06 1405.txt", and
+**Clear Clipboard** (Alt+E, B, B) empties it, which is worth doing after you
+copy a password. Neither has a key: no chord was free in both editors, and a
+key that could clear the clipboard by accident would be a trap.
+
+Two more quick questions. **Alt+Shift+Space** (**Tools > Say Time and
+Date**) says the time, "2:05 PM", and on a quick second press the date,
+"Friday, November 6, 2026". **Ctrl+Shift+Space** (**Window >
+Say Windows Open**, Alt+W, S) says "3 documents open", and on a quick second
+press names your document windows in order, marking the one you are in
+"(current)".
+
+When support asks for your log, **Help > Copy Log** (Alt+H, L) puts this
+session's `quill.log` on the clipboard as a file and as its path. Paste into an
+email and it is attached; paste into a document or a form and you get where
+it is.
+
+Every press answers straight away, and a quick press is one within half a
+second of the last. QUILL has all seven commands, from the same code, on the
+same keys.
+
 ## Knowing what happened
 
 ### Activity and Repeat Last Result
@@ -1298,6 +1341,10 @@ it takes over, and QUILL does the same.
 | **F11** | Speak a Command |
 | **Shift+F4** | Review Dictation |
 | **Ctrl+Enter** | Page Break |
+| **Alt+Shift+Home** | Say Clipboard |
+| **Alt+Shift+End** | Append Selection to Clipboard |
+| **Alt+Shift+Space** | Say Time and Date |
+| **Ctrl+Shift+Space** | Say Windows Open |
 | **Ctrl+Alt+Shift+Grave**, then a letter | The WordPress keys |
 
 The rest of the AI dictionary's keys are in the user guide. All of these are in

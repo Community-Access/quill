@@ -2,6 +2,32 @@
 
 ## 2.0.0
 
+### Hear the clipboard, the time and what is open (2026-11-06)
+
+- **Say Clipboard** (**Alt+Shift+Home**, Edit > Clipboard) reads what is on
+  the Windows clipboard without pasting it: the text (the first 2,000
+  characters of a long piece, then how many more), or, for files copied in File
+  Explorer, how many and their names. A quick second press spells the text
+  letter by letter, or gives each file's full path; a quick third press opens a
+  read-only Clipboard window to read it line by line.
+- **Append Selection to Clipboard** (**Alt+Shift+End**) adds the selection to
+  the end of the clipboard's text on a new line, and says how much it holds.
+- **Save Clipboard to File...** (Alt+E, B, F) and **Clear Clipboard** (Alt+E,
+  B, B) have no key. One saves the clipboard's text as a UTF-8 file under a
+  dated name; the other empties it, which is worth doing after copying a
+  password.
+- **Say Time and Date** (**Alt+Shift+Space**, Tools menu): the time, and on
+  a quick second press the date in full.
+- **Say Windows Open** (**Ctrl+Shift+Space**, Window menu, Alt+W, S): how many
+  documents are open, and on a quick second press their names, with the one
+  in front marked "(current)".
+- **Help > Copy Log** (Alt+H, L) puts this session's `quill.log` on the
+  clipboard as a file and as its path, so it attaches to an email or pastes
+  into a support form as its location.
+- Every press answers at once; a quick press is one within half a second. The
+  four clipboard commands sit at the top of Edit > Clipboard (Alt+E, B), above
+  the copy tray. QUILL has all seven, from the same code, on the same keys.
+
 ### Form payment integration (2026-11-06)
 
 - Shared with QUILL: Insert Payment Field, Form Payments Setup and Verify

@@ -203,6 +203,7 @@
   "quill.ui.main_frame_restore_points": "reachable",
   "quill.ui.main_frame_rich_mode": "reachable",
   "quill.ui.main_frame_rich_paragraph": "reachable",
+  "quill.ui.main_frame_say_commands": "reachable",
   "quill.ui.main_frame_selection": "reachable",
   "quill.ui.main_frame_sessions": "reachable",
   "quill.ui.main_frame_simple_open": "reachable",

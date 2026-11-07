@@ -396,3 +396,27 @@ def test_every_menu_item_is_in_the_command_palette(quill_menu_bar) -> None:
     frame._register_menu_palette_rows()
     again = [c for c in frame.commands.list() if c.id.startswith(MENU_COMMAND_PREFIX)]
     assert len(again) == len(menu_rows)
+
+
+def test_the_say_rows_sit_where_the_guide_says(quill_menu_bar) -> None:
+    """Edit > Clipboard, Navigate, Window and Help (main_frame_say_commands.py).
+
+    Placed from the Forms hook rather than the menu builder, so this is what
+    proves the hook ran and found each menu by its title.
+    """
+    from quill.ui.main_frame_say_commands import SAY_ROWS
+
+    frame = quill_menu_bar._quill_main_frame
+    for place, title in (
+        ("edit", "Edit"),
+        ("navigate", "Navigate"),
+        ("window", "Window"),
+        ("help", "Help"),
+    ):
+        menu = quill_menu_bar.GetMenu(quill_menu_bar.FindMenu(title))
+        for command_id, _label, _handler in SAY_ROWS[place]:
+            item = menu.FindItemById(frame._say_ids[command_id])
+            assert item is not None, (title, command_id)
+            assert frame.commands.get(command_id) is not None, command_id
+    say = quill_menu_bar.FindItemById(frame._say_ids["edit.say_clipboard"])
+    assert say.GetItemLabel().endswith("\tAlt+Shift+Home")

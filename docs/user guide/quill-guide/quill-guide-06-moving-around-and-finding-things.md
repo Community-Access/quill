@@ -230,6 +230,27 @@ Each one starts with the QUILL key (`Ctrl+Shift+Grave`):
 What they say also goes on the status bar, so you can read it again in
 braille.
 
+### Asking the time, and what is open
+
+Two more questions you can ask without leaving your writing. Both answer on
+the first press, and say a little more if you press again quickly, within
+half a second.
+
+- **Say Time and Date** (`Alt+Shift+Space`, on the Navigate menu just after
+  Speak Status Summary). Press it once and QUILL says the time, the way a clock
+  reads it: "2:05 PM". Press it twice, quickly, and you hear the date in full:
+  "Friday, November 6, 2026". It is quicker than hunting for the clock in the
+  system tray, and it does not move you out of your document.
+- **Say Windows Open** (`Ctrl+Shift+Space`, found on the Window menu just after Close Other
+  Documents). Press it once to hear how many documents you have open: "3
+  documents open". Press it twice, quickly, to hear their names, in the order
+  of their tabs, with the one you are in marked: "3 documents: notes.txt
+  (current), chapter 2.docx, letter.md". It is a fast way to check whether you
+  left something open before you close QUILL, without walking the Window menu.
+
+QUILL Lite has both, on the same keys. There they count and name its document
+windows, since QUILL Lite has no tabs.
+
 ## Search, Replace, and Deep Navigation
 
 QUILL knows what headings, lists and tables are, and it tells you about them

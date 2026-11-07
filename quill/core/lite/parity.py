@@ -170,6 +170,15 @@ DIVERGENCES: dict[str, str] = {
 #: organiser, the tab-mode toggle, Expand Abbreviations, the bookmark list and
 #: block comment), and four QUILL Lite verbs QUILL simply does not have.
 COMMAND_EQUIVALENTS: dict[str, str] = {
+    # The Say commands: one set of handlers (quill/ui/say_commands.py) on the
+    # same keys in both editors; the three with no key have none in either.
+    "cmd_say_clipboard": "edit.say_clipboard",
+    "cmd_append_to_clipboard": "edit.append_to_clipboard",
+    "cmd_save_clipboard": "edit.save_clipboard_to_file",
+    "cmd_clear_clipboard": "edit.clear_clipboard",
+    "cmd_say_time": "navigate.say_time",
+    "cmd_say_windows_open": "window.say_windows_open",
+    "cmd_copy_log": "help.copy_log",
     "cmd_about": "help.about_quill",
     "cmd_add_word_to_dictionary": "tools.add_word_to_dictionary",
     # The hosted free AI: five commands both editors now have, on the same five

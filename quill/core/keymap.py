@@ -829,6 +829,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.open_from_clipboard": "Ctrl+Alt+Shift+Enter",  # Ctrl+V pastes (rule 1); rule 5
     "file.open_url": "",  # no key in either editor; rule 8 reason in the family gate
     "file.import_convert": "",  # as open_url: no key in either; the reason is in the family gate
+    # The Say commands (ui/say_commands.py, shared; lite/commands_say.py says why these
+    # four, measured 2026-11-06). Plain, not the leader: QUILL Lite reaches them plainly (rule 6).
+    "edit.say_clipboard": "Alt+Shift+Home",  # twice spells it, three times shows it
+    "edit.append_to_clipboard": "Alt+Shift+End",
+    "navigate.say_time": "Alt+Shift+Space",  # twice quickly for the date
+    "window.say_windows_open": "Ctrl+Shift+Space",  # Word's nbsp; neither editor has one (rule 1)
+    "edit.save_clipboard_to_file": "",  # these three: rule 8 reasons in the family gate
+    "edit.clear_clipboard": "",
+    "help.copy_log": "",
     # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without switching
     # profiles: somebody can want QUILL Lite's abbreviations, not its menus (bad.md P2.4).
     "tools.bring_from_quilllite": "Alt+Shift+F11",

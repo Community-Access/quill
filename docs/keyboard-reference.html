@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 551.</p>
+<p>Editor commands with default bindings: 558.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -431,6 +431,11 @@ your own customised keymap.</p>
 <tbody>
 <tr>
 <td>(unbound by default)</td>
+<td>Clear Clipboard</td>
+<td><code>edit.clear_clipboard</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>Follow Link</td>
 <td><code>edit.follow_link</code></td>
 </tr>
@@ -438,6 +443,11 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Jump to Named Mark</td>
 <td><code>edit.jump_to_named_mark</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Save Clipboard to File…</td>
+<td><code>edit.save_clipboard_to_file</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -485,6 +495,11 @@ your own customised keymap.</p>
 <td><code>edit.copy_with_source</code></td>
 </tr>
 <tr>
+<td>Alt+Shift+End</td>
+<td>Append Selection to Clipboard</td>
+<td><code>edit.append_to_clipboard</code></td>
+</tr>
+<tr>
 <td>Alt+Shift+F3</td>
 <td>Undo and Say What Changed</td>
 <td><code>edit.undo_and_say</code></td>
@@ -503,6 +518,11 @@ your own customised keymap.</p>
 <td>Alt+Shift+F9</td>
 <td>Toggle Extend Selection Mode</td>
 <td><code>edit.toggle_extend_selection_mode</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+Home</td>
+<td>Say Clipboard</td>
+<td><code>edit.say_clipboard</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+U</td>
@@ -1282,6 +1302,11 @@ your own customised keymap.</p>
 <td>Alt+Shift+O</td>
 <td>Heading Organizer…</td>
 <td><code>navigate.heading_organizer</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+Space</td>
+<td>Say Time and Date</td>
+<td><code>navigate.say_time</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+[</td>
@@ -2115,6 +2140,11 @@ your own customised keymap.</p>
 <td><code>window.close_other_documents</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+Space</td>
+<td>Say Windows Open</td>
+<td><code>window.say_windows_open</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+Tab or Ctrl+Shift+F6</td>
 <td>Previous Document</td>
 <td><code>window.previous_document</code></td>
@@ -2198,6 +2228,11 @@ your own customised keymap.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>(unbound by default)</td>
+<td>Copy Log</td>
+<td><code>help.copy_log</code></td>
+</tr>
 <tr>
 <td>(unbound by default)</td>
 <td>Release Channel…</td>

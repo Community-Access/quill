@@ -35,6 +35,7 @@ from quill.core.lite.commands_ai import (
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
+from quill.core.lite.commands_say import CLIPBOARD_SAY_ROWS, TIME_SAY_ROWS, WINDOW_SAY_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
 from quill.core.wordpress import menu as wordpress_menu
 
@@ -416,6 +417,7 @@ COMMANDS: list[CommandRow] = [
     # application ever written. It was top-level so that the whole idea could be
     # switched off in one checkbox -- which a submenu does just as well, because
     # a submenu with nothing left in it is removed along with its title.
+    *CLIPBOARD_SAY_ROWS,  # Say Clipboard and its three siblings (commands_say.py)
     ("&Edit|Clip&board", "&Copy to Tray", "Ctrl+Alt+Y", "cmd_copy_to_tray", ""),
     # The next free slot is the right default and the wrong only option: a tray
     # filled in order is a tray whose numbers mean nothing, and the value of a
@@ -830,6 +832,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "", "", "", "sep"),
     ("&Tools", "&Spelling", "", "", "sub"),
     *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
+    *TIME_SAY_ROWS,  # Say Time and Date (commands_say.py)
     ("&Tools", "&Change Case", "", "", "sub"),
     ("&Tools", "Indentin&g", "", "", "sub"),
     # A submenu, not a tenth top-level menu: Clipboard and Spelling were demoted
@@ -1018,6 +1021,7 @@ COMMANDS: list[CommandRow] = [
     # route back to one document was Ctrl+W sixty-eight times, with a save
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
+    *WINDOW_SAY_ROWS,  # Say Windows Open (commands_say.py)
     *HELP_ROWS,  # the Help menu (commands_help.py)
     *wordpress_menu.lite_placed_rows(),  # WordPress, at the foot of Edit to Tools
     *forms_menu.lite_placed_rows(),  # Forms, at the foot of Insert to Tools

@@ -121,6 +121,15 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "cmd_import_convert": "As in QUILL, where Import / Convert Document has no key either "
     "(rule 2; rule 9 for an occasional command): the next thing it does is ask which "
     "file, so a chord saves nothing. Alt+F, I reaches it.",
+    "cmd_save_clipboard": "As in QUILL (rule 2), where it has no key either: no chord was "
+    "free in both editors (measured 2026-11-06, commands_say.py), and saving the clipboard "
+    "is occasional and asks for a file name next (rule 9). Alt+E, B, F.",
+    "cmd_clear_clipboard": "As in QUILL (rule 2), where it has no key either: no chord was "
+    "free in both editors (measured 2026-11-06), and a key that empties the clipboard "
+    "by accident costs what was on it (rule 4). Alt+E, B, B.",
+    "cmd_copy_log": "As in QUILL (rule 2), where it has no key either: no chord was free "
+    "in both editors (measured 2026-11-06), and it is pressed when writing to support, "
+    "not in the editing loop (rule 9). Alt+H, L.",
     **{
         handler: "As in QUILL (rule 2), and as in Word, which has no keys for these either: "
         "the table's own submenu reaches them (Alt+N, T), and Tab in a table's last cell "

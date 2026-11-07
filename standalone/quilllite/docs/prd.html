@@ -3696,6 +3696,73 @@ breaks.</li>
 page break needs a Word, Rich Text or Markdown document”. It never
 writes a form feed.</li>
 </ul>
+<h2
+id="say-commands-the-clipboard-the-time-the-open-documents-and-the-log-2026-11-06">Say
+commands: the clipboard, the time, the open documents and the log
+(2026-11-06)</h2>
+<p>Seven commands that answer what a sighted user settles with a glance.
+QUILL has the same seven: one set of handlers
+(<code>quill/ui/say_commands.py</code>), one set of words
+(<code>quill/core/say_commands.py</code>, wx-free), the same keys,
+mapped in <code>COMMAND_EQUIVALENTS</code> (family rule 10). QUILL
+Lite’s adapter is <code>quill/apps/lite_window_say.py</code> and its
+menu rows are <code>quill/core/lite/commands_say.py</code>. Each speaks
+a result the screen reader cannot know, which is what GATE-13 allows,
+through the announcement service, so it is brailled too.</p>
+<p>Repeated presses answer at once. <code>PressStreak</code>
+(<code>quill/core/multi_press.py</code>) counts quick repeats of the
+same command within half a second (<code>PRESS_WINDOW_SECONDS</code>)
+and every press is answered immediately; a quick further press
+supersedes the last answer. Waiting out the window, as
+<code>MultiPressDispatcher</code> does, would put a pause in front of
+the answer people press for most.</p>
+<ul>
+<li><strong>Say Clipboard</strong> (<code>cmd_say_clipboard</code>,
+<strong>Alt+Shift+Home</strong>, first row of Edit &gt; Clipboard).
+Once: the text, up to 2,000 characters and then “and N more characters.
+Press three times quickly to read it all”; for files on the clipboard,
+“N files on the clipboard:” and up to ten names, then “and N more”.
+Twice: the first 200 characters spelled, capitals as “cap”; for files,
+each full path. Three times: a read-only window titled Clipboard, Escape
+to close, one path a line for files. “The clipboard is empty” and “The
+clipboard holds something that is not text, such as a picture” cover the
+rest.</li>
+<li><strong>Append Selection to Clipboard</strong>
+(<code>cmd_append_to_clipboard</code>, <strong>Alt+Shift+End</strong>).
+The selection goes on a new line after the clipboard’s text, with no
+blank line invented; an empty clipboard becomes the selection; files on
+the clipboard are replaced. “Appended N characters to the clipboard,
+which now holds M characters”. No selection: “Select text first to
+append it to the clipboard”.</li>
+<li><strong>Save Clipboard to File…</strong>
+(<code>cmd_save_clipboard</code>, no key, Alt+E, B, F). A Save dialog
+offering <code>clipboard YYYY-MM-DD HHMM.txt</code>; UTF-8, line breaks
+normalised, written atomically. “Saved N characters to name”. Files on
+the clipboard: “The clipboard holds files, not text, so there is nothing
+to save”.</li>
+<li><strong>Clear Clipboard</strong> (<code>cmd_clear_clipboard</code>,
+no key, Alt+E, B, B). “Cleared the clipboard” or “The clipboard was
+already empty”.</li>
+<li><strong>Say Time and Date</strong> (<code>cmd_say_time</code>,
+<strong>Alt+Shift+Space</strong>, Tools, no access letter). Once: “2:05
+PM”. Twice: “Friday, November 6, 2026”.</li>
+<li><strong>Say Windows Open</strong>
+(<code>cmd_say_windows_open</code>, <strong>Ctrl+Shift+Space</strong>,
+Window, Alt+W, S). Once: “N documents open”. Twice: the document
+windows’ names in order, the one in front marked “(current)”. QUILL
+counts its tabs.</li>
+<li><strong>Copy Log</strong> (<code>cmd_copy_log</code>, no key, Help,
+Alt+H, L). Puts this session’s <code>quill.log</code> on the clipboard
+as a file and as its path, so an email attaches it and a document or
+support form gets its location. No log yet: “No log has been written
+yet”.</li>
+</ul>
+<p>Keys: measured on 2026-11-06, four plain chords were free in both
+editors, and the four commands people press went to them, plainly rather
+than on QUILL’s leader because QUILL Lite has none (rule 6). Save
+Clipboard to File and Copy Log are occasional (rule 9) and no chord was
+left; Clear Clipboard stays menu-only on purpose too, because a stray
+key would lose what was on the clipboard (rule 4).</p>
 </main>
 </body>
 </html>

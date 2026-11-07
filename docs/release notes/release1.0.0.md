@@ -87,6 +87,20 @@ QUILL writes accessible forms: contact forms, event sign-ups, membership renewal
 
 **Try this:** choose File > New Form..., pick the contact template, then Tools > Forms > Fill It In Yourself... and tab through your own form. Each required question says so. Answer them and press Submit: the What Would Be Sent window lists each question with its answer, and nothing has gone anywhere.
 
+## New in this build: hear the clipboard, the time and what is open
+
+You copied something, but did it work, and what did you get? Press **Alt+Shift+Home** (**Edit > Clipboard > Say Clipboard**) and QUILL reads you the clipboard without pasting it. Long text is read up to its first 2,000 characters, and QUILL tells you how many more there are. Files copied in File Explorer are counted and named: "2 files on the clipboard: report.docx, notes.txt". Press it twice quickly to hear the text spelled letter by letter, with capitals said as "cap", or each file's full path. Press it three times to open a read-only window titled Clipboard, and read it line by line with the arrow keys; Escape closes it. An empty clipboard says "The clipboard is empty", and a picture says so too.
+
+**Alt+Shift+End** (**Append Selection to Clipboard**) adds the selection to the end of the clipboard's text, on a new line, and tells you the total: "Appended 5 characters to the clipboard, which now holds 11 characters". Gather a name, an address and a phone number from three places, then paste them once. **Save Clipboard to File...** saves the clipboard's text as a UTF-8 file, offering a name such as "clipboard 2026-11-06 1405.txt", and **Clear Clipboard** empties it, which is worth doing after you copy a password. Both are on **Edit > Clipboard** with no key: no chord was free in both editors, and a key that could clear the clipboard by accident would be a trap.
+
+Two more quick questions. **Alt+Shift+Space** (**Navigate > Say Time and Date**) says the time, "2:05 PM", and on a quick second press the date, "Friday, November 6, 2026". **Ctrl+Shift+Space** (**Window > Say Windows Open**) says "3 documents open", and on a quick second press names them in tab order, marking the one you are in "(current)".
+
+When support asks for your log, **Help > Copy Log** puts this session's `quill.log` on the clipboard as a file and as its path. Paste into an email and it is attached; paste into a document or a form and you get where it is. If no log has been written yet, QUILL says so.
+
+Every press answers straight away, and a quick press is one within half a second of the last. QUILL Lite has all seven commands, from the same code, on the same keys.
+
+**Try this:** select a word, press **Ctrl+C**, then press **Alt+Shift+Home** twice, quickly. QUILL spells the word back to you, and nothing has been pasted.
+
 ## New in this build: every menu item in the Command Palette
 
 The Command Palette (**Ctrl+Shift+P**, first in the Tools menu) now finds everything in the menus, not just the registered commands. A few dozen menu items were never in it before, among them your recent files, your open documents and some of the braille tools, so typing their names found nothing. Now the palette reads the menus each time it opens, names each item by the menu it sits in, and runs it exactly as the menu would. A dimmed item tells you why it is not available instead of doing nothing. QUILL Lite's palette does the same, sits first in its Tools menu, and is there in every profile, WordPad and Notepad included.

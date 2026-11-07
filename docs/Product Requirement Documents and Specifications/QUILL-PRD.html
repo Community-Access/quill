@@ -9532,6 +9532,128 @@ management commands). Menu: <code>Edit &gt; Copy Tray</code> submenu
 including “Copy to Next Empty Slot” and “Search Tray Slots…”.</p>
 <hr />
 <h3
+id="577a-say-commands--the-clipboard-the-time-the-open-documents-and-the-log-shipped-2026-11-06">5.77a
+Say commands — the clipboard, the time, the open documents and the log
+(shipped 2026-11-06)</h3>
+<p>Seven small commands that answer questions a sighted user settles
+with a glance: what did I just copy, what time is it, how many documents
+do I have open, and where is the log support wants. Each speaks a result
+the screen reader cannot know, so speaking it is what GATE-13 allows.
+QUILL and QUILL Lite share the handlers, the wording and the keys
+(family rule 10).</p>
+<p><strong>Repeated presses answer at once.</strong> The readout
+commands count quick repeats with <code>PressStreak</code>
+(<code>quill/core/multi_press.py</code>) rather than
+<code>MultiPressDispatcher</code>: every press is answered immediately
+and a quick further press supersedes it, because waiting out the window
+would put a pause in front of the answer people press for most. A quick
+press is one within <code>PRESS_WINDOW_SECONDS</code> (half a second,
+the family’s window) of the last press of the same command; a press past
+the last level starts again at the first.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Id</th>
+<th>Key</th>
+<th>Menu (QUILL)</th>
+<th>What it says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Say Clipboard</td>
+<td><code>edit.say_clipboard</code></td>
+<td><code>Alt+Shift+Home</code></td>
+<td>Edit &gt; Clipboard</td>
+<td>Once: the text (first 2,000 characters, then “and N more characters.
+Press three times quickly to read it all”), or “N files on the
+clipboard: names” (ten names, then “and N more”). Twice: the text
+spelled, first 200 characters, capitals as “cap”; for files, each full
+path. Three times: a read-only Clipboard window, one path a line for
+files. Empty and non-text clipboards are said plainly.</td>
+</tr>
+<tr>
+<td>Append Selection to Clipboard</td>
+<td><code>edit.append_to_clipboard</code></td>
+<td><code>Alt+Shift+End</code></td>
+<td>Edit &gt; Clipboard</td>
+<td>“Appended N characters to the clipboard, which now holds M
+characters”. The selection goes on a new line; no blank line is
+invented, an empty clipboard becomes the selection, and files on the
+clipboard are replaced. No selection: “Select text first to append it to
+the clipboard”.</td>
+</tr>
+<tr>
+<td>Save Clipboard to File…</td>
+<td><code>edit.save_clipboard_to_file</code></td>
+<td>none</td>
+<td>Edit &gt; Clipboard</td>
+<td>Save dialog offering <code>clipboard YYYY-MM-DD HHMM.txt</code>;
+UTF-8, line breaks normalised, written atomically
+(<code>write_text_atomic</code>). “Saved N characters to name”. Files on
+the clipboard: “The clipboard holds files, not text, so there is nothing
+to save”.</td>
+</tr>
+<tr>
+<td>Clear Clipboard</td>
+<td><code>edit.clear_clipboard</code></td>
+<td>none</td>
+<td>Edit &gt; Clipboard</td>
+<td>“Cleared the clipboard” or “The clipboard was already empty”.</td>
+</tr>
+<tr>
+<td>Say Time and Date</td>
+<td><code>navigate.say_time</code></td>
+<td><code>Alt+Shift+Space</code></td>
+<td>Navigate, after Speak Status Summary</td>
+<td>Once: “2:05 PM”. Twice: “Friday, November 6, 2026”.</td>
+</tr>
+<tr>
+<td>Say Windows Open</td>
+<td><code>window.say_windows_open</code></td>
+<td><code>Ctrl+Shift+Space</code></td>
+<td>Window, after Close Other Documents</td>
+<td>Once: “N documents open”. Twice: their names in order, the one in
+front marked “(current)”. Tabs in QUILL, document windows in QUILL
+Lite.</td>
+</tr>
+<tr>
+<td>Copy Log</td>
+<td><code>help.copy_log</code></td>
+<td>none</td>
+<td>Help, after Save Diagnostics</td>
+<td>Puts this session’s <code>quill.log</code> on the clipboard as a
+file and as its path: an email attaches it, a document or form gets its
+location. No log yet: “No log has been written yet”.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Keys.</strong> Measured on 2026-11-06, four plain chords were
+free in both editors once the system-wide show and hide keys, the
+picker’s paging keys, the screen-reader profile’s arrows, Word’s Redo
+and the AltGr range were excluded; the four commands people press went
+to them. They are plain chords, not the QUILL key, because QUILL Lite
+has no leader and reaches them plainly (rule 6). Save Clipboard to File
+and Copy Log are occasional (rule 9) and no chord was left; Clear
+Clipboard is menu-only on purpose as well, because a stray key would
+lose what was on the clipboard (rule 4). The reasons are comments in
+<code>keymap.py</code>.</p>
+<p><strong>QUILL Lite.</strong> Edit &gt; Clipboard gains the four
+clipboard rows at its top (the submenu’s access letter is B; Save
+Clipboard to File is F and Clear Clipboard is B inside it), Tools gains
+Say Time and Date, Window gains Say Windows Open (S) and Help gains Copy
+Log (L).</p>
+<p><strong>Implementation map.</strong>
+<code>quill/core/say_commands.py</code> (wx-free wording, limits, append
+and save logic), <code>quill/ui/say_commands.py</code> (the shared
+handlers and clipboard access),
+<code>quill/ui/main_frame_say_commands.py</code> (QUILL’s adapter),
+<code>quill/apps/lite_window_say.py</code> and
+<code>quill/core/lite/commands_say.py</code> (QUILL Lite’s adapter and
+menu rows).</p>
+<hr />
+<h3
 id="578-abbreviation-expansion--textexpander-style-bare-word-shortcuts">5.78
 Abbreviation Expansion — TextExpander-style bare-word shortcuts</h3>
 <p>Abbreviation Expansion replaces short trigger words with longer text
