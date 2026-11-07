@@ -2,6 +2,26 @@
 
 ## 2.0.0
 
+### Document Statistics, pressed twice (2026-11-06)
+
+- View > Document Statistics (Ctrl+Shift+G) still says words, lines and
+  characters at once. Press it twice quickly to add paragraphs, sentences,
+  sentences over 30 words, the reading time and the reading grade. Both
+  presses count the selection when there is one. Shared with QUILL, which says
+  the same words on the same key. The first press now gives lines before
+  characters, as QUILL always has.
+### Searches that say more (2026-11-06)
+
+- Shared with QUILL: Go To Anything (Ctrl+Alt+Shift+A), including its `#`
+  heading search, Insert > Markdown Tag, Insert > HTML Tag and both lists of
+  Move Section To now understand a small query. `&` needs both words (two words
+  side by side mean the same), `|` takes either, `!` leaves a word out, `*` and
+  `?` stand for letters inside a word, and double quotes match exact text. `!`
+  is read first, then `&`, then `|`.
+- The File pattern of Search in Files and Replace Across Files combines
+  patterns: `*.md | *.txt`, `* !*.bak`. The search text is unchanged.
+- A search without any of `* ? & | ! "` works exactly as before. F1 in each
+  search box gives a short reminder.
 ### Math as MathML in exported pages (2026-11-06)
 
 - **File > Export as HTML...** (Ctrl+Alt+Shift+End) now writes equations in a

@@ -99,6 +99,9 @@ class _SearchCtrl:
     def SetHint(self, _text: str) -> None:
         return
 
+    def SetHelpText(self, _text: str) -> None:
+        return
+
     def Bind(self, *_args: object, **_kwargs: object) -> None:
         return
 

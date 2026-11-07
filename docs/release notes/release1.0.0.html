@@ -297,6 +297,16 @@ contract version 1. Provider credentials, charging and webhooks stay on
 WordPress; this desktop update does not deploy the plugin or establish
 live checkout acceptance. The WordPress and Forms guide covers the
 sandbox-first workflow.</p>
+<h2 id="document-statistics-pressed-twice">Document Statistics, pressed
+twice</h2>
+<p><strong>Tools &gt; Writing and Language &gt; Document
+Statistics…</strong> (<code>Ctrl+Shift+G</code>) still tells you words,
+lines and characters straight away. Press it twice quickly and you hear
+the full writing report too: paragraphs, sentences, how many sentences
+run over 30 words, the reading time and the reading grade, for example
+“about 7 minutes to read, reading grade about 9th grade”. Select some
+text first and it counts just that. QUILL Lite does the same on the same
+key.</p>
 <p><strong>Unreleased correction:</strong> The shared Radio code retires
 the built-in SomaFM source in response to its published
 third-party-client terms; known catalogue entries and direct playback
@@ -496,6 +506,32 @@ contact template, then Tools &gt; Forms &gt; Fill It In Yourself… and
 tab through your own form. Each required question says so. Answer them
 and press Submit: the What Would Be Sent window lists each question with
 its answer, and nothing has gone anywhere.</p>
+<h2 id="new-in-this-build-searches-that-say-more">New in this build:
+searches that say more</h2>
+<p>Every list you narrow by typing now understands a small query, so one
+search can ask for more than one thing. <code>&amp;</code> needs both
+words, and two words side by side mean the same. <code>|</code> takes
+either. <code>!</code> leaves a word out. <code>*</code> stands for any
+run of letters inside a word and <code>?</code> for exactly one. Double
+quotes match exact text, spaces included. <code>!</code> is read first,
+then <code>&amp;</code>, then <code>|</code>, so
+<code>draft | notes !old</code> means “draft, or notes that are not
+old”.</p>
+<p>It works in Go to Anything (<strong>Ctrl+Alt+Shift+A</strong>),
+including its <code>#</code> search for headings, and in Insert Snippet,
+Insert HTML Tag, Insert Markdown Tag, both lists of Move Section To
+(<strong>Ctrl+Alt+Shift+F5</strong>), the abbreviation manager and the
+Copy Tray search. The File pattern of Search in Files
+(<strong>Ctrl+Alt+Shift+F</strong>) combines patterns the same way:
+<code>*.md | *.txt</code> takes both kinds, and <code>* !*.bak</code>
+leaves the backups out. QUILL Lite has it in the same lists, from the
+same code. A search with none of those characters works exactly as
+before, and you never hear an error for a half-typed one. Press F1 in
+any of these search boxes for a short reminder.</p>
+<p><strong>Try this:</strong> open a long document, press
+<strong>Ctrl+Alt+Shift+A</strong>, and type
+<code>#chapter !draft</code>. The list holds every chapter heading
+except the drafts; press Enter to go to the one on top.</p>
 <h2 id="fixed-in-this-build-first-page-and-even-page-word-headers">Fixed
 in this build: first-page and even-page Word headers</h2>
 <p>When you open a Word document for rich editing, QUILL tells you what

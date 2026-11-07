@@ -27,6 +27,14 @@ Checkout needs the separately installed QAF WordPress plugin to implement
 payment contract version 1. Provider credentials, charging and webhooks stay
 in WordPress. This update does not deploy that plugin or certify live checkout.
 
+## Document Statistics, pressed twice
+
+View > Document Statistics (Ctrl+Shift+G) still says words, lines and
+characters straight away. Press it twice quickly to hear paragraphs,
+sentences, how many sentences run over 30 words, the reading time and the
+reading grade as well. Select some text first and it counts just that. QUILL
+says the same words on the same key.
+
 *Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1); the last
 published version is 1.1.2.*
 
@@ -295,6 +303,30 @@ guide covers them.
   work, such as each open window and each recent file. The WordPress and
   Forms commands, most of which have no key, are all there.
 - **It is in Tools now**, first in the menu, where QUILL keeps it.
+
+## Searches that say more
+
+The lists you narrow by typing now understand a small query, the same one QUILL
+uses, from the same code:
+
+- **`&` needs both words**, and two words side by side mean the same:
+  `#budget & 2026`.
+- **`|` takes either:** `#introduction | summary` lists both kinds of heading.
+- **`!` leaves a word out:** `#chapter !draft` skips the drafts.
+- **`*` and `?` stand for letters** inside a word, any number or exactly one:
+  `#chap*` finds Chapter and Chapters.
+- **Double quotes match exact text**, spaces included: `#"to do"`.
+
+`!` is read first, then `&`, then `|`. It works in Go To Anything
+(**Ctrl+Alt+Shift+A**), including its `#` search for headings, in
+**Insert > Markdown Tag...** (**Ctrl+Alt+I**) and **Insert > HTML Tag...**
+(**Ctrl+Alt+O**), and in both lists of **Move Section To...**
+(**Ctrl+Alt+Shift+F5**). The **File pattern** of Search in Files
+(**Ctrl+Alt+Shift+F**) combines patterns the same way, so `*.md | *.txt`
+searches both kinds of file and `* !*.bak` leaves the backups out. A search
+with none of those characters works exactly as before, and F1 in any of these
+search boxes gives a short reminder. Chapters 2 and 4 of the user guide have
+the details.
 
 ## Project tasks, in the Developer profile
 

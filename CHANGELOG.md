@@ -2,6 +2,35 @@
 
 ## 1.0.0
 
+### Document Statistics, pressed twice (2026-11-06)
+
+- Document Statistics (`Ctrl+Shift+G`) still says words, lines and characters
+  at once. Press it twice quickly and it adds paragraphs, sentences, how many
+  sentences run over 30 words, the reading time and the reading grade
+  (Flesch-Kincaid). Both presses count the selection when there is one and
+  start with "Selection:". The second press uses the Multi-press time window
+  setting, and the long report is spoken even when spoken counts are off.
+- The reading time is the status bar's, 200 words a minute, and the grade is
+  the one the WordPress reading-level check gives, now shared from
+  `quill/core/readability.py`. QUILL Lite has the same two presses on the same
+  key and says the same words.
+### Searches that say more, in every filtered list (2026-11-06)
+
+- Go to Anything (`Ctrl+Alt+Shift+A`), including its `#` heading search, and
+  every list you narrow by typing now understand a small query: `&` needs both
+  words (two words side by side mean the same), `|` takes either, `!` leaves a
+  word out, `*` and `?` stand for letters inside a word, and double quotes
+  match exact text. `!` is read first, then `&`, then `|`. Example:
+  `#introduction | summary`, or `#chapter !draft`.
+- The same rules reach Insert Snippet, Insert HTML Tag, Insert Markdown Tag,
+  both lists of Move Section To, the abbreviation manager and the Copy Tray
+  search, from one shared filter, so QUILL Lite's Go To Anything, tag pickers
+  and Move Section To lists answer the same way.
+- The File pattern of Search in Files and Replace Across Files combines
+  patterns: `*.md | *.txt`, `* !*.bak`, `*.md !drafts/*`. The search text and
+  its match modes are unchanged.
+- A search without any of `* ? & | ! "` works exactly as before. F1 in each of
+  these search boxes gives a short reminder of the rules.
 ### Diagrams, math and pictures in Markdown pages (2026-11-06)
 
 - **Mermaid diagrams in the Accessibility Tune-Up.** **AI > Accessibility

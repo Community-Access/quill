@@ -495,7 +495,9 @@ def choose_searchable(
     set_accessible_name(entry, _plain_label(prompt))
     entry.SetHelpText(
         "Type part of a name to narrow the list below. Leave it empty to see "
-        "everything. Press Enter or Down Arrow to move to the list."
+        "everything. Words can be combined: & needs both, | takes either, ! leaves "
+        "a word out, * and ? stand for letters, and quotes match exact text. Press "
+        "Enter or Down Arrow to move to the list."
     )
     root.Add(entry, 0, wx.EXPAND | wx.ALL, _PAD)
     root.Add(wx.StaticText(dialog, label=label), 0, wx.LEFT | wx.RIGHT, _PAD)

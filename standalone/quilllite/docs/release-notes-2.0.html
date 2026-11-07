@@ -269,6 +269,13 @@ exports; Refresh Payment Status rereads the site.</p>
 implement payment contract version 1. Provider credentials, charging and
 webhooks stay in WordPress. This update does not deploy that plugin or
 certify live checkout.</p>
+<h2 id="document-statistics-pressed-twice">Document Statistics, pressed
+twice</h2>
+<p>View &gt; Document Statistics (Ctrl+Shift+G) still says words, lines
+and characters straight away. Press it twice quickly to hear paragraphs,
+sentences, how many sentences run over 30 words, the reading time and
+the reading grade as well. Select some text first and it counts just
+that. QUILL says the same words on the same key.</p>
 <p><em>Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1);
 the last published version is 1.1.2.</em></p>
 <p>Welcome to QUILL Lite 2.0, the first release since 1.1.2, and the
@@ -615,6 +622,35 @@ there.</li>
 <li><strong>It is in Tools now</strong>, first in the menu, where QUILL
 keeps it.</li>
 </ul>
+<h2 id="searches-that-say-more">Searches that say more</h2>
+<p>The lists you narrow by typing now understand a small query, the same
+one QUILL uses, from the same code:</p>
+<ul>
+<li><strong><code>&amp;</code> needs both words</strong>, and two words
+side by side mean the same: <code>#budget &amp; 2026</code>.</li>
+<li><strong><code>|</code> takes either:</strong>
+<code>#introduction | summary</code> lists both kinds of heading.</li>
+<li><strong><code>!</code> leaves a word out:</strong>
+<code>#chapter !draft</code> skips the drafts.</li>
+<li><strong><code>*</code> and <code>?</code> stand for letters</strong>
+inside a word, any number or exactly one: <code>#chap*</code> finds
+Chapter and Chapters.</li>
+<li><strong>Double quotes match exact text</strong>, spaces included:
+<code>#"to do"</code>.</li>
+</ul>
+<p><code>!</code> is read first, then <code>&amp;</code>, then
+<code>|</code>. It works in Go To Anything
+(<strong>Ctrl+Alt+Shift+A</strong>), including its <code>#</code> search
+for headings, in <strong>Insert &gt; Markdown Tag…</strong>
+(<strong>Ctrl+Alt+I</strong>) and <strong>Insert &gt; HTML Tag…</strong>
+(<strong>Ctrl+Alt+O</strong>), and in both lists of <strong>Move Section
+To…</strong> (<strong>Ctrl+Alt+Shift+F5</strong>). The <strong>File
+pattern</strong> of Search in Files (<strong>Ctrl+Alt+Shift+F</strong>)
+combines patterns the same way, so <code>*.md | *.txt</code> searches
+both kinds of file and <code>* !*.bak</code> leaves the backups out. A
+search with none of those characters works exactly as before, and F1 in
+any of these search boxes gives a short reminder. Chapters 2 and 4 of
+the user guide have the details.</p>
 <h2 id="project-tasks-in-the-developer-profile">Project tasks, in the
 Developer profile</h2>
 <ul>

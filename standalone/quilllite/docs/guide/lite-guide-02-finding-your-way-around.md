@@ -289,7 +289,9 @@ saved in the file.
 ### What is in this document, in numbers
 
 - **Document Statistics** (**Ctrl+Shift+G**) tells you the size of the whole
-  document: characters, words, lines and paragraphs.
+  document, or of the selection: words, lines and characters. Press it twice
+  quickly to add paragraphs, sentences, long sentences, the reading time and
+  the reading grade. Chapter 8 has the details.
 - **Line Statistics** (**Ctrl+Alt+W**) tells you about line widths. It is useful
   when you are writing to fit something, like a braille display, a narrow
   window, or a line limit in code.
@@ -341,6 +343,34 @@ the Command Palette, the headings list (**Ctrl+Alt+L**) and the bookmark list
 
 Headings only show up here in a **rich text** document. In a Markdown or HTML
 file, use the headings list on Ctrl+Alt+L instead.
+
+### Saying more in one search
+
+Start a Go To Anything search with `#` to see headings only, or `>` to see
+commands only. The search box, and the other lists you narrow by typing, also
+understand a few characters that let one search say more:
+
+- **Words** match anywhere in a row, and capitals do not matter.
+- **`&`** needs both words: `#budget & 2026` finds only headings with both. Two
+  words side by side mean the same, so `budget 2026 !draft` is "budget and 2026
+  and not draft".
+- **`|`** takes either: `#introduction | summary` lists both kinds of heading.
+- **`!`** leaves a word out: `#chapter !draft` skips the drafts.
+- **`*`** stands for any run of letters inside a word, and **`?`** for exactly
+  one: `#chap*` finds Chapter and Chapters. Neither reaches past a space.
+- **Double quotes** match exact text, spaces and all: `#"to do"`.
+
+`!` is read first, then `&`, then `|`, so `draft | notes !old` means "draft, or
+notes that are not old". A search with none of these characters works exactly
+as before, and a half-finished one such as `notes |` is just read as `notes`
+until you type the next word.
+
+The same rules work in **Insert > Markdown Tag...** (**Ctrl+Alt+I**),
+**Insert > HTML Tag...** (**Ctrl+Alt+O**), where `h? !h1` lists every heading
+tag except the top one, and in both lists of **Move Section To...**
+(**Ctrl+Alt+Shift+F5**). The **File pattern** of Search in Files takes them
+too; chapter 4 has the details. Press **F1** in any of these search boxes to
+hear a short reminder.
 
 ## What you learned, and where to go next
 
