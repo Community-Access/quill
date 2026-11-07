@@ -3621,8 +3621,9 @@ invocation fails, any existing output is unchanged and the CLI explicitly
 warns that no new result was written; do not treat an older report as that run.
 
 **Still open:** real paired runs, hotword-capable model selection and
-pinning, licensing, CPU/RAM/latency and screen-reader acceptance; the
-broader keyword spotting/punctuation/speaker/TTS runners.
+pinning, licensing, CPU/RAM/latency and screen-reader acceptance. The
+keyword-spotting, punctuation, speaker and TTS runners shipped in
+`scripts/bench_post_passes.py` (section 41).
 `HOTWORDS_ENABLED`, `PUNCTUATION_ADOPTED` and `SPEAKERS_ADOPTED` remain
 off. A `measurement_pass` is not a product-adoption or release decision,
 and Sherpa Kokoro still requires model/voice licensing and human listening.

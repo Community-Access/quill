@@ -6100,9 +6100,10 @@ existing output is unchanged and the CLI explicitly warns that no new
 result was written; do not treat an older report as that run.</p>
 <p><strong>Still open:</strong> real paired runs, hotword-capable model
 selection and pinning, licensing, CPU/RAM/latency and screen-reader
-acceptance; the broader keyword spotting/punctuation/speaker/TTS
-runners. <code>HOTWORDS_ENABLED</code>, <code>PUNCTUATION_ADOPTED</code>
-and <code>SPEAKERS_ADOPTED</code> remain off. A
+acceptance. The keyword-spotting, punctuation, speaker and TTS runners
+shipped in <code>scripts/bench_post_passes.py</code> (section 41).
+<code>HOTWORDS_ENABLED</code>, <code>PUNCTUATION_ADOPTED</code> and
+<code>SPEAKERS_ADOPTED</code> remain off. A
 <code>measurement_pass</code> is not a product-adoption or release
 decision, and Sherpa Kokoro still requires model/voice licensing and
 human listening. The legacy-engine notice and the consented,
