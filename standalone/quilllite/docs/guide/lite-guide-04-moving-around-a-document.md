@@ -56,12 +56,22 @@ delete the matches. Its buttons are:
 - **Replace**, which changes the match you are on and moves on to the next
   one, so you can decide one at a time.
 - **Replace all**, which changes every match in the document at once and
-  tells you how many it changed.
+  tells you how many it changed, for example "Replaced 12 occurrences".
 - **Close**. Anything you have already replaced stays replaced, and
   **Ctrl+Z** takes it back if you change your mind.
 
 Both windows stay open while you work, so you can go back to your document
 and return to them.
+
+**What you type in Replace with is what goes in.** A backslash is just a
+backslash. Replace a folder name with `C:\new\reports` and that is exactly
+what lands in every match, and `\1` goes in as the two characters you typed.
+Only one thing reads the box differently: **Replace all** with the **Regular
+expression** search mode. There, `\1` puts back the first part of the match
+you wrapped in brackets and `\2` the second, so searching for `(\w+), (\w+)`
+and replacing all with `\2 \1` turns "Bishop, Jeff" into "Jeff Bishop". If the
+box names a part the search does not have, such as `\3` when there are only
+two, nothing is changed and you hear "Nothing replaced", with the reason.
 
 ### How many are there?
 
@@ -176,7 +186,14 @@ Both open the same window, which asks for:
 - **Starting folder**: where to look. It starts at the folder of the document
   you are in.
 - **File pattern**: which files, such as `*.txt` or `*.md`. A star on its own
-  means every file.
+  means every file. To name more than one kind, put `|` between patterns to
+  take either, `&` to need both, and `!` before one to leave it out:
+  `*.md | *.txt` searches Markdown and text files together, and `* !*.bak`
+  searches everything except backups. Double quotes around a name mean that one
+  exact file, and a pattern with a slash, such as `!drafts/*`, is matched
+  against the path inside the starting folder. A pattern without these
+  characters works exactly as before, and the search text still follows the
+  Match mode.
 - **Search text**, and for Replace Across Files, **Replacement**.
 - **Match mode**: Plain text, Wildcard (`*` and `?`) or Regular expression.
 - **Output format**: how the results are written out, from just the file names

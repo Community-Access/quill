@@ -45,7 +45,11 @@ from quill.core.heading_ladder import (
     HEADING_POINT_SIZES,
     heading_level_for_font,
 )
-from quill.core.highlights import highlight_from_colorref, highlight_hex
+from quill.core.highlights import (
+    highlight_from_colorref,
+    highlight_hex,
+    text_colour_from_colorref,
+)
 from quill.io.rtf_styles import parse_color
 from quill.ui.richedit_rtf_io import RtfIoMixin
 from quill.ui.richedit_tables import install_aligned_text
@@ -240,6 +244,12 @@ class QuillRichEdit(RtfIoMixin):
     instrument (Phase 3) are also wired here. ``surface`` is the live
     ``wx.TextCtrl``.
     """
+
+    #: The COLORREF a theme painted over the whole story (``set_document_color``
+    #: in ``richedit_editing``), or ``None``. Say Formatting treats it as the
+    #: default colour: in a dark theme every run is light grey, and naming that
+    #: on every character would be noise about the window, not the document.
+    _theme_colorref: int | None = None
 
     def __init__(self, surface: Any) -> None:
         self._surface = surface
@@ -478,6 +488,18 @@ class QuillRichEdit(RtfIoMixin):
                 parts.append("italic")
             if int(getattr(font, "Underline", 0)) != 0:
                 parts.append("underline")
+            # Text colour before highlight, the order the Markdown path speaks
+            # them in; automatic, black and the theme's own colour say nothing.
+            fore = getattr(font, "ForeColor", -1)
+            colour = text_colour_from_colorref(fore)
+            if colour and self._theme_colorref is not None:
+                try:
+                    if int(fore) == self._theme_colorref:
+                        colour = None
+                except (TypeError, ValueError):
+                    pass
+            if colour:
+                parts.append(colour)
             highlight = highlight_from_colorref(getattr(font, "BackColor", -1))
             if highlight:
                 parts.append(f"{highlight} highlight")

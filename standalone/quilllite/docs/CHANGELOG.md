@@ -10,6 +10,55 @@
   presses count the selection when there is one. Shared with QUILL, which says
   the same words on the same key. The first press now gives lines before
   characters, as QUILL always has.
+### Searches that say more (2026-11-06)
+
+- Shared with QUILL: Go To Anything (Ctrl+Alt+Shift+A), including its `#`
+  heading search, Insert > Markdown Tag, Insert > HTML Tag and both lists of
+  Move Section To now understand a small query. `&` needs both words (two words
+  side by side mean the same), `|` takes either, `!` leaves a word out, `*` and
+  `?` stand for letters inside a word, and double quotes match exact text. `!`
+  is read first, then `&`, then `|`.
+- The File pattern of Search in Files and Replace Across Files combines
+  patterns: `*.md | *.txt`, `* !*.bak`. The search text is unchanged.
+- A search without any of `* ? & | ! "` works exactly as before. F1 in each
+  search box gives a short reminder.
+### Math as MathML in exported pages (2026-11-06)
+
+- **File > Export as HTML...** (Ctrl+Alt+Shift+End) now writes equations in a
+  Markdown document as MathML, from the same code QUILL uses. The page needs
+  no script and nothing from the internet to show its math, and NVDA and JAWS
+  read and navigate the equations with their own math support. Underscores
+  inside an equation stay part of the equation instead of turning into
+  emphasis. A formula that cannot be converted is left as its source text.
+### Describe Formatting names the text colour (2026-11-06)
+
+- In a rich text document, **Ctrl+Shift+D** (Format > Describe Formatting at
+  Cursor) now names coloured text: "Calibri, 11 point, red, yellow
+  highlight". Common colours are named exactly and other shades by the
+  nearest common name. Uncoloured text, black text and the dark theme's page
+  colour say nothing. The description is shared with QUILL.
+### Replace All takes what you typed, and a missed backup is said (2026-11-06)
+
+- **Replace all puts in exactly what you typed.** In Normal and Extended
+  search, a backslash in **Replace with** is just a backslash. Replacing with
+  `C:\new\reports` used to put a line break where `\n` was, and `\1` stopped
+  Replace all with an error. With the **Regular expression** search mode,
+  `\1` and `\2` still bring back the parts of the match, and a replacement
+  naming a part the search does not have changes nothing and says "Nothing
+  replaced" with the reason.
+- **A backup that could not be written is said.** With timestamped backups on,
+  a save whose backup failed now says "Saved notes.txt, but could not write a
+  backup", on your braille display too, instead of the usual "Saved
+  notes.txt". The file is saved either way, and the reason is in the log. This
+  covers Word documents as well.
+
+### First-page and even-page Word headers are named before a rich edit (2026-11-06)
+
+- Shared with QUILL: a `.docx` whose header or footer appears only on the
+  first page or only on even pages is now listed as "headers" or "footers" in
+  the question QUILL Lite asks when it opens, and the first save writes the
+  backup. Before, the file opened without a word and the header was gone after
+  saving (#1756).
 
 ### Form payment integration (2026-11-06)
 

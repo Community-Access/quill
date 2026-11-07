@@ -12,9 +12,11 @@ well as by a coloured rule, so the marking never depends on colour. It follows
 the reader's light or dark setting and prints cleanly.
 
 QUILL runs Pandoc for Markdown when it is installed (:func:`pandoc_html_args`
-gives it ``--standalone``, the title, the language and this same stylesheet),
-and both editors fall back to QUILL's own renderer
-(:func:`standalone_html`), which knows task lists and strikethrough.
+gives it ``--standalone``, the title, the language and this same stylesheet,
+math as MathML, the document's own folder for its pictures and, when the
+installed Pandoc can, the pictures embedded in the page), and both editors
+fall back to QUILL's own renderer (:func:`standalone_html`), which knows task
+lists and strikethrough and also writes math as MathML.
 """
 
 from __future__ import annotations
@@ -24,12 +26,16 @@ import re
 
 from quill.core.browser_preview import render_preview_body
 from quill.core.inline_notes_file import NOTE_LINE_MARK, mark_notes_for_render, parse_file_notes
+from quill.core.math.preview_math import dollar_math
 
 __all__ = [
     "EXPORT_STYLESHEET",
     "count_file_notes",
+    "embed_flag",
+    "has_remote_resources",
     "normalise_language",
     "pandoc_html_args",
+    "pandoc_version",
     "prepare_for_pandoc",
     "standalone_html",
     "style_block",
@@ -119,16 +125,75 @@ def standalone_html(
 
 
 def prepare_for_pandoc(text: str, include_notes: bool) -> str:
-    """Markdown for Pandoc: notes as raw ``aside`` blocks, or gone."""
+    """Markdown for Pandoc: notes as raw ``aside`` blocks, or gone; math in dollars."""
     marked = mark_notes_for_render(text.replace("\r\n", "\n"), "markdown", include_notes)
-    return marked.replace(NOTE_LINE_MARK, "")
+    return dollar_math(marked.replace(NOTE_LINE_MARK, ""))
 
 
-def pandoc_html_args(title: str, lang: str, header_path: str) -> tuple[str, ...]:
-    """The Pandoc arguments for a standalone page: title, language, stylesheet."""
-    return (
+_VERSION_RE = re.compile(r"(\d+)\.(\d+)")
+# A picture or media file the page would have to download to embed.
+_REMOTE_RESOURCE_RE = re.compile(
+    r"!\[[^\]]*\]\(\s*<?(?:https?:)?//"
+    r"|<(?:img|source|video|audio)\b[^>]*\bsrc\s*=\s*[\"']?(?:https?:)?//",
+    re.IGNORECASE,
+)
+
+
+def pandoc_version(version_text: str | None) -> tuple[int, int] | None:
+    """``"pandoc 3.1.9"`` -> ``(3, 1)``; ``None`` when it cannot be read."""
+    match = _VERSION_RE.search(version_text or "")
+    return (int(match.group(1)), int(match.group(2))) if match else None
+
+
+def embed_flag(version: tuple[int, int] | None) -> str | None:
+    """The flag that puts pictures inside the page, for this Pandoc.
+
+    ``--embed-resources`` from Pandoc 3; Pandoc 2 spelled it
+    ``--self-contained`` (deprecated in 3, so never sent to it); an unknown
+    version gets neither, and the page links its pictures as before.
+    """
+    if version is None:
+        return None
+    return "--embed-resources" if version >= (3, 0) else "--self-contained"
+
+
+def has_remote_resources(text: str) -> bool:
+    """Does the Markdown show a picture from the web?
+
+    Embedding would download it during the export, a network call nobody
+    asked for, so a page like that links its pictures instead.
+    """
+    return bool(_REMOTE_RESOURCE_RE.search(text))
+
+
+def pandoc_html_args(
+    title: str,
+    lang: str,
+    header_path: str,
+    *,
+    resource_dir: str | None = None,
+    version: tuple[int, int] | None = None,
+    embed: bool = True,
+) -> tuple[str, ...]:
+    """The Pandoc arguments for a standalone page.
+
+    Title, language and stylesheet always, and math as MathML, so the page
+    needs no script and a screen reader reads the math itself.
+    ``resource_dir`` is the folder the document lives in: Pandoc runs on a
+    temporary copy, so without it a relative picture path resolves against the
+    wrong folder. With a known ``version`` and ``embed``, the pictures go
+    inside the page, so it still shows them when it is emailed or moved alone.
+    """
+    args = [
         "--standalone",
+        "--mathml",
         f"--metadata=title:{title or 'Untitled'}",
         f"--metadata=lang:{normalise_language(lang)}",
         f"--include-in-header={header_path}",
-    )
+    ]
+    if resource_dir:
+        args.append(f"--resource-path={resource_dir}")
+    flag = embed_flag(version) if embed else None
+    if flag is not None:
+        args.append(flag)
+    return tuple(args)

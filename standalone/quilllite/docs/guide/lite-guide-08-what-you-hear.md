@@ -69,7 +69,14 @@ reader would see at a glance.
 What you hear depends on the kind of document:
 
 - In a **rich text** document you hear the real formatting, for example
-  *"Arial, 14 point, bold, centred."*
+  *"Arial, 14 point, bold, centred."* Coloured text names its colour too,
+  just before any highlight: *"Calibri, 11 point, red, yellow highlight."*
+  Common colours such as red, green, blue and orange are named exactly, and
+  any other colour, such as an unusual shade from a Word document, is named
+  after the nearest one, so you hear a word and never a number.
+  Ordinary text says nothing about colour: not when nobody coloured it, not
+  when it is plain black, and not for the light text that the dark theme
+  paints on the page.
 - In a **Markdown** document it reads the markup around your cursor. Inside
   `**bold**` it says bold, and on a `##` line it says Heading 2.
 - In a **plain text** document it tells you it is plain text, because there is

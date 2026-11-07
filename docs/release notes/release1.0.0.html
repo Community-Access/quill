@@ -244,6 +244,44 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-10">QUILL 1.0</h1>
 <p><em>Version 1.0.0. From Community Access. Free.</em></p>
+<h2 id="diagrams-math-and-pictures-in-markdown-pages">Diagrams, math and
+pictures in Markdown pages</h2>
+<p><strong>AI &gt; Accessibility Tune-Up…</strong> now checks Mermaid
+diagrams in Markdown. For each fenced <code>mermaid</code> block it
+tells you, by line number, when the diagram has no accessible title
+(<code>accTitle</code>) or description (<code>accDescr</code>), when an
+init block forces a theme, and when it sets its own colours so you
+should check the contrast. With more than one diagram on a page, it asks
+for a heading before each. A new starter snippet pack,
+<strong>mermaid-diagrams</strong>, has eight diagram types, and every
+one asks for the title and description before anything else.</p>
+<p>Equations in Browser Preview, the side preview and <strong>File &gt;
+Export &gt; HTML…</strong> are now MathML. Nothing is downloaded from
+the internet to show them, and NVDA and JAWS read them with their own
+math support. When Pandoc writes the page, pictures are found beside
+your document and, with Pandoc 2 or 3, carried inside the page so it can
+be emailed on its own. QUILL Lite’s Export as HTML writes math as MathML
+too.</p>
+<h2 id="replace-export-and-backups-you-can-trust">Replace, export and
+backups you can trust</h2>
+<p>Three things that should never surprise you now do not.</p>
+<p><strong>Replace puts in what you typed.</strong> Unless you are
+searching with a regular expression, the Replace box is taken exactly as
+typed. Replace a folder name with <code>C:\new\reports</code> and that
+is what lands in your document, not a line break where the
+<code>\n</code> was. With a regular expression, <code>\1</code> and
+<code>\2</code> still bring back the parts of the match. This holds for
+Replace All and Replace Across Files (<code>Ctrl+Shift+R</code>).</p>
+<p><strong>Exporting over an earlier file is safe.</strong> File &gt;
+Export, Convert File and every other Pandoc conversion now build the new
+file under a hidden temporary name and swap it in only when it is
+finished. If the export fails, times out or is cancelled, the file you
+exported yesterday is still there, untouched.</p>
+<p><strong>A backup that fails is on the record.</strong> When a backup
+cannot be written before a save, QUILL still says “Could not write a
+backup; saving anyway” and saves, and now it writes the reason to its
+log as well, so <strong>Help &gt; Save Diagnostics…</strong> can explain
+a missing backup later.</p>
 <h2 id="form-payment-setup-and-reporting">Form payment setup and
 reporting</h2>
 <p>QUILL and QUILL Lite now share <strong>Tools &gt; Forms &gt; Insert
@@ -468,6 +506,47 @@ contact template, then Tools &gt; Forms &gt; Fill It In Yourself… and
 tab through your own form. Each required question says so. Answer them
 and press Submit: the What Would Be Sent window lists each question with
 its answer, and nothing has gone anywhere.</p>
+<h2 id="new-in-this-build-searches-that-say-more">New in this build:
+searches that say more</h2>
+<p>Every list you narrow by typing now understands a small query, so one
+search can ask for more than one thing. <code>&amp;</code> needs both
+words, and two words side by side mean the same. <code>|</code> takes
+either. <code>!</code> leaves a word out. <code>*</code> stands for any
+run of letters inside a word and <code>?</code> for exactly one. Double
+quotes match exact text, spaces included. <code>!</code> is read first,
+then <code>&amp;</code>, then <code>|</code>, so
+<code>draft | notes !old</code> means “draft, or notes that are not
+old”.</p>
+<p>It works in Go to Anything (<strong>Ctrl+Alt+Shift+A</strong>),
+including its <code>#</code> search for headings, and in Insert Snippet,
+Insert HTML Tag, Insert Markdown Tag, both lists of Move Section To
+(<strong>Ctrl+Alt+Shift+F5</strong>), the abbreviation manager and the
+Copy Tray search. The File pattern of Search in Files
+(<strong>Ctrl+Alt+Shift+F</strong>) combines patterns the same way:
+<code>*.md | *.txt</code> takes both kinds, and <code>* !*.bak</code>
+leaves the backups out. QUILL Lite has it in the same lists, from the
+same code. A search with none of those characters works exactly as
+before, and you never hear an error for a half-typed one. Press F1 in
+any of these search boxes for a short reminder.</p>
+<p><strong>Try this:</strong> open a long document, press
+<strong>Ctrl+Alt+Shift+A</strong>, and type
+<code>#chapter !draft</code>. The list holds every chapter heading
+except the drafts; press Enter to go to the one on top.</p>
+<h2 id="fixed-in-this-build-first-page-and-even-page-word-headers">Fixed
+in this build: first-page and even-page Word headers</h2>
+<p>When you open a Word document for rich editing, QUILL tells you what
+the editor cannot keep, and makes a backup before your first save over
+the file. Headers and footers have always been on that list, but only
+the ordinary ones. A header set to appear on the first page only (Word’s
+Different First Page), or on even pages only (Different Odd and Even
+Pages), slipped past: the file opened with no question, and saving it
+removed the header without a word. Now those count as headers and
+footers too, in every section of the document, so you hear them named in
+the <strong>Open Word document</strong> question and the backup is made.
+QUILL Lite has the same fix.</p>
+<p><strong>Try this:</strong> in Word, make a title page with its own
+first-page header and save it. Open it in QUILL and choose the normal
+text editor. The question lists “headers”.</p>
 <h2 id="new-in-this-build-every-menu-item-in-the-command-palette">New in
 this build: every menu item in the Command Palette</h2>
 <p>The Command Palette (<strong>Ctrl+Shift+P</strong>, first in the
@@ -636,6 +715,31 @@ list of everything that changed, in your web browser. Press
 QuillVille family has it on its Help menu now.</p>
 <p><strong>Try this:</strong> press Alt+H, then W, and use your screen
 reader’s heading keys to jump from one change to the next.</p>
+<h2 id="new-in-this-build-three-smaller-fixes">New in this build: three
+smaller fixes</h2>
+<ul>
+<li><strong>Describe Formatting names the colour.</strong> In a rich
+text document, <strong>Ctrl+Shift+D</strong> (Format &gt; Describe
+Formatting at Cursor) now names the text colour, just before any
+highlight: “Calibri, 11 point, red, yellow highlight”. A colour from
+<strong>Format &gt; Text Color</strong> comes back under the name you
+chose; any other shade is named after the nearest common colour.
+Uncoloured text, black text and a dark theme’s page colour say nothing
+about colour. QUILL Lite gives the same answer.</li>
+<li><strong>AI Translate says when nothing was translated.</strong> If
+the result is the same as your text, ignoring spacing and capital
+letters, the result box says “The translation came back the same as the
+original. The text may already be in the target language.” and takes
+focus, and the Copy, Replace and New Document buttons stay unavailable.
+Try another language or the other provider.</li>
+<li><strong>Ctrl+O starts where you last opened a file.</strong> Opening
+a file from File Explorer, the command line, Open Recent or a tab that
+already had it now sets the folder the next Open dialog starts in, just
+as the Open and Save As dialogs always did.</li>
+</ul>
+<p><strong>Try this:</strong> double-click a document in File Explorer
+to open it in QUILL, then press Ctrl+O. The dialog is already in that
+document’s folder.</p>
 <h2 id="try-this-first">Try this first</h2>
 <ol type="1">
 <li>Open QUILL. The first time, a short welcome asks what kind of
@@ -1524,7 +1628,7 @@ location in the editor</strong>, which puts your cursor on that block’s
 line in the source. The key opens a menu instead of doing something
 straight away, which is what screen reader users expect from it. There
 is also a browser preview that shows the document as a web page, with
-MathJax for equations.</p>
+equations shown as MathML.</p>
 <h3 id="insert-emoji">Insert Emoji</h3>
 <p>Insert Special Character is for when you know the code point you
 want. Emoji are the opposite: you don’t know the code point, you may not
@@ -1613,10 +1717,12 @@ an equation (numerator, exponent, radicand) instead of reading it as one
 long string.</p>
 <p>Typing math as text works well by ear: it is all keyboard, you can
 review it character by character, and screen readers that speak math can
-read it. The preview and HTML export show it through MathJax. Word
-export writes real Word equations you can edit, and they turn back into
-text when you reopen the file. With the optional MathCAT engine
-installed, “read this part aloud” speaks math the way NVDA does.</p>
+read it. The preview and HTML export show it as MathML, which needs
+nothing from the internet and which NVDA and JAWS read with their own
+math support. Word export writes real Word equations you can edit, and
+they turn back into text when you reopen the file. With the optional
+MathCAT engine installed, “read this part aloud” speaks math the way
+NVDA does.</p>
 <p>Insert Equation writes <code>\(...\)</code> around an equation in the
 line and <code>$$...$$</code> around a block, the same marks the Math
 Equations Quillin uses, so the preview and Word export both pick it up.

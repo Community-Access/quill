@@ -25,6 +25,7 @@ one is needed, and forwards the result to the existing announcement pipeline.
 
 from __future__ import annotations
 
+from quill.core.list_search import SearchTerms
 from quill.core.markdown_sections import (
     MoveResult,
     describe_section_selection,
@@ -191,9 +192,8 @@ def _matching(rows: list[str], query: str) -> list[str]:
     ("3 of 7, level 2 - Bread") and somebody who types "bread 2" means both
     halves of what they typed. Order is never re-ranked: the list is the
     document's outline, and an outline that reorders itself as you type is one
-    you cannot navigate by position.
+    you cannot navigate by position. The shared filter (quill.core.list_search)
+    also takes a query: ``bread | rolls``, ``!draft``, ``"level 2"``.
     """
-    words = query.lower().split()
-    if not words:
-        return list(rows)
-    return [row for row in rows if all(word in row.lower() for word in words)]
+    terms = SearchTerms(query)
+    return [row for row in rows if terms.found_in(row.casefold())]

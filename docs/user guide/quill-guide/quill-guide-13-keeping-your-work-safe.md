@@ -45,7 +45,12 @@ rules:
 - **A backup can never stop a save.** The backup is there to protect you from
   a bad save, so a failed backup must not cancel the save. If the backup cannot
   be written, QUILL says "Could not write a backup; saving anyway" and saves
-  your file.
+  your file. When it knows why, the reason is in the sentence too, for example
+  "Could not write a backup (No space left on device); saving anyway". The
+  failure is also written to QUILL's log, with the document's name and the
+  reason, so if you later find there is no backup to go back to, the bundle
+  from **Help > Save Diagnostics...** has the answer even though the spoken
+  message is long gone.
 - **A failed save is explained in words you can act on.** You will not hear
   "[Errno 28] No space left on device". You will hear "The disk is full. QUILL
   could not save notes.md. Free some space and try again; your text is still

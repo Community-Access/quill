@@ -60,6 +60,7 @@ __all__ = [
     "previous_passage",
     "runs_from_markdown",
     "spoken_passage",
+    "text_colour_from_colorref",
 ]
 
 
@@ -202,6 +203,49 @@ def highlight_from_colorref(value: object) -> str | None:
         return None
     red, green, blue = colorref & 0xFF, (colorref >> 8) & 0xFF, (colorref >> 16) & 0xFF
     return highlight_name(f"#{red:02X}{green:02X}{blue:02X}")
+
+
+#: The text colours QUILL's Format menu applies by name, in the RTF writer's
+#: own values (``quill.io.rtf_styles``), checked first so a colour the user
+#: chose comes back under the name they chose it by: Green is (0, 128, 0)
+#: there, which the highlight palette would call "dark green".
+_TEXT_COLOUR_NAMES: tuple[str, ...] = (
+    "red",
+    "green",
+    "blue",
+    "white",
+    "yellow",
+    "orange",
+    "purple",
+    "gray",
+)
+
+
+def text_colour_from_colorref(value: object) -> str | None:
+    """A spoken name for a Win32 COLORREF text colour, or ``None`` for default.
+
+    For a Rich Edit control's ``ITextFont.ForeColor``. Automatic colour
+    (tomAutoColor is negative), out-of-range values and plain black -- what
+    body text is when nobody has coloured it -- are ``None``, so Say Formatting
+    stays quiet about them. A colour from the Format menu is named exactly;
+    any other is named after the nearest colour in Word's highlight palette,
+    because a listener needs a word, not six hex digits.
+    """
+    from quill.io.rtf_styles import parse_color
+
+    try:
+        colorref = int(value)  # type: ignore[call-overload]
+    except (TypeError, ValueError):
+        return None
+    if colorref < 0 or colorref > 0xFFFFFF:
+        return None
+    rgb = (colorref & 0xFF, (colorref >> 8) & 0xFF, (colorref >> 16) & 0xFF)
+    if rgb == (0, 0, 0):
+        return None
+    for name in _TEXT_COLOUR_NAMES:
+        if parse_color(name) == rgb:
+            return name
+    return _nearest(rgb)
 
 
 def docx_highlight_member(value: object) -> str | None:

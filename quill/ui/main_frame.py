@@ -5915,6 +5915,7 @@ class MainFrame(
         existing_index = self._find_tab_index(selected_path)
         if existing_index >= 0 and not refresh_existing:
             self._select_tab(existing_index)
+            self._remember_open_folder(selected_path)
             if record_recent:
                 self._record_recent(selected_path)
             self._position_editor_at(line=line, column=column)
@@ -6075,6 +6076,7 @@ class MainFrame(
                 incorrect=encrypted_retry,
             )
             return
+        self._remember_open_folder(selected_path)
         illuminated = self._maybe_apply_illumination(loaded, selected_path, suffix)
         self._epub_book = epub_book if suffix == ".epub" else None
         linkage_entry = get_publishing_linkage(selected_path)

@@ -1,9 +1,9 @@
 """Accessibility Tune-Up: a consented, announced, reversible accessibility plan.
 
 This module is the deterministic core of the "Accessibility Tune-Up" feature
-(AGENT-1). It audits a document's structure, alt text, link
-text, and plain language, then proposes an ordered plan of discrete steps. Each
-step is reviewable on its own (a before/after snippet and a plain-language
+(AGENT-1). It audits a document's structure, alt text, link text, Mermaid
+diagrams, and plain language, then proposes an ordered plan of discrete steps.
+Each step is reviewable on its own (a before/after snippet and a plain-language
 rationale) and the user accepts or skips each one before anything is applied.
 
 The engine is UI-framework-agnostic: it imports no ``wx``. It reuses the
@@ -28,6 +28,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from quill.core.glow import audit_text
+from quill.core.mermaid_a11y import check_mermaid
 from quill.core.plain_language import lint_plain_language
 
 _TransformFn = Callable[[str], str]
@@ -36,6 +37,7 @@ _TransformFn = Callable[[str], str]
 CATEGORY_STRUCTURE = "structure"
 CATEGORY_ALT_TEXT = "alt-text"
 CATEGORY_LINK_TEXT = "link-text"
+CATEGORY_DIAGRAMS = "diagrams"
 CATEGORY_PLAIN_LANGUAGE = "plain-language"
 CATEGORY_CLEANUP = "cleanup"
 
@@ -43,8 +45,9 @@ _CATEGORY_ORDER: dict[str, int] = {
     CATEGORY_STRUCTURE: 0,
     CATEGORY_ALT_TEXT: 1,
     CATEGORY_LINK_TEXT: 2,
-    CATEGORY_PLAIN_LANGUAGE: 3,
-    CATEGORY_CLEANUP: 4,
+    CATEGORY_DIAGRAMS: 3,
+    CATEGORY_PLAIN_LANGUAGE: 4,
+    CATEGORY_CLEANUP: 5,
 }
 
 _GENERIC_LINK_TEXT = {
@@ -156,6 +159,7 @@ def build_plan(
     _collect_structure_steps(lines, markup, add)
     _collect_alt_text_steps(text, lines, markup, add)
     _collect_link_text_steps(lines, markup, add)
+    _collect_diagram_steps(text, markup, add)
     _collect_plain_language_steps(text, lines, add)
     _collect_cleanup_steps(text, add)
 
@@ -491,6 +495,23 @@ def _collect_link_text_steps(
                         index + 1,
                         None,
                     )
+
+
+def _collect_diagram_steps(text: str, markup: str, add: Callable[..., None]) -> None:
+    """Mermaid diagrams: accessible title and description, theme, colours, headings."""
+
+    if markup != "markdown":
+        return
+    for finding in check_mermaid(text):
+        add(
+            CATEGORY_DIAGRAMS,
+            finding.title,
+            finding.rationale,
+            finding.context,
+            finding.context,
+            finding.line,
+            None,
+        )
 
 
 def _collect_plain_language_steps(

@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+import pytest
+
 from quill.io.html_page import (
+    embed_flag,
+    has_remote_resources,
     normalise_language,
     pandoc_html_args,
+    pandoc_version,
     prepare_for_pandoc,
     standalone_html,
 )
@@ -38,6 +43,7 @@ def test_pandoc_gets_a_standalone_page_and_clean_input() -> None:
     args = pandoc_html_args("Plan", "fr_CA", "style.html")
     assert args == (
         "--standalone",
+        "--mathml",
         "--metadata=title:Plan",
         "--metadata=lang:fr-CA",
         "--include-in-header=style.html",
@@ -45,3 +51,32 @@ def test_pandoc_gets_a_standalone_page_and_clean_input() -> None:
     assert "quill-note" not in prepare_for_pandoc(MD, False)
     assert prepare_for_pandoc(MD, True).count("<aside") == 1
     assert normalise_language("not a tag!") == "en"
+
+
+@pytest.mark.parametrize(
+    ("version_text", "flag"),
+    [
+        ("pandoc 3.1.9", "--embed-resources"),
+        ("pandoc.exe 3.12.1", "--embed-resources"),
+        ("pandoc 2.19.2", "--self-contained"),
+        (None, None),
+        ("pandoc", None),
+    ],
+)
+def test_pictures_are_embedded_with_the_flag_this_pandoc_knows(version_text, flag) -> None:
+    version = pandoc_version(version_text)
+    assert embed_flag(version) == flag
+    args = pandoc_html_args("P", "en", "s.html", resource_dir=r"C:\notes", version=version)
+    assert args[5] == r"--resource-path=C:\notes"
+    assert args[6:] == ((flag,) if flag else ())
+
+
+def test_no_embedding_when_asked_not_to_and_no_resource_path_without_a_folder() -> None:
+    args = pandoc_html_args("P", "en", "s.html", version=(3, 1), embed=False)
+    assert not any(a.startswith(("--resource-path", "--embed", "--self")) for a in args)
+
+
+def test_a_picture_from_the_web_is_never_downloaded_to_embed_it() -> None:
+    assert has_remote_resources("![logo](https://example.com/a.png)")
+    assert has_remote_resources('<img alt="x" src="//cdn.example.com/a.png">')
+    assert not has_remote_resources("![logo](pics/a.png) and [site](https://example.com)")
