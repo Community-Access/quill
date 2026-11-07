@@ -414,6 +414,92 @@ status cannot be re-requested and QUILL says so. Each change asks first
 and reports GitHub’s confirmed result. Known refusals, such as
 auto-merge being turned off for the repository, are said as what to do
 next.</p>
+<h2 id="line-comments-the-timeline-and-reactions">Line comments, the
+timeline and reactions</h2>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Review, top line</td>
+<td>none</td>
+<td>The pull request in one sentence, said once on open</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>Alt+L</td>
+<td>Changed since my last review: only files changed since your reviewed
+commit</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>Alt+T</td>
+<td>Timeline: one line per event, newest last</td>
+</tr>
+<tr>
+<td>Diff</td>
+<td>Alt+P</td>
+<td>Patch lines, one row per line; Shift with arrows selects a run</td>
+</tr>
+<tr>
+<td>Diff</td>
+<td>Alt+L</td>
+<td>Comment on This Line (Enter on one line)</td>
+</tr>
+<tr>
+<td>Diff</td>
+<td>Alt+S</td>
+<td>Comment on Lines (Enter on a run, or type a start and end)</td>
+</tr>
+<tr>
+<td>Diff</td>
+<td>Alt+M</td>
+<td>Line marks: words or symbols</td>
+</tr>
+<tr>
+<td>Diff</td>
+<td>Alt+C, Alt+O</td>
+<td>Copy Diff; Open Diff in Default App</td>
+</tr>
+<tr>
+<td>Comment</td>
+<td>Alt+S, Alt+A, Alt+P</td>
+<td>Suggest a change; Add to Review; Post Now</td>
+</tr>
+</tbody>
+</table>
+<p>The summary comes from one GraphQL query
+(<code>reviewDecision</code>, <code>statusCheckRollup</code>, unresolved
+<code>reviewThreads</code>, <code>autoMergeRequest</code>,
+<code>mergeStateStatus</code>, and <code>baseRef.compare</code> for a
+same-repository branch). Its readiness phrase goes through the same
+rules as the review header, so partial or unknown data reads as “merge
+readiness unknown”, never as ready. The query takes aliases, so several
+pull requests can share one request.</p>
+<p>A line comment posts through <code>POST /pulls/{n}/comments</code>
+with <code>commit_id</code>, <code>path</code>, <code>line</code>,
+<code>side</code> and, for a range, <code>start_line</code> and
+<code>start_side</code>. Add to Review keeps it in a per-account local
+file, pinned to the head it was written on. Compose Review sends the
+review and every pending comment in one
+<code>POST /pulls/{n}/reviews</code>, and refuses when the head has
+moved since. The outline lists pending comments, each with Edit and
+Delete (Delete asks first).</p>
+<p>Changed since my last review reads the account’s latest review
+<code>commit_id</code> and compares it with the head
+(<code>GET /compare/{reviewed}...{head}</code>). A missing commit, after
+a force-push, is said plainly and the filter shows every file.</p>
+<p>The timeline reads <code>GET /issues/{n}/timeline</code>, up to five
+pages of 100, and says when it stopped early. Reactions list, add and
+remove through the REST reactions endpoints for issues, issue comments
+and review comments; removal deletes only the signed-in account’s own
+reaction. Counts read in words in comment details (“3 thumbs up, 1
+heart”).</p>
 <h2 id="review-and-write-safety">Review and write safety</h2>
 <p>The review tree announces reply counts, outdated positions, resolved
 state, and check status. Selecting a thread never resolves it. Reply,

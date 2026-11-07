@@ -1,5 +1,14 @@
 # QUILL Lite 2.0
 
+## GitHub: reviewing a pull request line by line
+
+Review now opens with the pull request in one sentence, such as "Approved, 2
+checks failing, 1 open thread, 3 commits behind main", and never calls it
+ready on partial data. In **Diff...**, comment on a line or a run of lines from
+**Patch lines**, keep the comment for your review or post it now, and suggest
+a change. **Changed since my last review**, **Timeline** and reactions by name
+come from the same windows as QUILL.
+
 ## GitHub: notifications, what failed, and merge automation
 
 The GitHub windows Lite shares with QUILL now triage your notifications. In

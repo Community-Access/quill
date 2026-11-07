@@ -2,6 +2,26 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## GitHub: reviewing a pull request line by line
+
+Open a pull request in Review and the first thing you hear is the whole of it
+in one sentence: "Approved, 2 checks failing, 1 open thread, 3 commits behind
+main." If QUILL is missing part of the picture, it says "merge readiness
+unknown" rather than telling you it is ready.
+
+In the diff, **Patch lines** lists each changed line, marked with words or, if
+you prefer and your screen reader reads punctuation, with + and -. Pick a line,
+or a run of them, and comment on it. Keep the comment with your review until
+you submit, or post it now. **Suggest a change** writes the code for the
+author to accept. **Copy Diff** and **Open Diff in Default App** hand the whole
+thing over as a `.diff`.
+
+Coming back to a pull request? Check **Changed since my last review** and you
+see only the files that changed since you last looked, with a count. If the
+branch was force-pushed, QUILL tells you so. **Timeline** reads the
+conversation's history one line at a time, and you can react with a thumbs up,
+heart and the rest, chosen by name. QUILL Lite has all of it in the same windows.
+
 ## GitHub: notifications, what failed, and merge automation
 
 Your GitHub notifications are now something you can work through rather than

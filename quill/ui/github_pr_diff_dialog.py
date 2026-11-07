@@ -128,7 +128,9 @@ class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 8)
 
         panel.SetSizer(root)
-        self.dialog.SetSizer(root)
+        outer = wx.BoxSizer(wx.VERTICAL)
+        outer.Add(panel, 1, wx.EXPAND)
+        self.dialog.SetSizer(outer)
         self._files.Bind(wx.EVT_LISTBOX, self._on_select)
         self._explain_btn.Bind(wx.EVT_BUTTON, self._explain_selected_change)
 
