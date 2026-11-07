@@ -1,5 +1,19 @@
 # QUILL Lite 2.0
 
+## Replace all and backups you can trust
+
+**Replace all puts in what you typed.** In Normal and Extended search, a
+backslash in **Replace with** is just a backslash, so replacing with
+`C:\new\reports` puts exactly that into every match. With the **Regular
+expression** search mode, `\1` and `\2` still bring back the parts of the
+match, and asking for a part the search does not have changes nothing and
+tells you why.
+
+**A backup that fails is said.** With timestamped backups switched on in
+**Tools > Customize Features**, a save whose backup could not be written now
+says "Saved notes.txt, but could not write a backup", and your braille display
+shows the same. Your file is saved either way.
+
 ## Stripe and PayPal form setup
 
 Tools > Forms now includes Insert Payment Field, Form Payments Setup and

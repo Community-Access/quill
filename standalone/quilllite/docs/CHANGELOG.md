@@ -2,6 +2,21 @@
 
 ## 2.0.0
 
+### Replace All takes what you typed, and a missed backup is said (2026-11-06)
+
+- **Replace all puts in exactly what you typed.** In Normal and Extended
+  search, a backslash in **Replace with** is just a backslash. Replacing with
+  `C:\new\reports` used to put a line break where `\n` was, and `\1` stopped
+  Replace all with an error. With the **Regular expression** search mode,
+  `\1` and `\2` still bring back the parts of the match, and a replacement
+  naming a part the search does not have changes nothing and says "Nothing
+  replaced" with the reason.
+- **A backup that could not be written is said.** With timestamped backups on,
+  a save whose backup failed now says "Saved notes.txt, but could not write a
+  backup", on your braille display too, instead of the usual "Saved
+  notes.txt". The file is saved either way, and the reason is in the log. This
+  covers Word documents as well.
+
 ### First-page and even-page Word headers are named before a rich edit (2026-11-06)
 
 - Shared with QUILL: a `.docx` whose header or footer appears only on the

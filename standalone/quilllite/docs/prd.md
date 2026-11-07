@@ -2419,3 +2419,35 @@ the same way.
 - In a plain text or HTML document it inserts nothing and says why: "A page
   break needs a Word, Rich Text or Markdown document". It never writes a form
   feed.
+
+
+## Replace All takes what was typed, and a failed backup is said (2026-11-06)
+
+**Replace All.** `lite_window_find._replace_every_match` built the whole new
+text with `pattern.sub(replacement, text)`, and `re.sub` reads a string
+replacement as a template in every mode. So in Normal and Extended search
+`C:\new` gained a line break and `\1` raised out of the command. The
+replacement now goes in through a function unless the search mode is
+`regex`, which keeps `\1` and `\g<name>`; a regex replacement naming a group
+the pattern does not have is caught, announced ("Nothing replaced: ...") and
+changes nothing, because the new text is built before the single edit. Rich
+mode's per-match loop was already literal. QUILL had the same fault in
+`quill/core/search.replace_all` (Replace All and Replace Across Files) and
+the same fix (rule 10: value flows both ways). Tests:
+`tests/unit/apps/test_lite_find_modes.py`, `tests/unit/core/test_search.py`.
+
+**Backups.** `core/lite/backups.write_backup` never raises and returned `None`
+on failure, which both save paths ignored, so a full or read-only backups
+folder went unnoticed until the day the backup was wanted. It now logs the
+reason, and `DocumentFileMixin._back_up_saved` (used by Save and by the Word
+save's finish, `_finish_word_save`) folds the failure into the one save
+announcement: "Saved notes.txt, but could not write a backup", through the
+window's voice so braille mirrors it (GATE-BRAILLE). One announcement rather
+than two, so the second does not cut off the first. QUILL already spoke its
+backup failure and now logs it too. Tests:
+`tests/unit/apps/test_lite_file_commands.py`.
+
+**Export.** QUILL Lite writes no file through Pandoc: Word saves go through
+`docx_open.write_docx_from_rtf` and HTML export through `write_text_atomic`,
+both already atomic. QUILL's Pandoc writer now stages beside the target and
+replaces it only on success (QUILL PRD 5.3a.1.1).

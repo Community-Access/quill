@@ -900,6 +900,15 @@ PDF, DOCX, EPUB, ODT and RTF don't ask, because QUILL cannot edit those
 directly. Instead a message tells you where the file was saved and copies the
 path to the clipboard, so you can paste it into File Explorer.
 
+**Exporting over an earlier file is safe.** Say you exported `report.docx`
+yesterday and export again today to the same name. Pandoc builds the new file
+under a temporary hidden name in the same folder, and only when it has
+finished successfully does QUILL swap it in over yesterday's. If the export
+fails, times out or you cancel it, yesterday's `report.docx` is exactly as it
+was, no half-written file is left behind, and you hear "Pandoc export failed"
+with the reason. The same holds for every conversion that writes a file
+through Pandoc: Convert File, batch conversion, braille and review exports.
+
 **Other formats.** Both menus end with **Other Pandoc Format...**. It shows a
 list of every other format Pandoc can read (on Import) or write (on Export),
 such as CommonMark and GitHub-Flavored Markdown. Arrow to the one you want and

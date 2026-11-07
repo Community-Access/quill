@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### Replace, export and backups you can trust (2026-11-06)
+
+- **Replace takes what you typed.** In a plain or wildcard search, the Replace
+  box goes in exactly as typed. Replacing with `C:\new\reports` used to put a
+  line break where `\n` was, and `\1` stopped Replace All with an error about a
+  group. A regular-expression search still reads `\1` and `\2` as the parts of
+  the match. The same fix covers Replace Across Files.
+- **An export never loses the file it was replacing.** Every Pandoc conversion
+  that writes a file (File > Export, Convert File, batch conversion, braille
+  and review exports) now writes to a hidden temporary file beside the target
+  and moves it into place only when it finished. A failed, timed-out or
+  cancelled export leaves the earlier file exactly as it was, and leaves no
+  half-written file behind.
+- **A backup that cannot be written is logged as well as spoken.** QUILL
+  already said "Could not write a backup; saving anyway"; the reason and the
+  document's name now go to the log too, so a missing backup can be explained
+  later from a diagnostics bundle.
+
 ### Word headers on the first page or even pages are named before a rich edit (2026-11-06)
 
 - A Word document whose only header or footer is a first-page one (Different
