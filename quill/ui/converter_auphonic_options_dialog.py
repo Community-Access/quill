@@ -64,14 +64,8 @@ def _place(root: wx.BoxSizer, control: wx.Window) -> None:
 
 
 def _ok_cancel(dialog: wx.Dialog, root: wx.BoxSizer, ok_help: str) -> None:
+    """Add OK and Cancel with their help; the caller wires them with apply_modal_ids."""
     root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALL | wx.EXPAND, 8)
-    apply_modal_ids(
-        dialog,
-        affirmative_id=wx.ID_OK,
-        affirmative_label="OK",
-        cancel_id=wx.ID_CANCEL,
-        cancel_label="Cancel",
-    )
     for button_id, text in (
         (wx.ID_OK, ok_help),
         (wx.ID_CANCEL, "Closes without changing anything."),
@@ -173,6 +167,13 @@ class AuphonicTagsDialog(wx.Dialog):
         )
         _place(root, self._chapters)
         _ok_cancel(self, root, "Keeps these tags, cover and chapter marks for this submission.")
+        apply_modal_ids(
+            self,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="OK",
+            cancel_id=wx.ID_CANCEL,
+            cancel_label="Cancel",
+        )
         self.SetSizerAndFit(root)
 
         self._choose.Bind(wx.EVT_BUTTON, lambda _e: self.choose_cover())
@@ -326,6 +327,13 @@ class AuphonicMoreDialog(wx.Dialog):
             "The language spoken in the recording, so the transcript is written in it.",
         )
         _ok_cancel(self, root, "Keeps these options for this submission.")
+        apply_modal_ids(
+            self,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="OK",
+            cancel_id=wx.ID_CANCEL,
+            cancel_label="Cancel",
+        )
         self.SetSizerAndFit(root)
         self._noise.Bind(wx.EVT_CHOICE, lambda _e: self._sync())
         self._transcript.Bind(wx.EVT_CHECKBOX, lambda _e: self._sync())
