@@ -286,6 +286,8 @@ def item_detail(
             )
             lines.append(header)
             body_lines = [f"    {ln}" for ln in c.get("body", "").splitlines() or [""]]
+            if c.get("reactions"):
+                body_lines.append(f"    Reactions: {c['reactions']}")
             lines.extend(body_lines)
             positions.append((start_line, len(body_lines) + 1))
     return "\n".join(lines), positions

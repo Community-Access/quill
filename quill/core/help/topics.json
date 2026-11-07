@@ -1891,6 +1891,36 @@
     "user_guide_section": "auto-merge-and-the-merge-queue"
   },
   {
+    "id": "github.line_comments",
+    "title": "Line Comments on a Pull Request",
+    "body": "In a pull request's diff, Patch lines lists the selected file's changes one line per row. Comment on This Line (Alt+L) or Comment on Lines (Alt+S, for a selected run or a start and end you type) opens the comment. Suggest a Change (Alt+S in the comment) writes a suggestion block holding the lines' text for you to edit. Add to Review (Alt+A) keeps it on this device until Compose Review sends it with your review; Post Now (Alt+P) posts it on its own. Line marks (Alt+M) reads lines as words or symbols; symbols need punctuation reading on. Copy Diff (Alt+C) and Open Diff in Default App (Alt+O) hand over the whole pull request as a .diff.",
+    "user_guide_section": "line-comments-on-a-pull-request"
+  },
+  {
+    "id": "github.changed_since_review",
+    "title": "Changed Since My Last Review",
+    "body": "In pull request Review, check Changed since my last review (Alt+L) to see only the files that changed since the commit you last reviewed. QUILL says how many, for example 4 files changed since your review on 2026-11-03, and says plainly when that commit was force-pushed away.",
+    "user_guide_section": "changed-since-my-last-review"
+  },
+  {
+    "id": "github.timeline",
+    "title": "Issue and Pull Request Timeline",
+    "body": "One read-only history of an issue or pull request, one line per event with its date and who did it, newest last: labels, assignments, review requests and reviews, commits, force-pushes, cross-references, closing, reopening and merging. Open it with Timeline (Alt+T) in Review, or View Timeline in the GitHub Items context menu. The last line says whether it is the whole history. Copy All (Alt+A) copies it.",
+    "user_guide_section": "reading-the-timeline"
+  },
+  {
+    "id": "github.reactions",
+    "title": "Reactions",
+    "body": "Add or remove a reaction on an issue, a pull request, an issue comment or a review comment, chosen by name from GitHub's eight: thumbs up, thumbs down, laugh, hooray, confused, heart, rocket and eyes. The list says which are already yours; choosing one of yours removes it. Comment details read the counts in words, such as 3 thumbs up, 1 heart.",
+    "user_guide_section": "reacting-to-issues-and-comments"
+  },
+  {
+    "id": "github.pull_request_summary",
+    "title": "The One-Sentence Pull Request Summary",
+    "body": "The top of the Review window says the pull request in one sentence, such as Approved, 2 checks failing, 1 open thread, 3 commits behind main, and QUILL says it once when the review opens. It never calls a pull request ready when data is missing or partial; it says merge readiness unknown instead.",
+    "user_guide_section": "the-one-sentence-summary"
+  },
+  {
     "id": "glow_audit.detail_text",
     "title": "Issue Detail",
     "body": "Shows the full description of the selected GLOW issue: what was found, why it matters, and what the automatic fix will do. Read this before applying a fix to understand the change.",

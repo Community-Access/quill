@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### GitHub pull request review, line by line (2026-11-07)
+
+- Review opens with the pull request in one sentence, said once, and never
+  calls it ready on partial data.
+- Diff lists Patch lines (Alt+P), marked with words or symbols (Alt+M).
+  Comment on This Line (Alt+L) and Comment on Lines (Alt+S) add a comment to
+  your review or post it now; Suggest a Change writes a suggestion block.
+  Copy Diff (Alt+C) and Open Diff in Default App (Alt+O).
+- Changed since my last review (Alt+L), Timeline (Alt+T) and reactions by name
+  come from the same shared windows as QUILL.
+
 ### GitHub notifications, failed runs and merge automation (2026-11-07)
 
 - The shared GitHub windows triage notifications: Explore's notifications view
