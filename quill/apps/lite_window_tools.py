@@ -37,6 +37,7 @@ import wx
 
 from quill.apps.lite_dialogs import edit_file_format
 from quill.apps.lite_dialogs_entry import ask_text
+from quill.apps.lite_github_open import GitHubFileOpenMixin
 from quill.apps.lite_window_backups import DocumentBackupsMixin
 from quill.core import format_ops, line_ops, transforms
 from quill.core.lite import APP_NAME
@@ -62,7 +63,7 @@ _Tool = Callable[[str], str]
 _IndentOp = Callable[[str, int, int], tuple[str, int, int]]
 
 
-class DocumentToolsMixin(DocumentBackupsMixin):
+class DocumentToolsMixin(DocumentBackupsMixin, GitHubFileOpenMixin):
     """Line tools, case tools, and the file-format dialog."""
 
     def cmd_github_workbench(self) -> None:
@@ -102,6 +103,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
                 self,
                 provider,
                 initial_repo=detect_github_repo(self.path),
+                open_file_reference_cb=self._open_github_file_reference,
                 announce_cb=self._announce,
             ).show()
         finally:

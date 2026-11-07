@@ -63,6 +63,9 @@ class GitHubPullReviewDialog(
         self._visited_thread_ids: set[str] = set()
         self._loading = False
         self._policy_loading = False
+        # Bumped by every refresh; a reply carrying an older number is dropped, so a
+        # slow refresh can never overwrite the one that started after it.
+        self._refresh_generation = 0
 
         self.dialog = wx.Dialog(
             parent,
@@ -265,6 +268,8 @@ class GitHubPullReviewDialog(
         if self._loading:
             return
         self._loading = True
+        self._refresh_generation += 1
+        generation = self._refresh_generation
         self._status.SetLabel("Loading review threads, checks, and status…")
 
         def worker() -> None:
@@ -278,19 +283,39 @@ class GitHubPullReviewDialog(
                     threads=threads,
                     thread_result=thread_result,
                 )
+                diff_error = ""
                 try:
                     diff = self._client._provider.fetch_pull_diff(self._repo, self._number)
-                except GitHubItemsError:
-                    diff = None
+                except GitHubItemsError as exc:
+                    diff, diff_error = None, str(exc.args[0]) if exc.args else str(exc)
             except GitHubReviewError as exc:
-                wx.CallAfter(self._refresh_failed, str(exc))
+                wx.CallAfter(self._refresh_failed, str(exc), generation)
                 return
-            wx.CallAfter(self._refresh_ready, state, threads, diff)
+            wx.CallAfter(self._refresh_landed, generation, state, threads, diff, diff_error)
 
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: review data fetch.
 
-    def _refresh_failed(self, message: str) -> None:
+    def _refresh_landed(
+        self,
+        generation: int,
+        state: object,
+        threads: tuple[GitHubReviewThread, ...],
+        diff: GitHubPullDiff | None,
+        diff_error: str,
+    ) -> None:
+        if generation != self._refresh_generation or not dialog_alive(self.dialog):
+            return
+        self._refresh_ready(state, threads, diff)
+        if diff_error:
+            # The threads and checks loaded; say plainly that the changed files did not.
+            message = f"Could not load the diff: {diff_error}"
+            self._status.SetLabel(f"Review loaded. {message}")
+            self._announce(message)
+
+    def _refresh_failed(self, message: str, generation: int | None = None) -> None:
         if not dialog_alive(self.dialog):
+            return
+        if generation is not None and generation != self._refresh_generation:
             return
         self._loading = False
         self._status.SetLabel(f"Could not load review: {message}")

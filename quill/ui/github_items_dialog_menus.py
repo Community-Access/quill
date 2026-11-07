@@ -122,6 +122,8 @@ class GitHubItemsMenusMixin:
             add("Copy Link", lambda: self._copy_item_text(url, "item link"), enabled=bool(url))
             add("Copy Details", lambda: self._copy_item_text(self._details.GetValue(), "details"))
             add("Add to or Remove from Favorites\tCtrl+D", self._favorite_selected)
+            add("Browse Repository Files...", self._open_repo_files)
+            add("Milestones...", self._open_milestones)
             if isinstance(model, GitHubItem):
                 add(
                     "Summarize Discussion", self._on_summarize, enabled=self._ai_acquire is not None
@@ -145,6 +147,8 @@ class GitHubItemsMenusMixin:
                     add("More Write Actions...", lambda: self._on_actions_menu(None))
         else:
             add("Refresh\tCtrl+R", self._reload, enabled=bool(self._repo))
+            add("Browse Repository Files...", self._open_repo_files, enabled=bool(self._repo))
+            add("Milestones...", self._open_milestones, enabled=bool(self._repo))
             if self._provider.is_authenticated and self._repo and self._view == VIEW_ISSUES:
                 add("New Issue...", self._new_issue)
                 add("New Pull Request...", self._new_pull_request)

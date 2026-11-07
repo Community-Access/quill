@@ -1128,6 +1128,33 @@ reviews deployments waiting for you. In Review, **Auto-Merge and Queue...**
 request to the merge queue or takes it out. Each change asks first and says
 what GitHub did.
 
+### Files, milestones, discussions and security alerts
+
+**Files...** (Alt+F) in the Items viewer opens the repository as a tree at any
+branch, tag or commit you type or pick in **Branch, tag or commit** (Alt+B).
+Right arrow or Enter opens a folder and Left closes it. Enter on a file shows
+its text, read-only, in **Contents**. **Open in Editor** (Alt+E) opens the file
+in QUILL Lite as a new untitled document; Save As keeps a copy. **README**
+(Alt+R) shows the README of the selected folder or the repository. **History...**
+(Alt+H) lists the commits that changed it, and **Blame...** (Alt+L) lists the
+file in runs such as "Lines 10 to 14: author, date, short SHA, commit title".
+Alt+N and Alt+P move between runs, and Enter opens that commit on GitHub.
+
+**Milestones...** lists each milestone in words, such as "61 percent done, 5
+open, 8 closed, due 12 December", and creates, edits, closes and reopens them.
+The **Batch...** menu can now set a milestone on the selected issues, or add
+assignees to them.
+
+In **Explore...**, Enter on a discussion opens its thread: comments and their
+replies, "Answered by" and the name, and any poll read as text. **Reply...**
+(Alt+R) and **Mark as Answer...** (Alt+M) work there, and the Discussions
+view's context menu starts a **New Discussion...**. In the security alerts view,
+**Dismiss Alert...** on the context menu offers GitHub's own reasons for that
+kind of alert, takes an optional comment and asks first; the **Dismissed and
+resolved security alerts** view reopens one. The [QUILL guide's GitHub
+section](https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html)
+covers each of these in full.
+
 ## Opening something you worked on recently
 
 

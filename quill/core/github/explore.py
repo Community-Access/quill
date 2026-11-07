@@ -9,6 +9,7 @@ from urllib.error import HTTPError
 from urllib.parse import quote
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
+from quill.core.github.alert_triage import alert_row
 from quill.core.github.attention_queue_fetch import (
     account_login as _account_login,
 )
@@ -416,34 +417,15 @@ class GitHubExploreClient(ExploreNotificationsMixin):
                     )
             return result
         if view == "security":
-            result = []
-            for alert in self._provider.fetch_security_alerts(repo, limit=limit):
-                alert_type = getattr(alert, "alert_type", "Dependabot")
-                if alert.state == "unavailable":
-                    label = f"{alert_type} alerts unavailable"
-                    detail = f"{label}\n{alert.summary}\n{alert.html_url}"
-                else:
-                    severity = alert.severity or "severity not reported"
-                    label = f"{alert_type}: {severity}: {alert.package} — {alert.summary}"
-                    details = [
-                        f"Security alert #{alert.number}",
-                        label,
-                        f"State: {alert.state}",
-                        f"Created: {alert.created_at}",
-                    ]
-                    location = getattr(alert, "location", "")
-                    tool = getattr(alert, "tool", "")
-                    rule_id = getattr(alert, "rule_id", "")
-                    if location:
-                        details.append(f"Location: {location}")
-                    if tool:
-                        details.append(f"Tool: {tool}")
-                    if rule_id:
-                        details.append(f"Rule: {rule_id}")
-                    details.append(alert.html_url)
-                    detail = "\n".join(details)
-                result.append(ExploreRow(label, detail, alert.html_url, repo, "security"))
-            return result
+            return [
+                alert_row(alert, repo)
+                for alert in self._provider.fetch_security_alerts(repo, limit=limit)
+            ]
+        if view == "security_closed":
+            return [
+                alert_row(alert, repo)
+                for alert in self._provider.fetch_closed_security_alerts(repo, limit=limit)
+            ]
         if view == "discussions":
             result, _complete, warning = list_discussions(
                 getattr(self._provider, "token", None), repo, limit=limit

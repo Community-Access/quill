@@ -40,13 +40,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.github.alert_triage import GitHubAlertTriageMixin
 from quill.core.github.auth_diagnostics import github_exception_hint
 from quill.core.github.branch_compare import GitHubBranchComparison, fetch_branch_comparison
+from quill.core.github.discussion_actions import GitHubDiscussionActionsMixin
 from quill.core.github.github_provider import _get_gh_module, require_pygithub
 from quill.core.github.issue_comments import list_comments as _list_issue_comments
 from quill.core.github.items_errors import GitHubItemsError
 from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
 from quill.core.github.items_provider_supplement import GitHubItemsSupplementMixin
+from quill.core.github.milestones import GitHubMilestonesMixin
 from quill.core.github.notification_triage import GitHubNotificationTriageMixin
 from quill.core.github.notifications import (
     GitHubNotification,
@@ -54,6 +57,7 @@ from quill.core.github.notifications import (
     list_notifications,
 )
 from quill.core.github.notifications import mark_notification_read as _mark_notification_read_raw
+from quill.core.github.repo_files import GitHubRepoFilesMixin
 from quill.core.github.run_actions import GitHubRunActionsMixin
 from quill.core.github.workflow_annotations import list_annotations
 from quill.core.github.workflow_jobs import list_jobs
@@ -403,7 +407,13 @@ def _take(iterable: Any, limit: int) -> list[Any]:
 
 
 class GitHubItemsProvider(
-    GitHubItemsSupplementMixin, GitHubNotificationTriageMixin, GitHubRunActionsMixin
+    GitHubItemsSupplementMixin,
+    GitHubNotificationTriageMixin,
+    GitHubRunActionsMixin,
+    GitHubRepoFilesMixin,
+    GitHubMilestonesMixin,
+    GitHubDiscussionActionsMixin,
+    GitHubAlertTriageMixin,
 ):
     """Read-only GitHub items fetcher backed by PyGithub.
 

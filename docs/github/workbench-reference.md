@@ -160,6 +160,60 @@ re-requested and QUILL says so. Each change asks first and reports GitHub's
 confirmed result. Known refusals, such as auto-merge being turned off for the
 repository, are said as what to do next.
 
+## Repository files, blame and history
+
+**Files** (Alt+F) in Items, or **Browse Repository Files** on its context menu,
+opens Repository Files: a real tree of the repository at a branch, tag or commit
+typed or picked in **Branch, tag or commit** (Alt+B). Right arrow or Enter opens
+a folder (fetched the first time), Left closes it, and each file says its size.
+Enter on a file or **View File** (Alt+V) shows it read-only in **Contents**.
+**Open in Editor** (Alt+E) opens it for editing: QUILL uses the same path as a
+GitHub file link, so Save to GitHub works afterwards; QUILL Lite opens the text
+as a new untitled document. **README** (Alt+R) shows the selected folder's or
+the repository's README. Binary files and files over GitHub's 1 MB contents
+limit say so instead of showing text.
+
+**History** (Alt+H) lists the commits that changed the selected path. **Blame**
+(Alt+L) lists the file in runs, neighbouring ranges from one commit joined into
+one: "Lines 10 to 14: author, date, short SHA, commit title". In both lists
+Alt+N and Alt+P move to the next and previous row from anywhere in the window,
+and Enter or **Open Commit** (Alt+O) opens the commit on GitHub. Blame uses
+GraphQL `blame(path:)` on the commit and needs a signed-in account.
+
+## Milestones and batch changes
+
+**Milestones** in Items (no access key; Tab to it, or use the context menu)
+lists milestones as words: "Release 2.0: 61 percent done, 5 open, 8 closed, due
+12 December". **Show** (Alt+S) picks open, closed or all. **New** (Alt+N) and
+**Edit** (Alt+E) take a title, description and a year-month-day due date;
+**Close Milestone** or **Reopen Milestone** (Alt+L) asks first. Every change is
+reported from GitHub's reply.
+
+The **Batch** menu adds **Set milestone** (the open milestones, or clear it) and
+**Add assignees** (usernames separated by commas) beside Close, Reopen and Add
+label. The confirmation names the items; the result counts what GitHub
+confirmed, and names anyone GitHub did not assign.
+
+## Discussions and security triage
+
+In Explore's Discussions view, Enter (or **Open Discussion Thread** on the
+context menu) opens a thread window: the discussion, then each comment followed
+by its replies. It says "Answered by" and the name, and reads a poll one option
+to a line ("Option A: 12 votes, 40 percent"). **Reply** (Alt+R) comments on the
+discussion or replies under the selected comment; **Mark as Answer** (Alt+M)
+marks or unmarks the selected comment after asking, when the category takes
+answers and GitHub says you may. **New Discussion** on the view's context menu
+picks a category and takes a title and body.
+
+In the security views, **Dismiss Alert** on the context menu offers GitHub's own
+reasons for that alert kind (Dependabot: `fix_started`, `inaccurate`,
+`no_bandwidth`, `not_used`, `tolerable_risk`; code scanning: `false positive`,
+`won't fix`, `used in tests`; secret scanning: `false_positive`, `wont_fix`,
+`revoked`, `used_in_tests`), an optional comment of up to 280 characters, and a
+confirmation. **Dismissed and resolved security alerts** is its own view, where
+**Reopen Alert** asks and then reopens. QUILL reports a change only when the
+alert's new state comes back from GitHub.
+
 ## Review and write safety
 
 The review tree announces reply counts, outdated positions, resolved state,
@@ -169,6 +223,9 @@ command and confirmation where appropriate. Actions are disabled if the PR is
 closed, the account is signed out, or GitHub denies that permission. If the
 review-thread state cannot be retrieved, threads remain readable while
 resolution controls are unavailable. Refresh to observe changes made elsewhere.
+If the review's diff cannot be loaded, the threads and checks still appear and
+QUILL says "Could not load the diff" with the reason. A refresh that finishes
+after a newer one started is dropped, so it can never overwrite newer data.
 
 The Items **Batch** menu operates on checked issue or PR rows. Its confirmation
 names the targeted items. Repository deletion, visibility changes, merges,
@@ -186,7 +243,10 @@ uses `explore.py`; pinned repositories, favorites, recent repositories, and
 saved queries use `saved_items.py`. Notifications triage is
 `notification_triage.py` and `explore_notifications.py`; the failure digest is
 `run_failure_digest.py`; run, check and deployment actions are `run_actions.py`;
-auto-merge and the merge queue are `merge_automation.py`. The REST calls
+auto-merge and the merge queue are `merge_automation.py`. Wave 3 adds
+`repo_files.py` (folders, files, README, history, blame), `milestones.py`,
+`discussion_actions.py`, `alert_triage.py` and `github_graphql.py`, whose
+GraphQL calls go through the same REST transport. The REST calls
 PyGithub lacks go through `rest_transport.py`, which refuses redirects so the
 token stays on api.github.com. The shared UI modules are under `quill/ui/`.
 Network calls are made off the UI thread. Tests exercise provider mapping,

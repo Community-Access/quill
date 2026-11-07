@@ -2,6 +2,27 @@
 
 ## 1.0.0
 
+### GitHub repository files, milestones, discussions and security triage (2026-11-07)
+
+- **Repository Files.** Files... (Alt+F) in GitHub Items browses a repository as a
+  tree at any branch, tag or commit, shows a file's text read-only, opens it in
+  the editor through the GitHub file path, and shows a folder's README.
+- **Blame and history.** History lists the commits that touched a path. Blame
+  reads in runs, "Lines 10 to 14: author, date, short SHA, commit title", with
+  Alt+N and Alt+P between runs and Enter to open the commit.
+- **Milestones.** A Milestones window lists each one in words ("61 percent done,
+  5 open, 8 closed, due 12 December") and creates, edits, closes and reopens
+  them. Batch... gains Set milestone and Add assignees.
+- **Discussions.** Enter on a discussion in Explore opens its thread, with
+  "Answered by" and polls read as text. Reply to the discussion or a comment,
+  mark or unmark the answer, and start a discussion in a category.
+- **Security alert triage.** Dismiss Dependabot, code-scanning and
+  secret-scanning alerts with GitHub's own reasons and an optional comment,
+  after a confirmation, and reopen them from the new Dismissed and resolved
+  security alerts view.
+- **Review.** A diff that fails to load is now said aloud as "Could not load the
+  diff" with the reason, and a slow refresh can no longer overwrite a newer one.
+
 ### GitHub notifications, failed runs and merge automation (2026-11-07)
 
 - **Triage your GitHub notifications.** Tools > Git and GitHub > GitHub >

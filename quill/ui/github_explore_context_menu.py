@@ -85,6 +85,7 @@ class GitHubExploreContextMenuMixin:
             add("Remove Saved Search", lambda: self._remove_search(query))
         if self._view_key() == "attention" and self._attention_state is not None:
             add("Queue Options...", lambda: self._attention_options_menu(None))
+        self._add_community_actions(add)
         add("Refresh", lambda: self._load(None))
         try:
             self._list.PopupMenu(menu)

@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### GitHub repository files, milestones, discussions and security triage (2026-11-07)
+
+- Files... (Alt+F) in the GitHub Items viewer browses a repository at any
+  branch, tag or commit, shows files and READMEs, and opens a file as a new
+  untitled document. History and Blame (runs, with Alt+N and Alt+P) come with it.
+- Milestones are listed in words and can be created, edited, closed and
+  reopened; Batch... sets a milestone or adds assignees.
+- Explore opens a discussion as a thread, with replies, answers and polls, and
+  starts new discussions. Security alerts can be dismissed with GitHub's own
+  reasons and reopened.
+
 ### GitHub notifications, failed runs and merge automation (2026-11-07)
 
 - The shared GitHub windows triage notifications: Explore's notifications view

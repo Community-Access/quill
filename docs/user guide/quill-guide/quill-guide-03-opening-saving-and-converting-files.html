@@ -2281,11 +2281,79 @@ that and where to turn it on.</p>
 <h4 id="batch-operations">Batch operations</h4>
 <p>The list lets you select several rows: hold Shift or Ctrl to select
 issues or pull requests, then press <strong>Batch…</strong> and choose
-Close, Reopen or Add label. You must be signed in, because browsing
-without an account only ever reads. A confirmation names the exact
-action and the exact item numbers, and nothing changes on GitHub until
-you confirm. If some items fail, QUILL tells you which, and the rest
-still go through.</p>
+Close, Reopen, Add label, <strong>Set milestone</strong> or <strong>Add
+assignees</strong>. Set milestone lists the repository’s open
+milestones, with a last choice to clear the milestone. Add assignees
+takes GitHub usernames separated by commas; GitHub quietly skips anyone
+who can’t be assigned in that repository, so QUILL checks each reply and
+names them. You must be signed in, because browsing without an account
+only ever reads. A confirmation names the exact action and the exact
+item numbers, and nothing changes on GitHub until you confirm. If some
+items fail, QUILL tells you which, and the rest still go through.</p>
+<h4 id="repository-files">Repository files</h4>
+<p><strong>Files…</strong> (<code>Alt+F</code>) in the GitHub Items
+viewer, or <strong>Browse Repository Files…</strong> on the list’s
+context menu, opens the repository as a tree. It starts on the default
+branch, or on the branch whose commits you are looking at. To see
+another version, type a branch, a tag or a commit SHA in <strong>Branch,
+tag or commit</strong> (<code>Alt+B</code>), or pick a branch or tag
+from its list, and press Enter.</p>
+<ul>
+<li>In the tree, Right arrow or Enter opens a folder and Left closes it.
+Each file says its size. QUILL fetches a folder the first time you open
+it.</li>
+<li>Enter on a file, or <strong>View File</strong> (<code>Alt+V</code>),
+shows its text read-only in <strong>Contents</strong>, where you can
+arrow through it and copy from it.</li>
+<li><strong>Open in Editor</strong> (<code>Alt+E</code>) opens the file
+for editing, the same way as <strong>File &gt; Open from Remote &gt;
+GitHub File URL…</strong>, so <strong>File &gt; Open from Remote &gt;
+Save to GitHub…</strong> works on it afterwards.</li>
+<li><strong>README</strong> (<code>Alt+R</code>) shows the README of the
+selected folder, or of the repository when nothing is selected, in
+<strong>Contents</strong>.</li>
+<li><strong>History…</strong> (<code>Alt+H</code>) and
+<strong>Blame…</strong> (<code>Alt+L</code>) are described next.</li>
+</ul>
+<p>A binary file, or one larger than the 1 MB GitHub sends this way,
+says so instead of showing text; open it on GitHub.</p>
+<h4 id="blame-and-file-history">Blame and file history</h4>
+<p><strong>History…</strong> in Repository Files lists the commits that
+changed the selected file or folder, newest first. Each reads as the
+commit title, then the author, the date and the short SHA.</p>
+<p><strong>Blame…</strong> shows who last changed each part of the
+selected file. GitHub reports blame in small ranges, and QUILL joins
+neighbouring ranges from the same commit into one run, so each line of
+the list reads like “Lines 10 to 14: Jeff Bishop, 3 November, 1a2b3c4,
+Fix the diff”. <code>Alt+N</code> and <code>Alt+P</code> move to the
+next and previous run from anywhere in the window, so you can stay in
+<strong>Details</strong> and still step through the file. Enter on a
+run, or <strong>Open Commit</strong> (<code>Alt+O</code>), opens that
+commit on GitHub. Blame needs you to be signed in, because GitHub only
+answers it for an account.</p>
+<h4 id="github-milestones">GitHub milestones</h4>
+<p><strong>Milestones…</strong> in the GitHub Items viewer (it has no
+access key, so Tab to it or use <strong>Milestones…</strong> on the
+list’s context menu) lists a repository’s milestones. Each reads as one
+line, such as “Release 2.0: 61 percent done, 5 open, 8 closed, due 12
+December”. The percentage is rounded down, the way GitHub shows it, and
+the year is said only when it is not this year.</p>
+<ul>
+<li><strong>Show</strong> (<code>Alt+S</code>) picks open, closed or all
+milestones.</li>
+<li><strong>New…</strong> (<code>Alt+N</code>) and
+<strong>Edit…</strong> (<code>Alt+E</code>) take a title, a description
+and a due date typed as year-month-day, such as 2026-12-12. Leave the
+date empty for none.</li>
+<li><strong>Close Milestone…</strong> (<code>Alt+L</code>) asks first
+and then closes it. On a closed milestone the same button is
+<strong>Reopen Milestone…</strong>.</li>
+<li>Enter on a milestone, or <strong>Open on GitHub</strong>
+(<code>Alt+O</code>), opens its page.</li>
+</ul>
+<p>To put issues in a milestone, select them in the list and use
+<strong>Batch… &gt; Set milestone</strong>, described under Batch
+operations above.</p>
 <h4 id="keys-in-the-items-viewer">Keys in the Items viewer</h4>
 <ul>
 <li>Enter on a row opens it in your browser. On a
@@ -2467,6 +2535,45 @@ adds the ones you have already read.</li>
 <p>GitHub asks apps not to check notifications more often than it says,
 usually once a minute. If you refresh sooner, QUILL keeps the list it
 has and tells you how many seconds to wait.</p>
+<h4 id="discussion-threads">Discussion threads</h4>
+<p>In <strong>Explore…</strong>, the <strong>Repository
+Discussions</strong> view lists a repository’s discussions. Enter on
+one, or <strong>Open Discussion Thread…</strong> on the context menu,
+opens it as a thread. The first row is the discussion itself; then come
+its comments, each followed by its replies. The text box reads whichever
+row is selected. The discussion row says “Answered by” and the name when
+someone’s comment is the answer, and reads a poll as text, one option to
+a line, such as “Option A: 12 votes, 40 percent”.</p>
+<ul>
+<li><strong>Reply…</strong> (<code>Alt+R</code>) on the discussion row
+adds a comment. On a comment or a reply it replies under that comment,
+since GitHub nests replies one level deep.</li>
+<li><strong>Mark as Answer…</strong> (<code>Alt+M</code>) marks the
+selected comment as the answer, in a category that takes answers, after
+asking. On the answer it reads <strong>Unmark Answer…</strong> and takes
+it back.</li>
+<li><strong>New Discussion…</strong> on the context menu in the
+Discussions view asks for a category, a title and a body, then starts
+the discussion.</li>
+</ul>
+<p>QUILL reports each change only when GitHub’s reply shows it, and when
+GitHub refuses (a locked discussion, say), QUILL says why.</p>
+<h4 id="security-alert-triage">Security alert triage</h4>
+<p>The <strong>Repository security alerts</strong> view in
+<strong>Explore…</strong> lists open Dependabot, code-scanning and
+secret-scanning alerts. <strong>Dismiss Alert…</strong> on an alert’s
+context menu asks why, offering GitHub’s own reasons for that kind of
+alert. For Dependabot those are that a fix has already started, the
+alert is inaccurate, there is no time to fix it, the vulnerable code is
+not used, or the risk is tolerable. Code scanning offers false positive,
+won’t fix and used in tests. Secret scanning offers false positive,
+won’t fix, revoked and used in tests. Then you can add a comment of up
+to 280 characters, and QUILL asks you to confirm before it sends
+anything.</p>
+<p>The <strong>Dismissed and resolved security alerts</strong> view
+lists the closed ones, with who closed them and why. <strong>Reopen
+Alert…</strong> there opens one again after asking. Secret values are
+never read: QUILL asks GitHub to leave them out.</p>
 <h4 id="codespaces">Codespaces</h4>
 <p>Two more commands on <strong>Tools &gt; Git and GitHub &gt;
 GitHub</strong> use the <code>gh</code> command-line tool installed on
