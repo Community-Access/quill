@@ -2461,6 +2461,27 @@ repository field takes `owner/repo`, a `github.com` address you paste in, or a
 The GitHub Items viewer lists issues, pull requests, branches, commits,
 workflows and workflow runs, all in one list you can arrow through.
 
+Select a pull request and choose **Review...** to open its review reader. The
+top line states whether the PR is draft, blocked, conflicted or ready, then
+summarizes approvals, checks and review-thread counts. An expandable PR
+outline groups review threads under changed files and check runs under Checks.
+Arrow among nodes, Right and Left expand or collapse, and Tab reads the
+selected node's details. Ctrl+R replies to a selected thread; Shift+F10 opens
+its context menu for reply, copy, or opening on GitHub. A file's menu opens
+its differences, and Enter on a check opens its job. **Copy Review Summary** copies a short
+plain-text brief with the PR link. Public PRs can be read without signing in.
+With a token, an open PR can be approved, given a changes-requested or comment
+review, replied to in a selected thread, sent to reviewers, marked draft or
+ready, and updated from its base branch. QUILL asks for a message where GitHub
+requires one and confirms changes to the PR state. The reader identifies
+outdated comments; resolved and unresolved review-thread state is not yet
+available, and resolving a thread still requires GitHub's own interface.
+The same GitHub Items viewer and PR review controls are available in QUILL Lite
+through **File > GitHub Workbench...** (**Alt+F**, then **G**).
+The Items list and details field now have contextual menus for opening,
+copying, favoriting, reviewing a PR, comparing branches, inspecting runs, and
+available write actions.
+
 - **Pinned repositories** keep the few you use most close at hand, so you are
   not typing `owner/repo` again. **Favorites** (**Ctrl+D**) bookmark one issue,
   pull request, branch or release, from any repository. They stay on your
@@ -3411,3 +3432,11 @@ perfectly" helps as much as one that says it does not.
 
 Thank you for trying QUILL 1.0.0. I hope it becomes the place you like to
 write, and I look forward to hearing what you make with it.
+# GitHub Workbench update (release acceptance pending)
+
+The shared QUILL and QUILL Lite GitHub windows add PR thread resolve/reopen,
+exact changed-line navigation when a patch position is current, global saved
+searches, My Work, activity and people views, repository discovery and watch
+controls, Pages builds, labels, gists, and workflow job logs. Run actions now
+use GitHub's actual run ID. See the [workbench reference](../github/workbench-reference.md)
+for keys, context menus, account requirements, and current limitations.

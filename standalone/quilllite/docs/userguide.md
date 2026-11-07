@@ -1,5 +1,16 @@
 # QUILL Lite User Guide
 
+## GitHub workbench
+
+Choose **File > GitHub Workbench...** (**Alt+F**, then **G**) to use the same
+GitHub Items viewer as QUILL. After network consent, enter a repository or use
+the one inferred from the current document's checkout. Select a PR and choose
+**Review...**. Arrow through the expandable PR, files, conversations, and
+checks. Tab into the selected details; Shift+Tab returns. Ctrl+R replies to a
+selected review thread, and Shift+F10 opens its context menu. The
+[GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md) explains
+the complete interaction model.
+
 *For QUILL Lite 2.0.0 (build 1), the beta for testers, October 2026. 2.0.0
 was prepared as 1.2.0 on October 3, 2026, renumbered on October 31, and is
 not yet published; the last published version is 1.1.2.*
@@ -258,3 +269,11 @@ drift from what is actually bound.
 - [Help](guide/lite-guide-keyboard-reference.html#help)
 - [Built per window](guide/lite-guide-keyboard-reference.html#built-per-window)
 - [Second keys](guide/lite-guide-keyboard-reference.html#second-keys)
+# GitHub Workbench
+
+**File > GitHub Workbench** opens the shared repository viewer. The review
+reader is an expandable tree, with files and threads under the pull request;
+Tab reads the selected node's detail. Ctrl+R replies and Ctrl+Shift+R toggles
+thread resolution where allowed. **Explore** reaches global search, My Work,
+activity, account and repository discovery, and workflow job logs. See the
+[complete keyboard reference](../../../docs/github/workbench-reference.md).

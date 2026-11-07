@@ -18,11 +18,88 @@ is the glue that enforces the same gates every other GitHub entry point uses:
 
 from __future__ import annotations
 
+from quill.core.github.references import (
+    GitHubReference,
+    GitHubReferenceError,
+    parse_github_reference,
+)
 from quill.core.github.token_store import load_github_token
 
 
 class GitHubItemsMixin:
     """Mixin that adds the GitHub items viewer command to ``MainFrame``."""
+
+    def start_github_issue_worktree(
+        self,
+        parent: object,
+        repository: str,
+        number: int,
+        title: str,
+        is_pr: bool = False,
+    ) -> None:
+        from quill.ui.github_issue_worktree import start_issue_worktree
+
+        start_issue_worktree(self, parent, repository, number, title, is_pr)
+
+    def open_github_reference(self) -> None:
+        """Open a pasted GitHub URL in the best available QUILL view."""
+        wx = self._wx
+        with wx.TextEntryDialog(
+            self.frame,
+            "Paste a GitHub URL or enter owner/repo:",
+            "Open GitHub Reference",
+        ) as dialog:
+            dialog.SetName("GitHub URL or owner and repository")
+            if self._show_modal_dialog(dialog, "Open GitHub Reference") != wx.ID_OK:
+                return
+            raw_reference = dialog.GetValue().strip()
+        try:
+            reference = parse_github_reference(raw_reference)
+        except GitHubReferenceError as exc:
+            self._show_message_box(
+                str(exc),
+                "Open GitHub Reference",
+                wx.ICON_ERROR | wx.OK,
+            )
+            return
+
+        if reference.kind == "file" and reference.supports_native_view:
+            self.open_github_file_url(reference.url)
+            return
+        if reference.supports_native_view:
+            self.open_github_items_viewer_for(
+                reference.repository,
+                initial_reference=reference,
+            )
+            return
+        self._open_github_reference_in_browser(reference)
+
+    def _open_github_reference_in_browser(self, reference: GitHubReference) -> None:
+        """Explain a native-view gap before opening a link in the browser."""
+        import webbrowser
+
+        wx = self._wx
+        kind = reference.kind.replace("_", " ")
+        message = (
+            f"QUILL does not have a native view for this {kind} link yet.\n\n"
+            "Open the GitHub link in your default browser? QUILL will not attach "
+            "your GitHub token to this browser request."
+        )
+        dialog = wx.MessageDialog(
+            self.frame,
+            message,
+            "Open GitHub Reference in Browser",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_INFORMATION,
+        )
+        try:
+            if self._show_modal_dialog(dialog, "Open GitHub Reference in Browser") != wx.ID_YES:
+                return
+        finally:
+            dialog.Destroy()
+        if webbrowser.open(reference.url, new=2):
+            self._announce(f"Opened {kind} in your browser.")
+        else:
+            self._set_status("Could not open the GitHub link in your default browser.")
 
     def open_github_items_viewer(self) -> None:
         """File > Open Remote > GitHub Items..."""
@@ -68,8 +145,54 @@ class GitHubItemsMixin:
             self.frame,
             provider,
             initial_repo=initial_repo,
+            open_file_reference_cb=self.open_github_file_url,
             announce_cb=self._announce,
             ai_acquire_cb=self._github_ai_summarizer,
+            start_issue_worktree_cb=self.start_github_issue_worktree,
+        ).show()
+        try:
+            provider.close()
+        except Exception:  # noqa: BLE001 - close is best-effort cleanup
+            pass
+
+    def open_github_items_viewer_for(
+        self,
+        full_name: str,
+        *,
+        initial_reference: GitHubReference | None = None,
+    ) -> None:
+        """Open the shared Items dialog pre-filled with a selected repository."""
+        from quill.core.github.items_provider import (
+            GitHubItemsError,
+            GitHubItemsProvider,
+            refuse_in_safe_mode,
+        )
+
+        try:
+            refuse_in_safe_mode(self._safe_mode)
+        except GitHubItemsError as exc:
+            self._show_message_box(
+                str(exc), "GitHub Items", self._wx.ICON_INFORMATION | self._wx.OK
+            )
+            return
+        if not self._ensure_github_ready():
+            return
+        token = load_github_token()
+        try:
+            provider = GitHubItemsProvider(token=token or None)
+        except Exception as exc:  # noqa: BLE001
+            self._set_status(f"Could not open {full_name}: {exc}")
+            return
+        from quill.ui.github_items_dialog import GitHubItemsDialog
+
+        GitHubItemsDialog(
+            self.frame,
+            provider,
+            initial_repo=full_name,
+            initial_reference=initial_reference,
+            open_file_reference_cb=self.open_github_file_url,
+            announce_cb=self._announce,
+            start_issue_worktree_cb=self.start_github_issue_worktree,
         ).show()
         try:
             provider.close()

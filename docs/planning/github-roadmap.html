@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>github-roadmap</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<h1 id="github-workbench-roadmap">GitHub Workbench Roadmap</h1>
+<p><strong>Accepted scope:</strong> 2026-11-06. This is the
+implementation record for the full GitHub expansion (GX01–GX15), in
+addition to the bounded G1–G4 engineering finish. The user owns the
+Windows assistive-technology acceptance in G5; that work is outside the
+engineering completion percentage and will be handled by the user.</p>
+<h2 id="product-direction">Product direction</h2>
+<p>Build one shared QUILL and QUILL Lite workbench that makes the next
+useful action clear: what needs attention, what changed, what blocks
+progress, and what can happen next. Extend the native Items, Explore,
+review, and administration dialogs. Keep keyboard operation,
+screen-reader names, plain-language status, and a readable list or
+outline equivalent in every workflow.</p>
+<p>Three journeys guide the work:</p>
+<ul>
+<li><strong>Resume work:</strong> restore the repository, issue or pull
+request, filters, exact thread or diff location, and unpublished draft.
+Show changes since the last visit. Loading the workbench never marks
+remote notifications read.</li>
+<li><strong>Explain a blocker:</strong> name the reason and freshness of
+every status, then link directly to the requested review, failed check,
+job, or source line. Partial, stale, unknown, and missing data remain
+explicit.</li>
+<li><strong>Finish the loop:</strong> guide issue → local
+branch/worktree → change → pull request → review → checks → merge →
+release evidence. Suggest the next valid action and leave publishing,
+merging, and repository changes under user control.</li>
+</ul>
+<h2 id="roadmap">Roadmap</h2>
+<p>The waves show implementation order. Existing foundations are listed
+so work reuses the current provider and native dialogs instead of
+rebuilding them.</p>
+<table>
+<thead>
+<tr>
+<th>ID / wave</th>
+<th>Existing foundation</th>
+<th>Accepted delivery and acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GX01 / W1 — Open a GitHub reference</strong></td>
+<td>Repository parsing and browser handoff exist.</td>
+<td>Accept repository, issue, pull request, discussion, commit,
+branch/file/line, release, and workflow URLs. Route supported links to
+the best native view and preserve location. State unsupported or
+enterprise hosts plainly; malformed links never write or send
+credentials.</td>
+</tr>
+<tr>
+<td><strong>GX02 / W1 — Personal attention queue</strong></td>
+<td>My Work, notifications, repository selection, and local saved items
+exist.</td>
+<td>Combine review requests, mentions, assignments, and failed checks
+across selected repositories. Explain source and freshness, deduplicate
+rows, support local snooze and saved filters, and show since-last-visit
+changes. Partial pages never look like an empty inbox; load never marks
+notifications read.</td>
+</tr>
+<tr>
+<td><strong>GX03 / W1 — Context-preserving navigation</strong></td>
+<td>Recent/pinned repositories, favorites, saved searches, and back
+navigation exist in separate views.</td>
+<td>Add searchable actions, recent locations, Back/Forward, saved views,
+and local draft recovery. Returning from a browser, diff, or nested
+dialog restores the selected row/thread. Every unavailable action
+explains its prerequisite.</td>
+</tr>
+<tr>
+<td><strong>GX04 / W1 — CI diagnosis</strong></td>
+<td>Workflow jobs, status, logs, artifacts, and explicit rerun controls
+exist.</td>
+<td>Show failed steps, annotations, bounded excerpts, prior attempts,
+source links, run/attempt/SHA provenance, and visible truncation.
+Rerunning failed jobs is explicit and duplicate activation cannot start
+duplicate work.</td>
+</tr>
+<tr>
+<td><strong>GX05 / W2 — Issue intake and triage</strong></td>
+<td>Issue creation, labels, comments, and batch updates exist.</td>
+<td>Support repository templates/forms, required-field validation,
+assignees, milestones, duplicate suggestions, cross-links, reusable
+replies, and batch previews. Drafts do not publish; duplicate
+suggestions never close issues; every batch item reports its
+result.</td>
+</tr>
+<tr>
+<td><strong>GX06 / W2 — Projects and dependencies</strong></td>
+<td>GitHub Projects and issue dependencies remain the source of
+truth.</td>
+<td>Provide keyboard-editable tables/outlines for supported project
+fields, sub-issues, blocking links, parent progress, and next unblocked
+work. Every board has a linear reading order; unsupported fields or
+permissions are named.</td>
+</tr>
+<tr>
+<td><strong>GX07 / W2 — Local repository continuity</strong></td>
+<td>Local Git and remote repository browsing exist as separate
+surfaces.</td>
+<td>Show fork/upstream, dirty files, ahead/behind, branches, and
+worktrees. Starting an issue prepares a named branch/worktree after a
+preflight. Never overwrite dirty files or run shell text taken from
+remote content.</td>
+</tr>
+<tr>
+<td><strong>GX08 / W2 — Deep accessible review</strong></td>
+<td>The native PR outline, exact diff-line mapping, replies, and thread
+resolution exist.</td>
+<td>Add changed-since-review, next unread/unresolved navigation,
+reviewer checklists, pending review drafts, and suggestions with exact
+patch preview. Renames, deletions, binary/large files, outdated threads,
+and unavailable patches remain honest; applying a suggestion verifies
+current content and preserves edits.</td>
+</tr>
+<tr>
+<td><strong>GX09 / W2 — Policy-aware merge path</strong></td>
+<td>GitHub mergeability, reviews, checks, and merge actions exist.</td>
+<td>Read required checks/reviews, rulesets, CODEOWNERS context, and
+merge-queue/auto-merge state. Explain every blocker and watch the exact
+revision. GitHub remains authoritative; changing HEAD invalidates prior
+readiness; no branch-protection bypass.</td>
+</tr>
+<tr>
+<td><strong>GX10 / W2 — Release and deployment evidence</strong></td>
+<td>Releases, tags, assets, and Pages/build history exist.</td>
+<td>Draft release notes from an explicit compare range; verify assets
+and provenance; show deployment environments/checks and release history.
+Draft versus published stays clear, and publishing/deploying requires a
+deliberate action.</td>
+</tr>
+<tr>
+<td><strong>GX11 / W3 — Security and dependencies</strong></td>
+<td>Dependabot alerts are available when the token and repository allow
+them.</td>
+<td>Add code/secret scanning and advisory views, linked fixes, and
+evidence-based grouping. Missing permission never means zero risk;
+exports redact sensitive details; alerts are not auto-dismissed.</td>
+</tr>
+<tr>
+<td><strong>GX12 / W2–W3 — Collaboration and knowledge</strong></td>
+<td>Gists, activity, mentions, and issue/PR conversations are
+available.</td>
+<td>Add Discussions, answers, wiki/docs, saved replies, and links across
+discussion → issue → pull request. Preserve author and thread context;
+suggestions remain drafts until submitted.</td>
+</tr>
+<tr>
+<td><strong>GX13 / W3 — Account and repository
+administration</strong></td>
+<td>Repository administration exists in QUILL; Lite shares Items,
+Explore, review, and diff.</td>
+<td>Add account-aware repository switching, team/collaborator
+permissions, SSO/auth-expiry diagnostics, and Lite entry points. Cache
+and tokens are isolated by host/account; consequential changes retain
+explicit confirmation.</td>
+</tr>
+<tr>
+<td><strong>GX14 / W3 — Workspace and service handoffs</strong></td>
+<td>Codespaces commands and browser handoffs exist.</td>
+<td>Preserve exact context when opening Codespaces or integrations; show
+health and opt-in workspace/repository metrics. Disclose cost-bearing
+launches, never provision automatically, and report team bottlenecks
+without ranking people.</td>
+</tr>
+<tr>
+<td><strong>GX15 / W2 — Optional grounded assistance</strong></td>
+<td>QUILL already has configured AI providers and local consent
+boundaries.</td>
+<td>Explain selected diffs, draft PR descriptions/reviewer briefs,
+decompose issues, and prepare release notes from user-selected evidence.
+Cite file/line/thread/SHA, show omitted or truncated context, keep
+drafts editable, and retain deterministic non-AI workflows. Remote text
+is untrusted input; no model upload outside configured consent.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="shared-acceptance-contract">Shared acceptance contract</h2>
+<ul>
+<li>No silent partial results, stale readiness, missing pages
+represented as empty, or remote state changes caused by reading.</li>
+<li>Every action is keyboard reachable, named for assistive technology,
+usable without color or hover, and returns focus predictably.</li>
+<li>Large logs and result sets load on demand with selection preserved,
+bounded memory use, explicit truncation, and a readable fallback.</li>
+<li>Local drafts and navigation state are private, recoverable,
+account-isolated, and never auto-submitted after reconnect.</li>
+<li>Writes state the target and effect before execution. Non-idempotent
+actions are not blindly retried after timeouts; batch outcomes identify
+each item.</li>
+<li>AI is optional, grounded in selected evidence, and subject to
+existing consent. It never invents checks, merge readiness, or
+completion claims.</li>
+</ul>
+<h2 id="delivery-order">Delivery order</h2>
+<ol type="1">
+<li>Finish G1–G4 engineering contracts, documentation, gates, and
+integration preparation for the current workbench.</li>
+<li>Complete W1 (GX01–GX04), then W2 (GX05–GX10, GX12, GX15), then W3
+(GX11, GX13, GX14).</li>
+<li>For each delivery, add focused failure cases, run relevant
+repository gates, review on the final candidate, and retain fresh CI
+evidence. Rebase/conflict resolution invalidates affected test
+evidence.</li>
+<li>The user owns the manual Windows keyboard, screen-reader, scaling,
+and braille acceptance. Engineering changes and merge readiness must not
+claim that acceptance has occurred.</li>
+</ol>
+</body>
+</html>

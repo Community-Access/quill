@@ -69,7 +69,16 @@ class WorktreesMixin:
         if message:
             self._set_status(message)
 
-    # ------------------------------------------------------------------
+    def _confirm_github_issue_worktree(self, parent: object, message: str) -> bool:
+        wx = self._wx
+        dialog = wx.MessageDialog(
+            parent, message, "Create Local Git Worktree", wx.YES_NO | wx.NO_DEFAULT
+        )
+        try:
+            return self._show_modal_dialog(dialog, "Create Local Git Worktree") == wx.ID_YES
+        finally:
+            dialog.Destroy()
+
     # The list dialog
 
     def _on_worktrees_listed(self, root: str, result: Any) -> None:
@@ -102,12 +111,13 @@ class WorktreesMixin:
     def _worktree_create(self, root: str) -> str:
         from quill.core.git_worktree import add_worktree
         from quill.ui.git_worktree_dialogs import NewWorktreeDialog
+        from quill.ui.github_issue_worktree import default_worktree_path
 
         branches = self._worktree_branch_names(root)
         request = NewWorktreeDialog(
             self.frame,
             branches,
-            default_parent_folder=str(Path(root).parent),
+            default_parent_folder=default_worktree_path(root, "worktree"),
             announce_cb=self._announce,
         ).show()
         if request is None:

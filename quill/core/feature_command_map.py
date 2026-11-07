@@ -38,6 +38,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "file.github_save_back": "core.github_remote",
     "file.github_manage_accounts": "core.github_remote",
     "file.open_github_items": "core.github_remote",
+    "file.open_github_reference": "core.github_remote",
     "github.create_repository": "core.github_remote",
     "github.fork_repository": "core.github_remote",
     "github.rename_repository": "core.github_remote",

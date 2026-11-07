@@ -2,6 +2,16 @@
 
 ## 2.0.0
 
+### GitHub workbench (2026-11-05)
+
+- File > GitHub Workbench... (Alt+F, then G) opens the same GitHub Items
+  viewer as QUILL, with the same consent, token store, and review actions.
+- Pull requests have an expandable file, conversation, and checks outline.
+  Ctrl+R replies to a selected thread; Shift+F10 opens node-specific actions.
+- The Items list and details field have context menus for review, diff,
+  comparison, copy, favorites, and relevant write actions.
+- The complete interaction model is in the [GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md).
+
 ### Hear the clipboard, the time and what is open (2026-11-06)
 
 - **Say Clipboard** (**Alt+Shift+Home**, Edit > Clipboard) reads what is on
@@ -3784,3 +3794,10 @@ editors in one family disagreeing about Justify outranks both. `Ctrl+Alt+J` and
 `Ctrl+Alt+V` are Set Temporary Bookmark and the copy tray in QUILL now; the eight
 keys that still differ on purpose are listed in `quill/core/lite/parity.py`, each
 with its reason.
+# GitHub Workbench update (2026-11-05, pending release acceptance)
+
+QUILL Lite's shared GitHub Items window now includes Explore, saved global
+searches, My Work, repository discovery, PR thread resolution and exact diff
+line targeting, and workflow job logs. The same keyboard and context-menu
+patterns are described in the QUILL [workbench reference](../../../docs/github/workbench-reference.md).
+Native screen-reader acceptance and destination-branch integration are pending.

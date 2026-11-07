@@ -213,6 +213,13 @@ results come back as one sentence. One command, Undo Last Agent Turn, puts back
 everything a turn changed, and coach mode lets the agent teach instead of type,
 for anyone learning. Nothing moves your focus, and nothing chatters.
 
+GitHub pull requests have a keyboard-first review outline. Expand a PR into
+changed files, their conversations, and checks. Arrow to a thread, Tab into its
+full text, press **Ctrl+R** to reply, or press **Shift+F10** for actions that
+fit the selected item. QUILL Lite opens the same GitHub workbench from **Tools >
+GitHub Workbench...**. The [GitHub tutorial](../tutorials/08-github-inside-quill.md)
+walks through every control and its screen reader behavior.
+
 ## Your website, from your editor
 
 If you look after a WordPress website, you know the block editor: floating
@@ -336,3 +343,12 @@ that says it does not.
 
 The full QUILL 1.0.0 release notes go through the editor feature by feature, and
 cover the companion apps that come with it too.
+# GitHub Workbench update (release acceptance pending)
+
+QUILL and QUILL Lite now share a keyboard-first GitHub workbench. The PR review
+tree keeps files and conversations together, supports replies and thread
+resolution, and points to the exact changed line when GitHub can provide one.
+Explore brings saved searches, My Work, activity, repositories, people, Pages,
+labels, notifications, and workflow jobs into a native list and detail window.
+Read the [guided tutorial](../tutorials/08-github-inside-quill.md) for the
+screen reader interaction model. Native accessibility acceptance is pending.

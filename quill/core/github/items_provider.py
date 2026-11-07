@@ -40,28 +40,29 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from quill.core.error_codes import CodedError
+from quill.core.github.auth_diagnostics import github_exception_hint
 from quill.core.github.branch_compare import GitHubBranchComparison, fetch_branch_comparison
 from quill.core.github.github_provider import _get_gh_module, require_pygithub
+from quill.core.github.issue_comments import list_comments as _list_issue_comments
+from quill.core.github.items_errors import GitHubItemsError
+from quill.core.github.items_provider_constants import DEFAULT_PAGE_LIMIT
+from quill.core.github.items_provider_supplement import GitHubItemsSupplementMixin
 from quill.core.github.notifications import (
     GitHubNotification,
     GitHubSecurityAlert,
     list_notifications,
-    list_security_alerts,
 )
 from quill.core.github.notifications import mark_notification_read as _mark_notification_read_raw
+from quill.core.github.workflow_annotations import list_annotations
+from quill.core.github.workflow_jobs import list_jobs
+from quill.core.github.workflow_models import (
+    GitHubWorkflowAnnotation,
+    GitHubWorkflowJob,
+    GitHubWorkflowRun,
+    map_workflow_run,
+)
 from quill.core.github.workflows import GitHubWorkflow, list_workflows
 from quill.core.net import verified_ssl_context
-
-#: Default page cap for a single fetch. The dialog loads this many, then offers
-#: "View more" for the next batch -- mirrors GHManage's 30-at-a-time behaviour.
-DEFAULT_PAGE_LIMIT = 30
-
-
-class GitHubItemsError(CodedError):
-    """A GitHub items fetch failed (network, auth, API, or Safe Mode refusal)."""
-
-    code = "QUILL-GITHUB-ITEMS-ERROR"
 
 
 def refuse_in_safe_mode(safe_mode: bool) -> None:
@@ -311,35 +312,6 @@ class GitHubRepoForkInfo:
 
 
 @dataclass(frozen=True, slots=True)
-class GitHubWorkflowRun:
-    """A GitHub Actions workflow run."""
-
-    name: str
-    status: str
-    conclusion: str = ""
-    branch: str = ""
-    event: str = ""
-    created_at: str = ""
-    url: str = ""
-    run_number: int = 0
-
-
-@dataclass(frozen=True, slots=True)
-class GitHubWorkflowJob:
-    """One job within a workflow run -- the practical "Actions log" surface:
-    per-job status/conclusion instead of raw log text (GitHub's log download
-    is a redirect to a zip archive, out of scope for a first pass; job-level
-    status is the same information a glance at the Actions tab gives)."""
-
-    name: str
-    status: str
-    conclusion: str = ""
-    started_at: str = ""
-    completed_at: str = ""
-    url: str = ""
-
-
-@dataclass(frozen=True, slots=True)
 class GitHubArtifact:
     """One build artifact from a workflow run -- the "redirect to a zip
     archive" case ``GitHubWorkflowJob`` above scoped out for logs, now built
@@ -428,7 +400,7 @@ def _take(iterable: Any, limit: int) -> list[Any]:
 # ---------------------------------------------------------------------------
 
 
-class GitHubItemsProvider:
+class GitHubItemsProvider(GitHubItemsSupplementMixin):
     """Read-only GitHub items fetcher backed by PyGithub.
 
     Construct with a token (authenticated) or ``None`` (anonymous, public repos
@@ -468,10 +440,12 @@ class GitHubItemsProvider:
                     f"Repository not found: {full_name!r}. Check owner/repo and access."
                 ) from exc
             if status == 401:
-                raise GitHubItemsError("GitHub token is invalid or has expired.") from exc
+                hint = github_exception_hint(exc)
+                raise GitHubItemsError(hint or "GitHub token is invalid or has expired.") from exc
             if status == 403:
+                hint = github_exception_hint(exc)
                 raise GitHubItemsError(
-                    "Access denied. Your token may need 'repo' scope for private repositories."
+                    hint or "Access denied. Check token permissions for this repository."
                 ) from exc
             msg = exc.data.get("message", str(exc)) if hasattr(exc, "data") else str(exc)
             raise GitHubItemsError(f"GitHub error {status}: {msg}") from exc
@@ -491,6 +465,17 @@ class GitHubItemsProvider:
 
     # ------------------------------------------------------------------
     # Issues and pull requests (one inbox; is_pr distinguishes)
+
+    def fetch_item(self, full_name: str, number: int) -> GitHubItem:
+        """Fetch one issue or pull request directly by repository number."""
+        if number <= 0:
+            raise GitHubItemsError("GitHub item numbers must be positive.")
+        repo = self._repo(full_name)
+        try:
+            row = repo.get_issue(number)
+        except Exception as exc:  # noqa: BLE001 - direct reference needs a truthful error
+            raise GitHubItemsError(f"Could not open item #{number}: {exc}") from exc
+        return self._map_issue(row, is_pr=False)
 
     def fetch_issues(
         self,
@@ -777,21 +762,7 @@ class GitHubItemsProvider:
             rows = _take(repo.get_workflow_runs(), limit)
         except Exception as exc:  # noqa: BLE001
             raise GitHubItemsError(f"Could not list workflow runs: {exc}") from exc
-        out: list[GitHubWorkflowRun] = []
-        for row in rows:
-            out.append(
-                GitHubWorkflowRun(
-                    name=_safe_str(getattr(row, "name", "")),
-                    status=_safe_str(getattr(row, "status", "")),
-                    conclusion=_safe_str(getattr(row, "conclusion", "")),
-                    branch=_safe_str(getattr(row, "head_branch", "")),
-                    event=_safe_str(getattr(row, "event", "")),
-                    created_at=_iso(getattr(row, "created_at", None)),
-                    url=_safe_str(getattr(row, "html_url", "")),
-                    run_number=int(getattr(row, "run_number", 0) or 0),
-                )
-            )
-        return out
+        return [map_workflow_run(row) for row in rows]
 
     def fetch_workflows(
         self, full_name: str, *, limit: int = DEFAULT_PAGE_LIMIT
@@ -949,21 +920,18 @@ class GitHubItemsProvider:
         :meth:`edit_comment` and :meth:`delete_comment` to address a specific
         comment in the thread.
         """
-        repo = self._repo(full_name)
         try:
-            issue = repo.get_issue(number=number)
-            comments = _take(issue.get_comments(), DEFAULT_PAGE_LIMIT)
+            return _list_issue_comments(
+                self._repo(full_name),
+                number,
+                limit=DEFAULT_PAGE_LIMIT,
+                take=_take,
+                safe_str=_safe_str,
+                login_of=_login_of,
+                iso=_iso,
+            )
         except Exception as exc:  # noqa: BLE001
             raise GitHubItemsError(f"Could not load comments: {exc}") from exc
-        out: list[dict[str, str]] = []
-        for comment in comments:
-            out.append({
-                "id": _safe_str(getattr(comment, "id", "")),
-                "author": _login_of(getattr(comment, "user", None)),
-                "created_at": _iso(getattr(comment, "created_at", None)),
-                "body": _safe_str(getattr(comment, "body", "")),
-            })
-        return out
 
     # ------------------------------------------------------------------
     # Creating issues, pull requests, and comments — and merging/re-running
@@ -973,12 +941,20 @@ class GitHubItemsProvider:
         full_name: str,
         title: str,
         body: str = "",
+        *,
+        labels: Sequence[str] = (),
+        assignees: Sequence[str] = (),
     ) -> GitHubItem:
         """File a new issue. Requires an authenticated session."""
         self._require_write_access("create an issue")
         repo = self._repo(full_name)
         try:
-            row = repo.create_issue(title=title, body=body)
+            row = repo.create_issue(
+                title=title,
+                body=body,
+                labels=list(labels) or None,
+                assignees=list(assignees) or None,
+            )
         except Exception as exc:  # noqa: BLE001
             raise GitHubItemsError(f"Could not create issue: {exc}") from exc
         return self._map_issue(row, is_pr=False)
@@ -1047,25 +1023,31 @@ class GitHubItemsProvider:
         except Exception as exc:  # noqa: BLE001
             raise GitHubItemsError(f"Could not re-run workflow run {run_id}: {exc}") from exc
 
-    def fetch_workflow_jobs(self, full_name: str, run_id: int) -> list[GitHubWorkflowJob]:
-        """Per-job status for a workflow run -- read-only, no token required."""
-        repo = self._repo(full_name)
+    def fetch_workflow_jobs(
+        self, full_name: str, run_id: int, *, attempt_number: int | None = None
+    ) -> list[GitHubWorkflowJob]:
+        """Per-job status for one workflow run attempt; read-only."""
         try:
-            run = repo.get_workflow_run(run_id)
-            rows = _take(run.jobs(), DEFAULT_PAGE_LIMIT)
+            return list_jobs(
+                self._repo(full_name),
+                run_id,
+                attempt_number=attempt_number,
+                limit=DEFAULT_PAGE_LIMIT,
+                take=_take,
+                safe_str=_safe_str,
+                iso=_iso,
+            )
         except Exception as exc:  # noqa: BLE001
             raise GitHubItemsError(f"Could not list jobs for run {run_id}: {exc}") from exc
-        return [
-            GitHubWorkflowJob(
-                name=_safe_str(getattr(row, "name", "")),
-                status=_safe_str(getattr(row, "status", "")),
-                conclusion=_safe_str(getattr(row, "conclusion", "")),
-                started_at=_iso(getattr(row, "started_at", None)),
-                completed_at=_iso(getattr(row, "completed_at", None)),
-                url=_safe_str(getattr(row, "html_url", "")),
-            )
-            for row in rows
-        ]
+
+    def fetch_workflow_job_annotations(
+        self, full_name: str, check_run_id: int, *, limit: int = 100
+    ) -> tuple[tuple[GitHubWorkflowAnnotation, ...], bool]:
+        """Read bounded annotations for a job's associated check run."""
+        try:
+            return list_annotations(self._repo(full_name), check_run_id, limit=limit)
+        except Exception as exc:  # noqa: BLE001 - annotations are optional but failures stay visible
+            raise GitHubItemsError(f"Could not list workflow annotations: {exc}") from exc
 
     def fetch_workflow_run_artifacts(self, full_name: str, run_id: int) -> list[GitHubArtifact]:
         """A run's build artifacts -- read-only, no token required for a
@@ -1207,17 +1189,6 @@ class GitHubItemsProvider:
             _mark_notification_read_raw(self._gh, notification_id)
         except Exception as exc:  # noqa: BLE001
             raise GitHubItemsError(f"Could not mark notification as read: {exc}") from exc
-
-    def fetch_security_alerts(
-        self, full_name: str, *, limit: int = DEFAULT_PAGE_LIMIT
-    ) -> list[GitHubSecurityAlert]:
-        """Open Dependabot security alerts for a repository. Mapping lives in
-        :mod:`quill.core.github.notifications` (GATE-11)."""
-        repo = self._repo(full_name)
-        try:
-            return list_security_alerts(repo, limit=limit, take=_take)
-        except Exception as exc:  # noqa: BLE001
-            raise GitHubItemsError(f"Could not list security alerts: {exc}") from exc
 
     def create_comment(self, full_name: str, number: int, body: str) -> dict[str, str]:
         """Post a comment on issue/PR *number* (also used to reply — GitHub's

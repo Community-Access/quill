@@ -20,16 +20,22 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from quill.core.github.accounts import (
+    active_github_account_id,
+    list_github_accounts,
+    save_github_account,
+)
 from quill.core.github.consent import load_github_consent_complete, save_github_consent_complete
 from quill.core.github.github_provider import GitHubDependencyError, GitHubRemoteProvider
 from quill.core.github.models import RemoteOrigin
 from quill.core.github.token_store import (
-    delete_github_token,
+    delete_legacy_github_token,
     load_github_token,
-    save_github_token,
 )
+from quill.core.i18n import _
 from quill.core.paths import app_data_dir
 from quill.core.platform_nouns import credential_store_name
+from quill.ui.main_frame_github_accounts import GitHubAccountsMixin
 
 if TYPE_CHECKING:
     from quill.core.github.models import BrowseResult, RemoteFile
@@ -42,7 +48,7 @@ class _GitHubState:
     origins: dict[str, RemoteOrigin]  # local_path -> origin
 
 
-class GitHubRemoteMixin:
+class GitHubRemoteMixin(GitHubAccountsMixin):
     """Mixin that adds GitHub browse, open, and save-back to ``MainFrame``."""
 
     # ------------------------------------------------------------------
@@ -52,6 +58,29 @@ class GitHubRemoteMixin:
         if not hasattr(self, "_github_state"):
             self._github_state = _GitHubState(origins={})
         return self._github_state
+
+    def _append_github_reference_menu(self, menu: object) -> None:
+        self._id_github_reference = self._wx.NewIdRef()
+        menu.Append(
+            self._id_github_reference,
+            self._menu_label(_("Open GitHub &Reference..."), "file.open_github_reference"),
+        )
+        menu.AppendSeparator()
+
+    def _register_github_reference_command(self) -> None:
+        """Register Manage GitHub Accounts and Open GitHub Reference (main_frame_commands)."""
+        self.commands.register(
+            "file.github_manage_accounts",
+            "Manage GitHub Accounts...",
+            self.manage_github_accounts,
+            None,
+        )
+        self.commands.register(
+            "file.open_github_reference",
+            "Open GitHub Reference...",
+            self.open_github_reference,
+            None,
+        )
 
     # ------------------------------------------------------------------
     # Public entry points (called from menu / commands)
@@ -70,32 +99,43 @@ class GitHubRemoteMixin:
             daemon=True,
         ).start()
 
-    def open_github_file_url(self) -> None:
+    def open_github_file_url(self, url: str | None = None) -> None:
         """File > Open Remote > GitHub File URL..."""
         if not self._ensure_github_ready():
             return
         wx = self._wx
-        with wx.TextEntryDialog(
-            self.frame,
-            "Paste a GitHub file URL (github.com/owner/repo/blob/branch/path):",
-            "Open GitHub File URL",
-        ) as dlg:
-            dlg.SetName("GitHub file URL")
-            if self._show_modal_dialog(dlg, "Open GitHub File URL") != wx.ID_OK:
-                return
-            url = dlg.GetValue().strip()
+        if url is None:
+            with wx.TextEntryDialog(
+                self.frame,
+                "Paste a GitHub file URL (github.com/owner/repo/blob/branch/path):",
+                "Open GitHub File URL",
+            ) as dlg:
+                dlg.SetName("GitHub file URL")
+                if self._show_modal_dialog(dlg, "Open GitHub File URL") != wx.ID_OK:
+                    return
+                url = dlg.GetValue().strip()
         if not url:
             return
-        parsed = _parse_github_blob_url(url)
-        if parsed is None:
+        from quill.core.github.references import GitHubReferenceError, parse_github_reference
+
+        try:
+            reference = parse_github_reference(url)
+        except GitHubReferenceError as exc:
             self._show_message_box(
-                "Could not parse the URL. Expected format:\n"
-                "https://github.com/owner/repo/blob/branch/path/to/file",
+                str(exc),
                 "Open GitHub File URL",
                 wx.ICON_ERROR | wx.OK,
             )
             return
-        owner_repo, ref, path = parsed
+        if reference.kind != "file" or not reference.supports_native_view:
+            self._show_message_box(
+                "Paste a supported GitHub file link such as "
+                "https://github.com/owner/repo/blob/main/path/to/file.",
+                "Open GitHub File URL",
+                wx.ICON_ERROR | wx.OK,
+            )
+            return
+        owner_repo, ref, path = reference.repository, reference.ref, reference.path
         token = load_github_token()
         provider = GitHubRemoteProvider(token=token or None)
         from quill.core.github.models import BrowseResult, RemoteRepository
@@ -106,7 +146,9 @@ class GitHubRemoteMixin:
             path=path,
             ref=ref,
             sha="",
-            html_url=url,
+            html_url=reference.url,
+            line=reference.line,
+            line_end=reference.line_end,
         )
         self._set_status_quiet("Connecting to GitHub...")
         self._announce("Connecting to GitHub")
@@ -161,15 +203,22 @@ class GitHubRemoteMixin:
     def manage_github_accounts(self) -> None:
         """File > Open Remote > Manage GitHub Accounts..."""
         token = load_github_token()
-        has_token = bool(token)
+        accounts = list_github_accounts()
+        active_id = active_github_account_id()
         if token:
             threading.Thread(  # GATE-40-OK: one-shot read-only GET; abandon-safe
                 target=self._github_fetch_identity_for_manage,
-                args=(token, has_token),
+                args=(token, accounts, active_id),
                 daemon=True,
             ).start()
         else:
-            self._github_show_manage_dialog(login=None, has_token=has_token)
+            self._github_show_manage_dialog(
+                login=None,
+                has_token=False,
+                accounts=accounts,
+                active_account_id=active_id,
+                status_note="",
+            )
 
     # ------------------------------------------------------------------
     # Background identity helpers (keep get_identity() off UI thread)
@@ -187,7 +236,7 @@ class GitHubRemoteMixin:
             if identity
             else "Anonymous (public repositories only)"
         )
-        from quill.ui.github_dialogs import GitHubRepositoryBrowserDialog
+        from quill.ui.github_repository_browser_dialog import GitHubRepositoryBrowserDialog
 
         result = GitHubRepositoryBrowserDialog(
             self.frame,
@@ -208,26 +257,6 @@ class GitHubRemoteMixin:
         except Exception:  # noqa: BLE001
             identity = None
         self._wx.CallAfter(self._github_open_file, provider, result, identity)
-
-    def _github_fetch_identity_for_manage(self, token: str, has_token: bool) -> None:
-        login: str | None = None
-        try:
-            p = GitHubRemoteProvider(token=token)
-            acc = p.get_identity()
-            login = acc.login if acc else None
-        except Exception:  # noqa: BLE001
-            pass
-        self._wx.CallAfter(self._github_show_manage_dialog, login=login, has_token=has_token)
-
-    def _github_show_manage_dialog(self, login: str | None, has_token: bool) -> None:
-        from quill.ui.github_dialogs import GitHubManageAccountsDialog
-
-        action = GitHubManageAccountsDialog(self.frame, login=login, has_token=has_token).show()
-        if action == "remove":
-            delete_github_token()
-            self._set_status("GitHub account disconnected")
-        elif action == "add":
-            self._github_add_token()
 
     # ------------------------------------------------------------------
     # Helper: guarantee consent + PyGithub present
@@ -259,15 +288,46 @@ class GitHubRemoteMixin:
         if result is None:
             return
         if result.token:
-            if save_github_token(result.token):
-                self._set_status("GitHub token saved")
-            else:
-                self._show_message_box(
-                    f"Could not save the token. The {credential_store_name()} "
-                    "may not be available.",
-                    "GitHub Sign In",
-                    self._wx.ICON_WARNING | self._wx.OK,
-                )
+            self._set_status_quiet("Checking the GitHub account...")
+            threading.Thread(
+                target=self._github_verify_new_token,
+                args=(result.token,),
+                daemon=True,
+            ).start()  # GATE-40-OK: one explicit, read-only credential check.
+
+    def _github_verify_new_token(self, token: str) -> None:
+        login: str | None = None
+        error = ""
+        try:
+            provider = GitHubRemoteProvider(token=token)
+            identity = provider.get_identity()
+            login = identity.login if identity else None
+            error = provider.last_auth_error
+            provider.close()
+        except Exception:  # noqa: BLE001 - report without retaining an unverified token
+            error = "QUILL could not verify that token with GitHub."
+        self._wx.CallAfter(self._github_add_token_done, token, login, error)
+
+    def _github_add_token_done(self, token: str, login: str | None, error: str) -> None:
+        if not login:
+            self._show_message_box(
+                error or "GitHub did not confirm an account for that token. Nothing was saved.",
+                "GitHub Sign In",
+                self._wx.ICON_WARNING | self._wx.OK,
+            )
+            return
+        try:
+            account = save_github_account(login, token)
+            delete_legacy_github_token()
+        except Exception:  # noqa: BLE001 - credential-store errors must be clear
+            self._show_message_box(
+                f"Could not save the verified token. The {credential_store_name()} "
+                "may not be available.",
+                "GitHub Sign In",
+                self._wx.ICON_WARNING | self._wx.OK,
+            )
+            return
+        self._set_status(f"Added and switched to GitHub account {account.login}")
 
     # ------------------------------------------------------------------
     # Open flow
@@ -348,6 +408,15 @@ class GitHubRemoteMixin:
         )
         self._gh_state().origins[str(local_path)] = origin
         self.open_file(local_path)
+        if result.line > 0:
+            editor = getattr(self, "editor", None)
+            if editor is not None and editor.GetLineCount() > 0:
+                first_line = min(result.line - 1, editor.GetLineCount() - 1)
+                last_line = min(max(result.line_end, result.line) - 1, editor.GetLineCount() - 1)
+                start = editor.PositionFromLine(first_line)
+                end = editor.GetLineEndPosition(last_line)
+                editor.SetSelection(start, end)
+                editor.SetFocus()
         label = f"GitHub: {remote_file.repository.full_name} ({remote_file.ref})"
         tab_count = len(self._document_tabs)
         if tab_count:
@@ -475,6 +544,11 @@ class GitHubRemoteMixin:
             wx.EVT_MENU,
             lambda _e: self.open_github_items_viewer(),
             id=self._id_github_items,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_github_reference(),
+            id=self._id_github_reference,
         )
 
 

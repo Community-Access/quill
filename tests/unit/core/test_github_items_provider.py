@@ -68,16 +68,27 @@ class _FakeRepo:
         self._runs: list[Any] = []
         self._workflows: list[Any] = []
         self._issue_comments: dict[int, list[Any]] = {}
+        self._items: dict[int, Any] = {}
         self._reruns: list[int] = []
         self._jobs: list[Any] = []
+        self._annotations: list[Any] = []
         self._dispatches: list[tuple[str, str, dict]] = []
         self._dispatch_ok = True
         self._alerts: list[Any] = []
+        self._code_alerts: list[Any] = []
+        self._secret_alerts: list[Any] = []
+        self._code_scan_error: Exception | None = None
+        self._secret_scan_error: Exception | None = None
         self._artifacts: list[Any] = []
+        self._issue_template_entries: list[Any] = []
 
     def get_issues(self, state: str = "open") -> list[Any]:
         self.calls.append(("get_issues", {"state": state}))
         return self._issues
+
+    def get_contents(self, path: str) -> list[Any]:
+        self.calls.append(("get_contents", {"path": path}))
+        return self._issue_template_entries
 
     def get_pulls(self, state: str = "open") -> list[Any]:
         self.calls.append(("get_pulls", {"state": state}))
@@ -109,6 +120,8 @@ class _FakeRepo:
 
     def get_issue(self, number: int) -> Any:
         self.calls.append(("get_issue", {"number": number}))
+        if number in self._items:
+            return self._items[number]
         return SimpleNamespace(
             get_comments=lambda: self._issue_comments.get(number, []),
             create_comment=lambda body: self._make_comment(number, body),
@@ -124,8 +137,20 @@ class _FakeRepo:
         self._issue_comments.setdefault(number, []).append(comment)
         return comment
 
-    def create_issue(self, *, title: str, body: str = "") -> Any:
-        self.calls.append(("create_issue", {"title": title, "body": body}))
+    def create_issue(
+        self,
+        *,
+        title: str,
+        body: str = "",
+        labels: list[str] | None = None,
+        assignees: list[str] | None = None,
+    ) -> Any:
+        call = {"title": title, "body": body}
+        if labels is not None:
+            call["labels"] = labels
+        if assignees is not None:
+            call["assignees"] = assignees
+        self.calls.append(("create_issue", call))
         return SimpleNamespace(
             number=1,
             title=title,
@@ -177,11 +202,21 @@ class _FakeRepo:
     def get_workflow_run(self, run_id: int) -> Any:
         self.calls.append(("get_workflow_run", {"run_id": run_id}))
         reruns: list[int] = self._reruns
+
+        def get_attempt(attempt_number: int) -> Any:
+            self.calls.append(("get_attempt", {"run_id": run_id, "attempt_number": attempt_number}))
+            return SimpleNamespace(jobs=lambda: self._jobs)
+
         return SimpleNamespace(
             rerun=lambda: reruns.append(run_id),
             jobs=lambda: self._jobs,
             get_artifacts=lambda: self._artifacts,
+            get_attempt=get_attempt,
         )
+
+    def get_check_run(self, check_run_id: int) -> Any:
+        self.calls.append(("get_check_run", {"check_run_id": check_run_id}))
+        return SimpleNamespace(get_annotations=lambda: self._annotations)
 
     def get_workflow(self, workflow_id: str) -> Any:
         self.calls.append(("get_workflow", {"workflow_id": workflow_id}))
@@ -196,6 +231,23 @@ class _FakeRepo:
     def get_dependabot_alerts(self, state: str = "open") -> list[Any]:
         self.calls.append(("get_dependabot_alerts", {"state": state}))
         return self._alerts
+
+    def get_codescan_alerts(self, state: str = "open", **_kwargs: Any) -> list[Any]:
+        self.calls.append(("get_codescan_alerts", {"state": state}))
+        if self._code_scan_error is not None:
+            raise self._code_scan_error
+        return self._code_alerts
+
+    def get_secret_scanning_alerts(
+        self, state: str = "open", hide_secret: bool = False, **_kwargs: Any
+    ) -> list[Any]:
+        self.calls.append((
+            "get_secret_scanning_alerts",
+            {"state": state, "hide_secret": hide_secret},
+        ))
+        if self._secret_scan_error is not None:
+            raise self._secret_scan_error
+        return self._secret_alerts
 
     def get_issue_comment(self, comment_id: int) -> Any:
         self.calls.append(("get_issue_comment", {"comment_id": comment_id}))
@@ -355,6 +407,169 @@ def test_fetch_issues_maps_issue_fields(provider: GitHubItemsProvider, repo: _Fa
     assert first.created_at.startswith("2026-01-01")
     # The state filter is forwarded to PyGithub.
     assert repo.calls[0] == ("get_issues", {"state": "open"})
+
+
+@pytest.mark.parametrize("is_pr", [False, True])
+def test_fetch_item_resolves_direct_issue_and_pull_request_reference(
+    provider: GitHubItemsProvider, repo: _FakeRepo, is_pr: bool
+) -> None:
+    repo._items[42] = _issue_row(42, title="Direct reference", is_pr=is_pr)
+
+    item = provider.fetch_item("owner/repo", 42)
+
+    assert item.number == 42
+    assert item.title == "Direct reference"
+    assert item.is_pr is is_pr
+    assert repo.calls == [("get_issue", {"number": 42})]
+
+
+def test_fetch_branch_by_name_uses_direct_lookup(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    branch = SimpleNamespace(
+        name="feature/direct",
+        protected=True,
+        commit=SimpleNamespace(sha="a" * 40),
+    )
+    repo.get_branch = lambda name: repo.calls.append(("get_branch", {"name": name})) or branch
+
+    result = provider.fetch_branch_by_name("owner/repo", "feature/direct")
+
+    assert result.name == "feature/direct"
+    assert result.commit_sha == "a" * 40
+    assert repo.calls[-1] == ("get_branch", {"name": "feature/direct"})
+
+
+def test_fetch_commit_by_sha_uses_direct_lookup(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    commit = SimpleNamespace(
+        sha="abcdef123456",
+        commit=SimpleNamespace(
+            message="Direct commit",
+            author=SimpleNamespace(name="alice", date=datetime(2026, 5, 1, tzinfo=UTC)),
+        ),
+        stats=SimpleNamespace(additions=4, deletions=2),
+        files=[SimpleNamespace(filename="src/app.py")],
+        html_url="https://github.com/owner/repo/commit/abcdef123456",
+    )
+    repo.get_commit = lambda sha: repo.calls.append(("get_commit", {"sha": sha})) or commit
+
+    result = provider.fetch_commit_by_sha("owner/repo", "abcdef123456")
+
+    assert result.sha == "abcdef123456"
+    assert result.message == "Direct commit"
+    assert result.author == "alice"
+    assert repo.calls[-1] == ("get_commit", {"sha": "abcdef123456"})
+
+
+def test_fetch_release_by_tag_quotes_tag_and_maps_assets(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    repo.url = "https://api.github.com/repos/owner/repo"
+    requests: list[tuple[str, str]] = []
+    data = {
+        "tag_name": "release/1.0",
+        "name": "Version 1.0",
+        "draft": False,
+        "prerelease": True,
+        "created_at": "2026-01-01T00:00:00Z",
+        "html_url": "https://github.com/owner/repo/releases/tag/release/1.0",
+        "body": "Release notes",
+        "assets": [
+            {
+                "name": "app.zip",
+                "download_count": 4,
+                "size": 1024,
+                "browser_download_url": "https://example.test/app.zip",
+            }
+        ],
+    }
+
+    def _request(method: str, url: str):
+        requests.append((method, url))
+        return {}, data
+
+    repo._requester = SimpleNamespace(requestJsonAndCheck=_request)
+
+    result = provider.fetch_release_by_tag("owner/repo", "release/1.0")
+
+    assert requests == [
+        ("GET", "https://api.github.com/repos/owner/repo/releases/tags/release%2F1.0")
+    ]
+    assert result.tag == "release/1.0"
+    assert result.name == "Version 1.0"
+    assert result.prerelease
+    assert result.asset_count == 1
+    assert result.total_downloads == 4
+
+
+def test_fetch_workflow_run_and_definition_by_direct_reference(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    run = SimpleNamespace(
+        id=101,
+        name="CI",
+        status="completed",
+        conclusion="success",
+        head_branch="main",
+        event="push",
+        run_number=7,
+        run_attempt=2,
+        head_sha="a" * 40,
+    )
+    repo.get_workflow_run = lambda run_id: (
+        repo.calls.append(("get_workflow_run_direct", {"run_id": run_id})) or run
+    )
+    repo._workflows = [
+        SimpleNamespace(
+            id=12,
+            name="CI",
+            path=".github/workflows/ci.yml",
+            state="active",
+        )
+    ]
+
+    mapped_run = provider.fetch_workflow_run_by_id("owner/repo", 101)
+    workflow = provider.fetch_workflow_by_reference("owner/repo", "ci.yml")
+
+    assert mapped_run.id == 101
+    assert mapped_run.run_attempt == 2
+    assert mapped_run.head_sha == "a" * 40
+    assert workflow.id == 12
+    assert workflow.path.endswith("ci.yml")
+
+
+def test_generate_release_notes_returns_local_preview_for_explicit_range(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    calls: list[dict[str, str]] = []
+    repo.generate_release_notes = lambda **kwargs: (
+        calls.append(kwargs) or SimpleNamespace(name="Version 2", body="## Changes\n- Fixed a bug")
+    )
+
+    draft = provider.generate_release_notes(
+        "owner/repo",
+        target_tag="v2.0",
+        previous_tag="v1.9",
+        target_commitish="main",
+    )
+
+    assert calls == [{"tag_name": "v2.0", "previous_tag_name": "v1.9", "target_commitish": "main"}]
+    assert draft.range_text == "v1.9 → v2.0"
+    assert draft.name == "Version 2"
+    assert "Fixed a bug" in draft.body
+
+
+def test_generate_release_notes_rejects_implicit_or_empty_ranges(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    repo.generate_release_notes = lambda **_kwargs: pytest.fail("should not call GitHub")
+
+    with pytest.raises(GitHubItemsError, match="both a target tag and a previous tag"):
+        provider.generate_release_notes("owner/repo", target_tag="v2.0", previous_tag="")
+    with pytest.raises(GitHubItemsError, match="must be different"):
+        provider.generate_release_notes("owner/repo", target_tag="v2.0", previous_tag="v2.0")
 
 
 def test_fetch_pulls_marks_is_pr_and_carries_diff(
@@ -697,6 +912,8 @@ def test_fetch_workflow_runs_maps_status_and_conclusion(
             created_at=datetime(2026, 3, 1, tzinfo=UTC),
             html_url="https://github.com/owner/repo/actions/runs/1",
             run_number=42,
+            run_attempt=2,
+            head_sha="0123456789abcdef",
         ),
     ]
     runs = provider.fetch_workflow_runs("owner/repo")
@@ -707,6 +924,8 @@ def test_fetch_workflow_runs_maps_status_and_conclusion(
     assert run.branch == "main"
     assert run.event == "push"
     assert run.run_number == 42
+    assert run.run_attempt == 2
+    assert run.head_sha == "0123456789abcdef"
 
 
 def test_fetch_workflows_maps_id_name_path_state(
@@ -981,6 +1200,88 @@ def test_create_issue(provider: GitHubItemsProvider, repo: _FakeRepo) -> None:
     assert repo.calls[0] == ("create_issue", {"title": "Bug found", "body": "steps to repro"})
 
 
+def test_create_issue_applies_template_labels_and_assignees(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    provider.create_issue(
+        "owner/repo",
+        "Bug found",
+        "Steps to reproduce",
+        labels=("bug", "triage"),
+        assignees=("alice",),
+    )
+    assert repo.calls[0] == (
+        "create_issue",
+        {
+            "title": "Bug found",
+            "body": "Steps to reproduce",
+            "labels": ["bug", "triage"],
+            "assignees": ["alice"],
+        },
+    )
+
+
+def test_fetch_issue_templates_reads_markdown_metadata_and_marks_forms(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    repo._issue_template_entries = [
+        SimpleNamespace(
+            type="file",
+            name="bug_report.md",
+            html_url="https://github.com/owner/repo/blob/main/.github/ISSUE_TEMPLATE/bug_report.md",
+            decoded_content=(
+                b"---\nname: Bug report\nabout: Report a bug\ntitle: '[Bug] '\n"
+                b"labels:\n  - bug\n  - triage\nassignees: alice, bob\n---\n"
+                b"## What happened?\nDescribe the problem.\n"
+            ),
+        ),
+        SimpleNamespace(
+            type="file",
+            name="config.yml",
+            html_url="https://github.com/owner/repo/blob/main/.github/ISSUE_TEMPLATE/config.yml",
+        ),
+        SimpleNamespace(
+            type="file",
+            name="feature_request.yml",
+            html_url="https://github.com/owner/repo/blob/main/.github/ISSUE_TEMPLATE/feature_request.yml",
+        ),
+    ]
+
+    templates = provider.fetch_issue_templates("owner/repo")
+
+    assert len(templates) == 2
+    assert templates[0].name == "Bug report"
+    assert templates[0].title == "[Bug]"
+    assert templates[0].labels == ("bug", "triage")
+    assert templates[0].assignees == ("alice", "bob")
+    assert "What happened" in templates[0].body
+    assert templates[0].supported
+    assert templates[1].supported is False
+    assert repo.calls[-1] == ("get_contents", {"path": ".github/ISSUE_TEMPLATE"})
+
+
+def test_fetch_issue_templates_skips_oversized_markdown_content(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    class _OversizedTemplate:
+        type = "file"
+        name = "large.md"
+        size = 50_001
+        html_url = "https://github.com/owner/repo/blob/main/.github/ISSUE_TEMPLATE/large.md"
+
+        @property
+        def decoded_content(self) -> bytes:
+            raise AssertionError("oversized content should not be fetched")
+
+    repo._issue_template_entries = [_OversizedTemplate()]
+
+    templates = provider.fetch_issue_templates("owner/repo")
+
+    assert len(templates) == 1
+    assert templates[0].body_truncated
+    assert templates[0].body == ""
+
+
 def test_create_issue_requires_a_token() -> None:
     anon_repo = _FakeRepo()
     fake_module = SimpleNamespace(
@@ -1090,12 +1391,69 @@ def test_fetch_workflow_jobs(provider: GitHubItemsProvider, repo: _FakeRepo) -> 
             started_at=datetime(2026, 1, 1, tzinfo=UTC),
             completed_at=datetime(2026, 1, 1, 0, 5, tzinfo=UTC),
             html_url="https://github.com/owner/repo/actions/runs/1/jobs/1",
+            id=1,
+            steps=[
+                SimpleNamespace(
+                    name="Run tests",
+                    status="completed",
+                    conclusion="failure",
+                    number=2,
+                    started_at=datetime(2026, 1, 1, 0, 2, tzinfo=UTC),
+                    completed_at=datetime(2026, 1, 1, 0, 3, tzinfo=UTC),
+                )
+            ],
+            head_sha="abcdef012345",
         ),
     ]
     jobs = provider.fetch_workflow_jobs("owner/repo", 1)
     assert len(jobs) == 1
     assert jobs[0].name == "build"
     assert jobs[0].conclusion == "success"
+    assert jobs[0].steps[0].name == "Run tests"
+    assert jobs[0].steps[0].conclusion == "failure"
+    assert jobs[0].steps[0].number == 2
+    assert jobs[0].head_sha == "abcdef012345"
+    assert jobs[0].check_run_id == 1
+
+
+def test_fetch_workflow_jobs_can_load_a_previous_attempt(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    repo._jobs = [SimpleNamespace(name="build", status="completed", id=7, steps=[])]
+
+    jobs = provider.fetch_workflow_jobs("owner/repo", 1, attempt_number=1)
+
+    assert jobs[0].name == "build"
+    assert repo.calls == [
+        ("get_workflow_run", {"run_id": 1}),
+        ("get_attempt", {"run_id": 1, "attempt_number": 1}),
+    ]
+
+
+def test_fetch_workflow_job_annotations_maps_and_bounds_annotations(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    repo._annotations = [
+        SimpleNamespace(
+            path=f"src/file_{index}.py",
+            start_line=index + 1,
+            end_line=index + 2,
+            annotation_level="warning",
+            title="Check",
+            message="Review this line.",
+            raw_details="details",
+        )
+        for index in range(101)
+    ]
+
+    annotations, truncated = provider.fetch_workflow_job_annotations("owner/repo", 1)
+
+    assert len(annotations) == 100
+    assert annotations[0].path == "src/file_0.py"
+    assert annotations[0].start_line == 1
+    assert annotations[0].message == "Review this line."
+    assert truncated
+    assert repo.calls == [("get_check_run", {"check_run_id": 1})]
 
 
 def test_dispatch_workflow(provider: GitHubItemsProvider, repo: _FakeRepo) -> None:
@@ -1175,7 +1533,68 @@ def test_fetch_security_alerts(provider: GitHubItemsProvider, repo: _FakeRepo) -
     assert len(alerts) == 1
     assert alerts[0].severity == "high"
     assert alerts[0].package == "left-pad"
-    assert repo.calls[-1] == ("get_dependabot_alerts", {"state": "open"})
+    assert repo.calls[0] == ("get_dependabot_alerts", {"state": "open"})
+    assert repo.calls[-1] == (
+        "get_secret_scanning_alerts",
+        {"state": "open", "hide_secret": True},
+    )
+
+
+def test_fetch_security_alerts_includes_code_and_redacted_secret_findings(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    repo._code_alerts = [
+        SimpleNamespace(
+            number=4,
+            state="open",
+            rule=SimpleNamespace(
+                id="py/sql-injection",
+                name="SQL injection",
+                severity="error",
+                description="User input reaches a query.",
+            ),
+            tool=SimpleNamespace(name="CodeQL"),
+            most_recent_instance=SimpleNamespace(
+                location=SimpleNamespace(path="src/app.py", start_line=18, end_line=18),
+                message=SimpleNamespace(text="Review this parameter."),
+            ),
+            html_url="https://github.com/owner/repo/security/code-scanning/4",
+            created_at=datetime(2026, 1, 2, tzinfo=UTC),
+        )
+    ]
+    repo._secret_alerts = [
+        SimpleNamespace(
+            number=5,
+            state="open",
+            secret_type="github_personal_access_token",
+            secret_type_display_name="GitHub personal access token",
+            secret="must-not-be-rendered",
+            html_url="https://github.com/owner/repo/security/secret-scanning/5",
+            created_at=datetime(2026, 1, 3, tzinfo=UTC),
+        )
+    ]
+
+    alerts = provider.fetch_security_alerts("owner/repo")
+
+    assert [alert.alert_type for alert in alerts] == ["Code scanning", "Secret scanning"]
+    assert alerts[0].location == "src/app.py:18-18"
+    assert alerts[0].tool == "CodeQL"
+    assert "must-not-be-rendered" not in repr(alerts[1])
+    assert "value is withheld" in alerts[1].summary
+    assert ("get_secret_scanning_alerts", {"state": "open", "hide_secret": True}) in repo.calls
+
+
+def test_missing_code_scanning_permission_is_not_reported_as_zero_alerts(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    repo._code_scan_error = RuntimeError("403 permission denied")
+
+    alerts = provider.fetch_security_alerts("owner/repo")
+
+    code_alerts = [alert for alert in alerts if alert.alert_type == "Code scanning"]
+    assert len(code_alerts) == 1
+    assert code_alerts[0].state == "unavailable"
+    assert "permission denied" in code_alerts[0].summary
 
 
 # ---------------------------------------------------------------------------

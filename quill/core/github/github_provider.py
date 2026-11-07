@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.error_codes import CodedError
+from quill.core.github.auth_diagnostics import github_exception_hint
 from quill.core.github.models import (
     RemoteAccount,
     RemoteFile,
@@ -74,19 +75,24 @@ class GitHubRemoteProvider(RemoteProvider):
         else:
             self._gh = gh.Github()
         self._token = token
+        self.last_auth_error = ""
 
     def get_identity(self) -> RemoteAccount | None:
         if not self._token:
             return None
         try:
             user = self._gh.get_user()
+            self.last_auth_error = ""
             return RemoteAccount(
                 provider="github",
                 account_id=f"github:{user.login}",
                 display_name=user.name or user.login,
                 login=user.login,
             )
-        except Exception:  # noqa: BLE001 - authentication errors are non-fatal
+        except Exception as exc:  # noqa: BLE001 - authentication errors are non-fatal
+            self.last_auth_error = github_exception_hint(exc) or (
+                "QUILL could not verify the GitHub account. Check the connection and retry."
+            )
             return None
 
     def get_repository(self, full_name: str) -> RemoteRepository:
@@ -102,10 +108,12 @@ class GitHubRemoteProvider(RemoteProvider):
                     "Check the owner/repo name and that you have access."
                 ) from exc
             if status == 401:
-                raise PermissionError("GitHub token is invalid or has expired.") from exc
+                hint = github_exception_hint(exc)
+                raise PermissionError(hint or "GitHub token is invalid or has expired.") from exc
             if status == 403:
+                hint = github_exception_hint(exc)
                 raise PermissionError(
-                    "Access denied. Your token may need 'repo' scope for private repositories."
+                    hint or "Access denied. Check token permissions for this repository."
                 ) from exc
             raise RuntimeError(f"GitHub error {status}: {msg}") from exc
         return RemoteRepository(

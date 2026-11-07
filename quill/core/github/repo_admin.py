@@ -26,6 +26,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.error_codes import CodedError
+from quill.core.github.auth_diagnostics import github_exception_hint
 from quill.core.github.github_provider import _get_gh_module, require_pygithub
 from quill.core.github.models import RemoteRepository
 
@@ -61,12 +62,16 @@ def _translate(exc: Exception, *, context: str) -> GitHubRepoAdminError:
         if status == 404:
             return GitHubRepoAdminError(f"{context}: not found or no access.")
         if status == 401:
-            return GitHubRepoAdminError(f"{context}: GitHub token is invalid or has expired.")
-        if status == 403:
+            hint = github_exception_hint(exc)
             return GitHubRepoAdminError(
-                f"{context}: access denied. Your token may need 'repo' or "
-                "'delete_repo' scope for this action."
+                f"{context}: {hint or 'GitHub token is invalid or has expired.'}"
             )
+        if status == 403:
+            hint = github_exception_hint(exc) or "Access denied."
+            if hint.startswith("Access denied"):
+                # A plain denial on an admin action is almost always a missing scope.
+                hint += " Admin actions may need the token's 'repo' or 'delete_repo' scope."
+            return GitHubRepoAdminError(f"{context}: {hint}")
         if status == 422:
             return GitHubRepoAdminError(f"{context}: {msg} (name may already be taken).")
         return GitHubRepoAdminError(f"{context}: GitHub error {status}: {msg}")

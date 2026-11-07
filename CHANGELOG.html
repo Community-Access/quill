@@ -244,6 +244,38 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="github-pull-request-review-reader-2026-11-05">GitHub pull
+request review reader (2026-11-05)</h3>
+<ul>
+<li><strong>Review a PR from the GitHub Items viewer.</strong> Select a
+pull request and choose <strong>Review…</strong> to read merge
+readiness, approval state, check runs, requested reviewers, and
+line-based review threads with every reply. A native expandable PR
+outline groups threads under changed files and includes checks. Tab
+reads the selected node’s details; Ctrl+R replies to a thread; Shift+F10
+opens node-specific actions. <strong>Copy Review Summary</strong>
+produces a plain-text status brief.</li>
+<li><strong>Take review actions when signed in.</strong> Approve,
+request changes, or leave a comment; reply to the selected review
+thread; request reviewers; switch between draft and ready; or update the
+PR branch. Closed and merged PRs disable these actions. Public review
+reading remains available without a token. (Historical entry: resolved
+thread state and Resolve/Reopen were outstanding at that point; see the
+update dated 2026-11-05.)</li>
+<li><strong>The shared Items viewer is in QUILL Lite.</strong> Tools
+&gt; GitHub Workbench… opens the same lists, PR outline, context menus,
+and review actions as QUILL, after the same consent and authentication
+checks.</li>
+<li><strong>Row context menus in the Items viewer.</strong> Shift+F10 or
+right-click opens review, diff, comparison, copy, favorite, browser, and
+available write actions for the selected issue, PR, branch, release, or
+workflow run.</li>
+<li><strong>GHManage scope is documented explicitly.</strong> The
+tracked <a href="docs/planning/github-workbench.md">workbench plan</a>
+inventories the capabilities QUILL has, the partial surfaces, and the
+remaining gaps. GHManage remains the design reference; full feature
+parity has not been claimed for this release.</li>
+</ul>
 <h3
 id="quill-converters-auphonic-backlog-history-account-tags-and-cover-more-options-2026-11-07">Quill
 Converter’s Auphonic backlog: history, account, tags and cover, more
@@ -16830,30 +16862,30 @@ default redirect-following or reaching into PyGithub’s internals, so the
 token only ever goes to github.com.</li>
 <li><strong>GitHub is no longer a read-only window: create, fork,
 rename, protect, and commit — right from QUILL.</strong>
-<code>docs/planning/github.md</code> mapped out how far QUILL’s existing
-PyGithub integration could go without a new <code>gh</code>-CLI
-dependency; this release ships the high-confidence half. <strong>Tools
-&gt; GitHub</strong> is a new submenu with eight repository-lifecycle
-commands: Create Repository…, Fork Repository…, Rename Repository…,
-Change Repository Visibility…, Change Default Branch…, Configure Branch
-Protection…, Delete Branch…, and Commit Multiple Files… (one atomic
-commit across several local files, distinct from the existing
-single-document Save to GitHub). Create and Fork both end by offering to
-wire the result into <strong>Sync Folder with GitHub</strong> on the
-spot, so starting a brand-new GitHub-backed project never means leaving
-QUILL. The GitHub Items viewer’s new <strong>Actions…</strong> menu adds
-New Issue…/New Pull Request…, Merge Pull Request…, Delete Branch…,
-Re-run Workflow, and — on top of the existing Alt+N/Alt+P comment
-navigation — Reply to Thread…, Edit This Comment…, and Delete This
-Comment… Every write needs a signed-in account (a missing token offers
-to sign you in on the spot rather than just refusing) and is named
-explicitly in its own confirmation; the four highest-consequence actions
-(rename, delete a branch, change visibility, merge a pull request)
-require retyping the exact name or number rather than a plain Yes/No.
-All thirteen GitHub commands — the eight new ones plus the five
-pre-existing read-only commands, which had never had default keybindings
-before — are in the Command Palette and now ship default QUILL Key
-chords.</li>
+<code>docs/planning/github-workbench.md</code> mapped out how far
+QUILL’s existing PyGithub integration could go without a new
+<code>gh</code>-CLI dependency; this release ships the high-confidence
+half. <strong>Tools &gt; GitHub</strong> is a new submenu with eight
+repository-lifecycle commands: Create Repository…, Fork Repository…,
+Rename Repository…, Change Repository Visibility…, Change Default
+Branch…, Configure Branch Protection…, Delete Branch…, and Commit
+Multiple Files… (one atomic commit across several local files, distinct
+from the existing single-document Save to GitHub). Create and Fork both
+end by offering to wire the result into <strong>Sync Folder with
+GitHub</strong> on the spot, so starting a brand-new GitHub-backed
+project never means leaving QUILL. The GitHub Items viewer’s new
+<strong>Actions…</strong> menu adds New Issue…/New Pull Request…, Merge
+Pull Request…, Delete Branch…, Re-run Workflow, and — on top of the
+existing Alt+N/Alt+P comment navigation — Reply to Thread…, Edit This
+Comment…, and Delete This Comment… Every write needs a signed-in account
+(a missing token offers to sign you in on the spot rather than just
+refusing) and is named explicitly in its own confirmation; the four
+highest-consequence actions (rename, delete a branch, change visibility,
+merge a pull request) require retyping the exact name or number rather
+than a plain Yes/No. All thirteen GitHub commands — the eight new ones
+plus the five pre-existing read-only commands, which had never had
+default keybindings before — are in the Command Palette and now ship
+default QUILL Key chords.</li>
 <li><strong>Tools &gt; Local Git: the first genuinely accessible
 interactive rebase and merge-conflict experience.</strong> A local git
 companion to the GitHub work above, built because interactive rebase and
@@ -16913,19 +16945,19 @@ Download Optional Components — portable, checksum-verified copies (Git
 for Windows, and the GitHub CLI for Windows and macOS) for anyone who
 doesn’t already have them installed; QUILL always prefers a system copy
 first.</li>
-<li><strong>GitHub Items reaches full parity with GHManage, its
-inspiration — Compare Branches, a Workflows view, a local Quick Filter,
-and columns that remember your choice.</strong> This closes out the
-GHManage/fastgh unification review: every idea from Kelly Ford’s
-GHManage (<code>github.com/kellylford/GHManage</code>) that hadn’t yet
-made the jump now has, each one extended with QUILL’s own reach.
-<strong>Compare Branches</strong> (select a branch, press
-<strong>Compare…</strong> or <strong>Ctrl+Shift+B</strong>) reports
-ahead/behind counts and every commit between two branches, and — going
-beyond GHManage’s own comparison view — walks each changed file’s
-differences through QUILL’s own compare engine, the same accessible
-difference walk <strong>Diff…</strong> already gives a pull request; it
-needs no signed-in account, since it never writes to GitHub. A new
+<li><strong>GitHub Items adds GHManage-inspired viewer features —
+Compare Branches, a Workflows view, a local Quick Filter, and columns
+that remember your choice.</strong> This closes out the GHManage/fastgh
+unification review: every idea from Kelly Ford’s GHManage
+(<code>github.com/kellylford/GHManage</code>) that hadn’t yet made the
+jump now has, each one extended with QUILL’s own reach. <strong>Compare
+Branches</strong> (select a branch, press <strong>Compare…</strong> or
+<strong>Ctrl+Shift+B</strong>) reports ahead/behind counts and every
+commit between two branches, and — going beyond GHManage’s own
+comparison view — walks each changed file’s differences through QUILL’s
+own compare engine, the same accessible difference walk
+<strong>Diff…</strong> already gives a pull request; it needs no
+signed-in account, since it never writes to GitHub. A new
 <strong>Workflows</strong> view lists workflow <em>definitions</em> (not
 just run history); <strong>Enter</strong> (or <strong>Actions… &gt; Run
 … on Branch…</strong>) dispatches one after asking for a branch, and
@@ -23131,6 +23163,24 @@ available for standalone diagnostics export.</p>
 <p>This is a beta release. The product direction is aligned with the
 Quill 1.0 PRD, while some workflows are still evolving toward that
 fuller 1.0 target.</p>
+<h1
+id="github-workbench-update-2026-11-05-pending-release-acceptance">GitHub
+Workbench update (2026-11-05, pending release acceptance)</h1>
+<ul>
+<li>QUILL and QUILL Lite share an expandable PR review outline with
+thread replies, resolve/reopen actions, and exact changed-line
+navigation when a current patch position is available.</li>
+<li>Explore GitHub adds global saved searches, My Work, activity,
+repository and people discovery, notifications, gists, labels, Pages
+builds, and security views. The repository chooser includes pinned and
+recent repositories.</li>
+<li>Workflow runs now expose jobs and text logs; run actions use the
+actual API run ID. Redirected job-log downloads do not forward the
+account token.</li>
+<li>Native screen-reader acceptance and destination-branch integration
+are pending. See <a href="docs/github/workbench-reference.md">the
+workbench reference</a>.</li>
+</ul>
 </main>
 </body>
 </html>

@@ -36,6 +36,10 @@ def test_command_registered_in_build_commands() -> None:
     src = _src("quill/ui/main_frame_commands.py")
     assert '"file.open_github_items"' in src
     assert "self.open_github_items_viewer" in src
+    assert "self._register_github_reference_command()" in src
+    github_src = _src("quill/ui/main_frame_github.py")
+    assert '"file.open_github_reference"' in github_src
+    assert "self.open_github_reference" in github_src
 
 
 def test_mixin_in_base_classes() -> None:
@@ -47,12 +51,15 @@ def test_menu_id_and_item_present() -> None:
     assert "self._id_github_items = wx.NewIdRef()" in src
     assert '"file.open_github_items"' in src
     assert "GitHub &Items..." in src
+    assert "self._append_github_reference_menu(remote_menu)" in src
 
 
 def test_menu_bound_in_bind_github_menu() -> None:
     src = _src("quill/ui/main_frame_github.py")
     assert "self._id_github_items" in src
     assert "self.open_github_items_viewer()" in src
+    assert "self._id_github_reference" in src
+    assert "self.open_github_reference()" in src
 
 
 def test_feature_command_map_gates_on_github_remote() -> None:
@@ -60,6 +67,7 @@ def test_feature_command_map_gates_on_github_remote() -> None:
     # release build keeps the viewer hidden until the feature is enabled.
     src = _src("quill/core/feature_command_map.py")
     assert '"file.open_github_items": "core.github_remote"' in src
+    assert '"file.open_github_reference": "core.github_remote"' in src
 
 
 # ---------------------------------------------------------------------------

@@ -269,7 +269,7 @@ class MenuBuilderMixin:
             self._id_github_items,
             self._menu_label(_("GitHub &Items..."), "file.open_github_items"),
         )
-        remote_menu.AppendSeparator()
+        self._append_github_reference_menu(remote_menu)
         remote_menu.Append(
             self._id_manage_remote_sites,
             self._menu_label(_("&Manage Remote Sites..."), "file.manage_remote_sites"),

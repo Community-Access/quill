@@ -1,5 +1,12 @@
 # QUILL Lite: free AI help, in an editor that talks to you
 
+**GitHub workbench update (November 2026):** QUILL Lite now opens QUILL's
+shared GitHub Items viewer from **File > GitHub Workbench...** (**Alt+F**, then **G**). Review a pull
+request through an expandable outline of changed files, conversations, and
+checks. **Ctrl+R** replies to a selected thread and **Shift+F10** reveals
+actions for the selected item. The [GitHub tutorial](../../../docs/tutorials/08-github-inside-quill.md)
+explains every step for a screen reader.
+
 ## November 2026 update: payment form authoring
 
 The 2.0 testing line adds Stripe and PayPal payment setup through the same
@@ -651,3 +658,10 @@ tries again when you next open Preferences.
 Do you know someone who puts up with an editor that does not talk to them? Or
 someone who was told AI is not for them, because every AI tool they tried was
 made for somebody else? Please send them this.
+# GitHub Workbench update (release acceptance pending)
+
+QUILL Lite's shared GitHub workbench adds the same PR review tree, conversation
+reply and resolution commands, exact diff-line targeting, and Explore views as
+QUILL. The [guided tutorial](../../../docs/tutorials/08-github-inside-quill.md)
+explains arrow keys, Tab, Ctrl+R, Ctrl+Shift+R, and context menus. Native
+screen-reader acceptance remains pending.

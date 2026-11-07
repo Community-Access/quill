@@ -81,3 +81,5 @@ class BrowseResult:
     ref: str
     sha: str
     html_url: str
+    line: int = 0
+    line_end: int = 0

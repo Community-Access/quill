@@ -258,6 +258,9 @@ class NewWorktreeDialog:
         branches: Sequence[str],
         *,
         default_parent_folder: str = "",
+        default_branch_name: str = "",
+        default_from_ref: str = "",
+        create_branch_by_default: bool = False,
         announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         import wx
@@ -307,12 +310,14 @@ class NewWorktreeDialog:
         grid.Add(wx.StaticText(self.dialog, label=""), 0)
         self._create_check = wx.CheckBox(self.dialog, label="Create a &new branch instead")
         self._create_check.SetName("Create a new branch in this worktree")
+        self._create_check.SetValue(create_branch_by_default)
         grid.Add(self._create_check, 0)
 
         grid.Add(wx.StaticText(self.dialog, label="New branch n&ame:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._new_branch_ctrl = wx.TextCtrl(self.dialog)
         self._new_branch_ctrl.SetName("Name for the new branch")
-        self._new_branch_ctrl.Enable(False)
+        self._new_branch_ctrl.SetValue(default_branch_name)
+        self._new_branch_ctrl.Enable(create_branch_by_default)
         grid.Add(self._new_branch_ctrl, 1, wx.EXPAND)
 
         grid.Add(
@@ -324,8 +329,10 @@ class NewWorktreeDialog:
         self._from_ref_ctrl.SetName(
             "Branch, tag, or commit the new branch starts from; leave blank for the current one"
         )
-        self._from_ref_ctrl.Enable(False)
+        self._from_ref_ctrl.SetValue(default_from_ref)
+        self._from_ref_ctrl.Enable(create_branch_by_default)
         grid.Add(self._from_ref_ctrl, 1, wx.EXPAND)
+        self._branch_choice.Enable(not create_branch_by_default)
 
         root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
