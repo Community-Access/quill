@@ -12,6 +12,7 @@ import ctypes
 import os
 import shutil
 import subprocess
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -80,6 +81,21 @@ def finalize(
 
     session = SessionRecord.load(work)
     plan = plan_from_dict(session.plan)
+    # Microphone enablement is never persisted. Mix its existing recorded stems,
+    # including after a crash, without reopening or remembering the device.
+    plan = replace(
+        plan,
+        sources=tuple(
+            replace(source, enabled=True)
+            if source.kind == "microphone"
+            and any(
+                (Path(segment.folder) / f"{source.source_id}.wav").is_file()
+                for segment in session.segments
+            )
+            else source
+            for source in plan.sources
+        ),
+    )
     markers = markers_from_session(session)
     output = Path(session.output)
     ffprobe = find_ffprobe()

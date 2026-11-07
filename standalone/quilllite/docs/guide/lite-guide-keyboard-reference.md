@@ -271,6 +271,16 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Home** | First Cell |
 | **Ctrl+Alt+End** | Last Cell |
 
+### Code (in Navigate)
+
+| Key | Command |
+|---|---|
+| **Alt+Shift+PageDown** | Next Indent Change |
+| **Alt+Shift+PageUp** | Previous Indent Change |
+| **Ctrl+Alt+/** | Check This File... |
+| **Ctrl+Alt+.** | Next Problem |
+| **Ctrl+Alt+,** | Previous Problem |
+
 ### Bookmarks (in Navigate)
 
 | Key | Command |

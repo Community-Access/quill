@@ -345,7 +345,7 @@ def command_titles() -> dict[str, str]:
     search matches against.
     """
     titles: dict[str, str] = {}
-    for menu, label, _key, handler, kind in COMMANDS:
+    for menu, label, _key, handler, kind in visible_commands(lambda _area: True):
         if kind in {"sep", "sub"} or not handler:
             continue
         parent, child = split_menu(menu)

@@ -24,6 +24,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.app_launcher import is_app_released
 from quill.core.forms import menu as forms_menu
 from quill.core.lite.commands import _MENU_ORDER, COMMANDS, SUBMENU_SEP, CommandRow
 from quill.core.wordpress import menu as wordpress_menu
@@ -255,6 +256,8 @@ def visible_commands(is_enabled: Callable[[str], bool]) -> list[CommandRow]:
     kept: list[CommandRow] = []
     for row in COMMANDS:
         menu, _label, _key, handler, kind = row
+        if handler == "cmd_open_studio" and not is_app_released("studio"):
+            continue
         if kind not in {"sep", "sub"}:
             area = area_for(menu, handler)
             if area and not is_enabled(area):

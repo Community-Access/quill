@@ -24,7 +24,6 @@ this without a display.
 from __future__ import annotations
 
 from quill.core.forms import menu as forms_menu
-from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands_ai import (
     AI_MENU_ROWS,
     PROJECT_EDIT_ROWS,
@@ -46,7 +45,6 @@ __all__ = [
     "CommandRow",
     "menu_titles",
     "plain_label",
-    "shortcut_text",
     "split_menu",
 ]
 #: One row: ``(menu, label, key, handler, kind)``.
@@ -989,6 +987,9 @@ COMMANDS: list[CommandRow] = [
     *NOTE_ROWS,  # QUILL's six inline-note chords (rule 2; commands_review.py)
     # Tools > Dictation, shared with QUILL; each key's reason is in commands_dictation.py.
     *DICTATION_ROWS,
+    # Companion launch, not an editing chord (family rules 7 and 9).
+    # Alt+T, Q reaches it without stealing a QuillVille key already used here.
+    ("&Tools", "Open &QUILL Studio", "", "cmd_open_studio", ""),
     ("&Tools|&Change Case", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools|&Change Case", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
     # Ctrl+Shift+T since 2026-09-16: Ctrl+Shift+G is Word Count in Word, and
@@ -1066,57 +1067,6 @@ def split_menu(menu: str) -> tuple[str, str]:
 def _plain(label: str) -> str:
     """*label* with its mnemonic ampersands removed, for reading aloud."""
     return label.replace("&&", "\0").replace("&", "").replace("\0", "&")
-
-
-def shortcut_text(keymap: dict[str, str] | None = None) -> str:
-    """The Keyboard Shortcuts window's body, generated from the same table.
-
-    *keymap* is the resolved binding per handler
-    (:func:`quill.core.lite.keymap.load_keymap`). Passing None gives the shipped
-    keys, which is what a test that predates rebinding is asking for -- but the
-    app always passes its own, because a shortcut list that shows the key a
-    command *used* to have is the one surface where a wrong key gets learned.
-
-    Two things are appended that the table cannot carry: the Alt+digit window
-    switches (built per window, from however many are open) and the heading
-    ladder, which is the one fact about rich mode that saves a support email.
-    """
-    lines = [f"{APP_NAME} {APP_VERSION} keyboard shortcuts", ""]
-    current = ""
-    for menu, label, default_key, handler, kind in COMMANDS:
-        key = (keymap or {}).get(handler, default_key)
-        # A submenu's title row is not a shortcut; the submenu gets its own
-        # heading below, from the rows that carry the keys.
-        if kind in {"sep", "sub"}:
-            continue
-        if menu != current:
-            current = menu
-            parent, child = split_menu(menu)
-            lines.append("")
-            lines.append(
-                f"{_plain(parent)} menu, {_plain(child).replace(SUBMENU_SEP, ' > ')} submenu"
-                if child
-                else f"{_plain(parent)} menu"
-            )
-        lines.append(f"  {key}: {_plain(label)}" if key else f"  No key: {_plain(label)}")
-    lines += [
-        "",
-        "Window menu",
-        "  Alt+1 to Alt+9: switch to that open window",
-        "",
-        "File menu, Open Recent",
-        "  Alt+Shift+1 to Alt+Shift+8: reopen that recent file",
-        "",
-        "Status bar (F6)",
-        "  Left and Right, Home and End: move between cells",
-        "  Enter: act on the cell -- go to a line, switch mode, list headings, save",
-        "  Escape: back to the document",
-        "",
-        "Headings in rich text are bold plus a point size: 20, 16, 14, 12, 11.5",
-        "and 10.5 point for levels 1 to 6, and 11 point for body text. That is",
-        "QUILL's own ladder, so a document saved here reads as headings in Word.",
-    ]
-    return "\n".join(lines)
 
 
 def plain_label(label: str) -> str:

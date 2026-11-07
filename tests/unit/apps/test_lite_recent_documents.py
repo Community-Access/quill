@@ -16,6 +16,7 @@ from quill.apps.lite_window_recent import DocumentRecentMixin
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.core.lite import commands as lite_commands
 from quill.core.lite.settings import Settings
+from quill.core.lite.shortcut_text import shortcut_text
 from quill.ui import recent_documents_dialog
 from quill.ui.recent_documents_dialog import RecentDocumentsAnswer
 
@@ -120,7 +121,7 @@ def test_the_chord_is_alt_shift_0_in_both_editors() -> None:
 
 
 def test_the_shortcut_list_names_it(window: _Window) -> None:
-    text = lite_commands.shortcut_text()
+    text = shortcut_text()
     assert "Alt+Shift+0: Recent Documents..." in text
 
 
