@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+### A complete GitHub guide (2026-11-07)
+
+- The GitHub Guide for QUILL and QUILL Lite ships as chapters of the user
+  guide (`guide/lite-github-guide*.md`): getting around the GitHub windows,
+  issues, pull request review, what failed in a run, files, releases,
+  discussions, security alerts, troubleshooting, and a keyboard reference
+  for every window, with notes where QUILL Lite differs from QUILL.
+- Chapter 3's GitHub section is now a short summary that links to it.
+
 ### GitHub search, releases, housekeeping and rate limits (2026-11-07)
 
 - Explore searches code, commits and repositories, reads a repository's

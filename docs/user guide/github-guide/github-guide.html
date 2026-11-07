@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>The GitHub Guide for QUILL and QUILL Lite</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="the-github-guide-for-quill-and-quill-lite">The GitHub Guide for
+QUILL and QUILL Lite</h1>
+<p>This is the book on doing GitHub work with a screen reader in QUILL
+and QUILL Lite: reading and triaging issues, reviewing pull requests
+line by line, finding out why a build failed, browsing code, and keeping
+on top of your notifications. It is a book of its own, beside each
+editor’s user guide, because there is a lot to say and you may only need
+part of it.</p>
+<p>The same GitHub windows ship in both editors, and so does this book.
+Where the two differ, a short paragraph starting <strong>In QUILL
+Lite</strong> says how.</p>
+<h2 id="how-to-read-this-book">How to read this book</h2>
+<ul>
+<li><strong>New to it?</strong> Read Chapters 1 and 2 in order. They get
+you signed in and moving. Then go to the chapter for the job in front of
+you.</li>
+<li><strong>Reviewing pull requests?</strong> Chapter 5.</li>
+<li><strong>A build failed?</strong> Chapter 6, and its section on What
+Failed.</li>
+<li><strong>Something went wrong?</strong> Chapter 10 has the sentences
+QUILL says when GitHub refuses, and what to do about each.</li>
+<li><strong>Looking up a key?</strong> Chapter 11 has every one, window
+by window.</li>
+</ul>
+<p>Each chapter is a level 3 heading on this page, so pressing 3 in JAWS
+or NVDA moves from chapter to chapter. Every chapter page starts with
+its title as a level 1 heading, its main topics are level 2 headings,
+and at the bottom are links to the chapters either side and back to
+these contents.</p>
+<h2 id="keys-at-a-glance">Keys at a glance</h2>
+<ul>
+<li><strong>Opening the workbench.</strong> In QUILL, <strong>File &gt;
+Open from Remote &gt; GitHub Items…</strong>. In QUILL Lite,
+<strong>File &gt; GitHub Workbench…</strong>: <code>Alt+F</code>, then
+<code>G</code>.</li>
+<li><strong>Enter goes in, <code>Ctrl+O</code> opens on GitHub,
+Backspace comes back out.</strong></li>
+<li><strong>Tab</strong> reads the selected row’s details; Shift+Tab
+returns to the list.</li>
+<li><strong>Shift+F10</strong> opens the context menu, which holds
+everything you can do with the selected row.</li>
+<li><code>Alt+N</code> and <code>Alt+P</code> move between comments, and
+between rows in History and Blame.</li>
+<li><code>Ctrl+Shift+W</code> says what failed in a workflow run.</li>
+<li><code>Ctrl+Shift+L</code> says how much of GitHub’s hourly allowance
+is left.</li>
+<li>In a pull request review, <code>Ctrl+R</code> replies to a thread
+and <code>Ctrl+Shift+R</code> resolves it.</li>
+</ul>
+<h2 id="the-chapters">The chapters</h2>
+<h3 id="chapter-1-getting-started"><a
+href="github-guide-01-getting-started.html">Chapter 1: Getting
+started</a></h3>
+<p>What the workbench is, opening it in each editor, the one question
+QUILL asks before it connects, signing in with a token, keeping more
+than one account, and Safe Mode. It ends with a two-minute tour.</p>
+<ul>
+<li><a
+href="github-guide-01-getting-started.html#opening-the-workbench">Opening
+the workbench</a></li>
+<li><a href="github-guide-01-getting-started.html#signing-in">Signing
+in</a></li>
+<li><a
+href="github-guide-01-getting-started.html#more-than-one-account">More
+than one account</a></li>
+<li><a href="github-guide-01-getting-started.html#a-two-minute-tour">A
+two-minute tour</a></li>
+</ul>
+<h3 id="chapter-2-getting-around"><a
+href="github-guide-02-getting-around.html">Chapter 2: Getting
+around</a></h3>
+<p>GitHub Items and Explore GitHub, control by control, the three keys
+that do most of the moving, context menus, searching, and coming back
+where you left off. Also pasting a GitHub link, and GitHub’s hourly
+allowance.</p>
+<ul>
+<li><a
+href="github-guide-02-getting-around.html#the-github-items-window-top-to-bottom">The
+GitHub Items window, top to bottom</a></li>
+<li><a
+href="github-guide-02-getting-around.html#enter-ctrlo-and-backspace">Enter,
+Ctrl+O and Backspace</a></li>
+<li><a
+href="github-guide-02-getting-around.html#what-quill-says-and-what-it-leaves-to-your-screen-reader">What
+QUILL says, and what it leaves to your screen reader</a></li>
+<li><a
+href="github-guide-02-getting-around.html#open-github-reference-paste-any-link">Open
+GitHub Reference: paste any link</a></li>
+<li><a
+href="github-guide-02-getting-around.html#rate-limits-and-the-readout">Rate
+limits and the readout</a></li>
+</ul>
+<h3 id="chapter-3-your-inbox-and-your-work"><a
+href="github-guide-03-inbox-and-your-work.html">Chapter 3: Your inbox
+and your work</a></h3>
+<p>Going through your notifications from the keyboard: what each says,
+clearing them and keeping your place. Then My Work, the attention queue
+and activity.</p>
+<ul>
+<li><a
+href="github-guide-03-inbox-and-your-work.html#triage-done-unsubscribe-and-mark-all-read">Triage:
+Done, Unsubscribe and Mark All Read</a></li>
+<li><a href="github-guide-03-inbox-and-your-work.html#my-work">My
+Work</a></li>
+<li><a
+href="github-guide-03-inbox-and-your-work.html#the-attention-queue">The
+attention queue</a></li>
+</ul>
+<h3 id="chapter-4-issues"><a href="github-guide-04-issues.html">Chapter
+4: Issues</a></h3>
+<p>Reading an issue and its comments, replying, reactions, the timeline,
+writing a new issue from a template, labels, milestones, assignees and
+batch changes, housekeeping, Projects, and starting work in a folder of
+its own.</p>
+<ul>
+<li><a href="github-guide-04-issues.html#reading-an-issue">Reading an
+issue</a></li>
+<li><a href="github-guide-04-issues.html#writing-a-new-issue">Writing a
+new issue</a></li>
+<li><a
+href="github-guide-04-issues.html#changing-many-issues-at-once">Changing
+many issues at once</a></li>
+<li><a
+href="github-guide-04-issues.html#housekeeping">Housekeeping</a></li>
+<li><a
+href="github-guide-04-issues.html#projects-and-dependencies">Projects
+and dependencies</a></li>
+</ul>
+<h3 id="chapter-5-pull-requests-and-review"><a
+href="github-guide-05-pull-requests-and-review.html">Chapter 5: Pull
+requests and review</a></h3>
+<p>The review outline and its one-sentence summary, what changed since
+your last review, the diff, comments on a line or a range, suggested
+changes, sending a review, and everything that gets a pull request
+merged.</p>
+<ul>
+<li><a
+href="github-guide-05-pull-requests-and-review.html#the-one-sentence-summary">The
+one-sentence summary</a></li>
+<li><a
+href="github-guide-05-pull-requests-and-review.html#the-review-window">The
+review window</a></li>
+<li><a
+href="github-guide-05-pull-requests-and-review.html#commenting-on-a-line-or-a-range">Commenting
+on a line or a range</a></li>
+<li><a
+href="github-guide-05-pull-requests-and-review.html#pending-comments-and-sending-your-review">Pending
+comments and sending your review</a></li>
+<li><a
+href="github-guide-05-pull-requests-and-review.html#getting-a-pull-request-merged">Getting
+a pull request merged</a></li>
+</ul>
+<h3 id="chapter-6-actions-and-checks"><a
+href="github-guide-06-actions-and-checks.html">Chapter 6: Actions and
+checks</a></h3>
+<p>Workflow runs, What Failed, jobs and logs, rerunning, cancelling and
+deleting runs, checks, deployments waiting for approval, artifacts,
+caches, and secret names.</p>
+<ul>
+<li><a href="github-guide-06-actions-and-checks.html#what-failed">What
+Failed</a></li>
+<li><a href="github-guide-06-actions-and-checks.html#jobs-and-logs">Jobs
+and logs</a></li>
+<li><a
+href="github-guide-06-actions-and-checks.html#doing-something-about-a-run">Doing
+something about a run</a></li>
+<li><a
+href="github-guide-06-actions-and-checks.html#artifacts">Artifacts</a></li>
+</ul>
+<h3 id="chapter-7-code-and-repositories"><a
+href="github-guide-07-code-and-repositories.html">Chapter 7: Code and
+repositories</a></h3>
+<p>Files at any branch, tag or commit, blame and history, branches and
+comparisons, tags and releases, search, forks, insights, looking after a
+repository, and watching, starring and following.</p>
+<ul>
+<li><a
+href="github-guide-07-code-and-repositories.html#browsing-a-repositorys-files">Browsing
+a repository’s files</a></li>
+<li><a
+href="github-guide-07-code-and-repositories.html#blame-and-file-history">Blame
+and file history</a></li>
+<li><a
+href="github-guide-07-code-and-repositories.html#tags-and-releases">Tags
+and releases</a></li>
+<li><a
+href="github-guide-07-code-and-repositories.html#searching">Searching</a></li>
+<li><a
+href="github-guide-07-code-and-repositories.html#looking-after-a-repository">Looking
+after a repository</a></li>
+</ul>
+<h3 id="chapter-8-discussions-and-security"><a
+href="github-guide-08-discussions-and-security.html">Chapter 8:
+Discussions and security</a></h3>
+<p>Discussion threads, replies, answers, polls and new discussions; then
+security alerts, dismissing them with a reason, and reopening them.</p>
+<ul>
+<li><a
+href="github-guide-08-discussions-and-security.html#discussions">Discussions</a></li>
+<li><a
+href="github-guide-08-discussions-and-security.html#security-alerts">Security
+alerts</a></li>
+</ul>
+<h3 id="chapter-9-codespaces-and-the-github-cli"><a
+href="github-guide-09-codespaces-and-the-cli.html">Chapter 9: Codespaces
+and the GitHub CLI</a></h3>
+<p>Opening Codespaces, QUILL’s Codespaces commands, and the GitHub CLI
+they rely on, including how QUILL keeps the two sign-ins on the same
+account.</p>
+<ul>
+<li><a
+href="github-guide-09-codespaces-and-the-cli.html#the-github-cli">The
+GitHub CLI</a></li>
+<li><a
+href="github-guide-09-codespaces-and-the-cli.html#quills-codespaces-commands">QUILL’s
+Codespaces commands</a></li>
+</ul>
+<h3 id="chapter-10-troubleshooting-privacy-and-help"><a
+href="github-guide-10-troubleshooting.html">Chapter 10: Troubleshooting,
+privacy and help</a></h3>
+<p>Every common refusal and what to do about it, exactly what goes over
+the network, and how to reach a person.</p>
+<ul>
+<li><a
+href="github-guide-10-troubleshooting.html#the-refusals-one-by-one">The
+refusals, one by one</a></li>
+<li><a
+href="github-guide-10-troubleshooting.html#privacy-what-goes-over-the-network">Privacy:
+what goes over the network</a></li>
+<li><a href="github-guide-10-troubleshooting.html#getting-help">Getting
+help</a></li>
+</ul>
+<h3 id="chapter-11-keyboard-reference"><a
+href="github-guide-11-keyboard-reference.html">Chapter 11: Keyboard
+reference</a></h3>
+<p>Every key the workbench answers to, one window at a time.</p>
+<hr />
+<ul>
+<li><a href="../userguide.html">QUILL User Guide</a></li>
+</ul>
+</main>
+</body>
+</html>

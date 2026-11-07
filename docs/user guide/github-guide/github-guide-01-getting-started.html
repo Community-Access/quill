@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 1: Getting started</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-1-getting-started">Chapter 1: Getting started</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter gets you from nothing to a repository on the screen. It
+explains what the GitHub workbench is, how to open it in QUILL and in
+QUILL Lite, the one question QUILL asks before it connects, how to sign
+in, how to keep more than one account, and what Safe Mode does. It ends
+with a two-minute tour.</p>
+<h2 id="what-the-github-workbench-is">What the GitHub workbench is</h2>
+<p>The GitHub workbench is a set of windows for doing GitHub work from
+the keyboard: reading and triaging issues, reviewing pull requests line
+by line, finding out why a workflow failed, browsing a repository’s
+files, and answering your notifications. You do not need Git, the GitHub
+website or any other program installed. QUILL talks to GitHub
+directly.</p>
+<p>The same windows ship in QUILL and in QUILL Lite. Everything in this
+book works the same way in both unless a note says otherwise. Where the
+two differ, you will find a short paragraph that starts <strong>In QUILL
+Lite</strong>.</p>
+<p>There are four main windows, and you will meet them in this
+order:</p>
+<ul>
+<li><strong>GitHub Items</strong> is where you start. It holds one
+repository: its issues and pull requests, branches, commits, tags,
+releases, workflows and workflow runs.</li>
+<li><strong>Review pull request</strong> opens from GitHub Items. It is
+an outline of one pull request, with its changed files, its review
+conversations and its checks.</li>
+<li><strong>Explore GitHub</strong> opens from GitHub Items too. It
+reaches across all of GitHub: your notifications, the work waiting for
+you, search, people, and views of a repository that do not fit in GitHub
+Items.</li>
+<li><strong>Repository Files</strong> is a tree of a repository’s
+folders and files at any branch, tag or commit.</li>
+</ul>
+<p>Smaller windows open from these for one job each, such as the diff of
+a pull request, the log of a failed job, or a discussion thread.</p>
+<h2 id="three-promises">Three promises</h2>
+<ul>
+<li><strong>Reading never changes anything.</strong> Moving through a
+list, expanding a pull request or opening a thread sends nothing to
+GitHub and marks nothing read. The one exception is said plainly where
+it happens: pressing Enter on a notification marks it read, because that
+is what opening it on GitHub does.</li>
+<li><strong>Every change asks first.</strong> Anything that changes
+GitHub is a command you choose on purpose, and it asks before it sends.
+The confirmations default to No, so a stray Enter cancels. The riskiest
+few, such as merging or deleting a repository, make you type a name or
+number instead of pressing Yes.</li>
+<li><strong>QUILL says what GitHub did, not what it hoped.</strong>
+After a change, the sentence you hear is built from GitHub’s reply. If
+GitHub accepted a request but has not finished it yet, QUILL says that
+instead of claiming it is done.</li>
+</ul>
+<h2 id="opening-the-workbench">Opening the workbench</h2>
+<h3 id="in-quill">In QUILL</h3>
+<p>QUILL keeps its GitHub commands in two places:</p>
+<ul>
+<li><strong>File &gt; Open from Remote &gt; GitHub Items…</strong> opens
+GitHub Items. The same submenu has <strong>Open GitHub
+Reference…</strong> for pasting any GitHub link, and <strong>Manage
+GitHub Accounts…</strong> for signing in.</li>
+<li><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> has the
+commands that work on a whole repository, such as creating, forking and
+renaming one, plus <strong>Notifications…</strong>, <strong>Security
+Alerts…</strong> and Codespaces.</li>
+</ul>
+<p>None of these has a key out of the box, so that they do not take keys
+a writer needs. Press <code>Ctrl+Shift+P</code> for the Command Palette
+and type “GitHub” to find any of them by name, or give one a key of your
+own in the Keymap Editor.</p>
+<p>The GitHub commands belong to the feature called GitHub Remote
+Access, which is part of QUILL’s Developer profile. If the GitHub rows
+are missing from the File and Tools menus, that feature is off. Press
+<code>Alt+Shift+P</code> to switch profile and choose Developer, or turn
+on GitHub Remote Access on its own in <strong>Profiles and
+Features…</strong>, in the <strong>Customize and Support</strong>
+submenu of the Tools menu.</p>
+<h3 id="in-quill-lite">In QUILL Lite</h3>
+<p>In QUILL Lite, choose <strong>File &gt; GitHub Workbench…</strong>:
+press <code>Alt+F</code>, then <code>G</code>. It opens GitHub Items.
+Everything else in this book is reached from there. QUILL Lite has no
+Tools &gt; Git and GitHub menu, so the commands this book describes as
+being on QUILL’s menus are QUILL’s alone.</p>
+<h3 id="where-you-land">Where you land</h3>
+<p>GitHub Items opens with focus in the <strong>Repository
+(owner/repo):</strong> field. If the document you have open lives in a
+Git folder whose remote points at GitHub, that repository is already
+filled in, and you can press Enter to load it. Otherwise type a
+repository as <code>owner/repo</code>, for example
+<code>community-access/quill</code>, or paste its GitHub address, and
+press Enter.</p>
+<p>When you reopen GitHub Items later, it comes back where you left it:
+the same repository, view, filters and selected row. Chapter 2 says more
+about this.</p>
+<h2 id="the-first-time-permission-to-connect">The first time: permission
+to connect</h2>
+<p>The first time you use any GitHub command, a window titled
+<strong>GitHub Access</strong> asks whether QUILL may connect to GitHub.
+It explains that nothing is downloaded until you choose it. Press
+<strong>Continue</strong> to go on, or <strong>Cancel</strong> to stop.
+You are asked once. QUILL remembers your answer, and from then on the
+GitHub windows open straight away.</p>
+<h2 id="signing-in">Signing in</h2>
+<p>You do not need an account to read public repositories. Without one,
+the workbench is a read-only guest: you can read issues, pull requests,
+files, workflow runs and logs of any public repository, and the commands
+that would change something tell you they need a signed-in account.
+GitHub also allows a guest far fewer requests an hour, so a busy session
+runs out sooner.</p>
+<p>Signing in adds private repositories, your notifications and your own
+work, and every command that changes GitHub. You sign in with a personal
+access token: a long password-like string that GitHub makes for you and
+that you can cancel at any time.</p>
+<h3 id="making-a-token">Making a token</h3>
+<ol type="1">
+<li>Open github.com in your browser and sign in.</li>
+<li>Go to your profile settings, then <strong>Developer
+settings</strong>, then <strong>Personal access tokens</strong>, then
+<strong>Tokens (classic)</strong>.</li>
+<li>Choose <strong>Generate new token (classic)</strong>.</li>
+<li>Give it a name you will recognise, such as “QUILL on my laptop”, and
+an expiry date.</li>
+<li>Check the scopes you need. The list below says which do what.</li>
+<li>Generate the token and copy it. GitHub shows it only once.</li>
+</ol>
+<p>A classic token is the simpler choice for the workbench. Some parts
+of GitHub, the notifications inbox among them, do not accept the newer
+fine-grained tokens.</p>
+<p>The scopes, and what each one lets the workbench do:</p>
+<ul>
+<li><code>repo</code>: private repositories, and everything that writes:
+issues, comments, reviews, merges, releases and workflow runs. Most
+people want this one.</li>
+<li><code>notifications</code>: your notifications inbox, if you did not
+choose <code>repo</code>.</li>
+<li><code>project</code>: Projects boards. <code>read:project</code> is
+enough to read them.</li>
+<li><code>read:org</code>: the organizations you belong to, for browsing
+their repositories.</li>
+<li><code>workflow</code>: only if you will save changes to workflow
+files themselves.</li>
+<li><code>delete_repo</code>: only if you will delete repositories from
+QUILL.</li>
+</ul>
+<p>If your organization uses single sign-on, there is one more step. On
+GitHub’s token page, choose <strong>Configure SSO</strong> beside the
+token and authorize it for the organization. Until you do, GitHub
+refuses the organization’s repositories even though the token is fine
+everywhere else.</p>
+<h3 id="adding-the-token">Adding the token</h3>
+<p>In QUILL, choose <strong>File &gt; Open from Remote &gt; Manage
+GitHub Accounts…</strong>, then <strong>Add Account…</strong>. The
+<strong>Sign in to GitHub</strong> window has one field,
+<strong>Personal access token</strong>. Paste the token and press
+<strong>Connect</strong>. QUILL asks GitHub who the token belongs to
+before it keeps it, so a mistyped or expired token is turned away with
+“GitHub did not confirm an account for that token. Nothing was saved.”
+When GitHub confirms it, you hear “Added and switched to GitHub account”
+and your GitHub username.</p>
+<p>The same window has <strong>Continue Anonymously</strong> for working
+as a guest, and <strong>Cancel</strong>. None of its buttons has an
+access key, so Tab to the one you want.</p>
+<p>Some QUILL commands on the Tools menu need an account before they can
+do anything. If you choose one while signed out, QUILL asks “This action
+needs a signed-in GitHub account. Sign in now?” and opens the same
+window.</p>
+<h3 id="where-the-token-is-kept">Where the token is kept</h3>
+<p>The token is kept in your operating system’s own secure store:
+Windows Credential Manager on Windows, or the Keychain on a Mac. A
+portable copy keeps it in its own encrypted file instead. It is never
+written into a settings file or a log. QUILL sends it to GitHub’s own
+servers and nowhere else. When GitHub hands a download to another
+address, such as a log or an artifact, QUILL fetches that without the
+token.</p>
+<h3 id="in-quill-lite-1">In QUILL Lite</h3>
+<p>QUILL Lite has no window for signing in. It works as a guest: it
+reads public repositories, and the commands that change GitHub say they
+need a signed-in account. To review, reply, merge or triage your
+notifications, use QUILL.</p>
+<h2 id="more-than-one-account">More than one account</h2>
+<p>If you have a personal account and a work account, keep both.
+<strong>Manage GitHub Accounts…</strong> shows the active account at the
+top, such as “Active account: your-name on github.com”, and a list of
+every account you have added. From there:</p>
+<ul>
+<li><strong>Use Selected Account</strong> makes the chosen account the
+active one. You hear “Switched to GitHub account” and its name.</li>
+<li><strong>Remove Selected Account</strong> deletes that account’s
+token from this computer. It does not ask first, and it does not cancel
+the token on GitHub; do that on GitHub’s token page if you want it gone
+for good.</li>
+<li><strong>Add Account…</strong> adds another.</li>
+<li><strong>Done</strong> closes the window. Escape does too.</li>
+</ul>
+<p>Only github.com accounts are supported. GitHub Enterprise servers are
+not, yet.</p>
+<p>Each account keeps its own place. GitHub Items remembers the last
+repository and row separately for each account, and so do your local
+drafts and the attention queue’s settings, so switching accounts never
+mixes them up.</p>
+<h2 id="the-github-cli-and-your-account">The GitHub CLI and your
+account</h2>
+<p>A few things, Codespaces in particular, run through GitHub’s own
+command-line tool, called <code>gh</code>. It signs in on its own,
+separately from QUILL. Before it runs a Codespaces command, QUILL asks
+<code>gh</code> which account it is using and compares that with the
+account QUILL is using. If they differ, it stops and says so, naming
+both, so you never create a codespace on the wrong account by accident.
+Chapter 9 covers this.</p>
+<h2 id="safe-mode">Safe Mode</h2>
+<p>When QUILL or QUILL Lite starts in Safe Mode, the GitHub windows stay
+closed. Opening GitHub Items says “GitHub item browsing is disabled in
+Safe Mode. Restart QUILL normally to browse a repository.” The
+repository commands on QUILL’s Tools menu and the GitHub CLI commands
+are switched off the same way. Start normally to use them again.</p>
+<h2 id="a-two-minute-tour">A two-minute tour</h2>
+<p>This tour reads a public repository, so you can do it before you sign
+in.</p>
+<ol type="1">
+<li>Open GitHub Items: in QUILL, <strong>File &gt; Open from Remote &gt;
+GitHub Items…</strong>; in QUILL Lite, <code>Alt+F</code>, then
+<code>G</code>.</li>
+<li>If this is the first time, press <strong>Continue</strong> in the
+GitHub Access window.</li>
+<li>Type a repository you know, such as
+<code>community-access/quill</code>, and press Enter. You hear the
+repository’s name, how many items loaded, and a short list of the keys
+that work here. Focus moves to the list, on the first row.</li>
+<li>Arrow down the list. Each row is an issue or a pull request: its
+number, whether it is an issue or a PR, its state and its title.</li>
+<li>Press Tab to reach <strong>Details</strong>. Read it like any text
+field. It holds the whole issue, then its comments as they load.</li>
+<li>Press <code>Alt+N</code>. You move to the first comment and hear
+“Comment 1 of” and the count. Press it again for the next one, and
+<code>Alt+P</code> to go back.</li>
+<li>Press Shift+Tab to return to the list.</li>
+<li>Press Shift+F10 on a row to hear what you can do with it.</li>
+<li>Press Escape to close the menu, and Escape again to close GitHub
+Items.</li>
+</ol>
+<p>Next time you open it, you are back on the same row.</p>
+<hr />
+<ul>
+<li>Next: <a href="github-guide-02-getting-around.html">Chapter 2:
+Getting around</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

@@ -2,6 +2,17 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## A complete GitHub guide
+
+QUILL now ships a book of its own on doing GitHub work with a screen reader:
+[The GitHub Guide for QUILL and QUILL Lite](https://www.quillforall.org/docs/github-guide.html). Its eleven chapters
+cover signing in, getting around the GitHub windows, your notifications,
+issues, reviewing a pull request line by line, what failed in a workflow run,
+repository files and releases, discussions and security alerts, Codespaces,
+and every refusal GitHub can give and what to do about it. The last chapter is
+a keyboard reference for every window. It is in the docs folder beside QUILL,
+and the user guide's GitHub section is now a short map of it.
+
 ## GitHub: search, releases, housekeeping and rate limits
 
 The GitHub windows now search code, commits and repositories, and read a
