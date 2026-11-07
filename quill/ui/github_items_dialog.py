@@ -79,6 +79,7 @@ from quill.ui.github_items_dialog_navigation import GitHubNavigationMixin
 from quill.ui.github_items_dialog_reactions import GitHubItemsReactionsMixin
 from quill.ui.github_items_dialog_references import GitHubReferenceMixin
 from quill.ui.github_items_dialog_releases import GitHubItemsReleaseMixin
+from quill.ui.github_items_dialog_repository import GitHubRepositoryToolsMixin
 from quill.ui.github_items_dialog_review import GitHubItemsReviewMixin
 from quill.ui.github_items_dialog_run_actions import GitHubRunActionsUiMixin
 from quill.ui.github_items_dialog_workflows import GitHubWorkflowsMixin
@@ -121,6 +122,7 @@ class GitHubItemsDialog(
     GitHubQuickFilterMixin,
     GitHubWorkflowsMixin,
     GitHubRunActionsUiMixin,
+    GitHubRepositoryToolsMixin,
     GitHubItemsMenusMixin,
     GitHubItemsReactionsMixin,
 ):
@@ -235,13 +237,21 @@ class GitHubItemsDialog(
             "Open the repository this fork was forked from; enabled only for forks"
         )
         self._upstream_btn.Enable(False)
+        self._files_btn = wx.Button(panel, label="&Files...")
+        self._files_btn.SetName("Browse the repository's files at any branch, tag or commit")
+        self._files_btn.SetHelpText("Folders and files, README, file history and blame.")
+        self._milestones_btn = wx.Button(panel, label="Milestones...")
+        self._milestones_btn.SetName("List, create, edit and close milestones")
+        self._milestones_btn.SetHelpText("Each milestone's percent done, open and closed counts.")
         repo_row.Add(self._repo_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         repo_row.Add(self._load_btn, 0, wx.RIGHT, 6)
         repo_row.Add(self._pinned_btn, 0, wx.RIGHT, 6)
         repo_row.Add(self._favorites_btn, 0, wx.RIGHT, 6)
         repo_row.Add(self._explore_btn, 0, wx.RIGHT, 6)
         repo_row.Add(self._projects_btn, 0, wx.RIGHT, 6)
-        repo_row.Add(self._upstream_btn)
+        repo_row.Add(self._upstream_btn, 0, wx.RIGHT, 6)
+        repo_row.Add(self._files_btn, 0, wx.RIGHT, 6)
+        repo_row.Add(self._milestones_btn)
         root.Add(repo_row, 0, wx.EXPAND | wx.ALL, 10)
 
         # Search row: full GitHub search syntax, scoped to the loaded repo
@@ -397,7 +407,10 @@ class GitHubItemsDialog(
             "Compare two branches: ahead/behind counts, commits, and changed files"
         )
         self._batch_btn = wx.Button(panel, label="&Batch...")
-        self._batch_btn.SetName("Batch actions on the checked items: close, reopen, add label")
+        self._batch_btn.SetName(
+            "Batch actions on the checked items: close, reopen, add label, "
+            "set milestone, add assignees"
+        )
         self._actions_btn = wx.Button(panel, label="&Actions...")
         self._actions_btn.SetName(
             "Write actions for the current view: new issue or pull request, merge, "
@@ -451,6 +464,8 @@ class GitHubItemsDialog(
         self._explore_btn.Bind(wx.EVT_BUTTON, self._on_explore)
         self._projects_btn.Bind(wx.EVT_BUTTON, self._on_projects)
         self._upstream_btn.Bind(wx.EVT_BUTTON, self._on_view_upstream)
+        self._files_btn.Bind(wx.EVT_BUTTON, lambda _e: self._open_repo_files())
+        self._milestones_btn.Bind(wx.EVT_BUTTON, lambda _e: self._open_milestones())
         self._search_btn.Bind(wx.EVT_BUTTON, self._on_search)
         self._reference_btn.Bind(wx.EVT_BUTTON, self._on_open_reference)
         self._search_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
@@ -961,10 +976,20 @@ class GitHubItemsDialog(
         menu.Append(close_id, f"Close {count} selected")
         menu.Append(reopen_id, f"Reopen {count} selected")
         menu.Append(label_id, f"Add label to {count} selected...")
+        extras: dict[int, object] = {}
+
+        def _extra(label: str, handler: object) -> None:
+            item_id = wx.NewIdRef()
+            menu.Append(item_id, label)
+            extras[int(item_id)] = handler
+
+        self._add_batch_extras(_extra, numbers)
 
         def _on_pick(event: object) -> None:
             picked = int(event.GetId())
-            if picked == int(close_id):
+            if picked in extras:
+                extras[picked]()
+            elif picked == int(close_id):
                 self._run_batch(numbers, state="closed")
             elif picked == int(reopen_id):
                 self._run_batch(numbers, state="open")

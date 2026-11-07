@@ -9,6 +9,16 @@ repository after typing its name; release editing, uploads and deletions;
 issue housekeeping; and Ctrl+Shift+L for the rate limit, with quieter
 refreshes.
 
+## GitHub: repository files, milestones, discussions and security triage
+
+**Files...** (Alt+F) in the GitHub Items viewer walks a repository as a tree at
+any branch, tag or commit, reads files and READMEs, opens a file as a new
+untitled document, and shows its history and blame, one sentence a run.
+**Milestones...** says each milestone in words and lets you create, edit and
+close them; **Batch...** sets a milestone or adds assignees. In Explore you can
+reply to discussions, mark the answer, start a discussion, and dismiss or
+reopen security alerts with GitHub's own reasons.
+
 ## GitHub: reviewing a pull request line by line
 
 Review now opens with the pull request in one sentence, such as "Approved, 2

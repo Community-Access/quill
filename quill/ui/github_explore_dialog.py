@@ -20,6 +20,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.github_explore_community import GitHubExploreCommunityMixin
 from quill.ui.github_explore_context_menu import GitHubExploreContextMenuMixin
 from quill.ui.github_explore_labels import GitHubExploreLabelsMixin
 from quill.ui.github_explore_notifications import GitHubExploreNotificationsMixin
@@ -36,6 +37,7 @@ if TYPE_CHECKING:
 
 
 class GitHubExploreDialog(
+    GitHubExploreCommunityMixin,
     GitHubExploreContextMenuMixin,
     GitHubExploreLabelsMixin,
     GitHubExploreRepoActionsMixin,
@@ -404,6 +406,8 @@ class GitHubExploreDialog(
         row = self._selected()
         if row and row.kind == "notification":
             self._activate_notification(row)
+        elif row and row.kind == "discussion" and row.key.isdecimal():
+            self._open_discussion_thread(row)
         elif row and row.repo and row.kind == "repo":
             self._use_repo(None)
         else:

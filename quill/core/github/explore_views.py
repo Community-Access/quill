@@ -43,6 +43,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("community", "Community profile checklist"),
     ("actions_caches", "Actions caches"),
     ("secrets", "Secret and variable names"),
+    ("security_closed", "Dismissed and resolved security alerts"),
 )
 
 REPO_VIEWS = frozenset({
@@ -61,6 +62,7 @@ REPO_VIEWS = frozenset({
     "community",
     "actions_caches",
     "secrets",
+    "security_closed",
 })
 QUERY_VIEWS = frozenset({"search", "code_search", "commit_search", "repo_search"})
 """Views that run the query typed in the search box."""

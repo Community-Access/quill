@@ -20,6 +20,25 @@ GitHub only for what changed, says "No changes since the last load" when
 nothing did, checks notifications less often when the allowance runs low, and
 says a request to wait once instead of failing repeatedly.
 
+## GitHub: repository files, milestones, discussions and security triage
+
+**Files...** (Alt+F) in GitHub Items opens a repository as a tree you can walk
+with the arrow keys, at any branch, tag or commit. Read a file in place, open it
+in the editor, read a folder's README, list the commits that changed it, or
+read its blame. Blame comes in runs, each one a sentence: "Lines 10 to 14: Jeff
+Bishop, 3 November, 1a2b3c4, Fix the diff". Alt+N and Alt+P move between runs.
+
+**Milestones...** says each milestone the way you would say it: "61 percent
+done, 5 open, 8 closed, due 12 December". You can create, edit and close them,
+and the **Batch...** menu now sets a milestone or adds assignees on the issues
+you select.
+
+Discussions are no longer read-only. Enter on one in Explore opens its thread,
+says who answered it, and reads any poll as text. You can reply, mark the
+answer, and start a discussion. And in Explore's security alerts you can dismiss
+an alert with GitHub's own reasons, after QUILL checks with you, or reopen one.
+QUILL Lite has all of this in the same windows.
+
 ## GitHub: reviewing a pull request line by line
 
 Open a pull request in Review and the first thing you hear is the whole of it

@@ -414,6 +414,67 @@ status cannot be re-requested and QUILL says so. Each change asks first
 and reports GitHub’s confirmed result. Known refusals, such as
 auto-merge being turned off for the repository, are said as what to do
 next.</p>
+<h2 id="repository-files-blame-and-history">Repository files, blame and
+history</h2>
+<p><strong>Files</strong> (Alt+F) in Items, or <strong>Browse Repository
+Files</strong> on its context menu, opens Repository Files: a real tree
+of the repository at a branch, tag or commit typed or picked in
+<strong>Branch, tag or commit</strong> (Alt+B). Right arrow or Enter
+opens a folder (fetched the first time), Left closes it, and each file
+says its size. Enter on a file or <strong>View File</strong> (Alt+V)
+shows it read-only in <strong>Contents</strong>. <strong>Open in
+Editor</strong> (Alt+E) opens it for editing: QUILL uses the same path
+as a GitHub file link, so Save to GitHub works afterwards; QUILL Lite
+opens the text as a new untitled document. <strong>README</strong>
+(Alt+R) shows the selected folder’s or the repository’s README. Binary
+files and files over GitHub’s 1 MB contents limit say so instead of
+showing text.</p>
+<p><strong>History</strong> (Alt+H) lists the commits that changed the
+selected path. <strong>Blame</strong> (Alt+L) lists the file in runs,
+neighbouring ranges from one commit joined into one: “Lines 10 to 14:
+author, date, short SHA, commit title”. In both lists Alt+N and Alt+P
+move to the next and previous row from anywhere in the window, and Enter
+or <strong>Open Commit</strong> (Alt+O) opens the commit on GitHub.
+Blame uses GraphQL <code>blame(path:)</code> on the commit and needs a
+signed-in account.</p>
+<h2 id="milestones-and-batch-changes">Milestones and batch changes</h2>
+<p><strong>Milestones</strong> in Items (no access key; Tab to it, or
+use the context menu) lists milestones as words: “Release 2.0: 61
+percent done, 5 open, 8 closed, due 12 December”. <strong>Show</strong>
+(Alt+S) picks open, closed or all. <strong>New</strong> (Alt+N) and
+<strong>Edit</strong> (Alt+E) take a title, description and a
+year-month-day due date; <strong>Close Milestone</strong> or
+<strong>Reopen Milestone</strong> (Alt+L) asks first. Every change is
+reported from GitHub’s reply.</p>
+<p>The <strong>Batch</strong> menu adds <strong>Set milestone</strong>
+(the open milestones, or clear it) and <strong>Add assignees</strong>
+(usernames separated by commas) beside Close, Reopen and Add label. The
+confirmation names the items; the result counts what GitHub confirmed,
+and names anyone GitHub did not assign.</p>
+<h2 id="discussions-and-security-triage">Discussions and security
+triage</h2>
+<p>In Explore’s Discussions view, Enter (or <strong>Open Discussion
+Thread</strong> on the context menu) opens a thread window: the
+discussion, then each comment followed by its replies. It says “Answered
+by” and the name, and reads a poll one option to a line (“Option A: 12
+votes, 40 percent”). <strong>Reply</strong> (Alt+R) comments on the
+discussion or replies under the selected comment; <strong>Mark as
+Answer</strong> (Alt+M) marks or unmarks the selected comment after
+asking, when the category takes answers and GitHub says you may.
+<strong>New Discussion</strong> on the view’s context menu picks a
+category and takes a title and body.</p>
+<p>In the security views, <strong>Dismiss Alert</strong> on the context
+menu offers GitHub’s own reasons for that alert kind (Dependabot:
+<code>fix_started</code>, <code>inaccurate</code>,
+<code>no_bandwidth</code>, <code>not_used</code>,
+<code>tolerable_risk</code>; code scanning: <code>false positive</code>,
+<code>won't fix</code>, <code>used in tests</code>; secret scanning:
+<code>false_positive</code>, <code>wont_fix</code>,
+<code>revoked</code>, <code>used_in_tests</code>), an optional comment
+of up to 280 characters, and a confirmation. <strong>Dismissed and
+resolved security alerts</strong> is its own view, where <strong>Reopen
+Alert</strong> asks and then reopens. QUILL reports a change only when
+the alert’s new state comes back from GitHub.</p>
 <h2 id="line-comments-the-timeline-and-reactions">Line comments, the
 timeline and reactions</h2>
 <table>
@@ -500,142 +561,6 @@ remove through the REST reactions endpoints for issues, issue comments
 and review comments; removal deletes only the signed-in account’s own
 reaction. Counts read in words in comment details (“3 thumbs up, 1
 heart”).</p>
-<h2 id="search-insights-and-repository-actions">Search, insights and
-repository actions</h2>
-<table>
-<thead>
-<tr>
-<th>Where</th>
-<th>Key</th>
-<th>What it does</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Explore, View</td>
-<td>Alt+V</td>
-<td>Code search, Commit search, Repository search</td>
-</tr>
-<tr>
-<td>Explore</td>
-<td>Alt+G</td>
-<td>The query; GitHub qualifiers such as <code>repo:</code> work</td>
-</tr>
-<tr>
-<td>Explore, repository views</td>
-<td>Alt+R</td>
-<td>Insights, Community profile checklist, Actions caches, Secret and
-variable names</td>
-</tr>
-<tr>
-<td>Explore, context menu</td>
-<td>Shift+F10</td>
-<td>Repository Actions submenu; Follow, Unfollow; Delete Cache</td>
-</tr>
-<tr>
-<td>Items or Explore</td>
-<td>Ctrl+Shift+L</td>
-<td>GitHub API Rate Limit, said as one sentence</td>
-</tr>
-</tbody>
-</table>
-<p>Searches go to <code>/search/code</code> (with the text-match media
-type), <code>/search/commits</code> and
-<code>/search/repositories</code>. A code row reads as the path, the
-line of the excerpt holding the match and the matched words; the detail
-holds each excerpt. GitHub gives no file line number, so none is
-claimed.</p>
-<p>Insights reads <code>traffic/views</code>,
-<code>traffic/clones</code>, <code>traffic/popular/referrers</code>,
-<code>traffic/popular/paths</code> and <code>contributors</code>. The
-first row is the whole picture in one sentence; every other row is one
-figure set (“Views on 2026-11-01: 120 views, 30 unique visitors”), so
-the list is the numbers table. A 403 on traffic is said as needing push
-access, and the contributors still load. The community profile reads
-<code>community/profile</code> as present or missing for each checklist
-item, after the health percentage.</p>
-<p>Repository Actions: Sync Fork with Upstream
-(<code>POST /merge-upstream</code>, with the upstream’s lead counted
-first through <code>compare</code> so the result can say “Merged 3
-commits”; “Already up to date” when GitHub reports no merge), Set Topics
-(<code>PUT /topics</code>, checked locally first), Watch Level
-(<code>/subscription</code>; Releases only is not in GitHub’s API, so it
-opens the repository page), Archive and Unarchive (<code>PATCH</code>
-with <code>archived</code>, refused if the reply disagrees), Create
-Repository from This Template (<code>POST /generate</code>) and Delete
-Repository, which needs the full name typed exactly. Secret and variable
-names come from the repository and each environment; values are dropped
-as the reply is read.</p>
-<h2 id="releases-and-issue-housekeeping">Releases and issue
-housekeeping</h2>
-<table>
-<thead>
-<tr>
-<th>Where</th>
-<th>Key</th>
-<th>What it does</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Items, Releases</td>
-<td>Actions or Shift+F10</td>
-<td>Edit Release, Upload Asset, Delete Asset (inside a release)</td>
-</tr>
-<tr>
-<td>Edit Release</td>
-<td>Alt+N, Alt+O</td>
-<td>Name; notes</td>
-</tr>
-<tr>
-<td>Edit Release</td>
-<td>Alt+D, Alt+P</td>
-<td>Draft (clear it to publish); Pre-release</td>
-</tr>
-<tr>
-<td>Items, issue or PR</td>
-<td>Shift+F10</td>
-<td>Housekeeping submenu</td>
-</tr>
-<tr>
-<td>Reorder Sub-issues</td>
-<td>Alt+U, Alt+D</td>
-<td>Move Up; Move Down</td>
-</tr>
-</tbody>
-</table>
-<p>Edit Release finds the release again by tag (drafts have no tag URL)
-and sends <code>PATCH /releases/{id}</code>; the sentence it says is
-built from GitHub’s reply, and a publish GitHub did not perform is
-reported as such. Upload Asset posts to
-<code>uploads.github.com/.../releases/{id}/assets?name=</code> with
-redirects refused, reading the file in blocks so progress is said at 25,
-50 and 75 percent. Delete Asset sends
-<code>DELETE /releases/assets/{id}</code> after a confirmation.</p>
-<p>Housekeeping: Lock (<code>PUT /issues/{n}/lock</code> with the
-reason) and Unlock; Transfer (<code>transferIssue</code>), Pin and Unpin
-(<code>pinIssue</code>, <code>unpinIssue</code>) and Set Issue Type
-(<code>issueTypes</code>, <code>updateIssueIssueType</code>) through
-GraphQL; Reorder Sub-issues sends
-<code>PATCH /sub_issues/priority</code> with the neighbour’s ID and
-reads the order back, so the list shows what GitHub holds.</p>
-<h2 id="rate-limits-and-conditional-requests">Rate limits and
-conditional requests</h2>
-<p><code>rate_limits.py</code> keeps the latest
-<code>X-RateLimit-*</code> headers from every REST reply. The readout
-reads <code>GET /rate_limit</code> (free) and GraphQL
-<code>rateLimit</code>. Notification polling doubles its interval under
-a quarter of the allowance, quadruples it under a tenth, and waits for
-the reset at zero. A secondary limit (<code>Retry-After</code>, or a 403
-or 429 naming one) is recorded once; until it passes, every request
-stops before the network with “GitHub asked QUILL to wait 60 seconds”,
-and Explore folds the warnings it caused into that one sentence.</p>
-<p><code>conditional_requests.py</code> keeps the last ETag and body of
-each repeated read per account (64 reads, 256 KB each, in
-<code>github_etag_cache.json</code>) and sends
-<code>If-None-Match</code>; a 304 shows the stored body and costs no
-rate limit. Explore says “No changes since the last load” when a reload
-found the same rows.</p>
 <h2 id="review-and-write-safety">Review and write safety</h2>
 <p>The review tree announces reply counts, outdated positions, resolved
 state, and check status. Selecting a thread never resolves it. Reply,
@@ -644,15 +569,18 @@ each require a deliberate command and confirmation where appropriate.
 Actions are disabled if the PR is closed, the account is signed out, or
 GitHub denies that permission. If the review-thread state cannot be
 retrieved, threads remain readable while resolution controls are
-unavailable. Refresh to observe changes made elsewhere.</p>
+unavailable. Refresh to observe changes made elsewhere. If the review’s
+diff cannot be loaded, the threads and checks still appear and QUILL
+says “Could not load the diff” with the reason. A refresh that finishes
+after a newer one started is dropped, so it can never overwrite newer
+data.</p>
 <p>The Items <strong>Batch</strong> menu operates on checked issue or PR
-rows. Its confirmation names the targeted items. Visibility changes,
-merges and branch deletion have stronger typed confirmations in QUILL’s
-administration flows, and Delete Repository in Explore (both apps) needs
-the repository’s full name typed. QUILL Lite currently shares the Items,
-Explore, diff, and review surfaces; the separate repository
-administration and Local Git menus still belong to QUILL. This product
-difference is tracked in the workbench plan.</p>
+rows. Its confirmation names the targeted items. Repository deletion,
+visibility changes, merges, and branch deletion have stronger typed
+confirmations in QUILL’s administration flows. QUILL Lite currently
+shares the Items, Explore, diff, and review surfaces; the separate
+repository administration and Local Git menus still belong to QUILL.
+This product difference is tracked in the workbench plan.</p>
 <h2 id="architecture-and-verification">Architecture and
 verification</h2>
 <p>The Items and review windows use
@@ -667,14 +595,13 @@ use <code>saved_items.py</code>. Notifications triage is
 <code>explore_notifications.py</code>; the failure digest is
 <code>run_failure_digest.py</code>; run, check and deployment actions
 are <code>run_actions.py</code>; auto-merge and the merge queue are
-<code>merge_automation.py</code>. Wave 4 adds
-<code>search_views.py</code>, <code>repo_insights.py</code>,
-<code>repo_actions.py</code>, <code>release_admin.py</code>,
-<code>issue_housekeeping.py</code>, <code>rate_limits.py</code> and
-<code>conditional_requests.py</code>, with Explore’s routing in
-<code>explore_extra_views.py</code>. The REST calls PyGithub lacks go
-through <code>rest_transport.py</code>, which refuses redirects so the
-token stays on api.github.com. The shared UI modules are under
+<code>merge_automation.py</code>. Wave 3 adds <code>repo_files.py</code>
+(folders, files, README, history, blame), <code>milestones.py</code>,
+<code>discussion_actions.py</code>, <code>alert_triage.py</code> and
+<code>github_graphql.py</code>, whose GraphQL calls go through the same
+REST transport. The REST calls PyGithub lacks go through
+<code>rest_transport.py</code>, which refuses redirects so the token
+stays on api.github.com. The shared UI modules are under
 <code>quill/ui/</code>. Network calls are made off the UI thread. Tests
 exercise provider mapping, pagination, diff-line matching, redirect
 token handling, and action routing. Manual Windows screen-reader

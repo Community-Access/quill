@@ -40,6 +40,12 @@ _GUARDED = [
     ("github_repository_browser_dialog.py", "_on_repo_loaded"),
     ("github_repository_browser_dialog.py", "_on_dir_loaded"),
     ("github_repository_browser_dialog.py", "_on_load_error"),
+    ("github_file_runs_dialog.py", "_loaded"),
+    ("github_milestones_dialog.py", "_loaded"),
+    ("github_milestones_dialog.py", "_written"),
+    ("github_discussion_dialog.py", "_loaded"),
+    ("github_discussion_dialog.py", "_written"),
+    ("github_explore_community.py", "_categories_loaded"),
 ]
 
 
