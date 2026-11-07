@@ -180,6 +180,71 @@ left</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -5986,6 +6051,63 @@ ten seconds. Re-measuring them all at dictated-sentence length is the
 coherent fix and changes at least one recommendation (the quickest
 Spanish model), so it is a decision for Jeff, not taken here; until then
 the weekly run reports it.</p>
+<h2
+id="40-report-reconciliation-paired-hotword-measurements-not-adoption">40.
+Report reconciliation: paired hotword measurements, not adoption</h2>
+<p>The preserved dictation worktree is an older experiment, not the
+current dictation implementation. Its <code>SplitLongPhrases</code> is
+superseded by the shared <code>ChunkedOffline</code> implementation with
+overlap and seam de-duplication. Do not copy the old decoder, re-enable
+experimental flags, or replace this record with the old draft.</p>
+<p><code>scripts/bench_hotwords_compare.py</code> adds a bounded,
+developer-only D-28 comparison. It reads four existing
+<code>dictbench --json</code> reports: a names set and a held-out B-1
+set, each decoded with and without hotwords, plus the same
+one-name-per-line vocabulary used by the experiment. It does not run
+models, change decoding settings, download anything, play audio or
+modify adoption flags. Prepare paired runs using the same model, source
+audio, language, normalization and decoding settings except for
+hotwords; separately record the exact model hashes/licences and machine
+configuration.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python scripts\bench_hotwords_compare<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>names S<span class="op">:</span>\bench\names<span class="op">.</span><span class="fu">txt</span> <span class="op">--</span>names-without S<span class="op">:</span>\bench\names-without<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>names-with S<span class="op">:</span>\bench\names-with<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>b1-without S<span class="op">:</span>\bench\b1-without<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>b1-with S<span class="op">:</span>\bench\b1-with<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>real-heldout <span class="op">--</span>out S<span class="op">:</span>\bench\hotwords-comparison<span class="op">.</span><span class="fu">json</span></span></code></pre></div>
+<p>Only give <code>--real-heldout</code> when the two sets really are
+consented, real speech held out from training; the tool records the
+operator’s attestation, not proof. Without it the result is
+<code>insufficient_evidence</code>, even if the numeric comparison looks
+good. Synthetic test inputs validate the tool, never recognition
+quality.</p>
+<p>The measurement reports distinct names recognized at least once in
+their corresponding reference clips; it is not per-occurrence recall.
+For this comparison, “50 percent better” means at least 1.5 times the
+baseline’s distinct name count, across a vocabulary of at least 20
+names. A zero-hit baseline is inconclusive because that relative
+increase is undefined. B-1 WER must not increase, using the shared
+word-error scorer and raw integer counts rather than rounded report
+summaries. Missing clips, changed references/durations, failed
+recognition, unused vocabulary names and malformed reports are errors,
+not passing or zero-error rows.</p>
+<p>The aggregate JSON contains counts, limitations and SHA-256 hashes of
+all five input files, not transcript text or personal vocabulary
+entries. Exit 0 means the measurement criteria were met; exit 1 means
+they were not met or evidence was insufficient; invalid input or a
+failed write exits 2. Output is atomic and must not overwrite an input.
+Reports cannot prove identical source audio or model provenance from
+filenames and durations alone. Run comparisons separately for each
+language, speaker cohort and condition: an aggregate pass cannot
+establish non-regression for every group. If an invocation fails, any
+existing output is unchanged and the CLI explicitly warns that no new
+result was written; do not treat an older report as that run.</p>
+<p><strong>Still open:</strong> real paired runs, hotword-capable model
+selection and pinning, licensing, CPU/RAM/latency and screen-reader
+acceptance; the broader keyword spotting/punctuation/speaker/TTS
+runners. <code>HOTWORDS_ENABLED</code>, <code>PUNCTUATION_ADOPTED</code>
+and <code>SPEAKERS_ADOPTED</code> remain off. A
+<code>measurement_pass</code> is not a product-adoption or release
+decision, and Sherpa Kokoro still requires model/voice licensing and
+human listening. The legacy-engine notice and the consented,
+containment-safe cleanup of the old model folders are no longer open:
+both shipped in section 41 (PR 1772).</p>
 <h2
 id="41-measured-2026-10-17-landed-2026-11-06-the-extras-benchmarks-two-deprecations-and-nemotrons-last-word">41.
 Measured 2026-10-17, landed 2026-11-06: the extras benchmarks, two
