@@ -139,6 +139,21 @@ class SimpleOpenMixin:
             self._last_file_dir = str(chosen.parent)
             return chosen
 
+    def _remember_open_folder(self, path: Path) -> None:
+        """Make *path*'s folder the one the next Open dialog starts in.
+
+        The Open dialogs set this themselves, but a file can also arrive from
+        Explorer, the command line, a recent-files entry or a link, and the
+        next Open should start beside that file rather than wherever the last
+        dialog happened to be.
+        """
+        try:
+            folder = Path(path).parent
+            if folder.is_dir():
+                self._last_file_dir = str(folder)
+        except (OSError, TypeError, ValueError):
+            pass
+
     def _simple_open_initial_dir(self) -> Path | None:
         """Resolve the initial directory for the simple dialog.
 

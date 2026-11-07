@@ -1165,6 +1165,42 @@ result.</li>
 <p>The optional GLOW engine adds Word, PowerPoint, Excel, PDF and EPUB
 files (DOCX, PPTX, XLSX, PDF, EPUB), with a scored and graded
 report.</p>
+<h3 id="checking-diagrams-with-the-accessibility-tune-up">Checking
+diagrams with the Accessibility Tune-Up</h3>
+<p>A Mermaid diagram is written as text in a fenced <code>mermaid</code>
+block, and becomes a picture when the page is shown in a browser or on a
+site such as GitHub. Without a name and a description, that picture
+reaches a screen reader as an unlabelled graphic. <strong>AI &gt;
+Accessibility Tune-Up…</strong> (shown once <strong>AI &gt; Show
+advanced AI features</strong> is checked) checks every diagram in a
+Markdown document and lists what it finds with the other Tune-Up steps,
+each with its line number:</p>
+<ul>
+<li><strong>No accessible title.</strong> Add a line such as
+<code>accTitle: Order flow</code> just after the diagram type.</li>
+<li><strong>No accessible description.</strong> Add
+<code>accDescr:</code> and a sentence or two saying what the diagram
+shows. For a longer description, write <code>accDescr {</code>, the text
+on the lines that follow, and <code>}</code>.</li>
+<li><strong>A theme set in an init block.</strong> A line such as
+<code>%%{init: {'theme': 'dark'}}%%</code> overrides the reader’s own
+light or dark setting and can leave text hard to read. Leave the theme
+out unless you have checked it.</li>
+<li><strong>Colours set by hand.</strong> A <code>style</code>,
+<code>classDef</code> or <code>linkStyle</code> line with a fill, text
+or stroke colour. Check that text on those colours has a contrast ratio
+of at least 4.5 to 1, and that colour is not the only thing that tells
+two parts of the diagram apart.</li>
+<li><strong>No heading before a diagram,</strong> when the document has
+more than one. A heading just above each diagram lets a listener jump to
+it with heading navigation and know which one they are on.</li>
+</ul>
+<p>These are review steps, marked as needing your review: the Tune-Up
+never rewrites a diagram for you, and accepting one changes nothing. Fix
+them in the document, then run the Tune-Up again. The
+<strong>mermaid-diagrams</strong> starter snippet pack, in the writing
+chapter, starts each new diagram with its title and description already
+asked for.</p>
 <h3 id="the-glow-engine-and-updates">The GLOW engine and updates</h3>
 <p>The in-editor checks are always there. Checking and fixing those
 other file types needs the optional GLOW engine (installed with QUILL’s

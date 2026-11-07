@@ -26,7 +26,31 @@ from quill.core.highlights import (
     previous_passage,
     runs_from_markdown,
     spoken_passage,
+    text_colour_from_colorref,
 )
+
+
+def _colorref(red: int, green: int, blue: int) -> int:
+    return red | (green << 8) | (blue << 16)
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (-9999997, None),  # tomAutoColor
+        (_colorref(0, 0, 0), None),  # black: uncoloured body text
+        (0x1000000, None),
+        ("not a number", None),
+        (_colorref(255, 0, 0), "red"),
+        (_colorref(0, 128, 0), "green"),  # the Format menu's green, not "dark green"
+        (_colorref(255, 165, 0), "orange"),
+        (_colorref(128, 128, 128), "gray"),
+        (_colorref(255, 255, 255), "white"),
+        (_colorref(0, 0, 120), "dark blue"),  # nearest palette name
+    ],
+)
+def test_text_colour_from_colorref(value: object, expected: str | None) -> None:
+    assert text_colour_from_colorref(value) == expected
 
 
 @pytest.mark.parametrize(

@@ -547,7 +547,10 @@ says "Row 2: Ann".
 
 - Pictures, comments, tracked changes, headers, footers, footnotes, endnotes,
   extra sections and table formatting are not kept by a save. You are always
-  told before you start (see *The question*).
+  told before you start (see *The question*). A header or footer that only
+  appears on the first page, or only on even pages, counts too: the question
+  names it as "headers" or "footers", and the first save still writes the
+  backup, just as it does for an ordinary header.
 - Styles other than the headings and the four named above become normal
   paragraphs with the formatting you can see.
 - A `.docm`, `.dotx` or `.dotm` cannot be saved; QUILL Lite says so and writes
@@ -1001,6 +1004,15 @@ Once it is on, **File > Earlier Versions...** (**Ctrl+Alt+Shift+E**) lists
 your saved copies, newest first, like "Today at 4:12 PM, 2,341 words". Up to
 twenty are kept for each document. After that, the oldest go.
 
+The copy is made just after your file is saved, so a copy that cannot be made
+never stops the save. It is not kept quiet, though. If the backups folder is
+full or cannot be written to, you hear "Saved notes.txt, but could not write a
+backup" instead of the usual "Saved notes.txt", and your braille display shows
+the same. Your file is saved either way. The reason, such as a full disk or a
+folder you do not have permission to write to, is written to QUILL Lite's log
+in its `logs` folder, so support can find it later if you ask why a backup is
+missing.
+
 The word count helps you tell copies apart. Two saves a minute apart sound
 almost the same, but a version that is suddenly two thousand words shorter is
 usually the one you are looking for.
@@ -1029,6 +1041,14 @@ document stays as it was; only the copy is a web page.
 If the document has notes written into the file, QUILL Lite asks whether to
 include them in the page, marked as notes. No is the default, so a note never
 ends up in a page by accident. QUILL has the same command on the same key.
+
+Equations in a Markdown document, written as `\(...\)` inside a line or as
+`$$...$$` or a fenced `math` block on their own, go into the page as MathML,
+the web's own format for maths. The page needs no script and nothing from the
+internet to show them, and NVDA and JAWS read them as maths, so you hear
+"a sub 1" rather than "a underscore 1" and can move through a fraction part
+by part. A formula with a mistake in it stays in the page as its source text,
+so nothing is lost.
 
 ## Opening what you copied, a link, or a file you drag in
 

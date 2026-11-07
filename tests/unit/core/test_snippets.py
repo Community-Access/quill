@@ -100,3 +100,30 @@ def test_find_snippet_by_trigger_is_case_insensitive_and_respects_enabled_flag()
         Snippet(id="b", name="Greeting 2", trigger=";Hi", body="hello", enabled=True),
     ]
     assert find_snippet_by_trigger(snippets, ";hi") is snippets[1]
+
+
+def test_mermaid_pack_asks_for_the_accessible_title_and_description_first() -> None:
+    from quill.core.mermaid_a11y import check_mermaid
+    from quill.core.snippets import starter_pack_names, starter_pack_snippets
+
+    assert "mermaid-diagrams" in starter_pack_names()
+    pack = starter_pack_snippets("mermaid-diagrams")
+    kinds = {s.body.split("\n")[1].split()[0] for s in pack}
+    assert kinds == {
+        "flowchart",
+        "sequenceDiagram",
+        "classDiagram",
+        "stateDiagram-v2",
+        "erDiagram",
+        "gantt",
+        "mindmap",
+        "timeline",
+    }
+    assert len({s.trigger for s in pack}) == len(pack)
+    for snippet in pack:
+        inputs = [p for p in extract_placeholders(snippet.body) if p.kind == "input"]
+        assert [p.name for p in inputs[:2]] == ["accessible title", "accessible description"]
+        values = {p.token: "Shown" for p in inputs}
+        text = render_snippet(snippet.body, values).text
+        assert "accTitle: Shown" in text and "accDescr: Shown" in text
+        assert check_mermaid(text) == []

@@ -13,7 +13,12 @@ from __future__ import annotations
 import threading
 from collections.abc import Callable
 
-from quill.core.ai.translation import LANGUAGE_NAMES, SUPPORTED_LANGUAGES
+from quill.core.ai.translation import (
+    LANGUAGE_NAMES,
+    SUPPORTED_LANGUAGES,
+    UNCHANGED_TRANSLATION_MESSAGE,
+    translation_unchanged,
+)
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive
 from quill.ui.dpi import dip_size
 
@@ -234,13 +239,26 @@ class AITranslationDialog:
         # ... has been deleted". The result is irrelevant once it is gone.
         if not dialog_alive(self.dialog):
             return
-        self._result_text = translated
-        self._detected_source = detected
-        self._result_text_ctrl.SetValue(translated)
         detected_label = (
             LANGUAGE_NAMES.get(detected, detected) if detected != "unknown" else "unknown"
         )
         self._source_lang_label.SetLabel(f"Detected source language: {detected_label}")
+        self._detected_source = detected
+        if translation_unchanged(self._initial_text, translated):
+            # Same text back is not a translation: say so in the result box,
+            # which takes focus, so the reader speaks it, and leave nothing to
+            # copy or replace.
+            self._result_text = ""
+            self._result_text_ctrl.SetValue(UNCHANGED_TRANSLATION_MESSAGE)
+            self._status_label.SetLabel(UNCHANGED_TRANSLATION_MESSAGE)
+            for btn in (self._copy_btn, self._replace_btn, self._new_doc_btn):
+                btn.Enable(False)
+            self._working = False
+            self._translate_btn.Enable(True)
+            self._wx.CallAfter(self._result_text_ctrl.SetFocus)
+            return
+        self._result_text = translated
+        self._result_text_ctrl.SetValue(translated)
         self._status_label.SetLabel(f"Translation to {lang_name} complete.")
         self._copy_btn.Enable(True)
         if self._on_replace is not None:

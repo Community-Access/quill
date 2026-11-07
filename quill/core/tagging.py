@@ -6,6 +6,7 @@ from dataclasses import dataclass
 # Re-exported so every existing ``from quill.core.tagging import ...`` still
 # works: the split was a GATE-11 extraction, not an interface change.
 from quill.core.html_tags import HTML_SEARCH_ALIASES, HTML_TAG_CHOICES, VOID_HTML_TAGS
+from quill.core.list_search import SearchTerms, has_query_syntax
 
 #: Run-level keyed attributes, in the fixed order they are materialized into a
 #: Pandoc span ``[text]{...}`` so the markup round-trips deterministically. The
@@ -131,6 +132,15 @@ def _rank_choices(
     normalized = query.strip().lower()
     if not normalized:
         return list(choices)
+    if has_query_syntax(normalized):
+        # A query ("dropdown | radio", "!input", "head*") filters over the same
+        # names and aliases and keeps the picker's own order (list_search).
+        terms = SearchTerms(normalized)
+        return [
+            choice
+            for choice in choices
+            if terms.found_in(" ".join((choice.lower(), *aliases.get(choice, ()))))
+        ]
     tokens = [token for token in normalized.split() if token]
     scored: list[tuple[tuple[int, int, int], str]] = []
     for choice in choices:
