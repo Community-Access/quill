@@ -11,6 +11,8 @@ from __future__ import annotations
 import functools
 import logging
 import time
+from collections.abc import Callable
+from typing import Any
 
 try:
     import regex
@@ -75,7 +77,7 @@ def safe_finditer(
 
 def safe_subn(
     pattern: str,
-    replacement: str,
+    replacement: str | Callable[[Any], str],
     text: str,
     *,
     timeout_seconds: float = 1.0,

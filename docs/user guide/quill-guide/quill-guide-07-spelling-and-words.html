@@ -704,10 +704,42 @@ is installed.</li>
 <h3 id="document-statistics-ctrlshiftg">Document Statistics
 (Ctrl+Shift+G)</h3>
 <p><strong>Tools &gt; Writing and Language &gt; Document
-Statistics…</strong> (<code>Ctrl+Shift+G</code>) gives you the number of
-words, characters, lines and paragraphs, and the reading time. It used
-to be called Word Count. It now has the same name and key as in Word and
-QUILL Lite.</p>
+Statistics…</strong> (<code>Ctrl+Shift+G</code>) says how big your
+document is, without opening a window. It used to be called Word Count.
+It now has the same name and key as in Word and QUILL Lite.</p>
+<p>Press it once and you hear the counts, for example <em>“1,240 words,
+96 lines, 7,315 characters.”</em></p>
+<p>Press it twice quickly and you hear the full writing report as well:
+paragraphs, sentences, how many sentences run over 30 words, the reading
+time and the reading grade. For example: <em>“1,240 words, 96 lines,
+7,315 characters, 31 paragraphs, 84 sentences, 3 long sentences over 30
+words, about 7 minutes to read, reading grade about 9th grade.”</em></p>
+<ul>
+<li><strong>Select some text first</strong> and both presses count only
+the selection. The sentence then starts with <em>“Selection:”</em> so
+you know which you got.</li>
+<li><strong>Paragraphs.</strong> When your text leaves a blank line
+between paragraphs, as Markdown does, a paragraph is everything between
+blank lines. When it never does, each line is a paragraph, the way a
+word processor counts them.</li>
+<li><strong>Long sentences</strong> are the ones worth a second look.
+Thirty words is about the point where a listener starts to lose the
+thread.</li>
+<li><strong>Reading time</strong> assumes 200 words a minute, the same
+figure the status bar’s reading-time cell uses, so the two always
+agree.</li>
+<li><strong>Reading grade</strong> is the Flesch-Kincaid grade level:
+roughly the school year a reader needs to follow the text easily. From
+grade 13 up you hear <em>“college level”</em>. With too little text to
+judge you hear <em>“no reading grade”</em>.</li>
+<li><strong>How quick is quickly?</strong> The second press must come
+within the <strong>Multi-press time window (ms)</strong> in
+<strong>Settings &gt; Editing</strong> (400 milliseconds to start with),
+the same window the Copy Tray keys use. Wait longer and you just hear
+the counts again.</li>
+</ul>
+<p>The long report is always spoken, even if you have turned off spoken
+counts: pressing twice is asking for it.</p>
 <h2 id="sounds-and-turning-them-off">Sounds, and turning them off</h2>
 <p>QUILL plays short sounds, called earcons, for things your screen
 reader does not mention, like a misspelling or a paste. Here is how to

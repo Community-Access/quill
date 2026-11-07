@@ -416,9 +416,38 @@ from three free online services. Nothing goes online until you check that box.
 
 ### Document Statistics (Ctrl+Shift+G)
 
-**Tools > Writing and Language > Document Statistics...** (`Ctrl+Shift+G`) gives you the number of
-words, characters, lines and paragraphs, and the reading time. It used to be
+**Tools > Writing and Language > Document Statistics...** (`Ctrl+Shift+G`)
+says how big your document is, without opening a window. It used to be
 called Word Count. It now has the same name and key as in Word and QUILL Lite.
+
+Press it once and you hear the counts, for example *"1,240 words, 96 lines,
+7,315 characters."*
+
+Press it twice quickly and you hear the full writing report as well:
+paragraphs, sentences, how many sentences run over 30 words, the reading time
+and the reading grade. For example: *"1,240 words, 96 lines, 7,315
+characters, 31 paragraphs, 84 sentences, 3 long sentences over 30 words,
+about 7 minutes to read, reading grade about 9th grade."*
+
+- **Select some text first** and both presses count only the selection. The
+  sentence then starts with *"Selection:"* so you know which you got.
+- **Paragraphs.** When your text leaves a blank line between paragraphs, as
+  Markdown does, a paragraph is everything between blank lines. When it never
+  does, each line is a paragraph, the way a word processor counts them.
+- **Long sentences** are the ones worth a second look. Thirty words is about
+  the point where a listener starts to lose the thread.
+- **Reading time** assumes 200 words a minute, the same figure the status bar's
+  reading-time cell uses, so the two always agree.
+- **Reading grade** is the Flesch-Kincaid grade level: roughly the school year
+  a reader needs to follow the text easily. From grade 13 up you hear *"college
+  level"*. With too little text to judge you hear *"no reading grade"*.
+- **How quick is quickly?** The second press must come within the
+  **Multi-press time window (ms)** in **Settings > Editing** (400
+  milliseconds to start with), the same window the Copy Tray keys use. Wait
+  longer and you just hear the counts again.
+
+The long report is always spoken, even if you have turned off spoken counts:
+pressing twice is asking for it.
 
 ## Sounds, and turning them off
 

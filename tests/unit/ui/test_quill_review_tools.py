@@ -66,6 +66,7 @@ def test_markdown_export_runs_pandoc_standalone(monkeypatch, tmp_path) -> None:
 
     class _Status:
         installed = True
+        version = "pandoc 3.1.9"
 
     def fake_convert(source: Path, target: Path, **kwargs) -> Path:
         seen["source"] = source.read_text(encoding="utf-8")
@@ -76,16 +77,42 @@ def test_markdown_export_runs_pandoc_standalone(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("quill.core.external_tools.get_external_tool_status", lambda _n: _Status())
     monkeypatch.setattr("quill.io.pandoc.convert_file_with_pandoc", fake_convert)
     target = tmp_path / "plan.html"
-    _Exporter()._write_html_export(
-        target, "# P\n\nx\n<!-- quill-note: n -->\n", "markdown", "Plan", False
+    exporter = _Exporter()
+    exporter.document = type("D", (), {"path": str(tmp_path / "notes" / "plan.md")})()
+    exporter._write_html_export(
+        target, "# P\n\nx \\(a_1\\)\n<!-- quill-note: n -->\n", "markdown", "Plan", False
     )
-    assert seen["extra_args"][:3] == (
+    args = seen["extra_args"]
+    assert args[:4] == (
         "--standalone",
+        "--mathml",
         "--metadata=title:Plan",
         "--metadata=lang:en-GB",
     )
+    # Pandoc reads a temporary copy: pictures resolve beside the real document.
+    assert args[5:] == (f"--resource-path={tmp_path / 'notes'}", "--embed-resources")
     assert "quill-note" not in seen["source"]
+    assert "$a_1$" in seen["source"]
     assert target.exists()
+
+
+def test_a_page_with_a_web_picture_is_not_embedded(monkeypatch, tmp_path) -> None:
+    seen: dict = {}
+
+    class _Status:
+        installed = True
+        version = "pandoc 2.19"
+
+    def fake_convert(source: Path, target: Path, **kwargs) -> Path:
+        seen.update(kwargs)
+        return target
+
+    monkeypatch.setattr("quill.core.external_tools.get_external_tool_status", lambda _n: _Status())
+    monkeypatch.setattr("quill.io.pandoc.convert_file_with_pandoc", fake_convert)
+    _Exporter()._write_html_export(
+        tmp_path / "p.html", "![x](https://example.com/x.png)\n", "markdown", "P", False
+    )
+    assert not any(a.startswith(("--embed", "--self", "--resource")) for a in seen["extra_args"])
 
 
 def test_without_pandoc_quills_own_renderer_writes_the_page(monkeypatch, tmp_path) -> None:

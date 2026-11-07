@@ -252,6 +252,116 @@ speaking, so a short phrase no longer loses its last word (“choose one”
 came back “Choose.” on 60 of 335 short commands; most now come back
 whole).</li>
 </ul>
+<h3
+id="navigate--code-blocks-indentation-and-check-this-file-2026-11-06">Navigate
+&gt; Code: blocks, indentation and Check This File (2026-11-06)</h3>
+<p>QUILL’s new Navigate &gt; Code submenu, with the same rows, letters
+and keys, from the same code.</p>
+<ul>
+<li><strong>Next Block</strong> and <strong>Previous Block</strong> move
+a paragraph at a time, and in an HTML document between headings and
+landmarks (<code>header</code>, <code>nav</code>, <code>main</code>,
+<code>aside</code>, <code>section</code>, <code>article</code>,
+<code>footer</code>, <code>form</code>, and anything with a landmark
+role). No key, as in QUILL.</li>
+<li><strong>Next Indent Change</strong> (Alt+Shift+PageDown) and
+<strong>Previous Indent Change</strong> (Alt+Shift+PageUp) jump to the
+next line, skipping blank ones, indented differently from yours, and say
+how far in it is.</li>
+<li><strong>Check This File…</strong> (Ctrl+Alt+/) checks a Markdown or
+HTML document and lists every problem with its line and column: heading
+levels that skip, pictures without alt text, empty links and links to
+missing files in Markdown; unclosed and mismatched tags and duplicate
+ids in HTML. <strong>Next Problem</strong> (Ctrl+Alt+.) and
+<strong>Previous Problem</strong> (Ctrl+Alt+,) step through them and say
+each one. QUILL checks code and data files as well.</li>
+</ul>
+<h3 id="the-wordpress-key-on-every-keyboard-layout-2026-11-06">The
+WordPress key on every keyboard layout (2026-11-06)</h3>
+<ul>
+<li><code>Ctrl+Alt+Shift+Grave</code> now finds the grave key by where
+it sits, the key above Tab, not by the character it types. On a German,
+French or Nordic layout that key types <code>^</code>, <code>²</code> or
+<code>§</code>, and the WordPress key used to need a US layout there. It
+is the same shared check QUILL uses for its QUILL key (#1753).</li>
+</ul>
+<h3 id="document-statistics-pressed-twice-2026-11-06">Document
+Statistics, pressed twice (2026-11-06)</h3>
+<ul>
+<li>View &gt; Document Statistics (Ctrl+Shift+G) still says words, lines
+and characters at once. Press it twice quickly to add paragraphs,
+sentences, sentences over 30 words, the reading time and the reading
+grade. Both presses count the selection when there is one. Shared with
+QUILL, which says the same words on the same key. The first press now
+gives lines before characters, as QUILL always has.</li>
+</ul>
+<h3 id="searches-that-say-more-2026-11-06">Searches that say more
+(2026-11-06)</h3>
+<ul>
+<li>Shared with QUILL: Go To Anything (Ctrl+Alt+Shift+A), including its
+<code>#</code> heading search, Insert &gt; Markdown Tag, Insert &gt;
+HTML Tag and both lists of Move Section To now understand a small query.
+<code>&amp;</code> needs both words (two words side by side mean the
+same), <code>|</code> takes either, <code>!</code> leaves a word out,
+<code>*</code> and <code>?</code> stand for letters inside a word, and
+double quotes match exact text. <code>!</code> is read first, then
+<code>&amp;</code>, then <code>|</code>.</li>
+<li>The File pattern of Search in Files and Replace Across Files
+combines patterns: <code>*.md | *.txt</code>, <code>* !*.bak</code>. The
+search text is unchanged.</li>
+<li>A search without any of <code>* ? &amp; | ! "</code> works exactly
+as before. F1 in each search box gives a short reminder.</li>
+</ul>
+<h3 id="math-as-mathml-in-exported-pages-2026-11-06">Math as MathML in
+exported pages (2026-11-06)</h3>
+<ul>
+<li><strong>File &gt; Export as HTML…</strong> (Ctrl+Alt+Shift+End) now
+writes equations in a Markdown document as MathML, from the same code
+QUILL uses. The page needs no script and nothing from the internet to
+show its math, and NVDA and JAWS read and navigate the equations with
+their own math support. Underscores inside an equation stay part of the
+equation instead of turning into emphasis. A formula that cannot be
+converted is left as its source text.</li>
+</ul>
+<h3 id="describe-formatting-names-the-text-colour-2026-11-06">Describe
+Formatting names the text colour (2026-11-06)</h3>
+<ul>
+<li>In a rich text document, <strong>Ctrl+Shift+D</strong> (Format &gt;
+Describe Formatting at Cursor) now names coloured text: “Calibri, 11
+point, red, yellow highlight”. Common colours are named exactly and
+other shades by the nearest common name. Uncoloured text, black text and
+the dark theme’s page colour say nothing. The description is shared with
+QUILL.</li>
+</ul>
+<h3
+id="replace-all-takes-what-you-typed-and-a-missed-backup-is-said-2026-11-06">Replace
+All takes what you typed, and a missed backup is said (2026-11-06)</h3>
+<ul>
+<li><strong>Replace all puts in exactly what you typed.</strong> In
+Normal and Extended search, a backslash in <strong>Replace with</strong>
+is just a backslash. Replacing with <code>C:\new\reports</code> used to
+put a line break where <code>\n</code> was, and <code>\1</code> stopped
+Replace all with an error. With the <strong>Regular expression</strong>
+search mode, <code>\1</code> and <code>\2</code> still bring back the
+parts of the match, and a replacement naming a part the search does not
+have changes nothing and says “Nothing replaced” with the reason.</li>
+<li><strong>A backup that could not be written is said.</strong> With
+timestamped backups on, a save whose backup failed now says “Saved
+notes.txt, but could not write a backup”, on your braille display too,
+instead of the usual “Saved notes.txt”. The file is saved either way,
+and the reason is in the log. This covers Word documents as well.</li>
+</ul>
+<h3
+id="first-page-and-even-page-word-headers-are-named-before-a-rich-edit-2026-11-06">First-page
+and even-page Word headers are named before a rich edit
+(2026-11-06)</h3>
+<ul>
+<li>Shared with QUILL: a <code>.docx</code> whose header or footer
+appears only on the first page or only on even pages is now listed as
+“headers” or “footers” in the question QUILL Lite asks when it opens,
+and the first save writes the backup. Before, the file opened without a
+word and the header was gone after saving (#1756).</li>
+</ul>
 <h3 id="form-payment-integration-2026-11-06">Form payment integration
 (2026-11-06)</h3>
 <ul>

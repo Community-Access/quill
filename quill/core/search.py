@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 import regex as regex_module
 
@@ -56,12 +58,19 @@ def replace_all(
     if not query:
         return text, 0
     pattern = _pattern(query, options)
+    # Only a regular-expression search treats the replacement as a template
+    # (``\1``, ``\g<name>``). Everywhere else it is the text the user typed: a
+    # string handed to ``sub`` would turn ``C:\new`` into a line break and make
+    # ``\1`` raise, so it goes in through a function, which ``sub`` never expands.
+    template: str | Callable[[Any], str] = (
+        replacement if options.use_regex else (lambda _match: replacement)
+    )
     try:
         if options.use_regex or options.wildcard:
             flags = 0 if options.case_sensitive else re.IGNORECASE
-            return safe_subn(pattern, replacement, text, flags=flags)
+            return safe_subn(pattern, template, text, flags=flags)
         flags = 0 if options.case_sensitive else re.IGNORECASE
-        return re.subn(pattern, replacement, text, flags=flags)
+        return re.subn(pattern, template, text, flags=flags)
     except RegexTimeoutError as error:
         raise SearchPatternError(str(error)) from error
     except regex_module.error as error:

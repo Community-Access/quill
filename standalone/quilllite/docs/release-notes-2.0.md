@@ -5,6 +5,35 @@
 If you dictate with Nemotron, short phrases no longer lose their last word.
 Saying "choose one" used to give you just "Choose." It now waits for a little
 more quiet before it finishes, the same as in QUILL.
+## Moving by block and indentation, and checking a document
+
+**Navigate > Code** is new, and it is the same submenu QUILL has, on the same keys.
+
+**Next Block** and **Previous Block** move a paragraph at a time. In an HTML document they move between headings and landmarks such as `nav`, `main` and `footer`, which is how you skim a web page you are writing. They have no key, as in QUILL: press **Alt+N**, **C**, then **N** or **P**.
+
+**Next Indent Change** (**Alt+Shift+PageDown**) and **Previous Indent Change** (**Alt+Shift+PageUp**) jump to the next line whose indentation differs from yours, skipping blank lines, and say how far in it is, such as "4 spaces".
+
+**Check This File...** (**Ctrl+Alt+/**) looks through a Markdown or HTML document and lists every problem it finds, with the line and column first: a heading level that skips, a picture with no alt text, a link with no text or no address, a link to a file that is not there, a tag closed in the wrong order or never closed, or the same `id` used twice. Press Enter on one to go to it. **Next Problem** (**Ctrl+Alt+.**) and **Previous Problem** (**Ctrl+Alt+,**) go to the next or previous one without the list and say what it is. QUILL checks code and data files too.
+## The WordPress key on any keyboard layout
+
+The WordPress key, `Ctrl+Alt+Shift+Grave`, now finds the grave key by where it
+sits, the key just above Tab, rather than by what it types. On a German,
+French or Nordic layout that key types `^`, `²` or `§`, and the WordPress key
+used to need a US layout there. Now it works on any layout, and you hear
+"WordPress keys" just as before. QUILL makes the same check for its QUILL key.
+## Replace all and backups you can trust
+
+**Replace all puts in what you typed.** In Normal and Extended search, a
+backslash in **Replace with** is just a backslash, so replacing with
+`C:\new\reports` puts exactly that into every match. With the **Regular
+expression** search mode, `\1` and `\2` still bring back the parts of the
+match, and asking for a part the search does not have changes nothing and
+tells you why.
+
+**A backup that fails is said.** With timestamped backups switched on in
+**Tools > Customize Features**, a save whose backup could not be written now
+says "Saved notes.txt, but could not write a backup", and your braille display
+shows the same. Your file is saved either way.
 
 ## Stripe and PayPal form setup
 
@@ -18,6 +47,14 @@ and include it in CSV/Word exports; Refresh Payment Status rereads the site.
 Checkout needs the separately installed QAF WordPress plugin to implement
 payment contract version 1. Provider credentials, charging and webhooks stay
 in WordPress. This update does not deploy that plugin or certify live checkout.
+
+## Document Statistics, pressed twice
+
+View > Document Statistics (Ctrl+Shift+G) still says words, lines and
+characters straight away. Press it twice quickly to hear paragraphs,
+sentences, how many sentences run over 30 words, the reading time and the
+reading grade as well. Select some text first and it counts just that. QUILL
+says the same words on the same key.
 
 *Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1); the last
 published version is 1.1.2.*
@@ -41,6 +78,9 @@ yet. Here is what is new.
 - **Spell check that reads only what you wrote**, not web addresses, file
   names or code.
 - **Word documents** that open and save as Word, and PDFs opened as text.
+  A header or footer that only appears on the first page, or only on even
+  pages, is now named in the question you are asked when the document opens,
+  and the first save backs up the original, just as for an ordinary header.
 - **Find in Open Documents** and folder search, across everything at once.
 - **WordPress.** Write, check and publish your website's pages and posts, and
   look after the site, from the editor you already use.
@@ -285,6 +325,30 @@ guide covers them.
   Forms commands, most of which have no key, are all there.
 - **It is in Tools now**, first in the menu, where QUILL keeps it.
 
+## Searches that say more
+
+The lists you narrow by typing now understand a small query, the same one QUILL
+uses, from the same code:
+
+- **`&` needs both words**, and two words side by side mean the same:
+  `#budget & 2026`.
+- **`|` takes either:** `#introduction | summary` lists both kinds of heading.
+- **`!` leaves a word out:** `#chapter !draft` skips the drafts.
+- **`*` and `?` stand for letters** inside a word, any number or exactly one:
+  `#chap*` finds Chapter and Chapters.
+- **Double quotes match exact text**, spaces included: `#"to do"`.
+
+`!` is read first, then `&`, then `|`. It works in Go To Anything
+(**Ctrl+Alt+Shift+A**), including its `#` search for headings, in
+**Insert > Markdown Tag...** (**Ctrl+Alt+I**) and **Insert > HTML Tag...**
+(**Ctrl+Alt+O**), and in both lists of **Move Section To...**
+(**Ctrl+Alt+Shift+F5**). The **File pattern** of Search in Files
+(**Ctrl+Alt+Shift+F**) combines patterns the same way, so `*.md | *.txt`
+searches both kinds of file and `* !*.bak` leaves the backups out. A search
+with none of those characters works exactly as before, and F1 in any of these
+search boxes gives a short reminder. Chapters 2 and 4 of the user guide have
+the details.
+
 ## Project tasks, in the Developer profile
 
 - **A Developer profile**, the fifth: Recommended plus a new **Coding** area,
@@ -508,6 +572,17 @@ The same table work as in QUILL, on the same keys.
   them.
 - A blank row is no longer skipped by the table keys.
 
+## Describe Formatting names the colour
+
+In a rich text document, **Ctrl+Shift+D** (Format > Describe Formatting at
+Cursor) now names coloured text, just before any highlight: "Calibri, 11
+point, red, yellow highlight". Common colours such as red, green and orange
+are named exactly; any other shade is named after the nearest one, so you
+hear a word rather than a number. Ordinary text says nothing about colour:
+not when nobody coloured it, not when it is black, and not for the light text
+the dark theme paints on the page. QUILL gives the same answer, from the same
+code.
+
 ## Spell check, recovery and sharp text
 
 - **Spell check skips web addresses, email addresses, file paths and file
@@ -687,6 +762,11 @@ several tasks to check them together. **Ctrl+Z** takes it back.
 **File > Export as HTML...** (**Ctrl+Alt+Shift+End**) saves a copy of your
 document as one web page, ready to email or put on a website. Task lists
 show as check boxes. Your document stays as it was.
+
+Equations in a Markdown document go into the page as MathML. The page shows
+them without any script or internet connection, and NVDA and JAWS read them
+as maths, so you can move through a fraction part by part with your screen
+reader's own math commands. QUILL writes its pages the same way.
 
 ## Find in Open Documents, folder search and the clipboard collector
 

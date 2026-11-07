@@ -24,7 +24,7 @@ import wx
 
 from quill.apps.lite_preferences import edit_preferences
 from quill.core.lite import APP_NAME
-from quill.core.metrics import compute_document_stats
+from quill.core.metrics import DEFAULT_REPEAT_WINDOW_MS, RepeatPress, statistics_report
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentViewCommandsMixin"]
@@ -135,10 +135,21 @@ class DocumentViewCommandsMixin:
 
     def cmd_statistics(self) -> None:
         """Speak the document's size. The same numbers the status bar carries,
-        said out loud, because a listener is not watching it."""
-        stats = compute_document_stats(self.control.GetValue())
+        said out loud, because a listener is not watching it.
+
+        A quick second press adds paragraphs, sentences, long sentences,
+        reading time and the reading grade; both presses count the selection
+        when there is one. QUILL says the same words on the same key
+        (:func:`quill.core.metrics.statistics_report`).
+        """
+        presses = getattr(self, "_statistics_presses", None)
+        if presses is None:
+            presses = self._statistics_presses = RepeatPress()
+        window = getattr(self.app.settings, "multi_press_window_ms", DEFAULT_REPEAT_WINDOW_MS)
+        detailed = presses.press(int(window)) == 2
+        text = self.control.GetValue()
         self._announce(
-            f"{stats.words:,} words, {stats.characters:,} characters, {stats.lines:,} lines"
+            statistics_report(text, self.control.GetStringSelection(), detailed=detailed)
         )
 
     def cmd_focus_status_bar(self) -> None:

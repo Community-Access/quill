@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 from quill.core.commands import Command, CommandRegistry
 from quill.core.features import FeatureManager
+from quill.core.list_search import SearchTerms, has_query_syntax
 from quill.core.palette import (
     load_palette_usage,
     rank_commands,
@@ -13,6 +14,42 @@ from quill.core.palette import (
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
+
+#: Command-palette mode markers (quill/core/palette.py _parse_mode). A search
+#: that starts with one keeps its mode rather than being read as a query.
+_PALETTE_MODE_MARKERS = ("?", ":", "~")
+
+
+def heading_filter(query: str) -> Callable[[str], bool]:
+    """Go to Anything's heading test for *query* (the text after any ``#``).
+
+    A plain search is what it always was: the whole text, anywhere in the
+    heading, case ignored. A search using the shared query syntax
+    (quill.core.list_search: ``*``, ``?``, ``&``, ``|``, ``!``, quotes) is read
+    as a query, so ``#intro | summary`` lists both kinds of heading.
+    """
+    if has_query_syntax(query):
+        terms = SearchTerms(query)
+        return lambda heading: terms.found_in(heading.casefold())
+    needle = query.lower()
+    return lambda heading: not needle or needle in heading.lower()
+
+
+def go_to_commands(commands: list[Command], query: str, usage: dict) -> list[Command]:
+    """The commands Go to Anything lists for *query*, best first.
+
+    Plain searches and the palette's own mode prefixes rank as the palette
+    does. A query (``table & insert``, ``!rich``) filters the titles through the
+    shared query syntax, keeping the palette's usage order.
+    """
+    if has_query_syntax(query) and not query.startswith(_PALETTE_MODE_MARKERS):
+        terms = SearchTerms(query)
+        return [
+            command
+            for command in rank_commands(commands, "", usage)
+            if terms.found_in(command.title.casefold())
+        ]
+    return rank_commands(commands, query, usage)
 
 
 class CommandPaletteDialog:
@@ -352,6 +389,12 @@ class GoToAnythingDialog:
             "Type to search commands, headings, settings  (#headings  >commands)"
         )
         self.search.SetHint("Type to search commands, headings, settings  (#headings  >commands)")
+        self.search.SetHelpText(
+            "Type part of a heading or command. Start with # for headings only or > "
+            "for commands only. Words can be combined: & needs both, | takes either, "
+            "! leaves a word out, * and ? stand for letters, and quotes match exact "
+            'text. For example: #intro | summary, or #chapter !draft, or "to do".'
+        )
         root.Add(self.search, 0, wx.EXPAND | wx.ALL, 8)
 
         self.status = wx.StaticText(self.dialog, label="")
@@ -473,12 +516,13 @@ class GoToAnythingDialog:
         results: list[dict[str, object]] = []
 
         if not command_only:
+            heading_found = heading_filter(clean_q)
             for heading, lineno in self._headings:
-                if not clean_q or clean_q in heading.lower():
+                if heading_found(heading):
                     results.append({"kind": "heading", "label": heading, "lineno": lineno})
 
         if not heading_only:
-            ranked = rank_commands(self._commands, clean_q, self._usage)
+            ranked = go_to_commands(self._commands, clean_q, self._usage)
             for cmd in ranked:
                 binding = self._binding(cmd)
                 label = f"{cmd.title} [{binding}]" if binding else cmd.title

@@ -539,7 +539,12 @@ Customization:
   session, then **Settings > General > Default document folder** (the
   `startup_folder` setting), then the Windows Documents folder when that
   setting is blank. A saved document keeps its existing location for ordinary
-  saves.
+  saves. "Most recently used" means the folder of the last file *opened by
+  any route*, not only through a dialog: `_finish_open_document` (and the
+  already-open-tab branch of `open_file`) call
+  `SimpleOpenMixin._remember_open_folder`, so a file arriving from File
+  Explorer, the command line, Open Recent or a link steers the next `Ctrl+O`
+  (2026-11-06; `tests/unit/ui/test_open_folder_follows_opened_file.py`).
 - Recent files: last N (default 10, range 5 to 50). If empty, announce "No recent files."
 - File Explorer integration: settings panel lets the user register Quill with Windows for chosen extensions and add an "Open with Quill" verb.
 
@@ -607,6 +612,8 @@ QUILL ships a curated Tier-1 list of Pandoc-supported formats in the File menu a
 **File > Import > <format>** converts a single file from disk into a new Markdown buffer in a new tab. **File > Export > <format>** converts the current buffer to the named format on a background thread. Both routes use Pandoc and `quill.stability.safe_subprocess.run_subprocess_safely` so a misbehaving Pandoc cannot take QUILL down.
 
 Post-conversion prompt rule (issue #262): when the target format is editable in QUILL (Markdown, CommonMark, GFM, HTML, plain text, CSV / TSV) the editor asks whether to open the new file in a new window. PDF, DOCX, EPUB, ODT, and RTF do not prompt; the file path is on the clipboard for pasting into File Explorer.
+
+**An export never destroys the file it replaces (2026-11-06).** `convert_file_with_pandoc`, the one function through which every Pandoc conversion writes a file (File > Export, Convert File, batch conversion, braille, review, the docx fallback), points Pandoc's `-o` at a hidden sibling of the target (`.<stem>.<uuid>.partial<suffix>`: same folder, so the final move is a same-volume `os.replace`; same suffix, because Pandoc picks some outputs such as PDF by extension) and replaces the target only after a zero exit and an output that exists. A non-zero exit, a timeout, a launch failure, a cancel or a failed `os.replace` leaves the previous target byte-for-byte as it was, and the staging file is removed in a `finally`. Tests: `tests/unit/io/test_pandoc.py`.
 
 ##### 5.3a.1.1a Save As conversion pipeline and format truthfulness (shipped 0.9.0 Beta 1)
 
@@ -1857,10 +1864,14 @@ A general action under the AI menu (**AI > More > Improve Reading Order…**) an
 - `File > Preview Markdown as HTML` renders via `markdown-it-py` and opens the browser.
 - `File > Export Markdown as HTML` saves a standalone HTML file.
 - `File > Export Markdown as Word` produces a `.docx` via `python-docx`, preserving headings, lists, links, tables, code blocks.
+- **Math is MathML everywhere HTML is made (2026-11-06).** Preview, Browser Preview and both HTML export paths write TeX math as MathML (`quill/core/math/preview_math.py`); no page loads MathJax or any other script from a CDN, so math shows offline and screen readers with a math engine read it natively. Pandoc HTML output carries `--mathml`.
+- **Export as HTML keeps its pictures (2026-11-06).** Pandoc runs on a temporary copy of the document, so `pandoc_html_args` (`quill/io/html_page.py`) passes `--resource-path=<the document's folder>`, and, from the installed Pandoc's version, `--embed-resources` (Pandoc 3) or `--self-contained` (Pandoc 2); an unreadable version embeds nothing. A document that shows a picture from the web (`![...](https://...)`, `<img src="//...">`) is never embedded, because embedding would download it: no export makes a network request. Pandoc's standalone template already gives the page a `<header>` for the title block and a `<nav>` for a table of contents; QUILL's own renderer wraps the body in `<main>`.
 
 ### 5.8 Find and replace
 
 Find in Quill is designed to feel like Microsoft editors and Visual Studio Code at the same time: F3 just works once a term is known, the search term is remembered everywhere it makes sense, and everything is announced.
+
+**The replacement is literal unless the search is a regular expression (2026-11-06).** `quill.core.search.replace_all` (Replace All, and Replace Across Files through `core/file_search.py`) hands `re.subn`/`safe_subn` a *function* returning the replacement in plain and wildcard modes, because a string replacement is a template there too: `C:\new` gained a line break and `\1` raised "invalid group reference" in a search that never asked for a regular expression. Only `use_regex` passes the string, so `\1`/`\g<name>` keep working. QUILL Lite's Replace All (`lite_window_find._replace_every_match`) follows the same rule by search mode, and a regex replacement naming a group the pattern lacks is announced ("Nothing replaced: ...") with the document unchanged. The shared `find_model.replace_all`/`replace_next` were already literal. Tests: `tests/unit/core/test_search.py`, `tests/unit/apps/test_lite_find_modes.py`.
 
 **The search term, the central concept.** Quill maintains a single "current search term" per editor. The term is set by any of:
 
@@ -1990,6 +2001,7 @@ This is a centrepiece of v0.2. See [section 7](#7-command-palette-deep-dive) for
 - **A backup can never abort a save.** `backup_document` is called inside its own guard (`_backup_before_save`); an `OSError` degrades to a spoken status line and the save proceeds. This is a correctness requirement, not a nicety: before #1390 the backup call sat *outside* the save path's `try/except OSError`, so a full disk raised out of `save_file` before the real file was ever touched, the close path's #210 safety net swallowed it, and QUILL exited with the document unsaved.
 - **A failed save is never consent to close.** `_prompt_to_save_active_document` catches a raising `save_file` and returns False; `_on_close` vetoes once via `_veto_close_after_failed_save` when a document is still modified, with a message naming the remedy. The veto is one-shot, so #210's "the window must always close" guarantee still holds even if this path itself has a bug.
 - **Failure wording (#1390).** `_report_save_failure` gives `ENOSPC` and the read-only family (`EACCES`/`EPERM`/`EROFS`) their own sentences naming what to do; everything else keeps the errno text. Raw errno strings are not an acceptable user-facing message for a save failure.
+- **A failed backup is logged, not only spoken (2026-11-06).** `_backup_before_save` logs a warning with the document's name and the OS reason (an unexpected exception is logged with its traceback) alongside the spoken status line, because the status line is gone by the time anyone asks why there is no backup, and the log is what a diagnostics bundle carries. QUILL Lite's equivalent: `core/lite/backups.write_backup` logs the failure and returns `None`, and `DocumentFileMixin._back_up_saved` turns that into the one save announcement, "Saved <name>, but could not write a backup", through the window's voice so braille mirrors it, for plain, rich and Word saves alike. The save itself is never affected.
 - Retention: default keep last 50 per document, prune older than 90 days, never delete the most recent 5.
 - Crash recovery: autosave snapshot every 30 seconds while a document is dirty; on launch, Quill offers to recover any orphan snapshots.
 
@@ -2087,6 +2099,22 @@ Local, instant, never sends content anywhere.
 - If a selection exists, statistics report on the selection and the title says so explicitly.
 - Status bar shows running word count for the current document or selection.
 
+**As shipped in 1.0.0 (2026-11-06).** Document Statistics is spoken, not a
+dialog: **Tools > Writing and Language > Document Statistics...**
+(`Ctrl+Shift+G`, `tools.word_count`, Word's Word Count key) says words, lines
+and characters at once. A second press within the multi-press window
+(`multi_press_window_ms`, default 400 ms) adds paragraphs, sentences, the
+number of sentences over 30 words, reading time at the status bar's 200 words a
+minute, and the Flesch-Kincaid grade ("reading grade about 9th grade", or
+"college level" from grade 13). Both presses report on the selection when there
+is one and start with "Selection:". The long report is spoken even when
+`announce_counts` is off. QUILL Lite has the same two presses on the same key,
+and both editors build the sentence with `quill.core.metrics.statistics_report`.
+The sentence and grade logic lives in `quill/core/readability.py`, shared with
+the WordPress reading-level check. Not yet built from the list above: speaking
+time, the other readability scores, per-level heading counts and the
+longest-sentence jump.
+
 ### 5.20 Accessibility auditor
 
 Quill's audience is exactly the audience that needs to _produce_ accessible documents. v1.0 ships a first-class auditor.
@@ -2101,6 +2129,30 @@ Quill's audience is exactly the audience that needs to _produce_ accessible docu
   - **Alt-text catalog** (`Ctrl+Alt+I`): every image with its current alt text, edit in place for editable formats, jump-to-source.
   - **Link inventory** (`Ctrl+Alt+L`): every link with target and accessible name; flags duplicates and internal-vs-external; copy URLs.
 - Audit completes in under 200 ms for documents up to 100 KB; up to 5 s for documents up to 5 MB.
+
+#### 5.20.1 Mermaid diagrams in the Accessibility Tune-Up (2026-11-06)
+
+A rendered Mermaid diagram is an SVG picture, and without an accessible name
+and description it reaches a screen reader as an unlabelled graphic. The
+Tune-Up (**AI > Accessibility Tune-Up...**, `quill/core/accessibility_agent.py`)
+has a **diagrams** category, filled by `quill/core/mermaid_a11y.py`, for every
+fenced `mermaid` block (backtick or tilde fence) in a Markdown document:
+
+- no `accTitle:` line -- the diagram has no accessible name;
+- no `accDescr:` (single line) or `accDescr {` (multi-line) -- no text
+  alternative;
+- an init directive (`%%{init: ...}%%`) that sets `theme` -- it overrides the
+  reader's light or dark choice and can break contrast;
+- `style`, `classDef` or `linkStyle` with `fill`, `color` or `stroke` -- advise
+  checking a 4.5 to 1 contrast ratio and that colour is not the only cue;
+- more than one diagram on the page and the nearest non-blank line above a
+  fence is not a heading (ATX or setext) -- each diagram should be reachable by
+  heading navigation.
+
+Every finding carries a 1-based line number (the opening fence, or the line of
+the theme or colour statement) and is advisory: it needs human judgement, so
+the Tune-Up never rewrites a diagram. The category is Markdown-only. QUILL Lite
+has no Tune-Up, so it is not behind here.
 
 ### 5.21 Table mode for Markdown and HTML tables
 
@@ -2169,6 +2221,7 @@ A group of small, individually unremarkable features whose absence would feel ch
 - **Word prediction**: `Ctrl+.` opens an IntelliSense-style picker for document words plus HTML and Markdown tag completions. It can also run automatically while typing when enabled in Settings.
 - **Snippets**: per-format snippet packs with trigger + Tab expansion. `Ctrl+Alt+Space` opens Insert Snippet; `Ctrl+Alt+Shift+Space` opens Manage Snippets. Off by default in prose, on by default in code. Editable in Settings.
 - **Named-text lists (2026-10-16, item 45).** The Insert Snippet picker (`quill/ui/searchable_picker.py`, shared by Insert HTML Tag and Move Section To) shows at most 200 matches with the true count in its status line and, for libraries above that, refills 150 ms after the last key (Enter and the arrows flush a pending refill first); measured fill cost was 0.22-0.3 ms a row, 2.2-3 s for 10,000. Snippet, abbreviation and Copy Tray search match the whole query or every word in any order (`quill/core/list_search.py`). The Abbreviations manager (QUILL, QUILL Lite, Inkwell) is a virtual report list (`quill/ui/virtual_report_list.py`; native type-ahead answered through `LVN_ODFINDITEM`) that keeps its selection by identity. Every `apply_listbox_activation` list has type-ahead through `quill.core.type_ahead.TypeAheadBuffer`: Space while a name is being typed (within 1.2 s) extends the name instead of activating the row; Enter activates and Escape closes, unchanged.
+- **One query syntax for filtered lists (2026-11-06).** `quill/core/list_search.py` adds a pure parser (`parse_query`, `has_query_syntax`); `SearchTerms` uses it whenever a search holds any of `* ? & | ! "`. Words match anywhere, case ignored; `*` is any run of non-space characters and `?` exactly one; `&` or adjacency is all, `|` any, `!` not; double quotes are exact text. Precedence `!`, then `&`, then `|`. The parser never raises (dangling operators and an unclosed quote are read as far as they go; operators alone match everything), and a search without those characters never reaches it, so plain searches are unchanged. Reached by Insert Snippet, the abbreviation manager and Copy Tray search (already `SearchTerms`), Insert HTML Tag and Insert Markdown Tag (`tagging._rank_choices`, which filters names plus aliases in picker order for a query), both Move Section To lists (`main_frame_section_move._matching`, now `SearchTerms`), and Go to Anything (`palette.heading_filter` for `#` headings, plain searches staying a whole-text substring; `palette.go_to_commands` for commands, the palette's `?`, `:` and `~` prefixes untouched). Search in Files' File pattern (`file_search.uses_file_pattern_query`, `file_pattern_matches`) treats `& | ! "` as operators over whole-name globs, a slash term matched against the path under the starting folder; without operators it is still `Path.rglob`, and the content search's Plain, Wildcard and Regular expression modes are unchanged. F1 help on each of those search boxes states the rules. QUILL Lite reaches the same code. Deferred: F3/Shift+F3 continuing a heading search, because F3 is owned by the text find in both editors, each with its own last-search state.
 - **Save options** (per document and per workspace): trim trailing whitespace on save, ensure final newline, normalise line endings on save.
 - **Smart paste**: by default, strip rich-text formatting when pasting from sources that include it.
 - **Three sentences about the document itself** (View menu): **What Is This Document?** (`Alt+Shift+F1`) answers with shape rather than name — size, then headings and list items, then anything that will stop you, in that order, because the last of those changes what you do next; an empty document says so, since an empty document and one that failed to load otherwise sound identical. **What Changed?** (`Alt+Shift+F2`) says what the last command did to the text, where Sort Lines and thirty others rewrote the buffer in silence. **Undo and Say What Changed** (`Alt+Shift+F3`) distinguishes an undo that reversed forty lines from an undo at the bottom of the stack — two things `Ctrl+Z` reports identically, which is to say not at all. The journal behind all three (`DocumentText.journal`, 50 entries) records **sizes and never text**, so nothing typed into a document can be read back out of it.
@@ -3437,7 +3490,7 @@ Remote I/O is the natural extension of "Open from URL": once a user has a saved 
 
 ### 5.28a Document Language profiles and auto-detection (#181)
 
-Each document has a **language profile** (`quill/core/language_profile.py`) describing one programming/markup language: extensions, indent convention, comment syntax, brackets, keyword set, and a `markup_kind` (`"html"`, `"markdown"`, or `"plain"`). Recognised languages: HTML, Markdown, CSS, Python, JavaScript, TypeScript, C, C++, C#, PHP, Go, Rust, Kotlin, Shell, YAML, JSON, TOML, SQL, plus a plain-text fallback. The profile is wx-free, pure data.
+Each document has a **language profile** (`quill/core/language_profile.py`) describing one programming/markup language: extensions, indent convention, comment syntax, brackets, keyword set, and a `markup_kind` (`"html"`, `"markdown"`, or `"plain"`). Recognised languages: HTML, Markdown, CSS, Python, JavaScript, TypeScript, C, C++, C#, Java, PHP, Go, Rust, Kotlin, Ruby, Perl, Shell, PowerShell, Batch, LaTeX, XML, YAML, JSON, TOML, INI, CSV, SQL, plus a plain-text fallback (Java, XML, INI, Batch, PowerShell, LaTeX, Ruby, Perl and CSV added 2026-11-06, section 5.28b). The profile is wx-free, pure data.
 
 - **Auto-assignment.** On open and on tab creation the profile is set from the file extension (`get_profile_for_path`), unless the user has pinned one.
 - **User override.** `set_document_language` pins a profile for the current tab (`_DocumentTab._language_profile` + `_language_profile_pinned`). Reachable via `navigate.set_language` (default **Ctrl+Shift+L**), **Navigate > Set Document Language...**, the **Format > Document Language** radio submenu (Auto-detect + every profile + Plain text, current item checked), and Enter on the status-bar **Language** segment (which appends "(set)" when pinned). "Auto-detect from file" clears the override.
@@ -3449,6 +3502,16 @@ Each document has a **language profile** (`quill/core/language_profile.py`) desc
 - **Setting:** `language_detection_mode` ∈ {`off` (default), `hint`, `prompt`, `auto`}, exposed in **Settings > Editing**.
 - **Trigger:** `LanguageDetectMixin` debounces content changes (~800 ms) and runs **only** on unpinned untitled/`.txt`-like documents; it never overrides a real extension or a user pin.
 - **Behaviour by mode:** `hint` updates the status bar silently; `prompt` announces a dismissible suggestion; `auto` calls `set_document_language` and announces the change. A screen-reader user is informed in every mode (no silent or visual-only switch). Braille content is out of scope — Braille Mode owns it.
+
+### 5.28b Navigate > Code: language-aware blocks, indent changes and Check This File (2026-11-06)
+
+One submenu, **Navigate > Code**, with the same rows, access letters and keys in QUILL and QUILL Lite (family rule 2), over shared code: `quill/core/navigation.py` and `quill/core/language_blocks.py` for movement, `quill/core/problems/` for checking, `quill/ui/problems_commands.py` for the commands. QUILL's side is `quill/ui/main_frame_code_nav.py`; QUILL Lite's is `quill/apps/lite_window_code_nav.py`.
+
+**Language-aware blocks.** `LanguageProfile` gains an optional `block_pattern`, a regular expression matched per line whose matches begin a block. Next / Previous Block (`navigate.next_block` / `previous_block`, no default chord; Quick Nav `Tab` / `Shift+Tab`) stop there when the document's profile has one and the text matches it, and otherwise move by paragraph exactly as before. Patterns: Python `def`/`class` (decorators included); C#, Java and Kotlin type and method declarations; JavaScript and TypeScript functions, classes, arrow functions assigned to a name, class methods, and TypeScript interfaces, enums, namespaces and type aliases; C and C++ definitions at the margin; Go, Rust, PHP, Ruby, Perl, Shell, PowerShell and SQL declarations; INI and TOML `[sections]`; batch `:labels` (not `::` comments); LaTeX `\part` to `\paragraph`; HTML headings, landmark elements and landmark roles. On arrival QUILL speaks the line landed on instead of "Moved to next block". QUILL Lite reaches the same core for the languages it knows: paragraphs in plain text and Markdown, HTML's pattern in HTML.
+
+**Next / Previous Indent Change** (`navigate.next_indent` Alt+Shift+PageDown, `navigate.previous_indent` Alt+Shift+PageUp, free in both editors): the next line, skipping blank lines, whose indentation in columns (tabs expanded to the profile's indent unit) differs from the caret's line; the caret lands on its first non-blank character and the depth is spoken ("8 spaces", "1 tab", "No indent"). `indent_change_target` and `describe_indent` in `quill/core/navigation.py`.
+
+**Check This File** (`tools.check_this_file` Ctrl+Alt+/), **Next Problem** (`navigate.next_problem` Ctrl+Alt+.) and **Previous Problem** (`navigate.previous_problem` Ctrl+Alt+,). F8 / Shift+F8 are Start / Complete Selection in both editors (rule 1), so the problem keys mirror Compare's Ctrl+Alt+Shift+. and , with one modifier fewer; the AltGr cost is recorded in `menu_lint`. A pluggable registry keyed by language returns every problem as (line, column, severity, message, source). Check This File opens the Problems list (a single-choice list, place first) when there are problems and speaks "No problems found." otherwise; Next / Previous Problem move the caret, speak "Problem n of m, line, column, severity: message", wrap, and re-check when the text has changed. Tier 1 is built in (JSON, JSONC, XML via defusedxml, HTML well-formedness via `html.parser`, TOML, YAML when PyYAML is importable, Python via `compile`, INI, CSV, Markdown via GLOW's rules plus link checks). Tiers 2 and 3 run outside tools the user already has, from one frozen allowlist (`CHECKER_TOOLS`): node, tsc, eslint, ruff, php, ruby, perl, shellcheck, gcc, clang, gofmt, rustc, csc and xmllint. Found with `shutil.which` only, run through `safe_subprocess` with a 15-second timeout in the file's folder, on a temporary copy when the buffer is unsaved; local only, so no network egress entry. QUILL runs outside checks on its task manager. QUILL Lite checks Markdown and HTML with the built-in tier only. The record of the tool table and the security model is `docs/design/syntax-checking.md`.
 
 ### 5.29 Format menu (text transforms, no styling)
 
@@ -3484,6 +3547,7 @@ A dedicated menu surfacing transforms that are otherwise reachable via Tools or 
 - Supported placeholders in snippet bodies: `${input:name}`, `${choice:a|b}`, `${date}`, `${time}`, `${cursor}`.
 - Trigger expansion can run while typing (for example `;meeting` plus a delimiter), and remains user-controllable via General Preferences.
 - Starter packs are installable from Preferences and snippet management so onboarding can begin with practical templates.
+- The **mermaid-diagrams** starter pack (2026-11-06) has eight fenced Mermaid diagrams: flowchart, sequence, class, state, entity relationship, Gantt, mind map and timeline (triggers `;mmflowchart` ... `;mmtimeline`). Each body puts `accTitle: ${input:accessible title}` and `accDescr: ${input:accessible description}` straight after the diagram type, so the snippet form asks for the title and description before anything else, and a filled-in diagram passes the Tune-Up's diagram checks (5.20.1).
 
 ### 5.29c Word prediction and tag IntelliSense
 
@@ -7057,6 +7121,19 @@ InstructionSet(task_id, title, default_prompt, user_prompt="", enabled=True)
 | Read with AI Voice | — | `core/ai/cloud_tts.py` (dispatch), `core/ai/tts.py` (OpenAI), `core/ai/gemini_tts.py` (Gemini), `core/ai/elevenlabs_tts.py` (ElevenLabs SDK gateway, audio export only — roadmap §4.1), `core/ai/tts_chunk.py` (boundary-safe split) | inline in `main_frame.py` |
 | Ask Quill chat | Alt+Q | `core/ai_chat.py` | `ui/ai_chat_dialog.py` |
 
+**Translate: an unchanged result is not a translation (2026-11-06).** The
+source language is always auto-detected, so text already in the target
+language comes back as itself, and a provider can "translate" Spanish into
+Spanish without complaint. `core/ai/translation.py::translation_unchanged`
+compares the input and the result with whitespace runs collapsed and case
+folded (empty text is never "unchanged"; that is a failure reported
+elsewhere). When it holds, the dialog puts `UNCHANGED_TRANSLATION_MESSAGE`
+("The translation came back the same as the original. The text may already be
+in the target language.") in the read-only result box and focuses it, so the
+screen reader speaks it without a separate announcement (GATE-13), and leaves
+Copy, Replace Original and Open as New Document disabled. QUILL Lite has no
+translation command, so this is QUILL-only.
+
 #### 5.90.5 Agentic task architecture
 
 Four commands (Rewrite, Summarize, Expand, Generate TOC) share a common agent session architecture in `quill/core/ai/agent_session.py`:
@@ -7610,6 +7687,21 @@ opt-in specifically to avoid colliding with prose), so switching the
 Quillin's own delimiters to MathJax's defaults made both surfaces render
 correctly with **zero template changes**. Verified empirically (headless
 browser screenshot), not assumed.
+
+**Rendering, superseded (2026-11-06): MathML, no CDN.** The MathJax include is
+gone from both surfaces. `quill/core/math/preview_math.py` lifts every math
+span (`\(...\)`, `\[...\]`, `$$...$$`, fenced `math`) out of the Markdown
+before the renderer runs, so `a_1` is never read as emphasis, and puts
+`latex_to_mathml` output (`quill/core/math/latex_bridge.py`) back where it
+was. Code spans and fenced code are untouched, and the line count is kept so
+the side preview's `data-src` source map still points at the right line. A
+formula that will not convert, or a build without `latex2mathml`, shows its
+TeX source as text. Pandoc HTML output carries `--mathml` (Export as HTML,
+`convert_with_pandoc` to HTML, the Accessible HTML Page profile), and
+`prepare_for_pandoc` rewrites the delimiters to dollars, because Pandoc's GFM
+reader does not know `\(...\)`. Result: preview and export make no network
+request for math, work offline, and hand the screen reader real MathML (NVDA's
+MathCAT, JAWS).
 
 **Word export and round-trip (`quill/io/docx_math.py`).** The native
 python-docx writer (`quill/io/docx_writer.py`) had no math model; math spans
@@ -8679,10 +8771,13 @@ The QUILL key (`Ctrl+Shift+Grave` by default) operates as a two-layer prefix sys
 
 **Layer 2 — Chord command dispatch.** Any key pressed while the prefix is armed that is not a mode gate is dispatched via a data-driven lookup: `_chord_command_for_event` scans the live keymap for entries whose binding matches `<prefix>, <second-key>` and runs the matching command via `_run_command`. This means every chord command (read aloud, snippets, headings, copy tray, etc.) is fully reassignable in the Keymap Editor without any code change.
 
-**Key detection.** The QUILL prefix key is recognized by three independent strategies so it works on any keyboard layout and Windows driver:
-1. wxPython key code or Unicode key equals `ord("`")` or `ord("~")`
+**Key detection.** The grave key is recognised by its position, not by the character it types, because only a US layout calls it a backtick (German types `^`, French `²`, Nordic layouts `§`). The rules live in one wx-free function, `quill.core.grave_key.is_grave_key`, which QUILL's QUILL key and WordPress key and QUILL Lite's WordPress key all call. Any one of these is enough:
+1. wxPython key code or Unicode key equals `ord("`")` or `ord("~")` (every platform)
 2. Windows virtual-key `VK_OEM_3` (0xC0) via `GetRawKeyCode()`
-3. Physical scan code `0x29` (key below Esc / above Tab on PC keyboards) via bits 16–23 of `GetRawKeyFlags()`
+3. Windows physical scan code `0x29` (key below Esc / above Tab on PC keyboards) via bits 16–23 of `GetRawKeyFlags()`
+4. macOS (#1753): `GetRawKeyCode()` is the Mac virtual key code, which names a physical key and never changes with the layout. `0x32` (`kVK_ANSI_Grave`) is the back-tick key on an ANSI keyboard; on an ISO keyboard macOS reports the key above Tab as `0x0A` (`kVK_ISO_Section`) and the extra key beside left Shift as `0x32`. Both are accepted. These codes are tested only on macOS, because on Windows `0x32` is the virtual key for the digit 2.
+
+Before #1753 the macOS path had only strategy 1, so on a German Mac layout the QUILL key did nothing until the user switched to US. Unit tests (`tests/unit/core/test_grave_key_layouts.py`, `tests/unit/ui/test_main_frame_quill_key.py`) simulate US ANSI and German ISO key events on a mocked macOS, and pin that Ctrl+Shift+2 on Windows is not the QUILL key. Confirmation on real Mac hardware with a German layout is pending with the reporter.
 
 **Keymap Editor validation.** Chord bindings (containing `, `) are validated separately from simple bindings: the prefix part must be a known modifier+key combination and the second-key part must be a parseable single key or modifier+key.
 
@@ -15392,6 +15487,19 @@ intercepted in rich mode and routed through QUILL's commands so formatting is
 announced, dirty-marked, and remappable. Describe Formatting at Cursor reads
 the live TOM in rich mode.
 
+**Text colour in Describe Formatting (2026-11-06).** The rich description
+named the highlight but never the text colour, which the Markdown path always
+spoke. `caret_format_description` now reads `ITextFont.ForeColor` through
+`quill.core.highlights.text_colour_from_colorref` and speaks it just before the
+highlight ("Calibri, 11 point, red, yellow highlight"). Names: an exact match
+to a Format > Text Color name (the RTF writer's own table, so green is
+"green", not the highlight palette's "dark green"), otherwise the nearest of
+Word's fifteen highlight-palette names. Silent for `tomAutoColor`, black, and
+the colour a theme painted over the whole story (`set_document_color`
+records it as `_theme_colorref`), so a dark theme does not make every
+character "gray". QUILL Lite calls the same surface method, so both editors
+answer the same way.
+
 **Paragraph formatting completed (2026-09-08, via QUILL Lite).** The surface has
 always been able to justify a paragraph, set a list type and set a line-spacing
 rule; nothing in QUILL was bound to any of it, so the small editor-only sibling
@@ -15464,6 +15572,17 @@ and renders each table inline as GFM Markdown-table paragraphs — so table cont
 that was previously dropped entirely now survives, reads correctly, and is
 reachable by single-key table navigation (`T`). `scan_docx_features` still lists
 tables so the format change is disclosed before a rich edit.
+
+**Alternate headers and footers (#1756, 2026-11-06).** "headers" and "footers"
+cover every header/footer the rich bridge drops, not only the default one: in
+each section, the first-page part when the section sets `w:titlePg`, and the
+even-page part when `settings.xml` sets `w:evenAndOddHeaders`. Those two are
+checked through python-docx's link resolution, because a section can switch on
+its title page while inheriting a first-page header an earlier section defined
+but never showed; the ordinary part keeps its skip-if-linked rule, since a
+linked default header repeats one already checked. A blank part is not a
+finding. Without this, a title-page-only header opened with no question,
+`needs_backup` was false, and the first save removed it silently.
 
 **Shared with QUILL Lite (2026-10-17).** The wx-free half of this path lives in
 `quill/core/docx_open.py`, and `main_frame_rich_mode.py` calls it: the scan

@@ -60,6 +60,11 @@ says "WordPress keys". Then press one letter:
 command's letter beside its row, and the manual has the full table. QUILL and
 QUILL Lite use the same letters, so moving between them costs you nothing.
 
+QUILL finds the grave key by where it sits, the key above Tab, not by what it
+types. So the WordPress key works on a German, French, Nordic or any other
+layout, where that key types `^`, `²` or `§` rather than a backtick. The
+QUILL key works the same way; Chapter 2 has the details.
+
 ---
 
 - Previous: [Chapter 15: Help, updates and support](quill-guide-15-help-updates-and-support.html)

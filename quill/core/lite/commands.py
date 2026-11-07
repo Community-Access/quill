@@ -752,6 +752,7 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate", "", "", "", "sep"),
     ("&Navigate", "&Table", "", "", "sub"),
     ("&Navigate", "&Bookmarks", "", "", "sub"),
+    ("&Navigate", "&Code", "", "", "sub"),
     ("&Navigate", "", "", "", "sep"),
     # F6 is the region key every Windows app uses, and the one QUILL's own
     # status bar answers. The menu item exists so the key is discoverable
@@ -780,6 +781,22 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Table", "&Delete Row", "", "cmd_table_delete_row", ""),
     ("&Navigate|&Table", "Delete Col&umn", "", "cmd_table_delete_column", ""),
     ("&Navigate|&Table", "&Tidy Table", "", "cmd_table_tidy", ""),
+    # -- Navigate > Code (2026-11-06) ----------------------------------------
+    # QUILL's Navigate > Code, on QUILL's keys (rule 2; keymap.py says why
+    # these), over the shared quill.core.navigation and quill.core.problems.
+    # Next and Previous Block have no key in either editor: see
+    # KEYLESS_WITH_REASON. Blocks in Markdown are paragraphs and in HTML are
+    # headings and landmarks, as in QUILL; Check This File checks the two
+    # languages QUILL Lite knows, Markdown and HTML, where QUILL checks many.
+    ("&Navigate|&Code", "&Next Block", "", "cmd_next_block", ""),
+    ("&Navigate|&Code", "&Previous Block", "", "cmd_previous_block", ""),
+    ("&Navigate|&Code", "", "", "", "sep"),
+    ("&Navigate|&Code", "Next &Indent Change", "Alt+Shift+PageDown", "cmd_next_indent", ""),
+    ("&Navigate|&Code", "Previous In&dent Change", "Alt+Shift+PageUp", "cmd_previous_indent", ""),
+    ("&Navigate|&Code", "", "", "", "sep"),
+    ("&Navigate|&Code", "&Check This File...", "Ctrl+Alt+/", "cmd_check_this_file", ""),
+    ("&Navigate|&Code", "Next P&roblem", "Ctrl+Alt+.", "cmd_next_problem", ""),
+    ("&Navigate|&Code", "Previous Pro&blem", "Ctrl+Alt+,", "cmd_previous_problem", ""),
     # -- Navigate > Bookmarks ------------------------------------------------
     # A place you meant to come back to. There is no scrollbar thumb to remember
     # the position of and no glance that finds the place again, so a bookmark is

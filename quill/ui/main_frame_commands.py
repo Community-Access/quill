@@ -832,6 +832,7 @@ class CommandRegistryMixin:
             ("table.last_cell", "Table: Last Cell", self.table_last_cell),
         ):
             self.commands.register(command_id, label, handler, self._binding_for(command_id))
+        self._register_code_commands()  # Navigate > Code (main_frame_code_nav)
         self.commands.register(
             "navigate.set_bookmark",
             "Set Bookmark...",

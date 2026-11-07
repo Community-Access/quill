@@ -155,6 +155,7 @@
   "quill.ui.main_frame_bw": "reachable",
   "quill.ui.main_frame_classic_editor": "reachable",
   "quill.ui.main_frame_clip_library": "reachable",
+  "quill.ui.main_frame_code_nav": "reachable",
   "quill.ui.main_frame_compare": "reachable",
   "quill.ui.main_frame_convert_file": "reachable",
   "quill.ui.main_frame_copy_tray": "reachable",
