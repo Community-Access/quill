@@ -1,5 +1,19 @@
 # QUILL Lite 2.0
 
+## Replace all and backups you can trust
+
+**Replace all puts in what you typed.** In Normal and Extended search, a
+backslash in **Replace with** is just a backslash, so replacing with
+`C:\new\reports` puts exactly that into every match. With the **Regular
+expression** search mode, `\1` and `\2` still bring back the parts of the
+match, and asking for a part the search does not have changes nothing and
+tells you why.
+
+**A backup that fails is said.** With timestamped backups switched on in
+**Tools > Customize Features**, a save whose backup could not be written now
+says "Saved notes.txt, but could not write a backup", and your braille display
+shows the same. Your file is saved either way.
+
 ## Stripe and PayPal form setup
 
 Tools > Forms now includes Insert Payment Field, Form Payments Setup and
@@ -35,6 +49,9 @@ yet. Here is what is new.
 - **Spell check that reads only what you wrote**, not web addresses, file
   names or code.
 - **Word documents** that open and save as Word, and PDFs opened as text.
+  A header or footer that only appears on the first page, or only on even
+  pages, is now named in the question you are asked when the document opens,
+  and the first save backs up the original, just as for an ordinary header.
 - **Find in Open Documents** and folder search, across everything at once.
 - **WordPress.** Write, check and publish your website's pages and posts, and
   look after the site, from the editor you already use.
@@ -501,6 +518,17 @@ The same table work as in QUILL, on the same keys.
   they keep the text in the cells, but not bold or other formatting inside
   them.
 - A blank row is no longer skipped by the table keys.
+
+## Describe Formatting names the colour
+
+In a rich text document, **Ctrl+Shift+D** (Format > Describe Formatting at
+Cursor) now names coloured text, just before any highlight: "Calibri, 11
+point, red, yellow highlight". Common colours such as red, green and orange
+are named exactly; any other shade is named after the nearest one, so you
+hear a word rather than a number. Ordinary text says nothing about colour:
+not when nobody coloured it, not when it is black, and not for the light text
+the dark theme paints on the page. QUILL gives the same answer, from the same
+code.
 
 ## Spell check, recovery and sharp text
 

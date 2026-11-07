@@ -345,8 +345,10 @@ class RichEditDocument(RichEditStructureMixin, QuillRichEdit):
             story.Expand(_TOM_UNIT_STORY)
             if rgb is None:
                 story.Font.ForeColor = _TOM_AUTOCOLOR
+                self._theme_colorref = None
             else:
                 story.Font.ForeColor = _colorref(*rgb)
+                self._theme_colorref = _colorref(*rgb)
         except Exception as exc:  # noqa: BLE001 - map COM failure to our error
             raise RichEditRtfError(f"Could not recolour the document: {exc}") from exc
         finally:

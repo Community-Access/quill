@@ -98,3 +98,146 @@ def test_convert_document_with_pandoc_raises_on_error(monkeypatch, tmp_path: Pat
     # message as "Pandoc invocation failed: <stderr from CalledProcessError>".
     with pytest.raises(PandocConversionError, match="Pandoc invocation failed"):
         convert_document_with_pandoc(source, "markdown", tool_status=tool_status)
+
+
+# -- an export never loses the file it was replacing ---------------------------
+
+
+def _staging_run(monkeypatch, *, returncode: int = 0, write: bytes | None = b"new", raises=None):
+    """Patch Pandoc with a fake that writes *write* to its ``-o`` path.
+
+    Records every ``-o`` path so a test can check where Pandoc was pointed.
+    A partial *write* with a non-zero exit is the realistic failure: Pandoc
+    had begun the file before it gave up.
+    """
+    outputs: list[Path] = []
+
+    class Completed:
+        stdout = ""
+        stderr = "pandoc: something went wrong"
+
+    Completed.returncode = returncode
+
+    def _run(command, **_kwargs):
+        out = Path(command[command.index("-o") + 1])
+        outputs.append(out)
+        if write is not None:
+            out.write_bytes(write)
+        if raises is not None:
+            raise raises
+        return Completed()
+
+    monkeypatch.setattr("quill.io.pandoc.run_subprocess_safely", _run)
+    return outputs
+
+
+def _status():
+    return type("Status", (), {"installed": True, "path": "C:/Tools/pandoc.exe"})()
+
+
+def _export(tmp_path: Path, **kwargs):
+    from quill.io.pandoc import convert_file_with_pandoc
+
+    source = tmp_path / "in.md"
+    source.write_text("# New", encoding="utf-8")
+    return convert_file_with_pandoc(
+        source,
+        tmp_path / "report.docx",
+        from_format="gfm",
+        to_format="docx",
+        tool_status=_status(),
+        **kwargs,
+    )
+
+
+def test_a_successful_export_replaces_the_earlier_file(monkeypatch, tmp_path: Path) -> None:
+    target = tmp_path / "report.docx"
+    target.write_bytes(b"old")
+    outputs = _staging_run(monkeypatch, write=b"new")
+
+    assert _export(tmp_path) == target
+
+    assert target.read_bytes() == b"new"
+    assert outputs[0] != target, "Pandoc writes beside the target, not over it"
+    assert outputs[0].parent == target.parent
+    assert outputs[0].suffix == ".docx", "the extension stays, Pandoc reads it"
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["in.md", "report.docx"]
+
+
+def test_a_failed_export_leaves_the_earlier_file_untouched(monkeypatch, tmp_path: Path) -> None:
+    target = tmp_path / "report.docx"
+    target.write_bytes(b"old")
+    _staging_run(monkeypatch, returncode=1, write=b"half a fi")
+
+    with pytest.raises(PandocConversionError):
+        _export(tmp_path)
+
+    assert target.read_bytes() == b"old"
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["in.md", "report.docx"]
+
+
+def test_an_export_that_raises_leaves_the_earlier_file_untouched(
+    monkeypatch, tmp_path: Path
+) -> None:
+    target = tmp_path / "report.docx"
+    target.write_bytes(b"old")
+    _staging_run(monkeypatch, write=b"half", raises=subprocess.TimeoutExpired("pandoc", 1))
+
+    with pytest.raises(PandocConversionError, match="timed out"):
+        _export(tmp_path)
+
+    assert target.read_bytes() == b"old"
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["in.md", "report.docx"]
+
+
+def test_an_export_cancelled_mid_run_leaves_the_earlier_file_untouched(
+    monkeypatch, tmp_path: Path
+) -> None:
+    import threading
+
+    from quill.io.pandoc import PandocCancelledError
+
+    target = tmp_path / "report.docx"
+    target.write_bytes(b"old")
+    cancel = threading.Event()
+    monkeypatch.setattr("quill.io.pandoc.run_subprocess_safely", _cancel_after(cancel))
+
+    with pytest.raises(PandocCancelledError):
+        _export(tmp_path, cancel=cancel)
+
+    assert target.read_bytes() == b"old"
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["in.md", "report.docx"]
+
+
+def _cancel_after(cancel):
+    """A Pandoc run that finishes its file just as the user presses Cancel."""
+
+    class Completed:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    def _run(command, **_kwargs):
+        Path(command[command.index("-o") + 1]).write_bytes(b"new")
+        cancel.set()
+        return Completed()
+
+    return _run
+
+
+def test_an_export_with_no_earlier_file_still_arrives(monkeypatch, tmp_path: Path) -> None:
+    _staging_run(monkeypatch, write=b"new")
+    assert _export(tmp_path).read_bytes() == b"new"
+
+
+def test_success_with_no_output_does_not_touch_the_earlier_file(
+    monkeypatch, tmp_path: Path
+) -> None:
+    target = tmp_path / "report.docx"
+    target.write_bytes(b"old")
+    _staging_run(monkeypatch, write=None)
+
+    with pytest.raises(PandocConversionError, match="did not produce"):
+        _export(tmp_path)
+
+    assert target.read_bytes() == b"old"

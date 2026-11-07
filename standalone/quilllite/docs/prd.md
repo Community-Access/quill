@@ -1548,6 +1548,18 @@ reports the formatting of the character *before* it, so standing at the start of
 a heading described the paragraph above it. `caret_format_description` now probes
 the character *after* the caret, which is what a screen reader describes.
 
+**The text colour was never spoken (2026-11-06).** Describe Formatting at
+Cursor (`Ctrl+Shift+D`) in a rich document named the highlight but not the text
+colour, although the Markdown path always spoke it. The shared surface now reads
+`ITextFont.ForeColor` through `quill.core.highlights.text_colour_from_colorref`
+and says the colour just before the highlight: "Calibri, 11 point, red, yellow
+highlight". Common colours are named exactly; other shades by the nearest
+highlight-palette name. Automatic colour, black, and the colour a theme painted
+over the whole story say nothing. That last case matters most here: QUILL Lite's
+dark theme recolours every run light grey through `set_document_color`, which
+now records the colour so the description treats it as the default instead of
+saying "gray" on every character. QUILL gets the same answer from the same code.
+
 ### 7.1 The spell checker, and the exception that makes it usable
 
 QUILL Lite ships a spell checker because the products it is measured against
@@ -1853,7 +1865,9 @@ footnotes, text boxes, shading.
 **One implementation, moved.** QUILL's wx-free Word decisions left
 `quill/ui/main_frame_rich_mode.py` for the shared `quill/core/docx_open.py`, and
 QUILL calls them in the same change: the fidelity scan (`fidelity_findings`,
-over `scan_docx_features`), the question and its three rows
+over `scan_docx_features`, whose "headers" and "footers" include first-page
+parts under `w:titlePg` and even-page parts under `w:evenAndOddHeaders` in
+every section since #1756), the question and its three rows
 (`fidelity_question`, `fidelity_choices`, `choice_for_selection`; Cancel is
 `text`), the one-time backup (`backup_path_for`, `backup_original`,
 `needs_backup`: `name.backup-YYYYMMDD-HHMMSS.docx`, once per session, only for
@@ -2435,3 +2449,34 @@ the same way.
   so nothing is lost. QUILL Lite has no Pandoc path, so the picture embedding
   QUILL's Pandoc export gained the same day does not apply here: QUILL Lite's
   page links its pictures as before.
+
+## Replace All takes what was typed, and a failed backup is said (2026-11-06)
+
+**Replace All.** `lite_window_find._replace_every_match` built the whole new
+text with `pattern.sub(replacement, text)`, and `re.sub` reads a string
+replacement as a template in every mode. So in Normal and Extended search
+`C:\new` gained a line break and `\1` raised out of the command. The
+replacement now goes in through a function unless the search mode is
+`regex`, which keeps `\1` and `\g<name>`; a regex replacement naming a group
+the pattern does not have is caught, announced ("Nothing replaced: ...") and
+changes nothing, because the new text is built before the single edit. Rich
+mode's per-match loop was already literal. QUILL had the same fault in
+`quill/core/search.replace_all` (Replace All and Replace Across Files) and
+the same fix (rule 10: value flows both ways). Tests:
+`tests/unit/apps/test_lite_find_modes.py`, `tests/unit/core/test_search.py`.
+
+**Backups.** `core/lite/backups.write_backup` never raises and returned `None`
+on failure, which both save paths ignored, so a full or read-only backups
+folder went unnoticed until the day the backup was wanted. It now logs the
+reason, and `DocumentFileMixin._back_up_saved` (used by Save and by the Word
+save's finish, `_finish_word_save`) folds the failure into the one save
+announcement: "Saved notes.txt, but could not write a backup", through the
+window's voice so braille mirrors it (GATE-BRAILLE). One announcement rather
+than two, so the second does not cut off the first. QUILL already spoke its
+backup failure and now logs it too. Tests:
+`tests/unit/apps/test_lite_file_commands.py`.
+
+**Export.** QUILL Lite writes no file through Pandoc: Word saves go through
+`docx_open.write_docx_from_rtf` and HTML export through `write_text_atomic`,
+both already atomic. QUILL's Pandoc writer now stages beside the target and
+replaces it only on success (QUILL PRD 5.3a.1.1).

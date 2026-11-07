@@ -34,6 +34,16 @@ menu has a few other ways in, and each one is handy at the right moment:
 Files on a server or on GitHub have their own commands. They are covered later
 in this chapter, under Remote access and GitHub remote files.
 
+**Where the Open dialog starts.** Press `Ctrl+O` and the dialog, the standard
+one or the Simple File Open dialog, starts in the folder of the last file you
+opened, however you opened it. That includes a file you double-clicked in
+File Explorer, one passed to QUILL on the command line, one from Open Recent,
+and one you went back to because it was already open in a tab. So if you open
+`Minutes.docx` from your Board folder in Explorer, the next `Ctrl+O` is already
+in the Board folder, ready for the agenda beside it. Saving with **Save As**
+moves it too. Until something has been opened, the dialog starts in your
+**Startup folder** from Settings, or in Documents.
+
 ### Opening what you copied, a link, or a file you drag in
 
 Documents reach you in all sorts of ways: a file in File Explorer, a path
@@ -910,6 +920,15 @@ a new window. Press **Yes** to open it, or **No** to carry on where you were.
 PDF, DOCX, EPUB, ODT and RTF don't ask, because QUILL cannot edit those
 directly. Instead a message tells you where the file was saved and copies the
 path to the clipboard, so you can paste it into File Explorer.
+
+**Exporting over an earlier file is safe.** Say you exported `report.docx`
+yesterday and export again today to the same name. Pandoc builds the new file
+under a temporary hidden name in the same folder, and only when it has
+finished successfully does QUILL swap it in over yesterday's. If the export
+fails, times out or you cancel it, yesterday's `report.docx` is exactly as it
+was, no half-written file is left behind, and you hear "Pandoc export failed"
+with the reason. The same holds for every conversion that writes a file
+through Pandoc: Convert File, batch conversion, braille and review exports.
 
 **Other formats.** Both menus end with **Other Pandoc Format...**. It shows a
 list of every other format Pandoc can read (on Import) or write (on Export),

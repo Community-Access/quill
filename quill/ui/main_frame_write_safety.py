@@ -29,6 +29,7 @@ the caller; nothing below that line touches wx.
 from __future__ import annotations
 
 import errno
+import logging
 from typing import TYPE_CHECKING
 
 from quill.core.autosave import autosave_document
@@ -38,6 +39,8 @@ from quill.stability.wx_dispatch import call_ui_safely
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from quill.core.document import Document
 
+logger = logging.getLogger(__name__)
+
 
 class WriteSafetyMixin:
     def _backup_before_save(self, document: Document) -> None:
@@ -46,12 +49,18 @@ class WriteSafetyMixin:
         A backup exists to protect the user *from* a bad save, so it can never
         be the reason a save does not happen.
         """
+        # Logged as well as spoken: the status line is gone by the time anyone
+        # asks why there is no backup to restore, and the log is where a support
+        # bundle looks.
+        name = document.path.name if document.path is not None else "an untitled document"
         try:
             backup_document(document)
         except OSError as error:
             reason = error.strerror or str(error)
+            logger.warning("Could not write a backup of %s before saving: %s", name, reason)
             self._set_status(f"Could not write a backup ({reason}); saving anyway")
         except Exception:  # noqa: BLE001 - a backup must never block a save
+            logger.exception("Could not write a backup of %s before saving", name)
             self._set_status("Could not write a backup; saving anyway")
 
     def _report_save_failure(

@@ -35,6 +35,16 @@ If regular expressions are new to you, the Regular Expression Helper
 when you need it. QUILL also keeps your search history, so a search you run
 often is there waiting for you next time.
 
+**What you type in Replace with is what goes in.** Unless you are searching
+with a regular expression, the Replace box is taken exactly as typed, in plain
+and wildcard searches alike. A backslash is just a backslash: replacing a
+folder name with `C:\new\reports` puts exactly that into every match, and `\1`
+goes in as the two characters you typed. With a regular expression, **Replace
+All** (`Ctrl+Shift+Grave` then `X`) and **Edit > Replace Across Files...**
+(`Ctrl+Shift+R`) can refer back to the match: `\1` is the first part you
+wrapped in brackets and `\2` the second, so searching for `(\w+), (\w+)` and
+replacing all with `\2 \1` turns "Bishop, Jeff" into "Jeff Bishop".
+
 ### Searching a whole folder of files
 
 QUILL no longer has a top-level Search menu. Its commands now live on the
@@ -684,6 +694,16 @@ you to the wrong place.
 highlight in a rich document:
 "Calibri, 11 point, yellow highlight". Before this it said nothing about
 highlighting there.
+
+It names the **text colour** too, just before the highlight: red text on a
+yellow highlight reads "Calibri, 11 point, red, yellow highlight". A colour you
+chose from **Format > Text Color** comes back under the name you chose it by,
+so green is "green" and orange is "orange". Any other colour, such as one that
+came in with a Word document, is named after the nearest colour in the list
+below, so you hear a word rather than a number. Text nobody has coloured,
+plain black, and the light text a dark theme paints on the page say nothing
+about colour at all, which keeps the description short for ordinary body text.
+QUILL Lite gives the same answer, from the same code, on the same key.
 
 **Colours.** QUILL knows all fifteen of Word's highlight colours by name:
 yellow, green, turquoise, pink, blue, red and gray, and the darker dark blue,

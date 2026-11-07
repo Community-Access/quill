@@ -238,12 +238,11 @@ class DocumentWordMixin:
             # typed during the save is not in it, so the window is not clean.
             self._set_modified(True)
             self._update_title()
-        if self.app.feature_enabled("backups"):
-            from quill.core.lite.backups import write_backup
-
-            write_backup(destination, baseline)
+        # The backup, and saying so when it could not be written, is the file
+        # mixin's (``DocumentFileMixin._back_up_saved``), shared with every save.
+        saved = self._back_up_saved(destination, baseline)
         self._cue_saved()
-        self._announce(f"Saved {destination.name}")
+        self._announce(saved)
 
     def _fail_word_save(self, destination: Path, exc: BaseException) -> None:
         self._word_save_busy = ""

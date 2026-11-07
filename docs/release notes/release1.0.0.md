@@ -18,6 +18,26 @@ and JAWS read them with their own math support. When Pandoc writes the page,
 pictures are found beside your document and, with Pandoc 2 or 3, carried
 inside the page so it can be emailed on its own. QUILL Lite's Export as HTML
 writes math as MathML too.
+## Replace, export and backups you can trust
+
+Three things that should never surprise you now do not.
+
+**Replace puts in what you typed.** Unless you are searching with a regular
+expression, the Replace box is taken exactly as typed. Replace a folder name
+with `C:\new\reports` and that is what lands in your document, not a line
+break where the `\n` was. With a regular expression, `\1` and `\2` still bring
+back the parts of the match. This holds for Replace All and Replace Across
+Files (`Ctrl+Shift+R`).
+
+**Exporting over an earlier file is safe.** File > Export, Convert File and
+every other Pandoc conversion now build the new file under a hidden temporary
+name and swap it in only when it is finished. If the export fails, times out
+or is cancelled, the file you exported yesterday is still there, untouched.
+
+**A backup that fails is on the record.** When a backup cannot be written
+before a save, QUILL still says "Could not write a backup; saving anyway" and
+saves, and now it writes the reason to its log as well, so **Help > Save
+Diagnostics...** can explain a missing backup later.
 
 ## Form payment setup and reporting
 
@@ -104,6 +124,12 @@ QUILL writes accessible forms: contact forms, event sign-ups, membership renewal
 
 **Try this:** choose File > New Form..., pick the contact template, then Tools > Forms > Fill It In Yourself... and tab through your own form. Each required question says so. Answer them and press Submit: the What Would Be Sent window lists each question with its answer, and nothing has gone anywhere.
 
+## Fixed in this build: first-page and even-page Word headers
+
+When you open a Word document for rich editing, QUILL tells you what the editor cannot keep, and makes a backup before your first save over the file. Headers and footers have always been on that list, but only the ordinary ones. A header set to appear on the first page only (Word's Different First Page), or on even pages only (Different Odd and Even Pages), slipped past: the file opened with no question, and saving it removed the header without a word. Now those count as headers and footers too, in every section of the document, so you hear them named in the **Open Word document** question and the backup is made. QUILL Lite has the same fix.
+
+**Try this:** in Word, make a title page with its own first-page header and save it. Open it in QUILL and choose the normal text editor. The question lists "headers".
+
 ## New in this build: every menu item in the Command Palette
 
 The Command Palette (**Ctrl+Shift+P**, first in the Tools menu) now finds everything in the menus, not just the registered commands. A few dozen menu items were never in it before, among them your recent files, your open documents and some of the braille tools, so typing their names found nothing. Now the palette reads the menus each time it opens, names each item by the menu it sits in, and runs it exactly as the menu would. A dimmed item tells you why it is not available instead of doing nothing. QUILL Lite's palette does the same, sits first in its Tools menu, and is there in every profile, WordPad and Notepad included.
@@ -182,6 +208,29 @@ changed, in your web browser. Press **Alt+H**, then **W**. Every app in the
 QuillVille family has it on its Help menu now.
 
 **Try this:** press Alt+H, then W, and use your screen reader's heading keys to jump from one change to the next.
+
+## New in this build: three smaller fixes
+
+- **Describe Formatting names the colour.** In a rich text document,
+  **Ctrl+Shift+D** (Format > Describe Formatting at Cursor) now names the
+  text colour, just before any highlight: "Calibri, 11 point, red, yellow
+  highlight". A colour from **Format > Text Color** comes back under the name
+  you chose; any other shade is named after the nearest common colour.
+  Uncoloured text, black text and a dark theme's page colour say nothing
+  about colour. QUILL Lite gives the same answer.
+- **AI Translate says when nothing was translated.** If the result is the
+  same as your text, ignoring spacing and capital letters, the result box
+  says "The translation came back the same as the original. The text may
+  already be in the target language." and takes focus, and the Copy, Replace
+  and New Document buttons stay unavailable. Try another language or the
+  other provider.
+- **Ctrl+O starts where you last opened a file.** Opening a file from File
+  Explorer, the command line, Open Recent or a tab that already had it now
+  sets the folder the next Open dialog starts in, just as the Open and Save
+  As dialogs always did.
+
+**Try this:** double-click a document in File Explorer to open it in QUILL,
+then press Ctrl+O. The dialog is already in that document's folder.
 
 ## Try this first
 

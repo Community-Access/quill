@@ -539,7 +539,12 @@ Customization:
   session, then **Settings > General > Default document folder** (the
   `startup_folder` setting), then the Windows Documents folder when that
   setting is blank. A saved document keeps its existing location for ordinary
-  saves.
+  saves. "Most recently used" means the folder of the last file *opened by
+  any route*, not only through a dialog: `_finish_open_document` (and the
+  already-open-tab branch of `open_file`) call
+  `SimpleOpenMixin._remember_open_folder`, so a file arriving from File
+  Explorer, the command line, Open Recent or a link steers the next `Ctrl+O`
+  (2026-11-06; `tests/unit/ui/test_open_folder_follows_opened_file.py`).
 - Recent files: last N (default 10, range 5 to 50). If empty, announce "No recent files."
 - File Explorer integration: settings panel lets the user register Quill with Windows for chosen extensions and add an "Open with Quill" verb.
 
@@ -607,6 +612,8 @@ QUILL ships a curated Tier-1 list of Pandoc-supported formats in the File menu a
 **File > Import > <format>** converts a single file from disk into a new Markdown buffer in a new tab. **File > Export > <format>** converts the current buffer to the named format on a background thread. Both routes use Pandoc and `quill.stability.safe_subprocess.run_subprocess_safely` so a misbehaving Pandoc cannot take QUILL down.
 
 Post-conversion prompt rule (issue #262): when the target format is editable in QUILL (Markdown, CommonMark, GFM, HTML, plain text, CSV / TSV) the editor asks whether to open the new file in a new window. PDF, DOCX, EPUB, ODT, and RTF do not prompt; the file path is on the clipboard for pasting into File Explorer.
+
+**An export never destroys the file it replaces (2026-11-06).** `convert_file_with_pandoc`, the one function through which every Pandoc conversion writes a file (File > Export, Convert File, batch conversion, braille, review, the docx fallback), points Pandoc's `-o` at a hidden sibling of the target (`.<stem>.<uuid>.partial<suffix>`: same folder, so the final move is a same-volume `os.replace`; same suffix, because Pandoc picks some outputs such as PDF by extension) and replaces the target only after a zero exit and an output that exists. A non-zero exit, a timeout, a launch failure, a cancel or a failed `os.replace` leaves the previous target byte-for-byte as it was, and the staging file is removed in a `finally`. Tests: `tests/unit/io/test_pandoc.py`.
 
 ##### 5.3a.1.1a Save As conversion pipeline and format truthfulness (shipped 0.9.0 Beta 1)
 
@@ -1864,6 +1871,8 @@ A general action under the AI menu (**AI > More > Improve Reading Order…**) an
 
 Find in Quill is designed to feel like Microsoft editors and Visual Studio Code at the same time: F3 just works once a term is known, the search term is remembered everywhere it makes sense, and everything is announced.
 
+**The replacement is literal unless the search is a regular expression (2026-11-06).** `quill.core.search.replace_all` (Replace All, and Replace Across Files through `core/file_search.py`) hands `re.subn`/`safe_subn` a *function* returning the replacement in plain and wildcard modes, because a string replacement is a template there too: `C:\new` gained a line break and `\1` raised "invalid group reference" in a search that never asked for a regular expression. Only `use_regex` passes the string, so `\1`/`\g<name>` keep working. QUILL Lite's Replace All (`lite_window_find._replace_every_match`) follows the same rule by search mode, and a regex replacement naming a group the pattern lacks is announced ("Nothing replaced: ...") with the document unchanged. The shared `find_model.replace_all`/`replace_next` were already literal. Tests: `tests/unit/core/test_search.py`, `tests/unit/apps/test_lite_find_modes.py`.
+
 **The search term, the central concept.** Quill maintains a single "current search term" per editor. The term is set by any of:
 
 - typing in the Find dialog and pressing Enter,
@@ -1992,6 +2001,7 @@ This is a centrepiece of v0.2. See [section 7](#7-command-palette-deep-dive) for
 - **A backup can never abort a save.** `backup_document` is called inside its own guard (`_backup_before_save`); an `OSError` degrades to a spoken status line and the save proceeds. This is a correctness requirement, not a nicety: before #1390 the backup call sat *outside* the save path's `try/except OSError`, so a full disk raised out of `save_file` before the real file was ever touched, the close path's #210 safety net swallowed it, and QUILL exited with the document unsaved.
 - **A failed save is never consent to close.** `_prompt_to_save_active_document` catches a raising `save_file` and returns False; `_on_close` vetoes once via `_veto_close_after_failed_save` when a document is still modified, with a message naming the remedy. The veto is one-shot, so #210's "the window must always close" guarantee still holds even if this path itself has a bug.
 - **Failure wording (#1390).** `_report_save_failure` gives `ENOSPC` and the read-only family (`EACCES`/`EPERM`/`EROFS`) their own sentences naming what to do; everything else keeps the errno text. Raw errno strings are not an acceptable user-facing message for a save failure.
+- **A failed backup is logged, not only spoken (2026-11-06).** `_backup_before_save` logs a warning with the document's name and the OS reason (an unexpected exception is logged with its traceback) alongside the spoken status line, because the status line is gone by the time anyone asks why there is no backup, and the log is what a diagnostics bundle carries. QUILL Lite's equivalent: `core/lite/backups.write_backup` logs the failure and returns `None`, and `DocumentFileMixin._back_up_saved` turns that into the one save announcement, "Saved <name>, but could not write a backup", through the window's voice so braille mirrors it, for plain, rich and Word saves alike. The save itself is never affected.
 - Retention: default keep last 50 per document, prune older than 90 days, never delete the most recent 5.
 - Crash recovery: autosave snapshot every 30 seconds while a document is dirty; on launch, Quill offers to recover any orphan snapshots.
 
@@ -7068,6 +7078,19 @@ InstructionSet(task_id, title, default_prompt, user_prompt="", enabled=True)
 | Transcribe Audio | — | `core/ai/transcription.py` | `ui/ai_transcribe_dialog.py` |
 | Read with AI Voice | — | `core/ai/cloud_tts.py` (dispatch), `core/ai/tts.py` (OpenAI), `core/ai/gemini_tts.py` (Gemini), `core/ai/elevenlabs_tts.py` (ElevenLabs SDK gateway, audio export only — roadmap §4.1), `core/ai/tts_chunk.py` (boundary-safe split) | inline in `main_frame.py` |
 | Ask Quill chat | Alt+Q | `core/ai_chat.py` | `ui/ai_chat_dialog.py` |
+
+**Translate: an unchanged result is not a translation (2026-11-06).** The
+source language is always auto-detected, so text already in the target
+language comes back as itself, and a provider can "translate" Spanish into
+Spanish without complaint. `core/ai/translation.py::translation_unchanged`
+compares the input and the result with whitespace runs collapsed and case
+folded (empty text is never "unchanged"; that is a failure reported
+elsewhere). When it holds, the dialog puts `UNCHANGED_TRANSLATION_MESSAGE`
+("The translation came back the same as the original. The text may already be
+in the target language.") in the read-only result box and focuses it, so the
+screen reader speaks it without a separate announcement (GATE-13), and leaves
+Copy, Replace Original and Open as New Document disabled. QUILL Lite has no
+translation command, so this is QUILL-only.
 
 #### 5.90.5 Agentic task architecture
 
@@ -15419,6 +15442,19 @@ intercepted in rich mode and routed through QUILL's commands so formatting is
 announced, dirty-marked, and remappable. Describe Formatting at Cursor reads
 the live TOM in rich mode.
 
+**Text colour in Describe Formatting (2026-11-06).** The rich description
+named the highlight but never the text colour, which the Markdown path always
+spoke. `caret_format_description` now reads `ITextFont.ForeColor` through
+`quill.core.highlights.text_colour_from_colorref` and speaks it just before the
+highlight ("Calibri, 11 point, red, yellow highlight"). Names: an exact match
+to a Format > Text Color name (the RTF writer's own table, so green is
+"green", not the highlight palette's "dark green"), otherwise the nearest of
+Word's fifteen highlight-palette names. Silent for `tomAutoColor`, black, and
+the colour a theme painted over the whole story (`set_document_color`
+records it as `_theme_colorref`), so a dark theme does not make every
+character "gray". QUILL Lite calls the same surface method, so both editors
+answer the same way.
+
 **Paragraph formatting completed (2026-09-08, via QUILL Lite).** The surface has
 always been able to justify a paragraph, set a list type and set a line-spacing
 rule; nothing in QUILL was bound to any of it, so the small editor-only sibling
@@ -15491,6 +15527,17 @@ and renders each table inline as GFM Markdown-table paragraphs — so table cont
 that was previously dropped entirely now survives, reads correctly, and is
 reachable by single-key table navigation (`T`). `scan_docx_features` still lists
 tables so the format change is disclosed before a rich edit.
+
+**Alternate headers and footers (#1756, 2026-11-06).** "headers" and "footers"
+cover every header/footer the rich bridge drops, not only the default one: in
+each section, the first-page part when the section sets `w:titlePg`, and the
+even-page part when `settings.xml` sets `w:evenAndOddHeaders`. Those two are
+checked through python-docx's link resolution, because a section can switch on
+its title page while inheriting a first-page header an earlier section defined
+but never showed; the ordinary part keeps its skip-if-linked rule, since a
+linked default header repeats one already checked. A blank part is not a
+finding. Without this, a title-page-only header opened with no question,
+`needs_backup` was false, and the first save removed it silently.
 
 **Shared with QUILL Lite (2026-10-17).** The wx-free half of this path lives in
 `quill/core/docx_open.py`, and `main_frame_rich_mode.py` calls it: the scan
