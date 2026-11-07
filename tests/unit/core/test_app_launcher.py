@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import sys
 
+import pytest
+
 from quill.core import app_launcher
 
 
@@ -84,6 +86,38 @@ def test_frozen_portable_sibling_in_adjacent_folder_launches(monkeypatch, tmp_pa
 def test_app_names() -> None:
     assert app_launcher.app_name("weather") == "Quill Weather"
     assert app_launcher.app_name("radio") == "Quill Radio"
+
+
+def test_studio_name_and_portable_identity_follow_the_runtime() -> None:
+    from quill.core.runtime_apps import app_for_module
+
+    studio = app_for_module("quill.apps.studio")
+    assert studio is not None
+    assert app_launcher.app_name("studio") == studio.display
+    assert app_launcher.portable_sibling_dirname("studio") == "QuillAudioStudio"
+
+
+@pytest.mark.parametrize("alongside", [True, False])
+@pytest.mark.parametrize(
+    ("folder", "executable"),
+    [
+        ("QuillAudioStudio", "QuillAudioStudio.exe"),
+        ("QuillStudio", "QuillStudio.exe"),
+    ],
+)
+def test_frozen_studio_preserves_shipping_and_rename_aliases(
+    monkeypatch, tmp_path, alongside, folder, executable
+) -> None:
+    radio_dir = tmp_path / "QuillRadio"
+    radio_dir.mkdir()
+    studio_dir = radio_dir if alongside else tmp_path / folder
+    studio_dir.mkdir(exist_ok=True)
+    launcher = studio_dir / executable
+    launcher.write_bytes(b"MZ")
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", str(radio_dir / "QuillRadio.exe"))
+
+    assert app_launcher.build_launch_argv("studio") == [str(launcher)]
 
 
 def test_launch_app_unknown_key_is_false() -> None:

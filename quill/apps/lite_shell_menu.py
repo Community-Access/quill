@@ -53,6 +53,7 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
     "cmd_sound_scheme",
     "cmd_backup_settings",
     "cmd_restore_settings",
+    "cmd_open_studio",
     # Help
     "cmd_context_help",
     "cmd_tutorials",

@@ -317,6 +317,19 @@ Snapshots regenerated: converter help, dialog, accessible-name and
 reachability inventories, family menu chords, the F1 help
 reference.</li>
 </ul>
+<h3 id="dictation-a-fair-test-for-hotwords-2026-11-07">Dictation: a fair
+test for hotwords (2026-11-07)</h3>
+<ul>
+<li><strong>For developers, nothing changes in the app.</strong>
+<code>scripts/bench_hotwords_compare.py</code> compares two pairs of
+existing <code>dictbench --json</code> reports, a set of names and a
+held-out set each decoded with and without hotwords, and says whether
+hotwords recognised at least half as many names again without adding
+word errors. It runs no model and switches nothing on, and it writes
+counts and file hashes, never transcripts or the names themselves.
+Section 40 of the dictation plan says how to use it and what a pass does
+not prove.</li>
+</ul>
 <h3 id="hear-the-clipboard-the-time-and-what-is-open-2026-11-06">Hear
 the clipboard, the time and what is open (2026-11-06)</h3>
 <ul>

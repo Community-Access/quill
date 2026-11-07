@@ -225,3 +225,26 @@ def test_the_shell_stands_in_for_the_window_where_handlers_look(shell) -> None:
     assert shell.control is shell
     assert shell.path is None and shell.modified is False
     assert inspect.ismethod(shell._announce)
+
+
+@pytest.mark.parametrize("developer", [False, True])
+def test_studio_from_the_empty_window_respects_release_gating(
+    wx_session_app, monkeypatch, developer
+) -> None:
+    from quill.core import app_launcher
+
+    monkeypatch.setenv("QUILL_DEV_BUILD", "1" if developer else "0")
+    calls = []
+    monkeypatch.setattr(app_launcher, "launch_app", lambda key: calls.append(key) or True)
+    frame = _ShellFrame(_app(keymap={"cmd_open_studio": "Ctrl+Alt+Shift+F24"}))
+    try:
+        menu = frame.GetMenuBar().GetMenu(1)
+        items = [item for item in menu.GetMenuItems() if "Studio" in item.GetItemLabel()]
+        assert len(items) == int(developer)
+        if developer:
+            assert items[0].GetItemLabel() == "Open &QUILL Studio\tCtrl+Alt+Shift+F24"
+            assert frame.ProcessEvent(wx.CommandEvent(wx.EVT_MENU.typeId, items[0].GetId()))
+            assert calls == ["studio"]
+            assert frame.app.voice.said == ["Opening QUILL Studio."]
+    finally:
+        frame.Destroy()
