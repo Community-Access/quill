@@ -72,6 +72,16 @@ or each filename with the matching lines around it. Replace Across Files adds a
 **Replacement** box and **Preview before replacing**, which shows you every
 change in a tab of its own and asks before it writes anything.
 
+The **File pattern** can name more than one kind of file. Put `|` between two
+patterns to take either, `&` to need both, and `!` before one to leave it out;
+double quotes around a name mean that one exact file. `*.md | *.txt` searches
+your Markdown and text files together, `* !*.bak` searches everything except
+backups, and `*.md !drafts/*` skips the Markdown files in a `drafts` folder
+(a pattern with a slash is matched against the path inside the starting
+folder). Capitals do not matter. A pattern without `|`, `&`, `!` or quotes, such
+as `*.md`, works exactly as before. These rules apply only to the file pattern:
+the **Search text** still follows the Match mode you chose.
+
 **An example.** You want every note in your `Clients` folder that mentions
 Rosa Diaz. Press `Ctrl+Alt+Shift+F`, check that the starting folder is
 `Clients`, type `*.md` as the file pattern and `Rosa Diaz` as the search text,
@@ -189,6 +199,51 @@ before, and **Forward Location** takes you forward again.
 
 - **Back Location**: `Alt+Left` on Windows, `Cmd+[` on macOS.
 - **Forward Location**: `Alt+Right` on Windows, `Cmd+]` on macOS.
+
+### Searching a list with more than one word
+
+Go to Anything is one search box for the headings in your document and every
+command. It has no menu row of its own: press `Ctrl+Alt+Shift+A`, or type "go
+to anything" in the Command Palette. Start your search with `#` to
+see headings only, or `>` to see commands only. Type part of a heading and the
+list narrows as you type; arrow to the one you want and press Enter to go
+there. QUILL says how many results there are and which is on top, for example
+"3 result(s). Top: [heading] Chapter two".
+
+That box, and every other list in QUILL that you narrow by typing, understands
+a few characters that let one search say more:
+
+- **Words** match anywhere in a row, and capitals do not matter, just as
+  before.
+- **`&`** needs both words: `#budget & 2026` finds only headings with both.
+  Two words side by side mean the same thing, so a search with an operator in
+  it reads `budget 2026 !draft` as "budget and 2026 and not draft".
+- **`|`** takes either: `#introduction | summary` lists both kinds of heading
+  at once.
+- **`!`** leaves a word out: `#chapter !draft` finds every chapter except the
+  drafts.
+- **`*`** stands for any run of letters inside a word, and **`?`** for exactly
+  one: `#chap*` finds Chapter and Chapters, and `#r?ad` finds read and road.
+  Neither reaches past a space.
+- **Double quotes** match exact text, spaces included, with nothing inside
+  taken as an operator: `#"to do"` finds "To do this week" but not "Do this
+  today too".
+
+`!` is read first, then `&`, then `|`, so `#draft | notes !old` means "draft,
+or notes that are not old". A search with none of these characters works
+exactly as it always has, so nothing you already type changes. You never get
+an error for a half-finished search: `#notes |` is simply read as `#notes`
+until you type the next word.
+
+The same rules work in **Insert Snippet**, **Insert HTML Tag**, **Insert
+Markdown Tag**, both lists of **Move Section To** (`Ctrl+Alt+Shift+F5`), the
+abbreviation manager and the Copy Tray search. In Insert HTML Tag, for
+example, `h? !h1` lists every heading tag except the top one. The **File
+pattern** of Search in Files takes them too, described in "Searching a whole
+folder of files" above. Press `F1` in any of those search boxes to hear a short
+reminder of the rules. The Command Palette (`Ctrl+Shift+P`) keeps its own
+looser search and its `:`, `?` and `~` prefixes, and so do those prefixes in
+Go to Anything.
 
 ### Moving by heading and structure
 

@@ -186,7 +186,14 @@ Both open the same window, which asks for:
 - **Starting folder**: where to look. It starts at the folder of the document
   you are in.
 - **File pattern**: which files, such as `*.txt` or `*.md`. A star on its own
-  means every file.
+  means every file. To name more than one kind, put `|` between patterns to
+  take either, `&` to need both, and `!` before one to leave it out:
+  `*.md | *.txt` searches Markdown and text files together, and `* !*.bak`
+  searches everything except backups. Double quotes around a name mean that one
+  exact file, and a pattern with a slash, such as `!drafts/*`, is matched
+  against the path inside the starting folder. A pattern without these
+  characters works exactly as before, and the search text still follows the
+  Match mode.
 - **Search text**, and for Replace Across Files, **Replacement**.
 - **Match mode**: Plain text, Wildcard (`*` and `?`) or Regular expression.
 - **Output format**: how the results are written out, from just the file names

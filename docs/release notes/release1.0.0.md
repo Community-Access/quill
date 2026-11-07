@@ -124,6 +124,13 @@ QUILL writes accessible forms: contact forms, event sign-ups, membership renewal
 
 **Try this:** choose File > New Form..., pick the contact template, then Tools > Forms > Fill It In Yourself... and tab through your own form. Each required question says so. Answer them and press Submit: the What Would Be Sent window lists each question with its answer, and nothing has gone anywhere.
 
+## New in this build: searches that say more
+
+Every list you narrow by typing now understands a small query, so one search can ask for more than one thing. `&` needs both words, and two words side by side mean the same. `|` takes either. `!` leaves a word out. `*` stands for any run of letters inside a word and `?` for exactly one. Double quotes match exact text, spaces included. `!` is read first, then `&`, then `|`, so `draft | notes !old` means "draft, or notes that are not old".
+
+It works in Go to Anything (**Ctrl+Alt+Shift+A**), including its `#` search for headings, and in Insert Snippet, Insert HTML Tag, Insert Markdown Tag, both lists of Move Section To (**Ctrl+Alt+Shift+F5**), the abbreviation manager and the Copy Tray search. The File pattern of Search in Files (**Ctrl+Alt+Shift+F**) combines patterns the same way: `*.md | *.txt` takes both kinds, and `* !*.bak` leaves the backups out. QUILL Lite has it in the same lists, from the same code. A search with none of those characters works exactly as before, and you never hear an error for a half-typed one. Press F1 in any of these search boxes for a short reminder.
+
+**Try this:** open a long document, press **Ctrl+Alt+Shift+A**, and type `#chapter !draft`. The list holds every chapter heading except the drafts; press Enter to go to the one on top.
 ## Fixed in this build: first-page and even-page Word headers
 
 When you open a Word document for rich editing, QUILL tells you what the editor cannot keep, and makes a backup before your first save over the file. Headers and footers have always been on that list, but only the ordinary ones. A header set to appear on the first page only (Word's Different First Page), or on even pages only (Different Odd and Even Pages), slipped past: the file opened with no question, and saving it removed the header without a word. Now those count as headers and footers too, in every section of the document, so you hear them named in the **Open Word document** question and the backup is made. QUILL Lite has the same fix.

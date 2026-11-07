@@ -2,6 +2,23 @@
 
 ## 1.0.0
 
+### Searches that say more, in every filtered list (2026-11-06)
+
+- Go to Anything (`Ctrl+Alt+Shift+A`), including its `#` heading search, and
+  every list you narrow by typing now understand a small query: `&` needs both
+  words (two words side by side mean the same), `|` takes either, `!` leaves a
+  word out, `*` and `?` stand for letters inside a word, and double quotes
+  match exact text. `!` is read first, then `&`, then `|`. Example:
+  `#introduction | summary`, or `#chapter !draft`.
+- The same rules reach Insert Snippet, Insert HTML Tag, Insert Markdown Tag,
+  both lists of Move Section To, the abbreviation manager and the Copy Tray
+  search, from one shared filter, so QUILL Lite's Go To Anything, tag pickers
+  and Move Section To lists answer the same way.
+- The File pattern of Search in Files and Replace Across Files combines
+  patterns: `*.md | *.txt`, `* !*.bak`, `*.md !drafts/*`. The search text and
+  its match modes are unchanged.
+- A search without any of `* ? & | ! "` works exactly as before. F1 in each of
+  these search boxes gives a short reminder of the rules.
 ### Diagrams, math and pictures in Markdown pages (2026-11-06)
 
 - **Mermaid diagrams in the Accessibility Tune-Up.** **AI > Accessibility

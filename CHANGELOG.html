@@ -245,6 +245,32 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="searches-that-say-more-in-every-filtered-list-2026-11-06">Searches
+that say more, in every filtered list (2026-11-06)</h3>
+<ul>
+<li>Go to Anything (<code>Ctrl+Alt+Shift+A</code>), including its
+<code>#</code> heading search, and every list you narrow by typing now
+understand a small query: <code>&amp;</code> needs both words (two words
+side by side mean the same), <code>|</code> takes either, <code>!</code>
+leaves a word out, <code>*</code> and <code>?</code> stand for letters
+inside a word, and double quotes match exact text. <code>!</code> is
+read first, then <code>&amp;</code>, then <code>|</code>. Example:
+<code>#introduction | summary</code>, or
+<code>#chapter !draft</code>.</li>
+<li>The same rules reach Insert Snippet, Insert HTML Tag, Insert
+Markdown Tag, both lists of Move Section To, the abbreviation manager
+and the Copy Tray search, from one shared filter, so QUILL Lite’s Go To
+Anything, tag pickers and Move Section To lists answer the same
+way.</li>
+<li>The File pattern of Search in Files and Replace Across Files
+combines patterns: <code>*.md | *.txt</code>, <code>* !*.bak</code>,
+<code>*.md !drafts/*</code>. The search text and its match modes are
+unchanged.</li>
+<li>A search without any of <code>* ? &amp; | ! "</code> works exactly
+as before. F1 in each of these search boxes gives a short reminder of
+the rules.</li>
+</ul>
+<h3
 id="diagrams-math-and-pictures-in-markdown-pages-2026-11-06">Diagrams,
 math and pictures in Markdown pages (2026-11-06)</h3>
 <ul>

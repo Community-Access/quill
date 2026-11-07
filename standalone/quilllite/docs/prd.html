@@ -2446,6 +2446,49 @@ a generated tab. Handlers <code>cmd_search_in_files</code> and
 <code>cmd_replace_in_files</code>, parity
 <code>tools.search_in_files</code> and
 <code>tools.replace_in_files</code>.</p>
+<h2 id="one-query-syntax-for-every-filtered-list-2026-11-06">One query
+syntax for every filtered list (2026-11-06)</h2>
+<p>QUILL’s filter, from the same module, so neither editor is ahead:
+<code>quill/core/list_search.py</code> gained a small pure parser
+(<code>parse_query</code>, <code>has_query_syntax</code>), and
+<code>SearchTerms</code> uses it whenever a search holds any of
+<code>* ? &amp; | ! "</code>. A word matches anywhere, case ignored;
+<code>*</code> is any run of non-space characters and <code>?</code>
+exactly one; <code>&amp;</code> (or adjacency) is all, <code>|</code> is
+any, <code>!</code> is not; double quotes are exact text with no
+operators inside. <code>!</code> binds tightest, then
+<code>&amp;</code>, then <code>|</code>. The parser never raises:
+dangling operators and an unclosed quote are read as far as they go, and
+a query of operators alone matches everything. A search with none of
+those characters never reaches the parser, so every plain search answers
+exactly as before.</p>
+<p>Where QUILL Lite reaches it: Go To Anything
+(<strong>Ctrl+Alt+Shift+A</strong>), whose <code>#</code> heading search
+goes through <code>quill.ui.palette.heading_filter</code> (plain
+searches stay a whole-text substring) and whose commands go through
+<code>go_to_commands</code> (a query filters titles in usage order; the
+palette’s <code>?</code>, <code>:</code> and <code>~</code> prefixes are
+untouched); <strong>Insert &gt; Markdown Tag…</strong> and
+<strong>Insert &gt; HTML Tag…</strong> through
+<code>quill.core.tagging._rank_choices</code>, which filters names and
+aliases in the picker’s own order when given a query; and both lists of
+<strong>Move Section To…</strong> through
+<code>lite_window_sections._matching_rows</code>, now
+<code>SearchTerms</code> (identical for plain searches, which were
+already every word). The shared <strong>Search in Files</strong>
+window’s File pattern (<code>quill.core.file_search</code>) treats
+<code>&amp; | ! "</code> as operators over whole-name globs, case
+ignored, with a slash term matched against the path under the starting
+folder; <code>*</code> and <code>?</code> keep their glob meaning, a
+pattern without operators still goes straight to
+<code>Path.rglob</code>, and the search text’s Plain, Wildcard and
+Regular expression modes are unchanged. F1 help on
+<code>choose_searchable</code>’s search box, Go To Anything’s and the
+File pattern box states the rules. No new command, key or setting. Not
+done: F3 and Shift+F3 continuing a heading search, because F3 belongs to
+the text find in both editors, each with its own last-search state, and
+a heading memory would need a mode switch inside both find paths. Tests:
+<code>tests/unit/core/test_list_query_syntax.py</code>.</p>
 <h2 id="the-clipboard-collector-2026-10-15">The clipboard collector
 (2026-10-15)</h2>
 <p>QUILL’s system-wide collector (#964), on QUILL’s key, from QUILL’s

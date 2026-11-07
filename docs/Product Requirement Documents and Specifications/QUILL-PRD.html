@@ -5169,6 +5169,38 @@ type-ahead through <code>quill.core.type_ahead.TypeAheadBuffer</code>:
 Space while a name is being typed (within 1.2 s) extends the name
 instead of activating the row; Enter activates and Escape closes,
 unchanged.</li>
+<li><strong>One query syntax for filtered lists (2026-11-06).</strong>
+<code>quill/core/list_search.py</code> adds a pure parser
+(<code>parse_query</code>, <code>has_query_syntax</code>);
+<code>SearchTerms</code> uses it whenever a search holds any of
+<code>* ? &amp; | ! "</code>. Words match anywhere, case ignored;
+<code>*</code> is any run of non-space characters and <code>?</code>
+exactly one; <code>&amp;</code> or adjacency is all, <code>|</code> any,
+<code>!</code> not; double quotes are exact text. Precedence
+<code>!</code>, then <code>&amp;</code>, then <code>|</code>. The parser
+never raises (dangling operators and an unclosed quote are read as far
+as they go; operators alone match everything), and a search without
+those characters never reaches it, so plain searches are unchanged.
+Reached by Insert Snippet, the abbreviation manager and Copy Tray search
+(already <code>SearchTerms</code>), Insert HTML Tag and Insert Markdown
+Tag (<code>tagging._rank_choices</code>, which filters names plus
+aliases in picker order for a query), both Move Section To lists
+(<code>main_frame_section_move._matching</code>, now
+<code>SearchTerms</code>), and Go to Anything
+(<code>palette.heading_filter</code> for <code>#</code> headings, plain
+searches staying a whole-text substring;
+<code>palette.go_to_commands</code> for commands, the palette’s
+<code>?</code>, <code>:</code> and <code>~</code> prefixes untouched).
+Search in Files’ File pattern
+(<code>file_search.uses_file_pattern_query</code>,
+<code>file_pattern_matches</code>) treats <code>&amp; | ! "</code> as
+operators over whole-name globs, a slash term matched against the path
+under the starting folder; without operators it is still
+<code>Path.rglob</code>, and the content search’s Plain, Wildcard and
+Regular expression modes are unchanged. F1 help on each of those search
+boxes states the rules. QUILL Lite reaches the same code. Deferred:
+F3/Shift+F3 continuing a heading search, because F3 is owned by the text
+find in both editors, each with its own last-search state.</li>
 <li><strong>Save options</strong> (per document and per workspace): trim
 trailing whitespace on save, ensure final newline, normalise line
 endings on save.</li>

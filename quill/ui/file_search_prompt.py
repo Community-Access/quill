@@ -78,7 +78,12 @@ def prompt_file_search(
     file_pattern_ctrl = add_row(
         "File pattern",
         lambda: wx.TextCtrl(dialog, value="*"),
-        "Which files to look in, such as *.txt or *.md. A star on its own means every file.",
+        (
+            "Which files to look in, such as *.txt or *.md. A star on its own means "
+            "every file. Patterns can be combined: | takes either (*.md | *.txt), & "
+            "needs both, ! leaves files out (* !*.bak), and quotes match one exact "
+            "file name."
+        ),
     )
     query_ctrl = add_row(
         "Search text",
