@@ -196,7 +196,7 @@ def test_an_inkwell_key_is_refused_when_it_is_one_of_inkwells_others() -> None:
                 "Expand Word key": "Ctrl+Alt+PageDown",
             },
         )
-        == "Alt+Shift+PageUp"
+        == "Ctrl+Alt+F4"
     )
 
 
