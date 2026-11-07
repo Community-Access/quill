@@ -2,6 +2,16 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Paste a copied file, and replace jobs you can save
+
+Copy a file in File Explorer and press **Ctrl+V** in an editor, and you usually get nothing, or a path you did not want. **Edit > Clipboard > Paste File...** asks which you meant: **Each file's text**, read the way QUILL would open it, so a Word document or a PDF comes in as its words, or **Each file's full path**, one per line. Files over 5 MB, folders and anything that is not text are left out, and QUILL tells you which and why.
+
+Some find-and-replace work is the same every week. **Edit > Search Tools > Manage Replace Jobs...** saves a list of steps under a name, each with its own Find what, Replace with, Regular expression and Match case, and **Run Replace Job...** runs one, in order, on the selection or the whole document. It is one change, so one **Ctrl+Z** takes the whole job back, and if any step's pattern is bad nothing changes at all. Three jobs are there to start with: Tidy spaces, Straighten quote marks and Close up blank lines. Multi Replace is still there for a quick one-off.
+
+Three smaller things. A snippet with blanks now asks them all in one form, the same one abbreviation fields use. **AI Translate** has a **Translate from** list: leave it on Detect, or choose the language your text is in when the result comes back unchanged, which QUILL now tells you in those words. And **What's New** and **Open Keyboard Reference** have keys at last: the QUILL key, then **W**, and the QUILL key, then **Shift+K**.
+
+QUILL Lite has Paste File, the replace jobs and fields in its abbreviations, from the same code.
+
 ## GitHub: repository files, milestones, discussions and security triage
 
 **Files...** (Alt+F) in GitHub Items opens a repository as a tree you can walk

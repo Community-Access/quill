@@ -338,6 +338,7 @@ from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
 from quill.ui.main_frame_dimmed_keys import DimmedMarkupKeysMixin
 from quill.ui.main_frame_docconvert import DocConvertMixin
 from quill.ui.main_frame_editor_font import EditorFontMixin
+from quill.ui.main_frame_editor_parity import EditorParityAdapterMixin
 from quill.ui.main_frame_emoji_picker import EmojiPickerMixin
 from quill.ui.main_frame_equations import EquationsMixin
 from quill.ui.main_frame_external_change import ExternalChangeMixin
@@ -705,6 +706,7 @@ class MainFrame(
     OpenDocumentsFindMixin,  # ahead of SearchCommandsMixin: its F3 wins
     CloseOthersMixin,
     SayCommandsAdapterMixin,  # Say Clipboard and the rest, shared with QUILL Lite
+    EditorParityAdapterMixin,  # Paste File and saved replace jobs, shared with QUILL Lite
     RecentDocumentsMixin,
     SessionRestoreMixin,
     MagicalTierMixin,
@@ -10885,8 +10887,12 @@ class MainFrame(
 
         markdown = self._current_markup_context() == "markdown"
 
-        def _on_translate(t: str, lang: str, provider: str, lt_url: str) -> tuple[str, str]:
-            return translate_text(t, lang, conn, api_key, provider, lt_url, markdown=markdown)
+        def _on_translate(
+            t: str, lang: str, provider: str, lt_url: str, source: str = ""
+        ) -> tuple[str, str]:
+            return translate_text(
+                t, lang, conn, api_key, provider, lt_url, markdown=markdown, source_language=source
+            )
 
         def _on_replace(new_text: str) -> None:
             if selection_only:
@@ -12731,34 +12737,14 @@ class MainFrame(
         return by_label.get(choice)
 
     def _render_snippet_with_prompts(self, snippet: Snippet) -> SnippetExpansionResult | None:
-        wx = self._wx
-        values: dict[str, str] = {}
-        for placeholder in extract_placeholders(snippet.body):
-            if placeholder.kind in {"cursor", "date", "time"}:
-                continue
-            if placeholder.kind == "choice":
-                with wx.SingleChoiceDialog(
-                    self.frame,
-                    f"Choose a value for {placeholder.name}:",
-                    f"Snippet: {snippet.name}",
-                    choices=placeholder.options,
-                ) as dialog:
-                    if self._show_modal_dialog(dialog, f"Snippet: {snippet.name}") != wx.ID_OK:
-                        return None
-                    selected = dialog.GetSelection()
-                if selected == wx.NOT_FOUND:
-                    return None
-                values[placeholder.token] = placeholder.options[selected]
-                continue
-            with wx.TextEntryDialog(
-                self.frame,
-                f"Value for {placeholder.name}:",
-                f"Snippet: {snippet.name}",
-                value="",
-            ) as dialog:
-                if self._show_modal_dialog(dialog, f"Snippet: {snippet.name}") != wx.ID_OK:
-                    return None
-                values[placeholder.token] = dialog.GetValue()
+        """Ask every blank in one window (quill/ui/snippet_prompts.py, shared with QUILL Lite)."""
+        from quill.ui.snippet_prompts import ask_snippet_values
+
+        blanks = [p for p in extract_placeholders(snippet.body) if p.kind in {"input", "choice"}]
+        title = f"Snippet: {snippet.name}"
+        values = ask_snippet_values(self.frame, title, blanks, self._show_modal_dialog)
+        if values is None:
+            return None
         return render_snippet(snippet.body, values)
 
     def insert_snippet(self) -> None:

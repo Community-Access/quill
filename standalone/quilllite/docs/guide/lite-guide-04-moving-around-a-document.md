@@ -25,7 +25,8 @@ All seven are rows of the **Edit** menu itself, so if you forget a key, press
 **Alt+E** and arrow down: after Replace you hear **Find in Open Documents...**,
 **Search in Files...** and **Replace Across Files...**, each with its key. The
 two that answer "how many" and "where in this document", **All Matches...** and
-**Count Occurrences**, are one step further in, on **Edit > Matches**.
+**Count Occurrences**, are one step further in, on **Edit > Matches**, and
+your saved replace jobs are on **Edit > Replace Jobs**, below.
 
 When a search reaches the end of the document, it goes back to the top and
 keeps looking, and it tells you it has done so. That little message is worth
@@ -72,6 +73,38 @@ you wrapped in brackets and `\2` the second, so searching for `(\w+), (\w+)`
 and replacing all with `\2 \1` turns "Bishop, Jeff" into "Jeff Bishop". If the
 box names a part the search does not have, such as `\3` when there are only
 two, nothing is changed and you hear "Nothing replaced", with the reason.
+
+### Saved replace jobs
+
+Some clean-ups are the same every time: the same six replacements on every
+transcript you export, the same curly quotes straightened in every email you
+paste in. A replace job is a list like that, saved under a name, so you set it
+up once and run it in a couple of keystrokes from then on.
+
+**Edit > Replace Jobs > Run Replace Job...** (**Alt+E**, **J**, **R**) lists
+your jobs. Arrow to one and press **Enter**. Its steps run in order, each one
+on the result of the one before, and you hear what happened: "Tidy spaces: 14
+replacements", or "Tidy spaces: 3 replacements in the selection. Step 1 found
+nothing". Select some text first and the job runs on just that; otherwise it
+runs on the whole document. Either way, one **Ctrl+Z** takes the whole job
+back. If one of the steps has a pattern that cannot work, nothing changes and
+you hear which step and why.
+
+**Edit > Replace Jobs > Manage Replace Jobs...** (**Alt+E**, **J**, **M**) is
+where you make them. It lists your jobs, with **New**, **Edit**, **Rename**
+and **Delete** buttons (Delete asks first). Editing a job shows its name and its
+steps in order, with **Add Step**, **Edit Step**, **Remove Step**, **Move Up**
+and **Move Down**. A step is the same four things the Replace window has:
+**Find what**, **Replace with**, **Regular expression** and **Match case**.
+With Regular expression checked, `\1` in Replace with puts back the first part
+in brackets; without it, what you type is what goes in.
+
+Three jobs are there to start with, and you can keep, change or delete them:
+**Tidy spaces**, **Straighten quote marks** and **Close up blank lines**. QUILL
+has the same two commands, under **Edit > Search Tools**, and keeps its own
+list. Neither has a key: none was free in both editors, and both ask you
+something straight away. The Keyboard Manager (**Ctrl+Alt+Shift+Space**) can
+give them one.
 
 ### How many are there?
 

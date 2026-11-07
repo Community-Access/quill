@@ -301,8 +301,8 @@ replaces it.</li>
 <li>The <strong>Clipboard</strong> submenu: <strong>Say
 Clipboard</strong> (<code>Alt+Shift+Home</code>), <strong>Append
 Selection to Clipboard</strong> (<code>Alt+Shift+End</code>),
-<strong>Save Clipboard to File…</strong> and <strong>Clear
-Clipboard</strong>. <a
+<strong>Save Clipboard to File…</strong>, <strong>Clear
+Clipboard</strong> and <strong>Paste File…</strong>. <a
 href="#hearing-and-handling-the-clipboard">Hearing and handling the
 clipboard</a>, later in this chapter, has the whole story.</li>
 <li>Select All</li>
@@ -337,9 +337,11 @@ Temporary Mark</strong>, <strong>Jump to Previous Mark</strong>,
 <strong>Swap Cursor and Mark</strong> and <strong>List Recent
 Marks</strong>. Selecting text, later in this chapter, has the
 keys.</li>
-<li><strong>Search Tools</strong>, with Count Occurrences, Multi Replace
-and the regular expression tools (Chapter 5 and Chapter 6 cover
-them).</li>
+<li><strong>Search Tools</strong>, with Count Occurrences, Multi
+Replace, the regular expression tools, and <strong>Run Replace
+Job…</strong> and <strong>Manage Replace Jobs…</strong> for
+find-and-replace lists you save and use again (Chapter 5 and Chapter 6
+cover them).</li>
 <li><strong>Paste HTML as Markdown</strong> turns rich HTML from the
 clipboard into Markdown as it pastes.</li>
 <li><strong>Paste Markdown as HTML</strong> does the opposite. It turns
@@ -730,14 +732,41 @@ the clipboard”, or “The clipboard was already empty” if there was
 nothing to clear. It is a good habit after you copy a password or
 anything else private, so the next <code>Ctrl+V</code>, in whatever
 program, cannot paste it somewhere it should not go.</p>
-<h3 id="why-two-of-these-have-no-key">Why two of these have no key</h3>
-<p>Save Clipboard to File and Clear Clipboard are on the menu only. When
-these commands were added, on 6 November 2026, there was no key left
-that was free in both QUILL and QUILL Lite, and both are occasional
-commands. Clear Clipboard has a second reason: a key you could press by
-accident would throw away whatever you had just copied. If you want a
-key for either, give it one in the Keymap Editor (<strong>Tools &gt;
-Customize and Support &gt; Keymap Editor…</strong>).</p>
+<h3 id="paste-file">Paste File…</h3>
+<p>Copy a file in File Explorer, come back to QUILL and press
+<code>Ctrl+V</code>, and you get nothing useful. <strong>Edit &gt;
+Clipboard &gt; Paste File…</strong> asks what you meant. A small window
+says how many files are on the clipboard and names them, then offers two
+choices in a list:</p>
+<ul>
+<li><strong>Each file’s text</strong> puts in what each file says, read
+the same way QUILL would open it: a Word document, a PDF or an RTF file
+comes in as its text, not as a screen of symbols. Two files are
+separated by a blank line.</li>
+<li><strong>Each file’s full path</strong> puts in one path per line,
+which is what you want for an email to IT or a note about where
+something lives.</li>
+</ul>
+<p>Arrow to the one you want and press Enter. Escape pastes nothing. The
+text goes in at the cursor, over anything you had selected, and
+<code>Ctrl+Z</code> takes it all back in one step.</p>
+<p>Some files are left out, and QUILL tells you which and why: a file
+over 5 MB (“big.log is 12 MB, over the 5 MB limit”), a folder, and
+anything that is not text, such as a picture or a program. The rest are
+still pasted, and you hear something like “Pasted the text of 2 files.
+Not pasted: photo.png is not a text file”. If there are no copied files
+on the clipboard at all, QUILL says so and suggests <code>Ctrl+V</code>
+for ordinary text.</p>
+<h3 id="why-some-of-these-have-no-key">Why some of these have no
+key</h3>
+<p>Save Clipboard to File, Clear Clipboard and Paste File are on the
+menu only. When these commands were added, in November 2026, there was
+no key left that was free in both QUILL and QUILL Lite, and all three
+are occasional commands. Clear Clipboard has a second reason: a key you
+could press by accident would throw away whatever you had just copied.
+If you want a key for either, give it one in the Keymap Editor
+(<strong>Tools &gt; Customize and Support &gt; Keymap
+Editor…</strong>).</p>
 <h2 id="copy-tray">Copy Tray</h2>
 <p>The Copy Tray is <strong>twelve</strong> clipboards of your own, each
 with a number. You put text in a slot on purpose, and it stays there
@@ -1114,7 +1143,13 @@ triggers while typing</strong> on or off as you like.</li>
 </ul>
 <p>Snippets can have blanks such as <code>${input:name}</code>,
 <code>${choice:a|b}</code>, <code>${date}</code>, <code>${time}</code>
-and <code>${cursor}</code>.</p>
+and <code>${cursor}</code>. When a snippet has blanks to fill, QUILL
+asks them all at once, in one small form: a labelled box for each
+<code>${input:...}</code> and a list for each
+<code>${choice:...}</code>, in the order the snippet uses them. Tab
+moves between them, Enter on the last one inserts the snippet, and
+Escape inserts nothing. It is the same form abbreviation fields use,
+below.</p>
 <p><strong>Finding a snippet by name.</strong> In <strong>Insert
 Snippet</strong>, type any part of a snippet’s name, trigger or text,
 spaces included, and the list narrows as you type. The words can come in
@@ -1497,7 +1532,9 @@ something</h3>
 same <em>except</em> for a name, a date or a reference number. Put a
 field in the expansion and QUILL asks for it before inserting:</p>
 <ul>
-<li><code>${field:Label}</code> asks for a value with that label.</li>
+<li><code>${field:Label}</code> asks for a value with that label.
+<code>${input:Label}</code> does the same thing, in the spelling
+snippets use, so a blank copied from a snippet still asks.</li>
 <li><code>${field:Label=something}</code> offers a starting value you
 can keep or change.</li>
 <li>The same label used twice is asked once and filled in everywhere, so

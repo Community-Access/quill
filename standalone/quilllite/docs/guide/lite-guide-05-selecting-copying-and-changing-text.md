@@ -231,8 +231,27 @@ These two have no key. You reach them from the menu.
   "The clipboard was already empty". Do it after you copy a password, so the
   next paste, wherever it is, cannot put it somewhere it should not go.
 
-Why no keys? When these were added there was no key left that was free in
-both QUILL Lite and QUILL, and they are things you do now and then. Clear
+### Paste File
+
+Copy a file in File Explorer, come back to QUILL Lite and press **Ctrl+V**, and
+nothing useful happens. **Edit > Clipboard > Paste File...** (**Alt+E**, **B**,
+**P**) asks what you meant. A small window says how many files you copied and
+names them, then offers two choices:
+
+- **Each file's text** puts in what each file says, read the way QUILL Lite
+  opens it, so a Word document or a PDF comes in as its words. Two files are
+  separated by a blank line.
+- **Each file's full path** puts in one path per line.
+
+Arrow to the one you want and press **Enter**; **Escape** pastes nothing. It
+goes in at your cursor, over anything selected, and one **Ctrl+Z** takes it
+back. A file over 5 MB, a folder, or anything that is not text, such as a
+picture, is left out, and you hear which and why: "Pasted the text of 2 files.
+Not pasted: photo.png is not a text file".
+
+Why no keys for these three? When they were added there was no key left that
+was free in both QUILL Lite and QUILL, and they are things you do now and
+then. Clear
 Clipboard has a second reason: a key you could press by accident would throw
 away what you had just copied. If you want one anyway, the Keyboard Manager
 (**Ctrl+Alt+Shift+Space**) can give it a key.
@@ -506,6 +525,16 @@ is on.
 in QUILL.) It lists every abbreviation you have,
 the ones you use most at the top, with a preview of what each one writes. Pick
 one and press **Enter**, and it goes in at your cursor.
+
+Some abbreviations have blanks to fill in. Write `${field:Name}` (or
+`${input:Name}`, the way QUILL's snippets spell it) where a name should go,
+`${field:Name=Sam}` to offer a starting value, or `${choice:Reminder|first|second}`
+for a list to pick from. Before the text goes in, a small form asks for each
+one in turn: Tab between them, **Enter** on the last one to put it in,
+**Escape** to put nothing in. The same blank used twice is asked once. This
+works when you type the short form too, and it is the same form QUILL and
+Quill Inkwell show, so one list of abbreviations behaves the same in all three.
+[QUILL's guide has more on fields](https://www.quillforall.org/docs/quill-guide-04-writing-and-editing.html).
 
 This is the easy way in when you cannot remember a short form. The six you use
 every day you will type from memory. The one you set up months ago, you can find

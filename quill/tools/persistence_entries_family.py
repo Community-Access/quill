@@ -13,4 +13,7 @@ FAMILY_ENTRIES: dict[str, str] = {
     # arrow keys move a slider in every app (slider_keys.json).
     "core/app_sounds_store.py::save": "marker",
     "core/slider_key_layout.py::save": "marker",
+    # Saved find-and-replace jobs, in each editor's own data folder: lists the
+    # user made, whose shape only ever grows (both editors, 2026-11-07).
+    "core/replace_jobs.py::save_replace_jobs": "content",
 }

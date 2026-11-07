@@ -664,7 +664,10 @@ with seventeen choices. Press a letter in the list to jump.</p>
 <strong>Find action items</strong>, <strong>Suggest headings</strong>,
 <strong>Continue writing</strong>, <strong>Write an email reply</strong>
 and <strong>Translate</strong>. When you choose Translate, a
-<strong>Translate into</strong> list appears with twenty languages.</li>
+<strong>Translate into</strong> list appears with twenty languages. If
+the answer comes back the same as your text, QUILL says so rather than
+showing it as a translation: the text may already be in that language,
+or the AI could not tell what language it was in.</li>
 <li>Three that need you to type: Ask a question about the document, Ask
 a general question, and Have a conversation.</li>
 </ul>
@@ -3019,6 +3022,10 @@ and Translate Document</h3>
 <strong>AI &gt; Translate &gt; Translate Document…</strong> translate
 your text into a language you choose in the dialog. Translate Selection
 has no key by default; you can give it one in the Keymap Editor.</p>
+<p><strong>Translate from</strong> is the language your text is in. It
+starts on <strong>Detect</strong>, which lets the translator work it
+out. Choose the language yourself when Detect gets it wrong: a short
+passage, or one that mixes two languages, is easy to misread.</p>
 <p>You can choose between two providers:</p>
 <ul>
 <li><p><strong>AI Assistant</strong> (the default) uses your cloud or
@@ -3047,13 +3054,14 @@ comes back exactly as you sent it. That usually means it was already in
 the language you picked: you asked for English and the passage was
 English all along, or the provider quietly turned Spanish into Spanish.
 QUILL does not dress that up as a translation. The result box says “The
-translation came back the same as the original. The text may already be
-in the target language.” and takes focus, so your screen reader reads
-the sentence to you. Copy to Clipboard, Replace Original and Open as New
-Document stay unavailable, because there is nothing new to use. Spacing,
-line breaks and capital letters do not count as a difference, so a
-result that only rewrapped your lines gets the same message. Pick
-another language, or the other provider, and press <strong>Translate
+translation came back the same as the original. The source language may
+be wrong; choose it instead of Detect.” and takes focus, so your screen
+reader reads the sentence to you. Copy to Clipboard, Replace Original
+and Open as New Document stay unavailable, because there is nothing new
+to use. Spacing, line breaks and capital letters do not count as a
+difference, so a result that only rewrapped your lines gets the same
+message. Choose the language your text is in from <strong>Translate
+from</strong>, or pick another provider, and press <strong>Translate
 Now</strong> again.</p>
 <h3 id="ai-thesaurus">AI Thesaurus</h3>
 <p><strong>AI &gt; More &gt; AI Thesaurus…</strong> finds synonyms for a

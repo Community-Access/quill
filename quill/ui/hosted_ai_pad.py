@@ -467,9 +467,25 @@ class AiPadFrame(PadRowsMixin, wx.Frame):
         if self:
             self._idle()
             self._status.SetValue(used)
+        if feature == "translate" and self._translation_unchanged(text):
+            # Same text back is not a translation: say so, and open nothing to
+            # copy or insert (as QUILL's AI Translate does).
+            from quill.core.ai.translation import HOSTED_UNCHANGED_TRANSLATION_MESSAGE as said
+
+            if self:
+                show_problem(self, self._status, said, self._announce)
+            else:
+                self._announce(said)
+            return
         # The result window takes focus, so the reader announces it and reads
         # the answer. Nothing is announced here on top of that.
         self._on_result(feature, text, used)
+
+    def _translation_unchanged(self, text: str) -> bool:
+        from quill.core.ai.translation import translation_unchanged
+
+        request = getattr(self, "last_request", None)
+        return bool(request) and translation_unchanged(str(request[1]), text)
 
     def _failed(self, message: str) -> None:
         if not self:

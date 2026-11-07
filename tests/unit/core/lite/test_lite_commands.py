@@ -175,9 +175,18 @@ KEYLESS_WITH_REASON: dict[str, str] = {
         "letters and the Command Palette are the way in."
         for _submenu, (command_id, _title, _handler) in forms_rows()
     },
-    "cmd_whats_new": "As in QUILL, where What's New has no key either (rule 2): no chord "
-    "is free in both editors -- Ctrl+Shift+F1, the standalone apps' key for it, is "
-    "QUILL's User Guide. Rule 9: read once per update, so Alt+H, W is enough.",
+    "cmd_whats_new": "QUILL's key for What's New is on its leader (Ctrl+Shift+Grave, W, "
+    "2026-11-07), which rule 6 keeps away from anything QUILL Lite reaches plainly; no "
+    "plain chord is free in both editors -- Ctrl+Shift+F1, the standalone apps' key for "
+    "it, is QUILL's User Guide. Rule 9: read once per update, so Alt+H, W is enough.",
+    "cmd_paste_file": "As in QUILL (rule 2), where it has no key either: no chord was "
+    "free in both editors (measured 2026-11-07), and it asks text or paths next, so a "
+    "chord would save little (rule 9). Alt+E, B, P.",
+    "cmd_run_replace_job": "As in QUILL (rule 2), where it has no key either: no chord was "
+    "free in both editors (measured 2026-11-07), and it asks which job next (rule 9). "
+    "Alt+E, J, R.",
+    "cmd_manage_replace_jobs": "As in QUILL (rule 2), where it has no key either: making "
+    "and editing jobs is occasional work in a window of its own (rule 9). Alt+E, J, M.",
 }
 
 

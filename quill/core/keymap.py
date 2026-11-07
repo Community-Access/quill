@@ -440,9 +440,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # dialog and closed it (rule 4); once a year needs a way in, not a chord (rule 9).
     "help.release_channel": "",
     # The changelog as HTML in the browser, the row every QuillVille app has
-    # (quill.ui.whats_new). No chord free in both editors: Ctrl+Shift+F1, the
-    # standalone apps' What's New, is the User Guide here. Rule 9: Alt+H, W.
-    "help.whats_new": "",
+    # (quill.ui.whats_new). No plain chord free in both editors: Ctrl+Shift+F1, the
+    # standalone apps' What's New, is the User Guide here. Leader W (2026-11-07):
+    # QUILL Lite reaches it from its menu only, so rule 6 allows it; Alt+H, W there.
+    "help.whats_new": "Ctrl+Shift+Grave, W",
     "help.about_quill": "Shift+F1",
     # Open User Guide carried "Ctrl+F1" as a LITERAL after a tab in its menu
     # label, outside the keymap: absent from the generated reference,
@@ -842,6 +843,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.save_clipboard_to_file": "",  # these three: rule 8 reasons in the family gate
     "edit.clear_clipboard": "",
     "help.copy_log": "",
+    # Paste File and the saved replace jobs (ui/paste_file.py, ui/replace_jobs.py, shared):
+    # no chord free in both editors (2026-11-07); rule 8 reasons in the family gate.
+    "edit.paste_file": "",
+    "edit.run_replace_job": "",
+    "edit.manage_replace_jobs": "",
+    # The keyboard reference page, on the leader: QUILL Lite's route is its Ctrl+F1 text
+    # list (help.key_cheatsheet here too), so nothing it reaches plainly moves (rule 6).
+    "tools.open_keyboard_reference": "Ctrl+Shift+Grave, Shift+K",
     # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without switching
     # profiles: somebody can want QUILL Lite's abbreviations, not its menus (bad.md P2.4).
     "tools.bring_from_quilllite": "Alt+Shift+F11",

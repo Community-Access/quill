@@ -56,8 +56,8 @@ clipboard commands come first:
   If something is selected, the pasted text replaces it.
 - **Copy With Attribution** (`Alt+Shift+C`)
 - The **Clipboard** submenu: **Say Clipboard** (`Alt+Shift+Home`), **Append
-  Selection to Clipboard** (`Alt+Shift+End`), **Save Clipboard to File...** and
-  **Clear Clipboard**. [Hearing and handling the
+  Selection to Clipboard** (`Alt+Shift+End`), **Save Clipboard to File...**,
+  **Clear Clipboard** and **Paste File...**. [Hearing and handling the
   clipboard](#hearing-and-handling-the-clipboard), later in this chapter, has
   the whole story.
 - Select All
@@ -85,8 +85,10 @@ After those come the commands that know about selection and position:
   Document, and the mark commands: **Set Temporary Mark**, **Jump to Previous
   Mark**, **Swap Cursor and Mark** and **List Recent Marks**. Selecting text,
   later in this chapter, has the keys.
-- **Search Tools**, with Count Occurrences, Multi Replace and the regular
-  expression tools (Chapter 5 and Chapter 6 cover them).
+- **Search Tools**, with Count Occurrences, Multi Replace, the regular
+  expression tools, and **Run Replace Job...** and **Manage Replace Jobs...**
+  for find-and-replace lists you save and use again (Chapter 5 and Chapter 6
+  cover them).
 - **Paste HTML as Markdown** turns rich HTML from the clipboard into Markdown
   as it pastes.
 - **Paste Markdown as HTML** does the opposite. It turns Markdown on the
@@ -350,11 +352,35 @@ was already empty" if there was nothing to clear. It is a good habit after you
 copy a password or anything else private, so the next `Ctrl+V`, in whatever
 program, cannot paste it somewhere it should not go.
 
-### Why two of these have no key
+### Paste File...
 
-Save Clipboard to File and Clear Clipboard are on the menu only. When these
-commands were added, on 6 November 2026, there was no key left that was free
-in both QUILL and QUILL Lite, and both are occasional commands. Clear Clipboard
+Copy a file in File Explorer, come back to QUILL and press `Ctrl+V`, and you
+get nothing useful. **Edit > Clipboard > Paste File...** asks what you meant.
+A small window says how many files are on the clipboard and names them, then
+offers two choices in a list:
+
+- **Each file's text** puts in what each file says, read the same way QUILL
+  would open it: a Word document, a PDF or an RTF file comes in as its text,
+  not as a screen of symbols. Two files are separated by a blank line.
+- **Each file's full path** puts in one path per line, which is what you want
+  for an email to IT or a note about where something lives.
+
+Arrow to the one you want and press Enter. Escape pastes nothing. The text
+goes in at the cursor, over anything you had selected, and `Ctrl+Z` takes it
+all back in one step.
+
+Some files are left out, and QUILL tells you which and why: a file over 5 MB
+("big.log is 12 MB, over the 5 MB limit"), a folder, and anything that is not
+text, such as a picture or a program. The rest are still pasted, and you hear
+something like "Pasted the text of 2 files. Not pasted: photo.png is not a
+text file". If there are no copied files on the clipboard at all, QUILL says
+so and suggests `Ctrl+V` for ordinary text.
+
+### Why some of these have no key
+
+Save Clipboard to File, Clear Clipboard and Paste File are on the menu only.
+When these commands were added, in November 2026, there was no key left that
+was free in both QUILL and QUILL Lite, and all three are occasional commands. Clear Clipboard
 has a second reason: a key you could press by accident would throw away
 whatever you had just copied. If you want a key for either, give it one in the
 Keymap Editor (**Tools > Customize and Support > Keymap Editor...**).
@@ -675,7 +701,11 @@ To set up and look after snippets:
   **Expand snippet triggers while typing** on or off as you like.
 
 Snippets can have blanks such as `${input:name}`, `${choice:a|b}`, `${date}`,
-`${time}` and `${cursor}`.
+`${time}` and `${cursor}`. When a snippet has blanks to fill, QUILL asks them
+all at once, in one small form: a labelled box for each `${input:...}` and a
+list for each `${choice:...}`, in the order the snippet uses them. Tab moves
+between them, Enter on the last one inserts the snippet, and Escape inserts
+nothing. It is the same form abbreviation fields use, below.
 
 **Finding a snippet by name.** In **Insert Snippet**, type any part of a
 snippet's name, trigger or text, spaces included, and the list narrows as you
@@ -931,7 +961,9 @@ A signature is the same every time. A letter or a bug report is the same
 *except* for a name, a date or a reference number. Put a field in the
 expansion and QUILL asks for it before inserting:
 
-- `${field:Label}` asks for a value with that label.
+- `${field:Label}` asks for a value with that label. `${input:Label}` does
+  the same thing, in the spelling snippets use, so a blank copied from a
+  snippet still asks.
 - `${field:Label=something}` offers a starting value you can keep or change.
 - The same label used twice is asked once and filled in everywhere, so a name
   in the greeting also appears in the sign-off.

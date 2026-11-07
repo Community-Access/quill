@@ -245,6 +245,40 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="paste-file-saved-replace-jobs-fields-in-quill-lite-and-two-help-keys-2026-11-07">Paste
+File, saved replace jobs, fields in QUILL Lite, and two Help keys
+(2026-11-07)</h3>
+<ul>
+<li><strong>Paste File…</strong> (Edit &gt; Clipboard) pastes the text,
+or the full paths, of files copied in File Explorer. Text is read the
+way QUILL opens the file, so a Word document or a PDF comes in as words.
+Files over 5 MB, folders and anything that is not text are left out and
+named. One undo step.</li>
+<li><strong>Saved replace jobs.</strong> Run Replace Job… and Manage
+Replace Jobs… (Edit &gt; Search Tools, after Multi Replace) keep named
+lists of find-and-replace steps, each with Regular expression and Match
+case. A job runs on the selection or the whole document as one undo
+step, says how many it replaced, and changes nothing if any step’s
+pattern is bad. Three starter jobs: Tidy spaces, Straighten quote marks,
+Close up blank lines.</li>
+<li><strong>Snippet blanks in one form.</strong> A snippet’s
+<code>${input:...}</code> and <code>${choice:...}</code> blanks are
+asked together in the fill-in form abbreviations use, instead of one
+window each. <code>${input:Label}</code> now also works as an
+abbreviation field, the same as <code>${field:Label}</code>.</li>
+<li><strong>AI Translate: Translate from.</strong> Choose the language
+your text is in, or leave it on Detect. A result that comes back
+unchanged now says “The source language may be wrong; choose it instead
+of Detect.” The free AI’s Translate says so too, instead of showing the
+same text as a translation.</li>
+<li><strong>Keys for What’s New and the keyboard reference:</strong> the
+QUILL key, then <code>W</code>, and the QUILL key, then
+<code>Shift+K</code>. Open Keyboard Reference now shows its key in the
+Help menu.</li>
+<li>QUILL Lite has Paste File, the replace jobs and abbreviation fields
+from the same code.</li>
+</ul>
+<h3
 id="github-repository-files-milestones-discussions-and-security-triage-2026-11-07">GitHub
 repository files, milestones, discussions and security triage
 (2026-11-07)</h3>

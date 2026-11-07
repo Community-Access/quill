@@ -1431,7 +1431,7 @@ class CommandRegistryMixin:
             "tools.open_keyboard_reference",
             "Open Keyboard Reference",
             self.open_keyboard_reference,
-            None,
+            self._binding_for("tools.open_keyboard_reference"),
         )
         self.commands.register(
             "help.open_user_guide",

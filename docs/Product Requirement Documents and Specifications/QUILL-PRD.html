@@ -9904,6 +9904,108 @@ handlers and clipboard access),
 <code>quill/core/lite/commands_say.py</code> (QUILL Lite’s adapter and
 menu rows).</p>
 <hr />
+<h3 id="577b-paste-file-and-saved-replace-jobs-shipped-2026-11-07">5.77b
+Paste File and saved replace jobs (shipped 2026-11-07)</h3>
+<p>Two commands QUILL and QUILL Lite share handlers, wording and (empty)
+keys for (family rule 10), with QUILL’s rows placed by
+<code>quill/ui/main_frame_editor_parity.py</code>, which defines no
+command of its own.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Id</th>
+<th>Key</th>
+<th>Menu (QUILL)</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Paste File…</td>
+<td><code>edit.paste_file</code></td>
+<td>none</td>
+<td>Edit &gt; Clipboard, last</td>
+<td>Needs copied files on the clipboard (CF_HDROP, read through
+<code>wx.FileDataObject</code>). Asks “Each file’s text” or “Each file’s
+full path”. Text is read through
+<code>quill.io.open_read.read_open_document</code>, so formats QUILL
+opens come in as text; files are joined by a blank line. Refused by
+name: over <code>MAX_FILE_BYTES</code> (5 MB), folders, and files with a
+NUL in their first 8 KB that are not a format QUILL reads (UTF-16
+excepted). Written with <code>_atomic_replace</code>: one undo step.
+“Pasted the text of N files. Not pasted: …”</td>
+</tr>
+<tr>
+<td>Run Replace Job…</td>
+<td><code>edit.run_replace_job</code></td>
+<td>none</td>
+<td>Edit &gt; Search Tools, after Count Occurrences</td>
+<td>Lists saved jobs; runs the chosen job’s steps in order on the
+selection, or the whole document when nothing is selected (rich text
+asks first), written once. Every pattern is compiled before anything
+runs, and a failure changes nothing: “Step 2 of Tidy: … Nothing was
+changed”. Result: “Tidy: 14 replacements in the selection. Step 1 found
+nothing”.</td>
+</tr>
+<tr>
+<td>Manage Replace Jobs…</td>
+<td><code>edit.manage_replace_jobs</code></td>
+<td>none</td>
+<td>Edit &gt; Search Tools</td>
+<td>New, Edit, Rename, Delete (confirmed). The job editor has Name,
+Steps (in run order), Add Step, Edit Step, Remove Step, Move Up, Move
+Down; a step has Find what, Replace with, Regular expression, Match
+case. Names are unique, case ignored.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Steps.</strong> A plain step is literal on both sides (the
+Replace All rule); a regular-expression step is compiled with
+<code>re.MULTILINE</code> and reads its replacement as a template. Match
+case off adds <code>re.IGNORECASE</code>.</p>
+<p><strong>Storage.</strong> <code>replace_jobs.json</code> in each
+editor’s own data folder, <code>{"schema": 1, "jobs": [...]}</code>,
+written with <code>write_json_atomic</code> and classified
+<code>content</code> in the persistence audit. No file yet means three
+samples (Tidy spaces, Straighten quote marks, Close up blank lines); an
+empty saved list stays empty; damaged entries are skipped.</p>
+<p><strong>Keys.</strong> None was free in both editors (measured
+2026-11-07), and all three ask a question at once (rule 9); the reasons
+are in the family gate. Multi Replace stays for one-off use.</p>
+<p><strong>Also in this change.</strong> Snippet blanks
+(<code>${input:...}</code>, <code>${choice:a|b}</code>) are asked in one
+<code>FillInDialog</code> (<code>quill/ui/snippet_prompts.py</code> maps
+them), not one dialog each; <code>${input:Label}</code> is a fill-in
+field synonym for <code>${field:Label}</code> in
+<code>quill/core/expansion/fields.py</code>. AI Translate gains
+<strong>Translate from</strong> (<code>SOURCE_DETECT</code> first),
+passed to <code>translate_text(source_language=...)</code>; an unchanged
+result says “The translation came back the same as the original. The
+source language may be wrong; choose it instead of Detect.” The shared
+AI pad’s Translate, which can name only a target language, says
+<code>HOSTED_UNCHANGED_TRANSLATION_MESSAGE</code> instead and opens no
+result. What’s New is the QUILL key, <code>W</code>; Open Keyboard
+Reference is the QUILL key, <code>Shift+K</code>, and its Help row
+renders the key through <code>_menu_label</code>. QUILL Lite reaches
+neither plainly (its keyboard route is the Ctrl+F1 list), so rule 6
+allows the leader.</p>
+<p><strong>Considered and not done.</strong> Speech rate, volume and
+punctuation-level keys: both editors speak through the screen reader,
+which owns all three; QUILL’s own voice settings belong to Read Aloud,
+which QUILL Lite does not have, and no chord was free in both.
+Configurable section-break text: low value.</p>
+<p><strong>Implementation map.</strong>
+<code>quill/core/paste_file.py</code>,
+<code>quill/core/replace_jobs.py</code> (wx-free),
+<code>quill/ui/paste_file.py</code>,
+<code>quill/ui/replace_jobs.py</code> (shared handlers and windows),
+<code>quill/ui/main_frame_editor_parity.py</code> (QUILL’s rows and
+hooks), <code>quill/apps/lite_window_say.py</code>,
+<code>quill/apps/lite_window_replace_jobs.py</code> and
+<code>quill/core/lite/commands_replace_jobs.py</code> (QUILL
+Lite’s).</p>
+<hr />
 <h3
 id="578-abbreviation-expansion--textexpander-style-bare-word-shortcuts">5.78
 Abbreviation Expansion — TextExpander-style bare-word shortcuts</h3>

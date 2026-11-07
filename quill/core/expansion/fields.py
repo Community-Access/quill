@@ -8,8 +8,10 @@ to change", which is exactly the fiddly work an expander is supposed to remove -
 and it is worse for someone reviewing by ear.
 
 A field is written ``${field:Label}``, or ``${field:Label=default}`` to offer a
-starting value. The same label used twice is asked once and filled everywhere,
-so a name typed in the greeting also lands in the sign-off.
+starting value. ``${input:Label}`` is the same field in the spelling QUILL's
+snippets use, so a blank copied from a snippet into an abbreviation still
+asks. The same label used twice is asked once and filled everywhere, so a name
+typed in the greeting also lands in the sign-off.
 
 Pure and wx-free: this module finds the fields and fills them in. Asking is the
 UI's job (:mod:`quill.ui.fill_in_dialog`), so both QUILL's editor and Quill
@@ -26,7 +28,7 @@ from dataclasses import dataclass
 #: ``=`` or the closing brace; neither may contain a brace, so an unclosed token
 #: is left alone as literal text rather than swallowing the rest of the
 #: expansion.
-_FIELD_RE = re.compile(r"\$\{field:([^}=]+)(?:=([^}]*))?\}")
+_FIELD_RE = re.compile(r"\$\{(?:field|input):([^}=]+)(?:=([^}]*))?\}")
 
 #: ``${choice:Label|one|two|three}``. The richer half of a fill-in: a template
 #: whose answer is one of a known few should offer them rather than ask for

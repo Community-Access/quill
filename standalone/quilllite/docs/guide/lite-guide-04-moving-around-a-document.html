@@ -298,7 +298,8 @@ Replace you hear <strong>Find in Open Documents…</strong>,
 Files…</strong>, each with its key. The two that answer “how many” and
 “where in this document”, <strong>All Matches…</strong> and
 <strong>Count Occurrences</strong>, are one step further in, on
-<strong>Edit &gt; Matches</strong>.</p>
+<strong>Edit &gt; Matches</strong>, and your saved replace jobs are on
+<strong>Edit &gt; Replace Jobs</strong>, below.</p>
 <p>When a search reaches the end of the document, it goes back to the
 top and keeps looking, and it tells you it has done so. That little
 message is worth listening for. It is how you know a document has only
@@ -352,6 +353,42 @@ brackets and <code>\2</code> the second, so searching for
 turns “Bishop, Jeff” into “Jeff Bishop”. If the box names a part the
 search does not have, such as <code>\3</code> when there are only two,
 nothing is changed and you hear “Nothing replaced”, with the reason.</p>
+<h3 id="saved-replace-jobs">Saved replace jobs</h3>
+<p>Some clean-ups are the same every time: the same six replacements on
+every transcript you export, the same curly quotes straightened in every
+email you paste in. A replace job is a list like that, saved under a
+name, so you set it up once and run it in a couple of keystrokes from
+then on.</p>
+<p><strong>Edit &gt; Replace Jobs &gt; Run Replace Job…</strong>
+(<strong>Alt+E</strong>, <strong>J</strong>, <strong>R</strong>) lists
+your jobs. Arrow to one and press <strong>Enter</strong>. Its steps run
+in order, each one on the result of the one before, and you hear what
+happened: “Tidy spaces: 14 replacements”, or “Tidy spaces: 3
+replacements in the selection. Step 1 found nothing”. Select some text
+first and the job runs on just that; otherwise it runs on the whole
+document. Either way, one <strong>Ctrl+Z</strong> takes the whole job
+back. If one of the steps has a pattern that cannot work, nothing
+changes and you hear which step and why.</p>
+<p><strong>Edit &gt; Replace Jobs &gt; Manage Replace Jobs…</strong>
+(<strong>Alt+E</strong>, <strong>J</strong>, <strong>M</strong>) is
+where you make them. It lists your jobs, with <strong>New</strong>,
+<strong>Edit</strong>, <strong>Rename</strong> and
+<strong>Delete</strong> buttons (Delete asks first). Editing a job shows
+its name and its steps in order, with <strong>Add Step</strong>,
+<strong>Edit Step</strong>, <strong>Remove Step</strong>, <strong>Move
+Up</strong> and <strong>Move Down</strong>. A step is the same four
+things the Replace window has: <strong>Find what</strong>,
+<strong>Replace with</strong>, <strong>Regular expression</strong> and
+<strong>Match case</strong>. With Regular expression checked,
+<code>\1</code> in Replace with puts back the first part in brackets;
+without it, what you type is what goes in.</p>
+<p>Three jobs are there to start with, and you can keep, change or
+delete them: <strong>Tidy spaces</strong>, <strong>Straighten quote
+marks</strong> and <strong>Close up blank lines</strong>. QUILL has the
+same two commands, under <strong>Edit &gt; Search Tools</strong>, and
+keeps its own list. Neither has a key: none was free in both editors,
+and both ask you something straight away. The Keyboard Manager
+(<strong>Ctrl+Alt+Shift+Space</strong>) can give them one.</p>
 <h3 id="how-many-are-there">How many are there?</h3>
 <p>The Find window counts as you type. Type three letters and it tells
 you how many matches there are. Type a fourth and the number changes.
