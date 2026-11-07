@@ -141,6 +141,17 @@ the same code.
   backup. Before, the file opened without a word and the header was gone after
   saving (#1756).
 
+### Taking payments with your forms (2026-11-07)
+
+- Chapter 16 of the guide, "Taking payments with your forms", goes through
+  the whole process, from what you need to going live, including what the
+  person paying hears with a screen reader. QUILL's guide has the same
+  chapter.
+- Shared with QUILL: Insert Payment Field's Amount help lists the form's
+  amount fields; amounts finer than their currency and statement descriptors
+  the plugin would refuse are refused before publishing; Test on Site says
+  the test card or sandbox account to use; Responses say payments in words.
+
 ### Form payment integration (2026-11-06)
 
 - Shared with QUILL: Insert Payment Field, Form Payments Setup and Verify

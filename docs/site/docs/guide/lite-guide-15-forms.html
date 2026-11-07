@@ -243,23 +243,6 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="chapter-15-forms">Chapter 15: Forms</h1>
-<h2 id="payments-and-donations">Payments and donations</h2>
-<p>QUILL Lite uses the same payment commands as QUILL. Tools &gt; Forms
-&gt; Insert Payment Field adds a fixed amount, <code>#field_id</code>
-reference or bounded donation. Form Payments Setup chooses Stripe and/or
-PayPal, currency and capture mode. New settings start in test mode.
-Setup changes only the local form.</p>
-<p>Configure sandbox credentials and webhooks in WordPress, then use
-Verify Payment Setup. Publishing requires a QAF plugin implementing
-payment contract version 1, ready selected providers/webhooks and
-matching test/live mode. Test on Site checks the published form and
-refuses live-payment checkout. Responses include payment metadata in
-Read, CSV and Word exports; Refresh Payment Status confirms the site
-before rereading entries. QUILL Lite stores no provider credentials and
-never captures or refunds payments.</p>
-<p>Follow the full payment walkthrough in <a
-href="../wordpress-and-forms/wordpress-forms-09-forms-on-the-web-and-paper.html">Forms
-on the web and paper</a>.</p>
 <h2 id="writing-a-form">Writing a form</h2>
 <p>A form is a contact form, an event sign-up, a membership renewal, a
 survey or a feedback page. Making one usually means dragging boxes
@@ -313,6 +296,15 @@ Responses</td>
 <p>To start, choose <strong>File &gt; New Form…</strong>, give the form
 a title, pick a template, and save it. Apart from New Form and
 Responses, the Forms commands are dimmed until a form is open.</p>
+<h2 id="payments-and-donations">Payments and donations</h2>
+<p>A form can take a fee, an order total or a donation through Stripe or
+PayPal, with the QUILL Accessible Forms plugin on your site doing the
+charging. <strong>Tools &gt; Forms</strong> has Insert Payment Field,
+Form Payments Setup and Verify Payment Setup, the same commands QUILL
+has. Everything starts in test mode, and QUILL Lite never sees a card
+number or a payment key. <a
+href="lite-guide-16-taking-payments.html">Chapter 16: Taking payments
+with your forms</a> goes through it from start to finish.</p>
 <h2 id="keys">Keys</h2>
 <p>None of the Forms commands has a shortcut key. Every useful key is
 already taken by something you use more often, and you will not write
@@ -322,8 +314,8 @@ type “form”, and pick the command from the list.</p>
 <ul>
 <li>Previous: <a href="lite-guide-14-wordpress.html">Chapter 14:
 WordPress</a></li>
-<li>Next: <a href="lite-guide-licences-and-notices.html">Licences and
-notices</a></li>
+<li>Next: <a href="lite-guide-16-taking-payments.html">Chapter 16:
+Taking payments with your forms</a></li>
 <li><a href="../quilllite-userguide.html">Contents</a></li>
 </ul>
 </main>

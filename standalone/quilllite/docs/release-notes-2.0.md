@@ -55,6 +55,15 @@ tells you why.
 says "Saved notes.txt, but could not write a backup", and your braille display
 shows the same. Your file is saved either way.
 
+## Taking payments with your forms
+
+Chapter 16 of the guide is new: "Taking payments with your forms", the whole
+process from what you need to going live, including what the person paying
+hears with a screen reader. Insert Payment Field now names the form's amount
+fields, QUILL Lite catches amounts and statement descriptors the site would
+refuse before publishing, Test on Site tells you which test card to use, and
+Responses say payment states in words.
+
 ## Stripe and PayPal form setup
 
 Tools > Forms now includes Insert Payment Field, Form Payments Setup and

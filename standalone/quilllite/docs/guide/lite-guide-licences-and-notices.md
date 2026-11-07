@@ -14,6 +14,6 @@ them without starting the app.
 
 ---
 
-- Previous: [Chapter 15: Forms](lite-guide-15-forms.html)
+- Previous: [Chapter 16: Taking payments with your forms](lite-guide-16-taking-payments.html)
 - Next: [Keyboard reference](lite-guide-keyboard-reference.html)
 - [Contents](../userguide.html)

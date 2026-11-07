@@ -91,7 +91,8 @@ class FormsPaymentsCommands:
                     "statement_descriptor",
                     "&Statement descriptor:",
                     "text",
-                    "Optional statement text, up to 22 characters; provider rules also apply.",
+                    "Optional text for the payer's card statement: 5 to 22 plain letters, "
+                    "digits and spaces, with at least one letter.",
                     value=config.statement_descriptor,
                 ),
             ],
@@ -131,6 +132,13 @@ class FormsPaymentsCommands:
         if pay.payment_fields(doc.model):
             self.host.announce("This form already has its payment field. Edit that field's source.")
             return
+        amount_help = (
+            "A positive number, #id of an amount field, "
+            "or donation for an amount the visitor chooses."
+        )
+        sources = pay.amount_sources(doc.model)
+        if sources:
+            amount_help += " Amount fields in this form: " + "; ".join(sources) + "."
         answer = wbd.ask_fields(
             self.host.parent,
             self.host.show_modal,
@@ -143,8 +151,7 @@ class FormsPaymentsCommands:
                     "amount",
                     "&Amount:",
                     "text",
-                    "A positive number, #id of an amount field, "
-                    "or donation for an amount the visitor chooses.",
+                    amount_help,
                     value="25",
                 ),
                 Ask("minimum", "Donation mi&nimum:", "text", "Optional positive donation minimum."),

@@ -176,6 +176,19 @@ def test_only_one_payment_field_per_form() -> None:
             {"providers": ["stripe"], "statement_descriptor": 'A "quoted" one'},
             "/extensions/payments/statement_descriptor",
         ),
+        # The QAF plugin's rules too, so QUILL refuses before the site does.
+        (
+            {"providers": ["stripe"], "statement_descriptor": "BITS"},
+            "/extensions/payments/statement_descriptor",
+        ),
+        (
+            {"providers": ["stripe"], "statement_descriptor": "12345"},
+            "/extensions/payments/statement_descriptor",
+        ),
+        (
+            {"providers": ["stripe"], "statement_descriptor": "Café Bits"},
+            "/extensions/payments/statement_descriptor",
+        ),
     ],
 )
 def test_each_way_the_block_can_be_wrong(block: dict[str, Any], where: str) -> None:
@@ -269,3 +282,40 @@ def test_the_order_form_charges_its_total() -> None:
     [entry] = P.payment_fields(model)
     assert entry["item"]["props"]["amount"] == "#order_total"
     assert P.semantic_errors(model) == []
+    assert P.amount_sources(model) == ["#order_total (Order total)"]
+
+
+# -- the plugin's precision rule: refused, never rounded ---------------------------------
+
+
+@pytest.mark.parametrize(
+    ("currency", "props", "wrong"),
+    [
+        ("usd", {"amount": 10.005}, "/props/amount"),
+        ("usd", {"amount": "donation", "donation_min": 0.001}, "/props/donation_min"),
+        ("jpy", {"amount": 2000.5}, "/props/amount"),
+        ("kwd", {"amount": 1.2345}, "/props/amount"),
+        ("usd", {"amount": 19.99}, None),
+        ("usd", {"amount": 0.3}, None),
+        ("jpy", {"amount": 2000}, None),
+        ("kwd", {"amount": 1.234}, None),
+    ],
+)
+def test_amounts_have_no_more_decimals_than_their_currency(
+    currency: str, props: dict[str, Any], wrong: str | None
+) -> None:
+    model = paid_model(currency=currency)
+    model["pages"][0]["items"][0]["props"] = props
+    found = paths(model)
+    if wrong is None:
+        assert found == []
+    else:
+        assert f"/pages/0/items/0{wrong}" in found
+
+
+def test_currency_decimals() -> None:
+    assert (P.currency_decimals("USD"), P.currency_decimals("jpy"), P.currency_decimals("bhd")) == (
+        2,
+        0,
+        3,
+    )

@@ -19,6 +19,6 @@ keyboard-driven editor can be.
 
 ---
 
-- Previous: [Chapter 17: Forms](quill-guide-17-forms.html)
+- Previous: [Chapter 18: Taking payments with your forms](quill-guide-18-taking-payments.html)
 - Next: [Appendix A: The QUILL Developer Console](quill-guide-appendix-a-quill-developer-console.html)
 - [Contents](../userguide.html)

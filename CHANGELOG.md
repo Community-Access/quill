@@ -319,6 +319,28 @@ A new **Navigate > Code** submenu, the same in both editors, on the same keys.
   warning and lost the header silently on save. Every section is checked
   (#1756).
 
+### Taking payments with your forms (2026-11-07)
+
+- A new chapter in both user guides, "Taking payments with your forms"
+  (Chapter 18 in QUILL's, Chapter 16 in QUILL Lite's), goes through the whole
+  process: what you need, test mode, the three kinds of amount, providers,
+  publishing and what each refusal means, what the person paying hears with
+  a screen reader, receipts, refunds, reporting and going live.
+- Insert Payment Field's Amount help lists the form's own total, price and
+  calculation fields, so you do not have to remember their ids.
+- QUILL now refuses, before publishing, the two things the QAF plugin would
+  refuse: an amount with more decimal places than its currency (10.005
+  dollars, 2000.5 yen), and a statement descriptor shorter than 5 characters,
+  with no letter, or with characters a card statement cannot print.
+- Test on Site says the test card or sandbox account to use, for the
+  providers the form offers, when it opens a test-mode payment form.
+- Responses say payments in words ("partly refunded", "PayPal"); CSV keeps
+  the plugin's codes.
+- Diagnostics redact Stripe restricted keys and webhook signing secrets and
+  PayPal access tokens, should a pasted site error ever carry one.
+- The QAF plugin side of payment contract version 1 now exists on the
+  plugin's branch, not yet released or tried on a live site.
+
 ### Form payment authoring and reporting (2026-11-06)
 
 - QUILL and QUILL Lite share Insert Payment Field, Form Payments Setup and
