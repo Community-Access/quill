@@ -2999,14 +2999,14 @@ dictation retirement has since shipped (#1663).
 | **whisper.cpp** (Locked Dictation default and offline file transcription, QUILL only) | The Whisper **initial prompt** (`--prompt`); tinydiarize speaker turns (`small.en-tdrz`); the lowest memory for large models (GGML used about half the memory of sherpa-onnx Whisper, design section 6) | sherpa-onnx Whisper keeps translation and segment timestamps, and ran 4 to 7 times faster per thread on the same recordings (design section 6). It has **no** initial-prompt parameter (checked in the local `from_whisper` signature). D-29 diarization would replace tinydiarize | `providers/whispercpp.py` (535 lines), `catalog.py` tiers, executable allowlist, the assets-v1 executable (about 8 MB) and GGML models with SHA-256 pins, `model_mirrors.py`, `test_whispercpp.py`; a subprocess path, not Python wheels, so Python 3.14 does not affect it | Models of 75 MB (tiny) to 3.1 GB (large-v3) (`catalog.py`) | High: it is the Locked Dictation default for every QUILL install without Parakeet (`service.preferred_dictation_provider_id`) | **Keep as an optional pack.** Change the default only after D-26 S2 and B-1 |
 | **Faster Whisper** (CTranslate2) | **GPU acceleration** (CUDA float16 when present, `fasterwhisper.pick_device_and_compute`); batched inference; initial prompt | sherpa-onnx Whisper on CPU. The Windows sherpa-onnx wheel here has no GPU provider (local observation), so nothing supersedes the GPU speed | `providers/fasterwhisper.py` (349 lines), `engine_install.install_faster_whisper` (about 110 MB of wheels; `ctranslate2` 4.8.2 has a cp314 win_amd64 wheel, 19.5 MB, in `uv.lock`), Hugging Face downloads, `test_fasterwhisper_provider.py` | Models of 75 MB to 3.1 GB, plus about 110 MB of engine | Medium: few users, but they are the ones with GPUs and long recordings | **Keep as an optional pack** (it is already install-on-demand) |
 | **Vosk** (Kaldi) | **Podcast chapters in QUILL and QUILL Cast**: it is the bundled chapter engine (`service.CHAPTER_PROVIDER_ID`; `scripts/build_windows_distribution.py`; the Cast spec). On the reference chapter lists it scored 0.372 against Whisper medium's 0.316, and was 4.7 times faster. As a dictation engine it offers only a small English model | For **dictation and voice features** (voice commands, Hey QUILL): the bundled Moonshine tiny (3.4 percent word errors at 0.05 of real time and 210 MB peak, design section 6). For **chapters**: nothing yet; Moonshine tiny plus Silero VAD cue segmentation is the candidate | `providers/vosk.py` (387 lines), `engine_install.install_vosk`, the bundled wheel (about 51 MB with libvosk), models from alphacephei.com checked by **MD5 only**, an egress entry, `test_vosk_provider.py`. The last `vosk` release, 0.3.45, was uploaded on 2022-12-14 (`uv.lock`) | 40 MB (small) or 1.8 GB (large `en-us-0.22`) (`catalog.py`) | Chapters: high, if removed. Dictation: low, because saved settings migrate to Moonshine tiny, which is already installed | **Keep for chapters. Retired as a dictation and voice-features engine: done, #1663 (2026-10-13).** Replace it as the chapter engine only when the Moonshine and Silero candidate beats 0.372 on the same reference set (gated on section 8); Cast would also need sherpa-onnx bundled |
-| **Duplicate Parakeet and Nemotron** (Locked Dictation's own providers and folder) | Nothing the shared models do not; the same model files in a second folder | The same models in the shared dictation store (`windows_dictation/model_store.py`), as D-26 S1 plans | Two providers (`nemotron_onnx.py`, 355 lines; `parakeet_onnx.py`, 314 lines), `engine_install.install_nemotron`, a second model folder; dictation design, section 10 (this record) lists "One folder for Parakeet" as deferred | About 632 to 670 MB **twice** when both stacks have downloaded it | None, if the files are moved rather than downloaded again | **Deprecate the duplicate path**: merge into the shared store in D-26 S1 (move or hard-link the files), then delete the second providers in QUILL 1.2. The models stay |
+| **Duplicate Parakeet and Nemotron** (Locked Dictation's own providers and folder) | Nothing the shared models do not; the same model files in a second folder | The same models in the shared dictation store (`windows_dictation/model_store.py`), as D-26 S1 plans | Two providers (`nemotron_onnx.py`, 355 lines; `parakeet_onnx.py`, 314 lines), `engine_install.install_nemotron`, a second model folder; dictation design, section 10 (this record) lists "One folder for Parakeet" as deferred | About 632 to 670 MB **twice** when both stacks have downloaded it | None, if the files are moved rather than downloaded again | **Deprecated 2026-10-17 (QUILL 1.1).** The providers were already replaced and the files merged by hard link or move in D-26 S1 (section 22); the move is now said once and the older Nemotron offered for deletion, No by default (section 41). The adoption code goes in QUILL 1.2. The models stay |
 | **Moonshine tiny** (bundled) and **Moonshine base** (download) | The fastest models on a modest computer, punctuated by themselves | Nothing yet. Moonshine v2 is in the sherpa-onnx 1.13.8 API (`from_moonshine_v2`), but its models are unmeasured | Small; shared with every app | 124 MB bundled; 141 MB download | Removing them would break the default | **Keep** (tiny stays the 4 GB default) |
 | **Whisper tiny and tiny.en** (bundled) | Tiny is the only bundled Spanish model | Nothing bundled | Small | About 104 MB each | It is the Spanish path | **Keep** |
 | **English-only Whisper sizes in the live catalogue** (base.en, small.en, medium.en, Distil-Whisper small.en, medium.en and large-v3) | Nothing measured that Moonshine base, Parakeet or Nemotron lacks in English | Measured multilingual Whisper base (5.1 percent, 0.37), small (5.1 percent, 1.29) and medium (3.4 percent, 3.04, 2.1 GB) against Moonshine base (3.4 percent, 0.08, 365 MB) and Nemotron (2.5 percent, 0.40). The `.en` and Distil variants themselves were **not** in that table, and the Distil cost factors are estimates (design section 10) | Catalogue rows only (`model_catalog_whisper.py`), pinned to a commit and SHA-256 | Hundreds of MB to over 1 GB each | Low, but some voices may suit Whisper better; that is the reason the design note offers Whisper | **Deprecate candidates, pending B-1 and B-8.** Decide per model after measuring; do not remove on the synthetic numbers |
 | **Multilingual Whisper sizes** (base, small, medium, large-v3-turbo, large-v3) | The only local models covering **many languages** beyond Parakeet TDT v3's 25; translation to English | Parakeet TDT v3 and Canary (four languages) cover only part of that | Catalogue rows only | 145 MB to 3.1 GB | High for people dictating in other languages | **Keep.** Review large-v3 against large-v3-turbo after B-8 (large-v3-turbo used 1.4 GB in the design table; large-v3 was not measured) |
 | **Windows speech recognition (SAPI)** | Real **alternates** for "correct that" (the only engine that gives them, design section 8); offline; no download; Spanish recognizers where Windows has them; any microphone | Nothing | `quill/platform/windows/sapi_dictation.py`, pywin32 already shipped | None | It is someone's preferred engine, and the fallback with no model | **Keep** |
 | **Windows voice typing** (Windows+H engine) | Windows' own panel, for people who already know it | Nothing | Small (`engines.py`) | None | Familiarity | **Keep** |
-| **Legacy Win+H shim** (`quill/core/dictation.py`) | Nothing the `voice_typing` engine does not; its own docstring says it is "retained only as the OS-panel fallback" | The `voice_typing` engine | A separate module and settings fields described in its docstring as "inert" | None | None, if its callers are pointed at `voice_typing` | **Deprecate**: fold into `voice_typing`, remove in QUILL 1.2 (callers **not yet traced**) |
+| **Legacy Win+H shim** (`quill/core/dictation.py`) | Nothing the `voice_typing` engine does not; its own docstring says it is "retained only as the OS-panel fallback" | The `voice_typing` engine | A separate module and settings fields described in its docstring as "inert" | None | None, if its callers are pointed at `voice_typing` | **Deprecated 2026-10-17 (QUILL 1.1).** Callers traced: two, both in QUILL's main window (the Dictation command and its Escape key), now on the voice typing route; nothing in the app imports the module, and a test keeps it so (section 41). Removed in QUILL 1.2 |
 | **Kokoro TTS** (kokoro-onnx, patched wheel) | Many languages through espeak; checked bit-identical on Python 3.14 (the untracked note `missing.md`) | Possibly sherpa-onnx `OfflineTts`; its Kokoro language list looks narrower (Chinese and English, **unverified**) | A patched wheel and the onnxruntime, phonemizer, espeakng-loader and Babel chain | About 114 MB of voices | High: people's reading voice | **Keep.** Revisit only through D-30 |
 | **Piper TTS** (`piper.exe`) | Many small voices | Possibly sherpa-onnx VITS with converted voices (**unverified**) | `piper_install.py`, about a 22 MB zip, SHA-256 | Voices vary | Medium | **Keep.** Revisit only through D-30 |
 
@@ -3106,8 +3106,8 @@ build, and leaves people with a measured, already-installed alternative.
 |---|---|---|---|
 | Vosk as a dictation and voice-features engine (it stays for chapters) | Done in #1663 (2026-10-13): settings migrated to Moonshine tiny with a one-time notice | The release that merges it | Moonshine tiny measured on B-1a, B-1c and B-8 |
 | Vosk as the chapter engine | Not before the replacement wins | Not scheduled | Moonshine tiny plus Silero VAD cue segmentation beats 0.372 on the same reference chapter lists (section 8), and sherpa-onnx is bundled in Cast |
-| Duplicate Parakeet and Nemotron providers and folder | QUILL 1.1 (files merged into the shared store in D-26 S1) | QUILL 1.2 | The migration is verified to move files without downloading them again |
-| Legacy Win+H shim (`quill/core/dictation.py`) | QUILL 1.1 | QUILL 1.2 | Its callers are traced and pointed at `voice_typing` (not yet traced) |
+| Duplicate Parakeet and Nemotron providers and folder | **Done 2026-10-17**: QUILL 1.1 (files merged in D-26 S1; the one-time notice and the leftover offer in section 41) | QUILL 1.2 | Met: `adopt_legacy_models` hard-links or moves, never downloads (section 22 and its tests) |
+| Legacy Win+H shim (`quill/core/dictation.py`) | **Done 2026-10-17**: QUILL 1.1 | QUILL 1.2 | Met: callers traced and pointed at the voice typing route (section 41) |
 | whisper.cpp as the **default** (the engine itself stays as a pack) | After D-26 S2 | Not removed | B-1 parity for sherpa-onnx Whisper or Parakeet |
 | English-only Whisper and Distil-Whisper sizes | Only if B-1 and B-8 show they are dominated | One release later | Measured per model, not on synthetic voices |
 
@@ -3572,3 +3572,98 @@ of about ten seconds. Re-measuring them all at dictated-sentence length is the
 coherent fix and changes at least one recommendation (the quickest Spanish
 model), so it is a decision for Jeff, not taken here; until then the weekly run
 reports it.
+
+## 41. Measured 2026-10-17, landed 2026-11-06: the extras benchmarks, two deprecations, and Nemotron's last word
+
+Work measured and written on 2026-10-17 and paused before it was merged. It
+landed on 2026-11-06 on top of sections 36 to 39, which had moved on in the
+meantime. Its own record was to have been "section 35", a number main gave
+to the acceptance coverage, so the code that cites it now cites this section.
+Where main had already done the same thing better, main's version stayed and
+the paused one was dropped; the list is at the end.
+
+**The benchmark tools** (developer-only, never shipped, never run by the app
+or a test, no download and no connection of their own):
+
+- `scripts/bench_post_passes.py` measures the sherpa-onnx extras that D-27 to
+  D-30 gate on numbers, one subcommand each: `kws` (false triggers an hour,
+  detection after a pause, processor per thread), `hotwords` (names
+  recognised with and without hotwords, and word errors), `punct`
+  (punctuation restored to unpunctuated references), `speakers` (who spoke
+  when, on conversations built from read speech) and `tts` (sherpa-onnx
+  Kokoro against kokoro-onnx). `vocab` writes a sentencepiece model's
+  vocabulary as sherpa-onnx's `bpe.vocab` without the sentencepiece package.
+- `scripts/bench_librivox.py` dates a project by the `_YYMM_librivox` month in
+  its archive.org identifier, because the API has no catalogue-date field;
+  fetches each chosen chapter's own MP3 rather than the whole book; and caps
+  how much one long chapter counts towards a reader's share
+  (`--max-section-minutes`).
+- `scripts/bench_librivox_sets.json` records the two held-out selections
+  (English and Spanish) built that day, with their readers, so a set can be
+  rebuilt. `scripts/bench_subsets.json` pins the `b1` and `quick` names for
+  LibriSpeech clean and other, FLEURS Spanish and both LibriVox sets.
+- `scripts/bench_datasets.json` gains SHA-256 pins for LibriSpeech test-clean
+  and test-other and for FLEURS Spanish, which is pinned to a dataset
+  revision. Parakeet's and Nemotron's training cutoffs are filled in as upper
+  bounds from the Hugging Face API (2026-04-27 and 2026-06-11).
+- `scripts/fetch_bench_audio.py` resumes a download after a dropped
+  connection; the SHA-256 check afterwards is what proves the file is whole.
+  `bench_machine_run.py` and `dictbench.py` take and record `--threads`; one
+  thread stays the budget's measure.
+
+**What was measured, and what it decided.** Nothing here was switched on.
+
+| Item | Result | Decision |
+|---|---|---|
+| D-27 keyword spotter (GigaSpeech 3.3M, Apache 2.0) | 1 false trigger in 60 minutes of LibriSpeech; the command word heard after a pause in 90 percent of 72 synthetic clips; 0.031 of one thread. Every criterion missed (2 an hour, 92 percent, 0.032) | Not adopted (`kws_keywords.py`) |
+| D-28 hotwords (GigaSpeech Zipformer transducer) | 20 hard names: 16 to 42 recognised in 120 clips; word errors 2.6 against 2.7 percent on LibriSpeech test-clean | Still off: that model writes upper case with no punctuation (`hotwords.py`) |
+| D-29 punctuation (CT-Transformer; the English cased model) | The CT-Transformer writes Chinese full-width marks into English; neither came near the engines' own punctuation | Not adopted (`post_passes.py`) |
+| D-29 speaker labels (pyannote 3.0, NeMo TitaNet small) | Threshold 0.8: 91.7 and 88.6 percent of turns right for two and three voices, about a fifth of one thread, under 400 MB. 0.5 over-split every conversation | The default threshold is now 0.8. Still off until the models are pinned and wired in |
+| D-30 Kokoro through sherpa-onnx | Its multi-language export carries all 41 of QUILL's Kokoro voices and spoke all seven languages, once the language is passed per call and French is named `fr` (`fr-fr` gave no audio) | Built and tested with fakes, `SHERPA_TTS_ADOPTED = False` (`quill/core/sherpa_kokoro.py`): switching needs a listening comparison by a person and a decision on the new download |
+
+**Two fixes found by the first real runs.**
+
+- **Nemotron's last word.** The quiet fed after a phrase so Nemotron's
+  1.12-second chunks flush was 0.4 seconds, and it lost the last word of 60 of
+  335 short commands ("choose one" came back "Choose."). 0.8 seconds recovered
+  39 of the 60; 1.2 and 1.6 recovered no more. `model_loader._TAIL_SECONDS` is
+  now 0.8, for QUILL, QUILL Lite and QUILL Transcribe alike.
+- **The keyword file.** sherpa-onnx splits a keyword line on spaces, so a
+  label of `@HEY QUILL` made it look for a token called `QUILL` and refuse the
+  whole file. The label's spaces are now underscores (`keyword_lines`).
+
+**Two deprecations** (section 32.6's table and timetable now say done):
+
+- **The duplicate Parakeet and Nemotron path.** Saved settings already load
+  `nemotron` and `parakeet` as `sherpa` (section 22). The policy says no engine
+  moves silently, so `sherpa_migration_notice` (`pending`, then `done`) records
+  that one sentence is owed, and `quill/ui/sherpa_migration_notice.py` says it
+  once, after the Vosk notice's delay and never over a modal window. When the
+  older Nemotron's files (80 mel features, never adopted) are still on disk,
+  the sentence becomes a Yes/No question with No the default; on Yes,
+  `sherpa_migration.remove_leftovers` deletes only folders inside the old
+  `speech-models/nemotron` and `parakeet` folders and says the bytes actually
+  freed. It never follows a link or junction out of those folders, and an
+  adopted Parakeet's folder, whose files are hard links into the shared store,
+  is never offered because deleting it would free nothing. QUILL only:
+  Locked Dictation is QUILL's.
+- **The legacy Win+H shim** (`quill/core/dictation.py`). Its two callers, the
+  Dictation command (QUILL Key + D) and its Escape key in the main window, now
+  open Windows' panel through `launch_windows_dictation`, as the Windows voice
+  typing engine does. Nothing a person hears changed. A test fails if anything
+  in the app imports the module again; it goes in QUILL 1.2.
+
+**Dropped, because main had done it since.**
+
+- `long_phrases.SplitLongPhrases`, Moonshine base fed in pieces: main's
+  `chunked_offline.ChunkedOffline` does the same with overlap and seam
+  de-duplication (sections 37 and 38).
+- The `Measured` docstring and figures, and the Spanish-aware advice in
+  `model_advice.py`: main's 2026-10-22 real-speech figures and Spanish advice
+  (section 36) replace the 2026-10-17 ones.
+- The English FLEURS archive pins: main pinned them first, to the same files.
+
+**Still open:** the speaker-label models' catalogue pins and wiring; a person
+comparing sherpa-onnx Kokoro by ear; whether the selection in
+`bench_librivox_sets.json` is exactly the one behind section 36's figures
+(section 36 counts 101 English recordings; this file's `b1` subset names 50).

@@ -1,5 +1,11 @@
 # QUILL Lite 2.0
 
+## Nemotron keeps its last word
+
+If you dictate with Nemotron, short phrases no longer lose their last word.
+Saying "choose one" used to give you just "Choose." It now waits for a little
+more quiet before it finishes, the same as in QUILL.
+
 ## Stripe and PayPal form setup
 
 Tools > Forms now includes Insert Payment Field, Form Payments Setup and

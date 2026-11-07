@@ -6430,6 +6430,28 @@ that took over, says Moonshine tiny understands English only, and says
 where to choose another (Ctrl+Comma, “voice engine”; Speech and
 Dictation for dictation). No model is offered for deletion, because
 chapters still use it.</p>
+<p><strong>The duplicate Parakeet and Nemotron path is deprecated
+(2026-10-17).</strong> Locked Dictation’s two engines of its own,
+<code>nemotron</code> and <code>parakeet</code>, became one engine,
+QUILL speech models (<code>sherpa</code>), on 2026-10-16 (dictation
+design record section 22, D-26), and the duplicate path is formally
+deprecated in QUILL 1.1 and its adoption code removed in QUILL 1.2
+(design record sections 32.6 and 41). Saved settings already load as
+<code>sherpa</code>; <code>sherpa_migration_notice</code> records that
+the move is owed one sentence (<code>pending</code>, then
+<code>done</code>), because the deprecation policy says no engine moves
+silently. <code>quill/ui/sherpa_migration_notice.py</code> says it once,
+after the Vosk notice’s delay and never over a modal window. When the
+older Nemotron’s files (80 mel features, a different model from the
+catalogue’s Nemotron 3.5, so never adopted) are still on disk, the
+sentence becomes a Yes/No question with <strong>No the default</strong>
+– “Delete the older files to free 650 MB? No keeps them.” – and on Yes
+<code>sherpa_migration.remove_leftovers</code> deletes only folders
+inside the old <code>speech-models/nemotron</code> and
+<code>parakeet</code> folders and the space actually freed is said
+(“Freed 650 MB.”). An adopted Parakeet’s old folder is never offered:
+its files are hard links into the shared store, so deleting them would
+free nothing.</p>
 <h3
 id="525d-batch-document-to-speech-pronunciation-and-ssml-shipped">5.25d
 Batch Document-to-Speech, pronunciation, and SSML (shipped)</h3>
