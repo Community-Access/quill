@@ -119,7 +119,10 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Types]
 Name: "full"; Description: "Full installation (recommended)"
-Name: "compact"; Description: "Compact installation (program only, no bundled documentation)"
+; Compact leaves out nothing a person reads: the User Guide and the GitHub
+; Guide come with every install type, as they do with the portable copy, and
+; Help > Open User Guide and Open GitHub Guide open them from here.
+Name: "compact"; Description: "Compact installation"
 Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
@@ -127,7 +130,7 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 ; Without it the per-app C launcher has no Python to spawn.
 Name: "runtime"; Description: "Shared QuillVille runtime (Python) -- installed once, reused by every QuillVille app"; Types: full compact custom; Flags: fixed
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
-Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
+Name: "docs"; Description: "Documentation (User Guide, GitHub Guide, Release Notes, Product Requirements)"; Types: full compact custom
 
 [INI]
 ; The version THIS installer installed, read by quill.core.app_version for
@@ -203,6 +206,7 @@ Type: files; Name: "{autodesktop}\QuillLite.lnk"
 ; before it is right on purpose.
 Name: "{group}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; AppUserModelID: "CommunityAccess.QuillLite"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"; Components: docs
+Name: "{group}\{#AppName} GitHub Guide"; Filename: "{app}\docs\guide\lite-github-guide.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; AppUserModelID: "CommunityAccess.QuillLite"; Check: WantsDesktopIcon; Components: main
 

@@ -425,6 +425,10 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     # Release channels: one shared window, and no chord in any of the four
     # channel apps (rules 4 and 9; keymap.py's help.release_channel says why).
     "cmd_release_channel": "help.release_channel",
+    # The guides, opened by one shared module (quill.ui.guide_opener): the User
+    # Guide on Ctrl+Shift+F1 in both, the GitHub Guide keyless in both.
+    "cmd_user_guide": "help.open_user_guide",
+    "cmd_github_guide": "help.github_guide",
     # The changelog in the browser, keyless in both (quill.ui.whats_new).
     "cmd_whats_new": "help.whats_new",
     "cmd_remember_clip": "edit.keep_selection_in_clip_library",

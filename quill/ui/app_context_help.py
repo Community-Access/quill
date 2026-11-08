@@ -65,6 +65,35 @@ _DEFAULT_WX_NAMES = frozenset({
 #: authored its catalogue.
 _purpose_resolver: Callable[[str], str] | None = None
 
+#: Windows whose F1 answer also offers a guide of their own: (does this title
+#: belong to it, the button's label, what the button opens). The GitHub windows
+#: register the GitHub Guide here (:mod:`quill.ui.guide_opener`), so their own
+#: code needs no F1 change.
+_guide_routes: list[tuple[Callable[[str], bool], str, Callable[[], None]]] = []
+
+
+def register_guide_route(
+    matches: Callable[[str], bool], label: str, opener: Callable[[], None]
+) -> None:
+    """Offer *label* (opening *opener*) in F1 for every window *matches* accepts.
+
+    A later registration for the same label replaces the earlier one, so an
+    app that registers at startup twice does not get two buttons.
+    """
+    _guide_routes[:] = [route for route in _guide_routes if route[1] != label]
+    _guide_routes.append((matches, label, opener))
+
+
+def guide_route_for(title: str) -> tuple[str, Callable[[], None]] | None:
+    """(label, opener) of the guide F1 offers for a window titled *title*."""
+    for matches, label, opener in _guide_routes:
+        try:
+            if matches(title):
+                return label, opener
+        except Exception:  # noqa: BLE001 - a bad predicate must not kill F1
+            continue
+    return None
+
 
 def ensure_help_provider(wx: Any = None) -> None:
     """Install ``wx.SimpleHelpProvider`` once, so ``SetHelpText`` stores text.
@@ -210,7 +239,15 @@ def show_help(window: Any) -> None:
         ensure_help_provider(wx)
         surface_topic, control_topic = topics_for(window, wx)
         top = _top_level_of(wx.Window.FindFocus() or window, wx)
-        dlg = ContextHelpDialog(top, dialog_topic=surface_topic, ctrl_topic=control_topic)
+        route = guide_route_for(str(surface_topic.title))
+        label, opener = route if route is not None else ("", None)
+        dlg = ContextHelpDialog(
+            top,
+            dialog_topic=surface_topic,
+            ctrl_topic=control_topic,
+            user_guide_opener=(lambda _section=None: opener()) if opener else None,
+            guide_label=label,
+        )
         try:
             show_modal_dialog(dlg, "Context Help")
         finally:

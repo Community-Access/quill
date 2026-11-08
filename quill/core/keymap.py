@@ -454,6 +454,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # invisible to every gate that would have caught it, which is the whole
     # of bad.md H4. Ctrl+Shift+F1 is free in both editors.
     "help.open_user_guide": "Ctrl+Shift+F1",
+    # The GitHub Guide (quill/ui/guide_opener.py, shared): keyless in both editors,
+    # as QUILL Lite's Open GitHub Guide is. A manual is opened to learn, not in the
+    # editing loop (rule 9), and the GitHub windows' F1 offers it too. Alt+H, I.
+    "help.github_guide": "",
     # Same defect, found by the gate written for the row above: this had
     # "Shift+F1" as a literal, which About took as a real binding on
     # 2026-09-16 -- so two Help items claimed it and one stopped firing.

@@ -161,6 +161,7 @@ class ContextHelpDialog(wx.Dialog):
         dialog_topic: HelpTopic | None,
         ctrl_topic: HelpTopic,
         user_guide_opener: Callable[..., None] | None = None,
+        guide_label: str = "",
     ) -> None:
         # Title = "Help: <ctrl title>" so the SR announces context immediately.
         super().__init__(
@@ -170,6 +171,10 @@ class ContextHelpDialog(wx.Dialog):
             name="context_help",
         )
         self._user_guide_opener = user_guide_opener
+        # A window with a guide of its own (the GitHub windows' GitHub Guide)
+        # names it here; otherwise the button is the user guide's, when the
+        # topic names a section of it.
+        self._guide_label = guide_label if user_guide_opener is not None else ""
         self._ctrl_topic = ctrl_topic
         self._body_text = self._build_ui(dialog_topic, ctrl_topic)
         self.SetMinSize(dip_size(self, 440, 220))
@@ -201,8 +206,11 @@ class ContextHelpDialog(wx.Dialog):
         close_btn.SetDefault()
         btn_sizer.AddButton(close_btn)
 
-        if ctrl_topic.user_guide_section:
-            guide_btn = wx.Button(panel, wx.ID_HELP, label="Open User Guide")
+        guide_label = self._guide_label or (
+            "Open User Guide" if ctrl_topic.user_guide_section else ""
+        )
+        if guide_label:
+            guide_btn = wx.Button(panel, wx.ID_HELP, label=guide_label)
             btn_sizer.AddButton(guide_btn)
             guide_btn.Bind(wx.EVT_BUTTON, self._on_open_guide)
 
