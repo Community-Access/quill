@@ -18,6 +18,7 @@ Quill Radio is not a fork. The whole application lives in the [quill](https://gi
 - Sound Enhancements (Ctrl+E): equalizer presets, a compressor, mono and one-ear modes, night mode and broadcast polish, applied live.
 - Lives in the system tray, with a system-wide show and hide key (Ctrl+Alt+Shift+R) and the keyboard's media keys.
 - New in 3.2: Station Details (Alt+Shift+I) finds a station by call sign, frequency or slogan; Lyrics (Ctrl+Alt+B); Identify This Song (Ctrl+K); QUILL Lineups (Ctrl+U), shared with QUILL Cast; What's New (Alt+Shift+N); a time-shift buffer of up to five hours; and recordings split into one file per song. The release notes list everything.
+- New since build 5, ideas from BlindRadio by serrebidev: twenty networks whose 516 channels go straight to each broadcaster's own stream; the IPRD public radio directory; What the Station Played (Alt+Shift+H), the station's own playlist; jumping between songs in the time-shift buffer (Alt+Shift+Left and Right) and saving them to files (Ctrl+Alt+F5 to F8); a steadier buffer for stations that keep running dry; a time-shift length per favorite (Alt+Shift+T); scrobbling to ListenBrainz, last.fm and Libre.fm; and AudD for Identify This Song.
 - F1 help on every control, 44 guided tutorials (Ctrl+Alt+F1), and a Command Palette (Ctrl+Shift+P).
 - Shares favorites, settings and recordings with QUILL and QUILL Cast when installed (one data store in `%APPDATA%\Quill`). A portable copy keeps its own.
 
