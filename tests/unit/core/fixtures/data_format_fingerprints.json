@@ -1443,6 +1443,10 @@
             "youtube_speed": "float",
             "volume_boost": "bool",
             "timeshift_minutes": "int",
+            "recognition_service": "str",
+            "scrobble_listenbrainz": "bool",
+            "scrobble_lastfm": "bool",
+            "scrobble_librefm": "bool",
             "volume_percent": "int",
             "channel_mode": "str",
             "night_mode_enabled": "bool",
@@ -1510,7 +1514,7 @@
         "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "Four new optional keys (scrobbling switches, recognition service); older builds ignore unknown keys and the defaults are off/acoustid."
     },
     "shared.listens": {
       "current": 1,

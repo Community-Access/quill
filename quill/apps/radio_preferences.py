@@ -18,6 +18,7 @@ from typing import Any
 from quill.apps import radio_preferences_listening, radio_preferences_load
 from quill.apps import radio_preferences_rows as rows
 from quill.apps.radio_preferences_load import PreferencesDataLoad, podcast_schedule_help
+from quill.apps.radio_preferences_scrobble import ScrobbleRows
 from quill.core.radio import main_view, reminders
 from quill.ui import app_sounds, slider_keys
 
@@ -100,6 +101,7 @@ def open_preferences(app: Any) -> None:
     podcast_schedule_options = [label for _minutes, label in refresh_policy.INTERVAL_CHOICES]
     yt_check, yt_choice, yt_file = yt_signin.rows(app)
     timeshift_choice, acoustid_text = radio_preferences_listening.rows(app)
+    scrobble = ScrobbleRows(app)  # Scrobbling and Song recognition (BlindRadio ideas)
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
     mpv_present = mpv_output_device_available()
     cached_devices = cached_output_devices()
@@ -253,6 +255,7 @@ def open_preferences(app: Any) -> None:
                 group=_REMINDERS,
             ),
             yt_check,
+            *scrobble.checkboxes(),
         ],
         choices=[
             PreferenceChoice(
@@ -346,6 +349,7 @@ def open_preferences(app: Any) -> None:
             ),
             yt_choice,
             timeshift_choice,
+            scrobble.choice(),
         ],
         texts=[
             PreferenceText(
@@ -360,6 +364,7 @@ def open_preferences(app: Any) -> None:
                 history.log_dir,
             ),
             acoustid_text,
+            *scrobble.texts(),
         ],
         actions=[
             # Where Quill Radio's own sounds play (ui/app_sounds), one window
@@ -397,9 +402,11 @@ def open_preferences(app: Any) -> None:
                 lambda: media_player.make_media_player(app),
                 group=media_player.GROUP_TITLE,
             ),
+            *scrobble.actions(),
         ],
         announce_cb=app._announce,
     )
+    scrobble.attach(dialog, first_text_index=3)
 
     # The device list and the shared cadence are slow to read, so they arrive
     # after the dialog is up (radio_preferences_load).
@@ -438,6 +445,7 @@ def open_preferences(app: Any) -> None:
         history.podcast_refresh_on_launch,
         history.reminder_sound,
         youtube_signin_on,
+        *scrobble_checks,
     ) = checkbox_values
     from quill.platform.windows import radio_startup
 
@@ -459,6 +467,7 @@ def open_preferences(app: Any) -> None:
         )
     youtube_said = yt_signin.apply(youtube_signin_on, choice_indices[10], app=app)
     listening_said = radio_preferences_listening.apply(app, choice_indices[11], text_values[2])
+    scrobble_said = scrobble.apply(list(scrobble_checks), choice_indices[12], text_values[3:7])
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
     # this session, not just the next launch.
     from quill.core.radio.radio_logging import set_radio_debug
@@ -550,5 +559,5 @@ def open_preferences(app: Any) -> None:
     menu_bar = app.frame.GetMenuBar()
     if menu_bar is not None:
         menu_bar.Check(int(app._resume_menu_item_id), history.resume_on_launch)
-    said = (startup_said, sound_said, schedule_said, youtube_said, listening_said)
+    said = (startup_said, sound_said, schedule_said, youtube_said, listening_said, scrobble_said)
     app._announce(" ".join(["Preferences saved.", *(part for part in said if part)]))
