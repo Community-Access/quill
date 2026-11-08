@@ -2535,7 +2535,8 @@ which is one of the hardest things on the web for a screen-reader user. But a
 form is really structured text: a title, pages, sections, questions, choices
 and rules. QUILL is good at text.
 
-**BITS Accessible Forms (BAF)** (`S:\code\baf`) is the WordPress side. It is a
+**QUILL Accessible Forms (QAF)**, first called BITS Accessible Forms (BAF)
+(`S:\code\qaf`, which was `S:\code\baf` until 2026-11-08), is the WordPress side. It is a
 WCAG 2.2 AA form plugin with a plain form language, BFL (Barrier-Free
 Language), a REST API, 30+ field types, choice libraries, conditional logic
 and entry views. QUILL does not build a second form engine for the web. It
@@ -2556,7 +2557,7 @@ over everything from BAF that makes sense on a computer rather than a server
 
 ### 17a.2 What already exists
 
-**In BAF (`S:\code\baf`):**
+**In QAF (`S:\code\qaf`):**
 
 - **BFL:** the form language, with:
   - four block styles (indentation, braces, square brackets, begin/end);
@@ -2897,7 +2898,7 @@ built in this order, because each piece needs the one before:
    show it as text?
 2. Should BAF's PHP BFL parser and QUILL's Python one share a conformance
    suite in the BAF repository, so the two can never disagree?
-3. May the test site install BAF from `S:\code\baf` for the regression plan?
+3. May the test site install QAF from `S:\code\qaf` for the regression plan?
 
 ### 17a.14 Is BFL complete? Not yet (checked against BAF's code, 2026-11-04)
 
@@ -2939,7 +2940,7 @@ a subset of BAF, not its whole language.
   (the `save` field): not in BFL.
 
 **The plan:** make BFL complete in BAF itself. That is the language's home, and
-QUILL must match it byte for byte. Work in `S:\code\baf`:
+QUILL must match it byte for byte. Work in `S:\code\qaf`:
 
 1. One written BFL specification, beside the guide, listing every field type
    with its modifiers, every block style, and the condition and calculation
@@ -3036,7 +3037,7 @@ people write, but it is no longer the definition.
 
 **Where the work happens:**
 
-- `S:\code\baf`: the model, the schema, the expression language, BFL's
+- `S:\code\qaf`: the model, the schema, the expression language, BFL's
   mapping, the builder's mapping, the conformance suite, and the imports and
   exports that run on the site.
 - `quill/core/forms/`: the same model and its expression evaluator in Python,
@@ -4124,6 +4125,18 @@ request. Each entry says what is done and how it was checked.
   because this machine has PHP 8.1 and no PHPUnit or Composer; the plugin's
   476 Node conformance checks. Not tried in a real WordPress, nor against
   Stripe's or PayPal's sandboxes.
+
+### 2026-11-08: QAF main carries everything; the folder is S:\code\qaf
+
+- The plugin's `main` was fast-forwarded to `feat/qaf-payments` (cbc7fef), at
+  Jeff's word. Every other branch (`chore/mit-license`, `chore/rename-qaf`,
+  `feat/json-form-model`) was already contained in it, so nothing was lost or
+  merged by hand. All 215 PHP files pass `php -l`; PHPUnit was not run (no
+  vendor folder on this machine).
+- The worktree `S:\wt\baf-payments` was removed and the repository folder
+  renamed from `S:\code\baf` to `S:\code\qaf`. The plugin's name is QUILL
+  Accessible Forms (QAF).
+- Not on GitHub yet: the repository has no working remote.
 
 ## 19. Remaining tasks
 

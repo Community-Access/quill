@@ -5666,14 +5666,15 @@ drag-and-drop canvas, which is one of the hardest things on the web for
 a screen-reader user. But a form is really structured text: a title,
 pages, sections, questions, choices and rules. QUILL is good at
 text.</p>
-<p><strong>BITS Accessible Forms (BAF)</strong>
-(<code>S:\code\baf</code>) is the WordPress side. It is a WCAG 2.2 AA
-form plugin with a plain form language, BFL (Barrier-Free Language), a
-REST API, 30+ field types, choice libraries, conditional logic and entry
-views. QUILL does not build a second form engine for the web. It becomes
-the accessible way to write, check and manage BAF forms, and it brings
-over everything from BAF that makes sense on a computer rather than a
-server (17a.3).</p>
+<p><strong>QUILL Accessible Forms (QAF)</strong>, first called BITS
+Accessible Forms (BAF) (<code>S:\code\qaf</code>, which was
+<code>S:\code\baf</code> until 2026-11-08), is the WordPress side. It is
+a WCAG 2.2 AA form plugin with a plain form language, BFL (Barrier-Free
+Language), a REST API, 30+ field types, choice libraries, conditional
+logic and entry views. QUILL does not build a second form engine for the
+web. It becomes the accessible way to write, check and manage BAF forms,
+and it brings over everything from BAF that makes sense on a computer
+rather than a server (17a.3).</p>
 <p><strong>Four rules shape the plan:</strong></p>
 <ol type="1">
 <li><strong>Simple first.</strong> A contact form is New Form, three
@@ -5689,7 +5690,7 @@ site. QUILL reads them only when asked, says what it is downloading, and
 never writes them to a log.</li>
 </ol>
 <h3 id="17a2-what-already-exists">17a.2 What already exists</h3>
-<p><strong>In BAF (<code>S:\code\baf</code>):</strong></p>
+<p><strong>In QAF (<code>S:\code\qaf</code>):</strong></p>
 <ul>
 <li><strong>BFL:</strong> the form language, with:
 <ul>
@@ -6166,7 +6167,7 @@ Jeff</h3>
 <li>Should BAF’s PHP BFL parser and QUILL’s Python one share a
 conformance suite in the BAF repository, so the two can never
 disagree?</li>
-<li>May the test site install BAF from <code>S:\code\baf</code> for the
+<li>May the test site install QAF from <code>S:\code\qaf</code> for the
 regression plan?</li>
 </ol>
 <h3
@@ -6216,7 +6217,7 @@ BFL.</li>
 </ul>
 <p><strong>The plan:</strong> make BFL complete in BAF itself. That is
 the language’s home, and QUILL must match it byte for byte. Work in
-<code>S:\code\baf</code>:</p>
+<code>S:\code\qaf</code>:</p>
 <ol type="1">
 <li><p>One written BFL specification, beside the guide, listing every
 field type with its modifiers, every block style, and the condition and
@@ -6334,7 +6335,7 @@ CI.</p></li>
 </ol>
 <p><strong>Where the work happens:</strong></p>
 <ul>
-<li><code>S:\code\baf</code>: the model, the schema, the expression
+<li><code>S:\code\qaf</code>: the model, the schema, the expression
 language, BFL’s mapping, the builder’s mapping, the conformance suite,
 and the imports and exports that run on the site.</li>
 <li><code>quill/core/forms/</code>: the same model and its expression
@@ -7741,6 +7742,23 @@ point to it.</li>
 PHPUnit because this machine has PHP 8.1 and no PHPUnit or Composer; the
 plugin’s 476 Node conformance checks. Not tried in a real WordPress, nor
 against Stripe’s or PayPal’s sandboxes.</li>
+</ul>
+<h3
+id="2026-11-08-qaf-main-carries-everything-the-folder-is-scodeqaf">2026-11-08:
+QAF main carries everything; the folder is S:\code\qaf</h3>
+<ul>
+<li>The plugin’s <code>main</code> was fast-forwarded to
+<code>feat/qaf-payments</code> (cbc7fef), at Jeff’s word. Every other
+branch (<code>chore/mit-license</code>, <code>chore/rename-qaf</code>,
+<code>feat/json-form-model</code>) was already contained in it, so
+nothing was lost or merged by hand. All 215 PHP files pass
+<code>php -l</code>; PHPUnit was not run (no vendor folder on this
+machine).</li>
+<li>The worktree <code>S:\wt\baf-payments</code> was removed and the
+repository folder renamed from <code>S:\code\baf</code> to
+<code>S:\code\qaf</code>. The plugin’s name is QUILL Accessible Forms
+(QAF).</li>
+<li>Not on GitHub yet: the repository has no working remote.</li>
 </ul>
 <h2 id="19-remaining-tasks">19. Remaining tasks</h2>
 <p><strong>wp-admin parity (9.18), Jeff 2026-11-04, “we should have all
