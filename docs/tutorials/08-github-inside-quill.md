@@ -353,3 +353,7 @@ cover everyday work on issues and pull requests. **Tools > Git and GitHub >
 GitHub** creates and manages repositories. **Tools > Git and GitHub > Local
 Git** covers the Git work on your own computer, like merge conflicts and
 interactive rebase.
+
+To try all of this somewhere nothing can go wrong, [Practise GitHub
+safely](11-practise-github-safely.md) gives you a practice repository and walks
+you through reviewing, merging and fixing a failing check in your own copy.

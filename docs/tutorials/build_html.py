@@ -91,8 +91,14 @@ def main() -> int:
         html = re.sub(r'href="(\d\d-[^"]+)\.md"', r'href="\1.html"', html)
         html = html.replace('href="README.md"', 'href="index.html"')
         # Repo-relative references that exist elsewhere on the site.
-        html = html.replace('href="../user%20guide/userguide.md"', 'href="../docs.html"').replace(
-            'href="../podcast/README.md"', 'href="../podcast/index.html"'
+        html = (
+            html
+            .replace('href="../user%20guide/userguide.md"', 'href="../docs.html"')
+            .replace('href="../podcast/README.md"', 'href="../podcast/index.html"')
+            .replace(
+                'href="../user%20guide/github-guide/github-guide.md"',
+                'href="/docs/github-guide/github-guide.html"',
+            )
         )
         # LF explicitly: the committed pages are LF and core.autocrlf is off,
         # so the platform default (CRLF here) would rewrite every line.
