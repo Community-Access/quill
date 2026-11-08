@@ -7,6 +7,8 @@ is a method on the dialog, so this module only decides what to list.
 
 from __future__ import annotations
 
+from typing import Any
+
 from quill.core.github.explore_views import QUERY_VIEWS
 from quill.ui.github_explore_queue import queue_item_key as _queue_item_key
 
@@ -33,7 +35,19 @@ class GitHubExploreContextMenuMixin:
             menu.Enable(item_id, enabled)
             menu.Bind(wx.EVT_MENU, lambda _event, callback=action: callback(), id=item_id)
 
-        row = self._selected()
+        self._fill_context_menu(menu, add, self._selected())
+        try:
+            self._list.PopupMenu(menu)
+        finally:
+            menu.Destroy()
+
+    def _fill_context_menu(self, menu: object, add: Any, row: Any) -> None:
+        """Add the actions that fit *row* and the current view, through *add*.
+
+        Separate from showing the menu so a test can read what is offered
+        without a window: every row action sits under ``if row``, every view
+        action after it.
+        """
         if row:
             add("Open on GitHub", lambda: self._open(None), bool(row.url))
             add("Copy Link", lambda: self._copy(row.url, "link"), bool(row.url))
@@ -50,8 +64,6 @@ class GitHubExploreContextMenuMixin:
                 add("Mark Notification Read", lambda: self._mark_seen(row.key))
                 add("Mark Done\tDelete", lambda: self._triage_notification(False))
                 add("Unsubscribe from Thread", lambda: self._triage_notification(True))
-        if self._view_key() == "notifications" and self._rows:
-            add("Mark All Read...", self._mark_all_read)
             if (
                 row.kind in {"issue", "pr"}
                 and row.key.isdecimal()
@@ -78,6 +90,8 @@ class GitHubExploreContextMenuMixin:
                     add("Unsnooze Locally", lambda: self._unsnooze_attention_item(key))
                 else:
                     add("Snooze for One Day", lambda: self._snooze_attention_item(key))
+        if self._view_key() == "notifications" and self._rows:
+            add("Mark All Read...", self._mark_all_read)
         if self._view_key() == "labels" and self._client._provider.is_authenticated:
             add("Create Label...", self._create_label)
         if self._view_key() in QUERY_VIEWS and self._query.GetValue().strip():
@@ -89,7 +103,3 @@ class GitHubExploreContextMenuMixin:
         self._add_community_actions(add)
         self._add_wave4_actions(menu, add, row)
         add("Refresh", lambda: self._load(None))
-        try:
-            self._list.PopupMenu(menu)
-        finally:
-            menu.Destroy()
