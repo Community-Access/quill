@@ -1451,14 +1451,41 @@ still inserted where you drop it.</p>
 requests</h2>
 <p><strong>File &gt; GitHub Workbench…</strong> (<strong>Alt+F</strong>,
 then <strong>G</strong>) opens QUILL’s shared GitHub Items viewer in
-QUILL Lite. The first use asks whether you want to connect to GitHub.
-Public repositories can be read without a token; posting reviews,
-replying, and other write actions need a GitHub token in the operating
-system’s credential store. If the current document is in a checkout with
-a GitHub origin, the repository field starts with that repository. On an
-Items row or its details field, Shift+F10 opens actions for the selected
-item: review a PR, compare a branch, inspect a run, copy its link or
-details, or favorite it. Signed-in sessions add relevant write
+QUILL Lite. The first use asks whether you want to connect to GitHub. If
+the current document is in a checkout with a GitHub origin, the
+repository field starts with that repository.</p>
+<p>If you haven’t signed in yet, the Workbench tells you so before it
+opens and gives you two choices. <strong>Manage GitHub
+Accounts…</strong> lets you add your account there and then, and once
+GitHub confirms it the Workbench opens signed in. <strong>Continue as
+Guest</strong> opens it anyway, and you can still read public
+repositories; posting reviews, replying and the other write actions are
+what need an account. Escape opens nothing.</p>
+<h3 id="signing-in-and-switching-accounts">Signing in and switching
+accounts</h3>
+<p><strong>File &gt; Manage GitHub Accounts…</strong>
+(<strong>Alt+F</strong>, then <strong>H</strong>) is where your GitHub
+accounts live. It’s the same window QUILL opens from File &gt; Open
+Remote, and the two editors share the accounts, so one you add in either
+is there in both. It tells you which account is active, and has three
+buttons:</p>
+<ul>
+<li><strong>Add Account…</strong> asks for a GitHub personal access
+token. QUILL Lite checks it with GitHub before it keeps it, saves it in
+your operating system’s credential store and makes it the active
+account. A token GitHub doesn’t recognise is never saved, and you’re
+told why.</li>
+<li><strong>Use Selected Account</strong> switches to another saved
+account.</li>
+<li><strong>Remove Selected Account</strong> forgets that account’s
+token on this computer.</li>
+</ul>
+<p>Export as HTML used to be Alt+F, then H. It gave the letter up
+because it still has its own key, <strong>Ctrl+Alt+Shift+End</strong>,
+and Manage GitHub Accounts has nothing else.</p>
+<p>On an Items row or its details field, Shift+F10 opens actions for the
+selected item: review a PR, compare a branch, inspect a run, copy its
+link or details, or favorite it. Signed-in sessions add relevant write
 actions.</p>
 <p>For a pull request, choose <strong>Review…</strong>. Its native
 outline expands from the PR into changed files, each file’s

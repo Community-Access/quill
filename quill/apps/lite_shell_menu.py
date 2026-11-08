@@ -32,6 +32,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.lite_github_accounts import GitHubAccountsLiteMixin  # Manage GitHub Accounts
 from quill.apps.lite_github_open import GitHubFileOpenMixin  # GitHub Workbench's Open in Editor
 from quill.core.speakable import speakable_controls
 
@@ -52,6 +53,7 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
     "cmd_preferences",
     "cmd_keyboard_manager",
     "cmd_github_workbench",
+    "cmd_github_manage_accounts",
     "cmd_sound_scheme",
     "cmd_backup_settings",
     "cmd_restore_settings",
@@ -71,7 +73,7 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
 _SHELL_OWN = frozenset({"cmd_open"})
 
 
-class ShellMenuMixin(GitHubFileOpenMixin):
+class ShellMenuMixin(GitHubFileOpenMixin, GitHubAccountsLiteMixin):
     """The empty-window bar, and the few attributes its borrowed handlers read."""
 
     app: Any

@@ -1386,12 +1386,22 @@ class DialogRecorder:
         # Import / Convert Document's scanned question, 2026-10-17 (a message
         # box imported at lite_window_import's scope).
         "show_message_box_import": ("quill.apps.lite_window_import", "show_message_box"),
+        # Manage GitHub Accounts, 2026-11-07: QUILL's two windows, imported
+        # inside the shared flow (quill.ui.github_accounts_flow), so the
+        # defining module is the only binding. Both are classes the flow
+        # constructs and then asks with show().
+        "GitHubManageAccountsDialog": ("quill.ui.github_dialogs", "GitHubManageAccountsDialog"),
+        "GitHubSignInDialog": ("quill.ui.github_dialogs", "GitHubSignInDialog"),
     }
 
     #: Names whose stub must be callable *and* have a ``show()``, because the
     #: caller constructs an object and then asks it. One extra shape rather than
     #: a second recorder.
-    CONSTRUCTED: frozenset[str] = frozenset({"EmojiPickerDialog"})
+    CONSTRUCTED: frozenset[str] = frozenset({
+        "EmojiPickerDialog",
+        "GitHubManageAccountsDialog",
+        "GitHubSignInDialog",
+    })
 
     #: The sentinel meaning "no test set an answer, so answer cancel".
     CANCELLED = object()

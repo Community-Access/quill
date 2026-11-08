@@ -112,6 +112,7 @@
   "cmd_forms_verify_payments": "covered",
   "cmd_forward_location": "covered",
   "cmd_get_help_from_support": "covered",
+  "cmd_github_manage_accounts": "covered",
   "cmd_github_workbench": "covered",
   "cmd_go_to_anything": "covered",
   "cmd_go_to_selection_start": "covered",

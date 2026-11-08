@@ -75,5 +75,7 @@ TASK_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
 )
 
 EXPORT_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
-    ("&File", "Export as &HTML...", "Ctrl+Alt+Shift+End", "cmd_export_html", ""),
+    # No access letter since 2026-11-07: H went to Manage Git&Hub Accounts, which
+    # has no chord to fall back on (commands_github.py). The chord is the route.
+    ("&File", "Export as HTML...", "Ctrl+Alt+Shift+End", "cmd_export_html", ""),
 )

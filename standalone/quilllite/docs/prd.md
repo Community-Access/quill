@@ -2473,6 +2473,25 @@ the same way.
 - In a plain text or HTML document it inserts nothing and says why: "A page
   break needs a Word, Rich Text or Markdown document". It never writes a form
   feed.
+# GitHub sign-in parity (2026-11-07)
+
+QUILL Lite could use a GitHub account only if QUILL had saved one; it had no
+way to add one itself. File > Manage GitHub Accounts... (Alt+F, then H) now
+runs the same flow as QUILL's `file.github_manage_accounts`, from one shared
+module, `quill/ui/github_accounts_flow.py`: check the saved token on a worker
+thread, then add (verify before saving), switch or remove in
+`GitHubManageAccountsDialog`. QUILL's mixins and QUILL Lite's
+`quill/apps/lite_github_accounts.py` are thin hosts that hand the flow a parent
+window, a voice, a message box and a worker thread. The command is mapped in
+`COMMAND_EQUIVALENTS` and, like QUILL's, has no chord (family rule 2). Every
+other letter in its name was taken in File, so Export as HTML gave up H and
+keeps Ctrl+Alt+Shift+End.
+
+With no saved account, the Workbench asks before it opens: Manage GitHub
+Accounts (the default), Continue as Guest, or Cancel. Adding an account from
+there reopens the Workbench signed in. The empty QUILL Lite window offers both
+commands too.
+
 # GitHub Workbench parity note (2026-11-05)
 
 QUILL Lite shares QUILL's GitHub Items, Explore, PR review, and diff windows.

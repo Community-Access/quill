@@ -29,6 +29,7 @@ from quill.core.lite.commands_ai import (
     PROJECT_VIEW_ROWS,
 )
 from quill.core.lite.commands_dictation import DICTATION_ROWS
+from quill.core.lite.commands_github import GITHUB_FILE_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_say import CLIPBOARD_SAY_ROWS, TIME_SAY_ROWS, WINDOW_SAY_ROWS
@@ -118,7 +119,7 @@ COMMANDS: list[CommandRow] = [
     ("&File", "Open from Clip&board", "Ctrl+Alt+Shift+Enter", "cmd_open_from_clipboard", ""),
     ("&File", "Open &from URL...", "", "cmd_open_from_url", ""),  # no key, as in QUILL
     ("&File", "&Import / Convert Document (OCR)...", "", "cmd_import_convert", ""),  # as QUILL
-    ("&File", "&GitHub Workbench...", "", "cmd_github_workbench", ""),  # File, as in QUILL
+    *GITHUB_FILE_ROWS,  # GitHub Workbench, Manage GitHub Accounts (commands_github.py)
     ("&File", "Recent &Documents...", "Alt+Shift+0", "cmd_recent_documents", ""),
     *PROJECT_FILE_ROWS,  # Open Project Folder, Close Project: Developer only
     ("&File", "", "", "", "sep"),

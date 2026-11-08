@@ -1089,10 +1089,34 @@ QUILL has the same three, on the same key.
 
 **File > GitHub Workbench...** (**Alt+F**, then **G**) opens QUILL's shared
 GitHub Items viewer in QUILL Lite. The first use asks whether you want to
-connect to GitHub. Public repositories can be read without a token; posting
-reviews, replying, and other write actions need a GitHub token in the operating
-system's credential store. If the current document is in a checkout with a
-GitHub origin, the repository field starts with that repository.
+connect to GitHub. If the current document is in a checkout with a GitHub
+origin, the repository field starts with that repository.
+
+If you haven't signed in yet, the Workbench tells you so before it opens and
+gives you two choices. **Manage GitHub Accounts...** lets you add your account
+there and then, and once GitHub confirms it the Workbench opens signed in.
+**Continue as Guest** opens it anyway, and you can still read public
+repositories; posting reviews, replying and the other write actions are what
+need an account. Escape opens nothing.
+
+### Signing in and switching accounts
+
+**File > Manage GitHub Accounts...** (**Alt+F**, then **H**) is where your
+GitHub accounts live. It's the same window QUILL opens from File > Open Remote,
+and the two editors share the accounts, so one you add in either is there in
+both. It tells you which account is active, and has three buttons:
+
+- **Add Account...** asks for a GitHub personal access token. QUILL Lite checks
+  it with GitHub before it keeps it, saves it in your operating system's
+  credential store and makes it the active account. A token GitHub doesn't
+  recognise is never saved, and you're told why.
+- **Use Selected Account** switches to another saved account.
+- **Remove Selected Account** forgets that account's token on this computer.
+
+Export as HTML used to be Alt+F, then H. It gave the letter up because it still
+has its own key, **Ctrl+Alt+Shift+End**, and Manage GitHub Accounts has nothing
+else.
+
 On an Items row or its details field, Shift+F10 opens actions for the selected
 item: review a PR, compare a branch, inspect a run, copy its link or details,
 or favorite it. Signed-in sessions add relevant write actions.
