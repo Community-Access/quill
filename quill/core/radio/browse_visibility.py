@@ -146,6 +146,11 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         "Live365's independent stations, A to Z.",
     ),
     BrowseSourceInfo(
+        "iprd",
+        "IPRD (Public Radio Directory)",
+        "An open list of about 24,000 stations from every country, by country and genre.",
+    ),
+    BrowseSourceInfo(
         "tv",
         "Television (iptv.org)",
         "About 10,000 playable TV channels, by country and category, with an optional XMLTV guide.",
@@ -265,11 +270,13 @@ INTRODUCED_BY_EPOCH: dict[int, tuple[str, ...]] = {
     4: ("localmedia",),
     # 2026-10-25: two whole networks, 181.FM and laut.fm.
     5: ("one81", "lautfm"),
+    # 2026-11-07: IPRD, the open public radio directory.
+    6: ("iprd",),
 }
 
 #: The highest epoch this build knows. A profile stamped with a lower one is
 #: shown the branches introduced since, once, and then stamped with this.
-SOURCES_EPOCH = 5
+SOURCES_EPOCH = 6
 
 
 def introduced_since(epoch: int) -> tuple[str, ...]:

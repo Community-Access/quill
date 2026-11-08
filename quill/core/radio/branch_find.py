@@ -189,6 +189,13 @@ def _find_lautfm(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]
     return [leaf(station) for station in rows], "searched laut.fm"
 
 
+def _find_iprd(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    from quill.core.radio import iprd
+
+    rows = iprd.search_stations(query, safe_mode=safe_mode)
+    return [leaf(station) for station in rows], "searched IPRD"
+
+
 def _find_tv(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
     from quill.core.radio import iptv
 
@@ -237,6 +244,7 @@ _PREFIX_ROUTES: tuple[tuple[str, Any], ...] = (
     ("radioparadise", _find_radio_paradise),
     ("one81", _find_one81),
     ("lautfm", _find_lautfm),
+    ("iprd", _find_iprd),
     ("tv", _find_tv),
     ("wx", _find_wx),
     ("audius", _find_free_music),

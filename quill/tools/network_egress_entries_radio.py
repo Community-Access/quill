@@ -417,6 +417,17 @@ RADIO_EGRESS: dict[str, str] = {
         "context, 15-second timeout, 8 MB cap. Disabled in Safe Mode via "
         "laut_fm.refuse_in_safe_mode."
     ),
+    "core/radio/iprd.py::_fetch": (
+        "Single egress site for IPRD, the International Public Radio Directory "
+        "(Browse Stations > IPRD, and its search; 2026-11-07, idea from "
+        "BlindRadio, MIT): one GET of the open catalogue the project publishes "
+        "on GitHub Pages, iprd-org.github.io/iprd/site_data/metadata/catalog.json "
+        "(MIT-licensed data, no robots restriction). Reached only by opening a "
+        "folder under the branch or searching, never a background poll; kept for "
+        "a day in the directory cache and ten minutes in memory. Sends nothing "
+        "but a User-Agent. HTTPS-only over a verified TLS context, 30-second "
+        "timeout, 64 MB cap. Disabled in Safe Mode via iprd.refuse_in_safe_mode."
+    ),
     "core/radio/icy.py::read_stream_title": (
         "What's Playing / announce-track-titles: one short side connection to "
         "the SAME stream URL the user is already playing (no third party), "

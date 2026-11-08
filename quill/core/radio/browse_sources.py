@@ -35,6 +35,7 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
     shoutcasttop                    ...its live Top 500, pinned first inside it
     shoutcaststation:<id>           (leaf, resolved on activation)
     live365 | live365:<letter>      Live365, by first letter ("#" for the rest)
+    iprd | iprdcountry:<c>[	<p>] | iprdgenre:<g>[	<p>]   IPRD (browse_iprd.py)
     quillins | extdir:<provider>[	<category>]
     extdirstation:<provider>	<key>  (leaf, resolved on activation)
     tv | tvcountry[:<code>] | tvcategory[:<id>]
@@ -70,6 +71,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 
+from quill.core.radio import browse_iprd as _iprd
 from quill.core.radio import browse_local_media as _local_media
 from quill.core.radio import browse_youtube_extra as _youtube_extra
 from quill.core.radio import browse_youtube_more as _youtube_more
@@ -249,6 +251,7 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("xiph", "Xiph / Icecast Directory"),
     ("shoutcast", "SHOUTcast Directory"),
     ("live365", "Live365"),
+    ("iprd", "IPRD (Public Radio Directory)"),
     ("quillins", "Quillin Sources"),
     ("radioparadise", "Radio Paradise"),
     ("apple", "Podcasts (Apple)"),
@@ -466,7 +469,12 @@ def _browse_network_group(args: list[str], *, safe_mode: bool) -> list[BrowseNod
     nodes = []
     for network in networks.networks_in_group(group):
         nodes.append(
-            folder(make_id("network", network.network_id), network.display_name, note=network.note)
+            folder(
+                make_id("network", network.network_id),
+                network.display_name,
+                note=network.note,
+                child_count=network.channel_count or None,
+            )
         )
     return nodes
 
@@ -609,6 +617,7 @@ _HANDLERS.update(_youtube_more.HANDLERS)
 # A channel's Shorts and My YouTube's History (browse_youtube_extra).
 _HANDLERS.update(_youtube_extra.HANDLERS)
 _HANDLERS.update(_local_media.HANDLERS)  # Local Media: your playlists
+_HANDLERS.update(_iprd.HANDLERS)  # IPRD, 2026-11-07 (browse_iprd.py)
 
 
 def is_expandable(node_id: str) -> bool:
