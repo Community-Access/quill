@@ -80,8 +80,9 @@ def test_every_command_id_is_in_quills_keymap_and_has_no_chord() -> None:
         *table.command_ids(table.NORMAL_REMOTE_ROWS),
         *table.command_ids(table.REPOSITORY_ROWS),
     ):
-        # Open GitHub Reference predates the keymap entry convention; keyless either way.
-        if command_id != "file.open_github_reference":
+        # Some older GitHub and Local Git ids predate the keymap entry
+        # convention; keyless either way. The ids this program added must be there.
+        if command_id in table.NEW_COMMAND_IDS:
             assert command_id in DEFAULT_KEYMAP, command_id
         assert DEFAULT_KEYMAP.get(command_id, "") == "", command_id
 

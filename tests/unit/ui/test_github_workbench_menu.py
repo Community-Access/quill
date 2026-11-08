@@ -18,6 +18,9 @@ wx = pytest.importorskip("wx")
 
 from quill.core.github import workbench_menu as table  # noqa: E402
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file uses
+#: a real MainFrame: system-wide hotkeys and the screen-reader bridges.
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
 pytestmark = pytest.mark.machine_global
 
 _ROOT = Path(__file__).resolve().parents[3]

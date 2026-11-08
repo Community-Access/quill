@@ -207,7 +207,8 @@ class GitHubExtrasMixin:
                 initial_view=initial_view,
                 announce_cb=self._announce,
                 on_open_reference=chosen.append,
-                gist_source_cb=self._github_gist_source,
+                # GitHubItemsMixin's, on MainFrame; optional, as the dialog takes it.
+                gist_source_cb=getattr(self, "_github_gist_source", None),
             ).show()
         finally:
             provider.close()

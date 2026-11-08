@@ -152,7 +152,10 @@ def test_stop_kills_the_whole_tree_within_two_seconds(tmp_path: Path) -> None:
     )
     worker.start()
     deadline = time.monotonic() + 20
-    while not marker.exists() and time.monotonic() < deadline:
+    # Until the pid is in it, not merely until the file exists: write_text
+    # creates the file before it writes, and a reader in between sees "" (CI,
+    # 2026-11-08, ValueError on int("")).
+    while not (marker.exists() and marker.read_text().strip()) and time.monotonic() < deadline:
         time.sleep(0.1)
     assert marker.exists(), "the grandchild never started"
     pid = int(marker.read_text())

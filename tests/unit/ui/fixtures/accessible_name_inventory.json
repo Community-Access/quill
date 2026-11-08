@@ -434,6 +434,8 @@
   "quill/ui/git_worktree_dialogs.py::NewWorktreeDialog.__init__::wx.TextCtrl#3": "named",
   "quill/ui/git_worktree_dialogs.py::WorktreesDialog.__init__::wx.ListBox": "named",
   "quill/ui/github_artifacts_dialog.py::ArtifactsDialog.__init__::wx.ListCtrl": "named",
+  "quill/ui/github_clone.py::CloneRepositoryDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/github_clone.py::CloneRepositoryDialog.__init__::wx.TextCtrl#2": "named",
   "quill/ui/github_commit_comments_dialog.py::GitHubCommitCommentsDialog.__init__::wx.ListBox": "named",
   "quill/ui/github_commit_comments_dialog.py::GitHubCommitCommentsDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/github_commit_comments_dialog.py::GitHubCommitCommentsDialog.__init__::wx.TextCtrl#2": "named",
