@@ -275,14 +275,12 @@ sentence in the step’s What to do field. The token is then checked with
 <code>GET /user</code> and saved with <code>save_github_account</code>,
 exactly like a pasted token, in the same store as every other account;
 Copilot’s token stays in its own entry. The scopes requested are
-<code>repo workflow gist read:org project security_events user:follow</code>,
-each justified beside <code>WORKBENCH_SCOPES</code>;
-<code>delete_repo</code> is deliberately not requested, so Delete
-Repository needs a token made for it. <strong>Add Token
-(Advanced)…</strong> keeps the pasted-token route for fine-grained or
-limited tokens. Organizations that restrict OAuth apps must approve
-QUILL once (Settings &gt; Applications &gt; Authorized OAuth Apps &gt;
-Request or Grant).</p>
+<code>repo workflow gist read:org project security_events user:follow delete_repo</code>,
+each justified beside <code>WORKBENCH_SCOPES</code>, so one sign-in
+covers every Workbench command. <strong>Add Token (Advanced)…</strong>
+keeps the pasted-token route for fine-grained or limited tokens.
+Organizations that restrict OAuth apps must approve QUILL once (Settings
+&gt; Applications &gt; Authorized OAuth Apps &gt; Request or Grant).</p>
 <p>In QUILL, <strong>File &gt; Open from Remote &gt; Open GitHub
 Reference</strong> accepts a pasted repository or GitHub URL. The Items
 window also has <strong>Open Link…</strong> in both QUILL and QUILL

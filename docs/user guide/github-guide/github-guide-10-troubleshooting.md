@@ -37,8 +37,8 @@ things is usually true:
 - **The token lacks a scope.** For example, a token without `repo` cannot
   write to a private repository, and one without `delete_repo` cannot delete
   one. Chapter 1 lists the scopes. An account added with Sign In with GitHub
-  has every scope the workbench uses except `delete_repo`; for that one, add a
-  token you made yourself. You cannot add a scope to a token from QUILL: edit
+  has every scope the workbench uses, so this usually means a token you added
+  yourself. You cannot add a scope to a token from QUILL: edit
   the token on GitHub, or make a new one.
 - **Your account lacks permission.** Only people with write access can merge,
   rerun or label, and only administrators can rename, archive or change

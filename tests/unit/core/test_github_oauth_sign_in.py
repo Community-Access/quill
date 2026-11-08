@@ -86,13 +86,13 @@ def test_the_config_uses_copilots_client_id_table_and_the_workbench_scopes() -> 
     assert copilot_auth.github_device_flow_config("QUILL").scope == "read:user"
 
 
-def test_every_scope_says_which_feature_needs_it_and_delete_repo_is_not_asked() -> None:
+def test_every_scope_says_which_feature_needs_it_and_delete_repo_is_asked() -> None:
     names = [name for name, _reason in WORKBENCH_SCOPES]
     assert WORKBENCH_SCOPE.split() == names
     assert len(set(names)) == len(names)
     assert all(reason.strip() for _name, reason in WORKBENCH_SCOPES)
     assert {"repo", "workflow", "gist", "read:org", "project", "security_events"} <= set(names)
-    assert "delete_repo" not in names
+    assert "delete_repo" in names
 
 
 def test_an_app_without_a_registration_is_unavailable_before_any_network(monkeypatch) -> None:

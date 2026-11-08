@@ -106,11 +106,13 @@ WORKBENCH_SCOPES: tuple[tuple[str, str], ...] = (
         "Code-scanning and Dependabot alerts: listing, dismissing and reopening them.",
     ),
     ("user:follow", "Follow and Unfollow on a person's profile."),
+    (
+        "delete_repo",
+        "Delete Repository. Jeff chose one sign-in that covers every Workbench "
+        "command (2026-11-08) over a second token for this one; the command "
+        "still asks you to type the full name before it deletes anything.",
+    ),
 )
-# Left out on purpose: delete_repo. Delete Repository is the one command that
-# needs it, and asking every person to grant "delete repositories" so that a
-# rare, irreversible command works is the wrong trade; that command asks for a
-# token made for the job (Add Token), and GitHub's refusal says so.
 # notifications, read:user and user:email are covered by repo or unneeded: GET
 # /user answers for any token, and nothing in the Workbench reads an email.
 

@@ -13,9 +13,9 @@
   A code that expires, a request declined on GitHub's page, Cancel and a lost
   connection each end in one plain sentence, and nothing is saved.
 - The account is checked with GitHub and saved exactly as a pasted token is.
-  It asks for repo, workflow, gist, read:org, project, security_events and
-  user:follow, the smallest set every workbench command needs; not
-  delete_repo, so Delete Repository still needs a token made for it.
+  It asks for repo, workflow, gist, read:org, project, security_events,
+  user:follow and delete_repo, so one sign-in covers every workbench command,
+  Delete Repository included.
 - Add Account is now **Add Token (Advanced)...**, for fine-grained or limited
   tokens. Its window is called Add GitHub Token.
 - A Tools menu command that needs an account now offers Sign In with GitHub.

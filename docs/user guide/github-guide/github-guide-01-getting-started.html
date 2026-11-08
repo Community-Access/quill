@@ -407,10 +407,12 @@ their repositories and creating or forking into them.</li>
 <li><code>security_events</code>: code-scanning and Dependabot
 alerts.</li>
 <li><code>user:follow</code>: following and unfollowing people.</li>
+<li><code>delete_repo</code>: <strong>Delete Repository</strong>. It
+still makes you type the repository’s full name before it deletes
+anything.</li>
 </ul>
-<p>QUILL does not ask to delete repositories. If you want <strong>Delete
-Repository</strong> to work, add a token you made yourself with the
-<code>delete_repo</code> scope, as the next section describes.</p>
+<p>One sign-in covers every command in the Workbench, so you never need
+a second token for any of them.</p>
 <p>If your organization uses single sign-on, GitHub may ask you to sign
 in through the organization while you approve QUILL. If your
 organization restricts which apps can see its repositories, see Chapter
@@ -419,8 +421,8 @@ organization restricts which apps can see its repositories, see Chapter
 <p><strong>Add Token (Advanced)…</strong> in Manage GitHub Accounts is
 for when you want to choose exactly what QUILL can reach: a fine-grained
 token limited to a few repositories, a token your organization gave you,
-or one with a scope Sign In with GitHub doesn’t ask for, such as
-<code>delete_repo</code>. Most people never need it.</p>
+or one with fewer scopes than Sign In with GitHub asks for. Most people
+never need it.</p>
 <p>To make a token:</p>
 <ol type="1">
 <li>Open github.com in your browser and sign in.</li>

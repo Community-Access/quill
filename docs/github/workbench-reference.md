@@ -26,9 +26,8 @@ sentence in the step's What to do field. The token is then checked with
 `GET /user` and saved with `save_github_account`, exactly like a pasted token,
 in the same store as every other account; Copilot's token stays in its own
 entry. The scopes requested are `repo workflow gist read:org project
-security_events user:follow`, each justified beside `WORKBENCH_SCOPES`;
-`delete_repo` is deliberately not requested, so Delete Repository needs a
-token made for it. **Add Token (Advanced)...** keeps the pasted-token route for
+security_events user:follow delete_repo`, each justified beside
+`WORKBENCH_SCOPES`, so one sign-in covers every Workbench command. **Add Token (Advanced)...** keeps the pasted-token route for
 fine-grained or limited tokens. Organizations that restrict OAuth apps must
 approve QUILL once (Settings > Applications > Authorized OAuth Apps >
 Request or Grant).

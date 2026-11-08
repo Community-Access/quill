@@ -160,10 +160,11 @@ What QUILL asks GitHub to allow, and why:
 - `project`: Projects boards.
 - `security_events`: code-scanning and Dependabot alerts.
 - `user:follow`: following and unfollowing people.
+- `delete_repo`: **Delete Repository**. It still makes you type the
+  repository's full name before it deletes anything.
 
-QUILL does not ask to delete repositories. If you want **Delete Repository**
-to work, add a token you made yourself with the `delete_repo` scope, as the
-next section describes.
+One sign-in covers every command in the Workbench, so you never need a
+second token for any of them.
 
 If your organization uses single sign-on, GitHub may ask you to sign in
 through the organization while you approve QUILL. If your organization
@@ -173,9 +174,8 @@ restricts which apps can see its repositories, see Chapter 10.
 
 **Add Token (Advanced)...** in Manage GitHub Accounts is for when you want to
 choose exactly what QUILL can reach: a fine-grained token limited to a few
-repositories, a token your organization gave you, or one with a scope
-Sign In with GitHub doesn't ask for, such as `delete_repo`. Most people never
-need it.
+repositories, a token your organization gave you, or one with fewer scopes
+than Sign In with GitHub asks for. Most people never need it.
 
 To make a token:
 
