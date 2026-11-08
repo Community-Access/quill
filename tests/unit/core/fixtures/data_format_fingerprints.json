@@ -1352,6 +1352,7 @@
             "optilab_auto_adapt": "int",
             "optilab_exact": "bool",
             "optilab_exact_live": "bool",
+            "timeshift_minutes": "int",
             "user_tags": "tuple[str, ...]"
           },
           "quill.core.radio.favorites:RadioFavoritesStore": {
@@ -1381,10 +1382,10 @@
             "match_reason": "str"
           }
         },
-        "function:quill.core.radio.favorites:save_favorites": "sha256:07ac4b1c29bb2410"
+        "function:quill.core.radio.favorites:save_favorites": "sha256:92e742e7b8c764f4"
       },
       "classification": "additive, compatible",
-      "note": "RadioStation.notes_html is transient: to_dict never writes it, so the files on disk do not change and older builds read them as before"
+      "note": "2026-11-07: FavoriteStation.timeshift_minutes added with default -1 (follow Preferences). Older builds read favorites by named keys and ignore it; if an older build saves the file, the per-station length is dropped and the station follows Preferences again, which is safe."
     },
     "radio.history": {
       "current": 2,
