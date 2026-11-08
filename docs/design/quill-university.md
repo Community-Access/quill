@@ -158,8 +158,36 @@ already teaches:
 | Quill Player | 1 | user guide; lessons to write |
 | Quill Beacon | 1 | user guide; lessons to write |
 
-Weather, Converter and Inkwell are short enough to share a week in a term
-schedule, and the terms below do that.
+Converter and Inkwell are short enough to share a week in a term schedule,
+and the terms below do that. Weather gets a week of its own, because its
+alert watch is the thing in the family most likely to matter on a bad day,
+and a learner should leave the week with it set up and trusted, not just
+heard about.
+
+### The Quill Weather track
+
+One week, built from Weather's 11 in-app lessons (about 48 minutes of
+lessons) and its user guide:
+
+- Session 1, Your first ten minutes (13 minutes of lessons): Add your first
+  place; Read everything it knows; The one-line answer.
+- Session 2, Being warned (21 minutes): Start the watch; Rehearse an alert;
+  Decide what gets through; Keep the watch running; NOAA Weather Radio, out
+  loud.
+- Session 3, Making it yours (13 minutes): More than one place; Decide how
+  the weather reads; Weather beside the other apps. Then Quill Radio's own
+  NOAA Weather Radio lesson, for learners who took the Radio track.
+- Practise: add home, work and one place you are travelling to; rehearse an
+  alert and make sure it reaches you with another program in front; then
+  choose which alerts get through, and say in a sentence why.
+- Check yourself: with Weather closed, how will you still be warned? What is
+  the one key that answers without opening anything, and what does it say?
+- Instructor's notes: alerts depend on the learner's location and the
+  weather service, so the rehearsal is what the class does together; a real
+  alert is never something to wait for in a room.
+
+When Quill Weather for iPhone ships, it joins this track as a second week
+rather than a track of its own.
 
 Then the **cross-family tracks**, which belong to no single app:
 
@@ -212,15 +240,17 @@ Four suggested paths, so a learner does not face fifteen tracks on day one:
 - **Producer**: Core, Transcribe, Studio, Cast, Audio production.
 - **Power user**: Core, QUILL, GitHub, AI, Developer.
 
-And two eight-week terms for classes:
+And three eight-week terms for classes:
 
 - **Term 1, The family** (first to ship): week 1 Core; weeks 2 and 3 QUILL
   Lite; week 4 Radio, first half; week 5 Radio second half with Cast; week 6
-  Weather and Inkwell; week 7 Converter with the start of Accessible
-  documents; week 8 AI across the family, first week, and a final project.
-- **Term 2, Going deeper**: QUILL (4 weeks), GitHub (3 weeks), and a final
-  project. Later terms are put together from the remaining tracks as they
-  become ready.
+  Weather; week 7 Converter and Inkwell; week 8 Transcribe and a final
+  project.
+- **Term 2, Going deeper**: QUILL (4 weeks), Studio (2 weeks), AI across the
+  family (2 weeks), with the final project in the last AI week.
+- **Term 3, Making things**: GitHub (3 weeks), Accessible documents (2
+  weeks), Audio production (2 weeks), and a final project. Player, Beacon and
+  the remaining cross-family tracks make later terms.
 
 The final project in a term is one real task chosen from a short list (make
 an accessible newsletter; record, edit and publish a five-minute show; build a
@@ -514,8 +544,9 @@ A pytest gate, plus a row in `platform_report`, that fails when:
   plus the authored estimates, and fails a week over three hours. When a
   lesson grows, the week that holds it says so.
 - **A track that is not ready is published**: each track names its app's
-  status (section 12), and only a released, signed-off track builds web
-  pages. Draft tracks still build their Markdown, so they can be reviewed.
+  the version it teaches and whether it is published (section 12), and only
+  a published track builds web pages. Draft tracks still build their
+  Markdown, so they can be reviewed.
 
 Menu paths ("Help, then Tutorials") are the one thing harder to check than
 keys, because the tutorial books state their door as text. The first version
@@ -556,44 +587,49 @@ JAWS before it is published for the first time, with the result in
 
 ## 12. Which apps are ready, and how a new one joins
 
+### The release assumption
+
+Settled by Jeff on 2026-11-07: every track is written against each app's
+latest version, and we assume that version is released by the time the track
+is taught. So tracks are not held back by release dates. Studio 2.0 and
+Transcribe 1.0 are written now, against the versions in their changelogs,
+like everything else. The only thing a release date changes is the day a
+track's web pages go live: a track is not published ahead of the version it
+teaches, because a learner would be following lessons for an app they cannot
+download yet.
+
 ### The bar for a track
 
-An app gets a published track only when all of these are true:
+A track is published when all of these are true:
 
-1. It is publicly released, with a dated release in its changelog and a
-   download on the site.
-2. Its screen-reader sign-off is done, with nothing open for it in
-   `docs/qa/screen-reader-checks-2026-10.md` or its successor.
-3. Its user guide is current for that release.
-4. It has in-app lessons in the shared tutorial window and a generated book
+1. The app version it teaches is out, with a download on the site.
+2. Its user guide is current for that version.
+3. It has in-app lessons in the shared tutorial window and a generated book
    (GATE-TUTDOC), or follow-along tutorials written for the track.
-5. Its F1 help gate is in `platform_report`.
-6. Its practice pack exists and has been used once by someone who is not
+4. Its F1 help gate is in `platform_report`.
+5. Its practice pack exists and has been used once by someone who is not
    the author.
+6. Its weeks have been walked with NVDA and JAWS against that version.
 
-### Where each app stands, as the changelogs say on 2026-11-07
+### The version each track teaches
 
-This needs Jeff to confirm (decision 1). It is read from the changelogs, not
-from what is actually published.
-
-| App | Latest in its changelog | Track |
+| App | Teaches | Lesson material today |
 | --- | --- | --- |
-| QUILL | 1.0.0 | Term 1 uses it lightly; its full track is Term 2 |
-| QUILL Lite | 2.0.0, undated | phase 1 |
-| Quill Radio | 3.2.0, 2026-10-03 | phase 1 |
-| QUILL Cast | 2.0.0, 2026-10-03 | phase 1 |
-| Quill Weather | 2.2.1, 2026-10-08 | phase 1 |
-| Quill Converter | 1.0.0, 2026-09-28 | phase 1, lessons to write |
-| Quill Inkwell | 1.0.0 | phase 1, lessons to write |
-| QUILL Transcribe | 1.0.0, code done | waits for its screen-reader pass |
-| Quill Studio | 2.0.0 built, not released | waits for 2.0 |
-| Quill Player | Unreleased | waits for release |
-| Quill Beacon | 0.1.0 | waits for 1.0 |
+| QUILL | 1.0.0 | 45 in-app lessons, 7 tutorials, the QUILL Cast |
+| QUILL Lite | 2.0.0 | 31 in-app lessons |
+| Quill Radio | 3.2.0 | 44 in-app lessons, tutorial 9 |
+| QUILL Cast | 2.0.0 | 25 in-app lessons, tutorial 10 |
+| Quill Weather | 2.2.1 | 11 in-app lessons |
+| Quill Converter | 1.0.0 | user guide only; lessons to write |
+| Quill Inkwell | 1.0.0 | user guide only; lessons to write |
+| QUILL Transcribe | 1.0.0 | 5 in-app lessons |
+| Quill Studio | 2.0.0 | user guide, tutorial 4; lessons to write |
+| Quill Player | 1.0.0 | user guide only; lessons to write |
+| Quill Beacon | latest | user guide only; lessons to write |
 
-QUILL Transcribe's 1.0 release, and so its track, waits for the 77-item
-screen-reader pass in the sign-off document. Its five in-app lessons and its
-user guide already exist, so its track can be written as a draft now and
-published the day the pass is done.
+When an app moves on, its track moves to the new version: the gate catches
+keys and lesson ids that changed, and the "last walked against" warning in
+section 11 catches the rest.
 
 ### How a new app joins
 
@@ -614,11 +650,10 @@ routine rather than a project:
 
 ## 13. Decisions for Jeff
 
-1. **Which apps count as released and finished today**, for phase 1. The
-   table in section 12 is read from changelogs. In particular: is QUILL Lite
-   2.0.0 out, are QUILL 1.0.0 and Inkwell 1.0.0 out, and is QUILL in Term 1
-   at all, or does Term 1 teach QUILL Lite as the editor and leave QUILL to
-   Term 2?
+1. Settled 2026-11-07: every track teaches the app's latest version, assumed
+   released by the time it is taught (section 12). Still open under this
+   heading: whether Term 1 teaches QUILL Lite as the editor and leaves QUILL
+   to Term 2, as written, or teaches QUILL from the start.
 2. **The name in the menus and on the site.** "QUILL University" throughout,
    or something shorter in a Help menu.
 3. **Certificates**: the self-made certificate and the trainer-signed one
@@ -645,7 +680,7 @@ routine rather than a project:
 Remove each one as it is done, and record it in a short progress log above
 this list when the first one lands.
 
-Phase 1: the course for released apps
+Phase 1: Term 1
 
 - Get Jeff's answers to the decisions in section 13.
 - Create `quill/core/university/` with the manifest model (track, week,
@@ -656,8 +691,8 @@ Phase 1: the course for released apps
 - Extend the site link test's model to `docs/site/university/` and add the
   course Markdown to the documentation chord corpora.
 - Write the Core week.
-- Write the QUILL Lite, Radio, Cast and Weather tracks from their existing
-  lessons.
+- Write the QUILL Lite, Radio, Cast, Weather and Transcribe tracks from
+  their existing lessons.
 - Write in-app lessons for Converter and Inkwell, then their tracks.
 - Make the practice packs for those tracks and ship them in their installers
   and portable zips.
@@ -686,12 +721,12 @@ Phase 3: audio and the cross-family tracks
 - Add the menu-path check to GATE-UNIDOC.
 - Add the "last walked against" warning to `platform_report`.
 
-Phase 4: apps as they finish
+Phase 4: Terms 2 and 3, and the rest of the family
 
-- QUILL Transcribe: draft its track now; publish it when its screen-reader
-  pass in the sign-off document is complete.
-- Quill Studio: write in-app lessons and its track; publish when 2.0 is
-  released.
-- Quill Player and Quill Beacon: in-app lessons and tracks when each is
-  released.
-- Put Term 2 together, and later terms from the tracks that are ready.
+- Write the QUILL track (4 weeks) from its in-app lessons, tutorials and the
+  QUILL Cast.
+- Quill Studio: write in-app lessons for 2.0, then its track.
+- Quill Player and Quill Beacon: in-app lessons, then their tracks.
+- Quill Weather for iPhone: a second Weather week when that app ships.
+- Put Terms 2 and 3 together, and later terms from the tracks that are
+  ready.
