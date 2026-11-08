@@ -4136,7 +4136,11 @@ request. Each entry says what is done and how it was checked.
 - The worktree `S:\wt\baf-payments` was removed and the repository folder
   renamed from `S:\code\baf` to `S:\code\qaf`. The plugin's name is QUILL
   Accessible Forms (QAF).
-- Not on GitHub yet: the repository has no working remote.
+- Published at Jeff's word: https://github.com/Community-Access/quill-accessible-forms
+  (public, `main` pushed). History was scanned first: every key-shaped string
+  is a test placeholder. `main` is protected: a pull request with one approval,
+  resolved conversations, no force pushes, no deletion; admins can still merge.
+  The feature branches stay local, since `main` contains them.
 
 ## 19. Remaining tasks
 
