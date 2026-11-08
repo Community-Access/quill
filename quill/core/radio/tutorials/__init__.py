@@ -31,10 +31,13 @@ from quill.core.radio.tutorials import (
     living_care,
     living_daily,
     local_media,
+    networks,
     own_sources,
     pick_up_and_help,
     recording_basics,
     recording_more,
+    songs_on_air,
+    time_shift,
 )
 from quill.core.tutorials.model import Track, TutorialSet, build
 
@@ -91,6 +94,7 @@ CATALOGUE: TutorialSet = build(
     first_hour.TUTORIALS,
     first_hour_unstuck.TUTORIALS,
     browsing.TUTORIALS,
+    networks.TUTORIALS,
     own_sources.TUTORIALS,
     favorites_and_rows.TUTORIALS,
     keys_and_settings.TUTORIALS,
@@ -102,6 +106,8 @@ CATALOGUE: TutorialSet = build(
     lineups.TUTORIALS,
     downloads_and_video.TUTORIALS,
     living_daily.TUTORIALS,
+    songs_on_air.TUTORIALS,
+    time_shift.TUTORIALS,
     living_care.TUTORIALS,
     pick_up_and_help.TUTORIALS,
     extras.TUTORIALS,
