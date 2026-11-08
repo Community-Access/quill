@@ -250,8 +250,8 @@ moves. On a busy project that is dozens a day, and the website’s inbox
 is a long page of links and icons. This chapter shows you how to go
 through it from the keyboard: what each notification says, how to clear
 it, and how to keep your place. Then it covers My Work, the attention
-queue that gathers everything waiting for you, and the activity
-views.</p>
+queue that gathers everything waiting for you and says where each pull
+request stands, and the activity views.</p>
 <p>All of this needs a signed-in account, because it is your inbox and
 your work.</p>
 <p><strong>In QUILL Lite</strong>, these views work once you sign in
@@ -393,6 +393,22 @@ remembers when you last finished loading the queue, so the next time it
 can tell you what moved: changed items say “Changed since your last
 visit.” in their details, and the status line adds how many changed. The
 first time, it says “This is your first recorded visit.”</p>
+<h3 id="where-each-pull-request-stands">Where each pull request
+stands</h3>
+<p>A pull request in the queue also says where it stands, in the same
+sentence the review window opens with: “Approved, 2 checks failing, 1
+open thread”. It comes after the row’s name in the list, and in the
+details it follows the reason the row is there, so you still hear why it
+is in your queue first.</p>
+<p>QUILL reads every pull request’s sentence in one request when the
+queue loads, however many there are. It covers the twenty newest; when
+the queue holds more, the status line says so, such as “Summaries cover
+the newest 20 of 26 pull requests”.</p>
+<p>The sentence never calls a pull request ready on data it does not
+have. When GitHub sent only part of the picture, it says “merge
+readiness unknown”. When GitHub did not answer for a pull request at
+all, its row says “Summary unavailable” and the status line says how
+many.</p>
 <p>If part of the queue could not load, perhaps because GitHub refused
 one of the searches, QUILL does not pretend the list is complete. You
 hear the count “with incomplete data. Check the status for details.”,

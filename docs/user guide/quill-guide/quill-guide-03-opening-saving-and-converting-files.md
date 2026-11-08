@@ -1550,6 +1550,23 @@ who last changed each run of its lines. See
 that finds nothing new says so and costs nothing. See
 [Rate limits and the readout](../github-guide/github-guide-02-getting-around.html#rate-limits-and-the-readout).
 
+#### Copilot review and the coding agent
+
+**Request Copilot Review**, on a pull request's context menu in the review,
+asks Copilot code review for a review, and **Assign to Copilot**, on an issue's
+context menu, hands the issue to Copilot's coding agent. Each says plainly when
+Copilot is not available to your account or repository. See
+[Asking Copilot for a review](../github-guide/github-guide-05-pull-requests-and-review.html#asking-copilot-for-a-review)
+and
+[Handing an issue to Copilot](../github-guide/github-guide-04-issues.html#handing-an-issue-to-copilot).
+
+#### Commit comments
+
+**Commit Comments...**, on a commit's context menu, reads a commit's comments
+as author, date and text, and posts one on the whole commit or on a line of a
+file. See
+[Commit comments](../github-guide/github-guide-07-code-and-repositories.html#commit-comments).
+
 ### Managing repositories
 
 **Tools > Git and GitHub > GitHub** creates, forks, renames and deletes
@@ -1595,6 +1612,19 @@ The **Repository Actions** submenu in Explore syncs a fork, sets topics,
 changes the watch level, archives a repository, makes one from a template and
 deletes one. See
 [Forks, templates and topics](../github-guide/github-guide-07-code-and-repositories.html#forks-templates-and-topics).
+
+#### Gists in Explore
+
+Explore's **My gists** view writes gists as well as listing them: a new one
+from the document or its selection, public or secret, and editing, starring
+and deleting the ones you have. See
+[Gists](../github-guide/github-guide-07-code-and-repositories.html#gists).
+
+#### Pull request summaries in the attention queue
+
+Each pull request in the attention queue says where it stands, in the review's
+one sentence, read for the whole queue in one request. See
+[Where each pull request stands](../github-guide/github-guide-03-inbox-and-your-work.html#where-each-pull-request-stands).
 
 #### Codespaces
 

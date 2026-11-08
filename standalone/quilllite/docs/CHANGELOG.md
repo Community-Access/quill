@@ -2,6 +2,18 @@
 
 ## 2.0.0
 
+### GitHub: Copilot, commit comments, gists and queue summaries (2026-11-07)
+
+- The review window's pull request context menu has Request Copilot Review, and
+  an issue's context menu in GitHub Items has Assign to Copilot, which checks
+  first and says plainly when Copilot's coding agent is not available.
+- A commit's context menu has Commit Comments: read them as author, date and
+  text, and post one on the whole commit or on a file line.
+- Explore's My gists view has New Gist, starting from the document or its
+  selection, Edit Gist, Star Gist, Unstar Gist and Delete Gist.
+- The attention queue says where each pull request stands in one sentence,
+  read for the whole queue in one request.
+
 ### Sign in to GitHub from QUILL Lite (2026-11-07)
 
 - File > Manage GitHub Accounts... (Alt+F, then H) adds, switches and removes

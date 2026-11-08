@@ -22,6 +22,7 @@ from quill.ui.dialog_contract import (
 from quill.ui.dpi import dip_size
 from quill.ui.github_explore_community import GitHubExploreCommunityMixin
 from quill.ui.github_explore_context_menu import GitHubExploreContextMenuMixin
+from quill.ui.github_explore_gists import GitHubExploreGistsMixin
 from quill.ui.github_explore_labels import GitHubExploreLabelsMixin
 from quill.ui.github_explore_notifications import GitHubExploreNotificationsMixin
 from quill.ui.github_explore_queue import GitHubExploreQueueMixin
@@ -44,6 +45,7 @@ class GitHubExploreDialog(
     GitHubExploreNotificationsMixin,
     GitHubExploreQueueMixin,
     GitHubExploreSearchMixin,
+    GitHubExploreGistsMixin,
 ):
     """Shared QUILL/Lite account and repository views with selected-row actions."""
 
@@ -59,6 +61,7 @@ class GitHubExploreDialog(
         announce_cb: Callable[[str], None] | None = None,
         on_start_issue_worktree: Callable[[object, str, int, str, bool], None] | None = None,
         on_open_reference: Callable[[object], None] | None = None,
+        gist_source_cb: Callable[[], tuple[str, str]] | None = None,
     ) -> None:
         import wx
 
@@ -72,6 +75,7 @@ class GitHubExploreDialog(
         self._on_repo_select = on_repo_select
         self._on_start_issue_worktree = on_start_issue_worktree
         self._on_open_reference = on_open_reference
+        self._gist_source_cb = gist_source_cb  # (file name, text) for New Gist
         self._rows: list[ExploreRow] = []
         self._attention_state: GitHubAttentionQueue | None = None
         self._selected_keys: dict[str, str] = {}
@@ -358,6 +362,8 @@ class GitHubExploreDialog(
             message = self._notifications_loaded_message()
         else:
             message = self._note_if_unchanged(view, f"{len(self._rows)} results loaded.")
+            if result is not None and result.warning:
+                message += f" {result.warning}."
         if view == "attention" and not error:
             if queue_state is not None and had_previous_visit and result is not None:
                 message += f" {changed_count} changed since your last visit."

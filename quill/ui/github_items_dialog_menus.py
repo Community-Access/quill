@@ -44,6 +44,7 @@ class GitHubItemsMenusMixin:
             announce_cb=self._announce,
             on_start_issue_worktree=self._start_issue_worktree_cb,
             on_open_reference=open_reference,
+            gist_source_cb=getattr(self, "_gist_source_cb", None),
         )
         dialog.show()
         if reference is not None:
@@ -120,6 +121,7 @@ class GitHubItemsMenusMixin:
                 )
             elif self._view == VIEW_RELEASES:
                 self._add_release_actions(add)
+            self._add_copilot_and_commit_actions(add, model)
             url = model_url(model)
             add("Open on GitHub", self._open_selected, enabled=bool(url))
             add("Copy Link", lambda: self._copy_item_text(url, "item link"), enabled=bool(url))

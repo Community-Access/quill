@@ -7,7 +7,8 @@ comments wedged between the lines. QUILL turns it into an outline you can
 walk: the pull request, its changed files, the conversations on each file, and
 its checks. This chapter covers reading a pull request, the diff, commenting
 on a line or a range, suggesting a change, sending a review, replying and
-resolving, and then everything that gets a pull request merged.
+resolving, asking Copilot for a review, and then everything that gets a pull
+request merged.
 
 Reading works signed out. Everything that writes needs a signed-in account.
 
@@ -269,6 +270,17 @@ The thread's context menu has these, plus **React to a Comment...**,
 - **Update Branch...** (`Alt+B`) merges the base branch into the pull
   request's branch, so it is up to date. It asks first, and is unavailable on
   a draft.
+
+### Asking Copilot for a review
+
+**Request Copilot Review**, on the pull request's context menu (`Shift+F10` on
+the outline), asks Copilot code review to review the pull request. It has no
+button or access key. You hear "Copilot review requested on pull request #4."
+only when GitHub lists Copilot among the reviewers. GitHub sometimes accepts the
+request and leaves Copilot off the list, which is how it answers an account or a
+repository without Copilot code review; QUILL says that plainly rather than
+telling you a request went in when it did not. Copilot's review arrives as
+review comments, like anyone else's, and the outline shows them after a refresh.
 
 ### Merging
 

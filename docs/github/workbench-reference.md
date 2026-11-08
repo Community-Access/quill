@@ -328,6 +328,57 @@ per account (64 reads, 256 KB each, in `github_etag_cache.json`) and sends
 `If-None-Match`; a 304 shows the stored body and costs no rate limit. Explore
 says "No changes since the last load" when a reload found the same rows.
 
+## Copilot, commit comments, gists and queue summaries
+
+| Where | Key | What it does |
+| --- | --- | --- |
+| Review, pull request node | Shift+F10 | Request Copilot Review |
+| Items, issue | Shift+F10 | Assign to Copilot (checks, then asks) |
+| Items, commit | Shift+F10 | Commit Comments |
+| Commit Comments | Alt+C, Alt+M | Comments; selected comment |
+| Commit Comments | Alt+N, Alt+F, Alt+L | New comment; file; line |
+| Commit Comments | Alt+P, Alt+R | Post Comment; Refresh |
+| Explore, My gists | Shift+F10 | New Gist, Edit Gist, Star, Unstar, Delete Gist |
+| Gist window | Alt+D, Alt+B | Description; Public gist (new gists only) |
+| Gist window | Alt+F, Alt+T | Files; File text |
+| Gist window | Alt+A, Alt+N, Alt+L | Add File; Rename File; Delete File |
+
+Request Copilot Review sends `POST /pulls/{n}/requested_reviewers` with
+`copilot-pull-request-reviewer[bot]`, the login GitHub's Copilot code review
+documentation names for the REST API, and reads the reply's
+`requested_reviewers` back: GitHub can answer 201 and leave Copilot off, which
+is how an account or repository without Copilot code review answers, and QUILL
+says so rather than reporting a request. A 422 is said as "Copilot code review
+may not be available".
+
+Assign to Copilot follows GitHub's "Using Copilot cloud agent via the API". One
+GraphQL query reads `suggestedActors(capabilities: [CAN_BE_ASSIGNED])` and the
+issue's ID, state and assignees; without `copilot-swe-agent` among the actors,
+QUILL says the coding agent is not available and sends nothing. Otherwise it
+asks, then sends `replaceActorsForAssignable` with the existing assignees' IDs
+plus the agent's, so nobody already assigned is dropped. Both calls carry
+`GraphQL-Features: issues_copilot_assignment_api_support,coding_agent_model_selection`.
+Success is said only when the mutation's assignee list holds the agent.
+
+Commit Comments reads `GET /commits/{sha}/comments` (100 a page, up to ten
+pages, and says when there were more) and posts with `POST` to the same path,
+sending `path` and `line` for a comment on a line; the deprecated diff
+`position` is never sent.
+
+Gists: `POST /gists`, `PATCH /gists/{id}`, `DELETE /gists/{id}`, and `PUT` or
+`DELETE /gists/{id}/star`. The gist window edits a local draft (`gists.py`),
+and saving sends one `PATCH` in which a deleted file is `null` and a renamed one
+carries `filename`. A file GitHub truncated is never sent back. Create and save
+are confirmed against the files and description GitHub returns.
+
+The attention queue adds `pr_summary.py`'s sentence to each pull request row
+from one aliased GraphQL request per refresh (`attention_queue_summaries.py`),
+covering the twenty newest pull requests. It keeps the summary's rules: unknown
+or partial data reads "merge readiness unknown", a pull request GitHub did not
+answer for reads "Summary unavailable", and the row's reason stays the first
+line of its details. A summary gap is said in the status line but does not mark
+the queue itself incomplete.
+
 ## Review and write safety
 
 The review tree announces reply counts, outdated positions, resolved state,
@@ -363,7 +414,8 @@ auto-merge and the merge queue are `merge_automation.py`. Wave 3 adds
 GraphQL calls go through the same REST transport. Wave 4 adds
 `search_views.py`, `repo_insights.py`, `repo_actions.py`, `release_admin.py`,
 `issue_housekeeping.py`, `rate_limits.py` and `conditional_requests.py`, with
-Explore's routing in `explore_extra_views.py`. The REST calls
+Explore's routing in `explore_extra_views.py`. The last four add `copilot.py`,
+`commit_comments.py`, `gists.py` and `attention_queue_summaries.py`. The REST calls
 PyGithub lacks go through `rest_transport.py`, which refuses redirects so the
 token stays on api.github.com. The shared UI modules are under `quill/ui/`.
 Network calls are made off the UI thread. Tests exercise provider mapping,

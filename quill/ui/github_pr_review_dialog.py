@@ -17,6 +17,7 @@ from quill.core.github.pr_review import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
 from quill.ui.dpi import dip_size
+from quill.ui.github_pr_review_copilot import GitHubPullReviewCopilotMixin
 from quill.ui.github_pr_review_extras import GitHubPullReviewExtrasMixin
 from quill.ui.github_pr_review_menus import GitHubPullReviewMenusMixin
 from quill.ui.github_pr_review_merge import GitHubPullReviewMergeMixin
@@ -36,6 +37,7 @@ class GitHubPullReviewDialog(
     GitHubPullReviewRenderMixin,
     GitHubPullReviewMenusMixin,
     GitHubPullReviewMergeMixin,
+    GitHubPullReviewCopilotMixin,
 ):
     """Three-pane reader for one PR's state, review threads, and check runs."""
 

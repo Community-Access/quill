@@ -4,9 +4,10 @@
 
 This chapter is about the code itself and the repository around it. It covers
 browsing files at any branch, tag or commit, blame and file history, opening a
-file to edit, branches and comparing them, tags and releases, searching
-across GitHub, forks, templates and topics, the community profile, insights,
-looking after a repository, and watching, starring and following.
+file to edit, branches and comparing them, commit comments, tags and
+releases, searching across GitHub, forks, templates and topics, the community
+profile, insights, looking after a repository, watching, starring and
+following, and writing and editing gists.
 
 ## Browsing a repository's files
 
@@ -114,6 +115,22 @@ two branches has two tabs:
 
 **Open on GitHub** (`Alt+G`) opens the comparison in your browser. Comparing
 only reads, so it works signed out.
+
+## Commit comments
+
+On a commit row, in the Commits view or in a branch's commits, the context
+menu has **Commit Comments...**. It opens the commit's comments, oldest first.
+Each reads as who wrote it, the date and its first line: "octocat, 2026-11-07:
+Looks good". A comment on a line of a file says where, such as "on
+docs/readme.md line 12". Tab reaches the whole comment.
+
+To add one, type it in **New comment** (`Alt+N`) and press **Post Comment**
+(`Alt+P`). It goes on the whole commit unless you name a file in **File,
+optional** (`Alt+F`); give a **Line, optional** (`Alt+L`) as well to put it on
+one line of that file. You hear "Comment posted on" and where only when GitHub
+sends the comment back, and then the list is read again. **Refresh** (`Alt+R`)
+reads it again whenever you like. As a guest you can read the comments, but
+posting needs a signed-in account.
 
 ## Tags and releases
 
@@ -292,6 +309,34 @@ On a person's row, the context menu has **Follow** or **Unfollow** and their
 username. These happen straight away, without a question: "You now follow"
 them. **Explore Person's Activity** shows what they have been doing.
 
+## Gists
+
+Explore's **My gists** view lists your gists, each with its description and
+whether it is public or secret. Signed in, the context menu has:
+
+- **New Gist...**, anywhere in the view. It starts from the document you are
+  editing: the selection if there is one, otherwise the whole document, under
+  the document's file name. Where there is no document, such as QUILL Lite's
+  empty window, it starts blank.
+- **Edit Gist...**, on a gist. QUILL reads the gist from GitHub first.
+- **Star Gist** and **Unstar Gist**.
+- **Delete Gist...**, which asks first. A deleted gist cannot be brought back
+  from QUILL.
+
+The gist window has **Description** (`Alt+D`), **Public gist** (`Alt+B`) when
+the gist is new, the **Files** list (`Alt+F`), and **File text** (`Alt+T`) for
+the chosen file. **Add File...** (`Alt+A`), **Rename File...** (`Alt+N`) and
+**Delete File...** (`Alt+L`) change the list. Delete File asks first, and a
+gist always keeps at least one file. Nothing goes to GitHub until **Create
+Gist** or **Save Gist**, which have no access key; Cancel sends nothing.
+
+A secret gist is unlisted, not private: anyone with its link can read it, and
+GitHub does not let you switch a gist between public and secret later. When you
+save, QUILL says what GitHub confirmed, such as "Gist saved. GitHub confirmed:
+rename notes.md to todo.md." A file over about a megabyte reaches QUILL cut
+short, so it is read-only in the gist window and never sent back; you can still
+rename it.
+
 ## Other repository views in Explore
 
 Explore has more views of one repository, each in **View:** with the
@@ -308,7 +353,7 @@ repository in **Repository:**:
 And views of people: **Person's repositories**, **Person's followers** and
 **People followed by person**, with the username in **Person:**; and your own,
 **My repositories**, **Starred repositories**, **Watched repositories**,
-**People I follow**, **My followers** and **My gists**.
+**People I follow**, **My followers** and **My gists** (see Gists, above).
 
 ---
 

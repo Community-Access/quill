@@ -71,6 +71,7 @@ from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_items_dialog_ai import GitHubItemsAiMixin
 from quill.ui.github_items_dialog_branches import GitHubBranchActionsMixin
+from quill.ui.github_items_dialog_copilot import GitHubItemsCopilotMixin
 from quill.ui.github_items_dialog_filter import GitHubQuickFilterMixin
 from quill.ui.github_items_dialog_housekeeping import GitHubItemsHousekeepingMixin
 from quill.ui.github_items_dialog_issue_templates import GitHubIssueTemplatesMixin
@@ -125,6 +126,7 @@ class GitHubItemsDialog(
     GitHubRepositoryToolsMixin,
     GitHubItemsMenusMixin,
     GitHubItemsReactionsMixin,
+    GitHubItemsCopilotMixin,
 ):
     """Modal list-over-detail viewer for a repository's GitHub items."""
 
@@ -139,6 +141,7 @@ class GitHubItemsDialog(
         announce_cb: Callable[[str], None] | None = None,
         ai_acquire_cb: Callable[[], Callable[[str], str] | None] | None = None,
         start_issue_worktree_cb: Callable[[object, str, int, str, bool], None] | None = None,
+        gist_source_cb: Callable[[], tuple[str, str]] | None = None,
     ) -> None:
         import wx
 
@@ -147,6 +150,7 @@ class GitHubItemsDialog(
         self._open_file_reference_cb = open_file_reference_cb
         self._announce = announce_cb or (lambda _m: None)
         self._start_issue_worktree_cb = start_issue_worktree_cb
+        self._gist_source_cb = gist_source_cb  # Explore's New Gist starts from it
         # Resolves QUILL's AI connection on demand (may prompt; UI thread) and
         # returns a summarize(text) callable safe to run off-thread, or None.
         self._ai_acquire = ai_acquire_cb

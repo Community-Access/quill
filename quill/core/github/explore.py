@@ -34,6 +34,7 @@ from quill.core.github.explore_models import (
 from quill.core.github.explore_notifications import ExploreNotificationsMixin
 from quill.core.github.explore_views import AUTH_VIEWS, PERSON_VIEWS
 from quill.core.github.fetch_results import GitHubFetchResult
+from quill.core.github.gists import GitHubGistsMixin
 from quill.core.github.repository_views import (
     fetch_deployments,
     fetch_repository_access,
@@ -50,7 +51,7 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
-class GitHubExploreClient(ExploreNotificationsMixin):
+class GitHubExploreClient(ExploreNotificationsMixin, GitHubGistsMixin):
     """Bounded reads and explicit writes using the workbench's existing session."""
 
     def __init__(self, provider: GitHubItemsProvider) -> None:
@@ -245,8 +246,16 @@ class GitHubExploreClient(ExploreNotificationsMixin):
             for row in _rows(user.get_gists(), limit, source="Gists", warnings=warnings):
                 url = _text(getattr(row, "html_url", ""))
                 description = _text(getattr(row, "description", "")) or "Untitled gist"
+                files = ", ".join(sorted(getattr(row, "files", None) or {}))
+                visibility = "Public" if getattr(row, "public", False) else "Secret"
                 result.append(
-                    ExploreRow(description, f"Gist: {description}\n{url}", url, kind="gist")
+                    ExploreRow(
+                        f"{description} ({visibility.casefold()})",
+                        f"Gist: {description}\n{visibility}\nFiles: {files}\n{url}",
+                        url,
+                        kind="gist",
+                        key=_text(getattr(row, "id", "")),
+                    )
                 )
             return result
         if view == "notifications":

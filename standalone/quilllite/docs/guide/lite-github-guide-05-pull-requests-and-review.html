@@ -250,8 +250,8 @@ with comments wedged between the lines. QUILL turns it into an outline
 you can walk: the pull request, its changed files, the conversations on
 each file, and its checks. This chapter covers reading a pull request,
 the diff, commenting on a line or a range, suggesting a change, sending
-a review, replying and resolving, and then everything that gets a pull
-request merged.</p>
+a review, replying and resolving, asking Copilot for a review, and then
+everything that gets a pull request merged.</p>
 <p>Reading works signed out. Everything that writes needs a signed-in
 account.</p>
 <p><strong>In QUILL Lite</strong>, a guest can read every part of a
@@ -522,6 +522,17 @@ first.</li>
 branch into the pull request’s branch, so it is up to date. It asks
 first, and is unavailable on a draft.</li>
 </ul>
+<h3 id="asking-copilot-for-a-review">Asking Copilot for a review</h3>
+<p><strong>Request Copilot Review</strong>, on the pull request’s
+context menu (<code>Shift+F10</code> on the outline), asks Copilot code
+review to review the pull request. It has no button or access key. You
+hear “Copilot review requested on pull request #4.” only when GitHub
+lists Copilot among the reviewers. GitHub sometimes accepts the request
+and leaves Copilot off the list, which is how it answers an account or a
+repository without Copilot code review; QUILL says that plainly rather
+than telling you a request went in when it did not. Copilot’s review
+arrives as review comments, like anyone else’s, and the outline shows
+them after a refresh.</p>
 <h3 id="merging">Merging</h3>
 <p>Merging is in GitHub Items, not the review window, because it is the
 one thing here that changes the main branch for everyone. Select the
