@@ -15,6 +15,7 @@ from collections.abc import Callable
 
 from quill.core.ai.translation import (
     LANGUAGE_NAMES,
+    SOURCE_DETECT,
     SUPPORTED_LANGUAGES,
     UNCHANGED_TRANSLATION_MESSAGE,
     translation_unchanged,
@@ -39,7 +40,9 @@ class AITranslationDialog:
       2. Translation runs in background; result appears in the text area.
       3. Buttons: Copy to Clipboard, Replace Original, Open as New Document, Close.
 
-    The caller supplies *on_translate(text, target_language, provider, libretranslate_url)*
+    The caller supplies
+    *on_translate(text, target_language, provider, libretranslate_url, source_language)*,
+    where *source_language* is "" for Detect,
     which dispatches to the appropriate backend.
     """
 
@@ -49,7 +52,7 @@ class AITranslationDialog:
         initial_text: str,
         source_description: str,
         show_modal_dialog: Callable,
-        on_translate: Callable[[str, str, str, str], tuple[str, str]],
+        on_translate: Callable[[str, str, str, str, str], tuple[str, str]],
         on_replace: Callable[[str], None] | None = None,
         on_new_document: Callable[[str, str], None] | None = None,
         default_libretranslate_url: str = _DEFAULT_LIBRETRANSLATE_URL,
@@ -124,6 +127,24 @@ class AITranslationDialog:
         lt_note.Wrap(720)
         provider_sizer.Add(lt_note, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 4)
         root.Add(provider_sizer, 0, wx.EXPAND | wx.ALL, 8)
+
+        # --- Source language row: Detect, or the language the text is in ---
+        # When Detect guesses wrong the AI hands the text back unchanged; naming
+        # the source is the fix the unchanged-result message points at.
+        source_row = wx.BoxSizer(wx.HORIZONTAL)
+        source_label = wx.StaticText(self.dialog, label="Translate &from:")
+        self._source_choice = wx.Choice(
+            self.dialog, choices=[SOURCE_DETECT, *sorted(SUPPORTED_LANGUAGES.keys())]
+        )
+        self._source_choice.SetSelection(0)
+        self._source_choice.SetName("Source language")
+        self._source_choice.SetHelpText(
+            "The language the text is in. Detect lets the translator work it out; "
+            "choose the language yourself when the translation comes back unchanged."
+        )
+        source_row.Add(source_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        source_row.Add(self._source_choice, 0)
+        root.Add(source_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         # --- Language chooser row ---
         lang_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -219,13 +240,15 @@ class AITranslationDialog:
         lang_name = self._lang_choice.GetString(self._lang_choice.GetSelection())
         provider = "libretranslate" if self._provider_lt_rb.GetValue() else "ai_assistant"
         lt_url = self._lt_url_ctrl.GetValue().strip() or _DEFAULT_LIBRETRANSLATE_URL
+        source = self._source_choice.GetString(self._source_choice.GetSelection())
+        source = "" if source == SOURCE_DETECT else source
         self._status_label.SetLabel(f"Translating to {lang_name} via {provider}...")
         self._translate_btn.Enable(False)
 
         def _run() -> None:
             try:
                 translated, detected = self._on_translate(
-                    self._initial_text, lang_name, provider, lt_url
+                    self._initial_text, lang_name, provider, lt_url, source
                 )
                 self._wx.CallAfter(self._on_done, translated, detected, lang_name)
             except Exception as exc:

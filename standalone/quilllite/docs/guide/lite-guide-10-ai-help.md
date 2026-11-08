@@ -86,7 +86,10 @@ computer, which is free and sends nothing anywhere.
    type something. For **Have a conversation** it is your first message, and
    you can leave it empty: the conversation window then opens ready for you.
    For **Translate**, you get a **Translate into** list instead, with twenty
-   languages. Spanish is chosen until you pick another.
+   languages. Spanish is chosen until you pick another. If the answer comes
+   back the same as your text, you hear so rather than getting it as a
+   translation: the text may already be in that language, or the AI could
+   not tell what language it was in.
 5. **Put the answer in.** Where the answer goes when it arrives. See *Where
    the answer goes*, below.
 6. **Send.** Nothing leaves your computer until you press it.

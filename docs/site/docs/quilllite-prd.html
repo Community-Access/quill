@@ -3897,6 +3897,49 @@ than on QUILL’s leader because QUILL Lite has none (rule 6). Save
 Clipboard to File and Copy Log are occasional (rule 9) and no chord was
 left; Clear Clipboard stays menu-only on purpose too, because a stray
 key would lose what was on the clipboard (rule 4).</p>
+<h2
+id="paste-copied-files-saved-replace-jobs-and-abbreviation-fields-2026-11-07">Paste
+Copied Files, saved replace jobs and abbreviation fields
+(2026-11-07)</h2>
+<p>QUILL has the same commands from the same handlers, mapped in
+<code>COMMAND_EQUIVALENTS</code> (family rule 10); none has a key in
+either editor (no chord was free in both, measured 2026-11-07, and each
+asks a question at once).</p>
+<ul>
+<li><strong>Paste Copied Files…</strong> (Edit &gt; Clipboard, letter D,
+the letters of “Paste File” being spent there by the copy tray and the
+collector; <code>cmd_paste_file</code>,
+<code>quill/ui/paste_file.py</code>): for files copied in File Explorer,
+inserts each file’s text (read through QUILL’s readers, joined by a
+blank line) or each full path, at the caret as one undo step. Refuses by
+name files over 5 MB, folders and non-text files.</li>
+<li><strong>Edit &gt; Replace Jobs</strong> (letter J): <strong>Run
+Replace Job…</strong> (R, <code>cmd_run_replace_job</code>) and
+<strong>Manage Replace Jobs…</strong> (M,
+<code>cmd_manage_replace_jobs</code>), from
+<code>quill/ui/replace_jobs.py</code>. A job is a named list of steps
+(Find what, Replace with, Regular expression, Match case) run in order
+on the selection or the whole document, written once with
+<code>replace_as_one_undo</code>. Stored in QUILL Lite’s data folder as
+<code>replace_jobs.json</code> with <code>write_json_atomic</code>.
+Three samples until the first save. The rows are
+<code>quill/core/lite/commands_replace_jobs.py</code>; the hooks are
+<code>quill/apps/lite_window_replace_jobs.py</code>.</li>
+<li><strong>Abbreviation fields.</strong> Snippets and typed expansion
+ask <code>${field:...}</code>, <code>${input:...}</code> and
+<code>${choice:Label|...}</code> in
+<code>quill.ui.fill_in_dialog</code>, the call QUILL’s abbreviations
+make, so one shared library answers the same way in both editors. Cancel
+inserts nothing and leaves a typed trigger as typed. Snippets also
+honour <code>${cursor}</code> correctly now when there is no cursor
+marker (the caret ends after the text).</li>
+<li><strong>Translate</strong> in the shared AI window says so when the
+answer equals the input (case and spacing ignored) and opens no
+result.</li>
+<li><strong>Not done:</strong> speech rate, volume and punctuation keys.
+QUILL Lite speaks through the screen reader, which owns those, and has
+no voice of its own to set.</li>
+</ul>
 <h2 id="document-statistics-pressed-twice-2026-11-06">Document
 Statistics, pressed twice (2026-11-06)</h2>
 <p><strong>View &gt; Document Statistics</strong>

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 565.
+Editor commands with default bindings: 569.
 
 ## The QUILL editor
 
@@ -57,6 +57,9 @@ Editor commands with default bindings: 565.
 | (unbound by default) | Clear Clipboard | `edit.clear_clipboard` |
 | (unbound by default) | Follow Link | `edit.follow_link` |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
+| (unbound by default) | Manage Replace Jobs... | `edit.manage_replace_jobs` |
+| (unbound by default) | Paste Copied Files... | `edit.paste_file` |
+| (unbound by default) | Run Replace Job... | `edit.run_replace_job` |
 | (unbound by default) | Save Clipboard to File... | `edit.save_clipboard_to_file` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
@@ -390,6 +393,7 @@ Editor commands with default bindings: 565.
 | QUILL Key + R | Read Aloud Start/Pause | `tools.read_aloud_start_pause` |
 | QUILL Key + Shift+D | Dictate (Offline) | `tools.speech_dictate` |
 | QUILL Key + Shift+I | Document Intake Report... | `tools.document_intake_report` |
+| QUILL Key + Shift+K | Open Keyboard Reference | `tools.open_keyboard_reference` |
 | QUILL Key + Shift+N | New Sticky Note... | `tools.sticky_note_capture` |
 | QUILL Key + Shift+O | Find recording chapters | `tools.find_recording_chapters` |
 | QUILL Key + Shift+P | Post to Mastodon... | `tools.post_to_mastodon` |
@@ -441,7 +445,6 @@ Editor commands with default bindings: 565.
 | --- | --- | --- |
 | (unbound by default) | Copy Log | `help.copy_log` |
 | (unbound by default) | Release Channel... | `help.release_channel` |
-| (unbound by default) | What's New | `help.whats_new` |
 | Alt+F1 | Why Is This Unavailable? | `help.why_unavailable` |
 | Alt+Shift+/ or Ctrl+F1 | Key Cheatsheet | `help.key_cheatsheet` |
 | Alt+Shift+P | Switch Feature Profile... | `help.switch_feature_profile` |
@@ -451,6 +454,7 @@ Editor commands with default bindings: 565.
 | Ctrl+Shift+F1 | Open User Guide | `help.open_user_guide` |
 | F1 | Help on This Control | `help.help_on_control` |
 | QUILL Key + Shift+H | Context Help: Current Mode Keys | `help.context_help` |
+| QUILL Key + W | What's New | `help.whats_new` |
 | Shift+F1 | About Quill | `help.about_quill` |
 
 ### Everything else

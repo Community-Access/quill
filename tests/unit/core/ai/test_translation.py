@@ -52,8 +52,53 @@ def test_translation_unchanged_false_for_real_or_empty_results(
 def test_unchanged_message_wording() -> None:
     assert UNCHANGED_TRANSLATION_MESSAGE == (
         "The translation came back the same as the original. "
-        "The text may already be in the target language."
+        "The source language may be wrong; choose it instead of Detect."
     )
+
+
+def test_a_named_source_language_is_told_to_the_ai(monkeypatch) -> None:
+    """Choosing the source instead of Detect is the fix the message offers, so it
+    has to reach the request: the AI is told what language the text is in."""
+    import quill.core.ai.translation as translation
+
+    sent: dict[str, str] = {}
+
+    def fake_response(_conn, _key, prompt, **_kwargs):
+        sent["prompt"] = prompt
+        return '{"source": "es"}\nHello', ""
+
+    monkeypatch.setattr(translation, "generate_assistant_response", fake_response)
+    result = translation.translate_text("Hola", "English", object(), "", source_language="Spanish")
+
+    assert result == ("Hello", "es")
+    assert "The following text is in Spanish. Translate it into English" in sent["prompt"]
+
+
+def test_detect_leaves_the_request_as_it_was(monkeypatch) -> None:
+    import quill.core.ai.translation as translation
+
+    sent: dict[str, str] = {}
+
+    def fake_response(_conn, _key, prompt, **_kwargs):
+        sent["prompt"] = prompt
+        return "Hello", ""
+
+    monkeypatch.setattr(translation, "generate_assistant_response", fake_response)
+    translation.translate_text(
+        "Hola", "English", object(), "", source_language=translation.SOURCE_DETECT
+    )
+
+    assert "Translate the following text into English" in sent["prompt"]
+    assert "is in" not in sent["prompt"].split("TEXT TO TRANSLATE")[0]
+
+
+def test_the_free_ai_message_does_not_mention_a_detect_it_does_not_have() -> None:
+    from quill.core.ai.translation import HOSTED_UNCHANGED_TRANSLATION_MESSAGE
+
+    assert HOSTED_UNCHANGED_TRANSLATION_MESSAGE.startswith(
+        "The translation came back the same as the original."
+    )
+    assert "Detect" not in HOSTED_UNCHANGED_TRANSLATION_MESSAGE
 
 
 # ---------------------------------------------------------------------------

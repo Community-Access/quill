@@ -230,7 +230,9 @@ Press a letter in the list to jump.
   friendlier**, **Turn into a list**, **Find action items**, **Suggest
   headings**, **Continue writing**, **Write an email reply** and **Translate**.
   When you choose Translate, a **Translate into** list appears with twenty
-  languages.
+  languages. If the answer comes back the same as your text, QUILL says so
+  rather than showing it as a translation: the text may already be in that
+  language, or the AI could not tell what language it was in.
 - Three that need you to type: Ask a question about the document, Ask a
   general question, and Have a conversation.
 
@@ -2449,6 +2451,11 @@ Document...** translate
 your text into a language you choose in the dialog. Translate Selection has no
 key by default; you can give it one in the Keymap Editor.
 
+**Translate from** is the language your text is in. It starts on **Detect**,
+which lets the translator work it out. Choose the language yourself when
+Detect gets it wrong: a short passage, or one that mixes two languages, is
+easy to misread.
+
 You can choose between two providers:
 
 - **AI Assistant** (the default) uses your cloud or local AI. It works with any
@@ -2476,13 +2483,14 @@ sent it. That usually means it was already in the language you picked: you
 asked for English and the passage was English all along, or the provider
 quietly turned Spanish into Spanish. QUILL does not dress that up as a
 translation. The result box says "The translation came back the same as the
-original. The text may already be in the target language." and takes focus,
+original. The source language may be wrong; choose it instead of Detect." and
+takes focus,
 so your screen reader reads the sentence to you. Copy to Clipboard, Replace
 Original and Open as New Document stay unavailable, because there is nothing
 new to use. Spacing, line breaks and capital letters do not count as a
 difference, so a result that only rewrapped your lines gets the same message.
-Pick another language, or the other provider, and press **Translate Now**
-again.
+Choose the language your text is in from **Translate from**, or pick another
+provider, and press **Translate Now** again.
 
 ### AI Thesaurus
 

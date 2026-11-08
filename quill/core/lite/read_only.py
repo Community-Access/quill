@@ -33,6 +33,8 @@ TEXT_CHANGING_HANDLERS: frozenset[str] = frozenset({
     "cmd_duplicate_selection",
     "cmd_paste_from_tray",
     "cmd_paste_clip",
+    "cmd_paste_file",
+    "cmd_run_replace_job",
     # Edit > Lines, every row
     "cmd_move_line_up",
     "cmd_move_line_down",

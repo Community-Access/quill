@@ -1386,6 +1386,13 @@ class DialogRecorder:
         # Import / Convert Document's scanned question, 2026-10-17 (a message
         # box imported at lite_window_import's scope).
         "show_message_box_import": ("quill.apps.lite_window_import", "show_message_box"),
+        # Paste Copied Files, saved replace jobs and abbreviation fields, 2026-11-07: shared
+        # windows (quill/ui), called by name from their own module, so the
+        # defining module is the binding.
+        "choose_paste_kind": ("quill.ui.paste_file", "choose_paste_kind"),
+        "choose_replace_job": ("quill.ui.replace_jobs", "choose_replace_job"),
+        "manage_replace_jobs": ("quill.ui.replace_jobs", "manage_replace_jobs"),
+        "prompt_for_fields": ("quill.ui.fill_in_dialog", "prompt_for_fields"),
     }
 
     #: Names whose stub must be callable *and* have a ``show()``, because the

@@ -2539,6 +2539,39 @@ Log are occasional (rule 9) and no chord was left; Clear Clipboard stays
 menu-only on purpose too, because a stray key would lose what was on the
 clipboard (rule 4).
 
+## Paste Copied Files, saved replace jobs and abbreviation fields (2026-11-07)
+
+QUILL has the same commands from the same handlers, mapped in
+`COMMAND_EQUIVALENTS` (family rule 10); none has a key in either editor (no
+chord was free in both, measured 2026-11-07, and each asks a question at once).
+
+- **Paste Copied Files...** (Edit > Clipboard, letter D, the letters of
+  "Paste File" being spent there by the copy tray and the collector; `cmd_paste_file`,
+  `quill/ui/paste_file.py`): for files copied in File Explorer, inserts each
+  file's text (read through QUILL's readers, joined by a blank line) or each
+  full path, at the caret as one undo step. Refuses by name files over 5 MB,
+  folders and non-text files.
+- **Edit > Replace Jobs** (letter J): **Run Replace Job...** (R,
+  `cmd_run_replace_job`) and **Manage Replace Jobs...** (M,
+  `cmd_manage_replace_jobs`), from `quill/ui/replace_jobs.py`. A job is a named
+  list of steps (Find what, Replace with, Regular expression, Match case) run in
+  order on the selection or the whole document, written once with
+  `replace_as_one_undo`. Stored in QUILL Lite's data folder as
+  `replace_jobs.json` with `write_json_atomic`. Three samples until the first
+  save. The rows are `quill/core/lite/commands_replace_jobs.py`; the hooks are
+  `quill/apps/lite_window_replace_jobs.py`.
+- **Abbreviation fields.** Snippets and typed expansion ask `${field:...}`,
+  `${input:...}` and `${choice:Label|...}` in `quill.ui.fill_in_dialog`, the
+  call QUILL's abbreviations make, so one shared library answers the same way
+  in both editors. Cancel inserts nothing and leaves a typed trigger as typed.
+  Snippets also honour `${cursor}` correctly now when there is no cursor
+  marker (the caret ends after the text).
+- **Translate** in the shared AI window says so when the answer equals the
+  input (case and spacing ignored) and opens no result.
+- **Not done:** speech rate, volume and punctuation keys. QUILL Lite speaks
+  through the screen reader, which owns those, and has no voice of its own to
+  set.
+
 ## Document Statistics, pressed twice (2026-11-06)
 
 **View > Document Statistics** (**Ctrl+Shift+G**, `cmd_statistics`) still

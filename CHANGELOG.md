@@ -51,6 +51,32 @@
   a secondary limit is said once ("GitHub asked QUILL to wait 60 seconds")
   instead of as a string of failures.
 
+### Paste Copied Files, saved replace jobs, fields in QUILL Lite, and two Help keys (2026-11-07)
+
+- **Paste Copied Files...** (Edit > Clipboard) pastes the text, or the full paths, of
+  files copied in File Explorer. Text is read the way QUILL opens the file, so
+  a Word document or a PDF comes in as words. Files over 5 MB, folders and
+  anything that is not text are left out and named. One undo step.
+- **Saved replace jobs.** Run Replace Job... and Manage Replace Jobs... (Edit >
+  Search Tools, after Multi Replace) keep named lists of find-and-replace
+  steps, each with Regular expression and Match case. A job runs on the
+  selection or the whole document as one undo step, says how many it replaced,
+  and changes nothing if any step's pattern is bad. Three starter jobs:
+  Tidy spaces, Straighten quote marks, Close up blank lines.
+- **Snippet blanks in one form.** A snippet's `${input:...}` and
+  `${choice:...}` blanks are asked together in the fill-in form abbreviations
+  use, instead of one window each. `${input:Label}` now also works as an
+  abbreviation field, the same as `${field:Label}`.
+- **AI Translate: Translate from.** Choose the language your text is in, or
+  leave it on Detect. A result that comes back unchanged now says "The source
+  language may be wrong; choose it instead of Detect." The free AI's Translate
+  says so too, instead of showing the same text as a translation.
+- **Keys for What's New and the keyboard reference:** the QUILL key, then `W`,
+  and the QUILL key, then `Shift+K`. Open Keyboard Reference now shows its key
+  in the Help menu.
+- QUILL Lite has Paste Copied Files, the replace jobs and abbreviation fields from the
+  same code.
+
 ### GitHub repository files, milestones, discussions and security triage (2026-11-07)
 
 - **Repository Files.** Files... (Alt+F) in GitHub Items browses a repository as a
