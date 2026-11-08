@@ -50,7 +50,11 @@ def rows(app: Any) -> tuple[Any, Any]:
         [label for _minutes, label in timeshift.CHOICES],
         timeshift.choice_index(int(getattr(history, "timeshift_minutes", 60))),
     )
-    key_text = PreferenceText(ACOUSTID_LABEL, ACOUSTID_HELP, acoustid.stored_key())
+    # In the Song recognition box beside the service choice and the AudD token
+    # (radio_preferences_scrobble), so the two keys sit with what uses them.
+    key_text = PreferenceText(
+        ACOUSTID_LABEL, ACOUSTID_HELP, acoustid.stored_key(), group="Song recognition"
+    )
     return choice, key_text
 
 

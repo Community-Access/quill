@@ -304,6 +304,10 @@ class PreferencesDialog:
             raise ValueError("selected_index must refer to an available option.")
         choice.SetSelection(selected_index)
 
+    def text_value(self, index: int) -> str:
+        """What one of the supplied text fields holds right now, saved or not."""
+        return str(self._text_controls[index].GetValue())
+
     def set_choice_help_text(self, index: int, help_text: str) -> None:
         self._describe(self._choice_controls[index], help_text)
 

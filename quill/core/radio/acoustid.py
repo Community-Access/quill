@@ -74,6 +74,9 @@ class Match:
     #: AcoustID's confidence, 0.0 to 1.0.
     score: float
     recording_id: str = ""
+    #: The album, when the service names one (AudD does; AcoustID's lookup
+    #: here does not ask for it).
+    album: str = ""
 
     def spoken(self) -> str:
         """``"Song by Artist"``, or just the title when no artist was given."""

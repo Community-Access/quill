@@ -279,6 +279,15 @@ class RadioHistory:
     #: cache, capped in bytes and removed on exit; 0 keeps the old in-memory
     #: buffer (about 45 minutes). See quill.core.radio.timeshift.
     timeshift_minutes: int = 60
+    #: Which service answers Identify This Song: "acoustid" (default) or
+    #: "audd" (the listener's own token). See quill.core.radio.song_recognition.
+    recognition_service: str = "acoustid"
+    #: Scrobbling (quill.core.radio.scrobble_tracker): send songs heard for a
+    #: minute to each service the listener turned on. All off by default; the
+    #: tokens and sign-ins live in the credential store, never here.
+    scrobble_listenbrainz: bool = False
+    scrobble_lastfm: bool = False
+    scrobble_librefm: bool = False
     #: Last volume level (0-100) the listener set, remembered across sessions so
     #: stations don't all come back at full blast on the next launch (#1263).
     #: -1 means "never set" -- the controller keeps its own default.

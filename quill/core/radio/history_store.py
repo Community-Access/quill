@@ -149,6 +149,11 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.playback_engine = engine if engine in ("auto", "wx", "mpv") else "auto"
         history.volume_boost = bool(raw.get("volume_boost", False))
         history.timeshift_minutes = timeshift.normalise_minutes(raw.get("timeshift_minutes", 60))
+        service = str(raw.get("recognition_service", "acoustid") or "").strip().lower()
+        history.recognition_service = service if service in ("acoustid", "audd") else "acoustid"
+        history.scrobble_listenbrainz = bool(raw.get("scrobble_listenbrainz", False))
+        history.scrobble_lastfm = bool(raw.get("scrobble_lastfm", False))
+        history.scrobble_librefm = bool(raw.get("scrobble_librefm", False))
         try:
             vol = int(raw.get("volume_percent", -1))
         except (TypeError, ValueError):
@@ -306,6 +311,10 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
         "playback_engine": history.playback_engine,
         "volume_boost": history.volume_boost,
         "timeshift_minutes": history.timeshift_minutes,
+        "recognition_service": history.recognition_service,
+        "scrobble_listenbrainz": history.scrobble_listenbrainz,
+        "scrobble_lastfm": history.scrobble_lastfm,
+        "scrobble_librefm": history.scrobble_librefm,
         "volume_percent": history.volume_percent,
         "favorites_sort": history.favorites_sort,
         "folder_sort_orders": history.folder_sort_orders,

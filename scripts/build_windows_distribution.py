@@ -2140,6 +2140,12 @@ def bundle_embedded_python(
         [str(python_exe), str(source_root / "tools" / "generate_podcast_index_key.py")],
         check=True,
     )
+    # Quill Radio's last.fm API pair for scrobbling, equally lenient: unset, the
+    # listener pastes their own pair in Preferences. See tools/generate_lastfm_api_key.py.
+    subprocess.run(
+        [str(python_exe), str(source_root / "tools" / "generate_lastfm_api_key.py")],
+        check=True,
+    )
 
     # Offline Edition marker. A build-time-generated module read by
     # quill.build_info.is_offline_edition() so the running app knows it is the
