@@ -1206,6 +1206,37 @@ use F8 for these, but in QUILL `F8` and `Shift+F8` are Word's extend-selection
 keys, so the problem keys sit beside Compare's next and previous difference
 keys instead. You can change all three in the Keyboard Manager.
 
+#### The Problems pane
+
+The Problems list closes when you pick a problem. If you'd rather keep the
+problems in front of you while you fix them, turn on **View > Problems Pane**
+(Alt+V, then P). It sits under the document, above the status bar, and stays
+there until you turn it off again. QUILL remembers whether it's on.
+
+- Turning it on checks the document straight away, and you hear the result,
+  such as "Problems pane shown. 2 problems: 1 error, 1 warning."
+- While it's on, **Check This File** fills the pane instead of opening the
+  list, and says what it found. Your caret stays where it was.
+- **F6** moves from the document to the pane, then on to the status bar, in
+  the order they are on screen. Shift+F6 goes the other way.
+- In the pane, each row starts with how serious the problem is, then where it
+  is and what it is: "Error, line 12, column 5: Expecting ',' delimiter (JSON)".
+  Press **Enter** to go to that problem in the document.
+- **Escape** takes you back to the document without closing the pane.
+- If you've changed the document since the check, Enter checks it again first
+  and goes to the same problem where it is now. If your change fixed it, you
+  hear "That problem is gone." and the new count.
+- **Shift+Tab** from the list reaches the two choosers at the top. **Show**
+  picks all problems, errors and warnings, or errors only. **Source** picks
+  one checker, such as JSON or ruff. Changing either says the new count, for
+  example "4 problems, 1 shown".
+- The context key (or Shift+F10) on a row has **Go To** and **Copy Message**.
+
+The pane has no shortcut key of its own. The obvious one, Ctrl+Shift+M, is Set
+Mark, and nothing near it was free in both QUILL and QUILL Lite. Once you've
+turned it on it stays on, so you rarely need the menu. You can give it a key
+in the Keyboard Manager; the command is called Problems Pane.
+
 #### What QUILL can check
 
 Some languages are checked by QUILL itself, with nothing else installed:

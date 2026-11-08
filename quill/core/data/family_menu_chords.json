@@ -894,6 +894,7 @@
   ["a QuillVille app", "ui/lineups/menus.py Stop After This Item", "Ctrl+Alt+S"],
   ["a QuillVille app", "ui/lineups/menus.py Undo", "Ctrl+Z"],
   ["a QuillVille app", "ui/lineups/menus.py Why Is This Here...", "Alt+Enter"],
+  ["a QuillVille app", "ui/problems_pane.py Go To", "Enter"],
   ["a QuillVille app", "ui/show_hide_key_picker.py Show and Hide Key...", "Ctrl+Alt+Shift+H"],
   ["a QuillVille app", "ui/tutorials_window.py Close", "Ctrl+W"],
   ["a QuillVille app", "ui/weather/weather_center_dialog.py Close", "Ctrl+W"],

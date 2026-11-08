@@ -460,6 +460,7 @@ class QuillLiteApp(
             frame.editor.set_word_wrap(self.settings.word_wrap)
             frame.restart_autosave()
             frame.apply_status_bar_visibility()
+            frame.apply_problems_pane_visibility()
             frame._sync_check_items()
 
     # -- the single-instance inbox --------------------------------------- #

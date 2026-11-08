@@ -2,6 +2,26 @@
 
 ## 1.0.0
 
+### The Problems pane (2026-11-08)
+
+- **View > Problems Pane** (Alt+V, then P) docks the problems Check This File
+  finds under the document, above the status bar, and keeps them there while
+  you fix things. QUILL remembers whether it's on. Turning it on checks the
+  document and says what it found.
+- While it's on, Check This File fills the pane instead of opening the
+  Problems list, and the caret stays put. The list is still there when the
+  pane is off.
+- F6 reaches the pane, between the document and the status bar. Enter on a row
+  goes to the problem; Escape goes back to the document and leaves the pane
+  open. After an edit, Enter checks again and finds the same problem where it
+  is now, or says it's gone.
+- A Show chooser (all, errors and warnings, errors only) and a Source chooser
+  head the pane. Changing either says the new count, such as "4 problems, 1
+  shown". The context menu has Go To and Copy Message.
+- No shortcut key: Ctrl+Shift+M is Set Mark, and nothing near it is free in
+  both editors. The Keyboard Manager can give it one.
+- QUILL Lite gets the same pane from the same shared code.
+
 ### Sign In with GitHub (2026-11-08)
 
 - **Sign In with GitHub...** is the new first button in Manage GitHub Accounts,

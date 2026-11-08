@@ -12,11 +12,16 @@ heading or landmark element -- QUILL's HTML pattern, read from the same profile.
 Check This File checks Markdown and HTML with the built-in checkers and never
 starts an outside tool; QUILL, which knows many more languages, checks those
 too. That keeps QUILL Lite level with QUILL rather than ahead of it (rule 10).
+
+View > Problems Pane docks the same problems under the text, above the status
+bar, in every open window at once (the setting is the app's). F6 goes from the
+text to the pane and on to the status bar; Escape in the pane comes back.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from quill.ui.problems_commands import ProblemsCommandsMixin
 
@@ -101,6 +106,78 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
             self._announce(_NOTHING_TO_CHECK)
             return
         self._step_problem(forward=False)
+
+    # -- the Problems pane -------------------------------------------------- #
+
+    def cmd_toggle_problems_pane(self) -> None:
+        """View > Problems Pane: the problems docked under the text, in every window."""
+        self._toggle_problems_pane()
+
+    def _problems_can_check(self) -> bool:
+        return self._problems_surface() is not None
+
+    def _problems_pane(self, *, create: bool) -> Any:
+        pane = getattr(self, "_problems_pane_widget", None)
+        if pane is not None or not create:
+            return pane
+        import wx
+
+        from quill.ui.dpi import dip_size
+        from quill.ui.problems_pane import ProblemsPane
+
+        pane = ProblemsPane(
+            wx,
+            self,
+            go_to=self._problems_pane_go_to,
+            back_to_editor=self._problems_back_to_editor,
+            copy_text=self._problems_copy,
+            say=self._problems_say,
+        )
+        pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
+        pane.panel.Hide()
+        sizer = self.GetSizer()
+        index = sizer.GetItemCount()
+        for position in range(sizer.GetItemCount()):
+            if sizer.GetItem(position).GetWindow() is self.status_panel:
+                index = position
+                break
+        # Above the status bar, so F6 meets them in screen order.
+        sizer.Insert(index, pane.panel, 0, wx.EXPAND)
+        self._problems_pane_widget = pane
+        return pane
+
+    def _problems_pane_set_shown(self, shown: bool) -> None:
+        self.app.settings.problems_pane_visible = shown
+        self.app._queue_settings_save()
+        self.app.reapply_settings()  # every window, this one included
+        self.apply_problems_pane_visibility()  # idempotent; here before the check
+
+    def apply_problems_pane_visibility(self) -> None:
+        """Match the pane to the setting; built only the first time it shows."""
+        shown = bool(getattr(self.app.settings, "problems_pane_visible", False))
+        pane = self._problems_pane(create=shown)
+        if pane is None or pane.is_shown() == shown:
+            return
+        if not shown and pane.has_focus():
+            self.control.SetFocus()
+        pane.panel.Show(shown)
+        self.Layout()
+
+    def problems_pane_takes_f6(self) -> bool:
+        """True when F6 from here should land in the pane rather than the bar."""
+        pane = self._problems_pane(create=False)
+        return pane is not None and pane.is_shown() and not pane.has_focus()
+
+    def focus_problems_pane(self) -> None:
+        pane = self._problems_pane(create=False)
+        if pane is not None:
+            pane.focus()
+
+    def _problems_back_to_editor(self) -> None:
+        self.control.SetFocus()
+
+    def _problems_copy(self, text: str) -> None:
+        self._set_clipboard_text(text)
 
     def _problems_surface(self) -> str | None:
         return self.markup_surface()

@@ -305,6 +305,7 @@
   "cmd_toggle_list_announcements": "covered",
   "cmd_toggle_live_spelling": "covered",
   "cmd_toggle_overwrite": "covered",
+  "cmd_toggle_problems_pane": "covered",
   "cmd_toggle_quiet_mode": "covered",
   "cmd_toggle_read_only": "covered",
   "cmd_toggle_status_bar": "covered",

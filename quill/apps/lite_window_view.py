@@ -153,8 +153,21 @@ class DocumentViewCommandsMixin:
         )
 
     def cmd_focus_status_bar(self) -> None:
-        """F6: move into the status bar. Escape there comes back here."""
+        """F6: move into the status bar. Escape there comes back here.
+
+        With the Problems pane shown, F6 from the text lands in the pane first,
+        and F6 there goes on to the bar: the order they are on screen.
+        """
+        on_bar = any(button.HasFocus() for button in getattr(self, "_status_buttons", {}).values())
+        if not on_bar and self.problems_pane_takes_f6():
+            self.focus_problems_pane()
+            return
         if not getattr(self.app.settings, "show_status_bar", True):
+            pane = self._problems_pane(create=False)
+            if pane is not None and pane.has_focus():
+                # No bar to go on to: round to the text, as the ring does.
+                self.control.SetFocus()
+                return
             # A key that does nothing is indistinguishable from a broken key,
             # and a hidden bar is the one state where F6 has nowhere to go. Say
             # what happened and how to undo it, in one sentence.

@@ -222,6 +222,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "edit.follow_link": "Reached another way: Ctrl+Enter, its key until 2026-11-03, "
     "still follows a link when the caret is on one; elsewhere that key is Word's page "
     "break now (rules 1 and 2). The Navigate menu and the context menu reach it too.",
+    "view.problems_pane": "Reached another way: View > Problems Pane, in both editors, and F6 "
+    "once it is shown. Ctrl+Shift+M, VS Code's key, is Set Mark in both, and no chord near it "
+    "was free in both (measured 2026-11-08); shown once, it stays (rule 9).",
     "edit.paste_file": "Reached another way: Edit > Clipboard > Paste Copied Files..., in both "
     "editors. No chord was free in both (measured 2026-11-07), and it asks text or paths "
     "next, so a chord would save little (rule 9).",

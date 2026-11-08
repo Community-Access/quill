@@ -280,12 +280,12 @@ class DocumentFrame(
         self.doc_text = DocumentText(lambda: self.control.GetValue())
         self._apply_editor_help()
         self._init_status_bar()
-        # The editor takes every pixel the status bar does not. A sizer rather
-        # than wx.Frame's single-child auto-fit, because there are two children.
+        # The editor takes every pixel the status bar and Problems pane do not.
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(self.control, 1, wx.EXPAND)
         layout.Add(self.status_panel, 0, wx.EXPAND)
         self.SetSizer(layout)
+        self.apply_problems_pane_visibility()
         self._build_menus()
         self._apply_editor_font()
         self.apply_theme()

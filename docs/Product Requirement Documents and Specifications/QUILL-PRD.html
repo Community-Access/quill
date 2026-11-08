@@ -7695,6 +7695,36 @@ the buffer is unsaved; local only, so no network egress entry. QUILL
 runs outside checks on its task manager. QUILL Lite checks Markdown and
 HTML with the built-in tier only. The record of the tool table and the
 security model is <code>docs/design/syntax-checking.md</code>.</p>
+<h3 id="528c-the-problems-pane-2026-11-08">5.28c The Problems pane
+(2026-11-08)</h3>
+<p><strong>View &gt; Problems Pane</strong>
+(<code>view.problems_pane</code>, no default chord) docks the problems
+Check This File finds under the editor, above the status bar, and keeps
+them there while the user works; <code>problems_pane_visible</code>
+remembers it (the same field name in QUILL Lite, where it applies to
+every window at once). No chord was free in both editors (Ctrl+Shift+M
+is Set Mark in both, measured 2026-11-08), so the command has a rule 9
+reason in <code>UNBOUND_WITH_REASON</code>. Showing it runs a check and
+says “Problems pane shown.” with the summary. While shown, Check This
+File fills the pane instead of opening the modal list and leaves the
+caret where it was; every check, the problem keys’ re-checks included,
+keeps it current. F6 / Shift+F6 reach it as the “Problems” region, after
+Reveal Codes and before the status bar (screen order). Rows read
+severity first (“Error, line 12, column 5: message (JSON)”); Enter goes
+to the problem and focuses the editor, re-checking first when the text
+has changed and landing on the same problem (message, source and
+severity, nearest line) or saying “That problem is gone.” Escape returns
+to the editor without closing the pane. A filter row (Show: all, errors
+and warnings, errors only; Source: every checker found in this report)
+says one count sentence on change (“4 problems, 1 shown”); nothing is
+spoken on focus (GATE-13). The context menu has Go To and Copy Message.
+No control in the pane has an access key, since the menu bar owns Alt.
+Code: <code>quill/core/problems/pane.py</code> (filters, rows, the count
+sentence; no wx), <code>quill/ui/problems_pane.py</code> (the widget,
+shared), <code>quill/ui/problems_commands.py</code> (the toggle and Go
+To, shared), <code>quill/ui/main_frame_code_nav.py</code> and
+<code>quill/apps/lite_window_code_nav.py</code> (each editor’s hooks).
+Plan of record: <code>docs/design/intellisense.md</code>.</p>
 <h3 id="529-format-menu-text-transforms-no-styling">5.29 Format menu
 (text transforms, no styling)</h3>
 <p>A dedicated menu surfacing transforms that are otherwise reachable
