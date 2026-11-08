@@ -715,6 +715,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+D | Mirror output | `radio.mirror_output` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Alt+Shift+H | Internet Radio: What the Station Played... | `radio.station_playlist` |
 | Alt+Shift+I | Station details | `radio.station_details` |
 | Alt+Shift+N | Whats new | `radio.whats_new` |
 | Ctrl+. | Radio: Stop | `radio.stop` |

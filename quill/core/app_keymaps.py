@@ -196,9 +196,9 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "radio.identify_song": "Ctrl+K",
         "radio.whats_playing_details": "Ctrl+T",
         "radio.song_history": "Ctrl+Shift+H",
-        # Lyrics of the song on the air (LRCLIB, on request only). The plan
-        # asked for Ctrl+Alt+L, which this window already gives to Resume Last
-        # Station on Launch; B is the one Ctrl+Alt letter Radio has left.
+        "radio.station_playlist": "Alt+Shift+H",  # the station's own list, same H
+        # Lyrics (LRCLIB, on request only). Not the planned Ctrl+Alt+L, which is
+        # Resume Last Station on Launch; B is the one Ctrl+Alt letter left.
         "radio.lyrics": "Ctrl+Alt+B",
         "radio.statistics": "Ctrl+Shift+Q",
         "radio.sound_enhancements": "Ctrl+E",
