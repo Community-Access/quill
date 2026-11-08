@@ -61,6 +61,11 @@ class _Host(GitHubAdminMixin):
     def _github_items_initial_repo(self) -> str:
         return "owner/repo"
 
+    def _github_sign_in(self) -> None:
+        # The offer opens Sign In with GitHub (the device flow), not Add Token.
+        self._signin_offered_and_accepted = True
+        self._token = "new-token"
+
     def _github_add_token(self) -> None:
         self._signin_offered_and_accepted = True
         self._token = "new-token"
