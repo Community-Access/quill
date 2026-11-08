@@ -151,6 +151,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.text_size_down": "Ctrl+-",
     "view.text_size_reset": "Ctrl+0",
     "view.reveal_codes_toggle": "Alt+F3",  # WordPerfect Reveal Codes
+    "view.problems_pane": "",  # no chord free in both editors; see the gate's reason
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
     "app.preferences": "Ctrl+,",

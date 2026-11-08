@@ -166,3 +166,120 @@ def test_rows_and_keys_match_quill_lite() -> None:
     for command_id, label, _palette, _handler in _CODE_ROWS:
         if command_id:
             assert lite[command_id] == (label, DEFAULT_KEYMAP[command_id]), command_id
+
+
+# -- View > Problems Pane ------------------------------------------------------
+
+
+class _FakePane:
+    def __init__(self) -> None:
+        self.shown = self.focused = False
+        self.report: Any = None
+        self.focus_calls = 0
+        self.panel = SimpleNamespace(Show=lambda value: setattr(self, "shown", bool(value)))
+
+    def is_shown(self) -> bool:
+        return self.shown
+
+    def has_focus(self) -> bool:
+        return self.focused
+
+    def show_report(self, report: Any) -> None:
+        self.report = report
+
+    def count_sentence(self) -> str:
+        return "count"
+
+    def focus(self) -> None:
+        self.focus_calls += 1
+
+
+class _PaneHost(_Host):
+    def __init__(self, text: str, path: str | None = None) -> None:
+        super().__init__(text, path)
+        self._problems_pane_widget = _FakePane()
+        self.settings = SimpleNamespace(problems_pane_visible=False)
+        self.checked: list[bool] = []
+        self.regions: list[str] = []
+        self.clipboard: list[str] = []
+        sizer = SimpleNamespace(Layout=lambda: None)
+        menu_bar = SimpleNamespace(Check=lambda _id, value: self.checked.append(value))
+        self.frame = SimpleNamespace(GetSizer=lambda: sizer, GetMenuBar=lambda: menu_bar)
+        self._id_problems_pane = 7
+
+    def _set_active_region(self, label: str) -> None:
+        self.regions.append(label)
+
+    def _copy_text_to_clipboard(self, text: str) -> bool:
+        self.clipboard.append(text)
+        return True
+
+
+@pytest.fixture
+def no_settings_write(monkeypatch: pytest.MonkeyPatch) -> list[Any]:
+    saved: list[Any] = []
+    monkeypatch.setattr("quill.core.settings.save_settings", saved.append)
+    return saved
+
+
+def test_problems_pane_shows_with_a_check_and_hides(no_settings_write: list[Any]) -> None:
+    host = _PaneHost('{"a": }\n', "data.json")
+    host.view_toggle_problems_pane()
+    pane = host._problems_pane_widget
+    assert pane.shown and host.settings.problems_pane_visible
+    assert host.checked == [True] and no_settings_write
+    assert host.said[-1] == "Problems pane shown. 1 problem: 1 error."
+    assert len(pane.report.problems) == 1
+    assert host._problems_pane_is_shown()
+    pane.focused = True
+    host.view_toggle_problems_pane()
+    assert not pane.shown and host.checked[-1] is False
+    assert host.regions == ["Editor"], "hiding the focused pane puts focus back in the text"
+    assert host.said[-1] == "Problems pane hidden"
+
+
+def test_check_this_file_fills_the_shown_pane_not_the_list(no_settings_write: list[Any]) -> None:
+    host = _PaneHost('{\n  "b": \n}\n', "data.json")
+    host._problems_pane_widget.shown = True
+    host.tools_check_this_file()
+    assert host.lists == []
+    assert host.said[-1] == "1 problem: 1 error."
+    host._problems_pane_go_to(0)
+    assert host.editor.caret == host.editor.text.index("}")
+
+
+def test_pane_row_after_an_edit_rechecks_and_finds_the_problem() -> None:
+    host = _PaneHost('{\n  "b": \n}\n', "data.json")
+    host._problems_pane_widget.shown = True
+    host.tools_check_this_file()
+    host.editor.text = '\n\n{\n  "b": \n}\n'
+    host._problems_pane_go_to(0)
+    assert host.editor.caret == host.editor.text.index("}")
+    host.editor.text = '{"b": 1}\n'
+    host._problems_pane_go_to(0)
+    assert host.said[-1].startswith("That problem is gone.")
+    host._problems_pane_go_to(5)  # out of range: nothing happens
+    assert host.said[-1].startswith("That problem is gone.")
+
+
+def test_escape_copy_and_the_f6_hooks() -> None:
+    host = _PaneHost("x", "a.json")
+    host._problems_back_to_editor()
+    assert host.regions == ["Editor"]
+    host._problems_copy("Expecting value")
+    assert host.clipboard == ["Expecting value"]
+    pane = host._problems_pane_widget
+    assert host._is_problems_panel(pane.panel)
+    host._focus_problems_pane()
+    assert pane.focus_calls == 1
+
+
+def test_problems_pane_row_matches_quill_lite() -> None:
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+    from quill.core.lite.parity import COMMAND_EQUIVALENTS
+
+    row = next(r for r in COMMANDS if r[3] == "cmd_toggle_problems_pane")
+    assert row[0] == "&View" and row[1] == "&Problems Pane"
+    assert COMMAND_EQUIVALENTS[row[3]] == "view.problems_pane"
+    assert DEFAULT_KEYMAP["view.problems_pane"] == row[2] == ""

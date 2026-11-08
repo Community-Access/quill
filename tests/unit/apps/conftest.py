@@ -1207,6 +1207,9 @@ def lite_window(tmp_path, lite_settings):
             """
             self.status_bar_focused += 1
 
+        def Layout(self) -> None:  # noqa: N802 - wx spelling
+            """The real frame lays out its sizer; the Problems pane asks it to."""
+
         # -- the window's own event hooks, as the real window wires them -- #
 
         def on_caret_moved(self, key_code: int) -> None:

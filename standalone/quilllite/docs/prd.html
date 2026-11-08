@@ -2771,6 +2771,23 @@ never starts an outside tool. In plain text or rich text it says
 checks the same two languages and many more (rule 10: Lite level with
 QUILL, not ahead).</li>
 </ul>
+<h2 id="the-problems-pane-2026-11-08">The Problems pane
+(2026-11-08)</h2>
+<ul>
+<li><strong>View &gt; Problems Pane</strong>
+(<code>cmd_toggle_problems_pane</code>, no key, as in QUILL, for the
+reason recorded there): QUILL’s pane, from the shared
+<code>quill/ui/problems_pane.py</code> and
+<code>quill/ui/problems_commands.py</code>, docked under the text and
+above the status bar. The setting is <code>problems_pane_visible</code>,
+QUILL’s field name, and applies to every open window through
+<code>reapply_settings</code>.</li>
+<li>F6 goes from the text to the pane, then to the status bar; F6 in the
+pane with the bar hidden goes back to the text. Enter goes to a problem
+(re-checking after an edit), Escape returns and leaves the pane open,
+and Show and Source narrow the list. While shown, Check This File fills
+the pane rather than opening <code>choose_from_rows</code>.</li>
+</ul>
 <h2 id="word-documents-and-table-navigation-2026-10-17">Word documents
 and table navigation (2026-10-17)</h2>
 <p><strong>One implementation, moved.</strong> QUILL’s wx-free Word

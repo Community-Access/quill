@@ -287,6 +287,7 @@ class DocumentMenuMixin:
             # and abbreviations either expand or do not, whichever document is
             # in front of you.
             "cmd_toggle_status_bar": getattr(self.app.settings, "show_status_bar", True),
+            "cmd_toggle_problems_pane": getattr(self.app.settings, "problems_pane_visible", False),
             "cmd_toggle_abbreviations": self.app.feature_enabled("abbreviations"),
             # On while *this* document is being dictated into. There is one
             # microphone, so at most one window's mark is ever on.
