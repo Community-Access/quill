@@ -1,5 +1,10 @@
 # QUILL Lite 2.0
 
+## Word Prediction knows your code
+
+In a code file, the list offers the file's own names with their kinds, such as
+"count_words, function", instead of dictionary words.
+
 ## Word Prediction
 
 Press **Ctrl+.** halfway through a word and QUILL Lite offers a short list of

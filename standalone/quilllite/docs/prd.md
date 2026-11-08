@@ -1886,7 +1886,7 @@ QUILL's Navigate > Code, in QUILL Lite with the same rows, letters and keys (fam
 
 ## Word Prediction (2026-11-08)
 
-- **Edit > Word Prediction...** (`cmd_word_prediction`, Ctrl+., QUILL's chord by rule 2): QUILL's list from the shared `quill/ui/suggestion_list.py`, through `quill/apps/lite_window_word_prediction.py`. Words from the spelling dictionary and the document, plus Markdown and HTML tags. Up and Down say each suggestion, Enter or Tab replaces only the fragment typed, Escape closes without changing the text; typing with the list open narrows it. Key press only: QUILL Lite has no "as you type" setting, which keeps it level with QUILL rather than ahead.
+- **Edit > Word Prediction...** (`cmd_word_prediction`, Ctrl+., QUILL's chord by rule 2): QUILL's list from the shared `quill/ui/suggestion_list.py`, through `quill/apps/lite_window_word_prediction.py`. Words from the spelling dictionary and the document, plus Markdown and HTML tags. Up and Down say each suggestion, Enter or Tab replaces only the fragment typed, Escape closes without changing the text; typing with the list open narrows it. Key press only: QUILL Lite has no "as you type" setting, which keeps it level with QUILL rather than ahead. In a code file (by extension) the list is the file's own names with their kinds, from the shared `quill/core/code_names.py`.
 
 ## The Problems pane (2026-11-08)
 

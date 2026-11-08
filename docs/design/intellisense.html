@@ -713,6 +713,16 @@ sentence; no chord (rule 9).</li>
 is <code>quill/apps/lite_window_word_prediction.py</code> (Edit &gt;
 Word Prediction…, Ctrl+.). The key works in every QUILL profile; “as you
 type” stays off by default and still follows the profile.</li>
+<li>2026-11-08: Phase 2, layer 1. <code>quill/core/code_names.py</code>:
+in a code file (any extension Pygments knows, prose excluded) the list
+offers the file’s own names nearest first, with kinds.
+<code>str.find</code> over a lower-cased copy finds the names, a
+definition-word check at each occurrence gives function or class, and
+Pygments reads only 2,500 characters either side of the caret for the
+other kinds. Lexing the whole file was measured at about 1.5 s per 600
+KB, so it is never done. Under 100 ms on 1 MB of QUILL’s own code, best
+of five, in the perf test; one-letter fragments look 100,000 characters
+either side.</li>
 </ul>
 <h2 id="remaining-tasks">Remaining tasks</h2>
 <ul class="task-list">
@@ -737,7 +747,6 @@ pure-Python walk. Ask Jeff before the first download (parent session,
 <li><label><input type="checkbox" />Choose a key for parameter hints:
 Ctrl+Shift+. is taken in both editors (measured
 2026-11-08).</label></li>
-<li><label><input type="checkbox" />Phase 2: layer 1.</label></li>
 <li><label><input type="checkbox" />Phase 3: layer 2.</label></li>
 <li><label><input type="checkbox" />Measure the tree-sitter grammar size
 for the languages we care about, before phase 4.</label></li>
