@@ -118,6 +118,9 @@ def _jump(app: Any, *, forward: bool) -> None:
         app._announce("Could not move in the buffer.")
         return
     phrase = app._radio_behind_live_phrase(max(0.0, live - target.song.start))
+    # The behind-live phrase always ends in a full stop ("Live." or "N seconds
+    # behind live.").
+    # announce-punctuation: exempt
     app._announce(f"{_title(target.song.title)}. {phrase}")
 
 
@@ -134,12 +137,14 @@ def which_song(app: Any) -> None:
     behind = app._radio_behind_live_phrase(max(0.0, live - playhead))
     current = song_marks.pick(songs, playhead, Which.CURRENT)
     if not current:
+        # announce-punctuation: exempt (the behind-live phrase ends in a full stop)
         app._announce(f"No song is marked here yet. {behind}")
         return
     song = current[0]
     into = song_marks.describe_offset(playhead - song.start)
     count = len(songs)
     place = f"song {songs.index(song) + 1} of {count} in the buffer"
+    # announce-punctuation: exempt (the behind-live phrase ends in a full stop)
     app._announce(f"{_title(song.title)}, {into} in, {place}. {behind}")
 
 

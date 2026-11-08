@@ -8,6 +8,7 @@ cases come from BlindRadio by serrebidev (MIT). No test reaches the network:
 
 from __future__ import annotations
 
+import re
 import urllib.error
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -315,4 +316,6 @@ def test_provenance_names_the_publisher_and_host() -> None:
     source = sp.match_source("https://kexp.streamguys1.com/kexp160.aac")
     assert source is not None
     line = source.provenance()
-    assert "KEXP" in line and "api.kexp.org" in line and "not what Quill Radio heard" in line
+    assert "KEXP" in line and "not what Quill Radio heard" in line
+    # Named as a word in the sentence, not checked as a URL.
+    assert re.search(r"(?<![\w.-])api\.kexp\.org(?![\w-]|\.\w)", line)

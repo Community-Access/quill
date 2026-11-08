@@ -132,7 +132,14 @@ def stored_app_credentials() -> tuple[str, str]:
 
 
 def sign(params: dict[str, str], secret: str) -> str:
-    """last.fm's ``api_sig`` for *params* (pure). ``format`` is never signed."""
+    """last.fm's ``api_sig`` for *params* (pure). ``format`` is never signed.
+
+    MD5 is not our choice: last.fm's API defines ``api_sig`` as the MD5 of the
+    sorted parameters followed by the shared secret
+    (https://www.last.fm/api/authspec, section 8), and Libre.fm copies it.
+    Nothing here stores or compares a password; the listener's password is
+    typed on the service's own page and never reaches Quill Radio.
+    """
     plain = "".join(
         f"{name}{value}"
         for name, value in sorted(params.items())
