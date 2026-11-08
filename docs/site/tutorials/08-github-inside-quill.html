@@ -2,9 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Tutorials - Tutorial 8: GitHub inside QUILL</title>
+  <title>QUILL Tutorials - Tutorial 8: GitHub inside QUILL and QUILL
+Lite</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -32,12 +33,18 @@
 <body>
 <a class="skip-link" href="#main">Skip to main content</a><header class="site"><div class="wrap"><nav class="site" aria-label="Primary"><ul><li><a href="/index.html">QUILL home</a></li><li><a href="index.html">All tutorials</a></li><li><a href="/podcast/index.html">The QUILL Cast</a></li><li><a href="/docs/userguide.html">User guide</a></li></ul></nav></div></header>
 <main id="main" tabindex="-1"><div class="wrap">
-<h1 id="tutorial-8-github-inside-quill">Tutorial 8: GitHub inside
-QUILL</h1>
+<h1 id="tutorial-8-github-inside-quill-and-quill-lite">Tutorial 8:
+GitHub inside QUILL and QUILL Lite</h1>
 <p><strong>Goal:</strong> learn what QUILL can do with GitHub and with
 Git on your own computer: browse and save files, work with issues and
 pull requests, manage a repository, and sort out a merge conflict,
 without opening a browser or a terminal.</p>
+<p>QUILL Lite opens the same GitHub Items viewer through <strong>File
+&gt; GitHub Workbench...</strong> (<strong>Alt+F</strong>, then
+<strong>G</strong>). Sections about that viewer, including PR review,
+apply to both apps. QUILL's file opening, repository administration, and
+Local Git commands described elsewhere in this tutorial are not yet in
+Lite.</p>
 <p>There are three parts, and you can use any of them on its own:</p>
 <ul>
 <li><strong>GitHub browsing and the Items viewer</strong>: read/write
@@ -114,6 +121,21 @@ comments, and QUILL tells you "Comment 2 of 5."</li>
 between Quick (compact) and Full (every cell spoken as
 <code>field: value</code>).</li>
 </ol>
+<p>On a selected row, <strong>Shift+F10</strong>, the
+<strong>Applications</strong> key, or right-click opens a context menu
+at the row. Every item offers <strong>Open on GitHub</strong>,
+<strong>Copy Link</strong>, <strong>Copy Details</strong>, and
+<strong>Add to or Remove from Favorites</strong>. PRs add <strong>Open
+Review</strong> and <strong>Open File Differences</strong>; branches add
+<strong>Compare Branches</strong>; workflow runs add <strong>View
+Artifacts</strong>. Issues and PRs offer <strong>Summarize
+Discussion</strong> when AI is available. A signed-in session also
+offers <strong>More Write Actions</strong>. With no row selected, the
+menu offers <strong>Refresh</strong> and, in Issues &amp; PRs when
+signed in, <strong>New Issue</strong> and <strong>New Pull
+Request</strong>. The same menu works from the details field, so reading
+a long item does not force you to return to the row before opening its
+actions.</p>
 <p><strong>Search</strong> (Ctrl+F) takes full GitHub search syntax for
 the loaded repo: try <code>label:bug is:open</code>. <strong>Quick
 filter</strong> (Ctrl+Shift+F) is different. It narrows the list you
@@ -139,6 +161,107 @@ both sides of every changed file and runs them through the same compare
 tool as <strong>Compare Documents</strong>. You move through the changes
 one at a time, hearing things like "Difference 2 of 5, text changed at
 line 41", instead of reading a raw patch.</p>
+<h3 id="reading-and-responding-to-a-pull-request-review">Reading and
+responding to a pull request review</h3>
+<p>In <strong>Issues &amp; PRs</strong>, select a pull request and
+choose <strong>Review...</strong>. The header states merge readiness,
+the current approval decision, check status, and the number of review
+threads. The main control is a native <strong>Pull request
+outline</strong>. It is a tree: the PR contains <strong>Changed
+files</strong>, optional <strong>General conversations</strong>, and
+<strong>Checks</strong>. Each file contains its review threads. A thread
+announces its line, author, reply count, and whether GitHub marks its
+original hunk outdated. Files without comments still appear when GitHub
+supplies the changed-file inventory.</p>
+<ol type="1">
+<li>Start on the PR node. Press <strong>Right Arrow</strong> to expand
+or <strong>Left Arrow</strong> to collapse a branch. <strong>Up
+Arrow</strong> and <strong>Down Arrow</strong> move among visible nodes.
+Expanding a file exposes its threads. The outline is the place to
+navigate; the adjacent, read-only details field follows the
+selection.</li>
+<li>Select a thread, then press <strong>Tab</strong> to read its
+complete conversation in order. Use your screen reader's normal text
+reading keys. <strong>Shift+Tab</strong> returns to the outline. The
+detail field is copyable and never posts merely because you read it.
+<strong>Enter</strong> on a thread moves focus into that field.</li>
+<li><strong>Ctrl+R</strong> on a selected thread or in its details opens
+a reply prompt. Type your reply and accept to post it.
+<strong>Shift+F10</strong>, the <strong>Applications</strong> key, or
+right-click opens the same context menu: <strong>Reply to
+Thread</strong>, <strong>Copy Conversation</strong>, <strong>Copy Thread
+Link</strong>, <strong>Open File Differences</strong>, and <strong>Open
+Thread on GitHub</strong>, and <strong>Resolve Thread</strong> or
+<strong>Reopen Thread</strong> when GitHub grants permission.
+<strong>Ctrl+Shift+R</strong> toggles the selected thread's resolution
+after confirmation. Reply is unavailable when you are signed out or the
+PR is closed or merged.</li>
+<li>Select a file and press <strong>Enter</strong> or use its context
+menu's <strong>Open File Differences</strong> action. That opens the
+accessible compare window for the PR's changed files. <strong>Copy File
+Name</strong> is also in the file menu. A thread's file and line are
+announced in the outline and details. From a thread, <strong>Open File
+Differences</strong> selects its file and points to that exact changed
+line when GitHub supplies a current patch position. For an outdated or
+missing position, QUILL says it cannot locate the line and leaves the
+file readable.</li>
+<li>Expand <strong>Checks</strong>, select a check, and read its state
+and summary in the details field. <strong>Enter</strong> or <strong>Open
+Check on GitHub</strong> in its context menu opens the job when GitHub
+provides a link. <strong>Copy Check Details</strong> copies the selected
+detail text. The separate Checks list also offers the runs.</li>
+<li>On the PR or a category node, the context menu offers <strong>Submit
+Review</strong>, <strong>Request Reviewers</strong>, <strong>Convert to
+Draft</strong> or <strong>Mark Ready</strong>, <strong>Update
+Branch</strong>, <strong>Copy Review Summary</strong>, <strong>Copy Pull
+Request Link</strong>, and <strong>Open Pull Request on GitHub</strong>.
+The visible buttons offer these review actions as well. The summary
+field remains separately readable and copyable.</li>
+</ol>
+<p><strong>Submit Review</strong> asks you to choose Approve, Request
+changes, or Comment. Changes requested and comment reviews need a
+message. Updating a branch merges the base branch into the PR branch
+after confirmation; check the destination before accepting. Review
+actions are disabled for a closed or merged PR.</p>
+<p>The outline announces whether each thread is resolved or unresolved.
+QUILL loads that state through GitHub's review-thread API for signed-in
+accounts. When the API cannot supply it, the conversation remains
+readable and the details explain why its resolution actions are
+unavailable. Refresh after a teammate changes a thread on GitHub.</p>
+<h3 id="explore-github-across-repositories">Explore GitHub across
+repositories</h3>
+<p>From <strong>GitHub Items</strong>, choose
+<strong>Explore...</strong>. This second native window uses a results
+list above a copyable detail field. Arrow through results, Tab into
+details, and Shift+Tab back to the list. Enter or <strong>Open on
+GitHub</strong> opens a result in your browser; <strong>Use
+Repository</strong> loads a selected repository into the Items viewer.
+Shift+F10, the Applications key, or right-click exposes actions for the
+selected row.</p>
+<p>Choose <strong>Global issue and PR search</strong> and enter GitHub
+search terms such as <code>is:open review-requested:@me</code>.
+<strong>Save Search</strong> stores that query on this computer;
+<strong>Saved Searches...</strong> lets you run or remove one.
+<strong>My Work</strong> brings together items you authored, are
+assigned, were asked to review, or were mentioned in. <strong>My
+activity feed</strong> lists recent account events. <strong>Repository
+chooser</strong> starts with pinned and recent repositories; other views
+show your repositories, starred and watched repositories, people, gists,
+notifications, and a person's public activity and connections.</p>
+<p>For a repository, choose <strong>Overview</strong>,
+<strong>Activity</strong>, <strong>People</strong>,
+<strong>Forks</strong>, <strong>Labels</strong>, <strong>GitHub Pages
+and builds</strong>, or <strong>Security Alerts</strong> and type its
+<code>owner/repo</code>. The context menu offers star/watch changes and
+label management when you are signed in and GitHub allows them.
+Notifications can be marked read. GitHub Pages and security views may be
+unavailable for a repository; the status field reports the API error
+instead of inventing data.</p>
+<p>In <strong>Workflow Runs</strong>, open <strong>Jobs and
+Logs</strong> for a selected run to inspect each job and read its text
+log. <strong>View Artifacts</strong> shows available downloads. These
+commands use GitHub's run ID even when the displayed run number
+differs.</p>
 <h3 id="comparing-two-branches">Comparing two branches</h3>
 <p>Switch to the <strong>Branches</strong> view, select one, and press
 <strong>Compare...</strong> (or <strong>Ctrl+Shift+B</strong>). This
@@ -308,6 +431,10 @@ requests. <strong>Tools &gt; Git and GitHub &gt; GitHub</strong> creates
 and manages repositories. <strong>Tools &gt; Git and GitHub &gt; Local
 Git</strong> covers the Git work on your own computer, like merge
 conflicts and interactive rebase.</p>
+<p>To try all of this somewhere nothing can go wrong, <a
+href="11-practise-github-safely.html">Practise GitHub safely</a> gives you
+a practice repository and walks you through reviewing, merging and
+fixing a failing check in your own copy.</p>
 </div></main>
 </body>
 </html>
