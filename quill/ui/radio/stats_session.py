@@ -80,6 +80,12 @@ def on_state_changed(host: Any, state: Any) -> None:
         playing = str(getattr(getattr(state, "state", None), "name", "")) == "PLAYING"
         station = getattr(state, "station", None)
         current = getattr(host, _STATION, None)
+        from quill.ui.radio import dial_tuning_ui
+
+        if dial_tuning_ui.passing_through(host, station):
+            # Dial tuning is only passing through it: not listening yet. Enter
+            # commits the station, and the clock starts on that play.
+            playing = False
 
         if not playing:
             flush(host)

@@ -42,6 +42,7 @@ from quill.core.radio.models import RadioStation
 __all__ = [
     "BROWSE",
     "DEFAULT_WAIT_MS",
+    "DIAL_KEYS",
     "FAVORITES",
     "HISS_LEVELS",
     "HOLD_GAP_S",
@@ -122,6 +123,14 @@ ON_DEMAND_SOURCES: frozenset[str] = frozenset({
     "tv",
     "youtube",
 })
+
+#: Quill Radio's keys for the two commands (``quill.core.app_keymaps``). U for
+#: tUne, since Alt+Shift+T is the station's time-shift length; P for the Playing
+#: station's row. The Alt+Shift row is where Radio's menu bar still has letters.
+DIAL_KEYS: dict[str, str] = {
+    "radio.dial_tuning": "Alt+Shift+U",
+    "radio.go_to_playing_station": "Alt+Shift+P",
+}
 
 RECORDING_PAUSED = "Tuning as you move is paused while you record. Press Enter to play a station."
 
@@ -405,7 +414,8 @@ class DialTuner:
         self._hiss = False
         if current.failed_at is None:
             current.failed_at = self._clock()
-        return []
+        # Its neighbours were the old station's; a dead one has none worth keeping.
+        return [Warm(())]
 
     def commit(self, key: str) -> bool:
         """Enter on the tuned station. True when there was one to commit.
@@ -465,11 +475,11 @@ class DialTuner:
             )
             self._committed_key = ""
             self._hiss = self._settings.hiss
+            # The new neighbours are warmed once this station is on the air,
+            # not before: moving quickly must not open connections for every
+            # row passed. The old ones stay until then, because one of them
+            # may be the station just tuned, ready to be promoted.
             actions.append(Tune(pending.row))
-            # The old neighbours are no longer neighbours. The new ones are
-            # warmed once this station is on the air, not before: moving
-            # quickly must not open connections for every row passed.
-            actions.append(Warm(()))
         current = self._current
         if current is not None and not current.connected and not current.said:
             if (
@@ -479,6 +489,7 @@ class DialTuner:
             ):
                 current.silent_at = now
                 self._hiss = False
+                actions.append(Warm(()))
             dead_from = current.failed_at if current.failed_at is not None else current.silent_at
             # A committed play that fails is an ordinary failure, and the
             # player says so itself; the dial only speaks for a passing tune.

@@ -25,6 +25,12 @@ class _Menu:
     def Append(self, _id: Any, label: str) -> None:  # noqa: N802 - wx's name
         self.rows.append(label)
 
+    def AppendCheckItem(self, _id: Any, label: str) -> None:  # noqa: N802 - wx's name
+        self.rows.append(label)
+
+    def Check(self, _id: Any, _on: bool) -> None:  # noqa: N802 - wx's name
+        pass
+
 
 def test_the_playback_menu_row_follows_song_history_and_shows_its_key() -> None:
     import wx
@@ -34,6 +40,7 @@ def test_the_playback_menu_row_follows_song_history_and_shows_its_key() -> None:
     app = SimpleNamespace(
         _menu_label=lambda title, cmd: f"{title}\t{radio[cmd]}" if radio.get(cmd) else title,
         frame=SimpleNamespace(Bind=lambda *a, **k: bound.append(k.get("id"))),
+        _radio_history=SimpleNamespace(dial_tuning=False),
     )
     menu = _Menu()
 
@@ -43,8 +50,11 @@ def test_the_playback_menu_row_follows_song_history_and_shows_its_key() -> None:
         "&Song History...\tCtrl+Shift+H",
         "L&yrics...\tCtrl+Alt+B",
         "What the Station Playe&d...\tAlt+Shift+H",
+        # Dial tuning's two rows (dial_tuning_commands), after the song rows.
+        "Tune as I &Move Through Stations\tAlt+Shift+U",
+        "Go to Playing Stat&ion\tAlt+Shift+P",
     ]
-    assert len(ids) == 3 and bound == list(ids)
+    assert len(ids) == 5 and bound == list(ids)
 
 
 def test_the_palette_offers_lyrics_and_it_runs_the_command(monkeypatch) -> None:

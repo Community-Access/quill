@@ -117,8 +117,7 @@ def test_settling_plays_after_the_wait_and_not_before():
     assert tuner.poll() == []
     clock.advance(0.06)
     actions = tuner.poll()
-    assert dial.Tune(a) in actions
-    assert dial.Warm(()) in actions
+    assert actions == [dial.Tune(a)]
     assert tuner.current_key == a.key
     assert tuner.passing_through(a.key)
 
@@ -279,7 +278,7 @@ def test_dead_station_hiss_stops_then_said_once():
     clock.advance(1)
     tuner.poll()
     clock.advance(dial.SILENT_AFTER_S)
-    assert tuner.poll() == []
+    assert tuner.poll() == [dial.Warm(())]
     assert not tuner.hiss_wanted
     clock.advance(dial.SAY_AFTER_S)
     assert tuner.poll() == [dial.Say("Dead FM is not answering.")]
@@ -294,7 +293,7 @@ def test_failed_connection_stops_hiss_at_once_and_says_later():
     tuner.focus(a)
     clock.advance(1)
     tuner.poll()
-    tuner.failed(a.key)
+    assert tuner.failed(a.key) == [dial.Warm(())]
     assert not tuner.hiss_wanted
     assert tuner.next_due() == pytest.approx(dial.SAY_AFTER_S)
     clock.advance(dial.SAY_AFTER_S)

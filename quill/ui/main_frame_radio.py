@@ -37,6 +37,7 @@ from quill.ui.main_frame_radio_callbacks import RadioCallbacksMixin
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
 from quill.ui.outcome_report import keep_outcome, say_recording_failed, say_recording_finished
 from quill.ui.radio import browse_door, playback_status, quick_play, stats_session, youtube_ui
+from quill.ui.radio import dial_tuning_ui as dial_tuning
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.playback_state import RadioPlaybackState
 from quill.ui.radio.player_controller import RadioPlayerController, ResolvedEnhancement
@@ -793,6 +794,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
     def _on_radio_state_changed(self, state: RadioPlaybackState) -> None:
         from quill.core.settings import save_settings
 
+        dial_tuning.on_state_changed(self, state)  # dial tuning follows playback
         self._radio_track_history_and_volume(state)
         # Time only counts while audio is actually coming out (stats_session).
         stats_session.on_state_changed(self, state)
@@ -817,7 +819,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         self._radio_last_state_name = state.state.name
         self._radio_last_state_message = state.message
         youtube_ui.offer_stale_component_update(self, state)
-        if words:
+        if words and not dial_tuning.quiet(self, state):
             self._announce(words)
         # A real playback transition re-arms the buffering earcon (#1302) --
         # volume/mute notifications land here too, and must not.
@@ -878,6 +880,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         if key != self._radio_history_key:
             # A different station just started.
             self._radio_history_key = key
+            if dial_tuning.passing_through(self, station):
+                return  # only tuned past: not Recently Played until Enter
             self._radio_history.record(station)
             self._save_radio_history()
             return
@@ -1750,6 +1754,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         to leave the current volume alone. getattr, because this runs on every
         play_station: a history predating the setting must fall through, never
         take playback down with an AttributeError."""
+        if dial_tuning.tuned_volume(self, station):
+            return -1  # the dial keeps the level you are hearing
         if getattr(self._radio_history, "use_global_volume", False):
             return self._radio_history.volume_percent
         key = station.station_uuid or station.stream_url

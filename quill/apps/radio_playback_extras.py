@@ -111,4 +111,9 @@ def append_song_items(app: Any, menu: Any, wx: Any) -> tuple[Any, ...]:
         station_playlist_commands.open_station_playlist(app)
 
     app.frame.Bind(wx.EVT_MENU, _playlist, id=playlist_id)
-    return (song_history_id, lyrics_id, playlist_id)
+    # Dial tuning's switch and its way back to the playing row
+    # (quill.ui.radio.dial_tuning_commands; idea from BlindRadio by serrebidev).
+    from quill.ui.radio import dial_tuning_commands
+
+    dial_ids = dial_tuning_commands.append_menu_items(app, menu, wx)
+    return (song_history_id, lyrics_id, playlist_id, *dial_ids)

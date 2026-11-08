@@ -44,6 +44,7 @@ from quill.ui.dialog_contract import (
 )
 from quill.ui.dpi import dip_size
 from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
+from quill.ui.radio import dial_tuning_ui as dial_tuning
 from quill.ui.radio.browse_marks import favorite_button, row_text
 from quill.ui.radio.volume_row import add_volume_slider
 from quill.ui.spoken_name import set_spoken_name
@@ -248,6 +249,7 @@ class BrowseTreeDialog:
         self._tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_expanding)
         self._tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_activated)
         self._tree.Bind(wx.EVT_TREE_SEL_CHANGED, self._on_selected)
+        dial_tuning.attach_browse(self)  # tune as you move, when that is on
         # Right-click, Shift+F10 and the Applications key -- see target_node.
         for context_event in (wx.EVT_TREE_ITEM_MENU, wx.EVT_CONTEXT_MENU):
             self._tree.Bind(context_event, self._on_context_menu)
@@ -744,6 +746,8 @@ class BrowseTreeDialog:
         self._play_station(station)
 
     def _play_station(self, station: RadioStation) -> None:
+        if dial_tuning.commit(self._controller, station, self._announce):
+            return
         if self._is_playing(station):
             self._controller.stop()
             self._announce("Radio stopped.")

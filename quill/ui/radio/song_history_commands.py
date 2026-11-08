@@ -66,8 +66,10 @@ def record_song(host: Any, title: str) -> None:
     Scrobbling hears the same title here first, whether or not Song History
     is on: the two follow one choke point so they never disagree.
     """
-    from quill.ui.radio import scrobble_commands
+    from quill.ui.radio import dial_tuning_ui, scrobble_commands
 
+    if dial_tuning_ui.passing_through(host, _current_station(host)):
+        return  # dial tuning is only passing through: neither logged nor scrobbled
     scrobble_commands.on_title(host, title)
     try:
         history_settings = getattr(host, "_radio_history", None)
