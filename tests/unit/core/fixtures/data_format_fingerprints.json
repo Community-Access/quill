@@ -1448,6 +1448,13 @@
             "scrobble_listenbrainz": "bool",
             "scrobble_lastfm": "bool",
             "scrobble_librefm": "bool",
+            "dial_tuning": "bool",
+            "dial_wait_ms": "int",
+            "dial_keep_neighbours": "bool",
+            "dial_metered_stop": "bool",
+            "dial_hiss": "bool",
+            "dial_hiss_level": "str",
+            "dial_remember_volume": "bool",
             "volume_percent": "int",
             "channel_mode": "str",
             "night_mode_enabled": "bool",
@@ -1515,7 +1522,7 @@
         "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
       "classification": "additive, compatible",
-      "note": "Four new optional keys (scrobbling switches, recognition service); older builds ignore unknown keys and the defaults are off/acoustid."
+      "note": "Seven new optional keys for dial tuning (dial_*); older builds ignore unknown keys, and the defaults leave it off."
     },
     "shared.listens": {
       "current": 1,

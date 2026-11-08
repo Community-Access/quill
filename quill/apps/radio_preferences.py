@@ -17,6 +17,7 @@ from typing import Any
 
 from quill.apps import radio_preferences_listening, radio_preferences_load
 from quill.apps import radio_preferences_rows as rows
+from quill.apps.radio_preferences_dial import DialRows
 from quill.apps.radio_preferences_load import PreferencesDataLoad, podcast_schedule_help
 from quill.apps.radio_preferences_scrobble import ScrobbleRows
 from quill.core.radio import main_view, reminders
@@ -102,6 +103,7 @@ def open_preferences(app: Any) -> None:
     yt_check, yt_choice, yt_file = yt_signin.rows(app)
     timeshift_choice, acoustid_text = radio_preferences_listening.rows(app)
     scrobble = ScrobbleRows(app)  # Scrobbling and Song recognition (BlindRadio ideas)
+    dial_rows = DialRows(app)  # Tune as I move through stations (BlindRadio's dial)
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
     mpv_present = mpv_output_device_available()
     cached_devices = cached_output_devices()
@@ -256,6 +258,7 @@ def open_preferences(app: Any) -> None:
             ),
             yt_check,
             *scrobble.checkboxes(),
+            *dial_rows.checkboxes(),
         ],
         choices=[
             PreferenceChoice(
@@ -350,6 +353,7 @@ def open_preferences(app: Any) -> None:
             yt_choice,
             timeshift_choice,
             scrobble.choice(),
+            *dial_rows.choices(),
         ],
         texts=[
             PreferenceText(
@@ -445,8 +449,9 @@ def open_preferences(app: Any) -> None:
         history.podcast_refresh_on_launch,
         history.reminder_sound,
         youtube_signin_on,
-        *scrobble_checks,
+        *extra_checks,
     ) = checkbox_values
+    scrobble_checks, dial_checks = extra_checks[:3], extra_checks[3:]
     from quill.platform.windows import radio_startup
 
     startup_said = ""
@@ -468,6 +473,7 @@ def open_preferences(app: Any) -> None:
     youtube_said = yt_signin.apply(youtube_signin_on, choice_indices[10], app=app)
     listening_said = radio_preferences_listening.apply(app, choice_indices[11], text_values[2])
     scrobble_said = scrobble.apply(list(scrobble_checks), choice_indices[12], text_values[3:7])
+    dial_rows.apply(list(dial_checks), list(choice_indices[13:15]))
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
     # this session, not just the next launch.
     from quill.core.radio.radio_logging import set_radio_debug

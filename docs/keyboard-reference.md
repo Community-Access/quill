@@ -719,8 +719,10 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+I | Station details | `radio.station_details` |
 | Alt+Shift+Left | Previous song | `radio.previous_song` |
 | Alt+Shift+N | Whats new | `radio.whats_new` |
+| Alt+Shift+P | Internet Radio: Go to Playing Station | `radio.go_to_playing_station` |
 | Alt+Shift+Right | Next song | `radio.next_song` |
 | Alt+Shift+T | Station timeshift | `radio.station_timeshift` |
+| Alt+Shift+U | Internet Radio: Tune as I Move Through Stations | `radio.dial_tuning` |
 | Alt+Shift+W | Which song | `radio.which_song` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |

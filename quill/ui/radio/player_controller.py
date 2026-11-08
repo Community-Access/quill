@@ -1021,7 +1021,9 @@ class RadioPlayerController(PlaybackUrlMixin, PlayerTracksMixin):
         # recovered stream from a stalled retry.
         self._set_state(RadioPlayerState.PLAYING, message=live_reconnect.announce_recovery(self))
         station = self._state.station
-        if station is not None and station.station_uuid and self._on_register_click:
+        # A station dial tuning only passed through is not a listen to count.
+        counted = self._on_register_click and not getattr(self, "dial_quiet", False)
+        if station is not None and station.station_uuid and counted:
             uuid = station.station_uuid
             threading.Thread(  # GATE-40-OK: fire-and-forget click-count etiquette ping
                 target=self._on_register_click, args=(uuid,), daemon=True
@@ -1076,7 +1078,10 @@ class RadioPlayerController(PlaybackUrlMixin, PlayerTracksMixin):
         # an event: coming back from BUFFERING to PLAYING. A stream that stalls
         # ten times is genuinely PLAYING ten times, and cueing each one would
         # reintroduce the ten-earcons problem the comment above exists to stop.
-        if cue and state is not self._state.state and state in _STATE_SOUNDS:
+        # ``dial_quiet``: a station dial tuning is only passing through cues
+        # nothing; its sound is the hiss (quill.ui.radio.dial_tuning_ui).
+        quiet = getattr(self, "dial_quiet", False)
+        if cue and not quiet and state is not self._state.state and state in _STATE_SOUNDS:
             post_cue(_STATE_SOUNDS[state])
         if station is not ...:
             self._state.station = station

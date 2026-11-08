@@ -33,6 +33,7 @@ from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
+from quill.ui.radio import dial_tuning_ui
 from quill.ui.radio.volume_keys import volume_chord_handled
 from quill.ui.slider_keys import bind_up_means_more
 from quill.ui.spoken_name import set_spoken_name
@@ -342,6 +343,7 @@ class RadioAppFrame(
         self._favorites_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_favorites_activated)
         self._favorites_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_favorites_context_menu)
         self._favorites_tree.Bind(wx.EVT_KEY_DOWN, self._on_favorites_key)
+        dial_tuning_ui.attach_favorites(self)  # tune as you move, when that is on
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         # A favorites list you play from, not a player: the rest of the player

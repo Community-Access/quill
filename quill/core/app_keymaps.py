@@ -20,6 +20,7 @@ from __future__ import annotations
 from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS, with_agent_tasks
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
+from quill.core.radio.dial_tuning import DIAL_KEYS
 from quill.core.radio.song_marks import SONG_MARK_KEYS
 
 #: app id -> {command id: binding}.
@@ -199,6 +200,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "radio.whats_playing_details": "Ctrl+T",
         "radio.song_history": "Ctrl+Shift+H",
         "radio.station_playlist": "Alt+Shift+H",  # the station's own list, same H
+        **DIAL_KEYS,  # dial tuning on and off, and Go to Playing Station: dial_tuning.py
         # Lyrics (LRCLIB, on request only). Not the planned Ctrl+Alt+L, which is
         # Resume Last Station on Launch; B is the one Ctrl+Alt letter left.
         "radio.lyrics": "Ctrl+Alt+B",
