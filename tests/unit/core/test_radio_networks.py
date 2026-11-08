@@ -57,13 +57,14 @@ def test_network_stations_uses_radio_browser_query(monkeypatch: pytest.MonkeyPat
         ]
 
     monkeypatch.setattr(networks.radio_browser, "search_stations", fake_search)
-    bbc = networks.get_network("bbc")
-    result = networks.network_stations(bbc, safe_mode=True)
+    # The BBC is a curated network since 2026-11-07; NPR is still a query.
+    npr = networks.get_network("npr")
+    result = networks.network_stations(npr, safe_mode=True)
     assert [s.name for s in result] == ["BBC Radio 4"]
     assert captured == {
-        "query": bbc.query,
-        "tag": bbc.tag,
-        "country": bbc.country,
-        "limit": bbc.limit,
+        "query": npr.query,
+        "tag": npr.tag,
+        "country": npr.country,
+        "limit": npr.limit,
         "safe_mode": True,
     }
