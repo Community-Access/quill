@@ -64,6 +64,51 @@ def hint_shown() -> bool:
     return False
 
 
+def command_understanding() -> str:
+    """The person's answer to the consent question: jev, my_ai, local, or "" (unasked)."""
+    value = str(_load_state().get("command_understanding", ""))
+    return value if value in {"jev", "my_ai", "local"} else ""
+
+
+def _assist_for(host: WxCommandKeyHost) -> Any:
+    """Tier 3, when it can be offered and the person said yes (7.8, decision 7).
+
+    Jev is offered only where a route exists: an own TypeSafe key in Credential
+    Manager today, the gateway once ``/v1/decide`` is deployed. Never in Safe
+    Mode. The question is asked once, the first time Jev would be used, with
+    "my own AI" and "on this computer only" as equal answers.
+    """
+    import os
+
+    from quill.core.command_catalogue.assist import JevAssist
+    from quill.core.command_catalogue.jev import _key_from_credential_manager
+    from quill.ui.command_key_ui import ask_command_understanding
+
+    if os.environ.get("QUILL_SAFE_MODE") == "1" or not _key_from_credential_manager():
+        return None
+    choice = command_understanding()
+    if not choice:
+        choice = ask_command_understanding(host._wx, host._parent, host._show_modal)
+        _save_state(command_understanding=choice)
+    if choice != "jev":
+        return None
+    return JevAssist(_route(), host.app, host.announce)
+
+
+#: One route for the process, so its "stop for the day" and its one request in
+#: flight hold across every F11 press and every app window.
+_JEV_ROUTE: Any = None
+
+
+def _route() -> Any:
+    global _JEV_ROUTE
+    if _JEV_ROUTE is None:
+        from quill.core.command_catalogue.jev import OwnKeyJev
+
+        _JEV_ROUTE = OwnKeyJev()
+    return _JEV_ROUTE
+
+
 def _other_apps(app: str) -> tuple[tuple[str, CommandSpec], ...]:
     """Other apps' offered rows, only to say "That's in Quill Radio" (11.5)."""
     others = ("radio",) if app in {"quill", "lite"} else ("quill",)
@@ -129,6 +174,7 @@ def quill_command_key(frame: Any) -> None:
         host,
         getattr(frame, "_command_key_session", None),
         first_time=not hint_shown(),
+        assist=_assist_for(host),
     )
 
 
@@ -187,6 +233,7 @@ def lite_command_key(window: Any) -> None:
         host,
         getattr(window, "_command_key_session", None),
         first_time=not hint_shown(),
+        assist=_assist_for(host),
     )
 
 
@@ -223,6 +270,7 @@ def radio_command_key(frame: Any) -> None:
         host,
         getattr(frame, "_command_key_session", None),
         first_time=not hint_shown(),
+        assist=_assist_for(host),
     )
 
 

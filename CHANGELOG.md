@@ -2,6 +2,22 @@
 
 ## 1.0.0
 
+### Jev, for commands the quick matcher cannot settle (2026-11-08)
+
+- Say or Type a Command can ask Jev, TypeSafe's decision model, to pick from
+  this window's commands when the matcher on your computer is not sure. It
+  sends only the words you typed, this app's name and the names of the
+  commands it can do right now; never document text, file names, stations,
+  places or accounts. TypeSafe keep the requests they receive, and say they do
+  not train on them.
+- You are asked once, with three equal answers: Use Jev, Use My Own AI
+  Instead, or Match on This Computer Only.
+- For now Jev is offered only where a TypeSafe key is stored in Windows
+  Credential Manager. Everyone else keeps the free, offline Command Key
+  exactly as it is.
+- When Jev cannot answer (offline, a limit, credit spent), you hear one line,
+  once, and the Command Key matches on your computer.
+
 ### Say or Type a Command (2026-11-08)
 
 - **Say or Type a Command (F11).** Press F11, type what you want in your own
