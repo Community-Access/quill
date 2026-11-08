@@ -177,7 +177,11 @@ class GitHubWorkbenchLiteMixin:
             else workbench_menu.ANNOUNCE_OFF
         )
         # The document window's bar, or the empty window's: each host says how.
-        self.rebuild_workbench_menus()  # type: ignore[attr-defined]
+        # Looked up, like every menu hook QUILL Lite's mixins reach for: a host
+        # with no bar of its own has nothing to rebuild.
+        rebuild = getattr(self, "rebuild_workbench_menus", None)
+        if callable(rebuild):
+            rebuild()
 
     def cmd_github_clone(self) -> None:
         """File > Clone Repository..., and GitHub > Clone Repository..."""
