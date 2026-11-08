@@ -295,6 +295,7 @@
   ["QUILL Lite", "core/lite/commands_help.py Get Help from Support...", "Ctrl+Alt+F2"],
   ["QUILL Lite", "core/lite/commands_help.py Help for This Window", "F1"],
   ["QUILL Lite", "core/lite/commands_help.py Keyboard Shortcuts", "Ctrl+F1"],
+  ["QUILL Lite", "core/lite/commands_help.py Open User Guide", "Ctrl+Shift+F1"],
   ["QUILL Lite", "core/lite/commands_help.py Repeat Last Result", "F9"],
   ["QUILL Lite", "core/lite/commands_help.py Tutorials...", "Ctrl+Alt+F1"],
   ["QUILL Lite", "core/lite/commands_review.py Add Inline Note...", "Alt+Shift+I"],
