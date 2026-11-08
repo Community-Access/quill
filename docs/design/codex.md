@@ -43,7 +43,7 @@ The biggest risks are not technical:
 
 - The size of the download: about 113 MB compressed for the Copilot runtime and 92 MB for Codex (section 9).
 - Both vendors are moving: Codex's plan sharing is a preview, and the Copilot SDK is changing owner (section 10).
-- Copilot needs a GitHub OAuth App registered for QUILL before any user can sign in from inside the app (section 3.7, R10).
+- Copilot sign-in from inside the app needed a GitHub OAuth App per app (section 3.7, R10). Done: Jeff registered them under Community-Access on 2026-11-02, and their client ids are built into `quill/core/ai/copilot_auth.py`.
 
 ## 2. Codex app-server: what the platform allows and refuses
 
@@ -539,7 +539,7 @@ Checked 2026-10-31. Line numbers are from `main` at `0e447bcd6`.
 - **Sign-in.** `quill/core/ai/copilot_auth.py`: GitHub device flow (`GITHUB_DEVICE_AUTH_URL`, line 44), scope `read:user` (48). The token goes to the GitHub token store (DPAPI) and is exported to `GITHUB_TOKEN` and `GH_TOKEN` in QUILL's own process (51, 91-102). Egress entry `core/ai/oauth_poster.py::_real_opener` in `quill/tools/network_egress_entries.py:399`.
 - **UI.** `quill/ui/copilot_onboarding_dialog.py`: Install, then Sign in (two steps). `quill/ui/ai_hub_engines_panel.py:125-135` and `quill/ui/main_frame_ai_actions.py:279-292` open it. The wizard's "agent" path is in `quill/core/ai/onboarding.py:105-117` and `:239`.
 
-**How it authenticates:** GitHub OAuth device flow against an OAuth App whose client id is read from `QUILL_GITHUB_CLIENT_ID` (`copilot_auth.py:54-56`). No build script or workflow sets it. Without it the dialog tells the user to run `copilot` or `gh auth login` in a terminal (`copilot_onboarding_dialog.py:194-198`). So in a release build today, sign-in from inside QUILL does not work.
+**How it authenticates:** GitHub OAuth device flow against the app's own OAuth App. Each app's client id is built in (`CLIENT_IDS` in `quill/core/ai/copilot_auth.py`, registered 2026-11-02, one per app, device flow on, no client secret). `QUILL_GITHUB_CLIENT_ID` is now only a developer override, honoured in a dev build. An app with no client id still falls back to telling the user to run `copilot` or `gh auth login` in a terminal (`copilot_onboarding_dialog.py`).
 
 **What it reaches:** whatever model the CLI defaults to. No model is chosen, no image is sent, no tool is offered, and no streaming is read. Text only.
 
@@ -1014,10 +1014,10 @@ The column is for the ChatGPT plan. Under Copilot the answers are the same in pr
 - **R9. The terms page blocks automated reads.**
   - The text quoted here is from a 2026-10-21 archive.
   - Re-read the live page by hand before shipping.
-- **R10. No GitHub OAuth App yet.** Blocker for Copilot.
-  - `QUILL_GITHUB_CLIENT_ID` is set nowhere, so sign-in from inside QUILL does not work today.
-  - Jeff, or Community Access, registers an OAuth App with device flow switched on, and the client id is built in. A client id is not a secret, and device flow needs no client secret.
-  - Until then the only route is "run `copilot` in a terminal", which no QUILL user should be asked to do.
+- **R10. GitHub OAuth App: resolved 2026-11-02.**
+  - Jeff registered one OAuth App per family app under Community-Access, with device flow on and no client secret.
+  - Their client ids are built into `CLIENT_IDS` in `quill/core/ai/copilot_auth.py`; `QUILL_GITHUB_CLIENT_ID` is only a dev-build override.
+  - They ask for `read:user` only, which is enough for Copilot. The GitHub workbench (Manage GitHub Accounts) still takes a pasted token; giving it a browser sign-in would need the scopes it uses and is an open decision.
 - **R11. The Copilot SDK is changing owner.** GitHub to Microsoft, in phases, no dates.
   - Package names, sign-in or billing could move. Pin versions; keep the adapter thin; re-read the announcement each release.
 - **R12. Tool filtering has sharp edges.**
@@ -1587,7 +1587,7 @@ A checklist to follow in a browser. Each step was checked against docs.github.co
    7. Register application.
 4. **Do not create a client secret.** Device flow needs none ("The client_secret is not needed for the device flow"). QUILL must never contain one: anything shipped in an app can be read out of it.
 5. **Copy the Client ID** from the app's page and send it to us in any ordinary message. A client id is public: it names the app, it grants nothing, and it appears in every sign-in request anyway.
-6. **Wiring it in (our work, not yours).** Today `client_id()` reads only the `QUILL_GITHUB_CLIENT_ID` environment variable (`quill/core/ai/copilot_auth.py:54-56`), so no user can sign in. The change: a built-in constant in `copilot_auth.py`, one per app's agent name, with the environment variable kept only as a developer override. Users never set anything.
+6. **Wiring it in (our work, not yours). Done.** `copilot_auth.py` now carries a built-in `CLIENT_IDS` table, one per app's agent name, with the environment variable kept only as a developer override. Users never set anything.
 7. **Testing it.** In a build with the id: open Choose Your AI, select My GitHub Copilot, press Sign In. You should hear the code, spaced out, and find it on the clipboard. Press Open the Page, sign in to GitHub if asked, paste the code, approve. Back in QUILL you should hear "Signed in to My GitHub Copilot. It is now in use", and Ctrl+8 should say Copilot.
 8. **One registration per app.** Decided (decision 16), for two reasons. Each app signs in separately (Jeff's decision), and each should appear by its own name on the approval page and in a user's GitHub settings. And GitHub allows only ten tokens per user, app and scope combination; an eleventh revokes an older one (docs.github.com, authorizing OAuth apps). Eleven family apps signing in on one registration would sign each other out. Start with QUILL and QUILL Lite; add the others as each gets AI.
 9. **Revoking and rotating.** A user revokes QUILL at github.com/settings/connections/applications/ followed by the client id; the next request then fails, and QUILL says "Your GitHub Copilot sign-in has ended" (10A.5). You can revoke every token at once from the app's page in the organization's settings (the exact button: to verify); every user then sees the same sentence and signs in again. Deleting the app breaks sign-in until a build with a new client id ships, so do it only if the app is compromised.

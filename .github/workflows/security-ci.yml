@@ -23,12 +23,28 @@ jobs:
           pip install -e .[dev]
           pip install pip-audit cyclonedx-bom
       - name: Run dependency vulnerability audit
+        shell: pwsh
         run: |
           # Audit resolved dependencies via requirements metadata to avoid
           # pip-audit failing on the local app package name.
           # Temporary policy exception: diskcache currently reports
           # CVE-2025-69872 with no published fixed version.
-          pip-audit --strict --ignore-vuln CVE-2025-69872 -r requirements.txt
+          #
+          # pip-audit installs every requirement in a dry run, so a download host
+          # that stalls (a GitHub release 504 on 2026-11-08) fails the audit with
+          # nothing vulnerable. Retry up to three times, and only when the output
+          # names a network fault; a finding fails at once.
+          $network = 'HTTP error 5\d\d|Gateway Time-out|Read timed out|ConnectionError|ConnectTimeout|Temporary failure in name resolution'
+          for ($try = 1; $try -le 3; $try++) {
+            $log = pip-audit --strict --ignore-vuln CVE-2025-69872 -r requirements.txt 2>&1 | Out-String
+            $code = $LASTEXITCODE
+            Write-Output $log
+            if ($code -eq 0) { exit 0 }
+            if ($log -notmatch $network) { exit $code }
+            Write-Output "pip-audit hit a network fault (try $try of 3); waiting 30 seconds."
+            Start-Sleep -Seconds 30
+          }
+          exit 1
       - name: Generate SBOM
         run: |
           cyclonedx-py environment --of JSON --output-file quill-sbom.json

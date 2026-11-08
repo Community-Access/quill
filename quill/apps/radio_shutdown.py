@@ -46,8 +46,13 @@ def run_radio_shutdown(app: Any) -> None:
         if timer is not None:
             report.step(timer_attr.strip("_"), BEST_EFFORT, timer.Stop)
     report.step("recording_marker", MUST_RECORD, lambda: app._clear_radio_recording_marker())
+    # Dial tuning's warm neighbours are mpv players of their own, and the hiss
+    # a loop of its own: neither may outlive the window (#1195).
+    controller = getattr(app, "_radio_controller", None)
+    dial = getattr(controller, "_dial_tuning", None)
     for name, action in (
-        ("player", getattr(getattr(app, "_radio_controller", None), "shutdown", None)),
+        ("dial_tuning", getattr(dial, "shutdown", None)),
+        ("player", getattr(controller, "shutdown", None)),
         ("recorder", getattr(getattr(app, "_radio_recorder", None), "shutdown", None)),
         ("scheduler", getattr(getattr(app, "_radio_scheduler", None), "shutdown", None)),
         # A wx.Timer still running when its frame goes is a timer that can fire

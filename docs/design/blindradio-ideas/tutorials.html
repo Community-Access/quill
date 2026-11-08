@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Tutorials for the BlindRadio ideas</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Tutorials for the BlindRadio ideas</h1>
+</header>
+<h1 id="tutorials-for-the-blindradio-ideas">Tutorials for the BlindRadio
+ideas</h1>
+<p>Branch <code>feat/br-tutorials</code>. Six guided lessons in Quill
+Radio's Help &gt; Tutorials (Ctrl+Alt+F1) for the features on
+<code>feat/radio-blindradio-ideas</code>. The features come from
+BlindRadio by serrebidev (MIT, Copyright (c) 2026 serrebidev); each new
+lesson module credits the idea in its docstring and its closing
+paragraph. No BlindRadio text was copied. Dial tuning is not covered; it
+is being built separately.</p>
+<h2 id="what-was-built">What was built</h2>
+<p>Three new content modules in
+<code>quill/core/radio/tutorials/</code>, wired into
+<code>CATALOGUE</code> in <code>__init__.py</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Lesson (slug)</th>
+<th>Track</th>
+<th>Minutes</th>
+<th>Steps</th>
+<th>Module</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Go straight to a broadcaster, or a public station
+(<code>networks-and-iprd</code>)</td>
+<td>Finding</td>
+<td>6</td>
+<td>7</td>
+<td><code>networks.py</code></td>
+</tr>
+<tr>
+<td>Ask the station what it played
+(<code>what-the-station-played</code>)</td>
+<td>Living with it</td>
+<td>5</td>
+<td>6</td>
+<td><code>songs_on_air.py</code></td>
+</tr>
+<tr>
+<td>Keep a list of what you heard on ListenBrainz
+(<code>scrobble-to-listenbrainz</code>)</td>
+<td>Living with it</td>
+<td>4</td>
+<td>5</td>
+<td><code>songs_on_air.py</code></td>
+</tr>
+<tr>
+<td>AcoustID or AudD: which one names the song
+(<code>choose-audd</code>)</td>
+<td>Living with it</td>
+<td>3</td>
+<td>4</td>
+<td><code>songs_on_air.py</code></td>
+</tr>
+<tr>
+<td>Jump between songs, and save one
+(<code>jump-between-songs</code>)</td>
+<td>Living with it</td>
+<td>6</td>
+<td>6</td>
+<td><code>time_shift.py</code></td>
+</tr>
+<tr>
+<td>Give one station a time-shift length of its own
+(<code>station-timeshift-length</code>)</td>
+<td>Living with it</td>
+<td>3</td>
+<td>4</td>
+<td><code>time_shift.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>27 minutes and 32 steps added. New totals: <strong>50 lessons, 330
+steps, about 292 minutes</strong> (was 44 lessons, 298 steps, 265
+minutes).</p>
+<p>Order: the Networks lesson sits after "Find stations by name, tag and
+country" and before "Add a station nobody lists". The five living
+lessons sit after "Sleeping, waking, and being left alone" and before
+"Shape the sound".</p>
+<p>Commands named (all real ids, keys from
+<code>APP_KEYMAPS["radio"]</code>): <code>radio.browse</code> (Ctrl+B),
+<code>radio.station_playlist</code> (Alt+Shift+H),
+<code>radio.identify_song</code> (Ctrl+K),
+<code>radio.previous_song</code> (Alt+Shift+Left),
+<code>radio.which_song</code> (Alt+Shift+W),
+<code>radio.next_song</code> (Alt+Shift+Right),
+<code>radio.save_current_song</code> (Ctrl+Alt+F8),
+<code>radio.save_previous_song</code> (Ctrl+Alt+F6, with Ctrl+Alt+F7 and
+Ctrl+Alt+F5 as literals), <code>radio.station_timeshift</code>
+(Alt+Shift+T), <code>radio.toggle_playing_favorite</code>
+(Ctrl+Shift+F), <code>radio.play_pause</code> (Ctrl+P). Preferences is
+written as the literal Ctrl+, as the existing settings lesson does.</p>
+<p>Step detection, using only the existing checks:
+<code>window:Browse Stations</code> when Browse opens,
+<code>playing</code> when a station starts (Networks, What the Station
+Played, both time-shift lessons), <code>favorite-added</code> for making
+a station a favorite. What the Station Played and the Preferences window
+are modal, not peer windows, so no window check is possible there, as
+with the other modal surfaces. No new check ids were added.</p>
+<p>The scrobbling and AudD lessons need no account: the token boxes are
+named and left empty, and the last step offers Escape. The scrobbling
+lesson's note says what OK with the check box on and no token says
+("ListenBrainz is on, but there is no user token yet.").</p>
+<p>Generated: <code>standalone/radio/docs/tutorials.md</code> (by
+<code>python -m quill.tools.build_tutorials_reference --app radio --write</code>),
+and its <code>tutorials.html</code> and <code>tutorials.epub</code>,
+rendered with the same Pandoc invocation and accessible template as
+<code>standalone/radio/scripts/render_docs.ps1</code>, for that one file
+only. Pandoc 3.12.1 was used.</p>
+<h2 id="count-text-for-the-integrator">Count text for the
+integrator</h2>
+<p><code>standalone/radio/README.md</code>, line 21. Replace:</p>
+<blockquote>
+<p>44 guided tutorials (Ctrl+Alt+F1)</p>
+</blockquote>
+<p>with:</p>
+<blockquote>
+<p>50 guided tutorials (Ctrl+Alt+F1)</p>
+</blockquote>
+<p><code>standalone/radio/docs/userguide.md</code>, "Learning by doing:
+the tutorials" (about line 123). Replace:</p>
+<blockquote>
+<p>Quill Radio comes with 44 short guided lessons.</p>
+</blockquote>
+<p>with:</p>
+<blockquote>
+<p>Quill Radio comes with 50 short guided lessons.</p>
+</blockquote>
+<p><code>standalone/radio/docs/userguide.md</code>, Chapter 16
+"Tutorials" (about line 7188). Replace:</p>
+<blockquote>
+<p>opens 44 guided lessons, 298 steps in</p>
+</blockquote>
+<p>with:</p>
+<blockquote>
+<p>opens 50 guided lessons, 330 steps in</p>
+</blockquote>
+<p>The historical counts in <code>announcement-3.0.md</code> and
+<code>release-notes-3.0.md</code> (41 lessons) describe that release and
+should stay. <code>docs/design/wordpress.md</code>'s "44 lessons" is
+QUILL's own set, not Radio's.</p>
+<h2 id="user-guide-text-to-add-lesson-pointers">User-guide text to add
+(lesson pointers)</h2>
+<p>Chapter 6, the paragraph that starts "The <strong>Finding something
+to listen to</strong> track". Replace its lesson list with:</p>
+<blockquote>
+<p>The <strong>Finding something to listen to</strong> track of the
+tutorials walks through all of this: <strong>Wander the browse
+tree</strong>, <strong>Search every directory at once</strong>,
+<strong>Find a station by its web address</strong>, <strong>Find
+stations by name, tag and country</strong>, <strong>Go straight to a
+broadcaster, or a public station</strong>, <strong>Add a station nobody
+lists</strong>, <strong>The catalog on your own disk</strong> and
+<strong>When a station will not play</strong>.</p>
+</blockquote>
+<p>Chapter 4, at the end of "Jumping between songs in the buffer"
+(before "Saving songs from the buffer" or after it):</p>
+<blockquote>
+<p>The tutorial <strong>Jump between songs, and save one</strong> walks
+through this, and <strong>Give one station a time-shift length of its
+own</strong> covers the length.</p>
+</blockquote>
+<p>Chapter 5, at the end of "What the Station Played, step by step":</p>
+<blockquote>
+<p>The tutorial <strong>Ask the station what it played</strong> walks
+through this.</p>
+</blockquote>
+<p>Chapter 5, at the end of "Choosing AudD instead of AcoustID":</p>
+<blockquote>
+<p>The tutorial <strong>AcoustID or AudD: which one names the
+song</strong> explains the choice without changing anything.</p>
+</blockquote>
+<p>Chapter 5, at the end of the ListenBrainz steps in "Scrobbling":</p>
+<blockquote>
+<p>The tutorial <strong>Keep a list of what you heard on
+ListenBrainz</strong> shows you where everything is, and needs no
+account to follow.</p>
+</blockquote>
+<h2 id="changelog-line">CHANGELOG line</h2>
+<blockquote>
+<p>Six new guided lessons in Help &gt; Tutorials: the Networks and IPRD
+branches, What the Station Played, jumping between songs and saving one,
+a time-shift length for one station, scrobbling to ListenBrainz, and
+choosing AudD for Identify This Song. There are now 50.</p>
+</blockquote>
+<h2 id="prd-text">PRD text</h2>
+<blockquote>
+<p>The tutorial catalogue (<code>quill/core/radio/tutorials/</code>)
+teaches the BlindRadio features in six lessons:
+<code>networks-and-iprd</code> (finding track) and
+<code>what-the-station-played</code>,
+<code>scrobble-to-listenbrainz</code>, <code>choose-audd</code>,
+<code>jump-between-songs</code> and
+<code>station-timeshift-length</code> (living track). The scrobbling and
+AudD lessons are completable without an account.</p>
+</blockquote>
+<h2 id="keys-settings-egress">Keys, settings, egress</h2>
+<p>None added. No new commands, settings, network calls or check
+ids.</p>
+<h2 id="not-done-or-not-verified">Not done or not verified</h2>
+<ul>
+<li>The "hear" lines were written from the code's announcement strings
+and the user guide; they were not checked against JAWS or NVDA live. Two
+are approximate: the Networks folder row (the exact wording of a channel
+count, written as "how many channels it holds") and the Preferences
+group controls (written as a screen reader would read a check box and an
+edit box).</li>
+<li>The Networks lesson tells the listener to arrow down to the branch;
+the tree order puts Networks about twenty rows down.</li>
+<li>The user guide and README were not edited; the text above is for the
+integrator.</li>
+</ul>
+</body>
+</html>

@@ -234,6 +234,10 @@ class MpvRadioEngine(VideoOutputMixin):
         self._buffering = False
         self._volume = 100
         self._current_url = ""
+        #: Song marks and the adaptive cushion (ideas from BlindRadio).
+        from quill.ui.radio.mpv_live_extras import LiveExtras
+
+        self.live_extras = LiveExtras(self._mpv, title=self.now_playing_title)
         #: Whether what is loaded is a *finished* recording rather than a live
         #: broadcast -- a YouTube video that has ended, for instance. It is set
         #: by the controller after the source resolves, because that is the
@@ -394,6 +398,7 @@ class MpvRadioEngine(VideoOutputMixin):
             # The time-shift folder is (re)made before every load: another
             # copy's start-up sweep may have removed it while it sat empty.
             self._timeshift.prepare()
+            self.live_extras.on_load()
             self._mpv.command("loadfile", path, "replace")
         except Exception:  # noqa: BLE001 - a bad URL must not crash the app
             _log.exception("mpv loadfile failed")
@@ -549,6 +554,7 @@ class MpvRadioEngine(VideoOutputMixin):
                 # stop claiming a stalled stream is playing, and reporting only
                 # the start left it stuck in BUFFERING until the next real
                 # transition.
+                self.live_extras.on_poll(stalled=stalled, was_stalled=self._buffering)
                 if stalled is not self._buffering and self._on_buffering is not None:
                     self._on_buffering(stalled)
                 self._buffering = stalled

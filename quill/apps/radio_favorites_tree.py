@@ -10,7 +10,7 @@ from __future__ import annotations
 import wx
 
 from quill.core.radio.row_marks import RowMarks
-from quill.ui.radio import favorites_marks
+from quill.ui.radio import dial_tuning_ui, favorites_marks
 from quill.ui.radio.volume_keys import volume_chord_handled
 
 #: The keys favorites_marks answers: "." (and the keypad's), and Delete.
@@ -98,7 +98,11 @@ class RadioFavoritesTreeMixin:
     def _on_favorites_activated(self, event: wx.CommandEvent) -> None:
         selected = self._selected_tree_data()
         if selected is not None and selected[0] == "station":
-            self._play_selected_favorite()
+            # Enter on a station dial tuning is passing through plays it for
+            # real (quill.ui.radio.dial_tuning_ui); otherwise the usual Play.
+            station = getattr(self._selected_favorite(), "station", None)
+            if not dial_tuning_ui.commit(self._radio_controller, station, self._announce):
+                self._play_selected_favorite()
             return
         event.Skip()  # a folder: let the tree toggle it
 

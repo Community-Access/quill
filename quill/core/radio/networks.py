@@ -18,14 +18,23 @@ Three kinds of "network" exist and are handled differently (see
   2026-05-22 and CBS-owned local radio became Audacy in 2017.
 
 The queries are an initial, tunable catalog; refine the name/tag/country of any
-entry as real Radio Browser results are reviewed. wx-free and strict-typed.
+entry as real Radio Browser results are reviewed.
+
+**Curated networks** (2026-11-07) sit beside the queries: a checked-in table of
+channels pinned to each operator's own stream
+(:mod:`quill.core.radio.curated_networks`, from BlindRadio by serrebidev, MIT).
+Where one covers a network this catalog also queries -- BBC, ABC, MPR, Big R
+Radio -- it **replaces** the query under the same id, in the same place, so the
+folder is shown once and anything remembered against ``network:bbc`` still
+lands on the BBC. :func:`catalog` is the merged list everything here reads.
+wx-free and strict-typed.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-from quill.core.radio import radio_browser
+from quill.core.radio import curated_networks, radio_browser
 from quill.core.radio.models import RadioStation
 
 #: Group labels, in display order.
@@ -35,6 +44,10 @@ GROUP_US_PUBLIC = "US public radio"
 GROUP_SPORTS = "Sports"
 GROUP_SYNDICATORS = "Syndicators (affiliates)"
 GROUP_MUSIC = "Music"
+#: 2026-11-07, for the curated networks: Global UK, Triple M, ARN, NZME.
+GROUP_COMMERCIAL = "Commercial radio"
+#: 2026-11-07, for the curated networks: K-LOVE and Air1.
+GROUP_CHRISTIAN = "Christian radio"
 
 GROUP_ORDER: tuple[str, ...] = (
     GROUP_PUBLIC,
@@ -43,6 +56,8 @@ GROUP_ORDER: tuple[str, ...] = (
     GROUP_SPORTS,
     GROUP_SYNDICATORS,
     GROUP_MUSIC,
+    GROUP_COMMERCIAL,
+    GROUP_CHRISTIAN,
 )
 
 
@@ -67,6 +82,10 @@ class Network:
     #: network whose name is a common substring: a search for "1.FM" also
     #: returns "011.FM" and "Radio 1.FM", which are not the network.
     name_prefix: str = ""
+    #: True for a network read from the curated snapshot rather than queried.
+    curated: bool = False
+    #: How many channels a curated network has (0 for a query: unknown).
+    channel_count: int = 0
 
 
 #: The catalog. Sources already available through a dedicated directory are
@@ -168,20 +187,66 @@ NETWORKS: tuple[Network, ...] = (
 )
 
 
+def _from_curated(entry: curated_networks.CuratedNetwork) -> Network:
+    group = entry.group if entry.group in GROUP_ORDER else GROUP_MUSIC
+    return Network(
+        entry.network_id,
+        entry.display_name,
+        group,
+        curated=True,
+        channel_count=len(entry.channels),
+    )
+
+
+def merge(
+    queried: tuple[Network, ...], curated: tuple[curated_networks.CuratedNetwork, ...]
+) -> tuple[Network, ...]:
+    """The queried networks with the curated ones folded in (pure).
+
+    A curated network that ``replaces`` a queried one takes its place and its
+    id; any other curated network follows the queried ones. A curated network
+    whose id collides with a query it did not declare it replaces is dropped,
+    because two folders under one id would be one folder that cannot be told
+    apart from the other.
+    """
+    by_id = {entry.network_id: entry for entry in curated}
+    replacing = {entry.replaces: entry for entry in curated if entry.replaces}
+    queried_ids = {n.network_id for n in queried}
+    merged: list[Network] = []
+    placed: set[str] = set()
+    for network in queried:
+        stand_in = replacing.get(network.network_id)
+        if stand_in is not None and stand_in.network_id not in placed:
+            placed.add(stand_in.network_id)
+            merged.append(_from_curated(stand_in))
+        else:
+            merged.append(network)
+    for network_id, entry in by_id.items():
+        if network_id in placed or network_id in queried_ids:
+            continue
+        merged.append(_from_curated(entry))
+    return tuple(merged)
+
+
+def catalog() -> tuple[Network, ...]:
+    """Every network the branch shows: the queries, with the curated ones merged."""
+    return merge(NETWORKS, curated_networks.networks())
+
+
 def groups() -> tuple[str, ...]:
     """Group labels that actually have at least one network, in display order."""
-    present = {n.group for n in NETWORKS}
+    present = {n.group for n in catalog()}
     return tuple(g for g in GROUP_ORDER if g in present)
 
 
 def networks_in_group(group: str) -> tuple[Network, ...]:
     """Every network in *group*, in catalog order."""
-    return tuple(n for n in NETWORKS if n.group == group)
+    return tuple(n for n in catalog() if n.group == group)
 
 
 def get_network(network_id: str) -> Network | None:
     """The network with *network_id*, or ``None``."""
-    return next((n for n in NETWORKS if n.network_id == network_id), None)
+    return next((n for n in catalog() if n.network_id == network_id), None)
 
 
 def network_stations(network: Network, *, safe_mode: bool = False) -> list[RadioStation]:
@@ -190,7 +255,10 @@ def network_stations(network: Network, *, safe_mode: bool = False) -> list[Radio
     Reuses the integrated Radio Browser client, so no new egress site is
     introduced. Safe Mode is enforced by ``search_stations`` itself. A network
     with a ``name_prefix`` keeps only stations named for it, each stream once.
+    A curated network reads its snapshot and makes no request at all.
     """
+    if network.curated:
+        return curated_networks.stations(network.network_id)
     stations = radio_browser.search_stations(
         network.query,
         tag=network.tag,

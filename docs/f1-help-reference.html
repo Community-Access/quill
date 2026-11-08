@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 329 audited sites (215 helped, 114 named-help).</p>
+<p>Control coverage: 337 audited sites (223 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -674,6 +674,12 @@ are skipped when the lineup plays through.</p>
 <p><strong>Windows titled “Song History…”.</strong> What each station
 has played while you listened: every title the stream reported, newest
 first, with the time it was heard.</p>
+<p><strong>Windows titled “What the Station Played…”.</strong> What the
+station says it played, from the playlist it publishes itself, newest
+first, with the time each song started when the station gives one. It is
+the station’s own record, not Song History, which is what Quill Radio
+heard while you listened. Copy, Send to Clip Library, Song Details and
+Lyrics work on the highlighted song.</p>
 <h3 id="every-authored-control-help-sentence">Every authored control
 help sentence</h3>
 <h4 id="module-level-quilluiradioaudio_health_dialogpy">(module level)
@@ -999,6 +1005,30 @@ came from. Read only; arrow through it, or select and copy any
 line.</li>
 <li><code>close_btn</code>: Closes Station Details. Nothing is changed
 by closing.</li>
+</ul>
+<h4
+id="stationplaylistdialog-quilluiradiostation_playlist_dialogpy">StationPlaylistDialog
+(<code>quill/ui/radio/station_playlist_dialog.py</code>)</h4>
+<ul>
+<li><code>self.songs</code>: The songs the station says it played,
+newest first, with the time each one started when the station gives
+it.</li>
+<li><code>self.source</code>: Who published this list. It is the
+station’s own record, not the songs Quill Radio heard; those are in Song
+History.</li>
+<li><code>self.facts</code>: What MusicBrainz knows about the
+highlighted song, after you press Song Details.</li>
+<li><code>self.copy_btn</code>: Copies the highlighted song, title and
+artist, to the clipboard.</li>
+<li><code>self.clip_btn</code>: Keeps the highlighted song in the Clip
+Library, the shared scrapbook every Quill app can read.</li>
+<li><code>self.facts_btn</code>: Looks the song up on MusicBrainz: which
+release, what year, how long. Keyless and off in Safe Mode.</li>
+<li><code>self.lyrics_btn</code>: Looks the highlighted song’s words up
+on LRCLIB and opens them in the Lyrics window. Only when you press it;
+off in Safe Mode.</li>
+<li><code>close_btn</code>: Closes this list. Song History is
+unchanged.</li>
 </ul>
 <h4 id="module-level-quilluiradiostation_tags_dialogpy">(module level)
 (<code>quill/ui/radio/station_tags_dialog.py</code>)</h4>

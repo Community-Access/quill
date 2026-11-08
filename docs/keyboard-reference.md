@@ -716,14 +716,25 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+D | Mirror output | `radio.mirror_output` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Alt+Shift+H | Internet Radio: What the Station Played... | `radio.station_playlist` |
 | Alt+Shift+I | Station details | `radio.station_details` |
+| Alt+Shift+Left | Previous song | `radio.previous_song` |
 | Alt+Shift+N | Whats new | `radio.whats_new` |
+| Alt+Shift+P | Internet Radio: Go to Playing Station | `radio.go_to_playing_station` |
+| Alt+Shift+Right | Next song | `radio.next_song` |
+| Alt+Shift+T | Station timeshift | `radio.station_timeshift` |
+| Alt+Shift+U | Internet Radio: Tune as I Move Through Stations | `radio.dial_tuning` |
+| Alt+Shift+W | Which song | `radio.which_song` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |
 | Ctrl+Alt+9 | Suggest a Station or Podcast... | `radio.suggest_pick` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+B | Internet Radio: Lyrics... | `radio.lyrics` |
 | Ctrl+Alt+F1 | Internet Radio: Tutorials... | `radio.tutorials` |
+| Ctrl+Alt+F5 | Save all songs | `radio.save_all_songs` |
+| Ctrl+Alt+F6 | Save previous song | `radio.save_previous_song` |
+| Ctrl+Alt+F7 | Save next song | `radio.save_next_song` |
+| Ctrl+Alt+F8 | Save current song | `radio.save_current_song` |
 | Ctrl+Alt+H | What Is On Now | `radio.on_now` |
 | Ctrl+Alt+I | ACB Media Podcasts... | `radio.acb_podcasts` |
 | Ctrl+Alt+N | Internet Radio: Add YouTube Link... | `radio.add_youtube_link` |

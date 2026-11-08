@@ -27,6 +27,23 @@ def _lyrics(host: Any) -> None:
     lyrics_commands.lyrics_for_playing(host)
 
 
+def _station_playlist(host: Any) -> None:
+    """What the station says it played -- see ui/radio/station_playlist_commands."""
+    from quill.ui.radio import station_playlist_commands
+
+    station_playlist_commands.open_station_playlist(host)
+
+
+def _dial(host: Any, verb: str) -> None:
+    """Dial tuning's two commands -- see ui/radio/dial_tuning_commands."""
+    from quill.ui.radio import dial_tuning_commands
+
+    if verb == "toggle":
+        dial_tuning_commands.toggle_dial_tuning(host)
+    else:
+        dial_tuning_commands.go_to_playing_station(host)
+
+
 def _folder_step(host: Any, *, forward: bool) -> None:
     """Walk the folder queue Play All in Folder left behind."""
     from quill.ui.radio import favorite_folder_actions
@@ -216,6 +233,24 @@ def register_radio_commands(host: Any) -> None:
             "radio.lyrics",
             "Internet Radio: Lyrics...",
             lambda: _lyrics(host),
+        ),
+        (
+            # The station's own published playlist (station_playlist_commands).
+            "radio.station_playlist",
+            "Internet Radio: What the Station Played...",
+            lambda: _station_playlist(host),
+        ),
+        (
+            # Dial tuning on and off, and back to the playing row
+            # (dial_tuning_commands; idea from BlindRadio by serrebidev).
+            "radio.dial_tuning",
+            "Internet Radio: Tune as I Move Through Stations",
+            lambda: _dial(host, "toggle"),
+        ),
+        (
+            "radio.go_to_playing_station",
+            "Internet Radio: Go to Playing Station",
+            lambda: _dial(host, "go_to"),
         ),
         (
             # Your own searchable tags on what is on air (station_tags_dialog).

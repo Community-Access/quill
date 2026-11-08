@@ -62,7 +62,15 @@ def record_song(host: Any, title: str) -> None:
     ``getattr`` for the same reason -- a host that predates the preference (or a
     lightweight test double standing in for one) must degrade to "log it", never
     to a crash on the announcement path.
+
+    Scrobbling hears the same title here first, whether or not Song History
+    is on: the two follow one choke point so they never disagree.
     """
+    from quill.ui.radio import dial_tuning_ui, scrobble_commands
+
+    if dial_tuning_ui.passing_through(host, _current_station(host)):
+        return  # dial tuning is only passing through: neither logged nor scrobbled
+    scrobble_commands.on_title(host, title)
     try:
         history_settings = getattr(host, "_radio_history", None)
         if not getattr(history_settings, "song_history_enabled", True):

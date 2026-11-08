@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dial tuning: what was built</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Dial tuning: what was built</h1>
+</header>
+<h1 id="dial-tuning-what-was-built">Dial tuning: what was built</h1>
+<p>Built on <code>feat/br-dial</code> on 2026-11-08, to the design
+agreed with Jeff on 2026-11-07
+(<code>docs/design/blindradio-ideas/dial-tuning.md</code>). The idea
+comes from BlindRadio by serrebidev (MIT),
+github.com/serrebidev/blindradio, doc/readme.md "Dial tuning" and its
+"FM Sound Between Stations" setting. No BlindRadio code, data or audio
+was copied.</p>
+<h2 id="what-was-built">What was built</h2>
+<ul>
+<li><strong>The policy</strong>, wx-free and strict-typed:
+<code>quill/core/radio/dial_tuning.py</code>. Which rows tune, the
+settle timer (with held-arrow detection), neighbour selection, the
+metered stop, the recording pause, the dead-station timer, and the
+"passing through" question every bookkeeping hook asks. Driven by an
+injected clock.</li>
+<li><strong>The hiss</strong>:
+<code>quill/core/radio/dial_hiss.py</code> synthesizes a two-second
+loopable clip from a seeded generator, cross-faded at the seam, in two
+fixed levels. The shipped files are
+<code>quill/assets/audio/dial_hiss_low.wav</code> and
+<code>dial_hiss_medium.wav</code>; a test checks them byte for byte
+against the code. Played by
+<code>quill/ui/radio/dial_hiss_player.py</code> through
+<code>winsound</code> (an async loop on a file).</li>
+<li><strong>Warm neighbours</strong>:
+<code>quill/ui/radio/dial_warm_pool.py</code>. At most two muted mpv
+players beside the main one, made once and reused. Promotion hands a
+warm engine to the controller and gives the controller's old engine back
+to the pool.</li>
+<li><strong>The glue</strong>:
+<code>quill/ui/radio/dial_tuning_ui.py</code> (one
+<code>DialTuningUI</code> per app, on the controller as
+<code>_dial_tuning</code>), list hooks for the Favorites tree, the
+Browse Stations tree (window and main view) and Search Stations' results
+list.</li>
+<li><strong>Commands and menu</strong>:
+<code>quill/ui/radio/dial_tuning_commands.py</code>. Playback menu rows,
+command palette entries, and Go to Playing Station.</li>
+<li><strong>Preferences</strong>:
+<code>quill/apps/radio_preferences_dial.py</code>, a "Tune as I move
+through stations" box. The shared <code>PreferenceChoice</code> gained
+<code>after_checks</code> so a box can lead with the check box that
+switches the rest on.</li>
+</ul>
+<h3 id="behaviour-as-built">Behaviour, as built</h3>
+<ul>
+<li>Ships off (<code>dial_tuning = False</code>). Every part is a
+setting.</li>
+<li>Tunes only in Favorites (main window, and Browse's Favorites
+branch), Browse folders of stations, Networks and Search Stations'
+results. Never a folder, a podcast or episode
+(<code>is_recording</code>), YouTube, Spotify, Local Media, TV, the
+on-demand Browse sources (Apple, Podcast Index, Archive, LibriVox,
+Gutenberg, AudioPub, Audius, Mixcloud, ccMixter), or a row that has to
+be resolved over the network first (TuneIn, Apple).</li>
+<li>Focus must rest on a station row for the chosen wait. Rows arriving
+less than 150 ms apart are a held key: nothing plays until it stops,
+even with Instant (Instant does play the first press, and the first
+repeat after the keyboard's repeat delay, because a key-up is not
+visible to the app).</li>
+<li>Only when the list itself has focus: a row selected by code (a
+reload, Go to Playing Station) never tunes.</li>
+<li>Nothing is spoken on a move (GATE-13); the reader reads the row.
+While a station is only passed through, the player's connecting, playing
+and error earcons are quiet
+(<code>RadioPlayerController.dial_quiet</code>), its "Could not play"
+sentence is not spoken, and its RadioBrowser click is not sent.</li>
+<li>Enter on the tuned station commits it: a fresh connection (so a
+fresh time-shift buffer, with the station's own buffer length), Recently
+Played, Song History, Listening Statistics and scrobbling from then on,
+and "Playing <station>." as every other Play says. Enter on any other
+row does what it always did.</li>
+<li>Stations only passed through are not added to Recently Played, Song
+History, Listening Statistics or scrobbling, and their volume is not
+written to the favorite.</li>
+<li>Leaving the list keeps the station playing and lets the neighbours
+go. A settle still pending when focus leaves is cancelled.</li>
+<li>While a recording runs, moving tunes nothing, and "Tuning as you
+move is paused while you record. Press Enter to play a station." is said
+once, the first time you move.</li>
+<li>A dead station: the hiss stops at once when the connection fails, or
+after 5 seconds with no audio; 3 seconds later "<station> is not
+answering." is said once.</li>
+<li>At most three mpv players. Neighbours are warmed only once the
+current station is on the air (moving quickly opens nothing),
+after-first, and let go when they stop being neighbours, when the
+station fails, when focus leaves the list, when playback moves on
+outside the dial, or when the feature is turned off. They are muted,
+carry no Sound Enhancements graph, buffer in memory only (no disk, no
+cache sweep), and are never recorded.</li>
+<li>Promotion keeps the main player's output device, volume (with Volume
+Boost), Sound Enhancements graph, per-station enhancement override, the
+station's time-shift length (configured; it applies from the next load,
+which is what Enter does) and resets the song marks. It is used only
+when the controller is on mpv with no exact-OptiLab relay; otherwise the
+ordinary play path runs.</li>
+<li>The hiss plays at a fixed level during a dial connect, including the
+reconnect after Enter. Mute silences it.</li>
+<li>"Remember each station's volume while tuning" is off by default:
+tuned stations, and the commit after Enter, keep the volume you are
+hearing. On, each comes in at its own remembered level. Quill Radio's
+existing per-favorite volume memory is unchanged for every other
+play.</li>
+<li>Teardown on exit: <code>run_radio_shutdown</code> stops the hiss and
+terminates every warm engine before the player.</li>
+</ul>
+<h2 id="keys-added">Keys added</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Menu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+Shift+U</td>
+<td><code>radio.dial_tuning</code>, Tune as I Move Through Stations
+(check item)</td>
+<td>Playback</td>
+</tr>
+<tr>
+<td>Alt+Shift+P</td>
+<td><code>radio.go_to_playing_station</code>, Go to Playing Station</td>
+<td>Playback</td>
+</tr>
+</tbody>
+</table>
+<p>Both live in <code>quill.core.radio.dial_tuning.DIAL_KEYS</code>,
+spread into <code>APP_KEYMAPS["radio"]</code>. Both are on the command
+palette.</p>
+<h2 id="settings-added">Settings added</h2>
+<p>All on <code>RadioHistory</code> (<code>radio_history.json</code>),
+all in Preferences under "Tune as I move through stations". The
+data-format gate recorded the shape change as additive and
+compatible.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Preferences row</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dial_tuning</code></td>
+<td>False</td>
+<td>Tune as I move through stations</td>
+</tr>
+<tr>
+<td><code>dial_keep_neighbours</code></td>
+<td>True</td>
+<td>Keep the next and previous stations connected</td>
+</tr>
+<tr>
+<td><code>dial_metered_stop</code></td>
+<td>True</td>
+<td>Stop keeping them connected on a metered connection</td>
+</tr>
+<tr>
+<td><code>dial_hiss</code></td>
+<td>True</td>
+<td>Play a soft hiss between stations</td>
+</tr>
+<tr>
+<td><code>dial_remember_volume</code></td>
+<td>False</td>
+<td>Remember each station's volume while tuning</td>
+</tr>
+<tr>
+<td><code>dial_wait_ms</code></td>
+<td>350</td>
+<td>Wait before tuning: Instant, 200 ms, 350 ms, 500 ms, 1 second</td>
+</tr>
+<tr>
+<td><code>dial_hiss_level</code></td>
+<td>"low"</td>
+<td>Hiss level: Low, Medium</td>
+</tr>
+</tbody>
+</table>
+<p>Metered detection reuses <code>quill/core/net_metered.py</code>
+(WinRT <code>NetworkCostType</code>); an unknown answer is treated as
+not metered, and the answer is cached for 30 seconds.</p>
+<h2 id="network-egress">Network egress</h2>
+<p>No new destination and no new egress call site. Warm neighbours open
+the same station stream URLs the player already opens, through mpv
+(which the AST audit does not see, as for every radio stream). They are
+opened only after the listener has turned dial tuning on, only for the
+two stations either side of the one they rested on, and never on a
+metered connection unless the listener allows it. For the integrator, a
+paragraph for the manually documented section of
+<code>network_egress_audit.py</code> if wanted:</p>
+<blockquote>
+<p><code>quill/ui/radio/dial_warm_pool.py::WarmPool.keep</code> -- dial
+tuning's warm neighbours: up to two muted mpv connections to the station
+streams either side of the one the listener rests on, the same URLs the
+player opens. Off by default (Preferences &gt; Tune as I move through
+stations); not on a metered connection unless the listener unchecks that
+row; closed when they stop being neighbours.</p>
+</blockquote>
+<h2 id="third-party-and-own-asset-notices">Third-party and own-asset
+notices</h2>
+<p>The hiss is QUILL's own generated asset. A
+<code>components.json</code> entry in the "fonts-sounds" group, beside
+the page-turn sound:</p>
+<ul>
+<li>id <code>dial-hiss</code>, name "Dial tuning hiss
+(quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav)",
+version "generated by quill/core/radio/dial_hiss.py", licence MIT (QUILL
+project), Copyright (c) 2026 Jeff Bishop, what: "An original synthesized
+soft noise loop played between stations while dial tuning connects; no
+sampled audio is used.", products radio, delivery bundled.</li>
+</ul>
+<p>BlindRadio's MIT notice is already in the notices; its entry can say
+the dial tuning idea is used too (no code or data from it is in this
+feature).</p>
+<h2 id="user-guide-text">User guide text</h2>
+<p>For the Radio user guide, in the chapter on finding and playing
+stations, after the time-shift sections:</p>
+<blockquote>
+<h3 id="tuning-as-you-move-through-stations">Tuning as you move through
+stations</h3>
+<p>Quill Radio can play the station you stop on as you move through a
+list, the way turning a radio dial does. It is off until you turn it on,
+so your arrow keys work as they always have.</p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+U</strong> (<strong>Playback &gt; Tune as I
+Move Through Stations</strong>). Quill Radio says it is on. Press it
+again to turn it off.</li>
+<li>Arrow through your favorites, a Browse folder, Networks or your
+search results. When you stop on a station for about a third of a
+second, it starts playing. Holding an arrow plays nothing until you let
+go.</li>
+<li>While a station connects you hear a soft hiss, like a dial between
+stations. If a station does not answer, the hiss stops and Quill Radio
+tells you, once.</li>
+<li>Press <strong>Enter</strong> on the station you want to stay with.
+It plays for real: it starts a fresh time-shift buffer and goes into
+Recently Played.</li>
+</ol>
+<p>Stations you only pass on the way are not added to Recently Played,
+Song History or Listening Statistics, and are not scrobbled. Podcasts,
+YouTube, audiobooks and folders never play as you move.</p>
+<p>When you leave the list, the last station keeps playing. Press
+<strong>Alt+Shift+P</strong> (<strong>Playback &gt; Go to Playing
+Station</strong>) to come back to its row.</p>
+<p>While you are recording, moving does not change the station. Quill
+Radio says so the first time you move; press Enter if you do want to
+change it.</p>
+<p>Good to know:</p>
+<ul>
+<li>To make the next step quicker, the stations either side of the one
+you are on stay connected with the sound off. That uses up to two extra
+streams. On a metered connection, such as a phone hotspot, Quill Radio
+does not do this.</li>
+<li>Mute silences the hiss too.</li>
+<li>Every part of this is in <strong>Preferences</strong>, under
+<strong>Tune as I move through stations</strong>: how long to wait
+(Instant, 200 milliseconds, 350, 500, or a second), whether to keep the
+next and previous stations connected and whether to stop on a metered
+connection, the hiss and how loud it is (Low or Medium), and whether
+each station you tune to comes in at its own remembered volume. That
+last one is off, so the volume stays where it is as you move.</li>
+<li>Keeping stations connected and the quick step need the mpv playback
+engine. With Windows Media, stations still play as you move, each one
+connecting when you stop.</li>
+</ul>
+<p>Tuning as you move follows an idea from BlindRadio by serrebidev.</p>
+</blockquote>
+<p>Add to the guide's key table: Alt+Shift+U, Tune as I Move Through
+Stations; Alt+Shift+P, Go to Playing Station. Add to the Preferences
+section: the box and its seven rows, as above.</p>
+<h2 id="prd-text">PRD text</h2>
+<p>Replace 31.6 "Dial tuning (designed, not built)" with:</p>
+<blockquote>
+<h3 id="316-dial-tuning-radiodial_tuning-altshiftu">31.6 Dial tuning
+(radio.dial_tuning, Alt+Shift+U)</h3>
+<p><code>quill/core/radio/dial_tuning.py</code>,
+<code>dial_hiss.py</code>,
+<code>quill/ui/radio/dial_tuning_ui.py</code>,
+<code>dial_warm_pool.py</code>, <code>dial_hiss_player.py</code>,
+<code>dial_tuning_commands.py</code>,
+<code>quill/apps/radio_preferences_dial.py</code>. Design:
+<code>docs/design/blindradio-ideas/dial-tuning.md</code>.</p>
+<ul>
+<li><strong>R-DIAL-OFF.</strong> Ships off; seven
+<code>RadioHistory</code> settings (<code>dial_*</code>), all in
+Preferences under "Tune as I move through stations". Alt+Shift+U toggles
+and says the new state.</li>
+<li><strong>R-DIAL-ROWS.</strong> Only live station lists tune:
+Favorites, Browse folders of stations, Networks, Search results
+(Recently Played too, should it become a list; today it is a menu).
+Never folders, <code>is_recording</code> rows, YouTube, Spotify, rows
+needing a resolve, or the on-demand Browse roots
+(<code>ON_DEMAND_SOURCES</code>). Only while the list has focus.</li>
+<li><strong>R-DIAL-SETTLE.</strong> Plays after the wait (default 350
+ms); rows under 150 ms apart are a held key and defer the tune.</li>
+<li><strong>R-DIAL-QUIET.</strong> Nothing spoken on a move. While
+passing through: no state earcons, no failure sentence, no RadioBrowser
+click.</li>
+<li><strong>R-DIAL-COMMIT.</strong> Enter on the tuned station
+reconnects (fresh time-shift buffer) and from then on it is an ordinary
+play. Passed-through stations are kept out of Recently Played, Song
+History, Listening Statistics, scrobbling and per-favorite volume.</li>
+<li><strong>R-DIAL-WARM.</strong> At most three mpv players. Up to two
+neighbours (after first), warmed once the current station plays, muted,
+no filter graph, in-memory buffer, never recorded; let go when no longer
+neighbours, on failure, on leaving the list, on playback elsewhere, or
+when turned off; not on a metered connection when
+<code>dial_metered_stop</code>. Promotion swaps engines and carries
+device, volume, Sound Enhancements, time-shift length and a song-marks
+reset; only on mpv without the exact-OptiLab relay.</li>
+<li><strong>R-DIAL-REC.</strong> While recording, moving tunes nothing;
+said once per recording.</li>
+<li><strong>R-DIAL-DEAD.</strong> Hiss stops on failure or after 5 s
+silent; "<station> is not answering." 3 s later, once.</li>
+<li><strong>R-DIAL-HISS.</strong> Generated loop, two fixed levels,
+<code>winsound</code> on the default device; Mute silences it.</li>
+<li><strong>R-DIAL-GOTO.</strong> Go to Playing Station (Alt+Shift+P)
+selects the playing station's row in Browse (when it is the main view)
+or Favorites, else says it is in no list.</li>
+</ul>
+</blockquote>
+<h2 id="changelog-line">CHANGELOG line</h2>
+<p>For the Radio changelog's "Ideas from BlindRadio" list (and QUILL's,
+if it carries the list):</p>
+<blockquote>
+<ul>
+<li><strong>Tune as you move through stations</strong> (Alt+Shift+U,
+2026-11-08). Off until you turn it on. The station you stop on in
+Favorites, Browse, Networks or Search plays after a moment, with a soft
+hiss while it connects; the stations either side stay connected so the
+next step is quick. Enter keeps the station; stations you only pass are
+not added to Recently Played or Song History. Go to Playing Station
+(Alt+Shift+P) finds its row again. Every part is in Preferences.</li>
+</ul>
+</blockquote>
+<p>The opening line of that section says "Six things arrive together";
+it becomes seven.</p>
+<h2 id="not-done-or-not-verified">Not done, or not verified</h2>
+<ul>
+<li><strong>Not heard on a real machine.</strong> Everything is tested
+with a fake engine pool, a fake hiss backend and a fake clock; nothing
+was run against libmpv, a real station, JAWS or NVDA. Worth a live
+check: the hiss level against speech, the loop seam by ear, promotion on
+a real mpv (no audible gap, the muted neighbour really silent), and how
+each screen reader reads the Preferences box.</li>
+<li><strong>The hiss plays on the default output device</strong>, not
+the radio's chosen device, and a <code>winsound</code> earcon (only when
+sound_lib is absent) stops it.</li>
+<li><strong>Recently Played is a menu, not a list</strong>, so it does
+not tune. The policy accepts a <code>recent</code> list kind for the day
+it becomes one.</li>
+<li><strong>Rows that must be resolved first</strong> (TuneIn, Apple)
+never tune: tuning them would be a network round trip per row
+passed.</li>
+<li><strong>A station you rest on without pressing Enter</strong> is
+never counted, however long you listen. An automatic commit after a
+dwell time is a possible follow-up; it was not in the agreed design, so
+it is not built.</li>
+<li><strong>Go to Playing Station</strong> looks in Browse only when
+Browse is the main view, and in Favorites otherwise. It does not search
+Search Stations' results or a separate Browse window.</li>
+<li><strong>Instant</strong> plays the first press and the first key
+repeat of a held arrow, because the app cannot see a key-up.</li>
+<li>The Quill Radio user guide, PRD, changelogs, What's New and
+third-party notices were not edited (by instruction); their text is
+above.</li>
+</ul>
+</body>
+</html>

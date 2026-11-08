@@ -23,6 +23,8 @@ from typing import Any
 
 from quill.core.error_codes import CodedError
 from quill.core.radio import (
+    curated_networks,
+    iprd,
     iptv,
     laut_fm,
     live365,
@@ -114,6 +116,12 @@ def run_search(
                     extras += network.search_stations(query, safe_mode=safe_mode)
                 except CodedError:
                     pass
+        # IPRD swallows its own errors and returns [] (2026-11-07); the
+        # curated networks read a bundled table and make no request at all.
+        if host._source_on("iprd"):
+            extras += iprd.search_stations(query, safe_mode=safe_mode)
+        if host._source_on("networks"):
+            extras += curated_networks.search_stations(query)
         if host._source_on("tv"):
             extras += iptv.search_stations(query, safe_mode=safe_mode)
         # NOAA Weather Radio: a SAME code, callsign, or "County, ST"/state

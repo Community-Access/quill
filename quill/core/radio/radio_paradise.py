@@ -109,6 +109,46 @@ _SERENITY_PATHS: dict[str, str] = {"64": "serenity", "flac": "serenity-flac"}
 _EXTRA_CHANNELS: tuple[tuple[str, str], ...] = (("radio2050", "Radio 2050"),)
 
 
+#: The ``chan`` number Radio Paradise's playlist API files each stream under,
+#: keyed by the first word of the stream name (``mellow-128`` -> ``mellow``).
+#: The Main Mix's streams are named for their codec, so all of those words
+#: mean channel 0. KFAT is missing on purpose: no channel number it answers to
+#: has a playlist behind it. Read by :mod:`quill.core.radio.station_playlist`;
+#: the table, and the KFAT finding, come from BlindRadio by serrebidev (MIT),
+#: crates/blindradio-core/src/sources/played.rs.
+PLAYLIST_CHANNELS: dict[str, int] = {
+    "aac": 0,
+    "mp3": 0,
+    "flac": 0,
+    "flacm": 0,
+    "mellow": 1,
+    "rock": 2,
+    "global": 3,
+    "beyond": 5,
+    "serenity": 42,
+    "radio2050": 2050,
+}
+
+
+def playlist_channel(stream_url: str) -> int | None:
+    """The playlist ``chan`` for a ``stream.radioparadise.com`` URL, or None (pure).
+
+    Matches the stream host exactly, so a station that merely mentions Radio
+    Paradise in its address is never mistaken for one of its channels.
+    """
+    from urllib.parse import urlsplit
+
+    try:
+        parts = urlsplit(stream_url.strip())
+        host = (parts.hostname or "").lower()
+    except ValueError:
+        return None
+    if host != "stream.radioparadise.com":
+        return None
+    name = parts.path.strip("/").split("/", 1)[0].lower()
+    return PLAYLIST_CHANNELS.get(name.split("-", 1)[0].split(".", 1)[0])
+
+
 class RadioParadiseError(CodedError):
     """A Radio Paradise request failed (network, or Safe Mode refusal)."""
 

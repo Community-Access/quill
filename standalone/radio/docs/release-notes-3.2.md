@@ -4,6 +4,87 @@ Version 3.2.0 (build 5), the beta for testers, October 2026. 3.2.0 was
 prepared on 2026-10-03 and is not yet published; the last published version
 is 3.0.4.
 
+## Since testing build 5: ideas from BlindRadio
+
+These arrived on 2026-11-07, after build 5. Each one is an idea from
+BlindRadio, a screen-reader-first radio player by serrebidev
+(github.com/serrebidev/blindradio, MIT). Thank you to its author.
+
+### Twenty networks, each channel straight to the broadcaster's stream
+
+Browse Stations > Networks used to find a broadcaster's stations by searching
+the station directory for its name, so a network was only as good as the
+directory's rows. Twenty networks now carry the broadcaster's own channels,
+516 in all, each going straight to the stream the broadcaster publishes, and
+each checked to play before it was added: the BBC's national, local and
+digital services, the ABC by region, Minnesota Public Radio and YourClassical,
+WFMU and its side channels, WFUV, Radio Swiss, Global's Capital, Heart,
+Smooth, Classic FM, LBC, Radio X and Gold, Triple M, ARN, NZME, K-LOVE and
+Air1, Big R Radio, NTS and its Infinite Mixtapes, Nightride FM, Power Hitz,
+Radio Record, PulsRadio, Sunshine Live and Planet Radio. Their folders say how
+many channels they hold, and open at once. There are two new groups,
+Commercial radio and Christian radio. The list is BlindRadio's, used under its
+MIT notice.
+
+### IPRD, an open directory of public radio
+
+A new branch in Browse Stations, **IPRD (Public Radio Directory)**: about
+24,000 stations, by country and by genre, a hundred at a time, with a
+**More...** row that says how many there are. Find Stations searches it, and
+searches the network channels too.
+
+### What the Station Played (Alt+Shift+H)
+
+Song History is what Quill Radio heard while you listened. Many stations also
+publish their own list of what they played, with the time each song started.
+Playback > What the Station Played shows it for KEXP, the BBC, Radio Paradise,
+Live365, laut.fm, StreamTheWorld stations and stations run on AzuraCast. It
+says where the list came from, and Copy, Clip Library, Song Details and Lyrics
+work as they do in Song History.
+
+### Jump between songs in the time-shift buffer, and save them
+
+Every song is marked in the buffer as it starts. **Alt+Shift+Left** and
+**Alt+Shift+Right** go to the previous and next song, saying its title and how
+far behind live you are, and **Alt+Shift+W** tells you which song you are in.
+**Save Songs from the Buffer** writes this song (Ctrl+Alt+F8), the previous
+(Ctrl+Alt+F6), the next (Ctrl+Alt+F7) or every song (Ctrl+Alt+F5) to its own
+file in your recordings folder, untouched.
+
+### Steadier stations, and a buffer length per station
+
+A station that keeps running dry now waits longer before it plays again,
+three seconds, then nine, then fifteen, instead of stuttering every few
+seconds, and goes back to normal after a clean minute. And a favorite can keep
+a time-shift length of its own: **Playback > Time-Shift Length for This
+Station** (Alt+Shift+T).
+
+### Tune as you move through stations
+
+Quill Radio can now play the station you stop on as you arrow through a list,
+the way turning a dial does. It is off until you turn it on with **Alt+Shift+U**
+(**Playback > Tune as I Move Through Stations**). Stop on a station in your
+favorites, a Browse folder, Networks or your search results, and after about a
+third of a second it plays, with a soft hiss while it connects. The stations
+either side stay connected with the sound off, so the next step is almost
+instant. Press Enter on the one you want to keep; stations you only passed are
+not added to Recently Played or Song History. **Alt+Shift+P** goes back to the
+playing station's row. How long it waits, the neighbours, the hiss and its
+level, and whether each station keeps its own volume are all settings in
+Preferences.
+
+### Scrobbling, and AudD for Identify This Song
+
+Quill Radio can send the songs you hear to ListenBrainz, last.fm or Libre.fm.
+Each is off until you turn it on in Preferences and sign in; a song counts once
+you have heard a minute of it, and time-shifted listening counts when you hear
+it. Identify This Song can now ask AudD instead of AcoustID, with your own AudD
+token. AudD is sent about twenty seconds of audio, only when you press Ctrl+K.
+
+The user guide covers each of these step by step: Chapter 4 for the song marks,
+Chapter 5 for What the Station Played, AudD and scrobbling, and Chapter 6 for
+the networks and IPRD.
+
 ## Since testing build 5: SomaFM and the shared runtime
 
 The shared Radio code retires the built-in SomaFM source in response to its
