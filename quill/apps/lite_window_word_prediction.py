@@ -15,6 +15,7 @@ from typing import Any
 
 import wx
 
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.suggestion_list import SuggestionListMixin
 
 __all__ = ["DocumentWordPredictionMixin"]
@@ -54,7 +55,8 @@ class DocumentWordPredictionMixin(SuggestionListMixin):
         return int(self.control.GetInsertionPoint())
 
     def _suggest_replace(self, start: int, end: int, text: str) -> None:
-        self.control.Replace(start, end, text)
+        # One undo step: Ctrl+Z takes the whole suggestion back, not a letter.
+        replace_as_one_undo(self.control, start, end, text)
 
     def _suggest_set_caret(self, offset: int) -> None:
         self.control.SetInsertionPoint(offset)
