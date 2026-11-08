@@ -71,6 +71,9 @@ class DocumentWordPredictionMixin(SuggestionListMixin):
         dictionary = getattr(self, "_spell_dictionary", None)
         return set(dictionary()) if callable(dictionary) else set()
 
+    def _suggest_path(self) -> Any:
+        return getattr(self, "path", None)
+
     def _suggest_say(self, message: str) -> None:
         self._announce(message)
 

@@ -53,6 +53,9 @@ class IntellisensePopupMixin(SuggestionListMixin):
     def _suggest_dictionary(self) -> set[str]:
         return set(self._spell_dictionary())
 
+    def _suggest_path(self) -> Any:
+        return getattr(getattr(self, "document", None), "path", None)
+
     def _suggest_as_you_type(self) -> bool:
         if not getattr(self.settings, "intellisense_as_you_type", False):
             return False
