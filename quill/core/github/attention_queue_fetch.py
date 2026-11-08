@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quill.core.github.attention_queue import QUEUE_CATEGORIES
+from quill.core.github.attention_queue_summaries import summarize_queue_rows
 from quill.core.github.explore_models import (
     ExploreRow,
     GitHubExploreError,
@@ -36,7 +37,11 @@ def fetch_attention_queue(
     categories: tuple[str, ...] | list[str] = (),
     limit: int = 50,
 ) -> GitHubFetchResult[ExploreRow]:
-    """Combine assignments, requested reviews, mentions, and failed-check PRs."""
+    """Combine assignments, requested reviews, mentions, and failed-check PRs.
+
+    Each pull request row then carries its one-sentence summary, read for the
+    whole queue in one request (:mod:`~quill.core.github.attention_queue_summaries`).
+    """
     if not provider.is_authenticated:
         raise GitHubExploreError("Sign in to GitHub to load your attention queue.")
     limit = max(1, min(limit, 100))
@@ -96,8 +101,15 @@ def fetch_attention_queue(
     )
     if len(rows) > limit:
         warnings.append(f"Attention queue: showing the first {limit} items; more may exist")
+    # One batched GraphQL request says where each pull request stands. Its gaps
+    # are said, but they do not make the queue itself incomplete.
+    summarized, summary_note = summarize_queue_rows(
+        rows[:limit], getattr(provider, "fetch_pull_summaries", None)
+    )
     return GitHubFetchResult(
-        tuple(rows[:limit]), complete=not warnings, warning="; ".join(warnings)
+        summarized,
+        complete=not warnings,
+        warning="; ".join([*warnings, *([summary_note] if summary_note else [])]),
     )
 
 

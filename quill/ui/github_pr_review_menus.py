@@ -108,6 +108,7 @@ class GitHubPullReviewMenusMixin:
                 self._request_reviewers,
                 enabled=self._reviewers_btn.IsEnabled(),
             )
+            self._append_copilot_entries(add)
             add(
                 self._draft_btn.GetLabel().replace("&", ""),
                 self._toggle_draft,

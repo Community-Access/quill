@@ -102,4 +102,5 @@ class GitHubExploreContextMenuMixin:
             add("Queue Options...", lambda: self._attention_options_menu(None))
         self._add_community_actions(add)
         self._add_wave4_actions(menu, add, row)
+        self._add_gist_actions(add, row)
         add("Refresh", lambda: self._load(None))

@@ -116,6 +116,7 @@ class DocumentToolsMixin(
                 initial_repo=detect_github_repo(self.path),
                 open_file_reference_cb=self._open_github_file_reference,
                 announce_cb=self._announce,
+                gist_source_cb=getattr(self, "_github_gist_source", None),
             ).show()
         finally:
             provider.close()

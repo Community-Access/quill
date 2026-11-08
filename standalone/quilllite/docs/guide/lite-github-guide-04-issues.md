@@ -4,7 +4,8 @@
 
 This chapter is about issues: reading one and its comments, replying,
 reacting, reading its history, writing a new one from a template, and keeping
-issues in order with labels, milestones, assignees and batch changes. It also
+issues in order with labels, milestones, assignees and batch changes, and
+handing an issue to Copilot's coding agent. It also
 covers the housekeeping commands, Projects boards and dependencies, and
 starting work on an issue in a folder of its own. Pull requests are issues
 too, so most of this applies to them as well.
@@ -170,6 +171,25 @@ Every change is reported from what GitHub sends back.
 
 Add assignees when you write an issue, in the form's **Assignees** field, or to
 several at once with the Batch menu.
+
+### Handing an issue to Copilot
+
+Signed in, an issue's context menu in GitHub Items (`Shift+F10` or the
+Applications key) has **Assign #3 to Copilot...**, with the issue's number. It
+hands the issue to Copilot's coding agent, which works on it in the background
+and opens a pull request for you to review.
+
+QUILL first asks GitHub whether Copilot can be assigned in this repository. If
+it cannot, you hear why: the coding agent needs a Copilot plan that includes it,
+and it has to be turned on for the repository, which an organization owner may
+have to allow. Nothing is changed. If it can, QUILL asks before handing the
+issue over and names anyone already assigned, who stay assigned. You hear
+"Issue #3 assigned to Copilot." only when GitHub's answer lists Copilot as an
+assignee. A closed issue, or one Copilot already has, gets a sentence saying so
+instead.
+
+The item is only on issues. To have Copilot look at a pull request, use
+**Request Copilot Review** in the review window (Chapter 5).
 
 ## Changing many issues at once
 
