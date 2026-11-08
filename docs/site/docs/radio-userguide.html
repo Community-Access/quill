@@ -1421,6 +1421,11 @@ Song</strong> (Alt+Shift+Right) and <strong>Which Song Is This?</strong>
 them to files, and <strong>Time-Shift Length for This Station…</strong>
 (Alt+Shift+T) gives a favorite its own length. See “Jumping between
 songs in the buffer” in Chapter 4.</li>
+<li><strong>Tune as I Move Through Stations</strong> (Alt+Shift+U): play
+the station you stop on as you move through a list; off until you turn
+it on. <strong>Go to Playing Station</strong> (Alt+Shift+P) finds the
+playing station’s row. See “Tuning as you move through stations” in
+Chapter 4.</li>
 <li><strong>Identify This Song</strong> (Ctrl+K): asks AcoustID, or AudD
 if you chose it, what song is playing. See “Identify This Song” in
 Chapter 5.</li>
@@ -1942,6 +1947,56 @@ cleared the next time Quill Radio starts.</p>
 engine these keys tell you that rewinding live radio needs the mpv
 playback engine. To get it back, set <strong>Playback engine</strong> to
 Automatic in Preferences.</p>
+<h3 id="tuning-as-you-move-through-stations">Tuning as you move through
+stations</h3>
+<p>Quill Radio can play the station you stop on as you move through a
+list, the way turning a radio dial does. It is off until you turn it on,
+so your arrow keys work as they always have.</p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+U</strong> (<strong>Playback &gt; Tune as I
+Move Through Stations</strong>). Quill Radio says it is on. Press it
+again to turn it off.</li>
+<li>Arrow through your favorites, a Browse folder, Networks or your
+search results. When you stop on a station for about a third of a
+second, it starts playing. Holding an arrow plays nothing until you let
+go.</li>
+<li>While a station connects you hear a soft hiss, like a dial between
+stations. If a station does not answer, the hiss stops and Quill Radio
+tells you, once.</li>
+<li>Press <strong>Enter</strong> on the station you want to stay with.
+It plays for real: it starts a fresh time-shift buffer and goes into
+Recently Played.</li>
+</ol>
+<p>Stations you only pass on the way are not added to Recently Played,
+Song History or Listening Statistics, and are not scrobbled. Podcasts,
+YouTube, audiobooks and folders never play as you move, and neither do
+stations TuneIn has to look up first.</p>
+<p>When you leave the list, the last station keeps playing. Press
+<strong>Alt+Shift+P</strong> (<strong>Playback &gt; Go to Playing
+Station</strong>) to come back to its row.</p>
+<p>While you are recording, moving does not change the station. Quill
+Radio says so the first time you move; press Enter if you do want to
+change it.</p>
+<p>Good to know:</p>
+<ul>
+<li>To make the next step quicker, the stations either side of the one
+you are on stay connected with the sound off. That uses up to two extra
+streams. On a metered connection, such as a phone hotspot, Quill Radio
+does not do this.</li>
+<li>Mute silences the hiss too. The hiss plays on your computer’s
+default sound device.</li>
+<li>Every part of this is in <strong>Preferences</strong>, under
+<strong>Tune as I move through stations</strong>: how long to wait
+(Instant, 200 milliseconds, 350, 500, or a second), whether to keep the
+next and previous stations connected and whether to stop doing that on a
+metered connection, the hiss and how loud it is (Low or Medium), and
+whether each station you tune to comes in at its own remembered volume.
+That last one is off, so the volume stays where it is as you move.</li>
+<li>Keeping stations connected, and the quick step, need the mpv
+playback engine. With Windows Media, stations still play as you move,
+each one connecting when you stop.</li>
+</ul>
+<p>Tuning as you move follows an idea from BlindRadio by serrebidev.</p>
 <h3 id="jumping-between-songs-in-the-buffer">Jumping between songs in
 the buffer</h3>
 <p>While the time-shift buffer runs, Quill Radio marks where each song
@@ -7936,10 +7991,11 @@ what the stream sent. It starts as <code>{title}[ by {artist}]</code>.
 Leave it blank to go back to that.</li>
 <li><strong>Log folder</strong>: where the log is written. Leave it
 blank for the usual place. Changing it moves the log straight away.</li>
-<li><strong>AcoustID key for song recognition</strong>: the free key
-Identify This Song needs. It starts empty. It is kept in the Windows
-credential store, not in a settings file; clear the box to remove it.
-See “Identify This Song” in Chapter 5.</li>
+<li><strong>AcoustID key for song recognition</strong>, now in the
+<strong>Song recognition</strong> group below: the free key Identify
+This Song needs. It starts empty. It is kept in the Windows credential
+store, not in a settings file; clear the box to remove it. See “Identify
+This Song” in Chapter 5.</li>
 </ul>
 <p>Two buttons:</p>
 <ul>
@@ -7955,8 +8011,27 @@ the station catalog, stay on each computer. Do not use Quill apps on two
 computers with the same folder at the same time. If you do, the next
 launch tells you.</li>
 </ul>
-<p>Three groups:</p>
+<p>Six groups:</p>
 <ul>
+<li><strong>Tune as I move through stations</strong>: <strong>Tune as I
+move through stations</strong> (off), <strong>Wait before
+tuning</strong> (350 milliseconds), <strong>Keep the next and previous
+stations connected</strong> (on), <strong>Stop keeping them connected on
+a metered connection</strong> (on), <strong>Play a soft hiss between
+stations</strong> (on), <strong>Hiss level</strong> (Low) and
+<strong>Remember each station’s volume while tuning</strong> (off). See
+“Tuning as you move through stations” in Chapter 4.</li>
+<li><strong>Song recognition</strong>: <strong>Song recognition
+service</strong> (AcoustID, or AudD), the <strong>AcoustID key</strong>
+and the <strong>AudD API token</strong>. See “Identify This Song” and
+“Choosing AudD instead of AcoustID” in Chapter 5.</li>
+<li><strong>Scrobbling</strong>: a check box for each of ListenBrainz,
+last.fm and Libre.fm (all off), the <strong>ListenBrainz user
+token</strong>, the last.fm <strong>API key</strong> and <strong>shared
+secret</strong> boxes for your own pair, and the <strong>Sign In to
+last.fm…</strong>, <strong>Sign In to Libre.fm…</strong> and <strong>Get
+a last.fm API Account…</strong> buttons. See “Scrobbling: keeping a list
+of what you heard” in Chapter 5.</li>
 <li><strong>Podcasts</strong>: <strong>Check subscribed podcast
 feeds</strong> (Manually only, where it starts, through every 15 minutes
 up to once a day), and <strong>Check subscribed podcast feeds at
@@ -10031,11 +10106,11 @@ holds the copyright and what the licence asks of us. The full licence
 texts are at the end.</p>
 <p>The curated networks, What the Station Played, song marks in the
 time-shift buffer, the deeper cushion, per-station time-shift length,
-scrobbling and AudD recognition follow ideas from BlindRadio, a
-screen-reader-first radio player by serrebidev
-(github.com/serrebidev/blindradio). The network list and its stream
-addresses are BlindRadio’s, used under the MIT License, and its notice
-is in the list. Thank you.</p>
+tuning as you move through stations, scrobbling and AudD recognition
+follow ideas from BlindRadio, a screen-reader-first radio player by
+serrebidev (github.com/serrebidev/blindradio). The network list and its
+stream addresses are BlindRadio’s, used under the MIT License, and its
+notice is in the list. Thank you.</p>
 <p>The same file, THIRD-PARTY-NOTICES.txt, and Quill Radio’s own
 licence, LICENSE.txt, are also in the folder where Quill Radio is
 installed or unpacked, so you can open them without starting the
@@ -10135,6 +10210,14 @@ minutes)</td>
 <tr>
 <td>Time-shift length for this station</td>
 <td>Alt+Shift+T</td>
+</tr>
+<tr>
+<td>Tune as I move through stations, on or off</td>
+<td>Alt+Shift+U</td>
+</tr>
+<tr>
+<td>Go to Playing Station</td>
+<td>Alt+Shift+P</td>
 </tr>
 <tr>
 <td>Continue Listening</td>

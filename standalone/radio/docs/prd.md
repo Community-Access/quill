@@ -3791,10 +3791,42 @@ so in one sentence with no request made.
   the listener's own token, only on the command; the answer maps into AcoustID's
   `Match`. Egress: `audd.py::_post`.
 
-### 31.6 Dial tuning (designed, not built)
+### 31.6 Dial tuning (radio.dial_tuning, Alt+Shift+U)
 
-Agreed with Jeff on 2026-11-07: moving through a live station list plays the
-station under focus after a short wait, with neighbours kept connected and a soft
-hiss between stations. It ships off, and every part is a setting; the design is
-`docs/design/blindradio-ideas/dial-tuning.md`. It waits until the time-shift work
-above is on main, because both change the mpv engine.
+`quill/core/radio/dial_tuning.py`, `dial_hiss.py`, `quill/ui/radio/dial_tuning_ui.py`,
+`dial_warm_pool.py`, `dial_hiss_player.py`, `dial_tuning_commands.py`,
+`quill/apps/radio_preferences_dial.py`. Design agreed with Jeff on 2026-11-07:
+`docs/design/blindradio-ideas/dial-tuning.md`; as built:
+`docs/design/blindradio-ideas/dial-tuning-built.md`.
+
+- **R-DIAL-OFF.** Ships off; seven `RadioHistory` settings (`dial_*`), all in
+  Preferences under "Tune as I move through stations". Alt+Shift+U toggles and says
+  the new state.
+- **R-DIAL-ROWS.** Only live station lists tune: Favorites, Browse folders of
+  stations, Networks, Search results. Never folders, recordings or episodes, YouTube,
+  Spotify, rows needing a network resolve (TuneIn, Apple), or the on-demand Browse
+  roots. Only while the list has focus.
+- **R-DIAL-SETTLE.** Plays after the wait (default 350 ms); rows under 150 ms apart are
+  a held key and defer the tune.
+- **R-DIAL-QUIET.** Nothing spoken on a move (GATE-13). While passing through: no state
+  earcons, no failure sentence, no RadioBrowser click.
+- **R-DIAL-COMMIT.** Enter on the tuned station reconnects (fresh time-shift buffer) and
+  from then on it is an ordinary play. Passed-through stations are kept out of Recently
+  Played, Song History, Listening Statistics, scrobbling and per-favorite volume.
+- **R-DIAL-WARM.** At most three mpv players. Up to two neighbours, warmed once the
+  current station plays, muted, no filter graph, in-memory buffer, never recorded; let
+  go when no longer neighbours, on failure, on leaving the list, on playback elsewhere,
+  or when turned off; not on a metered connection when `dial_metered_stop`. Promotion
+  swaps engines and carries device, volume, Sound Enhancements, time-shift length and a
+  song-marks reset; only on mpv without the exact-OptiLab relay.
+- **R-DIAL-REC.** While recording, moving tunes nothing; said once per recording.
+- **R-DIAL-DEAD.** Hiss stops on failure or after 5 s silent; "<station> is not
+  answering." 3 s later, once.
+- **R-DIAL-HISS.** A generated loop (`dial_hiss.py`, checked byte for byte against the
+  shipped `quill/assets/audio/dial_hiss_*.wav`), two fixed levels, on the default
+  device; Mute silences it.
+- **R-DIAL-GOTO.** Go to Playing Station (Alt+Shift+P) selects the playing station's row
+  in Browse (when it is the main view) or Favorites, else says it is in no list.
+- Warm neighbours open only the station streams the player itself would open; no new
+  destination and no new egress call site.
+

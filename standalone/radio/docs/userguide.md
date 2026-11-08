@@ -982,6 +982,10 @@ rather than something to learn.
   them to files, and **Time-Shift Length for This Station...** (Alt+Shift+T)
   gives a favorite its own length. See "Jumping between songs in the buffer"
   in Chapter 4.
+- **Tune as I Move Through Stations** (Alt+Shift+U): play the station you
+  stop on as you move through a list; off until you turn it on. **Go to
+  Playing Station** (Alt+Shift+P) finds the playing station's row. See
+  "Tuning as you move through stations" in Chapter 4.
 - **Identify This Song** (Ctrl+K): asks AcoustID, or AudD if you chose it,
   what song is playing. See "Identify This Song" in Chapter 5.
 - **Continue Listening...** (Ctrl+Alt+Shift+L): everything you started and did
@@ -1417,6 +1421,54 @@ starts.
 The Windows Media engine keeps nothing to go back to, so on that engine these
 keys tell you that rewinding live radio needs the mpv playback engine. To get
 it back, set **Playback engine** to Automatic in Preferences.
+
+### Tuning as you move through stations
+
+Quill Radio can play the station you stop on as you move through a list, the
+way turning a radio dial does. It is off until you turn it on, so your arrow
+keys work as they always have.
+
+1. Press **Alt+Shift+U** (**Playback > Tune as I Move Through Stations**).
+   Quill Radio says it is on. Press it again to turn it off.
+2. Arrow through your favorites, a Browse folder, Networks or your search
+   results. When you stop on a station for about a third of a second, it
+   starts playing. Holding an arrow plays nothing until you let go.
+3. While a station connects you hear a soft hiss, like a dial between
+   stations. If a station does not answer, the hiss stops and Quill Radio tells
+   you, once.
+4. Press **Enter** on the station you want to stay with. It plays for real: it
+   starts a fresh time-shift buffer and goes into Recently Played.
+
+Stations you only pass on the way are not added to Recently Played, Song
+History or Listening Statistics, and are not scrobbled. Podcasts, YouTube,
+audiobooks and folders never play as you move, and neither do stations TuneIn
+has to look up first.
+
+When you leave the list, the last station keeps playing. Press **Alt+Shift+P**
+(**Playback > Go to Playing Station**) to come back to its row.
+
+While you are recording, moving does not change the station. Quill Radio says
+so the first time you move; press Enter if you do want to change it.
+
+Good to know:
+
+- To make the next step quicker, the stations either side of the one you are
+  on stay connected with the sound off. That uses up to two extra streams. On a
+  metered connection, such as a phone hotspot, Quill Radio does not do this.
+- Mute silences the hiss too. The hiss plays on your computer's default sound
+  device.
+- Every part of this is in **Preferences**, under **Tune as I move through
+  stations**: how long to wait (Instant, 200 milliseconds, 350, 500, or a
+  second), whether to keep the next and previous stations connected and
+  whether to stop doing that on a metered connection, the hiss and how loud it
+  is (Low or Medium), and whether each station you tune to comes in at its own
+  remembered volume. That last one is off, so the volume stays where it is as
+  you move.
+- Keeping stations connected, and the quick step, need the mpv playback engine.
+  With Windows Media, stations still play as you move, each one connecting when
+  you stop.
+
+Tuning as you move follows an idea from BlindRadio by serrebidev.
 
 ### Jumping between songs in the buffer
 
@@ -6687,10 +6739,10 @@ Three text boxes:
   back to that.
 - **Log folder**: where the log is written. Leave it blank for the usual place.
   Changing it moves the log straight away.
-- **AcoustID key for song recognition**: the free key Identify This Song needs.
-  It starts empty. It is kept in the Windows credential store, not in a
-  settings file; clear the box to remove it. See "Identify This Song" in
-  Chapter 5.
+- **AcoustID key for song recognition**, now in the **Song recognition**
+  group below: the free key Identify This Song needs. It starts empty. It is
+  kept in the Windows credential store, not in a settings file; clear the box
+  to remove it. See "Identify This Song" in Chapter 5.
 
 Two buttons:
 
@@ -6705,8 +6757,22 @@ Two buttons:
   each computer. Do not use Quill apps on two computers with the same folder
   at the same time. If you do, the next launch tells you.
 
-Three groups:
+Six groups:
 
+- **Tune as I move through stations**: **Tune as I move through stations**
+  (off), **Wait before tuning** (350 milliseconds), **Keep the next and
+  previous stations connected** (on), **Stop keeping them connected on a
+  metered connection** (on), **Play a soft hiss between stations** (on),
+  **Hiss level** (Low) and **Remember each station's volume while tuning**
+  (off). See "Tuning as you move through stations" in Chapter 4.
+- **Song recognition**: **Song recognition service** (AcoustID, or AudD),
+  the **AcoustID key** and the **AudD API token**. See "Identify This Song"
+  and "Choosing AudD instead of AcoustID" in Chapter 5.
+- **Scrobbling**: a check box for each of ListenBrainz, last.fm and Libre.fm
+  (all off), the **ListenBrainz user token**, the last.fm **API key** and
+  **shared secret** boxes for your own pair, and the **Sign In to last.fm...**,
+  **Sign In to Libre.fm...** and **Get a last.fm API Account...** buttons. See
+  "Scrobbling: keeping a list of what you heard" in Chapter 5.
 - **Podcasts**: **Check subscribed podcast feeds** (Manually only, where it
   starts, through every 15 minutes up to once a day), and **Check subscribed
   podcast feeds at launch** (off). See "Checking your subscribed podcasts" in
@@ -8398,8 +8464,8 @@ heading for each component: what it is, its licence, who holds the copyright
 and what the licence asks of us. The full licence texts are at the end.
 
 The curated networks, What the Station Played, song marks in the time-shift
-buffer, the deeper cushion, per-station time-shift length, scrobbling and
-AudD recognition follow ideas from BlindRadio, a screen-reader-first radio player by serrebidev
+buffer, the deeper cushion, per-station time-shift length, tuning as you move
+through stations, scrobbling and AudD recognition follow ideas from BlindRadio, a screen-reader-first radio player by serrebidev
 (github.com/serrebidev/blindradio). The network list and its stream addresses
 are BlindRadio's, used under the MIT License, and its notice is in the list.
 Thank you.
@@ -8452,6 +8518,8 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Which song is this? | Alt+Shift+W |
 | Save this, previous, next, all songs in the buffer | Ctrl+Alt+F8 / Ctrl+Alt+F6 / Ctrl+Alt+F7 / Ctrl+Alt+F5 |
 | Time-shift length for this station | Alt+Shift+T |
+| Tune as I move through stations, on or off | Alt+Shift+U |
+| Go to Playing Station | Alt+Shift+P |
 | Continue Listening | Ctrl+Alt+Shift+L |
 | Chapters | Ctrl+Shift+C |
 | Next or previous chapter | Ctrl+Shift+. / Ctrl+Shift+, |

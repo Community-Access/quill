@@ -264,8 +264,11 @@ TuneIn, and the directories refused on their terms.</li>
 AudD.</li>
 <li><code>time-shift.md</code>: song marks, adaptive cushion,
 per-station buffer length.</li>
-<li><code>dial-tuning.md</code>: the agreed design for dial tuning (not
-built yet).</li>
+<li><code>dial-tuning.md</code>: the agreed design for dial tuning.</li>
+<li><code>dial-tuning-built.md</code>: dial tuning as built, with its
+open items.</li>
+<li><code>tutorials.md</code>: the six guided lessons for these
+features.</li>
 </ul>
 <p>Each notes file holds the exact user-guide, PRD and CHANGELOG text,
 the keys, settings and egress rows added, and what was not verified.</p>
@@ -299,19 +302,25 @@ MIT notice in every product’s third-party notices, site pages
 synced.</li>
 <li>2026-11-07: stale GitHub OAuth lines in
 <code>docs/design/codex.md</code> corrected.</li>
+<li>2026-11-08: six guided lessons added (50 lessons, 330 steps);
+release notes 3.2, README and the site’s docs page updated.</li>
+<li>2026-11-08: dial tuning built and merged: off by default, seven
+settings, Alt+Shift+U, Go to Playing Station (Alt+Shift+P), a generated
+hiss, up to two warm neighbours; docs folded in.</li>
+<li>2026-11-08: PR 1792 opened; CI fixes for the accessible-name
+inventory, announcement punctuation, persistence audit and CodeQL.</li>
 </ul>
 <h2 id="remaining-tasks">Remaining tasks</h2>
 <ol type="1">
-<li>Run <code>platform_report</code>, regenerate snapshots, re-run the
-menu-accelerator gate and the radio test suite on the merged
-branch.</li>
-<li>PR to main; merge on green CI.</li>
-<li>Remove the program’s worktrees once their branches are on main.</li>
-<li>Build dial tuning to <code>dial-tuning.md</code> (after time-shift
-is on main, since both change the mpv engine), as its own PR.</li>
-<li>Review the module budget entry for
-<code>quill/core/app_keymaps.py</code> (602 lines,
-<code>_rebaseline_2026_11_07_song_marks</code>).</li>
+<li>Run the gates and radio tests on the final branch; PR 1792 out of
+draft; merge on green CI.</li>
+<li>Pull <code>S:\QUILL</code>, delete its two strays
+(<code>docs/design/blindradio-review-2026-11-07.md</code>, an empty
+<code>quill/core/radio/radio_credentials.py</code>), remove
+<code>S:\QUILL-wt-br</code> and <code>S:\QUILL-wt-br-dial</code>.</li>
+<li>Review the module budget rebaselines: <code>app_keymaps.py</code>
+(604), <code>radio.py</code> (1267), <code>browse_tree_dialog.py</code>
+(947).</li>
 </ol>
 <h2 id="small-follow-ups-found-along-the-way">Small follow-ups found
 along the way</h2>
@@ -330,6 +339,10 @@ on the favorites context menu.</li>
 from its docs.</li>
 <li>Re-read 1.FM’s terms before switching its network to
 <code>api.1cloud.fm</code>.</li>
+<li>Dial tuning: the hiss plays on the default device, not the radio’s
+chosen one; Recently Played is a menu so it does not tune; a station
+rested on without Enter is never counted; Go to Playing Station looks
+only in Browse (when main view) or Favorites.</li>
 <li>Global, ARN and NZME run their own apps; if one withdraws from
 third-party players, delete its network entry.</li>
 </ul>
@@ -346,6 +359,11 @@ put the key and secret in the build environment for
 paste their own pair.</li>
 <li>One AudD request with a bad token, to confirm the error
 wording.</li>
+<li>Dismiss CodeQL alert 84 (last.fm’s required MD5) as won’t fix: <a
+href="https://github.com/Community-Access/quill/security/code-scanning/84">https://github.com/Community-Access/quill/security/code-scanning/84</a></li>
+<li>Dial tuning by ear: the hiss level against speech, the loop seam, a
+neighbour promoted with no gap, and how JAWS and NVDA read the
+Preferences box.</li>
 </ul>
 </main>
 </body>

@@ -59,6 +59,20 @@ seconds, and goes back to normal after a clean minute. And a favorite can keep
 a time-shift length of its own: **Playback > Time-Shift Length for This
 Station** (Alt+Shift+T).
 
+### Tune as you move through stations
+
+Quill Radio can now play the station you stop on as you arrow through a list,
+the way turning a dial does. It is off until you turn it on with **Alt+Shift+U**
+(**Playback > Tune as I Move Through Stations**). Stop on a station in your
+favorites, a Browse folder, Networks or your search results, and after about a
+third of a second it plays, with a soft hiss while it connects. The stations
+either side stay connected with the sound off, so the next step is almost
+instant. Press Enter on the one you want to keep; stations you only passed are
+not added to Recently Played or Song History. **Alt+Shift+P** goes back to the
+playing station's row. How long it waits, the neighbours, the hiss and its
+level, and whether each station keeps its own volume are all settings in
+Preferences.
+
 ### Scrobbling, and AudD for Identify This Song
 
 Quill Radio can send the songs you hear to ListenBrainz, last.fm or Libre.fm.

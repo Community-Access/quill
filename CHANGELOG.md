@@ -8,8 +8,8 @@
   IPRD directory, What the Station Played (Alt+Shift+H), song marks in the
   time-shift buffer with Save Songs from the Buffer, a deeper cushion for
   stations that keep running dry, a time-shift length per favorite, scrobbling
-  to ListenBrainz, last.fm and Libre.fm, and AudD as a second Identify This Song
-  service. All are ideas from BlindRadio by serrebidev (MIT); its network list
+  to ListenBrainz, last.fm and Libre.fm, AudD as a second Identify This Song
+  service, and tuning as you move through stations (off by default). All are ideas from BlindRadio by serrebidev (MIT); its network list
   is used under its notice. The shared radio core in QUILL carries the same
   networks, directory and playlist sources. See Quill Radio's changelog.
 ### GitHub: Copilot, commit comments, gists and queue summaries (2026-11-07)

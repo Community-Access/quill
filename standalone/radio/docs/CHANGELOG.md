@@ -10,7 +10,7 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ### Ideas from BlindRadio
 
-Six things arrive together, each an idea from BlindRadio, a screen-reader-first
+Seven things arrive together, each an idea from BlindRadio, a screen-reader-first
 radio player by serrebidev (github.com/serrebidev/blindradio, MIT). Thank you.
 
 - **More networks, straight to the broadcaster's stream** (2026-11-07). Networks
@@ -39,6 +39,13 @@ radio player by serrebidev (github.com/serrebidev/blindradio, MIT). Thank you.
   station that keeps running dry now waits longer before it plays again (3,
   then 9, then 15 seconds) instead of stuttering, and goes back to normal after
   a clean minute. A favorite can keep its own time-shift length (Alt+Shift+T).
+- **Tune as you move through stations** (Alt+Shift+U, 2026-11-08). Off until
+  you turn it on. The station you stop on in Favorites, Browse, Networks or
+  Search plays after a moment, with a soft hiss while it connects, and the
+  stations either side stay connected so the next step is quick. Enter keeps
+  the station; stations you only pass are not added to Recently Played or Song
+  History. Go to Playing Station (Alt+Shift+P) finds its row again. Every part
+  is a setting in Preferences.
 - **Scrobbling, and AudD for Identify This Song** (2026-11-07). Send the songs
   you hear to ListenBrainz, last.fm or Libre.fm; each is off until you turn it
   on and sign in, and a song counts after a minute heard. Identify This Song
