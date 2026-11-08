@@ -149,6 +149,12 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.playback_engine = engine if engine in ("auto", "wx", "mpv") else "auto"
         history.volume_boost = bool(raw.get("volume_boost", False))
         history.timeshift_minutes = timeshift.normalise_minutes(raw.get("timeshift_minutes", 60))
+        service = str(raw.get("recognition_service", "acoustid") or "").strip().lower()
+        history.recognition_service = service if service in ("acoustid", "audd") else "acoustid"
+        history.scrobble_listenbrainz = bool(raw.get("scrobble_listenbrainz", False))
+        history.scrobble_lastfm = bool(raw.get("scrobble_lastfm", False))
+        history.scrobble_librefm = bool(raw.get("scrobble_librefm", False))
+        _load_dial(history, raw)
         try:
             vol = int(raw.get("volume_percent", -1))
         except (TypeError, ValueError):
@@ -245,6 +251,23 @@ def load_history(data_dir: Path) -> RadioHistory:
     return history
 
 
+def _load_dial(history: RadioHistory, raw: dict[str, object]) -> None:
+    """The seven dial tuning settings, repaired the way the policy reads them."""
+    from types import SimpleNamespace
+
+    from quill.core.radio.dial_tuning import DialSettings
+
+    fields = {str(key): value for key, value in raw.items() if str(key).startswith("dial_")}
+    stored = DialSettings.from_history(SimpleNamespace(**fields))
+    history.dial_tuning = stored.enabled
+    history.dial_wait_ms = stored.wait_ms
+    history.dial_keep_neighbours = stored.keep_neighbours
+    history.dial_metered_stop = stored.metered_stop
+    history.dial_hiss = stored.hiss
+    history.dial_hiss_level = stored.hiss_level
+    history.dial_remember_volume = stored.remember_volume
+
+
 def snapshot_history(history: RadioHistory) -> dict[str, object]:
     """Return a detached JSON-ready snapshot of a history record."""
     return deepcopy({
@@ -306,6 +329,17 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
         "playback_engine": history.playback_engine,
         "volume_boost": history.volume_boost,
         "timeshift_minutes": history.timeshift_minutes,
+        "recognition_service": history.recognition_service,
+        "scrobble_listenbrainz": history.scrobble_listenbrainz,
+        "scrobble_lastfm": history.scrobble_lastfm,
+        "scrobble_librefm": history.scrobble_librefm,
+        "dial_tuning": history.dial_tuning,
+        "dial_wait_ms": history.dial_wait_ms,
+        "dial_keep_neighbours": history.dial_keep_neighbours,
+        "dial_metered_stop": history.dial_metered_stop,
+        "dial_hiss": history.dial_hiss,
+        "dial_hiss_level": history.dial_hiss_level,
+        "dial_remember_volume": history.dial_remember_volume,
         "volume_percent": history.volume_percent,
         "favorites_sort": history.favorites_sort,
         "folder_sort_orders": history.folder_sort_orders,

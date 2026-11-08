@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Scrobbling and AudD song recognition</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="scrobbling-and-audd-song-recognition">Scrobbling and AudD song
+recognition</h1>
+<p>Branch <code>feat/br-scrob</code>. Two ideas from BlindRadio by
+serrebidev (MIT, <a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a>),
+both chosen in <code>docs/design/blindradio-review-2026-11-07.md</code>
+(items 4 and 5). Both are off by default and send nothing until the
+listener turns them on and signs in or pastes their own token. No
+BlindRadio code was copied; the request shapes, the last.fm signature
+and the one-minute rule follow its <code>scrobble.rs</code> and
+<code>recognize.rs</code>, checked against the official API
+documentation.</p>
+<h2 id="what-was-built">What was built</h2>
+<h3 id="scrobbling">Scrobbling</h3>
+<ul>
+<li>Songs heard for a minute or more are sent to ListenBrainz, last.fm
+and Libre.fm, each switched on separately in Preferences, Scrobbling
+group.</li>
+<li><strong>The rule is one minute, and that is deliberate.</strong>
+last.fm’s own rule is “longer than 30 seconds, and played for half its
+length or 4 minutes, whichever comes first”; ListenBrainz asks for the
+same half-or-4-minutes. Both need the song’s length, and radio almost
+never sends one. So Quill Radio uses BlindRadio’s rule: a minute heard.
+It is longer than 30 seconds and shorter than 4 minutes, so it never
+sends a song last.fm would call too short, and it never waits for a
+length nobody knows.</li>
+<li><strong>Heard, not broadcast.</strong> Titles are kept as a
+broadcast timeline; the clock that counts is the playhead (now minus how
+far behind live playback is, read from the mpv engine). A pause adds
+nothing, rewinding adds nothing, jumping ahead adds no more than real
+time. A listen is stamped with when hearing began. Up to six hours of
+timeline is kept, past the longest time-shift buffer.</li>
+<li>Noise titles (<code>song_history.is_noise_title</code>: the
+station’s own name, Live, advert markers) and titles without an artist
+are never sent; a noise title still ends the song before it.</li>
+<li>Hooked at <code>song_history_commands.record_song</code>, the one
+choke point every title change already goes through (ICY, the engine,
+the status page), so scrobbling and Song History never disagree. It runs
+even when Song History is off. A 5-second wx timer runs only while a
+song is followed and stops when nothing plays.</li>
+<li>ListenBrainz: <code>POST /1/submit-listens</code> with
+<code>Authorization: Token ...</code>; <code>single</code> for one
+listen, <code>import</code> for several, <code>playing_now</code> for
+the song just started (never retried).</li>
+<li>last.fm and Libre.fm: the desktop sign-in flow.
+<code>auth.getToken</code> on a worker, the browser opens the service’s
+own “allow Quill Radio?” page, a message box waits until the listener
+comes back and chooses OK, then <code>auth.getSession</code> on a
+worker. The password is never typed into Quill Radio.
+<code>track.scrobble</code> in batches of up to 50 with
+<code>chosenByUser=0</code> (what last.fm asks a radio player to send),
+<code>track.updateNowPlaying</code> when a song starts (never retried).
+Libre.fm uses <code>https://libre.fm/2.0/</code> and
+<code>https://libre.fm/api/auth/</code>.</li>
+<li>Pressing Sign In again while signed in offers to sign out (No is the
+default).</li>
+<li><strong>Failed submissions wait in a queue on disk</strong>
+(<code>radio_scrobble_queue.json</code> in the data folder, atomic
+writes): 500 songs per service at most (newest kept), dropped after 14
+days (last.fm ignores older scrobbles), retried after 1, 2, 4 … minutes
+up to an hour. Error 9 and HTTP 401 hold the songs until the listener
+signs in again and say so once per session; 11, 16, 29, 429 and 5xx
+retry; anything else drops the batch, because it will never be accepted
+as written. All sending runs on the task manager; the queue file is
+written on the worker, never on the UI thread.</li>
+<li>Nothing runs in Safe Mode.</li>
+</ul>
+<h3 id="the-lastfm-application-key">The last.fm application key</h3>
+<p>last.fm needs an API key and shared secret for the application. None
+is invented or committed. QUILL already ships build-time credentials
+through gitignored generated modules
+(<code>tools/generate_podcast_index_key.py</code>,
+<code>tools/generate_youtube_oauth_client.py</code>), so this follows
+that:</p>
+<ul>
+<li><code>tools/generate_lastfm_api_key.py</code> writes the gitignored
+<code>quill/_lastfm_api_key.py</code> from
+<code>QUILL_LASTFM_API_KEY</code> /
+<code>QUILL_LASTFM_SHARED_SECRET</code> (or the <code>_FILE</code>
+variants). Lenient: with nothing set it writes an empty pair, or keeps a
+pair already written.</li>
+<li>Called leniently from
+<code>scripts/build_windows_distribution.py</code> and
+<code>standalone/runtime/build_runtime.ps1</code>.</li>
+<li>The listener can always paste their own pair into Preferences
+(last.fm API key and last.fm shared secret boxes), and their own pair
+wins, the way the Podcast Index credential works. With neither, Sign In
+says what is missing, and a Get a last.fm API Account button opens <a
+href="https://www.last.fm/api/account/create">https://www.last.fm/api/account/create</a>.</li>
+<li>Libre.fm uses the same pair. GNU FM has historically accepted any
+client key, so a build could drop that requirement for Libre.fm alone; I
+did not verify that against libre.fm live, so it is not relied on.</li>
+</ul>
+<p><strong>Someone has to register the application</strong> at <a
+href="https://www.last.fm/api/account/create">https://www.last.fm/api/account/create</a>
+and put the pair into the release build environment. Until then, last.fm
+and Libre.fm need the listener’s own pair.</p>
+<h3 id="audd-recognition">AudD recognition</h3>
+<ul>
+<li>Preferences, Song recognition group: a Song recognition service
+choice (AcoustID, the default, or AudD) and an AudD API token box. The
+AcoustID key box moved into the same group.</li>
+<li>Identify This Song is unchanged for AcoustID. With AudD chosen it
+needs only the token (no fpcalc), takes a 20-second clip from the buffer
+already playing (the same <code>dump_recent_audio</code> sample AcoustID
+uses, shorter), and posts it as multipart to
+<code>https://api.audd.io/</code> with the token. The clip is capped at
+AudD’s 10 MB limit and deleted afterwards.</li>
+<li>AudD’s answer maps into the same <code>acoustid.Match</code>
+AcoustID returns (title, artist, a new optional <code>album</code>
+field, score 1.0 because AudD gives none). The sentence names AudD and
+never says a percentage: “AudD says: Constant Craving by k.d. lang, from
+Ingenue.”</li>
+<li>AudD errors 900 (token not accepted) and 901 (free limit, no token)
+are their own sentences; 300 (too short) is “no match”. No automatic
+polling: AudD is only ever asked when the listener presses Identify This
+Song.</li>
+</ul>
+<h3 id="secrets">Secrets</h3>
+<p>Every token and session key is kept in the Windows credential store
+(DPAPI-sealed to the user) through the new
+<code>quill/core/radio/radio_credentials.py</code>, the same store the
+AcoustID key uses; nothing is in a settings file, so a synced or
+exported data folder carries none of them. Session keys carry the
+account name in the credential’s user-name field.
+<code>tests/conftest.py</code> has a new autouse fixture,
+<code>radio_credential_store</code>, so no test reaches the real
+store.</p>
+<h2 id="files">Files</h2>
+<p>New:</p>
+<ul>
+<li><code>quill/core/radio/scrobble_tracker.py</code> - the one-minute
+rule and the playhead model.</li>
+<li><code>quill/core/radio/scrobble_queue.py</code> - the retry
+queue.</li>
+<li><code>quill/core/radio/scrobble_http.py</code> - the one scrobbling
+egress site.</li>
+<li><code>quill/core/radio/listenbrainz.py</code>,
+<code>quill/core/radio/lastfm.py</code> - the services.</li>
+<li><code>quill/core/radio/scrobbling.py</code> - accounts, sending what
+is due, now playing.</li>
+<li><code>quill/core/radio/radio_credentials.py</code> -
+credential-store access.</li>
+<li><code>quill/core/radio/audd.py</code> - AudD request and
+answer.</li>
+<li><code>quill/ui/radio/scrobble_commands.py</code> - the title hook,
+the timer, the workers.</li>
+<li><code>quill/ui/radio/scrobble_signin.py</code> - the browser
+sign-in.</li>
+<li><code>quill/apps/radio_preferences_scrobble.py</code> - the
+Preferences rows.</li>
+<li><code>quill/tools/network_egress_entries_radio_listening.py</code> -
+the two egress rows.</li>
+<li><code>tools/generate_lastfm_api_key.py</code> - the build-time key
+module.</li>
+<li>Tests: <code>tests/unit/core/radio/test_scrobble_tracker.py</code>,
+<code>test_scrobble_queue.py</code>,
+<code>test_scrobble_services.py</code>,
+<code>test_audd_recognition.py</code>,
+<code>tests/unit/ui/test_radio_scrobble_ui.py</code>,
+<code>tests/unit/tools/test_generate_lastfm_api_key.py</code>.</li>
+</ul>
+<p>Changed: <code>song_recognition.py</code> (service choice, AudD
+path), <code>acoustid.py</code> (<code>Match.album</code>),
+<code>history.py</code> / <code>history_store.py</code> (four settings),
+<code>song_identify_commands.py</code>,
+<code>song_history_commands.py</code> (the hook),
+<code>radio_preferences.py</code> /
+<code>radio_preferences_listening.py</code> (rows),
+<code>app_preferences_dialog.py</code> (<code>text_value</code>, so Sign
+In reads the key boxes before OK),
+<code>network_egress_entries.py</code>, <code>.gitignore</code>, the two
+build scripts, <code>tests/conftest.py</code>.</p>
+<h2 id="keys-added">Keys added</h2>
+<p>None. Identify This Song keeps its existing command and chord. The
+new Preferences rows have no access keys: that dialog has no free letter
+left, and GATE-14 prefers no mnemonic to a duplicate.</p>
+<h2 id="settings-added">Settings added</h2>
+<p>In <code>RadioHistory</code> (<code>radio_history.json</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scrobble_listenbrainz</code></td>
+<td>false</td>
+<td>Send songs heard to ListenBrainz</td>
+</tr>
+<tr>
+<td><code>scrobble_lastfm</code></td>
+<td>false</td>
+<td>Send songs heard to last.fm</td>
+</tr>
+<tr>
+<td><code>scrobble_librefm</code></td>
+<td>false</td>
+<td>Send songs heard to Libre.fm</td>
+</tr>
+<tr>
+<td><code>recognition_service</code></td>
+<td><code>acoustid</code></td>
+<td><code>acoustid</code> or <code>audd</code></td>
+</tr>
+</tbody>
+</table>
+<p>In the Windows credential store (never a file):
+<code>quill:radio:listenbrainz:token</code>,
+<code>quill:radio:lastfm:api-key</code>,
+<code>quill:radio:lastfm:secret</code>,
+<code>quill:radio:lastfm:session</code>,
+<code>quill:radio:librefm:session</code>,
+<code>quill:radio:audd:token</code>. New data file:
+<code>radio_scrobble_queue.json</code>.</p>
+<h2 id="egress-rows-added">Egress rows added</h2>
+<p><code>quill/tools/network_egress_entries_radio_listening.py</code>:</p>
+<ul>
+<li><code>core/radio/scrobble_http.py::post</code> - ListenBrainz
+submit-listens, last.fm and Libre.fm 2.0 API (sign-in, scrobble, now
+playing). Artist, title, album and time heard, plus the listener’s own
+token or session key. Off by default, worker only, HTTPS only, refused
+in Safe Mode.</li>
+<li><code>core/radio/audd.py::_post</code> - one multipart POST to
+api.audd.io with the listener’s token and about 20 seconds of audio,
+only from Identify This Song with AudD chosen.</li>
+</ul>
+<h2 id="user-guide-text-to-add">User guide text (to add)</h2>
+<p>Under Identify This Song:</p>
+<blockquote>
+<h3 id="choosing-audd-instead-of-acoustid">Choosing AudD instead of
+AcoustID</h3>
+<p>Identify This Song asks AcoustID by default. AcoustID is free, and
+all it is sent is a fingerprint of the audio, which cannot be played
+back. If you have an AudD account, you can ask AudD instead: it copes
+better with live radio, where a presenter talks over the start of a song
+or one song runs into the next. To use it, open Preferences, find the
+Song recognition group, set Song recognition service to AudD, and paste
+your AudD API token (from dashboard.audd.io) into the AudD API token
+box.</p>
+<p>Be clear about the difference. AudD is sent about twenty seconds of
+the audio itself, together with your token. Quill Radio only does that
+when you choose Identify This Song; it never listens on its own. To go
+back, set Song recognition service to AcoustID.</p>
+</blockquote>
+<p>A new section, Scrobbling:</p>
+<blockquote>
+<h2 id="scrobbling-keeping-a-list-of-what-you-heard">Scrobbling: keeping
+a list of what you heard</h2>
+<p>Quill Radio can add the songs you hear to your listening history on
+ListenBrainz, last.fm or Libre.fm. This is called scrobbling. It is off
+until you turn it on.</p>
+<p>Scrobbling sends the artist, title and album of each song you hear
+for a minute or more, and the time you heard it, to the services you
+turn on, and only when you turn one on and sign in or paste your token.
+Nothing about the station or about you is sent.</p>
+<p><strong>ListenBrainz.</strong> Open Preferences, find the Scrobbling
+group, and paste your user token from listenbrainz.org/settings into the
+ListenBrainz user token box. Check Send the songs I hear to
+ListenBrainz, then choose OK.</p>
+<p><strong>last.fm and Libre.fm.</strong> In the same group, choose Sign
+In to last.fm (or Sign In to Libre.fm). Your web browser opens that
+service’s own page, asking whether Quill Radio may scrobble for you.
+Sign in there if it asks and choose Yes, allow access. Then come back to
+Quill Radio and choose OK in the box that is waiting. You type your
+password on the service’s page, never into Quill Radio. Then check Send
+the songs I hear to last.fm (or Libre.fm) and choose OK. To sign out,
+choose the Sign In button again; it offers to sign you out.</p>
+<p>If Sign In says it needs an API key, this copy of Quill Radio did not
+come with one. Choose Get a last.fm API Account, make a free account
+there, and paste its API key and shared secret into the two boxes above
+the buttons. Libre.fm uses the same pair.</p>
+<p><strong>What counts as heard.</strong> A song counts once you have
+heard a minute of it. last.fm’s own rule is half the song or four
+minutes, but that needs the song’s length, and radio stations almost
+never send one. If you pause or rewind with the time-shift buffer, the
+song counts when you actually hear it, and the time you were paused does
+not count. The station’s own name, “Live”, adverts, and titles with no
+artist are never sent.</p>
+<p>If the internet drops or a service is busy, the songs wait and are
+sent later, for up to two weeks. If a service stops accepting your
+sign-in, Quill Radio tells you once, and the songs wait until you sign
+in again. Nothing is sent in Safe Mode.</p>
+</blockquote>
+<h2 id="prd-text-to-add">PRD text (to add)</h2>
+<blockquote>
+<ul>
+<li><strong>Scrobbling (2026-11-07;
+<code>core/radio/scrobble_tracker.py</code>,
+<code>scrobble_queue.py</code>, <code>scrobbling.py</code>,
+<code>listenbrainz.py</code>, <code>lastfm.py</code>,
+<code>ui/radio/scrobble_commands.py</code>,
+<code>scrobble_signin.py</code>).</strong> From BlindRadio by serrebidev
+(MIT). ListenBrainz (user token), last.fm and Libre.fm (desktop sign-in
+through the browser), each off by default. A song counts after a minute
+heard, because radio gives no length for last.fm’s half-or-four-minutes
+rule. The playhead, not the broadcast, is the clock: time-shifted
+listening counts when heard, a pause adds nothing. Fed from the
+<code>record_song</code> choke point; a 5-second timer runs only while a
+song is followed. Failed scrobbles wait in a capped on-disk queue (500
+per service, 14 days, backoff to an hour); a lost sign-in is said once.
+Tokens and session keys live in the credential store. The last.fm app
+key ships as a gitignored build-time module
+(<code>tools/generate_lastfm_api_key.py</code>) and the listener’s own
+pair wins. Egress: <code>scrobble_http.py::post</code>.</li>
+<li><strong>AudD recognition (2026-11-07;
+<code>core/radio/audd.py</code>).</strong> From BlindRadio by serrebidev
+(MIT). A second service for Identify This Song, chosen in Preferences;
+AcoustID stays the default. Sends a 20-second clip from the playing
+buffer with the listener’s own token, only on the command; the answer
+maps into AcoustID’s <code>Match</code>. Egress:
+<code>audd.py::_post</code>.</li>
+</ul>
+</blockquote>
+<h2 id="changelog-line">CHANGELOG line</h2>
+<blockquote>
+<ul>
+<li>Quill Radio: scrobble the songs you hear to ListenBrainz, last.fm or
+Libre.fm (off until you turn it on and sign in), and choose AudD instead
+of AcoustID for Identify This Song with your own token. Both ideas come
+from BlindRadio by serrebidev.</li>
+</ul>
+</blockquote>
+<h2 id="third-party-notice-text">Third-party notice text</h2>
+<p>No BlindRadio code or data was copied, so no MIT notice is strictly
+required. If the integrator wants the credit there too:</p>
+<blockquote>
+<p>Quill Radio’s scrobbling and AudD recognition follow ideas from
+BlindRadio, Copyright (c) 2026 serrebidev, MIT License, <a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a>.</p>
+</blockquote>
+<h2 id="tests-and-gates-run">Tests and gates run</h2>
+<ul>
+<li>New tests (60) plus the existing Identify This Song, song
+recognition, preference-group, resume-preference and network-egress
+audit tests: 166 passed
+(<code>python -m pytest &lt;those files&gt; -q</code>).</li>
+<li><code>ruff check .</code> and <code>ruff format --check</code>
+clean; <code>mypy</code> on the new <code>quill/core/radio</code>
+modules clean.</li>
+<li><code>python -m quill.tools.data_format_audit</code>:
+<code>radio.history</code> recorded as an additive, compatible change
+(four new optional keys).</li>
+<li><strong>Not run, at the coordinator’s request:</strong>
+<code>python -m quill.tools.platform_report</code> and the full radio
+suite. Gates most likely to need a look after the merge: dialog
+inventory and F1 help audit (no new dialog classes; the rows are in the
+shared Preferences dialog, which sets <code>SetHelpText</code> on every
+control), surface reachability (<code>scrobble_signin</code> shows only
+message boxes), settings documentation inventory, and module size
+(<code>radio_preferences.py</code> is 564 lines, under the 600 default
+cap).</li>
+</ul>
+<h2 id="not-done-or-not-verified">Not done or not verified</h2>
+<ul>
+<li><strong>No live request was made</strong> to ListenBrainz, last.fm,
+Libre.fm or AudD; all behaviour is checked against hand-written fixtures
+from the official docs. The first real sign-in and scrobble should be
+tried by hand with a test account, ideally under JAWS and NVDA,
+including the “come back and choose OK” box.</li>
+<li>The application has not been registered with last.fm; until it is,
+the listener must paste their own API key and secret.</li>
+<li>AudD’s exact error JSON
+(<code>{"status":"error","error":{"error_code":...}}</code>) is from
+memory of the API and the docs’ error list; worth one live check with a
+wrong token.</li>
+<li>The AudD clip is the raw stream data mpv’s <code>dump-cache</code>
+writes (MP3, AAC or Ogg, depending on the station), sent as
+<code>application/octet-stream</code>. AudD accepts common formats, but
+an HLS station’s dump has not been tried.</li>
+<li>Time-shift is read from the mpv engine. On the classic engine there
+is no time-shift, so the playhead is live, which is right. The
+engine-title fallback (mpv <code>media-title</code>) may already
+describe the playhead rather than live when shifted; then a shifted song
+would count late, never wrongly.</li>
+<li>Retries happen only while a station is playing (the timer stops when
+nothing plays); songs queued at exit are sent the next time a station
+plays.</li>
+<li>The internet radio inside QUILL (the editor) runs the same hook,
+since it shares <code>song_history_commands.record_song</code>, but
+QUILL has no Preferences rows for scrobbling. It scrobbles only if its
+<code>RadioHistory</code> has a service turned on; I did not check
+whether that is the same file Quill Radio writes.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+ "station": {
+  "id": 1,
+  "name": "AzuraTest Radio",
+  "shortcode": "azuratest_radio"
+ },
+ "now_playing": {
+  "played_at": 1794105811,
+  "duration": 230,
+  "song": {
+   "text": "SKALP & Ryan Konline - One Of A Kind",
+   "artist": "SKALP & Ryan Konline",
+   "title": "One Of A Kind"
+  }
+ },
+ "song_history": [
+  {
+   "played_at": 1794105533,
+   "song": {
+    "text": "Internet Empire - Imagine",
+    "artist": "Internet Empire",
+    "title": "Imagine"
+   }
+  },
+  {
+   "played_at": 1794105300,
+   "song": {
+    "text": "Station ID Only",
+    "artist": "",
+    "title": ""
+   }
+  },
+  {
+   "played_at": 1794105000,
+   "song": {
+    "text": "",
+    "artist": "",
+    "title": ""
+   }
+  }
+ ]
+}

@@ -54,8 +54,22 @@ class _Timer:
         self.started += 1
 
 
+class _LiveExtras:
+    """Song marks and the cushion (``mpv_live_extras``), counted, not run."""
+
+    def __init__(self) -> None:
+        self.loads = 0
+
+    def on_load(self) -> None:
+        self.loads += 1
+
+    def on_poll(self, *, stalled: bool, was_stalled: bool) -> None:
+        pass
+
+
 def _engine(root: Path | None = None) -> MpvRadioEngine:
     engine = MpvRadioEngine.__new__(MpvRadioEngine)
+    engine.live_extras = _LiveExtras()  # type: ignore[assignment]
     engine._mpv = _Client()  # type: ignore[attr-defined]
     engine._timer = _Timer()  # type: ignore[attr-defined]
     engine._volume = 70  # type: ignore[attr-defined]

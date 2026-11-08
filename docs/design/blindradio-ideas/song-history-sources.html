@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>What the Station Played: song history from a station's own
+playlist</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="what-the-station-played-song-history-from-a-stations-own-playlist">What
+the Station Played: song history from a station’s own playlist</h1>
+<p>Branch <code>feat/br-hist</code>, 2026-11-07. The idea, the endpoint
+list and the edge cases come from BlindRadio by serrebidev (MIT),
+<code>crates/blindradio-core/src/sources/played.rs</code> and
+<code>docs/radio-sources-research-2026-11-04.md</code>. No code was
+copied; every parser was written against live answers fetched by hand on
+2026-11-07, and the test fixtures are cut down from those answers.</p>
+<h2 id="what-was-built">What was built</h2>
+<ul>
+<li><code>quill/core/radio/station_playlist.py</code> (wx-free,
+strict-typed): <code>match_source(stream_url)</code> picks the
+published-playlist source from the stream address only (host and path,
+never the station name), <code>fetch_station_playlist(stream_url)</code>
+asks it and returns the songs newest first. One egress site,
+<code>_fetch</code>: HTTPS only, verified TLS, 12 s timeout, 2 MB cap,
+Safe Mode refused. A 404 or 410 is “no list”, not a failure.</li>
+<li><code>quill/core/radio/station_playlist_parsers.py</code>: one pure
+parser per source, <code>PlayedSong</code>, <code>parse_time</code>.
+Split from the above for GATE-11.</li>
+<li><code>quill/core/radio/radio_paradise.py</code>:
+<code>PLAYLIST_CHANNELS</code> and <code>playlist_channel(url)</code>,
+the stream-name to <code>chan</code> table, beside the channels it
+already knew.</li>
+<li><code>quill/ui/radio/station_playlist_commands.py</code>: the
+<code>radio.station_playlist</code> command.</li>
+<li><code>quill/ui/radio/station_playlist_dialog.py</code>: the window
+(modal <code>wx.Dialog</code>).</li>
+<li>Playback menu row (after Song History and Lyrics), command palette
+entry, F1 purpose.</li>
+</ul>
+<p>Sources and how each is matched:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Stream address</th>
+<th>Asks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AzuraCast</td>
+<td>any host, path
+<code>/listen/&lt;shortcode&gt;/&lt;file&gt;</code></td>
+<td><code>https://&lt;host&gt;/api/nowplaying/&lt;shortcode&gt;</code>;
+kept only when <code>station.shortcode</code> matches</td>
+</tr>
+<tr>
+<td>KEXP</td>
+<td><code>kexp*.streamguys1.com</code>,
+<code>live-*.kexp.org</code></td>
+<td><code>api.kexp.org/v2/plays/?limit=50&amp;ordering=-airdate</code>;
+airbreaks skipped</td>
+</tr>
+<tr>
+<td>BBC</td>
+<td><code>as-hls-??-live.akamaized.net</code>,
+<code>*.bbci.co.uk</code>, <code>*.bbcmedia.co.uk</code>; first
+<code>bbc_...</code> path segment</td>
+<td><code>rms.api.bbc.co.uk/v2/services/&lt;id&gt;/segments/latest?limit=10</code>;
+music segments only</td>
+</tr>
+<tr>
+<td>Radio Paradise</td>
+<td><code>stream.radioparadise.com</code></td>
+<td><code>nowplaying_list_v2022?chan=N&amp;list_num=50</code></td>
+</tr>
+<tr>
+<td>Live365</td>
+<td><code>streaming.live365.com/&lt;a12345&gt;</code></td>
+<td><code>api.live365.com/station/&lt;id&gt;</code>;
+<code>current-track</code> then <code>last-played</code>, Live365’s own
+ad breaks skipped</td>
+</tr>
+<tr>
+<td>laut.fm</td>
+<td><code>stream.laut.fm/&lt;name&gt;</code>,
+<code>&lt;x&gt;.stream.laut.fm/&lt;name&gt;</code></td>
+<td><code>api.laut.fm/station/&lt;name&gt;/last_songs</code></td>
+</tr>
+<tr>
+<td>Triton</td>
+<td><code>*.streamtheworld.com</code>; mount is the last path segment’s
+stem</td>
+<td><code>np.tritondigital.com/public/nowplaying?mountName=..&amp;numberToFetch=50&amp;eventType=track</code>,
+trying the mount, then without <code>_SC</code>, then without
+<code>AAC</code></td>
+</tr>
+</tbody>
+</table>
+<p>Notes on the existing modules: <code>laut_fm.py</code> did not read
+<code>last_songs</code>, and <code>triton.py</code> parses mounts from
+player pages, not stream URLs, so neither had code to reuse beyond
+<code>live365.live365_station_id</code>, which is reused. AzuraCast is
+asked over HTTPS whatever the stream used. BBC times arrive only as
+phrases (“3 Minutes Ago”); rows show the phrase, not an invented clock
+time. A Radio Browser relay of a BBC stream on a bare IP is deliberately
+not matched. Online Radio Box, Airable and vTuner were not added.</p>
+<h2 id="keys-added">Keys added</h2>
+<ul>
+<li><code>radio.station_playlist</code>: Alt+Shift+H in Quill Radio
+(<code>APP_KEYMAPS["radio"]</code>). Free on the Radio bar (checked by
+walking the real menu bar); H pairs it with Song History’s Ctrl+Shift+H.
+Menu label “What the Station Playe&amp;d…” on Playback. Not on QUILL’s
+embedded radio menu (see below); reachable there from the command
+palette.</li>
+</ul>
+<h2 id="settings-added">Settings added</h2>
+<p>None.</p>
+<h2 id="egress-rows-added">Egress rows added</h2>
+<ul>
+<li><code>core/radio/station_playlist.py::_fetch</code> in
+<code>quill/tools/network_egress_entries_radio.py</code>.</li>
+</ul>
+<h2
+id="user-guide-text-quill-radio-after-the-song-history-section">User-guide
+text (Quill Radio, after the Song History section)</h2>
+<h3 id="what-the-station-played">What the Station Played</h3>
+<p>Song History is what Quill Radio heard while you listened. Many
+stations also publish their own list of what they played, with the time
+each song started, and that list goes back further than you have been
+listening. Press Alt+Shift+H, or choose Playback, What the Station
+Played, to see it for the station you are on.</p>
+<p>Quill Radio works out from the station’s stream address whether it
+publishes such a list. It can read the lists from KEXP, the BBC, Radio
+Paradise, Live365, laut.fm, stations streamed by Triton Digital
+(StreamTheWorld), and stations run on AzuraCast. If the station is not
+one of those, Quill Radio says so and asks nobody anything.</p>
+<p>The list opens newest first. Each song says when it started, or
+“playing now” for the one on the air; the BBC only says how long ago, so
+its songs read “3 minutes ago”. Below the list, “Where this list comes
+from” names who published it. From a song you can Copy it, Send it to
+the Clip Library, look up Song Details or find its Lyrics, the same as
+in Song History.</p>
+<p>Nothing is fetched until you ask, and it is off in Safe Mode.</p>
+<h2 id="prd-text-quill-radio-prd-song-history-section">PRD text (Quill
+Radio PRD, song history section)</h2>
+<p><strong>What the Station Played (radio.station_playlist,
+Alt+Shift+H).</strong> A station’s own published playlist, beside Song
+History and never merged with it. The source is chosen from the stream
+URL only, by exact host and path pattern, never by station name:
+AzuraCast (<code>/listen/&lt;shortcode&gt;/</code>, answer kept only
+when its shortcode matches), KEXP, BBC (service id from the stream path,
+ten rows, relative times kept as phrases), Radio Paradise (channel from
+the stream name), Live365, laut.fm and Triton (mount tried as given,
+without <code>_SC</code>, then without <code>AAC</code>). One
+user-initiated GET on the task manager, HTTPS only, 12 s timeout, 2 MB
+cap, refused in Safe Mode. The window states its provenance and offers
+Copy, Send to Clip Library, Song Details and Lyrics through Song
+History’s own code. A station with no published list is told so in one
+sentence with no request made. Idea and endpoint list from BlindRadio by
+serrebidev (MIT).</p>
+<h2 id="changelog-line">CHANGELOG line</h2>
+<ul>
+<li>Quill Radio: Playback &gt; What the Station Played (Alt+Shift+H)
+shows the station’s own published playlist, with start times, for KEXP,
+BBC, Radio Paradise, Live365, laut.fm, Triton/StreamTheWorld and
+AzuraCast stations. Idea from BlindRadio by serrebidev.</li>
+</ul>
+<h2 id="third-party-notice-text">Third-party notice text</h2>
+<p>No code or data was copied, so no licence text is required. Suggested
+acknowledgement line: “The station-playlist sources in Quill Radio
+follow BlindRadio by serrebidev (<a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a>,
+MIT, Copyright (c) 2026 serrebidev).”</p>
+<h2 id="tests">Tests</h2>
+<ul>
+<li><code>tests/unit/core/radio/test_station_playlist.py</code>:
+matching (positive and negative), Triton mount normalisation, time
+formats, every parser from hand-written fixtures in
+<code>tests/unit/core/radio/fixtures/station_playlist/</code>, the fetch
+loop with <code>_fetch</code> faked.</li>
+<li><code>tests/unit/ui/test_radio_station_playlist.py</code>: the
+command end to end against a host double (nothing playing, no source,
+Safe Mode, success, empty, failure), the window’s Copy / Clip Library /
+Song Details / Lyrics, row labels, key, palette and F1.</li>
+<li><code>tests/unit/ui/test_radio_lyrics_wiring.py</code> updated for
+the third Playback row.</li>
+</ul>
+<h2 id="not-done-or-not-verified">Not done or not verified</h2>
+<ul>
+<li>Not on QUILL’s own embedded radio menu
+(<code>main_frame_menu.py</code>, where Song History ships unbound); the
+command palette reaches it there. The integrator may want a menu
+row.</li>
+<li>The window is modal, not a peer window like standalone Song History.
+Lyrics opened from it shows its window behind the modal one until it
+closes, as Song History’s modal form does.</li>
+<li>No in-window Refresh, and no “search” action: Song History has none
+to reuse.</li>
+<li>No live JAWS or NVDA check.</li>
+<li>Gates: <code>platform_report</code> and the long radio suite were
+not run (skipped at the coordinator’s request; the integrator runs
+them). Regenerated on this branch: keyboard reference, F1 help
+reference, radio help inventory, dialog inventory, surface reachability.
+The menu-accelerator gate for Radio timed out once while building the
+frame on a busy machine (a hang in <code>tree.SetFocus</code>, not an
+assertion); Alt+Shift+H was checked free by walking the real Radio menu
+bar before it was added. Re-run
+<code>tests/unit/ui/test_menu_accelerators.py</code> after merging.</li>
+<li>Triton coverage depends on the station: news and talk mounts (KUOW,
+for one) answer an empty list, which the window reports as “lists no
+recent songs right now”.</li>
+</ul>
+</main>
+</body>
+</html>

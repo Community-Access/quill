@@ -73,6 +73,13 @@ SEARCH_SOURCES: tuple[SearchSource, ...] = (
     ),
     SearchSource("181fm", "181.FM", "The 181.FM network's channels, by name or genre."),
     SearchSource("lautfm", "laut.fm", "laut.fm's listener-run stations."),
+    SearchSource("iprd", "IPRD", "The open Public Radio Directory, by station name."),
+    SearchSource(
+        "networks",
+        "Networks",
+        "The channels of the networks Quill Radio carries itself, such as the BBC and WFMU.",
+        network=False,
+    ),
     SearchSource(
         "wxindex",
         "NOAA Weather Radio",
@@ -114,11 +121,13 @@ INTRODUCED_BY_EPOCH: dict[int, tuple[str, ...]] = {
     2: ("tv",),
     # 2026-10-25: two whole networks.
     3: ("181fm", "lautfm"),
+    # 2026-11-07: IPRD, and the curated networks' own channels.
+    4: ("iprd", "networks"),
 }
 
 #: The highest epoch this build knows. A profile stamped lower is shown the
 #: sources introduced since, once, and then stamped with this.
-SEARCH_SOURCES_EPOCH = 3
+SEARCH_SOURCES_EPOCH = 4
 
 SOURCE_IDS: tuple[str, ...] = tuple(s.id for s in SEARCH_SOURCES)
 

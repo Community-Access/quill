@@ -196,11 +196,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # loss is self-healing, not user data.
     "core/components.py::_save": "cache",
     # QuillVille companion apps (Quill Radio/Weather/Cast) + shared runtime.
-    # app_features and the weather monitor config are user choices with tolerant
-    # loaders (a corrupt file degrades to all-on / defaults), same shape as the
-    # radio/podcasts content stores. The runtime marker/refs and the monitor's
-    # already-notified id set are regenerable machinery: the marker is re-dropped
-    # by the installer, refcounts are re-asserted by each app on launch, and a
+    # app_features and the weather monitor config are user choices with tolerant loaders
+    # (a corrupt file degrades to all-on / defaults), like the radio/podcasts stores. The
+    # runtime marker/refs and the already-notified id set are regenerable: the marker is
+    # re-dropped by the installer, refcounts are re-asserted by each app on launch, and a
     # lost notified-id set at worst re-announces an alert already seen.
     "core/app_features.py::save_app_features": "content",
     "core/weather/monitor.py::save_config": "content",
@@ -208,6 +207,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/runtime_refs.py::_save": "cache",
     "core/weather/monitor.py::save_notified_ids": "cache",
     "core/radio/favorites.py::save_favorites": "content",
+    "core/radio/scrobble_queue.py::_save_locked": "cache",  # unsent scrobbles, capped
     # --- 2026-08-21: the Choose Columns / chapters / Listening Places wave ---
     # Which columns a list speaks and in what order, per surface. A user choice
     # with real structure (order plus a hidden set), an additive shape and a

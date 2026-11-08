@@ -47,7 +47,7 @@ from quill.ui.dialog_contract import (
 )
 from quill.ui.dpi import dip_size
 from quill.ui.media.list_columns_view import build_columns
-from quill.ui.radio import library_search, lineups_commands, transport_keys
+from quill.ui.radio import dial_tuning_ui, library_search, lineups_commands, transport_keys
 from quill.ui.radio.results_view import ALL_SOURCES as _ALL_SOURCES
 from quill.ui.radio.results_view import ResultsViewMixin
 from quill.ui.radio.search_fanout import run_search
@@ -497,6 +497,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self._tunein_tree.Bind(wx.EVT_TREE_SEL_CHANGED, self._on_tunein_tree_selected)
         self._results.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected)
         self._results.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_activate)
+        dial_tuning_ui.attach_search(self)  # tune as you move, when that is on
         self._results.Bind(wx.EVT_CONTEXT_MENU, self._on_results_context_menu)
         self._play_btn.Bind(wx.EVT_BUTTON, self._on_play)
         self._favorite_btn.Bind(wx.EVT_BUTTON, self._on_toggle_favorite)
@@ -1269,7 +1270,8 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         return None
 
     def _on_activate(self, _event: object) -> None:
-        self._on_play(_event)
+        if not dial_tuning_ui.commit(self._controller, self._selected_station(), self._announce):
+            self._on_play(_event)
 
     def _on_results_context_menu(self, _event: object) -> None:
         """Shift+F10 / right-click on a result: every action for the

@@ -115,6 +115,11 @@ TITLE_EXEMPT: dict[str, str] = {
         "in surface_help.PURPOSES; test_catalogue_picker pins that every caller "
         "of choose_from_catalogue passes a title the catalogue knows"
     ),
+    "quill/ui/radio/station_playlist_dialog.py::StationPlaylistDialog.__init__": (
+        "'What the Station Played: <station>' -- TITLE_PREFIX plus the station's "
+        "name; the prefix is in surface_help.PREFIX_PURPOSES, pinned by "
+        "test_radio_station_playlist.test_the_window_answers_f1"
+    ),
 }
 
 
