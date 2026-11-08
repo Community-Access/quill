@@ -197,6 +197,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "help.copy_log": "Reached another way: Help > Copy Log, in both editors. No chord was "
     "free in both (measured 2026-11-06), and it is pressed when writing to support, not "
     "in the editing loop (rule 9).",
+    "help.github_guide": "Reached another way: Help > Open GitHub Guide, in both editors, "
+    "and the F1 window in every GitHub window. A manual is opened to learn, not in the "
+    "editing loop, so a menu letter is the way in (rule 9).",
     "help.release_channel": "Deliberately vacated 2026-10-03 in all four channel apps. "
     "Alt+Shift+F4 closed the window it was pressed in wherever Windows read it as "
     "Alt+F4 -- a dialog, a separate Quill Radio window -- and rule 4 fixes "

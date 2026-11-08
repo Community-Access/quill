@@ -369,9 +369,17 @@ reference for every window. Chapter 3's GitHub section is a short map of it.
 
 - [Chapter 1: Getting started](./github-guide/github-guide-01-getting-started.html)
 - [Chapter 2: Getting around](./github-guide/github-guide-02-getting-around.html)
+- [Chapter 3: Your inbox and your work](./github-guide/github-guide-03-inbox-and-your-work.html)
+- [Chapter 4: Issues](./github-guide/github-guide-04-issues.html)
 - [Chapter 5: Pull requests and review](./github-guide/github-guide-05-pull-requests-and-review.html)
+- [Chapter 6: Actions and checks](./github-guide/github-guide-06-actions-and-checks.html)
+- [Chapter 7: Code and repositories](./github-guide/github-guide-07-code-and-repositories.html)
+- [Chapter 8: Discussions and security](./github-guide/github-guide-08-discussions-and-security.html)
+- [Chapter 9: Codespaces and the GitHub CLI](./github-guide/github-guide-09-codespaces-and-the-cli.html)
 - [Chapter 10: Troubleshooting, privacy and help](./github-guide/github-guide-10-troubleshooting.html)
 - [Chapter 11: Keyboard reference](./github-guide/github-guide-11-keyboard-reference.html)
+
+Help > Open GitHub Guide opens it from inside QUILL.
 
 ### [The WordPress and Forms manual](./wordpress-and-forms/wordpress-forms-guide.html)
 

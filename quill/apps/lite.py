@@ -147,6 +147,9 @@ class QuillLiteApp(
         from quill.ui import app_context_help
 
         app_context_help.activate(lite_surface_help.purpose_for_title)
+        from quill.apps.lite_guides import register_lite_github_guide_help
+
+        register_lite_github_guide_help(self)  # F1 in a GitHub window: the GitHub Guide
 
         # Never say "Entered Preferences dialog" / "Exited Preferences dialog".
         # The shared modal contract offers those cues and QUILL makes them a

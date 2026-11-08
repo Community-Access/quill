@@ -182,6 +182,9 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "2026-11-07), which rule 6 keeps away from anything QUILL Lite reaches plainly; no "
     "plain chord is free in both editors -- Ctrl+Shift+F1, the standalone apps' key for "
     "it, is QUILL's User Guide. Rule 9: read once per update, so Alt+H, W is enough.",
+    "cmd_github_guide": "As in QUILL (rule 2), where Open GitHub Guide has no key either: a "
+    "manual is opened to learn, not in the editing loop, and F1 in every GitHub window "
+    "offers it too (rule 9). Alt+H, I.",
     "cmd_paste_file": "As in QUILL (rule 2), where it has no key either: no chord was "
     "free in both editors (measured 2026-11-07), and it asks text or paths next, so a "
     "chord would save little (rule 9). Alt+E, B, D.",

@@ -1396,6 +1396,10 @@ def build_inno_setup_script(
         'Name: "{group}\\{#AppName}"; Filename: "{app}\\{#AppExeName}"; WorkingDir: "{app}"; Check: not HasBundledLauncher',
         'Name: "{group}\\{#AppName} README"; Filename: "{app}\\README.txt"',
         ('Name: "{group}\\{#AppName} User Guide"; Filename: "{app}\\docs\\userguide.html"'),
+        (
+            'Name: "{group}\\{#AppName} GitHub Guide";'
+            ' Filename: "{app}\\docs\\github-guide\\github-guide.html"'
+        ),
         'Name: "{group}\\Uninstall {#AppName}"; Filename: "{uninstallexe}"',
         'Name: "{autodesktop}\\{#AppName}"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill";'
         ' WorkingDir: "{app}"; Check: HasBundledLauncher',

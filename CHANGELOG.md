@@ -22,6 +22,27 @@
 - QUILL Lite gets the same window through the same shared code, signing in as
   QUILL Lite. My GitHub Copilot's sign-in and token stay separate.
 
+### The guides, from every download (2026-11-08)
+
+- **Help > Open GitHub Guide** (Alt+H, then I) opens the GitHub Guide in your
+  browser. It has no shortcut key, as in QUILL Lite. Pressing F1 in GitHub
+  Items, Explore GitHub or the review window offers an Open GitHub Guide button
+  too.
+- **Help > Open User Guide finds the guide however QUILL was started.** It used
+  to look beside QUILL's own code and in the working folder, so an installed
+  copy started by opening a file from File Explorer opened the welcome guide
+  instead. It now looks beside the program first, the same way QUILL Lite does,
+  through one shared lookup.
+- The Start menu has a **QUILL GitHub Guide** shortcut beside the User Guide.
+- The macOS disk image now carries the user guide, the GitHub Guide and the
+  WordPress and Forms manual.
+- The user guide's contents page lists all eleven GitHub Guide chapters, not
+  five. In the whole-book EPUB, links to the GitHub Guide and to the WordPress
+  and Forms manual now go to their pages on the website, because a relative
+  link out of an EPUB finds nothing.
+- The download page lists the GitHub Guide beside the user guide.
+
+
 ### Quill Radio: ideas from BlindRadio (2026-11-07)
 
 - Quill Radio gains curated networks with direct streams (516 channels), the

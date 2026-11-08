@@ -62,6 +62,8 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
     "cmd_context_help",
     "cmd_tutorials",
     "cmd_shortcuts",
+    "cmd_user_guide",
+    "cmd_github_guide",
     "cmd_get_help_from_support",
     "cmd_check_updates",
     "cmd_release_channel",

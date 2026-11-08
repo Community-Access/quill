@@ -64,6 +64,20 @@ key, as in QUILL, because you read it once after an update rather than every
 day. Every app in the QUILL family has the same item in its Help menu; in the
 apps other than the two editors it is on **Ctrl+Shift+F1**.
 
+### The guides: Help > Open User Guide and Open GitHub Guide
+
+**Help > Open User Guide** (**Ctrl+Shift+F1**, the same key as in QUILL) opens
+this guide in your web browser, starting at its contents page.
+
+**Help > Open GitHub Guide** (press **Alt+H**, then **I**) opens the GitHub
+Guide, the book about doing GitHub work in QUILL Lite with a screen reader. It
+has no shortcut key, as in QUILL, because you open a manual to learn rather than
+while you write. Pressing **F1** in GitHub Items, Explore GitHub or the review
+window offers it too: Tab to **Open GitHub Guide** and press it.
+
+Both guides come with every QUILL Lite download, the portable copy and both
+kinds of installation, and the Start menu has a shortcut to each.
+
 ### With every document closed
 
 If you close the last document, QUILL Lite's window stays open with a full
@@ -71,11 +85,11 @@ menu bar of what works without a document: **File** (New, New Rich Text
 Document, New Plain Text Document, Open, Recent Documents, Reopen Last Session
 and Exit), **Tools** (Preferences, the Keyboard Manager, the Sound Scheme and
 backing up or restoring your settings) and **Help** (Help for This Window,
-Tutorials, Keyboard Shortcuts, Get Help from Support, Check for Updates,
-Release Channel, What's New and About). The keys are the same ones the
-document windows use, including any you have changed, and a feature you
-switched off in Customize Features is off here too. Activity and Repeat Last
-Result need a document window.
+Tutorials, Keyboard Shortcuts, Open User Guide, Open GitHub Guide, Get Help
+from Support, Check for Updates, Release Channel, What's New and About). The
+keys are the same ones the document windows use, including any you have
+changed, and a feature you switched off in Customize Features is off here too.
+Activity and Repeat Last Result need a document window.
 
 ### Opening QUILL Studio
 

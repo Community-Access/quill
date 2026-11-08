@@ -2051,6 +2051,23 @@ own, run with the shell standing in (checked by
 `tests/unit/apps/test_lite_empty_window_menu.py`). Until 2026-10-25 the empty
 bar was File alone: New, Open and Exit.
 
+## Help > Open User Guide and Open GitHub Guide (2026-11-08)
+
+**Help > Open User Guide** (`cmd_user_guide`, **Ctrl+Shift+F1**, keymap
+`help.open_user_guide`) and **Help > Open GitHub Guide** (`cmd_github_guide`,
+keyless, keymap `help.github_guide`, rule 9: Alt+H, I) are QUILL's two rows,
+opened by the same shared code (`quill/apps/lite_guides.py` over
+`quill/ui/guide_opener.py`). Until this change no Help command in QUILL Lite
+opened either guide. Where the guides are is `quill/core/guide_locations.py`,
+which both editors use: beside the launcher (`QUILL_LAUNCHER_DIR`), the
+portable root, then this checkout. A user guide only counts when its chapter
+folder is beside it, so QUILL's guide is never taken for QUILL Lite's. Both
+rows are on the empty window's bar too. F1 in a GitHub window (GitHub Items,
+Explore GitHub, the review window) adds an **Open GitHub Guide** button,
+registered with the shared F1 engine (`app_context_help.register_guide_route`),
+so the GitHub windows' own code is unchanged. The Compact installation now
+carries the documentation, and the Start menu has a GitHub Guide shortcut.
+
 ## Choose Your AI, GitHub Copilot and Codex (2026-11-01)
 
 A summary. The full requirements, including decision 15 (no silent fall-back),
