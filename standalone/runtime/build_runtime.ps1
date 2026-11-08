@@ -71,6 +71,10 @@ try {
     # pair; a release without it looks broken to listeners (2026-10-03).
     & $Python (Join-Path $quillRepo "tools\generate_podcast_index_key.py") --require
     if ($LASTEXITCODE -ne 0) { throw "The Podcast Index credential is missing; see tools/generate_podcast_index_key.py." }
+    # Quill Radio's last.fm API pair, for scrobbling. Lenient: without one the
+    # listener pastes their own in Preferences (tools/generate_lastfm_api_key.py).
+    & $Python (Join-Path $quillRepo "tools\generate_lastfm_api_key.py")
+    if ($LASTEXITCODE -ne 0) { throw "Could not write the last.fm API module; see tools/generate_lastfm_api_key.py." }
     # The Phonon voice model rides in the runtime as data (quillville-runtime.spec
     # reads it from build\deps), so it must be staged before PyInstaller runs.
     & $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only phonon
