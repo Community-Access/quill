@@ -1,5 +1,16 @@
 # QUILL Lite 2.0
 
+## A complete GitHub guide
+
+QUILL Lite now ships a book on doing GitHub work with a screen reader, shared
+with QUILL: [The GitHub Guide for QUILL and QUILL Lite](guide/lite-github-guide.html).
+It covers getting around the GitHub windows, reading issues, reviewing a pull
+request line by line, what failed in a workflow run, repository files and
+releases, discussions and security alerts, and what to do when GitHub says
+no, with a keyboard reference for every window. Where QUILL Lite differs from
+QUILL, a short note says so. It is in the user guide, after the reference
+chapters.
+
 ## GitHub: search, releases, housekeeping and rate limits
 
 QUILL Lite's GitHub windows are QUILL's, so it gains the same things: code,

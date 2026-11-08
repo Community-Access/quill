@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### A complete GitHub guide (2026-11-07)
+
+- **The GitHub Guide for QUILL and QUILL Lite.** A new book in
+  `docs/user guide/github-guide/`, eleven chapters and a contents page:
+  getting started, getting around, your inbox and your work, issues, pull
+  requests and review, Actions and checks, code and repositories, discussions
+  and security, Codespaces and the GitHub CLI, troubleshooting, privacy and
+  help, and a keyboard reference for every window. Every key, menu path and
+  label in it was checked against the code. QUILL Lite ships the same text as
+  chapters of its own guide (`lite-github-guide-*.md`), with short notes where
+  the two differ.
+- The user guide's GitHub section in Chapter 3 is now a short map of the book,
+  keeping every heading F1 opens. The QUILL Lite guide's GitHub section and
+  its two stray GitHub blocks on the contents page became an entry for the
+  book.
+- The documentation-chord gate reads the new book, and QUILL Lite's menu gate
+  allows the QUILL menu paths it names as QUILL's.
+
 ### GitHub search, releases, housekeeping and rate limits (2026-11-07)
 
 - **Search beyond issues.** Explore has Code search, Commit search and

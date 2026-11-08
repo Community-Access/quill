@@ -1411,775 +1411,196 @@ Settings. Leave it off unless you have a reason.
 
 ## GitHub remote files
 
-QUILL can browse GitHub repositories, open files from them and save your changes
-back, without Git, the GitHub CLI or GitHub Desktop installed.
+QUILL can browse GitHub repositories, open files from them and save your
+changes back, and it has a whole workbench for issues, pull requests, workflow
+runs and notifications, all without Git or a browser. Everything about it is
+in its own book, [The GitHub Guide for QUILL and QUILL Lite](../github-guide/github-guide.html).
+This section is a short map of what is there, so that F1 and the contents can
+point you to the right chapter.
 
 ### Getting started with GitHub
 
-The first time you use a GitHub feature, QUILL asks you to confirm that it may
-connect to GitHub. You are asked once, and QUILL remembers your answer.
-
-You do not need a GitHub account to browse public repositories. For private
-repositories, and for anything that changes GitHub, you need a Personal Access
-Token (PAT).
-
-#### Creating a Personal Access Token
-
-1. Go to github.com and sign in.
-2. Open Settings > Developer settings > Personal access tokens > Tokens
-   (classic).
-3. Choose Generate new token.
-4. Give it a name such as "QUILL" and select the `repo` scope (or `public_repo`
-   if you only need public repositories).
-5. Copy the token. You will only see it once.
-
-QUILL keeps your token safely in **Windows Credential Manager**. It is never
-saved in a text file.
+The first time you use a GitHub command, QUILL asks once whether it may
+connect. You can read public repositories without an account; for private
+ones and for anything that changes GitHub, you sign in with a personal access
+token. The GitHub commands belong to the GitHub Remote Access feature, which
+is part of the Developer profile. See
+[Chapter 1: Getting started](../github-guide/github-guide-01-getting-started.html).
 
 #### Managing your GitHub account
 
-Use **File > Open from Remote > Manage GitHub Accounts...** to:
-
-- See which GitHub account you are signed in as.
-- Add or replace a token.
-- Sign out and clear your stored token.
-
-#### If the GitHub commands are missing
-
-GitHub access is the feature called GitHub Remote Access (`core.github_remote`).
-If you can't find it, open **File > Open from Remote** and check whether the
-GitHub items are there. If PyGithub is not installed, QUILL shows a message
-explaining how to install it: `pip install "quill[github]"`. The GitHub commands
-are also unavailable in Safe Mode.
+**File > Open from Remote > Manage GitHub Accounts...** adds a token, switches
+between accounts and removes one. The token is kept in your operating system's
+secure store. See
+[More than one account](../github-guide/github-guide-01-getting-started.html#more-than-one-account).
 
 ### Opening and saving GitHub files
 
-#### The repository browser
-
-Open **File > Open from Remote > GitHub Repository...**. The browser has these
-parts:
-
-- **Account** shows your GitHub username, or "Anonymous" if no token is stored.
-- **Repository**: type an owner/repo name such as `microsoft/vscode` and press
-  Enter or choose Load.
-- **Branch or tag** chooses which version of the repository to browse. It starts
-  on the repository's default branch.
-- **Current path** shows where you are in the folder tree.
-- **File list** lists folders and files, folders first.
-- **Status** shows progress messages and item counts.
-
-To move around:
-
-- Press Enter on a folder to open it.
-- Press Enter on a file to open it (the same as choosing Open File).
-- Press Backspace to go up one level.
-- Press `F5` to refresh the current folder.
-- Tab through the buttons: **Open File**, **Go Up**, **Refresh**, **Copy URL**,
-  **Cancel**.
-
-#### Opening a file from its address
-
-If you have the web address of a file on GitHub, perhaps from a colleague, use
-**File > Open from Remote > GitHub File URL...**. Paste an address like
-`https://github.com/owner/repo/blob/branch/path/to/file` and press Enter. QUILL
-fetches the file directly.
-
-GitHub's file service only handles files up to 1 MB. A larger file has to be
-downloaded by hand from github.com.
+**File > Open from Remote > GitHub Repository...** browses a repository and
+opens a file from it, **GitHub File URL...** opens one file from its address,
+and **Open GitHub Reference...** takes any GitHub link and opens the right
+window. See
+[Opening and saving files in QUILL](../github-guide/github-guide-07-code-and-repositories.html#opening-and-saving-files-in-quill).
 
 #### Saving back to GitHub
 
-When you have opened a file from GitHub and made changes, use
-**File > Open from Remote > Save to GitHub...**. QUILL asks for a commit
-message. Type a short description of your changes and press Enter. QUILL commits
-your changes to the same repository, branch and file path.
-
-- You need a token with permission to write (`repo` scope).
-- If the file changed on GitHub after you opened it, QUILL tells you to refresh
-  and try again.
-- Pressing Save never does this for you. You choose Save to GitHub each time.
+**File > Open from Remote > Save to GitHub...** commits your changes to a file
+you opened from GitHub, with a message you write. Pressing Save never does
+this for you. See
+[Opening and saving files in QUILL](../github-guide/github-guide-07-code-and-repositories.html#opening-and-saving-files-in-quill).
 
 ### The GitHub Items viewer
 
-**File > Open from Remote > GitHub Items...** opens a viewer for a repository's
-issues, pull requests, branches, commits, tags, releases, workflows and workflow
-runs. It is the same kind of overview the GitHub website gives you, made for the
-keyboard and a screen reader. It owes a great deal to
+**File > Open from Remote > GitHub Items...** opens the workbench on one
+repository: its issues and pull requests, branches, commits, tags, releases,
+workflows and runs. It owes a great deal to
 [GHManage](https://github.com/kellylford/GHManage), Kelly Ford's open-source
-GitHub browser for screen-reader users, which QUILL has followed from the start.
-QUILL adds its own touches: pull request and branch differences are read through
-the same engine as Compare Documents instead of as a raw patch, and the Quick
-filter stays quiet while you type.
-
-You can browse without signing in. Signing in adds the **Batch...** menu and the
-**Actions...** menu, for things like new issues and pull requests, merging,
-deleting branches, running workflows and replying to comments. Your pins,
-favorites and column choices are saved on your own computer only.
-
-#### Loading a repository
-
-Type a repository as `owner/repo`, paste a `github.com` address, or paste a
-`git@github.com:` remote, and press **Load**. QUILL turns any of those into
-`owner/repo` for you. If the document you are editing came from GitHub, or lives
-in a git folder whose `origin` remote points at GitHub, the repository is
-already filled in.
-
-- **Pinned...** opens a menu of your pinned repositories. Choose one to load it
-  straight away, or pin or unpin the repository you have loaded. It is your own
-  short list for the few repositories you really work in. It is separate from
-  anything GitHub keeps and never synced anywhere.
-- **Favorites.** Press `Ctrl+D` on any row (an issue, a pull request, a branch,
-  a release) to bookmark it. The **Favorites...** button lists every bookmark
-  across every repository. Choose one to open it in your browser. Favorites are
-  kept between sessions.
-- **View Upstream.** When the repository you load is a fork, the
-  **View Upstream** button becomes available. Press it to load the repository it
-  was forked from, just as if you had typed its name. The button stays
-  unavailable for a repository that is not a fork, or, rarely, for a fork whose
-  parent GitHub cannot find.
-
-#### Views and the list
-
-Pick a **View**: Issues & PRs (issues and pull requests together), Branches,
-Commits, Tags, Releases, Workflows or Workflow Runs. The list shows one row per
-item, and the **Details** box below shows the full text of the selected row. In
-Issues & PRs you can also filter by **Show** (Both, Issues, PRs) and **State**
-(Open, Closed, All), and **Sort** by number, title, last updated or number of
-comments.
-
-- **List mode.** There are two ways to read the list. **Quick** shows short
-  cells as they appear in the columns. **Full** says each cell as `field: value`
-  (for example `number: 208, type: ISSUE, state: OPEN, title: Fix the thing`),
-  so your screen reader reads a line that explains itself instead of bare
-  values. Switch with the **List mode** choice, or press `M` in the list.
-- **Columns...** lists every field for the current view as a checkbox. Uncheck
-  the ones you don't need (at least one always stays). Your choice is remembered
-  for each view.
-- **View More** loads the next page of results.
-
-#### Searching and filtering
-
-- **Search with GitHub's own syntax.** Press `Ctrl+F` (or Tab to the Search
-  box), type any GitHub search, such as `label:bug is:open crash`,
-  `author:alice is:pr` or `created:>2026-01-01 no:assignee`, and press Enter.
-  The results replace the Issues & PRs list, limited to the loaded repository.
-  Clear the box and press Enter to get the normal list back. Loading another
-  repository also clears the search.
-- **Quick filter.** `Ctrl+Shift+F` moves to the **Quick filter** box, next to
-  Search. Instead of asking GitHub, it narrows the list you already have, as you
-  type. Nothing goes over the network, so it is instant even on a slow
-  connection. It never moves your focus while you type, and it doesn't announce
-  a count after every letter, which would talk over your screen reader's own
-  typing echo. QUILL only says the count when a real fetch finishes. Press
-  Escape in the box to clear it. Switching views or loading another repository
-  clears it too.
-
-#### Reading issues, pull requests and comments
-
-When you select an issue or pull request, the details show its text and then
-load the comments. Press `Alt+N` for the next comment and `Alt+P` for the
-previous one. QUILL selects and scrolls to each and says "Comment N of M" (and
-"first" or "last" at either end).
-
-**AI thread summaries.** Select an issue or pull request and press
-**Summarize**. QUILL's AI boils the whole discussion, text and comments, down to
-a short summary in plain prose: what it is about, where it stands, open
-questions and the next step. It goes at the top of the details and is read out.
-It uses the same AI connection and consent questions as every other AI feature
-in QUILL. If AI is not set up, Summarize offers to set it up instead of failing
-quietly.
-
-#### Pull request diffs and branch comparisons
-
-- **Pull request diffs.** Select a pull request and press **Diff...**. A list of
-  its changed files opens, each row reading `status: filename +added -removed`.
-  Select a file to hear its changes through the same engine as
-  **Compare Documents**, for example "Difference 2 of 5. Text changed at line
-  41", with both sides labeled (`main:` and `this PR:`) and the changed words
-  described. A new file reads as its content, a deleted file says so plainly,
-  and a binary or very large file falls back to its change counts and GitHub's
-  patch text.
-- **Compare two branches.** In the **Branches** view, select a branch and press
-  **Compare...** or `Ctrl+Shift+B`. QUILL asks for the base branch, then the
-  branch to compare with it (the row you selected fills in the second question).
-  It tells you how far ahead and behind the two branches are and lists every
-  commit between them. The **Changed Files** tab walks each file's differences
-  the same way **Diff...** does. Comparing only reads, so it works without
-  signing in.
-
-#### Workflows
-
-Switch to the **Workflows** view to see the repository's workflow definitions,
-the `.yml` files themselves. The **Workflow Runs** view below them shows run
-history. Select a workflow and press Enter, or use
-**Actions... > Run "name" on Branch...**, to run it: QUILL asks for a branch,
-confirms, and tells you whether GitHub accepted the run. You need to be signed
-in. If the workflow does not accept manual runs, QUILL shows GitHub's own
-explanation.
-
-#### What failed in a workflow run
-
-When a run fails, the question is nearly always "what broke?", and on GitHub
-the answer is spread over collapsed log groups and a side panel of annotations.
-Select the run in **Workflow Runs** and press `Ctrl+Shift+W`, or choose
-**What Failed...** from the **Actions...** button or the row's context menu
-(`Shift+F10`). It is also a button, **What Failed...** (`Alt+F`), in
-**Jobs and Logs**.
-
-You get one read-only text you can arrow through and copy. It lists each failed
-job, then the steps in it that failed, then GitHub's annotations with the file
-and line, then the last 40 lines of each failed step's log. QUILL takes out the
-timestamps and colour codes, and drops blank lines and debug chatter, so what
-is left is what a person would read. If one job's log or annotations can't be
-fetched, the text says so for that job and carries on with the others.
-**Copy All** copies the lot, ready to paste into an issue or a message.
-
-#### Workflow run actions
-
-Select one run in **Workflow Runs**. The **Actions...** button and the context
-menu offer:
-
-- **Re-run Failed Jobs Only**, which starts again just the jobs that failed,
-  not the whole run.
-- **Cancel Run...**. GitHub accepts a cancel and finishes it in the background,
-  so QUILL says it is stopping the run, not that it has stopped. Refresh to check.
-- **Delete Run...**. The question names the run, its branch and its result, and
-  says its logs and artifacts go with it. This cannot be undone.
-- **Approve Run from a Fork...** for a pull request from someone outside the
-  repository, whose run waits for a maintainer. Only approve code you have read:
-  it runs with your repository's workflow permissions.
-- **Review Pending Deployments...** when a run waits for a reviewer before it
-  deploys to a protected environment. The window lists the environments, with
-  the ones you may approve already checked. Write a comment (GitHub requires
-  one), then press **Approve** or **Reject**. QUILL names the environments
-  GitHub confirmed.
-- **Combined Check Status** reads the run's commit and says one line, such as
-  "3 of 4 checks pass; failing: test."
-
-In **Jobs and Logs**, **Re-request Check** (`Alt+C`) asks GitHub to run the
-selected job's check again. Everything that changes something on GitHub asks
-first, needs you to be signed in, and reports only what GitHub confirmed. When
-GitHub refuses, QUILL says why and what to do, for example that your token
-lacks permission or that the run has already finished.
-
-#### Auto-merge and the merge queue
-
-In a pull request's **Review** window, the **Auto-Merge and Queue...** button
-(`Alt+A`) and the pull request's context menu in the outline offer:
-
-- **Enable Auto-Merge...**, which asks for the merge method (a merge commit,
-  squash or rebase). GitHub then merges the pull request by itself once its
-  required reviews and checks pass.
-- **Disable Auto-Merge...**.
-- **Add to Merge Queue...** and **Remove from Merge Queue...** for a branch that
-  uses a merge queue. When it joins, QUILL tells you its place in the queue.
-- **Combined Check Status**, which counts only the required checks once you
-  have pressed **Check Merge Policy**, for example "3 of 4 required checks pass;
-  not reported yet: deploy."
-
-QUILL says the outcome in plain words. When GitHub refuses, for example because
-auto-merge is turned off for the repository, QUILL says that and where to turn
-it on.
+GitHub browser for screen-reader users, which QUILL has followed from the
+start. See [Chapter 2: Getting around](../github-guide/github-guide-02-getting-around.html).
 
 #### The one-sentence summary
 
-The top line of a pull request's **Review** window says the whole pull request
-in one sentence, for example "Approved, 2 checks failing, 1 open thread, 3
-commits behind main". QUILL says it once when the review opens. It comes
-from a single request to GitHub covering the review decision, the checks on the newest
-commit, unresolved conversations, auto-merge and how far the branch is behind.
-For a branch from a fork, QUILL can't count the commits behind, so it says
-only "behind main" when GitHub reports that. QUILL never calls a pull request
-ready when part of that data is missing. It says "merge readiness unknown"
-instead. The summary needs you to be signed in.
+A pull request review opens by saying the whole pull request in one sentence:
+its review decision, checks, open threads and how far behind it is. See
+[The one-sentence summary](../github-guide/github-guide-05-pull-requests-and-review.html#the-one-sentence-summary).
 
 #### Line comments on a pull request
 
-In the **Diff...** window, below the file comparison, **Patch lines** (`Alt+P`)
-lists the selected file's changes one line per row, such as "Added line 42:
-return total" or "Removed line 40: return sum". Select a line, or hold Shift
-and arrow to select a run of lines, then:
-
-- **Comment on This Line...** (`Alt+L`), or press Enter on one line.
-- **Comment on Lines...** (`Alt+S`), or press Enter on a run of lines. With only
-  one line selected, QUILL asks for a start and end, such as `42-45`. GitHub
-  takes a comment on several lines only inside one run of changes, and QUILL
-  says so if the lines are further apart.
-
-The comment window reads back the lines you chose. Check **Suggest a change**
-(`Alt+S`) to put a suggestion block holding those lines' text into the
-comment, then edit the code inside it. The author can accept it on GitHub
-with one click. Then choose:
-
-- **Add to Review** (`Alt+A`, or Enter). The comment stays on this computer,
-  listed under **Pending line comments** in the Review outline, until you
-  submit your review with **Compose Review...**. The review and all its line
-  comments go to GitHub in one request. A pending comment can be edited or
-  deleted from its context menu first. If the pull request has changed since you
-  wrote them, QUILL won't send them. Check them first.
-- **Post Now** (`Alt+P`) posts this one comment straight away, outside a review.
-
-**Line marks** (`Alt+M`) chooses how lines are marked: words ("Added line",
-"Removed line") or symbols ("+", "-"). Symbols are shorter, but your screen
-reader only says them when punctuation reading is turned up. QUILL reminds you
-when you choose them. The choice is kept for both QUILL and QUILL Lite.
-
-**Copy Diff** (`Alt+C`) copies the whole pull request as a unified diff, and
-**Open Diff in Default App** (`Alt+O`) saves it as a `.diff` file and opens it
-in whatever your computer uses for `.diff` files.
+The diff's patch lines take a comment on one line or a range, with an
+optional suggested change, sent now or kept for your review. See
+[Commenting on a line or a range](../github-guide/github-guide-05-pull-requests-and-review.html#commenting-on-a-line-or-a-range).
 
 #### Changed since my last review
 
-When you come back to a pull request, check **Changed since my last review**
-(`Alt+L`) above the Review outline. QUILL finds the commit you last reviewed,
-compares it with the newest one, and shows only the files that changed, saying
-something like "4 files changed since your review on 2026-11-03". If that commit
-is gone because the branch was force-pushed, QUILL says so plainly and leaves
-every file showing. Uncheck the box to see them all again.
+One check box in the review keeps only the files changed since the commit you
+last reviewed. See
+[Changed since my last review](../github-guide/github-guide-05-pull-requests-and-review.html#changed-since-my-last-review).
+
+#### Auto-merge and the merge queue
+
+**Auto-Merge and Queue...** in the review turns auto-merge on or off and adds
+a pull request to the merge queue or takes it out. See
+[Getting a pull request merged](../github-guide/github-guide-05-pull-requests-and-review.html#getting-a-pull-request-merged).
+
+#### What failed in a workflow run
+
+`Ctrl+Shift+W` in the Workflow Runs view gives one digest of a failed run: the
+failed jobs and steps, the errors with their file and line, and the last lines
+of each failed step's log. See
+[What Failed](../github-guide/github-guide-06-actions-and-checks.html#what-failed).
+
+#### Workflow run actions
+
+A run's menus rerun only the failed jobs, cancel or delete the run, approve a
+run from a fork, review pending deployments and say the combined check
+status. See
+[Doing something about a run](../github-guide/github-guide-06-actions-and-checks.html#doing-something-about-a-run).
 
 #### Reading the timeline
 
-**Timeline...** (`Alt+T`) in Review, or **View Timeline...** in the GitHub Items
-context menu for an issue or pull request, opens the conversation's history as
-one read-only text, one line per event with the date and who did it, newest
-last: labels, assignments, review requests, reviews, commits, force-pushes,
-mentions from elsewhere, closing, reopening and merging. The last line says
-whether that is the whole history. For a very long conversation QUILL reads the
-first 500 events and tells you there are more. **Copy All** (`Alt+A`) copies it.
+**View Timeline...** reads an issue's or pull request's whole history, one
+event to a line. See
+[The timeline](../github-guide/github-guide-04-issues.html#the-timeline).
 
 #### Reacting to issues and comments
 
-To react, choose **React...** on an issue or pull request in the GitHub Items
-context menu, **React to This Comment...** when you have moved to a comment
-with `Alt+N`, or **React to Pull Request...** and **React to a Comment...** in
-the Review outline's context menus. Pick one of GitHub's eight reactions by
-name: thumbs up, thumbs down, laugh, hooray, confused, heart, rocket or eyes.
-The list says which ones are already yours, and choosing one of yours removes
-it. Comment details read the counts in words, such as "Reactions: 3 thumbs up,
-1 heart".
+**React...** adds or removes one of GitHub's eight reactions on an issue, a
+pull request or a comment. See
+[Reactions](../github-guide/github-guide-04-issues.html#reactions).
 
 #### Batch operations
 
-The list lets you select several rows: hold Shift or Ctrl to select issues or
-pull requests, then press **Batch...** and choose Close, Reopen, Add label,
-**Set milestone** or **Add assignees**. Set milestone lists the repository's
-open milestones, with a last choice to clear the milestone. Add assignees takes
-GitHub usernames separated by commas; GitHub quietly skips anyone who can't be
-assigned in that repository, so QUILL checks each reply and names them. You must
-be signed in, because browsing without an account only ever reads. A
-confirmation names the exact action and the exact item numbers, and nothing
-changes on GitHub until you confirm. If some items fail, QUILL tells you which,
-and the rest still go through.
-
-#### Repository files
-
-**Files...** (`Alt+F`) in the GitHub Items viewer, or **Browse Repository
-Files...** on the list's context menu, opens the repository as a tree. It starts
-on the default branch, or on the branch whose commits you are looking at. To see
-another version, type a branch, a tag or a commit SHA in **Branch, tag or
-commit** (`Alt+B`), or pick a branch or tag from its list, and press Enter.
-
-- In the tree, Right arrow or Enter opens a folder and Left closes it. Each file
-  says its size. QUILL fetches a folder the first time you open it.
-- Enter on a file, or **View File** (`Alt+V`), shows its text read-only in
-  **Contents**, where you can arrow through it and copy from it.
-- **Open in Editor** (`Alt+E`) opens the file for editing, the same way as
-  **File > Open from Remote > GitHub File URL...**, so
-  **File > Open from Remote > Save to GitHub...** works on it afterwards.
-- **README** (`Alt+R`) shows the README of the selected folder, or of the
-  repository when nothing is selected, in **Contents**.
-- **History...** (`Alt+H`) and **Blame...** (`Alt+L`) are described next.
-
-A binary file, or one larger than the 1 MB GitHub sends this way, says so
-instead of showing text; open it on GitHub.
-
-#### Blame and file history
-
-**History...** in Repository Files lists the commits that changed the selected
-file or folder, newest first. Each reads as the commit title, then the author,
-the date and the short SHA.
-
-**Blame...** shows who last changed each part of the selected file. GitHub
-reports blame in small ranges, and QUILL joins neighbouring ranges from the same
-commit into one run, so each line of the list reads like "Lines 10 to 14: Jeff
-Bishop, 3 November, 1a2b3c4, Fix the diff". `Alt+N` and `Alt+P` move to the
-next and previous run from anywhere in the window, so you can stay in
-**Details** and still step through the file. Enter on a run, or **Open Commit**
-(`Alt+O`), opens that commit on GitHub. Blame needs you to be signed in, because
-GitHub only answers it for an account.
+**Batch...** closes, reopens, labels, sets the milestone of, or assigns
+several selected issues at once, after naming them all. See
+[Changing many issues at once](../github-guide/github-guide-04-issues.html#changing-many-issues-at-once).
 
 #### GitHub milestones
 
-**Milestones...** in the GitHub Items viewer (it has no access key, so Tab to it
-or use **Milestones...** on the list's context menu) lists a repository's
-milestones. Each reads as one line, such as "Release 2.0: 61 percent done, 5
-open, 8 closed, due 12 December". The percentage is rounded down, the way GitHub
-shows it, and the year is said only when it is not this year.
-
-- **Show** (`Alt+S`) picks open, closed or all milestones.
-- **New...** (`Alt+N`) and **Edit...** (`Alt+E`) take a title, a description
-  and a due date typed as year-month-day, such as 2026-12-12. Leave the date
-  empty for none.
-- **Close Milestone...** (`Alt+L`) asks first and then closes it. On a closed
-  milestone the same button is **Reopen Milestone...**.
-- Enter on a milestone, or **Open on GitHub** (`Alt+O`), opens its page.
-
-To put issues in a milestone, select them in the list and use **Batch... > Set
-milestone**, described under Batch operations above.
-
-#### Keys in the Items viewer
-
-- Enter on a row opens it in your browser. On a **Branch** row, Enter shows that
-  branch's commits. On a **Workflow** row, Enter runs it on a branch you choose.
-- Backspace in the Commits view (reached with Enter on a branch) goes back to
-  the branch list.
-- `Ctrl+R` refreshes the current view. `Ctrl+O` opens the selected item in your
-  browser. `Ctrl+G` goes to an issue or pull request by number (in the Issues &
-  PRs view).
-- `Ctrl+F` moves to the GitHub search box, and `Ctrl+Shift+F` to the Quick
-  filter box. `Ctrl+Shift+B` compares two branches (Branches view). `Ctrl+D`
-  adds the selected row to your favorites.
-- `Ctrl+Shift+L` says how much of GitHub's hourly allowance is left. It works
-  in Explore too.
-
-The Items viewer follows the same rules as the other GitHub commands: it is off
-in Safe Mode, asks for your consent the first time, and works without an account
-for public repositories (GitHub allows fewer requests then) or with your stored
-token for private ones.
-
-#### Doing more from the Items viewer
-
-When you are signed in, the **Actions...** button opens a menu that changes with
-what you are looking at:
-
-- In **Issues & PRs**: **New Issue...** and **New Pull Request...** ask for a
-  title (and, for a pull request, the head and base branches) and an optional
-  description. If exactly one unmerged pull request is selected,
-  **Merge Pull Request #N...** appears too. Merging changes the target branch
-  for everyone, so you confirm it by typing the pull request number again, not
-  just by pressing Yes.
-- With comments loaded: **Reply to Thread...** posts a new comment. (GitHub's
-  comments are not threaded, so a reply is simply another comment in the same
-  conversation.) Once you have used `Alt+N` or `Alt+P` to land on a comment,
-  **Edit This Comment...** and **Delete This Comment...** appear as well. GitHub
-  only lets you edit or delete your own comments, so trying it on someone else's
-  brings back GitHub's permission error. To delete, you type "delete" to
-  confirm.
-- In **Branches**: select one branch and **Delete Branch 'name'...** appears.
-  Type the branch name again to confirm. It cannot be undone from QUILL.
-  **Compare...** is here too, and needs no sign-in.
-- In **Workflows**: select one workflow and **Run "name" on Branch...** appears,
-  the same as pressing Enter.
-- In **Workflow Runs**: select one run and **Re-run Workflow**,
-  **View Jobs and Logs...**, **View Artifacts...**, **What Failed...** and the
-  run actions described under Workflow run actions appear.
-
-All of these need you to be signed in. Without an account, the viewer only
-reads.
-
-#### Downloading workflow run artifacts
-
-Select a workflow run and choose **Actions... > View Artifacts...** to see that
-run's build artifacts, each with its size and whether GitHub has already let it
-expire (an expired artifact can't be downloaded). From there:
-
-- **Download Selected...** downloads the highlighted artifact, and
-  **Download All...** downloads every artifact in the run. Both ask you to
-  choose a folder first.
-- If a file with that name is already in the folder, QUILL asks before replacing
-  it.
-- A progress window with a **Cancel** button follows the download. Cancelling
-  stops after the artifact that is downloading at the moment.
-- **Refresh** fetches the list again, which helps while a run is still producing
-  artifacts, and **Open Run in Browser** takes you to the run's page on GitHub.
-
-A note on your token: GitHub hands the actual download to a different,
-short-lived address (usually on Azure Blob Storage). QUILL makes that second
-request without your token, so your token is only ever sent to github.com.
-
-### Managing repositories
-
-These commands are on **Tools > Git and GitHub > GitHub**. They let you do
-things you would otherwise open a browser for. All of them need you to be signed
-in. If you are not, QUILL offers to sign you in right there.
-
-#### Repository administration
-
-- **Create Repository...** asks for a name, a description, private or public,
-  and an optional organization. Right after creating it, QUILL offers to set up
-  a local folder synced to the new repository in one step, using the same folder
-  sync as **Sync Folder with GitHub** (QUILL Sync). Starting a new project never
-  means leaving QUILL.
-- **Fork Repository...** forks into your account or an organization you choose,
-  and offers to sync it locally afterwards in the same way.
-- **Rename Repository...** renames it. GitHub sends the old address on to the
-  new one, but anything elsewhere that has the old name written into it will
-  need updating. You confirm by typing the repository's current `owner/repo`
-  name again.
-- **Change Visibility...** switches a repository between private and
-  public. QUILL tells you which it is now before asking. Making a repository
-  public adds a warning line, because its whole history becomes visible. You
-  confirm by typing the repository name again.
-- **Change Default Branch...** loads the branches and lets you pick the new
-  default from a simple list.
-- **Configure Branch Protection...** is a short wizard. Pick a branch, then set
-  the required approving reviews, required status checks, and whether the rules
-  apply to administrators too. Or check "Remove all protection from this branch
-  instead" to clear the rules.
-- **Delete Branch...** lists the branches (never the default branch, so you
-  cannot delete the one everything depends on by accident), then asks you to
-  type the branch name again to confirm. It can't be undone from inside QUILL.
-- **Commit Multiple Files...** lets you pick one or more files on your computer,
-  choose the branch and write a commit message. QUILL commits them all to GitHub
-  together in one commit. This is different from **Save to GitHub**, which only
-  commits the document you have open. Only plain text (UTF-8) files are
-  supported.
-
-The four riskiest actions, renaming, changing visibility, deleting a branch and
-(in the Items viewer) merging a pull request, all ask you to type the exact name
-or number instead of answering Yes or No. A stray press of Enter on one of these
-is much harder to put right than most things in QUILL.
-
-All eight are in the Command Palette (`Ctrl+Shift+P`). They have no keys out of
-the box. You can give any of them one in the Keymap Editor (**Tools > Customize and Support > Keymap Editor...**).
-
-#### Organizations, releases, notifications and security alerts
-
-Five more commands on **Tools > Git and GitHub > GitHub**:
-
-- **Browse Organization Repositories...** lists the organizations your account
-  belongs to, then that organization's repositories. Choose one to open it in
-  the GitHub Items viewer. This is for browsing only. QUILL does not manage
-  organization teams or their permissions.
-- **Create Release...** asks for a tag and an optional title, then either your
-  own release notes or GitHub's automatic notes (a summary of pull requests
-  merged since the last release), and whether to save it as a draft or publish
-  it straight away.
-- **Dispatch Workflow...** runs a GitHub Actions workflow on a branch or tag you
-  choose, the same as "Run workflow" on github.com. It is useful for workflows
-  set up to be started by hand.
-- **Notifications...** opens your notifications inbox in Explore GitHub,
-  described under GitHub notifications below.
-- **Security Alerts...** lists a repository's open Dependabot alerts (severity,
-  the package affected and a summary), so you can see what needs attention
-  without opening a browser.
-
-#### GitHub notifications
-
-**Tools > Git and GitHub > GitHub > Notifications...**, or the
-**GitHub notifications** view in **Explore...** in the GitHub Items viewer,
-is your whole GitHub inbox, across every repository. When it loads, QUILL says
-the unread count once, such as "12 unread". Each row starts with whether it is
-read, then why you got it in words ("review requested", "you were mentioned",
-"you are watching the repository"), then the repository and title.
-
-- **Enter** marks the notification read and opens it in QUILL when QUILL has a
-  view for it: a pull request opens in **Review**, an issue in the GitHub Items
-  viewer at that issue. Anything else opens in your browser.
-- **Mark Done** (`Alt+D`, or Delete in the list) takes it off your inbox, as
-  the Done button on github.com does. **Unsubscribe** (`Alt+U`) stops that
-  thread notifying you until you comment or are mentioned. Either way the row
-  leaves the list and you land on the next one, so you keep your place.
-- **Mark All Read** (`Alt+A`) asks first, then marks everything read up to the
-  moment the list was loaded. Anything that arrived since stays unread.
-- **Include read notifications** (`Alt+I`) adds the ones you have already read.
-
-GitHub asks apps not to check notifications more often than it says, usually
-once a minute. If you refresh sooner, QUILL keeps the list it has and tells you
-how many seconds to wait.
-
-#### Discussion threads
-
-In **Explore...**, the **Repository Discussions** view lists a repository's
-discussions. Enter on one, or **Open Discussion Thread...** on the context
-menu, opens it as a thread. The first row is the discussion itself; then come
-its comments, each followed by its replies. The text box reads whichever row is
-selected. The discussion row says "Answered by" and the name when someone's
-comment is the answer, and reads a poll as text, one option to a line, such as
-"Option A: 12 votes, 40 percent".
-
-- **Reply...** (`Alt+R`) on the discussion row adds a comment. On a comment or a
-  reply it replies under that comment, since GitHub nests replies one level deep.
-- **Mark as Answer...** (`Alt+M`) marks the selected comment as the answer, in a
-  category that takes answers, after asking. On the answer it reads **Unmark
-  Answer...** and takes it back.
-- **New Discussion...** on the context menu in the Discussions view asks for a
-  category, a title and a body, then starts the discussion.
-
-QUILL reports each change only when GitHub's reply shows it, and when GitHub
-refuses (a locked discussion, say), QUILL says why.
-
-#### Security alert triage
-
-The **Repository security alerts** view in **Explore...** lists open Dependabot,
-code-scanning and secret-scanning alerts. **Dismiss Alert...** on an alert's
-context menu asks why, offering GitHub's own reasons for that kind of alert.
-For Dependabot those are that a fix has already started, the alert is
-inaccurate, there is no time to fix it, the vulnerable code is not used, or the
-risk is tolerable. Code scanning offers false positive, won't fix and used in
-tests. Secret scanning offers false positive, won't fix, revoked and used in
-tests. Then you can add a comment of up to 280 characters, and QUILL asks you to
-confirm before it sends anything.
-
-The **Dismissed and resolved security alerts** view lists the closed ones, with
-who closed them and why. **Reopen Alert...** there opens one again after asking.
-Secret values are never read: QUILL asks GitHub to leave them out.
-
-#### Searching code, commits and repositories
-
-**Explore...** in the GitHub Items viewer has three more searches beside the
-issue and pull request search. Choose **Code search**, **Commit search** or
-**Repository search** in **View** (`Alt+V`), type your search in **Global
-search** (`Alt+G`) and press Enter. GitHub's own qualifiers work, so
-`repo:owner/name`, `language:python` or `author:someone` narrow it the same
-way they do on github.com.
-
-- A code result reads as the file's path, the line of the excerpt the match is
-  on, and the words that matched, such as "quill/core/paths.py: def
-  app_data_dir() -> Path: (matched app_data_dir)". Tab to the details for the
-  whole excerpt. GitHub's search gives an excerpt rather than a line number, so
-  QUILL says the line's text instead. Code search needs you to be signed in.
-- A commit result reads as the repository, the short commit ID, the first line
-  of the message, who wrote it and when.
-- A repository result reads as its name and description, then its stars,
-  language, and whether it is archived or a fork. The context menu then offers
-  everything a repository row does elsewhere in Explore.
-
-GitHub returns at most 1,000 results for a search and allows only a few
-searches a minute. When there are more matches than the list shows, the status
-line says how many there were.
-
-#### Insights and the community profile
-
-Two repository views in Explore read a repository's numbers as sentences.
-Type the repository in **Repository** (`Alt+R`) first.
-
-**Insights: traffic and contributors** starts with one sentence for the whole
-picture, such as "owner/name: 1,234 views (210 unique) and 56 clones (12
-unique) in the last 14 days, 12 contributors." Below it, each row is one line
-of the table: the 14-day totals, each day's views and clones, the sites people
-came from, the pages they read most, and each contributor with their commits on
-the default branch. GitHub only shows traffic to people with push access. If
-yours is refused, QUILL says so in that first sentence and still lists the
-contributors.
-
-**Community profile checklist** says GitHub's health percentage, then which of
-these the repository has and which it is missing: README, license,
-contributing guide, code of conduct, issue templates and pull request template.
-Enter on a present item opens it.
-
-#### Repository actions in Explore
-
-Select a repository row in Explore, or type a repository and choose a
-repository view, and the context menu (`Shift+F10` or the Applications key) has
-a **Repository Actions** submenu. All of them need you to be signed in, and each
-one asks before it changes anything:
-
-- **Sync Fork with Upstream...** brings your fork's default branch up to date
-  with the repository it was forked from. QUILL says what happened, such as
-  "Merged 3 commits from owner:main" or "Already up to date".
-- **Set Topics...** shows the current topics for you to change. Separate them
-  with spaces or commas. Topics are lower-case letters, numbers and hyphens.
-- **Watch Level...** says how you watch the repository now and lets you choose
-  watching, ignoring or not watching. GitHub does not let apps set "Releases
-  only", so choosing it opens the repository page for you to use its Watch
-  button.
-- **Archive Repository...** makes it read-only. **Unarchive Repository...**
-  undoes that.
-- **Create Repository from This Template...** asks for a name, description,
-  visibility and an optional organization, then makes a new repository from
-  the template.
-- **Delete Repository...** asks you to type the repository's full name, exactly
-  as github.com does, before it deletes anything. There is no undo. Deleting
-  needs your token to have the `delete_repo` permission, and QUILL tells you if
-  it doesn't.
-
-Two more views list what Actions keeps for a repository. **Actions caches**
-lists each cache with its size, branch and when it was last used; **Delete
-Cache...** in the context menu removes one. **Secret and variable names** lists
-the repository's secrets and variables, then each environment's. QUILL only
-ever reads the names. Values never come back from GitHub for secrets, and
-QUILL throws away a variable's value before it gets as far as the list.
-
-A person's row in any people view has **Follow** and **Unfollow** in its
-context menu.
-
-#### Managing a release
-
-In the GitHub Items viewer's Releases view, the **Actions...** button and the
-row's context menu have:
-
-- **Edit Release...** opens the release as GitHub holds it now: its name, its
-  notes, and **Draft** (`Alt+D`) and **Pre-release** (`Alt+P`) check boxes.
-  Clearing Draft publishes it. QUILL asks first, because people watching the
-  repository are notified. When you save, QUILL says what changed according to
-  GitHub's reply, such as "Release 2.0: published, notes updated."
-- **Upload Asset...** asks you to choose a file, says its size and asks before
-  sending it. While it uploads, QUILL says how far it has got at 25, 50 and 75
-  percent, then says the file GitHub stored.
-- **Delete Asset...** appears when you have opened a release's files (Enter on
-  a release) and selected one. It asks first, because the file and its download
-  count go for good.
+**Milestones...** lists a repository's milestones in words, and creates,
+edits, closes and reopens them. See
+[Milestones](../github-guide/github-guide-04-issues.html#milestones).
 
 #### Issue housekeeping
 
-On an issue or pull request in the GitHub Items viewer, the context menu has a
-**Housekeeping** submenu:
+The **Housekeeping** submenu on an issue locks, transfers, pins, sets the type
+of, and reorders the sub-issues of an issue. See
+[Housekeeping](../github-guide/github-guide-04-issues.html#housekeeping).
 
-- **Lock Conversation...** asks for the reason GitHub shows (off-topic, too
-  heated, resolved, spam or none), after which only collaborators can comment.
-  **Unlock Conversation** opens it again.
-- **Transfer Issue...** moves an issue to another repository with the same
-  owner. It asks first, and then says where the issue went and its new number.
-- **Pin Issue** and **Unpin Issue** put an issue at the top of the repository's
-  issues list, or take it off. GitHub allows three pinned issues.
-- **Set Issue Type...** lists the types the repository has, such as Bug or
-  Feature, with No type first. Types are set up by an organization, so a
-  personal repository has none, and QUILL says so.
-- **Reorder Sub-issues...** lists an issue's sub-issues in order. **Move Up**
-  (`Alt+U`) and **Move Down** (`Alt+D`) change the selected one's place on
-  GitHub, and QUILL says where it landed, such as "#12 is now 2 of 5". Enter
-  opens a sub-issue in your browser.
+#### Managing a release
 
-Transfer, pin and the type and sub-issue commands are for issues. A pull request
-gets only Lock and Unlock.
+A release's menus write release notes, edit and publish the release, and
+upload or delete its files. See
+[Tags and releases](../github-guide/github-guide-07-code-and-repositories.html#tags-and-releases).
+
+#### Repository files
+
+**Files...** (`Alt+F`) in GitHub Items browses a repository's folders and files
+at any branch, tag or commit, shows READMEs, and opens a file to edit. See
+[Browsing a repository's files](../github-guide/github-guide-07-code-and-repositories.html#browsing-a-repositorys-files).
+
+#### Blame and file history
+
+**History...** lists the commits that changed a file, and **Blame...** says
+who last changed each run of its lines. See
+[Blame and file history](../github-guide/github-guide-07-code-and-repositories.html#blame-and-file-history).
 
 #### Rate limits and quiet refreshes
 
-GitHub allows each account a number of requests an hour. **GitHub API Rate
-Limit** (`Ctrl+Shift+L` in the GitHub Items viewer or in Explore, and in both
-context menus) says how much is left, such as "GitHub API: 4,212 of 5,000 left,
-resets at 3:40 PM", with the same for GraphQL and search.
+`Ctrl+Shift+L` says how much of GitHub's hourly allowance is left, and a reload
+that finds nothing new says so and costs nothing. See
+[Rate limits and the readout](../github-guide/github-guide-02-getting-around.html#rate-limits-and-the-readout).
 
-QUILL tries to use as little of that as it can. When it reads something again,
-it tells GitHub what it already has, and if nothing has changed GitHub says so
-without counting it. A refresh of an Explore view that found nothing new says
-"No changes since the last load" rather than reading the whole count again. When
-less than a quarter of the hour's allowance is left, QUILL checks notifications
-less often.
+### Managing repositories
 
-Sometimes GitHub asks an app to slow down for a minute. When that happens QUILL
-says it once, such as "GitHub asked QUILL to wait 60 seconds", and doesn't send
-anything more until the time is up, so you don't get a pile of failures.
+**Tools > Git and GitHub > GitHub** creates, forks, renames and deletes
+repositories, changes visibility, the default branch and branch protection,
+commits several files at once, and browses an organization's repositories.
+The riskiest of these make you type a name instead of pressing Yes. See
+[Looking after a repository](../github-guide/github-guide-07-code-and-repositories.html#looking-after-a-repository).
+
+#### GitHub notifications
+
+**Tools > Git and GitHub > GitHub > Notifications...** opens your whole GitHub
+inbox, with Mark Done, Unsubscribe and Mark All Read, and each notification's
+reason in words. See
+[Chapter 3: Your inbox and your work](../github-guide/github-guide-03-inbox-and-your-work.html).
+
+#### Discussion threads
+
+Explore opens a repository's discussions as threads, with replies, answers
+and polls, and starts new ones. See
+[Discussions](../github-guide/github-guide-08-discussions-and-security.html#discussions).
+
+#### Security alert triage
+
+Explore lists a repository's Dependabot, code scanning and secret scanning
+alerts, dismisses them with GitHub's own reasons, and reopens them. See
+[Security alerts](../github-guide/github-guide-08-discussions-and-security.html#security-alerts).
+
+#### Searching code, commits and repositories
+
+Explore searches all of GitHub for issues, code, commits and repositories,
+and keeps the searches you save. See
+[Searching](../github-guide/github-guide-07-code-and-repositories.html#searching).
+
+#### Insights and the community profile
+
+Explore says a repository's traffic and contributors in sentences, and checks
+it for the files GitHub recommends. See
+[Insights](../github-guide/github-guide-07-code-and-repositories.html#insights).
+
+#### Repository actions in Explore
+
+The **Repository Actions** submenu in Explore syncs a fork, sets topics,
+changes the watch level, archives a repository, makes one from a template and
+deletes one. See
+[Forks, templates and topics](../github-guide/github-guide-07-code-and-repositories.html#forks-templates-and-topics).
 
 #### Codespaces
 
-Two more commands on **Tools > Git and GitHub > GitHub** use the `gh`
-command-line tool installed on your own computer, instead of QUILL's usual
-GitHub connection. If you don't have `gh` yet, see Downloading git and the
-GitHub CLI elsewhere in this guide.
-
-- **Codespaces...** lists your active Codespaces (name, repository and state).
-  Select one for a menu to **Stop** or **Delete** it.
-- **Create Codespace...** asks for a repository and an optional branch, then
-  creates a Codespace.
-  **Codespaces use GitHub compute and storage minutes and may cost money.** This
-  is the one GitHub command in QUILL that says so, and it asks you to confirm,
-  naming the cost, before it does anything.
-
-These two are new. They have been tested with a stand-in for `gh`, but not yet
-with a real Codespaces repository. If something looks
-wrong, please tell us through **Help > Get Help from Support**.
+**Codespaces...** and **Create Codespace...** use GitHub's own command-line
+tool, and check that it is signed in to the same account as QUILL. See
+[Chapter 9: Codespaces and the GitHub CLI](../github-guide/github-guide-09-codespaces-and-the-cli.html).
 
 ## Command-line launching
 

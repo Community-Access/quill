@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2: Getting around</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-2-getting-around">Chapter 2: Getting around</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter is about moving, not doing. It walks through the GitHub
+Items window and the Explore GitHub window control by control, explains
+the three keys that do most of the moving, and covers context menus,
+searching, favorites, coming back where you left off, pasting a link,
+and GitHub’s hourly allowance. Every later chapter builds on it.</p>
+<h2 id="the-github-items-window-top-to-bottom">The GitHub Items window,
+top to bottom</h2>
+<p>GitHub Items is one window with a lot in it. Here is everything in
+the order Tab reaches it, with its access key where it has one. You do
+not need to learn them all. The list, Details and Shift+F10 carry most
+of the work.</p>
+<p>The repository row:</p>
+<ul>
+<li><strong>Repository (owner/repo):</strong> the repository to load.
+Enter loads it. You can type <code>owner/repo</code>, paste a github.com
+address, or paste a <code>git@github.com:</code> remote.</li>
+<li><strong>Load</strong>, the same as Enter in the field.</li>
+<li><strong>Pinned…</strong>, your own short list of repositories. Reach
+it with Tab: <code>Alt+P</code> is taken by comment navigation in this
+window.</li>
+<li><strong>Favorites…</strong> (<code>Alt+V</code>), the items you have
+starred with <code>Ctrl+D</code>.</li>
+<li><strong>Explore…</strong> (<code>Alt+E</code>) opens Explore
+GitHub.</li>
+<li><strong>Projects…</strong> (<code>Alt+J</code>) opens the
+repository’s Projects boards.</li>
+<li><strong>View Upstream</strong> (<code>Alt+U</code>) loads the
+repository a fork was made from. It is available only when the loaded
+repository is a fork, and QUILL says so when it loads one.</li>
+<li><strong>Files…</strong> (<code>Alt+F</code>) opens Repository
+Files.</li>
+<li><strong>Milestones…</strong>, which has no access key.</li>
+</ul>
+<p>The search row:</p>
+<ul>
+<li><strong>Search (GitHub syntax):</strong> (<code>Alt+H</code>, or
+<code>Ctrl+F</code> from anywhere in the window) asks GitHub.</li>
+<li><strong>Search</strong>, the button for the same thing.</li>
+<li><strong>Open Link…</strong> takes a pasted GitHub link.</li>
+<li><strong>Quick filter:</strong> (<code>Alt+Q</code>, or
+<code>Ctrl+Shift+F</code>) narrows the rows you already have, on your
+computer.</li>
+</ul>
+<p>The filter row:</p>
+<ul>
+<li><strong>View:</strong> (<code>Alt+I</code>) chooses what the list
+shows.</li>
+<li><strong>Show:</strong> (<code>Alt+S</code>): Both, Issues or
+PRs.</li>
+<li><strong>State:</strong> (<code>Alt+T</code>): Open, Closed or
+All.</li>
+<li><strong>Sort:</strong> (<code>Alt+O</code>): by number, title, last
+update or comment count, either way round.</li>
+<li><strong>List mode:</strong> (<code>Alt+L</code>): Quick (compact) or
+Full (field names).</li>
+<li><strong>Columns…</strong> (<code>Alt+M</code>) chooses which columns
+the list reads.</li>
+<li><strong>Back</strong> and <strong>Forward</strong> step through the
+places you have been.</li>
+</ul>
+<p>Show, State and Sort work in the Issues &amp; PRs view only.</p>
+<p>Then the heart of the window:</p>
+<ul>
+<li><strong>The list.</strong> One row per item. You can select more
+than one row, for the Batch menu.</li>
+<li><strong>Details</strong>, a read-only text field holding the whole
+of the selected row.</li>
+<li><strong>The status line</strong>, which says what just
+happened.</li>
+</ul>
+<p>And the button row: <strong>Refresh</strong>, <strong>View
+More</strong>, <strong>Open in Browser</strong>, <strong>Go To
+#…</strong>, <strong>Diff…</strong> (<code>Alt+D</code>),
+<strong>Review…</strong> (<code>Alt+R</code>),
+<strong>Summarize</strong> (<code>Alt+Z</code>),
+<strong>Compare…</strong> (<code>Alt+C</code>), <strong>Batch…</strong>
+(<code>Alt+B</code>), <strong>Actions…</strong> (<code>Alt+A</code>) and
+<strong>Close</strong>. Diff, Review, Summarize and Batch are for the
+Issues &amp; PRs view, and Compare for the Branches view.</p>
+<h3 id="the-views">The views</h3>
+<p><strong>View:</strong> has seven choices:</p>
+<ul>
+<li><strong>Issues &amp; PRs</strong>: issues and pull requests
+together, newest first.</li>
+<li><strong>Branches</strong>: each branch, whether it is protected, and
+its last commit.</li>
+<li><strong>Commits</strong>: the latest commits, or a branch’s commits
+after you open one.</li>
+<li><strong>Tags</strong>: each tag and the commit it points at.</li>
+<li><strong>Releases</strong>: each release, its download count, and
+whether it is a draft or a pre-release.</li>
+<li><strong>Workflows</strong>: the repository’s GitHub Actions
+workflows.</li>
+<li><strong>Workflow Runs</strong>: recent runs, with their status and
+result.</li>
+</ul>
+<p>The list loads 30 rows at a time. <strong>View More</strong> loads
+the next 30.</p>
+<h3 id="quick-and-full-rows">Quick and Full rows</h3>
+<p>In <strong>Quick</strong> mode a row is the bare values, the way the
+columns show them: “208, ISSUE, OPEN, Fix the thing”. In
+<strong>Full</strong> mode each value has its name in front, “number:
+208, type: ISSUE, state: OPEN, title: Fix the thing”, so a row explains
+itself and QUILL also says it as you arrive on it. Press <code>M</code>
+in the list to switch. Every new window starts in Quick mode.</p>
+<p><strong>Columns…</strong> opens a menu of the current view’s columns
+as check items. Uncheck the ones you do not want to hear. One always
+stays, and QUILL says “At least one column must stay visible.” if you
+try to remove the last.</p>
+<h2 id="enter-ctrlo-and-backspace">Enter, Ctrl+O and Backspace</h2>
+<p>Three keys do most of the moving in the list. They behave the same
+way everywhere, so once you know them you can guess.</p>
+<ul>
+<li><strong>Enter goes in.</strong> On a branch it opens that branch’s
+commits. On a release it opens the release’s files, with their download
+counts. On a workflow it offers to run it. On anything that has nowhere
+further to go in QUILL, such as an issue, Enter opens it in your
+browser.</li>
+<li><code>Ctrl+O</code> <strong>opens the selected row on
+GitHub</strong>, in your browser, whatever it is.</li>
+<li><strong>Backspace comes back out.</strong> From a branch’s commits
+it returns to Branches, and from a release’s files to Releases (“Back to
+releases.”).</li>
+</ul>
+<p>Two things that Enter does not do on an issue or a pull request,
+because they have their own keys: to <strong>read</strong> one, Tab to
+Details; to <strong>review</strong> a pull request, press
+<code>Alt+R</code> for <strong>Review…</strong>.</p>
+<p><strong>Back</strong> and <strong>Forward</strong> step through the
+places you have been in this window, up to the last hundred: a
+repository, a view, a search. <code>Ctrl+G</code> (<strong>Go To
+#…</strong>) asks for an issue or pull request number and selects it, in
+the Issues &amp; PRs view.</p>
+<p><code>Ctrl+R</code> reloads the current view. So does a plain
+<code>R</code> while the list has focus, which means R does not jump to
+a row starting with R here.</p>
+<h2 id="context-menus-and-the-actions-button">Context menus and the
+Actions button</h2>
+<p>Shift+F10, the Applications key or a right-click on a row opens its
+context menu. It holds everything that applies to that row and only
+that, so it is the quickest way to find out what you can do. Commands
+that change GitHub appear only when you are signed in. With no row
+selected, the menu has the commands for the whole view, such as
+<strong>Refresh</strong> and, when you are signed in, <strong>New
+Issue…</strong>.</p>
+<p>Every row’s menu ends with the same few: <strong>Open on
+GitHub</strong>, <strong>Copy Link</strong>, <strong>Copy
+Details</strong>, <strong>Add to or Remove from Favorites</strong>,
+<strong>Browse Repository Files…</strong> and
+<strong>Milestones…</strong>, then <strong>GitHub API Rate
+Limit</strong> last of all.</p>
+<p><strong>Actions…</strong> (<code>Alt+A</code>) holds the commands
+that write, for the current view and selection. Signed out, it says
+“Write actions need a signed-in GitHub account; this session is
+read-only.” If nothing applies, it says “No write actions available
+here. Select a row first.”</p>
+<p>Shift+F10 works the same way in Details, in the review outline, in
+Explore’s results and in most of the smaller windows.</p>
+<h2 id="searching-and-filtering">Searching and filtering</h2>
+<p>There are two boxes, and the difference matters.</p>
+<ul>
+<li><strong>Search</strong> asks GitHub. Press <code>Ctrl+F</code>, type
+anything GitHub’s own search understands, and press Enter:
+<code>label:bug is:open crash</code>, <code>author:alice is:pr</code>,
+or <code>created:&gt;2026-01-01 no:assignee</code>. The results replace
+the list, limited to the loaded repository. Empty the box and press
+Enter to get the normal list back; you hear “Search cleared; showing the
+normal list.”</li>
+<li><strong>Quick filter</strong> asks nobody. Press
+<code>Ctrl+Shift+F</code> and type. The list narrows to rows containing
+what you typed, as you type, with nothing sent over the network. It does
+not move your focus and does not announce a count after every letter,
+which would talk over your screen reader’s own typing echo. Escape in
+the box clears it.</li>
+</ul>
+<p>Searching across every repository, and searching code, commits or
+repositories, happens in Explore. Chapter 7 covers it.</p>
+<h2 id="pinned-repositories-and-favorites">Pinned repositories and
+favorites</h2>
+<p><strong>Pinned…</strong> is your short list of the repositories you
+really work in. It opens a menu: one row per pinned repository, which
+loads it, then <strong>Pin</strong> or <strong>Unpin</strong> for the
+repository you have loaded.</p>
+<p>A favorite is one item rather than a repository: an issue, a pull
+request, a branch or a release. Press <code>Ctrl+D</code> on its row and
+you hear “Favorited” and its name. <strong>Favorites…</strong>
+(<code>Alt+V</code>) lists every favorite across every repository, and
+choosing one opens it in your browser.</p>
+<p>Pins, favorites and your column choices stay on this computer. They
+are not synced to GitHub and not kept per account.</p>
+<h2 id="what-quill-says-and-what-it-leaves-to-your-screen-reader">What
+QUILL says, and what it leaves to your screen reader</h2>
+<p>Your screen reader already says the name of a window when it opens,
+the control that has focus, and the row you arrive on in a list. QUILL
+does not repeat any of that. It speaks only what your screen reader
+cannot know:</p>
+<ul>
+<li><strong>When a load finishes</strong>: the repository, how many
+rows, and a short line of the keys that work in this view. A load can
+take a second or two, and this is how you know it is done. Focus moves
+to the list, on the first row.</li>
+<li><strong>The result of a command</strong>: “Reply posted”,
+“Favorited”, “Cancelled; nothing was sent to GitHub.”, or GitHub’s
+reason for refusing.</li>
+<li><strong>Something that changed somewhere you are not</strong>, such
+as a comment arriving in Details while you are in the list.</li>
+</ul>
+<p>It deliberately stays quiet while you type in the Quick filter, while
+a page of results is fetching, and when a notification is marked read as
+you open it.</p>
+<p>Everything QUILL says is also written to the status line, so you can
+read it again with your screen reader’s review keys, and it is brailled
+as well as spoken.</p>
+<h2 id="coming-back-where-you-left-off">Coming back where you left
+off</h2>
+<p>When you close GitHub Items, QUILL remembers where you were: the
+repository, the view, Show, State and Sort, your search and Quick
+filter, the branch you had opened, and the selected row. The next time
+you open it, you are back there, and you hear “Restored the last
+selected GitHub item.”</p>
+<p>If that item is no longer in the first page of results, perhaps
+because newer issues have pushed it down, you hear “The previous item is
+outside the loaded results. Use View more or search to find it.”</p>
+<p>This is kept for each GitHub account separately. It stores where you
+were, never a token, and it never sends anything to GitHub.</p>
+<h2 id="open-github-reference-paste-any-link">Open GitHub Reference:
+paste any link</h2>
+<p>Someone sends you a link to an issue, a pull request, a line of a
+file or a failed run. You do not need to work out where it lives. Paste
+it, and QUILL opens the right window at the right place.</p>
+<p>In QUILL, choose <strong>File &gt; Open from Remote &gt; Open GitHub
+Reference…</strong>. In both apps, the <strong>Open Link…</strong>
+button in GitHub Items does the same from inside the window. Paste a
+link, or type <code>owner/repo</code>, and press Enter.</p>
+<ul>
+<li>A repository link loads that repository.</li>
+<li>An issue link selects that issue, and a pull request link opens its
+review.</li>
+<li>A branch, commit, release, workflow or workflow run link switches to
+the matching view and selects it.</li>
+<li>A link to a file opens the file in the editor, at the linked lines
+when the link names them.</li>
+<li>A discussion link opens the thread in Explore, when you are signed
+in.</li>
+</ul>
+<p>If the item is not in what has loaded, QUILL says so: “Could not find
+the linked” item “in the loaded results. Use View more or open the link
+in GitHub.”</p>
+<p>A link QUILL has no window for, such as a comparison, asks whether to
+open it in your browser instead, and says that QUILL will not attach
+your GitHub token to that request.</p>
+<p>QUILL refuses a link that carries a password or a token in it, and
+says “Remove credentials from the URL before opening it.” Paste the
+plain address.</p>
+<p><strong>In QUILL Lite</strong>, a file link opens the file’s text as
+a new untitled document, because QUILL Lite cannot save back to GitHub.
+Save As keeps a copy on your computer.</p>
+<h2 id="getting-around-explore-github">Getting around Explore
+GitHub</h2>
+<p><strong>Explore…</strong> (<code>Alt+E</code>) in GitHub Items opens
+Explore GitHub. In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub
+&gt; Notifications…</strong> opens it too, straight at your
+notifications.</p>
+<p>Explore is simpler than GitHub Items: a view, the boxes that view
+needs, a list and a details field. In Tab order:</p>
+<ul>
+<li><strong>View:</strong> (<code>Alt+V</code>) chooses what to show.
+Choosing a view loads it straight away.</li>
+<li><strong>Repository:</strong> (<code>Alt+R</code>), for the views
+about one repository.</li>
+<li>A line describing the view, when it needs explaining.</li>
+<li><strong>Person:</strong> (<code>Alt+P</code>), for the views about
+one person.</li>
+<li><strong>Global search:</strong> (<code>Alt+G</code>), for the search
+views. GitHub’s qualifiers, such as <code>repo:</code> and
+<code>is:open</code>, work here.</li>
+<li><strong>Saved Searches…</strong> (<code>Alt+S</code>) and
+<strong>Save Search</strong>.</li>
+<li><strong>Load</strong> (<code>Alt+L</code>). Enter in any of the
+boxes above does the same.</li>
+<li><strong>Queue Options…</strong> (<code>Alt+O</code>), for the
+attention queue.</li>
+<li><strong>Results</strong>, the list.</li>
+<li>In the notifications view only, four triage controls. Chapter 3
+covers them.</li>
+<li><strong>Selected result</strong>, the details of the row.</li>
+<li>The status line, then <strong>Open on GitHub</strong>, <strong>Use
+Repository</strong> and <strong>Close</strong>.</li>
+</ul>
+<p>When you are signed in, Explore opens on your attention queue and
+loads it straight away. Signed out, it opens on <strong>Global issue and
+PR search</strong>.</p>
+<p>In the Results list, Enter does the natural thing for the row: a
+notification opens, a discussion opens as a thread, a repository goes
+back to GitHub Items (you hear “Selected repository” and its name “in
+the workbench.”), and anything else opens in your browser. <strong>Use
+Repository</strong> sends the selected row’s repository to GitHub Items
+and closes Explore.</p>
+<h2 id="rate-limits-and-the-readout">Rate limits and the readout</h2>
+<p>GitHub lets each account make a certain number of requests an hour,
+and fewer as a guest. You rarely need to think about it, but when you
+do, press <code>Ctrl+Shift+L</code> in GitHub Items or Explore. QUILL
+reads GitHub’s own count and says it in a sentence for each allowance,
+such as “GitHub API: 4,212 of 5,000 left, resets at 3:15 PM.” Search and
+code search have allowances of their own, and the readout includes those
+too. <strong>GitHub API Rate Limit</strong>, at the end of every context
+menu, does the same.</p>
+<p>If GitHub asks QUILL to slow down, which it does when many requests
+arrive close together, QUILL stops sending until the wait is over, and
+says so once: “GitHub asked QUILL to wait 60 seconds.” Every request in
+that time stops before it reaches the network, so you do not hear the
+same refusal ten times.</p>
+<p>When the hourly allowance runs out, you hear “GitHub API rate limit
+reached. Retry after” and the number of seconds.</p>
+<h2 id="quiet-refreshes">Quiet refreshes</h2>
+<p>QUILL remembers what GitHub last sent for many of the reads it
+repeats, and asks GitHub whether anything has changed since. If nothing
+has, GitHub says so in a few bytes, and that answer does not count
+against your allowance.</p>
+<p>When you reload an Explore view and nothing has changed, you hear “No
+changes since the last load;” and the number of results, instead of the
+whole count again. Your notifications work the same way, with one more
+rule: GitHub tells apps how often they may check the inbox, and QUILL
+keeps to it. Chapter 3 explains what you hear if you refresh sooner.</p>
+<hr />
+<ul>
+<li>Previous: <a href="github-guide-01-getting-started.html">Chapter 1:
+Getting started</a></li>
+<li>Next: <a href="github-guide-03-inbox-and-your-work.html">Chapter 3:
+Your inbox and your work</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

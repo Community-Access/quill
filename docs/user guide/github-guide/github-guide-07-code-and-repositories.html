@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 7: Code and repositories</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-7-code-and-repositories">Chapter 7: Code and
+repositories</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter is about the code itself and the repository around it.
+It covers browsing files at any branch, tag or commit, blame and file
+history, opening a file to edit, branches and comparing them, tags and
+releases, searching across GitHub, forks, templates and topics, the
+community profile, insights, looking after a repository, and watching,
+starring and following.</p>
+<h2 id="browsing-a-repositorys-files">Browsing a repository’s files</h2>
+<p><strong>Files…</strong> (<code>Alt+F</code>) in GitHub Items, or
+<strong>Browse Repository Files…</strong> on any row’s context menu,
+opens <strong>Repository Files:</strong> and the repository. It reads
+public repositories signed out.</p>
+<p>In Tab order:</p>
+<ul>
+<li><strong>Branch, tag or commit:</strong> (<code>Alt+B</code>). Pick a
+branch or tag from the list, or type any of them, including a commit’s
+SHA, and press Enter. <strong>Go</strong> (<code>Alt+G</code>) does the
+same.</li>
+<li><strong>Files</strong> (<code>Alt+F</code>), a tree of the
+repository at that point.</li>
+<li><strong>Contents</strong> (<code>Alt+C</code>), read-only, where a
+file’s text appears.</li>
+<li>The status line.</li>
+<li><strong>View File</strong> (<code>Alt+V</code>), <strong>Open in
+Editor</strong> (<code>Alt+E</code>), <strong>README</strong>
+(<code>Alt+R</code>), <strong>History…</strong> (<code>Alt+H</code>),
+<strong>Blame…</strong> (<code>Alt+L</code>) and
+<strong>Close</strong>.</li>
+</ul>
+<p>In the tree, Right or Enter opens a folder, fetching it the first
+time, and Left closes it. Each row says what it is: “status.py, 4.2
+kilobytes”, or “docs, folder”. Enter on a file shows it in
+<strong>Contents</strong> and says how many lines it has; so does
+<strong>View File</strong>.</p>
+<p><strong>README</strong> shows the README of the selected folder, or
+of the folder the selected file is in, or of the whole repository.</p>
+<p>Some files have no text to show, and QUILL says why instead of
+filling Contents with noise: a file over the 1 MB GitHub sends this way
+(“Open it on GitHub instead”), a binary file, or one that is not UTF-8
+text.</p>
+<h3 id="opening-a-file-to-edit">Opening a file to edit</h3>
+<p><strong>Open in Editor</strong> (<code>Alt+E</code>) closes
+Repository Files and opens the file in QUILL’s editor, through the same
+path as a GitHub file link. You can then change it and send it back with
+<strong>File &gt; Open from Remote &gt; Save to GitHub…</strong>,
+below.</p>
+<p><strong>In QUILL Lite</strong>, <strong>Open in Editor</strong> opens
+the file’s text as a new untitled document, and you hear the file’s name
+“from GitHub, opened as a new untitled document. Save As keeps a copy.”
+QUILL Lite cannot save back to GitHub.</p>
+<h2 id="blame-and-file-history">Blame and file history</h2>
+<p>Select a file, or a folder, in Repository Files.</p>
+<ul>
+<li><strong>History…</strong> (<code>Alt+H</code>) lists the commits
+that changed it, newest first, up to 50: “Fix the status bar: alice, 4
+November, 1a2b3c4”.</li>
+<li><strong>Blame…</strong> (<code>Alt+L</code>) says who last changed
+each part of a file. Rather than one row per line, which would mean
+hearing the same commit forty times, neighbouring lines from the same
+commit are joined into one run: “Lines 10 to 14: alice, 4 November,
+1a2b3c4, Fix the status bar”. Blame needs a signed-in account.</li>
+</ul>
+<p>Both windows have the list (<strong>Commits</strong> or
+<strong>Runs</strong>), <strong>Details</strong> (<code>Alt+D</code>),
+<strong>Open Commit</strong> (<code>Alt+O</code>),
+<strong>Refresh</strong> and <strong>Close</strong>. <code>Alt+N</code>
+and <code>Alt+P</code> move to the next and previous row from anywhere
+in the window, and say the row if focus is somewhere else, so you can
+read Details and keep stepping. At the ends you hear “Last one.” or
+“First one.” Enter opens the commit on GitHub.</p>
+<p>In the Blame window, <code>Alt+R</code> belongs to the
+<strong>Runs</strong> list, so reach <strong>Refresh</strong> with
+Tab.</p>
+<h2 id="opening-and-saving-files-in-quill">Opening and saving files in
+QUILL</h2>
+<p>QUILL has three more ways in, on <strong>File &gt; Open from
+Remote</strong>. These are QUILL’s alone.</p>
+<ul>
+<li><strong>GitHub Repository…</strong> opens a simpler browser: your
+account, a <strong>Repository (owner/repo):</strong> field,
+<strong>Branch or tag:</strong>, the current path and a file list. Enter
+opens a folder or a file; Backspace goes up a level; F5 refreshes. The
+buttons are <strong>Open File</strong>, <strong>Go Up</strong>,
+<strong>Refresh</strong>, <strong>Show all refs</strong>, <strong>Copy
+URL</strong> and <strong>Cancel</strong>.</li>
+<li><strong>GitHub File URL…</strong> takes the address of one file,
+such as
+<code>https://github.com/owner/repo/blob/main/docs/readme.md</code>, and
+opens it.</li>
+<li><strong>Save to GitHub…</strong> sends your changes back. It works
+on a file you opened from GitHub, and asks for a commit message,
+starting with “Update” and the file’s name. QUILL commits to the same
+repository, branch and path. If the file changed on GitHub since you
+opened it, QUILL tells you, so you never overwrite someone else’s
+change. Pressing <code>Ctrl+S</code> saves on your computer only;
+sending is always this separate command.</li>
+</ul>
+<p>To commit several files from your computer at once, QUILL has
+<strong>Commit Multiple Files…</strong> on <strong>Tools &gt; Git and
+GitHub &gt; GitHub</strong>.</p>
+<h2 id="branches">Branches</h2>
+<p>The <strong>Branches</strong> view lists every branch, whether it is
+protected, and its last commit. Enter on a branch opens its commits, in
+the Commits view, and Backspace comes back.</p>
+<p>Signed in, the context menu has <strong>Delete Branch</strong> and
+the branch name. To confirm, you type the branch’s name. It cannot be
+undone from QUILL.</p>
+<h3 id="comparing-branches">Comparing branches</h3>
+<p>Select a branch and press <strong>Compare…</strong>
+(<code>Alt+C</code>) or <code>Ctrl+Shift+B</code>. QUILL asks for the
+base branch, starting with <code>main</code>, then the branch to compare
+with it, starting with the one you selected. The window
+<strong>Compare</strong> and the two branches has two tabs:</p>
+<ul>
+<li><strong>Commits</strong>, with every commit between them, and how
+far ahead and behind the branches are.</li>
+<li><strong>Changed Files</strong>, which walks each file’s differences
+the same way the pull request diff does.</li>
+</ul>
+<p><strong>Open on GitHub</strong> (<code>Alt+G</code>) opens the
+comparison in your browser. Comparing only reads, so it works signed
+out.</p>
+<h2 id="tags-and-releases">Tags and releases</h2>
+<p>The <strong>Tags</strong> view lists each tag and the commit it
+points at.</p>
+<p>The <strong>Releases</strong> view lists each release: its tag, name,
+how many times its files have been downloaded, how many files it has,
+when it was made, and whether it is a draft or a pre-release. Enter on a
+release lists its files with their download counts and sizes. Enter on a
+file opens its download in your browser, and Backspace goes back to the
+releases. A download count is how many times the file was fetched, not
+how many people fetched it, and QUILL says so.</p>
+<h3 id="writing-release-notes">Writing release notes</h3>
+<p><strong>Draft Release Notes…</strong>, on a release’s context menu,
+asks GitHub to write notes for a release from the pull requests merged
+since the previous one. Give it the release’s tag, the previous tag,
+and, for a tag that does not exist yet, the branch or commit it will
+point at. Press <strong>Generate Draft</strong> and the name and notes
+appear, ready to read and copy with <strong>Copy Draft</strong>. Nothing
+is published; it says so.</p>
+<h3 id="editing-and-publishing-a-release">Editing and publishing a
+release</h3>
+<p>Signed in, a release’s context menu and <strong>Actions…</strong>
+have:</p>
+<ul>
+<li><strong>Edit Release…</strong> opens <strong>Edit Release</strong>
+and the tag, with <strong>Release name:</strong> (<code>Alt+N</code>),
+<strong>Release notes:</strong> (<code>Alt+O</code>), <strong>Draft (not
+published yet)</strong> (<code>Alt+D</code>) and
+<strong>Pre-release</strong> (<code>Alt+P</code>). To publish a draft,
+uncheck Draft and press <strong>Save</strong>. QUILL asks first, because
+publishing notifies everyone watching the repository and makes the
+release public. What you hear afterwards is built from GitHub’s reply,
+so a publish GitHub did not do is never reported as done.</li>
+<li><strong>Upload Asset…</strong> adds a file to the release. Choose
+the file, confirm, and QUILL says how far it has got at 25, 50 and 75
+percent, then “Uploaded” with the file’s name and size.</li>
+<li><strong>Delete Asset</strong>, inside a release’s file list, removes
+a file after asking. Its download count goes with it.</li>
+</ul>
+<p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Create
+Release…</strong> makes a new release: a tag, an optional title, your
+own notes or GitHub’s, and whether to publish it now or keep it as a
+draft.</p>
+<h2 id="searching">Searching</h2>
+<p>Search in GitHub Items stays inside one repository (Chapter 2).
+Explore searches all of GitHub. Choose one of the search views in
+<strong>View:</strong> (<code>Alt+V</code>), type in <strong>Global
+search:</strong> (<code>Alt+G</code>) and press Enter.</p>
+<ul>
+<li><strong>Global issue and PR search</strong> finds issues and pull
+requests. Each row reads the repository, the number, the title, and
+which it is.</li>
+<li><strong>Code search</strong> finds code. Each row reads the file’s
+path, the line that matched, and the words that matched. Details has
+each excerpt. GitHub does not give a line number for these, so QUILL
+does not claim one. Code search needs a signed-in account.</li>
+<li><strong>Commit search</strong> finds commits: the repository, the
+short SHA, the first line of the message, who made it and when.</li>
+<li><strong>Repository search</strong> finds repositories: the name, the
+description, the stars and the language, and whether it is archived or a
+fork.</li>
+</ul>
+<p>GitHub’s qualifiers work in every one: <code>repo:owner/name</code>,
+<code>language:python</code>, <code>author:alice</code>,
+<code>is:open</code>. A query GitHub cannot run comes back with GitHub’s
+reason.</p>
+<p><strong>Save Search</strong> keeps the current query on this
+computer. <strong>Saved Searches…</strong> (<code>Alt+S</code>) lists
+them, and choosing one runs it. On a search view’s context menu,
+<strong>Remove Saved Search</strong> forgets the one in the box.</p>
+<h3 id="the-repository-chooser">The repository chooser</h3>
+<p><strong>Repository chooser</strong>, in <strong>View:</strong>, lists
+the repositories you are most likely to want: your pinned ones first,
+then the ones you opened recently, then your own, your starred and your
+watched repositories. Enter on one sends it to GitHub Items.</p>
+<h2 id="forks-templates-and-topics">Forks, templates and topics</h2>
+<p>These are on the <strong>Repository Actions for</strong> submenu of
+Explore’s context menu, which acts on the selected repository row, or on
+the repository in <strong>Repository:</strong> when you are in one of
+the repository views. You need to be signed in.</p>
+<ul>
+<li><strong>Sync Fork with Upstream…</strong> brings a fork up to date
+with the repository it was forked from. QUILL counts the new commits
+first, so it can say “Merged 3 commits from” the upstream, or “Already
+up to date with” it.</li>
+<li><strong>Set Topics…</strong> sets the repository’s topics, the tags
+that help people find it. The box starts with the current ones. Separate
+them with spaces or commas, or leave it empty to remove them all. Topics
+are lower-case letters, numbers and hyphens, up to 20 of them.</li>
+<li><strong>Create Repository from This Template…</strong> makes a new
+repository from a template repository. Give it a name, an optional
+description and organization, and choose whether it is private.</li>
+</ul>
+<p><strong>Repository forks</strong>, in <strong>View:</strong>, lists a
+repository’s forks. In GitHub Items, <strong>View Upstream</strong>
+(<code>Alt+U</code>) on a fork loads the repository it came from. In
+QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Fork
+Repository…</strong> makes a fork.</p>
+<h2 id="the-community-profile">The community profile</h2>
+<p><strong>Community profile checklist</strong>, in Explore’s
+<strong>View:</strong>, checks a repository for the files GitHub
+recommends. The first row says the score and what is present and
+missing; then one row each says “present” or “missing” for the README,
+licence, contributing guide, code of conduct, issue templates and pull
+request template.</p>
+<h2 id="insights">Insights</h2>
+<p><strong>Insights: traffic and contributors</strong> gives a
+repository’s last 14 days in one sentence, such as
+“community-access/quill: 120 views (30 unique) and 14 clones (6 unique)
+in the last 14 days, 9 contributors.” Each row after it is one figure:
+views and clones on each day, the sites that sent people, the most
+visited pages, and each contributor’s commits. The list is the
+table.</p>
+<p>Traffic figures need push access to the repository. Without it, QUILL
+says so, and still lists the contributors.</p>
+<h2 id="looking-after-a-repository">Looking after a repository</h2>
+<h3 id="in-explore-in-both-apps">In Explore, in both apps</h3>
+<p>The <strong>Repository Actions for</strong> submenu also holds:</p>
+<ul>
+<li><strong>Watch Level…</strong>, below.</li>
+<li><strong>Archive Repository…</strong> makes a repository read-only:
+no pushes, issues or pull requests until it is unarchived.
+<strong>Unarchive Repository…</strong> undoes it. Both ask first.</li>
+<li><strong>Delete Repository…</strong> deletes the repository and
+everything in it: code, issues, pull requests, wiki and releases. It
+cannot be undone, so you type the repository’s full name, exactly, to
+confirm. Deleting needs the token’s <code>delete_repo</code> scope, and
+QUILL says so if it is missing.</li>
+</ul>
+<h3 id="on-quills-tools-menu">On QUILL’s Tools menu</h3>
+<p><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> has the rest.
+All of them need you to be signed in, and offer to sign you in if you
+are not.</p>
+<ul>
+<li><strong>Create Repository…</strong>: a name, a description, private
+or public, and an optional organization. QUILL then offers to set up a
+folder on your computer that stays in step with it.</li>
+<li><strong>Fork Repository…</strong>, into your account or an
+organization.</li>
+<li><strong>Rename Repository…</strong>. GitHub forwards the old
+address, but anything that has the old name written into it will need
+changing. You confirm by typing the repository’s current name.</li>
+<li><strong>Change Visibility…</strong> switches between private and
+public. QUILL says which it is now before asking, warns that making it
+public shows its whole history, and asks you to type the name.</li>
+<li><strong>Change Default Branch…</strong>, from a list of the
+branches.</li>
+<li><strong>Configure Branch Protection…</strong>: pick a branch, then
+the required reviews, required checks, and whether the rules apply to
+administrators.</li>
+<li><strong>Delete Branch…</strong>, from a list that never includes the
+default branch. You type the branch’s name to confirm.</li>
+<li><strong>Commit Multiple Files…</strong>: pick files on your
+computer, a branch and a commit message, and QUILL commits them
+together.</li>
+<li><strong>Browse Organization Repositories…</strong> lists your
+organizations, then an organization’s repositories. Choosing one opens
+it in GitHub Items.</li>
+</ul>
+<p>The four riskiest commands, renaming, changing visibility, deleting a
+branch and merging a pull request, all make you type a name or number. A
+stray Enter on one of these is much harder to put right than most
+things.</p>
+<h2 id="watching-starring-and-following">Watching, starring and
+following</h2>
+<p>On a repository row in Explore, signed in, the context menu has
+<strong>Watch Repository</strong>, <strong>Unwatch Repository</strong>,
+<strong>Star Repository</strong> and <strong>Unstar Repository</strong>.
+Each asks first.</p>
+<p><strong>Watch Level…</strong>, on the Repository Actions submenu,
+sets exactly how much you hear about a repository: “Watching: all
+activity”, “Releases only”, “Ignoring: never notified”, or “Not
+watching: only when participating or mentioned”. It says the current
+level first. GitHub does not let apps choose “Releases only”, so QUILL
+opens the repository’s page for you to choose it with GitHub’s own Watch
+button, and tells you so.</p>
+<p>On a person’s row, the context menu has <strong>Follow</strong> or
+<strong>Unfollow</strong> and their username. These happen straight
+away, without a question: “You now follow” them. <strong>Explore
+Person’s Activity</strong> shows what they have been doing.</p>
+<h2 id="other-repository-views-in-explore">Other repository views in
+Explore</h2>
+<p>Explore has more views of one repository, each in
+<strong>View:</strong> with the repository in
+<strong>Repository:</strong>:</p>
+<ul>
+<li><strong>Repository overview</strong>, the repository at a
+glance.</li>
+<li><strong>Repository people</strong> and <strong>Collaborators and
+team access</strong>.</li>
+<li><strong>Deployments and environments</strong>.</li>
+<li><strong>Repository labels</strong>, with <strong>Create
+Label…</strong> on the context menu.</li>
+<li><strong>GitHub Pages and builds</strong>, for a repository with a
+website.</li>
+<li><strong>Repository health snapshot (opt-in)</strong>, a set of
+counts that stays on this computer and does not rank anybody.</li>
+</ul>
+<p>And views of people: <strong>Person’s repositories</strong>,
+<strong>Person’s followers</strong> and <strong>People followed by
+person</strong>, with the username in <strong>Person:</strong>; and your
+own, <strong>My repositories</strong>, <strong>Starred
+repositories</strong>, <strong>Watched repositories</strong>,
+<strong>People I follow</strong>, <strong>My followers</strong> and
+<strong>My gists</strong>.</p>
+<hr />
+<ul>
+<li>Previous: <a href="github-guide-06-actions-and-checks.html">Chapter
+6: Actions and checks</a></li>
+<li>Next: <a
+href="github-guide-08-discussions-and-security.html">Chapter 8:
+Discussions and security</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

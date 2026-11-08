@@ -35,7 +35,9 @@ same ground, if you would rather listen.
    it by ear, and export it to Word as a real, editable equation.
 8. [GitHub inside QUILL](08-github-inside-quill.md): open and save files,
    work with issues and pull requests, manage a repository, and sort out merge
-   conflicts, all without leaving QUILL.
+   conflicts, all without leaving QUILL. When you want every detail, [the
+   GitHub guide](../user%20guide/github-guide/github-guide.md) is a book of its
+   own on it, for QUILL and QUILL Lite.
 
 ## Tutorials for radio and podcasts
 

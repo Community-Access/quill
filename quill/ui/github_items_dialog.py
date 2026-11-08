@@ -222,7 +222,9 @@ class GitHubItemsDialog(
         self._repo_ctrl.SetName("Repository in owner slash repo format")
         self._load_btn = wx.Button(panel, label="Load")
         self._load_btn.SetName("Load repository")
-        self._pinned_btn = wx.Button(panel, label="&Pinned...")
+        # No access key: Alt+P moves between comments, and every other letter of the
+        # name is taken in this window (GATE-14: no key rather than a duplicate).
+        self._pinned_btn = wx.Button(panel, label="Pinned...")
         self._pinned_btn.SetName("Pinned repositories menu")
         self._favorites_btn = wx.Button(panel, label="Fa&vorites...")
         self._favorites_btn.SetName("Favorited items menu")

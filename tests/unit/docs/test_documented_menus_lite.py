@@ -34,6 +34,10 @@ from tests.unit.docs.menu_claims import ROOT, MenuItem, OptIn, check_documents
 _DOCS = ROOT / "standalone" / "quilllite" / "docs"
 DOCUMENTS: tuple[Path, ...] = (_DOCS / "CHANGELOG.md", _DOCS / "userguide.md")
 
+_GITHUB_GUIDE_QUILL_MENU = (
+    "QUILL's menu, in the GitHub guide both editors ship; the chapter names it as QUILL's"
+)
+
 #: Claims that are right although the menu does not keep them, each with why.
 #: Prefer fixing the document; an entry here is for a sentence that is *about*
 #: another program's menu or about where a command used to be.
@@ -52,6 +56,24 @@ ALLOW: dict[str, str] = {
     "path:tools > open quill studio": (
         "release-gated: shown only once Studio is released, which the paragraph says"
     ),
+    # The GitHub guide is one text shipped in both editors (docs/user guide/
+    # github-guide/ and guide/lite-github-guide*.md). Where it names QUILL's
+    # menus it says so, and QUILL Lite reaches the same windows from
+    # File > GitHub Workbench.
+    "path:file > open from remote > github": _GITHUB_GUIDE_QUILL_MENU,
+    "path:file > open from remote > github items": _GITHUB_GUIDE_QUILL_MENU,
+    "path:file > open from remote > manage github accounts": _GITHUB_GUIDE_QUILL_MENU,
+    "path:file > open from remote > open github reference": _GITHUB_GUIDE_QUILL_MENU,
+    "path:file > open from remote > save": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > github": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > github > notifications": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > github > dispatch workflow": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > github > create release": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > github > fork repository": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > github > security alerts": _GITHUB_GUIDE_QUILL_MENU,
+    "path:help > download optional components": _GITHUB_GUIDE_QUILL_MENU,
+    "path:help > why don't i see": _GITHUB_GUIDE_QUILL_MENU,
     # Keys of the Review Dictation window, not of the menu bar: they work only
     # while that window has focus, and the guide's table says so.
     "key:back to the words exactly as you said them": (
