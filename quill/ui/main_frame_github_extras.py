@@ -184,6 +184,13 @@ class GitHubExtrasMixin:
         Mark Done, Unsubscribe, Mark All Read, Include Read, and Enter opening a
         pull request in Review or an issue in the GitHub Items viewer.
         """
+        self.open_github_explore("notifications")
+
+    def open_github_explore(self, initial_view: str | None = None) -> None:
+        """Explore GitHub on a view (the GitHub menu's Inbox, My Work, Explore).
+
+        Enter on an issue or pull request opens it in the GitHub Items viewer.
+        """
         token = self._gh_admin_ready()
         if token is None:
             return
@@ -196,9 +203,11 @@ class GitHubExtrasMixin:
             GitHubExploreDialog(
                 self.frame,
                 provider,
-                initial_view="notifications",
+                initial_repo=self._github_items_initial_repo(),
+                initial_view=initial_view,
                 announce_cb=self._announce,
                 on_open_reference=chosen.append,
+                gist_source_cb=self._github_gist_source,
             ).show()
         finally:
             provider.close()

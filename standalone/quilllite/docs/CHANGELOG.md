@@ -2,6 +2,21 @@
 
 ## 2.0.0
 
+### GitHub Workbench Mode and Clone Repository (2026-11-08)
+
+- View > GitHub Workbench Mode (Alt+V, then K) is a check item, per window.
+  With it on, a GitHub menu (Alt+G) sits after Tools, File's three GitHub rows
+  move into it, and turning it off puts them back. It's QUILL's menu less
+  QUILL's own rows, built from the same table, so the letters match.
+- The GitHub menu opens Inbox, My Work, Notifications, Issues and Pull
+  Requests, Actions Runs, Releases and Explore GitHub in one step, and starts
+  with Leave Workbench Mode. It works in the empty window too.
+- File > Clone Repository... (Alt+F, then Y) copies a repository to your
+  computer with Git for Windows, using your signed-in account for a private
+  one without writing the token anywhere. Afterwards it offers to open a file.
+- Turning the mode on or off says one sentence, and nothing else in it speaks.
+- The Copilot and free AI sign-in codes now say "dash" as a word.
+
 ### Sign In with GitHub (2026-11-08)
 
 - Manage GitHub Accounts (Alt+F, then H) has Sign In with GitHub... as its

@@ -2,6 +2,19 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## A GitHub menu, when you want one
+
+Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a
+**GitHub** menu joins the menu bar after Tools. Everything GitHub that lived in
+the File and Tools menus moves into it, and it opens your inbox, your work,
+your notifications, a repository's issues and pull requests, its Actions runs
+and its releases in one step each. Turn it off and the rows go back where they
+were. New in both: **Clone Repository...** copies a repository to your
+computer, private ones included, without writing your token anywhere. And
+**Save to GitHub...** is now called **Commit to GitHub...**, because that is
+what it does. GitHub no longer needs the Developer profile, so the workbench is
+there in most profiles, as it always has been in QUILL Lite.
+
 ## Sign in to GitHub without a token
 
 Signing in to the GitHub windows no longer means making a personal access

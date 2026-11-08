@@ -1,5 +1,17 @@
 # QUILL Lite 2.0
 
+## A GitHub menu, when you want one
+
+Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a
+**GitHub** menu (Alt+G) joins the menu bar after Tools, with the GitHub rows
+from the File menu in it and rows that open your inbox, your work, your
+notifications, a repository's issues and pull requests, its Actions runs and
+its releases in one step. Turn it off and the rows go back. It's the same menu
+as QUILL's, less the rows only QUILL has. **File > Clone Repository...**
+(Alt+F, then Y) is new too: it copies a repository to your computer, private
+ones included, without writing your token anywhere, and then offers to open a
+file from it.
+
 ## Sign in to GitHub without a token
 
 **File > Manage GitHub Accounts...** (Alt+F, then H) now starts with **Sign In

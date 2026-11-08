@@ -39,15 +39,19 @@ it when you're done.
   yet: in QUILL, choose **File > Open from Remote > Manage GitHub
   Accounts...**. In QUILL Lite, choose **File > Manage GitHub Accounts...**
   (`Alt+F`, then `H`). The GitHub Guide's chapter 1 explains signing in.
-- In QUILL, the Developer profile, or GitHub Remote Access turned on by
-  itself. If the GitHub rows aren't on the File menu, press `Alt+Shift+P` and
-  choose Developer.
+- In QUILL, GitHub Remote Access, which is on in most profiles. If the GitHub
+  rows aren't on the File menu, turn it on in **Profiles and Features...**, or
+  press `Alt+Shift+P` and choose Developer.
+- If you like, **View > GitHub Workbench Mode** (`Alt+V`, then `K`). It puts
+  everything this tutorial uses in one **GitHub** menu (`Alt+G`), in both
+  apps. The steps below give both routes.
 
 ## 1. Read the practice repository
 
 1. Open GitHub Items. In QUILL, choose **File > Open from Remote > GitHub
    Items...**. In QUILL Lite, choose **File > GitHub Workbench...** (`Alt+F`,
-   then `G`).
+   then `G`). In workbench mode, in either app, choose
+   **GitHub > Repository Items...** (`Alt+G`, then `T`).
 2. In **Repository:**, type `Community-Access/quill-github-practice` and
    press Enter. The issues load.
 3. Arrow to "Word count is off by one when text ends with a space" and press
@@ -152,6 +156,24 @@ suggestion has a **Commit suggestion** button, if you want to try that too.
 3. Put your new issue in the milestone "Practice milestone 1".
 4. Close "Typo in the module docstring", then reopen it.
 5. React to the first comment on "Question: what counts as a word?".
+
+## 7. Clone your copy
+
+To have your copy's files on your computer, clone it.
+
+1. In QUILL, choose **File > Open from Remote > Clone Repository...**. In
+   QUILL Lite, choose **File > Clone Repository...** (`Alt+F`, then `Y`). In
+   workbench mode, choose **GitHub > Clone Repository...** (`Alt+G`, then `C`).
+2. In **Repository**, type your copy's name, such as
+   `your-name/my-github-practice`.
+3. In **Into this folder**, keep the folder QUILL suggests, or choose
+   **Browse...**.
+4. Press **Clone**. You hear "Cloning", then "Cloned" when it's done.
+5. When you're offered a file from the new folder, take it, and open
+   `PRACTICE.md`.
+
+Your copy can be private: cloning uses the account you signed in with, and
+nothing in the new folder keeps your token.
 
 ## Where to go next
 

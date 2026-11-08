@@ -244,6 +244,49 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="github-workbench-mode-and-clone-repository-2026-11-08">GitHub
+Workbench Mode and Clone Repository (2026-11-08)</h3>
+<ul>
+<li><strong>View &gt; GitHub Workbench Mode</strong> (Alt+V, then K) is
+a check item. Turn it on and a <strong>GitHub</strong> menu (Alt+G)
+joins the menu bar right after Tools. The GitHub rows of File &gt; Open
+from Remote and Tools &gt; Git and GitHub move into it, so nothing is
+listed twice, and turning the mode off puts them back. A key you gave
+one of those rows goes with it.</li>
+<li>The GitHub menu opens the views you use most in one step:
+<strong>Inbox…</strong>, <strong>My Work…</strong> and
+<strong>Notifications…</strong> open Explore GitHub on those views, and
+<strong>Issues and Pull Requests…</strong>, <strong>Actions
+Runs…</strong> and <strong>Releases…</strong> open GitHub Items on them.
+<strong>Leave Workbench Mode</strong> is its first row, and a disabled
+“Repository:” row above it names the repository you are in.</li>
+<li>The mode is per window and starts off. Turning it on or off says one
+sentence; nothing else in it speaks. It has no key of its own.</li>
+<li><strong>Clone Repository…</strong> is new, on File &gt; Open from
+Remote and in the GitHub menu. It asks for owner/name or an address and
+a folder, and runs Git for Windows in the background. A private
+repository works when you are signed in: the token goes to Git for that
+one command only, never into the copy’s settings, its remote address or
+the log. Afterwards QUILL offers to open a file from it, or, in the
+Developer profile, to open it as a project. With no Git installed, QUILL
+says so and offers the download page.</li>
+<li><strong>Save to GitHub… is now Commit to GitHub…</strong>, which is
+what it does. Same command, same place.</li>
+<li>GitHub Remote Access no longer needs the Developer profile. QUILL
+Lite has had the workbench in every profile, so QUILL now has it
+wherever GitHub Remote Access is on, which is most profiles. Local Git
+stays in the Developer profile.</li>
+<li>GitHub Items no longer says “Opening GitHub Items” on the way in.
+Your screen reader says the window’s title anyway.</li>
+<li>The Copilot and free AI sign-in codes now say “dash” as a word, as
+Sign In with GitHub does, instead of spelling it out letter by
+letter.</li>
+<li>The Menu Editor’s top-level order now applies again. The AI and
+QuillVille menus were missing from its list, and a bar with a menu it
+could not name was left as it was.</li>
+<li>Local Git and Clone now find Git when Windows reports it as
+git.EXE.</li>
+</ul>
 <h3 id="sign-in-with-github-2026-11-08">Sign In with GitHub
 (2026-11-08)</h3>
 <ul>

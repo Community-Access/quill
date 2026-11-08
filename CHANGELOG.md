@@ -2,6 +2,42 @@
 
 ## 1.0.0
 
+### GitHub Workbench Mode and Clone Repository (2026-11-08)
+
+- **View > GitHub Workbench Mode** (Alt+V, then K) is a check item. Turn it on
+  and a **GitHub** menu (Alt+G) joins the menu bar right after Tools. The GitHub
+  rows of File > Open from Remote and Tools > Git and GitHub move into it, so
+  nothing is listed twice, and turning the mode off puts them back. A key you
+  gave one of those rows goes with it.
+- The GitHub menu opens the views you use most in one step: **Inbox...**,
+  **My Work...** and **Notifications...** open Explore GitHub on those views,
+  and **Issues and Pull Requests...**, **Actions Runs...** and **Releases...**
+  open GitHub Items on them. **Leave Workbench Mode** is its first row, and a
+  disabled "Repository:" row above it names the repository you are in.
+- The mode is per window and starts off. Turning it on or off says one
+  sentence; nothing else in it speaks. It has no key of its own.
+- **Clone Repository...** is new, on File > Open from Remote and in the GitHub
+  menu. It asks for owner/name or an address and a folder, and runs Git for
+  Windows in the background. A private repository works when you are signed
+  in: the token goes to Git for that one command only, never into the copy's
+  settings, its remote address or the log. Afterwards QUILL offers to open a
+  file from it, or, in the Developer profile, to open it as a project. With no
+  Git installed, QUILL says so and offers the download page.
+- **Save to GitHub... is now Commit to GitHub...**, which is what it does. Same
+  command, same place.
+- GitHub Remote Access no longer needs the Developer profile. QUILL Lite has had
+  the workbench in every profile, so QUILL now has it wherever GitHub Remote
+  Access is on, which is most profiles. Local Git stays in the Developer
+  profile.
+- GitHub Items no longer says "Opening GitHub Items" on the way in. Your screen
+  reader says the window's title anyway.
+- The Copilot and free AI sign-in codes now say "dash" as a word, as Sign In
+  with GitHub does, instead of spelling it out letter by letter.
+- The Menu Editor's top-level order now applies again. The AI and QuillVille
+  menus were missing from its list, and a bar with a menu it could not name was
+  left as it was.
+- Local Git and Clone now find Git when Windows reports it as git.EXE.
+
 ### Sign In with GitHub (2026-11-08)
 
 - **Sign In with GitHub...** is the new first button in Manage GitHub Accounts,

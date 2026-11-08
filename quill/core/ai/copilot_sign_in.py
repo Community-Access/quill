@@ -41,6 +41,7 @@ from quill.core.ai.device_login import (
     DeviceCodeGrant,
     request_device_code,
     run_device_login,
+    spoken_code,
 )
 from quill.core.error_codes import CodedError
 
@@ -60,15 +61,6 @@ class SignInCancelled(CodedError):
     """The person pressed Cancel while GitHub was being asked."""
 
     code = "QUILL-AI-COPILOT-SIGNIN-CANCELLED"
-
-
-def spoken_code(user_code: str) -> str:
-    """The code as separate characters, so a reader says each one.
-
-    The same spacing as :attr:`quill.ui.hosted_ai_service.SignInCode.spoken`:
-    ``ABCD-1234`` read as a word is a word nobody can type back.
-    """
-    return " ".join(user_code.replace("-", " dash "))
 
 
 def _default_poster() -> Poster:

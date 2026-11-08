@@ -97,6 +97,17 @@ MENU_AREA: dict[str, str] = {
 COMMAND_AREA: dict[str, str] = {
     "cmd_github_workbench": "",
     "cmd_github_manage_accounts": "",
+    # GitHub Workbench Mode and its menu (quill/core/github/workbench_menu.py):
+    # wherever the Workbench is, which is every profile.
+    "cmd_github_clone": "",
+    "cmd_toggle_github_workbench": "",
+    "cmd_github_inbox": "",
+    "cmd_github_my_work": "",
+    "cmd_github_notifications": "",
+    "cmd_github_issues": "",
+    "cmd_github_actions_runs": "",
+    "cmd_github_releases": "",
+    "cmd_github_explore": "",
     # WordPress rows straight in Insert and View, not in a submenu of their own.
     **dict.fromkeys(wordpress_menu.direct_handlers(), "wordpress"),
     # Forms rows straight in File, Insert, View and Format (wordpress.md 17a.10).

@@ -33,6 +33,19 @@ Clock = Callable[[], float]
 # A sleeper waits the given number of seconds (injectable for tests).
 Sleeper = Callable[[float], None]
 
+
+def spoken_code(user_code: str) -> str:
+    """A device-flow user code as separate characters, so a reader says each one.
+
+    ``WDJB-MJHT`` -> ``W D J B dash M J H T``: the letters spaced, the hyphen a
+    word. Read as one word, the code is a word nobody can type back; spacing the
+    whole string after swapping in " dash " would spell "dash" out letter by
+    letter too. Every device-flow sign-in in the family (GitHub, Copilot, the
+    hosted AI) speaks its code through this one helper.
+    """
+    return " dash ".join(" ".join(part) for part in user_code.strip().split("-"))
+
+
 STATUS_AUTHORIZED = "authorized"
 STATUS_PENDING = "pending"
 STATUS_SLOW_DOWN = "slow_down"

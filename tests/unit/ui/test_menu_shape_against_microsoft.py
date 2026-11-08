@@ -213,3 +213,26 @@ def test_quilllite_keeps_the_same_menu_bar_shape() -> None:
     positions = {title: index for index, title in enumerate(titles)}
     shared = [title for title in _EXPECTED_ORDER if title in positions]
     assert shared == sorted(shared, key=lambda title: positions[title])
+
+
+def test_the_github_menu_comes_and_goes_with_workbench_mode_after_tools() -> None:
+    """GitHub Workbench Mode (2026-11-08): the one top-level menu that is not always there.
+
+    It is appended by its own method, which returns at once unless the mode is
+    on, and that method is called right after Tools -- the first place this gate
+    allows a menu Microsoft does not have. So both bars, with and without it,
+    keep Microsoft's order.
+    """
+    from quill.core.github.workbench_menu import GITHUB_MENU_TITLE
+
+    source = _menu_source()
+    tools = source.index('menu_bar.Append(tools_menu, _("&Tools"))')
+    github = source.index("self._append_github_workbench_menu(menu_bar)")
+    nxt = source.index('menu_bar.Append(ai_menu, _("&AI"))')
+    assert tools < github < nxt
+    mixin = (_ROOT / "quill" / "ui" / "main_frame_github_menu.py").read_text(encoding="utf-8")
+    body = mixin.split("def _append_github_workbench_menu", 1)[1].split("\n    def ", 1)[0]
+    assert "if not self._github_workbench_mode:" in body.split("menu_bar.Append", 1)[0]
+    assert f'menu_bar.Append(menu, _("{GITHUB_MENU_TITLE}"))' in body
+    titles = _appended_titles(mixin)
+    assert titles == ["GitHub"] and "GitHub" not in _EXPECTED_ORDER

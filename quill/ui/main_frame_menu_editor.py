@@ -11,6 +11,7 @@ for the menu-build customization pass. Extracted verbatim from
 
 from __future__ import annotations
 
+from quill.core.menu_customization import TOP_MENU_DEFS as _TOP_MENU_DEFS
 from quill.core.menu_customization import (
     MenuCustomization,
     save_menu_customization,
@@ -19,22 +20,6 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
 )
 from quill.ui.dpi import dip_size
-
-#: Stable key and factory label for each top-level menu, in default order.
-#: The Menu Editor and the menu-build transform pass share this list so a person
-#: can reorder, hide, and rename top-level menus without touching item code.
-_TOP_MENU_DEFS: tuple[tuple[str, str], ...] = (
-    ("file", "&File"),
-    ("edit", "&Edit"),
-    ("view", "&View"),
-    ("insert", "&Insert"),
-    ("format", "F&ormat"),
-    ("navigate", "&Navigate"),
-    # Search left the bar on 2026-09-17 and is Edit > Search Tools (bad.md M1).
-    ("tools", "&Tools"),
-    ("window", "&Window"),
-    ("help", "&Help"),
-)
 
 
 def _normalize_menu_label(label: str) -> str:

@@ -21,6 +21,7 @@ wx-free on purpose: the tests, the shortcut text and F1 import it without a disp
 from __future__ import annotations
 
 from quill.core.forms import menu as forms_menu
+from quill.core.github import workbench_menu
 from quill.core.lite.commands_ai import (
     AI_MENU_ROWS,
     PROJECT_EDIT_ROWS,
@@ -514,6 +515,10 @@ COMMANDS: list[CommandRow] = [
     # sibling vacated on the same day: one letter, two scopes.
     ("&View", "Li&ne Statistics", "Ctrl+Alt+W", "cmd_line_statistics", ""),
     *PROJECT_VIEW_ROWS,  # the task's transcript and output: Developer only
+    ("&View", "", "", "", "sep"),
+    # GitHub Workbench Mode (quill/core/github/workbench_menu.py): QUILL's row,
+    # per window, no key in either editor (rule 9). See KEYLESS_WITH_REASON.
+    ("&View", workbench_menu.TOGGLE_VIEW_LABEL, "", workbench_menu.TOGGLE_LITE_HANDLER, "check"),
     # -- Insert -------------------------------------------------------------
     # Everything that puts something into the document that is not typing. The
     # top three were Edit > Insert and keep their keys exactly; the bottom three
@@ -1027,6 +1032,10 @@ COMMANDS: list[CommandRow] = [
     # commands and they are not run in the editing loop.
     ("&Tools|Indentin&g", "Convert to &Spaces", "Alt+F11", "cmd_indentation_to_spaces", ""),
     ("&Tools|Indentin&g", "Convert to &Tabs", "Alt+F12", "cmd_indentation_to_tabs", ""),
+    # -- GitHub (workbench mode only) ---------------------------------------
+    # The GitHub menu's own rows; workbench_menu.lite_arrange builds the menu
+    # itself, with the File rows that move into it, only while the mode is on.
+    *workbench_menu.lite_rows(),
     # -- Window -------------------------------------------------------------
     # Ctrl+F6 is the Windows MDI convention and Ctrl+Tab is what everyone
     # actually presses; both are bound, because a key somebody expects and

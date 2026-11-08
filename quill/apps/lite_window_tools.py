@@ -39,6 +39,7 @@ from quill.apps.lite_dialogs import edit_file_format
 from quill.apps.lite_dialogs_entry import ask_text
 from quill.apps.lite_github_accounts import GitHubAccountsLiteMixin
 from quill.apps.lite_github_open import GitHubFileOpenMixin
+from quill.apps.lite_github_workbench import GitHubWorkbenchLiteMixin
 from quill.apps.lite_window_backups import DocumentBackupsMixin
 from quill.apps.lite_window_replace_jobs import DocumentReplaceJobsMixin
 from quill.core import format_ops, line_ops, transforms
@@ -66,60 +67,13 @@ _IndentOp = Callable[[str, int, int], tuple[str, int, int]]
 
 
 class DocumentToolsMixin(
-    DocumentBackupsMixin, GitHubFileOpenMixin, GitHubAccountsLiteMixin, DocumentReplaceJobsMixin
+    DocumentBackupsMixin,
+    GitHubFileOpenMixin,
+    GitHubAccountsLiteMixin,
+    GitHubWorkbenchLiteMixin,  # the Workbench, workbench mode, Clone (lite_github_workbench.py)
+    DocumentReplaceJobsMixin,
 ):
     """Line tools, case tools, and the file-format dialog."""
-
-    def cmd_github_workbench(self) -> None:
-        """Open the shared repository viewer in QUILL Lite."""
-        from quill.core.github.consent import (
-            load_github_consent_complete,
-            save_github_consent_complete,
-        )
-        from quill.core.github.github_provider import GitHubDependencyError, require_pygithub
-        from quill.core.github.items_provider import (
-            GitHubItemsError,
-            GitHubItemsProvider,
-            refuse_in_safe_mode,
-        )
-        from quill.core.github.local_repo import detect_github_repo
-        from quill.core.github.token_store import load_github_token
-        from quill.ui.github_dialogs import GitHubConsentDialog
-        from quill.ui.github_items_dialog import GitHubItemsDialog
-
-        try:
-            refuse_in_safe_mode(bool(getattr(self.app, "safe_mode", False)))
-            require_pygithub()
-        except (GitHubItemsError, GitHubDependencyError) as exc:
-            show_message_box(str(exc), "GitHub Workbench", wx.OK | wx.ICON_INFORMATION, self)
-            return
-        if not load_github_consent_complete():
-            if not GitHubConsentDialog(self).show():
-                return
-            save_github_consent_complete()
-        token = load_github_token()
-        # No account: say so and offer to add one, rather than opening as a
-        # guest without a word. Continue as Guest is still one key away.
-        if not token and not self._github_workbench_as_guest(
-            lambda: DocumentToolsMixin.cmd_github_workbench(self)
-        ):
-            return
-        try:
-            provider = GitHubItemsProvider(token=token or None)
-        except GitHubItemsError as exc:
-            show_message_box(str(exc), "GitHub Workbench", wx.OK | wx.ICON_INFORMATION, self)
-            return
-        try:
-            GitHubItemsDialog(
-                self,
-                provider,
-                initial_repo=detect_github_repo(self.path),
-                open_file_reference_cb=self._open_github_file_reference,
-                announce_cb=self._announce,
-                gist_source_cb=getattr(self, "_github_gist_source", None),
-            ).show()
-        finally:
-            provider.close()
 
     def cmd_open_studio(self) -> None:
         """Open the Studio companion without sending this document anywhere."""
