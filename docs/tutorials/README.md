@@ -39,6 +39,12 @@ same ground, if you would rather listen.
    GitHub guide](../user%20guide/github-guide/github-guide.md) is a book of its
    own on it, for QUILL and QUILL Lite.
 
+## Tutorials for QUILL and QUILL Lite
+
+11. [Practise GitHub safely](11-practise-github-safely.md): read a practice
+    project on GitHub, make a copy of your own, then review, merge and find
+    out why a check failed, where nothing you do can go wrong.
+
 ## Tutorials for radio and podcasts
 
 9. [Internet Radio with Quill Radio](09-internet-radio.md): play a station,

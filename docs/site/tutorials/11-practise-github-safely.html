@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Tutorials - Tutorial 11: Practise GitHub safely</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a><header class="site"><div class="wrap"><nav class="site" aria-label="Primary"><ul><li><a href="/index.html">QUILL home</a></li><li><a href="index.html">All tutorials</a></li><li><a href="/podcast/index.html">The QUILL Cast</a></li><li><a href="/docs/userguide.html">User guide</a></li></ul></nav></div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+<h1 id="tutorial-11-practise-github-safely">Tutorial 11: Practise GitHub
+safely</h1>
+<p><strong>Goal:</strong> get comfortable with GitHub in QUILL or QUILL
+Lite by working on a practice project where nothing you do can go wrong.
+You'll read a real-looking project, make a copy of your own, and then
+review, comment, merge and fix a failing check in it.</p>
+<p>This lesson works the same in <strong>QUILL</strong> and
+<strong>QUILL Lite</strong>. Where the two differ, both are given. It
+takes about twenty minutes, plus as long as you like afterwards.</p>
+<h2 id="what-youre-practising-on">What you're practising on</h2>
+<p>Community Access keeps a practice repository on GitHub, <a
+href="https://github.com/Community-Access/quill-github-practice">Community-Access/quill-github-practice</a>.
+It holds a tiny Python project called Tally, which counts the words in
+some text. The code hardly matters. What matters is everything around
+it, already set up for you:</p>
+<ul>
+<li>six issues, with labels, an assignee, a milestone and a closed
+one;</li>
+<li>a pull request, "Add a line count", with a review that has a line
+comment and a suggested change;</li>
+<li>a draft pull request, "Speed up word counting", whose check fails on
+purpose;</li>
+<li>a release, <code>v0.1.0</code>, with a file attached;</li>
+<li>a discussion with replies;</li>
+<li>a security policy, a code of conduct, and issue and pull request
+templates.</li>
+</ul>
+<p>The practice repository is the example everyone reads, so it's
+locked: you can read everything in it, but only Community Access can
+change it. Everything you do that writes something happens in
+<strong>your own copy</strong>, which you make in part 2. Nobody else
+sees your copy unless you want them to, and you can delete it when
+you're done.</p>
+<h2 id="what-you-need">What you need</h2>
+<ul>
+<li>A GitHub account. A free one is fine.</li>
+<li>QUILL or QUILL Lite, signed in to that account. If you haven't
+signed in yet: in QUILL, choose <strong>File &gt; Open from Remote &gt;
+Manage GitHub Accounts...</strong>. In QUILL Lite, choose <strong>File
+&gt; Manage GitHub Accounts...</strong> (<code>Alt+F</code>, then
+<code>H</code>). The GitHub Guide's chapter 1 explains signing in.</li>
+<li>In QUILL, the Developer profile, or GitHub Remote Access turned on
+by itself. If the GitHub rows aren't on the File menu, press
+<code>Alt+Shift+P</code> and choose Developer.</li>
+</ul>
+<h2 id="1-read-the-practice-repository">1. Read the practice
+repository</h2>
+<ol type="1">
+<li>Open GitHub Items. In QUILL, choose <strong>File &gt; Open from
+Remote &gt; GitHub Items...</strong>. In QUILL Lite, choose <strong>File
+&gt; GitHub Workbench...</strong> (<code>Alt+F</code>, then
+<code>G</code>).</li>
+<li>In <strong>Repository:</strong>, type
+<code>Community-Access/quill-github-practice</code> and press Enter. The
+issues load.</li>
+<li>Arrow to "Word count is off by one when text ends with a space" and
+press Enter. Read it from the top. It has one comment, suggesting the
+fix.</li>
+<li>Go back to the list and open "Question: what counts as a word?".
+Press <code>Alt+N</code> to move from comment to comment, and
+<code>Alt+P</code> to go back.</li>
+<li>Switch <strong>View:</strong> (<code>Alt+I</code>) to the pull
+requests and open "Add a line count". You hear its one-sentence summary
+first.</li>
+<li>Open it in the review window. Move through the outline, then from
+thread to thread. One thread has a suggested change: it shows what the
+reviewer thinks <code>line_count</code> should say instead.</li>
+</ol>
+<p>That's the read-only part. Everything you just did works in any
+public repository, signed in or not.</p>
+<h2 id="2-make-your-own-copy">2. Make your own copy</h2>
+<p>The practice repository is a template, which means GitHub can make a
+fresh copy of it for you, with its own history.</p>
+<ol type="1">
+<li>In GitHub Items, press <code>Alt+E</code> for
+<strong>Explore...</strong>.</li>
+<li>In <strong>Repository:</strong> (<code>Alt+R</code>), type
+<code>Community-Access/quill-github-practice</code> and load it.</li>
+<li>Open the context menu (the Applications key, or
+<code>Shift+F10</code>), then the <strong>Repository Actions for
+Community-Access/quill-github-practice</strong> submenu, and choose
+<strong>Create Repository from This Template...</strong>.</li>
+<li>Name it, say <code>my-github-practice</code>. Leave the organization
+empty so the copy goes in your own account. It can be private if you'd
+rather nobody saw it.</li>
+<li>Confirm. When it's made, QUILL says so.</li>
+</ol>
+<p>If you'd rather use the web: on the practice repository's page,
+choose <strong>Use this template</strong>, then <strong>Create a new
+repository</strong>.</p>
+<h2 id="3-fill-your-copy-with-practice-items">3. Fill your copy with
+practice items</h2>
+<p>GitHub copies the files, but not the issues or pull requests. Your
+copy comes with a workflow called <strong>Set up practice</strong> that
+makes them.</p>
+<p>First, two settings, once. These are on GitHub's website, in your
+copy's Settings:</p>
+<ul>
+<li><strong>Settings &gt; Actions &gt; General &gt; Workflow
+permissions:</strong> check <strong>Allow GitHub Actions to create and
+approve pull requests</strong>, then choose Save.</li>
+<li><strong>Settings &gt; General &gt; Features:</strong> check
+<strong>Discussions</strong>.</li>
+</ul>
+<p>Then run the workflow from QUILL:</p>
+<ol type="1">
+<li>In GitHub Items, load your copy, such as
+<code>your-name/my-github-practice</code>.</li>
+<li>Set <strong>View:</strong> to <strong>Workflows</strong>.</li>
+<li>Select <strong>Set up practice</strong> and press Enter, or choose
+<strong>Run Workflow on Branch...</strong> from its context menu. Keep
+<code>main</code> as the branch and confirm. You hear "Dispatched".</li>
+<li>Set <strong>View:</strong> to <strong>Workflow Runs</strong>. After
+a minute, the Set up practice run says "completed" and "success".</li>
+</ol>
+<p>Your copy now has the same issues, pull requests, release and
+discussion as the practice repository. If you forgot a setting, the run
+fails instead, and its summary says which setting to turn on. Turn it on
+and run it again. It never makes anything twice, so you can run it
+whenever you want a fresh start.</p>
+<h2 id="4-review-and-merge-a-pull-request">4. Review and merge a pull
+request</h2>
+<p>Everything from here is in your copy.</p>
+<ol type="1">
+<li>Open the pull request "Add a line count" in the review window.</li>
+<li>Go to the thread with the suggested change. Reply to it, saying you
+agree with the suggestion, then resolve the thread.</li>
+<li>Comment on a line of the diff of your own choosing. Your comment
+waits as pending until you send your review.</li>
+<li>Send your review as a comment.</li>
+<li>Merge the pull request. The issue "Add a line count to the summary"
+closes by itself, because the pull request said it would.</li>
+</ol>
+<p>QUILL doesn't commit a suggested change for you. On GitHub's website,
+the suggestion has a <strong>Commit suggestion</strong> button, if you
+want to try that too.</p>
+<h2 id="5-find-out-why-a-check-failed">5. Find out why a check
+failed</h2>
+<ol type="1">
+<li>Set <strong>View:</strong> to <strong>Workflow Runs</strong> and
+select the failed <strong>Tests</strong> run for the branch
+<code>practice/speed-up-word-counting</code>. Set up practice started it
+for you.</li>
+<li>In your copy, the draft pull request's own check may say it's
+waiting for approval, because a workflow opened the pull request rather
+than a person. You don't need it for this part: the run you just
+selected tested the same code.</li>
+<li>Press <code>Ctrl+Shift+W</code> for <strong>What Failed...</strong>.
+You hear how many jobs failed, then the failed step, and then the lines
+that matter: the test <code>test_counts_hyphenated_words</code> expected
+3 words and got 4.</li>
+<li>That's the whole story. The change splits on hyphens, so
+"screen-reader" counts as two words, and the issue "Question: what
+counts as a word?" settled that it should be one.</li>
+<li>From the run's <strong>Actions...</strong> menu, rerun the failed
+jobs. They'll fail again, of course, because the code hasn't changed.
+Rerunning is for failures that come from GitHub, not from the code.</li>
+</ol>
+<h2 id="6-work-with-issues">6. Work with issues</h2>
+<ol type="1">
+<li>Add the label <code>accessibility</code> to "CONTRIBUTING should
+explain how to write a test".</li>
+<li>Write a new issue using the <strong>Bug report</strong> template. It
+doesn't have to be a real bug.</li>
+<li>Put your new issue in the milestone "Practice milestone 1".</li>
+<li>Close "Typo in the module docstring", then reopen it.</li>
+<li>React to the first comment on "Question: what counts as a
+word?".</li>
+</ol>
+<h2 id="where-to-go-next">Where to go next</h2>
+<ul>
+<li>The practice repository's <code>PRACTICE.md</code> has a set of
+exercises for every chapter of the GitHub Guide, including releases,
+discussions, codespaces and the command line.</li>
+<li><a href="/docs/github-guide/github-guide.html">The GitHub
+Guide</a> explains every command used here, and many more. It comes with
+both QUILL and QUILL Lite.</li>
+<li><a href="08-github-inside-quill.html">Tutorial 8: GitHub inside QUILL
+and QUILL Lite</a> covers opening and saving files on GitHub, managing
+repositories and resolving merge conflicts.</li>
+</ul>
+<p>When you've finished with your copy, you can delete it: in Explore,
+its <strong>Repository Actions</strong> submenu has <strong>Delete
+Repository...</strong>. Or keep it, and run Set up practice again
+whenever you want to start over.</p>
+</div></main>
+</body>
+</html>
