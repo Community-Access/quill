@@ -1884,6 +1884,10 @@ QUILL's Navigate > Code, in QUILL Lite with the same rows, letters and keys (fam
 - **Next / Previous Indent Change** (`cmd_next_indent` Alt+Shift+PageDown, `cmd_previous_indent` Alt+Shift+PageUp): the next line, skipping blanks, indented differently; the depth is announced after the move.
 - **Check This File** (`cmd_check_this_file` Ctrl+Alt+/), **Next Problem** (`cmd_next_problem` Ctrl+Alt+.), **Previous Problem** (`cmd_previous_problem` Ctrl+Alt+,): every problem in a Markdown or HTML document, in the Problems list (`choose_from_rows`) or one at a time with "Problem n of m, line, column, severity: message". Built-in checkers only: QUILL Lite never starts an outside tool. In plain text or rich text it says "Nothing to check: QUILL Lite checks Markdown and HTML documents." QUILL checks the same two languages and many more (rule 10: Lite level with QUILL, not ahead).
 
+## Word Prediction (2026-11-08)
+
+- **Edit > Word Prediction...** (`cmd_word_prediction`, Ctrl+., QUILL's chord by rule 2): QUILL's list from the shared `quill/ui/suggestion_list.py`, through `quill/apps/lite_window_word_prediction.py`. Words from the spelling dictionary and the document, plus Markdown and HTML tags. Up and Down say each suggestion, Enter or Tab replaces only the fragment typed, Escape closes without changing the text; typing with the list open narrows it. Key press only: QUILL Lite has no "as you type" setting, which keeps it level with QUILL rather than ahead.
+
 ## The Problems pane (2026-11-08)
 
 - **View > Problems Pane** (`cmd_toggle_problems_pane`, no key, as in QUILL, for the reason recorded there): QUILL's pane, from the shared `quill/ui/problems_pane.py` and `quill/ui/problems_commands.py`, docked under the text and above the status bar. The setting is `problems_pane_visible`, QUILL's field name, and applies to every open window through `reapply_settings`.

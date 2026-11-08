@@ -60,7 +60,8 @@ def test_feature_mapping_infers_command_groups() -> None:
     assert feature_for_command("tools.announcement_backend") == "core.accessibility"
     assert feature_for_command("tools.announcement_trace_toggle") == "core.accessibility"
     assert feature_for_command("format.insert_table") == "core.format"
-    assert feature_for_command("edit.word_prediction") == "core.intellisense"
+    # Key-press Word Prediction is in every profile (intellisense plan, decision 1).
+    assert feature_for_command("edit.word_prediction") == "core.edit"
     assert feature_for_command("help.open_logs_folder") == "core.help"
     assert feature_for_command("help.open_diagnostics_folder") == "core.help"
     assert feature_for_command("tools.yaml_structure_editor") == "core.format"

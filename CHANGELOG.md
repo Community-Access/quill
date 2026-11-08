@@ -2,6 +2,16 @@
 
 ## 1.0.0
 
+### Word Prediction in every profile, and in QUILL Lite (2026-11-08)
+
+- **Edit > Word Prediction...** (Ctrl+.) works in every profile. The two
+  profiles that left it out used to answer "Word prediction is unavailable in
+  this profile"; a list you have to ask for can't get in anyone's way. Word
+  Prediction As You Type stays off by default, and those profiles still
+  switch it off.
+- The list moved into one shared module, so QUILL Lite runs the same list on
+  the same key. Nothing about how it sounds or what Escape does changed.
+
 ### The Problems pane (2026-11-08)
 
 - **View > Problems Pane** (Alt+V, then P) docks the problems Check This File
