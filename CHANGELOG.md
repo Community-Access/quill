@@ -2,6 +2,28 @@
 
 ## 1.0.0
 
+### GitHub: Copilot, commit comments, gists and queue summaries (2026-11-07)
+
+- **Request Copilot Review**, on a pull request's context menu in the review
+  window, asks Copilot code review for a review. QUILL says it was requested
+  only when GitHub lists Copilot as a reviewer, and says plainly when the
+  account or repository has no Copilot code review.
+- **Assign to Copilot**, on an issue's context menu in GitHub Items, hands the
+  issue to Copilot's coding agent. QUILL checks first whether the agent can be
+  assigned in the repository and says why not when it cannot, asks before
+  assigning, keeps anyone already assigned, and reports success only when
+  GitHub lists Copilot.
+- **Commit Comments**, on a commit row, lists a commit's comments as author,
+  date and text, and posts a new one on the whole commit or on a line of a file.
+- **Gists can be written and changed.** Explore's My gists view has New Gist
+  (from the document or its selection, public or secret), Edit Gist
+  (description, and adding, renaming, deleting and changing files), Star Gist,
+  Unstar Gist and Delete Gist. Deleting a file or a gist asks first.
+- **The attention queue says where each pull request stands**, in the
+  review window's one sentence ("Approved, 2 checks failing, 1 open thread"),
+  read for the whole queue in one request. It never calls a pull request ready
+  on missing or partial data, and each row keeps its reason.
+
 ### One account manager for both editors (2026-11-07)
 
 - **Manage GitHub Accounts** now runs from one shared module that QUILL Lite

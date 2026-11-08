@@ -1,5 +1,15 @@
 # QUILL Lite 2.0
 
+## GitHub: Copilot, commit comments, gists and queue summaries
+
+QUILL Lite's GitHub windows are QUILL's, so it gains the same four things:
+Request Copilot Review in the review window and Assign to Copilot on an issue,
+each saying plainly when Copilot is not available; Commit Comments on a commit;
+gists you can create from the document or its selection, edit, star and delete
+from Explore's My gists view; and the attention queue saying where each pull
+request stands. The details are in the
+[GitHub Guide](guide/lite-github-guide.html).
+
 ## A complete GitHub guide
 
 QUILL Lite now ships a book on doing GitHub work with a screen reader, shared

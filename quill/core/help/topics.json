@@ -1993,6 +1993,36 @@
     "user_guide_section": "rate-limits-and-quiet-refreshes"
   },
   {
+    "id": "github.copilot_review",
+    "title": "Request Copilot Review",
+    "body": "In the review window, the pull request's context menu (Shift+F10 on the outline) has Request Copilot Review, which asks Copilot code review to review the pull request. QUILL says Copilot review requested only when GitHub lists Copilot among the reviewers. When GitHub leaves Copilot off, which is how it answers an account or repository without Copilot code review, QUILL says so plainly. Copilot's review arrives as comments after a refresh.",
+    "user_guide_section": "copilot-review-and-the-coding-agent"
+  },
+  {
+    "id": "github.assign_to_copilot",
+    "title": "Assign to Copilot",
+    "body": "On an issue in the GitHub Items viewer, the context menu's Assign to Copilot hands the issue to Copilot's coding agent, which works on it and opens a pull request for you to review. QUILL first asks GitHub whether the agent can be assigned in this repository and, when it cannot, says why and changes nothing. Otherwise it asks before assigning, keeps anyone already assigned, and says the issue is assigned only when GitHub lists Copilot. It needs a signed-in account.",
+    "user_guide_section": "copilot-review-and-the-coding-agent"
+  },
+  {
+    "id": "github.commit_comments",
+    "title": "Commit Comments",
+    "body": "On a commit row in the GitHub Items viewer, the context menu's Commit Comments lists the commit's comments, each read as author, date and text; Tab reads the whole comment. Type in New comment (Alt+N) and press Post Comment (Alt+P) to add one on the whole commit, or name a file (Alt+F) and a line (Alt+L) to put it on one line of that file. QUILL says posted only when GitHub returns the comment.",
+    "user_guide_section": "commit-comments"
+  },
+  {
+    "id": "github.gists",
+    "title": "Writing and Editing Gists",
+    "body": "In Explore's My gists view, the context menu has New Gist, which starts from the document you are editing or its selection, and on a gist Edit Gist, Star Gist, Unstar Gist and Delete Gist. The gist window has Description (Alt+D), Public gist (Alt+B) for a new gist, Files (Alt+F), File text (Alt+T), Add File (Alt+A), Rename File (Alt+N) and Delete File (Alt+L). Deleting a file or a gist asks first, nothing is sent until Create Gist or Save Gist, and QUILL says what GitHub confirmed. A secret gist is unlisted, not private.",
+    "user_guide_section": "gists-in-explore"
+  },
+  {
+    "id": "github.attention_queue_summaries",
+    "title": "Pull Request Summaries in the Attention Queue",
+    "body": "Each pull request in Explore's attention queue says where it stands in one sentence, such as Approved, 2 checks failing, 1 open thread, after its name; in the details the reason it is in your queue comes first. QUILL reads every sentence in one request per refresh, covering the twenty newest pull requests. It never calls a pull request ready on missing or partial data, and a pull request GitHub did not answer for says Summary unavailable.",
+    "user_guide_section": "pull-request-summaries-in-the-attention-queue"
+  },
+  {
     "id": "glow_audit.detail_text",
     "title": "Issue Detail",
     "body": "Shows the full description of the selected GLOW issue: what was found, why it matters, and what the automatic fix will do. Read this before applying a fix to understand the change.",

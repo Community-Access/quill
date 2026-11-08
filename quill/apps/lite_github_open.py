@@ -10,6 +10,7 @@ in one editor and alive in the other.
 
 from __future__ import annotations
 
+import os
 import threading
 
 import wx
@@ -57,6 +58,19 @@ class GitHubFileOpenMixin:
             wx.CallAfter(self._show_github_file_text, path, text)
 
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: one file read.
+
+    def _github_gist_source(self) -> tuple[str, str]:
+        """(file name, text) a new gist starts from: the selection, else the document.
+
+        The empty window has neither, so New Gist starts blank there.
+        """
+        control = self.control
+        selection = getattr(control, "GetStringSelection", None)
+        text = selection() if callable(selection) else ""
+        whole = getattr(control, "GetValue", None)
+        if not text and callable(whole):
+            text = whole()
+        return (os.path.basename(self.path) if self.path else "notes.md"), text
 
     def _show_github_file_text(self, path: str, text: str) -> None:
         frame = self.app.new_window(PLAIN)

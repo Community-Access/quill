@@ -34,11 +34,17 @@ def split_repo(full_name: str) -> tuple[str, str]:
 
 
 def graphql_data(
-    token: str | None, query: str, variables: dict[str, object], *, action: str
+    token: str | None,
+    query: str,
+    variables: dict[str, object],
+    *,
+    action: str,
+    extra_headers: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Run one GraphQL query or mutation and return its ``data`` object.
 
-    *action* completes "Could not ..." in every failure message.
+    *action* completes "Could not ..." in every failure message. *extra_headers*
+    carries a preview opt-in such as ``GraphQL-Features`` (Copilot assignment).
     """
     if not token:
         raise GitHubItemsError(
@@ -47,7 +53,11 @@ def graphql_data(
         )
     try:
         response = request_json(
-            token, "POST", "/graphql", body={"query": query, "variables": variables}
+            token,
+            "POST",
+            "/graphql",
+            body={"query": query, "variables": variables},
+            extra_headers=extra_headers,
         )
     except GitHubRestError as exc:
         raise GitHubItemsError(rest_failure_message(action, exc)) from exc

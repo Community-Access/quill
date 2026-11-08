@@ -702,6 +702,110 @@ each repeated read per account (64 reads, 256 KB each, in
 <code>If-None-Match</code>; a 304 shows the stored body and costs no
 rate limit. Explore says “No changes since the last load” when a reload
 found the same rows.</p>
+<h2 id="copilot-commit-comments-gists-and-queue-summaries">Copilot,
+commit comments, gists and queue summaries</h2>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Review, pull request node</td>
+<td>Shift+F10</td>
+<td>Request Copilot Review</td>
+</tr>
+<tr>
+<td>Items, issue</td>
+<td>Shift+F10</td>
+<td>Assign to Copilot (checks, then asks)</td>
+</tr>
+<tr>
+<td>Items, commit</td>
+<td>Shift+F10</td>
+<td>Commit Comments</td>
+</tr>
+<tr>
+<td>Commit Comments</td>
+<td>Alt+C, Alt+M</td>
+<td>Comments; selected comment</td>
+</tr>
+<tr>
+<td>Commit Comments</td>
+<td>Alt+N, Alt+F, Alt+L</td>
+<td>New comment; file; line</td>
+</tr>
+<tr>
+<td>Commit Comments</td>
+<td>Alt+P, Alt+R</td>
+<td>Post Comment; Refresh</td>
+</tr>
+<tr>
+<td>Explore, My gists</td>
+<td>Shift+F10</td>
+<td>New Gist, Edit Gist, Star, Unstar, Delete Gist</td>
+</tr>
+<tr>
+<td>Gist window</td>
+<td>Alt+D, Alt+B</td>
+<td>Description; Public gist (new gists only)</td>
+</tr>
+<tr>
+<td>Gist window</td>
+<td>Alt+F, Alt+T</td>
+<td>Files; File text</td>
+</tr>
+<tr>
+<td>Gist window</td>
+<td>Alt+A, Alt+N, Alt+L</td>
+<td>Add File; Rename File; Delete File</td>
+</tr>
+</tbody>
+</table>
+<p>Request Copilot Review sends
+<code>POST /pulls/{n}/requested_reviewers</code> with
+<code>copilot-pull-request-reviewer[bot]</code>, the login GitHub’s
+Copilot code review documentation names for the REST API, and reads the
+reply’s <code>requested_reviewers</code> back: GitHub can answer 201 and
+leave Copilot off, which is how an account or repository without Copilot
+code review answers, and QUILL says so rather than reporting a request.
+A 422 is said as “Copilot code review may not be available”.</p>
+<p>Assign to Copilot follows GitHub’s “Using Copilot cloud agent via the
+API”. One GraphQL query reads
+<code>suggestedActors(capabilities: [CAN_BE_ASSIGNED])</code> and the
+issue’s ID, state and assignees; without <code>copilot-swe-agent</code>
+among the actors, QUILL says the coding agent is not available and sends
+nothing. Otherwise it asks, then sends
+<code>replaceActorsForAssignable</code> with the existing assignees’ IDs
+plus the agent’s, so nobody already assigned is dropped. Both calls
+carry
+<code>GraphQL-Features: issues_copilot_assignment_api_support,coding_agent_model_selection</code>.
+Success is said only when the mutation’s assignee list holds the
+agent.</p>
+<p>Commit Comments reads <code>GET /commits/{sha}/comments</code> (100 a
+page, up to ten pages, and says when there were more) and posts with
+<code>POST</code> to the same path, sending <code>path</code> and
+<code>line</code> for a comment on a line; the deprecated diff
+<code>position</code> is never sent.</p>
+<p>Gists: <code>POST /gists</code>, <code>PATCH /gists/{id}</code>,
+<code>DELETE /gists/{id}</code>, and <code>PUT</code> or
+<code>DELETE /gists/{id}/star</code>. The gist window edits a local
+draft (<code>gists.py</code>), and saving sends one <code>PATCH</code>
+in which a deleted file is <code>null</code> and a renamed one carries
+<code>filename</code>. A file GitHub truncated is never sent back.
+Create and save are confirmed against the files and description GitHub
+returns.</p>
+<p>The attention queue adds <code>pr_summary.py</code>’s sentence to
+each pull request row from one aliased GraphQL request per refresh
+(<code>attention_queue_summaries.py</code>), covering the twenty newest
+pull requests. It keeps the summary’s rules: unknown or partial data
+reads “merge readiness unknown”, a pull request GitHub did not answer
+for reads “Summary unavailable”, and the row’s reason stays the first
+line of its details. A summary gap is said in the status line but does
+not mark the queue itself incomplete.</p>
 <h2 id="review-and-write-safety">Review and write safety</h2>
 <p>The review tree announces reply counts, outdated positions, resolved
 state, and check status. Selecting a thread never resolves it. Reply,
@@ -745,11 +849,13 @@ REST transport. Wave 4 adds <code>search_views.py</code>,
 <code>repo_insights.py</code>, <code>repo_actions.py</code>,
 <code>release_admin.py</code>, <code>issue_housekeeping.py</code>,
 <code>rate_limits.py</code> and <code>conditional_requests.py</code>,
-with Explore’s routing in <code>explore_extra_views.py</code>. The REST
-calls PyGithub lacks go through <code>rest_transport.py</code>, which
-refuses redirects so the token stays on api.github.com. The shared UI
-modules are under <code>quill/ui/</code>. Network calls are made off the
-UI thread. Tests exercise provider mapping, pagination, diff-line
+with Explore’s routing in <code>explore_extra_views.py</code>. The last
+four add <code>copilot.py</code>, <code>commit_comments.py</code>,
+<code>gists.py</code> and <code>attention_queue_summaries.py</code>. The
+REST calls PyGithub lacks go through <code>rest_transport.py</code>,
+which refuses redirects so the token stays on api.github.com. The shared
+UI modules are under <code>quill/ui/</code>. Network calls are made off
+the UI thread. Tests exercise provider mapping, pagination, diff-line
 matching, redirect token handling, and action routing. Manual Windows
 screen-reader acceptance with NVDA, JAWS, and Narrator is user-owned
 follow-up. This reference does not claim a macOS assistive-technology

@@ -18,6 +18,8 @@ is the glue that enforces the same gates every other GitHub entry point uses:
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from quill.core.github.references import (
     GitHubReference,
     GitHubReferenceError,
@@ -149,6 +151,7 @@ class GitHubItemsMixin:
             announce_cb=self._announce,
             ai_acquire_cb=self._github_ai_summarizer,
             start_issue_worktree_cb=self.start_github_issue_worktree,
+            gist_source_cb=self._github_gist_source,
         ).show()
         try:
             provider.close()
@@ -193,11 +196,21 @@ class GitHubItemsMixin:
             open_file_reference_cb=self.open_github_file_url,
             announce_cb=self._announce,
             start_issue_worktree_cb=self.start_github_issue_worktree,
+            gist_source_cb=self._github_gist_source,
         ).show()
         try:
             provider.close()
         except Exception:  # noqa: BLE001 - close is best-effort cleanup
             pass
+
+    def _github_gist_source(self) -> tuple[str, str]:
+        """(file name, text) a new gist starts from: the selection, else the document."""
+        editor = getattr(self, "editor", None)
+        text = editor.GetStringSelection() if editor is not None else ""
+        if not text and editor is not None:
+            text = editor.GetValue()
+        path = getattr(getattr(self, "document", None), "path", None)
+        return (Path(path).name if path else "notes.md"), text
 
     def _github_ai_summarizer(self):
         """Resolve QUILL's AI connection for a thread summary, on demand.

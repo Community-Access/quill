@@ -102,7 +102,8 @@ Go To #... have no access key; reach them with Tab.
 | `Alt+B` | Update Branch... |
 | `Alt+A` | Auto-Merge and Queue... |
 
-Check Merge Policy has no access key.
+Check Merge Policy has no access key. Request Copilot Review is on the pull
+request's context menu (`Shift+F10` on the outline) and has none either.
 
 ### Compose Review
 
@@ -278,6 +279,19 @@ GitHub and Use Repository have no access key.
 | Edit Release | `Alt+O` | Release notes |
 | Edit Release | `Alt+D` | Draft (not published yet) |
 | Edit Release | `Alt+P` | Pre-release |
+| Commit Comments | `Alt+C` | Comments |
+| Commit Comments | `Alt+M` | Selected comment |
+| Commit Comments | `Alt+N` | New comment |
+| Commit Comments | `Alt+F`, `Alt+L` | File, optional; Line, optional |
+| Commit Comments | `Alt+P` | Post Comment |
+| Commit Comments | `Alt+R` | Refresh |
+| New Gist, Edit Gist | `Alt+D` | Description |
+| New Gist | `Alt+B` | Public gist |
+| New Gist, Edit Gist | `Alt+F` | Files |
+| New Gist, Edit Gist | `Alt+T` | File text |
+| New Gist, Edit Gist | `Alt+A` | Add File... |
+| New Gist, Edit Gist | `Alt+N` | Rename File... |
+| New Gist, Edit Gist | `Alt+L` | Delete File... |
 
 ## Discussion windows
 

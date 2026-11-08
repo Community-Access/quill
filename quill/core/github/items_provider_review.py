@@ -7,8 +7,9 @@ only, no redirects followed), and every write reports only what GitHub's
 answer confirmed.
 
 :class:`GitHubPullReviewExtrasMixin` gathers this module's mixin with the
-reactions, timeline and one-sentence summary mixins, so the provider gains
-them through one base class (``items_provider`` has almost no GATE-11 room).
+reactions, timeline and one-sentence summary mixins (and the later Copilot and
+commit-comment mixins), so the provider gains them through one base class
+(``items_provider`` has almost no GATE-11 room).
 
 No ``wx`` imports; strict-typed.
 """
@@ -20,6 +21,8 @@ from dataclasses import dataclass
 from functools import partial
 from typing import Any, Protocol
 
+from quill.core.github.commit_comments import GitHubCommitCommentsMixin
+from quill.core.github.copilot import GitHubCopilotMixin
 from quill.core.github.diff_lines import LineCommentAnchor
 from quill.core.github.items_errors import GitHubItemsError
 from quill.core.github.line_comment_drafts import PendingLineComment
@@ -288,8 +291,11 @@ class GitHubPullReviewExtrasMixin(
     GitHubReactionsMixin,
     GitHubTimelineMixin,
     GitHubPullSummaryMixin,
+    GitHubCopilotMixin,
+    GitHubCommitCommentsMixin,
 ):
-    """Everything Wave 2 adds to the provider, in one base class."""
+    """Everything Wave 2 adds to the provider, in one base class, plus the
+    Copilot review and coding-agent calls and commit comments that came after."""
 
 
 __all__ = [
