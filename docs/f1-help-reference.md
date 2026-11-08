@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 329 audited sites (215 helped, 114 named-help).
+Control coverage: 337 audited sites (223 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -224,6 +224,8 @@ Control coverage: 329 audited sites (215 helped, 114 named-help).
 
 **Windows titled "Song History...".** What each station has played while you listened: every title the stream reported, newest first, with the time it was heard.
 
+**Windows titled "What the Station Played...".** What the station says it played, from the playlist it publishes itself, newest first, with the time each song started when the station gives one. It is the station's own record, not Song History, which is what Quill Radio heard while you listened. Copy, Send to Clip Library, Song Details and Lyrics work on the highlighted song.
+
 ### Every authored control help sentence
 
 #### (module level) (`quill/ui/radio/audio_health_dialog.py`)
@@ -365,6 +367,16 @@ Control coverage: 329 audited sites (215 helped, 114 named-help).
 - `results`: Stations the station pack knows that match your search, best first. Each row says what matched, such as the frequency or a word from the slogan. The details of the highlighted station are below.
 - `details`: What the station pack knows about the highlighted station, one labelled line per fact, then where those facts came from. Read only; arrow through it, or select and copy any line.
 - `close_btn`: Closes Station Details. Nothing is changed by closing.
+#### StationPlaylistDialog (`quill/ui/radio/station_playlist_dialog.py`)
+
+- `self.songs`: The songs the station says it played, newest first, with the time each one started when the station gives it.
+- `self.source`: Who published this list. It is the station's own record, not the songs Quill Radio heard; those are in Song History.
+- `self.facts`: What MusicBrainz knows about the highlighted song, after you press Song Details.
+- `self.copy_btn`: Copies the highlighted song, title and artist, to the clipboard.
+- `self.clip_btn`: Keeps the highlighted song in the Clip Library, the shared scrapbook every Quill app can read.
+- `self.facts_btn`: Looks the song up on MusicBrainz: which release, what year, how long. Keyless and off in Safe Mode.
+- `self.lyrics_btn`: Looks the highlighted song's words up on LRCLIB and opens them in the Lyrics window. Only when you press it; off in Safe Mode.
+- `close_btn`: Closes this list. Song History is unchanged.
 #### (module level) (`quill/ui/radio/station_tags_dialog.py`)
 
 - `tags_box`: Words you want to find this station by, separated by commas -- for example: Detroit Tigers, MLB, baseball. Search and the Favorites filter match them. Empty the box to remove your tags.

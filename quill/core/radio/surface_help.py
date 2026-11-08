@@ -479,6 +479,14 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
         "The chapter list of what is playing. Enter jumps straight to the highlighted chapter.",
     ),
     (
+        "What the Station Played",
+        "What the station says it played, from the playlist it publishes "
+        "itself, newest first, with the time each song started when the "
+        "station gives one. It is the station's own record, not Song History, "
+        "which is what Quill Radio heard while you listened. Copy, Send to Clip "
+        "Library, Song Details and Lyrics work on the highlighted song.",
+    ),
+    (
         "Lyrics:",
         "The words of a song the station played, from LRCLIB (lrclib.net), "
         "as plain text to arrow through and copy. A radio stream does not say "

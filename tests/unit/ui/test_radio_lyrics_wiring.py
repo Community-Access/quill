@@ -39,8 +39,12 @@ def test_the_playback_menu_row_follows_song_history_and_shows_its_key() -> None:
 
     ids = radio_playback_extras.append_song_items(app, menu, wx)
 
-    assert menu.rows == ["&Song History...\tCtrl+Shift+H", "L&yrics...\tCtrl+Alt+B"]
-    assert len(ids) == 2 and bound == list(ids)
+    assert menu.rows == [
+        "&Song History...\tCtrl+Shift+H",
+        "L&yrics...\tCtrl+Alt+B",
+        "What the Station Playe&d...\tAlt+Shift+H",
+    ]
+    assert len(ids) == 3 and bound == list(ids)
 
 
 def test_the_palette_offers_lyrics_and_it_runs_the_command(monkeypatch) -> None:
