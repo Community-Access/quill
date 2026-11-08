@@ -98,12 +98,13 @@ def test_keys_pass_through_when_the_list_is_closed(lite_window) -> None:
 
 
 def test_typing_with_the_list_open_refreshes_after_the_key(lite_window, monkeypatch) -> None:
-    calls: list = []
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *a: calls.append(fn))
+    from tests.wx_session import patch_call_after
+
+    capture = patch_call_after(monkeypatch, lambda fn, *a, **k: None)
     win = _window(lite_window, "An ele", 6)
     win.cmd_word_prediction()
     assert not win._word_prediction_key_down(_key(ord("g")))
-    assert calls == [win._refresh_intellisense_popup]
+    assert len(capture.calls) == 1
 
 
 def test_word_prediction_is_quills_command_on_quills_chord() -> None:

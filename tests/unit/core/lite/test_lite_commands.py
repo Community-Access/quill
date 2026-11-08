@@ -92,12 +92,12 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "
     "commands (rule 9). "
-    "Stop Agent: the task window's own Stop is Alt+T there; elsewhere Alt+E, W, S.",
+    "Stop Agent: the task window's own Stop is Alt+T there; elsewhere Alt+E, K, S.",
     "cmd_undo_agent_turn": "As in QUILL (rule 2), where it has no plain key either: "
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "
     "commands (rule 9). "
-    "Undo Last Agent Turn: Alt+U in the task window; elsewhere Alt+E, W, U.",
+    "Undo Last Agent Turn: Alt+U in the task window; elsewhere Alt+E, K, U.",
     "cmd_explain_agent_turn": "As in QUILL (rule 2), where it has no plain key either: "
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "

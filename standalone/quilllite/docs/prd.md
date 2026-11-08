@@ -2301,8 +2301,8 @@ so the two editors cannot do them two ways. The plan of record is
 |---|---|---|
 | File | Open Pro&ject Folder... | `cmd_open_project_folder` |
 | File | Close Projec&t | `cmd_close_project` |
-| Edit > Agent &Work | &Undo Last Agent Turn | `cmd_undo_agent_turn` |
-| Edit > Agent &Work | &Stop Agent | `cmd_stop_agent` |
+| Edit > Agent Wor&k | &Undo Last Agent Turn | `cmd_undo_agent_turn` |
+| Edit > Agent Wor&k | &Stop Agent | `cmd_stop_agent` |
 | View | Agent Task Transcri&pt | `cmd_project_transcript` |
 | View | Agent Command O&utput | `cmd_open_command_output` |
 | Tools | Commands Allowed in This Pro&ject... | `cmd_project_allowed_commands` |
