@@ -235,6 +235,14 @@ def parse_browse_level(json_text: str) -> list[TuneInResult]:
     (an outline with ``children`` but no ``URL``/``guide_id`` of its own -- e.g.
     the ``FM``/``AM`` groups under Local Radio) is transparent, so its child
     stations appear at this level rather than as an un-openable folder.
+
+    A category page (``c=music``, ``c=talk``, ``c=sports``, ``c=local``) lists
+    its first stations and then a ``nextStations`` link, "More Stations", whose
+    own URL carries the offset; it comes through as a folder like any other
+    link, so paging is one more Enter. A station TuneIn files under both "Local
+    Stations" and "Stations" is listed once (the duplicate and the paging
+    shape were both pointed out by BlindRadio by serrebidev, MIT,
+    ``crates/blindradio-core/src/sources/tunein.rs``).
     """
     try:
         data = json.loads(json_text)
@@ -244,19 +252,26 @@ def parse_browse_level(json_text: str) -> list[TuneInResult]:
     if not isinstance(body, list):
         return []
     results: list[TuneInResult] = []
+    seen: set[str] = set()
+
+    def keep(row: TuneInResult | None) -> None:
+        if row is None:
+            return
+        if row.is_station:
+            if row.guide_id in seen:
+                return
+            seen.add(row.guide_id)
+        results.append(row)
+
     for node in body:
         if not isinstance(node, dict):
             continue
         children = node.get("children")
         if isinstance(children, list) and not (node.get("URL") or node.get("guide_id")):
             for child in children:
-                row = _browse_result(child)
-                if row is not None:
-                    results.append(row)
+                keep(_browse_result(child))
             continue
-        row = _browse_result(node)
-        if row is not None:
-            results.append(row)
+        keep(_browse_result(node))
     return results
 
 
