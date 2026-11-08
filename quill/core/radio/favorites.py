@@ -21,6 +21,7 @@ from quill.core.audio_enhance import clamp_eq_gain
 from quill.core.radio.models import RadioStation
 from quill.core.radio.natural_order import natural_key
 from quill.core.radio.station_tags import tags_from_json
+from quill.core.radio.timeshift import normalise_station_minutes
 
 _FILE_NAME = "radio_favorites.json"
 
@@ -88,6 +89,9 @@ class FavoriteStation:
     #: ... and through the engine while listening to this station (see
     #: RadioHistory.optilab_exact_live for what that costs).
     optilab_exact_live: bool = False
+    #: This station's own time-shift length in minutes; -1 follows Preferences
+    #: (``quill.core.radio.timeshift.resolve_minutes``; an idea from BlindRadio).
+    timeshift_minutes: int = -1
     #: Your own tags ("Detroit Tigers, MLB"), searched with everything else and
     #: kept here so they travel with the favorite (quill.core.radio.station_tags).
     user_tags: tuple[str, ...] = ()
@@ -510,6 +514,7 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
                 ),
                 optilab_exact=bool(entry.get("optilab_exact", False)),
                 optilab_exact_live=bool(entry.get("optilab_exact_live", False)),
+                timeshift_minutes=normalise_station_minutes(entry.get("timeshift_minutes", -1)),
                 user_tags=tags_from_json(entry.get("user_tags")),
             )
         )
@@ -580,6 +585,7 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
                 "optilab_auto_adapt": favorite.optilab_auto_adapt,
                 "optilab_exact": favorite.optilab_exact,
                 "optilab_exact_live": favorite.optilab_exact_live,
+                "timeshift_minutes": favorite.timeshift_minutes,
                 "user_tags": list(favorite.user_tags),
             }
             for favorite in store.favorites
