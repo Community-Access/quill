@@ -1,9 +1,18 @@
 # QUILL Lite 2.0
 
+## GitHub: search, releases, housekeeping and rate limits
+
+QUILL Lite's GitHub windows are QUILL's, so it gains the same things: code,
+commit and repository search; Insights and the community profile read as
+sentences; repository actions from Explore's context menu, including deleting a
+repository after typing its name; release editing, uploads and deletions;
+issue housekeeping; and Ctrl+Shift+L for the rate limit, with quieter
+refreshes.
+
 ## Paste a copied file, and replace jobs you can save
 
 Copy a file in File Explorer and press **Ctrl+V**, and usually nothing useful
-happens. **Edit > Clipboard > Paste File...** (**Alt+E**, **B**, **P**) asks
+happens. **Edit > Clipboard > Paste Copied Files...** (**Alt+E**, **B**, **D**) asks
 what you meant: each file's text, read the way QUILL Lite opens it, so a Word
 document or a PDF comes in as words, or each file's full path. Files over 5 MB,
 folders and pictures are left out, and you hear which.

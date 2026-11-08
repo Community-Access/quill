@@ -1,4 +1,4 @@
-"""Paste File, saved replace jobs and snippet blanks, through QUILL Lite's window.
+"""Paste Copied Files, saved replace jobs and snippet blanks, through QUILL Lite's window.
 
 The handlers are QUILL's (``quill/ui/paste_file.py``, ``quill/ui/replace_jobs.py``,
 ``quill/ui/snippet_prompts.py``), reached here the way QUILL Lite's menu reaches
@@ -29,7 +29,7 @@ def copied(monkeypatch):
     return put
 
 
-# -- Paste File ------------------------------------------------------------ #
+# -- Paste Copied Files ------------------------------------------------------------ #
 
 
 def test_paste_file_with_no_copied_files_says_how_to_get_some(lite_window, copied) -> None:

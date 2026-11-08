@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import json
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
-from urllib.error import HTTPError
 from urllib.parse import quote
-from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, HTTPSHandler, build_opener
 
 from quill.core.github.alert_triage import alert_row
 from quill.core.github.attention_queue_fetch import (
@@ -17,6 +15,12 @@ from quill.core.github.attention_queue_fetch import (
     fetch_attention_queue,
 )
 from quill.core.github.discussions import fetch_discussion, list_discussions
+from quill.core.github.explore_extra_views import (
+    collapse_waits,
+    explore_api_get,
+    explore_failure,
+    fetch_extra_view,
+)
 from quill.core.github.explore_models import (
     ExploreRow,
     GitHubExploreError,
@@ -143,8 +147,9 @@ class GitHubExploreClient(ExploreNotificationsMixin):
         except GitHubExploreError:
             raise
         except Exception as exc:  # noqa: BLE001 - API errors must be announced
-            raise GitHubExploreError(f"Could not load {view.replace('_', ' ')}: {exc}") from exc
-        return GitHubFetchResult(tuple(rows), complete=not warnings, warning="; ".join(warnings))
+            raise GitHubExploreError(explore_failure(view, exc)) from exc
+        warning = "; ".join(collapse_waits(warnings))
+        return GitHubFetchResult(tuple(rows), complete=not warnings, warning=warning)
 
     def _fetch(
         self,
@@ -157,6 +162,11 @@ class GitHubExploreClient(ExploreNotificationsMixin):
         warnings: list[str],
         include_read: bool = False,
     ) -> list[ExploreRow]:
+        extra = fetch_extra_view(
+            self._provider, view, repo=repo, query=query, limit=limit, warnings=warnings
+        )
+        if extra is not None:
+            return extra
         gh = self._provider._gh  # noqa: SLF001
         if view == "search":
             if not query.strip():
@@ -436,38 +446,9 @@ class GitHubExploreClient(ExploreNotificationsMixin):
         raise GitHubExploreError(f"Unknown GitHub explore view: {view}")
 
     def _api_get(self, path: str) -> Any:
-        headers = {"Accept": "application/vnd.github+json", "User-Agent": "QUILL-GitHub-Workbench"}
-        if self._provider.token:
-            headers["Authorization"] = f"Bearer {self._provider.token}"
-        request = Request(f"https://api.github.com{path}", headers=headers)
-        try:
-            opener = build_opener(_NoRedirect, HTTPSHandler(context=verified_ssl_context()))
-            with opener.open(request, timeout=20) as response:
-                return json.load(response)
-        except HTTPError as exc:
-            if exc.code == 404 and path.endswith("/pages"):
-                raise GitHubExploreError("This repository has no GitHub Pages site.") from exc
-            if exc.code in (301, 302, 303, 307, 308):
-                raise GitHubExploreError(
-                    "GitHub redirected the Pages request; the authenticated "
-                    "request was not followed."
-                ) from exc
-            if exc.code == 401:
-                raise GitHubExploreError(
-                    "The GitHub token is invalid or expired. Sign in again."
-                ) from exc
-            response_headers: Any = exc.headers or {}
-            if exc.code == 429 or (
-                exc.code == 403 and response_headers.get("X-RateLimit-Remaining") == "0"
-            ):
-                retry_after = response_headers.get("Retry-After")
-                detail = f" Retry after {retry_after} seconds." if retry_after else ""
-                raise GitHubExploreError(f"GitHub API rate limit reached.{detail}") from exc
-            if exc.code == 403:
-                raise GitHubExploreError(
-                    "GitHub denied this request. Check account and repository permissions."
-                ) from exc
-            raise GitHubExploreError(f"GitHub Pages request failed (HTTP {exc.code}).") from exc
+        """A conditional REST read (ETag kept); redirects are never followed."""
+        opener = build_opener(_NoRedirect, HTTPSHandler(context=verified_ssl_context()))
+        return explore_api_get(self._provider.token, path, opener=opener)
 
     def set_watched(self, repo: str, watched: bool) -> None:
         user = self._user()

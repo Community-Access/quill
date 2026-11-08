@@ -1,9 +1,9 @@
-"""QUILL Lite's half of the Say commands and Paste File: hooks, and no commands of its own.
+"""QUILL Lite's half of the Say commands and Paste Copied Files: hooks, and no commands of its own.
 
 Say Clipboard, Append Selection to Clipboard, Save Clipboard to File, Clear
 Clipboard, Say Time Then Date, Say Windows Open and Copy Log are
 :class:`quill.ui.say_commands.SayCommandsMixin`'s, the same handlers QUILL runs
-on the same keys; Paste File, beside them in Edit > Clipboard, is
+on the same keys; Paste Copied Files, beside them in Edit > Clipboard, is
 :class:`quill.ui.paste_file.PasteFileMixin`'s. What lives here is only how this
 window shows what it shows -- the clipboard in the read-only text window every
 other QUILL Lite readout uses, and the standard Save dialog -- and where a
@@ -26,7 +26,7 @@ __all__ = ["DocumentSayMixin"]
 
 
 class DocumentSayMixin(SayCommandsMixin, PasteFileMixin):
-    """The shared Say commands and Paste File, shown QUILL Lite's way."""
+    """The shared Say commands and Paste Copied Files, shown QUILL Lite's way."""
 
     def _say_show_text(self, title: str, text: str) -> None:
         show_text_window(self, title, text)  # type: ignore[arg-type]

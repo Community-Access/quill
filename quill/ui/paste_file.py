@@ -1,4 +1,4 @@
-"""Paste File, one implementation for both editors.
+"""Paste Copied Files, one implementation for both editors.
 
 QUILL reaches :meth:`PasteFileMixin.cmd_paste_file` through
 :mod:`quill.ui.main_frame_editor_parity`, QUILL Lite through
@@ -20,7 +20,7 @@ from quill.core.paste_file import CHOICES, describe_paste, plan_paste
 __all__ = ["PasteFileMixin", "choose_paste_kind"]
 
 _PAD = 8
-TITLE = "Paste File"
+TITLE = "Paste Copied Files"
 
 
 def choose_paste_kind(

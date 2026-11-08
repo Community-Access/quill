@@ -843,7 +843,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.save_clipboard_to_file": "",  # these three: rule 8 reasons in the family gate
     "edit.clear_clipboard": "",
     "help.copy_log": "",
-    # Paste File and the saved replace jobs (ui/paste_file.py, ui/replace_jobs.py, shared):
+    # Paste Copied Files and the saved replace jobs (ui/paste_file.py, ui/replace_jobs.py, shared):
     # no chord free in both editors (2026-11-07); rule 8 reasons in the family gate.
     "edit.paste_file": "",
     "edit.run_replace_job": "",

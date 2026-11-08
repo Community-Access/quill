@@ -2,9 +2,24 @@
 
 ## 2.0.0
 
-### Paste File, saved replace jobs and fields in abbreviations (2026-11-07)
+### GitHub search, releases, housekeeping and rate limits (2026-11-07)
 
-- **Paste File...** (Edit > Clipboard, Alt+E, B, P) pastes the text, or the full
+- Explore searches code, commits and repositories, reads a repository's
+  Insights and community profile as sentences, and lists Actions caches and
+  secret and variable names (never values).
+- A Repository Actions submenu syncs a fork, sets topics, changes the watch
+  level, archives, makes a repository from a template and deletes one once you
+  type its name. People rows have Follow and Unfollow.
+- Releases can be edited and published, and files uploaded (with progress at
+  25, 50 and 75 percent) or deleted.
+- An issue's Housekeeping submenu locks, transfers, pins, sets the issue type
+  and reorders sub-issues (Alt+U, Alt+D).
+- Ctrl+Shift+L says GitHub's remaining allowance. Unchanged refreshes say so and
+  cost nothing, and a request to slow down is said once.
+
+### Paste Copied Files, saved replace jobs and fields in abbreviations (2026-11-07)
+
+- **Paste Copied Files...** (Edit > Clipboard, Alt+E, B, D) pastes the text, or the full
   paths, of files copied in File Explorer. Word documents and PDFs come in as
   their words. Files over 5 MB, folders and pictures are left out and named.
 - **Edit > Replace Jobs** (Alt+E, J): **Run Replace Job...** and **Manage

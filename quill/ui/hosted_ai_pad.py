@@ -484,8 +484,10 @@ class AiPadFrame(PadRowsMixin, wx.Frame):
     def _translation_unchanged(self, text: str) -> bool:
         from quill.core.ai.translation import translation_unchanged
 
-        request = getattr(self, "last_request", None)
-        return bool(request) and translation_unchanged(str(request[1]), text)
+        request: Any = getattr(self, "last_request", None)
+        if not request:
+            return False
+        return translation_unchanged(str(request[1]), text)
 
     def _failed(self, message: str) -> None:
         if not self:

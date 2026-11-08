@@ -20,6 +20,9 @@ GITHUB_ENTRIES: dict[str, str] = {
     # regenerable state, and losing it only costs a re-sort.
     "core/github/attention_queue.py::save": "cache",
     "core/github/navigation_state.py::save": "cache",
+    # Wave 4: the last ETag and body of each repeated GitHub read, per account,
+    # so a refresh can send If-None-Match; losing it costs one full read.
+    "core/github/conditional_requests.py::save": "cache",
     # A one-time marker written while moving saved items to per-account files.
     "core/github/saved_items.py::load": "marker",
 }

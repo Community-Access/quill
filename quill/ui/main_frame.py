@@ -706,7 +706,7 @@ class MainFrame(
     OpenDocumentsFindMixin,  # ahead of SearchCommandsMixin: its F3 wins
     CloseOthersMixin,
     SayCommandsAdapterMixin,  # Say Clipboard and the rest, shared with QUILL Lite
-    EditorParityAdapterMixin,  # Paste File and saved replace jobs, shared with QUILL Lite
+    EditorParityAdapterMixin,  # Paste Copied Files and saved replace jobs, shared with QUILL Lite
     RecentDocumentsMixin,
     SessionRestoreMixin,
     MagicalTierMixin,

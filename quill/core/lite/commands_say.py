@@ -23,8 +23,8 @@ that get pressed went to those:
 
 Save Clipboard to File and Clear Clipboard are once-in-a-while commands (rule
 9) with no chord left free in both editors, so they are reached from this
-submenu -- Alt+E, B, then F or B -- the same as in QUILL. So is Paste File
-(2026-11-07, Alt+E, B, P), which puts in the text or the paths of files copied
+submenu -- Alt+E, B, then F or B -- the same as in QUILL. So is Paste Copied Files
+(2026-11-07, Alt+E, B, D), which puts in the text or the paths of files copied
 in File Explorer: the clipboard's own submenu is where somebody who just heard
 Say Clipboard say "2 files" already is.
 
@@ -46,7 +46,9 @@ CLIPBOARD_SAY_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     (_CLIPBOARD, "&Append Selection to Clipboard", "Alt+Shift+End", "cmd_append_to_clipboard", ""),
     (_CLIPBOARD, "Save Clipboard to &File...", "", "cmd_save_clipboard", ""),
     (_CLIPBOARD, "Clear Clip&board", "", "cmd_clear_clipboard", ""),
-    (_CLIPBOARD, "&Paste File...", "", "cmd_paste_file", ""),
+    # D: P, A, S, T, E, F, I and L are spent in this submenu by the copy tray
+    # and the collector (GATE-14), and the same label and letter as QUILL's.
+    (_CLIPBOARD, "Paste Copie&d Files...", "", "cmd_paste_file", ""),
     (_CLIPBOARD, "", "", "", "sep"),
 )
 

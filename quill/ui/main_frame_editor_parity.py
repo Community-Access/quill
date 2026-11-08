@@ -1,6 +1,6 @@
-"""QUILL's half of Paste File and the saved replace jobs: the rows and the hooks.
+"""QUILL's half of Paste Copied Files and the saved replace jobs: the rows and the hooks.
 
-No commands of its own. Paste File is :class:`quill.ui.paste_file.PasteFileMixin`'s
+No commands of its own. Paste Copied Files is :class:`quill.ui.paste_file.PasteFileMixin`'s
 and Run Replace Job and Manage Replace Jobs are
 :class:`quill.ui.replace_jobs.ReplaceJobsMixin`'s -- the same handlers QUILL Lite's
 command table names, so the two editors cannot do one of these two ways (rule
@@ -8,7 +8,7 @@ command table names, so the two editors cannot do one of these two ways (rule
 
 What lives here:
 
-- **Where the rows are.** Paste File is at the foot of Edit > Clipboard, which
+- **Where the rows are.** Paste Copied Files is at the foot of Edit > Clipboard, which
   :mod:`quill.ui.main_frame_say_commands` builds just before this mixin's
   Forms hook runs. The
   two replace-job rows follow Multi Replace and Count Occurrences, at the foot
@@ -33,8 +33,12 @@ from quill.ui.replace_jobs import ReplaceJobsMixin
 
 __all__ = ["PASTE_FILE_ROW", "REPLACE_JOB_ROWS", "EditorParityAdapterMixin"]
 
-#: Paste File's row, at the foot of the Edit > Clipboard submenu the Say rows build.
-PASTE_FILE_ROW: tuple[str, str, str] = ("edit.paste_file", "&Paste File...", "cmd_paste_file")
+#: Paste Copied Files, at the foot of the Edit > Clipboard submenu the Say rows build.
+PASTE_FILE_ROW: tuple[str, str, str] = (
+    "edit.paste_file",
+    "Paste Copie&d Files...",
+    "cmd_paste_file",
+)
 
 #: ``(command id, label, shared handler)``, in menu order, after Count Occurrences.
 REPLACE_JOB_ROWS: tuple[tuple[str, str, str], ...] = (
@@ -97,7 +101,7 @@ class EditorParityAdapterMixin(PasteFileMixin, ReplaceJobsMixin):
             self._parity_row(search_menu, row)
 
     def _place_forms_rows(self, menus: dict[str, Any]) -> None:
-        """Paste File at the foot of Edit > Clipboard, then the Forms rows."""
+        """Paste Copied Files at the foot of Edit > Clipboard, then the Forms rows."""
         clipboard = getattr(self, "_say_clipboard_menu", None)
         if clipboard is not None:
             self._parity_row(clipboard, PASTE_FILE_ROW)
@@ -118,7 +122,7 @@ class EditorParityAdapterMixin(PasteFileMixin, ReplaceJobsMixin):
                 pass
         super()._install_whats_new_item(help_menu)  # type: ignore[misc]
 
-    # -- Paste File's hooks ------------------------------------------------- #
+    # -- Paste Copied Files: the hooks -------------------------------------- #
 
     def _paste_file_say(self, message: str) -> None:
         self._announce(message, force=True)  # type: ignore[attr-defined]

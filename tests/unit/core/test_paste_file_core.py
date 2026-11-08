@@ -1,4 +1,4 @@
-"""Paste File's decisions and sentences (quill/core/paste_file.py), wx-free."""
+"""Paste Copied Files: the decisions and sentences (quill/core/paste_file.py), wx-free."""
 
 from __future__ import annotations
 

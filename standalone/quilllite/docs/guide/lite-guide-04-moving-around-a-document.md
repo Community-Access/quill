@@ -101,7 +101,7 @@ in brackets; without it, what you type is what goes in.
 
 Three jobs are there to start with, and you can keep, change or delete them:
 **Tidy spaces**, **Straighten quote marks** and **Close up blank lines**. QUILL
-has the same two commands, under **Edit > Search Tools**, and keeps its own
+has the same two commands, beside its Multi Replace, and keeps its own
 list. Neither has a key: none was free in both editors, and both ask you
 something straight away. The Keyboard Manager (**Ctrl+Alt+Shift+Space**) can
 give them one.

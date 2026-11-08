@@ -7,6 +7,7 @@ is a method on the dialog, so this module only decides what to list.
 
 from __future__ import annotations
 
+from quill.core.github.explore_views import QUERY_VIEWS
 from quill.ui.github_explore_queue import queue_item_key as _queue_item_key
 
 __all__ = ["GitHubExploreContextMenuMixin"]
@@ -79,13 +80,14 @@ class GitHubExploreContextMenuMixin:
                     add("Snooze for One Day", lambda: self._snooze_attention_item(key))
         if self._view_key() == "labels" and self._client._provider.is_authenticated:
             add("Create Label...", self._create_label)
-        if self._view_key() == "search" and self._query.GetValue().strip():
+        if self._view_key() in QUERY_VIEWS and self._query.GetValue().strip():
             query = self._query.GetValue().strip()
             add("Save Search", lambda: self._save_search(None))
             add("Remove Saved Search", lambda: self._remove_search(query))
         if self._view_key() == "attention" and self._attention_state is not None:
             add("Queue Options...", lambda: self._attention_options_menu(None))
         self._add_community_actions(add)
+        self._add_wave4_actions(menu, add, row)
         add("Refresh", lambda: self._load(None))
         try:
             self._list.PopupMenu(menu)

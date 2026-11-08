@@ -58,8 +58,16 @@ class FillInDialog:
                 field.SetSelection(
                     spec.choices.index(spec.default) if spec.default in spec.choices else 0
                 )
+                field.SetHelpText(
+                    f"Choose what goes in for {spec.label}. The arrow keys move through "
+                    "the choices; Enter puts the text in."
+                )
             else:
                 field = wx.TextCtrl(host, value=spec.default, style=wx.TE_PROCESS_ENTER)
+                field.SetHelpText(
+                    f"Type what goes in for {spec.label}. Enter moves to the next box, "
+                    "and on the last one puts the text in; Escape puts nothing in."
+                )
                 field.Bind(wx.EVT_TEXT_ENTER, self._on_enter)
             # The visible label and the accessible name agree, so speech and
             # braille match what is on screen.

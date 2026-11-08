@@ -120,7 +120,7 @@ class SayCommandsAdapterMixin(SayCommandsMixin):
             clipboard = wx.Menu()
             for row in SAY_ROWS["edit"]:
                 self._say_row(clipboard, row)
-            # Paste File follows (main_frame_editor_parity.py), into this submenu.
+            # Paste Copied Files follows (main_frame_editor_parity.py), into this submenu.
             self._say_clipboard_menu = clipboard
             after = self._say_position_after(edit_menu, getattr(self, "_id_copy_with_source", None))
             title = _("Clip&board")

@@ -116,7 +116,9 @@ def choose_replace_job(
 
     title = "Run Replace Job"
     where = "the selection" if in_selection else "the whole document"
-    dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+    dialog = wx.Dialog(
+        parent, title="Run Replace Job", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+    )
     try:
         root = wx.BoxSizer(wx.VERTICAL)
         label = wx.StaticText(dialog, label=f"&Job to run on {where}:")
@@ -160,7 +162,9 @@ def edit_replace_step(
 
     title = "Replace Step"
     current = step or ReplaceStep("")
-    dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+    dialog = wx.Dialog(
+        parent, title="Replace Step", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+    )
     try:
         root = wx.BoxSizer(wx.VERTICAL)
         find_label = wx.StaticText(dialog, label="&Find what:")
@@ -245,7 +249,7 @@ class _JobEditor:
         self._index = index
         self.steps = [ReplaceStep(**s.to_dict()) for s in job.steps]  # type: ignore[arg-type]
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        self.dialog = dialog = wx.Dialog(parent, title=self.TITLE, style=style)
+        self.dialog = dialog = wx.Dialog(parent, title="Edit Replace Job", style=style)
         root = wx.BoxSizer(wx.VERTICAL)
         name_label = wx.StaticText(dialog, label="&Name:")
         self.name = wx.TextCtrl(dialog, value=job.name)
@@ -360,6 +364,10 @@ class _JobEditor:
             return
         self.dialog.EndModal(wx.ID_OK)
 
+    def show(self) -> int:
+        """Through the host's modal route, which announces and brailles."""
+        return int(self._show_modal(self.dialog, self.TITLE))
+
     def result(self) -> ReplaceJob:
         return ReplaceJob(str(self.name.GetValue()).strip(), list(self.steps))
 
@@ -376,7 +384,7 @@ def edit_replace_job(
 
     editor = _JobEditor(parent, job, jobs, index, show_modal)
     try:
-        if show_modal(editor.dialog, _JobEditor.TITLE) != wx.ID_OK:
+        if editor.show() != wx.ID_OK:
             return None
         return editor.result()
     finally:
@@ -403,7 +411,7 @@ class _JobManager:
         self.jobs = list(jobs)
         self.changed = False
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        self.dialog = dialog = wx.Dialog(parent, title=self.TITLE, style=style)
+        self.dialog = dialog = wx.Dialog(parent, title="Manage Replace Jobs", style=style)
         root = wx.BoxSizer(wx.VERTICAL)
         label = wx.StaticText(dialog, label="Saved &jobs:")
         self.list = wx.ListBox(dialog)
@@ -435,6 +443,10 @@ class _JobManager:
         bind_close_button(dialog, close, modeless=False)
         self._refresh(0)
         self.list.SetFocus()
+
+    def show(self) -> int:
+        """Through the host's modal route, which announces and brailles."""
+        return int(self._show_modal(self.dialog, self.TITLE))
 
     def _refresh(self, select: int) -> None:
         self.list.Set([_job_row(job) for job in self.jobs])
@@ -501,7 +513,7 @@ def manage_replace_jobs(
     """The manager. Returns the new list when anything changed, else ``None``."""
     manager = _JobManager(parent, jobs, show_modal)
     try:
-        show_modal(manager.dialog, _JobManager.TITLE)
+        manager.show()
         return manager.jobs if manager.changed else None
     finally:
         manager.dialog.Destroy()

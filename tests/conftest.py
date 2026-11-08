@@ -899,6 +899,28 @@ def _own_data_dir_by_default(
 #: Numbers the folders :func:`_own_data_dir_by_default` names; per process.
 _DEFAULT_DATA_DIR_COUNT = 0
 
+
+@pytest.fixture(autouse=True)
+def _github_rate_limits_start_clear() -> Iterator[None]:
+    """No test inherits another's GitHub secondary-limit wait or ETags.
+
+    ``quill.core.github.rate_limits.RATE_LIMITS`` is process-wide on purpose:
+    once GitHub says "wait 60 seconds", every request in the app stops before
+    the network until it passes. In a test run that means one test faking a 429
+    would block every later GitHub test for a minute, and a remembered ETag
+    would put ``If-None-Match`` on another test's request. Only cleared when
+    the modules are already loaded, so the tests that never touch GitHub pay
+    nothing.
+    """
+    yield
+    limits = sys.modules.get("quill.core.github.rate_limits")
+    if limits is not None:
+        limits.RATE_LIMITS.reset()
+    conditional = sys.modules.get("quill.core.github.conditional_requests")
+    if conditional is not None:
+        conditional.reset_caches()
+
+
 #: Every Radio history writer built in this process (weakly), so each test can
 #: wait for the saves it started before the next test begins.
 _RADIO_HISTORY_WRITERS: weakref.WeakSet[Any] = weakref.WeakSet()

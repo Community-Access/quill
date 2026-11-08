@@ -57,7 +57,7 @@ clipboard commands come first:
 - **Copy With Attribution** (`Alt+Shift+C`)
 - The **Clipboard** submenu: **Say Clipboard** (`Alt+Shift+Home`), **Append
   Selection to Clipboard** (`Alt+Shift+End`), **Save Clipboard to File...**,
-  **Clear Clipboard** and **Paste File...**. [Hearing and handling the
+  **Clear Clipboard** and **Paste Copied Files...**. [Hearing and handling the
   clipboard](#hearing-and-handling-the-clipboard), later in this chapter, has
   the whole story.
 - Select All
@@ -352,10 +352,10 @@ was already empty" if there was nothing to clear. It is a good habit after you
 copy a password or anything else private, so the next `Ctrl+V`, in whatever
 program, cannot paste it somewhere it should not go.
 
-### Paste File...
+### Paste Copied Files...
 
 Copy a file in File Explorer, come back to QUILL and press `Ctrl+V`, and you
-get nothing useful. **Edit > Clipboard > Paste File...** asks what you meant.
+get nothing useful. **Edit > Clipboard > Paste Copied Files...** asks what you meant.
 A small window says how many files are on the clipboard and names them, then
 offers two choices in a list:
 
@@ -378,7 +378,7 @@ so and suggests `Ctrl+V` for ordinary text.
 
 ### Why some of these have no key
 
-Save Clipboard to File, Clear Clipboard and Paste File are on the menu only.
+Save Clipboard to File, Clear Clipboard and Paste Copied Files are on the menu only.
 When these commands were added, in November 2026, there was no key left that
 was free in both QUILL and QUILL Lite, and all three are occasional commands. Clear Clipboard
 has a second reason: a key you could press by accident would throw away

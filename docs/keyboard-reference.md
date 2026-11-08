@@ -58,7 +58,7 @@ Editor commands with default bindings: 569.
 | (unbound by default) | Follow Link | `edit.follow_link` |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
 | (unbound by default) | Manage Replace Jobs... | `edit.manage_replace_jobs` |
-| (unbound by default) | Paste File... | `edit.paste_file` |
+| (unbound by default) | Paste Copied Files... | `edit.paste_file` |
 | (unbound by default) | Run Replace Job... | `edit.run_replace_job` |
 | (unbound by default) | Save Clipboard to File... | `edit.save_clipboard_to_file` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |

@@ -1,7 +1,7 @@
-"""Paste File: what to put in the document when the clipboard holds copied files.
+"""Paste Copied Files: what to put in the document when the clipboard holds copied files.
 
 Copy a file in File Explorer and press Paste in an editor, and you get nothing,
-or a path you did not ask for. Paste File asks which you meant: each file's
+or a path you did not ask for. Paste Copied Files asks which you meant: each file's
 text, read the way the editor would open it, or each file's full path. Both
 editors run this through ``quill/ui/paste_file.py``; every decision and every
 sentence is here, wx-free, so the two cannot answer it differently.
@@ -102,7 +102,7 @@ def paths_text(paths: list[Path]) -> str:
 
 @dataclass(slots=True)
 class PastePlan:
-    """What Paste File will insert, and what it refused and why."""
+    """What Paste Copied Files will insert, and what it refused and why."""
 
     text: str = ""
     pasted: list[str] = field(default_factory=list)
@@ -135,7 +135,7 @@ def plan_paste(
 
 
 def describe_paste(plan: PastePlan, choice: str) -> str:
-    """The one sentence after Paste File: what went in, then what did not."""
+    """The one sentence after Paste Copied Files: what went in, then what did not."""
     count = len(plan.pasted)
     if choice == "path":
         noun = "path" if count == 1 else "paths"

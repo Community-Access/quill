@@ -2539,13 +2539,14 @@ Log are occasional (rule 9) and no chord was left; Clear Clipboard stays
 menu-only on purpose too, because a stray key would lose what was on the
 clipboard (rule 4).
 
-## Paste File, saved replace jobs and abbreviation fields (2026-11-07)
+## Paste Copied Files, saved replace jobs and abbreviation fields (2026-11-07)
 
 QUILL has the same commands from the same handlers, mapped in
 `COMMAND_EQUIVALENTS` (family rule 10); none has a key in either editor (no
 chord was free in both, measured 2026-11-07, and each asks a question at once).
 
-- **Paste File...** (Edit > Clipboard, letter P; `cmd_paste_file`,
+- **Paste Copied Files...** (Edit > Clipboard, letter D, the letters of
+  "Paste File" being spent there by the copy tray and the collector; `cmd_paste_file`,
   `quill/ui/paste_file.py`): for files copied in File Explorer, inserts each
   file's text (read through QUILL's readers, joined by a blank line) or each
   full path, at the caret as one undo step. Refuses by name files over 5 MB,

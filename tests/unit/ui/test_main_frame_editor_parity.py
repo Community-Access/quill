@@ -1,4 +1,4 @@
-"""QUILL's half of Paste File and the replace jobs: rows and hooks, no commands.
+"""QUILL's half of Paste Copied Files and the replace jobs: rows and hooks, no commands.
 
 The handlers are ``quill.ui.paste_file``'s and ``quill.ui.replace_jobs``'s, the
 same ones QUILL Lite's table names. Checked here: the adapter defines no

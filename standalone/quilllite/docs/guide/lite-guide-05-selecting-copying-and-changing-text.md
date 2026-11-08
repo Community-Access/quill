@@ -231,11 +231,11 @@ These two have no key. You reach them from the menu.
   "The clipboard was already empty". Do it after you copy a password, so the
   next paste, wherever it is, cannot put it somewhere it should not go.
 
-### Paste File
+### Paste Copied Files
 
 Copy a file in File Explorer, come back to QUILL Lite and press **Ctrl+V**, and
-nothing useful happens. **Edit > Clipboard > Paste File...** (**Alt+E**, **B**,
-**P**) asks what you meant. A small window says how many files you copied and
+nothing useful happens. **Edit > Clipboard > Paste Copied Files...** asks what you
+meant (**Alt+E**, **B**, **D**). A small window says how many files you copied and
 names them, then offers two choices:
 
 - **Each file's text** puts in what each file says, read the way QUILL Lite

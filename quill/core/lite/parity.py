@@ -179,7 +179,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_say_time": "navigate.say_time",
     "cmd_say_windows_open": "window.say_windows_open",
     "cmd_copy_log": "help.copy_log",
-    # Paste File and the saved replace jobs (quill/ui/paste_file.py,
+    # Paste Copied Files and the saved replace jobs (quill/ui/paste_file.py,
     # quill/ui/replace_jobs.py): one set of handlers, no key in either editor.
     "cmd_paste_file": "edit.paste_file",
     "cmd_run_replace_job": "edit.run_replace_job",

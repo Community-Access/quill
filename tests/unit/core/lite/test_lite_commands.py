@@ -181,7 +181,7 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "it, is QUILL's User Guide. Rule 9: read once per update, so Alt+H, W is enough.",
     "cmd_paste_file": "As in QUILL (rule 2), where it has no key either: no chord was "
     "free in both editors (measured 2026-11-07), and it asks text or paths next, so a "
-    "chord would save little (rule 9). Alt+E, B, P.",
+    "chord would save little (rule 9). Alt+E, B, D.",
     "cmd_run_replace_job": "As in QUILL (rule 2), where it has no key either: no chord was "
     "free in both editors (measured 2026-11-07), and it asks which job next (rule 9). "
     "Alt+E, J, R.",

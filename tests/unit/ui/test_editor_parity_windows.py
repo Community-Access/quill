@@ -1,4 +1,4 @@
-"""The shared windows behind Paste File, replace jobs and snippet blanks, built for real.
+"""The shared windows behind Paste Copied Files, replace jobs and snippet blanks, built for real.
 
 Each window is constructed on the session ``wx.App`` and "shown" through a fake
 modal route that fills in the controls the way a person would and presses OK --

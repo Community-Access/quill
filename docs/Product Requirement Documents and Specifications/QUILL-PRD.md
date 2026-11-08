@@ -4359,13 +4359,13 @@ Seven small commands that answer questions a sighted user settles with a glance:
 
 ---
 
-### 5.77b Paste File and saved replace jobs (shipped 2026-11-07)
+### 5.77b Paste Copied Files and saved replace jobs (shipped 2026-11-07)
 
 Two commands QUILL and QUILL Lite share handlers, wording and (empty) keys for (family rule 10), with QUILL's rows placed by `quill/ui/main_frame_editor_parity.py`, which defines no command of its own.
 
 | Command | Id | Key | Menu (QUILL) | Behaviour |
 | --- | --- | --- | --- | --- |
-| Paste File... | `edit.paste_file` | none | Edit > Clipboard, last | Needs copied files on the clipboard (CF_HDROP, read through `wx.FileDataObject`). Asks "Each file's text" or "Each file's full path". Text is read through `quill.io.open_read.read_open_document`, so formats QUILL opens come in as text; files are joined by a blank line. Refused by name: over `MAX_FILE_BYTES` (5 MB), folders, and files with a NUL in their first 8 KB that are not a format QUILL reads (UTF-16 excepted). Written with `_atomic_replace`: one undo step. "Pasted the text of N files. Not pasted: ..." |
+| Paste Copied Files... | `edit.paste_file` | none | Edit > Clipboard, last | Needs copied files on the clipboard (CF_HDROP, read through `wx.FileDataObject`). Asks "Each file's text" or "Each file's full path". Text is read through `quill.io.open_read.read_open_document`, so formats QUILL opens come in as text; files are joined by a blank line. Refused by name: over `MAX_FILE_BYTES` (5 MB), folders, and files with a NUL in their first 8 KB that are not a format QUILL reads (UTF-16 excepted). Written with `_atomic_replace`: one undo step. "Pasted the text of N files. Not pasted: ..." |
 | Run Replace Job... | `edit.run_replace_job` | none | Edit > Search Tools, after Count Occurrences | Lists saved jobs; runs the chosen job's steps in order on the selection, or the whole document when nothing is selected (rich text asks first), written once. Every pattern is compiled before anything runs, and a failure changes nothing: "Step 2 of Tidy: ... Nothing was changed". Result: "Tidy: 14 replacements in the selection. Step 1 found nothing". |
 | Manage Replace Jobs... | `edit.manage_replace_jobs` | none | Edit > Search Tools | New, Edit, Rename, Delete (confirmed). The job editor has Name, Steps (in run order), Add Step, Edit Step, Remove Step, Move Up, Move Down; a step has Find what, Replace with, Regular expression, Match case. Names are unique, case ignored. |
 

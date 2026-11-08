@@ -5622,7 +5622,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 278 audited sites (278 helped).</p>
+<p>Control coverage: 297 audited sites (297 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5752,6 +5752,9 @@ into the file is changed in the file, so Undo takes the change back.</p>
 <p><strong>Edit Prompt.</strong> Change a prompt’s name, category or
 instruction. Save keeps the change; Cancel leaves the prompt as it
 was.</p>
+<p><strong>Edit Replace Job.</strong> A replace job’s name and its
+steps, in the order they run. Each step runs on the result of the one
+before.</p>
 <p><strong>Email Reply.</strong> What the AI sent back. It is read-only
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -5767,6 +5770,9 @@ Control Z takes back.</p>
 to disk: which character encoding, and which line endings. QUILL Lite
 normally writes back exactly what it read, so these only change when you
 change them here – and the change happens at the next save, not now.</p>
+<p><strong>Fill In.</strong> This text asks for something before it goes
+in. Fill in each box or choose from each list, then press Enter; Escape
+puts nothing in.</p>
 <p><strong>Find.</strong> Find text in this document. Enter finds the
 next match and Shift Enter the previous one; the search wraps around the
 end and says so when it does. The window stays open while you work, so
@@ -5861,6 +5867,8 @@ Control Z takes back.</p>
 short form and a space, and the long form appears. This is QUILL Lite’s
 own list unless you asked it, in Preferences, to share the one QUILL and
 Quill Inkwell use.</p>
+<p><strong>Manage Replace Jobs.</strong> Make, edit, rename and delete
+saved replace jobs. Every change is kept when this window closes.</p>
 <p><strong>Marks.</strong> The places you have passed through, newest
 first, with the line each one is on. Choose one and press Enter to go
 there. A mark is not a bookmark: a bookmark is somewhere you meant to
@@ -5895,6 +5903,10 @@ edit that Control Z takes back.</p>
 <p><strong>Open Project Folder.</strong> Choose a folder to work on as a
 project. Your recent projects are listed first; Browse for a Folder
 picks any other.</p>
+<p><strong>Paste Copied Files.</strong> Choose what goes in for the
+files you copied in File Explorer: each file’s text, read the way the
+editor opens it, or each file’s full path. Files that are too large or
+are not text are left out and named.</p>
 <p><strong>Plain Language.</strong> What the AI sent back. It is
 read-only on purpose: nothing goes into your document until you choose
 Replace My Selection or Insert Below, and either of those is a single
@@ -5955,6 +5967,9 @@ place. Replace changes the match you are on and moves to the next;
 Replace All changes every one and tells you how many. In a rich text
 document Replace All asks first, because replaced text takes the
 formatting of the run it lands in.</p>
+<p><strong>Replace Step.</strong> One find-and-replace step: what to
+find, what it becomes, and whether to read it as a regular expression or
+match capital letters.</p>
 <p><strong>Review AI Changes.</strong> The AI’s answer compared with the
 text it would replace, one change per line, with the words that differ
 and the sentence they are in. Uncheck a change to keep the original
@@ -5977,6 +5992,9 @@ No is the default and sends nothing.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Run Replace Job.</strong> Your saved find-and-replace jobs.
+Enter runs the one you are on, every step in order, on the selection or
+the whole document, as one change that Control Z takes back.</p>
 <p><strong>Run This Command?.</strong> The agent wants to run a command
 in your project folder. The exact command is below the sentence, and a
 warning appears when QUILL sees a risk. QUILL cannot stop an allowed
@@ -7301,6 +7319,55 @@ sends it to the task that is running.</li>
 applied stay, and each can be undone with Control Z.</li>
 <li><code>close</code>: Closes this window, stopping a task that is
 still running.</li>
+</ul>
+<h4 id="module-level-quilluipaste_filepy">(module level)
+(<code>quill/ui/paste_file.py</code>)</h4>
+<ul>
+<li><code>listbox</code>: Each file’s text puts in what the file says,
+read the way this editor opens it, with a blank line between files;
+files that are too large or are not text are left out and named. Each
+file’s full path puts in one path per line. Enter pastes.</li>
+<li><code>ok</code>: Paste what is chosen in the list.</li>
+<li><code>cancel</code>: Paste nothing.</li>
+</ul>
+<h4 id="module-level-quilluireplace_jobs_windowspy">(module level)
+(<code>quill/ui/replace_jobs_windows.py</code>)</h4>
+<ul>
+<li><code>listbox</code>: Your saved replace jobs. Enter runs the one
+you are on, every step in order, as one change that Control Z takes
+back. Manage Replace Jobs adds, edits and deletes them.</li>
+<li><code>ok</code>: Run the job you are on.</li>
+<li><code>cancel</code>: Close this window and change nothing.</li>
+<li><code>find</code>: The text this step looks for. With Regular
+expression checked, a pattern: \s for any space, ^ and $ for the start
+and end of a line.</li>
+<li><code>replace</code>: What each match becomes. Leave it empty to
+delete the matches. Typed exactly, unless Regular expression is checked,
+when \1 puts back the first group.</li>
+<li><code>regex</code>: Read Find what as a regular expression rather
+than as plain text.</li>
+<li><code>match_case</code>: Find only matches with the same capital
+letters.</li>
+<li><code>ok</code>: Keep this step.</li>
+<li><code>cancel</code>: Close this window and change nothing.</li>
+</ul>
+<h4 id="_jobeditor-quilluireplace_jobs_windowspy">_JobEditor
+(<code>quill/ui/replace_jobs_windows.py</code>)</h4>
+<ul>
+<li><code>self.name</code>: What this job is called in the list you run
+it from.</li>
+<li><code>self.list</code>: Each step runs on the result of the one
+before. Enter edits the step you are on.</li>
+<li><code>ok</code>: Keep this job as it is now.</li>
+<li><code>cancel</code>: Close this window and change nothing.</li>
+</ul>
+<h4 id="_jobmanager-quilluireplace_jobs_windowspy">_JobManager
+(<code>quill/ui/replace_jobs_windows.py</code>)</h4>
+<ul>
+<li><code>self.list</code>: Your saved replace jobs, each a list of find
+and replace steps run in order. Enter edits the one you are on.</li>
+<li><code>close</code>: Close this window. Every change is already
+kept.</li>
 </ul>
 </main>
 </body>

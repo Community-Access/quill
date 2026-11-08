@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from quill.core.github.attention_queue import GitHubAttentionQueue
 from quill.core.github.explore import ExploreRow, GitHubExploreClient, GitHubExploreError
-from quill.core.github.explore_views import PERSON_VIEWS, REPO_VIEWS, VIEWS
+from quill.core.github.explore_views import PERSON_VIEWS, QUERY_VIEWS, REPO_VIEWS, VIEW_NOTES, VIEWS
 from quill.core.github.fetch_results import GitHubFetchResult
 from quill.core.github.navigation_state import account_key_for_token
 from quill.core.github.saved_items import GitHubSavedItems
@@ -22,9 +22,11 @@ from quill.ui.dialog_contract import (
 from quill.ui.dpi import dip_size
 from quill.ui.github_explore_community import GitHubExploreCommunityMixin
 from quill.ui.github_explore_context_menu import GitHubExploreContextMenuMixin
+from quill.ui.github_explore_labels import GitHubExploreLabelsMixin
 from quill.ui.github_explore_notifications import GitHubExploreNotificationsMixin
 from quill.ui.github_explore_queue import GitHubExploreQueueMixin
 from quill.ui.github_explore_queue import queue_item_key as _queue_item_key
+from quill.ui.github_explore_repo_actions import GitHubExploreRepoActionsMixin
 from quill.ui.github_explore_search import GitHubExploreSearchMixin
 from quill.ui.spoken_name import set_spoken_name
 
@@ -37,6 +39,8 @@ if TYPE_CHECKING:
 class GitHubExploreDialog(
     GitHubExploreCommunityMixin,
     GitHubExploreContextMenuMixin,
+    GitHubExploreLabelsMixin,
+    GitHubExploreRepoActionsMixin,
     GitHubExploreNotificationsMixin,
     GitHubExploreQueueMixin,
     GitHubExploreSearchMixin,
@@ -89,11 +93,9 @@ class GitHubExploreDialog(
         )
         self._view = wx.Choice(panel, choices=[label for _, label in VIEWS])
         self._view.SetName("GitHub exploration view")
-        initial_selection = next(
-            (index for index, (key, _label) in enumerate(VIEWS) if key == initial_view),
-            2 if provider.is_authenticated else 0,
-        )
-        self._view.SetSelection(initial_selection)
+        keys = [key for key, _label in VIEWS]
+        default_view = "attention" if provider.is_authenticated else "search"
+        self._view.SetSelection(keys.index(initial_view if initial_view in keys else default_view))
         controls.Add(self._view, 1, wx.RIGHT, 10)
         controls.Add(
             wx.StaticText(panel, label="&Repository:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 5
@@ -123,7 +125,11 @@ class GitHubExploreDialog(
             wx.StaticText(panel, label="&Global search:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 5
         )
         self._query = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
-        self._query.SetName("Global GitHub issue and pull request search query")
+        self._query.SetName("GitHub search query for the search views")
+        self._query.SetHelpText(
+            "What to search for. The view chooses what is searched: issues and pull "
+            "requests, code, commits or repositories. GitHub qualifiers such as repo: work."
+        )
         search.Add(self._query, 1, wx.RIGHT, 5)
         self._saved_btn = wx.Button(panel, label="Saved &Searches...")
         self._saved_btn.SetName("Choose or remove a saved global search")
@@ -170,6 +176,7 @@ class GitHubExploreDialog(
         self.dialog.SetSizer(outer)
 
         self._view.Bind(wx.EVT_CHOICE, self._load)
+        self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_explore_char_hook)
         self._load_btn.Bind(wx.EVT_BUTTON, self._load)
         self._repo.Bind(wx.EVT_TEXT_ENTER, self._load)
         self._person.Bind(wx.EVT_TEXT_ENTER, self._load)
@@ -210,13 +217,7 @@ class GitHubExploreDialog(
         return VIEWS[self._view.GetSelection()][0]
 
     def _on_view_changed(self, _event: object) -> None:
-        if self._view_key() == "metrics":
-            self._view_note.SetLabel(
-                "Opt-in snapshot: loads repository health counts from GitHub. "
-                "The results stay on this device and do not rank contributors."
-            )
-        else:
-            self._view_note.SetLabel("")
+        self._view_note.SetLabel(VIEW_NOTES.get(self._view_key(), ""))
         self._update_notification_controls()
 
     def _load(self, _event: object) -> None:
@@ -228,8 +229,8 @@ class GitHubExploreDialog(
             self._status.SetLabel("Enter a repository as owner/repo for this view.")
             self._repo.SetFocus()
             return
-        if view == "search" and not query:
-            self._status.SetLabel("Enter a global search query first.")
+        if view in QUERY_VIEWS and not query:
+            self._status.SetLabel("Enter a search query first.")
             self._query.SetFocus()
             return
         if view in PERSON_VIEWS and not person:
@@ -356,7 +357,7 @@ class GitHubExploreDialog(
         elif view == "notifications" and result is not None:
             message = self._notifications_loaded_message()
         else:
-            message = f"{len(self._rows)} results loaded."
+            message = self._note_if_unchanged(view, f"{len(self._rows)} results loaded.")
         if view == "attention" and not error:
             if queue_state is not None and had_previous_visit and result is not None:
                 message += f" {changed_count} changed since your last visit."
@@ -444,11 +445,6 @@ class GitHubExploreDialog(
         )
         self._load(None)
 
-    def _find_label_issues(self, row: ExploreRow) -> None:
-        self._query.SetValue(f'repo:{row.repo} is:issue label:"{row.key}"')
-        self._view.SetSelection(0)
-        self._load(None)
-
     def _mark_notification_read(self, notification_id: str) -> None:
         self._run_write(
             lambda: self._client.mark_notification_read(notification_id),
@@ -516,45 +512,3 @@ class GitHubExploreDialog(
             if show_modal_dialog(dialog, title, announce=self._announce) != wx.ID_OK:
                 return None
             return dialog.GetValue().strip()
-
-    def _create_label(self) -> None:
-        name = self._prompt("Label name:", "Create Label")
-        if not name:
-            return
-        color = self._prompt("Six-digit color without #:", "Create Label", "ededed")
-        if color is None:
-            return
-        description = self._prompt("Description (optional):", "Create Label")
-        if description is None:
-            return
-        repo = self._repo.GetValue().strip()
-        self._run_write(
-            lambda: self._client.create_label(repo, name, color, description),
-            f"Created label {name}.",
-        )
-
-    def _delete_label(self, row: ExploreRow) -> None:
-        if self._confirm(f"Delete label {row.key} from {row.repo}?", "Delete Label"):
-            self._run_write(
-                lambda: self._client.delete_label(row.repo, row.key), f"Deleted label {row.key}."
-            )
-
-    def _edit_label(self, row: ExploreRow) -> None:
-        detail_lines = row.detail.splitlines()
-        current_color = (
-            detail_lines[1].removeprefix("Color: #") if len(detail_lines) > 1 else "ededed"
-        )
-        current_description = detail_lines[2] if len(detail_lines) > 2 else ""
-        name = self._prompt("Label name:", "Edit Label", row.key)
-        if not name:
-            return
-        color = self._prompt("Six-digit color without #:", "Edit Label", current_color)
-        if color is None:
-            return
-        description = self._prompt("Description (optional):", "Edit Label", current_description)
-        if description is None:
-            return
-        self._run_write(
-            lambda: self._client.edit_label(row.repo, row.key, name, color, description),
-            f"Updated label {row.key}.",
-        )

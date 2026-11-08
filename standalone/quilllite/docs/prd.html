@@ -3898,19 +3898,21 @@ Clipboard to File and Copy Log are occasional (rule 9) and no chord was
 left; Clear Clipboard stays menu-only on purpose too, because a stray
 key would lose what was on the clipboard (rule 4).</p>
 <h2
-id="paste-file-saved-replace-jobs-and-abbreviation-fields-2026-11-07">Paste
-File, saved replace jobs and abbreviation fields (2026-11-07)</h2>
+id="paste-copied-files-saved-replace-jobs-and-abbreviation-fields-2026-11-07">Paste
+Copied Files, saved replace jobs and abbreviation fields
+(2026-11-07)</h2>
 <p>QUILL has the same commands from the same handlers, mapped in
 <code>COMMAND_EQUIVALENTS</code> (family rule 10); none has a key in
 either editor (no chord was free in both, measured 2026-11-07, and each
 asks a question at once).</p>
 <ul>
-<li><strong>Paste File…</strong> (Edit &gt; Clipboard, letter P;
-<code>cmd_paste_file</code>, <code>quill/ui/paste_file.py</code>): for
-files copied in File Explorer, inserts each file’s text (read through
-QUILL’s readers, joined by a blank line) or each full path, at the caret
-as one undo step. Refuses by name files over 5 MB, folders and non-text
-files.</li>
+<li><strong>Paste Copied Files…</strong> (Edit &gt; Clipboard, letter D,
+the letters of “Paste File” being spent there by the copy tray and the
+collector; <code>cmd_paste_file</code>,
+<code>quill/ui/paste_file.py</code>): for files copied in File Explorer,
+inserts each file’s text (read through QUILL’s readers, joined by a
+blank line) or each full path, at the caret as one undo step. Refuses by
+name files over 5 MB, folders and non-text files.</li>
 <li><strong>Edit &gt; Replace Jobs</strong> (letter J): <strong>Run
 Replace Job…</strong> (R, <code>cmd_run_replace_job</code>) and
 <strong>Manage Replace Jobs…</strong> (M,
