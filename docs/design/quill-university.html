@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>quill-university</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<h1 id="quill-university-plan-of-record">QUILL University: plan of
+record</h1>
+<p>Status: plan, written 2026-11-07. Nothing in it is built yet. The
+decisions that are Jeff's to make are listed in section 13, and the work
+still to do is at the bottom under Remaining tasks.</p>
+<h2 id="1-what-this-is">1. What this is</h2>
+<p>QUILL University is a course, spread over weeks, that teaches the
+whole QUILL family: QUILL, QUILL Lite, Quill Radio, QUILL Cast, Quill
+Weather, Quill Converter, Quill Inkwell, Quill Studio, QUILL Transcribe,
+Quill Player and Quill Beacon, plus the skills that cut across them,
+such as AI, GitHub and accessible documents.</p>
+<p>The most important decision in this plan is what the course is not.
+It is not a second set of lessons. We already have a lot of teaching
+material, and most of it is generated from the code so it cannot go
+stale:</p>
+<ul>
+<li>About 160 in-app guided lessons across six apps, in the shared
+tutorial window (Help, then Tutorials, in each app). Today's generated
+books count 45 lessons for QUILL, 31 for QUILL Lite, 44 for Quill Radio,
+25 for QUILL Cast, 11 for Quill Weather and 5 for QUILL Transcribe. Each
+lesson already carries its own length in minutes.</li>
+<li>Ten follow-along tutorials in <code>docs/tutorials/</code>,
+published to <code>docs/site/tutorials/</code> by
+<code>docs/tutorials/build_html.py</code>, with an eleventh, on
+practising GitHub safely, being written on its own branch.</li>
+<li>The QUILL Cast, a 54-episode audio course on QUILL in eight parts,
+with a transcript for every episode (<code>docs/podcast/</code>).</li>
+<li>A user guide for every app, a QUILL Lite AI guide, and the GitHub
+Guide (<code>docs/user guide/github-guide/</code>, eleven chapters, for
+QUILL and QUILL Lite).</li>
+<li>The public practice repository
+<code>Community-Access/quill-github-practice</code>, a template people
+copy, with a Set up practice workflow.</li>
+</ul>
+<p>So QUILL University is a <strong>syllabus and the glue around
+it</strong>. It puts the existing pieces in an order, in weeks someone
+can actually get through, and adds only what is missing: a short
+introduction to each week, practice files, a checkpoint at the end of
+the week, an instructor's edition, and versions in audio and braille.
+Where a lesson already exists, the course points at it and never copies
+it. A copied lesson is a lesson that is right in one place and wrong in
+the other by the next release.</p>
+<h2 id="2-who-it-is-for">2. Who it is for</h2>
+<h3 id="learners">Learners</h3>
+<p>Blind and low-vision people first, most of them screen-reader users,
+some using magnification, some using a braille display, and a few using
+braille alone. The course runs from the person who installed their first
+app last week to the power user who wants to rebind everything and
+automate the rest.</p>
+<p>What we assume a learner can already do, and say so up front:</p>
+<ul>
+<li>Use Windows with their own screen reader at a basic level: start a
+program, move through a menu, a dialog and a list, type and edit text,
+and open a file.</li>
+<li>Know their screen reader's own keys for reading and for the mouse
+cursor or review cursor, if they need them.</li>
+</ul>
+<p>We do not teach the screen reader itself. The orientation page points
+people who are not there yet at their screen reader's own training, and
+at their local rehab or assistive technology service, rather than
+half-teaching it badly.</p>
+<h3 id="trainers">Trainers</h3>
+<p>Rehab teachers, assistive technology instructors, vocational
+counsellors, library and school staff, and the friend or family member
+who ends up being the help desk. They need things a learner does not: a
+time plan for a class, what to set up beforehand, what usually goes
+wrong, how to adapt for a learner with low vision or one who reads
+braille only, and a way to show a learner has done the work. That is the
+instructor's edition (section 8).</p>
+<h3 id="what-the-course-must-never-assume">What the course must never
+assume</h3>
+<ul>
+<li>That the learner can see the screen, or that the trainer can see the
+learner's screen.</li>
+<li>That the learner has an account anywhere. The core course needs no
+account, no sign-in and no internet beyond downloading the apps. Only
+the AI and GitHub tracks need accounts, and they say so before the first
+lesson.</li>
+<li>That the learner uses a particular screen reader. Every lesson is
+written to work with NVDA, JAWS and Narrator, and says when they
+differ.</li>
+</ul>
+<h2 id="3-shape-tracks-weeks-sessions-lessons">3. Shape: tracks, weeks,
+sessions, lessons</h2>
+<h3 id="the-units">The units</h3>
+<ul>
+<li><strong>Lesson</strong>: one thing you can do afterwards. 3 to 20
+minutes. Almost always an existing in-app lesson, follow-along tutorial,
+podcast episode or guide chapter.</li>
+<li><strong>Session</strong>: one sitting, 30 to 45 minutes. A short
+introduction, three to six lessons, and a practice task. A session is
+the right size for one class period and for one evening at home.</li>
+<li><strong>Week</strong>: three sessions and a checkpoint. About two to
+two and a half hours of work, never more than three. A week has one
+theme and ends with something the learner can do that they could not do
+on Monday.</li>
+<li><strong>Track</strong>: a run of weeks on one app or one skill. One
+to four weeks.</li>
+<li><strong>Term</strong>: a suggested run of tracks, eight weeks long,
+for people and classes who want a schedule. Terms are a convenience. The
+tracks are the real structure, and anyone can take them in any order the
+prerequisites allow.</li>
+</ul>
+<p>Why weeks of about two hours: that is what a learner with a job, or a
+rehab student with other classes, can keep up, and it is what a trainer
+can fit into one or two class sessions a week. Self-paced learners can
+go faster; nothing is locked.</p>
+<h3 id="every-week-has-the-same-five-parts">Every week has the same five
+parts</h3>
+<p>The same order every week, so a screen-reader user can jump by
+heading to the part they want without hunting:</p>
+<ol type="1">
+<li><strong>This week</strong>: what you will be able to do by the end,
+what you need first, and how long it takes. A few sentences.</li>
+<li><strong>Listen</strong> (optional): the matching QUILL Cast episode
+or a course audio lesson, for people who learn better by ear first.</li>
+<li><strong>Do</strong>: the sessions, each a list of lessons in order.
+Each item says where the lesson lives (in the app, on the website, in a
+guide) and how long it takes.</li>
+<li><strong>Practise</strong>: a task with the week's practice files,
+written as a goal rather than steps ("make this letter ready to send"),
+so the learner has to put the lessons together on their own.</li>
+<li><strong>Check yourself</strong>: the checkpoint (section 6), then
+<strong>Going further</strong>, which points at the user guide chapters
+for people who want every detail.</li>
+</ol>
+<h3 id="tracks">Tracks</h3>
+<p>The <strong>Core track</strong> comes first, for everyone, and is one
+week long:</p>
+<ul>
+<li>Installing a QuillVille app, and the difference between the
+installer and the portable version.</li>
+<li>The habits every app in the family shares: F1 answers everywhere
+with what the window is for and what the focused control does; every
+menu item shows its key; Help, then Tutorials, opens the guided lessons;
+the command list finds anything by name; settings, and the feedback
+setting that chooses between sounds and speech.</li>
+<li>Where your files and settings live, backing them up, and Safe Mode
+when something will not start.</li>
+<li>Getting help: the user guide, the tutorials, and writing to support.
+Not GitHub issues.</li>
+<li>Choosing your path through the rest of the course.</li>
+</ul>
+<p>Then one <strong>app track</strong> per app. Proposed lengths, set by
+how much each app already teaches:</p>
+<table>
+<thead>
+<tr>
+<th>Track</th>
+<th>Weeks</th>
+<th>Built mostly from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL Lite</td>
+<td>2</td>
+<td>its 31 in-app lessons, user guide, AI guide</td>
+</tr>
+<tr>
+<td>QUILL</td>
+<td>4</td>
+<td>45 in-app lessons, tutorials 1 to 7, the QUILL Cast</td>
+</tr>
+<tr>
+<td>Quill Radio</td>
+<td>2</td>
+<td>44 in-app lessons, tutorial 9</td>
+</tr>
+<tr>
+<td>QUILL Cast</td>
+<td>1</td>
+<td>25 in-app lessons, tutorial 10</td>
+</tr>
+<tr>
+<td>Quill Weather</td>
+<td>1</td>
+<td>11 in-app lessons, user guide</td>
+</tr>
+<tr>
+<td>Quill Converter</td>
+<td>1</td>
+<td>user guide; lessons to write</td>
+</tr>
+<tr>
+<td>Quill Inkwell</td>
+<td>1</td>
+<td>user guide; lessons to write</td>
+</tr>
+<tr>
+<td>QUILL Transcribe</td>
+<td>1</td>
+<td>5 in-app lessons, user guide</td>
+</tr>
+<tr>
+<td>Quill Studio</td>
+<td>2</td>
+<td>user guide, tutorial 4; lessons to write</td>
+</tr>
+<tr>
+<td>Quill Player</td>
+<td>1</td>
+<td>user guide; lessons to write</td>
+</tr>
+<tr>
+<td>Quill Beacon</td>
+<td>1</td>
+<td>user guide; lessons to write</td>
+</tr>
+</tbody>
+</table>
+<p>Weather, Converter and Inkwell are short enough to share a week in a
+term schedule, and the terms below do that.</p>
+<p>Then the <strong>cross-family tracks</strong>, which belong to no
+single app:</p>
+<ul>
+<li><strong>AI across the family</strong> (2 weeks): Choose Your AI, the
+free hosted AI, using your own key or subscription, Ask, the AI features
+in each app, what is sent where, and responsible use. Built from
+<code>docs/design/codex.md</code> sections as they ship, the AI lessons
+in QUILL and QUILL Lite, the QUILL Cast AI part (episodes 34 to 39), the
+QUILL Lite AI guide and the responsible AI use page.</li>
+<li><strong>GitHub</strong> (3 weeks): from signing in to reviewing a
+pull request, built from the GitHub Guide, tutorial 8, the practising
+GitHub safely tutorial, and the practice repository. Week one never
+touches a real project.</li>
+<li><strong>Accessible documents</strong> (2 weeks): Word, EPUB, PDF,
+DAISY and braille out of QUILL; rescuing a scanned PDF; GLOW checking
+and fixing; math. Built from tutorials 3, 6 and 7, Converter, and QUILL
+Cast parts 3 and 7.</li>
+<li><strong>Audio production</strong> (2 weeks): Read Aloud and voices,
+narration, the Audio Studio, Quill Studio, and publishing a podcast
+feed. Tutorial 4, QUILL Cast part 5, and Studio.</li>
+<li><strong>Writing and organising</strong> (2 weeks): Story Studio, the
+Accessible Vault, daily notes and Git sync. Tutorial 5 and QUILL Cast
+part 7.</li>
+<li><strong>Publishing on the web</strong> (1 week): WordPress and
+Forms, from the in-app WordPress and Forms lessons and
+<code>docs/design/wordpress.md</code> as it ships.</li>
+<li><strong>Developer</strong> (2 weeks, for power users): coding in
+QUILL, Check This File, the agents, Quillins and building your own. From
+the coding lessons, <code>docs/design/code.md</code> and QUILL Cast
+episodes 50 and 51.</li>
+</ul>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Kept short and written on every track's first page. Core is required
+before everything. Then:</p>
+<ul>
+<li>QUILL or QUILL Lite before any cross-family track except GitHub's
+first week.</li>
+<li>QUILL Cast after Quill Radio is recommended, not required. They
+share the player keys, and Radio teaches them first.</li>
+<li>Transcribe and Studio before Audio production.</li>
+<li>The GitHub track's first week before Developer.</li>
+<li>AI across the family before the AI parts of Writing and
+Developer.</li>
+</ul>
+<p>A prerequisite is a recommendation with a reason ("Radio teaches the
+player keys that Cast takes for granted"), never a lock. Nothing in the
+course checks whether you did the earlier track.</p>
+<h3 id="paths-and-terms">Paths and terms</h3>
+<p>Four suggested paths, so a learner does not face fifteen tracks on
+day one:</p>
+<ul>
+<li><strong>Writer</strong>: Core, QUILL Lite, Accessible documents, AI,
+then QUILL if they want more.</li>
+<li><strong>Listener</strong>: Core, Radio, Cast, Weather, then
+Player.</li>
+<li><strong>Producer</strong>: Core, Transcribe, Studio, Cast, Audio
+production.</li>
+<li><strong>Power user</strong>: Core, QUILL, GitHub, AI,
+Developer.</li>
+</ul>
+<p>And two eight-week terms for classes:</p>
+<ul>
+<li><strong>Term 1, The family</strong> (first to ship): week 1 Core;
+weeks 2 and 3 QUILL Lite; week 4 Radio, first half; week 5 Radio second
+half with Cast; week 6 Weather and Inkwell; week 7 Converter with the
+start of Accessible documents; week 8 AI across the family, first week,
+and a final project.</li>
+<li><strong>Term 2, Going deeper</strong>: QUILL (4 weeks), GitHub (3
+weeks), and a final project. Later terms are put together from the
+remaining tracks as they become ready.</li>
+</ul>
+<p>The final project in a term is one real task chosen from a short list
+(make an accessible newsletter; record, edit and publish a five-minute
+show; build a listening lineup for the week and record one show from
+it), done with the practice files and the learner's own work.</p>
+<h2 id="4-a-sample-week-to-show-the-shape">4. A sample week, to show the
+shape</h2>
+<p>This is Term 1, week 4, built entirely from Quill Radio's existing
+in-app lessons. The minutes are the ones the lessons already carry.</p>
+<p><strong>This week.</strong> By Friday you will play, keep and
+organise stations, find almost anything to listen to, and know how to
+get yourself unstuck. You need the Core week and Quill Radio installed.
+About two hours.</p>
+<p><strong>Listen.</strong> No QUILL Cast episode covers Radio yet; this
+is where a course audio lesson would go (section 9).</p>
+<p><strong>Do.</strong></p>
+<ul>
+<li>Session 1, Your first hour (23 minutes of lessons, plus the
+introduction): Play your first station; Keep a station, and find it
+tomorrow; The player follows you; Do anything by name; Getting
+unstuck.</li>
+<li>Session 2, Finding something to listen to (42 minutes): Wander the
+browse tree; Search every directory at once; Find a station by its web
+address; Find stations by name, tag and country; Add a station nobody
+lists; The catalog on your own disk; When a station will not play. A
+trainer with a short class splits this one, and the instructor's edition
+says where.</li>
+<li>Session 3, Making it yours, first half (26 minutes): Folders, and an
+order of your own; Ten stations, no list at all; Make the keys yours;
+The settings actually worth changing.</li>
+</ul>
+<p><strong>Practise.</strong> Using the practice station list, make a
+folder of three stations for mornings and one for the evening, put them
+in the order you want, and give the one you use most a key of its own.
+Then delete the folders, so your real favourites are as you left
+them.</p>
+<p><strong>Check yourself.</strong> Do it, then answer it:</p>
+<ul>
+<li>Task: with Quill Radio in the background and another program in
+front, pause and resume the player without switching to Radio. What did
+you hear?</li>
+<li>Questions (answers on the next page, under their own heading): Where
+do you go when a station will not play? What is the difference between a
+favourite and a folder? How do you find out what key a command has, if
+the menu does not show one?</li>
+</ul>
+<p><strong>Going further.</strong> The Quill Radio user guide chapters
+on browsing, favourites and settings.</p>
+<p>Week 5 picks up at Recording and More than radio, with the QUILL Cast
+track starting on the third day.</p>
+<h2 id="5-practice-files-and-sandboxes">5. Practice files and
+sandboxes</h2>
+<h3 id="practice-files">Practice files</h3>
+<p>Each track gets a small practice pack: the files its lessons and
+practice tasks use, made for the course and free of anyone's real
+information.</p>
+<ul>
+<li>QUILL and QUILL Lite: a messy letter to tidy, a long report with
+headings to navigate, a document with accessibility problems for GLOW to
+find, a short manuscript for Story Studio, a table to edit.</li>
+<li>Converter and Accessible documents: a scanned PDF (a real scan of a
+page we wrote), a Word file, an EPUB, a Markdown file.</li>
+<li>Radio: a station list file to import, so every learner sees the same
+stations whatever the directories return that week.</li>
+<li>Cast: the course's own podcast feed. Following the course in Cast is
+the practice.</li>
+<li>Transcribe and Studio: two or three minutes of course audio with two
+speakers, recorded by us, so nobody has to bring a recording and nobody
+transcribes a stranger.</li>
+<li>Weather: nothing to ship. The app already rehearses an alert.</li>
+<li>Inkwell: an abbreviation set to import.</li>
+<li>GitHub: the practice repository, which is already a template with a
+Set up practice workflow.</li>
+</ul>
+<p>Where they live: the source files live under <code>quill/</code> as
+package data (a path such as
+<code>quill/core/university/practice/&lt;track&gt;/</code>), for the
+same reason feature code never lives in <code>standalone/</code>: every
+gate scopes to <code>quill/</code>. They ship in every installer and
+portable zip, because nothing a lesson needs is downloaded on first use.
+Each pack is also on the website as one zip for trainers preparing a
+room of computers.</p>
+<p>How a learner gets them: the course page says where they are on disk,
+and phase 2 adds an Open Practice Files command to each app's Help menu,
+which copies the app's pack into a QUILL University folder in Documents
+and opens it. Copying, never opening the installed copy, so a learner
+can wreck a practice file and start again.</p>
+<h3 id="sandboxes">Sandboxes</h3>
+<p>The risk of practice is that it changes the learner's real setup:
+favourites added, keys rebound, a podcast followed. Phase 1 handles it
+the plain way: every practice task that changes something ends with
+undoing it, and says so, as the sample week does.</p>
+<p>A real practice mode, an app started on a separate throwaway profile,
+is a bigger piece of work in every app and is not in phase 1. Section 13
+asks whether to build it later.</p>
+<h2 id="6-checkpoints-and-quizzes">6. Checkpoints and quizzes</h2>
+<p>Nothing in QUILL University is graded, timed or required to go on.
+That is the same rule as the in-app lessons. A checkpoint is there so a
+learner knows they have it, and so a trainer knows what to go over
+again.</p>
+<p>Each week's checkpoint has two parts:</p>
+<ul>
+<li><strong>A task</strong>, with what you should hear when it worked,
+the same way every in-app lesson step says what to listen for. Where an
+app already has a tutorial check for that state (the tutorial model's
+<code>check</code> field, such as "something is playing now"), the
+checkpoint can use it, so the app notices when you have done it.</li>
+<li><strong>Three to five questions</strong>, as a plain numbered list.
+The answers are on their own page, or under their own heading below a
+clear "answers follow" line, so nobody reads an answer by arrowing one
+line too far. No drag and drop, no matching columns, no timers, no
+images, no multiple choice that only makes sense when you can see all
+the options at once.</li>
+</ul>
+<p>Progress is the learner's own: the tutorial window already keeps
+lesson progress on the learner's computer
+(<code>quill/core/tutorials/progress.py</code>). The course adds no
+account and sends nothing anywhere.</p>
+<h2 id="7-completion-certificates">7. Completion certificates</h2>
+<p>Recommended: a certificate the learner makes themselves, on their own
+computer. At the end of a track or a term, a page on the site asks for
+the name to print and the track, and produces an accessible PDF and a
+plain text version. Nothing is sent to us, so nothing is verified by us,
+and the certificate says so in plain words: it records that the learner
+says they completed the course.</p>
+<p>For classes, the instructor's edition has a version a trainer fills
+in and signs, which carries the trainer's organisation rather than ours.
+That is the one an employer or a rehab case file can lean on, because
+the trainer saw the work.</p>
+<p>A certificate we verify ourselves would need accounts, records of
+learners and someone to look after them. That is a different kind of
+project, and section 13 asks whether Jeff wants it at all.</p>
+<h2 id="8-the-instructors-edition">8. The instructor's edition</h2>
+<p>One page per week, next to the learner's page, never mixed into it.
+Each has:</p>
+<ul>
+<li>Objectives in a sentence or two, and how they connect to the next
+week.</li>
+<li>A time plan for a 60-minute and a 90-minute class, saying which
+lessons to do together, which to set as homework, and where to split a
+long session.</li>
+<li>Setting up: which apps and versions, the practice pack, a test of
+the screen reader with each app, and anything the network at an agency
+or school is likely to block (station streams, AI services,
+GitHub).</li>
+<li>What usually goes wrong. Seeded from the <code>note</code> fields
+the in-app lessons already carry and from what reaches support, and
+added to as trainers tell us.</li>
+<li>Differences between NVDA, JAWS and Narrator for that week's
+work.</li>
+<li>Adapting the week: for magnification users, for braille display
+users, for a learner who reads braille only (everything QUILL speaks is
+also brailled, which the course can rely on), for a learner with some
+hearing loss, and for learners who need more time.</li>
+<li>Teaching remotely: sharing computer sound so the trainer hears the
+learner's screen reader, and asking a learner what they heard rather
+than what they see.</li>
+<li>The checkpoint answers, and the signed certificate.</li>
+</ul>
+<p>The instructor's edition is public. Hiding it helps nobody, and
+plenty of learners teach themselves with a trainer's notes.</p>
+<h2 id="9-audio-and-braille-ready-versions">9. Audio and braille-ready
+versions</h2>
+<h3 id="audio">Audio</h3>
+<p>Two kinds of audio, kept apart:</p>
+<ul>
+<li><strong>The QUILL Cast</strong> stays what it is: the audio course
+on QUILL. Weeks that match an episode point at it.</li>
+<li><strong>Course audio lessons</strong>: one short episode per week
+(10 to 15 minutes), introducing the week and walking through the hardest
+part of it, for the apps the QUILL Cast does not cover (Radio, Cast,
+Weather, Converter, Inkwell, Studio, Transcribe, Player, Beacon). Made
+with the same pipeline and the same two Kokoro hosts, scripts in the
+same <code>[LIAM]</code> and <code>[JESSICA]</code> format, with a
+transcript for every episode, which the site link gate already checks
+for. Whether these are a new feed or a new part of the QUILL Cast feed
+is decision 6 in section 13.</li>
+</ul>
+<p>Every week's text page also reads well aloud, and trainers can point
+learners at QUILL's or QUILL Lite's own Read Aloud to hear it.</p>
+<h3 id="braille-large-print-and-offline">Braille, large print and
+offline</h3>
+<p>Each track is published, beside its web pages, as:</p>
+<ul>
+<li><strong>EPUB</strong>, the same way every document in
+<code>docs/</code> already has one.</li>
+<li><strong>A braille-ready file</strong> (BRF), Unified English Braille
+contracted, made with QUILL's own braille production rather than a
+separate tool, so the course proves the feature it teaches. Uncontracted
+on request.</li>
+<li><strong>DAISY</strong>, from QUILL's DAISY export, for players and
+readers that prefer it.</li>
+<li><strong>Large print</strong>, which is the web page and its print
+stylesheet: no separate file to keep up.</li>
+</ul>
+<p>These are built from the same generated Markdown as the web pages, so
+they cannot say anything different.</p>
+<h2 id="10-delivery">10. Delivery</h2>
+<h3 id="on-the-website">On the website</h3>
+<p>A new section of quillforall.org at
+<code>docs/site/university/</code>, linked from the site's main
+navigation and from <code>docs.html</code>:</p>
+<ul>
+<li><code>index.html</code>: who it is for, what you need, how to choose
+a path, the terms, and which tracks are ready today.</li>
+<li>One page per track, one per week, and one instructor's page per
+week.</li>
+<li>The practice packs, the braille, EPUB and DAISY files, and the
+certificate page.</li>
+</ul>
+<p>The week pages link to the existing tutorial pages under
+<code>docs/site/tutorials/</code>, the app tutorial books under
+<code>docs/site/docs/</code>, the user guides and the podcast
+transcripts. They do not copy them.</p>
+<h3 id="from-inside-each-app">From inside each app</h3>
+<p>Three steps, in this order:</p>
+<ol type="1">
+<li>Nothing new in phase 1. Help, then Tutorials, is already in every
+app that has lessons, and it is the offline heart of the course.</li>
+<li>Phase 2 adds QUILL University to each released app's Help menu. It
+opens that app's track page in the learner's browser. Every app that
+gets it needs a key or a written reason under the family rules (rule 8,
+and rule 9 for something used once in a while), a label built with the
+live key, an access key that collides with nothing, F1 help at the
+construction site, and an entry in the network egress audit if it is
+classed as one. QUILL and QUILL Lite get it in the same change, so QUILL
+Lite is never ahead.</li>
+<li>Later, the tutorial window could show which lessons belong to the
+week the learner is on. Only if trainers ask for it.</li>
+</ol>
+<p>Whether the course pages also ship inside each installer, for
+learners with no internet at home or in class, is decision 7.</p>
+<h2 id="11-keeping-it-accurate">11. Keeping it accurate</h2>
+<p>The course is only worth having if it is right on the day someone
+uses it. Keys and menus move, and a lesson that teaches a key that now
+does something else is worse than no lesson. The repo already solves
+this three times (GATE-KEYREF, GATE-HELPREF and GATE-TUTDOC) by
+generating the document from the code. The course does the same.</p>
+<h3 id="one-source-a-course-manifest-in-code">One source: a course
+manifest in code</h3>
+<p>The course is described in a wx-free package,
+<code>quill/core/university/</code>, in the same style as the tutorial
+content modules: plain data saying which tracks there are, which weeks
+are in each, and which sessions and items are in each week. An item
+points at something that already exists, by an identifier rather than by
+a copy:</p>
+<ul>
+<li>an in-app lesson, by app and lesson id in its
+<code>TutorialSet</code>;</li>
+<li>a follow-along tutorial, by file;</li>
+<li>a QUILL Cast episode, by number;</li>
+<li>a user guide or GitHub Guide chapter, by file and heading;</li>
+<li>a practice file, by path.</li>
+</ul>
+<p>The authored text in the manifest is only the glue: each week's
+introduction, the practice task, the checkpoint and the instructor's
+notes. Any key in that text is written as a command id and rendered with
+the shipped default through <code>DEFAULT_KEYMAP</code> and
+<code>APP_KEYMAPS</code>, exactly as the tutorial books are. Never a
+typed chord.</p>
+<p>A generator, <code>quill/tools/build_university.py</code>, renders
+the manifest to Markdown under <code>docs/university/</code> and to the
+web pages under <code>docs/site/university/</code>, and the braille,
+EPUB and DAISY versions from the Markdown.</p>
+<h3 id="gate-unidoc-the-checks">GATE-UNIDOC: the checks</h3>
+<p>A pytest gate, plus a row in <code>platform_report</code>, that fails
+when:</p>
+<ul>
+<li><strong>The generated pages have drifted</strong> from the manifest
+(the same check as the other generated references, with
+<code>--write</code> to regenerate).</li>
+<li><strong>A reference resolves to nothing</strong>: a lesson id no
+longer in its app's tutorial set, a tutorial file renamed, a guide
+heading that is gone, a practice file missing, a QUILL Cast episode not
+in <code>episodes.json</code>. An episode whose audio is not published
+in <code>audio_assets.json</code> is linked as a transcript only, the
+same rule the site uses.</li>
+<li><strong>Authored text contains a chord</strong>: a pattern check for
+Ctrl, Alt, Shift, Insert, Windows and function-key chords in the
+manifest's prose, so a key can only arrive through a command id.</li>
+<li><strong>A command id is unknown</strong> to the command registry,
+which is how a renamed or removed command shows up.</li>
+<li><strong>A week is over its time</strong>: the gate adds up the
+minutes the lessons carry plus the authored estimates, and fails a week
+over three hours. When a lesson grows, the week that holds it says
+so.</li>
+<li><strong>A track that is not ready is published</strong>: each track
+names its app's status (section 12), and only a released, signed-off
+track builds web pages. Draft tracks still build their Markdown, so they
+can be reviewed.</li>
+</ul>
+<p>Menu paths ("Help, then Tutorials") are the one thing harder to check
+than keys, because the tutorial books state their door as text. The
+first version keeps menu paths to a short list in the manifest, each
+paired with the command id at its end, and a test checks that command
+still lives in that menu, using the same menu data the menu shape gate
+reads. That is phase 3, not phase 1.</p>
+<h3 id="the-other-gates-the-course-must-respect">The other gates the
+course must respect</h3>
+<ul>
+<li><strong>GATE-SITE-LINKS</strong>: every file the course adds under
+<code>docs/</code> (outside <code>docs/site/</code>) is flattened into
+<code>/docs/</code> by its bare name, so every course file starts with
+<code>university-</code> (for example
+<code>docs/university/university-term-1-week-04.md</code>). This plan's
+own name, <code>quill-university.md</code>, is unique today. The site
+link test models the new <code>docs/site/university/</code> pages like
+the rest of the shell, so a broken link in a week fails the build.</li>
+<li><strong>The documentation chord gates</strong>: the generated course
+Markdown joins the corpus that <code>test_documentation_chords.py</code>
+reads, and the QUILL Lite pages join GATE-DOCKEY's, so a chord the
+course teaches must be bound and must belong to the command named beside
+it. Generating keys from command ids should make both pass by
+construction; the gates are there for when it does not.</li>
+<li><strong>Docs HTML and EPUB parity</strong>: every Markdown file
+under <code>docs/</code> keeps its HTML and EPUB siblings, which the
+pre-commit hook already enforces.</li>
+<li><strong>Test file names</strong>: the gate's test needs a basename
+used nowhere else in <code>tests/</code>, such as
+<code>test_university_course.py</code>, because test directories are not
+packages.</li>
+</ul>
+<h3 id="what-a-gate-cannot-check">What a gate cannot check</h3>
+<p>Whether a week still makes sense. Each week records the app version
+it was last walked against, with a screen reader.
+<code>platform_report</code> lists, as a warning rather than a failure,
+the weeks walked against a version older than the app's current minor
+version. Before each app release, its track's warnings are part of the
+release checklist, and a week is walked with NVDA and JAWS before it is
+published for the first time, with the result in
+<code>docs/qa/</code>.</p>
+<h2 id="12-which-apps-are-ready-and-how-a-new-one-joins">12. Which apps
+are ready, and how a new one joins</h2>
+<h3 id="the-bar-for-a-track">The bar for a track</h3>
+<p>An app gets a published track only when all of these are true:</p>
+<ol type="1">
+<li>It is publicly released, with a dated release in its changelog and a
+download on the site.</li>
+<li>Its screen-reader sign-off is done, with nothing open for it in
+<code>docs/qa/screen-reader-checks-2026-10.md</code> or its
+successor.</li>
+<li>Its user guide is current for that release.</li>
+<li>It has in-app lessons in the shared tutorial window and a generated
+book (GATE-TUTDOC), or follow-along tutorials written for the
+track.</li>
+<li>Its F1 help gate is in <code>platform_report</code>.</li>
+<li>Its practice pack exists and has been used once by someone who is
+not the author.</li>
+</ol>
+<h3 id="where-each-app-stands-as-the-changelogs-say-on-2026-11-07">Where
+each app stands, as the changelogs say on 2026-11-07</h3>
+<p>This needs Jeff to confirm (decision 1). It is read from the
+changelogs, not from what is actually published.</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Latest in its changelog</th>
+<th>Track</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL</td>
+<td>1.0.0</td>
+<td>Term 1 uses it lightly; its full track is Term 2</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td>2.0.0, undated</td>
+<td>phase 1</td>
+</tr>
+<tr>
+<td>Quill Radio</td>
+<td>3.2.0, 2026-10-03</td>
+<td>phase 1</td>
+</tr>
+<tr>
+<td>QUILL Cast</td>
+<td>2.0.0, 2026-10-03</td>
+<td>phase 1</td>
+</tr>
+<tr>
+<td>Quill Weather</td>
+<td>2.2.1, 2026-10-08</td>
+<td>phase 1</td>
+</tr>
+<tr>
+<td>Quill Converter</td>
+<td>1.0.0, 2026-09-28</td>
+<td>phase 1, lessons to write</td>
+</tr>
+<tr>
+<td>Quill Inkwell</td>
+<td>1.0.0</td>
+<td>phase 1, lessons to write</td>
+</tr>
+<tr>
+<td>QUILL Transcribe</td>
+<td>1.0.0, code done</td>
+<td>waits for its screen-reader pass</td>
+</tr>
+<tr>
+<td>Quill Studio</td>
+<td>2.0.0 built, not released</td>
+<td>waits for 2.0</td>
+</tr>
+<tr>
+<td>Quill Player</td>
+<td>Unreleased</td>
+<td>waits for release</td>
+</tr>
+<tr>
+<td>Quill Beacon</td>
+<td>0.1.0</td>
+<td>waits for 1.0</td>
+</tr>
+</tbody>
+</table>
+<p>QUILL Transcribe's 1.0 release, and so its track, waits for the
+77-item screen-reader pass in the sign-off document. Its five in-app
+lessons and its user guide already exist, so its track can be written as
+a draft now and published the day the pass is done.</p>
+<h3 id="how-a-new-app-joins">How a new app joins</h3>
+<p>When an app finishes, its track goes through the same steps, so
+adding one is routine rather than a project:</p>
+<ol type="1">
+<li>Add the track to the manifest as a draft, pointing at the app's
+lessons, tutorials and guide.</li>
+<li>Write the glue: the week introductions, the practice task, the
+checkpoint and the instructor's notes. Write in-app lessons first if the
+app has none: they serve the app's own users whether or not they take
+the course.</li>
+<li>Make the practice pack.</li>
+<li>Record the course audio lesson.</li>
+<li>Walk the weeks with NVDA and JAWS.</li>
+<li>When the app meets the bar above, change the track's status to
+published, which is the change that makes the gate build its web pages
+and adds it to the index.</li>
+</ol>
+<h2 id="13-decisions-for-jeff">13. Decisions for Jeff</h2>
+<ol type="1">
+<li><strong>Which apps count as released and finished today</strong>,
+for phase 1. The table in section 12 is read from changelogs. In
+particular: is QUILL Lite 2.0.0 out, are QUILL 1.0.0 and Inkwell 1.0.0
+out, and is QUILL in Term 1 at all, or does Term 1 teach QUILL Lite as
+the editor and leave QUILL to Term 2?</li>
+<li><strong>The name in the menus and on the site.</strong> "QUILL
+University" throughout, or something shorter in a Help menu.</li>
+<li><strong>Certificates</strong>: the self-made certificate and the
+trainer-signed one (recommended), neither, or a verified certificate run
+by Community Access, which means accounts and records of learners.</li>
+<li><strong>Practice mode</strong>: build a separate throwaway profile
+in each app later, or keep practice as "do it, then undo it" for
+good.</li>
+<li><strong>Licence for the course text</strong>, so agencies can adapt
+it for their classes. A Creative Commons licence such as CC BY 4.0 would
+allow that; the code licence does not obviously cover teaching
+material.</li>
+<li><strong>Course audio</strong>: a new podcast feed for QUILL
+University, or a new part of the QUILL Cast feed. A new feed keeps the
+QUILL Cast about QUILL; one feed means one subscription.</li>
+<li><strong>Offline copies</strong>: ship each app's track pages inside
+its installer (in keeping with bundling everything, and useful in
+classrooms without internet), or keep the course on the website with the
+downloadable packs.</li>
+<li><strong>Live cohorts</strong>: whether Community Access ever runs
+scheduled classes with a start date, or the course stays self-paced with
+trainers running their own.</li>
+</ol>
+<h2 id="remaining-tasks">Remaining tasks</h2>
+<p>Remove each one as it is done, and record it in a short progress log
+above this list when the first one lands.</p>
+<p>Phase 1: the course for released apps</p>
+<ul>
+<li>Get Jeff's answers to the decisions in section 13.</li>
+<li>Create <code>quill/core/university/</code> with the manifest model
+(track, week, session, item, checkpoint) and the Core track.</li>
+<li>Write <code>quill/tools/build_university.py</code> to render
+Markdown and site pages.</li>
+<li>Write GATE-UNIDOC
+(<code>tests/unit/docs/test_university_course.py</code>) and add it to
+<code>platform_report</code>.</li>
+<li>Extend the site link test's model to
+<code>docs/site/university/</code> and add the course Markdown to the
+documentation chord corpora.</li>
+<li>Write the Core week.</li>
+<li>Write the QUILL Lite, Radio, Cast and Weather tracks from their
+existing lessons.</li>
+<li>Write in-app lessons for Converter and Inkwell, then their
+tracks.</li>
+<li>Make the practice packs for those tracks and ship them in their
+installers and portable zips.</li>
+<li>Write the checkpoints for every phase 1 week.</li>
+<li>Build <code>docs/site/university/index.html</code>, the track and
+week pages, and add the section to the site navigation.</li>
+<li>Walk every phase 1 week with NVDA and JAWS, and record the result in
+<code>docs/qa/</code>.</li>
+</ul>
+<p>Phase 2: trainers, formats and the apps</p>
+<ul>
+<li>Write the instructor's edition for every phase 1 week.</li>
+<li>Build the certificate page and the trainer-signed version.</li>
+<li>Generate the braille, EPUB and DAISY versions, and the practice pack
+zips.</li>
+<li>Add QUILL University and Open Practice Files to each released app's
+Help menu, QUILL and QUILL Lite in the same change.</li>
+</ul>
+<p>Phase 3: audio and the cross-family tracks</p>
+<ul>
+<li>Write and record a course audio lesson for each week the QUILL Cast
+does not cover.</li>
+<li>Write the AI, Accessible documents, Writing and organising, Audio
+production, Publishing on the web and Developer tracks.</li>
+<li>Write the GitHub track once the practising GitHub safely tutorial
+has landed, using the practice repository.</li>
+<li>Add the menu-path check to GATE-UNIDOC.</li>
+<li>Add the "last walked against" warning to
+<code>platform_report</code>.</li>
+</ul>
+<p>Phase 4: apps as they finish</p>
+<ul>
+<li>QUILL Transcribe: draft its track now; publish it when its
+screen-reader pass in the sign-off document is complete.</li>
+<li>Quill Studio: write in-app lessons and its track; publish when 2.0
+is released.</li>
+<li>Quill Player and Quill Beacon: in-app lessons and tracks when each
+is released.</li>
+<li>Put Term 2 together, and later terms from the tracks that are
+ready.</li>
+</ul>
+</body>
+</html>
