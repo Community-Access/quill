@@ -1087,158 +1087,32 @@ QUILL has the same three, on the same key.
 
 ## GitHub issues and pull requests
 
-**File > GitHub Workbench...** (**Alt+F**, then **G**) opens QUILL's shared
-GitHub Items viewer in QUILL Lite. The first use asks whether you want to
-connect to GitHub. If the current document is in a checkout with a GitHub
-origin, the repository field starts with that repository.
+**File > GitHub Workbench...** (**Alt+F**, then **G**) opens the same GitHub
+windows QUILL has. You can read any public repository's issues, pull
+requests, branches, releases, workflow runs and files, review a pull request
+in an outline of its files and conversations, find out what failed in a
+build, and browse a repository at any branch. The first time, QUILL Lite asks
+once whether it may connect to GitHub. If the document you have open is in a
+Git folder whose remote is on GitHub, that repository is already filled in.
 
-If you haven't signed in yet, the Workbench tells you so before it opens and
-gives you two choices. **Manage GitHub Accounts...** lets you add your account
-there and then, and once GitHub confirms it the Workbench opens signed in.
-**Continue as Guest** opens it anyway, and you can still read public
-repositories; posting reviews, replying and the other write actions are what
-need an account. Escape opens nothing.
+To sign in, choose **File > Manage GitHub Accounts...** (**Alt+F**, then
+**H**). It's the same window QUILL has, and the two editors share your
+accounts, so one you add in either is there in both. If you open the
+Workbench before you've signed in, it tells you so and offers Manage GitHub
+Accounts first; once GitHub confirms your account, the Workbench opens signed
+in. **Continue as Guest** opens it anyway: a guest can read public
+repositories, and the commands that would change something say they need a
+signed-in account. A file you open from GitHub opens as a new untitled
+document.
 
-### Signing in and switching accounts
+Export as HTML used to be Alt+F, then H. It gave the letter up because it
+still has its own key, **Ctrl+Alt+Shift+End**, and Manage GitHub Accounts has
+nothing else.
 
-**File > Manage GitHub Accounts...** (**Alt+F**, then **H**) is where your
-GitHub accounts live. It's the same window QUILL opens from File > Open Remote,
-and the two editors share the accounts, so one you add in either is there in
-both. It tells you which account is active, and has three buttons:
-
-- **Add Account...** asks for a GitHub personal access token. QUILL Lite checks
-  it with GitHub before it keeps it, saves it in your operating system's
-  credential store and makes it the active account. A token GitHub doesn't
-  recognise is never saved, and you're told why.
-- **Use Selected Account** switches to another saved account.
-- **Remove Selected Account** forgets that account's token on this computer.
-
-Export as HTML used to be Alt+F, then H. It gave the letter up because it still
-has its own key, **Ctrl+Alt+Shift+End**, and Manage GitHub Accounts has nothing
-else.
-
-On an Items row or its details field, Shift+F10 opens actions for the selected
-item: review a PR, compare a branch, inspect a run, copy its link or details,
-or favorite it. Signed-in sessions add relevant write actions.
-
-For a pull request, choose **Review...**. Its native outline expands from the
-PR into changed files, each file's conversations, general conversations, and
-checks. Arrow among nodes, Right and Left expand or collapse, Tab enters the
-selected details, and Shift+Tab returns to the outline. **Ctrl+R** replies to
-a selected review thread. **Shift+F10**, the Applications key, or right-click
-opens actions suited to the node: reply and copy links on threads, open the
-selected file's differences, inspect a check, or submit a review from the PR.
-The [complete GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
-walks through the viewer's other lists and controls in both apps.
-
-### Notifications, failed runs and merging
-
-Choose **Explore...** in the Items viewer and pick the **GitHub notifications**
-view for your whole GitHub inbox. QUILL Lite says how many are unread when it
-loads, and each row says why it arrived, such as "review requested" or "you
-were mentioned". Enter marks it read and opens a pull request in Review or an
-issue in the Items viewer. **Mark Done** (Alt+D, or Delete in the list) and
-**Unsubscribe** (Alt+U) take the row out and leave you on the next one.
-**Mark All Read** (Alt+A) asks first. **Include read notifications** (Alt+I)
-shows the ones you have read.
-
-On a failed workflow run, press **Ctrl+Shift+W** for **What Failed**: one
-read-only text of the failed jobs, their failed steps, the annotations with
-file and line, and the last 40 lines of each failed step's log, without
-timestamps or colour codes. The run's **Actions...** menu also re-runs only the
-failed jobs, cancels or deletes the run, approves a run from a fork, and
-reviews deployments waiting for you. In Review, **Auto-Merge and Queue...**
-(Alt+A) turns auto-merge on with a merge method or off, and adds the pull
-request to the merge queue or takes it out. Each change asks first and says
-what GitHub did.
-
-### Files, milestones, discussions and security alerts
-
-**Files...** (Alt+F) in the Items viewer opens the repository as a tree at any
-branch, tag or commit you type or pick in **Branch, tag or commit** (Alt+B).
-Right arrow or Enter opens a folder and Left closes it. Enter on a file shows
-its text, read-only, in **Contents**. **Open in Editor** (Alt+E) opens the file
-in QUILL Lite as a new untitled document; Save As keeps a copy. **README**
-(Alt+R) shows the README of the selected folder or the repository. **History...**
-(Alt+H) lists the commits that changed it, and **Blame...** (Alt+L) lists the
-file in runs such as "Lines 10 to 14: author, date, short SHA, commit title".
-Alt+N and Alt+P move between runs, and Enter opens that commit on GitHub.
-
-**Milestones...** lists each milestone in words, such as "61 percent done, 5
-open, 8 closed, due 12 December", and creates, edits, closes and reopens them.
-The **Batch...** menu can now set a milestone on the selected issues, or add
-assignees to them.
-
-In **Explore...**, Enter on a discussion opens its thread: comments and their
-replies, "Answered by" and the name, and any poll read as text. **Reply...**
-(Alt+R) and **Mark as Answer...** (Alt+M) work there, and the Discussions
-view's context menu starts a **New Discussion...**. In the security alerts view,
-**Dismiss Alert...** on the context menu offers GitHub's own reasons for that
-kind of alert, takes an optional comment and asks first; the **Dismissed and
-resolved security alerts** view reopens one. The [QUILL guide's GitHub
-section](https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html)
-covers each of these in full.
-
-### Reviewing a pull request line by line
-
-The top of the Review window says the pull request in one sentence, such as
-"Approved, 2 checks failing, 1 open thread, 3 commits behind main", and QUILL
-Lite says it once when the review opens. When something it needs is missing,
-it says "merge readiness unknown" rather than guessing.
-
-In **Diff...**, **Patch lines** (Alt+P) lists the selected file's changes one
-line per row. **Comment on This Line...** (Alt+L) and **Comment on Lines...**
-(Alt+S) open a comment on the selected line or run of lines. **Suggest a
-change** writes a suggestion block for you to edit. **Add to Review** keeps
-the comment on this computer until **Compose Review...** sends it with your
-review. **Post Now** posts it at once. **Line marks** (Alt+M) reads lines as
-words or as + and - symbols; symbols need punctuation reading turned up.
-**Copy Diff** (Alt+C) and **Open Diff in Default App** (Alt+O) hand over the
-whole pull request as a `.diff`.
-
-Back in Review, **Changed since my last review** (Alt+L) shows only the files
-that changed since the commit you last reviewed, and says how many.
-**Timeline...** (Alt+T) is the conversation's history, one line per event, newest
-last. The context menus add **React...**, which adds or removes one of GitHub's
-eight reactions chosen by name. The
-[QUILL guide's pull request section](https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html)
-has the details; the windows are the same in both apps.
-
-### Searching, repositories, releases and housekeeping
-
-Explore also searches code, commits and repositories. Pick **Code search**,
-**Commit search** or **Repository search** in **View** (Alt+V), type in
-**Global search** (Alt+G) and press Enter. A code result reads as the file's
-path, the matching line and the words that matched. **Insights** reads a
-repository's last 14 days of views and clones, the sites and pages behind them
-and each contributor's commits, as sentences one line at a time; it needs push
-access for the traffic and says so when GitHub refuses. **Community profile
-checklist** says which of README, license, contributing guide, code of conduct
-and templates the repository has.
-
-On a repository row, the context menu's **Repository Actions** submenu syncs a
-fork with its upstream ("Merged 3 commits" or "Already up to date"), sets
-topics, changes how you watch it, archives or unarchives it, makes a new
-repository from a template, and deletes a repository once you have typed its
-full name. Explore also lists **Actions caches**, which you can delete, and
-**Secret and variable names**, which never shows a value. A person's row has
-**Follow** and **Unfollow**.
-
-In the Items viewer's Releases view, **Edit Release...** changes a release's
-name, notes, **Draft** (Alt+D, clear it to publish) and **Pre-release** (Alt+P).
-**Upload Asset...** sends a file you choose and says 25, 50 and 75 percent on
-the way; **Delete Asset...** removes one of a release's files after asking. On
-an issue, the context menu's **Housekeeping** submenu locks or unlocks the
-conversation, transfers, pins or unpins the issue, sets its issue type, and
-reorders its sub-issues with **Move Up** (Alt+U) and **Move Down** (Alt+D).
-
-**Ctrl+Shift+L** in the Items viewer or Explore says how much of GitHub's
-hourly allowance is left, such as "GitHub API: 4,212 of 5,000 left, resets at
-3:40 PM". A refresh that found nothing new says "No changes since the last
-load", and if GitHub asks QUILL Lite to slow down you hear it once, such as
-"GitHub asked QUILL to wait 60 seconds". The
-[QUILL guide's GitHub section](https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html)
-has the details; the windows are the same in both apps.
+All of it is in its own book, which ships with QUILL Lite:
+[The GitHub Guide for QUILL and QUILL Lite](lite-github-guide.html). Start
+with [Chapter 1: Getting started](lite-github-guide-01-getting-started.html)
+and [Chapter 2: Getting around](lite-github-guide-02-getting-around.html).
 
 ## Opening something you worked on recently
 

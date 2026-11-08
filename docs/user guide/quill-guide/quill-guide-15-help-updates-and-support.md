@@ -33,8 +33,9 @@ the menu closes before it updates anything on it.
   QUILL.
 - **Open Welcome Guide** opens a lighter getting-started document that knows
   which feature profile you are using.
-- **Open Keyboard Reference** builds a fresh list of shortcuts from the keys
-  that are bound right now, so it always matches your setup.
+- **Open Keyboard Reference** (the QUILL key, then `Shift+K`) builds a fresh
+  list of shortcuts from the keys that are bound right now, so it always
+  matches your setup.
 - **Tutorials...** (`Ctrl+Alt+F1`) opens the guided lessons. They have their
   own topic, [Tutorials](#tutorials), later in this chapter.
 - **What Can I Do Here?** gives help that fits what you are doing at the
@@ -103,10 +104,11 @@ do the same thing in QUILL Lite, Quill Radio and QUILL Cast.
   download, and can close QUILL so setup runs straight away. Installed and
   portable copies are handled differently;
   [Checking for Updates](#checking-for-updates) explains both.
-- **What's New** opens QUILL's changelog, the list of everything that changed
-  in each version, in your web browser. It has no shortcut of its own, because
-  `Ctrl+Shift+F1` is the User Guide here; press `Alt+H`, then `W`. Every
-  QuillVille app has the same command on its Help menu.
+- **What's New** (the QUILL key, then `W`) opens QUILL's changelog, the list
+  of everything that changed in each version, in your web browser. The other
+  QuillVille apps use `Ctrl+Shift+F1` for it, but that is the User Guide here,
+  so QUILL's key is on the QUILL key instead; `Alt+H`, then `W`, works too.
+  Every QuillVille app has the same command on its Help menu.
 - **About Quill** shows the version, publisher details, and the third-party
   components QUILL uses, each with its license and version. The version has a
   build number, such as 1.0.0 (build 2): the build number tells you which build
@@ -128,7 +130,8 @@ several layers of help, and you can reach each one from the keyboard.
 - **F1** gives help on the control that has focus. It works anywhere in QUILL.
 - **Open User Guide** (`Ctrl+Shift+F1`) is for when you want the full map.
 - **Open Welcome Guide** is for when you want a lighter introduction.
-- **Open Keyboard Reference** is for when you want the exact keys you have now.
+- **Open Keyboard Reference** (the QUILL key, then `Shift+K`) is for when you
+  want the exact keys you have now.
 - **Key Cheatsheet** gives you a quick list of shortcuts. It has no menu
   row: press `Alt+Shift+/` (or `Ctrl+F1`), or find it in the Command Palette.
 - **What Can I Do Here?** (`Ctrl+Alt+Shift+F1`) gives help on the spot, for

@@ -219,9 +219,15 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "edit.follow_link": "Reached another way: Ctrl+Enter, its key until 2026-11-03, "
     "still follows a link when the caret is on one; elsewhere that key is Word's page "
     "break now (rules 1 and 2). The Navigate menu and the context menu reach it too.",
-    "help.whats_new": "Reached another way: Help > What's New, in both editors. No chord "
-    "is free in both -- Ctrl+Shift+F1, the standalone apps' What's New, is the User "
-    "Guide here -- and rule 9 asks a once-per-update read for a way in, not a chord.",
+    "edit.paste_file": "Reached another way: Edit > Clipboard > Paste Copied Files..., in both "
+    "editors. No chord was free in both (measured 2026-11-07), and it asks text or paths "
+    "next, so a chord would save little (rule 9).",
+    "edit.run_replace_job": "Reached another way: Edit > Search Tools > Run Replace Job..., "
+    "and Edit > Replace Jobs in QUILL Lite. No chord was free in both (measured "
+    "2026-11-07), and it asks which job next, so a chord would save little (rule 9).",
+    "edit.manage_replace_jobs": "Reached another way: Edit > Search Tools > Manage Replace "
+    "Jobs..., and Edit > Replace Jobs in QUILL Lite. Making and editing jobs is occasional "
+    "work in a window of its own (rule 9).",
     **{
         command: "Reached another way: Quick Nav's Tab and Shift+Tab, and Navigate > Code in "
         "both editors. No chord near them is free in both, and the Keyboard Manager binds one."

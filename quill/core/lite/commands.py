@@ -31,6 +31,7 @@ from quill.core.lite.commands_ai import (
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_github import GITHUB_FILE_ROWS
 from quill.core.lite.commands_help import HELP_ROWS
+from quill.core.lite.commands_replace_jobs import REPLACE_JOB_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_say import CLIPBOARD_SAY_ROWS, TIME_SAY_ROWS, WINDOW_SAY_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
@@ -205,6 +206,7 @@ COMMANDS: list[CommandRow] = [
     ("&Edit", "F&ind in Open Documents...", "Ctrl+Alt+Shift+F8", "cmd_find_open_docs", ""),
     ("&Edit", "&Search in Files...", "Ctrl+Alt+Shift+F", "cmd_search_in_files", ""),
     ("&Edit", "Replace Across Files...", "Ctrl+Shift+R", "cmd_replace_in_files", ""),
+    *REPLACE_JOB_ROWS,  # Edit > Replace Jobs (commands_replace_jobs.py)
     # Two questions Find Next cannot answer: how many are there, and what does
     # each one sit in. Both matter most in the moment just before a Replace
     # All, and both are otherwise reachable only by pressing F3 until it wraps

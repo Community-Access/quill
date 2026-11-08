@@ -96,7 +96,7 @@ class GitHubFileRunsDialog:
         self._open_btn = wx.Button(panel, label="&Open Commit")
         self._open_btn.SetName("Open the selected commit on GitHub")
         self._open_btn.SetHelpText("Opens the selected row's commit in your browser.")
-        self._refresh_btn = wx.Button(panel, label="&Refresh")
+        self._refresh_btn = wx.Button(panel, label="Re&fresh")
         self._refresh_btn.SetName("Load again")
         self._refresh_btn.SetHelpText("Asks GitHub again.")
         close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")

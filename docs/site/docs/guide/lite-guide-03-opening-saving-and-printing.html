@@ -1450,175 +1450,34 @@ still inserted where you drop it.</p>
 <h2 id="github-issues-and-pull-requests">GitHub issues and pull
 requests</h2>
 <p><strong>File &gt; GitHub Workbench…</strong> (<strong>Alt+F</strong>,
-then <strong>G</strong>) opens QUILL’s shared GitHub Items viewer in
-QUILL Lite. The first use asks whether you want to connect to GitHub. If
-the current document is in a checkout with a GitHub origin, the
-repository field starts with that repository.</p>
-<p>If you haven’t signed in yet, the Workbench tells you so before it
-opens and gives you two choices. <strong>Manage GitHub
-Accounts…</strong> lets you add your account there and then, and once
-GitHub confirms it the Workbench opens signed in. <strong>Continue as
-Guest</strong> opens it anyway, and you can still read public
-repositories; posting reviews, replying and the other write actions are
-what need an account. Escape opens nothing.</p>
-<h3 id="signing-in-and-switching-accounts">Signing in and switching
-accounts</h3>
-<p><strong>File &gt; Manage GitHub Accounts…</strong>
-(<strong>Alt+F</strong>, then <strong>H</strong>) is where your GitHub
-accounts live. It’s the same window QUILL opens from File &gt; Open
-Remote, and the two editors share the accounts, so one you add in either
-is there in both. It tells you which account is active, and has three
-buttons:</p>
-<ul>
-<li><strong>Add Account…</strong> asks for a GitHub personal access
-token. QUILL Lite checks it with GitHub before it keeps it, saves it in
-your operating system’s credential store and makes it the active
-account. A token GitHub doesn’t recognise is never saved, and you’re
-told why.</li>
-<li><strong>Use Selected Account</strong> switches to another saved
-account.</li>
-<li><strong>Remove Selected Account</strong> forgets that account’s
-token on this computer.</li>
-</ul>
+then <strong>G</strong>) opens the same GitHub windows QUILL has. You
+can read any public repository’s issues, pull requests, branches,
+releases, workflow runs and files, review a pull request in an outline
+of its files and conversations, find out what failed in a build, and
+browse a repository at any branch. The first time, QUILL Lite asks once
+whether it may connect to GitHub. If the document you have open is in a
+Git folder whose remote is on GitHub, that repository is already filled
+in.</p>
+<p>To sign in, choose <strong>File &gt; Manage GitHub Accounts…</strong>
+(<strong>Alt+F</strong>, then <strong>H</strong>). It’s the same window
+QUILL has, and the two editors share your accounts, so one you add in
+either is there in both. If you open the Workbench before you’ve signed
+in, it tells you so and offers Manage GitHub Accounts first; once GitHub
+confirms your account, the Workbench opens signed in. <strong>Continue
+as Guest</strong> opens it anyway: a guest can read public repositories,
+and the commands that would change something say they need a signed-in
+account. A file you open from GitHub opens as a new untitled
+document.</p>
 <p>Export as HTML used to be Alt+F, then H. It gave the letter up
 because it still has its own key, <strong>Ctrl+Alt+Shift+End</strong>,
 and Manage GitHub Accounts has nothing else.</p>
-<p>On an Items row or its details field, Shift+F10 opens actions for the
-selected item: review a PR, compare a branch, inspect a run, copy its
-link or details, or favorite it. Signed-in sessions add relevant write
-actions.</p>
-<p>For a pull request, choose <strong>Review…</strong>. Its native
-outline expands from the PR into changed files, each file’s
-conversations, general conversations, and checks. Arrow among nodes,
-Right and Left expand or collapse, Tab enters the selected details, and
-Shift+Tab returns to the outline. <strong>Ctrl+R</strong> replies to a
-selected review thread. <strong>Shift+F10</strong>, the Applications
-key, or right-click opens actions suited to the node: reply and copy
-links on threads, open the selected file’s differences, inspect a check,
-or submit a review from the PR. The <a
-href="https://www.quillforall.org/docs/08-github-inside-quill.html">complete
-GitHub tutorial</a> walks through the viewer’s other lists and controls
-in both apps.</p>
-<h3 id="notifications-failed-runs-and-merging">Notifications, failed
-runs and merging</h3>
-<p>Choose <strong>Explore…</strong> in the Items viewer and pick the
-<strong>GitHub notifications</strong> view for your whole GitHub inbox.
-QUILL Lite says how many are unread when it loads, and each row says why
-it arrived, such as “review requested” or “you were mentioned”. Enter
-marks it read and opens a pull request in Review or an issue in the
-Items viewer. <strong>Mark Done</strong> (Alt+D, or Delete in the list)
-and <strong>Unsubscribe</strong> (Alt+U) take the row out and leave you
-on the next one. <strong>Mark All Read</strong> (Alt+A) asks first.
-<strong>Include read notifications</strong> (Alt+I) shows the ones you
-have read.</p>
-<p>On a failed workflow run, press <strong>Ctrl+Shift+W</strong> for
-<strong>What Failed</strong>: one read-only text of the failed jobs,
-their failed steps, the annotations with file and line, and the last 40
-lines of each failed step’s log, without timestamps or colour codes. The
-run’s <strong>Actions…</strong> menu also re-runs only the failed jobs,
-cancels or deletes the run, approves a run from a fork, and reviews
-deployments waiting for you. In Review, <strong>Auto-Merge and
-Queue…</strong> (Alt+A) turns auto-merge on with a merge method or off,
-and adds the pull request to the merge queue or takes it out. Each
-change asks first and says what GitHub did.</p>
-<h3 id="files-milestones-discussions-and-security-alerts">Files,
-milestones, discussions and security alerts</h3>
-<p><strong>Files…</strong> (Alt+F) in the Items viewer opens the
-repository as a tree at any branch, tag or commit you type or pick in
-<strong>Branch, tag or commit</strong> (Alt+B). Right arrow or Enter
-opens a folder and Left closes it. Enter on a file shows its text,
-read-only, in <strong>Contents</strong>. <strong>Open in Editor</strong>
-(Alt+E) opens the file in QUILL Lite as a new untitled document; Save As
-keeps a copy. <strong>README</strong> (Alt+R) shows the README of the
-selected folder or the repository. <strong>History…</strong> (Alt+H)
-lists the commits that changed it, and <strong>Blame…</strong> (Alt+L)
-lists the file in runs such as “Lines 10 to 14: author, date, short SHA,
-commit title”. Alt+N and Alt+P move between runs, and Enter opens that
-commit on GitHub.</p>
-<p><strong>Milestones…</strong> lists each milestone in words, such as
-“61 percent done, 5 open, 8 closed, due 12 December”, and creates,
-edits, closes and reopens them. The <strong>Batch…</strong> menu can now
-set a milestone on the selected issues, or add assignees to them.</p>
-<p>In <strong>Explore…</strong>, Enter on a discussion opens its thread:
-comments and their replies, “Answered by” and the name, and any poll
-read as text. <strong>Reply…</strong> (Alt+R) and <strong>Mark as
-Answer…</strong> (Alt+M) work there, and the Discussions view’s context
-menu starts a <strong>New Discussion…</strong>. In the security alerts
-view, <strong>Dismiss Alert…</strong> on the context menu offers
-GitHub’s own reasons for that kind of alert, takes an optional comment
-and asks first; the <strong>Dismissed and resolved security
-alerts</strong> view reopens one. The <a
-href="https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html">QUILL
-guide’s GitHub section</a> covers each of these in full.</p>
-<h3 id="reviewing-a-pull-request-line-by-line">Reviewing a pull request
-line by line</h3>
-<p>The top of the Review window says the pull request in one sentence,
-such as “Approved, 2 checks failing, 1 open thread, 3 commits behind
-main”, and QUILL Lite says it once when the review opens. When something
-it needs is missing, it says “merge readiness unknown” rather than
-guessing.</p>
-<p>In <strong>Diff…</strong>, <strong>Patch lines</strong> (Alt+P) lists
-the selected file’s changes one line per row. <strong>Comment on This
-Line…</strong> (Alt+L) and <strong>Comment on Lines…</strong> (Alt+S)
-open a comment on the selected line or run of lines. <strong>Suggest a
-change</strong> writes a suggestion block for you to edit. <strong>Add
-to Review</strong> keeps the comment on this computer until
-<strong>Compose Review…</strong> sends it with your review. <strong>Post
-Now</strong> posts it at once. <strong>Line marks</strong> (Alt+M) reads
-lines as words or as + and - symbols; symbols need punctuation reading
-turned up. <strong>Copy Diff</strong> (Alt+C) and <strong>Open Diff in
-Default App</strong> (Alt+O) hand over the whole pull request as a
-<code>.diff</code>.</p>
-<p>Back in Review, <strong>Changed since my last review</strong> (Alt+L)
-shows only the files that changed since the commit you last reviewed,
-and says how many. <strong>Timeline…</strong> (Alt+T) is the
-conversation’s history, one line per event, newest last. The context
-menus add <strong>React…</strong>, which adds or removes one of GitHub’s
-eight reactions chosen by name. The <a
-href="https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html">QUILL
-guide’s pull request section</a> has the details; the windows are the
-same in both apps.</p>
-<h3 id="searching-repositories-releases-and-housekeeping">Searching,
-repositories, releases and housekeeping</h3>
-<p>Explore also searches code, commits and repositories. Pick
-<strong>Code search</strong>, <strong>Commit search</strong> or
-<strong>Repository search</strong> in <strong>View</strong> (Alt+V),
-type in <strong>Global search</strong> (Alt+G) and press Enter. A code
-result reads as the file’s path, the matching line and the words that
-matched. <strong>Insights</strong> reads a repository’s last 14 days of
-views and clones, the sites and pages behind them and each contributor’s
-commits, as sentences one line at a time; it needs push access for the
-traffic and says so when GitHub refuses. <strong>Community profile
-checklist</strong> says which of README, license, contributing guide,
-code of conduct and templates the repository has.</p>
-<p>On a repository row, the context menu’s <strong>Repository
-Actions</strong> submenu syncs a fork with its upstream (“Merged 3
-commits” or “Already up to date”), sets topics, changes how you watch
-it, archives or unarchives it, makes a new repository from a template,
-and deletes a repository once you have typed its full name. Explore also
-lists <strong>Actions caches</strong>, which you can delete, and
-<strong>Secret and variable names</strong>, which never shows a value. A
-person’s row has <strong>Follow</strong> and
-<strong>Unfollow</strong>.</p>
-<p>In the Items viewer’s Releases view, <strong>Edit Release…</strong>
-changes a release’s name, notes, <strong>Draft</strong> (Alt+D, clear it
-to publish) and <strong>Pre-release</strong> (Alt+P). <strong>Upload
-Asset…</strong> sends a file you choose and says 25, 50 and 75 percent
-on the way; <strong>Delete Asset…</strong> removes one of a release’s
-files after asking. On an issue, the context menu’s
-<strong>Housekeeping</strong> submenu locks or unlocks the conversation,
-transfers, pins or unpins the issue, sets its issue type, and reorders
-its sub-issues with <strong>Move Up</strong> (Alt+U) and <strong>Move
-Down</strong> (Alt+D).</p>
-<p><strong>Ctrl+Shift+L</strong> in the Items viewer or Explore says how
-much of GitHub’s hourly allowance is left, such as “GitHub API: 4,212 of
-5,000 left, resets at 3:40 PM”. A refresh that found nothing new says
-“No changes since the last load”, and if GitHub asks QUILL Lite to slow
-down you hear it once, such as “GitHub asked QUILL to wait 60 seconds”.
-The <a
-href="https://www.quillforall.org/docs/quill-guide-03-opening-saving-and-converting-files.html">QUILL
-guide’s GitHub section</a> has the details; the windows are the same in
-both apps.</p>
+<p>All of it is in its own book, which ships with QUILL Lite: <a
+href="lite-github-guide.html">The GitHub Guide for QUILL and QUILL
+Lite</a>. Start with <a
+href="lite-github-guide-01-getting-started.html">Chapter 1: Getting
+started</a> and <a
+href="lite-github-guide-02-getting-around.html">Chapter 2: Getting
+around</a>.</p>
 <h2 id="opening-something-you-worked-on-recently">Opening something you
 worked on recently</h2>
 <p>QUILL Lite remembers the documents you open, newest first, so getting

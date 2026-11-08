@@ -40,6 +40,7 @@ from quill.apps.lite_dialogs_entry import ask_text
 from quill.apps.lite_github_accounts import GitHubAccountsLiteMixin
 from quill.apps.lite_github_open import GitHubFileOpenMixin
 from quill.apps.lite_window_backups import DocumentBackupsMixin
+from quill.apps.lite_window_replace_jobs import DocumentReplaceJobsMixin
 from quill.core import format_ops, line_ops, transforms
 from quill.core.lite import APP_NAME
 from quill.core.selection import word_span
@@ -64,7 +65,9 @@ _Tool = Callable[[str], str]
 _IndentOp = Callable[[str, int, int], tuple[str, int, int]]
 
 
-class DocumentToolsMixin(DocumentBackupsMixin, GitHubFileOpenMixin, GitHubAccountsLiteMixin):
+class DocumentToolsMixin(
+    DocumentBackupsMixin, GitHubFileOpenMixin, GitHubAccountsLiteMixin, DocumentReplaceJobsMixin
+):
     """Line tools, case tools, and the file-format dialog."""
 
     def cmd_github_workbench(self) -> None:

@@ -315,6 +315,9 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "format.manage_abbreviations": "Manage Abbreviations",
     "format.toggle_abbreviation_expansion": "Toggle Abbreviation Expansion",
     "help.context_help": "Context Help",
+    # Leader W and Shift+K since 2026-11-07, by their Help menu names.
+    "help.whats_new": "What's New",
+    "tools.open_keyboard_reference": "Open Keyboard Reference",
     "navigate.go_to_anything": "Go To Anything",
     "view.announce_contrast": "Announce Contrast",
     "edit.open_copy_tray": "Open Copy Tray",

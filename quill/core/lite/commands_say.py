@@ -23,7 +23,17 @@ that get pressed went to those:
 
 Save Clipboard to File and Clear Clipboard are once-in-a-while commands (rule
 9) with no chord left free in both editors, so they are reached from this
-submenu -- Alt+E, B, then F or B -- the same as in QUILL. Copy Log is Help's
+submenu -- Alt+E, B, then F or B -- the same as in QUILL. So is Paste Copied Files
+(2026-11-07, Alt+E, B, D), which puts in the text or the paths of files copied
+in File Explorer: the clipboard's own submenu is where somebody who just heard
+Say Clipboard say "2 files" already is.
+
+**No speech rate, volume or punctuation keys** (considered 2026-11-07). Both
+editors speak through the screen reader, which owns all three and has its own
+keys for them; QUILL's own voice settings are for Read Aloud, which QUILL Lite
+does not have, and no chord is free in both editors to give them. A key that
+changed one editor's Read Aloud rate while the reader kept speaking at its own
+would be two voices answering one key. Copy Log is Help's
 (:mod:`quill.core.lite.commands_help`).
 """
 
@@ -36,6 +46,9 @@ CLIPBOARD_SAY_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     (_CLIPBOARD, "&Append Selection to Clipboard", "Alt+Shift+End", "cmd_append_to_clipboard", ""),
     (_CLIPBOARD, "Save Clipboard to &File...", "", "cmd_save_clipboard", ""),
     (_CLIPBOARD, "Clear Clip&board", "", "cmd_clear_clipboard", ""),
+    # D: P, A, S, T, E, F, I and L are spent in this submenu by the copy tray
+    # and the collector (GATE-14), and the same label and letter as QUILL's.
+    (_CLIPBOARD, "Paste Copie&d Files...", "", "cmd_paste_file", ""),
     (_CLIPBOARD, "", "", "", "sep"),
 )
 

@@ -104,8 +104,49 @@ The rest of the search commands are on **Edit > Search Tools**:
   marked blocks of lines and keep the lines that are only in the first, or the
   lines both share.
 - **Multi Replace...** runs up to four find-and-replace pairs in one pass.
+  For a list you will want again, use a replace job, below.
 - **Count Occurrences...** (`Ctrl+Alt+Shift+F3`) tells you how many times a
   piece of text appears in the document.
+
+### Saved replace jobs
+
+Some clean-ups are the same every time: the same six replacements on every
+exported transcript, the same curly quotes straightened in every pasted email.
+A replace job is a list like that, saved under a name, so you set it up once
+and run it with a couple of keystrokes after that.
+
+**Edit > Search Tools > Run Replace Job...** lists your saved jobs. Arrow to
+one and press Enter. Every step runs in order, each on the result of the one
+before, and QUILL tells you what happened: "Tidy spaces: 14 replacements", or
+"Tidy spaces: 3 replacements in the selection. Step 1 found nothing". If you
+selected some text first, the job runs on the selection only; otherwise it runs
+on the whole document. Either way it is one change, so one `Ctrl+Z` takes the
+whole job back. If a step has a pattern that cannot be used, nothing changes
+at all, and you hear which step and why.
+
+**Edit > Search Tools > Manage Replace Jobs...** is where you make them. The
+window lists your jobs, with buttons to make a **New** one, **Edit** the steps
+of the one you are on, **Rename** it and **Delete** it (QUILL asks first).
+Editing a job shows its name and its steps in order, with **Add Step**,
+**Edit Step**, **Remove Step**, **Move Up** and **Move Down**. Each step has
+four things:
+
+- **Find what**, the text to look for.
+- **Replace with**, what it becomes. Leave it empty to delete what was found.
+- **Regular expression**, to treat Find what as a pattern. With it checked,
+  `^` and `$` mean the start and end of a line, and `\1` in Replace with puts
+  back the first group. Without it, both fields are taken exactly as typed.
+- **Match case**, to find only the same capital letters.
+
+QUILL starts you off with three jobs you can keep, change or delete: **Tidy
+spaces** (tabs to spaces, runs of spaces to one, no spaces at line ends),
+**Straighten quote marks** (curly quotes to straight ones) and **Close up blank
+lines** (three or more line breaks to one blank line). Your jobs are saved in
+QUILL's own data folder, in `replace_jobs.json`. QUILL Lite has the same two
+commands, on its Edit menu under Replace Jobs, and keeps its own list.
+
+Neither command has a key: there was none free in both editors, and both ask
+you a question straight away. You can give them one in the Keymap Editor.
 
 ### Find and replace in all your open documents
 

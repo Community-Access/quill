@@ -179,6 +179,11 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_say_time": "navigate.say_time",
     "cmd_say_windows_open": "window.say_windows_open",
     "cmd_copy_log": "help.copy_log",
+    # Paste Copied Files and the saved replace jobs (quill/ui/paste_file.py,
+    # quill/ui/replace_jobs.py): one set of handlers, no key in either editor.
+    "cmd_paste_file": "edit.paste_file",
+    "cmd_run_replace_job": "edit.run_replace_job",
+    "cmd_manage_replace_jobs": "edit.manage_replace_jobs",
     "cmd_about": "help.about_quill",
     "cmd_add_word_to_dictionary": "tools.add_word_to_dictionary",
     # The hosted free AI: five commands both editors now have, on the same five

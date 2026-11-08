@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 8: Discussions and security</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-8-discussions-and-security">Chapter 8: Discussions and
+security</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Two kinds of conversation that are not issues. Discussions are a
+repository’s forum: questions, ideas and announcements, with threaded
+replies, answers and polls. Security alerts are GitHub telling a
+repository about a vulnerable package, a weakness in the code, or a
+secret committed by mistake. This chapter covers reading and taking part
+in both.</p>
+<h2 id="discussions">Discussions</h2>
+<h3 id="finding-them">Finding them</h3>
+<p>In Explore, choose <strong>Repository Discussions</strong> in
+<strong>View:</strong> (<code>Alt+V</code>), with the repository in
+<strong>Repository:</strong> (<code>Alt+R</code>). You need to be signed
+in. Each row reads the number, the title and the category, and whether
+it is answered: “#12 How do I turn off the sounds? (Q&amp;A; Answered by
+alice)”.</p>
+<p>A discussion link pasted into <strong>Open Link…</strong> in GitHub
+Items opens here too.</p>
+<h3 id="reading-a-thread">Reading a thread</h3>
+<p>Press Enter on a discussion, or choose <strong>Open Discussion
+Thread…</strong> from its context menu. The window <strong>Discussion
+#12:</strong> and the repository has:</p>
+<ul>
+<li><strong>Thread</strong> (<code>Alt+T</code>), a list. The first row
+is the discussion itself, then each comment followed by its replies:
+“Comment by bob, the answer, 2 replies:” and its first line, then “Reply
+by alice:” and so on. The answer, if there is one, says so.</li>
+<li><strong>Text</strong> (<code>Alt+X</code>), the selected row in
+full. Enter in the list takes you there.</li>
+<li><strong>Reply…</strong> (<code>Alt+R</code>), <strong>Mark as
+Answer…</strong> (<code>Alt+M</code>), <strong>Open on GitHub</strong>
+(<code>Alt+O</code>), <strong>Refresh</strong> (<code>Alt+F</code>) and
+<strong>Close</strong>.</li>
+</ul>
+<p>When it loads, the status line says who answered it, or “Not answered
+yet.”, and how many comments and replies there are. A category that does
+not take answers says “This category does not take answers.”</p>
+<p>A discussion with a poll reads it one option to a line, after the
+question and the total: “Poll: Which sound pack?, 25 votes in all”, then
+“Classic: 15 votes, 60 percent”.</p>
+<h3 id="replying">Replying</h3>
+<p><strong>Reply…</strong> (<code>Alt+R</code>) replies to the selected
+comment, or to the discussion itself when the first row is selected. The
+prompt says which: “Your reply to bob’s comment:”. You hear “Posted your
+reply”. A closed discussion takes no replies, so the button is
+unavailable.</p>
+<h3 id="marking-the-answer">Marking the answer</h3>
+<p>In a question-and-answer category, the person who asked, or a
+maintainer, can mark one comment as the answer. Select the comment and
+press <strong>Mark as Answer…</strong> (<code>Alt+M</code>). QUILL asks
+first: “Mark bob’s comment as the answer to this discussion?” On the
+comment that is already the answer, the button reads <strong>Unmark
+Answer…</strong>, still on <code>Alt+M</code>. A reply cannot be the
+answer, only a top-level comment.</p>
+<h3 id="starting-a-discussion">Starting a discussion</h3>
+<p>In the <strong>Repository Discussions</strong> view, signed in,
+choose <strong>New Discussion…</strong> from the context menu.</p>
+<ul>
+<li><strong>Category:</strong> (<code>Alt+C</code>). Categories that
+take answers say “, takes answers”.</li>
+<li><strong>Title:</strong> (<code>Alt+T</code>) and
+<strong>Body:</strong> (<code>Alt+B</code>).</li>
+<li><strong>Start Discussion</strong>, or <strong>Cancel</strong>.</li>
+</ul>
+<p>You hear “Started the discussion” with its title and category.</p>
+<h2 id="security-alerts">Security alerts</h2>
+<h3 id="finding-them-1">Finding them</h3>
+<p>In Explore, choose <strong>Repository security alerts</strong> in
+<strong>View:</strong>, with the repository in
+<strong>Repository:</strong>. The view brings three kinds of alert
+together:</p>
+<ul>
+<li><strong>Dependabot</strong>: a package the repository uses has a
+known vulnerability.</li>
+<li><strong>Code scanning</strong>: a tool found a likely weakness in
+the code.</li>
+<li><strong>Secret scanning</strong>: something that looks like a
+password or key was committed.</li>
+</ul>
+<p>Each row reads the kind, the severity, the package or file, and a
+summary: “Dependabot: high: lodash — Prototype pollution”.</p>
+<p>Reading alerts needs a signed-in account that can see the
+repository’s security alerts. If yours cannot read one kind, or the
+repository has that kind turned off, QUILL says that kind is unavailable
+rather than showing it as having no alerts. A secret’s value is never
+loaded into the view.</p>
+<p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Security
+Alerts…</strong> lists a repository’s open Dependabot alerts on their
+own.</p>
+<h3 id="dismissing-an-alert">Dismissing an alert</h3>
+<p>Not every alert needs a fix. The package might be used only in tests,
+or the finding might be wrong. On an alert’s row, <strong>Dismiss
+Alert…</strong> on the context menu asks three things:</p>
+<ol type="1">
+<li><strong>Why</strong>, from GitHub’s own reasons for that kind of
+alert:
+<ul>
+<li>Dependabot: “A fix has already been started”, “This alert is
+inaccurate or incorrect”, “No bandwidth to fix this”, “Vulnerable code
+is not actually used”, or “Risk is tolerable to this project”.</li>
+<li>Code scanning: “False positive”, “Won’t fix” or “Used in
+tests”.</li>
+<li>Secret scanning: “False positive”, “Won’t fix”, “Revoked” or “Used
+in tests”.</li>
+</ul></li>
+<li><strong>A comment</strong>, which you can leave empty. GitHub takes
+up to 280 characters.</li>
+<li><strong>Are you sure</strong>: the confirmation names the alert and
+the reason, and says everyone with access will see it as dismissed.</li>
+</ol>
+<p>Cancel at any step and nothing is sent. QUILL reports the dismissal
+only when GitHub sends the alert back in its new state.</p>
+<h3 id="reopening-an-alert">Reopening an alert</h3>
+<p>Dismissed and fixed alerts have their own view, <strong>Dismissed and
+resolved security alerts</strong>. There, <strong>Reopen Alert…</strong>
+on the context menu asks first, then reopens the alert.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="github-guide-07-code-and-repositories.html">Chapter 7: Code and
+repositories</a></li>
+<li>Next: <a href="github-guide-09-codespaces-and-the-cli.html">Chapter
+9: Codespaces and the GitHub CLI</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

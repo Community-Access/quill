@@ -2309,7 +2309,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 278 audited sites (278 helped).
+Control coverage: 297 audited sites (297 helped).
 
 ### Every window, and what it is for
 
@@ -2377,6 +2377,8 @@ Control coverage: 278 audited sites (278 helped).
 
 **Edit Prompt.** Change a prompt's name, category or instruction. Save keeps the change; Cancel leaves the prompt as it was.
 
+**Edit Replace Job.** A replace job's name and its steps, in the order they run. Each step runs on the result of the one before.
+
 **Email Reply.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Engine Tools for This Project.** The engine's own tools, beside QUILL's. All are off until you check them, each use still asks you first, and their edits skip Review Changes.
@@ -2384,6 +2386,8 @@ Control coverage: 278 audited sites (278 helped).
 **Explanation.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **File format.** How this document will be written back to disk: which character encoding, and which line endings. QUILL Lite normally writes back exactly what it read, so these only change when you change them here -- and the change happens at the next save, not now.
+
+**Fill In.** This text asks for something before it goes in. Fill in each box or choose from each list, then press Enter; Escape puts nothing in.
 
 **Find.** Find text in this document. Enter finds the next match and Shift Enter the previous one; the search wraps around the end and says so when it does. The window stays open while you work, so F3 and Shift F3 keep moving through the matches after you have gone back to the text.
 
@@ -2425,6 +2429,8 @@ Control coverage: 278 audited sites (278 helped).
 
 **Manage Abbreviations.** Your abbreviations: type the short form and a space, and the long form appears. This is QUILL Lite's own list unless you asked it, in Preferences, to share the one QUILL and Quill Inkwell use.
 
+**Manage Replace Jobs.** Make, edit, rename and delete saved replace jobs. Every change is kept when this window closes.
+
 **Marks.** The places you have passed through, newest first, with the line each one is on. Choose one and press Enter to go there. A mark is not a bookmark: a bookmark is somewhere you meant to keep, a mark is where you were standing before you went to look something up.
 
 **More Dictation Settings.** The finer dictation choices: holding the key to talk, the quiet preview of what is being heard, profiles for writing and for talking to the AI, and My Dictation Instructions. Nothing changes until you choose OK.
@@ -2442,6 +2448,8 @@ Control coverage: 278 audited sites (278 helped).
 **Next Paragraph.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Open Project Folder.** Choose a folder to work on as a project. Your recent projects are listed first; Browse for a Folder picks any other.
+
+**Paste Copied Files.** Choose what goes in for the files you copied in File Explorer: each file's text, read the way the editor opens it, or each file's full path. Files that are too large or are not text are left out and named.
 
 **Plain Language.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -2465,6 +2473,8 @@ Control coverage: 278 audited sites (278 helped).
 
 **Replace.** Find text and put something else in its place. Replace changes the match you are on and moves to the next; Replace All changes every one and tells you how many. In a rich text document Replace All asks first, because replaced text takes the formatting of the run it lands in.
 
+**Replace Step.** One find-and-replace step: what to find, what it becomes, and whether to read it as a regular expression or match capital letters.
+
 **Review AI Changes.** The AI's answer compared with the text it would replace, one change per line, with the words that differ and the sentence they are in. Uncheck a change to keep the original there. When one change holds several word edits, Alt+W goes to their list, where Space keeps or drops each one on its own. Then apply; it goes in as one edit Control Z takes back. Nothing changes until you apply.
 
 **Review Changes.** Every file this turn would change, then each change in it, with line numbers. Accept or reject each one; Apply Accepted Changes writes them all at once, after QUILL has kept a copy for Undo Last Turn.
@@ -2474,6 +2484,8 @@ Control coverage: 278 audited sites (278 helped).
 **Review with AI.** Before the first change is asked for, this says who receives the words being reviewed and what is sent. No is the default and sends nothing.
 
 **Rewrite.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Run Replace Job.** Your saved find-and-replace jobs. Enter runs the one you are on, every step in order, on the selection or the whole document, as one change that Control Z takes back.
 
 **Run This Command?.** The agent wants to run a command in your project folder. The exact command is below the sentence, and a warning appears when QUILL sees a risk. QUILL cannot stop an allowed command from doing what your account can do.
 
@@ -2943,3 +2955,29 @@ Control coverage: 278 audited sites (278 helped).
 - `self.send_button`: Starts a task with what you typed, or sends it to the task that is running.
 - `self.stop_button`: Stops the task now. Changes already applied stay, and each can be undone with Control Z.
 - `close`: Closes this window, stopping a task that is still running.
+#### (module level) (`quill/ui/paste_file.py`)
+
+- `listbox`: Each file's text puts in what the file says, read the way this editor opens it, with a blank line between files; files that are too large or are not text are left out and named. Each file's full path puts in one path per line. Enter pastes.
+- `ok`: Paste what is chosen in the list.
+- `cancel`: Paste nothing.
+#### (module level) (`quill/ui/replace_jobs_windows.py`)
+
+- `listbox`: Your saved replace jobs. Enter runs the one you are on, every step in order, as one change that Control Z takes back. Manage Replace Jobs adds, edits and deletes them.
+- `ok`: Run the job you are on.
+- `cancel`: Close this window and change nothing.
+- `find`: The text this step looks for. With Regular expression checked, a pattern: \s for any space, ^ and $ for the start and end of a line.
+- `replace`: What each match becomes. Leave it empty to delete the matches. Typed exactly, unless Regular expression is checked, when \1 puts back the first group.
+- `regex`: Read Find what as a regular expression rather than as plain text.
+- `match_case`: Find only matches with the same capital letters.
+- `ok`: Keep this step.
+- `cancel`: Close this window and change nothing.
+#### _JobEditor (`quill/ui/replace_jobs_windows.py`)
+
+- `self.name`: What this job is called in the list you run it from.
+- `self.list`: Each step runs on the result of the one before. Enter edits the step you are on.
+- `ok`: Keep this job as it is now.
+- `cancel`: Close this window and change nothing.
+#### _JobManager (`quill/ui/replace_jobs_windows.py`)
+
+- `self.list`: Your saved replace jobs, each a list of find and replace steps run in order. Enter edits the one you are on.
+- `close`: Close this window. Every change is already kept.

@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 11: Keyboard reference</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-11-keyboard-reference">Chapter 11: Keyboard
+reference</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Every key the workbench answers to, one window at a time. Keys marked
+as access keys are the underlined letters of a control, pressed with
+Alt; they work while that window has focus. Keys that open the windows
+themselves are in Chapter 1. QUILL’s GitHub menu commands have no keys
+out of the box, and you can give them some in the Keymap Editor.</p>
+<p>Throughout, Shift+F10 or the Applications key opens the context menu
+of whatever has focus, and Escape closes the window you are in.</p>
+<h2 id="github-items">GitHub Items</h2>
+<h3 id="anywhere-in-the-window">Anywhere in the window</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Reload the current view</td>
+</tr>
+<tr>
+<td><code>Ctrl+O</code></td>
+<td>Open the selected row on GitHub, in your browser</td>
+</tr>
+<tr>
+<td><code>Ctrl+G</code></td>
+<td>Go to an issue or pull request by number</td>
+</tr>
+<tr>
+<td><code>Ctrl+D</code></td>
+<td>Add the selected row to your favorites</td>
+</tr>
+<tr>
+<td><code>Ctrl+F</code></td>
+<td>Move to the Search box</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F</code></td>
+<td>Move to the Quick filter</td>
+</tr>
+<tr>
+<td><code>Alt+N</code>, <code>Alt+P</code></td>
+<td>Next or previous comment in Details</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+B</code></td>
+<td>Compare two branches, in Branches</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+W</code></td>
+<td>What Failed, in Workflow Runs</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+L</code></td>
+<td>GitHub’s remaining allowance</td>
+</tr>
+</tbody>
+</table>
+<p>Escape in the Quick filter clears it, when it has text. Otherwise
+Escape closes GitHub Items.</p>
+<h3 id="in-the-list">In the list</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enter</td>
+<td>Go in: a branch’s commits, a release’s files, run a workflow;
+otherwise open on GitHub</td>
+</tr>
+<tr>
+<td>Backspace</td>
+<td>Come back out to Branches or Releases</td>
+</tr>
+<tr>
+<td><code>M</code></td>
+<td>Switch between Quick and Full rows</td>
+</tr>
+<tr>
+<td><code>R</code></td>
+<td>Reload, the same as <code>Ctrl+R</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="access-keys">Access keys</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+V</code></td>
+<td>Favorites…</td>
+</tr>
+<tr>
+<td><code>Alt+E</code></td>
+<td>Explore…</td>
+</tr>
+<tr>
+<td><code>Alt+J</code></td>
+<td>Projects…</td>
+</tr>
+<tr>
+<td><code>Alt+U</code></td>
+<td>View Upstream</td>
+</tr>
+<tr>
+<td><code>Alt+F</code></td>
+<td>Files…</td>
+</tr>
+<tr>
+<td><code>Alt+H</code></td>
+<td>Search (GitHub syntax)</td>
+</tr>
+<tr>
+<td><code>Alt+Q</code></td>
+<td>Quick filter</td>
+</tr>
+<tr>
+<td><code>Alt+I</code></td>
+<td>View</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+S</code></td>
+<td>Show</td>
+</tr>
+<tr>
+<td><code>Alt+T</code></td>
+<td>State</td>
+</tr>
+<tr>
+<td><code>Alt+O</code></td>
+<td>Sort</td>
+</tr>
+<tr>
+<td><code>Alt+L</code></td>
+<td>List mode</td>
+</tr>
+<tr>
+<td><code>Alt+M</code></td>
+<td>Columns…</td>
+</tr>
+<tr>
+<td><code>Alt+D</code></td>
+<td>Diff…</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>Review…</td>
+</tr>
+<tr>
+<td><code>Alt+Z</code></td>
+<td>Summarize</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+C</code></td>
+<td>Compare…</td>
+</tr>
+<tr>
+<td><code>Alt+B</code></td>
+<td>Batch…</td>
+</tr>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Actions…</td>
+</tr>
+</tbody>
+</table>
+<p>Pinned…, Milestones…, Open Link…, Refresh, View More, Open in Browser
+and Go To #… have no access key; reach them with Tab.</p>
+<h2 id="review-pull-request">Review pull request</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Reply to the selected thread</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Resolve or reopen the selected thread</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Open a file’s diff, read a thread, open a check, or open and close a
+branch</td>
+</tr>
+<tr>
+<td>Right, Left</td>
+<td>Open or close a branch of the outline</td>
+</tr>
+<tr>
+<td>Tab, Shift+Tab</td>
+<td>Into the details and back</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+L</code></td>
+<td>Changed since my last review</td>
+</tr>
+<tr>
+<td><code>Alt+U</code></td>
+<td>Next Unresolved</td>
+</tr>
+<tr>
+<td><code>Alt+V</code></td>
+<td>Next Unvisited</td>
+</tr>
+<tr>
+<td><code>Alt+G</code></td>
+<td>Open on GitHub</td>
+</tr>
+<tr>
+<td><code>Alt+S</code></td>
+<td>Copy Review Summary</td>
+</tr>
+<tr>
+<td><code>Alt+T</code></td>
+<td>Timeline…</td>
+</tr>
+<tr>
+<td><code>Alt+C</code></td>
+<td>Compose Review…</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>Reply to Thread…</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+W</code></td>
+<td>Request Reviewers…</td>
+</tr>
+<tr>
+<td><code>Alt+M</code></td>
+<td>Mark Ready, on a draft</td>
+</tr>
+<tr>
+<td><code>Alt+D</code></td>
+<td>Convert to Draft</td>
+</tr>
+<tr>
+<td><code>Alt+B</code></td>
+<td>Update Branch…</td>
+</tr>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Auto-Merge and Queue…</td>
+</tr>
+</tbody>
+</table>
+<p>Check Merge Policy has no access key.</p>
+<h3 id="compose-review">Compose Review</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+M</code></td>
+<td>Review message</td>
+</tr>
+<tr>
+<td>Escape</td>
+<td>Save Draft and Close</td>
+</tr>
+</tbody>
+</table>
+<p>Review action and Submit Review have no access key; reach them with
+Tab.</p>
+<h2 id="the-diff">The diff</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+M</code></td>
+<td>Line marks: words or symbols</td>
+</tr>
+<tr>
+<td><code>Alt+P</code></td>
+<td>Patch lines</td>
+</tr>
+<tr>
+<td>Shift with the arrows</td>
+<td>Select a run of patch lines</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Comment on the line, or on the selected lines</td>
+</tr>
+<tr>
+<td><code>Alt+L</code></td>
+<td>Comment on This Line…</td>
+</tr>
+<tr>
+<td><code>Alt+S</code></td>
+<td>Comment on Lines…</td>
+</tr>
+<tr>
+<td><code>Alt+C</code></td>
+<td>Copy Diff</td>
+</tr>
+<tr>
+<td><code>Alt+O</code></td>
+<td>Open Diff in Default App</td>
+</tr>
+</tbody>
+</table>
+<h3 id="commenting-on-a-line">Commenting on a line</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+S</code></td>
+<td>Suggest a change</td>
+</tr>
+<tr>
+<td><code>Alt+C</code></td>
+<td>Comment</td>
+</tr>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Add to Review, the default</td>
+</tr>
+<tr>
+<td><code>Alt+P</code></td>
+<td>Post Now</td>
+</tr>
+</tbody>
+</table>
+<h2 id="explore-github">Explore GitHub</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control or action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+V</code></td>
+<td>View</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>Repository</td>
+</tr>
+<tr>
+<td><code>Alt+P</code></td>
+<td>Person</td>
+</tr>
+<tr>
+<td><code>Alt+G</code></td>
+<td>Global search</td>
+</tr>
+<tr>
+<td><code>Alt+S</code></td>
+<td>Saved Searches…</td>
+</tr>
+<tr>
+<td><code>Alt+L</code></td>
+<td>Load</td>
+</tr>
+<tr>
+<td><code>Alt+O</code></td>
+<td>Queue Options…</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+L</code></td>
+<td>GitHub’s remaining allowance</td>
+</tr>
+</tbody>
+</table>
+<p>Enter on a result opens it in the best place for it. Save Search,
+Open on GitHub and Use Repository have no access key.</p>
+<h3 id="in-the-notifications-view">In the notifications view</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control or action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+I</code></td>
+<td>Include read notifications</td>
+</tr>
+<tr>
+<td><code>Alt+D</code></td>
+<td>Mark Done</td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>Mark Done, in the list</td>
+</tr>
+<tr>
+<td><code>Alt+U</code></td>
+<td>Unsubscribe</td>
+</tr>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Mark All Read</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Mark read and open</td>
+</tr>
+</tbody>
+</table>
+<h2 id="repository-files">Repository Files</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control or action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+B</code></td>
+<td>Branch, tag or commit</td>
+</tr>
+<tr>
+<td><code>Alt+G</code></td>
+<td>Go</td>
+</tr>
+<tr>
+<td><code>Alt+F</code></td>
+<td>Files, the tree</td>
+</tr>
+<tr>
+<td><code>Alt+C</code></td>
+<td>Contents</td>
+</tr>
+<tr>
+<td><code>Alt+V</code></td>
+<td>View File</td>
+</tr>
+<tr>
+<td><code>Alt+E</code></td>
+<td>Open in Editor</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>README</td>
+</tr>
+<tr>
+<td><code>Alt+H</code></td>
+<td>History…</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control or action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+L</code></td>
+<td>Blame…</td>
+</tr>
+<tr>
+<td>Right, Enter</td>
+<td>Open a folder</td>
+</tr>
+<tr>
+<td>Left</td>
+<td>Close a folder</td>
+</tr>
+</tbody>
+</table>
+<h3 id="history-and-blame">History and Blame</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+N</code>, <code>Alt+P</code></td>
+<td>Next or previous row, from anywhere in the window</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Open the commit on GitHub</td>
+</tr>
+<tr>
+<td><code>Alt+O</code></td>
+<td>Open Commit</td>
+</tr>
+<tr>
+<td><code>Alt+D</code></td>
+<td>Details</td>
+</tr>
+<tr>
+<td><code>Alt+C</code></td>
+<td>The Commits list, in History</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>The Runs list in Blame; Refresh in History</td>
+</tr>
+</tbody>
+</table>
+<h2 id="actions-windows">Actions windows</h2>
+<h3 id="what-failed">What Failed</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+W</code></td>
+<td>What failed, the text</td>
+</tr>
+<tr>
+<td><code>Alt+C</code></td>
+<td>Copy All</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>Refresh</td>
+</tr>
+</tbody>
+</table>
+<h3 id="jobs-and-logs">Jobs and Logs</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Attempt</td>
+</tr>
+<tr>
+<td><code>Alt+L</code></td>
+<td>Load Log</td>
+</tr>
+<tr>
+<td><code>Alt+N</code></td>
+<td>Load Annotations</td>
+</tr>
+<tr>
+<td><code>Alt+J</code></td>
+<td>Open Job on GitHub</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>Open Run on GitHub</td>
+</tr>
+<tr>
+<td><code>Alt+F</code></td>
+<td>What Failed…</td>
+</tr>
+<tr>
+<td><code>Alt+C</code></td>
+<td>Re-request Check</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Load the selected job’s log</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pending-deployments">Pending Deployments</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+E</code></td>
+<td>Environments waiting for review</td>
+</tr>
+<tr>
+<td><code>Alt+C</code></td>
+<td>Comment</td>
+</tr>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Approve</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>Reject</td>
+</tr>
+</tbody>
+</table>
+<h3 id="artifacts">Artifacts</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+S</code></td>
+<td>Download Selected…</td>
+</tr>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Download All…</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>Refresh</td>
+</tr>
+<tr>
+<td><code>Alt+B</code></td>
+<td>Open Run in Browser</td>
+</tr>
+</tbody>
+</table>
+<h2 id="issue-windows">Issue windows</h2>
+<h3 id="new-issue">New Issue</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+T</code></td>
+<td>Title</td>
+</tr>
+<tr>
+<td><code>Alt+B</code></td>
+<td>Body</td>
+</tr>
+<tr>
+<td><code>Alt+L</code></td>
+<td>Labels</td>
+</tr>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Assignees</td>
+</tr>
+</tbody>
+</table>
+<h3 id="milestones">Milestones</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+S</code></td>
+<td>Show</td>
+</tr>
+<tr>
+<td><code>Alt+M</code></td>
+<td>Milestones, the list</td>
+</tr>
+<tr>
+<td><code>Alt+D</code></td>
+<td>Details</td>
+</tr>
+<tr>
+<td><code>Alt+N</code></td>
+<td>New…</td>
+</tr>
+<tr>
+<td><code>Alt+E</code></td>
+<td>Edit…</td>
+</tr>
+<tr>
+<td><code>Alt+L</code></td>
+<td>Close Milestone… or Reopen Milestone…</td>
+</tr>
+<tr>
+<td><code>Alt+O</code></td>
+<td>Open on GitHub</td>
+</tr>
+<tr>
+<td><code>Alt+R</code></td>
+<td>Refresh</td>
+</tr>
+</tbody>
+</table>
+<h3 id="projects-and-dependencies">Projects and Dependencies</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+L</code></td>
+<td>Load Projects</td>
+</tr>
+<tr>
+<td><code>Alt+P</code></td>
+<td>Project</td>
+</tr>
+<tr>
+<td><code>Alt+N</code></td>
+<td>Next Unblocked</td>
+</tr>
+<tr>
+<td><code>Alt+A</code></td>
+<td>Actions…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="smaller-windows">Smaller windows</h3>
+<table>
+<thead>
+<tr>
+<th>Window</th>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Timeline</td>
+<td><code>Alt+H</code></td>
+<td>History, oldest first</td>
+</tr>
+<tr>
+<td>Timeline</td>
+<td><code>Alt+A</code></td>
+<td>Copy All</td>
+</tr>
+<tr>
+<td>Reorder Sub-issues</td>
+<td><code>Alt+U</code></td>
+<td>Move Up</td>
+</tr>
+<tr>
+<td>Reorder Sub-issues</td>
+<td><code>Alt+D</code></td>
+<td>Move Down</td>
+</tr>
+<tr>
+<td>Edit Release</td>
+<td><code>Alt+N</code></td>
+<td>Release name</td>
+</tr>
+<tr>
+<td>Edit Release</td>
+<td><code>Alt+O</code></td>
+<td>Release notes</td>
+</tr>
+<tr>
+<td>Edit Release</td>
+<td><code>Alt+D</code></td>
+<td>Draft (not published yet)</td>
+</tr>
+<tr>
+<td>Edit Release</td>
+<td><code>Alt+P</code></td>
+<td>Pre-release</td>
+</tr>
+</tbody>
+</table>
+<h2 id="discussion-windows">Discussion windows</h2>
+<table>
+<thead>
+<tr>
+<th>Window</th>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Discussion thread</td>
+<td><code>Alt+T</code></td>
+<td>Thread</td>
+</tr>
+<tr>
+<td>Discussion thread</td>
+<td><code>Alt+X</code></td>
+<td>Text</td>
+</tr>
+<tr>
+<td>Discussion thread</td>
+<td><code>Alt+R</code></td>
+<td>Reply…</td>
+</tr>
+<tr>
+<td>Discussion thread</td>
+<td><code>Alt+M</code></td>
+<td>Mark as Answer… or Unmark Answer…</td>
+</tr>
+<tr>
+<td>Discussion thread</td>
+<td><code>Alt+O</code></td>
+<td>Open on GitHub</td>
+</tr>
+<tr>
+<td>Discussion thread</td>
+<td><code>Alt+F</code></td>
+<td>Refresh</td>
+</tr>
+<tr>
+<td>New Discussion</td>
+<td><code>Alt+C</code></td>
+<td>Category</td>
+</tr>
+<tr>
+<td>New Discussion</td>
+<td><code>Alt+T</code>, <code>Alt+B</code></td>
+<td>Title, Body</td>
+</tr>
+</tbody>
+</table>
+<h2 id="compare-branches">Compare branches</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+G</code></td>
+<td>Open on GitHub</td>
+</tr>
+<tr>
+<td><code>Ctrl+Tab</code></td>
+<td>Switch between the Commits and Changed Files tabs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<ul>
+<li>Previous: <a href="github-guide-10-troubleshooting.html">Chapter 10:
+Troubleshooting, privacy and help</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

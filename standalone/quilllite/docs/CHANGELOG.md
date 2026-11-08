@@ -13,6 +13,15 @@
 - Export as HTML has no access letter in the File menu any more; its key,
   Ctrl+Alt+Shift+End, is unchanged.
 
+### A complete GitHub guide (2026-11-07)
+
+- The GitHub Guide for QUILL and QUILL Lite ships as chapters of the user
+  guide (`guide/lite-github-guide*.md`): getting around the GitHub windows,
+  issues, pull request review, what failed in a run, files, releases,
+  discussions, security alerts, troubleshooting, and a keyboard reference
+  for every window, with notes where QUILL Lite differs from QUILL.
+- Chapter 3's GitHub section is now a short summary that links to it.
+
 ### GitHub search, releases, housekeeping and rate limits (2026-11-07)
 
 - Explore searches code, commits and repositories, reads a repository's
@@ -27,6 +36,22 @@
   and reorders sub-issues (Alt+U, Alt+D).
 - Ctrl+Shift+L says GitHub's remaining allowance. Unchanged refreshes say so and
   cost nothing, and a request to slow down is said once.
+
+### Paste Copied Files, saved replace jobs and fields in abbreviations (2026-11-07)
+
+- **Paste Copied Files...** (Edit > Clipboard, Alt+E, B, D) pastes the text, or the full
+  paths, of files copied in File Explorer. Word documents and PDFs come in as
+  their words. Files over 5 MB, folders and pictures are left out and named.
+- **Edit > Replace Jobs** (Alt+E, J): **Run Replace Job...** and **Manage
+  Replace Jobs...** keep named lists of find-and-replace steps and run one on
+  the selection or the whole document as one undo step. Three starter jobs.
+- **Fields in abbreviations.** `${field:Name}`, `${input:Name}` and
+  `${choice:Label|a|b}` ask before the text goes in, in the same form QUILL
+  uses, from Snippets and when you type the short form.
+- **Translate** in the AI window says so when the answer comes back the same
+  as your text, instead of showing it as a translation.
+- QUILL has all of these from the same code; QUILL also gains keys for What's
+  New and its keyboard reference.
 
 ### GitHub repository files, milestones, discussions and security triage (2026-11-07)
 

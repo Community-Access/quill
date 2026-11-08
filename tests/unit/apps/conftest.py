@@ -1392,6 +1392,13 @@ class DialogRecorder:
         # constructs and then asks with show().
         "GitHubManageAccountsDialog": ("quill.ui.github_dialogs", "GitHubManageAccountsDialog"),
         "GitHubSignInDialog": ("quill.ui.github_dialogs", "GitHubSignInDialog"),
+        # Paste Copied Files, saved replace jobs and abbreviation fields, 2026-11-07: shared
+        # windows (quill/ui), called by name from their own module, so the
+        # defining module is the binding.
+        "choose_paste_kind": ("quill.ui.paste_file", "choose_paste_kind"),
+        "choose_replace_job": ("quill.ui.replace_jobs", "choose_replace_job"),
+        "manage_replace_jobs": ("quill.ui.replace_jobs", "manage_replace_jobs"),
+        "prompt_for_fields": ("quill.ui.fill_in_dialog", "prompt_for_fields"),
     }
 
     #: Names whose stub must be callable *and* have a ``show()``, because the

@@ -1,5 +1,16 @@
 # QUILL Lite 2.0
 
+## A complete GitHub guide
+
+QUILL Lite now ships a book on doing GitHub work with a screen reader, shared
+with QUILL: [The GitHub Guide for QUILL and QUILL Lite](guide/lite-github-guide.html).
+It covers getting around the GitHub windows, reading issues, reviewing a pull
+request line by line, what failed in a workflow run, repository files and
+releases, discussions and security alerts, and what to do when GitHub says
+no, with a keyboard reference for every window. Where QUILL Lite differs from
+QUILL, a short note says so. It is in the user guide, after the reference
+chapters.
+
 ## GitHub: search, releases, housekeeping and rate limits
 
 QUILL Lite's GitHub windows are QUILL's, so it gains the same things: code,
@@ -8,6 +19,27 @@ sentences; repository actions from Explore's context menu, including deleting a
 repository after typing its name; release editing, uploads and deletions;
 issue housekeeping; and Ctrl+Shift+L for the rate limit, with quieter
 refreshes.
+
+## Paste a copied file, and replace jobs you can save
+
+Copy a file in File Explorer and press **Ctrl+V**, and usually nothing useful
+happens. **Edit > Clipboard > Paste Copied Files...** (**Alt+E**, **B**, **D**) asks
+what you meant: each file's text, read the way QUILL Lite opens it, so a Word
+document or a PDF comes in as words, or each file's full path. Files over 5 MB,
+folders and pictures are left out, and you hear which.
+
+**Edit > Replace Jobs** (**Alt+E**, **J**) keeps find-and-replace lists you use
+again and again. **Manage Replace Jobs...** makes them, step by step, each with
+Regular expression and Match case, and **Run Replace Job...** runs one on the
+selection or the whole document as a single change that one **Ctrl+Z** takes
+back. Three are there to start with: Tidy spaces, Straighten quote marks and
+Close up blank lines.
+
+Abbreviations can ask you something now. Put `${field:Name}` in one, or
+`${choice:Reminder|first|second}`, and a small form asks before the text goes
+in, from Snippets or when you type the short form. And when the AI's Translate
+hands your text back unchanged, you hear so rather than getting it as a
+translation. QUILL has all of this from the same code.
 
 ## GitHub: repository files, milestones, discussions and security triage
 
@@ -150,6 +182,8 @@ yet. Here is what is new.
 - **Ctrl+Enter for a page break**, as in Word.
 - **Hear the clipboard without pasting it**, add to it, save it or clear it,
   and ask the time or how many documents you have open.
+- **Paste a copied file's text**, and **save find-and-replace jobs** to run
+  again.
 
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.

@@ -58,6 +58,8 @@ class DocumentAbbreviationsMixin:
             return
         if match is None:
             return
+        if not self._fill_in_fields(match):
+            return  # cancelled: the trigger stays exactly as it was typed
         # An expansion is the app typing several words on your behalf, which is
         # the largest thing that happens in this editor without anybody pressing
         # a key for it -- and a screen reader says nothing at all, because no
@@ -73,6 +75,37 @@ class DocumentAbbreviationsMixin:
         self._set_modified(True)
         self._touch_status()
         self._announce(f"Expanded to {match.resolved_text.strip()[:60]}")
+
+    def _fill_in_fields(self, match: Any) -> bool:
+        """Ask an expansion's fields before it goes in, as QUILL does. False is Cancel.
+
+        ``${field:Label}``, ``${input:Label}`` and ``${choice:Label|a|b}`` are
+        asked in the family's one form (:mod:`quill.ui.fill_in_dialog`), the same
+        call QUILL's abbreviations make, so one library answers the same way in
+        both editors. The text is then resolved again from the filled template,
+        so ``${cursor}`` still lands where the template put it.
+        """
+        from quill.core.expansion.fields import has_fields
+
+        entry = getattr(match, "abbreviation", None)
+        if entry is None or not has_fields(entry.expansion):
+            return True
+        filled = self._ask_fields(entry.expansion, entry.abbreviation)
+        if filled is None:
+            return False
+        from quill.core.abbreviations import resolve_expansion
+
+        text, cursor_offset, has_cursor = resolve_expansion(filled, self._clipboard_text())
+        match.resolved_text, match.cursor_offset, match.has_cursor = text, cursor_offset, has_cursor
+        return True
+
+    def _ask_fields(self, expansion: str, title: str) -> str | None:
+        from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.fill_in_dialog import prompt_for_fields
+
+        filled = prompt_for_fields(self, expansion, show_modal_dialog, title=title)
+        self.control.SetFocus()
+        return filled
 
     def cmd_toggle_abbreviations(self) -> None:
         """Alt+Shift+A: expansion on or off, without opening a dialog.
@@ -157,13 +190,24 @@ class DocumentAbbreviationsMixin:
         # ``_clipboard_text`` is DocumentClipboardMixin's -- the same reader the
         # typed expansion uses, so a clipboard snippet inserts the same thing
         # whichever route reached it.
-        text, back, _used_clipboard = resolve_expansion(entry.expansion, self._clipboard_text())
+        expansion = entry.expansion
+        from quill.core.expansion.fields import has_fields
+
+        if has_fields(expansion):
+            # The fields QUILL asks for, asked the same way (the typed route too).
+            filled = self._ask_fields(expansion, entry.abbreviation)
+            if filled is None:
+                return
+            expansion = filled
+        text, offset, has_cursor = resolve_expansion(expansion, self._clipboard_text())
         self.control.WriteText(text)
-        if back:
+        if has_cursor:
             # The cursor placeholder, honoured the same way the typed expansion
             # honours it -- a snippet that puts the caret in the wrong place
             # through one route and the right place through the other is two
-            # features wearing one name.
+            # features wearing one name. Counted back from the end of what was
+            # written, which is where WriteText leaves the caret.
+            back = len(text) - offset
             self.control.SetInsertionPoint(max(0, self.control.GetInsertionPoint() - back))
         self._set_modified(True)
         self._touch_status()

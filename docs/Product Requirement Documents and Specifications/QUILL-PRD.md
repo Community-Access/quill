@@ -4359,6 +4359,30 @@ Seven small commands that answer questions a sighted user settles with a glance:
 
 ---
 
+### 5.77b Paste Copied Files and saved replace jobs (shipped 2026-11-07)
+
+Two commands QUILL and QUILL Lite share handlers, wording and (empty) keys for (family rule 10), with QUILL's rows placed by `quill/ui/main_frame_editor_parity.py`, which defines no command of its own.
+
+| Command | Id | Key | Menu (QUILL) | Behaviour |
+| --- | --- | --- | --- | --- |
+| Paste Copied Files... | `edit.paste_file` | none | Edit > Clipboard, last | Needs copied files on the clipboard (CF_HDROP, read through `wx.FileDataObject`). Asks "Each file's text" or "Each file's full path". Text is read through `quill.io.open_read.read_open_document`, so formats QUILL opens come in as text; files are joined by a blank line. Refused by name: over `MAX_FILE_BYTES` (5 MB), folders, and files with a NUL in their first 8 KB that are not a format QUILL reads (UTF-16 excepted). Written with `_atomic_replace`: one undo step. "Pasted the text of N files. Not pasted: ..." |
+| Run Replace Job... | `edit.run_replace_job` | none | Edit > Search Tools, after Count Occurrences | Lists saved jobs; runs the chosen job's steps in order on the selection, or the whole document when nothing is selected (rich text asks first), written once. Every pattern is compiled before anything runs, and a failure changes nothing: "Step 2 of Tidy: ... Nothing was changed". Result: "Tidy: 14 replacements in the selection. Step 1 found nothing". |
+| Manage Replace Jobs... | `edit.manage_replace_jobs` | none | Edit > Search Tools | New, Edit, Rename, Delete (confirmed). The job editor has Name, Steps (in run order), Add Step, Edit Step, Remove Step, Move Up, Move Down; a step has Find what, Replace with, Regular expression, Match case. Names are unique, case ignored. |
+
+**Steps.** A plain step is literal on both sides (the Replace All rule); a regular-expression step is compiled with `re.MULTILINE` and reads its replacement as a template. Match case off adds `re.IGNORECASE`.
+
+**Storage.** `replace_jobs.json` in each editor's own data folder, `{"schema": 1, "jobs": [...]}`, written with `write_json_atomic` and classified `content` in the persistence audit. No file yet means three samples (Tidy spaces, Straighten quote marks, Close up blank lines); an empty saved list stays empty; damaged entries are skipped.
+
+**Keys.** None was free in both editors (measured 2026-11-07), and all three ask a question at once (rule 9); the reasons are in the family gate. Multi Replace stays for one-off use.
+
+**Also in this change.** Snippet blanks (`${input:...}`, `${choice:a|b}`) are asked in one `FillInDialog` (`quill/ui/snippet_prompts.py` maps them), not one dialog each; `${input:Label}` is a fill-in field synonym for `${field:Label}` in `quill/core/expansion/fields.py`. AI Translate gains **Translate from** (`SOURCE_DETECT` first), passed to `translate_text(source_language=...)`; an unchanged result says "The translation came back the same as the original. The source language may be wrong; choose it instead of Detect." The shared AI pad's Translate, which can name only a target language, says `HOSTED_UNCHANGED_TRANSLATION_MESSAGE` instead and opens no result. What's New is the QUILL key, `W`; Open Keyboard Reference is the QUILL key, `Shift+K`, and its Help row renders the key through `_menu_label`. QUILL Lite reaches neither plainly (its keyboard route is the Ctrl+F1 list), so rule 6 allows the leader.
+
+**Considered and not done.** Speech rate, volume and punctuation-level keys: both editors speak through the screen reader, which owns all three; QUILL's own voice settings belong to Read Aloud, which QUILL Lite does not have, and no chord was free in both. Configurable section-break text: low value.
+
+**Implementation map.** `quill/core/paste_file.py`, `quill/core/replace_jobs.py` (wx-free), `quill/ui/paste_file.py`, `quill/ui/replace_jobs.py` (shared handlers and windows), `quill/ui/main_frame_editor_parity.py` (QUILL's rows and hooks), `quill/apps/lite_window_say.py`, `quill/apps/lite_window_replace_jobs.py` and `quill/core/lite/commands_replace_jobs.py` (QUILL Lite's).
+
+---
+
 ### 5.78 Abbreviation Expansion — TextExpander-style bare-word shortcuts
 
 Abbreviation Expansion replaces short trigger words with longer text automatically as you type, **when enabled** (it ships **off by default** so nothing changes under the user's hands unannounced). It complements the snippet system (which requires an explicit trigger prefix) by firing on any bare word followed by a delimiter.

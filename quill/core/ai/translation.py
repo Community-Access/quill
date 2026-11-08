@@ -86,10 +86,13 @@ def translate_text(
     libretranslate_url: str = "http://localhost:5000",
     *,
     markdown: bool = False,
+    source_language: str = "",
 ) -> tuple[str, str]:
     """Translate *text* to *target_language*.
 
     *provider*: "ai_assistant" (default, uses configured AI) or "libretranslate".
+    *source_language* names the language the text is in (a name or an ISO code);
+    empty, or :data:`SOURCE_DETECT`, lets the translator detect it.
     *markdown* says the text is Markdown: the preservation clause is then added
     even when the user has replaced Translate's default instruction.
 
@@ -100,17 +103,44 @@ def translate_text(
         raise TranslationError("No text to translate.")
 
     target_name = _resolve_target_name(target_language)
+    source = "" if source_language in ("", SOURCE_DETECT) else source_language
 
     if provider == "libretranslate":
-        return _translate_libretranslate(text, target_language, libretranslate_url)
+        return _translate_libretranslate(
+            text, target_language, libretranslate_url, source=_source_code(source)
+        )
 
-    return _translate_ai(text, target_name, connection, api_key, markdown=markdown)
+    return _translate_ai(
+        text,
+        target_name,
+        connection,
+        api_key,
+        markdown=markdown,
+        source_name=_resolve_target_name(source) if source else "",
+    )
+
+
+def _source_code(source: str) -> str:
+    """An ISO code for *source*, or "" for Detect."""
+    if not source:
+        return ""
+    return SUPPORTED_LANGUAGES.get(source, source)
 
 
 UNCHANGED_TRANSLATION_MESSAGE = (
     "The translation came back the same as the original. "
-    "The text may already be in the target language."
+    "The source language may be wrong; choose it instead of Detect."
 )
+
+#: The free AI's Translate (both editors' AI pad) takes a target language only,
+#: so there is no Detect to change there; the advice is what can be done.
+HOSTED_UNCHANGED_TRANSLATION_MESSAGE = (
+    "The translation came back the same as the original. The text may already "
+    "be in the language you chose, or the AI could not tell what language it is in."
+)
+
+#: The first row of every Translate from list: let the translator work it out.
+SOURCE_DETECT = "Detect"
 
 
 def _comparable(text: str) -> str:
@@ -147,12 +177,18 @@ def _translate_ai(
     api_key: str,
     *,
     markdown: bool = False,
+    source_name: str = "",
 ) -> tuple[str, str]:
-    system_prompt, user_prompt = split_instruction(
-        "translate",
-        _TRANSLATE_PROMPT_TEMPLATE.format(target_language=target_language_name) + text,
-        markdown=markdown,
-    )
+    template = _TRANSLATE_PROMPT_TEMPLATE.format(target_language=target_language_name)
+    if source_name:
+        # Named by the person: say so, so the model translates rather than
+        # deciding the text is already in the target language.
+        template = template.replace(
+            "Translate the following text into",
+            f"The following text is in {source_name}. Translate it into",
+            1,
+        )
+    system_prompt, user_prompt = split_instruction("translate", template + text, markdown=markdown)
     response, error = generate_assistant_response(
         connection,
         api_key,
@@ -200,13 +236,17 @@ def _translate_libretranslate(
     text: str,
     target: str,
     base_url: str,
+    *,
+    source: str = "",
 ) -> tuple[str, str]:
-    """Translate via a local LibreTranslate instance."""
+    """Translate via a local LibreTranslate instance (*source* is an ISO code, or "")."""
     endpoint = base_url.rstrip("/") + "/translate"
-    # Detect source language first
+    # Detect source language first, unless the person named it
     detect_endpoint = base_url.rstrip("/") + "/detect"
-    source_lang = "auto"
+    source_lang = source or "auto"
     try:
+        if source:
+            raise LookupError("named, so not detected")
         detect_body = json.dumps({"q": text[:500]}).encode()
         req = Request(
             detect_endpoint,

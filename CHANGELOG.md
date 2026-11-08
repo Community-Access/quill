@@ -2,6 +2,32 @@
 
 ## 1.0.0
 
+### One account manager for both editors (2026-11-07)
+
+- **Manage GitHub Accounts** now runs from one shared module that QUILL Lite
+  uses too, so an account you add in either editor is there in both. Nothing
+  changes in how it works in QUILL. The GitHub Guide's sign-in chapter and its
+  troubleshooting entry now say how to sign in from QUILL Lite, instead of
+  sending you to QUILL.
+
+### A complete GitHub guide (2026-11-07)
+
+- **The GitHub Guide for QUILL and QUILL Lite.** A new book in
+  `docs/user guide/github-guide/`, eleven chapters and a contents page:
+  getting started, getting around, your inbox and your work, issues, pull
+  requests and review, Actions and checks, code and repositories, discussions
+  and security, Codespaces and the GitHub CLI, troubleshooting, privacy and
+  help, and a keyboard reference for every window. Every key, menu path and
+  label in it was checked against the code. QUILL Lite ships the same text as
+  chapters of its own guide (`lite-github-guide-*.md`), with short notes where
+  the two differ.
+- The user guide's GitHub section in Chapter 3 is now a short map of the book,
+  keeping every heading F1 opens. The QUILL Lite guide's GitHub section and
+  its two stray GitHub blocks on the contents page became an entry for the
+  book.
+- The documentation-chord gate reads the new book, and QUILL Lite's menu gate
+  allows the QUILL menu paths it names as QUILL's.
+
 ### GitHub search, releases, housekeeping and rate limits (2026-11-07)
 
 - **Search beyond issues.** Explore has Code search, Commit search and
@@ -32,6 +58,32 @@
   the last load". Notification checks slow down when the allowance runs low, and
   a secondary limit is said once ("GitHub asked QUILL to wait 60 seconds")
   instead of as a string of failures.
+
+### Paste Copied Files, saved replace jobs, fields in QUILL Lite, and two Help keys (2026-11-07)
+
+- **Paste Copied Files...** (Edit > Clipboard) pastes the text, or the full paths, of
+  files copied in File Explorer. Text is read the way QUILL opens the file, so
+  a Word document or a PDF comes in as words. Files over 5 MB, folders and
+  anything that is not text are left out and named. One undo step.
+- **Saved replace jobs.** Run Replace Job... and Manage Replace Jobs... (Edit >
+  Search Tools, after Multi Replace) keep named lists of find-and-replace
+  steps, each with Regular expression and Match case. A job runs on the
+  selection or the whole document as one undo step, says how many it replaced,
+  and changes nothing if any step's pattern is bad. Three starter jobs:
+  Tidy spaces, Straighten quote marks, Close up blank lines.
+- **Snippet blanks in one form.** A snippet's `${input:...}` and
+  `${choice:...}` blanks are asked together in the fill-in form abbreviations
+  use, instead of one window each. `${input:Label}` now also works as an
+  abbreviation field, the same as `${field:Label}`.
+- **AI Translate: Translate from.** Choose the language your text is in, or
+  leave it on Detect. A result that comes back unchanged now says "The source
+  language may be wrong; choose it instead of Detect." The free AI's Translate
+  says so too, instead of showing the same text as a translation.
+- **Keys for What's New and the keyboard reference:** the QUILL key, then `W`,
+  and the QUILL key, then `Shift+K`. Open Keyboard Reference now shows its key
+  in the Help menu.
+- QUILL Lite has Paste Copied Files, the replace jobs and abbreviation fields from the
+  same code.
 
 ### GitHub repository files, milestones, discussions and security triage (2026-11-07)
 

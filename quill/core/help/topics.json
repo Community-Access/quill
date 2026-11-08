@@ -3527,7 +3527,10 @@
     "id": "tools.open_keyboard_reference",
     "title": "Open Keyboard Reference",
     "body": "Open a reference listing QUILL's keyboard shortcuts.",
-    "user_guide_section": "tools"
+    "user_guide_section": "tools",
+    "keystrokes": [
+      "QUILL Key + Shift+K"
+    ]
   },
   {
     "id": "tools.open_python_console",

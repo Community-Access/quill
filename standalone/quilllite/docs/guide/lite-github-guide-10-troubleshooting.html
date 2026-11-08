@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 10: Troubleshooting, privacy and help</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-10-troubleshooting-privacy-and-help">Chapter 10:
+Troubleshooting, privacy and help</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>When GitHub says no, QUILL tells you why in a sentence and what to do
+next. This chapter lists the sentences you are most likely to hear, what
+each one means and how to fix it. Then it says exactly what the
+workbench sends over the network, and how to get help from a person.</p>
+<h2 id="how-a-refusal-sounds">How a refusal sounds</h2>
+<p>Most refusals have two parts: what QUILL was trying to do, and why it
+could not. “Could not re-run the failed jobs. Access denied. GitHub
+refused this request: check the token permissions and its organization
+SSO authorization.” When GitHub gave a reason of its own, QUILL adds it
+after “GitHub said:”.</p>
+<p>Nothing is half-done. When a command is refused, nothing was changed
+on GitHub, and anything you had typed, such as a comment, a review or a
+new issue, is still on your computer.</p>
+<h2 id="the-refusals-one-by-one">The refusals, one by one</h2>
+<h3 id="the-github-token-is-invalid-or-expired">“The GitHub token is
+invalid or expired.”</h3>
+<p>The full sentence ends “Add a valid token or switch accounts.” Your
+token has reached its expiry date, or was cancelled on GitHub. Make a
+new one (Chapter 1), then in QUILL use <strong>Manage GitHub
+Accounts…</strong> to remove the old account and add the new token.</p>
+<h3 id="access-denied-github-refused-this-request">“Access denied.
+GitHub refused this request”</h3>
+<p>GitHub knows who you are, but will not let this token do this. One of
+three things is usually true:</p>
+<ul>
+<li><strong>The token lacks a scope.</strong> For example, a token
+without <code>repo</code> cannot write to a private repository, and one
+without <code>delete_repo</code> cannot delete one. Chapter 1 lists the
+scopes. You cannot add a scope to a token from QUILL: edit the token on
+GitHub, or make a new one.</li>
+<li><strong>Your account lacks permission.</strong> Only people with
+write access can merge, rerun or label, and only administrators can
+rename, archive or change visibility. Ask a maintainer.</li>
+<li><strong>The organization needs single sign-on.</strong> See the next
+section.</li>
+</ul>
+<p>Traffic in Insights is a special case. It needs push access, and
+QUILL says so in plain words while still showing the contributors.</p>
+<h3
+id="github-requires-organization-sso-authorization-for-this-token">“GitHub
+requires organization SSO authorization for this token.”</h3>
+<p>The organization signs its members in through its own system, and
+your token has not been authorized for it yet. On GitHub, open your
+personal access tokens, choose <strong>Configure SSO</strong> beside the
+token, and authorize it for the organization. Then try again. The token
+keeps working everywhere else in the meantime.</p>
+<h3 id="github-could-not-find-it-or-this-account-cannot-see-it">“GitHub
+could not find it, or this account cannot see it.”</h3>
+<p>The full sentence ends “Refresh the list; it may already be gone.”
+Either the thing really is gone, perhaps deleted or transferred, or it
+is private and this account cannot see it. GitHub answers both the same
+way, on purpose, so that private repositories cannot be discovered by
+guessing. Check that you are using the right account
+(<code>Manage GitHub Accounts...</code> in QUILL), and that the token
+has the <code>repo</code> scope if the repository is private.</p>
+<h3 id="github-rate-limited-this-request">“GitHub rate-limited this
+request.”</h3>
+<p>You have used up an allowance, or sent many requests close together.
+Press <code>Ctrl+Shift+L</code> to hear how much is left and when it
+resets. Signed out you get far fewer requests, so signing in is often
+the fix.</p>
+<p>Two related sentences:</p>
+<ul>
+<li>“GitHub asked QUILL to wait 60 seconds.” is a short pause GitHub
+asks for after a burst of requests. QUILL waits by itself and stops
+sending until the time is up. You hear it once.</li>
+<li>“GitHub API rate limit reached. Retry after” a number of seconds
+means the hourly allowance is gone. It comes back at the reset time the
+readout gives.</li>
+</ul>
+<h3
+id="github-reported-a-conflict-and-github-refused-the-request">“GitHub
+reported a conflict” and “GitHub refused the request”</h3>
+<p>A conflict means the thing changed while you were looking at it:
+someone else merged, closed or edited it. Refresh and try again.</p>
+<p>“GitHub refused the request” with a reason means GitHub will not do
+this in the current state, such as rerunning the failed jobs of a run
+where nothing failed. The reason that follows is GitHub’s own.</p>
+<h3 id="github-had-a-server-error">“GitHub had a server error”</h3>
+<p>The problem is at GitHub’s end. Wait a moment and try again. GitHub
+keeps a status page at <code>githubstatus.com</code>.</p>
+<h3 id="write-actions-need-a-signed-in-github-account">“Write actions
+need a signed-in GitHub account”</h3>
+<p>You are working as a guest, so the workbench only reads. Sign in with
+<strong>Manage GitHub Accounts…</strong> (Chapter 1): in QUILL it’s on
+File &gt; Open from Remote, and in QUILL Lite it’s on File
+(<code>Alt+F</code>, then <code>H</code>).</p>
+<h3 id="the-github-menus-are-missing-in-quill">The GitHub menus are
+missing in QUILL</h3>
+<p>GitHub Remote Access is part of the Developer profile and is off in
+the others. Press <code>Alt+Shift+P</code> and choose Developer, or turn
+on GitHub Remote Access alone in <strong>Profiles and
+Features…</strong>. <strong>Help &gt; Why Don’t I See a
+Feature?</strong> explains any missing command.</p>
+<h3 id="github-item-browsing-is-disabled-in-safe-mode">“GitHub item
+browsing is disabled in Safe Mode.”</h3>
+<p>QUILL started in Safe Mode, which keeps every GitHub window closed.
+Restart it normally.</p>
+<h3 id="a-file-shows-no-text">A file shows no text</h3>
+<p>Repository Files shows text only for UTF-8 text files up to 1 MB, and
+says which rule a file broke. Open it on GitHub, or download it
+there.</p>
+<h2 id="privacy-what-goes-over-the-network">Privacy: what goes over the
+network</h2>
+<p>The workbench talks to GitHub and to nobody else, and only when you
+ask it to.</p>
+<ul>
+<li><strong>Before the first connection</strong> QUILL asks your
+permission, once (Chapter 1).</li>
+<li><strong>Requests go to GitHub’s own servers</strong>:
+<code>api.github.com</code> for nearly everything, and
+<code>uploads.github.com</code> when you upload a release file. They use
+encrypted connections, and QUILL refuses to follow a redirect to any
+other address while carrying your token.</li>
+<li><strong>Downloads</strong> of logs and artifacts are handed by
+GitHub to a short-lived address elsewhere. QUILL fetches those without
+your token.</li>
+<li><strong>Links opened in your browser</strong> never carry your token
+either.</li>
+<li><strong>The GitHub CLI</strong> uses its own sign-in, never QUILL’s
+token (Chapter 9).</li>
+<li><strong>AI summaries</strong> in QUILL send the issue’s text to the
+AI you chose, after the same questions as every AI feature. Nothing else
+in the workbench uses AI.</li>
+</ul>
+<p>What stays on your computer and never goes to GitHub: your token (in
+the operating system’s secure store), your pins and favorites, where you
+left off, your local drafts and pending review comments, your saved
+searches, the attention queue’s settings and filters, and the copies of
+earlier answers QUILL keeps so that unchanged reloads cost nothing.</p>
+<p>Safe Mode switches all of it off.</p>
+<h2 id="getting-help">Getting help</h2>
+<p>If something here does not work the way this book says, or you are
+stuck, write to a person. Support is run by Community Access, at
+<strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>.
+A real person reads every message and replies by email. Nothing you send
+is posted on GitHub or anywhere else in public.</p>
+<p>The quickest way to write is <strong>Help &gt; Get Help from
+Support…</strong>, in both apps. It fills in your app’s version and your
+screen reader for you, and opens your own mail program with the message
+written. Nothing is sent until you send it from there.</p>
+<p>It helps to say:</p>
+<ul>
+<li>which app and version you are using, and which screen reader;</li>
+<li>which window you were in, and what you pressed;</li>
+<li>what QUILL said, word for word if you can; and</li>
+<li>what you expected instead.</li>
+</ul>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-github-guide-09-codespaces-and-the-cli.html">Chapter 9:
+Codespaces and the GitHub CLI</a></li>
+<li>Next: <a href="lite-github-guide-11-keyboard-reference.html">Chapter
+11: Keyboard reference</a></li>
+<li><a href="lite-github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>
