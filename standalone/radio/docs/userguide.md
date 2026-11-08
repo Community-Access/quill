@@ -120,7 +120,7 @@ and try each step as you read. Alt+Tab moves you between the two.
 
 ### Learning by doing: the tutorials
 
-Quill Radio comes with 44 short guided lessons. Open them with **Help >
+Quill Radio comes with 50 short guided lessons. Open them with **Help >
 Tutorials...** (Ctrl+Alt+F1). A lesson can do a step for you, notice when you
 have done it yourself, and always shows the keys you actually have. Wherever a
 chapter covers something a lesson walks through, this guide names the lesson,
@@ -1480,6 +1480,9 @@ hear long clean stretches instead of a stutter every few seconds. After a minute
 without trouble it goes back to normal, and changing station starts fresh. There
 is nothing to set, and nothing is said when it happens.
 
+The tutorial **Jump between songs, and save one** walks through this, and
+**Give one station a time-shift length of its own** covers the length.
+
 Song marks, saving songs, per-station length and the deeper cushion all follow
 ideas from BlindRadio by serrebidev.
 
@@ -1768,7 +1771,7 @@ is empty, and you hear that too.
 Good to know: nothing is fetched until you press Alt+Shift+H, all that is sent
 is the station's own name for itself from its stream address, and it is off
 in Safe Mode. The idea, and the list of where to look, come from BlindRadio by
-serrebidev.
+serrebidev. The tutorial **Ask the station what it played** walks through it.
 
 ### Lyrics, step by step
 
@@ -1867,7 +1870,8 @@ itself, with your token, where AcoustID is sent only a fingerprint. Quill
 Radio only does that when you press Ctrl+K; it never listens on its own. To go
 back, set **Song recognition service** to **AcoustID**. Your token is kept in
 the Windows credential store, not in a settings file. The idea comes from
-BlindRadio by serrebidev.
+BlindRadio by serrebidev. The tutorial **AcoustID or AudD: which one names the
+song** explains the choice without changing anything.
 
 ### Listening statistics
 
@@ -1914,6 +1918,9 @@ Nothing about the station or about you is sent.
 2. Open Preferences (Ctrl+,) and find the **Scrobbling** group.
 3. Paste the token into **ListenBrainz user token**.
 4. Check **Send the songs I hear to ListenBrainz**, then choose **OK**.
+
+The tutorial **Keep a list of what you heard on ListenBrainz** shows you where
+everything is, and needs no account to follow.
 
 #### last.fm and Libre.fm
 
@@ -2334,8 +2341,9 @@ stations that no directory lists. None of it needs an account or a sign-in.
 The **Finding something to listen to** track of the tutorials walks through
 all of this: **Wander the browse tree**, **Search every directory at once**,
 **Find a station by its web address**, **Find stations by name, tag and
-country**, **Add a station nobody lists**, **The catalog on your own disk**
-and **When a station will not play**.
+country**, **Go straight to a broadcaster, or a public station**, **Add a
+station nobody lists**, **The catalog on your own disk** and **When a station
+will not play**.
 
 ### Browse Stations
 
@@ -7185,7 +7193,7 @@ walks you through the help you have here.
 
 ### Tutorials
 
-**Help > Tutorials...** (Ctrl+Alt+F1) opens 44 guided lessons, 298 steps in
+**Help > Tutorials...** (Ctrl+Alt+F1) opens 50 guided lessons, 330 steps in
 all, in six tracks: Your first hour, Finding something to listen to, Making it
 yours, Recording, More than radio, and Living with it. They are not a copy of
 this guide:
