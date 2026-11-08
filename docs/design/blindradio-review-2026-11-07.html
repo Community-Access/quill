@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
@@ -180,11 +180,68 @@
       vertical-align: middle;
     }
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">BlindRadio review for Quill Radio</h1>
-</header>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1 id="blindradio-review-for-quill-radio">BlindRadio review for Quill
 Radio</h1>
 <p>Reviewed 2026-11-07, from github.com/serrebidev/blindradio (MIT,
@@ -205,9 +262,9 @@ way the operator intends.</p>
 <ul>
 <li><strong>Curated network table</strong>
 (<code>crates/blindradio-core/data/networks.json</code>, 76 networks,
-868 direct stream URLs). Quill's <code>networks.py</code> builds
+868 direct stream URLs). Quill’s <code>networks.py</code> builds
 networks by Radio Browser query, so a network is only as good as Radio
-Browser's rows. BlindRadio's table pins each channel to the operator's
+Browser’s rows. BlindRadio’s table pins each channel to the operator’s
 own published stream, with the source of each in
 <code>docs/radio-directory-sources.md</code>. Networks Quill does not
 have at all: WFMU and its side channels, Global UK (Capital, Heart,
@@ -267,11 +324,11 @@ strip <code>_SC</code> and <code>AAC</code> from the mount name, 65 of
 <li><strong>Live365 full list via page data</strong>: the station list
 API answers Unauthorized, so they read React Router data out of
 <code>live365.com/listen/...</code> pages. Works, but it is scraping a
-closed list. Quill's <code>live365.py</code> already uses the sitemap;
+closed list. Quill’s <code>live365.py</code> already uses the sitemap;
 prefer that.</li>
 <li><strong>Big R Radio, Power Hitz, PulsRadio, Planet Radio</strong>:
-stream tables read from each site's own player script or HTML. The
-streams are the operator's, but the list is scraped, so it breaks
+stream tables read from each site’s own player script or HTML. The
+streams are the operator’s, but the list is scraped, so it breaks
 silently. Fine as a snapshot, not as a live source.</li>
 </ul>
 <h3 id="high-risk-do-not-add">High risk: do not add</h3>
@@ -280,7 +337,7 @@ silently. Fine as a snapshot, not as a live source.</li>
 their own research says the terms forbid it and robots.txt disallows
 <code>/json/*</code>; the author added it anyway. Conflicts with our
 no-competitor-data rule.</li>
-<li><strong>Airable</strong>: catalogue behind an NDA; using a radio's
+<li><strong>Airable</strong>: catalogue behind an NDA; using a radio’s
 token would pose as a licensed device.</li>
 <li><strong>vTuner</strong>: personal-use terms, half the sample
 dead.</li>
@@ -321,7 +378,7 @@ after a clean minute. Maps onto mpv <code>cache-secs</code> /
 songs heard a minute or more. Needs consent, a network-egress audit row
 and stored tokens through DPAPI.</li>
 <li><strong>AudD recognition</strong> as a second engine beside
-AcoustID, for talk-free music stations with no titles. User's own token;
+AcoustID, for talk-free music stations with no titles. User’s own token;
 egress row.</li>
 <li><strong>Per-station time-shift length</strong> (global default 30
 min, override per station).</li>
@@ -336,12 +393,13 @@ UI.</p>
 <ol type="1">
 <li>Song-history sources (AzuraCast, KEXP, BBC, Radio Paradise list,
 Live365, Triton mount tip): small, keyless, immediately audible in
-What's Playing.</li>
+What’s Playing.</li>
 <li>Curated network snapshot with per-URL probe and attribution.</li>
 <li>Segment bookmarks.</li>
 <li>Adaptive cushion.</li>
 <li>Dial tuning, as a designed feature with its own PRD section.</li>
 <li>Scrobbling and AudD, each behind consent and an egress entry.</li>
 </ol>
+</main>
 </body>
 </html>

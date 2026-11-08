@@ -976,8 +976,14 @@ rather than something to learn.
 - **Rewind** (Ctrl+Shift+Left), **Forward** (Ctrl+Shift+Right) and **Back
   to Live** (Ctrl+Shift+L). Tap once for a little, twice or three times for
   more; see "Rewinding live radio" in Chapter 4.
-- **Identify This Song** (Ctrl+K): asks AcoustID what song is playing. See
-  "Identify This Song" in Chapter 5.
+- **Previous Song** (Alt+Shift+Left), **Next Song** (Alt+Shift+Right) and
+  **Which Song Is This?** (Alt+Shift+W): move between the songs in the
+  time-shift buffer. **Save Songs from the Buffer** (Ctrl+Alt+F5 to F8) saves
+  them to files, and **Time-Shift Length for This Station...** (Alt+Shift+T)
+  gives a favorite its own length. See "Jumping between songs in the buffer"
+  in Chapter 4.
+- **Identify This Song** (Ctrl+K): asks AcoustID, or AudD if you chose it,
+  what song is playing. See "Identify This Song" in Chapter 5.
 - **Continue Listening...** (Ctrl+Alt+Shift+L): everything you started and did
   not finish.
 - **Chapters...** (Ctrl+Shift+C), **Next Chapter** (Ctrl+Shift+.) and
@@ -993,6 +999,8 @@ rather than something to learn.
 - **Go to Player** (Ctrl+Shift+G): open the Player, or bring it to the front.
 - **What's Playing?** (Ctrl+T): the Now Playing window.
 - **Song History...** (Ctrl+Shift+H): what each station played earlier.
+- **What the Station Played...** (Alt+Shift+H): the station's own list of
+  the songs it played, with start times, when it publishes one.
 - **Lyrics...** (Ctrl+Alt+B): the words of the song on the air, in a
   window of their own.
 - **Sleep Timer...** (Ctrl+Shift+Z) and **Wake-Up Timer...** (Ctrl+Alt+Z).
@@ -1410,6 +1418,71 @@ The Windows Media engine keeps nothing to go back to, so on that engine these
 keys tell you that rewinding live radio needs the mpv playback engine. To get
 it back, set **Playback engine** to Automatic in Preferences.
 
+### Jumping between songs in the buffer
+
+While the time-shift buffer runs, Quill Radio marks where each song starts,
+every time the station sends a new title. Stations that name what they play are
+divided up with nothing for you to set. Announcements such as "Live" or the
+station's own name mark nothing, so the song before keeps the time.
+
+1. Listen to a music station for a while, so the buffer holds a few songs.
+2. Press **Alt+Shift+Left** (**Playback > Previous Song**). You go back to the
+   start of the song you are in, or to the one before if it only just began.
+   You hear the song's title and how far behind live you now are.
+3. Press **Alt+Shift+Right** (**Playback > Next Song**) to go on to the next
+   one. After the last song it goes back to live.
+4. Press **Alt+Shift+W** (**Playback > Which Song Is This?**) to hear the song,
+   how far into it you are, which song it is of how many, and how far behind
+   live.
+
+#### Saving songs from the buffer
+
+**Playback > Save Songs from the Buffer** writes songs to files of their own in
+your recordings folder:
+
+- **Save This Song** (Ctrl+Alt+F8)
+- **Save the Previous Song** (Ctrl+Alt+F6)
+- **Save the Next Song** (Ctrl+Alt+F7)
+- **Save All Songs in the Buffer** (Ctrl+Alt+F5)
+
+Each file is named like a recording, with the station, the time the song played
+and its title, and an earlier file is never overwritten. The audio is kept
+exactly as the station sent it, with nothing re-encoded. The song still playing
+is saved as far as it has got, and the oldest song starts where the buffer
+does.
+
+Good to know:
+
+- Song marks need the mpv playback engine and a station that sends titles.
+- The marks start again whenever you change station.
+- A mark can be a second or two either side of the real change, and a title the
+  station sends late is marked late. While you are well behind live, a song
+  ahead of you may be marked up to half a minute late until you reach it.
+
+#### A time-shift length for one station
+
+Some stations are worth keeping five hours of, and some are not worth keeping at
+all.
+
+1. Play the station, or select it in your favorites.
+2. Press **Alt+Shift+T** (**Playback > Time-Shift Length for This Station...**).
+3. Choose a length, or **Same as Preferences** to follow the Time-shift buffer
+   setting again, and choose **OK**.
+
+It takes effect the next time the station starts. Only favorites can keep a
+length of their own.
+
+#### When a station keeps stuttering
+
+If a station keeps running dry and stuttering, Quill Radio waits a little longer
+before it plays again each time: three seconds, then nine, then fifteen. You
+hear long clean stretches instead of a stutter every few seconds. After a minute
+without trouble it goes back to normal, and changing station starts fresh. There
+is nothing to set, and nothing is said when it happens.
+
+Song marks, saving songs, per-station length and the deeper cushion all follow
+ideas from BlindRadio by serrebidev.
+
 ### Speed, position and chapters
 
 These work on anything that is not live: a finished YouTube video, a podcast
@@ -1665,6 +1738,38 @@ If a song is still playing when Quill Radio checks again, its play count goes
 up rather than it being listed twice. Station names, "Live" and advert markers
 are left out.
 
+### What the Station Played, step by step
+
+Song History is what Quill Radio heard while you listened. Many stations also
+publish their own list of what they played, with the time each song started,
+and that list goes back further than you have been listening.
+
+1. While a station plays, press **Alt+Shift+H** (**Playback > What the
+   Station Played...**).
+2. If the station publishes a list, a window opens with your cursor in the
+   list of songs, newest first. Each song says when it started, or "playing
+   now" for the one on the air. The BBC only says how long ago, so its songs
+   read like "3 minutes ago".
+3. Tab past the list to **Where this list comes from**. It names who
+   published the list, so you know it came from the station and not from
+   Quill Radio.
+4. With a song selected, choose **Copy**, **Send to Clip Library**, **Song
+   Details** or **Lyrics**. They work exactly as they do in Song History.
+5. Press **Escape** to close.
+
+Quill Radio works out from the station's stream address, never from its name,
+whether the station publishes such a list. It can read the lists from KEXP,
+the BBC, Radio Paradise, Live365, laut.fm, stations streamed by Triton Digital
+(StreamTheWorld, which carries a great many US stations), and stations run on
+AzuraCast. If the station is not one of those, you hear that in one sentence
+and nobody is asked anything. A talk or news station may publish a list that
+is empty, and you hear that too.
+
+Good to know: nothing is fetched until you press Alt+Shift+H, all that is sent
+is the station's own name for itself from its stream address, and it is off
+in Safe Mode. The idea, and the list of where to look, come from BlindRadio by
+serrebidev.
+
 ### Lyrics, step by step
 
 Lyrics shows the words of the song the station is playing, as text you
@@ -1742,6 +1847,28 @@ Good to know:
   cannot be played back. No audio leaves your computer. Nothing is sent until
   you press Ctrl+K, and nothing at all in Safe Mode.
 
+#### Choosing AudD instead of AcoustID
+
+Identify This Song asks AcoustID unless you choose otherwise. AcoustID is free,
+and all it is sent is a fingerprint. If you have an AudD account, you can ask
+AudD instead. It copes better with live radio, where a presenter talks over
+the start of a song or one song runs into the next, and it needs no fpcalc
+program.
+
+1. Make an account at audd.io and copy your API token from
+   dashboard.audd.io.
+2. Open Preferences (Ctrl+,) and find the **Song recognition** group.
+3. Set **Song recognition service** to **AudD**.
+4. Paste your token into **AudD API token** and choose **OK**.
+
+From then on, Ctrl+K asks AudD, and the answer says it came from AudD. Be
+clear about the difference: AudD is sent about twenty seconds of the audio
+itself, with your token, where AcoustID is sent only a fingerprint. Quill
+Radio only does that when you press Ctrl+K; it never listens on its own. To go
+back, set **Song recognition service** to **AcoustID**. Your token is kept in
+the Windows credential store, not in a settings file. The idea comes from
+BlindRadio by serrebidev.
+
 ### Listening statistics
 
 **View > Listening Statistics...** (Ctrl+Shift+Q) answers how much you
@@ -1768,6 +1895,62 @@ What counts as listening:
   listening.
 
 Your history stays on your computer.
+
+### Scrobbling: keeping a list of what you heard
+
+Quill Radio can add the songs you hear to your listening history on
+ListenBrainz, last.fm or Libre.fm. This is called scrobbling. It is off until
+you turn it on, separately for each service.
+
+Scrobbling sends the artist, title and album of each song you hear for a
+minute or more, and the time you heard it, to the services you turn on. It
+sends nothing until you turn a service on and sign in or paste your token.
+Nothing about the station or about you is sent.
+
+#### ListenBrainz
+
+1. Sign in at listenbrainz.org, open your settings, and copy your **user
+   token**.
+2. Open Preferences (Ctrl+,) and find the **Scrobbling** group.
+3. Paste the token into **ListenBrainz user token**.
+4. Check **Send the songs I hear to ListenBrainz**, then choose **OK**.
+
+#### last.fm and Libre.fm
+
+1. In the same **Scrobbling** group, choose **Sign In to last.fm** (or **Sign
+   In to Libre.fm**).
+2. Your web browser opens that service's own page, asking whether Quill Radio
+   may scrobble for you. Sign in there if it asks, and choose **Yes, allow
+   access**. You type your password on the service's own page, never into
+   Quill Radio.
+3. Come back to Quill Radio and choose **OK** in the box that is waiting.
+4. Check **Send the songs I hear to last.fm** (or **Libre.fm**), then choose
+   **OK**.
+
+To sign out, choose the same **Sign In** button again. It offers to sign you
+out, and **No** is already chosen.
+
+If Sign In says it needs an API key, this copy of Quill Radio did not come
+with one. Choose **Get a last.fm API Account...**, make a free API account
+there, and paste its **API key** and **shared secret** into the two boxes
+above the buttons. Libre.fm uses the same pair.
+
+#### What counts as heard
+
+- A song counts once you have heard a minute of it. last.fm's own rule is half
+  the song or four minutes, but that needs the song's length, and radio
+  stations almost never send one.
+- If you pause or rewind with the time-shift buffer, the song counts when you
+  actually hear it, and the time you were paused does not count.
+- The station's own name, "Live", adverts, and titles with no artist are never
+  sent.
+- If the internet drops or a service is busy, the songs wait and are sent
+  later, for up to two weeks. If a service stops accepting your sign-in, Quill
+  Radio tells you once, and the songs wait until you sign in again.
+- Nothing is sent in Safe Mode. Your tokens and sign-ins are kept in the
+  Windows credential store.
+
+The idea comes from BlindRadio by serrebidev.
 
 ### Volume
 
@@ -2242,30 +2425,32 @@ After **Search All Sources...**, the branches are:
     platform's most-listened genres.
 19. **TuneIn**: TuneIn's own folders, from continent down to city.
 20. **iHeart**: **By City** first, then genres.
-21. **Networks**: well-known broadcasters, grouped by type. **Music** includes
-    181.FM, Big R Radio and 1.FM, each showing only that network's own
-    stations.
+21. **Networks**: well-known broadcasters, grouped by type. Many of them, the
+    BBC, WFMU and Global's Capital and Heart among them, list every channel
+    the broadcaster runs, each going straight to its own stream.
 22. **Community M3U (Music Genres)**.
 23. **Xiph / Icecast Directory**: switched off to begin with.
 24. **SHOUTcast Directory**: the live Top 500, then 313 genres.
 25. **Live365**: about 5,500 independent stations, A to Z.
-26. **Quillin Sources**: only when an installed Quillin adds a source.
-27. **Radio Paradise**: including lossless FLAC.
-28. **Podcasts (Apple)**: your Subscriptions, then 16 national storefronts.
-29. **Podcast Index**.
-30. **Internet Archive**.
-31. **LibriVox Audiobooks**.
-32. **Project Gutenberg Audiobooks**.
-33. **AudioPub (Community Audio)**.
-34. **Audius (Independent Music)**.
-35. **Mixcloud (Shows & DJ Sets)**.
-36. **ccMixter (Creative Commons)**.
-37. **My Servers**: Icecast or SHOUTcast servers you add yourself.
-38. **Television (iptv.org)**.
-39. **YouTube**: channels, playlists and videos you save.
-40. **Explore (Wikidata)**: switched off to begin with.
+26. **IPRD (Public Radio Directory)**: an open list of about 24,000 stations
+    from every country, by country and by genre.
+27. **Quillin Sources**: only when an installed Quillin adds a source.
+28. **Radio Paradise**: including lossless FLAC.
+29. **Podcasts (Apple)**: your Subscriptions, then 16 national storefronts.
+30. **Podcast Index**.
+31. **Internet Archive**.
+32. **LibriVox Audiobooks**.
+33. **Project Gutenberg Audiobooks**.
+34. **AudioPub (Community Audio)**.
+35. **Audius (Independent Music)**.
+36. **Mixcloud (Shows & DJ Sets)**.
+37. **ccMixter (Creative Commons)**.
+38. **My Servers**: Icecast or SHOUTcast servers you add yourself.
+39. **Television (iptv.org)**.
+40. **YouTube**: channels, playlists and videos you save.
+41. **Explore (Wikidata)**: switched off to begin with.
 
-That is 38 sources. A new installation shows 36 of them, because Xiph and
+That is 39 sources. A new installation shows 37 of them, because Xiph and
 Wikidata start switched off. Quillin Sources only appears when something adds
 to it. You can switch branches on and off with **Choose Browse Sources**,
 described later in this chapter.
@@ -2306,11 +2491,28 @@ described later in this chapter.
   off the internet, and the channel then says so.
 - **Networks** groups well-known broadcasters: public broadcasters such as the
   BBC, NPR, CBC, ABC Australia, Radio France and Deutschlandfunk, plus US news
-  and talk, sports, music, and syndicators. A syndicator such as Westwood One
-  has no single stream, so it opens a search across the stations that carry
-  it, and its name tells you so. **Music** includes 181.FM, Big R Radio and
-  1.FM; each shows only stations named for that network, so a search for 1.FM
-  does not bring in "Radio 1.FM" or "011.FM".
+  and talk, US public radio, sports, music, commercial radio, Christian radio
+  and syndicators.
+  - Twenty of them list the broadcaster's own channels, each going straight to
+    the broadcaster's own stream: the BBC's national, local and digital
+    services, the ABC by region, Minnesota Public Radio and YourClassical,
+    WFMU and its side channels, WFUV, Radio Swiss, Global's Capital, Heart,
+    Smooth, Classic FM, LBC, Radio X and Gold, Triple M, ARN and NZME, K-LOVE
+    and Air1, and music networks such as Big R Radio, NTS and its Infinite
+    Mixtapes, Nightride FM, Power Hitz, Radio Record, PulsRadio, Sunshine Live
+    and Planet Radio. That is 516 channels, and every one was checked to play
+    before it was added.
+  - These folders say how many channels they hold before you open them, and
+    open at once, because the list comes with Quill Radio. Seasonal channels
+    are left out, so a network never goes quiet in January.
+  - The list of these networks and their streams comes from BlindRadio by
+    serrebidev, used under the MIT License.
+  - The rest of the networks search the station directory for the
+    broadcaster's name. **Music** includes 181.FM and 1.FM; each shows only
+    stations named for that network, so a search for 1.FM does not bring in
+    "Radio 1.FM" or "011.FM".
+  - A syndicator such as Westwood One has no single stream, so it opens a
+    search across the stations that carry it, and its name tells you so.
 - **181.FM** opens on **All stations**, then the network's own genres. Explicit
   channels say so, and the Christmas genre is marked seasonal. The list comes
   from the one 181.FM's own website plays from; Quill Radio keeps the last good
@@ -2327,6 +2529,15 @@ described later in this chapter.
 - **Live365** is arranged A to Z. Names that start with a number or symbol are
   under **#**. The whole list is fetched once a day, so opening a letter
   needs no wait.
+- **IPRD (Public Radio Directory)** is an open, community-kept list of about
+  24,000 stations. It has **By Country** and **By Genre** (the hundred genres
+  with the most stations). A long list shows a hundred stations at a time;
+  the last row, **More...**, says how many there are and opens the next
+  hundred. The whole directory is fetched the first time you open a folder
+  in it and kept for a day, so moving around it afterwards needs no wait.
+- **TuneIn**: Music, Talk, Sports and Local Radio list their first stations
+  and then **More Stations**, which opens the next page. A station TuneIn
+  files under both its local list and a category is listed once.
 - **Radio Paradise** lists each channel once for each quality: 320k AAC first
   (where Enter lands), then 192k MP3, 128k AAC, 64k and 32k AAC+, and FLAC
   last, because it is lossless and the heaviest.
@@ -2792,9 +3003,10 @@ menu.
 #### Search Sources, step by step
 
 Search Sources decides which directories Search Stations asks. There are
-thirteen, all on to begin with: Radio Browser, TuneIn, iHeart,
-SHOUTcast, Live365, TV, Radio Paradise, 181.FM, laut.fm, NOAA Weather Radio,
-Radio Reading Service, Spotify and YouTube. "YouTube in Search Stations" in Chapter 11 says
+fifteen, all on to begin with: Radio Browser, TuneIn, iHeart,
+SHOUTcast, Live365, TV, Radio Paradise, 181.FM, laut.fm, IPRD, Networks,
+NOAA Weather Radio, Radio Reading Service, Spotify and YouTube. Networks
+asks nobody: it searches the network channels that come with Quill Radio. "YouTube in Search Stations" in Chapter 11 says
 what the YouTube one finds.
 
 1. Press **Ctrl+Alt+Shift+U** (**Station > Search Sources...**). The Search
@@ -6900,14 +7112,23 @@ plainly.
   which need a key or an account: RadioBrowser, iHeart, TuneIn,
   SHOUTcast, Live365, Radio Paradise, a community M3U list on GitHub,
   iptv.org, the Internet Archive, LibriVox, Project Gutenberg, AudioPub,
-  Audius, Mixcloud, ccMixter, Apple's podcast storefront and Podcast Index.
+  Audius, Mixcloud, ccMixter, IPRD, Apple's podcast storefront and Podcast
+  Index.
   Xiph and Wikidata start switched off. **Choose Browse Sources** lists every
   one, each saying whether it is on. A branch that is off is never contacted
   while you browse, and not to refresh the catalog either. **Search All
   Sources** asks every directory.
 - **Identify This Song** sends your AcoustID key and a fingerprint of the
   last minute of sound to AcoustID, only when you press Ctrl+K. No audio is
-  sent, and with no key entered (where it starts) nothing is sent at all.
+  sent, and with no key entered (where it starts) nothing is sent at all. If
+  you choose AudD instead, about twenty seconds of audio and your AudD token
+  are sent to AudD, again only when you press Ctrl+K.
+- **What the Station Played** (Alt+Shift+H) asks the station's own playlist
+  service (KEXP, the BBC, Radio Paradise, Live365, laut.fm, Triton Digital or
+  the station's AzuraCast server) for its list, only when you press it.
+- **Scrobbling** is off until you turn it on. Then the artist, title, album
+  and time of each song you hear for a minute go to ListenBrainz, last.fm or
+  Libre.fm, whichever you turned on and signed in to.
 - **Podcast Index** is on to begin with. It is the one directory here that
   needs a key, and Quill Radio comes with its own. The key identifies the app,
   not you.
@@ -8168,6 +8389,13 @@ Licences and Notices button. The list opens as a plain text file, with one
 heading for each component: what it is, its licence, who holds the copyright
 and what the licence asks of us. The full licence texts are at the end.
 
+The curated networks, What the Station Played, song marks in the time-shift
+buffer, the deeper cushion, per-station time-shift length, scrobbling and
+AudD recognition follow ideas from BlindRadio, a screen-reader-first radio player by serrebidev
+(github.com/serrebidev/blindradio). The network list and its stream addresses
+are BlindRadio's, used under the MIT License, and its notice is in the list.
+Thank you.
+
 The same file, THIRD-PARTY-NOTICES.txt, and Quill Radio's own licence, LICENSE.txt,
 are also in the folder where Quill Radio is installed or unpacked, so you can open
 them without starting the app.
@@ -8212,6 +8440,10 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Rewind or forward (one tap 12 seconds, two a minute, three five minutes) | Ctrl+Shift+Left / Ctrl+Shift+Right |
 | Identify This Song | Ctrl+K |
 | Back to Live | Ctrl+Shift+L |
+| Previous song, next song in the buffer | Alt+Shift+Left / Alt+Shift+Right |
+| Which song is this? | Alt+Shift+W |
+| Save this, previous, next, all songs in the buffer | Ctrl+Alt+F8 / Ctrl+Alt+F6 / Ctrl+Alt+F7 / Ctrl+Alt+F5 |
+| Time-shift length for this station | Alt+Shift+T |
 | Continue Listening | Ctrl+Alt+Shift+L |
 | Chapters | Ctrl+Shift+C |
 | Next or previous chapter | Ctrl+Shift+. / Ctrl+Shift+, |
@@ -8222,6 +8454,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Go to Player | Ctrl+Shift+G |
 | What's Playing? | Ctrl+T |
 | Song History | Ctrl+Shift+H |
+| What the Station Played | Alt+Shift+H |
 | Lyrics | Ctrl+Alt+B |
 | Bookmark This Moment | Ctrl+Alt+A |
 | Sleep Timer | Ctrl+Shift+Z |

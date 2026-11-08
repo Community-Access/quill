@@ -13,7 +13,7 @@ Every module built from a BlindRadio idea credits it in its docstring.
 - `networks-and-directories.md`: curated networks, IPRD, TuneIn, and the directories refused on their terms.
 - `song-history-sources.md`: What the Station Played.
 - `scrobbling-and-recognition.md`: scrobbling and AudD.
-- `time-shift.md`: song marks, adaptive cushion, per-station buffer length (arrives with its branch).
+- `time-shift.md`: song marks, adaptive cushion, per-station buffer length.
 - `dial-tuning.md`: the agreed design for dial tuning (not built yet).
 
 Each notes file holds the exact user-guide, PRD and CHANGELOG text, the keys, settings
@@ -30,21 +30,23 @@ and egress rows added, and what was not verified.
   - scrobbling to ListenBrainz, last.fm and Libre.fm (off by default) and AudD as a second Identify This Song service.
 - 2026-11-07: refused after reading their terms: Internet-Radio.com, radio.net tag browse, Online Radio Box, Airable, vTuner.
 - 2026-11-07: dial tuning design agreed with Jeff: ships off, every part a setting.
+- 2026-11-07: time-shift branch merged: song marks with Save Songs from the Buffer, adaptive cushion, per-station length.
+- 2026-11-07: docs folded in: Radio user guide (chapters 3, 4, 5, 6, privacy, keys, licences), Radio PRD section 31, Radio and QUILL CHANGELOGs (Help > What's New reads the Radio one), the BlindRadio MIT notice in every product's third-party notices, site pages synced.
+- 2026-11-07: stale GitHub OAuth lines in `docs/design/codex.md` corrected.
 
 ## Remaining tasks
 
-1. Merge the time-shift branch (`feat/br-shift`): song marks in the buffer, adaptive cushion, per-station buffer length.
-2. Fold each notes file's text into the Radio user guide, PRD, CHANGELOG and What's New; add the BlindRadio MIT notice to the third-party notices; regenerate HTML and EPUB.
-3. Run `platform_report`, regenerate snapshots, re-run the menu-accelerator gate and the radio test suite on the merged branch.
-4. PR to main; merge on green CI.
-5. Remove the program's worktrees once their branches are on main.
-6. Build dial tuning to `dial-tuning.md` (after time-shift, since both change the mpv engine), as its own PR.
-7. Correct stale GitHub OAuth lines in `docs/design/codex.md` (542, 1018, 1590): the per-app OAuth Apps were registered on 2026-11-02 and their client ids are built into `quill/core/ai/copilot_auth.py`.
+1. Run `platform_report`, regenerate snapshots, re-run the menu-accelerator gate and the radio test suite on the merged branch.
+2. PR to main; merge on green CI.
+3. Remove the program's worktrees once their branches are on main.
+4. Build dial tuning to `dial-tuning.md` (after time-shift is on main, since both change the mpv engine), as its own PR.
+5. Review the module budget entry for `quill/core/app_keymaps.py` (602 lines, `_rebaseline_2026_11_07_song_marks`).
 
 ## Small follow-ups found along the way
 
 - What the Station Played has no row on QUILL's embedded radio menu (the command palette reaches it); its window is modal; it has no Refresh.
 - Scrobbling has no Preferences rows in the radio inside QUILL itself; retries run only while a station plays.
+- Song marks: songs ahead of the playhead are known only from the 30-second title poll, so may be marked late until reached; saved songs keep the station's format rather than the recorder's chosen one; QUILL's embedded radio menu lacks the song commands; per-station length is not on the favorites context menu.
 - AudD clip not tried on an HLS station; AudD's error replies written from its docs.
 - Re-read 1.FM's terms before switching its network to `api.1cloud.fm`.
 - Global, ARN and NZME run their own apps; if one withdraws from third-party players, delete its network entry.

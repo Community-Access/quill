@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Quill Radio: ideas from BlindRadio (2026-11-07)
+
+- Quill Radio gains curated networks with direct streams (516 channels), the
+  IPRD directory, What the Station Played (Alt+Shift+H), song marks in the
+  time-shift buffer with Save Songs from the Buffer, a deeper cushion for
+  stations that keep running dry, a time-shift length per favorite, scrobbling
+  to ListenBrainz, last.fm and Libre.fm, and AudD as a second Identify This Song
+  service. All are ideas from BlindRadio by serrebidev (MIT); its network list
+  is used under its notice. The shared radio core in QUILL carries the same
+  networks, directory and playlist sources. See Quill Radio's changelog.
+
 ### One account manager for both editors (2026-11-07)
 
 - **Manage GitHub Accounts** now runs from one shared module that QUILL Lite

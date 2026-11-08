@@ -3686,3 +3686,115 @@ every standalone QuillVille app gives it. N rather than W, which What Is This?
 owns. It is distinct from **Community > What's New** (Alt+Shift+N), which says
 what arrived since the listener last looked. A changelog that cannot be found
 is said, not silent.
+
+
+## 31. Ideas from BlindRadio (unreleased, 2026-11-07)
+
+BlindRadio, by serrebidev (MIT, https://github.com/serrebidev/blindradio), is a
+screen-reader-first radio player written in Rust. Its ideas, and in one case its
+data, were reviewed on 2026-11-07 (`docs/design/blindradio-review-2026-11-07.md`)
+and the best of them built here. No BlindRadio code is included; its network table
+is, under its MIT notice. Each module built from one of its ideas credits it in its
+docstring. The program's status and remaining tasks are in
+`docs/design/blindradio-ideas/blindradio-ideas-status.md`; each piece's notes are in
+the same folder.
+
+### 31.1 Curated networks with direct stream addresses
+
+`quill/core/radio/curated_networks.py`, `quill/data/radio_networks.json`,
+`scripts/refresh_radio_networks.py`. The Networks branch carries 20 networks (516
+channels) whose channels are pinned to each operator's own published stream, from
+BlindRadio's curated table, each with a recorded origin. A curated network that
+`replaces` a Radio Browser query takes its id and place (BBC, ABC, MPR, Big R
+Radio), so no network is shown twice and saved browse positions still resolve.
+Listing them makes no request; playing one reaches only the operator's stream.
+Every address is HTTPS unless the row states why not (one: WFUV, an incomplete
+certificate chain). A hand-run tool re-probes every address (GET, 200, audio type,
+4096 bytes, close) and refreshes NTS and Radio Record from their own keyless APIs;
+it never runs in the app, tests or CI. Excluded: seasonal-only channels, Bauer
+brands (withdrawn from third-party apps), keyed streams, SomaFM (retired here
+2026-10-31). Two new groups: Commercial radio, Christian radio.
+
+### 31.2 IPRD, and directories refused on their terms
+
+`quill/core/radio/iprd.py`, `browse_iprd.py`. The International Public Radio
+Directory, an MIT-licensed open catalogue on GitHub Pages, as a root branch: By
+Country and By Genre (top 100), paged 100 at a time with a counted More... row, and
+a Find Stations source. One reviewed egress site, fetched only on a user's open or
+search, cached a day. Refused after reading their terms on 2026-11-07:
+Internet-Radio.com (streaming only through its own player or players it
+facilitates; copying the site forbidden; HTML only), radio.net's tag browse (its API
+host's robots.txt disallows everything; private use only), Online Radio Box (terms
+forbid reuse; robots disallow its JSON), Airable (NDA catalogue), vTuner
+(personal-use terms). TuneIn lists a station once when it appears both in its local
+list and in a category.
+
+### 31.3 What the Station Played (radio.station_playlist, Alt+Shift+H)
+
+`quill/core/radio/station_playlist.py`, `station_playlist_parsers.py`,
+`quill/ui/radio/station_playlist_dialog.py`. A station's own published playlist,
+beside Song History and never merged with it. The source is chosen from the stream
+URL only, by exact host and path pattern, never by station name: AzuraCast
+(`/listen/<shortcode>/`, kept only when the answer names the same shortcode), KEXP,
+BBC (service id from the stream path, ten rows, relative times kept as phrases),
+Radio Paradise (channel from the stream name), Live365, laut.fm and Triton (mount
+tried as given, without `_SC`, then without `AAC`). One user-initiated GET on the
+task manager, HTTPS only, 12 s timeout, 2 MB cap, refused in Safe Mode. The window
+states its provenance and offers Copy, Send to Clip Library, Song Details and
+Lyrics through Song History's own code. A station with no published list is told
+so in one sentence with no request made.
+
+### 31.4 Song marks, adaptive cushion, per-station time-shift length
+
+`quill/core/radio/song_marks.py`, `cushion.py`, `quill/ui/radio/song_marks_ui.py`,
+`mpv_live_extras.py`, `quill/apps/radio_timeshift_menu.py`.
+
+- **Song marks (R-TS-MARKS).** Every non-noise title change while the time-shift
+  buffer runs marks the buffer. Sources: mpv's timed metadata (marked at
+  `time-pos`) and the out-of-band title reader (marked at the live edge); two
+  sightings of one title within 60 s keep the earlier position. Previous Song
+  (Alt+Shift+Left) restarts a song more than 3 s in, else goes to the one before;
+  Next Song (Alt+Shift+Right) past the last returns to live; Which Song Is This?
+  (Alt+Shift+W). Save This, Previous, Next and All (Ctrl+Alt+F8, F6, F7, F5) write
+  each song with mpv `dump-cache` (no re-encode) to the recordings folder, named by
+  the recorder's pattern plus the song name, never overwriting. After a jump the app
+  speaks the title and the distance from live and nothing else (GATE-13). Marks are
+  cleared on every load.
+- **Adaptive cushion (R-TS-CUSHION).** On each `paused-for-cache` stall,
+  `cache-pause-wait` steps 3, 9, 15 s; one clean minute restores 1 s; every load
+  resets it. Not announced.
+- **Per-station length (R-TS-STATION, Alt+Shift+T).** A favorite may override the
+  global time-shift length (`timeshift_minutes`, -1 follows Preferences); applied
+  before each load, including the engine-fallback path.
+
+### 31.5 Scrobbling and AudD recognition
+
+`quill/core/radio/scrobble_tracker.py`, `scrobble_queue.py`, `scrobbling.py`,
+`listenbrainz.py`, `lastfm.py`, `audd.py`, `radio_credentials.py`,
+`quill/ui/radio/scrobble_commands.py`, `scrobble_signin.py`,
+`quill/apps/radio_preferences_scrobble.py`.
+
+- **Scrobbling.** ListenBrainz (user token), last.fm and Libre.fm (desktop sign-in
+  through the browser), each off by default. A song counts after a minute heard,
+  because radio gives no length for last.fm's half-or-four-minutes rule. The
+  playhead, not the broadcast, is the clock: time-shifted listening counts when
+  heard, and a pause adds nothing. Fed from the `record_song` choke point; a
+  5-second timer runs only while a song is followed. Failed scrobbles wait in a
+  capped on-disk queue (500 per service, 14 days, backoff to an hour); a lost
+  sign-in is said once. Tokens and session keys live in the credential store. The
+  last.fm app key ships as a gitignored build-time module
+  (`tools/generate_lastfm_api_key.py`, from `QUILL_LASTFM_API_KEY` and
+  `QUILL_LASTFM_SHARED_SECRET` or their `_FILE` forms); the listener's own pair
+  wins. Egress: `scrobble_http.py::post`.
+- **AudD.** A second service for Identify This Song, chosen in Preferences;
+  AcoustID stays the default. Sends a 20-second clip from the playing buffer with
+  the listener's own token, only on the command; the answer maps into AcoustID's
+  `Match`. Egress: `audd.py::_post`.
+
+### 31.6 Dial tuning (designed, not built)
+
+Agreed with Jeff on 2026-11-07: moving through a live station list plays the
+station under focus after a short wait, with neighbours kept connected and a soft
+hiss between stations. It ships off, and every part is a setting; the design is
+`docs/design/blindradio-ideas/dial-tuning.md`. It waits until the time-shift work
+above is on main, because both change the mpv engine.

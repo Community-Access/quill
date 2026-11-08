@@ -12,6 +12,42 @@ than by build. A date in brackets says when a change arrived.
 
 **Everything 3.1 was going to be, and the two things that stopped an update from arriving.** Check for Updates now reads the version this computer actually installed instead of the version the shared runtime happens to carry, so it stops offering an update you already have; and Install and restart survives the launcher closing, so a one-click update installs instead of quietly doing nothing. It was prepared as 3.1.1 and never published under that number, so it ships as 3.2.0 (see below). **Five new things, and fourteen fixes.** Quill Radio checks your subscribed podcasts on its own and tells you what arrived, in the way each podcast asks for; there is a list of everything you have been told; you can leave yourself a note on any station or podcast; and Ask QUILL Radio answers questions about what is playing, on the ChatGPT plan you already pay for; and a Website button beside Play and Stop opens the station's own site. Then: the sound card switches, or says why it cannot and puts the setting back; Windows Media gets a route to a device of its own; Preferences names only the engines this copy has; a minimized window comes back when its menu item or key asks for it; a stale "start with Windows" entry is repaired by the installer rather than waiting for a launch; Preferences opens in a blink instead of two seconds; and four smaller things that came in the same week. **Also in 3.2.0:** Apple's podcast categories fill up and the Podcast Index says why when it cannot; browsing long lists stays smooth; Preferences has Find a setting; Undo History lists the last ten things you can take back; and a few choices can be shared with your other Quill apps.
 
+### Ideas from BlindRadio (2026-11-07)
+
+Six things arrive together, each an idea from BlindRadio, a screen-reader-first
+radio player by serrebidev (github.com/serrebidev/blindradio, MIT). Thank you.
+
+- **More networks, straight to the broadcaster's stream** (2026-11-07). Networks
+  now lists every channel of the BBC, the ABC by region, Minnesota Public Radio
+  and YourClassical, WFMU, WFUV, Radio Swiss, Global's UK brands (Capital, Heart,
+  Smooth, Classic FM, LBC, Radio X, Gold), Triple M, ARN, NZME, K-LOVE, Air1, Big
+  R Radio, NTS and its Infinite Mixtapes, Nightride FM, Power Hitz, Radio Record,
+  PulsRadio, Sunshine Live and Planet Radio: 516 channels, each checked to play.
+  Their folders say how many channels they hold and open at once, because the
+  list comes with Quill Radio. Two new groups, Commercial radio and Christian
+  radio. The list is BlindRadio's, used under its MIT notice.
+- **IPRD, the open Public Radio Directory** (2026-11-07). A new Browse Stations
+  branch: about 24,000 stations by country and by genre, a hundred at a time.
+  Find Stations searches it, and the network channels too. TuneIn no longer
+  lists a station twice when it is both local and in a category.
+- **What the Station Played** (Alt+Shift+H, 2026-11-07). The station's own list
+  of what it played, with start times, beside your Song History, for KEXP, the
+  BBC, Radio Paradise, Live365, laut.fm, Triton (StreamTheWorld) and AzuraCast
+  stations. Only fetched when you ask.
+- **Song marks in the time-shift buffer** (2026-11-07). Each song is marked as
+  it starts. Previous Song and Next Song (Alt+Shift+Left and Right) jump between
+  them, Which Song Is This? (Alt+Shift+W) says where you are, and Save Songs
+  from the Buffer (Ctrl+Alt+F5 to F8) writes this, the previous, the next or
+  every song to its own file, untouched.
+- **Steadier stations, and a buffer length per station** (2026-11-07). A
+  station that keeps running dry now waits longer before it plays again (3,
+  then 9, then 15 seconds) instead of stuttering, and goes back to normal after
+  a clean minute. A favorite can keep its own time-shift length (Alt+Shift+T).
+- **Scrobbling, and AudD for Identify This Song** (2026-11-07). Send the songs
+  you hear to ListenBrainz, last.fm or Libre.fm; each is off until you turn it
+  on and sign in, and a song counts after a minute heard. Identify This Song
+  can ask AudD instead of AcoustID, with your own AudD token.
+
 ### AI menu and the station catalogue (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.

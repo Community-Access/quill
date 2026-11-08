@@ -273,7 +273,7 @@ quill/tools/build_third_party_notices.py. Do not edit it by hand.</p>
 </ul>
 <h2 id="summary-by-licence">Summary by licence</h2>
 <ul>
-<li>MIT License: 67 components</li>
+<li>MIT License: 68 components</li>
 <li>BSD 3-Clause License: 23 components</li>
 <li>Apache License, version 2.0: 16 components</li>
 <li>GNU General Public License, version 2: 7 components</li>
@@ -2719,6 +2719,29 @@ href="https://www.radio-browser.info/">https://www.radio-browser.info/</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> None.</li>
+</ul>
+<h3 id="blindradio-network-table">BlindRadio network table</h3>
+<ul>
+<li><strong>What it is:</strong> The curated radio networks and their
+stream addresses in Browse Stations &gt; Networks (20 networks, 516
+channels), from BlindRadio’s networks table and its sourcing notes, each
+address re-checked before it was kept. Quill Radio’s song marks, deeper
+cushion, per-station time-shift length, What the Station Played,
+scrobbling and AudD recognition also follow BlindRadio’s ideas; no
+BlindRadio code is included. It ships in quill/data, so every product
+carries it.</li>
+<li><strong>Included in:</strong> Every product in the family.</li>
+<li><strong>Version:</strong> 2026-11-07 snapshot
+(quill/data/radio_networks.json)</li>
+<li><strong>Licence:</strong> MIT License (its notice is also in
+quill/data/radio_networks.LICENSE.txt)</li>
+<li><strong>Copyright:</strong> Copyright (c) 2026 serrebidev</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a></li>
+<li><strong>How it reaches you:</strong> Bundled: it is inside the
+installer or the portable zip.</li>
+<li><strong>What the licence asks of us:</strong> Keep the copyright
+notice and the permission notice with every copy.</li>
 </ul>
 <h3 id="voice-previews-synthesised-samples">Voice Previews (synthesised
 samples)</h3>
@@ -6217,10 +6240,11 @@ Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and
 kokoro-onnx, ptts (Phonon text-to-speech runtime), MathCAT, Piper
 text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji
 catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data),
-Image Description Toolkit (ideas and image prompt text), App icons,
-Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs
-(Ink and the indent-tone packs), VS Code accessibility signal sounds
-(the VS Code Signals sound pack), Weather alert sound
+BlindRadio network table, Image Description Toolkit (ideas and image
+prompt text), App icons, Page-turn sound
+(quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the
+indent-tone packs), VS Code accessibility signal sounds (the VS Code
+Signals sound pack), Weather alert sound
 (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest,
 ruff, mypy and their plugins).</p>
 <p>What it asks of us: Keep the copyright notice and the permission
