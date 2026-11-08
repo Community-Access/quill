@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import wx
 
-from quill.apps import radio_audio_menu, radio_go_to, radio_playback_extras
+from quill.apps import radio_audio_menu, radio_go_to, radio_playback_extras, radio_timeshift_menu
 from quill.ui.radio.radio_ai_host import RadioAiMixin
 
 
@@ -256,12 +256,8 @@ class RadioMenuBarMixin(RadioAiMixin):  # Ask and the AI rows (Community)
         audio_menu.Append(output_device_id, "&Output Device...\tCtrl+Shift+D")
         self.frame.Bind(wx.EVT_MENU, lambda _e: choose_output_device(self), id=output_device_id)
         playback_menu.AppendSeparator()
-        # Live DVR (mpv engine): pause is the Play/Stop item; these move
-        # within the buffered live window.
-        rewind_id, forward_id, live_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(rewind_id, self._menu_label("Re&wind", "radio.rewind"))
-        playback_menu.Append(forward_id, self._menu_label("&Forward", "radio.forward"))
-        playback_menu.Append(live_id, self._menu_label("Back to &Live", "radio.jump_to_live"))
+        # Rewind, Forward, Back to Live and the song marks (radio_timeshift_menu).
+        self._keep_menu_ids(*radio_timeshift_menu.append_items(self, playback_menu, wx))
         # Video: a finished YouTube video has a timeline, so it can be
         # scrubbed, sped up, navigated by chapter and read as a transcript --
         # none of which a live broadcast can do, and every one of which says so
@@ -306,9 +302,6 @@ class RadioMenuBarMixin(RadioAiMixin):  # Ask and the AI rows (Community)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._on_volume_boost_menu(), id=self._volume_boost_item_id
         )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_rewind(), id=rewind_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_forward(), id=forward_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_jump_to_live(), id=live_id)
         # Ctrl+T opens the reviewable Now Playing window (fetch-and-speak fallback).
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.radio_whats_playing_details(), id=whats_playing_id
@@ -605,9 +598,6 @@ class RadioMenuBarMixin(RadioAiMixin):  # Ask and the AI rows (Community)
             vol_up_id,
             vol_down_id,
             self._volume_boost_item_id,
-            rewind_id,
-            forward_id,
-            live_id,
             whats_playing_id,
             *song_ids,
             self._global_volume_item_id,

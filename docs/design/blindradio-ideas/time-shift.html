@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Time-shift: song marks, adaptive cushion, per-station
+length</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="time-shift-song-marks-adaptive-cushion-per-station-length">Time-shift:
+song marks, adaptive cushion, per-station length</h1>
+<p>Branch <code>feat/br-shift</code>. Three ideas from BlindRadio by
+serrebidev (MIT, Copyright (c) 2026 serrebidev), chosen in
+<code>docs/design/blindradio-review-2026-11-07.md</code> (items 2, 3 and
+6). No BlindRadio code was copied; the behaviour and the numbers
+(15-second first-title rule, 3-second restart rule, cushion steps 3, 9,
+15 and the clean minute) come from its <code>segments.rs</code>,
+<code>stream.rs</code>, user guide and CHANGELOG 0.2.2.</p>
+<h2 id="what-was-built">What was built</h2>
+<h3 id="1-song-marks-in-the-time-shift-buffer">1. Song marks in the
+time-shift buffer</h3>
+<ul>
+<li><code>quill/core/radio/song_marks.py</code> (wx-free, strict):
+<code>SongMarks</code> keeps <code>(position, title)</code> marks on
+mpv’s stream timeline. Blank and noise titles
+(<code>song_history.is_noise_title</code>, so “Live”, “Advertisement” or
+the station’s own name) mark nothing. A repeat of the title already at
+that point is no news. A second sighting of one title within 60 seconds
+moves the mark earlier, never later. A first title within 15 seconds of
+the buffer’s start is marked at the start. Marks whose audio has left
+the buffer are pruned. <code>songs()</code>, <code>pick()</code>
+(previous, current, next, all) and <code>jump()</code> (Previous
+restarts a song more than 3 seconds in, otherwise goes to the one
+before; Next past the last goes back to live) are pure.</li>
+<li>Two sources of titles, both feeding the same marks:
+<ul>
+<li><strong>mpv itself.</strong> mpv’s ICY and HLS metadata are timed:
+the demuxer files each title change with its timestamp and hands it over
+when playback reaches it (<code>demux/demux.c</code>,
+<code>add_timed_metadata</code>). So when the engine’s title changes,
+<code>time-pos</code> is where that song starts. The engine checks once
+a second (<code>quill/ui/radio/mpv_live_extras.py</code>, every fifth
+200 ms poll).</li>
+<li><strong>The out-of-band title reader</strong> (ICY tap, status
+page), through the one choke point
+<code>_radio_apply_track_title</code>. It describes the live edge, so it
+is marked at <code>demuxer-cache-time</code>; the merge rule keeps mpv’s
+exact position when both report the same song.</li>
+</ul></li>
+<li>Marks are per session: the engine clears them on every load, so a
+station change (or a reconnect) starts a fresh list. The station name
+for the noise check is set before each load
+(<code>engine_selection.prepare_station</code>).</li>
+<li>Commands (<code>quill/ui/radio/song_marks_ui.py</code>, menu rows in
+<code>quill/apps/radio_timeshift_menu.py</code>, Playback menu right
+after Back to Live):
+<ul>
+<li>Previous Song, Next Song: seek to the song’s start and say “Title by
+Artist. N minutes behind live.” After the last song, Next does Back to
+Live (“Back to live.”). At the edges: “This is the oldest song in the
+buffer.” / “You are listening live; there is no next song yet.”</li>
+<li>Which Song Is This?: “Title by Artist, 50 seconds in, song 2 of 3 in
+the buffer. 1 minute 50 seconds behind live.”</li>
+<li>Playback &gt; Save Songs from the Buffer &gt; Save This Song, Save
+the Previous Song, Save the Next Song, Save All Songs in the Buffer.
+Each song goes to its own file in the recordings folder (Recording
+Settings’ destination, or the default Quill Radio Recordings folder),
+named with the recorder’s filename pattern for the station and the time
+the song went out, then “ - “ and the song as the song splitter names it
+(<code>recording_split.song_file_name</code>), made unique with the
+recorder’s <code>uniquify</code>, so nothing is overwritten. The audio
+is copied out of the buffer with mpv’s <code>dump-cache</code> exactly
+as the station sent it (no decode, no re-encode); the extension follows
+mpv’s <code>audio-codec-name</code> (mp3, aac, opus, ogg, flac, anything
+else .mka). The dump runs on the task manager, so the window stays free.
+The song still playing is saved as far as it has got.</li>
+<li>Refusals are spoken: nothing playing; the Windows Media engine (the
+existing “needs the mpv playback engine” sentence); a finished recording
+(“This is a recording, not live radio, so it has no song marks.”); no
+marks yet.</li>
+</ul></li>
+</ul>
+<h3 id="2-adaptive-cushion">2. Adaptive cushion</h3>
+<ul>
+<li><code>quill/core/radio/cushion.py</code> (wx-free, strict):
+<code>CushionPolicy</code> with a clock. Each underrun goes one step
+deeper (3, 9, 15 seconds); one clean minute after playback comes back
+restores the normal 1 second; time spent stalled is not clean; a new
+station resets it.</li>
+<li>mpv mapping: <code>cache-pause-wait</code>, the number of seconds
+the cache must hold before playback resumes after “buffering”. Verified
+against mpv’s sources: <code>player/playloop.c</code> reads
+<code>opts-&gt;cache_pause_wait</code> on every cache update, so writing
+the property takes effect at the next stall without a reload. The manual
+(<code>DOCS/man/options.rst</code>) confirms the semantics.
+<code>cache-secs</code> and <code>demuxer-readahead-secs</code> were
+considered and rejected: they limit read-ahead, and with the cache on
+Quill Radio already reads as far ahead as the byte cap allows, so
+raising them would change nothing.</li>
+<li>The trigger is the <code>paused-for-cache</code> edge the engine
+poll already watched for its buffering announcement. The engine writes
+<code>cache-pause-wait=1.0</code> on every load, because an option set
+at runtime survives a load.</li>
+<li>Nothing is announced. The existing buffering announcement already
+covers the stall; the cushion only makes the next stretch longer.</li>
+</ul>
+<h3 id="3-per-station-time-shift-length">3. Per-station time-shift
+length</h3>
+<ul>
+<li><code>FavoriteStation.timeshift_minutes</code> (default -1, follow
+Preferences), stored in <code>radio_favorites.json</code> with the
+station’s other per-station settings (volume, Sound Enhancements).
+Unknown or corrupt values follow Preferences.</li>
+<li><code>timeshift.resolve_minutes</code>,
+<code>normalise_station_minutes</code>, <code>station_choices</code>,
+<code>label_for</code> (pure).</li>
+<li><code>engine_selection.prepare_station</code> configures the engine
+with the station’s length before every load (and on the engine-fallback
+path), which is when mpv reads <code>demuxer-max-back-bytes</code> and
+the disk-cache options.</li>
+<li>Playback &gt; Time-Shift Length for This Station… (Alt+Shift+T) acts
+on the playing station’s favorite, else the favorite selected in the
+tree, and offers “Same as Preferences (1 hour, on disk)” plus every
+length. A station that is not a favorite is told to add it first.</li>
+</ul>
+<h2 id="keys-added-quill-radio-app_keymapsradio">Keys added (Quill
+Radio, <code>APP_KEYMAPS["radio"]</code>)</h2>
+<p>The rows live in
+<code>quill/core/radio/song_marks.SONG_MARK_KEYS</code> and are spread
+into <code>APP_KEYMAPS["radio"]</code> with one line, because
+<code>app_keymaps.py</code> sat on the 600-line default cap. It now has
+a budget entry of 602 (<code>_rebaseline_2026_11_07_song_marks</code>),
+and <code>radio_menu_bar.py</code>’s budget came down from 639 to
+629.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Previous Song (<code>radio.previous_song</code>)</td>
+<td>Alt+Shift+Left</td>
+</tr>
+<tr>
+<td>Next Song (<code>radio.next_song</code>)</td>
+<td>Alt+Shift+Right</td>
+</tr>
+<tr>
+<td>Which Song Is This? (<code>radio.which_song</code>)</td>
+<td>Alt+Shift+W</td>
+</tr>
+<tr>
+<td>Save All Songs in the Buffer
+(<code>radio.save_all_songs</code>)</td>
+<td>Ctrl+Alt+F5</td>
+</tr>
+<tr>
+<td>Save the Previous Song (<code>radio.save_previous_song</code>)</td>
+<td>Ctrl+Alt+F6</td>
+</tr>
+<tr>
+<td>Save the Next Song (<code>radio.save_next_song</code>)</td>
+<td>Ctrl+Alt+F7</td>
+</tr>
+<tr>
+<td>Save This Song (<code>radio.save_current_song</code>)</td>
+<td>Ctrl+Alt+F8</td>
+</tr>
+<tr>
+<td>Time-Shift Length for This Station
+(<code>radio.station_timeshift</code>)</td>
+<td>Alt+Shift+T</td>
+</tr>
+</tbody>
+</table>
+<p>BlindRadio uses Shift+F6/F7 and Ctrl+F5-F8. Here Shift+F6 is the
+status-bar region key’s reverse and Ctrl+F5/Ctrl+F8 were taken, so the
+saves keep BlindRadio’s order on Ctrl+Alt+F5-F8.</p>
+<h2 id="settings-added">Settings added</h2>
+<p>None in <code>Settings</code> or <code>RadioHistory</code>. One
+per-favorite field, <code>timeshift_minutes</code>, in the favorites
+file.</p>
+<h2 id="egress-rows-added">Egress rows added</h2>
+<p>None. Everything works on audio already buffered; no new
+connection.</p>
+<h2
+id="user-guide-text-add-after-rewinding-live-radio-and-going-back-to-live">User
+guide text (add after “Rewinding live radio, and going back to
+live”)</h2>
+<blockquote>
+<h3 id="jumping-between-songs-in-the-buffer">Jumping between songs in
+the buffer</h3>
+<p>While the time-shift buffer runs, Quill Radio marks where each song
+starts, every time the station sends a new title. Stations that name
+what they play are divided up with nothing to set. Announcements like
+“Live” or the station’s own name mark nothing, so the song before keeps
+the time.</p>
+<ul>
+<li><strong>Previous Song</strong> (Alt+Shift+Left) goes back to the
+start of the song you are in, or to the one before if it only just
+began.</li>
+<li><strong>Next Song</strong> (Alt+Shift+Right) goes on to the next
+one. After the last song it goes back to live.</li>
+<li><strong>Which Song Is This?</strong> (Alt+Shift+W) tells you the
+song, how far into it you are, and how far behind live.</li>
+</ul>
+<p>Each jump says the song and how far behind live you now are.</p>
+<p><strong>Playback &gt; Save Songs from the Buffer</strong> writes
+songs to their own files in your recordings folder: <strong>Save This
+Song</strong> (Ctrl+Alt+F8), <strong>Save the Previous Song</strong>
+(Ctrl+Alt+F6), <strong>Save the Next Song</strong> (Ctrl+Alt+F7) and
+<strong>Save All Songs in the Buffer</strong> (Ctrl+Alt+F5). Each file
+is named like a recording, with the station, the time the song played
+and its title, and an earlier file is never overwritten. The audio is
+kept exactly as the station sent it. The song still playing is saved as
+far as it has got, and the oldest song starts where the buffer does.</p>
+<p>Song marks need the mpv playback engine and a station that sends
+titles. The marks start again whenever you change station. A mark can be
+a second or two either side of the real change, and a title the station
+sends late is marked late.</p>
+<p><strong>A station of its own length.</strong> Some stations are worth
+keeping five hours of, and some are not worth keeping at all. Play the
+station (or select it in your favorites) and choose <strong>Playback
+&gt; Time-Shift Length for This Station</strong> (Alt+Shift+T). Pick a
+length, or <strong>Same as Preferences</strong> to follow the Time-shift
+buffer setting again. It takes effect the next time the station starts.
+Only favorites can keep their own length.</p>
+</blockquote>
+<p>And in the “stutters” troubleshooting entry, or after the buffer
+paragraph:</p>
+<blockquote>
+<p>If a station keeps running dry and stuttering, Quill Radio waits a
+little longer before it plays again each time: three seconds, then nine,
+then fifteen, so you hear long clean stretches instead of a stutter
+every few seconds. After a minute without trouble it goes back to
+normal, and changing station starts fresh.</p>
+</blockquote>
+<p>Keyboard table rows (guide’s Appendix):</p>
+<blockquote>
+<p>| Previous song, next song in the buffer | Alt+Shift+Left /
+Alt+Shift+Right | | Which song is this? | Alt+Shift+W | | Save this,
+previous, next, all songs | Ctrl+Alt+F8 / F6 / F7 / F5 | | Time-shift
+length for this station | Alt+Shift+T |</p>
+</blockquote>
+<h2 id="prd-text-radio-prd-live-time-shift-section">PRD text (Radio PRD,
+live time-shift section)</h2>
+<blockquote>
+<p><strong>Song marks (R-TS-MARKS).</strong> Every non-noise title
+change while the time-shift buffer runs marks the buffer. Sources: mpv’s
+timed metadata (marked at <code>time-pos</code>) and the out-of-band
+title reader (marked at the live edge); two sightings of one title
+within 60 s keep the earlier position. Previous Song restarts a song
+more than 3 s in, else goes to the one before; Next Song past the last
+returns to live. Save This/Previous/Next/All write each song with mpv
+<code>dump-cache</code> (no re-encode) to the recordings folder, named
+by the recorder’s pattern plus the song name, never overwriting. After a
+jump the app speaks the title and the distance from live and nothing
+else (GATE-13). Marks are cleared on every load. Idea: BlindRadio
+(MIT).</p>
+<p><strong>Adaptive cushion (R-TS-CUSHION).</strong> On each
+<code>paused-for-cache</code> stall, <code>cache-pause-wait</code> steps
+3, 9, 15 s; one clean minute restores 1 s; every load resets it. Not
+announced. Policy in <code>quill/core/radio/cushion.py</code>. Idea:
+BlindRadio (MIT).</p>
+<p><strong>Per-station length (R-TS-STATION).</strong> A favorite may
+override the global time-shift length (<code>timeshift_minutes</code>,
+-1 follows Preferences); applied before each load. Idea: BlindRadio
+(MIT).</p>
+</blockquote>
+<h2 id="changelog-line">CHANGELOG line</h2>
+<blockquote>
+<ul>
+<li>Quill Radio marks each song in the time-shift buffer: jump to the
+previous or next song (Alt+Shift+Left/Right), ask which song you are in
+(Alt+Shift+W), and save this, the previous, the next or every buffered
+song to its own file (Ctrl+Alt+F5 to F8). Stations that keep running dry
+now refill a deeper cushion (3, 9, then 15 seconds) and earn the normal
+one back after a clean minute. Each favorite can keep its own time-shift
+length (Alt+Shift+T). Ideas from BlindRadio by serrebidev.</li>
+</ul>
+</blockquote>
+<h2 id="third-party-notice-text">Third-party notice text</h2>
+<p>No code or data was copied, so no notice is strictly required. If the
+integrator credits ideas in THIRD_PARTY_NOTICES, this is the line:</p>
+<blockquote>
+<p>Quill Radio’s song marks, adaptive cushion and per-station time-shift
+length follow ideas from BlindRadio (<a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a>),
+Copyright (c) 2026 serrebidev, MIT License. No BlindRadio code is
+included.</p>
+</blockquote>
+<h2 id="tests">Tests</h2>
+<ul>
+<li><code>tests/unit/core/radio/test_song_marks.py</code>: marking,
+noise skipping, merging, first-title rule, pruning, songs, pick and jump
+at every edge, offsets, extensions.</li>
+<li><code>tests/unit/core/radio/test_cushion_policy.py</code>: steps,
+ceiling, clean minute, stalls not counting as clean, restart of the
+count, reset, with a fake clock.</li>
+<li><code>tests/unit/core/radio/test_timeshift_per_station.py</code>:
+resolution, choices, favorites round trip, corrupt and pre-field
+files.</li>
+<li><code>tests/unit/ui/test_radio_mpv_live_extras.py</code>: the engine
+side over a fake mpv client (timed title marks, once-a-second check,
+live-edge marks, pruning, load reset, cushion writes, seek and
+dump).</li>
+<li><code>tests/unit/ui/test_radio_song_marks_commands.py</code>: every
+new handler, with a fake controller and fake mpv, including what is
+spoken, saves, refusals, the per-station dialog (accept and cancel), and
+the engine receiving the station’s length.</li>
+</ul>
+<h2 id="not-done-or-not-verified">Not done or not verified</h2>
+<ul>
+<li><p>Gates run here: the menu-accelerator gate (all 20 pass, including
+access letters), module-size budget, dialog inventory, surface
+reachability, keyboard reference, ruff and scoped mypy on the core
+modules. <code>platform_report</code> and the full radio suite were not
+run (the integrator runs them after the merge).</p></li>
+<li><p>Not heard live: no listening test against a real station with
+JAWS or NVDA. In particular the claim that mpv’s title change arrives in
+step with the playhead comes from reading mpv’s demuxer source; on a
+station whose ICY title lags its audio, marks lag the same way.</p></li>
+<li><p>While you are behind live, songs between you and the live edge
+are known only from the out-of-band title reader, which polls every 30
+seconds, so those marks can be up to 30 seconds late until playback
+reaches them and mpv’s own sighting moves them earlier.</p></li>
+<li><p>Saves are always in the station’s own format. The recorder’s
+chosen format (for example MP3 at a set bitrate) is not applied;
+re-encoding would mean an ffmpeg pass over each saved file.</p></li>
+<li><p><code>dump-cache</code> of a very long span can briefly hold up
+mpv while it writes (mpv’s manual says so). It runs off the UI thread,
+so the window stays responsive, but audio may hiccup while Save All
+writes a long buffer.</p></li>
+<li><p>The QUILL editor’s Media &gt; Internet Radio menu did not get the
+song commands; only Quill Radio did.</p></li>
+<li><p>The per-station length is reachable from the Playback menu only,
+not from the favorites tree’s context menu.</p></li>
+</ul>
+</main>
+</body>
+</html>
