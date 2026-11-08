@@ -23,9 +23,11 @@ issue, is still on your computer.
 ### "The GitHub token is invalid or expired."
 
 The full sentence ends "Add a valid token or switch accounts." Your token has
-reached its expiry date, or was cancelled on GitHub. Make a new one (Chapter
-1), then in QUILL use **Manage GitHub Accounts...** to remove the old account
-and add the new token.
+reached its expiry date, or was cancelled on GitHub, perhaps because QUILL was
+revoked under Authorized OAuth Apps. Open **Manage GitHub Accounts...**,
+remove the old account, and choose **Sign In with GitHub...** again. If you
+added the account with a token, make a new token (Chapter 1) and add that
+instead.
 
 ### "Access denied. GitHub refused this request"
 
@@ -34,8 +36,10 @@ things is usually true:
 
 - **The token lacks a scope.** For example, a token without `repo` cannot
   write to a private repository, and one without `delete_repo` cannot delete
-  one. Chapter 1 lists the scopes. You cannot add a scope to a token from
-  QUILL: edit the token on GitHub, or make a new one.
+  one. Chapter 1 lists the scopes. An account added with Sign In with GitHub
+  has every scope the workbench uses, so this usually means a token you added
+  yourself. You cannot add a scope to a token from QUILL: edit
+  the token on GitHub, or make a new one.
 - **Your account lacks permission.** Only people with write access can merge,
   rerun or label, and only administrators can rename, archive or change
   visibility. Ask a maintainer.
@@ -51,6 +55,43 @@ has not been authorized for it yet. On GitHub, open your personal access
 tokens, choose **Configure SSO** beside the token, and authorize it for the
 organization. Then try again. The token keeps working everywhere else in the
 meantime.
+
+### Sign In with GitHub: "The code expired before it was used."
+
+A code from Sign In with GitHub lasts about fifteen minutes. Close the window,
+choose **Sign In with GitHub...** again, and type the new code on GitHub's
+page. You never have to retype an old one: each try gets a fresh code, already
+on the clipboard.
+
+### Sign In with GitHub: "The sign-in was declined on GitHub's page."
+
+Somebody chose Cancel on GitHub's approval page instead of Authorize. Nothing
+was saved. Choose **Sign In with GitHub...** again if that was a slip.
+
+### Sign In with GitHub: "GitHub did not give a sign-in code."
+
+QUILL could not reach github.com. Check your connection, and any proxy or
+firewall that might block it, then try again. If your network will not let
+QUILL through at all, **Add Token (Advanced)...** still works wherever the
+workbench itself does.
+
+### An organization's repositories are missing after Sign In with GitHub
+
+Some organizations stop apps from seeing their repositories until an owner
+approves each app. Your own repositories show up, and the organization's are
+missing or refused, even though you are a member.
+
+The fix is a one-time approval of QUILL for that organization. On GitHub,
+open your settings, then **Applications**, then **Authorized OAuth Apps**,
+then QUILL (or QUILL Lite). Beside the organization, choose **Request**.
+GitHub emails the organization's owners, and once one of them approves, the
+repositories appear the next time you refresh. If you are an owner yourself,
+the button says **Grant** and works at once. You only ask once per app and
+organization, however many times you sign in.
+
+If the organization would rather not approve apps, a token still works: add
+one with **Add Token (Advanced)...** (Chapter 1), and authorize it for the
+organization's single sign-on if it uses that.
 
 ### "GitHub could not find it, or this account cannot see it."
 
@@ -91,9 +132,9 @@ status page at `githubstatus.com`.
 
 ### "Write actions need a signed-in GitHub account"
 
-You are working as a guest, so the workbench only reads. In QUILL, sign in
-with **Manage GitHub Accounts...** (Chapter 1). In QUILL Lite there is no
-sign-in, so use QUILL for this.
+You are working as a guest, so the workbench only reads. Sign in with
+**Manage GitHub Accounts...** (Chapter 1): in QUILL it's on File > Open from
+Remote, and in QUILL Lite it's on File (`Alt+F`, then `H`).
 
 ### The GitHub menus are missing in QUILL
 

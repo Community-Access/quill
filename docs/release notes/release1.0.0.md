@@ -2,6 +2,17 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Sign in to GitHub without a token
+
+Signing in to the GitHub windows no longer means making a personal access
+token. In **Manage GitHub Accounts...**, choose **Sign In with GitHub...**:
+QUILL puts a short code on the clipboard and opens GitHub's page, you paste
+the code there and approve QUILL, and the account is added. If the code
+expires or something goes wrong, QUILL says so in one sentence. A token you
+made yourself still works, under **Add Token (Advanced)...**, for when you
+want a fine-grained token limited to a few repositories. QUILL Lite has the
+same window.
+
 ## The guides, from every download
 
 **Help > Open GitHub Guide** opens the GitHub Guide in your browser (press
@@ -11,6 +22,7 @@ an installed copy started by opening a file from File Explorer opened the
 welcome guide instead. The Start menu has a GitHub Guide shortcut, the macOS
 disk image carries the guides, and the user guide's contents page lists all
 eleven GitHub Guide chapters.
+
 
 ## GitHub: Copilot, commit comments, gists and queue summaries
 

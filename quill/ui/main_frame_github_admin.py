@@ -62,7 +62,7 @@ class GitHubAdminMixin:
             "This action needs a signed-in GitHub account. Sign in now?",
             "GitHub Sign In",
         ):
-            self._github_add_token()
+            self._github_sign_in()
             token = load_github_token()
         return token or None
 

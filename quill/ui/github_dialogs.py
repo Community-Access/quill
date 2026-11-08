@@ -86,21 +86,28 @@ class SignInResult:
 
 
 class GitHubSignInDialog:
-    """Collect a GitHub personal access token or allow anonymous access."""
+    """Add Token, the advanced road: paste a personal access token, or go on anonymously.
+
+    Sign In with GitHub (:mod:`quill.ui.github_device_sign_in`) is the default
+    since 2026-11-07; this window is for a token made by hand, such as a
+    fine-grained token limited to a few repositories.
+    """
 
     def __init__(self, parent: object) -> None:
         import wx
 
         self._wx = wx
-        self.dialog = wx.Dialog(parent, title="Sign in to GitHub", style=wx.DEFAULT_DIALOG_STYLE)
+        self.dialog = wx.Dialog(parent, title="Add GitHub Token", style=wx.DEFAULT_DIALOG_STYLE)
         panel = wx.Panel(self.dialog)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
             panel,
             label=(
-                "Enter a GitHub personal access token to browse private repositories,\n"
-                "or continue anonymously to browse public repositories only."
+                "Most people should choose Sign In with GitHub instead. Paste a token here "
+                "when you want one you made yourself, such as a fine-grained token limited "
+                "to a few repositories, or continue anonymously to browse public "
+                "repositories only."
             ),
         )
         intro.Wrap(440)
@@ -111,6 +118,10 @@ class GitHubSignInDialog:
         token_label = wx.StaticText(panel, label="Personal access token")
         self._token_ctrl = wx.TextCtrl(panel, style=wx.TE_PASSWORD)
         self._token_ctrl.SetName("Personal access token")
+        self._token_ctrl.SetHelpText(
+            "A personal access token you made on GitHub. QUILL asks GitHub whose it is "
+            "before it keeps it."
+        )
         grid.Add(token_label, 0, wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self._token_ctrl, 1, wx.EXPAND)
         sizer.Add(grid, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=12)
@@ -149,7 +160,7 @@ class GitHubSignInDialog:
         wx = self._wx
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         try:
-            result = show_modal_dialog(self.dialog, "Sign in to GitHub")
+            result = show_modal_dialog(self.dialog, "Add GitHub Token")
             if result == wx.ID_CANCEL:
                 return None
             if result == wx.ID_APPLY:
@@ -237,7 +248,25 @@ class GitHubManageAccountsDialog:
             diagnostic.Wrap(480)
             sizer.Add(diagnostic, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=12)
 
+        ways = wx.StaticText(
+            panel,
+            label=(
+                "Sign In with GitHub gives you a short code to type on GitHub's page; "
+                "nothing to copy out of GitHub's settings. Add Token is for a token you "
+                "made yourself, such as a fine-grained one limited to a few repositories."
+            ),
+        )
+        ways.Wrap(480)
+        sizer.Add(ways, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=12)
+        self._sign_in_id = wx.NewIdRef()
+        sign_in_btn = wx.Button(panel, int(self._sign_in_id), label="&Sign In with GitHub...")
+        sign_in_btn.SetName("Sign in with GitHub")
+        sign_in_btn.SetHelpText(
+            "Signs in with a short code: QUILL copies it and opens GitHub's page, you "
+            "type it there and approve QUILL. The account is added and becomes active."
+        )
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        btn_sizer.Add(sign_in_btn, flag=wx.RIGHT, border=8)
         self._switch_btn = wx.Button(panel, int(self._switch_id), label="Use Selected Account")
         self._switch_btn.SetName("Use selected GitHub account")
         self._switch_btn.Enable(
@@ -249,14 +278,23 @@ class GitHubManageAccountsDialog:
         self._remove_btn.SetName("Remove selected GitHub account")
         self._remove_btn.Enable(bool(self._accounts) or has_token)
         btn_sizer.Add(self._remove_btn, flag=wx.RIGHT, border=8)
-        add_btn = wx.Button(panel, wx.ID_ADD, label="Add Account...")
-        add_btn.SetName("Add GitHub account")
+        add_btn = wx.Button(panel, wx.ID_ADD, label="Add &Token (Advanced)...")
+        add_btn.SetName("Add a GitHub token, advanced")
+        add_btn.SetHelpText(
+            "Paste a personal access token you made on GitHub, for example a "
+            "fine-grained token limited to a few repositories."
+        )
         btn_sizer.Add(add_btn)
         sizer.Add(btn_sizer, flag=wx.LEFT | wx.RIGHT, border=12)
 
         sizer.AddSpacer(8)
         close_btn = wx.Button(panel, wx.ID_OK, label="Done")
-        close_btn.SetDefault()
+        # Sign In with GitHub is the default until there is an account to use;
+        # after that Enter closes, so a second sign-in is never an accident.
+        if active is None and not (has_token and login):
+            sign_in_btn.SetDefault()
+        else:
+            close_btn.SetDefault()
         close_row = wx.BoxSizer(wx.HORIZONTAL)
         close_row.AddStretchSpacer()
         close_row.Add(close_btn)
@@ -272,6 +310,8 @@ class GitHubManageAccountsDialog:
         if self._choice is not None:
             self._choice.Bind(wx.EVT_CHOICE, self._on_account_selected)
         add_btn.Bind(wx.EVT_BUTTON, self._on_add)
+        sign_in_btn.Bind(wx.EVT_BUTTON, self._on_sign_in)
+        self._sign_in_btn = sign_in_btn
 
     def _selected_account_id(self) -> str | None:
         if self._choice is None or not self._accounts:
@@ -294,8 +334,11 @@ class GitHubManageAccountsDialog:
     def _on_add(self, _event: object) -> None:
         self.dialog.EndModal(self._wx.ID_ADD)
 
+    def _on_sign_in(self, _event: object) -> None:
+        self.dialog.EndModal(self._sign_in_id)
+
     def show(self) -> str:
-        """Return ``switch:<id>``, ``remove:<id>``, ``remove:legacy``, ``add``, or ``done``."""
+        """``sign_in``, ``switch:<id>``, ``remove:<id>``, ``remove:legacy``, ``add`` or ``done``."""
         wx = self._wx
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
         try:
@@ -308,6 +351,8 @@ class GitHubManageAccountsDialog:
                 if account_id:
                     return f"remove:{account_id}"
                 return "remove:legacy"
+            if result == self._sign_in_id:
+                return "sign_in"
             if result == wx.ID_ADD:
                 return "add"
             return "done"

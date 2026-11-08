@@ -244,6 +244,31 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="sign-in-with-github-2026-11-08">Sign In with GitHub
+(2026-11-08)</h3>
+<ul>
+<li><strong>Sign In with GitHub…</strong> is the new first button in
+Manage GitHub Accounts, and the default while no account is saved. QUILL
+gets a short code from GitHub, puts it on the clipboard, opens
+github.com/login/device and moves focus to the code; you paste it there
+and approve QUILL. No personal access token to make, copy or paste.</li>
+<li>The wait runs on QUILL’s task manager at GitHub’s own polling
+interval. A code that expires, a request declined on GitHub’s page,
+Cancel and a lost connection each end in one plain sentence, and nothing
+is saved.</li>
+<li>The account is checked with GitHub and saved exactly as a pasted
+token is. It asks for repo, workflow, gist, read:org, project,
+security_events, user:follow and delete_repo, so one sign-in covers
+every workbench command, Delete Repository included.</li>
+<li>Add Account is now <strong>Add Token (Advanced)…</strong>, for
+fine-grained or limited tokens. Its window is called Add GitHub
+Token.</li>
+<li>A Tools menu command that needs an account now offers Sign In with
+GitHub.</li>
+<li>QUILL Lite gets the same window through the same shared code,
+signing in as QUILL Lite. My GitHub Copilot’s sign-in and token stay
+separate.</li>
+</ul>
 <h3 id="the-guides-from-every-download-2026-11-08">The guides, from
 every download (2026-11-08)</h3>
 <ul>

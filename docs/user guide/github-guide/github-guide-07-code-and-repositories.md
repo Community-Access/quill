@@ -261,7 +261,9 @@ The **Repository Actions for** submenu also holds:
 - **Delete Repository...** deletes the repository and everything in it: code,
   issues, pull requests, wiki and releases. It cannot be undone, so you type
   the repository's full name, exactly, to confirm. Deleting needs the token's
-  `delete_repo` scope, and QUILL says so if it is missing.
+  `delete_repo` scope, and QUILL says so if it is missing. Sign In with GitHub
+  asks for it, so an account added that way can delete; a token you added
+  yourself needs the scope too (Chapter 1).
 
 ### On QUILL's Tools menu
 

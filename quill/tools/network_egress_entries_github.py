@@ -3,6 +3,23 @@
 from __future__ import annotations
 
 GITHUB_WORKBENCH_EGRESS: dict[str, str] = {
+    "core/github/oauth_sign_in.py::_github_opener": (
+        "Sign In with GitHub (2026-11-07), the default way to add an account in "
+        "Manage GitHub Accounts in QUILL and QUILL Lite. Two fixed endpoints, and "
+        "only after the person chooses Sign In with GitHub: POST "
+        "github.com/login/device/code with this app's public OAuth client id and "
+        "the Workbench scopes (core/github/oauth_sign_in.py WORKBENCH_SCOPES), "
+        "which returns a device code and the short user code; then POST "
+        "github.com/login/oauth/access_token with the client id, the device code "
+        "and the device grant type, repeated at GitHub's own interval (backing off "
+        "on slow_down) until the person approves or declines on GitHub's page, the "
+        "code expires, or they press Cancel, which stops the wait at once. Receives "
+        "the access token, which is not stored until GitHub's identity check "
+        "(GitHubRemoteProvider) confirms whose it is. No document content and no "
+        "client secret are sent. Any other URL is refused before a request is "
+        "made, redirects are refused, verified system-store TLS, 30-second "
+        "timeouts. Never at launch or on a schedule; runs on a worker thread."
+    ),
     "core/github/discussions.py::_request": (
         "Explore's Repository Discussions view reads a bounded page of discussion "
         "titles, categories, authors, answered state, and capped plain-text bodies "

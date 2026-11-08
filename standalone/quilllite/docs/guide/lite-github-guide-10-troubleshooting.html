@@ -262,9 +262,12 @@ new issue, is still on your computer.</p>
 <h3 id="the-github-token-is-invalid-or-expired">“The GitHub token is
 invalid or expired.”</h3>
 <p>The full sentence ends “Add a valid token or switch accounts.” Your
-token has reached its expiry date, or was cancelled on GitHub. Make a
-new one (Chapter 1), then in QUILL use <strong>Manage GitHub
-Accounts…</strong> to remove the old account and add the new token.</p>
+token has reached its expiry date, or was cancelled on GitHub, perhaps
+because QUILL was revoked under Authorized OAuth Apps. Open
+<strong>Manage GitHub Accounts…</strong>, remove the old account, and
+choose <strong>Sign In with GitHub…</strong> again. If you added the
+account with a token, make a new token (Chapter 1) and add that
+instead.</p>
 <h3 id="access-denied-github-refused-this-request">“Access denied.
 GitHub refused this request”</h3>
 <p>GitHub knows who you are, but will not let this token do this. One of
@@ -273,8 +276,10 @@ three things is usually true:</p>
 <li><strong>The token lacks a scope.</strong> For example, a token
 without <code>repo</code> cannot write to a private repository, and one
 without <code>delete_repo</code> cannot delete one. Chapter 1 lists the
-scopes. You cannot add a scope to a token from QUILL: edit the token on
-GitHub, or make a new one.</li>
+scopes. An account added with Sign In with GitHub has every scope the
+workbench uses, so this usually means a token you added yourself. You
+cannot add a scope to a token from QUILL: edit the token on GitHub, or
+make a new one.</li>
 <li><strong>Your account lacks permission.</strong> Only people with
 write access can merge, rerun or label, and only administrators can
 rename, archive or change visibility. Ask a maintainer.</li>
@@ -291,6 +296,43 @@ your token has not been authorized for it yet. On GitHub, open your
 personal access tokens, choose <strong>Configure SSO</strong> beside the
 token, and authorize it for the organization. Then try again. The token
 keeps working everywhere else in the meantime.</p>
+<h3 id="sign-in-with-github-the-code-expired-before-it-was-used">Sign In
+with GitHub: “The code expired before it was used.”</h3>
+<p>A code from Sign In with GitHub lasts about fifteen minutes. Close
+the window, choose <strong>Sign In with GitHub…</strong> again, and type
+the new code on GitHub’s page. You never have to retype an old one: each
+try gets a fresh code, already on the clipboard.</p>
+<h3
+id="sign-in-with-github-the-sign-in-was-declined-on-githubs-page">Sign
+In with GitHub: “The sign-in was declined on GitHub’s page.”</h3>
+<p>Somebody chose Cancel on GitHub’s approval page instead of Authorize.
+Nothing was saved. Choose <strong>Sign In with GitHub…</strong> again if
+that was a slip.</p>
+<h3 id="sign-in-with-github-github-did-not-give-a-sign-in-code">Sign In
+with GitHub: “GitHub did not give a sign-in code.”</h3>
+<p>QUILL could not reach github.com. Check your connection, and any
+proxy or firewall that might block it, then try again. If your network
+will not let QUILL through at all, <strong>Add Token
+(Advanced)…</strong> still works wherever the workbench itself does.</p>
+<h3
+id="an-organizations-repositories-are-missing-after-sign-in-with-github">An
+organization’s repositories are missing after Sign In with GitHub</h3>
+<p>Some organizations stop apps from seeing their repositories until an
+owner approves each app. Your own repositories show up, and the
+organization’s are missing or refused, even though you are a member.</p>
+<p>The fix is a one-time approval of QUILL for that organization. On
+GitHub, open your settings, then <strong>Applications</strong>, then
+<strong>Authorized OAuth Apps</strong>, then QUILL (or QUILL Lite).
+Beside the organization, choose <strong>Request</strong>. GitHub emails
+the organization’s owners, and once one of them approves, the
+repositories appear the next time you refresh. If you are an owner
+yourself, the button says <strong>Grant</strong> and works at once. You
+only ask once per app and organization, however many times you sign
+in.</p>
+<p>If the organization would rather not approve apps, a token still
+works: add one with <strong>Add Token (Advanced)…</strong> (Chapter 1),
+and authorize it for the organization’s single sign-on if it uses
+that.</p>
 <h3 id="github-could-not-find-it-or-this-account-cannot-see-it">“GitHub
 could not find it, or this account cannot see it.”</h3>
 <p>The full sentence ends “Refresh the list; it may already be gone.”

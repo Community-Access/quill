@@ -11,6 +11,27 @@ Open from Remote > GitHub Items**. Public repository reading works without an
 account. Account views and writes require a signed-in GitHub account. Safe Mode
 and the first-use network consent still apply.
 
+**Signing in.** Manage GitHub Accounts (QUILL: **File > Open from Remote**;
+QUILL Lite: **File**, **Alt+F** then **H**) offers **Sign In with GitHub...**
+first, and as the default button while no account is saved. It is GitHub's
+OAuth device flow (`quill/core/github/oauth_sign_in.py`, UI in
+`quill/ui/github_device_sign_in.py`): QUILL posts to
+`github.com/login/device/code` with the app's own OAuth client id (the same
+per-app registration My GitHub Copilot uses, `copilot_auth.CLIENT_IDS`), puts
+the user code on the clipboard and in a read-only field that takes focus,
+opens `github.com/login/device`, and polls `github.com/login/oauth/access_token`
+at GitHub's interval on a worker thread, adding five seconds on `slow_down`.
+Expiry, a declined request, Cancel and a network failure each end in one
+sentence in the step's What to do field. The token is then checked with
+`GET /user` and saved with `save_github_account`, exactly like a pasted token,
+in the same store as every other account; Copilot's token stays in its own
+entry. The scopes requested are `repo workflow gist read:org project
+security_events user:follow delete_repo`, each justified beside
+`WORKBENCH_SCOPES`, so one sign-in covers every Workbench command. **Add Token (Advanced)...** keeps the pasted-token route for
+fine-grained or limited tokens. Organizations that restrict OAuth apps must
+approve QUILL once (Settings > Applications > Authorized OAuth Apps >
+Request or Grant).
+
 In QUILL, **File > Open from Remote > Open GitHub Reference** accepts a pasted
 repository or GitHub URL. The Items window also has **Open Link...** in both
 QUILL and QUILL Lite. Repository links open Items; issue links select the exact

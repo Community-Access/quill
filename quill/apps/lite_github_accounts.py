@@ -31,7 +31,7 @@ _NOT_SIGNED_IN = (
     "You are not signed in to GitHub. Signed in, the Workbench shows your own "
     "repositories, including private ones, and can comment, label and merge for you. "
     "As a guest it can still read public repositories.\n\n"
-    "Choose Manage GitHub Accounts to add your account now, or Continue as Guest."
+    "Choose Manage GitHub Accounts to sign in with GitHub now, or Continue as Guest."
 )
 
 
@@ -60,6 +60,7 @@ class GitHubAccountsLiteMixin:
                 message_box=message_box,
                 run_in_background=in_background,
                 call_after=wx.CallAfter,
+                app_name="QUILL Lite",
             ),
             on_signed_in=on_signed_in,
         )

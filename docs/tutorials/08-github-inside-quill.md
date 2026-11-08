@@ -26,17 +26,32 @@ There are three parts, and you can use any of them on its own:
 The first time you touch any GitHub feature, QUILL shows a one-time consent
 dialog telling you it will connect to api.github.com. Accept it, then:
 
-1. **File > Open from Remote > Manage GitHub Accounts...**
-2. **Add Token.** On github.com: **Settings > Developer settings > Personal
-   access tokens > Tokens (classic) > Generate new token**, select the `repo`
-   scope, and copy it. You only see it once.
-3. Paste it into QUILL. It is kept safely in Windows Credential Manager or the
-   macOS Keychain, never in a plain file.
+1. **File > Open from Remote > Manage GitHub Accounts...** In QUILL Lite it's
+   **File > Manage GitHub Accounts...** (`Alt+F`, then `H`).
+2. **Sign In with GitHub...**, the first button. QUILL puts a short code on
+   the clipboard, opens github.com/login/device in your browser, and moves you
+   to the code, which it spells out a character at a time.
+3. In the browser, paste the code, choose **Continue**, then **Authorize**.
+4. Come back to QUILL. The window closes by itself and you hear "Added and
+   switched to GitHub account" and your username. What GitHub gave QUILL is
+   kept safely in Windows Credential Manager or the macOS Keychain, never in a
+   plain file.
 
-You can browse public repositories without a token, though GitHub limits how
-many requests you can make. Everything that *writes* to GitHub needs a token;
-if you try a write command without one, QUILL offers to sign you in right
-there instead of just refusing.
+The code lasts about fifteen minutes; if it runs out, choose Sign In with
+GitHub again for a new one. If your organization makes members ask before an
+app can see its repositories, approve QUILL once on GitHub, under
+**Settings > Applications > Authorized OAuth Apps** (chapter 10 of the GitHub
+guide has the details).
+
+**Add Token (Advanced)...** is still there for when you want a token you made
+yourself, such as a fine-grained token limited to a few repositories. Make
+one on github.com under **Settings > Developer settings > Personal access
+tokens**, then paste it in.
+
+You can browse public repositories without signing in, though GitHub limits
+how many requests you can make. Everything that *writes* to GitHub needs an
+account; if you try a write command without one, QUILL offers to sign you in
+right there instead of just refusing.
 
 ## 1. Browse, open, and save a file
 
