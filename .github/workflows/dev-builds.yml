@@ -107,6 +107,16 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
+      # The build stages Live Dictation's models (about 230 MB) through
+      # scripts/fetch_dictation_models.py, which skips any model already present
+      # and verified. Keeping them between runs means a stalled model host no
+      # longer fails a Dev build; the key matches dictation-benchmark.yml, so the
+      # two workflows share one copy.
+      - name: Restore the dictation models
+        uses: actions/cache@v6
+        with:
+          path: build/dictation-models
+          key: dictation-models-${{ hashFiles('quill/core/windows_dictation/model_catalog*.py', 'scripts/fetch_dictation_models.py') }}
       - name: Install build dependencies
         run: python -m pip install -e .[ui,spellcheck,dev] "pyinstaller>=6.22.3" "pyinstaller-hooks-contrib>=2026.7" "packaging>=25"
       - name: Install shared runtime dependencies for sibling apps

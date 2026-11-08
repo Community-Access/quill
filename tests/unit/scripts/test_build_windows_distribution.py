@@ -62,6 +62,12 @@ def _no_model_downloads(monkeypatch: pytest.MonkeyPatch) -> list[Path]:
     ``test_a_plain_build_still_stages_the_vosk_model`` keeps the contract itself
     covered, so this stub cannot quietly become the reason nobody notices the
     staging was dropped.
+
+    The Live Dictation models get the same treatment, and for the same reason:
+    ``_stage_dictation_models`` runs ``scripts/fetch_dictation_models.py``, about
+    230 MB from the model host, and on 2026-11-08 a stalled download failed four
+    of these tests in CI with nothing wrong in the code. The real staging is
+    still asserted by ``test_a_plain_build_still_stages_the_dictation_models``.
     """
     staged: list[Path] = []
 
@@ -69,8 +75,19 @@ def _no_model_downloads(monkeypatch: pytest.MonkeyPatch) -> list[Path]:
         staged.append(portable_dir)
         return True
 
+    def _fake_dictation(portable_dir: Path, source_root: Path) -> None:
+        _DICTATION_STAGED.append(portable_dir)
+
+    _DICTATION_STAGED.clear()
     monkeypatch.setattr("scripts.build_windows_distribution._stage_vosk_model", _fake_stage)
+    monkeypatch.setattr(
+        "scripts.build_windows_distribution._stage_dictation_models", _fake_dictation
+    )
     return staged
+
+
+#: Where the stubbed dictation staging was asked to put the models, per test.
+_DICTATION_STAGED: list[Path] = []
 
 
 def test_a_plain_build_still_stages_the_vosk_model(
@@ -99,6 +116,24 @@ version = "3.0.0"
         "a plain (non-offline) build must still stage the Vosk model; without it "
         "the first request for podcast chapters answers 'none found'."
     )
+
+
+def test_a_plain_build_still_stages_the_dictation_models(
+    tmp_path: Path, _no_model_downloads: list[Path]
+) -> None:
+    """The dictation models are staged on every build, like the Vosk model.
+
+    The autouse stub keeps the 230 MB download out of the tests; this keeps the
+    contract that the build asks for them, so the stub cannot hide a build that
+    quietly stopped shipping dictation.
+    """
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "quill"\nversion = "3.0.0"\n', encoding="utf-8"
+    )
+
+    build_windows_distribution(tmp_path / "pyproject.toml", tmp_path / "dist")
+
+    assert _DICTATION_STAGED == [tmp_path / "dist" / "portable"]
 
 
 # Builds a full portable distribution (file copies + installer-script generation),
