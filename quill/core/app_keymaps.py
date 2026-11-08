@@ -20,6 +20,7 @@ from __future__ import annotations
 from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS, with_agent_tasks
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
+from quill.core.radio.song_marks import SONG_MARK_KEYS
 
 #: app id -> {command id: binding}.
 APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
@@ -189,6 +190,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "radio.rewind": "Ctrl+Shift+Left",
         "radio.forward": "Ctrl+Shift+Right",
         "radio.jump_to_live": "Ctrl+Shift+L",
+        **SONG_MARK_KEYS,  # song marks and per-station length: song_marks.py
         # Identify This Song (AcoustID, 2026-10-15). Not Ctrl+Alt+Shift+R,
         # which looks free on this bar only because it is Radio's own
         # system-wide show/hide key. Ctrl+K is one of the few plain Ctrl

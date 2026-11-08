@@ -88,6 +88,7 @@ def select(host: Any) -> None:
         if host._engine is not host._mpv_engine:
             host._engine.close()
             host._engine = host._mpv_engine
+        prepare_station(host, host._mpv_engine)
         return
 
     from quill.ui.radio import output_device_guard
@@ -114,6 +115,41 @@ def select(host: Any) -> None:
         host._engine = host._wx_engine
 
 
+def station_timeshift_minutes(host: Any) -> int | None:
+    """The time-shift length for the station about to play, or None for the default.
+
+    The station's own length when its favorite has one, else the Preferences
+    choice. Per-station lengths are an idea from BlindRadio by serrebidev (MIT).
+    The host may supply ``_resolve_timeshift_minutes(station)``; without it the
+    global length from the history record applies, as it always did.
+    """
+    resolver = getattr(host, "_resolve_timeshift_minutes", None)
+    station = getattr(getattr(host, "_state", None), "station", None)
+    if callable(resolver) and station is not None:
+        try:
+            return int(resolver(station))
+        except Exception:  # noqa: BLE001 - a bad override must never stop a station
+            _log.exception("per-station time-shift length unavailable")
+    return getattr(getattr(host, "_radio_history", None), "timeshift_minutes", None)
+
+
+def prepare_station(host: Any, engine: Any) -> None:
+    """Size the buffer for this station and name it for the song marks.
+
+    Runs before every load: ``demuxer-max-back-bytes`` and the disk cache are
+    read when a stream opens, so this is the moment a station's own length
+    takes effect.
+    """
+    try:
+        engine.configure_timeshift(station_timeshift_minutes(host))
+        station = getattr(getattr(host, "_state", None), "station", None)
+        extras = getattr(engine, "live_extras", None)
+        if extras is not None:
+            extras.marks.station_name = str(getattr(station, "name", "") or "")
+    except Exception:  # noqa: BLE001 - never block playback
+        _log.exception("could not prepare the time-shift buffer for this station")
+
+
 def _build_mpv(host: Any) -> bool:
     """Construct the mpv engine on *host*, or leave it None. True on success.
 
@@ -135,9 +171,7 @@ def _build_mpv(host: Any) -> bool:
             on_buffering=host._handle_buffering,
             # The listener's time-shift length, from the history record the
             # frame hands the controller (None = the default, on disk).
-            timeshift_minutes=getattr(
-                getattr(host, "_radio_history", None), "timeshift_minutes", None
-            ),
+            timeshift_minutes=station_timeshift_minutes(host),
         )
     except Exception:  # noqa: BLE001 - fall back, never fail playback
         _log.exception("mpv radio engine unavailable; using wx.media")
@@ -173,6 +207,8 @@ def attempt_fallback(host: Any) -> bool:
         output_device_guard.note_windows_media_fallback(host)
     host._engine.close()
     host._engine = target
+    if target is host._mpv_engine:
+        prepare_station(host, target)
     host._engine.set_volume(host._effective_volume())
     host._set_state(RadioPlayerState.CONNECTING, message="")
     url = host._resolve_playback_url(station)

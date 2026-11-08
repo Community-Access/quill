@@ -113,6 +113,11 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             youtube_consent=self._radio_youtube_consent,
         )
         self._radio_controller.on_output_device_reverted = self._on_radio_output_device_reverted
+        from quill.ui.radio.song_marks_ui import resolve_timeshift_minutes
+
+        self._radio_controller._resolve_timeshift_minutes = lambda station: (
+            resolve_timeshift_minutes(self, station)
+        )
         self._radio_controller.set_enhancement(
             bass_db=self._radio_history.eq_bass_db,
             mid_db=self._radio_history.eq_mid_db,
@@ -1057,6 +1062,10 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             from quill.ui.radio import song_history_commands
 
             song_history_commands.record_song(self, title)
+            # ...and a song mark at the live edge of the time-shift buffer.
+            from quill.ui.radio import song_marks_ui
+
+            song_marks_ui.note_title(self, title)
             # And Windows' own now-playing card, from the same choke point
             # for the same reason: the card and the announcement must never
             # be describing different songs. It says nothing out loud --

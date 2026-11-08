@@ -265,6 +265,25 @@ def describe_offset(seconds: float) -> str:
     return unit(secs, "second")
 
 
+#: Quill Radio's keys for the song-mark commands, spread into
+#: ``APP_KEYMAPS["radio"]`` (kept here so app_keymaps.py stays under its size
+#: cap). Alt+Shift+Left/Right step by song, the bigger brother of Rewind and
+#: Forward on Ctrl+Shift+Left/Right; W is "where", like Where Am I on
+#: Ctrl+Shift+W; the saves take Ctrl+Alt+F5-F8 in BlindRadio's order (all,
+#: previous, next, current), since Ctrl+F5 and Ctrl+F8 were taken; T is the
+#: once-in-a-while time-shift length for one station (rule 9).
+SONG_MARK_KEYS: dict[str, str] = {
+    "radio.previous_song": "Alt+Shift+Left",
+    "radio.next_song": "Alt+Shift+Right",
+    "radio.which_song": "Alt+Shift+W",
+    "radio.save_all_songs": "Ctrl+Alt+F5",
+    "radio.save_previous_song": "Ctrl+Alt+F6",
+    "radio.save_next_song": "Ctrl+Alt+F7",
+    "radio.save_current_song": "Ctrl+Alt+F8",
+    "radio.station_timeshift": "Alt+Shift+T",
+}
+
+
 #: mpv's ``audio-codec-name`` -> the extension mpv's stream writer (``dump-cache``)
 #: picks a container from. The audio goes out exactly as the station sent it.
 _EXTENSION_BY_CODEC: dict[str, str] = {
@@ -295,6 +314,7 @@ __all__ = [
     "FIRST_TITLE_SECONDS",
     "MERGE_SECONDS",
     "RESTART_SECONDS",
+    "SONG_MARK_KEYS",
     "Jump",
     "Song",
     "SongMark",
