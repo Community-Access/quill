@@ -22,6 +22,14 @@ HELP_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     # Radio, Cast, Weather and QUILL answer with (bad.md P3.2).
     ("&Help", "&Tutorials...", "Ctrl+Alt+F1", "cmd_tutorials", ""),
     ("&Help", "&Keyboard Shortcuts", "Ctrl+F1", "cmd_shortcuts", ""),
+    # The guides, opened by the code QUILL's Help rows use (quill/ui/guide_opener.py).
+    # Open User Guide keeps QUILL's chord (rule 2): Ctrl+Shift+F1, free here. &O and
+    # &I because Get Help from Support owns G in this menu (GATE-14).
+    ("&Help", "&Open User Guide", "Ctrl+Shift+F1", "cmd_user_guide", ""),
+    # No key, as in QUILL: a manual is opened to learn, not in the editing loop
+    # (rule 9), and F1 in a GitHub window offers it too. Alt+H, I. See
+    # KEYLESS_WITH_REASON.
+    ("&Help", "Open GitHub Gu&ide", "", "cmd_github_guide", ""),
     ("&Help", "Activit&y...", "Shift+F9", "cmd_activity", ""),
     ("&Help", "&Repeat Last Result", "F9", "cmd_repeat_last_result", ""),
     # The family item and key: Lite's users least know where else to write.
@@ -36,7 +44,7 @@ HELP_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&Help", "Release &Channel...", "", "cmd_release_channel", ""),
     # The changelog, as HTML in the browser -- every QuillVille app has this row
     # (quill.ui.whats_new). No key, as in QUILL: no chord is free in both
-    # editors (Ctrl+Shift+F1 is QUILL's User Guide), and rule 9 asks only for a
+    # editors (Ctrl+Shift+F1 is the User Guide in both), and rule 9 asks only for a
     # way in. Alt+H, W. See KEYLESS_WITH_REASON.
     ("&Help", "&What's New", "", "cmd_whats_new", ""),
     ("&Help", "&About QUILL Lite", "Shift+F1", "cmd_about", ""),

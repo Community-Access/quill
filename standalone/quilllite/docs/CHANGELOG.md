@@ -2,6 +2,18 @@
 
 ## 2.0.0
 
+### The guides, from every download (2026-11-08)
+
+- Help > Open User Guide (Ctrl+Shift+F1, the same key as in QUILL) opens this
+  guide in your browser, and Help > Open GitHub Guide (Alt+H, then I) opens the
+  GitHub Guide. Both work with no document open too. Before this, no Help
+  command opened either guide.
+- Pressing F1 in GitHub Items, Explore GitHub or the review window offers an
+  Open GitHub Guide button.
+- The Compact installation now includes the documentation, as the portable copy
+  always has, and the Start menu has a QUILL Lite GitHub Guide shortcut.
+- The download page lists the GitHub Guide beside the user guide.
+
 ### GitHub: Copilot, commit comments, gists and queue summaries (2026-11-07)
 
 - The review window's pull request context menu has Request Copilot Review, and

@@ -470,6 +470,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **F1** | Help for This Window |
 | **Ctrl+Alt+F1** | Tutorials... |
 | **Ctrl+F1** | Keyboard Shortcuts |
+| **Ctrl+Shift+F1** | Open User Guide |
 | **Shift+F9** | Activity... |
 | **F9** | Repeat Last Result |
 | **Ctrl+Alt+F2** | Get Help from Support... |

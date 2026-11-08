@@ -3180,10 +3180,7 @@ class MenuBuilderMixin:
         )
         self._id_open_user_guide = wx.NewIdRef()
         self._id_open_third_party_notices = wx.NewIdRef()
-        help_menu.Append(
-            self._id_open_user_guide,
-            self._menu_label(_("Open User &Guide"), "help.open_user_guide"),
-        )
+        self._append_guide_rows(help_menu)  # User Guide, GitHub Guide: main_frame_guides.py
         help_menu.Append(
             self._id_open_third_party_notices,
             _("&Open Third-Party Notices"),

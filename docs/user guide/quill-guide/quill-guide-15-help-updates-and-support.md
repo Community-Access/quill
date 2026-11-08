@@ -29,8 +29,14 @@ the menu closes before it updates anything on it.
   status bar, and the everyday editing keys otherwise.
 - **Show Spoken Echo** (`Alt+Shift+E`) shows the last things QUILL said, so
   you can read them at your own pace. Chapter 11 has more.
-- **Open User Guide** (`Ctrl+Shift+F1`) opens this guide as a document inside
-  QUILL.
+- **Open User Guide** (`Ctrl+Shift+F1`) opens this guide in your web browser.
+  It is found beside the program, so it opens the same way however you started
+  QUILL, even when you opened a file with it from File Explorer.
+- **Open GitHub Guide** (press `Alt+H`, then `I`) opens the GitHub Guide, the
+  book about doing GitHub work in QUILL with a screen reader, in your web
+  browser. It has no shortcut key, because you open a manual to learn rather
+  than while you write. Pressing `F1` in GitHub Items, Explore GitHub or the
+  review window offers it too.
 - **Open Welcome Guide** opens a lighter getting-started document that knows
   which feature profile you are using.
 - **Open Keyboard Reference** (the QUILL key, then `Shift+K`) builds a fresh
@@ -165,6 +171,8 @@ From the help window:
 - Press **Escape**, or **Enter on Close**, to go back to where you were.
 - **Tab to Open User Guide** and press it to jump to the part of this guide
   that covers the control.
+- In a GitHub window, the button is **Open GitHub Guide** instead, and it opens
+  the GitHub Guide.
 
 Here is how the Help keys fit together:
 

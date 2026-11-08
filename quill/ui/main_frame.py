@@ -352,6 +352,7 @@ from quill.ui.main_frame_github_extras import GitHubExtrasMixin
 from quill.ui.main_frame_github_items import GitHubItemsMixin
 from quill.ui.main_frame_glow import GlowEditorMixin, GlowFileMixin
 from quill.ui.main_frame_go_to import GoToMixin
+from quill.ui.main_frame_guides import GuidesMenuMixin
 from quill.ui.main_frame_headings import HeadingLevelsMixin
 from quill.ui.main_frame_hosted_ai import HostedAiCommandsMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
@@ -732,6 +733,7 @@ class MainFrame(
     EmojiPickerMixin,
     RadioMixin,
     TutorialsMixin,
+    GuidesMenuMixin,
     PodcastsMixin,
     LibraryMixin,
     MediaSleepTimerMixin,
@@ -7909,38 +7911,22 @@ class MainFrame(
         """Open the user guide in the browser: the contents, or the chapter
         holding *start_anchor* (quill.core.user_guide_files renders it).
 
-        Searches the dev tree, an installed package and a packaged build;
+        Found the way QUILL Lite finds its own (quill.core.guide_locations:
+        the app's folder, whatever the working directory, then this checkout);
         falls back to the in-app welcome guide when no guide is on disk.
         """
-        candidates = [
-            Path(__file__).resolve().parent.parent.parent / "docs" / "user guide" / "userguide.md",
-            Path(__file__).resolve().parent.parent.parent / "docs" / "userguide.md",
-            Path(__file__).resolve().parent.parent / "docs" / "userguide.md",
-            Path.cwd() / "docs" / "userguide.md",
-        ]
-        guide_path: Path | None = None
-        for candidate in candidates:
-            try:
-                if candidate.is_file():
-                    guide_path = candidate
-                    break
-            except OSError:
-                continue
-        if guide_path is None:
+        from quill.ui.guide_opener import open_guide
+
+        render_dir = app_data_dir() / "user-guide"
+        if not open_guide(
+            "quill",
+            "user",
+            render_dir=render_dir,
+            report=self._set_status,
+            start_anchor=start_anchor,
+        ):
             self.open_welcome_guide()
             self._set_status("User guide file not found; opened welcome guide instead.")
-            return
-        from quill.core.user_guide_files import render_guide
-
-        try:
-            target_path = render_guide(guide_path, app_data_dir() / "user-guide", start_anchor)
-        except OSError as error:
-            self._set_status(f"Could not open user guide: {error}")
-            return
-        if webbrowser.open(target_path.as_uri()):
-            self._set_status("Opened user guide in browser")
-        else:
-            self._set_status(f"User guide saved to {target_path}")
 
     def open_third_party_notices(self) -> None:
         from quill.ui.about_notices import quill_notices_text

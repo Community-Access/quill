@@ -49,6 +49,12 @@ WORDPRESS_FORMS_MANUAL = (
 #: its contents page, so :func:`manual_files` reads it the same way.
 GITHUB_GUIDE = _REPO_ROOT / "docs" / "user guide" / "github-guide" / "github-guide.md"
 
+#: Where the website publishes every document under ``docs/``: flattened into
+#: one folder by bare basename (``.github/workflows/github-pages.yml``; the
+#: model of it is GATE-SITE-LINKS, ``tests/unit/docs/test_site_links.py``).
+SITE_DOCS_URL = "https://community-access.github.io/quill/docs/"
+_DOCS_ROOT = _REPO_ROOT / "docs"
+
 #: A contents-page link to a chapter: ``](quill-guide/quill-guide-03-x.html#y)``.
 _CHAPTER_LINK = re.compile(
     r"\]\((?P<folder>[A-Za-z0-9_-]+)/(?P<stem>[A-Za-z0-9_-]+)\.html(?:#[^)\s]*)?\)"
@@ -111,13 +117,17 @@ def read_guide_text(path: Path) -> str:
 
     For a split guide (QUILL's or QUILL Lite's) this also includes the shared
     WordPress and Forms manual, which their WordPress and Forms chapters hand
-    over to: a gate asking whether "the guide" names a command is asking about
-    everything a reader is sent to. A document that is not a split guide reads
-    as itself, so a gate can call this for every file in its corpus.
+    over to, and the GitHub Guide, which QUILL's contents page lists chapter by
+    chapter (QUILL Lite's guide holds its own copy as chapters already): a gate
+    asking whether "the guide" names a command is asking about everything a
+    reader is sent to. A document that is not a split guide reads as itself, so
+    a gate can call this for every file in its corpus.
     """
     parts = guide_files(path)
     if len(parts) > 1:
         parts += manual_files()
+        if not any("github-guide" in part.name for part in parts):
+            parts += manual_files(GITHUB_GUIDE)
     return "\n\n".join(part.read_text(encoding="utf-8") for part in parts)
 
 
@@ -229,6 +239,13 @@ def single_document_text(index: Path) -> str:
     navigation block. A link from one guide file to another becomes a link to
     the anchor inside this one document (the target's first heading when the
     link named none).
+
+    A link to a document outside the book -- QUILL's GitHub Guide and the
+    WordPress and Forms manual, which have books (and EPUBs) of their own --
+    becomes a link to the published page on the website (:data:`SITE_DOCS_URL`).
+    An EPUB is one file read anywhere, often on another device, so a relative
+    link out of it finds nothing; pulling those books in would make the guide's
+    EPUB a second copy of each.
     """
     chapters = chapter_paths(index)
     if not chapters:
@@ -253,12 +270,31 @@ def single_document_text(index: Path) -> str:
                 if chapter.resolve() == resolved:
                     anchor = fragment or first_anchor[chapter]
                     return f"[{match['text']}](#{anchor})"
+            published = _published_url(resolved)
+            if published:
+                tail = f"#{fragment}" if fragment else ""
+                return f"[{match['text']}]({published}{tail})"
             return match.group(0)
 
         return _LINK.sub(swap, text)
 
     parts = [f"# {title}\n"] + [relink(path, texts[path]) for path in chapters]
     return "\n\n".join(part.rstrip("\n") for part in parts) + "\n"
+
+
+def _published_url(source: Path) -> str:
+    """The website address of the repository document *source*, or ``""``.
+
+    Only a document under ``docs/`` (outside the hand-built ``docs/site``) that
+    exists is published, as its HTML, under its bare name.
+    """
+    try:
+        relative = source.relative_to(_DOCS_ROOT.resolve())
+    except ValueError:
+        return ""
+    if relative.parts[:1] == ("site",) or not source.is_file():
+        return ""
+    return f"{SITE_DOCS_URL}{source.with_suffix('.html').name}"
 
 
 def _localise_links(source: Path, text: str, guide: set[Path]) -> str:
@@ -337,6 +373,7 @@ __all__ = [
     "WORDPRESS_FORMS_MANUAL",
     "NAV_RULE",
     "QUILL_GUIDE",
+    "SITE_DOCS_URL",
     "anchors_in",
     "chapter_paths",
     "file_for_anchor",

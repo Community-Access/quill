@@ -142,8 +142,27 @@ OPTIONS = {
     },
 }
 
+#: The guides, beside the program as on Windows: py2app copies these into
+#: Contents/Resources/docs, where Help > Open User Guide and Open GitHub Guide
+#: find them through RESOURCEPATH (quill/core/guide_locations.py). The layout is
+#: the Windows package's (scripts/build_windows_distribution.py _SHIPPED_DOCS):
+#: the contents page with its HTML and EPUB, then each guide folder whole.
+_GUIDE_DIR = _REPO_ROOT / "docs" / "user guide"
+_GUIDE_FOLDERS = ("quill-guide", "github-guide", "wordpress-and-forms")
+
+
+def _doc_files() -> list[tuple[str, list[str]]]:
+    contents = [_GUIDE_DIR / f"userguide{suffix}" for suffix in (".md", ".html", ".epub")]
+    files = [("docs", [str(path) for path in contents if path.is_file()])]
+    for folder in _GUIDE_FOLDERS:
+        pages = sorted(path for path in (_GUIDE_DIR / folder).glob("*") if path.is_file())
+        files.append((f"docs/{folder}", [str(path) for path in pages]))
+    return files
+
+
 setup(
     app=APP,
+    data_files=_doc_files(),
     options={"py2app": OPTIONS},
     setup_requires=["py2app"],
 )

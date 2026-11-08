@@ -67,6 +67,9 @@ _CORPUS_GLOBS = (
     # chapters now send a reader for the settings they used to describe.
     "docs/user guide/quill-guide/*.md",
     "docs/user guide/wordpress-and-forms/*.md",
+    # The GitHub Guide, a book of its own that the contents page lists chapter
+    # by chapter, and that teaches the GitHub settings.
+    "docs/user guide/github-guide/*.md",
     "docs/apps/*.md",
     "docs/Product Requirement Documents and Specifications/*.md",
 )

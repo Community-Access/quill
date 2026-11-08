@@ -2,6 +2,16 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## The guides, from every download
+
+**Help > Open GitHub Guide** opens the GitHub Guide in your browser (press
+Alt+H, then I), and F1 in any GitHub window offers it too. **Help > Open User
+Guide** (Ctrl+Shift+F1) now finds the guide however QUILL was started; before,
+an installed copy started by opening a file from File Explorer opened the
+welcome guide instead. The Start menu has a GitHub Guide shortcut, the macOS
+disk image carries the guides, and the user guide's contents page lists all
+eleven GitHub Guide chapters.
+
 ## GitHub: Copilot, commit comments, gists and queue summaries
 
 You can now ask Copilot to review a pull request (Request Copilot Review on the

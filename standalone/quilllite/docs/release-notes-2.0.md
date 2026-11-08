@@ -1,5 +1,14 @@
 # QUILL Lite 2.0
 
+## The guides, from the Help menu
+
+**Help > Open User Guide** (Ctrl+Shift+F1, the same key as in QUILL) opens this
+guide, and **Help > Open GitHub Guide** (press Alt+H, then I) opens the
+[GitHub Guide](guide/lite-github-guide.html), both in your browser and both with
+no document open as well. F1 in any GitHub window offers the GitHub Guide too.
+The Compact installation now includes the documentation, and the Start menu has
+a shortcut to the GitHub Guide.
+
 ## GitHub: Copilot, commit comments, gists and queue summaries
 
 QUILL Lite's GitHub windows are QUILL's, so it gains the same four things:

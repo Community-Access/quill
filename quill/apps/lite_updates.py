@@ -34,6 +34,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.lite_guides import DocumentGuidesMixin
 from quill.core.app_version import installed_version
 from quill.core.lite import (
     APP_BUILD,
@@ -257,8 +258,13 @@ def _confirm_update_started(app: Any) -> None:
     )
 
 
-class DocumentUpdatesMixin:
-    """``cmd_check_updates``, mixed into the QUILL Lite document window."""
+class DocumentUpdatesMixin(DocumentGuidesMixin):
+    """``cmd_check_updates``, mixed into the QUILL Lite document window.
+
+    It brings the Help menu's guide rows with it (``cmd_user_guide``,
+    ``cmd_github_guide``, :mod:`quill.apps.lite_guides`): like What's New, each
+    opens a page in the browser, and ``lite_window.py`` is at its GATE-11 cap.
+    """
 
     def cmd_check_updates(self) -> None:
         """Help > Check for Updates... -- the family key, Ctrl+Alt+U."""
