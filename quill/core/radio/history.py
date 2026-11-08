@@ -288,6 +288,17 @@ class RadioHistory:
     scrobble_listenbrainz: bool = False
     scrobble_lastfm: bool = False
     scrobble_librefm: bool = False
+    #: Dial tuning (quill.core.radio.dial_tuning, an idea from BlindRadio by
+    #: serrebidev, MIT): the station under focus plays after a short wait. Off
+    #: by default, so nobody's arrow keys change after an update, and every
+    #: part of it is a setting of its own.
+    dial_tuning: bool = False
+    dial_wait_ms: int = 350
+    dial_keep_neighbours: bool = True
+    dial_metered_stop: bool = True
+    dial_hiss: bool = True
+    dial_hiss_level: str = "low"
+    dial_remember_volume: bool = False
     #: Last volume level (0-100) the listener set, remembered across sessions so
     #: stations don't all come back at full blast on the next launch (#1263).
     #: -1 means "never set" -- the controller keeps its own default.
