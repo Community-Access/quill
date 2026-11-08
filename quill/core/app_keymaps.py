@@ -20,6 +20,8 @@ from __future__ import annotations
 from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS, with_agent_tasks
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
+from quill.core.radio.dial_tuning import DIAL_KEYS
+from quill.core.radio.song_marks import SONG_MARK_KEYS
 
 #: app id -> {command id: binding}.
 APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
@@ -189,6 +191,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "radio.rewind": "Ctrl+Shift+Left",
         "radio.forward": "Ctrl+Shift+Right",
         "radio.jump_to_live": "Ctrl+Shift+L",
+        **SONG_MARK_KEYS,  # song marks and per-station length: song_marks.py
         # Identify This Song (AcoustID, 2026-10-15). Not Ctrl+Alt+Shift+R,
         # which looks free on this bar only because it is Radio's own
         # system-wide show/hide key. Ctrl+K is one of the few plain Ctrl
@@ -196,9 +199,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "radio.identify_song": "Ctrl+K",
         "radio.whats_playing_details": "Ctrl+T",
         "radio.song_history": "Ctrl+Shift+H",
-        # Lyrics of the song on the air (LRCLIB, on request only). The plan
-        # asked for Ctrl+Alt+L, which this window already gives to Resume Last
-        # Station on Launch; B is the one Ctrl+Alt letter Radio has left.
+        "radio.station_playlist": "Alt+Shift+H",  # the station's own list, same H
+        **DIAL_KEYS,  # dial tuning on and off, and Go to Playing Station: dial_tuning.py
+        # Lyrics (LRCLIB, on request only). Not the planned Ctrl+Alt+L, which is
+        # Resume Last Station on Launch; B is the one Ctrl+Alt letter left.
         "radio.lyrics": "Ctrl+Alt+B",
         "radio.statistics": "Ctrl+Shift+Q",
         "radio.sound_enhancements": "Ctrl+E",

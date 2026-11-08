@@ -326,8 +326,10 @@ is wrong or the wrong window is captured.</li>
 runtime and 92 MB for Codex (section 9).</li>
 <li>Both vendors are moving: Codex’s plan sharing is a preview, and the
 Copilot SDK is changing owner (section 10).</li>
-<li>Copilot needs a GitHub OAuth App registered for QUILL before any
-user can sign in from inside the app (section 3.7, R10).</li>
+<li>Copilot sign-in from inside the app needed a GitHub OAuth App per
+app (section 3.7, R10). Done: Jeff registered them under
+Community-Access on 2026-11-02, and their client ids are built into
+<code>quill/core/ai/copilot_auth.py</code>.</li>
 </ul>
 <h2 id="2-codex-app-server-what-the-platform-allows-and-refuses">2.
 Codex app-server: what the platform allows and refuses</h2>
@@ -1744,13 +1746,14 @@ wizard’s “agent” path is in
 <code>:239</code>.</li>
 </ul>
 <p><strong>How it authenticates:</strong> GitHub OAuth device flow
-against an OAuth App whose client id is read from
-<code>QUILL_GITHUB_CLIENT_ID</code>
-(<code>copilot_auth.py:54-56</code>). No build script or workflow sets
-it. Without it the dialog tells the user to run <code>copilot</code> or
+against the app’s own OAuth App. Each app’s client id is built in
+(<code>CLIENT_IDS</code> in <code>quill/core/ai/copilot_auth.py</code>,
+registered 2026-11-02, one per app, device flow on, no client secret).
+<code>QUILL_GITHUB_CLIENT_ID</code> is now only a developer override,
+honoured in a dev build. An app with no client id still falls back to
+telling the user to run <code>copilot</code> or
 <code>gh auth login</code> in a terminal
-(<code>copilot_onboarding_dialog.py:194-198</code>). So in a release
-build today, sign-in from inside QUILL does not work.</p>
+(<code>copilot_onboarding_dialog.py</code>).</p>
 <p><strong>What it reaches:</strong> whatever model the CLI defaults to.
 No model is chosen, no image is sent, no tool is offered, and no
 streaming is read. Text only.</p>
@@ -2692,15 +2695,17 @@ gate checks it.</li>
 <li>The text quoted here is from a 2026-10-21 archive.</li>
 <li>Re-read the live page by hand before shipping.</li>
 </ul></li>
-<li><strong>R10. No GitHub OAuth App yet.</strong> Blocker for Copilot.
+<li><strong>R10. GitHub OAuth App: resolved 2026-11-02.</strong>
 <ul>
-<li><code>QUILL_GITHUB_CLIENT_ID</code> is set nowhere, so sign-in from
-inside QUILL does not work today.</li>
-<li>Jeff, or Community Access, registers an OAuth App with device flow
-switched on, and the client id is built in. A client id is not a secret,
-and device flow needs no client secret.</li>
-<li>Until then the only route is “run <code>copilot</code> in a
-terminal”, which no QUILL user should be asked to do.</li>
+<li>Jeff registered one OAuth App per family app under Community-Access,
+with device flow on and no client secret.</li>
+<li>Their client ids are built into <code>CLIENT_IDS</code> in
+<code>quill/core/ai/copilot_auth.py</code>;
+<code>QUILL_GITHUB_CLIENT_ID</code> is only a dev-build override.</li>
+<li>They ask for <code>read:user</code> only, which is enough for
+Copilot. The GitHub workbench (Manage GitHub Accounts) still takes a
+pasted token; giving it a browser sign-in would need the scopes it uses
+and is an open decision.</li>
 </ul></li>
 <li><strong>R11. The Copilot SDK is changing owner.</strong> GitHub to
 Microsoft, in phases, no dates.
@@ -4460,13 +4465,11 @@ it.</li>
 <li><strong>Copy the Client ID</strong> from the app’s page and send it
 to us in any ordinary message. A client id is public: it names the app,
 it grants nothing, and it appears in every sign-in request anyway.</li>
-<li><strong>Wiring it in (our work, not yours).</strong> Today
-<code>client_id()</code> reads only the
-<code>QUILL_GITHUB_CLIENT_ID</code> environment variable
-(<code>quill/core/ai/copilot_auth.py:54-56</code>), so no user can sign
-in. The change: a built-in constant in <code>copilot_auth.py</code>, one
-per app’s agent name, with the environment variable kept only as a
-developer override. Users never set anything.</li>
+<li><strong>Wiring it in (our work, not yours). Done.</strong>
+<code>copilot_auth.py</code> now carries a built-in
+<code>CLIENT_IDS</code> table, one per app’s agent name, with the
+environment variable kept only as a developer override. Users never set
+anything.</li>
 <li><strong>Testing it.</strong> In a build with the id: open Choose
 Your AI, select My GitHub Copilot, press Sign In. You should hear the
 code, spaced out, and find it on the clipboard. Press Open the Page,

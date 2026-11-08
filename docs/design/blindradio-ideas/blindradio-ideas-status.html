@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>BlindRadio ideas for Quill Radio: status and remaining
+tasks</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="blindradio-ideas-for-quill-radio-status-and-remaining-tasks">BlindRadio
+ideas for Quill Radio: status and remaining tasks</h1>
+<p>Started 2026-11-07. This is the running record for the program: what
+shipped, what is left, and what only Jeff can do. Remove an item when it
+is done; when everything is done, fold the useful parts into the Radio
+PRD and user guide and retire this folder.</p>
+<p>BlindRadio is by serrebidev, MIT licensed: <a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a>.
+The review that chose these ideas is
+<code>docs/design/blindradio-review-2026-11-07.md</code>. Every module
+built from a BlindRadio idea credits it in its docstring.</p>
+<h2 id="files-in-this-folder">Files in this folder</h2>
+<ul>
+<li><code>networks-and-directories.md</code>: curated networks, IPRD,
+TuneIn, and the directories refused on their terms.</li>
+<li><code>song-history-sources.md</code>: What the Station Played.</li>
+<li><code>scrobbling-and-recognition.md</code>: scrobbling and
+AudD.</li>
+<li><code>time-shift.md</code>: song marks, adaptive cushion,
+per-station buffer length.</li>
+<li><code>dial-tuning.md</code>: the agreed design for dial tuning.</li>
+<li><code>dial-tuning-built.md</code>: dial tuning as built, with its
+open items.</li>
+<li><code>tutorials.md</code>: the six guided lessons for these
+features.</li>
+</ul>
+<p>Each notes file holds the exact user-guide, PRD and CHANGELOG text,
+the keys, settings and egress rows added, and what was not verified.</p>
+<h2 id="progress-log">Progress log</h2>
+<ul>
+<li>2026-11-07: review written; four branches built in parallel
+worktrees.</li>
+<li>2026-11-07: merged into <code>feat/radio-blindradio-ideas</code>:
+<ul>
+<li>curated networks (20 networks, 516 channels, every address probed,
+68 moved to HTTPS) and the hand-run probe
+<code>scripts/refresh_radio_networks.py</code>;</li>
+<li>IPRD directory (By Country, By Genre, in search);</li>
+<li>TuneIn lists a station once when it is both local and in a
+category;</li>
+<li>What the Station Played (Alt+Shift+H) from seven published-playlist
+sources;</li>
+<li>scrobbling to ListenBrainz, last.fm and Libre.fm (off by default)
+and AudD as a second Identify This Song service.</li>
+</ul></li>
+<li>2026-11-07: refused after reading their terms: Internet-Radio.com,
+radio.net tag browse, Online Radio Box, Airable, vTuner.</li>
+<li>2026-11-07: dial tuning design agreed with Jeff: ships off, every
+part a setting.</li>
+<li>2026-11-07: time-shift branch merged: song marks with Save Songs
+from the Buffer, adaptive cushion, per-station length.</li>
+<li>2026-11-07: docs folded in: Radio user guide (chapters 3, 4, 5, 6,
+privacy, keys, licences), Radio PRD section 31, Radio and QUILL
+CHANGELOGs (Help &gt; What’s New reads the Radio one), the BlindRadio
+MIT notice in every product’s third-party notices, site pages
+synced.</li>
+<li>2026-11-07: stale GitHub OAuth lines in
+<code>docs/design/codex.md</code> corrected.</li>
+<li>2026-11-08: six guided lessons added (50 lessons, 330 steps);
+release notes 3.2, README and the site’s docs page updated.</li>
+<li>2026-11-08: dial tuning built and merged: off by default, seven
+settings, Alt+Shift+U, Go to Playing Station (Alt+Shift+P), a generated
+hiss, up to two warm neighbours; docs folded in.</li>
+<li>2026-11-08: PR 1792 opened; CI fixes for the accessible-name
+inventory, announcement punctuation, persistence audit and CodeQL.</li>
+</ul>
+<h2 id="remaining-tasks">Remaining tasks</h2>
+<ol type="1">
+<li>Run the gates and radio tests on the final branch; PR 1792 out of
+draft; merge on green CI.</li>
+<li>Pull <code>S:\QUILL</code>, delete its two strays
+(<code>docs/design/blindradio-review-2026-11-07.md</code>, an empty
+<code>quill/core/radio/radio_credentials.py</code>), remove
+<code>S:\QUILL-wt-br</code> and <code>S:\QUILL-wt-br-dial</code>.</li>
+<li>Review the module budget rebaselines: <code>app_keymaps.py</code>
+(604), <code>radio.py</code> (1267), <code>browse_tree_dialog.py</code>
+(947).</li>
+</ol>
+<h2 id="small-follow-ups-found-along-the-way">Small follow-ups found
+along the way</h2>
+<ul>
+<li>What the Station Played has no row on QUILL’s embedded radio menu
+(the command palette reaches it); its window is modal; it has no
+Refresh.</li>
+<li>Scrobbling has no Preferences rows in the radio inside QUILL itself;
+retries run only while a station plays.</li>
+<li>Song marks: songs ahead of the playhead are known only from the
+30-second title poll, so may be marked late until reached; saved songs
+keep the station’s format rather than the recorder’s chosen one; QUILL’s
+embedded radio menu lacks the song commands; per-station length is not
+on the favorites context menu.</li>
+<li>AudD clip not tried on an HLS station; AudD’s error replies written
+from its docs.</li>
+<li>Re-read 1.FM’s terms before switching its network to
+<code>api.1cloud.fm</code>.</li>
+<li>Dial tuning: the hiss plays on the default device, not the radio’s
+chosen one; Recently Played is a menu so it does not tune; a station
+rested on without Enter is never counted; Go to Playing Station looks
+only in Browse (when main view) or Favorites.</li>
+<li>Global, ARN and NZME run their own apps; if one withdraws from
+third-party players, delete its network entry.</li>
+</ul>
+<h2 id="needs-jeff">Needs Jeff</h2>
+<ul>
+<li>JAWS and NVDA hand checks: the new Browse branches, What the Station
+Played, the Preferences rows for scrobbling and recognition, and (when
+built) dial tuning.</li>
+<li>A real scrobble: sign in to ListenBrainz and last.fm, listen for a
+minute, confirm it arrives.</li>
+<li>Register Quill Radio with last.fm (last.fm/api/account/create) and
+put the key and secret in the build environment for
+<code>tools/generate_lastfm_api_key.py</code>. Until then listeners
+paste their own pair.</li>
+<li>One AudD request with a bad token, to confirm the error
+wording.</li>
+<li>Dismiss CodeQL alert 84 (last.fm’s required MD5) as won’t fix: <a
+href="https://github.com/Community-Access/quill/security/code-scanning/84">https://github.com/Community-Access/quill/security/code-scanning/84</a></li>
+<li>Dial tuning by ear: the hiss level against speech, the loop seam, a
+neighbour promoted with no gap, and how JAWS and NVDA read the
+Preferences box.</li>
+</ul>
+</main>
+</body>
+</html>

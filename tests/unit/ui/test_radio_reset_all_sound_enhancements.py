@@ -192,9 +192,12 @@ def test_open_preferences_passes_a_reset_all_action(monkeypatch: pytest.MonkeyPa
     # Folder dialog (2026-08-17), Change
     # Release Channel (2026-10-04), the YouTube group's cookies.txt picker
     # (2026-10-03) and Make Quill Radio My Media Player in Windows and your
-    # files (2026-10-04). This test owns Reset All; the exact count is pinned
-    # so a silently dropped action still fails here.
-    assert len(actions) == 7
+    # files (2026-10-04). Then the Scrobbling group's Sign In to last.fm, Sign In
+    # to Libre.fm and Get a last.fm API Account (2026-11-07), which follow these
+    # seven. This test owns Reset All; the exact count is pinned so a silently
+    # dropped action still fails here.
+    assert len(actions) == 10
+    assert any("Sign In to last.fm" in action.name for action in actions[7:])
     assert "App Sounds Play On" in actions[0].name
     assert actions[1].name == "Slider Keys..."
     assert actions[2].on_click == frame._reset_all_sound_enhancements

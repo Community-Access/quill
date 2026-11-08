@@ -1089,6 +1089,33 @@ def _no_saved_acoustid_key(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def radio_credential_store(monkeypatch: pytest.MonkeyPatch) -> dict[str, tuple[str, str]]:
+    """Radio's scrobbling and AudD secrets, in a dict instead of Windows' store.
+
+    Every test starts empty and nothing reaches the developer's real sign-ins.
+    A test that needs a stored token writes ``store[target] = (secret, user)``.
+    """
+    from quill.core.radio import radio_credentials
+
+    store: dict[str, tuple[str, str]] = {}
+
+    def _load(target: str) -> radio_credentials.Stored:
+        secret, user = store.get(target, ("", ""))
+        return radio_credentials.Stored(secret, user)
+
+    def _save(target: str, secret: str, user_name: str = "") -> bool:
+        if secret.strip():
+            store[target] = (secret.strip(), user_name)
+        else:
+            store.pop(target, None)
+        return True
+
+    monkeypatch.setattr(radio_credentials, "load", _load)
+    monkeypatch.setattr(radio_credentials, "save", _save)
+    return store
+
+
+@pytest.fixture(autouse=True)
 def _no_live_release_feed(monkeypatch: pytest.MonkeyPatch) -> None:
     """Every update check sees "no v2 list published yet" unless a test says otherwise.
 

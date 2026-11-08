@@ -2,6 +2,51 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-3.2.md` (Help > Release Notes, Shift+F1) for the fuller narrative version of the latest release.
 
+## [Unreleased] - 2026-11-07
+
+### Ideas from BlindRadio
+
+Seven things arrive together, each an idea from BlindRadio, a screen-reader-first
+radio player by serrebidev (github.com/serrebidev/blindradio, MIT). Thank you.
+
+- **More networks, straight to the broadcaster's stream** (2026-11-07). Networks
+  now lists every channel of the BBC, the ABC by region, Minnesota Public Radio
+  and YourClassical, WFMU, WFUV, Radio Swiss, Global's UK brands (Capital, Heart,
+  Smooth, Classic FM, LBC, Radio X, Gold), Triple M, ARN, NZME, K-LOVE, Air1, Big
+  R Radio, NTS and its Infinite Mixtapes, Nightride FM, Power Hitz, Radio Record,
+  PulsRadio, Sunshine Live and Planet Radio: 516 channels, each checked to play.
+  Their folders say how many channels they hold and open at once, because the
+  list comes with Quill Radio. Two new groups, Commercial radio and Christian
+  radio. The list is BlindRadio's, used under its MIT notice.
+- **IPRD, the open Public Radio Directory** (2026-11-07). A new Browse Stations
+  branch: about 24,000 stations by country and by genre, a hundred at a time.
+  Find Stations searches it, and the network channels too. TuneIn no longer
+  lists a station twice when it is both local and in a category.
+- **What the Station Played** (Alt+Shift+H, 2026-11-07). The station's own list
+  of what it played, with start times, beside your Song History, for KEXP, the
+  BBC, Radio Paradise, Live365, laut.fm, Triton (StreamTheWorld) and AzuraCast
+  stations. Only fetched when you ask.
+- **Song marks in the time-shift buffer** (2026-11-07). Each song is marked as
+  it starts. Previous Song and Next Song (Alt+Shift+Left and Right) jump between
+  them, Which Song Is This? (Alt+Shift+W) says where you are, and Save Songs
+  from the Buffer (Ctrl+Alt+F5 to F8) writes this, the previous, the next or
+  every song to its own file, untouched.
+- **Steadier stations, and a buffer length per station** (2026-11-07). A
+  station that keeps running dry now waits longer before it plays again (3,
+  then 9, then 15 seconds) instead of stuttering, and goes back to normal after
+  a clean minute. A favorite can keep its own time-shift length (Alt+Shift+T).
+- **Tune as you move through stations** (Alt+Shift+U, 2026-11-08). Off until
+  you turn it on. The station you stop on in Favorites, Browse, Networks or
+  Search plays after a moment, with a soft hiss while it connects, and the
+  stations either side stay connected so the next step is quick. Enter keeps
+  the station; stations you only pass are not added to Recently Played or Song
+  History. Go to Playing Station (Alt+Shift+P) finds its row again. Every part
+  is a setting in Preferences.
+- **Scrobbling, and AudD for Identify This Song** (2026-11-07). Send the songs
+  you hear to ListenBrainz, last.fm or Libre.fm; each is off until you turn it
+  on and sign in, and a song counts after a minute heard. Identify This Song
+  can ask AudD instead of AcoustID, with your own AudD token.
+
 ## [3.2.0] - 2026-10-03
 
 Testing rebuild: **3.2.0 (build 5)**. The packages have not been published yet.

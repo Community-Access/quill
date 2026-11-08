@@ -16,12 +16,14 @@ from quill.tools.network_egress_entries_agents import AGENT_EGRESS, AGENT_HTTP_E
 from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
 from quill.tools.network_egress_entries_github import GITHUB_WORKBENCH_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
+from quill.tools.network_egress_entries_radio_listening import RADIO_LISTENING_EGRESS
 from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
 from quill.tools.network_egress_entries_wordpress import WORDPRESS_EGRESS
 
 _REVIEWED_EGRESS: dict[str, str] = {
     # Quill Radio's, split out under GATE-11 -- see the module beside this one.
     **RADIO_EGRESS,
+    **RADIO_LISTENING_EGRESS,  # scrobbling and AudD, beside it
     # The cloud dictation providers (D-31 to D-37), split out the same way.
     **SPEECH_EGRESS,
     **CAST_EXTRAS_EGRESS,

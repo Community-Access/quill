@@ -42,13 +42,32 @@ def _sample_dir() -> Path:
     return Path(tempfile.mkdtemp(prefix="sample-", dir=root))
 
 
+def _service(host: Any) -> str:
+    from quill.core.radio import song_recognition
+
+    history = getattr(host, "_radio_history", None)
+    return song_recognition.normalise_service(getattr(history, "recognition_service", ""))
+
+
 def identify_song(host: Any) -> None:
-    """Listen to what is playing and say what AcoustID thinks it is."""
-    from quill.core.radio import acoustid, chromaprint, song_recognition
+    """Listen to what is playing and say what the chosen service thinks it is.
+
+    AcoustID by default; AudD when the listener chose it in Preferences (an
+    idea from BlindRadio by serrebidev, MIT). Only ever on this command.
+    """
+    from quill.core.radio import acoustid, audd, chromaprint, song_recognition
 
     controller = getattr(host, "_radio_controller", None)
     station = getattr(getattr(controller, "state", None), "station", None)
-    blocker = song_recognition.precheck(key=acoustid.stored_key(), fpcalc=chromaprint.find_fpcalc())
+    service = _service(host)
+    if service == song_recognition.SERVICE_AUDD:
+        blocker = song_recognition.precheck(
+            key="", fpcalc=None, service=service, audd_token=audd.stored_token()
+        )
+    else:
+        blocker = song_recognition.precheck(
+            key=acoustid.stored_key(), fpcalc=chromaprint.find_fpcalc()
+        )
     if blocker:
         host._announce(blocker)
         return
@@ -72,7 +91,7 @@ def identify_song(host: Any) -> None:
         host._announce("Song recognition could not make a place to keep the sample.")
         return
     sample = folder / "sample"
-    if not engine.dump_recent_audio(song_recognition.SAMPLE_SECONDS, str(sample)):
+    if not engine.dump_recent_audio(song_recognition.sample_seconds(service), str(sample)):
         shutil.rmtree(folder, ignore_errors=True)
         host._announce(song_recognition.NOT_ENOUGH_AUDIO)
         return
@@ -81,15 +100,18 @@ def identify_song(host: Any) -> None:
 
 def start_worker(host: Any, task_manager: Any, sample: Path, folder: Path) -> None:
     """Fingerprint and look up *sample* off the UI thread, then speak the answer."""
-    from quill.core.radio import acoustid, chromaprint, song_recognition
+    from quill.core.radio import acoustid, audd, chromaprint, song_recognition
 
-    key = acoustid.stored_key()
-    fpcalc = chromaprint.find_fpcalc() or ""
+    use_audd = _service(host) == song_recognition.SERVICE_AUDD
+    key = audd.stored_token() if use_audd else acoustid.stored_key()
+    fpcalc = "" if use_audd else chromaprint.find_fpcalc() or ""
     safe_mode = bool(getattr(host, "_safe_mode", False))
     host._announce(song_recognition.LISTENING)
 
     def _work(**_kwargs: Any) -> Any:
         try:
+            if use_audd:
+                return song_recognition.recognise_with_audd(sample, token=key, safe_mode=safe_mode)
             return song_recognition.recognise(sample, key=key, fpcalc=fpcalc, safe_mode=safe_mode)
         finally:
             shutil.rmtree(folder, ignore_errors=True)

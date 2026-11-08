@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Networks and directories from BlindRadio</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="networks-and-directories-from-blindradio">Networks and
+directories from BlindRadio</h1>
+<p>Branch <code>feat/br-dirs</code>, 2026-11-07. Part of the BlindRadio
+ideas program
+(<code>docs/design/blindradio-review-2026-11-07.md</code>). BlindRadio
+is by serrebidev, MIT licensed: <a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a>.</p>
+<h2 id="what-was-built">What was built</h2>
+<h3 id="curated-networks-with-direct-stream-addresses">Curated networks
+with direct stream addresses</h3>
+<ul>
+<li><code>quill/data/radio_networks.json</code>: 20 networks, 516
+channels, each pinned to the operator’s own published stream. Taken from
+BlindRadio’s <code>crates/blindradio-core/data/networks.json</code>
+(current head for the English networks; commit <code>f398c69a</code>,
+2026-10-30, for Sunshine Live, Planet Radio, Radio Record, PulsRadio and
+Radio Swiss, which BlindRadio later dropped when it trimmed to
+English-language networks). The file carries an <code>attribution</code>
+line, the full MIT notice (<code>license</code>), the date it was last
+checked, and for every network an <code>origin</code> saying where its
+addresses came from. <code>quill/data/radio_networks.LICENSE.txt</code>
+carries the same notice beside it. <code>quill/data</code> ships whole
+(the wheel packages <code>quill</code>; the runtime inventory copies
+<code>quill/data</code>), so nothing else is needed to package it.</li>
+<li>Networks carried: BBC (66 services), ABC Australia by region (49),
+Radio Swiss (3), Minnesota Public Radio and YourClassical (16), WFMU and
+its side channels (5), WFUV (1), Big R Radio (46), NTS with its Infinite
+Mixtapes (18), Nightride FM (7), Power Hitz (15), Radio Record (90),
+PulsRadio (8), Sunshine Live (7), Planet Radio and FFH (31), Global UK
+(Capital, Heart, Smooth, Classic FM, LBC, Radio X, Gold: 39), Triple M
+(39), ARN Australia (12), NZME (53), K-LOVE (9), Air1 (2).</li>
+<li><code>quill/core/radio/curated_networks.py</code>: loads and
+validates the snapshot (<code>problems()</code> names duplicate ids,
+plain HTTP with no reason, a missing origin or a missing MIT notice),
+turns a channel into a <code>RadioStation</code> with a stable
+<code>station_uuid</code> of
+<code>net:&lt;network&gt;:&lt;channel&gt;</code>, and searches the
+channels by name. Listing a curated network makes no network call.</li>
+<li><code>quill/core/radio/networks.py</code>: <code>catalog()</code>
+merges the curated networks into the existing Radio Browser query
+networks. A curated network that declares <code>replaces</code> takes
+the query’s id and its place in the list, so the BBC is one folder, not
+two, and anything remembered against <code>network:bbc</code> still
+lands on the BBC. Replaced deliberately: <code>bbc</code>,
+<code>abc-au</code>, <code>apm</code> (now “Minnesota Public Radio and
+YourClassical”), <code>big-r-radio</code>. A curated id that collides
+with a query it did not declare it replaces is dropped (tested). Two new
+groups: Commercial radio (Global UK, Triple M, ARN, NZME) and Christian
+radio (K-LOVE, Air1). Curated network folders show their channel count
+before they are opened.</li>
+<li>Channels are ordinary stations in the tree, so favorites, recording,
+scheduling, What’s Playing and the context menu all work as for any
+leaf.</li>
+<li>Find Stations gains a <strong>Networks</strong> source (no network;
+it reads the table).</li>
+<li><code>scripts/refresh_radio_networks.py</code>: the hand-run probe
+and refresh tool. It checks each address the way BlindRadio did: GET,
+HTTP 200, audio content type, 4096 bytes read, connection closed. An HLS
+address passes when its playlist (and first variant) is served and the
+newest segment reads 4096 bytes. One retry per failure.
+<code>--refresh</code> reads the operators’ own lists for NTS
+(<code>www.nts.live/api/v2/mixtapes</code>) and Radio Record
+(<code>www.radiorecord.ru/api/stations/</code>) and merges them, keeping
+a channel’s id when its address moves; for the BBC
+(<code>rms.api.bbc.co.uk/v2/experience/inline/stations</code>) it is a
+roster check only, because that API names services but carries no stream
+address. <code>--upgrade-http</code> tries HTTPS for every HTTP row,
+<code>--drop-dead</code> removes failures, <code>--write</code> saves
+with LF endings. It refuses to run under pytest or when <code>CI</code>
+is set. The app never runs it.</li>
+</ul>
+<h3 id="directories">Directories</h3>
+<ul>
+<li><strong>IPRD</strong>, the International Public Radio Directory
+(<code>quill/core/radio/iprd.py</code>,
+<code>quill/core/radio/browse_iprd.py</code>): a new root branch “IPRD
+(Public Radio Directory)” with By Country and By Genre (the 100
+most-used genres), each list 100 stations at a time with a “More…” row
+that says “showing 100 of 4,012”. Find Stations, Find in this folder and
+the federated search all reach it. The catalogue is one 2 MB gzipped
+GET, made only when a folder under the branch is opened or a search
+runs, kept for a day in the directory cache (trimmed) and ten minutes in
+memory. Safe Mode refuses it out loud.</li>
+<li><strong>TuneIn</strong>: Music, Talk, Sports and Local Radio were
+already in the tree (they are TuneIn’s own root), and “More Stations”
+(<code>nextStations</code>) already opened the next page, because its
+link carries the offset. Added: a station TuneIn files under both “Local
+Stations” and “Stations” is listed once. Tests now pin the paging.</li>
+<li><strong>iHeart markets</strong>: already shipped (By City,
+<code>/api/v2/content/markets</code>, then stations by
+<code>marketId</code>). Nothing to add.</li>
+</ul>
+<h3 id="terms-checks">Terms checks</h3>
+<ul>
+<li><strong>IPRD: added.</strong> The project is MIT licensed, describes
+itself as a “public listing of internet radios from all around the
+world”, and publishes the catalogue on GitHub Pages; github.io has no
+robots restriction on it.</li>
+<li><strong>Internet-Radio.com: not added.</strong> Its terms of use
+(internet-radio.com/terms/enduser/) say a listener may stream the
+stations “solely by means of the audio player embedded in the site or
+any third party media player facilitated by the site”, and the
+acceptable use policy forbids reproducing or copying any part of the
+site. There is no API: BlindRadio reads its HTML pages. robots.txt also
+disallows <code>/playlist.m3u</code> and <code>/playlist.xspf</code>,
+the very links the site uses to hand a station to a player. Reading its
+listing into another app’s browse tree is not a use those terms
+allow.</li>
+<li><strong>radio.net tag browse: not added.</strong> The API host
+BlindRadio uses, <code>prod.radio-api.net</code>, serves a robots.txt of
+<code>Disallow: /</code> for every agent, and radio.net’s terms
+(radio.net/terms-and-conditions, section on use) permit use “for private
+purposes of locating and playing Audio Sources” and forbid “any further
+use”, including “making available to the public”. Quill Radio already
+accepts a pasted radio.net page through Find Streams; that is
+unchanged.</li>
+</ul>
+<h3 id="left-out-of-the-snapshot-and-why">Left out of the snapshot, and
+why</h3>
+<ul>
+<li><strong>SomaFM</strong>: retired in Quill Radio on 2026-10-31 (its
+terms no longer approve new third-party clients;
+<code>models.is_retired_somafm_station</code>). Not carried, and a test
+asserts it stays out. Its <code>channels.json</code> refresh path was
+therefore not built.</li>
+<li><strong>1.FM</strong>: <code>api.1cloud.fm/api/channels</code>
+answered keyless on 2026-11-07, but the 2026-10-25 ruling in
+<code>networks.py</code> was that 1.FM publishes no station list a
+player may use. Left as the existing Radio Browser query; worth a fresh
+terms read before switching it to the API.</li>
+<li><strong>181.FM and Radio Paradise</strong>: Quill Radio already
+carries both whole, from their own lists.</li>
+<li><strong>Bauer brands</strong> (none were in the source list) and
+anything needing a key.</li>
+<li><strong>Seasonal channels</strong>: Big R Radio’s Halloween Channel
+and four Christmas channels, Radio Record’s Christmas and Christmas
+Chill, Planet Radio’s FFH Weihnachtsradio and Weihnachtsklassiker.</li>
+<li><strong>Probe failures on 2026-11-07</strong>: none of BlindRadio’s
+own rows failed. The Radio Record API lists 25 channels whose
+<code>stream_128</code> answers 404 (mostly artist shows); the refresh
+adds them and the probe drops them every time, which is why the network
+has 90 rather than 115. PulsRadio’s host
+(<code>icecast.pulsradio.com</code>) refuses roughly one TLS handshake
+in three; all eight channels play on a retry and are kept.</li>
+<li><strong>BBC services the BBC lists but the snapshot lacks</strong>:
+5 Sports Extra 1 to 3, 6 Indie Forever, Live News, Radio Wales Extra,
+CBeebies Radio (BlindRadio found their audio 403 outside the UK), and
+CWR, Hereford and Worcester, Radio Solent Dorset (BlindRadio found no
+address). Not invented.</li>
+</ul>
+<h3 id="https">HTTPS</h3>
+<p>Every address is HTTPS except one. The probe upgraded 68 BlindRadio
+rows from HTTP (65 BBC, 3 Triple M) because the same host served the
+stream over HTTPS. WFUV stays HTTP with its reason recorded in the row:
+its HTTPS host sends an incomplete certificate chain, so a verified TLS
+connection fails, and the same stream over HTTP answers audio.</p>
+<h2 id="user-guide-text">User guide text</h2>
+<p>Replace item 21 in the Browse Stations list with:</p>
+<blockquote>
+<ol start="21" type="1">
+<li><strong>Networks</strong>: well-known broadcasters, grouped by type.
+Many of them, the BBC, WFMU and Global’s Capital and Heart among them,
+list every channel the broadcaster runs, each going straight to its own
+stream.</li>
+</ol>
+</blockquote>
+<p>Add after item 25 (Live365), renumbering what follows:</p>
+<blockquote>
+<ol start="26" type="1">
+<li><strong>IPRD (Public Radio Directory)</strong>: an open list of
+about 24,000 stations from every country, by country and by genre.</li>
+</ol>
+</blockquote>
+<p>Replace the <strong>Networks</strong> paragraph under “What is in
+each branch” with:</p>
+<blockquote>
+<ul>
+<li><strong>Networks</strong> groups well-known broadcasters: public
+broadcasters such as the BBC, NPR, CBC, ABC Australia, Radio France and
+Deutschlandfunk, plus US news and talk, US public radio, sports, music,
+commercial radio, Christian radio and syndicators. Many of them list the
+broadcaster’s own channels, each going straight to the broadcaster’s own
+stream: the BBC’s national, local and digital services, the ABC by
+region, Minnesota Public Radio and YourClassical, WFMU and its side
+channels, WFUV, Radio Swiss, Global’s Capital, Heart, Smooth, Classic
+FM, LBC, Radio X and Gold, Triple M, ARN and NZME, K-LOVE and Air1, and
+music networks such as Big R Radio, NTS and its Infinite Mixtapes,
+Nightride FM, Power Hitz, Radio Record, PulsRadio, Sunshine Live and
+Planet Radio. These folders say how many channels they hold before you
+open them, and open at once, because the list comes with Quill Radio.
+Seasonal channels are left out so a network never goes quiet in January.
+The rest of the networks search the station directory for the
+broadcaster’s name. A syndicator such as Westwood One has no single
+stream, so it opens a search across the stations that carry it, and its
+name tells you so.</li>
+</ul>
+</blockquote>
+<p>Add after the <strong>Live365</strong> paragraph:</p>
+<blockquote>
+<ul>
+<li><strong>IPRD (Public Radio Directory)</strong> has <strong>By
+Country</strong> and <strong>By Genre</strong>. A long list shows a
+hundred stations at a time; the last row, <strong>More…</strong>, says
+how many there are and opens the next hundred. The whole directory is
+fetched the first time you open a folder in it and kept for a day, so
+moving around it afterwards needs no wait.</li>
+</ul>
+</blockquote>
+<p>Under TuneIn, add one sentence:</p>
+<blockquote>
+<p>Music, Talk, Sports and Local Radio list their first stations and
+then <strong>More Stations</strong>, which opens the next page.</p>
+</blockquote>
+<p>Find Stations sources list (the sentence that names them): add
+<strong>IPRD</strong> and <strong>Networks</strong> after laut.fm.</p>
+<h2 id="prd-text">PRD text</h2>
+<blockquote>
+<ul>
+<li>Curated networks (2026-11-07;
+<code>quill/core/radio/curated_networks.py</code>,
+<code>quill/data/radio_networks.json</code>,
+<code>scripts/refresh_radio_networks.py</code>). The Networks branch
+carries 20 networks whose channels are pinned to each operator’s own
+published stream, from BlindRadio’s curated table (MIT, notice kept in
+the data file and beside it), each with a recorded origin. A curated
+network that <code>replaces</code> a Radio Browser query takes its id
+and place (BBC, ABC, MPR, Big R Radio), so no network is shown twice and
+saved browse positions still resolve. Listing them makes no request;
+playing one reaches only the operator’s stream. Every address is HTTPS
+unless the row states why not. A hand-run tool re-probes every address
+(GET, 200, audio type, 4096 bytes, close) and refreshes NTS and Radio
+Record from their own keyless APIs; it never runs in the app, tests or
+CI. Seasonal-only channels, Bauer brands, keyed streams and SomaFM
+(retired) are excluded.</li>
+<li>IPRD directory (2026-11-07; <code>quill/core/radio/iprd.py</code>,
+<code>browse_iprd.py</code>). The International Public Radio Directory,
+an MIT-licensed open catalogue on GitHub Pages, as a root branch: By
+Country and By Genre (top 100), paged 100 at a time with a counted More…
+row, and a Find Stations source. One reviewed egress site, fetched only
+on a user’s open or search, cached a day.</li>
+<li>Directories considered and refused (2026-11-07): Internet-Radio.com
+(its terms limit streaming to its own player or players it facilitates
+and forbid copying the site; HTML scraping only) and radio.net’s tag
+browse (its API host’s robots.txt disallows everything, and its terms
+permit private use only).</li>
+</ul>
+</blockquote>
+<h2 id="changelog-line">CHANGELOG line</h2>
+<blockquote>
+<ul>
+<li><strong>More networks, straight to the broadcaster’s stream;
+IPRD</strong> (2026-11-07). Networks now lists every channel of the BBC,
+the ABC by region, MPR and YourClassical, WFMU, WFUV, Radio Swiss,
+Global’s UK brands, Triple M, ARN, NZME, K-LOVE, Air1, Big R Radio, NTS
+and its Infinite Mixtapes, Nightride FM, Power Hitz, Radio Record,
+PulsRadio, Sunshine Live and Planet Radio, 516 channels in all, each
+checked to answer audio. The list comes from BlindRadio by serrebidev.
+Browse Stations gains IPRD, the open Public Radio Directory, by country
+and genre, a hundred at a time. Find Stations searches both. TuneIn no
+longer lists a station twice when it is both local and in a
+category.</li>
+</ul>
+</blockquote>
+<h2 id="third-party-notice">Third-party notice</h2>
+<p>Text for THIRD_PARTY_NOTICES (through
+<code>quill/data/third_party/components.json</code>, which renders it;
+not edited on this branch):</p>
+<pre><code>BlindRadio network table
+Copyright (c) 2026 serrebidev
+https://github.com/serrebidev/blindradio
+License: MIT
+Used for: the curated network list and stream addresses in
+quill/data/radio_networks.json (from crates/blindradio-core/data/networks.json
+and docs/radio-directory-sources.md), and the probe rule used by
+scripts/refresh_radio_networks.py.
+
+MIT License
+
+Copyright (c) 2026 serrebidev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+<p>Suggested <code>components.json</code> entry: id
+<code>blindradio-networks</code>, group data, licenses
+<code>["MIT"]</code>, copyright “Copyright (c) 2026 serrebidev”,
+homepage <a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a>,
+products <code>["radio", "quill"]</code> (or whichever products ship the
+Radio core), delivery bundled. IPRD’s catalogue is read at run time, not
+shipped, so it needs no notice.</p>
+<h2 id="keys-settings-egress">Keys, settings, egress</h2>
+<ul>
+<li>Keys added: none. The new branch and the networks are tree rows;
+every existing Browse Stations key applies.</li>
+<li>Settings added: none. Two registries gained entries with epoch bumps
+so existing profiles see them once: <code>browse_visibility</code> epoch
+6 (<code>iprd</code>) and <code>search_sources</code> epoch 4
+(<code>iprd</code>, <code>networks</code>).</li>
+<li>Egress rows added: <code>core/radio/iprd.py::_fetch</code> in
+<code>quill/tools/network_egress_entries_radio.py</code>. The refresh
+tool lives in <code>scripts/</code>, outside the app and outside the
+audit’s scope, and is never run by the app.</li>
+</ul>
+<h2 id="not-done-or-not-verified">Not done or not verified</h2>
+<ul>
+<li>Not heard through mpv: the probe checks HTTP and bytes, not
+playback. The BBC and ABC rows are HLS; Quill Radio’s mpv path plays
+HLS, but these exact streams were not played here.</li>
+<li>Each operator’s own terms for third-party players were not read one
+by one; the list relies on BlindRadio’s sourcing notes (each address is
+the operator’s own published stream) plus the exclusions above. Global,
+ARN and NZME run their own apps and could follow Bauer’s lead; if one
+does, delete that network’s entry.</li>
+<li>ARD’s geo-limit (from 2026-10-01) does not touch this list; no ARD
+network is curated.</li>
+<li>No screen-reader pass of the new branch was done on this
+machine.</li>
+<li>The integrator should regenerate THIRD_PARTY_NOTICES from
+components.json with the entry above, and fold the user-guide, PRD and
+CHANGELOG text in.</li>
+</ul>
+</main>
+</body>
+</html>

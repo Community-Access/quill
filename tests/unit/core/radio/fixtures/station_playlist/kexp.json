@@ -1,0 +1,28 @@
+{
+ "next": null,
+ "previous": null,
+ "results": [
+  {
+   "id": 3728669,
+   "airdate": "2026-11-07T18:42:15-08:00",
+   "song": "Telegram",
+   "artist": "Eggshells",
+   "album": "Phase II",
+   "play_type": "trackplay"
+  },
+  {
+   "id": 3728668,
+   "airdate": "2026-11-07T18:41:50-08:00",
+   "song": null,
+   "artist": null,
+   "play_type": "airbreak"
+  },
+  {
+   "id": 3728666,
+   "airdate": "2026-11-07T18:39:39-08:00",
+   "song": "BROWN BEANIE",
+   "artist": "Yaya Bey",
+   "play_type": "trackplay"
+  }
+ ]
+}

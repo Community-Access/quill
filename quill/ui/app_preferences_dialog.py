@@ -112,6 +112,9 @@ class PreferenceChoice:
     #: The :class:`~quill.core.settings_finder.SettingEntry` key this row is,
     #: so Find a setting can name it by its declared label and aliases.
     key: str = ""
+    #: Drawn after the group's check boxes rather than before them, for a box
+    #: led by the check box that switches the rest on (Radio's dial tuning).
+    after_checks: bool = False
 
 
 class PreferencesDialog:
@@ -159,19 +162,11 @@ class PreferencesDialog:
 
         for group in self._group_order(choices, checkboxes, texts, actions):
             sizer, parent_window = self._container(root, group)
-            for index, choice_spec in enumerate(choices or []):
-                if choice_spec.group == group:
-                    choice = self._add_choice(sizer, parent_window, choice_spec)
-                    choice.Bind(
-                        self._wx.EVT_CHOICE,
-                        lambda _event, choice_index=index: self._choice_user_changed.add(
-                            choice_index
-                        ),
-                    )
-                    self._choice_controls[index] = choice
+            self._add_group_choices(sizer, parent_window, choices, group, after_checks=False)
             for index, check_spec in enumerate(checkboxes):
                 if check_spec.group == group:
                     self._checks[index] = self._add_check(sizer, parent_window, check_spec)
+            self._add_group_choices(sizer, parent_window, choices, group, after_checks=True)
             for index, text_spec in enumerate(texts or []):
                 if text_spec.group == group:
                     self._text_controls[index] = self._add_text(sizer, parent_window, text_spec)
@@ -201,6 +196,20 @@ class PreferencesDialog:
                 self._leave_for,
                 control_for=lambda entry: self.controls_by_key.get(entry.key),
             )
+
+    def _add_group_choices(
+        self, sizer: Any, parent: Any, choices: Any, group: str, *, after_checks: bool
+    ) -> None:
+        for index, choice_spec in enumerate(choices or []):
+            late = bool(getattr(choice_spec, "after_checks", False))
+            if choice_spec.group != group or late != after_checks:
+                continue
+            choice = self._add_choice(sizer, parent, choice_spec)
+            choice.Bind(
+                self._wx.EVT_CHOICE,
+                lambda _event, choice_index=index: self._choice_user_changed.add(choice_index),
+            )
+            self._choice_controls[index] = choice
 
     def _leave_for(self, entry: SettingEntry) -> None:
         """Find a setting chose a setting outside this dialog: close, then go.
@@ -303,6 +312,10 @@ class PreferencesDialog:
         if not 0 <= selected_index < choice.GetCount():
             raise ValueError("selected_index must refer to an available option.")
         choice.SetSelection(selected_index)
+
+    def text_value(self, index: int) -> str:
+        """What one of the supplied text fields holds right now, saved or not."""
+        return str(self._text_controls[index].GetValue())
 
     def set_choice_help_text(self, index: int, help_text: str) -> None:
         self._describe(self._choice_controls[index], help_text)

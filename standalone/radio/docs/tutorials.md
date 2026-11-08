@@ -1,6 +1,6 @@
 # Quill Radio Tutorials
 
-Welcome. There are 44 short lessons here, about 265 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 50 short lessons here, about 292 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in Quill Radio. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -19,6 +19,7 @@ The keys here are the ones Quill Radio comes with. If you have changed a key, th
   - Search every directory at once (5 minutes)
   - Find a station by its web address (4 minutes)
   - Find stations by name, tag and country (6 minutes)
+  - Go straight to a broadcaster, or a public station (6 minutes)
   - Add a station nobody lists (8 minutes)
   - The catalog on your own disk (5 minutes)
   - When a station will not play (6 minutes)
@@ -53,6 +54,11 @@ The keys here are the ones Quill Radio comes with. If you have changed a key, th
   - What was that song? (5 minutes)
   - Keep a moment, and move around inside one (6 minutes)
   - Sleeping, waking, and being left alone (6 minutes)
+  - Ask the station what it played (5 minutes)
+  - Keep a list of what you heard on ListenBrainz (4 minutes)
+  - AcoustID or AudD: which one names the song (3 minutes)
+  - Jump between songs, and save one (6 minutes)
+  - Give one station a time-shift length of its own (3 minutes)
   - Shape the sound (7 minutes)
   - How much did I actually listen? (4 minutes)
   - Back it up, move it, and keep it working (8 minutes)
@@ -405,6 +411,47 @@ Use the search window with separate boxes for name, tag and country. You will al
 Now you have both ways to find stations: wandering when you are not sure, and searching when you are. Next, find out how to add the stations no directory lists.
 
 Next: Find a station by its web address; Add a station nobody lists.
+
+### Go straight to a broadcaster, or a public station
+
+Open a broadcaster's own channels in Networks, play one straight from its own stream, and find a public station anywhere in the world in the open IPRD directory.
+
+*7 steps, about 6 minutes.*
+
+1. **Open Browse Stations.** Networks and IPRD are both branches of the one big tree in Browse Stations, further down than the directories you met first. Neither needs an account, and both play with the keys you already know.
+   - Keys: Ctrl+B
+   - You should hear: Browse Stations, and the row you were last on.
+
+2. **Find Networks and open it.** Arrow down the top-level branches to Networks and press Right arrow. It groups well-known broadcasters by type: public broadcasters, US public radio, news and talk, sports, music, commercial and Christian radio, and syndicators.
+   - Keys: Down arrow, Right arrow
+   - You should hear: Networks, then the first group, such as Public broadcasters.
+
+3. **Hear how many channels a folder holds.** Open a group and arrow through it. Broadcasters such as the BBC, WFMU or Global's Heart say how many channels they hold before you open them, and open at once, because that list comes with Quill Radio rather than from the internet.
+   - Keys: Right arrow, Down arrow
+   - You should hear: A broadcaster's name, and how many channels it holds.
+   - Worth knowing: A broadcaster without a count searches the station directory for its name instead, so it takes a moment to fill.
+
+4. **Play a channel from its own stream.** Open a broadcaster and press Enter on a channel. It goes straight to the broadcaster's own stream, with no directory in between, and every one was checked to play before it was added. Favorite it, record it or schedule it like any station.
+   - Keys: Right arrow, Enter
+   - You should hear: The channel's name, then the station playing.
+   - Worth knowing: Seasonal channels are left out, so a network never goes quiet in January.
+
+5. **Open the public radio directory.** Go back up to the top level and arrow down to IPRD (Public Radio Directory), an open, community-kept list of about 24,000 stations. Open it for By Country and By Genre. The first folder you open fetches the whole list, so wait a moment.
+   - Keys: Left arrow, Down arrow, Right arrow
+   - You should hear: IPRD (Public Radio Directory), then By Country and By Genre.
+
+6. **Move through a long list a hundred at a time.** Open By Country, then a country. A long list shows a hundred stations at a time, and its last row, More, says how many there are in all. Press Enter on More to open the next hundred. The list is kept for a day, so the rest is quick.
+   - Keys: End, Enter
+   - You should hear: More, and how many it is showing, such as showing 100 of 4,012.
+
+7. **Find them from Search Stations too.** Search All Sources, at the top of the tree, and Search Stations both ask IPRD and Networks along with everything else. Networks asks nobody on the internet: it searches the channels that came with Quill Radio, so a search for WFMU finds its side channels at once.
+   - Keys: Home, Enter
+   - You should hear: Search All Sources: What are you looking for?
+   - Worth knowing: Search Sources, on the Station menu, turns either of them off if you would rather not see them in results.
+
+Networks is the short way to a broadcaster you already know, and IPRD is the long way round the world's public radio. The list of networks and their streams comes from BlindRadio by serrebidev.
+
+Next: Add a station nobody lists.
 
 ### Add a station nobody lists
 
@@ -1520,6 +1567,159 @@ Set the radio to switch off by itself, to switch on by itself, and to stop talki
    - You should hear: The setting read back.
 
 Sleep, wake, quiet and remind. Four handy helpers, each one clear about what it does and what it leaves alone. Sleep well.
+
+### Ask the station what it played
+
+Open the list a station publishes of the songs it played, with the time each one started, reaching back before you tuned in. Then copy a song or look it up.
+
+*6 steps, about 5 minutes.*
+
+1. **Play a station that publishes a list.** Not every station publishes one. Radio Paradise does, and so do KEXP, the BBC, Live365, laut.fm, AzuraCast stations and many US stations streamed by Triton Digital. In Browse Stations, open Radio Paradise and press Enter on a channel.
+   - Keys: Ctrl+B, Enter
+   - You should hear: Browse Stations, then the channel playing.
+
+2. **Ask what the station played.** What the Station Played, on the Playback menu, asks the station for its own list. It sits beside Song History on the same letter, because Song History is what Quill Radio heard and this is what the station says it sent.
+   - Keys: Alt+Shift+H
+   - You should hear: Asking Radio Paradise for the playlist, then the window, on the newest song.
+   - Worth knowing: On a station that publishes no list you hear that in one sentence, and nothing opens. Nothing is fetched until you ask.
+
+3. **Read the list, newest first.** Arrow down through the songs. Each one says when it started, or playing now for the one on the air. The BBC only says how long ago, so its songs read like 3 minutes ago.
+   - Keys: Down arrow
+   - You should hear: A song by its artist, and the time it started.
+
+4. **Check who published it.** Tab past the list to Where this list comes from. It names who published the list, so you know the times came from the station and not from Quill Radio guessing.
+   - Keys: Tab
+   - You should hear: Where this list comes from, and the publisher's name.
+
+5. **Copy a song, or find out more.** With a song selected, the buttons work exactly as they do in Song History: Copy, Send to Clip Library, Song Details and Lyrics. Song Details asks MusicBrainz for the album and year, and only when you press it.
+   - Keys: Alt+C, Alt+D, Alt+Y
+   - You should hear: Copied, and the song.
+
+6. **Close it.** Escape closes the window and takes you back where you were. The list is fetched fresh each time you open it, so open it again later for the songs played since.
+   - Keys: Escape
+   - You should hear: The window you came from.
+
+Song History remembers what you heard, and What the Station Played fills in what you missed. The idea, and the list of where to look, come from BlindRadio by serrebidev.
+
+Next: Keep a list of what you heard on ListenBrainz.
+
+### Keep a list of what you heard on ListenBrainz
+
+Find where scrobbling is turned on, learn exactly what it sends, and where your ListenBrainz token goes. Nothing here needs an account to follow.
+
+*5 steps, about 4 minutes.*
+
+1. **Open Preferences.** Scrobbling adds the songs you hear to your listening history on ListenBrainz, last.fm or Libre.fm. It is off until you turn it on, separately for each service, in Preferences.
+   - Keys: Ctrl+,
+   - You should hear: Quill Radio Preferences, and its first check box.
+
+2. **Find the Scrobbling group.** Tab down to the Scrobbling group. Its first control is the check box for ListenBrainz, followed by last.fm and Libre.fm. Leave it as it is for now; the next step says what it sends.
+   - Keys: Tab
+   - You should hear: Send the songs I hear to ListenBrainz, check box, not checked.
+
+3. **Hear exactly what is sent.** Press F1 on the check box. Scrobbling sends the artist, title and album of each song you hear for a minute or more, and when you heard it. Nothing about the station or about you is sent, and nothing at all in Safe Mode.
+   - Keys: F1
+   - You should hear: The check box's help, ending with what is sent.
+
+4. **Find where the token goes.** Tab on to ListenBrainz user token. ListenBrainz gives every account a user token on its settings page; it goes here, and Quill Radio keeps it in the Windows credential store, not in a settings file. Without an account, leave the box empty.
+   - Keys: Tab
+   - You should hear: ListenBrainz user token, edit.
+   - Worth knowing: last.fm and Libre.fm sign in through their own web page instead, with the Sign In buttons further down. You never type their password into Quill Radio.
+
+5. **Turn it on, or leave without changing anything.** With a token pasted in, check Send the songs I hear to ListenBrainz and press Enter for OK. Without one, press Escape: a check box on with no token only keeps the songs waiting, for up to two weeks, until a token arrives.
+   - Keys: Space, Escape
+   - You should hear: Preferences saved, or the window you came from after Escape.
+   - Worth knowing: If you choose OK with the check box on and no token, you hear ListenBrainz is on, but there is no user token yet.
+
+A song counts once you have heard a minute of it, and the station's own name, adverts and titles with no artist are never sent. The idea comes from BlindRadio by serrebidev.
+
+Next: AcoustID or AudD: which one names the song.
+
+### AcoustID or AudD: which one names the song
+
+Learn the difference between the two services Identify This Song can ask, and where the choice lives. A lesson to read: it changes nothing.
+
+*4 steps, about 3 minutes.*
+
+1. **Know what Identify This Song does.** Identify This Song, on the Playback menu, listens to the last minute of what you are hearing and asks a recognition service what the song is. You do not need to press it for this lesson.
+   - Keys: Ctrl+K
+   - You should hear: Nothing yet. This step only names the key.
+
+2. **Know what each service is sent.** AcoustID is free and is sent only a fingerprint, a summary of the sound that cannot be played back. AudD needs an account of your own and is sent about twenty seconds of the audio itself, but copes better when a presenter talks over a song.
+   - You should hear: Nothing. This step is one to read.
+   - Worth knowing: Either way, nothing is sent until you press the key, and nothing at all in Safe Mode.
+
+3. **Find the choice in Preferences.** Open Preferences and Tab down to the Song recognition group. Song recognition service says which one Ctrl+K asks. It is AcoustID unless you have chosen otherwise.
+   - Keys: Ctrl+,
+   - You should hear: Song recognition service, AcoustID.
+
+4. **Leave without changing it.** Press Escape to close Preferences as it was. To use AudD later, choose AudD here and paste your token into AudD API token. The token is kept in the Windows credential store.
+   - Keys: Escape
+   - You should hear: The window you came from.
+   - Worth knowing: AudD also needs no fpcalc program, which AcoustID does. The user guide's Choosing AudD instead of AcoustID has the steps.
+
+Fingerprint or audio, free or your own account: that is the whole choice. The idea of offering AudD comes from BlindRadio by serrebidev.
+
+### Jump between songs, and save one
+
+Go back to the start of the song you are in, on to the next one, ask which song you are in, and save a song from the buffer to a file of its own.
+
+*6 steps, about 6 minutes.*
+
+1. **Let a music station run for a while.** Quill Radio marks where each song starts, every time the station sends a new title. Play a music station that names its songs and leave it for ten minutes or so, so the buffer holds a few of them. There is nothing to set.
+   - Keys: Ctrl+B
+   - You should hear: Browse Stations, then the station playing.
+   - Worth knowing: Announcements such as Live or the station's own name mark nothing, so the song before keeps the time.
+
+2. **Go back to the start of this song.** Previous Song, on the Playback menu, takes you back to where the song you are in began. Press it again within a few seconds and you go to the song before. You are now listening behind live, from the buffer.
+   - Keys: Alt+Shift+Left
+   - You should hear: The song's title, then how far behind live you are.
+
+3. **Ask which song you are in.** Which Song Is This tells you the song, how far into it you are, which song it is of how many in the buffer, and how far behind live. It is the question to ask when you have lost track of where you are.
+   - Keys: Alt+Shift+W
+   - You should hear: The title, how far in, song 2 of 4 in the buffer, and how far behind live.
+
+4. **Go on to the next song.** Next Song goes on to the start of the next one. After the newest song it goes back to live, so pressing it a few times is a safe way home.
+   - Keys: Alt+Shift+Right
+   - You should hear: The next song's title and how far behind live. Or Back to live.
+
+5. **Save the song you are in.** Save Songs from the Buffer, on the Playback menu, writes songs to files of their own in your recordings folder. Save This Song saves the one you are in, exactly as the station sent it, named with the station, the time and the title.
+   - Keys: Ctrl+Alt+F8
+   - You should hear: Saved, the song's title, and the folder it went to.
+   - Worth knowing: A song still playing is saved as far as it has got. An earlier file is never overwritten.
+
+6. **Save the one before, the one after, or all of them.** The same submenu has Save the Previous Song, Save the Next Song and Save All Songs in the Buffer. They are worth knowing for the moment you realise the song you loved has just ended.
+   - Keys: Ctrl+Alt+F6, Ctrl+Alt+F7, Ctrl+Alt+F5
+   - You should hear: Saved, and the title. For all of them, how many songs were saved.
+
+Song marks start again whenever you change station, and a mark can be a second or two either side of the real change. The idea comes from BlindRadio by serrebidev.
+
+Next: Give one station a time-shift length of its own.
+
+### Give one station a time-shift length of its own
+
+Keep five hours of the station you love and none of the one you only check for the news, without changing anybody else's.
+
+*4 steps, about 3 minutes.*
+
+1. **Make it a favorite first.** A station keeps its own length with its favorite, so play the station and add it if it is not one already. If it is a favorite, skip this step, because the same command takes a favorite away again.
+   - Keys: Ctrl+Shift+F
+   - You should hear: Added, and the station's name.
+
+2. **Open its time-shift length.** Time-Shift Length for This Station, on the Playback menu, works on the station playing, or on the favorite selected in the main window when nothing plays. A list of lengths opens on the one it has now.
+   - Keys: Alt+Shift+T
+   - You should hear: How much of the station should the time-shift buffer keep? Then a list.
+
+3. **Choose a length.** Arrow through the list, from in memory only, about 45 minutes, up to 5 hours on disk. The first row, Same as Preferences, follows the Time-shift buffer setting again, and says what that is now. Press Enter on the one you want.
+   - Keys: Down arrow, Enter
+   - You should hear: The station, the length you chose, and that it takes effect next time.
+   - Worth knowing: Escape leaves the length as it was.
+
+4. **Hear it take effect.** The new length starts the next time the station starts, so the buffer you have now is not thrown away. Press Play/Stop once to stop and again to start the station afresh, and Rewind can reach as far as the new length allows.
+   - Keys: Ctrl+P
+   - You should hear: Stopped, then the station playing again.
+
+Every favorite can keep its own length, and the rest follow Preferences. The idea comes from BlindRadio by serrebidev.
 
 ### Shape the sound
 

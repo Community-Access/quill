@@ -100,6 +100,55 @@ def choice_index(minutes: int) -> int:
     return 0
 
 
+#: A station's own length when it has none: follow the Preferences choice.
+FOLLOW_PREFERENCES = -1
+
+
+def normalise_station_minutes(value: object) -> int:
+    """A station's stored override as a length, or :data:`FOLLOW_PREFERENCES` (pure).
+
+    Anything that is not one of :data:`CHOICES`' lengths -- missing, corrupt,
+    or a length an older build offered -- follows Preferences rather than
+    guessing at what was meant.
+    """
+    try:
+        minutes = int(value)  # type: ignore[call-overload]
+    except (TypeError, ValueError):
+        return FOLLOW_PREFERENCES
+    allowed = [choice for choice, _label in CHOICES]
+    return minutes if minutes in allowed else FOLLOW_PREFERENCES
+
+
+def resolve_minutes(station_minutes: object, global_minutes: object) -> int:
+    """The buffer length a station plays with: its own, else the global one (pure).
+
+    Per-station lengths are an idea from BlindRadio by serrebidev (MIT), whose
+    time-shift has a global default and a per-station override.
+    """
+    own = normalise_station_minutes(station_minutes)
+    return own if own != FOLLOW_PREFERENCES else normalise_minutes(global_minutes)
+
+
+def label_for(minutes: int) -> str:
+    """The Preferences wording for *minutes*, without "(default)" (pure)."""
+    for choice, label in CHOICES:
+        if choice == normalise_minutes(minutes):
+            return label.replace(" (default)", "")
+    return ""
+
+
+def station_choices(global_minutes: object) -> list[tuple[int, str]]:
+    """``(minutes, label)`` rows for one station's choice, Preferences first (pure).
+
+    The first row says what "follow Preferences" currently means, so nobody
+    has to remember what they chose there.
+    """
+    follow = f"Same as Preferences ({label_for(normalise_minutes(global_minutes))})"
+    return [(FOLLOW_PREFERENCES, follow)] + [
+        (choice, label.replace(" (default)", "")) for choice, label in CHOICES
+    ]
+
+
 def plan(minutes: int, *, free_bytes: int | None) -> TimeshiftPlan:
     """Turn the chosen length into a byte cap, never past the disk's room (pure).
 

@@ -1,0 +1,60 @@
+{
+ "total": 4,
+ "limit": 4,
+ "offset": 0,
+ "data": [
+  {
+   "type": "segment_item",
+   "segment_type": "music",
+   "titles": {
+    "primary": "Barbara Tucker",
+    "secondary": "Beautiful People <CJ Edit>",
+    "tertiary": null
+   },
+   "offset": {
+    "start": 2238,
+    "end": 2467,
+    "label": "Now Playing",
+    "now_playing": true
+   }
+  },
+  {
+   "type": "segment_item",
+   "segment_type": "speech",
+   "titles": {
+    "primary": "Travel news",
+    "secondary": null
+   },
+   "offset": {
+    "label": "5 Minutes Ago",
+    "now_playing": false
+   }
+  },
+  {
+   "type": "segment_item",
+   "segment_type": "music",
+   "titles": {
+    "primary": "The Real Thing",
+    "secondary": "Can You Feel The Force?"
+   },
+   "offset": {
+    "start": 2065,
+    "end": 2239,
+    "label": "3 Minutes Ago",
+    "now_playing": false
+   }
+  },
+  {
+   "type": "segment_item",
+   "segment_type": "music",
+   "titles": {
+    "primary": "Gloria Gaynor",
+    "secondary": "I Will Survive"
+   },
+   "offset": {
+    "label": "2 Hours Ago",
+    "now_playing": false
+   }
+  }
+ ]
+}

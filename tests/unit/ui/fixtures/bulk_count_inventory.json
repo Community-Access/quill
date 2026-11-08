@@ -59,5 +59,6 @@
   "quill/ui/radio/radio_ai_host.py::RadioAiHost.rebuild_all_menus": "single-row",
   "quill/ui/radio/recordings_manager_dialog.py::RecordingsManagerDialog._on_stop_all_recordings": "counted",
   "quill/ui/radio/search_sources_dialog.py::SearchSourcesDialog._set_all": "counts-elsewhere",
+  "quill/ui/radio/song_marks_ui.py::save_all": "counts-elsewhere",
   "quill/ui/radio/youtube_playlist_dialog.py::YouTubePlaylistDialog._on_add_all": "counts-elsewhere"
 }

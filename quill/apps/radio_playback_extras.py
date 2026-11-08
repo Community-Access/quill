@@ -72,7 +72,8 @@ def build_playback_extras(
 
 
 def append_song_items(app: Any, menu: Any, wx: Any) -> tuple[Any, ...]:
-    """Append Song History and Lyrics to the Playback menu. Returns the ids to pin.
+    """Append Song History, Lyrics and What the Station Played to the Playback
+    menu. Returns the ids to pin.
 
     Together because they are the two questions about the song itself -- what
     was that, and what are the words -- and because ``radio_menu_bar`` is at its
@@ -96,4 +97,23 @@ def append_song_items(app: Any, menu: Any, wx: Any) -> tuple[Any, ...]:
         lyrics_commands.lyrics_for_playing(app)
 
     app.frame.Bind(wx.EVT_MENU, _lyrics, id=lyrics_id)
-    return (song_history_id, lyrics_id)
+    # What the station says it played, from its own published playlist
+    # (quill.ui.radio.station_playlist_commands): beside Song History, which is
+    # what Quill heard, and never mixed with it.
+    playlist_id = wx.NewIdRef()
+    menu.Append(
+        playlist_id, app._menu_label("What the Station Playe&d...", "radio.station_playlist")
+    )
+
+    def _playlist(_event: Any) -> None:
+        from quill.ui.radio import station_playlist_commands
+
+        station_playlist_commands.open_station_playlist(app)
+
+    app.frame.Bind(wx.EVT_MENU, _playlist, id=playlist_id)
+    # Dial tuning's switch and its way back to the playing row
+    # (quill.ui.radio.dial_tuning_commands; idea from BlindRadio by serrebidev).
+    from quill.ui.radio import dial_tuning_commands
+
+    dial_ids = dial_tuning_commands.append_menu_items(app, menu, wx)
+    return (song_history_id, lyrics_id, playlist_id, *dial_ids)
