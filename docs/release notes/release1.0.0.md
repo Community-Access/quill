@@ -2,6 +2,17 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Sign in to GitHub without a token
+
+Signing in to the GitHub windows no longer means making a personal access
+token. In **Manage GitHub Accounts...**, choose **Sign In with GitHub...**:
+QUILL puts a short code on the clipboard and opens GitHub's page, you paste
+the code there and approve QUILL, and the account is added. If the code
+expires or something goes wrong, QUILL says so in one sentence. A token you
+made yourself still works, under **Add Token (Advanced)...**, for when you
+want a fine-grained token limited to a few repositories. QUILL Lite has the
+same window.
+
 ## GitHub: Copilot, commit comments, gists and queue summaries
 
 You can now ask Copilot to review a pull request (Request Copilot Review on the

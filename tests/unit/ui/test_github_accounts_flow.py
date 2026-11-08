@@ -125,3 +125,73 @@ def test_the_flow_imports_no_window_of_its_own_at_module_scope() -> None:
     source = inspect.getsource(github_accounts_flow)
     header = source.split("class GitHubAccountsHost", 1)[0]
     assert "import wx" not in header
+
+
+def test_sign_in_with_github_is_checked_and_saved_like_a_pasted_token(host, monkeypatch) -> None:
+    saved: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        f"{_FLOW}.save_github_account",
+        lambda login, token: saved.append((login, token)) or SimpleNamespace(login=login),
+    )
+    monkeypatch.setattr(f"{_FLOW}.delete_legacy_github_token", lambda: False)
+    asked: list[dict] = []
+
+    def sign_in_with_github(parent, app_name, announce, **kwargs):
+        asked.append({"parent": parent, "app": app_name, **kwargs})
+        return "gho_new"
+
+    monkeypatch.setattr("quill.ui.github_device_sign_in.sign_in_with_github", sign_in_with_github)
+
+    class _Provider:
+        last_auth_error = ""
+
+        def __init__(self, *, token=None) -> None:
+            assert token == "gho_new"
+
+        def get_identity(self):
+            return SimpleNamespace(login="octocat")
+
+        def close(self) -> None:
+            pass
+
+    monkeypatch.setattr(f"{_FLOW}.GitHubRemoteProvider", _Provider)
+    submitted: list[object] = []
+    host.host.submit = lambda *a, **k: submitted.append(a)
+    host.host.app_name = "QUILL Lite"
+    _Dialog.answer = "sign_in"
+
+    GitHubAccountsFlow(host.host).show_manage_dialog(None, False, [], None, "")
+
+    assert asked[0]["parent"] == "frame" and asked[0]["app"] == "QUILL Lite"
+    assert asked[0]["submit"] is host.host.submit  # the host's task submitter, not a thread
+    assert host.quiet == ["Checking the GitHub account..."]
+    assert saved == [("octocat", "gho_new")]
+    assert host.said == ["Added and switched to GitHub account octocat"]
+
+
+def test_a_sign_in_that_returns_no_token_saves_nothing(host, monkeypatch) -> None:
+    monkeypatch.setattr(
+        "quill.ui.github_device_sign_in.sign_in_with_github", lambda *_a, **_k: None
+    )
+    monkeypatch.setattr(f"{_FLOW}.save_github_account", lambda *_a: pytest.fail("nothing to save"))
+
+    GitHubAccountsFlow(host.host).sign_in()
+
+    assert host.quiet == [] and host.said == []
+
+
+def test_quill_waits_for_github_on_its_task_manager() -> None:
+    from quill.ui.main_frame_github_accounts import GitHubAccountsMixin
+
+    manager = SimpleNamespace(submit=lambda *_a, **_k: None)
+    frame = GitHubAccountsMixin()
+    frame.frame = "frame"
+    frame._set_status = frame._set_status_quiet = lambda _m: None
+    frame._show_message_box = lambda *_a: None
+    frame._wx = SimpleNamespace(CallAfter=lambda fn, *a, **k: fn(*a, **k))
+    frame._task_manager = manager
+
+    host = frame._github_accounts_flow().host
+
+    assert host.app_name == "QUILL"
+    assert host.submit == manager.submit

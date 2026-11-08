@@ -1,4 +1,4 @@
-"""Manage GitHub Accounts, once, for both editors: check, add, switch, remove.
+"""Manage GitHub Accounts, once, for both editors: check, sign in, add, switch, remove.
 
 QUILL reached this flow from File > Open Remote and QUILL Lite could not reach
 it at all: Lite's GitHub Workbench used an account QUILL had saved and had no
@@ -13,9 +13,17 @@ and nothing else of wx. Everything that belongs to the window -- the parent,
 how a sentence reaches the user, how a message box is shown, how work goes to a
 worker thread and back -- is handed in as a :class:`GitHubAccountsHost`.
 
+Two ways in, since 2026-11-07. **Sign In with GitHub** is the default: GitHub's
+device code, typed on github.com/login/device
+(:mod:`quill.ui.github_device_sign_in`). **Add Token** is the advanced road, for
+a fine-grained token or one limited to a few repositories. Both end in the same
+place -- one identity check, then ``save_github_account`` -- so an account
+signed in either way is the same kind of account.
+
 Threading: the identity checks run through ``run_in_background`` (off the UI
-thread) and hand their result back with ``call_after``; every dialog opens on
-the UI thread.
+thread) and hand their result back with ``call_after``; the device sign-in
+waits on ``submit`` (QUILL's task manager; a worker thread in QUILL Lite);
+every dialog opens on the UI thread.
 """
 
 from __future__ import annotations
@@ -55,6 +63,12 @@ class GitHubAccountsHost:
     run_in_background: Callable[[Callable[[], None]], None]
     #: Run ``fn(*args, **kwargs)`` on the UI thread (``wx.CallAfter``).
     call_after: Callable[..., None]
+    #: The name GitHub's approval page shows, and the key of the app's OAuth
+    #: registration (``copilot_auth.CLIENT_IDS``).
+    app_name: str = "QUILL"
+    #: The task manager's ``submit(name, func, on_success=, on_failure=)``; None
+    #: means a one-shot worker thread (``update_download.thread_submit``).
+    submit: Callable[..., Any] | None = None
 
 
 class GitHubAccountsFlow:
@@ -182,8 +196,29 @@ class GitHubAccountsFlow:
                 set_status("GitHub account disconnected from this QUILL product")
             else:
                 set_status("No saved GitHub token was removed")
+        elif action == "sign_in":
+            self.sign_in()
         elif action == "add":
             self.add_token()
+
+    # -- Sign In with GitHub ---------------------------------------------- #
+
+    def sign_in(self) -> None:
+        """UI thread: the device-code step, then the same check a pasted token gets."""
+        from quill.ui.github_device_sign_in import sign_in_with_github
+        from quill.ui.update_download import thread_submit
+
+        token = sign_in_with_github(
+            self.host.parent,
+            self.host.app_name,
+            self.host.set_status,
+            submit=self.host.submit or thread_submit,
+            call_after=self.host.call_after,
+        )
+        if not token:
+            return
+        self.host.set_status_quiet("Checking the GitHub account...")
+        self.host.run_in_background(lambda: self.verify_new_token(token))
 
     # -- adding a token --------------------------------------------------- #
 

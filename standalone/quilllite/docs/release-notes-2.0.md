@@ -1,5 +1,14 @@
 # QUILL Lite 2.0
 
+## Sign in to GitHub without a token
+
+**File > Manage GitHub Accounts...** (Alt+F, then H) now starts with **Sign In
+with GitHub...**: QUILL Lite puts a short code on the clipboard and opens
+GitHub's page, you paste the code there and approve QUILL Lite, and the account
+is added. No personal access token to make or paste. **Add Token
+(Advanced)...** is still there for a fine-grained token you made yourself. It's
+the same window as QUILL's.
+
 ## GitHub: Copilot, commit comments, gists and queue summaries
 
 QUILL Lite's GitHub windows are QUILL's, so it gains the same four things:
@@ -88,7 +97,7 @@ GitHub Items viewer. A PR expands into changed files, review threads, general
 conversations, and checks. Arrow to an item and Tab into its detail; Ctrl+R
 replies to a selected thread. Shift+F10 opens a context menu that fits the
 selected item. Public repositories can be read anonymously; posting needs a
-token. See the [full GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html).
+signed-in account. See the [full GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html).
 
 ## Nemotron keeps its last word
 

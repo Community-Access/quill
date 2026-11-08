@@ -98,6 +98,36 @@ def test_add_account_verifies_with_github_then_saves(
     assert win.announcements[-1] == "Added and switched to GitHub account octocat"
 
 
+def test_sign_in_with_github_is_quill_lites_default_road_too(
+    lite_window, lite_dialogs, no_account, github_says
+) -> None:
+    saved = github_says("octocat")
+    lite_dialogs.answer("GitHubManageAccountsDialog", "sign_in")
+    lite_dialogs.answer("sign_in_with_github", "gho_test")
+    win = lite_window("")
+
+    win.cmd_github_manage_accounts()
+
+    assert lite_dialogs.names() == ["GitHubManageAccountsDialog", "sign_in_with_github"]
+    args = lite_dialogs.args_for("sign_in_with_github")
+    assert args[:2] == (win, "QUILL Lite")  # GitHub's page names QUILL Lite, not QUILL
+    assert saved == [("octocat", "gho_test")]
+    assert win.announcements[-1] == "Added and switched to GitHub account octocat"
+
+
+def test_a_cancelled_sign_in_with_github_saves_nothing(
+    lite_window, lite_dialogs, no_account, github_says
+) -> None:
+    saved = github_says("octocat")
+    lite_dialogs.answer("GitHubManageAccountsDialog", "sign_in")
+    win = lite_window("")
+
+    win.cmd_github_manage_accounts()  # the step answers None: cancelled
+
+    assert saved == []
+    assert win.announcements == []
+
+
 def test_a_token_github_does_not_confirm_is_never_saved(
     lite_window, lite_dialogs, no_account, github_says, monkeypatch
 ) -> None:

@@ -108,11 +108,76 @@ change something tell you they need a signed-in account. GitHub also allows a
 guest far fewer requests an hour, so a busy session runs out sooner.
 
 Signing in adds private repositories, your notifications and your own work,
-and every command that changes GitHub. You sign in with a personal access
-token: a long password-like string that GitHub makes for you and that you can
-cancel at any time.
+and every command that changes GitHub. The easy way is **Sign In with
+GitHub**: QUILL gets a short code from GitHub, you type it on GitHub's own
+page, and you approve QUILL there. There is nothing to dig out of GitHub's
+settings, and QUILL never sees your GitHub password.
 
-### Making a token
+### Signing in with GitHub
+
+1. In QUILL, choose **File > Open from Remote > Manage GitHub Accounts...**.
+   In QUILL Lite it's **File > Manage GitHub Accounts...**: press `Alt+F`,
+   then `H`.
+2. Choose **Sign In with GitHub...**, the first button. Until you have an
+   account it's also the default button, so Enter does it.
+3. A small window titled **Sign In with GitHub** opens. A moment later QUILL
+   has a code from GitHub, something like WDJB-MJHT. It puts the code on the
+   clipboard, opens github.com/login/device in your browser, and moves you to
+   the **Code** field, which spells the code out a character at a time. You
+   hear "The code is on the clipboard. GitHub's page is opening in your
+   browser."
+4. In the browser, sign in to GitHub if it asks, paste the code and choose
+   **Continue**.
+5. GitHub shows what QUILL is asking for, under the name QUILL, or QUILL Lite
+   if you started there. Choose **Authorize**.
+6. Come back to QUILL. The window closes by itself, QUILL checks with GitHub
+   whose account it is, and you hear "Added and switched to GitHub account"
+   and your username.
+
+If you closed the browser tab, or it opened behind something, press **Open
+the Page Again**; it's the default button, so Enter works. If the browser
+doesn't open at all, the **What to do** field gives you the address to type.
+**Cancel** stops the sign-in straight away and saves nothing.
+
+A code lasts about fifteen minutes. If it runs out, or you choose Cancel on
+GitHub's page instead of Authorize, the **What to do** field says so in one
+sentence and nothing is saved. Close the window and choose **Sign In with
+GitHub...** again for a fresh code.
+
+To add a second account this way, sign in to that account in your browser
+first. GitHub approves whichever account the browser is signed in to.
+
+What QUILL asks GitHub to allow, and why:
+
+- `repo`: private repositories, and everything that writes: issues, comments,
+  reviews, merges, releases, discussions, workflow runs and saving files. It
+  covers your notifications inbox too.
+- `workflow`: saving changes to workflow files, the ones under
+  .github/workflows. GitHub refuses those without it.
+- `gist`: your gists.
+- `read:org`: the organizations you belong to, for browsing their
+  repositories and creating or forking into them.
+- `project`: Projects boards.
+- `security_events`: code-scanning and Dependabot alerts.
+- `user:follow`: following and unfollowing people.
+
+QUILL does not ask to delete repositories. If you want **Delete Repository**
+to work, add a token you made yourself with the `delete_repo` scope, as the
+next section describes.
+
+If your organization uses single sign-on, GitHub may ask you to sign in
+through the organization while you approve QUILL. If your organization
+restricts which apps can see its repositories, see Chapter 10.
+
+### Adding a token instead
+
+**Add Token (Advanced)...** in Manage GitHub Accounts is for when you want to
+choose exactly what QUILL can reach: a fine-grained token limited to a few
+repositories, a token your organization gave you, or one with a scope
+Sign In with GitHub doesn't ask for, such as `delete_repo`. Most people never
+need it.
+
+To make a token:
 
 1. Open github.com in your browser and sign in.
 2. Go to your profile settings, then **Developer settings**, then
@@ -120,68 +185,58 @@ cancel at any time.
 3. Choose **Generate new token (classic)**.
 4. Give it a name you will recognise, such as "QUILL on my laptop", and an
    expiry date.
-5. Check the scopes you need. The list below says which do what.
+5. Check the scopes you need. The list above says which do what.
 6. Generate the token and copy it. GitHub shows it only once.
 
 A classic token is the simpler choice for the workbench. Some parts of GitHub,
 the notifications inbox among them, do not accept the newer fine-grained
 tokens.
 
-The scopes, and what each one lets the workbench do:
-
-- `repo`: private repositories, and everything that writes: issues, comments,
-  reviews, merges, releases and workflow runs. Most people want this one.
-- `notifications`: your notifications inbox, if you did not choose `repo`.
-- `project`: Projects boards. `read:project` is enough to read them.
-- `read:org`: the organizations you belong to, for browsing their
-  repositories.
-- `workflow`: only if you will save changes to workflow files themselves.
-- `delete_repo`: only if you will delete repositories from QUILL.
-
 If your organization uses single sign-on, there is one more step. On GitHub's
 token page, choose **Configure SSO** beside the token and authorize it for the
 organization. Until you do, GitHub refuses the organization's repositories
 even though the token is fine everywhere else.
 
-### Adding the token
-
-In QUILL, choose **File > Open from Remote > Manage GitHub Accounts...**, then
-**Add Account...**. In QUILL Lite it's **File > Manage GitHub Accounts...**:
-press `Alt+F`, then `H`. The **Sign in to GitHub** window has one field,
-**Personal access token**. Paste the token and press **Connect**. QUILL asks
-GitHub who the token belongs to before it keeps it, so a mistyped or expired
-token is turned away with "GitHub did not confirm an account for that token.
-Nothing was saved." When GitHub confirms it, you hear "Added and switched to
-GitHub account" and your GitHub username.
+Then choose **Add Token (Advanced)...**. The **Add GitHub Token** window has
+one field, **Personal access token**. Paste the token and press **Connect**.
+QUILL asks GitHub who the token belongs to before it keeps it, so a mistyped
+or expired token is turned away with "GitHub did not confirm an account for
+that token. Nothing was saved." When GitHub confirms it, you hear "Added and
+switched to GitHub account" and your GitHub username.
 
 The same window has **Continue Anonymously** for working as a guest, and
 **Cancel**. None of its buttons has an access key, so Tab to the one you want.
 
 Some QUILL commands on the Tools menu need an account before they can do
 anything. If you choose one while signed out, QUILL asks "This action needs a
-signed-in GitHub account. Sign in now?" and opens the same window.
+signed-in GitHub account. Sign in now?" and opens Sign In with GitHub.
 
 ### Where the token is kept
 
-The token is kept in your operating system's own secure store: Windows
-Credential Manager on Windows, or the Keychain on a Mac. A portable copy keeps
-it in its own encrypted file instead. It is never written
-into a settings file or a log. QUILL sends it to GitHub's own servers and
-nowhere else. When GitHub hands a download to another address, such as a log
-or an artifact, QUILL fetches that without the token.
+However you sign in, GitHub gives QUILL a token, and the token is kept in
+your operating system's own secure store: Windows Credential Manager on
+Windows, or the Keychain on a Mac. A portable copy keeps it in its own
+encrypted file instead. It is never written into a settings file or a log.
+QUILL sends it to GitHub's own servers and nowhere else. When GitHub hands a
+download to another address, such as a log or an artifact, QUILL fetches that
+without the token.
+
+The workbench's sign-in is separate from My GitHub Copilot's, even though
+both go through GitHub's page under the same name. Signing out of one leaves
+the other alone.
 
 ### In QUILL Lite
 
-QUILL Lite signs in with the same window, from **File > Manage GitHub
-Accounts...** (`Alt+F`, then `H`), and the two editors share your accounts:
-one you add in either is there in both. Signed in, QUILL Lite reviews, replies,
-merges and triages your notifications just as QUILL does.
+QUILL Lite signs in the same way, from **File > Manage GitHub Accounts...**
+(`Alt+F`, then `H`), and the two editors share your accounts: one you add in
+either is there in both. Signed in, QUILL Lite reviews, replies, merges and
+triages your notifications just as QUILL does.
 
 If you open the workbench before you've signed in, QUILL Lite says "You are
 not signed in to GitHub" and offers three buttons. **Manage GitHub
-Accounts...** is the default: add your account there, and once GitHub confirms
-it the workbench opens signed in. **Continue as Guest** opens it anyway, to
-read public repositories. **Cancel** opens nothing.
+Accounts...** is the default: sign in there, and once GitHub confirms your
+account the workbench opens signed in. **Continue as Guest** opens it anyway,
+to read public repositories. **Cancel** opens nothing.
 
 ## More than one account
 
@@ -193,9 +248,12 @@ have added. From there:
 - **Use Selected Account** makes the chosen account the active one. You hear
   "Switched to GitHub account" and its name.
 - **Remove Selected Account** deletes that account's token from this computer.
-  It does not ask first, and it does not cancel the token on GitHub; do that
-  on GitHub's token page if you want it gone for good.
-- **Add Account...** adds another.
+  It does not ask first, and it does not cancel the token on GitHub. To do
+  that, open your GitHub settings: for an account added with Sign In with
+  GitHub, revoke QUILL under **Applications**, then **Authorized OAuth Apps**;
+  for one added with a token, delete the token on the token page.
+- **Sign In with GitHub...** adds another account, and **Add Token
+  (Advanced)...** adds one from a token.
 - **Done** closes the window. Escape does too.
 
 Only github.com accounts are supported. GitHub Enterprise servers are not, yet.

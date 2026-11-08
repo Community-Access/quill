@@ -2,6 +2,18 @@
 
 ## 2.0.0
 
+### Sign In with GitHub (2026-11-08)
+
+- Manage GitHub Accounts (Alt+F, then H) has Sign In with GitHub... as its
+  first button, and the default while no account is saved: a short code goes
+  on the clipboard, github.com/login/device opens, you paste the code and
+  approve QUILL Lite. No personal access token to make.
+- A code that expires, a request declined on GitHub's page, Cancel and a lost
+  connection each end in one plain sentence, and nothing is saved.
+- Add Account is now Add Token (Advanced)..., for fine-grained or limited
+  tokens. It's QUILL's window and QUILL's code, so both editors changed
+  together.
+
 ### GitHub: Copilot, commit comments, gists and queue summaries (2026-11-07)
 
 - The review window's pull request context menu has Request Copilot Review, and

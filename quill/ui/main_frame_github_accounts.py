@@ -8,7 +8,10 @@ the message box and the worker thread, handed to the flow as a host.
 It is a base of ``GitHubRemoteMixin`` rather than of ``MainFrame`` itself, so the
 frame's own base list (and ``main_frame.py``'s size budget) did not change. The
 ``_github_*`` names are kept because other mixins call them
-(``main_frame_github_admin`` offers Add Account through ``_github_add_token``).
+(``main_frame_github_admin`` offers to sign in through ``_github_sign_in``).
+
+Sign In with GitHub waits for GitHub on the frame's task manager, so the
+fifteen-minute wait for a device code is a tracked task, never the UI thread.
 """
 
 from __future__ import annotations
@@ -38,6 +41,8 @@ class GitHubAccountsMixin:
                 message_box=self._show_message_box,
                 run_in_background=in_background,
                 call_after=self._wx.CallAfter,
+                app_name="QUILL",
+                submit=getattr(getattr(self, "_task_manager", None), "submit", None),
             )
         )
 
@@ -47,3 +52,6 @@ class GitHubAccountsMixin:
 
     def _github_add_token(self) -> None:
         self._github_accounts_flow().add_token()
+
+    def _github_sign_in(self) -> None:
+        self._github_accounts_flow().sign_in()

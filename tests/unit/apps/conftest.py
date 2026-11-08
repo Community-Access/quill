@@ -1392,6 +1392,9 @@ class DialogRecorder:
         # constructs and then asks with show().
         "GitHubManageAccountsDialog": ("quill.ui.github_dialogs", "GitHubManageAccountsDialog"),
         "GitHubSignInDialog": ("quill.ui.github_dialogs", "GitHubSignInDialog"),
+        # Sign In with GitHub, 2026-11-07: the device-code step, a function the
+        # flow imports inside sign_in(); it answers the new token, or None.
+        "sign_in_with_github": ("quill.ui.github_device_sign_in", "sign_in_with_github"),
         # Paste Copied Files, saved replace jobs and abbreviation fields, 2026-11-07: shared
         # windows (quill/ui), called by name from their own module, so the
         # defining module is the binding.
