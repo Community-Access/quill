@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>BlindRadio ideas for Quill Radio: status and remaining tasks</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">BlindRadio ideas for Quill Radio: status and remaining
+tasks</h1>
+</header>
+<h1
+id="blindradio-ideas-for-quill-radio-status-and-remaining-tasks">BlindRadio
+ideas for Quill Radio: status and remaining tasks</h1>
+<p>Started 2026-11-07. This is the running record for the program: what
+shipped, what is left, and what only Jeff can do. Remove an item when it
+is done; when everything is done, fold the useful parts into the Radio
+PRD and user guide and retire this folder.</p>
+<p>BlindRadio is by serrebidev, MIT licensed: <a
+href="https://github.com/serrebidev/blindradio">https://github.com/serrebidev/blindradio</a>.
+The review that chose these ideas is
+<code>docs/design/blindradio-review-2026-11-07.md</code>. Every module
+built from a BlindRadio idea credits it in its docstring.</p>
+<h2 id="files-in-this-folder">Files in this folder</h2>
+<ul>
+<li><code>networks-and-directories.md</code>: curated networks, IPRD,
+TuneIn, and the directories refused on their terms.</li>
+<li><code>song-history-sources.md</code>: What the Station Played.</li>
+<li><code>scrobbling-and-recognition.md</code>: scrobbling and
+AudD.</li>
+<li><code>time-shift.md</code>: song marks, adaptive cushion,
+per-station buffer length (arrives with its branch).</li>
+<li><code>dial-tuning.md</code>: the agreed design for dial tuning (not
+built yet).</li>
+</ul>
+<p>Each notes file holds the exact user-guide, PRD and CHANGELOG text,
+the keys, settings and egress rows added, and what was not verified.</p>
+<h2 id="progress-log">Progress log</h2>
+<ul>
+<li>2026-11-07: review written; four branches built in parallel
+worktrees.</li>
+<li>2026-11-07: merged into <code>feat/radio-blindradio-ideas</code>:
+<ul>
+<li>curated networks (20 networks, 516 channels, every address probed,
+68 moved to HTTPS) and the hand-run probe
+<code>scripts/refresh_radio_networks.py</code>;</li>
+<li>IPRD directory (By Country, By Genre, in search);</li>
+<li>TuneIn lists a station once when it is both local and in a
+category;</li>
+<li>What the Station Played (Alt+Shift+H) from seven published-playlist
+sources;</li>
+<li>scrobbling to ListenBrainz, last.fm and Libre.fm (off by default)
+and AudD as a second Identify This Song service.</li>
+</ul></li>
+<li>2026-11-07: refused after reading their terms: Internet-Radio.com,
+radio.net tag browse, Online Radio Box, Airable, vTuner.</li>
+<li>2026-11-07: dial tuning design agreed with Jeff: ships off, every
+part a setting.</li>
+</ul>
+<h2 id="remaining-tasks">Remaining tasks</h2>
+<ol type="1">
+<li>Merge the time-shift branch (<code>feat/br-shift</code>): song marks
+in the buffer, adaptive cushion, per-station buffer length.</li>
+<li>Fold each notes file's text into the Radio user guide, PRD,
+CHANGELOG and What's New; add the BlindRadio MIT notice to the
+third-party notices; regenerate HTML and EPUB.</li>
+<li>Run <code>platform_report</code>, regenerate snapshots, re-run the
+menu-accelerator gate and the radio test suite on the merged
+branch.</li>
+<li>PR to main; merge on green CI.</li>
+<li>Remove the program's worktrees once their branches are on main.</li>
+<li>Build dial tuning to <code>dial-tuning.md</code> (after time-shift,
+since both change the mpv engine), as its own PR.</li>
+<li>Correct stale GitHub OAuth lines in
+<code>docs/design/codex.md</code> (542, 1018, 1590): the per-app OAuth
+Apps were registered on 2026-11-02 and their client ids are built into
+<code>quill/core/ai/copilot_auth.py</code>.</li>
+</ol>
+<h2 id="small-follow-ups-found-along-the-way">Small follow-ups found
+along the way</h2>
+<ul>
+<li>What the Station Played has no row on QUILL's embedded radio menu
+(the command palette reaches it); its window is modal; it has no
+Refresh.</li>
+<li>Scrobbling has no Preferences rows in the radio inside QUILL itself;
+retries run only while a station plays.</li>
+<li>AudD clip not tried on an HLS station; AudD's error replies written
+from its docs.</li>
+<li>Re-read 1.FM's terms before switching its network to
+<code>api.1cloud.fm</code>.</li>
+<li>Global, ARN and NZME run their own apps; if one withdraws from
+third-party players, delete its network entry.</li>
+</ul>
+<h2 id="needs-jeff">Needs Jeff</h2>
+<ul>
+<li>JAWS and NVDA hand checks: the new Browse branches, What the Station
+Played, the Preferences rows for scrobbling and recognition, and (when
+built) dial tuning.</li>
+<li>A real scrobble: sign in to ListenBrainz and last.fm, listen for a
+minute, confirm it arrives.</li>
+<li>Register Quill Radio with last.fm (last.fm/api/account/create) and
+put the key and secret in the build environment for
+<code>tools/generate_lastfm_api_key.py</code>. Until then listeners
+paste their own pair.</li>
+<li>One AudD request with a bad token, to confirm the error
+wording.</li>
+</ul>
+</body>
+</html>
