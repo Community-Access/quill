@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### One list of every command (2026-11-08)
+
+- The QUILL family now has one command catalogue: each command's spoken name,
+  the other words people use for it, a few example sentences, what it does,
+  and whether it is safe to do without asking. The Command Palette, the
+  offline voice commands, Key Describer and the AI agents' list of commands
+  they may run all read it, instead of four lists of their own.
+- The Command Palette finds a few more commands by the words people use:
+  "search" finds Find, "commands" finds the palette itself, and the voice
+  commands' phrases ("save my work", "count words") work there too. Every
+  word it found before still finds the same command.
+- What you can say in each app is a new page, `docs/command-catalogue.md`,
+  made from the catalogue so it cannot go out of date: QUILL, QUILL Lite and
+  Quill Radio, with each command's key and example sentences.
+- Nothing new can be run by a sentence yet. A command with no reviewed row is
+  never offered to one, and a new command fails the build until somebody
+  writes its row.
+
 ### Sign In with GitHub (2026-11-08)
 
 - **Sign In with GitHub...** is the new first button in Manage GitHub Accounts,
