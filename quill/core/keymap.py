@@ -153,6 +153,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.reveal_codes_toggle": "Alt+F3",  # WordPerfect Reveal Codes
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
+    # Say or Type a Command (command-key.md 9.1): F11, commands only, in every
+    # family app. Free in both editors once Speak a Command gave it up (rule 5),
+    # not on the leader (rule 6); Word's F11 is Next Field, which no family app
+    # has (rule 1). It never starts, stops or pauses dictation.
+    "app.command_key": "F11",
     "app.preferences": "Ctrl+,",
     "app.preferences_hub": "Ctrl+Shift+Grave, O",  # the hub; Ctrl+, opens Settings
     # #608: app.exit is bound to Ctrl+Q so it maps to Cmd+Q on macOS
@@ -607,7 +612,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.windows_dictation_switch_language": "Ctrl+Shift+F11",
     "tools.windows_dictation_live_transcript": "Ctrl+Alt+Shift+PageDown",
     "tools.windows_dictation_context": "Ctrl+Alt+Shift+PageUp",
-    "tools.windows_dictation_command": "F11",  # free in both editors (rule 2)
+    # Next Phrase Is a Dictation Command: no key (command-key.md decision 5). F11
+    # is the Command Key now, commands only, and never touches dictation; the
+    # command word ("QUILL scratch that") does this job, and a key beside F11
+    # would bring back the confusion between commanding and dictating.
+    "tools.windows_dictation_command": "",
     # D-2: free in both (rule 2). Every F11 chord and Ctrl+Alt+Shift+F11 (a
     # QuillVille launcher) are taken, and Ctrl+Alt+F4 is one missed Control
     # from Alt+F4; F4 alone is unbound in both, so a missed Shift does nothing.

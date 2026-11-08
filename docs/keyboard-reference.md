@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 570.
+Editor commands with default bindings: 571.
 
 ## The QUILL editor
 
@@ -320,6 +320,7 @@ Editor commands with default bindings: 570.
 | (unbound by default) | Voice Conversation Mode | `tools.voice_conversation` |
 | (unbound by default) | Speak Voice Status | `tools.voice_status` |
 | (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
+| (unbound by default) | Windows dictation command | `tools.windows_dictation_command` |
 | Alt+F10 | Look Up Word... | `tools.look_up` |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
@@ -386,7 +387,6 @@ Editor commands with default bindings: 570.
 | Ctrl+Shift+R | Replace Across Files... | `tools.replace_in_files` |
 | Ctrl+Shift+] | List Folds... | `tools.list_folds` |
 | Escape | Stop Dictation (keep speech) | `tools.dictation_emergency_stop` |
-| F11 | Windows dictation command | `tools.windows_dictation_command` |
 | F7 | Spell Check... | `tools.spell_check_dialog` |
 | QUILL Key + D | Dictation | `tools.dictation_toggle` |
 | QUILL Key + I | Describe Image... | `tools.describe_image` |
@@ -435,6 +435,7 @@ Editor commands with default bindings: 570.
 | Ctrl+, | Preferences... | `app.preferences` |
 | Ctrl+Q | Exit | `app.exit` |
 | Ctrl+Shift+P | Command Palette... | `app.command_palette` |
+| F11 | Command key | `app.command_key` |
 | F9 | Repeat Last Result | `app.repeat_last_result` |
 | QUILL Key + O | More Preferences... | `app.preferences_hub` |
 | Shift+F9 | Activity... | `app.activity` |
@@ -451,7 +452,7 @@ Editor commands with default bindings: 570.
 | Alt+Shift+P | Switch Feature Profile... | `help.switch_feature_profile` |
 | Ctrl+Alt+F1 | Tutorials... | `help.tutorials` |
 | Ctrl+Alt+F2 | Get Help from Support... | `help.report_bug` |
-| Ctrl+Alt+Shift+F1 | What Can I Do Here? | `help.what_can_i_do_here` |
+| Ctrl+Alt+Shift+F1 | What Can I Say Here? | `help.what_can_i_do_here` |
 | Ctrl+Shift+F1 | Open User Guide | `help.open_user_guide` |
 | F1 | Help on This Control | `help.help_on_control` |
 | QUILL Key + Shift+H | Context Help: Current Mode Keys | `help.context_help` |
@@ -710,6 +711,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+7 | Play favorite 7 | `radio.play_favorite_7` |
 | Alt+8 | Play favorite 8 | `radio.play_favorite_8` |
 | Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
+| Alt+F11 | Command key | `app.command_key` |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `radio.chatgpt_account` |
 | Alt+Shift+B | Background station | `radio.background_station` |

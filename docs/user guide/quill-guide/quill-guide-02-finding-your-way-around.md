@@ -23,7 +23,7 @@ The help keys are:
 
 - `F1` help on the focused control.
 - `Ctrl+Shift+F1` open the full User Guide.
-- `Ctrl+Alt+Shift+F1` open **What Can I Do Here?**, ideas for the document you
+- `Ctrl+Alt+Shift+F1` open **What Can I Say Here?**, ideas for the document you
   have open.
 - `Ctrl+F1` the Key Cheatsheet, a list of shortcuts.
 - `Shift+F1` About QUILL.
@@ -101,6 +101,45 @@ Start your search with one of these characters to change how the palette looks:
 - `:` searches command IDs.
 - `?` favours commands that have a key.
 - `~` puts recently used commands first.
+
+### Say or Type a Command (F11)
+
+Press **F11** and type what you want, in your own words, then press Enter.
+"Save", "go to line 120", "how many words", "make this bold" and "next
+heading please" all work. You do not need the command's exact name, and a
+small typo is forgiven. **Tools > Say or Type a Command...** opens the same
+box.
+
+It only ever does what this window can do right now. If you ask for something
+that is switched off here, it says why, and it does not do the next nearest
+thing instead. If it is in another app, it says which one. If it cannot work
+out what you mean, it says so, and "what can I say" gets you ideas.
+
+A few more things to know:
+
+- **When it is not sure,** it shows a short Did You Mean list, each command with
+  its key. Arrow to the one you meant and press Enter, or choose Something else
+  to type it another way.
+- **Anything that closes, clears or stops something asks first.** Close
+  Document and Clear Bookmarks are two. Press Enter to go ahead or Escape to
+  leave it.
+- **Some things are never done from a sentence:** exiting, signing in,
+  sending, publishing, deleting and changing settings. Ask for one and you are
+  told where it is, so you can do it yourself from its menu or its key.
+- **"Undo that" and "do that again"** work on what the box last did. "A lot
+  bigger" does three steps at once, and "undo that" takes all three back.
+- **What can I say here?** Type "what can I say", or choose **Help > What Can I
+  Say Here?** (**Ctrl+Alt+Shift+F1**). You get a list of everything this window
+  can do right now, by menu, with one way of saying each and its key. Press
+  Enter on one to do it. "What can I say about bookmarks" shows only those.
+- **F11 never starts, stops or pauses dictation.** Dictation keeps
+  **Ctrl+F11**. The dictation command that used to be on F11 is now **Next
+  Phrase Is a Dictation Command**, on the Dictation menu, with no key.
+
+It is free, it works without an internet connection, and nothing you type in
+the box leaves your computer. The page "What you can say in each app"
+(`command-catalogue.html` in the documentation folder) lists every command it
+understands in QUILL, QUILL Lite and Quill Radio, with examples.
 
 ### The QUILL key
 
@@ -487,7 +526,7 @@ and offers to open the download page instead. Chapter 14, Projects, notes and th
 
 ### Help
 
-Help has help on the control you are on, **What Can I Do Here?**, the tutorials,
+Help has help on the control you are on, **What Can I Say Here?**, the tutorials,
 the User Guide, the keyboard reference, **Personalise QUILL...**, feature
 profiles, checking for updates and ways to get support. Chapter 15, Help,
 updates and support, covers it.

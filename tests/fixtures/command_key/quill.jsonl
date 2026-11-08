@@ -1,0 +1,894 @@
+{"text": "save this", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "train"}
+{"text": "save my document", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "train"}
+{"text": "keep my changes", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "train"}
+{"text": "write", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "train"}
+{"text": "store", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "held_out"}
+{"text": "keep", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "train"}
+{"text": "save file", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "train"}
+{"text": "save document", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "train"}
+{"text": "save my work", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "train"}
+{"text": "Save", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "tier_max": 1, "set": "held_out"}
+{"text": "please save this", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "set": "train"}
+{"text": "save this please", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "set": "train"}
+{"text": "can you save this", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "set": "train"}
+{"text": "could you save this for me", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "set": "train"}
+{"text": "I want to save this", "app": "quill", "mode": "typed", "expect": {"id": "file.save"}, "set": "held_out"}
+{"text": "save my docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.save"}, "set": "train"}
+{"text": "keep my chages", "app": "quill", "mode": "misheard", "expect": {"id": "file.save"}, "set": "train"}
+{"text": "save docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.save"}, "set": "train"}
+{"text": "save this", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "save all my documents", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "tier_max": 1, "set": "held_out"}
+{"text": "save every file", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "tier_max": 1, "set": "train"}
+{"text": "save everything that is open", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "tier_max": 1, "set": "train"}
+{"text": "save all", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "tier_max": 1, "set": "train"}
+{"text": "save everything", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "tier_max": 1, "set": "train"}
+{"text": "Save All", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "tier_max": 1, "set": "held_out"}
+{"text": "please save all my documents", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "set": "train"}
+{"text": "save all my documents please", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "set": "train"}
+{"text": "can you save all my documents", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "set": "train"}
+{"text": "could you save all my documents for me", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "set": "train"}
+{"text": "I want to save all my documents", "app": "quill", "mode": "typed", "expect": {"id": "file.save_all"}, "set": "held_out"}
+{"text": "save all my docuents", "app": "quill", "mode": "misheard", "expect": {"id": "file.save_all"}, "set": "train"}
+{"text": "save everyhing that is open", "app": "quill", "mode": "misheard", "expect": {"id": "file.save_all"}, "set": "train"}
+{"text": "save everyhing", "app": "quill", "mode": "misheard", "expect": {"id": "file.save_all"}, "set": "train"}
+{"text": "save all my documents", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "start a new document", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "held_out"}
+{"text": "give me a blank page", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "train"}
+{"text": "new file please", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "train"}
+{"text": "create", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "train"}
+{"text": "blank", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "train"}
+{"text": "fresh", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "held_out"}
+{"text": "new", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "train"}
+{"text": "new document", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "train"}
+{"text": "new file", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "train"}
+{"text": "New Document", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "tier_max": 1, "set": "train"}
+{"text": "please start a new document", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "set": "held_out"}
+{"text": "start a new document please", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "set": "train"}
+{"text": "can you start a new document", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "set": "train"}
+{"text": "could you start a new document for me", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "set": "train"}
+{"text": "I want to start a new document", "app": "quill", "mode": "typed", "expect": {"id": "file.new"}, "set": "train"}
+{"text": "start a new docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.new"}, "set": "held_out"}
+{"text": "new docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.new"}, "set": "train"}
+{"text": "New Docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.new"}, "set": "train"}
+{"text": "start a new document", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "undo the last change", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "tier_max": 1, "set": "train"}
+{"text": "oops take that back", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "tier_max": 1, "set": "held_out"}
+{"text": "revert my last edit", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "tier_max": 1, "set": "train"}
+{"text": "revert", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "tier_max": 1, "set": "train"}
+{"text": "back", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "tier_max": 1, "set": "train"}
+{"text": "mistake", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "tier_max": 1, "set": "train"}
+{"text": "take that back", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "tier_max": 1, "set": "held_out"}
+{"text": "Undo", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "tier_max": 1, "set": "train"}
+{"text": "please undo the last change", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "set": "train"}
+{"text": "undo the last change please", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "set": "train"}
+{"text": "can you undo the last change", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "set": "train"}
+{"text": "could you undo the last change for me", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "set": "held_out"}
+{"text": "I want to undo the last change", "app": "quill", "mode": "typed", "expect": {"id": "edit.undo"}, "set": "train"}
+{"text": "misake", "app": "quill", "mode": "misheard", "expect": {"id": "edit.undo"}, "set": "train"}
+{"text": "undo the last change", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "redo that change", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "tier_max": 1, "set": "train"}
+{"text": "put the change back", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "tier_max": 1, "set": "held_out"}
+{"text": "redo what I undid", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "tier_max": 1, "set": "train"}
+{"text": "restore", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "tier_max": 1, "set": "train"}
+{"text": "change", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "tier_max": 1, "set": "train"}
+{"text": "redo", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "tier_max": 1, "set": "train"}
+{"text": "Redo", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "tier_max": 1, "set": "held_out"}
+{"text": "please redo that change", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "set": "train"}
+{"text": "redo that change please", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "set": "train"}
+{"text": "can you redo that change", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "set": "train"}
+{"text": "could you redo that change for me", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "set": "train"}
+{"text": "I want to redo that change", "app": "quill", "mode": "typed", "expect": {"id": "edit.redo"}, "set": "held_out"}
+{"text": "resore", "app": "quill", "mode": "misheard", "expect": {"id": "edit.redo"}, "set": "train"}
+{"text": "redo that change", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "select the whole document", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "tier_max": 1, "set": "train"}
+{"text": "select everything", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "tier_max": 1, "set": "train"}
+{"text": "highlight all the text", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "tier_max": 1, "set": "held_out"}
+{"text": "select all", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "tier_max": 1, "set": "train"}
+{"text": "highlight everything", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "tier_max": 1, "set": "train"}
+{"text": "Select All", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "tier_max": 1, "set": "train"}
+{"text": "please select the whole document", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "set": "train"}
+{"text": "select the whole document please", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "set": "held_out"}
+{"text": "can you select the whole document", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "set": "train"}
+{"text": "could you select the whole document for me", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "set": "train"}
+{"text": "I want to select the whole document", "app": "quill", "mode": "typed", "expect": {"id": "edit.select_all"}, "set": "train"}
+{"text": "select the whole docuent", "app": "quill", "mode": "misheard", "expect": {"id": "edit.select_all"}, "set": "train"}
+{"text": "select everyhing", "app": "quill", "mode": "misheard", "expect": {"id": "edit.select_all"}, "set": "held_out"}
+{"text": "highight all the text", "app": "quill", "mode": "misheard", "expect": {"id": "edit.select_all"}, "set": "train"}
+{"text": "highlight everyhing", "app": "quill", "mode": "misheard", "expect": {"id": "edit.select_all"}, "set": "train"}
+{"text": "select the whole document", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "make this bold", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "tier_max": 1, "set": "train"}
+{"text": "bold the selection", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "tier_max": 1, "set": "held_out"}
+{"text": "put it in bold", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "tier_max": 1, "set": "train"}
+{"text": "bold", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "tier_max": 1, "set": "train"}
+{"text": "make bold", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "tier_max": 1, "set": "train"}
+{"text": "embolden", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "tier_max": 1, "set": "train"}
+{"text": "Bold", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "tier_max": 1, "set": "held_out"}
+{"text": "please make this bold", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "set": "train"}
+{"text": "make this bold please", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "set": "train"}
+{"text": "can you make this bold", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "set": "train"}
+{"text": "could you make this bold for me", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "set": "train"}
+{"text": "I want to make this bold", "app": "quill", "mode": "typed", "expect": {"id": "format.bold"}, "set": "held_out"}
+{"text": "bold the seletion", "app": "quill", "mode": "misheard", "expect": {"id": "format.bold"}, "set": "train"}
+{"text": "emboden", "app": "quill", "mode": "misheard", "expect": {"id": "format.bold"}, "set": "train"}
+{"text": "make this bold", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "make this italic", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "tier_max": 1, "set": "train"}
+{"text": "put it in italics", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "tier_max": 1, "set": "held_out"}
+{"text": "italicise the selection", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "tier_max": 1, "set": "train"}
+{"text": "italic", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "tier_max": 1, "set": "train"}
+{"text": "make italic", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "tier_max": 1, "set": "train"}
+{"text": "italics", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "tier_max": 1, "set": "train"}
+{"text": "Italic", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "tier_max": 1, "set": "held_out"}
+{"text": "please make this italic", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "set": "train"}
+{"text": "make this italic please", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "set": "train"}
+{"text": "can you make this italic", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "set": "train"}
+{"text": "could you make this italic for me", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "set": "train"}
+{"text": "I want to make this italic", "app": "quill", "mode": "typed", "expect": {"id": "format.italic"}, "set": "held_out"}
+{"text": "put it in itaics", "app": "quill", "mode": "misheard", "expect": {"id": "format.italic"}, "set": "train"}
+{"text": "italcise the selection", "app": "quill", "mode": "misheard", "expect": {"id": "format.italic"}, "set": "train"}
+{"text": "itaics", "app": "quill", "mode": "misheard", "expect": {"id": "format.italic"}, "set": "train"}
+{"text": "make this italic", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "make this all capitals", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "change it to upper case", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "shout this part", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "uppercase", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "upper case", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "make uppercase", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "all capitals", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "Upper Case", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "please make this all capitals", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "set": "train"}
+{"text": "make this all capitals please", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "set": "train"}
+{"text": "can you make this all capitals", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "set": "held_out"}
+{"text": "could you make this all capitals for me", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "set": "train"}
+{"text": "I want to make this all capitals", "app": "quill", "mode": "typed", "expect": {"id": "format.upper_case"}, "set": "train"}
+{"text": "make this all capials", "app": "quill", "mode": "misheard", "expect": {"id": "format.upper_case"}, "set": "train"}
+{"text": "uppecase", "app": "quill", "mode": "misheard", "expect": {"id": "format.upper_case"}, "set": "train"}
+{"text": "make uppecase", "app": "quill", "mode": "misheard", "expect": {"id": "format.upper_case"}, "set": "held_out"}
+{"text": "all capials", "app": "quill", "mode": "misheard", "expect": {"id": "format.upper_case"}, "set": "train"}
+{"text": "make this all capitals", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "make this lower case", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "no capitals in this bit", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "change it to small letters", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "lowercase", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "lower case", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "make lowercase", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "small letters", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "Lower Case", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "please make this lower case", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "set": "train"}
+{"text": "make this lower case please", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "set": "train"}
+{"text": "can you make this lower case", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "set": "train"}
+{"text": "could you make this lower case for me", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "set": "train"}
+{"text": "I want to make this lower case", "app": "quill", "mode": "typed", "expect": {"id": "format.lower_case"}, "set": "held_out"}
+{"text": "no capials in this bit", "app": "quill", "mode": "misheard", "expect": {"id": "format.lower_case"}, "set": "train"}
+{"text": "change it to small leters", "app": "quill", "mode": "misheard", "expect": {"id": "format.lower_case"}, "set": "train"}
+{"text": "lowecase", "app": "quill", "mode": "misheard", "expect": {"id": "format.lower_case"}, "set": "train"}
+{"text": "make lowecase", "app": "quill", "mode": "misheard", "expect": {"id": "format.lower_case"}, "set": "train"}
+{"text": "small leters", "app": "quill", "mode": "misheard", "expect": {"id": "format.lower_case"}, "set": "held_out"}
+{"text": "make this lower case", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "make this title case", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "tier_max": 1, "set": "train"}
+{"text": "capitalise each word", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "tier_max": 1, "set": "train"}
+{"text": "turn it into a title", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "tier_max": 1, "set": "train"}
+{"text": "title case", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "Title Case", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "tier_max": 1, "set": "train"}
+{"text": "please make this title case", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "set": "train"}
+{"text": "make this title case please", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "set": "train"}
+{"text": "can you make this title case", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "set": "train"}
+{"text": "could you make this title case for me", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "set": "held_out"}
+{"text": "I want to make this title case", "app": "quill", "mode": "typed", "expect": {"id": "format.title_case"}, "set": "train"}
+{"text": "capitlise each word", "app": "quill", "mode": "misheard", "expect": {"id": "format.title_case"}, "set": "train"}
+{"text": "make this title case", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "make this sentence case", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "tier_max": 1, "set": "train"}
+{"text": "fix the capitals like a sentence", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "sentence case please", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "tier_max": 1, "set": "train"}
+{"text": "sentence case", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "tier_max": 1, "set": "train"}
+{"text": "Sentence Case", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "tier_max": 1, "set": "train"}
+{"text": "please make this sentence case", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "set": "train"}
+{"text": "make this sentence case please", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "set": "held_out"}
+{"text": "can you make this sentence case", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "set": "train"}
+{"text": "could you make this sentence case for me", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "set": "train"}
+{"text": "I want to make this sentence case", "app": "quill", "mode": "typed", "expect": {"id": "format.sentence_case"}, "set": "train"}
+{"text": "make this sentnce case", "app": "quill", "mode": "misheard", "expect": {"id": "format.sentence_case"}, "set": "train"}
+{"text": "fix the capials like a sentence", "app": "quill", "mode": "misheard", "expect": {"id": "format.sentence_case"}, "set": "held_out"}
+{"text": "sentnce case please", "app": "quill", "mode": "misheard", "expect": {"id": "format.sentence_case"}, "set": "train"}
+{"text": "sentnce case", "app": "quill", "mode": "misheard", "expect": {"id": "format.sentence_case"}, "set": "train"}
+{"text": "Sentnce Case", "app": "quill", "mode": "misheard", "expect": {"id": "format.sentence_case"}, "set": "train"}
+{"text": "make this sentence case", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "start a bulleted list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "tier_max": 1, "set": "held_out"}
+{"text": "make a list with bullets", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "tier_max": 1, "set": "train"}
+{"text": "add bullet points", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "tier_max": 1, "set": "train"}
+{"text": "bullet list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "tier_max": 1, "set": "train"}
+{"text": "insert bullet list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "tier_max": 1, "set": "train"}
+{"text": "bulleted list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "tier_max": 1, "set": "held_out"}
+{"text": "bullets", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "tier_max": 1, "set": "train"}
+{"text": "Bulleted List", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "tier_max": 1, "set": "train"}
+{"text": "please start a bulleted list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "set": "train"}
+{"text": "start a bulleted list please", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "set": "train"}
+{"text": "can you start a bulleted list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "set": "held_out"}
+{"text": "could you start a bulleted list for me", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "set": "train"}
+{"text": "I want to start a bulleted list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_bullet_list"}, "set": "train"}
+{"text": "start a bullted list", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_bullet_list"}, "set": "train"}
+{"text": "make a list with bulets", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_bullet_list"}, "set": "train"}
+{"text": "bullted list", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_bullet_list"}, "set": "held_out"}
+{"text": "bulets", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_bullet_list"}, "set": "train"}
+{"text": "Bullted List", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_bullet_list"}, "set": "train"}
+{"text": "start a bulleted list", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "start a numbered list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "tier_max": 1, "set": "train"}
+{"text": "make a list with numbers", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "tier_max": 1, "set": "held_out"}
+{"text": "number these lines", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "tier_max": 1, "set": "train"}
+{"text": "numbered list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "tier_max": 1, "set": "train"}
+{"text": "insert numbered list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "tier_max": 1, "set": "train"}
+{"text": "number list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "tier_max": 1, "set": "train"}
+{"text": "Numbered List", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "tier_max": 1, "set": "held_out"}
+{"text": "please start a numbered list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "set": "train"}
+{"text": "start a numbered list please", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "set": "train"}
+{"text": "can you start a numbered list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "set": "train"}
+{"text": "could you start a numbered list for me", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "set": "train"}
+{"text": "I want to start a numbered list", "app": "quill", "mode": "typed", "expect": {"id": "format.insert_numbered_list"}, "set": "held_out"}
+{"text": "start a numbred list", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_numbered_list"}, "set": "train"}
+{"text": "make a list with numers", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_numbered_list"}, "set": "train"}
+{"text": "numbred list", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_numbered_list"}, "set": "train"}
+{"text": "insert numbred list", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_numbered_list"}, "set": "train"}
+{"text": "Numbred List", "app": "quill", "mode": "misheard", "expect": {"id": "format.insert_numbered_list"}, "set": "held_out"}
+{"text": "start a numbered list", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "how many words is this", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "tier_max": 1, "set": "train"}
+{"text": "how long is this document", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "tier_max": 1, "set": "train"}
+{"text": "count the words", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "tier_max": 1, "set": "train"}
+{"text": "word count", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "tier_max": 1, "set": "held_out"}
+{"text": "count words", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "tier_max": 1, "set": "train"}
+{"text": "how many words", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "tier_max": 1, "set": "train"}
+{"text": "how long is this", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "tier_max": 1, "set": "train"}
+{"text": "Word Count", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "tier_max": 1, "set": "train"}
+{"text": "please how many words is this", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "set": "held_out"}
+{"text": "how many words is this please", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "set": "train"}
+{"text": "can you how many words is this", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "set": "train"}
+{"text": "could you how many words is this for me", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "set": "train"}
+{"text": "I want to how many words is this", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_count"}, "set": "train"}
+{"text": "how long is this docuent", "app": "quill", "mode": "misheard", "expect": {"id": "tools.word_count"}, "set": "held_out"}
+{"text": "how many words is this", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "check my spelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "tier_max": 1, "set": "train"}
+{"text": "run the spell checker", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "tier_max": 1, "set": "train"}
+{"text": "are there any spelling mistakes", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "tier_max": 1, "set": "train"}
+{"text": "spell check", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "tier_max": 1, "set": "held_out"}
+{"text": "check spelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "tier_max": 1, "set": "train"}
+{"text": "spelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "tier_max": 1, "set": "train"}
+{"text": "Spelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "tier_max": 1, "set": "train"}
+{"text": "please check my spelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "check my spelling please", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "set": "held_out"}
+{"text": "can you check my spelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "could you check my spelling for me", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "I want to check my spelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "check my speling", "app": "quill", "mode": "misheard", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "run the spell cheker", "app": "quill", "mode": "misheard", "expect": {"id": "tools.spell_check_dialog"}, "set": "held_out"}
+{"text": "are there any speling mistakes", "app": "quill", "mode": "misheard", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "check speling", "app": "quill", "mode": "misheard", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "speling", "app": "quill", "mode": "misheard", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "Speling", "app": "quill", "mode": "misheard", "expect": {"id": "tools.spell_check_dialog"}, "set": "train"}
+{"text": "check my spelling", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "held_out"}
+{"text": "read this to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "tier_max": 1, "set": "train"}
+{"text": "read the document out loud", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "tier_max": 1, "set": "train"}
+{"text": "pause the reading", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "tier_max": 1, "set": "train"}
+{"text": "read aloud", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "tier_max": 1, "set": "train"}
+{"text": "start reading", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "tier_max": 1, "set": "held_out"}
+{"text": "pause reading", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "tier_max": 1, "set": "train"}
+{"text": "read to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "tier_max": 1, "set": "train"}
+{"text": "Read Aloud", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "tier_max": 1, "set": "train"}
+{"text": "please read this to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "train"}
+{"text": "read this to me please", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "held_out"}
+{"text": "can you read this to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "train"}
+{"text": "could you read this to me for me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "train"}
+{"text": "I want to read this to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "train"}
+{"text": "read the docuent out loud", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "train"}
+{"text": "pause the reaing", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "held_out"}
+{"text": "start reaing", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "train"}
+{"text": "pause reaing", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_start_pause"}, "set": "train"}
+{"text": "read this to me", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "stop reading to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "tier_max": 1, "set": "train"}
+{"text": "stop reading aloud", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "tier_max": 1, "set": "held_out"}
+{"text": "that is enough reading", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "tier_max": 1, "set": "train"}
+{"text": "stop reading", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "tier_max": 1, "set": "train"}
+{"text": "stop read aloud", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "tier_max": 1, "set": "train"}
+{"text": "be quiet", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "tier_max": 1, "set": "train"}
+{"text": "Stop Reading Aloud", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "tier_max": 1, "set": "held_out"}
+{"text": "please stop reading to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "set": "train"}
+{"text": "stop reading to me please", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "set": "train"}
+{"text": "can you stop reading to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "set": "train"}
+{"text": "could you stop reading to me for me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "set": "train"}
+{"text": "I want to stop reading to me", "app": "quill", "mode": "typed", "expect": {"id": "tools.read_aloud_stop"}, "set": "held_out"}
+{"text": "stop reaing to me", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_stop"}, "set": "train"}
+{"text": "stop reaing aloud", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_stop"}, "set": "train"}
+{"text": "that is enough reaing", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_stop"}, "set": "train"}
+{"text": "stop reaing", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_stop"}, "set": "train"}
+{"text": "Stop Reaing Aloud", "app": "quill", "mode": "misheard", "expect": {"id": "tools.read_aloud_stop"}, "set": "held_out"}
+{"text": "stop reading to me", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "go to the next heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "jump to the next section", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "next heading please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "next heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "tier_max": 1, "set": "held_out"}
+{"text": "following heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "Next Heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "please go to the next heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "go to the next heading please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "can you go to the next heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "set": "held_out"}
+{"text": "could you go to the next heading for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "I want to go to the next heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "go to the next heaing", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "jump to the next secion", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "next heaing please", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_heading"}, "set": "held_out"}
+{"text": "next heaing", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "follwing heading", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "Next Heaing", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_heading"}, "set": "train"}
+{"text": "go to the next heading", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "go back a heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "tier_max": 1, "set": "held_out"}
+{"text": "jump to the previous section", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "previous heading please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "previous heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "prior heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "last heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "tier_max": 1, "set": "held_out"}
+{"text": "Previous Heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "please go back a heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "go back a heading please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "can you go back a heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "could you go back a heading for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "set": "held_out"}
+{"text": "I want to go back a heading", "app": "quill", "mode": "typed", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "go back a heaing", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "jump to the prevous section", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "prevous heading please", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "prevous heading", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.previous_heading"}, "set": "held_out"}
+{"text": "prior heaing", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "last heaing", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "Prevous Heading", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.previous_heading"}, "set": "train"}
+{"text": "go back a heading", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "show me the headings", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "tier_max": 1, "set": "held_out"}
+{"text": "list the headings", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "tier_max": 1, "set": "train"}
+{"text": "open the outline", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "tier_max": 1, "set": "train"}
+{"text": "outline", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "tier_max": 1, "set": "train"}
+{"text": "outline navigator", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "tier_max": 1, "set": "train"}
+{"text": "show outline", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "tier_max": 1, "set": "held_out"}
+{"text": "list headings", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "tier_max": 1, "set": "train"}
+{"text": "Headings List", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "tier_max": 1, "set": "train"}
+{"text": "please show me the headings", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "show me the headings please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "can you show me the headings", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "set": "held_out"}
+{"text": "could you show me the headings for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "I want to show me the headings", "app": "quill", "mode": "typed", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "show me the headngs", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "list the headngs", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "open the outine", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.outline_navigator"}, "set": "held_out"}
+{"text": "outine", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "outline naviator", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "show outine", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "list headngs", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.outline_navigator"}, "set": "train"}
+{"text": "Headngs List", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.outline_navigator"}, "set": "held_out"}
+{"text": "show me the headings", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "find a word", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "tier_max": 1, "set": "train"}
+{"text": "search the document", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "tier_max": 1, "set": "train"}
+{"text": "look for something", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "tier_max": 1, "set": "train"}
+{"text": "find", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "tier_max": 1, "set": "held_out"}
+{"text": "search", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "tier_max": 1, "set": "train"}
+{"text": "find text", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "tier_max": 1, "set": "train"}
+{"text": "look for", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "tier_max": 1, "set": "train"}
+{"text": "Find", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "tier_max": 1, "set": "train"}
+{"text": "please find a word", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "set": "held_out"}
+{"text": "find a word please", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "set": "train"}
+{"text": "can you find a word", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "set": "train"}
+{"text": "could you find a word for me", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "set": "train"}
+{"text": "I want to find a word", "app": "quill", "mode": "typed", "expect": {"id": "edit.find"}, "set": "train"}
+{"text": "search the docuent", "app": "quill", "mode": "misheard", "expect": {"id": "edit.find"}, "set": "held_out"}
+{"text": "look for somehing", "app": "quill", "mode": "misheard", "expect": {"id": "edit.find"}, "set": "train"}
+{"text": "find a word", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "turn word wrap on", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "stop wrapping lines", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "wrap the long lines", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "tier_max": 1, "set": "held_out"}
+{"text": "word wrap", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "line wrap", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "soft wrap", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "toggle soft wrap", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "Word Wrap", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "tier_max": 1, "set": "held_out"}
+{"text": "please turn word wrap on", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "set": "train"}
+{"text": "turn word wrap on please", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "set": "train"}
+{"text": "can you turn word wrap on", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "set": "train"}
+{"text": "could you turn word wrap on for me", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "set": "train"}
+{"text": "I want to turn word wrap on", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_soft_wrap"}, "set": "held_out"}
+{"text": "stop wraping lines", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_soft_wrap"}, "set": "train"}
+{"text": "turn word wrap on", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "show me every command", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "open the command palette", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "list all the commands", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "tier_max": 1, "set": "held_out"}
+{"text": "command palette", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "commands", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "every command", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "all commands", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "Command Palette", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "tier_max": 1, "set": "held_out"}
+{"text": "please show me every command", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "show me every command please", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "can you show me every command", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "could you show me every command for me", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "I want to show me every command", "app": "quill", "mode": "typed", "expect": {"id": "app.command_palette"}, "set": "held_out"}
+{"text": "show me every comand", "app": "quill", "mode": "misheard", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "open the comand palette", "app": "quill", "mode": "misheard", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "list all the commnds", "app": "quill", "mode": "misheard", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "comand palette", "app": "quill", "mode": "misheard", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "commnds", "app": "quill", "mode": "misheard", "expect": {"id": "app.command_palette"}, "set": "held_out"}
+{"text": "every comand", "app": "quill", "mode": "misheard", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "all commnds", "app": "quill", "mode": "misheard", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "Comand Palette", "app": "quill", "mode": "misheard", "expect": {"id": "app.command_palette"}, "set": "train"}
+{"text": "show me every command", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "what have I selected", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "tier_max": 1, "set": "held_out"}
+{"text": "read me the selected text", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "tier_max": 1, "set": "train"}
+{"text": "say the selection", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "tier_max": 1, "set": "train"}
+{"text": "say selection", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "tier_max": 1, "set": "train"}
+{"text": "what is selected", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "tier_max": 1, "set": "train"}
+{"text": "read out the selection", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "tier_max": 1, "set": "held_out"}
+{"text": "Say Selection", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "tier_max": 1, "set": "train"}
+{"text": "please what have I selected", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "what have I selected please", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "can you what have I selected", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "could you what have I selected for me", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "set": "held_out"}
+{"text": "I want to what have I selected", "app": "quill", "mode": "typed", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "what have I seleted", "app": "quill", "mode": "misheard", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "read me the seleted text", "app": "quill", "mode": "misheard", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "say the seletion", "app": "quill", "mode": "misheard", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "say seletion", "app": "quill", "mode": "misheard", "expect": {"id": "edit.say_selected"}, "set": "held_out"}
+{"text": "what is seleted", "app": "quill", "mode": "misheard", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "read out the seletion", "app": "quill", "mode": "misheard", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "Say Seletion", "app": "quill", "mode": "misheard", "expect": {"id": "edit.say_selected"}, "set": "train"}
+{"text": "what have I selected", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "what time is it", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "tier_max": 1, "set": "held_out"}
+{"text": "what is today's date", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "tier_max": 1, "set": "train"}
+{"text": "tell me the time", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "tier_max": 1, "set": "train"}
+{"text": "time", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "tier_max": 1, "set": "train"}
+{"text": "date", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "tier_max": 1, "set": "train"}
+{"text": "what day is it", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "tier_max": 1, "set": "held_out"}
+{"text": "say time", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "tier_max": 1, "set": "train"}
+{"text": "Say Time and Date", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "tier_max": 1, "set": "train"}
+{"text": "please what time is it", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "set": "train"}
+{"text": "what time is it please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "set": "train"}
+{"text": "can you what time is it", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "set": "held_out"}
+{"text": "could you what time is it for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "set": "train"}
+{"text": "I want to what time is it", "app": "quill", "mode": "typed", "expect": {"id": "navigate.say_time"}, "set": "train"}
+{"text": "what time is it", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "where am I", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "tier_max": 1, "set": "train"}
+{"text": "what is the state of this document", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "tier_max": 1, "set": "held_out"}
+{"text": "tell me where I am", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "tier_max": 1, "set": "train"}
+{"text": "where am i", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "tier_max": 1, "set": "train"}
+{"text": "status summary", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "tier_max": 1, "set": "train"}
+{"text": "speak status", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "tier_max": 1, "set": "train"}
+{"text": "Where Am I", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "tier_max": 1, "set": "held_out"}
+{"text": "please where am I", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "set": "train"}
+{"text": "where am I please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "set": "train"}
+{"text": "can you where am I", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "set": "train"}
+{"text": "could you where am I for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "set": "train"}
+{"text": "I want to where am I", "app": "quill", "mode": "typed", "expect": {"id": "navigate.speak_status_summary"}, "set": "held_out"}
+{"text": "what is the state of this docuent", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.speak_status_summary"}, "set": "train"}
+{"text": "status sumary", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.speak_status_summary"}, "set": "train"}
+{"text": "where am I", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "talk less", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "tier_max": 1, "set": "train"}
+{"text": "be less chatty", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "tier_max": 1, "set": "held_out"}
+{"text": "turn quiet mode on", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "tier_max": 1, "set": "train"}
+{"text": "quiet mode", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "tier_max": 1, "set": "train"}
+{"text": "less chatty", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "tier_max": 1, "set": "train"}
+{"text": "Quiet Mode", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "tier_max": 1, "set": "train"}
+{"text": "please talk less", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "set": "held_out"}
+{"text": "talk less please", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "set": "train"}
+{"text": "can you talk less", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "set": "train"}
+{"text": "could you talk less for me", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "set": "train"}
+{"text": "I want to talk less", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_quiet"}, "set": "train"}
+{"text": "talk less", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "held_out"}
+{"text": "I'm in a meeting", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "tier_max": 1, "set": "train"}
+{"text": "turn meeting mode on", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "tier_max": 1, "set": "train"}
+{"text": "meeting mode off", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "tier_max": 1, "set": "train"}
+{"text": "meeting mode", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "tier_max": 1, "set": "train"}
+{"text": "in a meeting", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "tier_max": 1, "set": "held_out"}
+{"text": "Meeting Mode", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "tier_max": 1, "set": "train"}
+{"text": "please I'm in a meeting", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "I'm in a meeting please", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "can you I'm in a meeting", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "could you I'm in a meeting for me", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "set": "held_out"}
+{"text": "I want to I'm in a meeting", "app": "quill", "mode": "typed", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "I'm in a meeing", "app": "quill", "mode": "misheard", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "turn meeing mode on", "app": "quill", "mode": "misheard", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "meeing mode off", "app": "quill", "mode": "misheard", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "meeing mode", "app": "quill", "mode": "misheard", "expect": {"id": "verbosity.toggle_meeting"}, "set": "held_out"}
+{"text": "in a meeing", "app": "quill", "mode": "misheard", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "Meeing Mode", "app": "quill", "mode": "misheard", "expect": {"id": "verbosity.toggle_meeting"}, "set": "train"}
+{"text": "I'm in a meeting", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "turn the sounds off", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "stop the beeps", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "held_out"}
+{"text": "sounds back on", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "sounds", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "sound effects", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "mute sounds", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "sounds off", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "held_out"}
+{"text": "sounds on", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "Sounds On or Off", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "please turn the sounds off", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "set": "train"}
+{"text": "turn the sounds off please", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "set": "train"}
+{"text": "can you turn the sounds off", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "set": "held_out"}
+{"text": "could you turn the sounds off for me", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "set": "train"}
+{"text": "I want to turn the sounds off", "app": "quill", "mode": "typed", "expect": {"id": "tools.sound_toggle"}, "set": "train"}
+{"text": "sound effcts", "app": "quill", "mode": "misheard", "expect": {"id": "tools.sound_toggle"}, "set": "train"}
+{"text": "turn the sounds off", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "go to line 120", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "tier_max": 1, "set": "held_out"}
+{"text": "jump to line 5", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "tier_max": 1, "set": "train"}
+{"text": "take me to line 40", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "tier_max": 1, "set": "train"}
+{"text": "go to line", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "tier_max": 1, "set": "train"}
+{"text": "line number", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "tier_max": 1, "set": "train"}
+{"text": "jump to line", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "tier_max": 1, "set": "held_out"}
+{"text": "Go to Line", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "tier_max": 1, "set": "train"}
+{"text": "please go to line 120", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "set": "train"}
+{"text": "go to line 120 please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "set": "train"}
+{"text": "can you go to line 120", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "set": "train"}
+{"text": "could you go to line 120 for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "set": "held_out"}
+{"text": "I want to go to line 120", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_line"}, "set": "train"}
+{"text": "go to line 120", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "go to the next bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "jump to my next bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "next bookmark please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "tier_max": 1, "set": "held_out"}
+{"text": "next bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "Next Bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "please go to the next bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "set": "train"}
+{"text": "go to the next bookmark please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "set": "train"}
+{"text": "can you go to the next bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "set": "held_out"}
+{"text": "could you go to the next bookmark for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "set": "train"}
+{"text": "I want to go to the next bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.next_bookmark"}, "set": "train"}
+{"text": "go to the next bookark", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_bookmark"}, "set": "train"}
+{"text": "jump to my next bookark", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_bookmark"}, "set": "train"}
+{"text": "next bookark please", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_bookmark"}, "set": "held_out"}
+{"text": "next bookark", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_bookmark"}, "set": "train"}
+{"text": "Next Bookark", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.next_bookmark"}, "set": "train"}
+{"text": "go to the next bookmark", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "bookmark this spot", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "put a bookmark here", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "tier_max": 1, "set": "held_out"}
+{"text": "remember this place", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "set bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "bookmark this", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "add bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "mark this spot", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "tier_max": 1, "set": "held_out"}
+{"text": "Set Bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "please bookmark this spot", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "bookmark this spot please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "can you bookmark this spot", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "could you bookmark this spot for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "held_out"}
+{"text": "I want to bookmark this spot", "app": "quill", "mode": "typed", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "bookark this spot", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "put a bookark here", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "remeber this place", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "set bookark", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "held_out"}
+{"text": "bookark this", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "add bookark", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "Set Bookark", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.set_numbered_bookmark"}, "set": "train"}
+{"text": "bookmark this spot", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "make the text bigger", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "tier_max": 1, "set": "held_out"}
+{"text": "bigger font", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "increase the font size", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "bigger", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "grow font", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "larger text", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "tier_max": 1, "set": "held_out"}
+{"text": "Bigger Text", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "please make the text bigger", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "set": "train"}
+{"text": "make the text bigger please", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "set": "train"}
+{"text": "can you make the text bigger", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "set": "train"}
+{"text": "could you make the text bigger for me", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "set": "held_out"}
+{"text": "I want to make the text bigger", "app": "quill", "mode": "typed", "expect": {"id": "format.grow_font"}, "set": "train"}
+{"text": "incrase the font size", "app": "quill", "mode": "misheard", "expect": {"id": "format.grow_font"}, "set": "train"}
+{"text": "make the text bigger", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "make the text smaller", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "smaller font", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "tier_max": 1, "set": "held_out"}
+{"text": "decrease the font size", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "smaller", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "shrink font", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "smaller text", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "Smaller Text", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "tier_max": 1, "set": "held_out"}
+{"text": "please make the text smaller", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "make the text smaller please", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "can you make the text smaller", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "could you make the text smaller for me", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "I want to make the text smaller", "app": "quill", "mode": "typed", "expect": {"id": "format.shrink_font"}, "set": "held_out"}
+{"text": "make the text smaler", "app": "quill", "mode": "misheard", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "smaler font", "app": "quill", "mode": "misheard", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "decrase the font size", "app": "quill", "mode": "misheard", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "smaler", "app": "quill", "mode": "misheard", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "smaler text", "app": "quill", "mode": "misheard", "expect": {"id": "format.shrink_font"}, "set": "held_out"}
+{"text": "Smaler Text", "app": "quill", "mode": "misheard", "expect": {"id": "format.shrink_font"}, "set": "train"}
+{"text": "make the text smaller", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "go to the next spelling mistake", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "find the next typo", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "next misspelled word", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "tier_max": 1, "set": "held_out"}
+{"text": "next misspelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "next spelling mistake", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "next typo", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "Next Misspelling", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "please go to the next spelling mistake", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "set": "held_out"}
+{"text": "go to the next spelling mistake please", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "set": "train"}
+{"text": "can you go to the next spelling mistake", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "set": "train"}
+{"text": "could you go to the next spelling mistake for me", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "set": "train"}
+{"text": "I want to go to the next spelling mistake", "app": "quill", "mode": "typed", "expect": {"id": "tools.next_misspelling"}, "set": "train"}
+{"text": "go to the next speling mistake", "app": "quill", "mode": "misheard", "expect": {"id": "tools.next_misspelling"}, "set": "held_out"}
+{"text": "next missplled word", "app": "quill", "mode": "misheard", "expect": {"id": "tools.next_misspelling"}, "set": "train"}
+{"text": "next missplling", "app": "quill", "mode": "misheard", "expect": {"id": "tools.next_misspelling"}, "set": "train"}
+{"text": "next speling mistake", "app": "quill", "mode": "misheard", "expect": {"id": "tools.next_misspelling"}, "set": "train"}
+{"text": "Next Missplling", "app": "quill", "mode": "misheard", "expect": {"id": "tools.next_misspelling"}, "set": "train"}
+{"text": "go to the next spelling mistake", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "held_out"}
+{"text": "open my last document", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "show my recent files", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "what was I working on", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "recent documents", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "recent files", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "tier_max": 1, "set": "held_out"}
+{"text": "last document", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "Recent Documents", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "please open my last document", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "set": "train"}
+{"text": "open my last document please", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "set": "train"}
+{"text": "can you open my last document", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "set": "held_out"}
+{"text": "could you open my last document for me", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "set": "train"}
+{"text": "I want to open my last document", "app": "quill", "mode": "typed", "expect": {"id": "file.recent_documents"}, "set": "train"}
+{"text": "open my last docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.recent_documents"}, "set": "train"}
+{"text": "what was I woring on", "app": "quill", "mode": "misheard", "expect": {"id": "file.recent_documents"}, "set": "train"}
+{"text": "recent docuents", "app": "quill", "mode": "misheard", "expect": {"id": "file.recent_documents"}, "set": "held_out"}
+{"text": "last docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.recent_documents"}, "set": "train"}
+{"text": "Recent Docuents", "app": "quill", "mode": "misheard", "expect": {"id": "file.recent_documents"}, "set": "train"}
+{"text": "open my last document", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "close this document", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "tier_max": 1, "set": "train"}
+{"text": "I'm done with this file", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "tier_max": 1, "set": "held_out"}
+{"text": "close it", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "tier_max": 1, "set": "train"}
+{"text": "close document", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "tier_max": 1, "set": "train"}
+{"text": "close this", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "tier_max": 1, "set": "train"}
+{"text": "close file", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "tier_max": 1, "set": "train"}
+{"text": "Close Document", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "tier_max": 1, "set": "held_out"}
+{"text": "please close this document", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "set": "train"}
+{"text": "close this document please", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "set": "train"}
+{"text": "can you close this document", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "set": "train"}
+{"text": "could you close this document for me", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "set": "train"}
+{"text": "I want to close this document", "app": "quill", "mode": "typed", "expect": {"id": "file.close_document"}, "set": "held_out"}
+{"text": "close this docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.close_document"}, "set": "train"}
+{"text": "close docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.close_document"}, "set": "train"}
+{"text": "Close Docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.close_document"}, "set": "train"}
+{"text": "close this document", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "find the next one", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "tier_max": 1, "set": "held_out"}
+{"text": "next match please", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "tier_max": 1, "set": "train"}
+{"text": "search again", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "tier_max": 1, "set": "train"}
+{"text": "find next", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "tier_max": 1, "set": "train"}
+{"text": "next match", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "tier_max": 1, "set": "train"}
+{"text": "find again", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "tier_max": 1, "set": "held_out"}
+{"text": "Find Next", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "tier_max": 1, "set": "train"}
+{"text": "please find the next one", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "set": "train"}
+{"text": "find the next one please", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "set": "train"}
+{"text": "can you find the next one", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "set": "train"}
+{"text": "could you find the next one for me", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "set": "held_out"}
+{"text": "I want to find the next one", "app": "quill", "mode": "typed", "expect": {"id": "edit.find_next"}, "set": "train"}
+{"text": "find the next one", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "what can I do in this window", "app": "quill", "mode": "typed", "expect": {"id": "help.what_can_i_do_here"}, "tier_max": 1, "set": "train"}
+{"text": "list what I can say here", "app": "quill", "mode": "typed", "expect": {"id": "help.what_can_i_do_here"}, "tier_max": 1, "set": "train"}
+{"text": "please what can I do in this window", "app": "quill", "mode": "typed", "expect": {"id": "help.what_can_i_do_here"}, "set": "held_out"}
+{"text": "what can I do in this window please", "app": "quill", "mode": "typed", "expect": {"id": "help.what_can_i_do_here"}, "set": "train"}
+{"text": "can you what can I do in this window", "app": "quill", "mode": "typed", "expect": {"id": "help.what_can_i_do_here"}, "set": "train"}
+{"text": "could you what can I do in this window for me", "app": "quill", "mode": "typed", "expect": {"id": "help.what_can_i_do_here"}, "set": "train"}
+{"text": "I want to what can I do in this window", "app": "quill", "mode": "typed", "expect": {"id": "help.what_can_i_do_here"}, "set": "train"}
+{"text": "what can I do in this window", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "held_out"}
+{"text": "open a document", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "tier_max": 1, "set": "train"}
+{"text": "open a file from my folders", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "tier_max": 1, "set": "train"}
+{"text": "load a file", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "tier_max": 1, "set": "train"}
+{"text": "load", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "tier_max": 1, "set": "train"}
+{"text": "browse", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "tier_max": 1, "set": "held_out"}
+{"text": "open file", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "tier_max": 1, "set": "train"}
+{"text": "open document", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "tier_max": 1, "set": "train"}
+{"text": "Open", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "tier_max": 1, "set": "train"}
+{"text": "please open a document", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "set": "train"}
+{"text": "open a document please", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "set": "held_out"}
+{"text": "can you open a document", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "set": "train"}
+{"text": "could you open a document for me", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "set": "train"}
+{"text": "I want to open a document", "app": "quill", "mode": "typed", "expect": {"id": "file.open"}, "set": "train"}
+{"text": "open a docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.open"}, "set": "train"}
+{"text": "open a file from my folers", "app": "quill", "mode": "misheard", "expect": {"id": "file.open"}, "set": "held_out"}
+{"text": "open docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.open"}, "set": "train"}
+{"text": "open a document", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "save this under a new name", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "tier_max": 1, "set": "train"}
+{"text": "save a copy", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "tier_max": 1, "set": "train"}
+{"text": "save it somewhere else", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "tier_max": 1, "set": "held_out"}
+{"text": "duplicate", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "tier_max": 1, "set": "train"}
+{"text": "save copy", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "tier_max": 1, "set": "train"}
+{"text": "save under a new name", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "tier_max": 1, "set": "train"}
+{"text": "Save As", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "tier_max": 1, "set": "train"}
+{"text": "please save this under a new name", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "set": "held_out"}
+{"text": "save this under a new name please", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "set": "train"}
+{"text": "can you save this under a new name", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "set": "train"}
+{"text": "could you save this under a new name for me", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "set": "train"}
+{"text": "I want to save this under a new name", "app": "quill", "mode": "typed", "expect": {"id": "file.save_as"}, "set": "train"}
+{"text": "save it somehere else", "app": "quill", "mode": "misheard", "expect": {"id": "file.save_as"}, "set": "held_out"}
+{"text": "duplcate", "app": "quill", "mode": "misheard", "expect": {"id": "file.save_as"}, "set": "train"}
+{"text": "save this under a new name", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "print this", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "tier_max": 1, "set": "train"}
+{"text": "print the document", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "tier_max": 1, "set": "train"}
+{"text": "send it to the printer", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "tier_max": 1, "set": "held_out"}
+{"text": "printer", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "tier_max": 1, "set": "train"}
+{"text": "paper", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "tier_max": 1, "set": "train"}
+{"text": "Print", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "tier_max": 1, "set": "train"}
+{"text": "please print this", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "set": "train"}
+{"text": "print this please", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "set": "held_out"}
+{"text": "can you print this", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "set": "train"}
+{"text": "could you print this for me", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "set": "train"}
+{"text": "I want to print this", "app": "quill", "mode": "typed", "expect": {"id": "file.print"}, "set": "train"}
+{"text": "print the docuent", "app": "quill", "mode": "misheard", "expect": {"id": "file.print"}, "set": "train"}
+{"text": "send it to the priter", "app": "quill", "mode": "misheard", "expect": {"id": "file.print"}, "set": "held_out"}
+{"text": "priter", "app": "quill", "mode": "misheard", "expect": {"id": "file.print"}, "set": "train"}
+{"text": "print this", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "zoom in", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "tier_max": 1, "set": "train"}
+{"text": "make it larger on screen", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "tier_max": 1, "set": "train"}
+{"text": "magnify the text", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "tier_max": 1, "set": "held_out"}
+{"text": "larger on screen", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "tier_max": 1, "set": "train"}
+{"text": "Zoom In", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "tier_max": 1, "set": "train"}
+{"text": "please zoom in", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "set": "train"}
+{"text": "zoom in please", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "set": "train"}
+{"text": "can you zoom in", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "set": "held_out"}
+{"text": "could you zoom in for me", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "set": "train"}
+{"text": "I want to zoom in", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_up"}, "set": "train"}
+{"text": "magify the text", "app": "quill", "mode": "misheard", "expect": {"id": "view.text_size_up"}, "set": "train"}
+{"text": "zoom in", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "zoom out", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "tier_max": 1, "set": "held_out"}
+{"text": "make it smaller on screen", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "tier_max": 1, "set": "train"}
+{"text": "less magnified", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "tier_max": 1, "set": "train"}
+{"text": "smaller on screen", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "tier_max": 1, "set": "train"}
+{"text": "Zoom Out", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "tier_max": 1, "set": "train"}
+{"text": "please zoom out", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "set": "held_out"}
+{"text": "zoom out please", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "set": "train"}
+{"text": "can you zoom out", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "set": "train"}
+{"text": "could you zoom out for me", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "set": "train"}
+{"text": "I want to zoom out", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_down"}, "set": "train"}
+{"text": "make it smaler on screen", "app": "quill", "mode": "misheard", "expect": {"id": "view.text_size_down"}, "set": "held_out"}
+{"text": "less magnfied", "app": "quill", "mode": "misheard", "expect": {"id": "view.text_size_down"}, "set": "train"}
+{"text": "smaler on screen", "app": "quill", "mode": "misheard", "expect": {"id": "view.text_size_down"}, "set": "train"}
+{"text": "zoom out", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "reset the zoom", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "tier_max": 1, "set": "train"}
+{"text": "back to normal size", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "tier_max": 1, "set": "held_out"}
+{"text": "normal zoom please", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "tier_max": 1, "set": "train"}
+{"text": "reset zoom", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "tier_max": 1, "set": "train"}
+{"text": "normal zoom", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "tier_max": 1, "set": "train"}
+{"text": "actual size", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "tier_max": 1, "set": "train"}
+{"text": "Normal Zoom", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "tier_max": 1, "set": "held_out"}
+{"text": "please reset the zoom", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "set": "train"}
+{"text": "reset the zoom please", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "set": "train"}
+{"text": "can you reset the zoom", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "set": "train"}
+{"text": "could you reset the zoom for me", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "set": "train"}
+{"text": "I want to reset the zoom", "app": "quill", "mode": "typed", "expect": {"id": "view.text_size_reset"}, "set": "held_out"}
+{"text": "reset the zoom", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "tell me the headings as I move", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "stop announcing headings", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "announce headings", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "heading announcements", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "tier_max": 1, "set": "held_out"}
+{"text": "Say Headings As I Move", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "please tell me the headings as I move", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "set": "train"}
+{"text": "tell me the headings as I move please", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "set": "train"}
+{"text": "can you tell me the headings as I move", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "set": "train"}
+{"text": "could you tell me the headings as I move for me", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "set": "held_out"}
+{"text": "I want to tell me the headings as I move", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_heading_announcements"}, "set": "train"}
+{"text": "tell me the headngs as I move", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_heading_announcements"}, "set": "train"}
+{"text": "stop annoucing headings", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_heading_announcements"}, "set": "train"}
+{"text": "annonce headings", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_heading_announcements"}, "set": "train"}
+{"text": "heading announements", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_heading_announcements"}, "set": "held_out"}
+{"text": "Say Headngs As I Move", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_heading_announcements"}, "set": "train"}
+{"text": "tell me the headings as I move", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "check my spelling as I type", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "tier_max": 1, "set": "train"}
+{"text": "stop checking spelling while I type", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "tier_max": 1, "set": "train"}
+{"text": "live spelling on", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "tier_max": 1, "set": "held_out"}
+{"text": "live spelling", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "tier_max": 1, "set": "train"}
+{"text": "spell check as i type", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "tier_max": 1, "set": "train"}
+{"text": "Check Spelling As I Type", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "tier_max": 1, "set": "train"}
+{"text": "please check my spelling as I type", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "train"}
+{"text": "check my spelling as I type please", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "held_out"}
+{"text": "can you check my spelling as I type", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "train"}
+{"text": "could you check my spelling as I type for me", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "train"}
+{"text": "I want to check my spelling as I type", "app": "quill", "mode": "typed", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "train"}
+{"text": "check my speling as I type", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "train"}
+{"text": "stop checing spelling while I type", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "held_out"}
+{"text": "live speling on", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "train"}
+{"text": "live speling", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "train"}
+{"text": "Check Speling As I Type", "app": "quill", "mode": "misheard", "expect": {"id": "view.toggle_spellcheck_as_you_type"}, "set": "train"}
+{"text": "check my spelling as I type", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "tools.word_summary", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "give me the word summary", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "tier_max": 1, "set": "held_out"}
+{"text": "how many sentences are there", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "tier_max": 1, "set": "train"}
+{"text": "document statistics", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "tier_max": 1, "set": "train"}
+{"text": "word summary", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "tier_max": 1, "set": "train"}
+{"text": "Word Summary", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "tier_max": 1, "set": "train"}
+{"text": "please give me the word summary", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "set": "held_out"}
+{"text": "give me the word summary please", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "set": "train"}
+{"text": "can you give me the word summary", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "set": "train"}
+{"text": "could you give me the word summary for me", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "set": "train"}
+{"text": "I want to give me the word summary", "app": "quill", "mode": "typed", "expect": {"id": "tools.word_summary"}, "set": "train"}
+{"text": "give me the word sumary", "app": "quill", "mode": "misheard", "expect": {"id": "tools.word_summary"}, "set": "held_out"}
+{"text": "how many sentnces are there", "app": "quill", "mode": "misheard", "expect": {"id": "tools.word_summary"}, "set": "train"}
+{"text": "document statitics", "app": "quill", "mode": "misheard", "expect": {"id": "tools.word_summary"}, "set": "train"}
+{"text": "word sumary", "app": "quill", "mode": "misheard", "expect": {"id": "tools.word_summary"}, "set": "train"}
+{"text": "Word Sumary", "app": "quill", "mode": "misheard", "expect": {"id": "tools.word_summary"}, "set": "train"}
+{"text": "give me the word summary", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "navigate.go_to_anything", "navigate.clear_numbered_bookmarks"], "set": "held_out"}
+{"text": "go to anything", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "tier_max": 1, "set": "train"}
+{"text": "jump to a heading by name", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "tier_max": 1, "set": "train"}
+{"text": "take me somewhere", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "tier_max": 1, "set": "train"}
+{"text": "jump anywhere", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "tier_max": 1, "set": "train"}
+{"text": "Go to Anything", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "tier_max": 1, "set": "held_out"}
+{"text": "please go to anything", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "set": "train"}
+{"text": "go to anything please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "set": "train"}
+{"text": "can you go to anything", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "set": "train"}
+{"text": "could you go to anything for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "set": "train"}
+{"text": "I want to go to anything", "app": "quill", "mode": "typed", "expect": {"id": "navigate.go_to_anything"}, "set": "held_out"}
+{"text": "go to anyting", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.go_to_anything"}, "set": "train"}
+{"text": "jump to a heaing by name", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.go_to_anything"}, "set": "train"}
+{"text": "take me somehere", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.go_to_anything"}, "set": "train"}
+{"text": "jump anywere", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.go_to_anything"}, "set": "train"}
+{"text": "Go to Anyting", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.go_to_anything"}, "set": "held_out"}
+{"text": "go to anything", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.clear_numbered_bookmarks"], "set": "train"}
+{"text": "clear all my bookmarks", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "remove every bookmark", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "get rid of the bookmarks", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "clear bookmarks", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "tier_max": 1, "set": "held_out"}
+{"text": "remove all bookmarks", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "Clear Bookmarks", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "please clear all my bookmarks", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "clear all my bookmarks please", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "can you clear all my bookmarks", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "held_out"}
+{"text": "could you clear all my bookmarks for me", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "I want to clear all my bookmarks", "app": "quill", "mode": "typed", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "clear all my bookarks", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "remove every bookark", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "get rid of the bookarks", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "held_out"}
+{"text": "clear bookarks", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "remove all bookarks", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "Clear Bookarks", "app": "quill", "mode": "misheard", "expect": {"id": "navigate.clear_numbered_bookmarks"}, "set": "train"}
+{"text": "clear all my bookmarks", "app": "quill", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["file.save", "file.save_all", "file.new", "edit.undo", "edit.redo", "edit.select_all", "format.bold", "format.italic", "format.upper_case", "format.lower_case", "format.title_case", "format.sentence_case", "format.insert_bullet_list", "format.insert_numbered_list", "tools.word_count", "tools.spell_check_dialog", "tools.read_aloud_start_pause", "tools.read_aloud_stop", "navigate.next_heading", "navigate.previous_heading", "navigate.outline_navigator", "edit.find", "view.toggle_soft_wrap", "app.command_palette", "edit.say_selected", "navigate.say_time", "navigate.speak_status_summary", "verbosity.toggle_quiet", "verbosity.toggle_meeting", "tools.sound_toggle", "navigate.go_to_line", "navigate.next_bookmark", "navigate.set_numbered_bookmark", "format.grow_font", "format.shrink_font", "tools.next_misspelling", "file.recent_documents", "file.close_document", "edit.find_next", "help.what_can_i_do_here", "file.open", "file.save_as", "file.print", "view.text_size_up", "view.text_size_down", "view.text_size_reset", "view.toggle_heading_announcements", "view.toggle_spellcheck_as_you_type", "tools.word_summary", "navigate.go_to_anything"], "set": "train"}
+{"text": "flibbertigibbet", "app": "quill", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "held_out"}
+{"text": "purple monkey dishwasher", "app": "quill", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "zxcv", "app": "quill", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "the quick brown fox", "app": "quill", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "banana", "app": "quill", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "hmm", "app": "quill", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "held_out"}
+{"text": "lorem ipsum dolor", "app": "quill", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "seventeen giraffes", "app": "quill", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "why is the sky blue", "app": "quill", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "write me a poem about autumn", "app": "quill", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "who won the world cup", "app": "quill", "mode": "typed", "expect": {"refuse": "ask"}, "set": "held_out"}
+{"text": "explain photosynthesis", "app": "quill", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "tell me a joke", "app": "quill", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "how do magnets work", "app": "quill", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "translate hello into French", "app": "quill", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "summarize the news", "app": "quill", "mode": "typed", "expect": {"refuse": "ask"}, "set": "held_out"}
+{"text": "delete everything", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "send this to my boss", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "publish it", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "upload my files", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "sign me in to ChatGPT", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "erase all my work", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "uninstall the app", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "push to GitHub", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "Say or Type a Command", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "quit", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "leave", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "recover", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "previous version", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "web address", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "link", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "settings", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "options", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "preferences hub", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "recipes", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "speech test", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "braille test", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "braille diagnostic", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "surface class", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "braille compare", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "test display", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "substitute", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "swap", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "clipboard tray", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "multi copy", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "theme", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "light", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "minimize", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "background", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "position", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "location", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "debug info", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "support report", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "updates", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "new version", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "Save to Remote", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "Save to GitHub", "app": "quill", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "go back to live", "app": "quill", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "radio"}, "set": "train"}
+{"text": "what song is this", "app": "quill", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "radio"}, "set": "train"}
+{"text": "wake me at 7", "app": "quill", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "radio"}, "set": "train"}

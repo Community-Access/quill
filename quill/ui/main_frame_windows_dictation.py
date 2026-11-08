@@ -80,7 +80,12 @@ _ROWS: tuple[tuple[str, str, str, str], ...] = (
         "cmd_dictation_context",
     ),
     # D-1 (2026-10-15): the command word's key, F11 in both editors.
-    (_COMMAND, "Speak a Co&mmand", "Live Dictation: Speak a Command", "cmd_dictation_command"),
+    (
+        _COMMAND,
+        "Next Phrase Is a Dictation Co&mmand",
+        "Live Dictation: Next Phrase Is a Dictation Command",
+        "cmd_dictation_command",
+    ),
     # D-2 (2026-10-15): review before inserting, Shift+F4 in both editors.
     (_REVIEW, "Re&view Dictation...", "Live Dictation: Review Dictation", "cmd_dictation_review"),
 )

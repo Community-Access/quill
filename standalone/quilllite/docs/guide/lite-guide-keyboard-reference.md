@@ -317,6 +317,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Ctrl+Shift+P** | Command Palette... |
+| **F11** | Say or Type a Command... |
 | **Alt+F10** | Look Up Word... |
 | **Shift+F7** | Thesaurus... |
 | **Ctrl+Alt+Shift+[** | Say Word Summary |
@@ -416,7 +417,6 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+PageDown** | Start or Stop Live Transcript |
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document... |
 | **Alt+F9** | Dictation Status |
-| **F11** | Speak a Command |
 | **Shift+F4** | Review Dictation... |
 
 ### Change Case (in Tools)
@@ -468,6 +468,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **F1** | Help for This Window |
+| **Ctrl+Alt+Shift+F1** | What Can I Say Here? |
 | **Ctrl+Alt+F1** | Tutorials... |
 | **Ctrl+F1** | Keyboard Shortcuts |
 | **Ctrl+Shift+F1** | Open User Guide |

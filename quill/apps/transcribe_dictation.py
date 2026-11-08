@@ -343,7 +343,7 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
         self.start_dictation()
 
     def speak_a_command(self) -> None:
-        """F11, the editors' Speak a Command, from QUILL Transcribe's window:
+        """Next Phrase Is a Dictation Command, from QUILL Transcribe's window:
         while dictating, the same as the Command Key; otherwise dictation waits
         for the field you switch to, with one command armed."""
         if self.dictation_active():

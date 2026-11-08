@@ -274,6 +274,10 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_clipboard_collector": "power.toggle_clipboard_collector",
     "cmd_toggle_read_only": "power.toggle_read_only_guard",
     "cmd_command_palette": "app.command_palette",
+    # 2026-11-08: the Command Key and its help list, one shared module
+    # (quill/ui/command_key_hosts.py), on the same keys in both (command-key.md).
+    "cmd_command_key": "app.command_key",
+    "cmd_what_can_i_say_here": "help.what_can_i_do_here",
     "cmd_complete_selection": "edit.complete_selection",
     "cmd_context_help": "help.context_help",
     "cmd_copy_all": "edit.copy_all",
@@ -307,7 +311,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_live_transcript": "tools.windows_dictation_live_transcript",
     "cmd_dictation_context": "tools.windows_dictation_context",
     "cmd_dictation_status": "tools.dictation_status",
-    # 2026-10-15 (D-1): Speak a Command, F11 in both, one shared handler.
+    # 2026-10-15 (D-1): Next Phrase Is a Dictation Command, one shared handler; no key
+    # in either since F11 became the Command Key (2026-11-08).
     "cmd_dictation_command": "tools.windows_dictation_command",
     # 2026-10-15 (D-2): Review Dictation, Shift+F4 in both, one handler.
     "cmd_dictation_review": "tools.windows_dictation_review",

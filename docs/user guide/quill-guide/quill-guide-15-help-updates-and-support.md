@@ -44,7 +44,7 @@ the menu closes before it updates anything on it.
   matches your setup.
 - **Tutorials...** (`Ctrl+Alt+F1`) opens the guided lessons. They have their
   own topic, [Tutorials](#tutorials), later in this chapter.
-- **What Can I Do Here?** gives help that fits what you are doing at the
+- **What Can I Say Here?** gives help that fits what you are doing at the
   moment.
 - **Why Don't I See a Feature?** explains why a command is hidden by your
   feature profile.
@@ -140,7 +140,7 @@ several layers of help, and you can reach each one from the keyboard.
   want the exact keys you have now.
 - **Key Cheatsheet** gives you a quick list of shortcuts. It has no menu
   row: press `Alt+Shift+/` (or `Ctrl+F1`), or find it in the Command Palette.
-- **What Can I Do Here?** (`Ctrl+Alt+Shift+F1`) gives help on the spot, for
+- **What Can I Say Here?** (`Ctrl+Alt+Shift+F1`) gives help on the spot, for
   the document you are in.
 - **Why Don't I See a Feature?** is for when a command seems to have
   disappeared.
@@ -180,7 +180,7 @@ Here is how the Help keys fit together:
 |-----|--------------|
 | `F1` | Help on the control that has focus |
 | `Ctrl+Shift+F1` | Open the full User Guide |
-| `Ctrl+Alt+Shift+F1` | Open What Can I Do Here? for the document you are in |
+| `Ctrl+Alt+Shift+F1` | Open What Can I Say Here? for the document you are in |
 | `Ctrl+F1` | Open the Key Cheatsheet |
 | `Shift+F1` | Open About Quill |
 
@@ -625,7 +625,7 @@ python -m quill.tools.build_docs
 ## What you learned, and where to go next
 
 You now know your way around the Help menu, including Activity (`Shift+F9`)
-and Repeat Last Result (`F9`). F1 explains any control, What Can I Do Here?
+and Repeat Last Result (`F9`). F1 explains any control, What Can I Say Here?
 helps on the spot, and the Personalise QUILL wizard can be run again whenever
 your needs change. You can send a message to a real person with Get Help from
 Support (`Ctrl+Alt+F2`), and you know how to check for updates.

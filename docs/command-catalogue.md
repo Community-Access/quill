@@ -148,6 +148,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Restore a Backup: File, Restore a Backup.
 - Save to GitHub: the GitHub menu.
 - Save to Remote: File, Save to Remote.
+- Say or Type a Command: F11.
 - Send to Tray: View, Send to Tray.
 - Settings: Tools, Settings.
 - Speech and Braille Self-Test: Help, Troubleshooting.
@@ -155,7 +156,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## QUILL Lite
 
-41 commands can be asked for in a sentence here.
+42 commands can be asked for in a sentence here.
 
 ### QUILL Lite: Edit
 
@@ -210,6 +211,8 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 - **Command Palette (Ctrl+Shift+P).** Show every command, to search them.
   Say: "show me every command"; "open the command palette"; "list all the commands".
+- **What Can I Say Here (Ctrl+Alt+Shift+F1).** List what you can say or do in this window.
+  Say: "what can I do in this window"; "list what I can say here"; "what are my options".
 
 ### QUILL Lite: Navigate
 
@@ -269,6 +272,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Dark Mode: View, Dark Mode.
 - Exit: File, Exit.
 - Open a Web Address: File, Open a Web Address.
+- Say or Type a Command: F11.
 - Settings: Tools, Settings.
 
 ## Quill Radio
@@ -368,5 +372,6 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Export Setup: the File menu.
 - Forget Station Volumes: the Volume menu.
 - Import Setup: the File menu.
+- Say or Type a Command: the Help menu, Alt+F11.
 - Suggest a Station: the AI menu.
 - Update the Station Catalogue: the Stations menu.

@@ -326,6 +326,7 @@ from quill.ui.main_frame_classic_editor import ClassicEditorMixin
 from quill.ui.main_frame_clip_library import ClipLibraryMixin
 from quill.ui.main_frame_close_others import CloseOthersMixin
 from quill.ui.main_frame_code_nav import CodeNavMixin
+from quill.ui.main_frame_command_key import CommandKeyMixin
 from quill.ui.main_frame_commands import CommandRegistryMixin
 from quill.ui.main_frame_compare import CompareMixin
 from quill.ui.main_frame_convert_file import ConvertFileMixin
@@ -720,6 +721,7 @@ class MainFrame(
     ExtendSelectionMixin,
     SelectionSpanMixin,
     RichParagraphMixin,
+    CommandKeyMixin,
     TypingModesMixin,
     PersistentUndoMixin,
     AnnounceCommandsMixin,

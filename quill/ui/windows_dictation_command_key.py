@@ -1,4 +1,8 @@
-"""Speak a Command (F11), in both editors: the keyboard way to the command word.
+"""Next Phrase Is a Dictation Command, in both editors: the menu way to the command word.
+
+It was Speak a Command, on F11, until 2026-11-08, when F11 became the Command
+Key (docs/design/command-key.md, decision 5): commands only, never dictation.
+This keeps no key, and the paragraphs below are its history.
 
 D-1, 2026-10-15. The spoken command word ("QUILL scratch that") marks one
 utterance as a command; this is the same thing for somebody who would rather

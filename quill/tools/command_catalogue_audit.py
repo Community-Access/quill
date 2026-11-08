@@ -124,13 +124,26 @@ def _id_words(command_id: str) -> set[str]:
     return set(re.split(r"[._]", command_id.lower()))
 
 
+#: Rows whose command is registered with no default chord, so it is not in
+#: the keymap: each with the file that registers it, which is checked instead.
+#: Reading every UI module to find two ids took over a minute on a busy disk.
+REGISTERED_ELSEWHERE: dict[str, str] = {
+    "file.save_all": "quill/ui/main_frame_commands.py",
+    "edit.select_all": "quill/ui/main_frame_menu_editor.py",
+    "format.insert_bullet_list": "quill/ui/main_frame_commands.py",
+    "format.insert_numbered_list": "quill/ui/main_frame_commands.py",
+    "file.restore_backup": "quill/ui/main_frame_commands.py",
+    "app.report_editor_surface": "quill/ui/main_frame_commands.py",
+    "app.braille_ab": "quill/ui/main_frame_commands.py",
+    "tools.copy_diagnostic_summary": "quill/ui/main_frame_commands.py",
+}
+
+
 def _registered_in_source(command_id: str) -> bool:
-    needle = f'"{command_id}"'
-    for folder in ("ui", "apps"):
-        for path in (_ROOT / "quill" / folder).rglob("*.py"):
-            if needle in path.read_text(encoding="utf-8", errors="replace"):
-                return True
-    return False
+    where = REGISTERED_ELSEWHERE.get(command_id)
+    if where is None:
+        return False
+    return f'"{command_id}"' in (_ROOT / where).read_text(encoding="utf-8")
 
 
 def _dictation_phrases() -> set[str]:

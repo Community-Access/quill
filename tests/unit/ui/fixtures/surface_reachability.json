@@ -61,6 +61,8 @@
   "quill.ui.bulk_close_dialog": "reachable",
   "quill.ui.calculator_dialog": "reachable",
   "quill.ui.clip_library_dialog": "reachable",
+  "quill.ui.command_key_hosts": "reachable",
+  "quill.ui.command_key_ui": "reachable",
   "quill.ui.compare_dialog": "reachable",
   "quill.ui.concierge_menu": "reachable",
   "quill.ui.confirm_once_dialog": "reachable",

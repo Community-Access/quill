@@ -1,0 +1,725 @@
+{"text": "what time is it", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "tier_max": 1, "set": "train"}
+{"text": "what is today's date", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "tier_max": 1, "set": "train"}
+{"text": "tell me the time", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "tier_max": 1, "set": "train"}
+{"text": "time", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "tier_max": 1, "set": "train"}
+{"text": "date", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "tier_max": 1, "set": "held_out"}
+{"text": "what day is it", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "tier_max": 1, "set": "train"}
+{"text": "say time", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "tier_max": 1, "set": "train"}
+{"text": "Say Time and Date", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "tier_max": 1, "set": "train"}
+{"text": "please what time is it", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "set": "train"}
+{"text": "what time is it please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "set": "held_out"}
+{"text": "can you what time is it", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "set": "train"}
+{"text": "could you what time is it for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "set": "train"}
+{"text": "I want to what time is it", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_time"}, "set": "train"}
+{"text": "what time is it", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "give me the word summary", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "tier_max": 1, "set": "held_out"}
+{"text": "how many sentences are there", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "tier_max": 1, "set": "train"}
+{"text": "document statistics", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "tier_max": 1, "set": "train"}
+{"text": "word summary", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "tier_max": 1, "set": "train"}
+{"text": "Word Summary", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "tier_max": 1, "set": "train"}
+{"text": "please give me the word summary", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "set": "held_out"}
+{"text": "give me the word summary please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "set": "train"}
+{"text": "can you give me the word summary", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "set": "train"}
+{"text": "could you give me the word summary for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "set": "train"}
+{"text": "I want to give me the word summary", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_word_summary"}, "set": "train"}
+{"text": "give me the word sumary", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_word_summary"}, "set": "held_out"}
+{"text": "how many sentnces are there", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_word_summary"}, "set": "train"}
+{"text": "document statitics", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_word_summary"}, "set": "train"}
+{"text": "word sumary", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_word_summary"}, "set": "train"}
+{"text": "Word Sumary", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_word_summary"}, "set": "train"}
+{"text": "give me the word summary", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "held_out"}
+{"text": "make this bold", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "tier_max": 1, "set": "train"}
+{"text": "bold the selection", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "tier_max": 1, "set": "train"}
+{"text": "put it in bold", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "tier_max": 1, "set": "train"}
+{"text": "bold", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "tier_max": 1, "set": "train"}
+{"text": "make bold", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "tier_max": 1, "set": "held_out"}
+{"text": "embolden", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "tier_max": 1, "set": "train"}
+{"text": "Bold", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "tier_max": 1, "set": "train"}
+{"text": "please make this bold", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "set": "train"}
+{"text": "make this bold please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "set": "train"}
+{"text": "can you make this bold", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "set": "held_out"}
+{"text": "could you make this bold for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "set": "train"}
+{"text": "I want to make this bold", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_bold"}, "set": "train"}
+{"text": "bold the seletion", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_bold"}, "set": "train"}
+{"text": "emboden", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_bold"}, "set": "train"}
+{"text": "make this bold", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "held_out"}
+{"text": "clear all my bookmarks", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "remove every bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "get rid of the bookmarks", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "clear bookmarks", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "remove all bookmarks", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "tier_max": 1, "set": "held_out"}
+{"text": "Clear Bookmarks", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "tier_max": 1, "set": "train"}
+{"text": "please clear all my bookmarks", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "clear all my bookmarks please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "can you clear all my bookmarks", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "could you clear all my bookmarks for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "held_out"}
+{"text": "I want to clear all my bookmarks", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "clear all my bookarks", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "remove every bookark", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "get rid of the bookarks", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "clear bookarks", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "held_out"}
+{"text": "remove all bookarks", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "Clear Bookarks", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_clear_bookmarks"}, "set": "train"}
+{"text": "clear all my bookmarks", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "close this document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "tier_max": 1, "set": "train"}
+{"text": "I'm done with this file", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "tier_max": 1, "set": "held_out"}
+{"text": "close it", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "tier_max": 1, "set": "train"}
+{"text": "close document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "tier_max": 1, "set": "train"}
+{"text": "close this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "tier_max": 1, "set": "train"}
+{"text": "close file", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "tier_max": 1, "set": "train"}
+{"text": "Close Document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "tier_max": 1, "set": "held_out"}
+{"text": "please close this document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "set": "train"}
+{"text": "close this document please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "set": "train"}
+{"text": "can you close this document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "set": "train"}
+{"text": "could you close this document for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "set": "train"}
+{"text": "I want to close this document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_close"}, "set": "held_out"}
+{"text": "close this docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_close"}, "set": "train"}
+{"text": "close docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_close"}, "set": "train"}
+{"text": "Close Docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_close"}, "set": "train"}
+{"text": "close this document", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "show me every command", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "tier_max": 1, "set": "held_out"}
+{"text": "open the command palette", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "list all the commands", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "command palette", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "commands", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "every command", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "tier_max": 1, "set": "held_out"}
+{"text": "all commands", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "Command Palette", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "tier_max": 1, "set": "train"}
+{"text": "please show me every command", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "show me every command please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "can you show me every command", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "set": "held_out"}
+{"text": "could you show me every command for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "I want to show me every command", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "show me every comand", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "open the comand palette", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "list all the commnds", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_command_palette"}, "set": "held_out"}
+{"text": "comand palette", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "commnds", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "every comand", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "all commnds", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_command_palette"}, "set": "train"}
+{"text": "Comand Palette", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_command_palette"}, "set": "held_out"}
+{"text": "show me every command", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "what can I do in this window", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_what_can_i_say_here"}, "tier_max": 1, "set": "train"}
+{"text": "list what I can say here", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_what_can_i_say_here"}, "tier_max": 1, "set": "train"}
+{"text": "please what can I do in this window", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_what_can_i_say_here"}, "set": "train"}
+{"text": "what can I do in this window please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_what_can_i_say_here"}, "set": "held_out"}
+{"text": "can you what can I do in this window", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_what_can_i_say_here"}, "set": "train"}
+{"text": "could you what can I do in this window for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_what_can_i_say_here"}, "set": "train"}
+{"text": "I want to what can I do in this window", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_what_can_i_say_here"}, "set": "train"}
+{"text": "what can I do in this window", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "find a word", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "tier_max": 1, "set": "held_out"}
+{"text": "search the document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "tier_max": 1, "set": "train"}
+{"text": "look for something", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "tier_max": 1, "set": "train"}
+{"text": "find", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "tier_max": 1, "set": "train"}
+{"text": "search", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "tier_max": 1, "set": "train"}
+{"text": "find text", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "tier_max": 1, "set": "held_out"}
+{"text": "look for", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "tier_max": 1, "set": "train"}
+{"text": "Find", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "tier_max": 1, "set": "train"}
+{"text": "please find a word", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "set": "train"}
+{"text": "find a word please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "set": "train"}
+{"text": "can you find a word", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "set": "held_out"}
+{"text": "could you find a word for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "set": "train"}
+{"text": "I want to find a word", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find"}, "set": "train"}
+{"text": "search the docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_find"}, "set": "train"}
+{"text": "look for somehing", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_find"}, "set": "train"}
+{"text": "find a word", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "held_out"}
+{"text": "find the next one", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "tier_max": 1, "set": "train"}
+{"text": "next match please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "tier_max": 1, "set": "train"}
+{"text": "search again", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "tier_max": 1, "set": "train"}
+{"text": "find next", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "tier_max": 1, "set": "train"}
+{"text": "next match", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "tier_max": 1, "set": "held_out"}
+{"text": "find again", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "tier_max": 1, "set": "train"}
+{"text": "Find Next", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "tier_max": 1, "set": "train"}
+{"text": "please find the next one", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "set": "train"}
+{"text": "find the next one please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "set": "train"}
+{"text": "can you find the next one", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "set": "held_out"}
+{"text": "could you find the next one for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "set": "train"}
+{"text": "I want to find the next one", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_find_next"}, "set": "train"}
+{"text": "find the next one", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "go to anything", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "tier_max": 1, "set": "train"}
+{"text": "jump to a heading by name", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "tier_max": 1, "set": "held_out"}
+{"text": "take me somewhere", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "tier_max": 1, "set": "train"}
+{"text": "jump anywhere", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "tier_max": 1, "set": "train"}
+{"text": "Go to Anything", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "tier_max": 1, "set": "train"}
+{"text": "please go to anything", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "train"}
+{"text": "go to anything please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "held_out"}
+{"text": "can you go to anything", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "train"}
+{"text": "could you go to anything for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "train"}
+{"text": "I want to go to anything", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "train"}
+{"text": "go to anyting", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "train"}
+{"text": "jump to a heaing by name", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "held_out"}
+{"text": "take me somehere", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "train"}
+{"text": "jump anywere", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "train"}
+{"text": "Go to Anyting", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_go_to_anything"}, "set": "train"}
+{"text": "go to anything", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "go to line 120", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "tier_max": 1, "set": "held_out"}
+{"text": "jump to line 5", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "tier_max": 1, "set": "train"}
+{"text": "take me to line 40", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "tier_max": 1, "set": "train"}
+{"text": "go to line", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "tier_max": 1, "set": "train"}
+{"text": "line number", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "tier_max": 1, "set": "train"}
+{"text": "jump to line", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "tier_max": 1, "set": "held_out"}
+{"text": "Go to Line", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "tier_max": 1, "set": "train"}
+{"text": "please go to line 120", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "set": "train"}
+{"text": "go to line 120 please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "set": "train"}
+{"text": "can you go to line 120", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "set": "train"}
+{"text": "could you go to line 120 for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "set": "held_out"}
+{"text": "I want to go to line 120", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_goto_line"}, "set": "train"}
+{"text": "go to line 120", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "make the text bigger", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "bigger font", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "increase the font size", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "tier_max": 1, "set": "held_out"}
+{"text": "bigger", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "grow font", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "larger text", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "Bigger Text", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "tier_max": 1, "set": "train"}
+{"text": "please make the text bigger", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "set": "held_out"}
+{"text": "make the text bigger please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "set": "train"}
+{"text": "can you make the text bigger", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "set": "train"}
+{"text": "could you make the text bigger for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "set": "train"}
+{"text": "I want to make the text bigger", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_grow_font"}, "set": "train"}
+{"text": "incrase the font size", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_grow_font"}, "set": "held_out"}
+{"text": "make the text bigger", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "make this italic", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "tier_max": 1, "set": "train"}
+{"text": "put it in italics", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "tier_max": 1, "set": "train"}
+{"text": "italicise the selection", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "tier_max": 1, "set": "train"}
+{"text": "italic", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "tier_max": 1, "set": "held_out"}
+{"text": "make italic", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "tier_max": 1, "set": "train"}
+{"text": "italics", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "tier_max": 1, "set": "train"}
+{"text": "Italic", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "tier_max": 1, "set": "train"}
+{"text": "please make this italic", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "set": "train"}
+{"text": "make this italic please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "set": "held_out"}
+{"text": "can you make this italic", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "set": "train"}
+{"text": "could you make this italic for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "set": "train"}
+{"text": "I want to make this italic", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_italic"}, "set": "train"}
+{"text": "put it in itaics", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_italic"}, "set": "train"}
+{"text": "italcise the selection", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_italic"}, "set": "held_out"}
+{"text": "itaics", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_italic"}, "set": "train"}
+{"text": "make this italic", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "show me the headings", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "tier_max": 1, "set": "train"}
+{"text": "list the headings", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "tier_max": 1, "set": "train"}
+{"text": "open the outline", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "tier_max": 1, "set": "held_out"}
+{"text": "outline", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "tier_max": 1, "set": "train"}
+{"text": "outline navigator", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "tier_max": 1, "set": "train"}
+{"text": "show outline", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "tier_max": 1, "set": "train"}
+{"text": "list headings", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "tier_max": 1, "set": "train"}
+{"text": "Headings List", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "tier_max": 1, "set": "held_out"}
+{"text": "please show me the headings", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "show me the headings please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "can you show me the headings", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "could you show me the headings for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "I want to show me the headings", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_list_headings"}, "set": "held_out"}
+{"text": "show me the headngs", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "list the headngs", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "open the outine", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "outine", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "outline naviator", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_list_headings"}, "set": "held_out"}
+{"text": "show outine", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "list headngs", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "Headngs List", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_list_headings"}, "set": "train"}
+{"text": "show me the headings", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "make this lower case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "no capitals in this bit", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "change it to small letters", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "lowercase", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "lower case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "make lowercase", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "small letters", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "Lower Case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "tier_max": 1, "set": "train"}
+{"text": "please make this lower case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "set": "train"}
+{"text": "make this lower case please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "set": "train"}
+{"text": "can you make this lower case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "set": "held_out"}
+{"text": "could you make this lower case for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "set": "train"}
+{"text": "I want to make this lower case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_lower_case"}, "set": "train"}
+{"text": "no capials in this bit", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_lower_case"}, "set": "train"}
+{"text": "change it to small leters", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_lower_case"}, "set": "train"}
+{"text": "lowecase", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_lower_case"}, "set": "held_out"}
+{"text": "make lowecase", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_lower_case"}, "set": "train"}
+{"text": "small leters", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_lower_case"}, "set": "train"}
+{"text": "make this lower case", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "start a new document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "train"}
+{"text": "give me a blank page", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "held_out"}
+{"text": "new file please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "train"}
+{"text": "create", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "train"}
+{"text": "blank", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "train"}
+{"text": "fresh", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "train"}
+{"text": "new", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "held_out"}
+{"text": "new document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "train"}
+{"text": "new file", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "train"}
+{"text": "New Document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "tier_max": 1, "set": "train"}
+{"text": "please start a new document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "set": "train"}
+{"text": "start a new document please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "set": "held_out"}
+{"text": "can you start a new document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "set": "train"}
+{"text": "could you start a new document for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "set": "train"}
+{"text": "I want to start a new document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_new"}, "set": "train"}
+{"text": "start a new docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_new"}, "set": "train"}
+{"text": "new docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_new"}, "set": "held_out"}
+{"text": "New Docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_new"}, "set": "train"}
+{"text": "start a new document", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "go to the next bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "jump to my next bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "next bookmark please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "tier_max": 1, "set": "held_out"}
+{"text": "next bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "Next Bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "please go to the next bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "train"}
+{"text": "go to the next bookmark please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "train"}
+{"text": "can you go to the next bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "held_out"}
+{"text": "could you go to the next bookmark for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "train"}
+{"text": "I want to go to the next bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "train"}
+{"text": "go to the next bookark", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "train"}
+{"text": "jump to my next bookark", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "train"}
+{"text": "next bookark please", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "held_out"}
+{"text": "next bookark", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "train"}
+{"text": "Next Bookark", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_bookmark"}, "set": "train"}
+{"text": "go to the next bookmark", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "go to the next heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "jump to the next section", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "tier_max": 1, "set": "held_out"}
+{"text": "next heading please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "next heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "following heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "Next Heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "tier_max": 1, "set": "train"}
+{"text": "please go to the next heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "set": "held_out"}
+{"text": "go to the next heading please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "set": "train"}
+{"text": "can you go to the next heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "set": "train"}
+{"text": "could you go to the next heading for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "set": "train"}
+{"text": "I want to go to the next heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_heading"}, "set": "train"}
+{"text": "go to the next heaing", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_heading"}, "set": "held_out"}
+{"text": "jump to the next secion", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_heading"}, "set": "train"}
+{"text": "next heaing please", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_heading"}, "set": "train"}
+{"text": "next heaing", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_heading"}, "set": "train"}
+{"text": "follwing heading", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_heading"}, "set": "train"}
+{"text": "Next Heaing", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_heading"}, "set": "held_out"}
+{"text": "go to the next heading", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "go to the next spelling mistake", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "find the next typo", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "next misspelled word", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "next misspelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "tier_max": 1, "set": "held_out"}
+{"text": "next spelling mistake", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "next typo", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "Next Misspelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "tier_max": 1, "set": "train"}
+{"text": "please go to the next spelling mistake", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "train"}
+{"text": "go to the next spelling mistake please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "held_out"}
+{"text": "can you go to the next spelling mistake", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "train"}
+{"text": "could you go to the next spelling mistake for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "train"}
+{"text": "I want to go to the next spelling mistake", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "train"}
+{"text": "go to the next speling mistake", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "train"}
+{"text": "next missplled word", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "held_out"}
+{"text": "next missplling", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "train"}
+{"text": "next speling mistake", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "train"}
+{"text": "Next Missplling", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_next_misspelling"}, "set": "train"}
+{"text": "go to the next spelling mistake", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "open a document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "tier_max": 1, "set": "held_out"}
+{"text": "open a file from my folders", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "tier_max": 1, "set": "train"}
+{"text": "load a file", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "tier_max": 1, "set": "train"}
+{"text": "load", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "tier_max": 1, "set": "train"}
+{"text": "browse", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "tier_max": 1, "set": "train"}
+{"text": "open file", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "tier_max": 1, "set": "held_out"}
+{"text": "open document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "tier_max": 1, "set": "train"}
+{"text": "Open", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "tier_max": 1, "set": "train"}
+{"text": "please open a document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "set": "train"}
+{"text": "open a document please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "set": "train"}
+{"text": "can you open a document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "set": "held_out"}
+{"text": "could you open a document for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "set": "train"}
+{"text": "I want to open a document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_open"}, "set": "train"}
+{"text": "open a docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_open"}, "set": "train"}
+{"text": "open a file from my folers", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_open"}, "set": "train"}
+{"text": "open docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_open"}, "set": "held_out"}
+{"text": "open a document", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "go back a heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "jump to the previous section", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "previous heading please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "previous heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "tier_max": 1, "set": "held_out"}
+{"text": "prior heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "last heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "Previous Heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "tier_max": 1, "set": "train"}
+{"text": "please go back a heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "go back a heading please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "set": "held_out"}
+{"text": "can you go back a heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "could you go back a heading for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "I want to go back a heading", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "go back a heaing", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "jump to the prevous section", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_previous_heading"}, "set": "held_out"}
+{"text": "prevous heading please", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "prevous heading", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "prior heaing", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "last heaing", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_previous_heading"}, "set": "train"}
+{"text": "Prevous Heading", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_previous_heading"}, "set": "held_out"}
+{"text": "go back a heading", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "print this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "tier_max": 1, "set": "train"}
+{"text": "print the document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "tier_max": 1, "set": "train"}
+{"text": "send it to the printer", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "tier_max": 1, "set": "train"}
+{"text": "printer", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "tier_max": 1, "set": "held_out"}
+{"text": "paper", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "tier_max": 1, "set": "train"}
+{"text": "Print", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "tier_max": 1, "set": "train"}
+{"text": "please print this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "set": "train"}
+{"text": "print this please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "set": "train"}
+{"text": "can you print this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "set": "held_out"}
+{"text": "could you print this for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "set": "train"}
+{"text": "I want to print this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_print"}, "set": "train"}
+{"text": "print the docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_print"}, "set": "train"}
+{"text": "send it to the priter", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_print"}, "set": "train"}
+{"text": "priter", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_print"}, "set": "held_out"}
+{"text": "print this", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "redo that change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "tier_max": 1, "set": "train"}
+{"text": "put the change back", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "tier_max": 1, "set": "train"}
+{"text": "redo what I undid", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "tier_max": 1, "set": "train"}
+{"text": "restore", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "tier_max": 1, "set": "held_out"}
+{"text": "change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "tier_max": 1, "set": "train"}
+{"text": "redo", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "tier_max": 1, "set": "train"}
+{"text": "Redo", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "tier_max": 1, "set": "train"}
+{"text": "please redo that change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "set": "train"}
+{"text": "redo that change please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "set": "held_out"}
+{"text": "can you redo that change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "set": "train"}
+{"text": "could you redo that change for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "set": "train"}
+{"text": "I want to redo that change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_redo"}, "set": "train"}
+{"text": "resore", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_redo"}, "set": "train"}
+{"text": "redo that change", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "held_out"}
+{"text": "open my last document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "show my recent files", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "what was I working on", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "recent documents", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "recent files", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "tier_max": 1, "set": "held_out"}
+{"text": "last document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "Recent Documents", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "tier_max": 1, "set": "train"}
+{"text": "please open my last document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "set": "train"}
+{"text": "open my last document please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "set": "train"}
+{"text": "can you open my last document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "set": "held_out"}
+{"text": "could you open my last document for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "set": "train"}
+{"text": "I want to open my last document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_recent_documents"}, "set": "train"}
+{"text": "open my last docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_recent_documents"}, "set": "train"}
+{"text": "what was I woring on", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_recent_documents"}, "set": "train"}
+{"text": "recent docuents", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_recent_documents"}, "set": "held_out"}
+{"text": "last docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_recent_documents"}, "set": "train"}
+{"text": "Recent Docuents", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_recent_documents"}, "set": "train"}
+{"text": "open my last document", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "save this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "train"}
+{"text": "save my document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "held_out"}
+{"text": "keep my changes", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "train"}
+{"text": "write", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "train"}
+{"text": "store", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "train"}
+{"text": "keep", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "train"}
+{"text": "save file", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "held_out"}
+{"text": "save document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "train"}
+{"text": "save my work", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "train"}
+{"text": "Save", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "tier_max": 1, "set": "train"}
+{"text": "please save this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "set": "train"}
+{"text": "save this please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "set": "held_out"}
+{"text": "can you save this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "set": "train"}
+{"text": "could you save this for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "set": "train"}
+{"text": "I want to save this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save"}, "set": "train"}
+{"text": "save my docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_save"}, "set": "train"}
+{"text": "keep my chages", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_save"}, "set": "held_out"}
+{"text": "save docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_save"}, "set": "train"}
+{"text": "save this", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "save this under a new name", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "tier_max": 1, "set": "train"}
+{"text": "save a copy", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "tier_max": 1, "set": "train"}
+{"text": "save it somewhere else", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "tier_max": 1, "set": "held_out"}
+{"text": "duplicate", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "tier_max": 1, "set": "train"}
+{"text": "save copy", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "tier_max": 1, "set": "train"}
+{"text": "save under a new name", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "tier_max": 1, "set": "train"}
+{"text": "Save As", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "tier_max": 1, "set": "train"}
+{"text": "please save this under a new name", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "set": "held_out"}
+{"text": "save this under a new name please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "set": "train"}
+{"text": "can you save this under a new name", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "set": "train"}
+{"text": "could you save this under a new name for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "set": "train"}
+{"text": "I want to save this under a new name", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_save_as"}, "set": "train"}
+{"text": "save it somehere else", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_save_as"}, "set": "held_out"}
+{"text": "duplcate", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_save_as"}, "set": "train"}
+{"text": "save this under a new name", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "what have I selected", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "tier_max": 1, "set": "train"}
+{"text": "read me the selected text", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "tier_max": 1, "set": "train"}
+{"text": "say the selection", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "tier_max": 1, "set": "held_out"}
+{"text": "say selection", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "tier_max": 1, "set": "train"}
+{"text": "what is selected", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "tier_max": 1, "set": "train"}
+{"text": "read out the selection", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "tier_max": 1, "set": "train"}
+{"text": "Say Selection", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "tier_max": 1, "set": "train"}
+{"text": "please what have I selected", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "set": "held_out"}
+{"text": "what have I selected please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "can you what have I selected", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "could you what have I selected for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "I want to what have I selected", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "what have I seleted", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_say_selection"}, "set": "held_out"}
+{"text": "read me the seleted text", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "say the seletion", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "say seletion", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "what is seleted", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "read out the seletion", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_say_selection"}, "set": "held_out"}
+{"text": "Say Seletion", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_say_selection"}, "set": "train"}
+{"text": "what have I selected", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "make this sentence case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "tier_max": 1, "set": "train"}
+{"text": "fix the capitals like a sentence", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "tier_max": 1, "set": "train"}
+{"text": "sentence case please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "sentence case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "tier_max": 1, "set": "train"}
+{"text": "Sentence Case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "tier_max": 1, "set": "train"}
+{"text": "please make this sentence case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "set": "train"}
+{"text": "make this sentence case please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "set": "train"}
+{"text": "can you make this sentence case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "set": "held_out"}
+{"text": "could you make this sentence case for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "set": "train"}
+{"text": "I want to make this sentence case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_sentence_case"}, "set": "train"}
+{"text": "make this sentnce case", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_sentence_case"}, "set": "train"}
+{"text": "fix the capials like a sentence", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_sentence_case"}, "set": "train"}
+{"text": "sentnce case please", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_sentence_case"}, "set": "held_out"}
+{"text": "sentnce case", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_sentence_case"}, "set": "train"}
+{"text": "Sentnce Case", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_sentence_case"}, "set": "train"}
+{"text": "make this sentence case", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "bookmark this spot", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "put a bookmark here", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "tier_max": 1, "set": "held_out"}
+{"text": "remember this place", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "set bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "bookmark this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "add bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "mark this spot", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "tier_max": 1, "set": "held_out"}
+{"text": "Set Bookmark", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "tier_max": 1, "set": "train"}
+{"text": "please bookmark this spot", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "bookmark this spot please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "can you bookmark this spot", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "could you bookmark this spot for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "held_out"}
+{"text": "I want to bookmark this spot", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "bookark this spot", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "put a bookark here", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "remeber this place", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "set bookark", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "held_out"}
+{"text": "bookark this", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "add bookark", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "Set Bookark", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_set_bookmark"}, "set": "train"}
+{"text": "bookmark this spot", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "make the text smaller", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "tier_max": 1, "set": "held_out"}
+{"text": "smaller font", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "decrease the font size", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "smaller", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "shrink font", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "smaller text", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "tier_max": 1, "set": "held_out"}
+{"text": "Smaller Text", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "tier_max": 1, "set": "train"}
+{"text": "please make the text smaller", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "make the text smaller please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "can you make the text smaller", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "could you make the text smaller for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "set": "held_out"}
+{"text": "I want to make the text smaller", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "make the text smaler", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "smaler font", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "decrase the font size", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "smaler", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_shrink_font"}, "set": "held_out"}
+{"text": "smaler text", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "Smaler Text", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_shrink_font"}, "set": "train"}
+{"text": "make the text smaller", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "check my spelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "tier_max": 1, "set": "train"}
+{"text": "run the spell checker", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "tier_max": 1, "set": "held_out"}
+{"text": "are there any spelling mistakes", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "tier_max": 1, "set": "train"}
+{"text": "spell check", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "tier_max": 1, "set": "train"}
+{"text": "check spelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "tier_max": 1, "set": "train"}
+{"text": "spelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "tier_max": 1, "set": "train"}
+{"text": "Spelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "tier_max": 1, "set": "held_out"}
+{"text": "please check my spelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "check my spelling please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "can you check my spelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "could you check my spelling for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "I want to check my spelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_spell_review"}, "set": "held_out"}
+{"text": "check my speling", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "run the spell cheker", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "are there any speling mistakes", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "check speling", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "speling", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_spell_review"}, "set": "held_out"}
+{"text": "Speling", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_spell_review"}, "set": "train"}
+{"text": "check my spelling", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "how many words is this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "tier_max": 1, "set": "train"}
+{"text": "how long is this document", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "tier_max": 1, "set": "train"}
+{"text": "count the words", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "tier_max": 1, "set": "held_out"}
+{"text": "word count", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "tier_max": 1, "set": "train"}
+{"text": "count words", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "tier_max": 1, "set": "train"}
+{"text": "how many words", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "tier_max": 1, "set": "train"}
+{"text": "how long is this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "tier_max": 1, "set": "train"}
+{"text": "Word Count", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "tier_max": 1, "set": "held_out"}
+{"text": "please how many words is this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "set": "train"}
+{"text": "how many words is this please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "set": "train"}
+{"text": "can you how many words is this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "set": "train"}
+{"text": "could you how many words is this for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "set": "train"}
+{"text": "I want to how many words is this", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_statistics"}, "set": "held_out"}
+{"text": "how long is this docuent", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_statistics"}, "set": "train"}
+{"text": "how many words is this", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "make this title case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "tier_max": 1, "set": "train"}
+{"text": "capitalise each word", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "tier_max": 1, "set": "train"}
+{"text": "turn it into a title", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "title case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "tier_max": 1, "set": "train"}
+{"text": "Title Case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "tier_max": 1, "set": "train"}
+{"text": "please make this title case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "set": "train"}
+{"text": "make this title case please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "set": "train"}
+{"text": "can you make this title case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "set": "held_out"}
+{"text": "could you make this title case for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "set": "train"}
+{"text": "I want to make this title case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_title_case"}, "set": "train"}
+{"text": "capitlise each word", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_title_case"}, "set": "train"}
+{"text": "make this title case", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "tell me the headings as I move", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "tier_max": 1, "set": "held_out"}
+{"text": "stop announcing headings", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "announce headings", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "heading announcements", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "Say Headings As I Move", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "please tell me the headings as I move", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "held_out"}
+{"text": "tell me the headings as I move please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "train"}
+{"text": "can you tell me the headings as I move", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "train"}
+{"text": "could you tell me the headings as I move for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "train"}
+{"text": "I want to tell me the headings as I move", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "train"}
+{"text": "tell me the headngs as I move", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "held_out"}
+{"text": "stop annoucing headings", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "train"}
+{"text": "annonce headings", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "train"}
+{"text": "heading announements", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "train"}
+{"text": "Say Headngs As I Move", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_heading_announcements"}, "set": "train"}
+{"text": "tell me the headings as I move", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "held_out"}
+{"text": "check my spelling as I type", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "tier_max": 1, "set": "train"}
+{"text": "stop checking spelling while I type", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "tier_max": 1, "set": "train"}
+{"text": "live spelling on", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "tier_max": 1, "set": "train"}
+{"text": "live spelling", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "tier_max": 1, "set": "train"}
+{"text": "spell check as i type", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "tier_max": 1, "set": "held_out"}
+{"text": "Check Spelling As I Type", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "tier_max": 1, "set": "train"}
+{"text": "please check my spelling as I type", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "train"}
+{"text": "check my spelling as I type please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "train"}
+{"text": "can you check my spelling as I type", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "train"}
+{"text": "could you check my spelling as I type for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "held_out"}
+{"text": "I want to check my spelling as I type", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "train"}
+{"text": "check my speling as I type", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "train"}
+{"text": "stop checing spelling while I type", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "train"}
+{"text": "live speling on", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "train"}
+{"text": "live speling", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "held_out"}
+{"text": "Check Speling As I Type", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_live_spelling"}, "set": "train"}
+{"text": "check my spelling as I type", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "turn the sounds off", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "train"}
+{"text": "stop the beeps", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "train"}
+{"text": "sounds back on", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "held_out"}
+{"text": "sounds", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "train"}
+{"text": "sound effects", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "train"}
+{"text": "mute sounds", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "train"}
+{"text": "sounds off", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "train"}
+{"text": "sounds on", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "held_out"}
+{"text": "Sounds On or Off", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "tier_max": 1, "set": "train"}
+{"text": "please turn the sounds off", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "set": "train"}
+{"text": "turn the sounds off please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "set": "train"}
+{"text": "can you turn the sounds off", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "set": "train"}
+{"text": "could you turn the sounds off for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "set": "held_out"}
+{"text": "I want to turn the sounds off", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "set": "train"}
+{"text": "sound effcts", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_quiet_mode"}, "set": "train"}
+{"text": "turn the sounds off", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "turn word wrap on", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "stop wrapping lines", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "tier_max": 1, "set": "held_out"}
+{"text": "wrap the long lines", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "word wrap", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "line wrap", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "soft wrap", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "toggle soft wrap", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "tier_max": 1, "set": "held_out"}
+{"text": "Word Wrap", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "tier_max": 1, "set": "train"}
+{"text": "please turn word wrap on", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "set": "train"}
+{"text": "turn word wrap on please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "set": "train"}
+{"text": "can you turn word wrap on", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "set": "train"}
+{"text": "could you turn word wrap on for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "set": "held_out"}
+{"text": "I want to turn word wrap on", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_toggle_wrap"}, "set": "train"}
+{"text": "stop wraping lines", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_toggle_wrap"}, "set": "train"}
+{"text": "turn word wrap on", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "undo the last change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "tier_max": 1, "set": "train"}
+{"text": "oops take that back", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "tier_max": 1, "set": "held_out"}
+{"text": "revert my last edit", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "tier_max": 1, "set": "train"}
+{"text": "revert", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "tier_max": 1, "set": "train"}
+{"text": "back", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "tier_max": 1, "set": "train"}
+{"text": "mistake", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "tier_max": 1, "set": "train"}
+{"text": "take that back", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "tier_max": 1, "set": "held_out"}
+{"text": "Undo", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "tier_max": 1, "set": "train"}
+{"text": "please undo the last change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "set": "train"}
+{"text": "undo the last change please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "set": "train"}
+{"text": "can you undo the last change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "set": "train"}
+{"text": "could you undo the last change for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "set": "held_out"}
+{"text": "I want to undo the last change", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_undo"}, "set": "train"}
+{"text": "misake", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_undo"}, "set": "train"}
+{"text": "undo the last change", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "make this all capitals", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "change it to upper case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "shout this part", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "uppercase", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "upper case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "make uppercase", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "all capitals", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "tier_max": 1, "set": "held_out"}
+{"text": "Upper Case", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "tier_max": 1, "set": "train"}
+{"text": "please make this all capitals", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "set": "train"}
+{"text": "make this all capitals please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "set": "train"}
+{"text": "can you make this all capitals", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "set": "train"}
+{"text": "could you make this all capitals for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "set": "held_out"}
+{"text": "I want to make this all capitals", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_upper_case"}, "set": "train"}
+{"text": "make this all capials", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_upper_case"}, "set": "train"}
+{"text": "uppecase", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_upper_case"}, "set": "train"}
+{"text": "make uppecase", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_upper_case"}, "set": "train"}
+{"text": "all capials", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_upper_case"}, "set": "held_out"}
+{"text": "make this all capitals", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_zoom_in", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "zoom in", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "tier_max": 1, "set": "train"}
+{"text": "make it larger on screen", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "tier_max": 1, "set": "train"}
+{"text": "magnify the text", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "tier_max": 1, "set": "train"}
+{"text": "larger on screen", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "tier_max": 1, "set": "held_out"}
+{"text": "Zoom In", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "tier_max": 1, "set": "train"}
+{"text": "please zoom in", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "set": "train"}
+{"text": "zoom in please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "set": "train"}
+{"text": "can you zoom in", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "set": "train"}
+{"text": "could you zoom in for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "set": "held_out"}
+{"text": "I want to zoom in", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_in"}, "set": "train"}
+{"text": "magify the text", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_zoom_in"}, "set": "train"}
+{"text": "zoom in", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_out", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "zoom out", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "tier_max": 1, "set": "train"}
+{"text": "make it smaller on screen", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "tier_max": 1, "set": "held_out"}
+{"text": "less magnified", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "tier_max": 1, "set": "train"}
+{"text": "smaller on screen", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "tier_max": 1, "set": "train"}
+{"text": "Zoom Out", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "tier_max": 1, "set": "train"}
+{"text": "please zoom out", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "set": "train"}
+{"text": "zoom out please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "set": "held_out"}
+{"text": "can you zoom out", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "set": "train"}
+{"text": "could you zoom out for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "set": "train"}
+{"text": "I want to zoom out", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_out"}, "set": "train"}
+{"text": "make it smaler on screen", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_zoom_out"}, "set": "train"}
+{"text": "less magnfied", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_zoom_out"}, "set": "held_out"}
+{"text": "smaler on screen", "app": "lite", "mode": "misheard", "expect": {"id": "lite.cmd_zoom_out"}, "set": "train"}
+{"text": "zoom out", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_reset"], "set": "train"}
+{"text": "reset the zoom", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "tier_max": 1, "set": "train"}
+{"text": "back to normal size", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "tier_max": 1, "set": "train"}
+{"text": "normal zoom please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "tier_max": 1, "set": "held_out"}
+{"text": "reset zoom", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "tier_max": 1, "set": "train"}
+{"text": "normal zoom", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "tier_max": 1, "set": "train"}
+{"text": "actual size", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "tier_max": 1, "set": "train"}
+{"text": "Normal Zoom", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "tier_max": 1, "set": "train"}
+{"text": "please reset the zoom", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "set": "held_out"}
+{"text": "reset the zoom please", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "set": "train"}
+{"text": "can you reset the zoom", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "set": "train"}
+{"text": "could you reset the zoom for me", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "set": "train"}
+{"text": "I want to reset the zoom", "app": "lite", "mode": "typed", "expect": {"id": "lite.cmd_zoom_reset"}, "set": "train"}
+{"text": "reset the zoom", "app": "lite", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["lite.cmd_say_time", "lite.cmd_word_summary", "lite.cmd_bold", "lite.cmd_clear_bookmarks", "lite.cmd_close", "lite.cmd_command_palette", "lite.cmd_what_can_i_say_here", "lite.cmd_find", "lite.cmd_find_next", "lite.cmd_go_to_anything", "lite.cmd_goto_line", "lite.cmd_grow_font", "lite.cmd_italic", "lite.cmd_list_headings", "lite.cmd_lower_case", "lite.cmd_new", "lite.cmd_next_bookmark", "lite.cmd_next_heading", "lite.cmd_next_misspelling", "lite.cmd_open", "lite.cmd_previous_heading", "lite.cmd_print", "lite.cmd_redo", "lite.cmd_recent_documents", "lite.cmd_save", "lite.cmd_save_as", "lite.cmd_say_selection", "lite.cmd_sentence_case", "lite.cmd_set_bookmark", "lite.cmd_shrink_font", "lite.cmd_spell_review", "lite.cmd_statistics", "lite.cmd_title_case", "lite.cmd_toggle_heading_announcements", "lite.cmd_toggle_live_spelling", "lite.cmd_toggle_quiet_mode", "lite.cmd_toggle_wrap", "lite.cmd_undo", "lite.cmd_upper_case", "lite.cmd_zoom_in", "lite.cmd_zoom_out"], "set": "held_out"}
+{"text": "flibbertigibbet", "app": "lite", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "purple monkey dishwasher", "app": "lite", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "zxcv", "app": "lite", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "the quick brown fox", "app": "lite", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "banana", "app": "lite", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "held_out"}
+{"text": "hmm", "app": "lite", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "lorem ipsum dolor", "app": "lite", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "seventeen giraffes", "app": "lite", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "why is the sky blue", "app": "lite", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "write me a poem about autumn", "app": "lite", "mode": "typed", "expect": {"refuse": "ask"}, "set": "held_out"}
+{"text": "who won the world cup", "app": "lite", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "explain photosynthesis", "app": "lite", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "tell me a joke", "app": "lite", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "how do magnets work", "app": "lite", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "translate hello into French", "app": "lite", "mode": "typed", "expect": {"refuse": "ask"}, "set": "held_out"}
+{"text": "summarize the news", "app": "lite", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "delete everything", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "send this to my boss", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "publish it", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "upload my files", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "sign me in to ChatGPT", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "erase all my work", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "uninstall the app", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "push to GitHub", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "updates", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "new version", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "Say or Type a Command", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "clipboard tray", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "multi copy", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "quit", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "leave", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "web address", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "link", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "settings", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "options", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "theme", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "light", "app": "lite", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "go back to live", "app": "lite", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "radio"}, "set": "train"}
+{"text": "what song is this", "app": "lite", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "radio"}, "set": "train"}
+{"text": "wake me at 7", "app": "lite", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "radio"}, "set": "held_out"}

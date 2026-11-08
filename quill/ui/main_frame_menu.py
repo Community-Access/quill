@@ -1871,6 +1871,7 @@ class MenuBuilderMixin:
             self._id_palette,
             self._menu_label(_("&Command Palette..."), "app.command_palette"),
         )
+        self._append_command_key_item(tools_menu)  # main_frame_command_key
         tools_menu.Append(
             self._id_open_story_studio,
             self._menu_label(_("Story &Studio..."), "story.open_studio"),
@@ -3141,7 +3142,7 @@ class MenuBuilderMixin:
         )
         help_menu.Append(
             self._id_context_help,
-            self._menu_label(_("&What Can I Do Here?"), "help.what_can_i_do_here"),
+            self._menu_label(_("&What Can I Say Here?"), "help.what_can_i_do_here"),
         )
         help_menu.Append(
             self._id_announce_context_shortcuts,

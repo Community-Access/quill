@@ -341,8 +341,10 @@ The same submenu has more windows:
 - **Dictation Context for This Document...** (`Ctrl+Alt+Shift+PageUp`) tells
   QUILL what this document is, in a sentence. See "Dictation Context for This
   Document".
-- **Speak a Command** (`F11`) makes the next thing you say a command, as if you
-  had said QUILL first. Press it twice for command mode. See "The command word".
+- **Next Phrase Is a Dictation Command**, on the Dictation menu, makes the next
+  thing you say a dictation command, as if you had said QUILL first. Choose it
+  twice for command mode. It has no key: F11 is the Command Key now, which runs
+  QUILL's commands and never touches dictation. See "The command word".
 - **Review Dictation...** (`Shift+F4`) holds the last phrase in a window to
   read, change and insert once. See "Review before inserting".
 
@@ -359,7 +361,6 @@ Here are the dictation keys in one place:
 | My Words and Phrases | `Alt+Shift+F10` |
 | Dictation Settings | `Alt+Shift+F6` |
 | Tidy Dictated Text | `Ctrl+F3` |
-| Speak a Command | `F11` |
 | Review Dictation | `Shift+F4` |
 
 A few things that are good to know while you talk:
@@ -405,10 +406,11 @@ command word first: **"QUILL scratch that"**, **"QUILL select the cat"**,
   until you say **"dictation mode"**. If you give no command for eight seconds,
   command mode ends by itself with a falling tone, and what you say next is
   written again. The status bar says "Command mode" while it lasts.
-- **Speak a Command** (`F11`) does the same from the keyboard. Press it and
-  the next thing you say is a command. Press it twice for command mode, and
-  once more to go back to dictation. If dictation is off, it starts dictation
-  first.
+- **Next Phrase Is a Dictation Command**, on the Dictation menu, does the same
+  without the word. Choose it and the next thing you say is a command. Choose
+  it twice for command mode, and once more to go back to dictation. If
+  dictation is off, it starts dictation first. It used to be Speak a Command on
+  F11; F11 is now Say or Type a Command, which is for QUILL's own commands.
 
 Three choices in **More Dictation Settings** go with it: the command word
 itself (`Alt+C`; empty means no spoken command word, so only `F11` gives

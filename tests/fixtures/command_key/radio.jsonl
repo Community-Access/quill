@@ -1,0 +1,521 @@
+{"text": "play the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "train"}
+{"text": "pause it", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "train"}
+{"text": "carry on playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "train"}
+{"text": "play", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "train"}
+{"text": "pause", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "held_out"}
+{"text": "resume", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "train"}
+{"text": "play pause", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "train"}
+{"text": "start the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "train"}
+{"text": "Play or Pause", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "tier_max": 1, "set": "train"}
+{"text": "please play the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "set": "held_out"}
+{"text": "play the radio please", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "set": "train"}
+{"text": "can you play the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "set": "train"}
+{"text": "could you play the radio for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "set": "train"}
+{"text": "I want to play the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_pause"}, "set": "train"}
+{"text": "carry on plaing", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_pause"}, "set": "held_out"}
+{"text": "play the radio", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "stop the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "tier_max": 1, "set": "train"}
+{"text": "turn the radio off", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "tier_max": 1, "set": "train"}
+{"text": "stop playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "tier_max": 1, "set": "train"}
+{"text": "stop", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "tier_max": 1, "set": "held_out"}
+{"text": "turn it off", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "tier_max": 1, "set": "train"}
+{"text": "silence", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "tier_max": 1, "set": "train"}
+{"text": "Stop", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "tier_max": 1, "set": "train"}
+{"text": "please stop the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "set": "train"}
+{"text": "stop the radio please", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "set": "held_out"}
+{"text": "can you stop the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "set": "train"}
+{"text": "could you stop the radio for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "set": "train"}
+{"text": "I want to stop the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop"}, "set": "train"}
+{"text": "stop plaing", "app": "radio", "mode": "misheard", "expect": {"id": "radio.stop"}, "set": "train"}
+{"text": "silnce", "app": "radio", "mode": "misheard", "expect": {"id": "radio.stop"}, "set": "held_out"}
+{"text": "stop the radio", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "play the last station", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "tier_max": 1, "set": "train"}
+{"text": "go back to the station I had on", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "tier_max": 1, "set": "train"}
+{"text": "play what I was listening to", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "tier_max": 1, "set": "train"}
+{"text": "last station", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "tier_max": 1, "set": "held_out"}
+{"text": "previous station", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "tier_max": 1, "set": "train"}
+{"text": "play last", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "tier_max": 1, "set": "train"}
+{"text": "Play the Last Station", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "tier_max": 1, "set": "train"}
+{"text": "please play the last station", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "play the last station please", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "set": "held_out"}
+{"text": "can you play the last station", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "could you play the last station for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "I want to play the last station", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "play the last staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "go back to the staion I had on", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_last"}, "set": "held_out"}
+{"text": "play what I was listning to", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "last staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "prevous station", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "Play the Last Staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_last"}, "set": "train"}
+{"text": "play the last station", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "held_out"}
+{"text": "play favourite 3", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "play my first favourite", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "put on a favourite station", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "favourite", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "favorite", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "tier_max": 1, "set": "held_out"}
+{"text": "play favourite", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "play favorite", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "Play a Favourite", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "please play favourite 3", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "play favourite 3 please", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "set": "held_out"}
+{"text": "can you play favourite 3", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "could you play favourite 3 for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "I want to play favourite 3", "app": "radio", "mode": "typed", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "play favorite 3", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "play my first favorite", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_favorite"}, "set": "held_out"}
+{"text": "put on a favorite station", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "favorite", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "favoite", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "play favorite", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "play favoite", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_favorite"}, "set": "held_out"}
+{"text": "Play a Favorite", "app": "radio", "mode": "misheard", "expect": {"id": "radio.play_favorite"}, "set": "train"}
+{"text": "play favourite 3", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "add this station to my favourites", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "make this a favourite", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "take this off my favourites", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "tier_max": 1, "set": "held_out"}
+{"text": "add to favourites", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "add to favorites", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "remove from favourites", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "favourite this", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "tier_max": 1, "set": "train"}
+{"text": "Favourite This Station", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "tier_max": 1, "set": "held_out"}
+{"text": "please add this station to my favourites", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "add this station to my favourites please", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "can you add this station to my favourites", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "could you add this station to my favourites for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "I want to add this station to my favourites", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "held_out"}
+{"text": "add this station to my favouites", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "make this a favorite", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "take this off my favouites", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "add to favouites", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "add to favoites", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "held_out"}
+{"text": "remove from favouites", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "favorite this", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "Favorite This Station", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_playing_favorite"}, "set": "train"}
+{"text": "add this station to my favourites", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "turn it up a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "tier_max": 1, "set": "held_out"}
+{"text": "much louder", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "tier_max": 1, "set": "train"}
+{"text": "I can't hear it", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "tier_max": 1, "set": "train"}
+{"text": "louder", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "tier_max": 1, "set": "train"}
+{"text": "volume up", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "tier_max": 1, "set": "train"}
+{"text": "turn it up", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "tier_max": 1, "set": "held_out"}
+{"text": "increase volume", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "tier_max": 1, "set": "train"}
+{"text": "Volume Up", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "tier_max": 1, "set": "train"}
+{"text": "please turn it up a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "set": "train"}
+{"text": "turn it up a bit please", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "set": "train"}
+{"text": "can you turn it up a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "set": "held_out"}
+{"text": "could you turn it up a bit for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "set": "train"}
+{"text": "I want to turn it up a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_up"}, "set": "train"}
+{"text": "incrase volume", "app": "radio", "mode": "misheard", "expect": {"id": "radio.volume_up"}, "set": "train"}
+{"text": "turn it up a bit", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "turn it down a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "held_out"}
+{"text": "much quieter", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "train"}
+{"text": "it's too loud", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "train"}
+{"text": "quieter", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "train"}
+{"text": "softer", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "train"}
+{"text": "volume down", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "held_out"}
+{"text": "turn it down", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "train"}
+{"text": "decrease volume", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "train"}
+{"text": "Volume Down", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "tier_max": 1, "set": "train"}
+{"text": "please turn it down a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "set": "train"}
+{"text": "turn it down a bit please", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "set": "held_out"}
+{"text": "can you turn it down a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "set": "train"}
+{"text": "could you turn it down a bit for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "set": "train"}
+{"text": "I want to turn it down a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_down"}, "set": "train"}
+{"text": "much quiter", "app": "radio", "mode": "misheard", "expect": {"id": "radio.volume_down"}, "set": "train"}
+{"text": "quiter", "app": "radio", "mode": "misheard", "expect": {"id": "radio.volume_down"}, "set": "held_out"}
+{"text": "decrase volume", "app": "radio", "mode": "misheard", "expect": {"id": "radio.volume_down"}, "set": "train"}
+{"text": "turn it down a bit", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "mute the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "unmute it", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "silence it for a moment", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "tier_max": 1, "set": "held_out"}
+{"text": "mute", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "unmute", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "mute toggle", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "Mute", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "please mute the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "set": "held_out"}
+{"text": "mute the radio please", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "set": "train"}
+{"text": "can you mute the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "set": "train"}
+{"text": "could you mute the radio for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "set": "train"}
+{"text": "I want to mute the radio", "app": "radio", "mode": "typed", "expect": {"id": "radio.mute_toggle"}, "set": "train"}
+{"text": "silnce it for a moment", "app": "radio", "mode": "misheard", "expect": {"id": "radio.mute_toggle"}, "set": "held_out"}
+{"text": "mute the radio", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "boost this quiet station", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "tier_max": 1, "set": "train"}
+{"text": "turn the boost on", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "tier_max": 1, "set": "train"}
+{"text": "stop boosting the volume", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "tier_max": 1, "set": "train"}
+{"text": "boost", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "tier_max": 1, "set": "held_out"}
+{"text": "volume boost", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "tier_max": 1, "set": "train"}
+{"text": "boost the volume", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "tier_max": 1, "set": "train"}
+{"text": "Volume Boost", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "tier_max": 1, "set": "train"}
+{"text": "please boost this quiet station", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "set": "train"}
+{"text": "boost this quiet station please", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "set": "held_out"}
+{"text": "can you boost this quiet station", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "set": "train"}
+{"text": "could you boost this quiet station for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "set": "train"}
+{"text": "I want to boost this quiet station", "app": "radio", "mode": "typed", "expect": {"id": "radio.volume_boost"}, "set": "train"}
+{"text": "boost this quiet staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.volume_boost"}, "set": "train"}
+{"text": "stop boosing the volume", "app": "radio", "mode": "misheard", "expect": {"id": "radio.volume_boost"}, "set": "held_out"}
+{"text": "boost this quiet station", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "skip back 30 seconds", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "tier_max": 1, "set": "train"}
+{"text": "go back a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "tier_max": 1, "set": "train"}
+{"text": "rewind", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "tier_max": 1, "set": "train"}
+{"text": "go back", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "tier_max": 1, "set": "held_out"}
+{"text": "skip back", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "tier_max": 1, "set": "train"}
+{"text": "back up", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "tier_max": 1, "set": "train"}
+{"text": "Rewind", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "tier_max": 1, "set": "train"}
+{"text": "please skip back 30 seconds", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "set": "train"}
+{"text": "skip back 30 seconds please", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "set": "held_out"}
+{"text": "can you skip back 30 seconds", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "set": "train"}
+{"text": "could you skip back 30 seconds for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "set": "train"}
+{"text": "I want to skip back 30 seconds", "app": "radio", "mode": "typed", "expect": {"id": "radio.rewind"}, "set": "train"}
+{"text": "skip back 30 secnds", "app": "radio", "mode": "misheard", "expect": {"id": "radio.rewind"}, "set": "train"}
+{"text": "skip back 30 seconds", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "held_out"}
+{"text": "skip ahead 30 seconds", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "tier_max": 1, "set": "train"}
+{"text": "go forward a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "tier_max": 1, "set": "train"}
+{"text": "fast forward", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "tier_max": 1, "set": "train"}
+{"text": "forward", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "tier_max": 1, "set": "train"}
+{"text": "skip ahead", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "tier_max": 1, "set": "held_out"}
+{"text": "skip forward", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "tier_max": 1, "set": "train"}
+{"text": "Fast Forward", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "tier_max": 1, "set": "train"}
+{"text": "please skip ahead 30 seconds", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "skip ahead 30 seconds please", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "can you skip ahead 30 seconds", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "set": "held_out"}
+{"text": "could you skip ahead 30 seconds for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "I want to skip ahead 30 seconds", "app": "radio", "mode": "typed", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "skip ahead 30 secnds", "app": "radio", "mode": "misheard", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "go forard a bit", "app": "radio", "mode": "misheard", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "fast forard", "app": "radio", "mode": "misheard", "expect": {"id": "radio.forward"}, "set": "held_out"}
+{"text": "forard", "app": "radio", "mode": "misheard", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "skip forard", "app": "radio", "mode": "misheard", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "Fast Forard", "app": "radio", "mode": "misheard", "expect": {"id": "radio.forward"}, "set": "train"}
+{"text": "skip ahead 30 seconds", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "go back to live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "tier_max": 1, "set": "held_out"}
+{"text": "jump to the live broadcast", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "tier_max": 1, "set": "train"}
+{"text": "catch up to live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "tier_max": 1, "set": "train"}
+{"text": "live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "tier_max": 1, "set": "train"}
+{"text": "jump to live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "tier_max": 1, "set": "train"}
+{"text": "go live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "tier_max": 1, "set": "held_out"}
+{"text": "back to live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "tier_max": 1, "set": "train"}
+{"text": "Jump to Live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "tier_max": 1, "set": "train"}
+{"text": "please go back to live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "set": "train"}
+{"text": "go back to live please", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "set": "train"}
+{"text": "can you go back to live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "set": "held_out"}
+{"text": "could you go back to live for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "set": "train"}
+{"text": "I want to go back to live", "app": "radio", "mode": "typed", "expect": {"id": "radio.jump_to_live"}, "set": "train"}
+{"text": "jump to the live broacast", "app": "radio", "mode": "misheard", "expect": {"id": "radio.jump_to_live"}, "set": "train"}
+{"text": "go back to live", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "what song is this", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "tier_max": 1, "set": "held_out"}
+{"text": "identify this song", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "tier_max": 1, "set": "train"}
+{"text": "who sings this", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "tier_max": 1, "set": "train"}
+{"text": "identify song", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "tier_max": 1, "set": "train"}
+{"text": "name that tune", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "tier_max": 1, "set": "train"}
+{"text": "Identify Song", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "tier_max": 1, "set": "held_out"}
+{"text": "please what song is this", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "set": "train"}
+{"text": "what song is this please", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "set": "train"}
+{"text": "can you what song is this", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "set": "train"}
+{"text": "could you what song is this for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "set": "train"}
+{"text": "I want to what song is this", "app": "radio", "mode": "typed", "expect": {"id": "radio.identify_song"}, "set": "held_out"}
+{"text": "idenify this song", "app": "radio", "mode": "misheard", "expect": {"id": "radio.identify_song"}, "set": "train"}
+{"text": "idenify song", "app": "radio", "mode": "misheard", "expect": {"id": "radio.identify_song"}, "set": "train"}
+{"text": "Idenify Song", "app": "radio", "mode": "misheard", "expect": {"id": "radio.identify_song"}, "set": "train"}
+{"text": "what song is this", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "what's playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "tier_max": 1, "set": "held_out"}
+{"text": "what station is this", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "tier_max": 1, "set": "train"}
+{"text": "tell me what is on", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "tier_max": 1, "set": "train"}
+{"text": "whats playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "tier_max": 1, "set": "train"}
+{"text": "what is playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "tier_max": 1, "set": "train"}
+{"text": "now playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "tier_max": 1, "set": "held_out"}
+{"text": "what's this", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "tier_max": 1, "set": "train"}
+{"text": "What's Playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "tier_max": 1, "set": "train"}
+{"text": "please what's playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "what's playing please", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "can you what's playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "set": "held_out"}
+{"text": "could you what's playing for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "I want to what's playing", "app": "radio", "mode": "typed", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "what's plaing", "app": "radio", "mode": "misheard", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "what staion is this", "app": "radio", "mode": "misheard", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "whats plaing", "app": "radio", "mode": "misheard", "expect": {"id": "radio.whats_playing_details"}, "set": "held_out"}
+{"text": "what is plaing", "app": "radio", "mode": "misheard", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "now plaing", "app": "radio", "mode": "misheard", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "What's Plaing", "app": "radio", "mode": "misheard", "expect": {"id": "radio.whats_playing_details"}, "set": "train"}
+{"text": "what's playing", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "what played earlier", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "tier_max": 1, "set": "held_out"}
+{"text": "show the song history", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "tier_max": 1, "set": "train"}
+{"text": "what was the last song", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "tier_max": 1, "set": "train"}
+{"text": "song history", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "tier_max": 1, "set": "train"}
+{"text": "recent songs", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "tier_max": 1, "set": "train"}
+{"text": "Song History", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "tier_max": 1, "set": "held_out"}
+{"text": "please what played earlier", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "set": "train"}
+{"text": "what played earlier please", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "set": "train"}
+{"text": "can you what played earlier", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "set": "train"}
+{"text": "could you what played earlier for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "set": "train"}
+{"text": "I want to what played earlier", "app": "radio", "mode": "typed", "expect": {"id": "radio.song_history"}, "set": "held_out"}
+{"text": "what played earier", "app": "radio", "mode": "misheard", "expect": {"id": "radio.song_history"}, "set": "train"}
+{"text": "show the song hisory", "app": "radio", "mode": "misheard", "expect": {"id": "radio.song_history"}, "set": "train"}
+{"text": "song hisory", "app": "radio", "mode": "misheard", "expect": {"id": "radio.song_history"}, "set": "train"}
+{"text": "Song Hisory", "app": "radio", "mode": "misheard", "expect": {"id": "radio.song_history"}, "set": "train"}
+{"text": "what played earlier", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "held_out"}
+{"text": "show me the lyrics", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "tier_max": 1, "set": "train"}
+{"text": "what are the words to this", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "tier_max": 1, "set": "train"}
+{"text": "lyrics please", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "tier_max": 1, "set": "train"}
+{"text": "lyrics", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "tier_max": 1, "set": "train"}
+{"text": "song words", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "tier_max": 1, "set": "held_out"}
+{"text": "show lyrics", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "tier_max": 1, "set": "train"}
+{"text": "Lyrics", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "tier_max": 1, "set": "train"}
+{"text": "please show me the lyrics", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "set": "train"}
+{"text": "show me the lyrics please", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "set": "train"}
+{"text": "can you show me the lyrics", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "set": "held_out"}
+{"text": "could you show me the lyrics for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "set": "train"}
+{"text": "I want to show me the lyrics", "app": "radio", "mode": "typed", "expect": {"id": "radio.lyrics"}, "set": "train"}
+{"text": "show me the lyrics", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "browse the stations", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "tier_max": 1, "set": "train"}
+{"text": "find me a station", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "tier_max": 1, "set": "held_out"}
+{"text": "show me the stations", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "tier_max": 1, "set": "train"}
+{"text": "browse", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "tier_max": 1, "set": "train"}
+{"text": "browse stations", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "tier_max": 1, "set": "train"}
+{"text": "station list", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "tier_max": 1, "set": "train"}
+{"text": "find a station", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "tier_max": 1, "set": "held_out"}
+{"text": "Browse Stations", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "tier_max": 1, "set": "train"}
+{"text": "please browse the stations", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "browse the stations please", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "can you browse the stations", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "could you browse the stations for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "set": "held_out"}
+{"text": "I want to browse the stations", "app": "radio", "mode": "typed", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "browse the statons", "app": "radio", "mode": "misheard", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "find me a staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "show me the statons", "app": "radio", "mode": "misheard", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "browse statons", "app": "radio", "mode": "misheard", "expect": {"id": "radio.browse"}, "set": "held_out"}
+{"text": "staion list", "app": "radio", "mode": "misheard", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "find a staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "Browse Statons", "app": "radio", "mode": "misheard", "expect": {"id": "radio.browse"}, "set": "train"}
+{"text": "browse the stations", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "find the streams on a website", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "tier_max": 1, "set": "held_out"}
+{"text": "get a station from a web page", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "tier_max": 1, "set": "train"}
+{"text": "look for streams on a site", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "tier_max": 1, "set": "train"}
+{"text": "find streams", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "tier_max": 1, "set": "train"}
+{"text": "streams from a website", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "tier_max": 1, "set": "train"}
+{"text": "Find Streams on a Website", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "tier_max": 1, "set": "held_out"}
+{"text": "please find the streams on a website", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "find the streams on a website please", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "can you find the streams on a website", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "could you find the streams on a website for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "I want to find the streams on a website", "app": "radio", "mode": "typed", "expect": {"id": "radio.find_streams"}, "set": "held_out"}
+{"text": "find the strams on a website", "app": "radio", "mode": "misheard", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "get a staion from a web page", "app": "radio", "mode": "misheard", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "look for strams on a site", "app": "radio", "mode": "misheard", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "find strams", "app": "radio", "mode": "misheard", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "strams from a website", "app": "radio", "mode": "misheard", "expect": {"id": "radio.find_streams"}, "set": "held_out"}
+{"text": "Find Strams on a Website", "app": "radio", "mode": "misheard", "expect": {"id": "radio.find_streams"}, "set": "train"}
+{"text": "find the streams on a website", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "what's on right now", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "tier_max": 1, "set": "train"}
+{"text": "show what is on now", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "tier_max": 1, "set": "train"}
+{"text": "what programmes are on", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "tier_max": 1, "set": "held_out"}
+{"text": "on now", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "tier_max": 1, "set": "train"}
+{"text": "whats on now", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "tier_max": 1, "set": "train"}
+{"text": "schedule", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "tier_max": 1, "set": "train"}
+{"text": "On Now", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "tier_max": 1, "set": "train"}
+{"text": "please what's on right now", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "set": "held_out"}
+{"text": "what's on right now please", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "set": "train"}
+{"text": "can you what's on right now", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "set": "train"}
+{"text": "could you what's on right now for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "set": "train"}
+{"text": "I want to what's on right now", "app": "radio", "mode": "typed", "expect": {"id": "radio.on_now"}, "set": "train"}
+{"text": "what progrmmes are on", "app": "radio", "mode": "misheard", "expect": {"id": "radio.on_now"}, "set": "held_out"}
+{"text": "scheule", "app": "radio", "mode": "misheard", "expect": {"id": "radio.on_now"}, "set": "train"}
+{"text": "what's on right now", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "record a station", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "tier_max": 1, "set": "train"}
+{"text": "record the jazz station", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "tier_max": 1, "set": "train"}
+{"text": "set up a recording", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "tier_max": 1, "set": "held_out"}
+{"text": "record station", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "tier_max": 1, "set": "train"}
+{"text": "Record a Station", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "tier_max": 1, "set": "train"}
+{"text": "please record a station", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "set": "train"}
+{"text": "record a station please", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "set": "train"}
+{"text": "can you record a station", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "set": "held_out"}
+{"text": "could you record a station for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "set": "train"}
+{"text": "I want to record a station", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_station"}, "set": "train"}
+{"text": "record a staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_station"}, "set": "train"}
+{"text": "record the jazz staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_station"}, "set": "train"}
+{"text": "set up a recoding", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_station"}, "set": "held_out"}
+{"text": "record staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_station"}, "set": "train"}
+{"text": "Record a Staion", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_station"}, "set": "train"}
+{"text": "record a station", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "record this", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "start recording", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "tier_max": 1, "set": "held_out"}
+{"text": "stop the recording", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "record", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "stop recording", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "Record or Stop Recording", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "tier_max": 1, "set": "train"}
+{"text": "please record this", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "set": "held_out"}
+{"text": "record this please", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "set": "train"}
+{"text": "can you record this", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "set": "train"}
+{"text": "could you record this for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "set": "train"}
+{"text": "I want to record this", "app": "radio", "mode": "typed", "expect": {"id": "radio.record_toggle"}, "set": "train"}
+{"text": "start recoding", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_toggle"}, "set": "held_out"}
+{"text": "stop the recoding", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_toggle"}, "set": "train"}
+{"text": "stop recoding", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_toggle"}, "set": "train"}
+{"text": "Record or Stop Recoding", "app": "radio", "mode": "misheard", "expect": {"id": "radio.record_toggle"}, "set": "train"}
+{"text": "record this", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "stop all the recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "tier_max": 1, "set": "held_out"}
+{"text": "stop every recording", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "tier_max": 1, "set": "train"}
+{"text": "end all recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "tier_max": 1, "set": "train"}
+{"text": "stop all recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "tier_max": 1, "set": "train"}
+{"text": "Stop Every Recording", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "tier_max": 1, "set": "train"}
+{"text": "please stop all the recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "set": "held_out"}
+{"text": "stop all the recordings please", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "set": "train"}
+{"text": "can you stop all the recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "set": "train"}
+{"text": "could you stop all the recordings for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "set": "train"}
+{"text": "I want to stop all the recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.stop_all_recordings"}, "set": "train"}
+{"text": "stop all the recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.stop_all_recordings"}, "set": "held_out"}
+{"text": "stop every recoding", "app": "radio", "mode": "misheard", "expect": {"id": "radio.stop_all_recordings"}, "set": "train"}
+{"text": "end all recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.stop_all_recordings"}, "set": "train"}
+{"text": "stop all recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.stop_all_recordings"}, "set": "train"}
+{"text": "Stop Every Recoding", "app": "radio", "mode": "misheard", "expect": {"id": "radio.stop_all_recordings"}, "set": "train"}
+{"text": "stop all the recordings", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "held_out"}
+{"text": "show my recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "tier_max": 1, "set": "train"}
+{"text": "open the recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "tier_max": 1, "set": "train"}
+{"text": "where are my recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "tier_max": 1, "set": "train"}
+{"text": "recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "tier_max": 1, "set": "train"}
+{"text": "my recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "tier_max": 1, "set": "held_out"}
+{"text": "show recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "tier_max": 1, "set": "train"}
+{"text": "Recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "tier_max": 1, "set": "train"}
+{"text": "please show my recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "show my recordings please", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "can you show my recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "set": "held_out"}
+{"text": "could you show my recordings for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "I want to show my recordings", "app": "radio", "mode": "typed", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "show my recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "open the recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "where are my recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.recordings"}, "set": "held_out"}
+{"text": "recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "my recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "show recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "Recorings", "app": "radio", "mode": "misheard", "expect": {"id": "radio.recordings"}, "set": "train"}
+{"text": "show my recordings", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "held_out"}
+{"text": "wake me at 7", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "tier_max": 1, "set": "train"}
+{"text": "set a wake timer", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "tier_max": 1, "set": "train"}
+{"text": "start the radio in the morning", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "tier_max": 1, "set": "train"}
+{"text": "wake timer", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "tier_max": 1, "set": "train"}
+{"text": "alarm", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "tier_max": 1, "set": "held_out"}
+{"text": "wake me", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "tier_max": 1, "set": "train"}
+{"text": "Wake Timer", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "tier_max": 1, "set": "train"}
+{"text": "please wake me at 7", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "set": "train"}
+{"text": "wake me at 7 please", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "set": "train"}
+{"text": "can you wake me at 7", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "set": "held_out"}
+{"text": "could you wake me at 7 for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "set": "train"}
+{"text": "I want to wake me at 7", "app": "radio", "mode": "typed", "expect": {"id": "radio.wake_timer"}, "set": "train"}
+{"text": "start the radio in the moring", "app": "radio", "mode": "misheard", "expect": {"id": "radio.wake_timer"}, "set": "train"}
+{"text": "wake me at 7", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "sleep in 20 minutes", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "tier_max": 1, "set": "held_out"}
+{"text": "stop playing in an hour", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "tier_max": 1, "set": "train"}
+{"text": "set a sleep timer", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "tier_max": 1, "set": "train"}
+{"text": "sleep timer", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "tier_max": 1, "set": "train"}
+{"text": "sleep", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "tier_max": 1, "set": "train"}
+{"text": "turn off later", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "tier_max": 1, "set": "held_out"}
+{"text": "Sleep Timer", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "tier_max": 1, "set": "train"}
+{"text": "please sleep in 20 minutes", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "set": "train"}
+{"text": "sleep in 20 minutes please", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "set": "train"}
+{"text": "can you sleep in 20 minutes", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "set": "train"}
+{"text": "could you sleep in 20 minutes for me", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "set": "held_out"}
+{"text": "I want to sleep in 20 minutes", "app": "radio", "mode": "typed", "expect": {"id": "media.sleep_timer"}, "set": "train"}
+{"text": "sleep in 20 mintes", "app": "radio", "mode": "misheard", "expect": {"id": "media.sleep_timer"}, "set": "train"}
+{"text": "stop plaing in an hour", "app": "radio", "mode": "misheard", "expect": {"id": "media.sleep_timer"}, "set": "train"}
+{"text": "sleep in 20 minutes", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "play it faster", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "tier_max": 1, "set": "held_out"}
+{"text": "speed it up a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "tier_max": 1, "set": "train"}
+{"text": "a lot faster", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "tier_max": 1, "set": "train"}
+{"text": "faster", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "tier_max": 1, "set": "train"}
+{"text": "speed up", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "tier_max": 1, "set": "train"}
+{"text": "quicker", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "tier_max": 1, "set": "held_out"}
+{"text": "Faster", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "tier_max": 1, "set": "train"}
+{"text": "please play it faster", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "set": "train"}
+{"text": "play it faster please", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "set": "train"}
+{"text": "can you play it faster", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "set": "train"}
+{"text": "could you play it faster for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "set": "held_out"}
+{"text": "I want to play it faster", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_up"}, "set": "train"}
+{"text": "quiker", "app": "radio", "mode": "misheard", "expect": {"id": "radio.transport.speed_up"}, "set": "train"}
+{"text": "play it faster", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "play it slower", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "tier_max": 1, "set": "train"}
+{"text": "slow it down a bit", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "tier_max": 1, "set": "held_out"}
+{"text": "a lot slower", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "tier_max": 1, "set": "train"}
+{"text": "slower", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "tier_max": 1, "set": "train"}
+{"text": "slow down", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "tier_max": 1, "set": "train"}
+{"text": "speed down", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "tier_max": 1, "set": "train"}
+{"text": "Slower", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "tier_max": 1, "set": "held_out"}
+{"text": "please play it slower", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "set": "train"}
+{"text": "play it slower please", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "set": "train"}
+{"text": "can you play it slower", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "set": "train"}
+{"text": "could you play it slower for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "set": "train"}
+{"text": "I want to play it slower", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_down"}, "set": "held_out"}
+{"text": "play it slower", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_reset", "radio.toggle_title_announcements", "app.undo_last"], "set": "train"}
+{"text": "back to normal speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "tier_max": 1, "set": "train"}
+{"text": "reset the speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "tier_max": 1, "set": "train"}
+{"text": "play at normal speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "tier_max": 1, "set": "train"}
+{"text": "normal speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "tier_max": 1, "set": "held_out"}
+{"text": "reset speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "tier_max": 1, "set": "train"}
+{"text": "regular speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "tier_max": 1, "set": "train"}
+{"text": "Normal Speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "tier_max": 1, "set": "train"}
+{"text": "please back to normal speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "set": "train"}
+{"text": "back to normal speed please", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "set": "held_out"}
+{"text": "can you back to normal speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "set": "train"}
+{"text": "could you back to normal speed for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "set": "train"}
+{"text": "I want to back to normal speed", "app": "radio", "mode": "typed", "expect": {"id": "radio.transport.speed_reset"}, "set": "train"}
+{"text": "reglar speed", "app": "radio", "mode": "misheard", "expect": {"id": "radio.transport.speed_reset"}, "set": "train"}
+{"text": "back to normal speed", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.toggle_title_announcements", "app.undo_last"], "set": "held_out"}
+{"text": "tell me each song title", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "stop announcing the songs", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "announce titles", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "title announcements", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "say titles", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "tier_max": 1, "set": "held_out"}
+{"text": "Say Song Titles", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "tier_max": 1, "set": "train"}
+{"text": "please tell me each song title", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "set": "train"}
+{"text": "tell me each song title please", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "set": "train"}
+{"text": "can you tell me each song title", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "set": "train"}
+{"text": "could you tell me each song title for me", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "set": "held_out"}
+{"text": "I want to tell me each song title", "app": "radio", "mode": "typed", "expect": {"id": "radio.toggle_title_announcements"}, "set": "train"}
+{"text": "stop annoucing the songs", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_title_announcements"}, "set": "train"}
+{"text": "annonce titles", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_title_announcements"}, "set": "train"}
+{"text": "title announements", "app": "radio", "mode": "misheard", "expect": {"id": "radio.toggle_title_announcements"}, "set": "train"}
+{"text": "tell me each song title", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "app.undo_last"], "set": "held_out"}
+{"text": "undo the last thing", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "tier_max": 1, "set": "train"}
+{"text": "put it back how it was", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "tier_max": 1, "set": "train"}
+{"text": "take that back", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "tier_max": 1, "set": "train"}
+{"text": "put it back", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "tier_max": 1, "set": "train"}
+{"text": "Undo", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "tier_max": 1, "set": "held_out"}
+{"text": "please undo the last thing", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "set": "train"}
+{"text": "undo the last thing please", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "set": "train"}
+{"text": "can you undo the last thing", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "set": "train"}
+{"text": "could you undo the last thing for me", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "set": "train"}
+{"text": "I want to undo the last thing", "app": "radio", "mode": "typed", "expect": {"id": "app.undo_last"}, "set": "held_out"}
+{"text": "undo the last thing", "app": "radio", "mode": "typed", "expect": {"refuse": "disabled"}, "enabled": ["radio.play_pause", "radio.stop", "radio.play_last", "radio.play_favorite", "radio.toggle_playing_favorite", "radio.volume_up", "radio.volume_down", "radio.mute_toggle", "radio.volume_boost", "radio.rewind", "radio.forward", "radio.jump_to_live", "radio.identify_song", "radio.whats_playing_details", "radio.song_history", "radio.lyrics", "radio.browse", "radio.find_streams", "radio.on_now", "radio.record_station", "radio.record_toggle", "radio.stop_all_recordings", "radio.recordings", "radio.wake_timer", "media.sleep_timer", "radio.transport.speed_up", "radio.transport.speed_down", "radio.transport.speed_reset", "radio.toggle_title_announcements"], "set": "train"}
+{"text": "flibbertigibbet", "app": "radio", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "purple monkey dishwasher", "app": "radio", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "zxcv", "app": "radio", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "the quick brown fox", "app": "radio", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "held_out"}
+{"text": "banana", "app": "radio", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "hmm", "app": "radio", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "lorem ipsum dolor", "app": "radio", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "seventeen giraffes", "app": "radio", "mode": "typed", "expect": {"refuse": "not_here"}, "set": "train"}
+{"text": "why is the sky blue", "app": "radio", "mode": "typed", "expect": {"refuse": "ask"}, "set": "held_out"}
+{"text": "write me a poem about autumn", "app": "radio", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "who won the world cup", "app": "radio", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "explain photosynthesis", "app": "radio", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "tell me a joke", "app": "radio", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "how do magnets work", "app": "radio", "mode": "typed", "expect": {"refuse": "ask"}, "set": "held_out"}
+{"text": "translate hello into French", "app": "radio", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "summarize the news", "app": "radio", "mode": "typed", "expect": {"refuse": "ask"}, "set": "train"}
+{"text": "delete everything", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "send this to my boss", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "publish it", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "upload my files", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "sign me in to ChatGPT", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "erase all my work", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "uninstall the app", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "push to GitHub", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "Say or Type a Command", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "Forget Station Volumes", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "Update the Station Catalogue", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "Download Preferences", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "Import Setup", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "held_out"}
+{"text": "Export Setup", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "ChatGPT Account", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "Suggest a Station", "app": "radio", "mode": "typed", "expect": {"refuse": "never"}, "set": "train"}
+{"text": "make this bold", "app": "radio", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "quill"}, "set": "train"}
+{"text": "check my spelling", "app": "radio", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "quill"}, "set": "held_out"}
+{"text": "go to the next heading", "app": "radio", "mode": "typed", "expect": {"refuse": "other_app", "pointer": "quill"}, "set": "train"}
