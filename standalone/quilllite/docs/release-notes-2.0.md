@@ -1555,6 +1555,21 @@ profile one for project tasks, if you would like a guided start.
 If you get stuck, choose **Help > Get Help from Support** (**Ctrl+Alt+F2**),
 or write to support@community-access.org. A person at Community Access reads
 every message.
+# Sign in to GitHub from QUILL Lite
+
+You no longer need QUILL to sign in to GitHub. **File > Manage GitHub
+Accounts...** (**Alt+F**, then **H**) adds an account from a personal access
+token, checks it with GitHub before saving it, and switches or removes saved
+accounts. It's the same window QUILL has, and both editors see the same
+accounts.
+
+If you open the GitHub Workbench with no account saved, it now tells you so and
+offers Manage GitHub Accounts first. Once your account is added the Workbench
+opens signed in. **Continue as Guest** still opens it for public repositories.
+
+Export as HTML gave up its access letter, H, to make room; **Ctrl+Alt+Shift+End**
+still exports.
+
 # GitHub Workbench update (release acceptance pending)
 
 The shared GitHub Items and Explore windows add global saved search, My Work,

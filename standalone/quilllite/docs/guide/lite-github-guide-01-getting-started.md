@@ -146,7 +146,8 @@ even though the token is fine everywhere else.
 ### Adding the token
 
 In QUILL, choose **File > Open from Remote > Manage GitHub Accounts...**, then
-**Add Account...**. The **Sign in to GitHub** window has one field,
+**Add Account...**. In QUILL Lite it's **File > Manage GitHub Accounts...**:
+press `Alt+F`, then `H`. The **Sign in to GitHub** window has one field,
 **Personal access token**. Paste the token and press **Connect**. QUILL asks
 GitHub who the token belongs to before it keeps it, so a mistyped or expired
 token is turned away with "GitHub did not confirm an account for that token.
@@ -171,9 +172,16 @@ or an artifact, QUILL fetches that without the token.
 
 ### In QUILL Lite
 
-QUILL Lite has no window for signing in. It works as a guest: it reads public
-repositories, and the commands that change GitHub say they need a signed-in
-account. To review, reply, merge or triage your notifications, use QUILL.
+QUILL Lite signs in with the same window, from **File > Manage GitHub
+Accounts...** (`Alt+F`, then `H`), and the two editors share your accounts:
+one you add in either is there in both. Signed in, QUILL Lite reviews, replies,
+merges and triages your notifications just as QUILL does.
+
+If you open the workbench before you've signed in, QUILL Lite says "You are
+not signed in to GitHub" and offers three buttons. **Manage GitHub
+Accounts...** is the default: add your account there, and once GitHub confirms
+it the workbench opens signed in. **Continue as Guest** opens it anyway, to
+read public repositories. **Cancel** opens nothing.
 
 ## More than one account
 

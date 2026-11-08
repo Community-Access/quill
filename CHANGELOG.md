@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### One account manager for both editors (2026-11-07)
+
+- **Manage GitHub Accounts** now runs from one shared module that QUILL Lite
+  uses too, so an account you add in either editor is there in both. Nothing
+  changes in how it works in QUILL. The GitHub Guide's sign-in chapter and its
+  troubleshooting entry now say how to sign in from QUILL Lite, instead of
+  sending you to QUILL.
+
 ### A complete GitHub guide (2026-11-07)
 
 - **The GitHub Guide for QUILL and QUILL Lite.** A new book in

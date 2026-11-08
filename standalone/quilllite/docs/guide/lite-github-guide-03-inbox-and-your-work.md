@@ -11,8 +11,9 @@ waiting for you, and the activity views.
 
 All of this needs a signed-in account, because it is your inbox and your work.
 
-**In QUILL Lite**, which works as a guest, these views say "Sign in to GitHub
-for this account view." Use QUILL for them.
+**In QUILL Lite**, these views work once you sign in with **File > Manage
+GitHub Accounts...** (`Alt+F`, then `H`). As a guest they say "Sign in to
+GitHub for this account view."
 
 ## Opening your notifications
 

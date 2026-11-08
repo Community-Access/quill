@@ -393,14 +393,16 @@ refuses the organization’s repositories even though the token is fine
 everywhere else.</p>
 <h3 id="adding-the-token">Adding the token</h3>
 <p>In QUILL, choose <strong>File &gt; Open from Remote &gt; Manage
-GitHub Accounts…</strong>, then <strong>Add Account…</strong>. The
-<strong>Sign in to GitHub</strong> window has one field,
-<strong>Personal access token</strong>. Paste the token and press
-<strong>Connect</strong>. QUILL asks GitHub who the token belongs to
-before it keeps it, so a mistyped or expired token is turned away with
-“GitHub did not confirm an account for that token. Nothing was saved.”
-When GitHub confirms it, you hear “Added and switched to GitHub account”
-and your GitHub username.</p>
+GitHub Accounts…</strong>, then <strong>Add Account…</strong>. In QUILL
+Lite it’s <strong>File &gt; Manage GitHub Accounts…</strong>: press
+<code>Alt+F</code>, then <code>H</code>. The <strong>Sign in to
+GitHub</strong> window has one field, <strong>Personal access
+token</strong>. Paste the token and press <strong>Connect</strong>.
+QUILL asks GitHub who the token belongs to before it keeps it, so a
+mistyped or expired token is turned away with “GitHub did not confirm an
+account for that token. Nothing was saved.” When GitHub confirms it, you
+hear “Added and switched to GitHub account” and your GitHub
+username.</p>
 <p>The same window has <strong>Continue Anonymously</strong> for working
 as a guest, and <strong>Cancel</strong>. None of its buttons has an
 access key, so Tab to the one you want.</p>
@@ -417,10 +419,17 @@ servers and nowhere else. When GitHub hands a download to another
 address, such as a log or an artifact, QUILL fetches that without the
 token.</p>
 <h3 id="in-quill-lite-1">In QUILL Lite</h3>
-<p>QUILL Lite has no window for signing in. It works as a guest: it
-reads public repositories, and the commands that change GitHub say they
-need a signed-in account. To review, reply, merge or triage your
-notifications, use QUILL.</p>
+<p>QUILL Lite signs in with the same window, from <strong>File &gt;
+Manage GitHub Accounts…</strong> (<code>Alt+F</code>, then
+<code>H</code>), and the two editors share your accounts: one you add in
+either is there in both. Signed in, QUILL Lite reviews, replies, merges
+and triages your notifications just as QUILL does.</p>
+<p>If you open the workbench before you’ve signed in, QUILL Lite says
+“You are not signed in to GitHub” and offers three buttons.
+<strong>Manage GitHub Accounts…</strong> is the default: add your
+account there, and once GitHub confirms it the workbench opens signed
+in. <strong>Continue as Guest</strong> opens it anyway, to read public
+repositories. <strong>Cancel</strong> opens nothing.</p>
 <h2 id="more-than-one-account">More than one account</h2>
 <p>If you have a personal account and a work account, keep both.
 <strong>Manage GitHub Accounts…</strong> shows the active account at the

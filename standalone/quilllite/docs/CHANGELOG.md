@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### Sign in to GitHub from QUILL Lite (2026-11-07)
+
+- File > Manage GitHub Accounts... (Alt+F, then H) adds, switches and removes
+  GitHub accounts. It's QUILL's own window and QUILL's own code, and the two
+  editors share the accounts. Before this you could only sign in from QUILL.
+- When no account is saved, the GitHub Workbench says so and offers Manage
+  GitHub Accounts first. Continue as Guest still opens it for public
+  repositories.
+- Export as HTML has no access letter in the File menu any more; its key,
+  Ctrl+Alt+Shift+End, is unchanged.
+
 ### A complete GitHub guide (2026-11-07)
 
 - The GitHub Guide for QUILL and QUILL Lite ships as chapters of the user

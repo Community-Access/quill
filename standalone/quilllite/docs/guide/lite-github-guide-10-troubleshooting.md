@@ -91,9 +91,9 @@ status page at `githubstatus.com`.
 
 ### "Write actions need a signed-in GitHub account"
 
-You are working as a guest, so the workbench only reads. In QUILL, sign in
-with **Manage GitHub Accounts...** (Chapter 1). In QUILL Lite there is no
-sign-in, so use QUILL for this.
+You are working as a guest, so the workbench only reads. Sign in with
+**Manage GitHub Accounts...** (Chapter 1): in QUILL it's on File > Open from
+Remote, and in QUILL Lite it's on File (`Alt+F`, then `H`).
 
 ### The GitHub menus are missing in QUILL
 

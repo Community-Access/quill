@@ -37,6 +37,7 @@ import wx
 
 from quill.apps.lite_dialogs import edit_file_format
 from quill.apps.lite_dialogs_entry import ask_text
+from quill.apps.lite_github_accounts import GitHubAccountsLiteMixin
 from quill.apps.lite_github_open import GitHubFileOpenMixin
 from quill.apps.lite_window_backups import DocumentBackupsMixin
 from quill.apps.lite_window_replace_jobs import DocumentReplaceJobsMixin
@@ -64,7 +65,9 @@ _Tool = Callable[[str], str]
 _IndentOp = Callable[[str, int, int], tuple[str, int, int]]
 
 
-class DocumentToolsMixin(DocumentBackupsMixin, GitHubFileOpenMixin, DocumentReplaceJobsMixin):
+class DocumentToolsMixin(
+    DocumentBackupsMixin, GitHubFileOpenMixin, GitHubAccountsLiteMixin, DocumentReplaceJobsMixin
+):
     """Line tools, case tools, and the file-format dialog."""
 
     def cmd_github_workbench(self) -> None:
@@ -94,8 +97,15 @@ class DocumentToolsMixin(DocumentBackupsMixin, GitHubFileOpenMixin, DocumentRepl
             if not GitHubConsentDialog(self).show():
                 return
             save_github_consent_complete()
+        token = load_github_token()
+        # No account: say so and offer to add one, rather than opening as a
+        # guest without a word. Continue as Guest is still one key away.
+        if not token and not self._github_workbench_as_guest(
+            lambda: DocumentToolsMixin.cmd_github_workbench(self)
+        ):
+            return
         try:
-            provider = GitHubItemsProvider(token=load_github_token() or None)
+            provider = GitHubItemsProvider(token=token or None)
         except GitHubItemsError as exc:
             show_message_box(str(exc), "GitHub Workbench", wx.OK | wx.ICON_INFORMATION, self)
             return

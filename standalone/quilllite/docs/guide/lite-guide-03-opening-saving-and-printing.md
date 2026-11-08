@@ -1095,10 +1095,19 @@ build, and browse a repository at any branch. The first time, QUILL Lite asks
 once whether it may connect to GitHub. If the document you have open is in a
 Git folder whose remote is on GitHub, that repository is already filled in.
 
-QUILL Lite works with GitHub as a guest: it reads, and the commands that
-would change something say they need a signed-in account. Replying,
-reviewing, merging and your notifications inbox are in QUILL. A file you open
-from GitHub opens as a new untitled document.
+To sign in, choose **File > Manage GitHub Accounts...** (**Alt+F**, then
+**H**). It's the same window QUILL has, and the two editors share your
+accounts, so one you add in either is there in both. If you open the
+Workbench before you've signed in, it tells you so and offers Manage GitHub
+Accounts first; once GitHub confirms your account, the Workbench opens signed
+in. **Continue as Guest** opens it anyway: a guest can read public
+repositories, and the commands that would change something say they need a
+signed-in account. A file you open from GitHub opens as a new untitled
+document.
+
+Export as HTML used to be Alt+F, then H. It gave the letter up because it
+still has its own key, **Ctrl+Alt+Shift+End**, and Manage GitHub Accounts has
+nothing else.
 
 All of it is in its own book, which ships with QUILL Lite:
 [The GitHub Guide for QUILL and QUILL Lite](lite-github-guide.html). Start

@@ -11,8 +11,9 @@ resolving, and then everything that gets a pull request merged.
 
 Reading works signed out. Everything that writes needs a signed-in account.
 
-**In QUILL Lite**, which works as a guest, you can read every part of a
-review. The commands that write say they need a signed-in account.
+**In QUILL Lite**, a guest can read every part of a review, and the commands
+that write say they need a signed-in account. Sign in with **File > Manage
+GitHub Accounts...** (`Alt+F`, then `H`) and they work as they do in QUILL.
 
 ## Opening a pull request
 

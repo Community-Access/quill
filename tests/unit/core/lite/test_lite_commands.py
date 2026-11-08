@@ -68,6 +68,9 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "cmd_github_workbench": "As in QUILL (rule 2), where GitHub Items has no chord either; "
     "it sits in File, as QUILL's does, and Alt+F, G reaches it. Ctrl+Alt+Shift+F6 is "
     "Spelling Announcements in QUILL.",
+    "cmd_github_manage_accounts": "As in QUILL (rule 2), where Manage GitHub Accounts has "
+    "no chord either, and a once-in-a-while command (rule 9). It sits beside the Workbench "
+    "in File, and Alt+F, H reaches it.",
     "cmd_open_studio": "Rule 7: launching another app does not take an editor chord. "
     "Lite already uses QUILL's positional QuillVille keys for editing commands. "
     "Alt+T, Q reaches Studio when the shared release gate permits it; the user can "
