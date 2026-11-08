@@ -2543,6 +2543,7 @@ _SHIPPED_DOCS = (
 _SHIPPED_DOC_FOLDERS = (
     Path("docs") / "user guide" / "quill-guide",
     Path("docs") / "user guide" / "wordpress-and-forms",
+    Path("docs") / "user guide" / "github-guide",
 )
 
 

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 5: Pull requests and review</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-5-pull-requests-and-review">Chapter 5: Pull requests and
+review</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>Reviewing a pull request on the website means a long page of code
+with comments wedged between the lines. QUILL turns it into an outline
+you can walk: the pull request, its changed files, the conversations on
+each file, and its checks. This chapter covers reading a pull request,
+the diff, commenting on a line or a range, suggesting a change, sending
+a review, replying and resolving, and then everything that gets a pull
+request merged.</p>
+<p>Reading works signed out. Everything that writes needs a signed-in
+account.</p>
+<p><strong>In QUILL Lite</strong>, which works as a guest, you can read
+every part of a review. The commands that write say they need a
+signed-in account.</p>
+<h2 id="opening-a-pull-request">Opening a pull request</h2>
+<p>In GitHub Items, select a pull request and press
+<strong>Review…</strong> (<code>Alt+R</code>), or choose <strong>Open
+Review…</strong> from its context menu. A pull request link pasted into
+<strong>Open Link…</strong> opens straight into its review, and so does
+a pull request in your notifications.</p>
+<p><strong>Diff…</strong> (<code>Alt+D</code>) skips the outline and
+opens the changed files on their own. More on that below.</p>
+<h2 id="the-one-sentence-summary">The one-sentence summary</h2>
+<p>The first thing you hear when the review opens is the whole pull
+request in one sentence:</p>
+<p>“Review loaded for pull request #42. Approved, 2 checks failing, 1
+open thread, 3 commits behind main.”</p>
+<p>The sentence is built from these, in this order, leaving out what
+does not apply:</p>
+<ul>
+<li>whether it is a <strong>draft</strong>;</li>
+<li>the review decision: <strong>Approved</strong>, <strong>Changes
+requested</strong>, <strong>Review required</strong>, or <strong>No
+review decision</strong>;</li>
+<li>the checks: how many are failing or still running, or “all 4 checks
+passing”;</li>
+<li>the open review threads, or “no open threads”;</li>
+<li>how far behind its base branch it is, or “up to date with
+main”;</li>
+<li><strong>merge conflicts</strong>, if there are any;</li>
+<li><strong>auto-merge on</strong>, if it is set;</li>
+<li>and whether GitHub says it can merge, it is blocked by branch rules,
+or QUILL cannot tell. QUILL never guesses “ready”: when it is not sure,
+it says “merge readiness unknown”.</li>
+</ul>
+<p>A merged or closed pull request just says “Merged.” or “Closed
+without merging.” The same sentence is the first line of the window,
+<strong>Pull request in one sentence</strong>, so you can read it again.
+<strong>Copy Review Summary</strong> (<code>Alt+S</code>) copies the
+fuller summary.</p>
+<h2 id="the-review-window">The review window</h2>
+<p>In Tab order:</p>
+<ul>
+<li>The one-sentence summary, then a status line: the merge readiness,
+the review decision, the checks, and how many threads are unresolved or
+outdated.</li>
+<li><strong>Pull request outline</strong>, the tree. This is where you
+spend your time.</li>
+<li><strong>Changed since my last review</strong> (<code>Alt+L</code>),
+a check box. See below.</li>
+<li>The selected node’s details, a read-only text field.</li>
+<li><strong>Review summary</strong>, with <strong>Check Merge
+Policy</strong> beside it, and the summary and merge readiness in
+full.</li>
+<li><strong>Checks</strong>, a list of the check runs.</li>
+<li>The status line.</li>
+<li>The buttons: <strong>Next Unresolved</strong> (<code>Alt+U</code>),
+<strong>Next Unvisited</strong> (<code>Alt+V</code>), <strong>Open on
+GitHub</strong> (<code>Alt+G</code>), <strong>Copy Review
+Summary</strong> (<code>Alt+S</code>), <strong>Timeline…</strong>
+(<code>Alt+T</code>), <strong>Compose Review…</strong>
+(<code>Alt+C</code>), <strong>Reply to Thread…</strong>
+(<code>Alt+R</code>), <strong>Request Reviewers…</strong>
+(<code>Alt+W</code>), <strong>Mark Ready</strong> (<code>Alt+M</code>)
+on a draft or <strong>Convert to Draft</strong> (<code>Alt+D</code>)
+otherwise, <strong>Update Branch…</strong> (<code>Alt+B</code>),
+<strong>Auto-Merge and Queue…</strong> (<code>Alt+A</code>), and
+<strong>Close</strong>.</li>
+</ul>
+<p>The buttons that write are unavailable when you are signed out or the
+pull request is closed, and Reply is available only with a thread
+selected.</p>
+<h3 id="the-outline">The outline</h3>
+<p>The tree is a real tree: Up and Down move between the rows you can
+see, Right opens a branch and Left closes it. Tab reads the selected
+row’s details, and Shift+Tab comes back.</p>
+<ul>
+<li>The top row is the pull request: “PR #42:” and its title.</li>
+<li><strong>Changed files</strong> holds one row per file. Each file
+opens to the review threads on it: “Line 12, alice, 2 replies,
+unresolved”. A thread on a line that has since changed adds
+“outdated”.</li>
+<li><strong>General conversations</strong> holds threads that are not on
+a file, when there are any.</li>
+<li><strong>Pending line comments, not sent yet</strong> holds comments
+you have written but not sent. See below.</li>
+<li><strong>Checks</strong> holds one row per check, its result first:
+“success: build”, “failure: test”, or “in progress: lint” while it
+runs.</li>
+</ul>
+<p>Enter on a row does the natural thing: on a file it opens the file’s
+diff; on a thread it moves you into its details to read every comment
+and reply; on a check it opens the check on GitHub; on anything else it
+opens or closes the branch.</p>
+<p>Reading or expanding never changes anything. Selecting a thread does
+not resolve it or mark it read.</p>
+<h3 id="moving-between-threads">Moving between threads</h3>
+<ul>
+<li><strong>Next Unresolved</strong> (<code>Alt+U</code>) moves to the
+next thread that is still open, and says “Moved to unresolved thread by”
+the author, and the line. It goes round from the end to the start.</li>
+<li><strong>Next Unvisited</strong> (<code>Alt+V</code>) moves to the
+next thread you have not selected in this review. It is how you make
+sure you have read everything. When you have, it says “You have visited
+every loaded review thread in this session.”</li>
+</ul>
+<p>Neither of these tells GitHub anything. “Visited” lives only in this
+window.</p>
+<h2 id="changed-since-my-last-review">Changed since my last review</h2>
+<p>When someone pushes more commits after you have reviewed, you do not
+want to read every file again. Check <strong>Changed since my last
+review</strong> (<code>Alt+L</code>). QUILL finds the commit you last
+reviewed and keeps only the files that have changed since then. The
+tree’s first branch is renamed <strong>Files changed since your review
+on</strong> and the date, and you hear how many:</p>
+<ul>
+<li>“3 files changed since your review on 4 November.”</li>
+<li>“No files changed since your review on 4 November.”</li>
+<li>“You have not reviewed this pull request yet, so every file is new
+to you.”</li>
+</ul>
+<p>If the branch has been force-pushed and the commit you reviewed is
+gone from GitHub, QUILL says so plainly and shows every file. Uncheck
+the box to see every file again.</p>
+<h2 id="the-diff">The diff</h2>
+<p>Enter on a file, <strong>Open File Differences</strong> on a file’s
+or thread’s context menu, or <strong>Diff…</strong> in GitHub Items,
+opens the diff window, <strong>PR #42 diff:</strong> and the title.</p>
+<ul>
+<li><strong>Changed files</strong>: one row per file, “modified:
+src/status.py +12 -3”. Select one to hear its changes.</li>
+<li><strong>Differences</strong> reads the changes through the same
+engine as QUILL’s Compare Documents: “Difference 2 of 5. Text changed at
+line 41”, with both sides named and the changed words described.</li>
+<li><strong>Selected review hunk</strong> shows the part of the file a
+thread is about, when you came here from a thread.</li>
+<li><strong>Line marks:</strong> (<code>Alt+M</code>) chooses how
+changed lines are marked in the patch list: <strong>Words</strong>
+(“Added line 12”, “Removed line 9”, “Unchanged line 13”) or
+<strong>Symbols</strong> (plus and minus). Symbols are shorter, but your
+screen reader says them only when it reads punctuation, and QUILL
+reminds you of that when you choose them. Your choice is kept.</li>
+<li><strong>Patch lines:</strong> (<code>Alt+P</code>), the patch one
+line to a row. This is where you comment.</li>
+<li><strong>Comment on This Line…</strong> (<code>Alt+L</code>),
+<strong>Comment on Lines…</strong> (<code>Alt+S</code>), <strong>Copy
+Diff</strong> (<code>Alt+C</code>) and <strong>Open Diff in Default
+App</strong> (<code>Alt+O</code>).</li>
+<li>Under them, how many of your line comments are waiting to be
+sent.</li>
+</ul>
+<p>Opened from a thread, the diff goes straight to that thread’s lines
+and says “Review comment at” the file and line. If the line is no longer
+in the patch, it says so and suggests the thread may be outdated.</p>
+<p><strong>Open Diff in Default App</strong> saves the diff as a
+<code>.diff</code> file and opens it in whatever program your computer
+uses for those, and tells you where the file is.</p>
+<h2 id="commenting-on-a-line-or-a-range">Commenting on a line or a
+range</h2>
+<p>In <strong>Patch lines:</strong>, arrow to a line and press Enter, or
+press <strong>Comment on This Line…</strong> (<code>Alt+L</code>). To
+comment on several lines, hold Shift and arrow to select them, then
+press Enter or <strong>Comment on Lines…</strong> (<code>Alt+S</code>).
+With one line or none selected, Comment on Lines asks you to type the
+range instead, such as <code>12-15</code>, <code>12 to 15</code> or just
+<code>12</code>.</p>
+<p>GitHub takes a comment only on lines the patch shows, and a range
+only inside one block of changes. QUILL checks before it sends and tells
+you which rule the lines broke, such as “Line 30 is not in this file’s
+changes, so GitHub will not take a comment on it.”</p>
+<p>The comment window is titled with where the comment goes, such as
+“Comment on line 12 of src/status.py”. It has:</p>
+<ul>
+<li><strong>Lines you are commenting on:</strong>, read-only, so you can
+check.</li>
+<li><strong>Suggest a change</strong> (<code>Alt+S</code>), a check box.
+See below.</li>
+<li><strong>Comment:</strong> (<code>Alt+C</code>), where focus
+starts.</li>
+<li><strong>Add to Review</strong> (<code>Alt+A</code>), the default:
+keep the comment and send it with your review.</li>
+<li><strong>Post Now</strong> (<code>Alt+P</code>): send it on its own,
+straight away.</li>
+<li><strong>Cancel</strong>.</li>
+</ul>
+<p>Most of the time you want <strong>Add to Review</strong>. GitHub then
+sends your comments together, with your verdict, as one review, and
+people are notified once instead of once per comment.</p>
+<h3 id="suggesting-a-change">Suggesting a change</h3>
+<p>Check <strong>Suggest a change</strong> and QUILL puts the lines you
+chose into the comment as a suggestion block, ready for you to edit into
+what they should say. On GitHub, the author can accept a suggestion with
+one button. Uncheck it to take the block out again. A suggestion
+replaces lines of the new file, so it works on added and unchanged
+lines, not removed ones.</p>
+<h2 id="pending-comments-and-sending-your-review">Pending comments and
+sending your review</h2>
+<p>Comments added to your review are kept on this computer, for your
+account, until you send them. You hear “Added to your review:” and
+where, and how many are waiting. They show in the outline under
+<strong>Pending line comments, not sent yet</strong>, each with its
+place and the start of its text.</p>
+<p>On a pending comment, Enter or <strong>Edit Pending Comment…</strong>
+changes it, and <strong>Delete Pending Comment…</strong> removes it
+after asking. It was never sent, so it cannot be got back.</p>
+<h3 id="compose-review">Compose Review</h3>
+<p>When you are ready, press <strong>Compose Review…</strong>
+(<code>Alt+C</code>). The window <strong>Review Pull Request
+#42</strong> says how many line comments go with this review, and
+has:</p>
+<ul>
+<li><strong>Review action:</strong>, a list: <strong>Comment</strong>,
+<strong>Approve</strong> or <strong>Request changes</strong>.</li>
+<li><strong>Review message:</strong> (<code>Alt+M</code>), your overall
+comment. Request changes needs one; so does Comment, unless you have
+line comments.</li>
+<li><strong>Discard Saved Draft</strong>, to throw away a saved review
+message.</li>
+<li><strong>Submit Review</strong>, which sends it, and <strong>Save
+Draft and Close</strong>, which keeps it. Escape is Save Draft and
+Close.</li>
+</ul>
+<p>The review message saves as you type, so closing the window loses
+nothing. Submit Review is the only thing that sends. Request changes
+asks once more before it goes. You hear “Review submitted on pull
+request #42.” and how many line comments GitHub took with it.</p>
+<h3 id="when-the-pull-request-moves-under-you">When the pull request
+moves under you</h3>
+<p>Comments are written against one version of the code. If new commits
+arrive before you send, the lines you commented on may have moved. QUILL
+will not send a review whose comments were written on an older version:
+it says how many were, and asks you to delete or rewrite them under
+Pending line comments first. If the version changes while the Compose
+window is open, nothing is sent, and QUILL tells you to reopen the draft
+against the current diff.</p>
+<h2 id="replying-and-resolving">Replying and resolving</h2>
+<p>On a thread in the outline:</p>
+<ul>
+<li><code>Ctrl+R</code>, or <strong>Reply to Thread…</strong>
+(<code>Alt+R</code>), replies. Type it in <strong>Reply to this review
+thread:</strong> and press <strong>OK</strong>. You hear “Reply posted
+to the review thread.”</li>
+<li><code>Ctrl+Shift+R</code> resolves the thread, or reopens a resolved
+one. It asks first. You hear “Review conversation resolved.” If GitHub
+does not let you change it, QUILL says so.</li>
+</ul>
+<p>The thread’s context menu has these, plus <strong>React to a
+Comment…</strong>, <strong>Copy Conversation</strong>, <strong>Copy
+Thread Link</strong>, <strong>Open File Differences</strong> and
+<strong>Open Thread on GitHub</strong>.</p>
+<p><code>Ctrl+R</code> replies here, in the review window. In GitHub
+Items it refreshes.</p>
+<h2 id="getting-a-pull-request-merged">Getting a pull request
+merged</h2>
+<h3 id="reviewers-draft-and-ready">Reviewers, draft and ready</h3>
+<ul>
+<li><strong>Request Reviewers…</strong> (<code>Alt+W</code>) asks for
+GitHub usernames, separated by commas. You hear “Review requested from”
+and their names.</li>
+<li>On a draft, <strong>Mark Ready</strong> (<code>Alt+M</code>) marks
+it ready for review. On one that is ready, <strong>Convert to
+Draft</strong> (<code>Alt+D</code>) turns it back into a draft. Both ask
+first.</li>
+<li><strong>Update Branch…</strong> (<code>Alt+B</code>) merges the base
+branch into the pull request’s branch, so it is up to date. It asks
+first, and is unavailable on a draft.</li>
+</ul>
+<h3 id="merging">Merging</h3>
+<p>Merging is in GitHub Items, not the review window, because it is the
+one thing here that changes the main branch for everyone. Select the
+pull request and choose <strong>Merge Pull Request #42…</strong> from
+<strong>Actions…</strong> or its context menu. QUILL asks you to type
+the pull request’s number to confirm, not just press Yes, and says what
+will happen: that it merges into the base branch and that this changes
+the branch for everyone. You hear “Merged #42” and the new commit. QUILL
+merges by squashing the pull request’s commits into one.</p>
+<h3 id="auto-merge-and-the-merge-queue">Auto-merge and the merge
+queue</h3>
+<p><strong>Auto-Merge and Queue…</strong> (<code>Alt+A</code>) opens a
+menu:</p>
+<ul>
+<li><strong>Enable Auto-Merge…</strong> tells GitHub to merge the pull
+request by itself as soon as its required reviews and checks pass. QUILL
+asks how: Create a merge commit, Squash and merge, or Rebase and
+merge.</li>
+<li><strong>Disable Auto-Merge…</strong> turns it off.</li>
+<li><strong>Add to Merge Queue…</strong> puts the pull request in the
+branch’s merge queue, if it has one. You hear its place in the
+queue.</li>
+<li><strong>Remove from Merge Queue…</strong> takes it out.</li>
+<li><strong>Combined Check Status</strong> says all the checks in one
+sentence, such as “3 of 4 checks pass; failing: test.”</li>
+</ul>
+<p>Each asks first, and reports what GitHub confirmed. When GitHub
+refuses for a reason QUILL knows, it says what to do about it, for
+example that auto-merge is turned off for the repository and an
+administrator can turn it on in the repository’s settings, or that
+GitHub can merge the pull request now, so there is nothing for
+auto-merge to wait for.</p>
+<h3 id="merge-policy">Merge policy</h3>
+<p><strong>Check Merge Policy</strong> reads the rules on the base
+branch: required reviews, required checks, code owners and the merge
+queue. It adds them to the review summary, and from then on the
+readiness and the combined check status count only the checks that are
+required (“3 of 4 required checks pass”). The rules are read for the
+current version of the pull request; refresh the review after new
+commits to check again. GitHub always has the last word, and QUILL says
+so.</p>
+<h3 id="a-check-that-needs-another-run">A check that needs another
+run</h3>
+<p>On a check in the outline, the context menu has <strong>Re-request
+Check…</strong>, which asks GitHub to run that check again. Some checks
+are older-style commit statuses rather than check runs, and those cannot
+be re-run from outside; QUILL says so. Chapter 6 covers checks and
+workflow runs in full.</p>
+<h2 id="writing-a-new-pull-request">Writing a new pull request</h2>
+<p>Signed in, <strong>Actions…</strong> in the Issues &amp; PRs view has
+<strong>New Pull Request…</strong>. QUILL asks four questions in turn:
+the title, the description (you can leave it empty), the branch with
+your changes, and the branch to merge into, which starts as
+<code>main</code>.</p>
+<hr />
+<ul>
+<li>Previous: <a href="github-guide-04-issues.html">Chapter 4:
+Issues</a></li>
+<li>Next: <a href="github-guide-06-actions-and-checks.html">Chapter 6:
+Actions and checks</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

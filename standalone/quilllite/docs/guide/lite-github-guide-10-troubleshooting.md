@@ -1,0 +1,165 @@
+# Chapter 10: Troubleshooting, privacy and help
+
+## What this chapter covers
+
+When GitHub says no, QUILL tells you why in a sentence and what to do next.
+This chapter lists the sentences you are most likely to hear, what each one
+means and how to fix it. Then it says exactly what the workbench sends over
+the network, and how to get help from a person.
+
+## How a refusal sounds
+
+Most refusals have two parts: what QUILL was trying to do, and why it could
+not. "Could not re-run the failed jobs. Access denied. GitHub refused this
+request: check the token permissions and its organization SSO authorization."
+When GitHub gave a reason of its own, QUILL adds it after "GitHub said:".
+
+Nothing is half-done. When a command is refused, nothing was changed on
+GitHub, and anything you had typed, such as a comment, a review or a new
+issue, is still on your computer.
+
+## The refusals, one by one
+
+### "The GitHub token is invalid or expired."
+
+The full sentence ends "Add a valid token or switch accounts." Your token has
+reached its expiry date, or was cancelled on GitHub. Make a new one (Chapter
+1), then in QUILL use **Manage GitHub Accounts...** to remove the old account
+and add the new token.
+
+### "Access denied. GitHub refused this request"
+
+GitHub knows who you are, but will not let this token do this. One of three
+things is usually true:
+
+- **The token lacks a scope.** For example, a token without `repo` cannot
+  write to a private repository, and one without `delete_repo` cannot delete
+  one. Chapter 1 lists the scopes. You cannot add a scope to a token from
+  QUILL: edit the token on GitHub, or make a new one.
+- **Your account lacks permission.** Only people with write access can merge,
+  rerun or label, and only administrators can rename, archive or change
+  visibility. Ask a maintainer.
+- **The organization needs single sign-on.** See the next section.
+
+Traffic in Insights is a special case. It needs push access, and QUILL says so
+in plain words while still showing the contributors.
+
+### "GitHub requires organization SSO authorization for this token."
+
+The organization signs its members in through its own system, and your token
+has not been authorized for it yet. On GitHub, open your personal access
+tokens, choose **Configure SSO** beside the token, and authorize it for the
+organization. Then try again. The token keeps working everywhere else in the
+meantime.
+
+### "GitHub could not find it, or this account cannot see it."
+
+The full sentence ends "Refresh the list; it may already be gone." Either the
+thing really is gone, perhaps deleted or transferred, or it is private and
+this account cannot see it. GitHub answers both the same way, on purpose, so
+that private repositories cannot be discovered by guessing. Check that you are
+using the right account (`Manage GitHub Accounts...` in QUILL), and that the
+token has the `repo` scope if the repository is private.
+
+### "GitHub rate-limited this request."
+
+You have used up an allowance, or sent many requests close together. Press
+`Ctrl+Shift+L` to hear how much is left and when it resets. Signed out you get
+far fewer requests, so signing in is often the fix.
+
+Two related sentences:
+
+- "GitHub asked QUILL to wait 60 seconds." is a short pause GitHub asks for
+  after a burst of requests. QUILL waits by itself and stops sending until the
+  time is up. You hear it once.
+- "GitHub API rate limit reached. Retry after" a number of seconds means the
+  hourly allowance is gone. It comes back at the reset time the readout gives.
+
+### "GitHub reported a conflict" and "GitHub refused the request"
+
+A conflict means the thing changed while you were looking at it: someone else
+merged, closed or edited it. Refresh and try again.
+
+"GitHub refused the request" with a reason means GitHub will not do this in
+the current state, such as rerunning the failed jobs of a run where nothing
+failed. The reason that follows is GitHub's own.
+
+### "GitHub had a server error"
+
+The problem is at GitHub's end. Wait a moment and try again. GitHub keeps a
+status page at `githubstatus.com`.
+
+### "Write actions need a signed-in GitHub account"
+
+You are working as a guest, so the workbench only reads. In QUILL, sign in
+with **Manage GitHub Accounts...** (Chapter 1). In QUILL Lite there is no
+sign-in, so use QUILL for this.
+
+### The GitHub menus are missing in QUILL
+
+GitHub Remote Access is part of the Developer profile and is off in the
+others. Press `Alt+Shift+P` and choose Developer, or turn on GitHub Remote
+Access alone in **Profiles and Features...**. **Help > Why Don't I See a
+Feature?** explains any missing command.
+
+### "GitHub item browsing is disabled in Safe Mode."
+
+QUILL started in Safe Mode, which keeps every GitHub window closed. Restart it
+normally.
+
+### A file shows no text
+
+Repository Files shows text only for UTF-8 text files up to 1 MB, and says
+which rule a file broke. Open it on GitHub, or download it there.
+
+## Privacy: what goes over the network
+
+The workbench talks to GitHub and to nobody else, and only when you ask it to.
+
+- **Before the first connection** QUILL asks your permission, once (Chapter
+  1).
+- **Requests go to GitHub's own servers**: `api.github.com` for nearly
+  everything, and `uploads.github.com` when you upload a release file. They
+  use encrypted connections, and QUILL refuses to follow a redirect to any
+  other address while carrying your token.
+- **Downloads** of logs and artifacts are handed by GitHub to a short-lived
+  address elsewhere. QUILL fetches those without your token.
+- **Links opened in your browser** never carry your token either.
+- **The GitHub CLI** uses its own sign-in, never QUILL's token (Chapter 9).
+- **AI summaries** in QUILL send the issue's text to the AI you chose, after
+  the same questions as every AI feature. Nothing else in the workbench uses
+  AI.
+
+What stays on your computer and never goes to GitHub: your token (in the
+operating system's secure store), your pins and favorites, where you left off,
+your local drafts and pending review comments, your saved searches, the
+attention queue's settings and filters, and the copies of earlier answers
+QUILL keeps so that unchanged reloads cost nothing.
+
+Safe Mode switches all of it off.
+
+## Getting help
+
+If something here does not work the way this book says, or you are stuck,
+write to a person. Support is run by Community Access, at
+**support@community-access.org**. A real person reads every message and
+replies by email. Nothing you send is posted on GitHub or anywhere else in
+public.
+
+The quickest way to write is **Help > Get Help from Support...**, in both
+apps. It fills in your app's version and your screen reader for you, and opens
+your own mail program with the message written. Nothing is sent until you send
+it from there.
+
+It helps to say:
+
+- which app and version you are using, and which screen reader;
+- which window you were in, and what you pressed;
+- what QUILL said, word for word if you can; and
+- what you expected instead.
+
+---
+
+- Previous: [Chapter 9: Codespaces and the GitHub CLI](lite-github-guide-09-codespaces-and-the-cli.html)
+- Next: [Chapter 11: Keyboard reference](lite-github-guide-11-keyboard-reference.html)
+- [Contents](lite-github-guide.html)

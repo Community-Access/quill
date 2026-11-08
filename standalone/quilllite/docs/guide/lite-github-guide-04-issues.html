@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 4: Issues</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-4-issues">Chapter 4: Issues</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>This chapter is about issues: reading one and its comments, replying,
+reacting, reading its history, writing a new one from a template, and
+keeping issues in order with labels, milestones, assignees and batch
+changes. It also covers the housekeeping commands, Projects boards and
+dependencies, and starting work on an issue in a folder of its own. Pull
+requests are issues too, so most of this applies to them as well.</p>
+<h2 id="reading-an-issue">Reading an issue</h2>
+<p>Load a repository, keep <strong>View:</strong> on <strong>Issues
+&amp; PRs</strong>, and arrow to the issue. Press Tab to reach
+<strong>Details</strong>. It reads like a document:</p>
+<ul>
+<li>the number, whether it is an issue or a PR, and the title;</li>
+<li>its state, author, when it was opened and last updated, and its
+link;</li>
+<li>its labels and assignees, when it has any, and how many
+comments;</li>
+<li>then a line of dashes, and the description.</li>
+</ul>
+<p>For a pull request, Details also says whether it is a draft, whether
+it is merged, its review state, which branch merges into which, and how
+many lines and files it changes.</p>
+<p>The comments load on their own a moment after you select the issue.
+You hear how many, such as “4 comments loaded. Alt+N to jump to the
+first.” They follow the description in Details, each starting “Comment 1
+of 4”, then the author and the date.</p>
+<h3 id="moving-between-comments">Moving between comments</h3>
+<p><code>Alt+N</code> moves to the next comment and <code>Alt+P</code>
+to the previous one, from anywhere in the window. QUILL moves focus into
+Details, selects the comment and says “Comment 2 of 4”. At either end
+you hear “Already at first comment.” or “Already at last comment.” This
+is the quickest way through a long thread: press <code>Alt+N</code>,
+read, press <code>Alt+N</code> again.</p>
+<p>Reactions on a comment are in words at the end of it, such as
+“Reactions: 3 thumbs up, 1 heart”.</p>
+<h3 id="a-summary-of-the-discussion">A summary of the discussion</h3>
+<p><strong>Summarize</strong> (<code>Alt+Z</code>) asks QUILL’s AI to
+boil the issue and its comments down to a few sentences: what it is
+about, where it stands, the open questions and the next step. The
+summary goes at the top of Details and is read out. It uses the AI
+connection you chose in QUILL and asks the same questions about sending
+text that every AI feature asks. If no AI is set up, it offers to set
+one up.</p>
+<p><strong>In QUILL Lite</strong>, Summarize says “AI summaries are
+unavailable here.”</p>
+<h2 id="replying-editing-and-deleting">Replying, editing and
+deleting</h2>
+<p>You need to be signed in for these.</p>
+<ul>
+<li><strong>Reply.</strong> Choose <strong>Actions…</strong>
+(<code>Alt+A</code>), then <strong>Reply to Thread…</strong>. Type your
+comment in <strong>Reply:</strong> and press <strong>OK</strong>. You
+hear “Reply posted”. GitHub’s issue comments are not threaded, so a
+reply is the next comment in the conversation.</li>
+<li><strong>Edit.</strong> Move to your comment with <code>Alt+N</code>
+first. Then <strong>Actions…</strong> has <strong>Edit This
+Comment…</strong>. Change the text and press <strong>OK</strong>; you
+hear “Comment updated”.</li>
+<li><strong>Delete.</strong> On your comment, <strong>Actions…</strong>
+has <strong>Delete This Comment…</strong>. To confirm, you type the word
+“delete”. You hear “Comment deleted”.</li>
+</ul>
+<p>GitHub lets you edit and delete only your own comments, unless you
+look after the repository. Trying it on someone else’s brings back
+GitHub’s refusal. If you have not moved to a comment yet, QUILL says
+“Navigate to a comment first (Alt+N).”</p>
+<h2 id="reactions">Reactions</h2>
+<p>Shift+F10 on the issue has <strong>React…</strong>, which reacts to
+the issue itself. After <code>Alt+N</code>, it also has <strong>React to
+This Comment…</strong>. A list of GitHub’s eight reactions opens: thumbs
+up, thumbs down, laugh, hooray, confused, heart, rocket and eyes. One
+you have already given reads, for example, “heart, yours: choose to
+remove it”, so the same list adds and takes away. You hear “Added
+heart.” or “Removed heart.”</p>
+<h2 id="the-timeline">The timeline</h2>
+<p>Comments are only part of an issue’s story. Labels are added, people
+are assigned, the issue is closed and reopened, and pull requests
+mention it. Shift+F10 on the issue has <strong>View Timeline…</strong>,
+which opens the whole history in one text field, <strong>History, oldest
+first:</strong> (<code>Alt+H</code>), one event to a line. <strong>Copy
+All</strong> (<code>Alt+A</code>) copies it. When it loads, you hear
+“Timeline loaded,” and the number of events. A very long history is read
+up to five hundred events, and QUILL says when it stopped early: “Only
+part of the history was read.”</p>
+<h2 id="writing-a-new-issue">Writing a new issue</h2>
+<p>Signed in, choose <strong>Actions…</strong>, then <strong>New
+Issue…</strong>. With no row selected, Shift+F10 in the list has it
+too.</p>
+<h3 id="templates">Templates</h3>
+<p>If the repository has issue templates, QUILL asks which to start
+from: <strong>Blank issue</strong>, then each template with its
+description. The template’s text fills the form, ready to edit.</p>
+<p>Some repositories use GitHub’s structured issue forms instead of
+plain templates. Those are filled in on GitHub, so QUILL offers to open
+the form in your browser: “This structured issue form is completed on
+GitHub.” It does the same for a template too large to load.</p>
+<h3 id="the-form">The form</h3>
+<p>The <strong>New Issue</strong> window has four fields:</p>
+<ul>
+<li><strong>Title:</strong> (<code>Alt+T</code>), required, up to 256
+characters.</li>
+<li><strong>Body:</strong> (<code>Alt+B</code>), the description, in
+Markdown.</li>
+<li><strong>Labels (comma-separated):</strong>
+(<code>Alt+L</code>).</li>
+<li><strong>Assignees (GitHub usernames):</strong>
+(<code>Alt+A</code>).</li>
+</ul>
+<p><strong>Create Issue</strong> sends it, and <strong>Cancel</strong>
+closes the window.</p>
+<h3 id="drafts-that-keep-themselves">Drafts that keep themselves</h3>
+<p>Everything you type is saved on this computer as you go, a moment
+after you stop typing. Nothing is sent. If QUILL closes, or you press
+Cancel, the next <strong>New Issue…</strong> in that repository brings
+it back and says “Recovered a local draft for” the repository, “It has
+not been submitted.” If you do not want it, <strong>Discard Saved
+Draft</strong> throws it away. A draft is deleted when the issue is
+created.</p>
+<p>Drafts are kept for each account and repository, in your own QUILL
+data folder.</p>
+<h3 id="checking-for-duplicates">Checking for duplicates</h3>
+<p>When you press <strong>Create Issue</strong>, QUILL first searches
+the repository’s open issues for similar titles. If it finds some, a
+window titled <strong>Possible Duplicate Issues</strong> lists them and
+asks whether to create yours anyway. It is worth reading: the issue you
+were about to write is often already there, and a comment on it helps
+more than a second copy. When the issue is created, you hear “Created
+issue” with its number and title.</p>
+<h2 id="labels-milestones-and-assignees">Labels, milestones and
+assignees</h2>
+<h3 id="labels">Labels</h3>
+<p>You can add labels as you write an issue, in the form’s
+<strong>Labels</strong> field. To add one to issues that already exist,
+use the Batch menu, below.</p>
+<p>To make a new label, open Explore, choose <strong>Repository
+labels</strong> in <strong>View:</strong>, and choose <strong>Create
+Label…</strong> from the context menu. QUILL asks for its name, a
+six-digit colour without the <code>#</code> sign, and an optional
+description.</p>
+<h3 id="milestones">Milestones</h3>
+<p><strong>Milestones…</strong> in GitHub Items (it has no access key;
+Tab to it, or use any row’s context menu) opens the repository’s
+milestones. Each one reads in words: “Release 2.0: 62 percent done, 5
+open, 8 closed, due 12 December”.</p>
+<ul>
+<li><strong>Show:</strong> (<code>Alt+S</code>) chooses Open, Closed or
+All.</li>
+<li><strong>Milestones</strong> (<code>Alt+M</code>) is the list, and
+<strong>Details</strong> (<code>Alt+D</code>) the selected one in
+full.</li>
+<li><strong>New…</strong> (<code>Alt+N</code>) and
+<strong>Edit…</strong> (<code>Alt+E</code>) ask for a
+<strong>Title:</strong>, a <strong>Description:</strong>, and a
+<strong>Due date (year-month-day):</strong> such as 2026-12-12, which
+you can leave empty.</li>
+<li><strong>Close Milestone…</strong> (<code>Alt+L</code>) closes the
+selected milestone after asking. On a closed one it reads <strong>Reopen
+Milestone…</strong>.</li>
+<li><strong>Open on GitHub</strong> (<code>Alt+O</code>) and
+<strong>Refresh</strong> (<code>Alt+R</code>).</li>
+</ul>
+<p>Every change is reported from what GitHub sends back.</p>
+<h3 id="assignees">Assignees</h3>
+<p>Add assignees when you write an issue, in the form’s
+<strong>Assignees</strong> field, or to several at once with the Batch
+menu.</p>
+<h2 id="changing-many-issues-at-once">Changing many issues at once</h2>
+<p>The list lets you select more than one row. Use the usual Windows
+keys for a list: hold Shift with the arrows to select a run, or hold
+Ctrl and press Space to add or remove one row at a time. Then press
+<strong>Batch…</strong> (<code>Alt+B</code>):</p>
+<ul>
+<li><strong>Close</strong> the selected items.</li>
+<li><strong>Reopen</strong> them.</li>
+<li><strong>Add label to</strong> them. QUILL asks for the label.</li>
+<li><strong>Set milestone on</strong> them, from a list of open
+milestones, or “No milestone (clear it)”.</li>
+<li><strong>Add assignees to</strong> them, as GitHub usernames
+separated by commas.</li>
+</ul>
+<p>Each menu row says how many items it will change, such as “Close 3
+selected”. The confirmation names every item and says “This changes the
+items on GitHub for everyone watching them.” When it is done you hear
+how many GitHub confirmed, such as “Batch change applied to 3 of 3
+item(s).”, and the name of anyone GitHub would not assign.</p>
+<p>Batch works in the Issues &amp; PRs view, and needs you to be signed
+in.</p>
+<h2 id="housekeeping">Housekeeping</h2>
+<p>Shift+F10 on an issue has a submenu called <strong>Housekeeping
+for</strong> and its number. Signed in, it holds:</p>
+<ul>
+<li><strong>Lock Conversation…</strong>, with a reason: No reason given,
+Off-topic, Too heated, Resolved or Spam. Only collaborators can comment
+on a locked issue. <strong>Unlock Conversation</strong> opens it
+again.</li>
+<li><strong>Transfer Issue…</strong> moves the issue to another
+repository you can write to. QUILL asks for the repository as
+<code>owner/name</code>, then warns that labels and milestones are not
+carried across.</li>
+<li><strong>Pin Issue</strong> and <strong>Unpin Issue</strong>: a
+repository can pin a few issues to the top of its issue list.</li>
+<li><strong>Set Issue Type…</strong> chooses the issue’s type, such as
+Bug or Feature, from the types the organization has set up. A repository
+with none says so.</li>
+<li><strong>Reorder Sub-issues…</strong> opens a list of the issue’s
+sub-issues in order, <strong>Sub-issues, in order:</strong>. Select one
+and press <strong>Move Up</strong> (<code>Alt+U</code>) or <strong>Move
+Down</strong> (<code>Alt+D</code>). You hear its new place, such as “#12
+is now 2 of 5.”, read back from GitHub. Enter opens the selected
+sub-issue in your browser.</li>
+</ul>
+<p>On a pull request, the submenu holds only Lock and Unlock, because
+the others are for issues.</p>
+<h2 id="projects-and-dependencies">Projects and dependencies</h2>
+<p>GitHub Projects are boards that track issues and pull requests across
+one or more repositories, with fields of their own such as Status,
+Priority or Iteration. <strong>Projects…</strong> (<code>Alt+J</code>)
+in GitHub Items opens the window <strong>GitHub Projects and
+Dependencies</strong> for the loaded repository. You need to be signed
+in.</p>
+<ul>
+<li><strong>Load Projects</strong> (<code>Alt+L</code>), then choose a
+board in <strong>Project:</strong> (<code>Alt+P</code>).</li>
+<li><strong>Project items</strong> lists everything on the board. Each
+row reads the kind, the repository and number, the title, its state, and
+whether it is <strong>Ready</strong> or <strong>Blocked</strong>.</li>
+<li><strong>Selected item and dependencies</strong> shows the selected
+item’s fields, what blocks it, and its sub-issues and parent, with the
+parent’s progress.</li>
+<li><strong>Next Unblocked</strong> (<code>Alt+N</code>) moves to the
+next open item with nothing open blocking it. It is the answer to “what
+can I start now?” You hear “Selected unblocked work:” and its title, or
+“No open issue or pull request is currently unblocked.”</li>
+<li><strong>Actions…</strong> (<code>Alt+A</code>), and the list’s
+context menu, hold <strong>Edit Project Field…</strong>, <strong>Add
+Blocker…</strong>, <strong>Remove Blocker…</strong>, <strong>Add
+Sub-issue…</strong>, <strong>Remove Sub-issue…</strong>, <strong>Open on
+GitHub</strong> and <strong>Refresh Board</strong>.</li>
+</ul>
+<p>Edit Project Field changes text, number, date, single-select,
+multi-select and iteration fields. Add Blocker and Add Sub-issue ask for
+the other issue, as a GitHub link or as <code>owner/repo#number</code>.
+Every change names its target and what it will do, and asks first.</p>
+<h2 id="starting-an-issue-in-its-own-folder">Starting an issue in its
+own folder</h2>
+<p>This one is QUILL’s alone. When you start work on an issue, you
+usually want a new branch, kept apart from whatever else you have going.
+Shift+F10 on an issue or pull request has <strong>Start issue #N in
+Local Worktree…</strong> (or <strong>Start pull request #N in Local
+Worktree…</strong>). It uses Git’s worktrees: a second folder for the
+same repository, on a branch of its own.</p>
+<ol type="1">
+<li>QUILL uses the Git folder of the document you have open, or asks you
+to choose the local checkout of the repository.</li>
+<li>It checks that the checkout’s remote really is this GitHub
+repository, and stops with <strong>Repository Does Not Match</strong> if
+it is not.</li>
+<li>It suggests a branch name, such as
+<code>issue-208-fix-the-status-bar</code>, and tells you which local
+branch it starts from and whether you have uncommitted changes. Those
+stay where they are, in the folder you already have.</li>
+<li>It asks you to confirm. Nothing is fetched and nothing is sent to
+GitHub.</li>
+<li>You choose where the new folder goes. QUILL suggests one beside the
+existing checkout.</li>
+</ol>
+<p><strong>In QUILL Lite</strong>, this command is not on the menu.</p>
+<hr />
+<ul>
+<li>Previous: <a
+href="lite-github-guide-03-inbox-and-your-work.html">Chapter 3: Your
+inbox and your work</a></li>
+<li>Next: <a
+href="lite-github-guide-05-pull-requests-and-review.html">Chapter 5:
+Pull requests and review</a></li>
+<li><a href="lite-github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

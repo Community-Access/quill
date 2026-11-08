@@ -355,6 +355,29 @@ with thanks to the editors that came before it.
 
 - [Acknowledgments](quill-guide/quill-guide-a-last-word.html#acknowledgments)
 
+## Books of their own
+
+Two subjects have whole books beside this guide, shared by QUILL and QUILL
+Lite, because there is too much to say in a chapter.
+
+### [The GitHub Guide for QUILL and QUILL Lite](./github-guide/github-guide.html)
+
+Doing GitHub work with a screen reader: notifications, issues, pull request
+review line by line, what failed in a workflow run, repository files, blame,
+releases, discussions, security alerts and Codespaces, with a keyboard
+reference for every window. Chapter 3's GitHub section is a short map of it.
+
+- [Chapter 1: Getting started](./github-guide/github-guide-01-getting-started.html)
+- [Chapter 2: Getting around](./github-guide/github-guide-02-getting-around.html)
+- [Chapter 5: Pull requests and review](./github-guide/github-guide-05-pull-requests-and-review.html)
+- [Chapter 10: Troubleshooting, privacy and help](./github-guide/github-guide-10-troubleshooting.html)
+- [Chapter 11: Keyboard reference](./github-guide/github-guide-11-keyboard-reference.html)
+
+### [The WordPress and Forms manual](./wordpress-and-forms/wordpress-forms-guide.html)
+
+Looking after WordPress websites and writing accessible forms. Chapters 16 to
+18 of this guide are the short version.
+
 ## Appendices
 
 ### [Appendix A: The QUILL Developer Console](quill-guide/quill-guide-appendix-a-quill-developer-console.html)

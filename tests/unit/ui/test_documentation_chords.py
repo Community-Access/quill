@@ -30,7 +30,7 @@ import re
 from pathlib import Path
 
 from quill.core.native_richedit_keys import NATIVE_FORMATTING_CHORDS
-from quill.core.user_guide_files import guide_files, manual_files, read_guide_text
+from quill.core.user_guide_files import GITHUB_GUIDE, guide_files, manual_files, read_guide_text
 from quill.core.wordpress.menu import LAYER_PREFIX
 
 _ROOT = Path(__file__).resolve().parents[3]
@@ -68,6 +68,9 @@ GUIDES: tuple[Path, ...] = (
     # The WordPress and Forms manual both guides hand over to: its index and
     # every page it links, each scanned and reported on its own.
     *manual_files(),
+    # The GitHub guide, QUILL's copy: its contents page and every chapter. QUILL
+    # Lite's copy is a run of chapters in its own guide, read above.
+    *manual_files(GITHUB_GUIDE),
 )
 
 #: A chord as the guides write it. QUILL's guide uses backticks and QUILL Lite's

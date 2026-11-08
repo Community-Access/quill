@@ -44,6 +44,11 @@ WORDPRESS_FORMS_MANUAL = (
     _REPO_ROOT / "docs" / "user guide" / "wordpress-and-forms" / "wordpress-forms-guide.md"
 )
 
+#: The GitHub guide both editors ship (QUILL's copy; QUILL Lite's is a chapter
+#: run of its own guide, ``guide/lite-github-guide*.md``). Its pages sit beside
+#: its contents page, so :func:`manual_files` reads it the same way.
+GITHUB_GUIDE = _REPO_ROOT / "docs" / "user guide" / "github-guide" / "github-guide.md"
+
 #: A contents-page link to a chapter: ``](quill-guide/quill-guide-03-x.html#y)``.
 _CHAPTER_LINK = re.compile(
     r"\]\((?P<folder>[A-Za-z0-9_-]+)/(?P<stem>[A-Za-z0-9_-]+)\.html(?:#[^)\s]*)?\)"
@@ -326,6 +331,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 __all__ = [
+    "GITHUB_GUIDE",
     "INDEX_NAME",
     "LITE_GUIDE",
     "WORDPRESS_FORMS_MANUAL",

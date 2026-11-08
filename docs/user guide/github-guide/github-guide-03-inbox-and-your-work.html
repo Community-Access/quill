@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 3: Your inbox and your work</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-3-your-inbox-and-your-work">Chapter 3: Your inbox and
+your work</h1>
+<h2 id="what-this-chapter-covers">What this chapter covers</h2>
+<p>GitHub sends you a notification whenever something you are part of
+moves. On a busy project that is dozens a day, and the website’s inbox
+is a long page of links and icons. This chapter shows you how to go
+through it from the keyboard: what each notification says, how to clear
+it, and how to keep your place. Then it covers My Work, the attention
+queue that gathers everything waiting for you, and the activity
+views.</p>
+<p>All of this needs a signed-in account, because it is your inbox and
+your work.</p>
+<p><strong>In QUILL Lite</strong>, which works as a guest, these views
+say “Sign in to GitHub for this account view.” Use QUILL for them.</p>
+<h2 id="opening-your-notifications">Opening your notifications</h2>
+<p>In QUILL, choose <strong>Tools &gt; Git and GitHub &gt; GitHub &gt;
+Notifications…</strong>. Explore GitHub opens straight at your inbox.
+From GitHub Items, press <strong>Explore…</strong> (<code>Alt+E</code>)
+and choose <strong>GitHub notifications</strong> in
+<strong>View:</strong> (<code>Alt+V</code>).</p>
+<p>When the inbox loads, QUILL says how many are unread, once:</p>
+<ul>
+<li>“12 unread.”</li>
+<li>“3 unread of 40.”, when you are showing read ones too.</li>
+<li>“No unread notifications; 40 read.”</li>
+<li>“No notifications.”</li>
+</ul>
+<h2 id="what-a-notification-says">What a notification says</h2>
+<p>Each row says, in this order, whether it is unread, why it reached
+you, the repository and the title: “Unread, review requested:
+community-access/quill — Fix the status bar”.</p>
+<p>The reason is in words, not GitHub’s code names:</p>
+<ul>
+<li>“review requested”</li>
+<li>“you were mentioned”, or “your team was mentioned”</li>
+<li>“you were assigned”</li>
+<li>“you opened it”, or “you commented”</li>
+<li>“you changed its state”</li>
+<li>“you are watching the repository”, or “you subscribed”</li>
+<li>“a workflow run you started finished”</li>
+<li>“your approval was requested for a deployment”</li>
+<li>“security alert”</li>
+<li>“you were invited to the repository”</li>
+<li>“you were credited on a security advisory”</li>
+</ul>
+<p><strong>Selected result</strong> holds the rest, one line each: what
+the subject is (an issue, a pull request, a release, a discussion, a
+commit, a workflow run, a security alert), the repository, why you got
+it, its state and when it last changed, and the link.</p>
+<h2 id="opening-one">Opening one</h2>
+<p>Press Enter on a notification. Two things happen.</p>
+<p>First, QUILL marks it read, the way opening it on GitHub would. It
+does this quietly. The row’s first word changes from Unread to Read,
+which you hear when you next arrive on it.</p>
+<p>Then it opens the notification in the best place for it:</p>
+<ul>
+<li><strong>A pull request</strong> opens in the review window, on top
+of Explore. Close the review and you are back in your inbox, on the same
+row.</li>
+<li><strong>An issue</strong> opens in GitHub Items, at that issue, and
+Explore closes.</li>
+<li><strong>Anything else</strong>, such as a release or a workflow run,
+opens in your browser.</li>
+</ul>
+<h2 id="triage-done-unsubscribe-and-mark-all-read">Triage: Done,
+Unsubscribe and Mark All Read</h2>
+<p>In the notifications view, and only there, four controls appear under
+the Results list:</p>
+<ul>
+<li><strong>Include read notifications</strong> (<code>Alt+I</code>), a
+check box. Check it to see notifications you have already read as well.
+The list reloads.</li>
+<li><strong>Mark Done</strong> (<code>Alt+D</code>) takes the selected
+notification out of your inbox. It is the same as Done on GitHub. The
+Delete key in the list does the same.</li>
+<li><strong>Unsubscribe</strong> (<code>Alt+U</code>) stops
+notifications from that thread for good, and takes it out of the
+inbox.</li>
+<li><strong>Mark All Read</strong> (<code>Alt+A</code>) marks everything
+read.</li>
+</ul>
+<h3 id="keeping-your-place">Keeping your place</h3>
+<p>Mark Done and Unsubscribe take the row out of the list and put you on
+the next one, with focus still in the list, so you can keep going: read,
+Delete, read, Delete. You hear “Marked done.” or “Unsubscribed from the
+thread.” When the last one goes, QUILL adds “No notifications left in
+this list.”</p>
+<p>If you reload, QUILL puts you back on the same notification, if it is
+still there.</p>
+<h3 id="mark-all-read">Mark All Read</h3>
+<p>Mark All Read asks first: “Mark every notification in your GitHub
+inbox read, up to when this list was loaded? Newer notifications stay
+unread.” That second sentence is the safety: anything that arrived after
+you loaded the list stays unread, so you never clear something you have
+not seen.</p>
+<p>You hear “Marked all notifications read.” On a large inbox GitHub may
+do the work in the background instead. Then you hear “GitHub accepted
+the request and is marking them read in the background. Refresh in a
+minute to check.”</p>
+<h3 id="the-context-menu">The context menu</h3>
+<p>Shift+F10 on a notification has the same commands, plus one more:
+<strong>Mark Notification Read</strong>, <strong>Mark Done</strong>,
+<strong>Unsubscribe from Thread</strong>, and, for the whole view,
+<strong>Mark All Read…</strong>. Mark Notification Read marks it read
+without opening it.</p>
+<h2 id="how-often-quill-checks">How often QUILL checks</h2>
+<p>GitHub tells apps how often they may check the inbox, usually once a
+minute, and asks them to keep to it. QUILL does. If you reload sooner,
+it keeps the list it already has, and adds to the unread count: “GitHub
+asks apps to check notifications no more often than it says; this is the
+list from the last check. Try again in” and the number of seconds.</p>
+<p>When you do reload, QUILL asks GitHub only for what has changed since
+last time. An unchanged inbox comes back in a moment and costs nothing
+from your hourly allowance. When the allowance is running low, QUILL
+waits longer between checks on its own: twice as long under a quarter
+left, four times as long under a tenth.</p>
+<h2 id="my-work">My Work</h2>
+<p><strong>My Work</strong>, in Explore’s <strong>View:</strong> list,
+is everything open that involves you, across every repository you can
+see. It runs four searches and puts the results in one list:</p>
+<ul>
+<li><strong>Assigned</strong>: open issues and pull requests assigned to
+you.</li>
+<li><strong>Review requested</strong>: open pull requests waiting for
+your review.</li>
+<li><strong>Mentioned</strong>: where someone mentioned you.</li>
+<li><strong>Authored</strong>: what you opened.</li>
+</ul>
+<p>An item that turns up in more than one search appears once. Its
+details start with the searches that found it, so you know whether it is
+here because you were assigned or because you were mentioned. Each row
+reads the repository, the number, the title, and whether it is an issue
+or a pull request.</p>
+<h2 id="the-attention-queue">The attention queue</h2>
+<p>The attention queue is a shorter, sharper list: only what is waiting
+for you to act. It is the view Explore opens on when you are signed in.
+It gathers four kinds of work:</p>
+<ul>
+<li><strong>Assigned to me</strong></li>
+<li><strong>Review requested</strong></li>
+<li><strong>Mentioned</strong></li>
+<li><strong>Failed checks</strong>: open pull requests whose checks
+failed, in the repositories the queue covers.</li>
+</ul>
+<p>Each row names where it came from and when it last changed. QUILL
+remembers when you last finished loading the queue, so the next time it
+can tell you what moved: changed items say “Changed since your last
+visit.” in their details, and the status line adds how many changed. The
+first time, it says “This is your first recorded visit.”</p>
+<p>If part of the queue could not load, perhaps because GitHub refused
+one of the searches, QUILL does not pretend the list is complete. You
+hear the count “with incomplete data. Check the status for details.”,
+and the status line says which part is missing.</p>
+<h3 id="queue-options">Queue Options</h3>
+<p><strong>Queue Options…</strong> (<code>Alt+O</code>) opens a menu for
+shaping the queue. It is available once the queue has loaded.</p>
+<ul>
+<li><strong>Choose Repositories…</strong> limits the queue to up to ten
+repositories. Type them as <code>owner/repo</code>, separated by commas,
+or leave the box empty to search everything you can see.</li>
+<li><strong>Choose Categories…</strong> picks which of the four kinds to
+include. Check the ones you want; at least one has to stay.</li>
+<li><strong>Save Current Filter…</strong> names the current repositories
+and categories, so you can switch to them again. Each saved filter then
+has its own <strong>Use Filter</strong> and <strong>Remove
+Filter</strong> rows in this menu.</li>
+</ul>
+<p>Filters are kept on this computer, for each account separately. None
+of this changes anything on GitHub.</p>
+<h2 id="activity">Activity</h2>
+<p>Three views show what has been happening rather than what is
+waiting:</p>
+<ul>
+<li><strong>My activity feed</strong>: events from the people you follow
+and the repositories you watch.</li>
+<li><strong>Repository activity</strong>: recent events in the
+repository named in <strong>Repository:</strong>.</li>
+<li><strong>Person’s public activity</strong>: one person’s public
+events. Type their username in <strong>Person:</strong>
+(<code>Alt+P</code>).</li>
+</ul>
+<p>Each row reads the kind of event, the repository and who did it, such
+as “Push: community-access/quill — jeff”.</p>
+<h2 id="a-morning-routine">A morning routine</h2>
+<ol type="1">
+<li>Open your notifications: in QUILL, <strong>Tools &gt; Git and GitHub
+&gt; GitHub &gt; Notifications…</strong>.</li>
+<li>Listen to the unread count.</li>
+<li>Arrow down. For each row, decide: read it now (Enter), clear it
+(Delete), or stop hearing about it (<code>Alt+U</code>).</li>
+<li>After opening a pull request, close the review window to come back
+to the same place in the list.</li>
+<li>When the inbox is clear, choose <strong>Attention queue</strong> in
+<strong>View:</strong> and work from the top.</li>
+</ol>
+<hr />
+<ul>
+<li>Previous: <a href="github-guide-02-getting-around.html">Chapter 2:
+Getting around</a></li>
+<li>Next: <a href="github-guide-04-issues.html">Chapter 4:
+Issues</a></li>
+<li><a href="github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

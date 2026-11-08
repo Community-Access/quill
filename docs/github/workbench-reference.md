@@ -1,5 +1,10 @@
 # GitHub Workbench: keyboard and screen reader reference
 
+This is the technical reference: what each window does and which part of
+GitHub it calls. For a book on doing the work, written for screen-reader
+users, read [The GitHub Guide for QUILL and QUILL Lite](https://www.quillforall.org/docs/github-guide.html),
+which ships with both editors.
+
 QUILL and QUILL Lite share the GitHub Items and Explore windows. QUILL Lite
 opens the workbench from **File > GitHub Workbench** (**Alt+F**, then **G**). In QUILL, use **File >
 Open from Remote > GitHub Items**. Public repository reading works without an
@@ -368,3 +373,5 @@ user-owned follow-up. This reference does not claim a macOS assistive-technology
 acceptance matrix.
 
 For a guided walkthrough, read [Tutorial 8](../tutorials/08-github-inside-quill.md).
+For every window, key and refusal in plain words, read
+[The GitHub Guide for QUILL and QUILL Lite](https://www.quillforall.org/docs/github-guide.html).
