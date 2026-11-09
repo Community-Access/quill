@@ -7519,14 +7519,16 @@ every app runs the same session.</p>
 and settle most requests. Tier 3 is Jev, TypeSafe’s decision model
 (<code>jev-1.14.0</code>), asked to pick one offered command or none.
 Tier 4 (the person’s own AI) is in QUILL and QUILL Lite only: Quill
-Radio has no <code>AiService</code>, so in Radio “Use My Own AI Instead”
-sends nothing (#1819).</p>
+Radio has no <code>AiService</code>, so its question does not offer “Use
+My Own AI Instead” (#1819).</p>
 <p><strong>Consent (<code>command-key.md</code> 7.8).</strong> Nothing
 leaves the computer until the person answers one question, asked once
 and only when a route exists: Use Jev (Jev, then tier 4), Use My Own AI
 Instead (tier 4 only) or Match on This Computer Only (neither; Escape).
 The answer is <code>command_understanding</code> in
-<code>command-key.json</code>. It cannot yet be changed (#1819).</p>
+<code>command-key.json</code>; What Can I Say Here? has Change How
+Requests Are Understood… to change it (#1819). “Use My Own AI Instead”
+is offered only where tier 4 can run.</p>
 <p><strong>Routes for Jev.</strong> An own TypeSafe key in Windows
 Credential Manager (<code>QUILL TypeSafe dev key</code>) is used first.
 Otherwise, when this computer is signed in to QUILL’s free AI,

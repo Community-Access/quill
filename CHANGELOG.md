@@ -2,6 +2,27 @@
 
 ## 1.0.0
 
+### Fixes from today's reports (2026-11-09)
+
+- **QUILL no longer closes a moment after it starts.** On wxPython 4.3.2, QUILL
+  run from source could vanish just after the startup sound (#1817, reported by
+  Doug Lawlor). A hidden web view made at startup to speed up the first preview
+  was the cause. It is gone: the first preview takes a moment longer instead.
+- **The side preview no longer says "Unknown runtime error".** The automatic
+  side-by-side Markdown preview showed "Error running JavaScript: Error:
+  Unknown runtime error" as it started or updated (#1818, reported by Doug
+  Lawlor). Its content now sits in a container every web engine can update,
+  with the same main landmark for your screen reader.
+- **Change how requests are understood.** The first time Say or Type a Command
+  could ask for help, you choose Use Jev, Use My Own AI Instead or Match on This
+  Computer Only, and the window said you could change that at any time, though
+  nothing let you. Now **What Can I Say Here?** (**Ctrl+Alt+Shift+F1**) has
+  **Change How Requests Are Understood...** (**Alt+H**): it asks again, says your
+  current answer first, keeps it on Escape, and tells you where requests go now
+  (#1819).
+- **Use My Own AI Instead only where it can work.** It is offered only when your
+  own AI can be asked, not while QUILL's free AI is the one in use.
+
 ### Clearer command descriptions for Jev (2026-11-09)
 
 - Jev reads a one-line description of each command, and in the live test it

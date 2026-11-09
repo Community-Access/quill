@@ -426,7 +426,7 @@ The first time Jev or tier 4 could be used. As shipped on 2026-11-09 (`CONSENT_T
 
 Escape answers Match on This Computer Only. The question is asked only when a route exists: a Jev route (this computer signed in to QUILL's free AI, or an own TypeSafe key) or a tier 4 engine (an own AI in Choose Your AI).
 
-The choice is meant to be a setting, `command_understanding` (`jev`, `my_ai` or `local`), shared by both editors and every app. **Not yet:** it lives in `command-key.json` in the app's data folder, and nothing lets a person change it, although the text above says they can. Issue #1819 tracks the Preferences row, and Radio offering "Use My Own AI Instead" when it has no tier 4.
+The choice is `command_understanding` (`jev`, `my_ai` or `local`), kept in `command-key.json` in the app's data folder. **Changing it (#1819, 2026-11-09):** What Can I Say Here? has Change How Requests Are Understood..., which asks the question again with the current answer said first, keeps it on Escape, saves the new one and says where requests go now (`change_command_understanding` in `quill/ui/command_key_hosts.py`); the consent text names it. "Use My Own AI Instead" is offered only where tier 4 has an engine, so never in Quill Radio and not on the free AI, and the text then leaves out the own-AI sentence (`CONSENT_TEXT_JEV_ONLY`). A shared Preferences row is still a remaining task.
 
 ### 7.9 Egress rows and error codes
 
@@ -448,7 +448,7 @@ The choice is meant to be a setting, `command_understanding` (`jev`, `my_ai` or 
 
 - **One more `AiService` feature, `command_pick`.** It has the `INSTRUCTIONS` row in `own_key.py`, used by own key, ChatGPT, Copilot and Codex. **Built 2026-11-09 (#1814)** as `quill/ui/command_key_ai.py`: `AiService.ask("command_pick", ..., requires=("text",))`, so Safe Mode, the agreement, GATE-CAPS and the route-changed question all apply; "Asking your AI." is said first; the box waits at most eight seconds with `wx.SafeYield` (every window disabled, so nothing typed lands anywhere) and then cancels. `CommandPickAssist` acts only when the answer agrees with tier 2's best guess and the command is SAFE, and otherwise offers "Did you mean".
 - **Not on the free hosted AI.** No gateway template was added: a person on the free AI who says yes to Jev already has the gateway route, and tier 4 there would spend their free allowance on a lookup. `command_pick_engine` answers None for it.
-- **Only where the app has an `AiService`.** QUILL and QUILL Lite do (`HostedAiMixin`); Quill Radio does not, so in Radio "Use My Own AI Instead" sends nothing (#1819).
+- **Only where the app has an `AiService`.** QUILL and QUILL Lite do (`HostedAiMixin`); Quill Radio does not, so Radio's question does not offer "Use My Own AI Instead" (#1819).
 - **Local Ollama and llama.cpp** reuse llama.cpp's `decide` pattern.
 - **One question per request.** It asks only the `action` and `steps` questions, as "reply with one id from this list, or none".
 - **Checking the answer.** The answer is parsed on the computer and checked against the list.
@@ -1503,7 +1503,8 @@ Every recommendation above was taken. None of Jeff's later words overrode one: "
 - [x] Tier 4 wired to `AiService.ask` with the `own_key.py` `INSTRUCTIONS` row (#1814, 2026-11-09). No free-AI template, on purpose (7.10).
 - [x] A first live run, through the gateway (#1813 tools, #1815 report, 2026-11-09): `docs/release/jev-live-test-2026-11-09.md`.
 - [x] Command descriptions Jev confused, sharpened; catalogue 2026-11-09, with 2026-11-08 kept on the gateway for installed copies (#1816).
-- [ ] `command_understanding` as a real shared setting, with a Preferences row in every app (settings vocabulary, GATE-SETDOC); and Radio's question without "Use My Own AI Instead" while Radio has no tier 4. Issue #1819. The consent text already promises it.
+- [x] A way to change the answer: Change How Requests Are Understood in What Can I Say Here, and Radio's question without "Use My Own AI Instead" (#1819, 2026-11-09).
+- [ ] `command_understanding` as a shared setting with a Preferences row in every app (settings vocabulary, GATE-SETDOC).
 - [ ] Jev without the free sign-in: automatic free sign-in, an anonymous capped route, or neither. Undecided; today Jev needs the free-AI sign-in or an own key.
 - [ ] From the live report: make tier 2 less sure of itself where a request carries a duration or a "to my list" ("turn the radio off in half an hour" ran Stop; "save this station to my list" ran Browse), so Jev is asked.
 - [ ] From the live report: send dictation's alternative hearings (`heard_alternatives`) to Jev, for misheard words ("make it bowled", "word cow", "paws").
