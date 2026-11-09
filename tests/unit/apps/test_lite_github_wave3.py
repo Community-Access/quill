@@ -61,7 +61,9 @@ def test_wave3_provider_operations_are_on_the_shared_provider() -> None:
 
 
 def test_lite_gives_the_workbench_an_open_file_callback() -> None:
-    source = inspect.getsource(DocumentToolsMixin.cmd_github_workbench)
+    # The row goes through the one opener every GitHub row shares (lite_github_workbench.py).
+    assert "self.open_github_items()" in inspect.getsource(DocumentToolsMixin.cmd_github_workbench)
+    source = inspect.getsource(DocumentToolsMixin.open_github_items)
     assert "open_file_reference_cb=self._open_github_file_reference" in source
 
 

@@ -166,6 +166,10 @@ class DocumentTypingMixin(DocumentAbbreviationsMixin, DocumentTypingAssistMixin)
         wordpress_key = getattr(self, "_wordpress_key_down", None)
         if wordpress_key is not None and wordpress_key(event):
             return
+        # An open Word Prediction list owns Up, Down, Enter, Tab and Escape.
+        prediction_key = getattr(self, "_word_prediction_key_down", None)
+        if prediction_key is not None and prediction_key(event):
+            return
         code = event.GetKeyCode()
         # A side effect, not a branch: the key goes on to the control, which
         # does the deleting. All this adds is that it is audible.

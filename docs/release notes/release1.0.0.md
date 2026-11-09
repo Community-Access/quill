@@ -2,6 +2,49 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## A GitHub menu, when you want one
+
+Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a
+**GitHub** menu joins the menu bar after Tools. Everything GitHub that lived in
+the File and Tools menus moves into it, and it opens your inbox, your work,
+your notifications, a repository's issues and pull requests, its Actions runs
+and its releases in one step each. Turn it off and the rows go back where they
+were. New in both: **Clone Repository...** copies a repository to your
+computer, private ones included, without writing your token anywhere. And
+**Save to GitHub...** is now called **Commit to GitHub...**, because that is
+what it does. GitHub no longer needs the Developer profile, so the workbench is
+there in most profiles, as it always has been in QUILL Lite.
+
+## Word Prediction knows your code
+
+In a code file, **Ctrl+.** now offers the file's own names that start with
+what you've typed, nearest first, and says what each one is: "count_words,
+function", "while, keyword". It's ready within a tenth of a second even on a
+large file, and when there's room it adds names from the rest of your
+project, read in the background. QUILL Lite has it too.
+
+
+## Word Prediction in every profile
+
+**Ctrl+.** now opens Word Prediction in every profile, including the two that
+left it out. It only opens when you press the key; Word Prediction As You
+Type is still off unless you turn it on. QUILL Lite has the same list on the
+same key.
+
+
+## A Problems pane that stays open
+
+Check This File's list closed as soon as you picked a problem. Now you can
+turn on **View > Problems > Show Pane** and keep the problems under the document
+while you fix them. F6 reaches it, Enter goes to a problem, and Escape comes
+back without closing it. Two choosers at the top narrow it to errors only, or
+to one checker, and say the new count. If you've edited since the check,
+Enter checks again and finds the same problem where it is now. While it's on,
+saving checks the file again, and a Check after a pause box does the same
+when you stop typing; either way you hear only a changed count. A Files chooser lists every open
+document's problems at once, and Enter on one brings that document forward.
+QUILL Lite has the same pane.
+
 ## Sign in to GitHub without a token
 
 Signing in to the GitHub windows no longer means making a personal access

@@ -273,6 +273,13 @@ from quill.tools.network_egress_entries import _REVIEWED_EGRESS  # noqa: E402
 #   dialog states exactly what will run. Triggered: Tools > Sync Folder with
 #   GitHub... (explicit user action only). Blocked in Safe Mode.
 #
+# quill/core/github/clone.py::clone_repository (Clone Repository..., 2026-11-08)
+#   `git clone` via run_subprocess_safely (argv, no shell), after the person
+#   names a repository and folder. Blocked in Safe Mode. QUILL *does* hand git a
+#   credential here: for https github.com only, the token rides the child's
+#   environment (GIT_CONFIG_* -> http.https://github.com/.extraheader), never
+#   argv, .git/config, the remote URL or the log.
+#
 # quill/core/local_git.py (Tools > Local Git; 0.9.0 Beta 3, docs/planning/
 # github.md section 4) -- listed here for the same subprocess-boundary
 # auditability, though unlike the two entries above this module makes **no

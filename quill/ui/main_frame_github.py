@@ -152,7 +152,7 @@ class GitHubRemoteMixin(GitHubAccountsMixin):
         ).start()
 
     def github_save_back(self) -> None:
-        """File > Open Remote > Save to GitHub..."""
+        """File > Open Remote > Commit to GitHub..."""
         path = getattr(self.document, "path", None)
         if path is None:
             self._set_status("No file to save back to GitHub")
@@ -162,7 +162,7 @@ class GitHubRemoteMixin(GitHubAccountsMixin):
             self._show_message_box(
                 "This document was not opened from GitHub.\n"
                 "Use File > Open Remote > GitHub Repository to open a file first.",
-                "Save to GitHub",
+                "Commit to GitHub",
                 self._wx.ICON_INFORMATION | self._wx.OK,
             )
             return
@@ -170,11 +170,11 @@ class GitHubRemoteMixin(GitHubAccountsMixin):
         with wx.TextEntryDialog(
             self.frame,
             f"Commit message for {Path(origin.path).name}:",
-            "Save to GitHub",
+            "Commit to GitHub",
             value=f"Update {Path(origin.path).name}",
         ) as dlg:
             dlg.SetName("Commit message")
-            if self._show_modal_dialog(dlg, "Save to GitHub") != wx.ID_OK:
+            if self._show_modal_dialog(dlg, "Commit to GitHub") != wx.ID_OK:
                 return
             message = dlg.GetValue().strip()
         if not message:
@@ -377,7 +377,7 @@ class GitHubRemoteMixin(GitHubAccountsMixin):
                 )
             wx.CallAfter(self._on_save_back_done, origin, new_sha)
         except Exception as exc:  # noqa: BLE001
-            wx.CallAfter(self._on_github_error, str(exc), "Save to GitHub")
+            wx.CallAfter(self._on_github_error, str(exc), "Commit to GitHub")
 
     def _on_save_back_done(self, origin: RemoteOrigin, new_sha: str) -> None:
         path = getattr(self.document, "path", None)

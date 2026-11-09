@@ -2,11 +2,70 @@
 
 ## What this chapter covers
 
-This chapter is about moving, not doing. It walks through the GitHub Items
-window and the Explore GitHub window control by control, explains the three
-keys that do most of the moving, and covers context menus, searching,
-favorites, coming back where you left off, pasting a link, and GitHub's hourly
-allowance. Every later chapter builds on it.
+This chapter is about moving, not doing. It starts with GitHub Workbench Mode
+and the GitHub menu, then walks through the GitHub Items window and the
+Explore GitHub window control by control, explains the three keys that do most
+of the moving, and covers context menus, searching, favorites, coming back
+where you left off, pasting a link, and GitHub's hourly allowance. Every later
+chapter builds on it.
+
+## GitHub Workbench Mode and the GitHub menu
+
+Normally the GitHub commands sit a few levels down, in the File and Tools
+menus, where they keep out of the way of writing. When you are spending an
+afternoon on issues and pull requests, you want them one key away instead.
+That is what GitHub Workbench Mode is for.
+
+Turn it on with **View > GitHub Workbench Mode**: `Alt+V`, then `K`. It is a
+check item, so the View menu tells you whether it is on. QUILL says "Workbench
+mode on. GitHub menu added." and a **GitHub** menu joins the menu bar right
+after Tools. Press `Alt+G` to open it.
+
+While the mode is on, the GitHub rows leave File and Tools and live in the
+GitHub menu instead, so nothing is listed twice. Turn the mode off and they go
+back. A row's key, if you have given it one, goes with it: keys belong to
+commands, not to menus, so a key you set works in both modes.
+
+The mode belongs to the window you turned it on in. Other windows keep their
+own menus, and a new window starts with the mode off. Nothing else changes:
+every other menu is where it was, and a document you have open keeps working.
+
+### What the GitHub menu holds
+
+From the top:
+
+- **Repository:** and its name, when the document you have open lives in a
+  GitHub repository. It is a readout rather than a command, so your screen
+  reader says it is unavailable. When there is no repository, the row is left
+  out.
+- **Leave Workbench Mode** (`V`), the way out, where you already are.
+- **Inbox...** (`I`), **My Work...** (`W`) and **Notifications...** (`N`):
+  Explore GitHub, opened straight on your attention queue, your work or your
+  notifications. Chapter 3 covers all three.
+- **Issues and Pull Requests...** (`P`), **Actions Runs...** (`A`) and
+  **Releases...** (`E`): GitHub Items, opened straight on that view of the
+  current repository. **Repository Items...** (`T`) opens GitHub Items as it
+  always has.
+- **Explore GitHub...** (`X`), **Clone Repository...** (`C`) and, in QUILL,
+  **Open GitHub Reference...** (`R`) and **Open a Repository...** (`O`).
+- In QUILL only: **GitHub File URL...** (`U`), **Commit to GitHub...** (`M`),
+  **Sync Folder with GitHub...** (`Y`), and three submenus,
+  **Repository Admin** (`D`), **Local Git** (`L`) and **Codespaces** (`S`),
+  which hold what Tools > Git and GitHub holds the rest of the time.
+- **Manage GitHub Accounts...** (`G`) and **Open GitHub Guide** (`H`), last.
+  Help keeps its own Open GitHub Guide row too.
+
+QUILL Lite's GitHub menu is the same menu with QUILL's own rows left out, so
+the letters are the same in both apps.
+
+To leave, choose **GitHub > Leave Workbench Mode** (`Alt+G`, then `V`), or
+uncheck **View > GitHub Workbench Mode**. QUILL says "Workbench mode off."
+Neither has a key of its own: the mode is something you switch a few times a
+day at most, and no key was free in both apps.
+
+In QUILL Lite, the mode works in the empty window too, the one that is left
+when you close every document. With the mode on there, that window is a GitHub
+launcher with nothing to write in.
 
 ## The GitHub Items window, top to bottom
 
@@ -243,9 +302,11 @@ on your computer.
 
 ## Getting around Explore GitHub
 
-**Explore...** (`Alt+E`) in GitHub Items opens Explore GitHub. In QUILL,
-**Tools > Git and GitHub > GitHub > Notifications...** opens it too, straight at
-your notifications.
+**Explore...** (`Alt+E`) in GitHub Items opens Explore GitHub. In workbench
+mode, **GitHub > Explore GitHub...** opens it from the menu bar, and **Inbox...**,
+**My Work...** and **Notifications...** open it straight on those views. In
+QUILL, **Tools > Git and GitHub > GitHub > Notifications...** opens it at your
+notifications when the mode is off.
 
 Explore is simpler than GitHub Items: a view, the boxes that view needs, a
 list and a details field. In Tab order:

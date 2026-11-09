@@ -2771,6 +2771,49 @@ never starts an outside tool. In plain text or rich text it says
 checks the same two languages and many more (rule 10: Lite level with
 QUILL, not ahead).</li>
 </ul>
+<h2 id="word-prediction-2026-11-08">Word Prediction (2026-11-08)</h2>
+<ul>
+<li><strong>Edit &gt; Word Prediction…</strong>
+(<code>cmd_word_prediction</code>, Ctrl+., QUILL’s chord by rule 2):
+QUILL’s list from the shared <code>quill/ui/suggestion_list.py</code>,
+through <code>quill/apps/lite_window_word_prediction.py</code>. Words
+from the spelling dictionary and the document, plus Markdown and HTML
+tags. Up and Down say each suggestion, Enter or Tab replaces only the
+fragment typed, Escape closes without changing the text; typing with the
+list open narrows it. Key press only: QUILL Lite has no “as you type”
+setting, which keeps it level with QUILL rather than ahead. In a code
+file (by extension) the list is the file’s own names with their kinds,
+from the shared <code>quill/core/code_names.py</code>.</li>
+</ul>
+<h2 id="the-problems-pane-2026-11-08">The Problems pane
+(2026-11-08)</h2>
+<ul>
+<li><strong>View &gt; Problems &gt; Show Pane</strong>
+(<code>cmd_toggle_problems_pane</code>, no key, as in QUILL, for the
+reason recorded there): QUILL’s pane, from the shared
+<code>quill/ui/problems_pane.py</code> and
+<code>quill/ui/problems_commands.py</code>, docked under the text and
+above the status bar. The setting is <code>problems_pane_visible</code>,
+QUILL’s field name, and applies to every open window through
+<code>reapply_settings</code>.</li>
+<li>F6 goes from the text to the pane, then to the status bar; F6 in the
+pane with the bar hidden goes back to the text. Enter goes to a problem
+(re-checking after an edit), Escape returns and leaves the pane open,
+and Show and Source narrow the list. While shown, Check This File fills
+the pane rather than opening <code>choose_from_rows</code>. Saving
+checks again, and so does a pause in typing when the pane’s Check after
+a pause box (<code>problems_check_after_pause</code>, QUILL’s field, off
+by default) is checked; only a changed count is said. View &gt; Problems
+&gt; This File Only / All Open Files
+(<code>cmd_problems_this_file</code>,
+<code>cmd_problems_all_files</code>, QUILL’s rows), F in the pane’s
+list, and the pane’s Files chooser list every open window’s problems
+(built-in checkers), and Enter on another window’s row brings it forward
+with <code>focus_frame</code>. Those switch per window;
+<code>problems_all_open_files</code> (Preferences,
+<code>lite_preferences_problems.py</code>) is the default each window
+starts from.</li>
+</ul>
 <h2 id="word-documents-and-table-navigation-2026-10-17">Word documents
 and table navigation (2026-10-17)</h2>
 <p><strong>One implementation, moved.</strong> QUILL’s wx-free Word
@@ -3223,6 +3266,26 @@ the handlers are the document window’s own, run with the shell standing
 in (checked by
 <code>tests/unit/apps/test_lite_empty_window_menu.py</code>). Until
 2026-10-25 the empty bar was File alone: New, Open and Exit.</p>
+<h2 id="help--open-user-guide-and-open-github-guide-2026-11-08">Help
+&gt; Open User Guide and Open GitHub Guide (2026-11-08)</h2>
+<p><strong>Help &gt; Open User Guide</strong>
+(<code>cmd_user_guide</code>, <strong>Ctrl+Shift+F1</strong>, keymap
+<code>help.open_user_guide</code>) and <strong>Help &gt; Open GitHub
+Guide</strong> (<code>cmd_github_guide</code>, keyless, keymap
+<code>help.github_guide</code>, rule 9: Alt+H, I) are QUILL’s two rows,
+opened by the same shared code (<code>quill/apps/lite_guides.py</code>
+over <code>quill/ui/guide_opener.py</code>). Until this change no Help
+command in QUILL Lite opened either guide. Where the guides are is
+<code>quill/core/guide_locations.py</code>, which both editors use:
+beside the launcher (<code>QUILL_LAUNCHER_DIR</code>), the portable
+root, then this checkout. A user guide only counts when its chapter
+folder is beside it, so QUILL’s guide is never taken for QUILL Lite’s.
+Both rows are on the empty window’s bar too. F1 in a GitHub window
+(GitHub Items, Explore GitHub, the review window) adds an <strong>Open
+GitHub Guide</strong> button, registered with the shared F1 engine
+(<code>app_context_help.register_guide_route</code>), so the GitHub
+windows’ own code is unchanged. The Compact installation now carries the
+documentation, and the Start menu has a GitHub Guide shortcut.</p>
 <h2 id="choose-your-ai-github-copilot-and-codex-2026-11-01">Choose Your
 AI, GitHub Copilot and Codex (2026-11-01)</h2>
 <p>A summary. The full requirements, including decision 15 (no silent
@@ -3543,12 +3606,12 @@ hidden wherever it sits):</p>
 <td><code>cmd_close_project</code></td>
 </tr>
 <tr>
-<td>Edit &gt; Agent &amp;Work</td>
+<td>Edit &gt; Agent Wor&amp;k</td>
 <td>&amp;Undo Last Agent Turn</td>
 <td><code>cmd_undo_agent_turn</code></td>
 </tr>
 <tr>
-<td>Edit &gt; Agent &amp;Work</td>
+<td>Edit &gt; Agent Wor&amp;k</td>
 <td>&amp;Stop Agent</td>
 <td><code>cmd_stop_agent</code></td>
 </tr>

@@ -65,12 +65,40 @@ KEYLESS_WITH_REASON: dict[str, str] = {
         "reaches both (Alt+N, C, then N or P)."
         for handler in ("cmd_next_block", "cmd_previous_block")
     },
+    "cmd_toggle_problems_pane": "As in QUILL (rule 2), where Problems Pane has no chord "
+    "either: Ctrl+Shift+M is Set Mark in both editors and nothing near it was free in both "
+    "(measured 2026-11-08). Shown once, it stays shown (rule 9). Alt+V, P, S.",
+    **{
+        handler: "As in QUILL (rule 2), where This File Only and All Open Files have no "
+        "chord either; the pane's Files chooser does the same, and the choice is "
+        "remembered, so it is set once (rule 9). Alt+V, P, then T or A."
+        for handler in ("cmd_problems_this_file", "cmd_problems_all_files")
+    },
     "cmd_github_workbench": "As in QUILL (rule 2), where GitHub Items has no chord either; "
     "it sits in File, as QUILL's does, and Alt+F, G reaches it. Ctrl+Alt+Shift+F6 is "
     "Spelling Announcements in QUILL.",
     "cmd_github_manage_accounts": "As in QUILL (rule 2), where Manage GitHub Accounts has "
     "no chord either, and a once-in-a-while command (rule 9). It sits beside the Workbench "
     "in File, and Alt+F, H reaches it.",
+    "cmd_github_clone": "As in QUILL (rule 2), where Clone Repository has no chord either; "
+    "it asks for a repository and a folder next, so a chord would save little (rule 9). "
+    "Alt+F, Y reaches it.",
+    "cmd_toggle_github_workbench": "As in QUILL (rule 2), where GitHub Workbench Mode has "
+    "no chord either: it is pressed a few times a day at most, and no chord is free in both "
+    "keymaps (rule 9). Alt+V, K reaches it.",
+    **{
+        handler: "As in QUILL (rule 2), where no GitHub command has a chord: the GitHub menu "
+        "it sits in exists only in workbench mode, and its access letter, Alt+G, is the way in."
+        for handler in (
+            "cmd_github_inbox",
+            "cmd_github_my_work",
+            "cmd_github_notifications",
+            "cmd_github_issues",
+            "cmd_github_actions_runs",
+            "cmd_github_releases",
+            "cmd_github_explore",
+        )
+    },
     "cmd_open_studio": "Rule 7: launching another app does not take an editor chord. "
     "Lite already uses QUILL's positional QuillVille keys for editing commands. "
     "Alt+T, Q reaches Studio when the shared release gate permits it; the user can "
@@ -89,12 +117,12 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "
     "commands (rule 9). "
-    "Stop Agent: the task window's own Stop is Alt+T there; elsewhere Alt+E, W, S.",
+    "Stop Agent: the task window's own Stop is Alt+T there; elsewhere Alt+E, K, S.",
     "cmd_undo_agent_turn": "As in QUILL (rule 2), where it has no plain key either: "
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "
     "commands (rule 9). "
-    "Undo Last Agent Turn: Alt+U in the task window; elsewhere Alt+E, W, U.",
+    "Undo Last Agent Turn: Alt+U in the task window; elsewhere Alt+E, K, U.",
     "cmd_explain_agent_turn": "As in QUILL (rule 2), where it has no plain key either: "
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "
@@ -109,7 +137,7 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "
     "commands (rule 9). "
-    "Agent Task Transcript: Alt+R in the task window; elsewhere Alt+V, P.",
+    "Agent Task Transcript: Alt+R in the task window; elsewhere Alt+V, G.",
     "cmd_project_allowed_commands": "As in QUILL (rule 2), where it has no plain key either: "
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "

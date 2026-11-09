@@ -12,11 +12,16 @@ heading or landmark element -- QUILL's HTML pattern, read from the same profile.
 Check This File checks Markdown and HTML with the built-in checkers and never
 starts an outside tool; QUILL, which knows many more languages, checks those
 too. That keeps QUILL Lite level with QUILL rather than ahead of it (rule 10).
+
+View > Problems > Show Pane docks the same problems under the text, above the status
+bar, in every open window at once (the setting is the app's). F6 goes from the
+text to the pane and on to the status bar; Escape in the pane comes back.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from quill.ui.problems_commands import ProblemsCommandsMixin
 
@@ -101,6 +106,139 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
             self._announce(_NOTHING_TO_CHECK)
             return
         self._step_problem(forward=False)
+
+    # -- the Problems pane -------------------------------------------------- #
+
+    def cmd_toggle_problems_pane(self) -> None:
+        """View > Problems > Show Pane: the problems docked under the text, in every window."""
+        self._toggle_problems_pane()
+
+    def cmd_problems_this_file(self) -> None:
+        """View > Problems > This File Only: the pane lists this document's problems."""
+        self._problems_choose_files(False)
+
+    def cmd_problems_all_files(self) -> None:
+        """View > Problems > All Open Files: the pane lists every window's problems."""
+        self._problems_choose_files(True)
+
+    def _problems_all_files_setting(self) -> bool:
+        return bool(getattr(self.app.settings, "problems_all_open_files", False))
+
+    def _problems_mark_all_files(self, all_files: bool) -> None:
+        self._sync_check_items()
+
+    def problems_listing_all_files(self) -> bool:
+        """What this window's View > Problems radio pair shows."""
+        if self._problems_files_chosen:
+            return self._problems_all_files
+        return self._problems_all_files_setting()
+
+    def _problems_can_check(self) -> bool:
+        return self._problems_surface() is not None
+
+    def _problems_pane(self, *, create: bool) -> Any:
+        pane = getattr(self, "_problems_pane_widget", None)
+        if pane is not None or not create:
+            return pane
+        import wx
+
+        from quill.ui.dpi import dip_size
+        from quill.ui.problems_pane import ProblemsPane
+
+        pane = ProblemsPane(
+            wx,
+            self,
+            go_to=self._problems_pane_go_to,
+            back_to_editor=self._problems_back_to_editor,
+            copy_text=self._problems_copy,
+            say=self._problems_say,
+            tick=self._problems_tick,
+            pause_enabled=self._problems_pause_enabled(),
+            set_pause_enabled=self._problems_set_pause_enabled,
+            set_all_files=self._problems_set_all_files,
+            switch_files=self._problems_switch_files,
+        )
+        pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
+        pane.panel.Hide()
+        sizer = self.GetSizer()
+        index = sizer.GetItemCount()
+        for position in range(sizer.GetItemCount()):
+            if sizer.GetItem(position).GetWindow() is self.status_panel:
+                index = position
+                break
+        # Above the status bar, so F6 meets them in screen order.
+        sizer.Insert(index, pane.panel, 0, wx.EXPAND)
+        self._problems_pane_widget = pane
+        if not self._problems_files_chosen:
+            self._problems_all_files = self._problems_all_files_setting()
+        pane.set_all_files(self._problems_all_files)
+        return pane
+
+    def _problems_pane_set_shown(self, shown: bool) -> None:
+        self.app.settings.problems_pane_visible = shown
+        self.app._queue_settings_save()
+        self.app.reapply_settings()  # every window, this one included
+        self.apply_problems_pane_visibility()  # idempotent; here before the check
+
+    def apply_problems_pane_visibility(self) -> None:
+        """Match the pane to the setting; built only the first time it shows."""
+        shown = bool(getattr(self.app.settings, "problems_pane_visible", False))
+        pane = self._problems_pane(create=shown)
+        if pane is None or pane.is_shown() == shown:
+            return
+        if not shown and pane.has_focus():
+            self.control.SetFocus()
+        pane.set_shown(shown)
+        self.Layout()
+
+    def problems_pane_takes_f6(self) -> bool:
+        """True when F6 from here should land in the pane rather than the bar."""
+        pane = self._problems_pane(create=False)
+        return pane is not None and pane.is_shown() and not pane.has_focus()
+
+    def focus_problems_pane(self) -> None:
+        pane = self._problems_pane(create=False)
+        if pane is not None:
+            pane.focus()
+
+    def _problems_open_documents(self) -> list[Any]:
+        from quill.core.problems.pane import OpenProblemDocument
+
+        frames = list(getattr(self.app, "frames", []) or []) or [self]
+        return [
+            OpenProblemDocument(
+                key=frame,
+                name=frame.document_name(),
+                text=str(frame.control.GetValue()),
+                language=frame._problems_language(),
+                path=getattr(frame, "path", None),
+                modified=bool(getattr(frame, "modified", True)),
+            )
+            for frame in frames
+        ]
+
+    def _problems_document_key(self) -> object:
+        return self
+
+    def _problems_go_to_document(self, key: object, line: int, column: int) -> None:
+        from quill.core.problems import offset_for
+
+        frame: Any = key
+        self.app.focus_frame(frame)
+        frame._problems_go_to(offset_for(str(frame.control.GetValue()), line, column))
+
+    def _problems_pause_enabled(self) -> bool:
+        return bool(getattr(self.app.settings, "problems_check_after_pause", False))
+
+    def _problems_set_pause_enabled(self, enabled: bool) -> None:
+        self.app.settings.problems_check_after_pause = enabled
+        self.app._queue_settings_save()
+
+    def _problems_back_to_editor(self) -> None:
+        self.control.SetFocus()
+
+    def _problems_copy(self, text: str) -> None:
+        self._set_clipboard_text(text)
 
     def _problems_surface(self) -> str | None:
         return self.markup_surface()

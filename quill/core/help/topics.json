@@ -997,8 +997,8 @@
   },
   {
     "id": "file.github_save_back",
-    "title": "Save to GitHub...",
-    "body": "Save the current file back to the GitHub repository it came from, creating a commit with your changes.",
+    "title": "Commit to GitHub...",
+    "body": "Commit the current file back to the GitHub repository it came from, with a message saying what changed.",
     "user_guide_section": "saving-back-to-github"
   },
   {
@@ -2021,6 +2021,42 @@
     "title": "Pull Request Summaries in the Attention Queue",
     "body": "Each pull request in Explore's attention queue says where it stands in one sentence, such as Approved, 2 checks failing, 1 open thread, after its name; in the details the reason it is in your queue comes first. QUILL reads every sentence in one request per refresh, covering the twenty newest pull requests. It never calls a pull request ready on missing or partial data, and a pull request GitHub did not answer for says Summary unavailable.",
     "user_guide_section": "pull-request-summaries-in-the-attention-queue"
+  },
+  {
+    "id": "github.workbench_inbox",
+    "title": "GitHub: Inbox",
+    "body": "Opens Explore GitHub on your attention queue: the issues and pull requests waiting on you, in the order they need you. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+  },
+  {
+    "id": "github.workbench_my_work",
+    "title": "GitHub: My Work",
+    "body": "Opens Explore GitHub on My Work: what you opened, are assigned and were asked to review. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+  },
+  {
+    "id": "github.workbench_issues",
+    "title": "GitHub: Issues and Pull Requests",
+    "body": "Opens GitHub Items on the issues and pull requests of the repository you are working in, or asks which one. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+  },
+  {
+    "id": "github.workbench_actions_runs",
+    "title": "GitHub: Actions Runs",
+    "body": "Opens GitHub Items on the repository's recent workflow runs, with their status and result. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+  },
+  {
+    "id": "github.workbench_releases",
+    "title": "GitHub: Releases",
+    "body": "Opens GitHub Items on the repository's releases, with their downloads and whether each is a draft or a pre-release. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+  },
+  {
+    "id": "github.workbench_explore",
+    "title": "GitHub: Explore GitHub",
+    "body": "Opens Explore GitHub on its usual first view: your attention queue when you are signed in, search when you are not. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+  },
+  {
+    "id": "github.clone_repository",
+    "title": "GitHub: Clone Repository",
+    "body": "Copies a repository to a folder on your computer with Git for Windows. Type owner/name or paste its address and choose a folder; a private repository works when you are signed in, and your token is never written into the copy, its remote address or the log. Afterwards QUILL offers to open a file from it. If Git is not installed, QUILL says so and offers its download page. Refused in Safe Mode.",
+    "user_guide_section": "cloning-a-repository"
   },
   {
     "id": "glow_audit.detail_text",
@@ -4088,6 +4124,12 @@
       "QUILL Key + Shift+T"
     ],
     "user_guide_section": "view-and-display"
+  },
+  {
+    "id": "view.github_workbench_mode",
+    "title": "GitHub Workbench Mode",
+    "body": "A check item, per window. On, it adds a GitHub menu right after Tools and moves the GitHub rows of File > Open from Remote and Tools > Git and GitHub into it; off, it puts them back. A key you give a moved row works in both modes. Turning it on or off says one sentence. It is not remembered when QUILL restarts.",
+    "user_guide_section": "github-workbench-mode"
   },
   {
     "id": "whisperer.capability_matrix",

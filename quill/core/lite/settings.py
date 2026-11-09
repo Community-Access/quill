@@ -315,11 +315,11 @@ class Settings(DictationSettings):
     print_landscape: bool = False
     #: Left, top, right and bottom margins, in millimetres.
     print_margins_mm: list[int] = field(default_factory=lambda: [15, 15, 15, 15])
-    #: Whether the status bar is on screen at all. Notepad's View menu has had
-    #: this checkbox since Windows 95 and QUILL Lite had no answer to it: the bar
-    #: was always there. Per app rather than per document, because it is a
-    #: statement about how you want to work rather than about a file.
+    #: The status bar on screen at all (Notepad's View menu); per app, not per document.
     show_status_bar: bool = True
+    problems_pane_visible: bool = False  # View > Problems, its pane box: QUILL's names
+    problems_check_after_pause: bool = False
+    problems_all_open_files: bool = False
     #: Check spelling as you type. On, but never in a source or configuration
     #: file: the per-document default comes from the extension
     #: (quill.core.spellcheck_filetypes), and this is the answer for everything

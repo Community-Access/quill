@@ -147,3 +147,213 @@ def test_the_commands_are_quills_commands() -> None:
     ):
         assert keys[handler] == DEFAULT_KEYMAP[COMMAND_EQUIVALENTS[handler]], handler
     assert COMMAND_EQUIVALENTS["cmd_next_block"] == "navigate.next_block"
+
+
+# -- View > Problems > Show Pane ------------------------------------------------------
+
+
+class _FakePane:
+    """The pane's surface, without wx: the real widget is tested on its own."""
+
+    def __init__(self) -> None:
+        from types import SimpleNamespace
+
+        self.shown = False
+        self.focused = False
+        self.report = None
+        self.focus_calls = 0
+        self.panel = SimpleNamespace(Show=lambda value: setattr(self, "shown", bool(value)))
+
+    def is_shown(self) -> bool:
+        return self.shown
+
+    def set_shown(self, shown: bool) -> None:
+        self.shown = bool(shown)
+
+    def set_all_files(self, all_files: bool) -> None:
+        self.all_files = bool(all_files)
+
+    def has_focus(self) -> bool:
+        return self.focused
+
+    def show_report(self, report) -> None:
+        self.report = report
+
+    def count_sentence(self) -> str:
+        from quill.core.problems.pane import count_sentence
+
+        return count_sentence(len(self.report.problems) if self.report else 0)
+
+    def focus(self) -> None:
+        self.focus_calls += 1
+
+
+def _with_pane(win) -> _FakePane:
+    pane = _FakePane()
+    win._problems_pane_widget = pane
+    return pane
+
+
+def test_problems_pane_shows_checks_and_hides(lite_window) -> None:
+    win = lite_window("<b>open\n", cursor=0)
+    win.set_document_language("html", announce=False)
+    pane = _with_pane(win)
+    win.cmd_toggle_problems_pane()
+    assert win.app.settings.problems_pane_visible is True
+    assert win.app.reapplied == 1
+    win.apply_problems_pane_visibility()
+    assert pane.shown
+    assert win.announcements[-1].startswith("Problems pane shown. 1 problem: 1 error")
+    assert len(pane.report.problems) == 1
+    win.cmd_toggle_problems_pane()
+    assert win.app.settings.problems_pane_visible is False
+    win.apply_problems_pane_visibility()
+    assert not pane.shown
+    assert win.announcements[-1] == "Problems pane hidden"
+
+
+def test_check_this_file_fills_the_shown_pane_instead_of_the_list(
+    lite_window, lite_dialogs
+) -> None:
+    text = "# Title\n### Skipped\n"
+    win = lite_window(text, cursor=0)
+    win.set_document_language("markdown", announce=False)
+    pane = _with_pane(win)
+    pane.shown = True
+    win.cmd_check_this_file()
+    assert lite_dialogs.names() == []
+    assert pane.report is not None and len(pane.report.problems) == 1
+    assert win.announcements[-1].startswith("1 problem: 1 warning")
+
+
+def test_enter_on_a_pane_row_goes_there_and_rechecks_after_an_edit(lite_window) -> None:
+    text = "<p>a</p>\n<b>open\n"
+    win = lite_window(text, cursor=0)
+    win.set_document_language("html", announce=False)
+    pane = _with_pane(win)
+    pane.shown = True
+    win.cmd_check_this_file()
+    win._problems_pane_go_to(0)
+    assert win.control.GetInsertionPoint() == text.index("<b>")
+    edited = "<p>new line</p>\n" + text
+    win.control.SetValue(edited)
+    win.control.SetInsertionPoint(0)
+    win._problems_pane_go_to(0)
+    assert win.control.GetInsertionPoint() == edited.index("<b>")
+    win.control.SetValue("<p>fixed</p>\n")
+    win._problems_pane_go_to(0)
+    assert win.announcements[-1].startswith("That problem is gone. No problems found.")
+
+
+def test_escape_from_the_pane_and_copy_message(lite_window) -> None:
+    win = lite_window("<b>x", cursor=2)
+    win._problems_back_to_editor()
+    assert win.control.GetInsertionPoint() == 2
+    assert win.control.GetValue() == "<b>x"
+    win._problems_copy("Unclosed b")
+    assert win.control.clipboard == "Unclosed b"
+
+
+def test_f6_goes_to_the_pane_first_then_the_status_bar(lite_window) -> None:
+    win = lite_window("text", cursor=0)
+    win.cmd_focus_status_bar()
+    assert win.status_bar_focused == 1
+    pane = _with_pane(win)
+    pane.shown = True
+    win.cmd_focus_status_bar()
+    assert pane.focus_calls == 1
+    assert win.status_bar_focused == 1
+    pane.focused = True
+    win.cmd_focus_status_bar()
+    assert win.status_bar_focused == 2
+
+
+def test_f6_from_the_pane_with_no_status_bar_goes_back_to_the_text(lite_window) -> None:
+    win = lite_window("text", cursor=1)
+    win.app.settings.show_status_bar = False
+    pane = _with_pane(win)
+    pane.shown = pane.focused = True
+    win.cmd_focus_status_bar()
+    assert win.status_bar_focused == 0
+    assert win.announcements == []
+
+
+def test_problems_pane_in_plain_text_shows_without_checking(lite_window) -> None:
+    win = lite_window("plain words", cursor=0)
+    win.set_document_language("plain", announce=False)
+    pane = _with_pane(win)
+    win.cmd_toggle_problems_pane()
+    assert win.announcements[-1] == "Problems pane shown"
+    assert pane.report is None
+
+
+def test_problems_pane_is_quills_command() -> None:
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+
+    keys = {row[3]: row[2] for row in COMMANDS}
+    assert COMMAND_EQUIVALENTS["cmd_toggle_problems_pane"] == "view.problems_pane"
+    assert keys["cmd_toggle_problems_pane"] == DEFAULT_KEYMAP["view.problems_pane"] == ""
+
+
+def test_check_after_a_pause_is_remembered_for_the_app(lite_window) -> None:
+    win = lite_window("<b>x", cursor=0)
+    assert win._problems_pause_enabled() is False
+    queued = win.app.queued_settings
+    win._problems_set_pause_enabled(True)
+    assert win.app.settings.problems_check_after_pause is True
+    assert win._problems_pause_enabled() is True
+    assert win.app.queued_settings == queued + 1
+
+
+def test_all_open_files_lists_every_window_and_brings_one_forward(lite_window, tmp_path) -> None:
+    first = lite_window("<b>open", cursor=0)
+    first.path = tmp_path / "page.html"
+    first.set_document_language("html", announce=False)
+    second = lite_window("# Title" + "\n### Skipped" + "\n", cursor=0)
+    second.set_document_language("markdown", announce=False)
+    second.path = tmp_path / "notes.md"
+    first.app.frames.append(second)
+    pane = _with_pane(first)
+    pane.shown = True
+    first.cmd_check_this_file()
+    first._problems_set_all_files(True)
+    assert len(pane.report.problems) == 2
+    assert {p.document for p in pane.report.problems} == {
+        first.document_name(),
+        second.document_name(),
+    }
+    row = next(
+        i for i, p in enumerate(pane.report.problems) if p.document == second.document_name()
+    )
+    first._problems_pane_go_to(row)
+    assert first.app.focused[-1] is second
+    assert second.control.GetInsertionPoint() == second.control.GetValue().index("###")
+
+
+def test_view_problems_files_rows_switch_for_now(lite_window) -> None:
+    win = lite_window("<b>open", cursor=0)
+    win.set_document_language("html", announce=False)
+    pane = _with_pane(win)
+    chosen: list[bool] = []
+    pane.set_all_files = chosen.append
+    win.cmd_problems_all_files()
+    assert win.problems_listing_all_files() is True
+    assert win.app.settings.problems_all_open_files is False, "the setting is the default"
+    assert chosen[0] is True
+    win.apply_problems_pane_visibility()
+    assert pane.shown, "choosing from the menu shows a hidden pane"
+    assert win.announcements[-1].startswith("Problems pane shown, all open files.")
+    win.cmd_problems_this_file()
+    assert win.problems_listing_all_files() is False
+    assert win.announcements[-1] == "1 problem"
+
+
+def test_the_default_comes_from_preferences(lite_window) -> None:
+    win = lite_window("<b>open", cursor=0)
+    win.set_document_language("html", announce=False)
+    win.app.settings.problems_all_open_files = True
+    assert win.problems_listing_all_files() is True
+    _with_pane(win)
+    win.cmd_toggle_problems_pane()
+    assert win._problems_all_files is True

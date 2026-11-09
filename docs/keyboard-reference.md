@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 570.
+Editor commands with default bindings: 581.
 
 ## The QUILL editor
 
@@ -20,7 +20,7 @@ Editor commands with default bindings: 570.
 | Key | Command | Command id |
 | --- | --- | --- |
 | (unbound by default) | Manage GitHub Accounts... | `file.github_manage_accounts` |
-| (unbound by default) | Save to GitHub... | `file.github_save_back` |
+| (unbound by default) | Commit to GitHub... | `file.github_save_back` |
 | (unbound by default) | Import / Convert Document (OCR) | `file.import_convert` |
 | (unbound by default) | Manage Remote Sites... | `file.manage_remote_sites` |
 | (unbound by default) | Open from Remote... | `file.open_from_remote` |
@@ -281,6 +281,10 @@ Editor commands with default bindings: 570.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | Github workbench mode | `view.github_workbench_mode` |
+| (unbound by default) | Problems: All Open Files | `view.problems_all_files` |
+| (unbound by default) | Problems Pane | `view.problems_pane` |
+| (unbound by default) | Problems: This File Only | `view.problems_this_file` |
 | Alt+F3 | Reveal Codes | `view.reveal_codes_toggle` |
 | Alt+F6 | Focus Preview | `view.focus_preview` |
 | Alt+Shift+B | Show Status Bar | `view.toggle_status_bar` |
@@ -465,6 +469,7 @@ Editor commands with default bindings: 570.
 | (unbound by default) | GitHub: Browse Organization Repositories... | `github.browse_organization` |
 | (unbound by default) | GitHub: Change Default Branch... | `github.change_default_branch` |
 | (unbound by default) | GitHub: Change Repository Visibility... | `github.change_repository_visibility` |
+| (unbound by default) | Clone repository | `github.clone_repository` |
 | (unbound by default) | GitHub: Commit Multiple Files... | `github.commit_multiple_files` |
 | (unbound by default) | GitHub: Configure Branch Protection... | `github.configure_branch_protection` |
 | (unbound by default) | GitHub: Create Codespace... | `github.create_codespace` |
@@ -477,6 +482,12 @@ Editor commands with default bindings: 570.
 | (unbound by default) | GitHub: Rename Repository... | `github.rename_repository` |
 | (unbound by default) | GitHub: Notifications... | `github.view_notifications` |
 | (unbound by default) | GitHub: Security Alerts... | `github.view_security_alerts` |
+| (unbound by default) | Workbench actions runs | `github.workbench_actions_runs` |
+| (unbound by default) | Workbench explore | `github.workbench_explore` |
+| (unbound by default) | Workbench inbox | `github.workbench_inbox` |
+| (unbound by default) | Workbench issues | `github.workbench_issues` |
+| (unbound by default) | Workbench my work | `github.workbench_my_work` |
+| (unbound by default) | Workbench releases | `github.workbench_releases` |
 | (unbound by default) | Local Git: End Bisect | `localgit.bisect_reset` |
 | (unbound by default) | Local Git: Start Bisect... | `localgit.bisect_start` |
 | (unbound by default) | Local Git: Who Wrote This Line... | `localgit.blame_at_cursor` |

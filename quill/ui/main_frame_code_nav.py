@@ -5,6 +5,9 @@ QUILL's side of three things QUILL Lite has too, over the same shared code:
 * **Next / Previous Indent Change** (``quill.core.navigation.indent_change_target``):
   the next line, skipping blanks, whose indentation differs from this one --
   how you get out of a Python block or a YAML mapping without reading it.
+* **View > Problems > Show Pane** (:class:`quill.ui.problems_pane.ProblemsPane`):
+  the same problems docked under the editor, above the status bar, which F6
+  reaches. Built the first time it is shown, so it costs nothing until then.
 * **Check This File**, **Next Problem**, **Previous Problem**
   (:class:`quill.ui.problems_commands.ProblemsCommandsMixin`, over
   :mod:`quill.core.problems`). QUILL checks every language it has a checker
@@ -16,7 +19,8 @@ the document's language profile (``_block_pattern``).
 
 Host requirements (provided by MainFrame): ``editor``, ``document``,
 ``_set_status``, ``_announce_navigation_move``, ``_record_location_before_jump``,
-``_location_ring``, ``_show_modal_dialog``, ``_task_manager``.
+``_location_ring``, ``_show_modal_dialog``, ``_task_manager``, ``statusbar``,
+``settings``, ``_set_active_region``, ``_copy_text_to_clipboard``.
 """
 
 from __future__ import annotations
@@ -67,6 +71,10 @@ class CodeNavMixin(ProblemsCommandsMixin):
     _record_location_before_jump: Any
     _show_modal_dialog: Any
     _task_manager: Any
+    statusbar: Any
+    settings: Any
+    _set_active_region: Any
+    _copy_text_to_clipboard: Any
 
     # -- language-aware blocks ------------------------------------------------ #
 
@@ -183,6 +191,183 @@ class CodeNavMixin(ProblemsCommandsMixin):
             on_failure=lambda _op, error: self._set_status(f"Check This File failed: {error}"),
         )
 
+    # -- the Problems pane ---------------------------------------------------- #
+
+    def view_toggle_problems_pane(self) -> None:
+        self._toggle_problems_pane()
+
+    def _problems_pane(self, *, create: bool) -> Any:
+        pane = getattr(self, "_problems_pane_widget", None)
+        if pane is not None or not create:
+            return pane
+        import wx
+
+        from quill.ui.dpi import dip_size
+        from quill.ui.problems_pane import ProblemsPane
+
+        pane = ProblemsPane(
+            wx,
+            self.frame,
+            go_to=self._problems_pane_go_to,
+            back_to_editor=self._problems_back_to_editor,
+            copy_text=self._problems_copy,
+            say=self._problems_say,
+            tick=self._problems_tick,
+            pause_enabled=self._problems_pause_enabled(),
+            set_pause_enabled=self._problems_set_pause_enabled,
+            set_all_files=self._problems_set_all_files,
+            switch_files=self._problems_switch_files,
+        )
+        pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
+        pane.panel.Hide()
+        sizer = self.frame.GetSizer()
+        # Under the editor and Reveal Codes, above the status bar: where F6
+        # finds it, because the ring is in screen order.
+        index = sizer.GetItemCount()
+        for position in range(sizer.GetItemCount()):
+            if sizer.GetItem(position).GetWindow() is self.statusbar:
+                index = position
+                break
+        sizer.Insert(index, pane.panel, 0, wx.EXPAND)
+        self._problems_pane_widget = pane
+        if not self._problems_files_chosen:
+            self._problems_all_files = self._problems_all_files_setting()
+        pane.set_all_files(self._problems_all_files)
+        return pane
+
+    def _problems_pane_is_shown(self) -> bool:
+        pane = self._problems_pane(create=False)
+        return pane is not None and pane.is_shown()
+
+    def _is_problems_panel(self, window: Any) -> bool:
+        pane = self._problems_pane(create=False)
+        return pane is not None and window is pane.panel
+
+    def _focus_problems_pane(self) -> None:
+        pane = self._problems_pane(create=False)
+        if pane is not None:
+            pane.focus()
+
+    def _problems_pane_set_shown(self, shown: bool) -> None:
+        pane = self._problems_pane(create=True)
+        pane.set_shown(shown)
+        self.frame.GetSizer().Layout()
+        self.settings.problems_pane_visible = shown
+        try:
+            from quill.core.settings import save_settings
+
+            save_settings(self.settings)
+        except Exception:  # noqa: BLE001 - remembering it is best-effort
+            pass
+        item_id = getattr(self, "_id_problems_pane", None)
+        menu_bar = self.frame.GetMenuBar()
+        if item_id is not None and menu_bar is not None:
+            menu_bar.Check(item_id, shown)
+
+    def _problems_open_documents(self) -> list[Any]:
+        from quill.core.language_profile import get_profile_for_path
+        from quill.core.problems.pane import OpenProblemDocument
+
+        documents = []
+        for index, tab in enumerate(list(getattr(self, "_document_tabs", []) or [])):
+            document = tab.document
+            path = getattr(document, "path", None)
+            profile = getattr(tab, "_language_profile", None) or get_profile_for_path(path)
+            documents.append(
+                OpenProblemDocument(
+                    key=index,
+                    name=getattr(document, "name", "") or "Untitled",
+                    text=str(tab.editor.GetValue()),
+                    language=language_key(getattr(profile, "name", None), path),
+                    path=path,
+                    modified=bool(getattr(document, "modified", True)),
+                )
+            )
+        return documents
+
+    def _problems_document_key(self) -> object:
+        return int(getattr(self, "_active_tab_index", 0) or 0)
+
+    def _problems_go_to_document(self, key: object, line: int, column: int) -> None:
+        from quill.core.problems import offset_for
+
+        self._select_tab(int(key))  # type: ignore[attr-defined, call-overload]
+        self._problems_go_to(offset_for(self._problems_text(), line, column))
+
+    def _problems_pause_enabled(self) -> bool:
+        return bool(getattr(self.settings, "problems_check_after_pause", False))
+
+    def _problems_set_pause_enabled(self, enabled: bool) -> None:
+        self.settings.problems_check_after_pause = enabled
+        try:
+            from quill.core.settings import save_settings
+
+            save_settings(self.settings)
+        except Exception:  # noqa: BLE001 - remembering it is best-effort
+            pass
+
+    def view_problems_this_file(self) -> None:
+        self._problems_choose_files(False)
+
+    def view_problems_all_files(self) -> None:
+        self._problems_choose_files(True)
+
+    def _problems_all_files_setting(self) -> bool:
+        return bool(getattr(self.settings, "problems_all_open_files", False))
+
+    def _problems_mark_all_files(self, all_files: bool) -> None:
+        menu_bar = self.frame.GetMenuBar()
+        ids = getattr(self, "_problems_scope_ids", None)
+        if menu_bar is not None and ids is not None:
+            menu_bar.Check(ids[1] if all_files else ids[0], True)
+
+    def _problems_back_to_editor(self) -> None:
+        self._set_active_region("Editor")
+        self.editor.SetFocus()
+
+    def _problems_copy(self, text: str) -> None:
+        self._copy_text_to_clipboard(text)
+
+    def _append_problems_pane_item(self, view_menu: Any) -> None:
+        """View > Problems, under Reveal Codes: the pane, and which files it lists.
+
+        Show Pane, then This File Only and All Open Files as a radio pair, so
+        the scope is one menu visit away as well as on the pane's own Files
+        chooser. The same rows, letters and order as QUILL Lite's.
+        """
+        import wx
+
+        from quill.core.i18n import _
+
+        label = self._menu_label  # type: ignore[attr-defined]
+        submenu = wx.Menu()
+        self._id_problems_pane = wx.NewIdRef()
+        this_id, all_id = wx.NewIdRef(), wx.NewIdRef()
+        self._problems_scope_ids = (this_id, all_id)
+        submenu.AppendCheckItem(
+            self._id_problems_pane, label(_("&Show Pane"), "view.problems_pane")
+        )
+        submenu.AppendSeparator()
+        submenu.AppendRadioItem(this_id, label(_("&This File Only"), "view.problems_this_file"))
+        submenu.AppendRadioItem(all_id, label(_("&All Open Files"), "view.problems_all_files"))
+        view_menu.AppendSubMenu(submenu, _("&Problems"))
+        shown = bool(getattr(self.settings, "problems_pane_visible", False))
+        if shown and not self._problems_pane_is_shown():
+            self._problems_pane_set_shown(True)
+        submenu.Check(self._id_problems_pane, shown)
+        listing_all = (
+            self._problems_all_files
+            if self._problems_files_chosen
+            else self._problems_all_files_setting()
+        )
+        submenu.Check(all_id if listing_all else this_id, True)
+        for item_id, run in (
+            (self._id_problems_pane, self.view_toggle_problems_pane),
+            (this_id, self.view_problems_this_file),
+            (all_id, self.view_problems_all_files),
+        ):
+            self.frame.Bind(wx.EVT_MENU, lambda _e, run=run: run(), id=item_id)
+
     # -- Navigate > Code ------------------------------------------------------ #
 
     def _code_menu_ids(self) -> dict[str, Any]:
@@ -195,6 +380,17 @@ class CodeNavMixin(ProblemsCommandsMixin):
         return ids
 
     def _register_code_commands(self) -> None:
+        for command_id, palette, handler in (
+            ("view.problems_pane", "Problems Pane", self.view_toggle_problems_pane),
+            ("view.problems_this_file", "Problems: This File Only", self.view_problems_this_file),
+            ("view.problems_all_files", "Problems: All Open Files", self.view_problems_all_files),
+        ):
+            self.commands.try_register(  # type: ignore[attr-defined]
+                command_id,
+                palette,
+                handler,
+                self._binding_for(command_id),  # type: ignore[attr-defined]
+            )
         for command_id, _label, palette, handler_name in _CODE_ROWS:
             if command_id:
                 self.commands.try_register(  # type: ignore[attr-defined]
@@ -229,4 +425,10 @@ class CodeNavMixin(ProblemsCommandsMixin):
     def _command_to_menu_id_map(self) -> dict[str, int]:
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
         mapping.update(self._code_menu_ids())
+        item_id = getattr(self, "_id_problems_pane", None)
+        if item_id is not None:
+            mapping["view.problems_pane"] = item_id
+        scope_ids = getattr(self, "_problems_scope_ids", None)
+        if scope_ids is not None:
+            mapping["view.problems_this_file"], mapping["view.problems_all_files"] = scope_ids
         return mapping

@@ -151,6 +151,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.text_size_down": "Ctrl+-",
     "view.text_size_reset": "Ctrl+0",
     "view.reveal_codes_toggle": "Alt+F3",  # WordPerfect Reveal Codes
+    "view.problems_pane": "",  # no chord free in both editors; see the gate's reason
+    "view.problems_this_file": "",
+    "view.problems_all_files": "",
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
     "app.preferences": "Ctrl+,",
@@ -1152,6 +1155,19 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # chords -- the leader-chord space is fully claimed.
     "github.list_codespaces": "",
     "github.create_codespace": "",
+    # GitHub Workbench Mode (2026-11-08, quill/core/github/workbench_menu.py).
+    # The switch and the GitHub menu's own rows have no chord, as no GitHub
+    # command does: the switch is pressed a few times a day at most (rule 9),
+    # no chord is free in both keymaps, and the GitHub menu's access letter is
+    # the way in. The same in QUILL Lite.
+    "view.github_workbench_mode": "",
+    "github.workbench_inbox": "",
+    "github.workbench_my_work": "",
+    "github.workbench_issues": "",
+    "github.workbench_actions_runs": "",
+    "github.workbench_releases": "",
+    "github.workbench_explore": "",
+    "github.clone_repository": "",
     # Local git (Tools > Local Git). No default chords -- the single-letter
     # leader-chord space is fully claimed (see the github.* block above);
     # these are reachable via the menu and the Command Palette, and freely

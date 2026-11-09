@@ -265,6 +265,137 @@ command’s key and example sentences.</li>
 row is never offered to one, and a new command fails the build until
 somebody writes its row.</li>
 </ul>
+<h3 id="github-workbench-mode-and-clone-repository-2026-11-08">GitHub
+Workbench Mode and Clone Repository (2026-11-08)</h3>
+<ul>
+<li><strong>View &gt; GitHub Workbench Mode</strong> (Alt+V, then K) is
+a check item. Turn it on and a <strong>GitHub</strong> menu (Alt+G)
+joins the menu bar right after Tools. The GitHub rows of File &gt; Open
+from Remote and Tools &gt; Git and GitHub move into it, so nothing is
+listed twice, and turning the mode off puts them back. A key you gave
+one of those rows goes with it.</li>
+<li>The GitHub menu opens the views you use most in one step:
+<strong>Inbox…</strong>, <strong>My Work…</strong> and
+<strong>Notifications…</strong> open Explore GitHub on those views, and
+<strong>Issues and Pull Requests…</strong>, <strong>Actions
+Runs…</strong> and <strong>Releases…</strong> open GitHub Items on them.
+<strong>Leave Workbench Mode</strong> is its first row, and a disabled
+“Repository:” row above it names the repository you are in.</li>
+<li>The mode is per window and starts off. Turning it on or off says one
+sentence; nothing else in it speaks. It has no key of its own.</li>
+<li><strong>Clone Repository…</strong> is new, on File &gt; Open from
+Remote and in the GitHub menu. It asks for owner/name or an address and
+a folder, and runs Git for Windows in the background. A private
+repository works when you are signed in: the token goes to Git for that
+one command only, never into the copy’s settings, its remote address or
+the log. Afterwards QUILL offers to open a file from it, or, in the
+Developer profile, to open it as a project. With no Git installed, QUILL
+says so and offers the download page.</li>
+<li><strong>Save to GitHub… is now Commit to GitHub…</strong>, which is
+what it does. Same command, same place.</li>
+<li>GitHub Remote Access no longer needs the Developer profile. QUILL
+Lite has had the workbench in every profile, so QUILL now has it
+wherever GitHub Remote Access is on, which is most profiles. Local Git
+stays in the Developer profile.</li>
+<li>GitHub Items no longer says “Opening GitHub Items” on the way in.
+Your screen reader says the window’s title anyway.</li>
+<li>The Copilot and free AI sign-in codes now say “dash” as a word, as
+Sign In with GitHub does, instead of spelling it out letter by
+letter.</li>
+<li>The Menu Editor’s top-level order now applies again. The AI and
+QuillVille menus were missing from its list, and a bar with a menu it
+could not name was left as it was.</li>
+<li>Local Git and Clone now find Git when Windows reports it as
+git.EXE.</li>
+</ul>
+<h3 id="the-problems-pane-lists-every-open-document-2026-11-08">The
+Problems pane lists every open document (2026-11-08)</h3>
+<ul>
+<li><strong>View &gt; Problems</strong> is now a submenu: <strong>Show
+Pane</strong>, then <strong>This File Only</strong> and <strong>All Open
+Files</strong>; choosing one shows the pane if it’s hidden.
+<strong>F</strong> in the pane’s list switches between the two, and a
+<strong>Files</strong> chooser heads the pane. These switch for now;
+<strong>Problems pane lists all open files at first</strong>, in
+Settings under Editing, is the default. With all open files, each row
+starts with the document’s name, and Enter on another document’s problem
+brings it to the front with the caret there.</li>
+<li>The other documents use QUILL’s built-in checkers; the outside tools
+you have installed run only for the one in front. QUILL Lite does the
+same across its windows.</li>
+</ul>
+<h3
+id="the-problems-pane-checks-on-save-and-after-a-pause-if-you-like-2026-11-08">The
+Problems pane checks on save, and after a pause if you like
+(2026-11-08)</h3>
+<ul>
+<li>While the Problems pane is on, saving checks the file again.</li>
+<li>A <strong>Check after a pause</strong> box beside the pane’s
+choosers checks it again a moment after you stop typing. It’s off by
+default and remembered.</li>
+<li>These checks say nothing but the new count, such as “2 problems”,
+and only when the count has changed. QUILL Lite has the same pane and
+the same box.</li>
+</ul>
+<h3 id="word-prediction-knows-your-project-2026-11-08">Word Prediction
+knows your project (2026-11-08)</h3>
+<ul>
+<li>When the file’s own names leave room, Ctrl+. fills the list with
+names from the rest of the project: the folder holding <code>.git</code>
+or a project file, or the file’s own folder. Names from files this one
+imports come first.</li>
+<li>The project is read in the background the first time you ask, and
+again when it’s more than five minutes old, skipping
+<code>node_modules</code>, <code>.venv</code>, <code>build</code> and
+the like, and stopping at 5,000 files. Nothing is sent anywhere. QUILL
+Lite does the same.</li>
+</ul>
+<h3 id="word-prediction-knows-your-code-2026-11-08">Word Prediction
+knows your code (2026-11-08)</h3>
+<ul>
+<li>In a code file, Ctrl+. offers the file’s own names that start with
+what you’ve typed, nearest first, instead of dictionary words. Each is
+said with its kind: “8 suggestions. count_words, function”.</li>
+<li>Any language QUILL can colour counts as code, from its extension.
+Text, Markdown and Word files keep word prediction.</li>
+<li>The list is ready within a tenth of a second on a 1 MB file. QUILL
+Lite has the same list.</li>
+</ul>
+<h3
+id="word-prediction-in-every-profile-and-in-quill-lite-2026-11-08">Word
+Prediction in every profile, and in QUILL Lite (2026-11-08)</h3>
+<ul>
+<li><strong>Edit &gt; Word Prediction…</strong> (Ctrl+.) works in every
+profile. The two profiles that left it out used to answer “Word
+prediction is unavailable in this profile”; a list you have to ask for
+can’t get in anyone’s way. Word Prediction As You Type stays off by
+default, and those profiles still switch it off.</li>
+<li>The list moved into one shared module, so QUILL Lite runs the same
+list on the same key. Nothing about how it sounds or what Escape does
+changed.</li>
+</ul>
+<h3 id="the-problems-pane-2026-11-08">The Problems pane
+(2026-11-08)</h3>
+<ul>
+<li><strong>View &gt; Problems &gt; Show Pane</strong> (Alt+V, P, S)
+docks the problems Check This File finds under the document, above the
+status bar, and keeps them there while you fix things. QUILL remembers
+whether it’s on. Turning it on checks the document and says what it
+found.</li>
+<li>While it’s on, Check This File fills the pane instead of opening the
+Problems list, and the caret stays put. The list is still there when the
+pane is off.</li>
+<li>F6 reaches the pane, between the document and the status bar. Enter
+on a row goes to the problem; Escape goes back to the document and
+leaves the pane open. After an edit, Enter checks again and finds the
+same problem where it is now, or says it’s gone.</li>
+<li>A Show chooser (all, errors and warnings, errors only) and a Source
+chooser head the pane. Changing either says the new count, such as “4
+problems, 1 shown”. The context menu has Go To and Copy Message.</li>
+<li>No shortcut key: Ctrl+Shift+M is Set Mark, and nothing near it is
+free in both editors. The Keyboard Manager can give it one.</li>
+<li>QUILL Lite gets the same pane from the same shared code.</li>
+</ul>
 <h3 id="sign-in-with-github-2026-11-08">Sign In with GitHub
 (2026-11-08)</h3>
 <ul>
