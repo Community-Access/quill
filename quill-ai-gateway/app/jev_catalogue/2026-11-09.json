@@ -1,0 +1,511 @@
+{
+  "apps": {
+    "lite": {
+      "lite.cmd_bold": {
+        "criterion": "Make the selected text bold (rich documents only). For example: \"make this bold\".",
+        "stepped": false
+      },
+      "lite.cmd_clear_bookmarks": {
+        "criterion": "Remove every bookmark in this document. For example: \"clear all my bookmarks\".",
+        "stepped": false
+      },
+      "lite.cmd_close": {
+        "criterion": "Close this document. For example: \"close this document\".",
+        "stepped": false
+      },
+      "lite.cmd_command_palette": {
+        "criterion": "Show every command, to search them. For example: \"show me every command\".",
+        "stepped": false
+      },
+      "lite.cmd_find": {
+        "criterion": "Find words in the document. For example: \"find a word\".",
+        "stepped": false
+      },
+      "lite.cmd_find_next": {
+        "criterion": "Find the next match of what you last searched for. For example: \"find the next one\".",
+        "stepped": false
+      },
+      "lite.cmd_go_to_anything": {
+        "criterion": "Move to a heading, bookmark or line by name. For example: \"go to anything\".",
+        "stepped": false
+      },
+      "lite.cmd_goto_line": {
+        "criterion": "Move to a line by its number. For example: \"go to line 120\".",
+        "stepped": false
+      },
+      "lite.cmd_grow_font": {
+        "criterion": "Make the selected text's font bigger in the document itself. For example: \"make the text bigger\".",
+        "stepped": true
+      },
+      "lite.cmd_italic": {
+        "criterion": "Make the selected text italic (rich documents only). For example: \"make this italic\".",
+        "stepped": false
+      },
+      "lite.cmd_list_headings": {
+        "criterion": "Show the headings, to move to one. For example: \"show me the headings\".",
+        "stepped": false
+      },
+      "lite.cmd_lower_case": {
+        "criterion": "Change the selection to small letters. For example: \"make this lower case\".",
+        "stepped": false
+      },
+      "lite.cmd_new": {
+        "criterion": "Start a new blank document. For example: \"start a new document\".",
+        "stepped": false
+      },
+      "lite.cmd_next_bookmark": {
+        "criterion": "Move to the next bookmark. For example: \"go to the next bookmark\".",
+        "stepped": false
+      },
+      "lite.cmd_next_heading": {
+        "criterion": "Move to the next heading. For example: \"go to the next heading\".",
+        "stepped": false
+      },
+      "lite.cmd_next_misspelling": {
+        "criterion": "Move to the next misspelled word. For example: \"go to the next spelling mistake\".",
+        "stepped": false
+      },
+      "lite.cmd_open": {
+        "criterion": "Open a document from a folder. For example: \"open a document\".",
+        "stepped": false
+      },
+      "lite.cmd_parameter_hints": {
+        "criterion": "Say which argument of the call at the cursor you are on, and its signature. For example: \"which parameter am I on\".",
+        "stepped": false
+      },
+      "lite.cmd_previous_heading": {
+        "criterion": "Move to the previous heading. For example: \"go back a heading\".",
+        "stepped": false
+      },
+      "lite.cmd_print": {
+        "criterion": "Print this document. For example: \"print this\".",
+        "stepped": false
+      },
+      "lite.cmd_recent_documents": {
+        "criterion": "Open a document you had open recently. For example: \"open my last document\".",
+        "stepped": false
+      },
+      "lite.cmd_redo": {
+        "criterion": "Put back the change you just undid. For example: \"redo that change\".",
+        "stepped": false
+      },
+      "lite.cmd_save": {
+        "criterion": "Save this document. For example: \"save this\".",
+        "stepped": false
+      },
+      "lite.cmd_save_as": {
+        "criterion": "Save a copy of this document under a new name or in another place. For example: \"save this under a new name\".",
+        "stepped": false
+      },
+      "lite.cmd_say_selection": {
+        "criterion": "Read out what is selected. For example: \"what have I selected\".",
+        "stepped": false
+      },
+      "lite.cmd_say_time": {
+        "criterion": "Say the time and the date. For example: \"what time is it\".",
+        "stepped": false
+      },
+      "lite.cmd_sentence_case": {
+        "criterion": "Capitalise only the first word of each sentence. For example: \"make this sentence case\".",
+        "stepped": false
+      },
+      "lite.cmd_set_bookmark": {
+        "criterion": "Bookmark this spot. For example: \"bookmark this spot\".",
+        "stepped": false
+      },
+      "lite.cmd_shrink_font": {
+        "criterion": "Make the selected text's font smaller in the document itself. For example: \"make the text smaller\".",
+        "stepped": true
+      },
+      "lite.cmd_spell_review": {
+        "criterion": "Check the spelling of the document. For example: \"check my spelling\".",
+        "stepped": false
+      },
+      "lite.cmd_statistics": {
+        "criterion": "Say how many words the document has. For example: \"how many words is this\".",
+        "stepped": false
+      },
+      "lite.cmd_title_case": {
+        "criterion": "Capitalise each main word of the selection. For example: \"make this title case\".",
+        "stepped": false
+      },
+      "lite.cmd_toggle_heading_announcements": {
+        "criterion": "Say each heading you move onto, or stop. For example: \"tell me the headings as I move\".",
+        "stepped": false
+      },
+      "lite.cmd_toggle_live_spelling": {
+        "criterion": "Check spelling while you type, or stop. For example: \"check my spelling as I type\".",
+        "stepped": false
+      },
+      "lite.cmd_toggle_quiet_mode": {
+        "criterion": "Turn QUILL's sounds on or off. For example: \"turn the sounds off\".",
+        "stepped": false
+      },
+      "lite.cmd_toggle_wrap": {
+        "criterion": "Wrap long lines to the window, or stop wrapping. For example: \"turn word wrap on\".",
+        "stepped": false
+      },
+      "lite.cmd_undo": {
+        "criterion": "Take back the last change. For example: \"undo the last change\".",
+        "stepped": false
+      },
+      "lite.cmd_upper_case": {
+        "criterion": "Change the selection to capital letters. For example: \"make this all capitals\".",
+        "stepped": false
+      },
+      "lite.cmd_what_can_i_say_here": {
+        "criterion": "List what you can say or do in this window. For example: \"what can I do in this window\".",
+        "stepped": false
+      },
+      "lite.cmd_word_summary": {
+        "criterion": "The full statistics: words, sentences, paragraphs and more. For example: \"give me the word summary\".",
+        "stepped": false
+      },
+      "lite.cmd_zoom_in": {
+        "criterion": "Magnify the view on screen, without changing the document. For example: \"zoom in\".",
+        "stepped": true
+      },
+      "lite.cmd_zoom_out": {
+        "criterion": "Make the view on screen smaller, without changing the document. For example: \"zoom out\".",
+        "stepped": true
+      },
+      "lite.cmd_zoom_reset": {
+        "criterion": "Show the text at its normal size on screen. For example: \"reset the zoom\".",
+        "stepped": false
+      }
+    },
+    "quill": {
+      "app.command_palette": {
+        "criterion": "Show every command, to search them. For example: \"show me every command\".",
+        "stepped": false
+      },
+      "edit.find": {
+        "criterion": "Find words in the document. For example: \"find a word\".",
+        "stepped": false
+      },
+      "edit.find_next": {
+        "criterion": "Find the next match of what you last searched for. For example: \"find the next one\".",
+        "stepped": false
+      },
+      "edit.parameter_hints": {
+        "criterion": "Say which argument of the call at the cursor you are on, and its signature. For example: \"which parameter am I on\".",
+        "stepped": false
+      },
+      "edit.redo": {
+        "criterion": "Put back the change you just undid. For example: \"redo that change\".",
+        "stepped": false
+      },
+      "edit.say_selected": {
+        "criterion": "Read out what is selected. For example: \"what have I selected\".",
+        "stepped": false
+      },
+      "edit.select_all": {
+        "criterion": "Select the whole document. For example: \"select the whole document\".",
+        "stepped": false
+      },
+      "edit.undo": {
+        "criterion": "Take back the last change. For example: \"undo the last change\".",
+        "stepped": false
+      },
+      "file.close_document": {
+        "criterion": "Close this document. For example: \"close this document\".",
+        "stepped": false
+      },
+      "file.new": {
+        "criterion": "Start a new blank document. For example: \"start a new document\".",
+        "stepped": false
+      },
+      "file.open": {
+        "criterion": "Open a document from a folder. For example: \"open a document\".",
+        "stepped": false
+      },
+      "file.print": {
+        "criterion": "Print this document. For example: \"print this\".",
+        "stepped": false
+      },
+      "file.recent_documents": {
+        "criterion": "Open a document you had open recently. For example: \"open my last document\".",
+        "stepped": false
+      },
+      "file.save": {
+        "criterion": "Save this document. For example: \"save this\".",
+        "stepped": false
+      },
+      "file.save_all": {
+        "criterion": "Save every open document. For example: \"save all my documents\".",
+        "stepped": false
+      },
+      "file.save_as": {
+        "criterion": "Save a copy of this document under a new name or in another place. For example: \"save this under a new name\".",
+        "stepped": false
+      },
+      "format.bold": {
+        "criterion": "Make the selected text bold (rich documents only). For example: \"make this bold\".",
+        "stepped": false
+      },
+      "format.grow_font": {
+        "criterion": "Make the selected text's font bigger in the document itself. For example: \"make the text bigger\".",
+        "stepped": true
+      },
+      "format.insert_bullet_list": {
+        "criterion": "Start a bulleted list. For example: \"start a bulleted list\".",
+        "stepped": false
+      },
+      "format.insert_numbered_list": {
+        "criterion": "Start a numbered list. For example: \"start a numbered list\".",
+        "stepped": false
+      },
+      "format.italic": {
+        "criterion": "Make the selected text italic (rich documents only). For example: \"make this italic\".",
+        "stepped": false
+      },
+      "format.lower_case": {
+        "criterion": "Change the selection to small letters. For example: \"make this lower case\".",
+        "stepped": false
+      },
+      "format.sentence_case": {
+        "criterion": "Capitalise only the first word of each sentence. For example: \"make this sentence case\".",
+        "stepped": false
+      },
+      "format.shrink_font": {
+        "criterion": "Make the selected text's font smaller in the document itself. For example: \"make the text smaller\".",
+        "stepped": true
+      },
+      "format.title_case": {
+        "criterion": "Capitalise each main word of the selection. For example: \"make this title case\".",
+        "stepped": false
+      },
+      "format.upper_case": {
+        "criterion": "Change the selection to capital letters. For example: \"make this all capitals\".",
+        "stepped": false
+      },
+      "help.what_can_i_do_here": {
+        "criterion": "List what you can say or do in this window. For example: \"what can I do in this window\".",
+        "stepped": false
+      },
+      "navigate.clear_numbered_bookmarks": {
+        "criterion": "Remove every bookmark in this document. For example: \"clear all my bookmarks\".",
+        "stepped": false
+      },
+      "navigate.go_to_anything": {
+        "criterion": "Move to a heading, bookmark or line by name. For example: \"go to anything\".",
+        "stepped": false
+      },
+      "navigate.go_to_line": {
+        "criterion": "Move to a line by its number. For example: \"go to line 120\".",
+        "stepped": false
+      },
+      "navigate.next_bookmark": {
+        "criterion": "Move to the next bookmark. For example: \"go to the next bookmark\".",
+        "stepped": false
+      },
+      "navigate.next_heading": {
+        "criterion": "Move to the next heading. For example: \"go to the next heading\".",
+        "stepped": false
+      },
+      "navigate.outline_navigator": {
+        "criterion": "Show the headings, to move to one. For example: \"show me the headings\".",
+        "stepped": false
+      },
+      "navigate.previous_heading": {
+        "criterion": "Move to the previous heading. For example: \"go back a heading\".",
+        "stepped": false
+      },
+      "navigate.say_time": {
+        "criterion": "Say the time and the date. For example: \"what time is it\".",
+        "stepped": false
+      },
+      "navigate.set_numbered_bookmark": {
+        "criterion": "Bookmark this spot. For example: \"bookmark this spot\".",
+        "stepped": false
+      },
+      "navigate.speak_status_summary": {
+        "criterion": "Say where you are and the state of the document. For example: \"where am I\".",
+        "stepped": false
+      },
+      "tools.next_misspelling": {
+        "criterion": "Move to the next misspelled word. For example: \"go to the next spelling mistake\".",
+        "stepped": false
+      },
+      "tools.read_aloud_start_pause": {
+        "criterion": "Read the document aloud, or pause reading. For example: \"read this to me\".",
+        "stepped": false
+      },
+      "tools.read_aloud_stop": {
+        "criterion": "Stop reading the document aloud. For example: \"stop reading to me\".",
+        "stepped": false
+      },
+      "tools.sound_toggle": {
+        "criterion": "Turn QUILL's sounds on or off. For example: \"turn the sounds off\".",
+        "stepped": false
+      },
+      "tools.spell_check_dialog": {
+        "criterion": "Check the spelling of the document. For example: \"check my spelling\".",
+        "stepped": false
+      },
+      "tools.word_count": {
+        "criterion": "Say how many words the document has. For example: \"how many words is this\".",
+        "stepped": false
+      },
+      "tools.word_summary": {
+        "criterion": "The full statistics: words, sentences, paragraphs and more. For example: \"give me the word summary\".",
+        "stepped": false
+      },
+      "verbosity.toggle_meeting": {
+        "criterion": "Stay quiet while you are in a meeting. For example: \"I'm in a meeting\".",
+        "stepped": false
+      },
+      "verbosity.toggle_quiet": {
+        "criterion": "Make QUILL say less as you work, or talk as usual again. For example: \"talk less\".",
+        "stepped": false
+      },
+      "view.text_size_down": {
+        "criterion": "Make the view on screen smaller, without changing the document. For example: \"zoom out\".",
+        "stepped": true
+      },
+      "view.text_size_reset": {
+        "criterion": "Show the text at its normal size on screen. For example: \"reset the zoom\".",
+        "stepped": false
+      },
+      "view.text_size_up": {
+        "criterion": "Magnify the view on screen, without changing the document. For example: \"zoom in\".",
+        "stepped": true
+      },
+      "view.toggle_heading_announcements": {
+        "criterion": "Say each heading you move onto, or stop. For example: \"tell me the headings as I move\".",
+        "stepped": false
+      },
+      "view.toggle_soft_wrap": {
+        "criterion": "Wrap long lines to the window, or stop wrapping. For example: \"turn word wrap on\".",
+        "stepped": false
+      },
+      "view.toggle_spellcheck_as_you_type": {
+        "criterion": "Check spelling while you type, or stop. For example: \"check my spelling as I type\".",
+        "stepped": false
+      }
+    },
+    "radio": {
+      "app.undo_last": {
+        "criterion": "Undo the last thing you did. For example: \"undo the last thing\".",
+        "stepped": false
+      },
+      "media.sleep_timer": {
+        "criterion": "Stop the radio after a set time, such as in half an hour. For example: \"sleep in 20 minutes\".",
+        "stepped": false
+      },
+      "radio.browse": {
+        "criterion": "Look through the stations to find one. For example: \"browse the stations\".",
+        "stepped": false
+      },
+      "radio.find_streams": {
+        "criterion": "Find the radio streams on a web page. For example: \"find the streams on a website\".",
+        "stepped": false
+      },
+      "radio.forward": {
+        "criterion": "Go forward in what is playing. For example: \"skip ahead 30 seconds\".",
+        "stepped": false
+      },
+      "radio.identify_song": {
+        "criterion": "Find out what song this is. For example: \"what song is this\".",
+        "stepped": false
+      },
+      "radio.jump_to_live": {
+        "criterion": "Go back to the live broadcast. For example: \"go back to live\".",
+        "stepped": false
+      },
+      "radio.lyrics": {
+        "criterion": "Show the words of the song playing. For example: \"show me the lyrics\".",
+        "stepped": false
+      },
+      "radio.mute_toggle": {
+        "criterion": "Mute the radio, or unmute it. For example: \"mute the radio\".",
+        "stepped": false
+      },
+      "radio.on_now": {
+        "criterion": "Show the programme schedule: the shows on the stations now and later. For example: \"what's on right now\".",
+        "stepped": false
+      },
+      "radio.play_favorite": {
+        "criterion": "Play one of your favourite stations, by number or by name. For example: \"play favourite 3\".",
+        "stepped": false
+      },
+      "radio.play_last": {
+        "criterion": "Play the station you listened to last. For example: \"play the last station\".",
+        "stepped": false
+      },
+      "radio.play_pause": {
+        "criterion": "Start the radio, or pause it. For example: \"play the radio\".",
+        "stepped": false
+      },
+      "radio.record_station": {
+        "criterion": "Set up a recording of a station you pick from a list. For example: \"record a station\".",
+        "stepped": false
+      },
+      "radio.record_toggle": {
+        "criterion": "Record what is playing now, or stop recording it. For example: \"record this\".",
+        "stepped": false
+      },
+      "radio.recordings": {
+        "criterion": "Show your recordings. For example: \"show my recordings\".",
+        "stepped": false
+      },
+      "radio.rewind": {
+        "criterion": "Go back in what is playing. For example: \"skip back 30 seconds\".",
+        "stepped": false
+      },
+      "radio.song_history": {
+        "criterion": "List the songs that played earlier. For example: \"what played earlier\".",
+        "stepped": false
+      },
+      "radio.stop": {
+        "criterion": "Stop the radio. For example: \"stop the radio\".",
+        "stepped": false
+      },
+      "radio.stop_all_recordings": {
+        "criterion": "Stop every recording that is running. For example: \"stop all the recordings\".",
+        "stepped": false
+      },
+      "radio.toggle_playing_favorite": {
+        "criterion": "Save the station on air to your favourites list, or take it off. For example: \"add this station to my favourites\".",
+        "stepped": false
+      },
+      "radio.toggle_title_announcements": {
+        "criterion": "Say each song's title when it starts, or stop. For example: \"tell me each song title\".",
+        "stepped": false
+      },
+      "radio.transport.speed_down": {
+        "criterion": "Play slower. For example: \"play it slower\".",
+        "stepped": true
+      },
+      "radio.transport.speed_reset": {
+        "criterion": "Play at normal speed again. For example: \"back to normal speed\".",
+        "stepped": false
+      },
+      "radio.transport.speed_up": {
+        "criterion": "Play faster. For example: \"play it faster\".",
+        "stepped": true
+      },
+      "radio.volume_boost": {
+        "criterion": "Make a quiet station louder than full volume allows, or stop boosting. For example: \"boost this quiet station\".",
+        "stepped": false
+      },
+      "radio.volume_down": {
+        "criterion": "Make the radio quieter. For example: \"turn it down a bit\".",
+        "stepped": true
+      },
+      "radio.volume_up": {
+        "criterion": "Make the radio louder. For example: \"turn it up a bit\".",
+        "stepped": true
+      },
+      "radio.wake_timer": {
+        "criterion": "Start the radio at a time you choose. For example: \"wake me at 7\".",
+        "stepped": false
+      },
+      "radio.whats_playing_details": {
+        "criterion": "Say the song and station playing right now. For example: \"what's playing\".",
+        "stepped": false
+      }
+    }
+  },
+  "version": "2026-11-09"
+}

@@ -168,7 +168,7 @@ AGENT_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "tools.word_count",
         "Word Count",
-        "How many words the document has",
+        "Say how many words the document has",
         aliases=("word count", "count words", "how many words", "how long is this"),
         examples=("how many words is this", "how long is this document", "count the words"),
         risk=_S,
@@ -203,7 +203,7 @@ AGENT_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "tools.read_aloud_stop",
         "Stop Reading Aloud",
-        "Stop reading aloud",
+        "Stop reading the document aloud",
         aliases=("stop reading", "stop read aloud", "be quiet"),
         examples=("stop reading to me", "stop reading aloud", "that is enough reading"),
         risk=_S,
