@@ -2355,10 +2355,13 @@ the app's data folder), signed in to QUILL's free AI.
 6. **Free AI only.** With only the free AI and no sign-in, F11 never asks the
    question.
 7. **Quill Radio.** Alt+F11, "turn it up a lot": the same question, once per
-   profile. Note that Use My Own AI Instead sends nothing here (#1819).
+   profile, offering only Use Jev and Match on This Computer Only.
 8. **QUILL Lite.** Checks 1, 3 and 5 in QUILL Lite.
+9. **Changing the answer.** In each app, Ctrl+Alt+Shift+F1, then Alt+H: the
+   question opens with "Right now: ..." read first; Escape keeps the answer,
+   and a new answer is followed by one line saying where requests go now.
 
-- [ ] All eight with NVDA.
-- [ ] All eight with JAWS.
-- [ ] Checks 1, 2 and 5 with Narrator.
+- [ ] All nine with NVDA.
+- [ ] All nine with JAWS.
+- [ ] Checks 1, 2, 5 and 9 with Narrator.
 

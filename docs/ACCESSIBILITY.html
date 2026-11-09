@@ -662,21 +662,24 @@ blockers</h2>
 affects, and what we know about its accessibility. Revisit this list
 whenever one of them is added, upgraded or replaced.</p>
 <ul>
-<li><strong>wxPython 4.3.1</strong> (wxWidgets): every window and
+<li><strong>wxPython 4.3.2</strong> (wxWidgets 3.3.4): every window and
 control. On Windows it uses native Win32 controls, so names, roles and
 states reach screen readers through Microsoft Active Accessibility and
-UI Automation; a control’s name is the label created before it. Upstream
-blocker: a name set in code is not read, and a picture-only button has
-no name, until wxPython exposes <code>SetAccessibleName</code>
-(wxWidgets <a
-href="https://github.com/wxWidgets/wxWidgets/pull/27056">PR #27056</a>
-and <a href="https://github.com/wxWidgets/wxWidgets/pull/27051">PR
-#27051</a>, both merged in September 2026). Tracked in <a
+UI Automation; a control’s name is the label created before it. The old
+upstream blocker is gone: 4.3.2 is the first wxPython with
+<code>SetAccessibleName</code> (wxWidgets <a
+href="https://github.com/wxWidgets/wxWidgets/pull/27056">PR #27056</a>)
+and the fix that names a picture-only button from its tooltip (<a
+href="https://github.com/wxWidgets/wxWidgets/pull/27051">PR #27051</a>),
+and <code>quill/ui/spoken_name.py</code> uses it to name a control with
+no label of its own (and <code>wx.Accessible</code> on an older
+wxPython). The by-ear confirmation is open in <a
 href="https://github.com/Community-Access/quill/issues/1693">#1693</a>.
-Mitigation: every control gets a real label created before it, and
-buttons carry their object in the visible label. On macOS, VoiceOver
-ignores wx window names, so <code>quill/ui/accessible_names.py</code>
-sets native accessibility labels (<a
+The rule stays anyway: every control gets a real label created before
+it, and buttons carry their object in the visible label. On macOS,
+VoiceOver ignores wx window names, so
+<code>quill/ui/accessible_names.py</code> sets native accessibility
+labels (<a
 href="https://github.com/Community-Access/quill/issues/1012">#1012</a>).</li>
 <li><strong>Prism</strong> (the <code>prismatoid</code> package): routes
 announcements to NVDA, JAWS and other screen readers, with speech and
@@ -745,12 +748,13 @@ without results. Until they are recorded, treat a combination of app,
 screen reader and version that is not in a record as untested. Help is
 wanted in <a
 href="https://github.com/Community-Access/quill/issues/1694">#1694</a>.</li>
-<li><strong>A control without a visible label can be announced without a
-name</strong> on Windows, because the toolkit does not yet let QUILL set
-one (see <a
+<li><strong>A control without a visible label could be announced without
+a name</strong> on Windows before wxPython 4.3.2. QUILL now gives such a
+control a name in code (<code>SetAccessibleName</code>), but that is
+waiting for a by-ear check with a screen reader (<a
 href="https://github.com/Community-Access/quill/issues/1693">#1693</a>).
-Our rule is that every control has a label; if you find one that does
-not, please report it.</li>
+Our rule is still that every control has a label; if you find one that
+does not, please report it.</li>
 <li><strong>The screen reader does not say a paragraph is a
 heading</strong> by itself in the editor, because no Windows edit
 control exposes paragraph styles. QUILL says it for you instead
@@ -802,8 +806,8 @@ severity, response and resolution expectations; an accessibility
 checklist in the pull request templates; beginner-friendly and
 expert-help accessibility issues; an owner; documentation checked by the
 documentation gates; interface requirements enforced by the build and by
-review; and the dependency list above, with its upstream blocker
-tracked.</li>
+review; and the dependency list above, with its last upstream blocker
+resolved and its by-ear check tracked.</li>
 <li><strong>Testing:</strong> automated accessibility checks on every
 pull request; a review of representative documentation; supported
 environments and known limitations above. Documented keyboard, screen

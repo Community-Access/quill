@@ -183,6 +183,25 @@ def test_the_old_space_join_is_what_broke() -> None:
     assert parsed[:2] == ["C:\\portable\\Quill", "Radio\\Radio\\pythonw.exe"]
 
 
+def test_a_song_with_spaces_opened_from_explorer_is_one_file() -> None:
+    """Chris Nova, QUILLVille, 2026-11-09: with Quill Radio as the default player,
+    Enter on one MP3 in Downloads said it could not find 3 files. Explorer runs
+    ``QuillRadio.exe "%1"``; on 3.0.4 the launcher passed the path on in words.
+    Through today's quoting and Windows' own parsing, Radio reads one file."""
+    from quill.core.radio.opened_files import parse_argv
+
+    song = "C:\\Users\\Chris\\Downloads\\My Favourite Song.mp3"
+    argv = ["C:\\Program Files\\Quill Radio\\pythonw.exe", "-m", "quill.apps.radio", song]
+    child = parse_command_line(build_command_line(argv))
+    assert child[3:] == [song]
+    opened = parse_argv(child[3:]).paths
+    assert len(opened) == 1 and opened[0].endswith("My Favourite Song.mp3")
+    # 3.0.4 joined with bare spaces: three "files", none of which exists.
+    old = parse_command_line(" ".join(argv))
+    assert old[-3:] == ["C:\\Users\\Chris\\Downloads\\My", "Favourite", "Song.mp3"]
+    assert len(parse_argv(old[-3:]).paths) == 3
+
+
 def test_all_tricky_arguments_together() -> None:
     argv = [_PORTABLE_PYTHONW, *_TRICKY]
     assert parse_command_line(build_command_line(argv)) == argv

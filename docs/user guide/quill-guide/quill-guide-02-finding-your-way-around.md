@@ -181,9 +181,15 @@ What you hear and what happens:
   itself.
 - **Nothing is sent in Safe Mode.**
 
-Your answer is kept for every later request. The question's own window says
-you can change it at any time, but there is no setting for it yet; that is
-being fixed (issue 1819 on GitHub).
+Your answer is kept for every later request. To change it, open **What Can I
+Say Here?** (**Ctrl+Alt+Shift+F1**) and press **Change How Requests Are
+Understood...** (**Alt+H**). The question opens again and says your current
+answer first; Escape keeps it. Afterwards QUILL tells you where requests go
+now, such as "Requests the matcher cannot settle will go to Jev."
+
+**Use My Own AI Instead** is offered only when your own AI can be asked. While
+QUILL's free AI is the one in use, the question offers Jev or this computer
+only.
 
 ### The QUILL key
 

@@ -8,6 +8,17 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Change how requests are understood (2026-11-09)
+
+- **What Can I Say Here?** (**Ctrl+Alt+Shift+F1**) has **Change How Requests
+  Are Understood...** (**Alt+H**): it asks the Jev question again, says your
+  current answer first, keeps it on Escape, and tells you where requests go
+  now. The question used to say you could change your answer at any time,
+  though nothing let you (#1819).
+- **No more "Use My Own AI Instead" in Quill Radio.** Asking your own AI is in
+  QUILL and QUILL Lite; in Quill Radio that choice sent nothing, silently. The
+  question now offers Use Jev or Match on This Computer Only.
+
 ### Say or Type a Command can ask Jev (2026-11-09)
 
 - When the matcher on your computer is not sure what you meant, Say or Type a

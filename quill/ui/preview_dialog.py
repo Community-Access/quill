@@ -34,6 +34,26 @@ try:
 
     AccessibleHtmlDialog = _LibraryAccessibleHtmlDialog
 
+    class _PreviewWebView(AccessibleWebView):
+        """The library's view, with its content in a ``div`` that has the main role.
+
+        #1818: the side preview replaces its content with
+        ``content.innerHTML = ...`` on every update. The library's page puts that
+        content in a ``<main>`` element, and Internet Explorer's engine, the one
+        wx.html2 falls back to when Edge WebView2 is not chosen, treats ``main``
+        as an unknown element and refuses the assignment with "Error: Unknown
+        runtime error". A ``div`` with ``role="main"`` is the same landmark to a
+        screen reader and works on every engine.
+        """
+
+        def _skeleton(self, initial_html: str) -> str:
+            page = str(super()._skeleton(initial_html))
+            opened = page.replace('<main id="content"', '<div role="main" id="content"', 1)
+            if opened == page:  # the library changed its page; leave it alone
+                return page
+            head, _sep, tail = opened.rpartition("</main>")
+            return f"{head}</div>{tail}" if _sep else page
+
     _HAS_WEBVIEW_LIB = True
 except ImportError:
     # Resilience: if the wx-accessible-webview package isn't installed, don't
@@ -221,7 +241,7 @@ class SourceMappedSidePreview:
         if not _HAS_WEBVIEW_LIB:
             self._plain = SidePreview(parent, title=title, on_return=on_return)
             return
-        self._view = AccessibleWebView(
+        self._view = _PreviewWebView(
             parent,
             title=title,
             live_region=False,

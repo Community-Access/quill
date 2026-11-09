@@ -122,6 +122,12 @@ def ask_for_command(wx: Any, parent: Any, show_modal: ShowModal, initial: str = 
         dialog.Destroy()
 
 
+#: What :func:`_pick_from_list` answers when its extra button was pressed.
+EXTRA_CHOSEN = -1
+#: What Can I Say Here's way back to the consent question (#1819).
+CHANGE_UNDERSTANDING_LABEL = "Change &How Requests Are Understood..."
+
+
 def _pick_from_list(
     wx: Any,
     parent: Any,
@@ -133,7 +139,9 @@ def _pick_from_list(
     list_help: str,
     ok_help: str,
     start: int = 0,
+    extra: tuple[str, str] | None = None,
 ) -> int | None:
+    """The chosen row's index, :data:`EXTRA_CHOSEN` for the extra button, or None."""
     from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
 
     chosen: dict[str, int | None] = {"index": None}
@@ -147,6 +155,16 @@ def _pick_from_list(
     listing.SetHelpText(list_help)
     sizer.Add(listing, 1, wx.EXPAND | wx.ALL, 10)
     buttons, _ok = _buttons(wx, dialog, "Go", ok_help, "Close the list without doing anything.")
+    if extra is not None:
+        extra_button = wx.Button(dialog, wx.ID_ANY, label=extra[0])
+        extra_button.SetHelpText(extra[1])
+
+        def _extra(_event: Any) -> None:
+            chosen["index"] = EXTRA_CHOSEN
+            dialog.EndModal(wx.ID_OK)
+
+        extra_button.Bind(wx.EVT_BUTTON, _extra)
+        buttons.Insert(0, extra_button, 0, wx.RIGHT, 6)
     sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
 
     def _go(_event: Any = None) -> None:
@@ -164,6 +182,8 @@ def _pick_from_list(
     wx.CallAfter(listing.SetFocus)
     try:
         result = show_modal(dialog, title)
+        if chosen["index"] == EXTRA_CHOSEN:
+            return EXTRA_CHOSEN
         if result == wx.ID_OK and chosen["index"] is None:
             index = listing.GetSelection()
             if 0 <= index < len(rows):
@@ -208,8 +228,22 @@ def show_command_help(
     parent: Any,
     show_modal: ShowModal,
     rows: Sequence[HelpRow],
+    change_understanding: Callable[[], None] | None = None,
 ) -> Candidate | None:
-    """What Can I Say Here. Returns the command chosen to run, or None."""
+    """What Can I Say Here. Returns the command chosen to run, or None.
+
+    With *change_understanding*, the window also has Change How Requests Are
+    Understood, which asks the consent question again (#1819).
+    """
+    extra = (
+        (
+            CHANGE_UNDERSTANDING_LABEL,
+            "Choose again whether requests the quick matcher cannot settle go to "
+            "Jev, to your own AI, or nowhere.",
+        )
+        if change_understanding is not None
+        else None
+    )
     start = next((index for index, row in enumerate(rows) if not row.is_heading), 0)
     while True:
         index = _pick_from_list(
@@ -226,7 +260,11 @@ def show_command_help(
             ),
             ok_help="Do the chosen command.",
             start=start,
+            extra=extra,
         )
+        if index == EXTRA_CHOSEN and change_understanding is not None:
+            change_understanding()
+            return None
         if index is None:
             return None
         if not rows[index].is_heading:
@@ -277,8 +315,22 @@ CONSENT_TEXT = (
     "keep the requests they receive, and say they do not train on them. If Jev "
     "cannot answer, or you choose your own AI instead, the same words go to the AI "
     "you chose in Choose Your AI, when it is one of your own. You can change this "
-    "at any time."
+    "at any time: What Can I Say Here? (Ctrl+Alt+Shift+F1) has Change How Requests "
+    "Are Understood."
 )
+#: The same, where the AI in use is not one of the person's own (QUILL's free AI,
+#: none, or an app with no AI service such as Quill Radio): only Jev is offered.
+CONSENT_TEXT_JEV_ONLY = CONSENT_TEXT.replace(
+    "If Jev cannot answer, or you choose your own AI instead, the same words go to "
+    "the AI you chose in Choose Your AI, when it is one of your own. ",
+    "",
+)
+#: How the current answer is said when the question is asked again.
+CONSENT_NOW: dict[str, str] = {
+    "jev": "Right now: Use Jev.",
+    "my_ai": "Right now: Use My Own AI Instead.",
+    "local": "Right now: Match on This Computer Only.",
+}
 #: The three equal answers, and the setting each one stores.
 CONSENT_CHOICES: tuple[tuple[str, str], ...] = (
     ("Use Jev", "jev"),
@@ -287,8 +339,20 @@ CONSENT_CHOICES: tuple[tuple[str, str], ...] = (
 )
 
 
-def ask_command_understanding(wx: Any, parent: Any, show_modal: ShowModal) -> str:
-    """The consent question, asked once. Escape means "on this computer only"."""
+def ask_command_understanding(
+    wx: Any,
+    parent: Any,
+    show_modal: ShowModal,
+    *,
+    offer_own_ai: bool = True,
+    current: str = "",
+) -> str:
+    """The consent question. Escape means "on this computer only".
+
+    Asked once on its own, and again from What Can I Say Here (#1819), when
+    *current* is the answer already given and Escape keeps it. "Use My Own AI
+    Instead" is offered only where the person's own AI can be asked.
+    """
     from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
     dialog = _sized(
@@ -299,16 +363,19 @@ def ask_command_understanding(wx: Any, parent: Any, show_modal: ShowModal) -> st
     sizer = wx.BoxSizer(wx.VERTICAL)
     # Constructed just before the box, so wxMSW reads it as the box's name.
     sizer.Add(wx.StaticText(dialog, label="&What is sent:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
-    text = wx.TextCtrl(
-        dialog, value=CONSENT_TEXT, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
-    )
+    value = CONSENT_TEXT if offer_own_ai else CONSENT_TEXT_JEV_ONLY
+    if current in CONSENT_NOW:
+        value = f"{CONSENT_NOW[current]} {value}"
+    text = wx.TextCtrl(dialog, value=value, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP)
     text.SetName("What is sent")
     text.SetHelpText("What QUILL would send to understand a command, and to whom.")
     sizer.Add(text, 1, wx.EXPAND | wx.ALL, 10)
     row = wx.BoxSizer(wx.HORIZONTAL)
-    chosen = {"value": "local"}
+    kept = current if current in CONSENT_NOW else "local"
+    chosen = {"value": kept}
     buttons = []
-    for index, (label, value) in enumerate(CONSENT_CHOICES):
+    choices = [item for item in CONSENT_CHOICES if offer_own_ai or item[1] != "my_ai"]
+    for index, (label, value) in enumerate(choices):
         button = wx.Button(dialog, wx.ID_OK if index == 0 else wx.ID_ANY, label=label)
         button.SetHelpText(
             {
@@ -334,7 +401,7 @@ def ask_command_understanding(wx: Any, parent: Any, show_modal: ShowModal) -> st
     wx.CallAfter(text.SetFocus)
     try:
         if show_modal(dialog, CONSENT_TITLE) != wx.ID_OK:
-            return "local"
+            return kept
         return chosen["value"]
     finally:
         dialog.Destroy()
@@ -378,6 +445,8 @@ class WxCommandKeyHost:
         self._dictation_help = dictation_help
         self._usage = dict(usage or {})
         self.retype = False
+        #: Asks the consent question again, from What Can I Say Here (#1819).
+        self.change_understanding: Callable[[], None] | None = None
 
     # -- the lists ----------------------------------------------------------
 
@@ -447,7 +516,9 @@ class WxCommandKeyHost:
             return None
         # The count is the one thing only the app knows (GATE-13).
         self.announce(count_line(rows))
-        return show_command_help(self._wx, self._parent, self._show_modal, rows)
+        return show_command_help(
+            self._wx, self._parent, self._show_modal, rows, self.change_understanding
+        )
 
     def show_dictation_help(self) -> None:
         if self._dictation_help is not None:

@@ -869,10 +869,10 @@ right now are sent; never stations, places or accounts. Jev's pick runs only
 when it is clearly sure. If Jev cannot answer, because you are offline or a
 limit is reached, you hear one line, once, and the matcher carries on.
 
-The question also offers **Use My Own AI Instead**, but asking your own AI is
-in QUILL and QUILL Lite only. In Quill Radio, choosing it means nothing is
-sent, the same as Match on This Computer Only. There is not yet a setting to
-change your answer later (issue 1819 on GitHub).
+Asking your own AI instead is in QUILL and QUILL Lite, so in Quill Radio the
+question offers Jev or this computer only. To change your answer later, open
+**What Can I Say Here?** (**Ctrl+Alt+Shift+F1**) and press **Change How
+Requests Are Understood...** (**Alt+H**). Escape keeps the answer you had.
 
 Two requests the matcher gets wrong for now, because it is sure of itself and
 never asks Jev: "turn the radio off in half an hour" stops the radio rather

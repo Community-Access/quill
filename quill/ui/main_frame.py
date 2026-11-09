@@ -1079,7 +1079,6 @@ class MainFrame(
         self._bw_download_status: dict[str, dict[str, object]] = {}
         self._last_intake_report = ""
         self._startup_deferred_ran = False
-        self._webview_warm = False
         # Background task pool for offloading I/O out of UI-thread modal paths.
         # Used by _offer_crash_recovery (snapshot read + mkdir) and the deferred
         # startup task list.  Closed in run_app() shutdown.
@@ -1512,22 +1511,12 @@ class MainFrame(
                 self._report_startup_task_failure(label)
             if _profile:
                 _times.append((label, time.perf_counter() - _t))
-        # WebView2 warm-up runs LAST, on its own delayed CallLater — not inline.
-        # The first ``wx.html2.WebView.New()`` initialises the Edge WebView2
-        # process and can block the UI thread for several seconds (sometimes
-        # minutes) on slower or first-run Windows installs (#174/#177). Running it
-        # inline at the *front* of this list meant that block landed while the
-        # user was waiting to interact — dead air a screen-reader user reads as a
-        # frozen app (the wx heartbeat watchdog logged ~7 s stalls). Deferring it
-        # to after the editor is focused and "Ready" is announced, on a short
-        # delay, lets the user start working first; F6/preview before it finishes
-        # is already handled by the ``_webview_warm`` deferral in preview_in_app.
-        # Isolated like every other deferred step: a failure scheduling the
-        # warm-up must never take down startup (the DLG-3 Phase 5 contract).
-        try:
-            self._wx.CallLater(1200, self._prewarm_webview_runtime)
-        except Exception:
-            self._report_startup_task_failure("webview warm-up scheduling")
+        # No WebView warm-up at startup (#1817). A hidden 1x1 WebView used to be
+        # made here and destroyed from inside its own EVT_WEBVIEW_LOADED, and on
+        # wxPython 4.3.2 that ended QUILL with an access violation in MainLoop a
+        # moment after the startup sound. A WebView is now made the first time
+        # one is needed (the preview, the AI pane), which costs that one opening
+        # a moment more and never costs the session.
         _t = time.perf_counter() if _profile else 0.0
         if (
             getattr(self.settings, "auto_check_updates", False)

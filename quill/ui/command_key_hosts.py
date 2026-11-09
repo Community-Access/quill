@@ -98,7 +98,9 @@ def _assist_for(host: WxCommandKeyHost, owner: Any = None) -> Any:
         return None
     choice = command_understanding()
     if not choice:
-        choice = ask_command_understanding(host._wx, host._parent, host._show_modal)
+        choice = ask_command_understanding(
+            host._wx, host._parent, host._show_modal, offer_own_ai=engine is not None
+        )
         _save_state(command_understanding=choice)
     tier_4 = CommandPickAssist(engine) if engine is not None else None
     if choice == "my_ai":
@@ -113,6 +115,54 @@ def _assist_for(host: WxCommandKeyHost, owner: Any = None) -> Any:
 #: One route for the process, so its "stop for the day" and its one request in
 #: flight hold across every F11 press and every app window.
 _JEV_ROUTE: Any = None
+
+
+#: What is said after the question is answered again (#1819): the outcome only
+#: the app knows (GATE-13), never the window's title or the button's name.
+UNDERSTANDING_SAID: dict[str, str] = {
+    "jev": "Requests the matcher cannot settle will go to Jev.",
+    "my_ai": "Requests the matcher cannot settle will go to your own AI.",
+    "local": "Requests will be matched on this computer only.",
+}
+NOTHING_TO_CHOOSE = (
+    "Nothing can help the matcher here yet: sign in to QUILL's free AI, or choose "
+    "your own AI in Choose Your AI, and this question can be answered."
+)
+
+
+def change_command_understanding(host: WxCommandKeyHost, owner: Any = None) -> None:
+    """Ask the consent question again, from What Can I Say Here (#1819).
+
+    The consent window has always said the answer can be changed at any time;
+    this is where. Offered the same answers the first question would offer now:
+    "Use My Own AI Instead" only where the person's own AI can be asked.
+    """
+    import os
+
+    from quill.ui.command_key_ai import command_pick_engine
+    from quill.ui.command_key_ui import ask_command_understanding
+
+    if os.environ.get("QUILL_SAFE_MODE") == "1":
+        host.announce("Nothing is sent anywhere in Safe Mode, so there is nothing to choose.")
+        return
+    engine = command_pick_engine(owner, host.announce) if owner is not None else None
+    if not _route_available() and engine is None:
+        host.announce(NOTHING_TO_CHOOSE)
+        return
+    choice = ask_command_understanding(
+        host._wx,
+        host._parent,
+        host._show_modal,
+        offer_own_ai=engine is not None,
+        current=command_understanding(),
+    )
+    _save_state(command_understanding=choice)
+    host.announce(UNDERSTANDING_SAID[choice])
+
+
+def _with_change(host: WxCommandKeyHost, owner: Any) -> WxCommandKeyHost:
+    host.change_understanding = lambda: change_command_understanding(host, owner)
+    return host
 
 
 def _gateway_token() -> str:
@@ -192,7 +242,7 @@ def _quill_host(frame: Any) -> WxCommandKeyHost:
             return ""
         return _dimmed(menu_bar.FindItemById(item_id), spec)
 
-    return WxCommandKeyHost(
+    host = WxCommandKeyHost(
         wx=wx,
         parent=frame.frame,
         app="quill",
@@ -203,6 +253,7 @@ def _quill_host(frame: Any) -> WxCommandKeyHost:
         probe=probe,
         other_apps=_other_apps("quill"),
     )
+    return _with_change(host, frame)
 
 
 def quill_command_key(frame: Any) -> None:
@@ -253,7 +304,7 @@ def _lite_host(window: Any) -> WxCommandKeyHost:
     def probe(spec: CommandSpec) -> str:
         return _dimmed(items.get(spec.id.removeprefix("lite.")), spec)
 
-    return WxCommandKeyHost(
+    host = WxCommandKeyHost(
         wx=wx,
         parent=window,
         app="lite",
@@ -264,6 +315,7 @@ def _lite_host(window: Any) -> WxCommandKeyHost:
         probe=probe,
         other_apps=_other_apps("lite"),
     )
+    return _with_change(host, window)
 
 
 def lite_command_key(window: Any) -> None:
@@ -291,7 +343,7 @@ def lite_what_can_i_say_here(window: Any) -> None:
 def _radio_host(frame: Any) -> WxCommandKeyHost:
     import wx
 
-    return WxCommandKeyHost(
+    host = WxCommandKeyHost(
         wx=wx,
         parent=frame,
         app="radio",
@@ -301,6 +353,7 @@ def _radio_host(frame: Any) -> WxCommandKeyHost:
         key_for=_keys(frame.commands),
         other_apps=_other_apps("radio"),
     )
+    return _with_change(host, frame)
 
 
 def radio_command_key(frame: Any) -> None:

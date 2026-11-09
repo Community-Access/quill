@@ -136,7 +136,9 @@ def state(tmp_path: Any, monkeypatch: pytest.MonkeyPatch) -> list[int]:
 
 
 def _answer(monkeypatch: pytest.MonkeyPatch, asked: list[int], choice: str) -> None:
-    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a: asked.append(1) or choice)
+    monkeypatch.setattr(
+        ui, "ask_command_understanding", lambda *_a, **_k: asked.append(1) or choice
+    )
 
 
 def _jev(monkeypatch: pytest.MonkeyPatch, ready: bool) -> None:
@@ -195,3 +197,91 @@ def test_a_jev_failure_says_your_ai_is_next_when_it_is() -> None:
     )
     assist("flibbertigibbet", cands)
     assert host.spoken == ["Jev's daily limit is reached, so I'm asking your AI."]
+
+
+# -- changing the answer (#1819) ------------------------------------------------------
+
+
+def test_the_consent_text_says_where_to_change_the_answer() -> None:
+    for text in (ui.CONSENT_TEXT, ui.CONSENT_TEXT_JEV_ONLY):
+        assert "What Can I Say Here? (Ctrl+Alt+Shift+F1)" in text
+        assert "Change How Requests Are Understood" in text
+
+
+def test_without_your_own_ai_the_text_drops_only_that_sentence() -> None:
+    assert "your own AI" in ui.CONSENT_TEXT
+    assert "your own AI" not in ui.CONSENT_TEXT_JEV_ONLY
+    assert "TypeSafe keep the requests" in ui.CONSENT_TEXT_JEV_ONLY
+    assert len(ui.CONSENT_TEXT_JEV_ONLY) < len(ui.CONSENT_TEXT)
+
+
+def _record_question(monkeypatch: pytest.MonkeyPatch, choice: str) -> list[dict[str, Any]]:
+    calls: list[dict[str, Any]] = []
+
+    def ask(*_a: Any, **kwargs: Any) -> str:
+        calls.append(kwargs)
+        return choice
+
+    monkeypatch.setattr(ui, "ask_command_understanding", ask)
+    return calls
+
+
+def test_the_first_question_offers_your_own_ai_only_when_it_can_be_asked(
+    monkeypatch: pytest.MonkeyPatch, state
+) -> None:
+    _jev(monkeypatch, True)
+    monkeypatch.setattr(hosts, "_route", lambda: object())
+    calls = _record_question(monkeypatch, "jev")
+    hosts._assist_for(_Host(), _Owner(_Service(FREE)))
+    assert calls[-1]["offer_own_ai"] is False
+    hosts._save_state(command_understanding="")
+    hosts._assist_for(_Host(), _Owner(_Service(OWN_KEY)))
+    assert calls[-1]["offer_own_ai"] is True
+
+
+def test_quill_radio_with_no_ai_service_is_never_offered_your_own_ai(
+    monkeypatch: pytest.MonkeyPatch, state
+) -> None:
+    _jev(monkeypatch, True)
+    calls = _record_question(monkeypatch, "local")
+    hosts.change_command_understanding(_Host(), object())
+    assert calls[-1]["offer_own_ai"] is False
+
+
+def test_changing_the_answer_saves_it_and_says_what_happens_now(
+    monkeypatch: pytest.MonkeyPatch, state
+) -> None:
+    _jev(monkeypatch, True)
+    hosts._save_state(command_understanding="local")
+    calls = _record_question(monkeypatch, "jev")
+    host = _Host()
+    hosts.change_command_understanding(host, _Owner(_Service(OWN_KEY)))
+    assert calls[-1]["current"] == "local"
+    assert hosts.command_understanding() == "jev"
+    assert host.spoken[-1] == hosts.UNDERSTANDING_SAID["jev"]
+
+
+def test_with_nothing_to_help_the_matcher_it_says_so_and_asks_nothing(
+    monkeypatch: pytest.MonkeyPatch, state
+) -> None:
+    _jev(monkeypatch, False)
+    calls = _record_question(monkeypatch, "jev")
+    host = _Host()
+    hosts.change_command_understanding(host, _Owner(_Service(FREE)))
+    assert calls == [] and host.spoken == [hosts.NOTHING_TO_CHOOSE]
+
+
+def test_nothing_is_offered_in_safe_mode(monkeypatch: pytest.MonkeyPatch, state) -> None:
+    _jev(monkeypatch, True)
+    monkeypatch.setenv("QUILL_SAFE_MODE", "1")
+    calls = _record_question(monkeypatch, "jev")
+    host = _Host()
+    hosts.change_command_understanding(host, _Owner(_Service(OWN_KEY)))
+    assert calls == [] and "Safe Mode" in host.spoken[-1]
+
+
+def test_every_app_host_carries_the_way_to_change_it() -> None:
+    import inspect
+
+    for builder in (hosts._quill_host, hosts._lite_host, hosts._radio_host):
+        assert "_with_change(host," in inspect.getsource(builder)

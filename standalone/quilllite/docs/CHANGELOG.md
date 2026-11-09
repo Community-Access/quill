@@ -2,6 +2,19 @@
 
 ## 2.0.0
 
+### Change how requests are understood (2026-11-09)
+
+- **Change how requests are understood.** The first time Say or Type a Command
+  could ask for help, you choose Use Jev, Use My Own AI Instead or Match on This
+  Computer Only, and the window said you could change that at any time, though
+  nothing let you. Now **What Can I Say Here?** (**Ctrl+Alt+Shift+F1**) has
+  **Change How Requests Are Understood...** (**Alt+H**): it asks again, says your
+  current answer first, keeps it on Escape, and tells you where requests go now
+  (#1819).
+- **Use My Own AI Instead only where it can work.** It is offered only when your
+  own AI can be asked, not while QUILL's free AI is the one in use.
+- QUILL has the same, from the same shared code.
+
 ### The GitHub Guide has its own folder (2026-11-09)
 
 - The GitHub Guide's pages moved from `docs\guide\`, where they sat among the

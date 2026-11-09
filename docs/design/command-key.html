@@ -1343,13 +1343,18 @@ can change this at any time.</p>
 only when a route exists: a Jev route (this computer signed in to
 QUILL’s free AI, or an own TypeSafe key) or a tier 4 engine (an own AI
 in Choose Your AI).</p>
-<p>The choice is meant to be a setting,
-<code>command_understanding</code> (<code>jev</code>, <code>my_ai</code>
-or <code>local</code>), shared by both editors and every app.
-<strong>Not yet:</strong> it lives in <code>command-key.json</code> in
-the app’s data folder, and nothing lets a person change it, although the
-text above says they can. Issue #1819 tracks the Preferences row, and
-Radio offering “Use My Own AI Instead” when it has no tier 4.</p>
+<p>The choice is <code>command_understanding</code> (<code>jev</code>,
+<code>my_ai</code> or <code>local</code>), kept in
+<code>command-key.json</code> in the app’s data folder. <strong>Changing
+it (#1819, 2026-11-09):</strong> What Can I Say Here? has Change How
+Requests Are Understood…, which asks the question again with the current
+answer said first, keeps it on Escape, saves the new one and says where
+requests go now (<code>change_command_understanding</code> in
+<code>quill/ui/command_key_hosts.py</code>); the consent text names it.
+“Use My Own AI Instead” is offered only where tier 4 has an engine, so
+never in Quill Radio and not on the free AI, and the text then leaves
+out the own-AI sentence (<code>CONSENT_TEXT_JEV_ONLY</code>). A shared
+Preferences row is still a remaining task.</p>
 <h3 id="79-egress-rows-and-error-codes">7.9 Egress rows and error
 codes</h3>
 <ul>
@@ -1426,7 +1431,8 @@ gateway route, and tier 4 there would spend their free allowance on a
 lookup. <code>command_pick_engine</code> answers None for it.</li>
 <li><strong>Only where the app has an <code>AiService</code>.</strong>
 QUILL and QUILL Lite do (<code>HostedAiMixin</code>); Quill Radio does
-not, so in Radio “Use My Own AI Instead” sends nothing (#1819).</li>
+not, so Radio’s question does not offer “Use My Own AI Instead”
+(#1819).</li>
 <li><strong>Local Ollama and llama.cpp</strong> reuse llama.cpp’s
 <code>decide</code> pattern.</li>
 <li><strong>One question per request.</strong> It asks only the
@@ -4124,11 +4130,13 @@ the gateway (#1813 tools, #1815 report, 2026-11-09):
 <li><label><input type="checkbox" checked="" />Command descriptions Jev
 confused, sharpened; catalogue 2026-11-09, with 2026-11-08 kept on the
 gateway for installed copies (#1816).</label></li>
+<li><label><input type="checkbox" checked="" />A way to change the
+answer: Change How Requests Are Understood in What Can I Say Here, and
+Radio’s question without “Use My Own AI Instead” (#1819,
+2026-11-09).</label></li>
 <li><label><input type="checkbox" /><code>command_understanding</code>
-as a real shared setting, with a Preferences row in every app (settings
-vocabulary, GATE-SETDOC); and Radio’s question without “Use My Own AI
-Instead” while Radio has no tier 4. Issue #1819. The consent text
-already promises it.</label></li>
+as a shared setting with a Preferences row in every app (settings
+vocabulary, GATE-SETDOC).</label></li>
 <li><label><input type="checkbox" />Jev without the free sign-in:
 automatic free sign-in, an anonymous capped route, or neither.
 Undecided; today Jev needs the free-AI sign-in or an own
