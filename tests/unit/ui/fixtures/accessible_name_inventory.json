@@ -327,6 +327,7 @@
   "quill/ui/clip_library_dialog.py::ClipLibraryDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/clip_library_dialog.py::ClipLibraryDialog.__init__::wx.TextCtrl#2": "named",
   "quill/ui/command_key_ui.py::_pick_from_list::wx.ListBox": "named",
+  "quill/ui/command_key_ui.py::ask_command_understanding::wx.TextCtrl": "named",
   "quill/ui/command_key_ui.py::ask_for_command::wx.TextCtrl": "named",
   "quill/ui/compare_dialog.py::CompareDialog.__init__::wx.ListBox": "named",
   "quill/ui/compare_dialog.py::CompareDialog.__init__::wx.TextCtrl": "named",

@@ -265,6 +265,77 @@ def confirm_command(wx: Any, parent: Any, show_modal: ShowModal, question: str) 
         dialog.Destroy()
 
 
+CONSENT_TITLE = "Understanding Commands"
+#: Section 7.8, with what TypeSafe's terms say about keeping requests.
+CONSENT_TEXT = (
+    "To understand requests the quick matcher can't, QUILL can send the words you "
+    "typed or said, the name of this app, and the names of the commands it can do "
+    "right now to TypeSafe, a company in San Francisco, which picks one. Nothing else "
+    "is sent: no document text, file names, stations, places or accounts. TypeSafe "
+    "keep the requests they receive, and say they do not train on them. You can "
+    "change this at any time."
+)
+#: The three equal answers, and the setting each one stores.
+CONSENT_CHOICES: tuple[tuple[str, str], ...] = (
+    ("Use Jev", "jev"),
+    ("Use My Own AI Instead", "my_ai"),
+    ("Match on This Computer Only", "local"),
+)
+
+
+def ask_command_understanding(wx: Any, parent: Any, show_modal: ShowModal) -> str:
+    """The consent question, asked once. Escape means "on this computer only"."""
+    from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+
+    dialog = _sized(
+        wx.Dialog(parent, title=CONSENT_TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER),
+        560,
+        260,
+    )
+    sizer = wx.BoxSizer(wx.VERTICAL)
+    # Constructed just before the box, so wxMSW reads it as the box's name.
+    sizer.Add(wx.StaticText(dialog, label="&What is sent:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+    text = wx.TextCtrl(
+        dialog, value=CONSENT_TEXT, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+    )
+    text.SetName("What is sent")
+    text.SetHelpText("What QUILL would send to understand a command, and to whom.")
+    sizer.Add(text, 1, wx.EXPAND | wx.ALL, 10)
+    row = wx.BoxSizer(wx.HORIZONTAL)
+    chosen = {"value": "local"}
+    buttons = []
+    for index, (label, value) in enumerate(CONSENT_CHOICES):
+        button = wx.Button(dialog, wx.ID_OK if index == 0 else wx.ID_ANY, label=label)
+        button.SetHelpText(
+            {
+                "jev": "Send requests the quick matcher cannot settle to TypeSafe's Jev.",
+                "my_ai": "Ask the AI you chose in Choose Your AI instead of Jev.",
+                "local": "Never send a request anywhere; match on this computer only.",
+            }[value]
+        )
+
+        def _pick(_event: Any, value: str = value) -> None:
+            chosen["value"] = value
+            dialog.EndModal(wx.ID_OK)
+
+        button.Bind(wx.EVT_BUTTON, _pick)
+        row.Add(button, 0, wx.RIGHT, 6)
+        buttons.append(button)
+    sizer.Add(row, 0, wx.ALL, 10)
+    dialog.SetSizer(sizer)
+    cancel = wx.Button(dialog, wx.ID_CANCEL, label="Cancel")
+    cancel.Hide()
+    bind_close_button(dialog, cancel, modeless=False)
+    apply_modal_ids(dialog, escape_id=wx.ID_CANCEL)
+    wx.CallAfter(text.SetFocus)
+    try:
+        if show_modal(dialog, CONSENT_TITLE) != wx.ID_OK:
+            return "local"
+        return chosen["value"]
+    finally:
+        dialog.Destroy()
+
+
 class WxCommandKeyHost:
     """One app window, as the Command Key sees it.
 

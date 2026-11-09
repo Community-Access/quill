@@ -122,3 +122,69 @@ def host_for(app: str, *, disabled: Mapping[str, str] | None = None, **kwargs: o
     rows = rows_for_app(app)
     registry = FakeRegistry(ids={spec.id for spec in rows}, reasons=dict(disabled or {}))
     return FakeHost(app, registry, rows, **kwargs)  # type: ignore[arg-type]
+
+
+# -- tiers 3 and 4 --------------------------------------------------------------
+
+
+@dataclass
+class FakeJevClient:
+    """Jev, scripted: a rule from the request to an answer, or an error to raise.
+
+    Records every request body, so a test can assert what was and was not sent.
+    """
+
+    rule: Callable[[object], dict[str, object]] | None = None
+    error: Exception | None = None
+    requests: list[dict[str, object]] = field(default_factory=list)
+
+    def decide(self, request: object) -> object:
+        from quill.core.command_catalogue.jev import parse_answer
+
+        body = getattr(request, "body", {})
+        self.requests.append(dict(body))
+        if self.error is not None:
+            raise self.error
+        raw = self.rule(request) if self.rule is not None else {}
+        return parse_answer(raw, getattr(request, "offered", ()))
+
+
+def jev_answer(
+    probabilities: Mapping[str, float],
+    *,
+    fits: float = 0.9,
+    confidence: float | None = None,
+    is_question: float = 0.0,
+    size: str = "",
+) -> dict[str, object]:
+    """A raw Jev answer in TypeSafe's shape (answers, model, usage)."""
+    top = max(probabilities.values()) if probabilities else 0.0
+    n = max(len(probabilities), 2)
+    conf = confidence if confidence is not None else (top - 1 / n) / (1 - 1 / n)
+    answers: dict[str, object] = {
+        "action": {
+            "type": "choice",
+            "probabilities": dict(probabilities),
+            "confidence": max(0.0, conf),
+        },
+        "fits": {"type": "noul", "noul": fits},
+        "is_question": {"type": "noul", "noul": is_question},
+    }
+    if size:
+        answers["size"] = {"type": "choice", "choice": size}
+    return {"model": "jev-1.14.0", "answers": answers, "usage": {"input_tokens": 2100}}
+
+
+@dataclass
+class FakeCommandPickEngine:
+    """Choose Your AI, scripted: a reply, or an exception."""
+
+    reply: str = "none"
+    error: Exception | None = None
+    prompts: list[str] = field(default_factory=list)
+
+    def __call__(self, prompt: str) -> str:
+        self.prompts.append(prompt)
+        if self.error is not None:
+            raise self.error
+        return self.reply

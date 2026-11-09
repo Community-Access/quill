@@ -311,3 +311,76 @@ def test_something_else_is_the_last_row() -> None:
     spec = row("radio.stop", "radio")
     assert spec is not None
     assert ui.choose_command(wx, None, pick_last, [Candidate(spec)]) == "else"
+
+
+# -- tier 3's consent (command-key.md 7.8) ---------------------------------------------
+
+
+def test_no_key_means_no_jev_and_no_question(monkeypatch: pytest.MonkeyPatch) -> None:
+    from quill.core.command_catalogue import jev
+
+    monkeypatch.setattr(jev, "_key_from_credential_manager", lambda: "")
+    asked: list[int] = []
+    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a: asked.append(1) or "jev")
+    host, _registry, _spoken = _host()
+    assert hosts._assist_for(host) is None and asked == []
+
+
+def test_safe_mode_means_no_jev(monkeypatch: pytest.MonkeyPatch) -> None:
+    from quill.core.command_catalogue import jev
+
+    monkeypatch.setattr(jev, "_key_from_credential_manager", lambda: "sk-test")
+    monkeypatch.setenv("QUILL_SAFE_MODE", "1")
+    host, _registry, _spoken = _host()
+    assert hosts._assist_for(host) is None
+
+
+@pytest.mark.parametrize(
+    ("answer", "assisted"), [("jev", True), ("my_ai", False), ("local", False)]
+)
+def test_the_consent_question_is_asked_once_and_remembered(
+    answer: str, assisted: bool, tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quill.core.paths as paths
+    from quill.core.command_catalogue import jev
+
+    monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    monkeypatch.setattr(jev, "_key_from_credential_manager", lambda: "sk-test")
+    asked: list[int] = []
+    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a: asked.append(1) or answer)
+    host, _registry, _spoken = _host()
+    first = hosts._assist_for(host)
+    second = hosts._assist_for(host)
+    assert asked == [1]
+    assert hosts.command_understanding() == answer
+    assert (first is not None, second is not None) == (assisted, assisted)
+
+
+def test_the_consent_says_typesafe_keeps_requests_and_does_not_train() -> None:
+    assert "keep the requests they receive" in ui.CONSENT_TEXT
+    assert "do not train on them" in ui.CONSENT_TEXT
+    assert "no document text, file names" in ui.CONSENT_TEXT
+    assert [value for _label, value in ui.CONSENT_CHOICES] == ["jev", "my_ai", "local"]
+
+
+@pytest.mark.usefixtures("wx_session_app")
+def test_the_consent_window_answers_and_escape_means_local() -> None:
+    import wx
+
+    def escape(_dialog: Any, _label: str) -> int:
+        return wx.ID_CANCEL
+
+    assert ui.ask_command_understanding(wx, None, escape) == "local"
+
+    def press_second(dialog: Any, _label: str) -> int:
+        buttons = [c for c in dialog.GetChildren() if isinstance(c, wx.Button) and c.IsShown()]
+        assert [b.GetLabel() for b in buttons] == [label for label, _v in ui.CONSENT_CHOICES]
+        event = wx.CommandEvent(wx.wxEVT_BUTTON, buttons[1].GetId())
+        event.SetEventObject(buttons[1])
+        dialog.IsModal = lambda: True  # type: ignore[method-assign]
+        dialog.EndModal = lambda _code: None  # type: ignore[method-assign]
+        buttons[1].ProcessEvent(event)
+        return wx.ID_OK
+
+    assert ui.ask_command_understanding(wx, None, press_second) == "my_ai"

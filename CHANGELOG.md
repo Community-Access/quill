@@ -49,6 +49,23 @@
   4.10.0, typescript-language-server 6.0.2, TypeScript 6.0.3, Pyright 1.1.414,
   Prettier 3.9.10 (for Format Document, coming next) and ripgrep 15.2.0. Their
   licences are in the third-party notices.
+
+### Jev, for commands the quick matcher cannot settle (2026-11-08)
+
+- Say or Type a Command can ask Jev, TypeSafe's decision model, to pick from
+  this window's commands when the matcher on your computer is not sure. It
+  sends only the words you typed, this app's name and the names of the
+  commands it can do right now; never document text, file names, stations,
+  places or accounts. TypeSafe keep the requests they receive, and say they do
+  not train on them.
+- You are asked once, with three equal answers: Use Jev, Use My Own AI
+  Instead, or Match on This Computer Only.
+- For now Jev is offered only where a TypeSafe key is stored in Windows
+  Credential Manager. Everyone else keeps the free, offline Command Key
+  exactly as it is.
+- When Jev cannot answer (offline, a limit, credit spent), you hear one line,
+  once, and the Command Key matches on your computer.
+
 ### Say or Type a Command (2026-11-08)
 
 - **Say or Type a Command (F11).** Press F11, type what you want in your own

@@ -631,6 +631,7 @@ markers = [
     "lsp: drives the real bundled language servers; skipped unless QUILL_LANGUAGE_SERVERS_DIR names a staged folder (scripts/fetch_build_deps.py --only nodejs --only language-servers)",
     "uia: Windows UI-automation regression tests (launch the real app via UIA); opt-in with QUILL_UIA_TESTS=1 and -m uia on a Windows desktop session",
     "machine_global: touches a resource the machine owns rather than the process (the Windows clipboard, the system-wide RegisterHotKey table, the screen-reader COM bridges). Serialized onto one worker under -n --dist loadgroup; see tests/conftest.py.",
+    "live_jev: sends real requests to TypeSafe's Jev with the key in Credential Manager; only with QUILL_JEV_LIVE=1, never in CI (docs/design/command-key.md 14.7)",
     "slow: runs for many minutes and only when asked by its own environment variable (the dictation soak, tests/stability/test_dictation_soak.py); never in CI",
 ]
 
