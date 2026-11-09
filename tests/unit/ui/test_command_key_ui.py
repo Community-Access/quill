@@ -191,7 +191,7 @@ def test_help_says_the_count_once_and_runs_the_pick(monkeypatch: pytest.MonkeyPa
     host, registry, spoken = _host()
     shown: list[Any] = []
 
-    def show(_wx: Any, _parent: Any, _show: Any, rows: Any) -> Candidate | None:
+    def show(_wx: Any, _parent: Any, _show: Any, rows: Any, *_extra: Any) -> Candidate | None:
         shown.append(rows)
         return next(r.candidate for r in rows if r.candidate is not None)
 
@@ -322,7 +322,7 @@ def test_no_key_means_no_jev_and_no_question(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch.setattr(jev, "_key_from_credential_manager", lambda: "")
     monkeypatch.setattr(hosts, "_gateway_token", lambda: "")
     asked: list[int] = []
-    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a: asked.append(1) or "jev")
+    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a, **_k: asked.append(1) or "jev")
     host, _registry, _spoken = _host()
     assert hosts._assist_for(host) is None and asked == []
 
@@ -338,7 +338,7 @@ def test_signed_in_to_free_ai_offers_jev_through_the_gateway(
     monkeypatch.setattr(jev, "_key_from_credential_manager", lambda: "")
     monkeypatch.setattr(hosts, "_gateway_token", lambda: "device-token")
     monkeypatch.setattr(hosts, "_JEV_ROUTE", None)
-    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a: "jev")
+    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a, **_k: "jev")
     host, _registry, _spoken = _host()
     assert hosts._assist_for(host) is not None
     assert isinstance(hosts._JEV_ROUTE, jev.GatewayJev)
@@ -366,7 +366,9 @@ def test_the_consent_question_is_asked_once_and_remembered(
     monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
     monkeypatch.setattr(jev, "_key_from_credential_manager", lambda: "sk-test")
     asked: list[int] = []
-    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a: asked.append(1) or answer)
+    monkeypatch.setattr(
+        ui, "ask_command_understanding", lambda *_a, **_k: asked.append(1) or answer
+    )
     host, _registry, _spoken = _host()
     first = hosts._assist_for(host)
     second = hosts._assist_for(host)
