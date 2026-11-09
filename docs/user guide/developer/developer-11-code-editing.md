@@ -218,9 +218,23 @@ that isn't, because in code `count` and `Count` are different things.
 
 QUILL knows a file is code from its extension, for any language it can
 colour (Python, JavaScript, C, Go, Rust, PowerShell, HTML, JSON and hundreds
-more). Text, Markdown and Word files keep word prediction. The list can only
-see this file so far, and it doesn't yet know which names are in scope where
-you are; names from the rest of your project come next.
+more). Text, Markdown and Word files keep word prediction. When this file's names leave room in the list, it fills up with names from
+the rest of your project. The project is the nearest folder above the file
+that holds a `.git` folder or a project file such as `pyproject.toml` or
+`package.json`, or else the file's own folder. Names from files this file
+imports come first, then names some file defines as a function or class, then
+the rest.
+
+QUILL reads the project in the background the first time you press `Ctrl+.`
+in it, so that first list has only this file's names, and the next has the
+project's too. It skips folders like `node_modules`, `.venv`, `build` and
+`.git`, reads only code files, and stops after 5,000 files, so opening a file
+in a very large folder never slows you down. It reads the project again in
+the background if it's more than five minutes old. Nothing leaves your
+computer.
+
+The list doesn't yet know which names are in scope where you are; that needs
+a parser or a language server, which come later.
 
 ## Shell integration, in QUILL
 

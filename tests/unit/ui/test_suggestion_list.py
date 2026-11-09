@@ -158,3 +158,46 @@ def test_in_a_code_file_the_list_is_the_files_names_with_kinds(_quiet) -> None:
     assert _quiet[-1] == "count_words, function"
     host._handle_intellisense_key_down(_key(_WX.WXK_RETURN))
     assert host.editor.text.endswith("\ncount_words")
+
+
+def test_project_names_fill_the_list_after_a_background_walk(tmp_path, monkeypatch, _quiet) -> None:
+    from quill.ui import suggestion_list
+
+    monkeypatch.setattr(suggestion_list, "_PROJECT_INDEXES", {})
+    monkeypatch.setattr(suggestion_list, "_PROJECT_BUILDS", set())
+    (tmp_path / ".git").mkdir()
+    (tmp_path / "shapes.py").write_text("def rectangle_area(r):\n    return r\n", encoding="utf-8")
+    jobs: list = []
+
+    class _ProjectHost(_Host):
+        def _suggest_in_background(self, work, done) -> bool:
+            jobs.append((work, done))
+            return True
+
+    text = "from shapes import rectangle_area\nrect"
+    host = _ProjectHost(text, len(text))
+    host.document = SimpleNamespace(path=str(tmp_path / "main.py"))
+    host._show_intellisense_popup(manual=True)
+    assert len(jobs) == 1, "the first press starts the walk, off the UI thread"
+    work, done = jobs.pop()
+    done(work())
+    host._hide_intellisense_popup()
+    text = "x = 1\nrect"
+    host.editor = _Editor(text, len(text))
+    assert host._show_intellisense_popup(manual=True)
+    assert _quiet[-1] == "1 suggestion. rectangle_area, function"
+    assert jobs == [], "a fresh index is reused, not rebuilt"
+
+
+def test_no_background_runner_means_no_project_walk(tmp_path, monkeypatch) -> None:
+    from quill.ui import suggestion_list
+    from quill.ui.suggestion_list import SuggestionListMixin
+
+    monkeypatch.setattr(suggestion_list, "_PROJECT_INDEXES", {})
+    monkeypatch.setattr(suggestion_list, "_PROJECT_BUILDS", set())
+    host = _Host("rect", 4)
+    host.document = SimpleNamespace(path=str(tmp_path / "main.py"))
+    assert SuggestionListMixin._suggest_in_background(host, lambda: None, lambda _r: None) is False
+    host._suggest_in_background = lambda work, done: False  # type: ignore[method-assign]
+    host._show_intellisense_popup(manual=True)
+    assert suggestion_list._PROJECT_BUILDS == set()

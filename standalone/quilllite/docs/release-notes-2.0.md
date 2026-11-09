@@ -3,7 +3,8 @@
 ## Word Prediction knows your code
 
 In a code file, the list offers the file's own names with their kinds, such as
-"count_words, function", instead of dictionary words.
+"count_words, function", instead of dictionary words, and then names from
+the rest of the project.
 
 ## Word Prediction
 

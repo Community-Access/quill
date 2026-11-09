@@ -10,6 +10,16 @@
 - These checks say nothing but the new count, such as "2 problems", and only
   when the count has changed. QUILL Lite has the same pane and the same box.
 
+### Word Prediction knows your project (2026-11-08)
+
+- When the file's own names leave room, Ctrl+. fills the list with names from
+  the rest of the project: the folder holding `.git` or a project file, or
+  the file's own folder. Names from files this one imports come first.
+- The project is read in the background the first time you ask, and again
+  when it's more than five minutes old, skipping `node_modules`, `.venv`,
+  `build` and the like, and stopping at 5,000 files. Nothing is sent
+  anywhere. QUILL Lite does the same.
+
 ### Word Prediction knows your code (2026-11-08)
 
 - In a code file, Ctrl+. offers the file's own names that start with what

@@ -8,6 +8,11 @@
   pause box (off by default) checks it when you stop typing. Only a changed
   count is said. QUILL's pane, shared.
 
+### Word Prediction knows your project (2026-11-08)
+
+- After the file's own names, Word Prediction adds names from the other code
+  files in the project, read in the background. QUILL's code, shared.
+
 ### Word Prediction knows your code (2026-11-08)
 
 - In a code file, Word Prediction offers the file's own names, nearest first,

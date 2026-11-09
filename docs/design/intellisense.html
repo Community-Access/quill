@@ -728,6 +728,18 @@ re-checks quietly after a save and, with its Check after a pause box
 (<code>problems_check_after_pause</code>, off by default, both editors),
 after 1.5 s of stillness; only a changed count is said. All open files
 is the second half, still to do.</li>
+<li>2026-11-08: Phase 3, layer 2.
+<code>quill/core/project_names.py</code> indexes the project (nearest
+folder with <code>.git</code>, <code>pyproject.toml</code>,
+<code>package.json</code>, <code>Cargo.toml</code>, <code>go.mod</code>,
+<code>.sln</code> or <code>composer.json</code>, else the document’s
+folder) on the task manager in both editors, with one index per root
+shared by every window. Caps: 5,000 files, 1 MB a file, 40 MB in all;
+dependency, build and hidden folders skipped. Ranking after this file’s
+names: same case, then names from imported files, then defined names. On
+this machine the walk of <code>quill/core</code> (1,773 files) took
+about 25 s, almost all of it in <code>open()</code> (antivirus); that is
+the case for ripgrep in the layer 4 phase.</li>
 </ul>
 <h2 id="remaining-tasks">Remaining tasks</h2>
 <ul class="task-list">
@@ -752,7 +764,6 @@ pure-Python walk. Ask Jeff before the first download (parent session,
 <li><label><input type="checkbox" />Choose a key for parameter hints:
 Ctrl+Shift+. is taken in both editors (measured
 2026-11-08).</label></li>
-<li><label><input type="checkbox" />Phase 3: layer 2.</label></li>
 <li><label><input type="checkbox" />Measure the tree-sitter grammar size
 for the languages we care about, before phase 4.</label></li>
 <li><label><input type="checkbox" />Screen-reader checks with JAWS and

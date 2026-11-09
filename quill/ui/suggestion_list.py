@@ -29,6 +29,9 @@ own navigation), Escape, Enter and Tab still work there, so it is never a trap.
 
 from __future__ import annotations
 
+import time
+from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from quill.core.code_names import code_language_for
@@ -41,12 +44,28 @@ from quill.core.intellisense import (
     spoken_suggestion,
     suggestions_status,
 )
+from quill.core.project_names import (
+    ProjectNameIndex,
+    build_project_index,
+    imported_modules,
+    project_root_for,
+)
 from quill.ui.dpi import dip_size
 
 __all__ = ["SuggestionListMixin", "SuggestionPopup", "suggestion_status"]
 
 #: How many suggestions the list holds.
 SUGGESTION_LIMIT = 8
+
+#: How old a project index may be before the next Ctrl+. rebuilds it in the
+#: background (the old one answers meanwhile).
+PROJECT_INDEX_MAX_AGE = 300.0
+
+#: One index per project folder, shared by every window in the process, with
+#: the time it was built. Read and written on the UI thread only: the walk
+#: runs in the background and hands its result back through the task manager.
+_PROJECT_INDEXES: dict[Path, tuple[ProjectNameIndex, float]] = {}
+_PROJECT_BUILDS: set[Path] = set()
 
 
 def suggestion_status(suggestions: list[IntellisenseSuggestion]) -> str:
@@ -204,10 +223,15 @@ class SuggestionListMixin:
         cursor = self._suggest_caret()
         alias = code_language_for(self._suggest_path())
         if alias is not None:
-            # A code file: its own names, with their kinds (layer 1).
+            # A code file: its own names, with their kinds (layer 1), then
+            # the rest of the project's (layer 2) while there is room.
             context, suggestions = build_code_suggestions(
                 text, cursor, alias, limit=SUGGESTION_LIMIT
             )
+            if context is not None and len(suggestions) < SUGGESTION_LIMIT:
+                suggestions = suggestions + self._project_suggestions(
+                    text, context.fragment, {item.label for item in suggestions}
+                )
         else:
             dictionary = self._suggest_dictionary() | collect_document_words(text)
             context, suggestions = build_intellisense_suggestions(
@@ -311,7 +335,60 @@ class SuggestionListMixin:
             return True
         return False
 
+    # -- layer 2: the rest of the project ------------------------------------ #
+
+    def _project_suggestions(
+        self, text: str, fragment: str, already: set[str]
+    ) -> list[IntellisenseSuggestion]:
+        path = self._suggest_path()
+        root = project_root_for(path)
+        if root is None:
+            return []
+        entry = _PROJECT_INDEXES.get(root)
+        if entry is None or time.monotonic() - entry[1] > PROJECT_INDEX_MAX_AGE:
+            self._start_project_index(root)
+        if entry is None:
+            # The first press in a project starts the walk; the next has it.
+            return []
+        names = entry[0].complete(
+            fragment,
+            exclude=already,
+            imports=imported_modules(text),
+            own_stem=Path(path).stem if path else "",
+            limit=SUGGESTION_LIMIT - len(already),
+        )
+        return [
+            IntellisenseSuggestion(
+                label=item.name,
+                inserted_text=item.name,
+                caret_offset=len(item.name),
+                kind=item.kind,
+            )
+            for item in names
+        ]
+
+    def _start_project_index(self, root: Path) -> None:
+        if root in _PROJECT_BUILDS:
+            return
+        _PROJECT_BUILDS.add(root)
+
+        def done(index: ProjectNameIndex | None) -> None:
+            _PROJECT_BUILDS.discard(root)
+            if index is not None:
+                _PROJECT_INDEXES[root] = (index, time.monotonic())
+
+        if not self._suggest_in_background(lambda: build_project_index(root), done):
+            _PROJECT_BUILDS.discard(root)
+
     # -- hooks each editor supplies ------------------------------------------ #
+
+    def _suggest_in_background(self, work: Callable[[], Any], done: Callable[[Any], None]) -> bool:
+        """Run *work* off the UI thread and hand its result to *done* on it.
+
+        False when this editor has no background runner, and then the project
+        layer is simply absent: it never walks a disk on the UI thread.
+        """
+        return False
 
     def _suggest_wx(self) -> Any:
         import wx
