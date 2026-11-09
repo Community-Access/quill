@@ -17,6 +17,18 @@
 - Turning the mode on or off says one sentence, and nothing else in it speaks.
 - The Copilot and free AI sign-in codes now say "dash" as a word.
 
+### Word Prediction knows your project (2026-11-08)
+
+- After the file's own names, Word Prediction adds names from the other code
+  files in the project, read in the background. QUILL's code, shared.
+
+### Word Prediction knows your code (2026-11-08)
+
+- In a code file, Word Prediction offers the file's own names, nearest first,
+  each said with its kind: "8 suggestions. count_words, function". QUILL's
+  code, shared.
+
+
 ### Word Prediction (2026-11-08)
 
 - Edit > Word Prediction... (Ctrl+., Alt+E, then W) suggests the word you're

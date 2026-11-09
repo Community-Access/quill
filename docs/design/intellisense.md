@@ -168,6 +168,8 @@ Measured 2026-11-08: no chord near Ctrl+Shift+M is free in both editors, so the 
 
 - 2026-11-08: Problems pane P1 in both editors (PR #1798): docked, F6, Show and Source filters, Go To with a re-check after edits, the count sentence; no chord (rule 9).
 - 2026-11-08: Phase 1. The suggestion list moved into `quill/ui/suggestion_list.py`; QUILL's `main_frame_intellisense.py` is its adapter and QUILL Lite's is `quill/apps/lite_window_word_prediction.py` (Edit > Word Prediction..., Ctrl+.). The key works in every QUILL profile; "as you type" stays off by default and still follows the profile.
+- 2026-11-08: Phase 2, layer 1. `quill/core/code_names.py`: in a code file (any extension Pygments knows, prose excluded) the list offers the file's own names nearest first, with kinds. `str.find` over a lower-cased copy finds the names, a definition-word check at each occurrence gives function or class, and Pygments reads only 2,500 characters either side of the caret for the other kinds. Lexing the whole file was measured at about 1.5 s per 600 KB, so it is never done. Under 100 ms on 1 MB of QUILL's own code, best of five, in the perf test; one-letter fragments look 100,000 characters either side.
+- 2026-11-08: Phase 3, layer 2. `quill/core/project_names.py` indexes the project (nearest folder with `.git`, `pyproject.toml`, `package.json`, `Cargo.toml`, `go.mod`, `.sln` or `composer.json`, else the document's folder) on the task manager in both editors, with one index per root shared by every window. Caps: 5,000 files, 1 MB a file, 40 MB in all; dependency, build and hidden folders skipped. Ranking after this file's names: same case, then names from imported files, then defined names. On this machine the walk of `quill/core` (1,773 files) took about 25 s, almost all of it in `open()` (antivirus); that is the case for ripgrep in the layer 4 phase.
 
 ## Remaining tasks
 
@@ -177,7 +179,5 @@ Measured 2026-11-08: no chord near Ctrl+Shift+M is free in both editors, so the 
 - [ ] Measure Node plus the servers in the shared runtime.
 - [ ] Layer 4 phase: bundle ripgrep (`rg.exe`, about 5 MB) beside Node in the shared runtime, pinned and SHA-256 checked like Pandoc. Read its licence (MIT or Unlicense) from the release first, record it in THIRD-PARTY-NOTICES and the component inventory, and add a network-audit note that it is local only. Layer 2's project index uses it when present and falls back to the pure-Python walk. Ask Jeff before the first download (parent session, 2026-11-08, with Jeff's go-ahead).
 - [ ] Choose a key for parameter hints: Ctrl+Shift+. is taken in both editors (measured 2026-11-08).
-- [ ] Phase 2: layer 1.
-- [ ] Phase 3: layer 2.
 - [ ] Measure the tree-sitter grammar size for the languages we care about, before phase 4.
 - [ ] Screen-reader checks with JAWS and NVDA for each phase, added to `docs/qa/screen-reader-checks-2026-10.md`.

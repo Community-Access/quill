@@ -582,6 +582,12 @@ your document, plus Markdown and HTML tags where they fit. It's QUILL's list
 on QUILL's key. QUILL can also open it on its own as you type; QUILL Lite
 only opens it when you ask.
 
+In a code file, such as a `.py`, `.js` or `.html` file, the list offers the
+file's own names instead of dictionary words, nearest first, and says what
+kind each one is: "8 suggestions. count_words, function". When there's room,
+it adds names from the other code files in the same project folder, which
+QUILL Lite reads in the background the first time you ask.
+
 ## Undo, and getting text back
 
 | Key | What it does |

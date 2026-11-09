@@ -7776,7 +7776,17 @@ only Toggle Word Prediction As You Type
 &gt; Word Prediction… (<code>cmd_word_prediction</code>, Ctrl+., rule 2)
 is <code>quill/apps/lite_window_word_prediction.py</code>; QUILL’s
 adapter is <code>quill/ui/main_frame_intellisense.py</code>. Plan of
-record: <code>docs/design/intellisense.md</code>.</li>
+record: <code>docs/design/intellisense.md</code>. Layer 1 (2026-11-08):
+in a code file (<code>code_language_for</code>: any extension Pygments
+knows, prose excluded) the list offers the file’s own names nearest
+first via <code>quill/core/code_names.py</code>, each spoken with its
+kind (<code>spoken_suggestion</code>: “count_words, function”; open: “8
+suggestions. count_words, function”); budget 100 ms on 1 MB,
+perf-tested. Layer 2 (2026-11-08): when room remains, names from the
+rest of the project (<code>quill/core/project_names.py</code>: nearest
+marked folder, background walk on the task manager, capped at 5,000
+files, 1 MB a file and 40 MB in all; imported files first, then defined
+names), rebuilt in the background after five minutes; no network.</li>
 <li>Surface-aware formatting shortcuts (Markdown/HTML only):
 <code>Ctrl+B</code> bold, <code>Ctrl+I</code> italic, and heading levels
 <code>Ctrl+Alt+1</code> through <code>Ctrl+Alt+6</code>.</li>

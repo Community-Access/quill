@@ -12,6 +12,13 @@ as QUILL's, less the rows only QUILL has. **File > Clone Repository...**
 ones included, without writing your token anywhere, and then offers to open a
 file from it.
 
+## Word Prediction knows your code
+
+In a code file, the list offers the file's own names with their kinds, such as
+"count_words, function", instead of dictionary words, and then names from
+the rest of the project.
+
+
 ## Word Prediction
 
 Press **Ctrl+.** halfway through a word and QUILL Lite offers a short list of

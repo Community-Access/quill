@@ -15,6 +15,15 @@ computer, private ones included, without writing your token anywhere. And
 what it does. GitHub no longer needs the Developer profile, so the workbench is
 there in most profiles, as it always has been in QUILL Lite.
 
+## Word Prediction knows your code
+
+In a code file, **Ctrl+.** now offers the file's own names that start with
+what you've typed, nearest first, and says what each one is: "count_words,
+function", "while, keyword". It's ready within a tenth of a second even on a
+large file, and when there's room it adds names from the rest of your
+project, read in the background. QUILL Lite has it too.
+
+
 ## Word Prediction in every profile
 
 **Ctrl+.** now opens Word Prediction in every profile, including the two that

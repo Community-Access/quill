@@ -53,6 +53,9 @@ class IntellisensePopupMixin(SuggestionListMixin):
     def _suggest_dictionary(self) -> set[str]:
         return set(self._spell_dictionary())
 
+    def _suggest_path(self) -> Any:
+        return getattr(getattr(self, "document", None), "path", None)
+
     def _suggest_as_you_type(self) -> bool:
         if not getattr(self.settings, "intellisense_as_you_type", False):
             return False
@@ -60,6 +63,18 @@ class IntellisensePopupMixin(SuggestionListMixin):
         # the one you ask for with Ctrl+. is in every profile (decision 1).
         feature_enabled = getattr(self, "_feature_enabled", None)
         return not callable(feature_enabled) or bool(feature_enabled("core.intellisense"))
+
+    def _suggest_in_background(self, work: Any, done: Any) -> bool:
+        manager = getattr(self, "_task_manager", None)
+        if manager is None:
+            return False
+        manager.submit(
+            name="project-name-index",
+            func=lambda **_kwargs: work(),
+            on_success=lambda _op, result: done(result),
+            on_failure=lambda _op, _error: done(None),
+        )
+        return True
 
     def _suggest_say(self, message: str) -> None:
         self._set_status(message)

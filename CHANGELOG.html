@@ -287,6 +287,30 @@ could not name was left as it was.</li>
 <li>Local Git and Clone now find Git when Windows reports it as
 git.EXE.</li>
 </ul>
+<h3 id="word-prediction-knows-your-project-2026-11-08">Word Prediction
+knows your project (2026-11-08)</h3>
+<ul>
+<li>When the file’s own names leave room, Ctrl+. fills the list with
+names from the rest of the project: the folder holding <code>.git</code>
+or a project file, or the file’s own folder. Names from files this one
+imports come first.</li>
+<li>The project is read in the background the first time you ask, and
+again when it’s more than five minutes old, skipping
+<code>node_modules</code>, <code>.venv</code>, <code>build</code> and
+the like, and stopping at 5,000 files. Nothing is sent anywhere. QUILL
+Lite does the same.</li>
+</ul>
+<h3 id="word-prediction-knows-your-code-2026-11-08">Word Prediction
+knows your code (2026-11-08)</h3>
+<ul>
+<li>In a code file, Ctrl+. offers the file’s own names that start with
+what you’ve typed, nearest first, instead of dictionary words. Each is
+said with its kind: “8 suggestions. count_words, function”.</li>
+<li>Any language QUILL can colour counts as code, from its extension.
+Text, Markdown and Word files keep word prediction.</li>
+<li>The list is ready within a tenth of a second on a 1 MB file. QUILL
+Lite has the same list.</li>
+</ul>
 <h3
 id="word-prediction-in-every-profile-and-in-quill-lite-2026-11-08">Word
 Prediction in every profile, and in QUILL Lite (2026-11-08)</h3>
