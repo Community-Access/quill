@@ -138,3 +138,16 @@ def question_prompt(video: Path, part: Section, times: list[float], transcript: 
     if transcript:
         lines += ["", "Transcript of the same stretch, with times:", transcript]
     return "\n".join(lines)
+
+
+def sheet_path(folder: Path, video: Path) -> Path:
+    """Where *video*'s contact sheet goes: one file per video, never shared.
+
+    The name carries a short fingerprint of the full path, so two videos called
+    ``Demo.mp4`` in different folders (or ``Demo.mp4`` and ``Demo.mov``) do not
+    overwrite each other's frames.
+    """
+    import hashlib
+
+    key = str(video.resolve()).casefold().encode("utf-8")
+    return folder / f"{video.stem} - {hashlib.sha1(key).hexdigest()[:8]} - frames.png"

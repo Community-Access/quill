@@ -26,6 +26,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.converter_lifecycle import ConverterLifecycleMixin
 from quill.core.audio.batch_progress import BatchProgress
 from quill.core.audio.convert import (
     BatchResult,
@@ -46,7 +47,7 @@ from quill.ui.about_notices import show_app_about
 _TITLE = "Quill Converter"
 
 
-class ConverterActionsMixin:
+class ConverterActionsMixin(ConverterLifecycleMixin):
     """The Converter's commands. See the module docstring for the contract."""
 
     # -- the recipe on screen ---------------------------------------------------
@@ -218,7 +219,8 @@ class ConverterActionsMixin:
                 result = BatchResult(results=[JobResult(job=jobs[0], ok=False, error=str(error))])
             wx.CallAfter(self._finish_batch, result, total, dest, notes, time.monotonic() - started)
 
-        threading.Thread(target=worker, daemon=True, name="converter-batch").start()
+        self._work_thread = threading.Thread(target=worker, daemon=True, name="converter-batch")
+        self._work_thread.start()
 
     def _finish_batch(
         self, result: BatchResult, total: int, dest: Path, notes: str, seconds: float
@@ -260,11 +262,6 @@ class ConverterActionsMixin:
                 lines.append(f"FAILED: {item.job.source}")
                 lines.append(f"  Reason: {item.error}")
         return "\n".join(lines)
-
-    def stop_work(self) -> None:
-        if self._cancel is not None:
-            self._cancel.cancel()
-            self._announce("Stopping.", force=True)
 
     def _begin_work(self, label: str, cancel: CancelToken) -> None:
         self._busy = True
@@ -311,101 +308,6 @@ class ConverterActionsMixin:
         self._set_status(message)
         self._announce(message, force=True)
 
-    # -- preview --------------------------------------------------------------
-
-    def preview(self, *, original: bool) -> None:
-        """Play fifteen seconds of the highlighted (or first) file; again stops."""
-        if self._previewing:
-            self.stop_preview(announce=True)
-            return
-        source = self._preview_source()
-        if source is None:
-            self._announce("Add a file to preview first.")
-            return
-        ffmpeg = self._ffmpeg()
-        if ffmpeg is None:
-            return
-        from quill.core.audio.assemble import render_preview
-
-        spec = self.current_spec()
-        if spec.copy_video:
-            spec = replace(spec, copy_video=False, filters=())
-        what = "the original" if original else "with your settings"
-        self._previewing = True
-        self._announce(f"Preparing a preview of {source.name}, {what}.")
-        out_wav = Path(tempfile.gettempdir()) / f"quill-converter-preview-{os.getpid()}.wav"
-
-        def worker() -> None:
-            try:
-                render_preview(ffmpeg, source, spec, out_wav, original=original)
-                wx.CallAfter(self._play_preview, out_wav, what)
-            except Exception as error:  # noqa: BLE001 - said out loud
-                wx.CallAfter(self._preview_failed, str(error))
-
-        threading.Thread(target=worker, daemon=True, name="converter-preview").start()
-
-    def _preview_source(self) -> Path | None:
-        from quill.core.audio.assemble import join_inputs
-
-        index = self._list.GetSelection()
-        entries = self._entries
-        if index != wx.NOT_FOUND and 0 <= index < len(entries):
-            entries = [entries[index]]
-        files = join_inputs(entries, recurse=self._recurse.GetValue())
-        return files[0] if files else None
-
-    def _play_preview(self, wav: Path, what: str) -> None:
-        if not self._previewing:
-            return
-        try:
-            import winsound
-
-            winsound.PlaySound(str(wav), winsound.SND_FILENAME | winsound.SND_ASYNC)
-        except Exception as error:  # noqa: BLE001 - no sound device, or not Windows
-            self._preview_failed(f"Could not play the preview: {error}")
-            return
-        self._announce(f"Playing 15 seconds {what}. Press the same key again to stop.")
-        wx.CallLater(16000, self._preview_ended)
-
-    def _preview_ended(self) -> None:
-        self._previewing = False
-
-    def _preview_failed(self, reason: str) -> None:
-        self._previewing = False
-        self._announce(f"Preview failed. {reason}", force=True)
-
-    def stop_preview(self, *, announce: bool = False) -> None:
-        self._previewing = False
-        try:
-            import winsound
-
-            winsound.PlaySound(None, 0)
-        except Exception:  # noqa: BLE001 - nothing to stop
-            pass
-        if announce:
-            self._announce("Preview stopped.")
-
-    # -- information ----------------------------------------------------------
-
-    def show_properties(self) -> None:
-        """File Properties (Alt+Enter) for the highlighted file."""
-        source = self._preview_source()
-        if source is None:
-            self._announce("Highlight a file in the queue first.")
-            return
-        from quill.core.audio.media_probe import describe, probe
-        from quill.core.volume_info import describe_volume
-        from quill.ui.converter_dialogs import show_text
-
-        wx.BeginBusyCursor()
-        try:
-            # The drive comes last: its name, capacity, used and free space,
-            # which is what to check before a long conversion (todo item 46).
-            text = "\n".join(describe(probe(source)) + describe_volume(source))
-        finally:
-            wx.EndBusyCursor()
-        show_text(self, "File Properties", text)
-
     def show_report(self) -> None:
         """The last conversion's full report (Ctrl+R)."""
         from quill.ui.converter_dialogs import show_text
@@ -432,48 +334,6 @@ class ConverterActionsMixin:
             os.startfile(str(folder))  # type: ignore[attr-defined]  # Windows only
         except (AttributeError, OSError) as error:
             self._announce(f"Could not open the folder: {error}")
-
-    # -- background task (for the shared URL-import orchestration) ---------------
-
-    def _run_background_task(
-        self,
-        label: str,
-        work: Any,
-        on_success: Any,
-        *,
-        notify_on_success: bool = False,
-        notify_on_error: bool = True,
-        notification_category: str = "",
-        protect_on_close: bool = False,
-    ) -> None:
-        """Run ``work(progress)`` off the UI thread; deliver on the UI thread."""
-        del notify_on_success, notify_on_error, notification_category, protect_on_close
-        self._set_status(f"{label} started")
-
-        def progress(message: str, current: int, total: int) -> None:
-            wx.CallAfter(self._note_progress, message or label, current, total)
-
-        def worker() -> None:
-            try:
-                result = work(progress)
-            except Exception as error:  # noqa: BLE001 - surfaced on the UI thread
-                wx.CallAfter(self._finish_task, label, error, None, on_success)
-                return
-            wx.CallAfter(self._finish_task, label, None, result, on_success)
-
-        threading.Thread(target=worker, daemon=True).start()
-
-    def _finish_task(self, label: str, error: Any, result: Any, on_success: Any) -> None:
-        if error is not None:
-            self._set_status(f"{label} failed")
-            self._show_message_box(f"{label} failed.\n\n{error}", label, wx.ICON_ERROR | wx.OK)
-            self._refresh_statusbar()
-            return
-        self._set_status(f"{label} finished")
-        try:
-            on_success(result)
-        finally:
-            self._refresh_statusbar()
 
     def show_context_help(self) -> None:
         from quill.ui import app_context_help
@@ -502,43 +362,6 @@ class ConverterActionsMixin:
             app="converter",
             app_name=_TITLE,
         )
-
-    # -- single instance: a second launch hands over its files ---------------------
-
-    def _start_ipc_poll(self) -> None:
-        """Poll the hand-over queue, so the Explorer verb on ten selected files --
-        ten launches -- ends as ten rows in this one window, not nine lost."""
-        self._ipc_timer = wx.Timer(self.frame)
-        self.frame.Bind(wx.EVT_TIMER, self._on_ipc_timer, self._ipc_timer)
-        self._ipc_timer.Start(600)
-        # Stopped as the window closes, so it never fires into a frame that is
-        # gone (qc.md F-12's timer-ownership gate).
-        self.frame.Bind(wx.EVT_CLOSE, self._on_converter_close)
-
-    def _on_converter_close(self, event: Any) -> None:
-        timer = getattr(self, "_ipc_timer", None)
-        if timer is not None:
-            try:
-                timer.Stop()
-            except Exception:  # noqa: BLE001 - a timer already gone is stopped
-                pass
-        event.Skip()
-
-    def _on_ipc_timer(self, _event: object) -> None:
-        from quill.core.ipc import drain_open_requests
-
-        requests = drain_open_requests(slot="converter")
-        if not requests:
-            return
-        paths = [request.path for request in requests if request is not None]
-        if paths:
-            self.add_paths(paths)
-        frame = self.frame
-        if not frame.IsShown():
-            self._restore_from_tray()
-        frame.Iconize(False)
-        frame.Raise()
-        self._list.SetFocus()
 
     def edit_tags(self) -> None:
         """Queue > Edit Tags (Ctrl+T): every tag and the cover of the highlighted file.

@@ -12,6 +12,16 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### Fixes from the November review (2026-11-09)
+
+- **Closing Studio while you are on air asks first** (2026-11-09). A live broadcast now counts as work in progress, so Alt+F4 says the show is still running and asks before it takes you off air. If you do quit, the Live broadcast window goes with it and the microphone is handed back; before, Studio could stay running with no window, and other apps found the microphone still taken.
+- **Broadcast Live cannot start twice** (2026-11-09). While Studio is still connecting, pressing Broadcast Live again says Studio is already going live, instead of starting a second stream that could not be stopped.
+- **A failed go-live no longer freezes Studio** (2026-11-09). When the server refuses the stream, Studio tidies up in the background and says why, rather than locking up for up to 17 seconds.
+- **The saved copy of a long show keeps recording** (2026-11-09). The copy saved during a broadcast could stall after a long time on air; it no longer does.
+- **Make a Video asks before replacing a video** (2026-11-09). If a video of that name is already there, Studio asks whether to replace it. No keeps both and saves the new one under another name. A video that fails to finish no longer leaves a broken file behind, and the earlier video is kept.
+- **A failed screenshot or automatic AI look is spoken** (2026-11-09). Before, it only changed the status bar, so you never heard it.
+- **Asking AI about two videos with the same name** (2026-11-09). Each video now gets its own set of frames, so a question about one never shows the AI pictures from the other.
+
 ### AI menu (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.

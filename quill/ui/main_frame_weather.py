@@ -544,7 +544,7 @@ class WeatherMixin:
             def _work(**_kwargs: Any) -> object:
                 try:
                     return nws.active_alerts(loc.latitude, loc.longitude, safe_mode=self._safe_mode)
-                except nws.WeatherError as exc:
+                except Exception as exc:  # noqa: BLE001 - a missed poll, never the end
                     return exc
 
             return _work
@@ -555,8 +555,9 @@ class WeatherMixin:
             def _ok(_op: str, result: object, loc: Any = loc) -> None:
                 self._wx.CallAfter(self._weather_monitor_poll_done, loc, result)
 
+            # A failure still completes the round, or the next tick is never armed.
             self._task_manager.submit(
-                "weather-monitor", _make_work(loc), on_success=_ok, on_failure=None
+                "weather-monitor", _make_work(loc), on_success=_ok, on_failure=_ok
             )
 
     def _weather_monitor_poll_done(self, location: Any, result: object) -> None:

@@ -39,6 +39,9 @@ class StudioPictureVideoMixin:
                 return
         finally:
             dialog.Destroy()
+        plan = self._picture_video_output(plan)
+        if plan is None:
+            return
         self._picture_video_busy = True
         self._announce("Making the video.")
 
@@ -62,6 +65,26 @@ class StudioPictureVideoMixin:
             on_failure=failed,
             ui_lifetime=self._demo_lifetime(),
         )
+
+    def _picture_video_output(self, plan):
+        """Ask before replacing a video already there; No keeps both, Cancel stops."""
+        if not plan.output.exists():
+            return plan
+        from dataclasses import replace
+
+        from quill.core.demo_recording import unique_path
+
+        answer = self._show_message_box(
+            f"{plan.output.name} is already there. Replace it?\n\n"
+            "Choose No to keep both and save the new video under another name.",
+            "Make a video",
+            wx.YES_NO | wx.CANCEL | wx.NO_DEFAULT | wx.ICON_WARNING,
+        )
+        if answer in (wx.YES, wx.ID_YES):
+            return plan
+        if answer in (wx.NO, wx.ID_NO):
+            return replace(plan, output=unique_path(plan.output))
+        return None
 
     def ask_ai_about_video(self, video: str = "") -> None:
         """Roadmap A1: the whole video or a stretch, as one labelled picture, in the
@@ -93,13 +116,14 @@ class StudioPictureVideoMixin:
                 captions_beside,
                 question_prompt,
                 section,
+                sheet_path,
                 transcript_excerpt,
             )
             from quill.platform.windows.video_review import contact_sheet
 
             duration = probe_duration_ms(path) / 1000
             part = section(duration, start, end)
-            sheet = app_data_dir() / "studio-captures" / f"{path.stem} - frames.png"
+            sheet = sheet_path(app_data_dir() / "studio-captures", path)
             times = contact_sheet(ffmpeg, path, part, frames, sheet, cancellation_token)
             transcript = ""
             captions = captions_beside(path) if use_transcript else None
