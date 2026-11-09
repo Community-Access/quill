@@ -276,9 +276,9 @@ chapters;</li>
 link;</li>
 <li>send recordings to your own Auphonic account for post-production,
 and get the results back, without opening Auphonic’s website;</li>
-<li>ask an AI of your choosing whether your files will play on a phone,
-a car stereo or a smart speaker, and what to convert them to if they
-will not.</li>
+<li>ask an AI (artificial intelligence) of your choosing whether your
+files will play on a phone, a car stereo or a smart speaker, and what to
+convert them to if they will not.</li>
 </ul>
 <h3 id="how-this-guide-is-laid-out">How this guide is laid out</h3>
 <p>Each chapter starts with what it covers and ends with a short summary
@@ -336,9 +336,10 @@ nothing to the computer it runs on.</li>
 <p>Nothing downloads the first time you use a feature. Both downloads
 already contain everything the app needs: FFmpeg and ffprobe (which do
 the converting and reading), libmpv (the mpv playback engine, the
-Chapter Workbench’s player), yt-dlp (for Convert from URL), mutagen (for
-carrying cover art and chapters across) and, in builds that include it,
-the OptiLab Core broadcast-polish adapter.</p>
+Chapter Workbench’s player), yt-dlp (for Convert from URL, which takes a
+web address), mutagen (for carrying cover art and chapters across) and,
+in builds that include it, the OptiLab Core broadcast-polish
+adapter.</p>
 <h4 id="the-file-explorer-right-click-menu">The File Explorer
 right-click menu</h4>
 <p>The installer offers three choices, each a real Windows checkbox that
@@ -645,11 +646,11 @@ is.</li>
 background hiss, softens harsh s sounds, and sets a comfortable
 listening level.</li>
 <li><strong>Podcast ready</strong> – cleans the voice, evens out loud
-and quiet speakers, and meets the podcast loudness standard of -16
-LUFS.</li>
+and quiet speakers, and meets the podcast loudness standard of -16 LUFS
+(loudness units relative to full scale).</li>
 <li><strong>Audiobook, ACX ready</strong> – rumble filter, gentle noise
-reduction and the ACX loudness window of -20 LUFS with peaks held under
--3 dB, as Audible requires.</li>
+reduction and the ACX (Audiobook Creation Exchange) loudness window of
+-20 LUFS with peaks held under -3 dB, as Audible requires.</li>
 <li><strong>Clearer voice for listening</strong> – lifts the frequencies
 that carry consonants, trims muddiness, and evens out the level; easier
 on the ears and on hearing aids.</li>
@@ -715,7 +716,8 @@ is on.</li>
 <ul>
 <li><strong>Loudness target</strong> – no normalization, Audiobook / ACX
 (-20 LUFS), Podcast / streaming (-16 LUFS), Music streaming (-14 LUFS),
-or Broadcast TV and radio, EBU R128 (-23 LUFS).</li>
+or Broadcast TV and radio, EBU (European Broadcasting Union) R128 (-23
+LUFS).</li>
 <li><strong>Gain in decibels</strong> – a flat volume change from -30 to
 +30. 0 changes nothing.</li>
 <li><strong>Playback speed</strong> – from 0.5 to 2.0, without changing
@@ -837,7 +839,7 @@ playhead:</p>
 to the playhead, and merge chapters;</li>
 <li>find chapters at silences;</li>
 <li>import and export chapter lists: Audacity labels, CUE, timestamps,
-Podcasting 2.0 JSON and CSV;</li>
+Podcasting 2.0 JSON and CSV (comma-separated values);</li>
 <li>edit the book’s details – book title, author, narrator, genre and
 year – and, with <strong>All tags…</strong>, every other tag and the
 cover art in the Tag Editor (see <a href="#editing-tags">Editing
@@ -961,7 +963,8 @@ artist, track and disc (each a number of a total), genre and year.</li>
 transcript, grouping, language, beats per minute, and a Part of a
 compilation check box.</li>
 <li><strong>Publishing</strong> – composer, conductor, publisher,
-copyright, encoded by and ISRC.</li>
+copyright, encoded by and ISRC (International Standard Recording
+Code).</li>
 <li><strong>Sort order</strong> – sort title, sort artist, sort album
 and sort album artist.</li>
 <li><strong>Cover art</strong> – what the current cover is, with
@@ -1471,10 +1474,10 @@ a long batch, press Ctrl+Alt+Shift+A, then Alt+C. You hear “Signed in:
 an Auphonic token is stored on this computer. Account: jeff. Plan: A
 recurring plan: 9 hours each month, next added on 2026-11-01.” and the
 details box holds the full breakdown.</p>
-<p><strong>Limits.</strong> Sign-in is by API token only; signing in
-through Auphonic’s website in a browser is not offered. Quill Converter
-shows the credits Auphonic reports and never estimates what a production
-will cost.</p>
+<p><strong>Limits.</strong> Sign-in is by API (application programming
+interface) token only; signing in through Auphonic’s website in a
+browser is not offered. Quill Converter shows the credits Auphonic
+reports and never estimates what a production will cost.</p>
 <h3 id="privacy">Privacy</h3>
 <p>Nothing is sent to Auphonic by opening Quill Converter, adding files,
 opening the Process with Auphonic window or choosing a preset, nor by
@@ -1706,9 +1709,9 @@ graphics chip has no video encoder, H.264 runs at about the speed of
 playback and H.265 slower; WebM (VP9) is slow everywhere. MP4 H.264 is
 the fastest choice. The status bar and tray tooltip say how far the file
 has got and about how long is left.</li>
-<li><strong>A file failed as copy-protected.</strong> Files with DRM,
-such as purchased Audible books or protected iTunes purchases, cannot be
-converted.</li>
+<li><strong>A file failed as copy-protected.</strong> Files with DRM
+(digital rights management), such as purchased Audible books or
+protected iTunes purchases, cannot be converted.</li>
 <li><strong>Preview is silent.</strong> Preview plays through the
 Windows default sound device. Check that it is the one you are listening
 on.</li>
@@ -1737,7 +1740,7 @@ the AI menu are refused.</p>
 <code>converter-ai.json</code>, in the same data folder.</p>
 <h3 id="your-version-and-updates">Your version and updates</h3>
 <p><strong>Help &gt; About Quill Converter</strong> (Alt+F1) shows your
-version with a build number, such as 1.0.0 (build 1). The build number
+version with a build number, such as 1.0.0 (build 2). The build number
 tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build.</p>
 <p><strong>Help &gt; Check for Updates…</strong> (Ctrl+Alt+U) asks

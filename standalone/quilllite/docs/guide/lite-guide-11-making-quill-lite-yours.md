@@ -338,7 +338,7 @@ spell check, the dictionary and thesaurus, Matches, Go Back and Go Forward, the
 Command Palette, Describe Character, text size, dictation, WordPress and
 Forms.
 
-**Off:** autocorrect, timestamped backups, Go To Anything, AI help and coding.
+**Off:** autocorrect, timestamped backups, Go To Anything, AI (artificial intelligence) help and coding.
 The first four are not switched off because they are poor. They are off
 because you should choose them yourself:
 

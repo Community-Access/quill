@@ -254,7 +254,7 @@ accident. Chapter 9 covers this.
 When QUILL or QUILL Lite starts in Safe Mode, the GitHub windows stay closed.
 Opening GitHub Items says "GitHub item browsing is disabled in Safe Mode.
 Restart QUILL normally to browse a repository." The repository commands on
-QUILL's Tools menu and the GitHub CLI commands are switched off the same way.
+QUILL's Tools menu and the GitHub CLI (command-line interface) commands are switched off the same way.
 Start normally to use them again.
 
 ## A two-minute tour
@@ -269,7 +269,7 @@ This tour reads a public repository, so you can do it before you sign in.
    Enter. You hear the repository's name, how many items loaded, and a short
    list of the keys that work here. Focus moves to the list, on the first row.
 4. Arrow down the list. Each row is an issue or a pull request: its number,
-   whether it is an issue or a PR, its state and its title.
+   whether it is an issue or a PR (pull request), its state and its title.
 5. Press Tab to reach **Details**. Read it like any text field. It holds the
    whole issue, then its comments as they load.
 6. Press `Alt+N`. You move to the first comment and hear "Comment 1 of" and

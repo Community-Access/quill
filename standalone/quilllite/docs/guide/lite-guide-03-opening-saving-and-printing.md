@@ -697,7 +697,7 @@ does. Every byte of the file is read, and a save puts every byte back.
 
 QUILL Lite keeps an eye on every file you have open. When something else
 writes to one, such as Word saving a document, a sync tool bringing down a
-newer copy, or an AI assistant rewriting a plan while you read it, QUILL Lite
+newer copy, or an AI (artificial intelligence) assistant rewriting a plan while you read it, QUILL Lite
 notices within a second or so.
 
 If you have not changed the document yourself, and you have turned on
@@ -776,7 +776,7 @@ so.
 This is how the letters are stored. You can choose:
 
 - UTF-8, for anything new.
-- UTF-8 with BOM, for the Windows tools that expect it.
+- UTF-8 with BOM (byte order mark), for the Windows tools that expect it.
 - UTF-16.
 - Windows-1252, which many older `.txt` files use.
 
@@ -784,7 +784,7 @@ This is how the letters are stored. You can choose:
 
 You can choose:
 
-- CRLF, which Windows programs write. A new QUILL Lite document starts with
+- CRLF (carriage return and line feed), which Windows programs write. A new QUILL Lite document starts with
   this.
 - LF, which Unix, macOS and most programming tools expect.
 
@@ -1064,7 +1064,7 @@ first, then press it:
   several, QUILL Lite tells you how many it opened.
 - A file path copied as text opens that file, quotes and all. Several paths,
   one per line, open in turn.
-- A web link goes to Open from URL, below.
+- A web link, or URL (web address), goes to Open from URL, below.
 
 If the clipboard holds none of those, you hear "The clipboard holds no file,
 path or link." **Ctrl+V** still pastes.

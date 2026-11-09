@@ -115,7 +115,7 @@ The search row:
 The filter row:
 
 - **View:** (`Alt+I`) chooses what the list shows.
-- **Show:** (`Alt+S`): Both, Issues or PRs.
+- **Show:** (`Alt+S`): Both, Issues or PRs (pull requests).
 - **State:** (`Alt+T`): Open, Closed or All.
 - **Sort:** (`Alt+O`): by number, title, last update or comment count, either
   way round.
@@ -307,7 +307,7 @@ in your browser instead, and says that QUILL will not attach your GitHub token
 to that request.
 
 QUILL refuses a link that carries a password or a token in it, and says
-"Remove credentials from the URL before opening it." Paste the plain address.
+"Remove credentials from the URL (web address) before opening it." Paste the plain address.
 
 **In QUILL Lite**, a file link opens the file's text as a new untitled
 document, because QUILL Lite cannot save back to GitHub. Save As keeps a copy
@@ -353,7 +353,7 @@ row's repository to GitHub Items and closes Explore.
 GitHub lets each account make a certain number of requests an hour, and fewer
 as a guest. You rarely need to think about it, but when you do, press
 `Ctrl+Shift+L` in GitHub Items or Explore. QUILL reads GitHub's own count and
-says it in a sentence for each allowance, such as "GitHub API: 4,212 of 5,000
+says it in a sentence for each allowance, such as "GitHub API (application programming interface): 4,212 of 5,000
 left, resets at 3:15 PM." Search and code search have allowances of their own,
 and the readout includes those too. **GitHub API Rate Limit**, at the end of
 every context menu, does the same.

@@ -30,7 +30,7 @@ By the end of this guide you will be able to:
 - download the sound of a video, a playlist or a channel from a link;
 - send recordings to your own Auphonic account for post-production, and get
   the results back, without opening Auphonic's website;
-- ask an AI of your choosing whether your files will play on a phone, a car
+- ask an AI (artificial intelligence) of your choosing whether your files will play on a phone, a car
   stereo or a smart speaker, and what to convert them to if they will not.
 
 ### How this guide is laid out
@@ -87,7 +87,7 @@ There are two downloads. Choose one.
 Nothing downloads the first time you use a feature. Both downloads already
 contain everything the app needs: FFmpeg and ffprobe (which do the converting
 and reading), libmpv (the mpv playback engine, the Chapter Workbench's player),
-yt-dlp (for Convert from URL), mutagen (for carrying cover art and chapters
+yt-dlp (for Convert from URL, which takes a web address), mutagen (for carrying cover art and chapters
 across) and, in builds that include it, the OptiLab Core broadcast-polish
 adapter.
 
@@ -378,8 +378,8 @@ a de-esser is to use one.
 - **Clean up speech** -- removes rumble, hum and steady background hiss, softens
   harsh s sounds, and sets a comfortable listening level.
 - **Podcast ready** -- cleans the voice, evens out loud and quiet speakers, and
-  meets the podcast loudness standard of -16 LUFS.
-- **Audiobook, ACX ready** -- rumble filter, gentle noise reduction and the ACX
+  meets the podcast loudness standard of -16 LUFS (loudness units relative to full scale).
+- **Audiobook, ACX ready** -- rumble filter, gentle noise reduction and the ACX (Audiobook Creation Exchange)
   loudness window of -20 LUFS with peaks held under -3 dB, as Audible requires.
 - **Clearer voice for listening** -- lifts the frequencies that carry
   consonants, trims muddiness, and evens out the level; easier on the ears and
@@ -435,7 +435,7 @@ Then:
 
 - **Loudness target** -- no normalization, Audiobook / ACX (-20 LUFS), Podcast /
   streaming (-16 LUFS), Music streaming (-14 LUFS), or Broadcast TV and radio,
-  EBU R128 (-23 LUFS).
+  EBU (European Broadcasting Union) R128 (-23 LUFS).
 - **Gain in decibels** -- a flat volume change from -30 to +30. 0 changes
   nothing.
 - **Playback speed** -- from 0.5 to 2.0, without changing pitch. 1.0 is
@@ -553,7 +553,7 @@ book and work at the playhead:
   playhead, and merge chapters;
 - find chapters at silences;
 - import and export chapter lists: Audacity labels, CUE, timestamps,
-  Podcasting 2.0 JSON and CSV;
+  Podcasting 2.0 JSON and CSV (comma-separated values);
 - edit the book's details -- book title, author, narrator, genre and year --
   and, with **All tags...**, every other tag and the cover art in the Tag
   Editor (see [Editing tags](#editing-tags));
@@ -672,7 +672,7 @@ needs installing. Its 26 fields and the cover art are spread over five pages:
 - **Details** -- original release date, comment, lyrics or transcript,
   grouping, language, beats per minute, and a Part of a compilation check box.
 - **Publishing** -- composer, conductor, publisher, copyright, encoded by and
-  ISRC.
+  ISRC (International Standard Recording Code).
 - **Sort order** -- sort title, sort artist, sort album and sort album artist.
 - **Cover art** -- what the current cover is, with **Load image...** (a JPEG
   or PNG, up to 8 MB), **Save image as...** and **Remove image**.
@@ -1156,7 +1156,7 @@ Ctrl+Alt+Shift+A, then Alt+C. You hear "Signed in: an Auphonic token is stored
 on this computer. Account: jeff. Plan: A recurring plan: 9 hours each month,
 next added on 2026-11-01." and the details box holds the full breakdown.
 
-**Limits.** Sign-in is by API token only; signing in through Auphonic's
+**Limits.** Sign-in is by API (application programming interface) token only; signing in through Auphonic's
 website in a browser is not offered. Quill Converter shows the credits
 Auphonic reports and never estimates what a production will cost.
 
@@ -1378,7 +1378,7 @@ through.
   WebM (VP9) is slow everywhere. MP4 H.264 is the fastest choice. The status
   bar and tray tooltip say how far the file has got and about how long is
   left.
-- **A file failed as copy-protected.** Files with DRM, such as purchased
+- **A file failed as copy-protected.** Files with DRM (digital rights management), such as purchased
   Audible books or protected iTunes purchases, cannot be converted.
 - **Preview is silent.** Preview plays through the Windows default sound device.
   Check that it is the one you are listening on.
@@ -1408,7 +1408,7 @@ folder.
 ### Your version and updates
 
 **Help > About Quill Converter** (Alt+F1) shows your version with a build
-number, such as 1.0.0 (build 1). The build number tells you which build of a
+number, such as 1.0.0 (build 2). The build number tells you which build of a
 version you have: when a fix comes out without a new version number, it is a
 newer build.
 

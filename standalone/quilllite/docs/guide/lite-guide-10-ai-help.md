@@ -1,6 +1,6 @@
 # Chapter 10: AI help
 
-AI help can summarize a passage, tidy your wording, answer a question about
+AI (artificial intelligence) help can summarize a passage, tidy your wording, answer a question about
 your document, translate, and more. It is off when you first install QUILL
 Lite. To use it you do two things: switch it on, and accept the privacy
 agreement. Doing only one of them is not enough. *Switching on AI help*, in
@@ -109,7 +109,7 @@ A few things worth knowing about the choices:
   the list, after **Have a conversation**. Press `F1` on it to hear what it
   does; **Send** runs it like any other choice, and it uses one request. The
   first time you open the pad, a new tool can take a moment to appear. These
-  tools are offered only on QUILL's free service, not with your own API key or
+  tools are offered only on QUILL's free service, not with your own API (application programming interface) key or
   your ChatGPT plan.
 
 ### What comes back, and what you can do with it
@@ -1275,7 +1275,7 @@ disk without Review Changes. A turn that has any on says so in its plan.
 ### Engines
 
 - **My GitHub Copilot** and **Codex** run tasks on your account.
-- **Claude**, on your own Anthropic key, runs through the Claude Agent SDK
+- **Claude**, on your own Anthropic key, runs through the Claude Agent SDK (software development kit)
   with QUILL's tools and none of Claude Code's own unless you turn them on.
 - **Ollama on this computer** is practice mode: "Practice, on this computer.
   Nothing is sent. Slower and less capable." Good for a classroom or for

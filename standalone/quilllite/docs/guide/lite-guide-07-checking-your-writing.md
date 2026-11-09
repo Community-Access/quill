@@ -455,7 +455,7 @@ Where it helps, you also get a list of choices, each with a reason.
 | **Is This the Right Word?** | Ctrl+Alt+Shift+/ | Affect or effect, complement or compliment: a plain yes, or the difference and the right word first |
 | **Use It in a Sentence** | Alt+Shift+= | Three short example sentences in the same sense |
 | **Where It Comes From** | Alt+Shift+, | The word's origin and how its meaning developed |
-| **How to Say It** | Alt+Shift+' | Syllables with the stress in capitals, a plain respelling, the IPA, and the common mispronunciation |
+| **How to Say It** | Alt+Shift+' | Syllables with the stress in capitals, a plain respelling, the IPA (International Phonetic Alphabet), and the common mispronunciation |
 | **Rhymes** | Ctrl+Alt+Shift+; | Perfect rhymes first, then near rhymes, with syllable counts |
 | **Find the Word For...** | Ctrl+Alt+Shift+] | The reverse dictionary: describe the meaning, get the word, inserted at the cursor |
 

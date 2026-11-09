@@ -35,7 +35,7 @@ The lessons come in two groups, called tracks.
 | Finding your way back | Bookmarks, marks, and Go Back |
 | Skimming something long | Headings, folding, and the headings list |
 | Spelling, without a red squiggle | F7, the misspelling sound, and the Applications key |
-| Asking a question about a document | AI help, from the very beginning |
+| Asking a question about a document | AI (artificial intelligence) help, from the very beginning |
 | Write by talking | Dictation with Ctrl+F11: a first sentence, scratch that, holding the key, Recent Phrases and the settings |
 | Punctuation and symbols by voice | Saying marks, starting a heading and a list, spelling a web address |
 | Fix a word by voice | Select, correct and spell that |

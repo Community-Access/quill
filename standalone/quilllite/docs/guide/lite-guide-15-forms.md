@@ -15,7 +15,7 @@ WordPad and Notepad. If you do not see **File > New Form...**, check
 Forms in **Tools > Customize Features**.
 
 This chapter is the short version. The form language, rules, Form Properties,
-putting a form on your site, paper and braille copies, responses and AI help
+putting a form on your site, paper and braille copies, responses and AI (artificial intelligence) help
 are all in the [WordPress and Forms manual](https://community-access.github.io/quill/docs/wordpress-forms-guide.html), which QUILL and QUILL
 Lite share.
 

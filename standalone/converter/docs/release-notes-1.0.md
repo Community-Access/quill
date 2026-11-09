@@ -121,7 +121,7 @@ never quietly drop the one track a blind viewer needed.
 ### Effects named for the problem they solve
 
 A new **Effects** choice on the main window offers twelve recipes named for
-what is wrong: Clean up speech, Podcast ready, Audiobook ACX ready, Clearer voice
+what is wrong: Clean up speech, Podcast ready, Audiobook ACX ready (ACX is Audible's Audiobook Creation Exchange), Clearer voice
 for listening, Louder dialogue for films and TV, Night listening, music and
 broadcast loudness, hum, noise, long silences, and bass. You should not have to
 know what a de-esser is to fix sibilance.
@@ -172,7 +172,7 @@ The **Chapter Workbench** (Queue > Chapter Workbench..., Ctrl+H) opens the
 highlighted MP3, M4B or M4A in the Audio Studio's Chapter Workbench, with a
 player: rename, split at the playhead, set a start to the playhead, merge, find
 chapters at silences, import and export chapter lists (Audacity labels, CUE,
-timestamps, Podcasting 2.0 JSON, CSV), edit the book's details or, with All
+timestamps, Podcasting 2.0 JSON, and CSV, which is comma-separated values, edit the book's details or, with All
 tags..., every tag in the Tag Editor, save, and split into files. The player is libmpv, now bundled in both downloads, so it seeks
 exactly.
 
@@ -265,7 +265,7 @@ available in public builds.
 ### AI, if you want it
 
 A new **AI** menu (Alt+I) does nothing until you use it. **Choose Your AI**
-(Ctrl+Shift+F8) picks the free AI, your ChatGPT subscription or your own key.
+(Ctrl+Shift+F8) picks the free AI (artificial intelligence), your ChatGPT subscription or your own key.
 **Ask** (Ctrl+Shift+8) knows the queue's file details and the last report.
 **Will This Play on My Device?** (Ctrl+Shift+D) says whether the queued files
 will play on the device you name, and what to convert them to if not. **Make
@@ -319,7 +319,7 @@ Nothing downloads the first time you use a feature. Both downloads carry:
 - **FFmpeg and ffprobe**, which do the converting and read what is inside a
   file.
 - **libmpv**, the mpv playback engine, as the Chapter Workbench's player.
-- **yt-dlp**, for Convert from URL, and **deno**, the JavaScript runtime it
+- **yt-dlp**, for Convert from URL (a web address), and **deno**, the JavaScript runtime it
   needs for YouTube.
 - **mutagen**, for carrying cover art and chapters into the converted copy.
 - **The OptiLab Core adapter**, for broadcast polish in Advanced Options, in
