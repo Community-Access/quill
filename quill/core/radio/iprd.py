@@ -25,13 +25,15 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
-import gzip
+import http.client
 import json
+import math
 import ssl
 import threading
 import time
 import urllib.error
 import urllib.request
+import zlib
 from collections import Counter
 
 from quill.core import http_client
@@ -59,6 +61,11 @@ Row = tuple[str, str, str, tuple[str, ...], str, int, str]
 
 _memo: tuple[float, list[Row]] | None = None
 _memo_lock = threading.Lock()
+#: One catalogue fetch at a time, held apart from ``_memo_lock`` so a slow
+#: fetch never stalls a reader that already has a copy.
+_fetch_lock = threading.Lock()
+#: ``time.monotonic()`` of the last fetch that came back with nothing.
+_last_failure = float("-inf")
 
 
 class IprdError(CodedError):
@@ -88,16 +95,41 @@ def _fetch() -> object:
         ) as resp:
             data: bytes = resp.read(_MAX_BYTES + 1)
             packed = resp.headers.get("Content-Encoding", "").casefold() == "gzip"
-    except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
+    except (
+        urllib.error.URLError,
+        http.client.HTTPException,
+        TimeoutError,
+        ssl.SSLError,
+        OSError,
+    ) as error:
         raise IprdError(f"Could not reach IPRD: {error}") from error
     if len(data) > _MAX_BYTES:
         raise IprdError("IPRD sent far more than its catalogue.")
     try:
         if packed:
-            data = gzip.decompress(data)
+            data = _inflate(data)
         return json.loads(data.decode("utf-8", errors="replace"))
-    except (OSError, ValueError) as error:
+    except (OSError, ValueError, zlib.error) as error:
         raise IprdError("IPRD returned an unreadable catalogue.") from error
+
+
+def _inflate(data: bytes) -> bytes:
+    """Gunzip *data*, refusing more than ``_MAX_BYTES`` once unpacked."""
+    unpacker = zlib.decompressobj(16 + zlib.MAX_WBITS)
+    out = unpacker.decompress(data, _MAX_BYTES + 1)
+    if len(out) > _MAX_BYTES or unpacker.unconsumed_tail:
+        raise IprdError("IPRD sent far more than its catalogue.")
+    return out
+
+
+def _listed(value: object) -> list[object]:
+    return value if isinstance(value, list) else []
+
+
+def _kbps(value: object) -> int:
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return 0
+    return int(value) if math.isfinite(value) and 0 < value < 100_000 else 0
 
 
 def _playable(url: str) -> bool:
@@ -118,7 +150,7 @@ def trim_catalog(payload: object) -> list[list[object]]:
         if not isinstance(item, dict):
             continue
         name = " ".join(str(item.get("name") or "").split())
-        streams = [s for s in item.get("streams") or [] if isinstance(s, dict)]
+        streams = [s for s in _listed(item.get("streams")) if isinstance(s, dict)]
         urls = [str(s.get("url") or "").strip() for s in streams]
         playable = [u for u in urls if _playable(u)]
         url = next(
@@ -129,9 +161,8 @@ def trim_catalog(payload: object) -> list[list[object]]:
         seen.add(url)
         stream = streams[urls.index(url)]
         codec = str(stream.get("format") or "").strip()
-        bitrate = stream.get("bitrate")
         genres = sorted({
-            str(g).strip().casefold() for g in item.get("genres") or [] if str(g).strip()
+            str(g).strip().casefold() for g in _listed(item.get("genres")) if str(g).strip()
         })
         rows.append([
             name,
@@ -139,7 +170,7 @@ def trim_catalog(payload: object) -> list[list[object]]:
             str(item.get("country") or "").strip(),
             genres,
             "" if codec.casefold() == "unknown" else codec.upper(),
-            int(bitrate) if isinstance(bitrate, int | float) and bitrate > 0 else 0,
+            _kbps(stream.get("bitrate")),
             str(item.get("website") or "").strip(),
         ])
     return rows
@@ -163,20 +194,46 @@ def _coerce(payload: object) -> list[Row]:
     return rows
 
 
-def catalog(*, safe_mode: bool = False, refresh: bool = False) -> list[Row]:
-    """Every station: memory, then the day-long cache, then live, then stale."""
-    global _memo
-    refuse_in_safe_mode(safe_mode)
+def _fresh_memo() -> list[Row] | None:
     with _memo_lock:
-        if not refresh and _memo is not None and time.monotonic() - _memo[0] < _MEMO_SECONDS:
+        if _memo is not None and time.monotonic() - _memo[0] < _MEMO_SECONDS:
             return _memo[1]
+    return None
+
+
+def catalog(*, safe_mode: bool = False, refresh: bool = False) -> list[Row]:
+    """Every station: memory, then the day-long cache, then live, then stale.
+
+    While another thread fetches, a caller holding an older copy gets that copy
+    at once; one with none waits for that fetch, and when it came back empty
+    gets nothing too, rather than starting a second 30-second wait of its own.
+    """
+    global _memo, _last_failure
+    refuse_in_safe_mode(safe_mode)
+    if not refresh and (rows := _fresh_memo()) is not None:
+        return rows
+    with _memo_lock:
+        stale = _memo[1] if _memo is not None else None
+    asked = time.monotonic()
+    if not _fetch_lock.acquire(blocking=stale is None):
+        return stale or []
+    try:
+        if _last_failure > asked:
+            return []
+        if not refresh and (rows := _fresh_memo()) is not None:
+            return rows
         payload, _age = directory_cache.resolve(
             _CACHE_KEY, lambda: trim_catalog(_fetch()), refresh=refresh, empty=[]
         )
         rows = _coerce(payload)
-        if rows:
-            _memo = (time.monotonic(), rows)
+        with _memo_lock:
+            if rows:
+                _memo = (time.monotonic(), rows)
+            else:
+                _last_failure = time.monotonic()
         return rows
+    finally:
+        _fetch_lock.release()
 
 
 def to_station(row: Row, *, with_country: bool = True) -> RadioStation:
@@ -247,9 +304,10 @@ def search_stations(query: str, *, safe_mode: bool = False) -> list[RadioStation
 
 def forget_memo() -> None:
     """Drop the in-memory copy (tests, and Refresh on the branch)."""
-    global _memo
+    global _memo, _last_failure
     with _memo_lock:
         _memo = None
+        _last_failure = float("-inf")
 
 
 __all__ = [

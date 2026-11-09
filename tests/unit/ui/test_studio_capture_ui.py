@@ -387,3 +387,22 @@ def test_advanced_coordinates_are_optional_and_invalid_values_explained(parent):
             dialog.selected_target()
     finally:
         dialog.Destroy()
+
+
+def test_a_failed_automatic_analysis_is_spoken_not_only_shown(chat, connected, monkeypatch):
+    from quill.core import studio_capture_ai as ai
+
+    host, dialog = chat(consent=wx.YES)
+    preferences = {
+        "auto_ai_enabled": True,
+        "approved_connection": ai.connection_identity(host._studio_picture_route()),
+    }
+    monkeypatch.setattr(ai, "load_capture_ai_preferences", lambda: preferences)
+    host._maybe_auto_inspect(dialog.evidence)
+    shown = []
+    host._set_status = shown.append  # the status bar alone; _announce still speaks
+    host.messages.clear()
+    host._task_manager.jobs[0][2]["on_failure"]("task", RuntimeError("no network"))
+    assert host.messages == [
+        "Automatic screenshot analysis failed; the image remains saved: no network"
+    ]

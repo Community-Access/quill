@@ -98,3 +98,48 @@ def test_notified_ids_round_trip(tmp_path) -> None:
     monitor.save_notified_ids(tmp_path, {"x", "y"})
     assert monitor.notified_ids_exist(tmp_path) is True
     assert monitor.load_notified_ids(tmp_path) == {"x", "y"}
+
+
+def _seed_places(data_dir) -> None:
+    store = loc_store.WeatherLocationStore()
+    store.add(WeatherLocation(display_name="Tucson, AZ", latitude=32.22, longitude=-110.97))
+    store.add(WeatherLocation(display_name="Mesa, AZ", latitude=33.42, longitude=-111.83))
+    loc_store.save_locations(data_dir, store)
+
+
+def test_every_watched_place_is_checked_not_only_the_first(tmp_path) -> None:
+    _seed_places(tmp_path)
+    by_place = {32.22: [_alert("a", "Flood Watch")], 33.42: []}
+    headless_check.run_check(tmp_path, fetch_alerts=lambda la, _lo: by_place[la])
+    by_place[33.42] = [_alert("b", "Tornado Warning", "Extreme")]
+    result = headless_check.run_check(tmp_path, fetch_alerts=lambda la, _lo: by_place[la])
+    assert [a.event for a in result.new_alerts] == ["Tornado Warning"]
+    assert result.location_label == "Mesa, AZ"
+    assert monitor.load_notified_ids(tmp_path) == {"a", "b"}
+
+
+def test_one_place_offline_keeps_what_was_already_said(tmp_path) -> None:
+    _seed_places(tmp_path)
+    alerts = {32.22: [_alert("a", "Flood Watch")], 33.42: [_alert("b", "Heat Advisory")]}
+    headless_check.run_check(tmp_path, fetch_alerts=lambda la, _lo: alerts[la])
+
+    def half_offline(latitude, _longitude):
+        if latitude == 32.22:
+            raise OSError("offline")
+        return alerts[latitude]
+
+    result = headless_check.run_check(tmp_path, fetch_alerts=half_offline)
+    assert result.new_alerts == []
+    assert monitor.load_notified_ids(tmp_path) == {"a", "b"}  # "a" is not toasted again
+
+
+def test_every_place_offline_raises_for_the_caller(tmp_path) -> None:
+    import pytest
+
+    _seed_places(tmp_path)
+
+    def offline(_la, _lo):
+        raise OSError("offline")
+
+    with pytest.raises(OSError):
+        headless_check.run_check(tmp_path, fetch_alerts=offline)

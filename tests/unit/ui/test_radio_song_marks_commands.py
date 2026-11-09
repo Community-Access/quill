@@ -257,6 +257,24 @@ def test_save_all_writes_every_buffered_song_to_its_own_file(host: _Host, tmp_pa
     assert host.said == [f"Saved 3 songs to {tmp_path.name}."]
 
 
+def test_a_station_change_mid_save_never_saves_from_the_new_buffer(
+    host: _Host, tmp_path: Path
+) -> None:
+    mpv = _engine(host).mpv
+    first_dump = mpv.command
+
+    def change_after_first(*args: str) -> None:
+        first_dump(*args)
+        if args[0] == "dump-cache":
+            _engine(host).live_extras.on_load()  # the listener chose another station
+
+    mpv.command = change_after_first  # type: ignore[method-assign]
+    song_marks_ui.save_all(host)
+    dumps = [c for c in mpv.commands if c[0] == "dump-cache"]
+    assert len(dumps) == 1, "the other two positions belong to the old buffer"
+    assert host.said == [f"Saved 1 of 3 songs to {tmp_path.name}; the rest failed."]
+
+
 def test_saving_the_same_song_twice_never_overwrites(host: _Host) -> None:
     song_marks_ui.save_current(host)
     song_marks_ui.save_current(host)

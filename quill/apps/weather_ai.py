@@ -122,13 +122,13 @@ class WeatherAiFeaturesMixin:
                     hourly_hours=12,
                     temperature_unit=unit,
                 )
-            except nws.WeatherError as error:
+            except Exception as error:  # noqa: BLE001 - "Getting weather" always gets an answer
                 return error
 
         def fetched(_op: str, result: object) -> None:
             self._weather_ai_call_after(self._weather_ai_fetched, result, then)
 
-        self._task_manager.submit("weather-ai-report", work, on_success=fetched, on_failure=None)  # type: ignore[attr-defined]
+        self._task_manager.submit("weather-ai-report", work, on_success=fetched, on_failure=fetched)  # type: ignore[attr-defined]
 
     def _weather_ai_call_after(self, func: Any, *args: Any) -> None:
         import wx
