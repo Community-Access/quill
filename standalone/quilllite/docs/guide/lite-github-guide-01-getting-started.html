@@ -300,7 +300,8 @@ instead of claiming it is done.</li>
 <p>QUILL keeps its GitHub commands in two places:</p>
 <ul>
 <li><strong>File &gt; Open from Remote &gt; GitHub Items…</strong> opens
-GitHub Items. The same submenu has <strong>Open GitHub
+GitHub Items. The same submenu has <strong>Clone Repository…</strong>
+for copying a repository to your computer, <strong>Open GitHub
 Reference…</strong> for pasting any GitHub link, and <strong>Manage
 GitHub Accounts…</strong> for signing in.</li>
 <li><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> has the
@@ -308,23 +309,35 @@ commands that work on a whole repository, such as creating, forking and
 renaming one, plus <strong>Notifications…</strong>, <strong>Security
 Alerts…</strong> and Codespaces.</li>
 </ul>
+<p>If you do a lot of GitHub work, turn on <strong>View &gt; GitHub
+Workbench Mode</strong> (<code>Alt+V</code>, then <code>K</code>). A
+<strong>GitHub</strong> menu joins the menu bar right after Tools, with
+all of those commands in it and a few more that open the views you use
+most in one step, such as <strong>Inbox…</strong> and <strong>Issues and
+Pull Requests…</strong>. <code>Alt+G</code> opens it. Chapter 2 walks
+through it.</p>
 <p>None of these has a key out of the box, so that they do not take keys
 a writer needs. Press <code>Ctrl+Shift+P</code> for the Command Palette
 and type “GitHub” to find any of them by name, or give one a key of your
 own in the Keymap Editor.</p>
 <p>The GitHub commands belong to the feature called GitHub Remote
-Access, which is part of QUILL’s Developer profile. If the GitHub rows
-are missing from the File and Tools menus, that feature is off. Press
-<code>Alt+Shift+P</code> to switch profile and choose Developer, or turn
-on GitHub Remote Access on its own in <strong>Profiles and
-Features…</strong>, in the <strong>Customize and Support</strong>
-submenu of the Tools menu.</p>
+Access. It is on in most profiles, because reading issues and reviewing
+pull requests is not coding. The Local Git commands, which are, still
+belong to the Developer profile. If the GitHub rows are missing from the
+File and Tools menus, GitHub Remote Access is off. Turn it on in
+<strong>Profiles and Features…</strong>, in the <strong>Customize and
+Support</strong> submenu of the Tools menu, or press
+<code>Alt+Shift+P</code> and choose a profile that has it.</p>
 <h3 id="in-quill-lite">In QUILL Lite</h3>
 <p>In QUILL Lite, choose <strong>File &gt; GitHub Workbench…</strong>:
 press <code>Alt+F</code>, then <code>G</code>. It opens GitHub Items.
-Everything else in this book is reached from there. QUILL Lite has no
-Tools &gt; Git and GitHub menu, so the commands this book describes as
-being on QUILL’s menus are QUILL’s alone.</p>
+Everything else in this book is reached from there. <strong>File &gt;
+Clone Repository…</strong> (<code>Alt+F</code>, then <code>Y</code>)
+copies a repository to your computer; chapter 7 explains it. QUILL Lite
+has no Tools &gt; Git and GitHub menu, so the commands this book
+describes as being on QUILL’s menus are QUILL’s alone. QUILL Lite has
+<strong>View &gt; GitHub Workbench Mode</strong> too, with its own,
+shorter GitHub menu.</p>
 <h3 id="where-you-land">Where you land</h3>
 <p>GitHub Items opens with focus in the <strong>Repository
 (owner/repo):</strong> field. If the document you have open lives in a
@@ -527,7 +540,9 @@ in.</p>
 <ol type="1">
 <li>Open GitHub Items: in QUILL, <strong>File &gt; Open from Remote &gt;
 GitHub Items…</strong>; in QUILL Lite, <code>Alt+F</code>, then
-<code>G</code>.</li>
+<code>G</code>. In workbench mode, in either app, it is <strong>GitHub
+&gt; Repository Items…</strong>: <code>Alt+G</code>, then
+<code>T</code>.</li>
 <li>If this is the first time, press <strong>Continue</strong> in the
 GitHub Access window.</li>
 <li>Type a repository you know, such as

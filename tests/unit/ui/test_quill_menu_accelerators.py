@@ -94,8 +94,11 @@ def _mnemonic(title: str) -> str:
         return title[index + 1].upper()
 
 
-@pytest.fixture(scope="module")
-def quill_menu_bar(tmp_path_factory):
+@pytest.fixture(scope="module", params=["normal", "workbench"])
+def quill_menu_bar(tmp_path_factory, request):
+    """QUILL's bar, in both arrangements: GitHub Workbench Mode moves rows between
+    menus and adds one (quill/core/github/workbench_menu.py), so every rule here
+    has to hold in each."""
     app = shared_wx_app()
     from unittest.mock import patch
 
@@ -117,7 +120,12 @@ def quill_menu_bar(tmp_path_factory):
         mp.setenv("QUILL_DATA_DIR", data)
         with patch.object(MainFrame, "check_for_updates", lambda self, **_kwargs: None):
             frame = MainFrame()
+            if request.param == "workbench":
+                frame.toggle_github_workbench_mode()
+                assert frame._github_workbench_mode, "GitHub is off in the test profile"
     bar = frame.frame.GetMenuBar()
+    if request.param == "workbench":
+        assert bar.FindMenu("GitHub") != -1
     bar._quill_main_frame = frame
     yield bar
     with pytest.MonkeyPatch.context() as mp:

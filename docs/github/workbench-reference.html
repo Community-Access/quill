@@ -256,6 +256,54 @@ QUILL, use <strong>File &gt; Open from Remote &gt; GitHub
 Items</strong>. Public repository reading works without an account.
 Account views and writes require a signed-in GitHub account. Safe Mode
 and the first-use network consent still apply.</p>
+<p><strong>GitHub Workbench Mode.</strong> <strong>View &gt; GitHub
+Workbench Mode</strong> (<strong>Alt+V</strong>, then
+<strong>K</strong>), a per-window check item in both editors, adds a
+<strong>GitHub</strong> menu (<strong>Alt+G</strong>) right after Tools
+and moves the GitHub rows of File &gt; Open from Remote and Tools &gt;
+Git and GitHub into it; turning it off puts them back. Both editors
+build it from one wx-free table,
+<code>quill/core/github/workbench_menu.py</code> (QUILL:
+<code>quill/ui/main_frame_github_menu.py</code>; QUILL Lite:
+<code>quill/apps/lite_github_workbench.py</code>, which also serves the
+empty window). QUILL Lite’s menu is the table less QUILL’s own rows.
+Rows keep their command ids, so a user-bound key follows the row;
+nothing in the mode has a default chord. New entry points open a view
+directly: Inbox, My Work and Notifications open Explore on
+<code>attention</code>, <code>my_work</code> and
+<code>notifications</code>; Issues and Pull Requests, Actions Runs and
+Releases open Items on <code>issues</code>, <code>runs</code> and
+<code>releases</code> (the new <code>initial_view</code> argument);
+Explore GitHub opens Explore on its default. They are
+<code>quill/ui/github_workbench_commands.py</code>, shared, and go
+through each editor’s existing opener and gates. The switch announces
+“Workbench mode on. GitHub menu added.” and “Workbench mode off.”
+through the announcement service; nothing else in the mode speaks. It is
+not remembered across sessions. In QUILL the mode needs GitHub Remote
+Access (<code>core.github_remote</code>), which since 2026-11-08 no
+longer depends on <code>core.developer</code>.</p>
+<p><strong>Clone Repository.</strong> QUILL: <strong>File &gt; Open from
+Remote &gt; Clone Repository…</strong>; QUILL Lite: <strong>File &gt;
+Clone Repository…</strong> (<strong>Alt+F</strong>, then
+<strong>Y</strong>); both: <strong>GitHub &gt; Clone
+Repository…</strong> in workbench mode. Shared window
+<code>quill/ui/github_clone.py</code>, core
+<code>quill/core/github/clone.py</code>. Git is found by
+<code>quill.core.git_binaries.find_git</code>: <code>QUILL_GIT</code>
+(dev builds only), then <code>&lt;runtime&gt;/mingit/cmd/git.exe</code>,
+then <code>git</code> on <code>PATH</code>, then the optional component
+copy. It runs <code>git clone -- &lt;url&gt; &lt;folder&gt;</code>
+through <code>run_subprocess_safely</code> (argv, no shell) on the task
+manager. For an https github.com clone the signed-in token travels only
+in the child’s environment, as
+<code>GIT_CONFIG_COUNT</code>/<code>GIT_CONFIG_KEY_n</code>/<code>GIT_CONFIG_VALUE_n</code>
+setting <code>http.https://github.com/.extraheader</code> for that
+process; it is never in argv, <code>.git/config</code>, the remote URL
+or the log, and it is registered with
+<code>redaction.remember_secret</code>.
+<code>GIT_TERMINAL_PROMPT=0</code> stops a hidden password prompt. An
+address with a user name or password in it is refused. With no git, one
+sentence offers the Git for Windows download page.</p>
 <p><strong>Signing in.</strong> Manage GitHub Accounts (QUILL:
 <strong>File &gt; Open from Remote</strong>; QUILL Lite:
 <strong>File</strong>, <strong>Alt+F</strong> then <strong>H</strong>)
@@ -454,7 +502,7 @@ opens a folder (fetched the first time), Left closes it, and each file
 says its size. Enter on a file or <strong>View File</strong> (Alt+V)
 shows it read-only in <strong>Contents</strong>. <strong>Open in
 Editor</strong> (Alt+E) opens it for editing: QUILL uses the same path
-as a GitHub file link, so Save to GitHub works afterwards; QUILL Lite
+as a GitHub file link, so Commit to GitHub works afterwards; QUILL Lite
 opens the text as a new untitled document. <strong>README</strong>
 (Alt+R) shows the selected folder’s or the repository’s README. Binary
 files and files over GitHub’s 1 MB contents limit say so instead of

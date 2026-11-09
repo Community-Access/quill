@@ -11,6 +11,21 @@
   Parameter Hints says which argument you're on. Navigate > Code > Language
   Servers... switches each one and each use. Nothing uses the internet.
 
+### GitHub Workbench Mode and Clone Repository (2026-11-08)
+
+- View > GitHub Workbench Mode (Alt+V, then K) is a check item, per window.
+  With it on, a GitHub menu (Alt+G) sits after Tools, File's three GitHub rows
+  move into it, and turning it off puts them back. It's QUILL's menu less
+  QUILL's own rows, built from the same table, so the letters match.
+- The GitHub menu opens Inbox, My Work, Notifications, Issues and Pull
+  Requests, Actions Runs, Releases and Explore GitHub in one step, and starts
+  with Leave Workbench Mode. It works in the empty window too.
+- File > Clone Repository... (Alt+F, then Y) copies a repository to your
+  computer with Git for Windows, using your signed-in account for a private
+  one without writing the token anywhere. Afterwards it offers to open a file.
+- Turning the mode on or off says one sentence, and nothing else in it speaks.
+- The Copilot and free AI sign-in codes now say "dash" as a word.
+
 ### The Problems pane lists every open document (2026-11-08)
 
 - View > Problems > This File Only or All Open Files, F in the pane's list,
@@ -19,11 +34,13 @@
   Preferences, is the default. Each row names its document and Enter brings
   it forward.
 
+
 ### The Problems pane checks on save (2026-11-08)
 
 - While the pane is on, saving checks the document again, and a Check after a
   pause box (off by default) checks it when you stop typing. Only a changed
   count is said. QUILL's pane, shared.
+
 
 ### Word Prediction knows your project (2026-11-08)
 
@@ -36,6 +53,7 @@
   each said with its kind: "8 suggestions. count_words, function". QUILL's
   code, shared.
 
+
 ### Word Prediction (2026-11-08)
 
 - Edit > Word Prediction... (Ctrl+., Alt+E, then W) suggests the word you're
@@ -43,6 +61,7 @@
   HTML tags. Up and Down say each one, Enter or Tab inserts it, and Escape
   closes the list without changing your text. It's QUILL's list, from the
   same shared code, on QUILL's key.
+
 
 ### The Problems pane (2026-11-08)
 

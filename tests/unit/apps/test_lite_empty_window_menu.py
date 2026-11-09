@@ -131,7 +131,9 @@ def _bar(frame: wx.Frame) -> dict[str, list[str]]:
 
 def test_the_empty_bar_has_file_tools_and_help(shell) -> None:
     bar = _bar(shell)
-    assert list(bar) == ["&File", "&Tools", "&Help"]
+    # View holds one row, GitHub Workbench Mode (quill/core/github/workbench_menu.py).
+    assert list(bar) == ["&File", "&View", "&Tools", "&Help"]
+    assert [row.split("\t")[0] for row in bar["&View"]] == ["GitHub Wor&kbench Mode"]
     help_rows = " ".join(bar["&Help"])
     for wanted in ("What's New", "About QUILL Lite", "Check for &Updates", "Keyboard Shortcuts"):
         assert wanted in help_rows
@@ -240,7 +242,8 @@ def test_studio_from_the_empty_window_respects_release_gating(
     monkeypatch.setattr(app_launcher, "launch_app", lambda key: calls.append(key) or True)
     frame = _ShellFrame(_app(keymap={"cmd_open_studio": "Ctrl+Alt+Shift+F24"}))
     try:
-        menu = frame.GetMenuBar().GetMenu(1)
+        bar = frame.GetMenuBar()
+        menu = bar.GetMenu(bar.FindMenu("Tools"))
         items = [item for item in menu.GetMenuItems() if "Studio" in item.GetItemLabel()]
         assert len(items) == int(developer)
         if developer:
@@ -250,3 +253,33 @@ def test_studio_from_the_empty_window_respects_release_gating(
             assert frame.app.voice.said == ["Opening QUILL Studio."]
     finally:
         frame.Destroy()
+
+
+def _press(frame: wx.Frame, menu_label: str, row_label: str) -> None:
+    bar = frame.GetMenuBar()
+    menu = bar.GetMenu(bar.FindMenu(menu_label))
+    item = next(i for i in menu.GetMenuItems() if i.GetItemLabel().split("\t")[0] == row_label)
+    assert frame.ProcessEvent(wx.CommandEvent(wx.EVT_MENU.typeId, item.GetId()))
+
+
+def test_the_empty_window_in_workbench_mode_is_a_github_launcher(shell) -> None:
+    """GitHub Workbench Mode in the empty window: the GitHub menu after Tools,
+    File's GitHub rows inside it, and one sentence each way."""
+    _press(shell, "View", "GitHub Wor&kbench Mode")
+    bar = _bar(shell)
+    assert list(bar) == ["&File", "&View", "&Tools", "&GitHub", "&Help"]
+    github = [row.split("\t")[0] for row in bar["&GitHub"]]
+    assert github[0] == "Lea&ve Workbench Mode"
+    assert "&Inbox..." in github and "Repository I&tems..." in github
+    assert "&Clone Repository..." in github and "Mana&ge GitHub Accounts..." in github
+    file_rows = " ".join(bar["&File"])
+    assert "GitHub Workbench" not in file_rows and "Clone" not in file_rows
+    view = shell.GetMenuBar().GetMenu(shell.GetMenuBar().FindMenu("View"))
+    assert view.GetMenuItems()[0].IsChecked()
+    assert shell.app.voice.said[-1] == "Workbench mode on. GitHub menu added."
+
+    _press(shell, "GitHub", "Lea&ve Workbench Mode")
+    bar = _bar(shell)
+    assert list(bar) == ["&File", "&View", "&Tools", "&Help"]
+    assert any("GitHub Workbench" in row for row in bar["&File"])
+    assert shell.app.voice.said[-1] == "Workbench mode off."

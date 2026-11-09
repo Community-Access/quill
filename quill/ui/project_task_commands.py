@@ -80,14 +80,23 @@ class ProjectTaskMixin(AgentTaskMixin):
     def cmd_open_project_folder(self) -> None:
         if not self._developer_ready():
             return
-        from quill.core.ai.project import Project, ProjectError
-        from quill.core.ai.project_store import RecentProjects, git_status_text
+        from quill.core.ai.project_store import RecentProjects
         from quill.ui.project_open_dialog import choose_project_folder
 
         recent = RecentProjects(self._project_data_dir())
         folder = choose_project_folder(self._ai_parent(), recent.existing())  # type: ignore[attr-defined]
         if folder is None:
             return
+        self.open_project_at(folder)
+
+    def open_project_at(self, folder: Path | str) -> None:
+        """Open *folder* as the project (after Open Project Folder, or a clone)."""
+        if not self._developer_ready():
+            return
+        from quill.core.ai.project import Project, ProjectError
+        from quill.core.ai.project_store import RecentProjects, git_status_text
+
+        recent = RecentProjects(self._project_data_dir())
         try:
             project = Project(folder)
         except ProjectError as error:

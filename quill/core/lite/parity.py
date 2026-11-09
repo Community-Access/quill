@@ -323,6 +323,17 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_find_open_docs": "edit.find_in_open_documents",
     "cmd_github_workbench": "file.open_github_items",
     "cmd_github_manage_accounts": "file.github_manage_accounts",
+    # 2026-11-08: GitHub Workbench Mode and its menu, one table for both
+    # (quill/core/github/workbench_menu.py), so QUILL Lite's rows are QUILL's.
+    "cmd_github_clone": "github.clone_repository",
+    "cmd_toggle_github_workbench": "view.github_workbench_mode",
+    "cmd_github_inbox": "github.workbench_inbox",
+    "cmd_github_my_work": "github.workbench_my_work",
+    "cmd_github_notifications": "github.view_notifications",
+    "cmd_github_issues": "github.workbench_issues",
+    "cmd_github_actions_runs": "github.workbench_actions_runs",
+    "cmd_github_releases": "github.workbench_releases",
+    "cmd_github_explore": "github.workbench_explore",
     "cmd_find_next": "edit.find_next",
     "cmd_find_previous": "edit.find_previous",
     "cmd_focus_status_bar": "navigate.next_region",
