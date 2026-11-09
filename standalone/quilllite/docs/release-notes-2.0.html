@@ -250,7 +250,8 @@ have.</em></p>
 it’s a big one. QUILL Lite is still the small, quick editor you know,
 the one that opens in a blink and stays out of your way. But now you can
 talk to it, tell it what you want in your own words, publish to your
-website from it, and pick which AI helps you, or none at all.</p>
+website from it, and pick which AI (artificial intelligence) helps you,
+or none at all.</p>
 <p>Here are the moments we think you’ll love most. Each one has its own
 section further down, with every key and every detail.</p>
 <h3 id="talk-and-it-writes">Talk, and it writes</h3>
@@ -734,7 +735,8 @@ the family</h3>
 <li><strong>Shared settings and words.</strong> You can share dictation
 settings and your word list with QUILL, QUILL Transcribe and Quill
 Inkwell, and import or export My Words and Phrases
-(<strong>Alt+Shift+F10</strong>) as Markdown or CSV.</li>
+(<strong>Alt+Shift+F10</strong>) as Markdown or CSV (comma-separated
+values).</li>
 <li><strong>Programs dictation never types into.</strong> Password
 managers and Windows sign-in prompts are on the list to begin with, and
 you can add more. See “Programs dictation never types into”.</li>
@@ -1231,10 +1233,10 @@ on while checking your form. Publishing requires matching site mode and
 ready providers/webhooks; Test on Site refuses a published live-payment
 form. Responses show payment metadata and include it in CSV/Word
 exports; Refresh Payment Status rereads the site.</p>
-<p>Checkout needs the separately installed QAF WordPress plugin to
-implement payment contract version 1. Provider credentials, charging and
-webhooks stay in WordPress. This update does not deploy that plugin or
-certify live checkout.</p>
+<p>Checkout needs the separately installed QAF (QUILL Accessible Forms)
+WordPress plugin to implement payment contract version 1. Provider
+credentials, charging and webhooks stay in WordPress. This update does
+not deploy that plugin or certify live checkout.</p>
 <hr />
 <h2 id="word-documents-pdfs-and-other-files">Word documents, PDFs and
 other files</h2>
@@ -1288,8 +1290,8 @@ its password and never saves it, and QUILL Lite never writes to a PDF.
 When it opens, you hear which pages may read poorly. Page breaks are a
 pause, never “form feed”. See “Opening a PDF”.</li>
 <li><strong>PDFs in the portable copy.</strong> The portable QUILL Lite
-now reads PDFs and has Windows OCR too, like the installed copy. The
-portable zip is about 25 MB bigger.</li>
+now reads PDFs and has Windows OCR (optical character recognition) too,
+like the installed copy. The portable zip is about 25 MB bigger.</li>
 <li><strong>Import / Convert Document.</strong> <strong>File &gt; Import
 / Convert Document (OCR)…</strong>, QUILL’s command, turns a document,
 an e-book, a PDF or a picture of a page into a new, untitled document,
@@ -1616,36 +1618,21 @@ Developer profile.</li>
 <p>See “Coding: project tasks, in the Developer profile” in the user
 guide.</p>
 <h3 id="github-from-the-editor">GitHub, from the editor</h3>
-<p><strong>Signing in, kept simple.</strong> The GitHub Guide teaches
-<strong>Sign In with GitHub</strong>, and keeps tokens in one advanced
-section for the few who need them. A broad classic token gets one gentle
-suggestion to sign in instead, a token about to expire gets a warning a
-few days ahead, and with GitHub Workbench Mode on, a
-<strong>Workbench</strong> cell on the status bar names the repository
-you’re in. It all works as it does in QUILL.</p>
-<h4 id="sign-in-to-github-from-quill-lite">Sign in to GitHub from QUILL
-Lite</h4>
-<p>You no longer need QUILL to sign in to GitHub. <strong>File &gt;
-Manage GitHub Accounts…</strong> (<strong>Alt+F</strong>, then
-<strong>H</strong>) adds an account from a personal access token, checks
-it with GitHub before saving it, and switches or removes saved accounts.
-It’s the same window QUILL has, and both editors see the same
-accounts.</p>
-<p>If you open the GitHub Workbench with no account saved, it now tells
-you so and offers Manage GitHub Accounts first. Once your account is
-added the Workbench opens signed in. <strong>Continue as Guest</strong>
-still opens it for public repositories.</p>
+<h4 id="connecting-to-github">Connecting to GitHub</h4>
+<p>Choose <strong>File &gt; Manage GitHub Accounts…</strong>
+(<strong>Alt+F</strong>, then <strong>H</strong>) and press <strong>Sign
+In with GitHub…</strong>. QUILL Lite puts a short code on the clipboard
+and opens GitHub’s page; paste the code there, approve QUILL Lite, and
+you’re signed in. That’s all most people ever need. QUILL and QUILL Lite
+share the same accounts, so signing in once covers both.</p>
+<p>If you open the GitHub Workbench before signing in, it offers to sign
+you in first, and <strong>Continue as Guest</strong> still opens public
+repositories. If you’d rather use a personal access token, you can add
+one there too; the GitHub Guide explains when you might want to.</p>
+<p>With GitHub Workbench Mode on, a <strong>Workbench</strong> cell on
+the status bar names the repository you’re in.</p>
 <p>Export as HTML gave up its access letter, H, to make room;
 <strong>Ctrl+Alt+Shift+End</strong> still exports.</p>
-<h4 id="sign-in-to-github-without-a-token">Sign in to GitHub without a
-token</h4>
-<p><strong>File &gt; Manage GitHub Accounts…</strong> (Alt+F, then H)
-now starts with <strong>Sign In with GitHub…</strong>: QUILL Lite puts a
-short code on the clipboard and opens GitHub’s page, you paste the code
-there and approve QUILL Lite, and the account is added. No personal
-access token to make or paste. <strong>Add Token (Advanced)…</strong> is
-still there for a fine-grained token you made yourself. It’s the same
-window as QUILL’s.</p>
 <h4 id="a-github-menu-when-you-want-one">A GitHub menu, when you want
 one</h4>
 <p>Turn on <strong>View &gt; GitHub Workbench Mode</strong> (press
@@ -1656,16 +1643,15 @@ issues and pull requests, its Actions runs and its releases in one step.
 Turn it off and the rows go back. It’s the same menu as QUILL’s, less
 the rows only QUILL has. <strong>File &gt; Clone Repository…</strong>
 (Alt+F, then Y) is new too: it copies a repository to your computer,
-private ones included, without writing your token anywhere, and then
-offers to open a file from it.</p>
+private ones included, and then offers to open a file from it.</p>
 <h4 id="the-github-workbench">The GitHub Workbench</h4>
 <p><strong>File &gt; GitHub Workbench…</strong> (<strong>Alt+F</strong>,
 then <strong>G</strong>) opens the shared QUILL GitHub Items viewer. A
-PR expands into changed files, review threads, general conversations,
-and checks. Arrow to an item and Tab into its detail; Ctrl+R replies to
-a selected thread. Shift+F10 opens a context menu that fits the selected
-item. Public repositories can be read anonymously; posting needs a
-signed-in account. See the <a
+PR (pull request) expands into changed files, review threads, general
+conversations, and checks. Arrow to an item and Tab into its detail;
+Ctrl+R replies to a selected thread. Shift+F10 opens a context menu that
+fits the selected item. Public repositories can be read anonymously;
+posting needs a signed-in account. See the <a
 href="https://www.quillforall.org/docs/08-github-inside-quill.html">full
 GitHub tutorial</a>.</p>
 <h4 id="more-in-the-workbench">More in the Workbench</h4>
@@ -1950,9 +1936,9 @@ is the wrong size”.</li>
 <li><strong>A spoken name for the profile description</strong> in
 Preferences.</li>
 <li><strong>The shared runtime under the hood.</strong> Windows OCR now
-uses PyWinRT 4.0.3 and the Windows SDK 10.0.28000.2705 projections.
-Reading a scanned page works as before; nothing new is added to
-OCR.</li>
+uses PyWinRT 4.0.3 and the Windows SDK (software development kit)
+10.0.28000.2705 projections. Reading a scanned page works as before;
+nothing new is added to OCR.</li>
 <li><strong>Licensing of the shared runtime.</strong> The installed
 QUILL Lite uses the QuillVille Runtime, which includes PyMuPDF 1.28.2
 under AGPL-3.0 through GLOW. QUILL Lite does not itself expose GLOW. The

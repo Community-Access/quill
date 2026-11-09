@@ -182,7 +182,7 @@ If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
 | **Saved State** | Whether you have unsaved changes | saves |
 | **Workbench** | The repository the GitHub menu works on, such as "Workbench: community-access/quill", or just "Workbench" when the document isn't in a GitHub repository. Only there while GitHub Workbench Mode is on | says it again |
 | **Project** | The open project and its git branch, and "waiting for you" when the project task needs an answer. Only there while a project is open, in the Developer profile | opens Do a Project Task |
-| **AI** | Which AI is in use, such as "AI: ChatGPT plan" | opens Choose Your AI |
+| **AI** | Which AI (artificial intelligence) is in use, such as "AI: ChatGPT plan" | opens Choose Your AI |
 
 That is seventeen parts, or sixteen when the document has no pages, and an
 eighteenth, Project, while a project is open. Most of

@@ -419,7 +419,7 @@ you would like to try these keys with some guidance.
 ### Checking off tasks
 
 A task list is a list whose items start with a box: `- [ ]` for something to do
-and `- [x]` for something done. AI-written plans are full of them, and
+and `- [x]` for something done. Plans written by AI (artificial intelligence) are full of them, and
 **Ctrl+Alt+I** (**Markdown Tag...**) can insert one.
 
 Put the cursor on a task and press **Ctrl+Alt+Enter** (**Format > Toggle Task

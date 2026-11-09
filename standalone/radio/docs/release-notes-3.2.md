@@ -892,7 +892,7 @@ air around the clock with talk, tech, music and the best of the Double Tap
 podcast.
 
 Press **Ctrl+B** for Browse Stations. **Double Tap Live** has its own branch,
-right under ACB Media. Open it and press Enter, and you are listening.
+right under ACB Media (the American Council of the Blind's service). Open it and press Enter, and you are listening.
 What's Playing (**Ctrl+T**) reads the segment or song. You can favorite,
 record and schedule it like any other station.
 
@@ -1233,7 +1233,7 @@ published third-party-client terms. Known catalogue entries and direct
 playback and recording paths are filtered or blocked. Indirect paths, existing
 user data and previously published packages still need review; this is not a
 new public release. The shared Windows Media runtime also moves to PyWinRT
-4.0.3 and the Windows SDK 10.0.28000.2705 projections.
+4.0.3 and the Windows SDK (software development kit) 10.0.28000.2705 projections.
 
 Installed editions use the shared QuillVille Runtime, which includes PyMuPDF
 1.28.2 under AGPL-3.0. Radio does not itself expose GLOW, the feature that

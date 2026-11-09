@@ -37,7 +37,7 @@ Jeff
   note and bookmark, and moves it all to a new computer. See "Your library goes
   where you go".
 - **AI, only if you ask.** A summary of an episode's show notes, or an answer
-  about them, from QUILL's free AI, your ChatGPT plan or your own key. See "AI
+  about them, from QUILL's free AI (artificial intelligence), your ChatGPT plan or your own key. See "AI
   help, if you want it".
 
 You'll meet two new faces in these notes. QUILLBert finds the things worth
@@ -59,9 +59,9 @@ A few things work differently now:
   main window now. Podcasts is Ctrl+Shift+S, the Play Queue is Ctrl+Shift+Q,
   and Go To (Ctrl+G) lists every place.
 - **Follow, not subscribe.** The Subscriptions menu is now called Podcasts.
-  Subscribe to ACB Media Podcasts is now Follow ACB Media Podcasts
+  Subscribe to ACB Media Podcasts (the American Council of the Blind's podcasts) is now Follow ACB Media Podcasts
   (Ctrl+Alt+B), and Unsubscribe is now Unfollow. Only the words changed. An
-  OPML file is still called a subscription list, because that's what every
+  OPML (Outline Processor Markup Language) file is still called a subscription list, because that's what every
   other app calls it.
 - **A new key for showing and hiding Cast.** From any program, it's now
   Ctrl+Alt+Shift+F12.

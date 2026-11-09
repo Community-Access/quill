@@ -25,7 +25,7 @@ you decide.)
 
 This chapter starts with your first dictation. Then it covers what you can
 say, starting and stopping with your voice, making dictation fit you, talking
-to the AI, writing down a whole meeting as it happens, dictating into other
+to the AI (artificial intelligence), writing down a whole meeting as it happens, dictating into other
 programs, turning a recording into text, and what to do when something goes
 wrong. Near the end, "Dictating well" gathers the habits that make the
 biggest difference, with two short paragraphs to practise on.
@@ -1029,7 +1029,7 @@ text file called `dictation.md`.
 
 **Export...** in My Words and Phrases saves your whole list to a file you name.
 Choose **Word list in Markdown** for the same kind of file as `dictation.md`, or
-**Spreadsheet, say and write columns** for a CSV file with three columns: `say`,
+**Spreadsheet, say and write columns** for a CSV (comma-separated values) file with three columns: `say`,
 `write` and `kind` (word, phrase or correction). You hear how many were saved,
 such as "Exported 15 entries to my-dictation-words.md."
 

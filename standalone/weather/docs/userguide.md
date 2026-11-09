@@ -88,7 +88,8 @@ places to watch is coming; today the watch covers all of them.)
 ## Customizing features
 
 **Options > Customize Features...** lists the app's switchable areas -- **Alert
-Monitoring** and **NOAA Weather Radio** -- each with a short description.
+Monitoring** and **NOAA Weather Radio** (from the National Oceanic and Atmospheric
+Administration, NOAA) -- each with a short description.
 Unchecking one removes its menu items the next time you open Quill Weather, so
 you can trim the app to just what you use. (This is the same customization Quill
 Radio offers.)
@@ -313,7 +314,7 @@ only when a new one is required, and again with a fully accessible progress bar.
 
 ## Asking the AI about the weather
 
-Quill Weather can ask an AI about your forecast, if you want it to. Nothing
+Quill Weather can ask an AI (artificial intelligence) about your forecast, if you want it to. Nothing
 is sent anywhere until you press one of these keys, and nothing runs on a timer.
 The menu is called AI, and Alt+I opens it (Alt+A is still the Add Location
 button).
@@ -483,7 +484,7 @@ alerts list, so you can review warnings with the fewest keystrokes.
   **Play** button to hear it and **Use Default** to go back), and set how many
   times it plays for each alert (1 to 10).
 - **Refresh interval** -- how often Weather Now refreshes (never faster than the
-  NWS-recommended minimum).
+  minimum the National Weather Service, NWS, recommends).
 - **Quick Weather line** -- turn feels-like temperature, wind, humidity, the
   active-alert count, and data age on or off.
 
@@ -556,7 +557,7 @@ Quill Weather's.
 ### Your local NOAA Weather Radio
 
 NOAA Weather Radio is the National Weather Service's own broadcast voice --
-continuous forecasts, conditions, and warnings from real VHF transmitters.
+continuous forecasts, conditions, and warnings from real VHF (very high frequency) transmitters.
 Quill Radio carries the authoritative directory of those transmitters and
 their internet re-streams:
 
@@ -567,7 +568,7 @@ their internet re-streams:
   silently. Once playing, it is a normal station -- favorite it, record it,
   schedule it.
 - **Weather menu > Update NOAA Weather Radio Directory** -- pull the newest
-  directory on demand. It fetches off the UI thread, announces the result,
+  directory on demand. It fetches off the UI (user interface) thread, announces the result,
   and on failure leaves your existing data untouched. The complete directory
   ships inside the app (1,035 transmitters across every state and territory),
   so browsing and the local lookup work even fully offline; an update simply

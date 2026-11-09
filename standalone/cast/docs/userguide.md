@@ -48,7 +48,7 @@ The chapters follow the order you are likely to want things.
    through the Inbox and New Episodes, the Play Queue, downloads, playlists and
    notifications.
 6. **Chapter 6: Making Cast yours.** Preferences, settings for one podcast,
-   Quick Actions, changing keys, switching off what you never use, and AI help.
+   Quick Actions, changing keys, switching off what you never use, and AI (artificial intelligence) help.
 7. **Chapter 7: Your podcasts, wherever you are.** Listening statistics,
    backups, moving to a new computer, and what Cast shares with QUILL and
    Quill Radio.
@@ -194,11 +194,12 @@ address.
 If you would like more than one podcast to start with, here are two shortcuts.
 
 **Follow ACB Media's podcasts.** Choose Podcasts > Follow ACB Media Podcasts
-(**Ctrl+Alt+B**). Cast follows ACB Media's whole live directory in one step,
+(**Ctrl+Alt+B**). ACB Media is the American Council of the Blind's (ACB) media
+service. Cast follows its whole live directory in one step,
 which gives you plenty to explore straight away.
 
 **Bring your list from another app.** Most podcast apps can save the podcasts
-you follow as an OPML file. Save one from your old app, then in Cast press
+you follow as an OPML (Outline Processor Markup Language) file. Save one from your old app, then in Cast press
 Ctrl+N and choose **Import OPML...** (Alt+I) in the Add Podcast window. Pick
 the file and press Import. Your folders come across too, and you can keep
 listening while it works. Chapter 4 has the details.
@@ -532,7 +533,7 @@ In the beta builds, a large place shows **loading...** while Cast prepares
 its counts and rows from a detached catalogue. Choosing another place discards
 the earlier result rather than moving you back when it finishes. Downloads
 remains a place in this main window, not a separate storage-report dialog.
-Opening, row publication and transport/status updates happen in small UI
+Opening, row publication and transport/status updates happen in small UI (user interface)
 steps. If you move focus while an opening is pending, its completion does
 not take focus back. Closing Cast during preparation also retires unfinished
 detached input in the background rather than waiting to free it.
@@ -1838,7 +1839,7 @@ same podcast twice, so it is safe to press whenever you like.
 
 Sometimes a website, a newsletter or a friend gives you the feed address
 itself. It usually ends in ".rss" or ".xml", or the page calls it the "RSS
-feed".
+feed" (RSS stands for Really Simple Syndication).
 
 1. In Add Podcast, press **Alt+F** to go to **Feed address**.
 2. Paste the address with Ctrl+V.
@@ -3850,6 +3851,10 @@ switching windows.
    what you are doing, and Show or Hide QUILL Cast. Cast already shows and
    hides on Ctrl+Alt+Shift+F12, so you only need a key for that one if you
    would like a different one as well.
+
+To change the show and hide key itself, choose **File > Show and Hide Key...**.
+Type the combination, or press **Record Key...** (**Alt+R**) and then press the
+keys you want: Cast writes them out for you.
 
 The first time, Cast warns you that a system-wide key can take over the same
 key in other programs. If another program already owns a key, Cast leaves it

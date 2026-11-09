@@ -365,7 +365,7 @@ it, which is not the same as paid.
 - **Refresh Payment Status** asks the site again, after confirming which site.
   It reads what the site knows; it never takes, captures or refunds money.
 - **Export to CSV...** and **Export to Word...** include the payment details.
-  In CSV the status stays as the plugin's own code (`partially_refunded`,
+  In CSV (comma-separated values) the status stays as the plugin's own code (`partially_refunded`,
   for instance), which sorts and filters well in a spreadsheet.
 
 The site's own report, under QAF Forms > Payments in wp-admin, lists recent

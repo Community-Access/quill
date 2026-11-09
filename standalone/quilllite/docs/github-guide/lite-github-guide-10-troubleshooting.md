@@ -12,7 +12,7 @@ help from a person.
 
 Most refusals have two parts: what QUILL was trying to do, and why it could
 not. "Could not re-run the failed jobs. Access denied. GitHub refused this
-request: check the token permissions and its organization SSO authorization."
+request: check the token permissions and its organization SSO (single sign-on) authorization."
 When GitHub gave a reason of its own, QUILL adds it after "GitHub said:".
 
 Nothing is half-done. When a command is refused, nothing was changed on
@@ -113,7 +113,7 @@ Two related sentences:
 - "GitHub asked QUILL to wait 60 seconds." is a short pause GitHub asks for
   after a burst of requests. QUILL waits by itself and stops sending until the
   time is up. You hear it once.
-- "GitHub API rate limit reached. Retry after" a number of seconds means the
+- "GitHub API (application programming interface) rate limit reached. Retry after" a number of seconds means the
   hourly allowance is gone. It comes back at the reset time the readout gives.
 
 ### "GitHub reported a conflict" and "GitHub refused the request"
@@ -246,7 +246,7 @@ The workbench talks to GitHub and to nobody else, and only when you ask it to.
   address elsewhere. QUILL fetches those without your token.
 - **Links opened in your browser** never carry your token either.
 - **The GitHub CLI** uses its own sign-in, never QUILL's token (Chapter 9).
-- **AI summaries** in QUILL send the issue's text to the AI you chose, after
+- **AI summaries** in QUILL send the issue's text to the AI (artificial intelligence) you chose, after
   the same questions as every AI feature. Nothing else in the workbench uses
   AI.
 

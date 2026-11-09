@@ -29,7 +29,7 @@ and save it back without changing a thing you did not mean to change. You
 will move between several documents, find words and jump to headings, and
 select exactly what you want without holding Shift down. You will format in
 plain text, Markdown, HTML or rich text, check your spelling and find a
-better word, write by talking, and, if you choose to, ask AI to help. You will
+better word, write by talking, and, if you choose to, ask AI (artificial intelligence) to help. You will
 have QUILL Lite set up as small or as full as you like. And when something
 puzzles you, you will know where to find help.
 

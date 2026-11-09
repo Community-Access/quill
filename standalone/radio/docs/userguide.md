@@ -71,8 +71,8 @@ The chapters follow the order you are likely to want things.
     YouTube sign-in.
 12. **Chapter 12: The ACB Media schedule and reminders.** What is on, what is
     coming up, and being told about it.
-13. **Chapter 13: The Community menu.** Ask, choosing your AI, describing a
-    video, ACB Media podcasts, Community Picks, and suggesting a station.
+13. **Chapter 13: The Community menu.** Ask, choosing your AI (artificial intelligence), describing a
+    video, ACB Media podcasts (from the American Council of the Blind, ACB), Community Picks, and suggesting a station.
 14. **Chapter 14: Making Quill Radio yours.** Preferences, keys, the Command
     Palette, quiet hours and more.
 15. **Chapter 15: Safety nets.** Undo, why something is dimmed, Recent
@@ -166,7 +166,7 @@ under the tag `quill-radio-v3.2.0`.
    SmartScreen speaks up" below.
 3. Setup installs for your Windows account only. It does not offer an
    all-users installation, so it does not need administrator rights or show a
-   UAC prompt. Both Quill Radio and the shared runtime are installed in your
+   UAC (User Account Control) prompt. Both Quill Radio and the shared runtime are installed in your
    user profile.
 4. The setup wizard opens. Press Enter on each page to accept the usual
    choices. The full installation includes this guide and the release notes.
@@ -347,7 +347,7 @@ Open Quill Radio from the Start menu, or run `QuillRadio.exe` in the portable
 folder. The window opens with your cursor in the **Favorite stations** list.
 
 - **No favorites yet?** Press **Ctrl+B** to open Browse Stations. It is a tree
-  of everything: popular stations, NOAA Weather Radio, radio reading services,
+  of everything: popular stations, NOAA (National Oceanic and Atmospheric Administration) Weather Radio, radio reading services,
   whole directories, podcasts and more. Open **ACB Media** for the whole ACB
   stream directory, ready to play with no setup. Or press **Ctrl+F** for Search
   Stations, to search by name, genre, country or language.
@@ -1142,8 +1142,7 @@ with nothing held down:
 - **Open Quill Weather**: Alt+Q, then W (or Ctrl+Alt+Shift+F8)
 - **Open Quill Converter**: Alt+Q, then V (or Ctrl+Alt+Shift+F9)
 - **Open QUILL Transcribe**: Alt+Q, then T (or Ctrl+Alt+Shift+F10). QUILL
-  Transcribe types what you say into any program, and it is released on
-  1 November 2026.
+  Transcribe, new in November 2026, types what you say into any program.
 
 QUILL Transcribe is also the app behind **Edit > Dictate Here** (Ctrl+F11),
 which shows in every copy of Quill Radio from its release: see "Dictating a
@@ -1957,7 +1956,7 @@ AudD instead. It copes better with live radio, where a presenter talks over
 the start of a song or one song runs into the next, and it needs no fpcalc
 program.
 
-1. Make an account at audd.io and copy your API token from
+1. Make an account at audd.io and copy your API (application programming interface) token from
    dashboard.audd.io.
 2. Open Preferences (Ctrl+,) and find the **Song recognition** group.
 3. Set **Song recognition service** to **AudD**.
@@ -2310,7 +2309,7 @@ The rest of the Video menu:
 - **Video Information** (Ctrl+Shift+I) tells you the size, the frame rate, and
   whether captions and described audio are available.
 - **Take a Snapshot** (Ctrl+Shift+Alt+H) saves the current picture into your
-  recordings folder, for example so you can read a slide with OCR. You should
+  recordings folder, for example so you can read a slide with OCR (optical character recognition). You should
   hear "Snapshot saved as" and its name.
 - **Describe the Video** (Ctrl+F5) asks the AI you chose what is on screen. See
   Chapter 13.
@@ -2519,7 +2518,7 @@ After **Search All Sources...**, the branches are:
 12. **Double Tap Live**: the blind tech show's own 24-hour channel, with talk,
     tech, music and the best of the Double Tap podcast, on air around the
     clock.
-13. **NFB Radio**: the NFB Radio Network.
+13. **NFB Radio**: the NFB (National Federation of the Blind) Radio Network.
 14. **Radio Reading Services**: services that read print aloud for blind and
     print-disabled listeners.
 15. **Westwood One Sports**: Westwood One's ten live event channels. During
@@ -2877,7 +2876,8 @@ which it used:
   "jazz" while you are on France and you get France's jazz stations, with or
   without the internet.
 - On **LibriVox**, the **Internet Archive**, **TuneIn**, **iHeart**, **NOAA**
-  (by call sign, SAME code, or "County, ST"), **Project Gutenberg**,
+  (by call sign, by SAME code, which is short for Specific Area Message
+  Encoding, or by "County, ST"), **Project Gutenberg**,
   **181.FM**, **laut.fm**, **Audius**, **Mixcloud** and
   **ccMixter**, it uses that source's own search.
 - On a **podcast show**, it searches the episodes, show notes included.
@@ -4249,7 +4249,7 @@ Quill Radio takes these out by itself. There is nothing to set.
 - If the station plays a different advert each time, or none, nothing is
   cut and the recording stays exactly as it was captured. Quill Radio only
   removes audio it has heard open two different connections.
-- It does not apply to YouTube broadcasts or to HLS streams (addresses ending
+- It does not apply to YouTube broadcasts or to HLS (HTTP Live Streaming) streams (addresses ending
   in `.m3u8`), where two connections can genuinely start with the same
   programme audio.
 
@@ -4427,7 +4427,7 @@ Worth knowing:
   **Import Podcasts from OPML...** and **Search for a Podcast...**.
 - **Export Podcasts to OPML...** (since 3.0.4) is on the menu of the
   **Subscriptions** folder and of the **Podcasts (Apple)** branch, next to
-  Import. It writes every show you follow, folders included, to an OPML file,
+  Import. It writes every show you follow, folders included, to an OPML (Outline Processor Markup Language) file,
   the kind of file every podcast app can read, and tells you how many it
   wrote, for example "Exported 12 podcasts to quill-radio-podcasts.opml." It is
   the same file QUILL Cast's Subscriptions > Export OPML writes, so nothing is
@@ -7362,7 +7362,7 @@ Quill Radio comes with.
 
 ### Check for Updates, step by step
 
-Help > About shows your version with a build number, such as 3.2.0 (build 4). The
+Help > About shows your version with a build number, such as 3.2.0 (build 5). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 

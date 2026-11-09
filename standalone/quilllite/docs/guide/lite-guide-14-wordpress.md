@@ -1,7 +1,7 @@
 # Chapter 14: WordPress
 
 Payment forms use this same WordPress connection. Tools > Forms configures
-Stripe/PayPal payments and reads provider/webhook readiness; the QAF plugin
+Stripe/PayPal payments and reads provider/webhook readiness; the QAF (QUILL Accessible Forms) plugin
 must implement payment contract version 1. Provider credentials and checkout
 stay on the site. See [Forms](lite-guide-15-forms.html) for setup and testing.
 

@@ -15,7 +15,7 @@ too, so most of this applies to them as well.
 Load a repository, keep **View:** on **Issues & PRs**, and arrow to the issue.
 Press Tab to reach **Details**. It reads like a document:
 
-- the number, whether it is an issue or a PR, and the title;
+- the number, whether it is an issue or a PR (pull request), and the title;
 - its state, author, when it was opened and last updated, and its link;
 - its labels and assignees, when it has any, and how many comments;
 - then a line of dashes, and the description.
@@ -42,7 +42,7 @@ thumbs up, 1 heart".
 
 ### A summary of the discussion
 
-**Summarize** (`Alt+Z`) asks QUILL's AI to boil the issue and its comments
+**Summarize** (`Alt+Z`) asks QUILL's AI (artificial intelligence) to boil the issue and its comments
 down to a few sentences: what it is about, where it stands, the open
 questions and the next step. The summary goes at the top of Details and is
 read out. It uses the AI connection you chose in QUILL and asks the same

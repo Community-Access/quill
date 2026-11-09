@@ -4,7 +4,7 @@
 
 A codespace is a computer GitHub runs for you in the cloud, already set up
 with a repository and its tools. This chapter covers opening the Codespaces
-page from GitHub Items, QUILL's Codespaces commands, and the GitHub CLI those
+page from GitHub Items, QUILL's Codespaces commands, and the GitHub CLI (command-line interface) those
 commands rely on, including how QUILL makes sure it is using the same account
 as you.
 

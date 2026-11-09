@@ -131,7 +131,7 @@ security alerts, dismissing them with a reason, and reopening them.
 
 ### [Chapter 9: Codespaces and the GitHub CLI](lite-github-guide-09-codespaces-and-the-cli.html)
 
-Opening Codespaces, QUILL's Codespaces commands, and the GitHub CLI they rely
+Opening Codespaces, QUILL's Codespaces commands, and the GitHub CLI (command-line interface) they rely
 on, including how QUILL keeps the two sign-ins on the same account.
 
 - [The GitHub CLI](lite-github-guide-09-codespaces-and-the-cli.html#the-github-cli)

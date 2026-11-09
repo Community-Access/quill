@@ -94,7 +94,7 @@ Press Enter on **Show QUILL Transcribe** in the tray menu, or your show and
 hide key if you chose one. The window shows:
 
 - **State** (Alt+E) - Ready, Listening, Hearing you, Paused, or Waiting for you to
-  switch to a field. It was Alt+A until the AI menu took that letter.
+  switch to a field. It was Alt+A until the AI (artificial intelligence) menu took that letter.
 - **Start Dictation** - the button changes to Stop Dictation while dictation is on.
 - **Resume** (Alt+R), **Resume in This Field** (Alt+T) and **Discard Held Words** (Alt+C) - for when dictation is paused. Discard Held Words was Alt+W until 2026-10-17, but Alt+W is the **Window** menu, and when a button and a menu share a letter Windows presses the button: Alt+W threw your held words away instead of opening the Window menu. Now Alt+W always opens Window, and Alt+C is the button. For example, if dictation paused because you left the field and you no longer want those words, press Alt+C; Dictation > Discard Held Words (Ctrl+Shift+D) does the same from the menu.
 - **Model and microphone** - the model, microphone, dictation profile (and
@@ -1277,7 +1277,7 @@ that model.
   the update it is copied there from QUILL's data folder, and the old file is
   left as it was, as a backup. QUILL Lite shares it once you
   check **Use the shared word list** in its own My Words and Phrases window.
-  **Export...** saves the list to a Markdown or CSV file, and **Import...**
+  **Export...** saves the list to a Markdown or CSV (comma-separated values) file, and **Import...**
   adds the new entries from one after showing you what it will add; nothing
   you have is replaced. You hear the counts, such as "Imported 12 words, 3
   already there."

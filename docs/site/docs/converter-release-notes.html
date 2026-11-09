@@ -365,10 +365,11 @@ a converter never quietly drop the one track a blind viewer needed.</p>
 problem they solve</h3>
 <p>A new <strong>Effects</strong> choice on the main window offers
 twelve recipes named for what is wrong: Clean up speech, Podcast ready,
-Audiobook ACX ready, Clearer voice for listening, Louder dialogue for
-films and TV, Night listening, music and broadcast loudness, hum, noise,
-long silences, and bass. You should not have to know what a de-esser is
-to fix sibilance.</p>
+Audiobook ACX ready (ACX is Audible’s Audiobook Creation Exchange),
+Clearer voice for listening, Louder dialogue for films and TV, Night
+listening, music and broadcast loudness, hum, noise, long silences, and
+bass. You should not have to know what a de-esser is to fix
+sibilance.</p>
 <p><strong>Custom Effects</strong> (Ctrl+E) puts every switch on one
 page, starting from the recipe you chose, so you can take “Podcast
 ready” and change one thing. It also has loudness targets, gain, speed,
@@ -419,9 +420,10 @@ Workbench…, Ctrl+H) opens the highlighted MP3, M4B or M4A in the Audio
 Studio’s Chapter Workbench, with a player: rename, split at the
 playhead, set a start to the playhead, merge, find chapters at silences,
 import and export chapter lists (Audacity labels, CUE, timestamps,
-Podcasting 2.0 JSON, CSV), edit the book’s details or, with All tags…,
-every tag in the Tag Editor, save, and split into files. The player is
-libmpv, now bundled in both downloads, so it seeks exactly.</p>
+Podcasting 2.0 JSON, and CSV, which is comma-separated values, edit the
+book’s details or, with All tags…, every tag in the Tag Editor, save,
+and split into files. The player is libmpv, now bundled in both
+downloads, so it seeks exactly.</p>
 <h3 id="join-and-split">Join and split</h3>
 <p><strong>Join into One File</strong> (Ctrl+J) puts the whole queue, in
 order, into one sound file with one chapter per source, named from its
@@ -504,15 +506,16 @@ and QUILL’s own <strong>Convert with Quill</strong> Explorer entry,
 which opens Quill Converter, is available in public builds.</p>
 <h3 id="ai-if-you-want-it">AI, if you want it</h3>
 <p>A new <strong>AI</strong> menu (Alt+I) does nothing until you use it.
-<strong>Choose Your AI</strong> (Ctrl+Shift+F8) picks the free AI, your
-ChatGPT subscription or your own key. <strong>Ask</strong>
-(Ctrl+Shift+8) knows the queue’s file details and the last report.
-<strong>Will This Play on My Device?</strong> (Ctrl+Shift+D) says
-whether the queued files will play on the device you name, and what to
-convert them to if not. <strong>Make This Right for My Player…</strong>
-(Ctrl+F3) starts one conversion from a sentence, after telling you what
-it will do; it needs GitHub Copilot or Codex. The AI gets file details,
-never folders or the sound, and Safe Mode turns the menu off.</p>
+<strong>Choose Your AI</strong> (Ctrl+Shift+F8) picks the free AI
+(artificial intelligence), your ChatGPT subscription or your own key.
+<strong>Ask</strong> (Ctrl+Shift+8) knows the queue’s file details and
+the last report. <strong>Will This Play on My Device?</strong>
+(Ctrl+Shift+D) says whether the queued files will play on the device you
+name, and what to convert them to if not. <strong>Make This Right for My
+Player…</strong> (Ctrl+F3) starts one conversion from a sentence, after
+telling you what it will do; it needs GitHub Copilot or Codex. The AI
+gets file details, never folders or the sound, and Safe Mode turns the
+menu off.</p>
 <h3 id="new-in-build-2">New in build 2</h3>
 <ul>
 <li><strong>Process with Auphonic.</strong> If you have an Auphonic
@@ -566,7 +569,7 @@ carry:</p>
 read what is inside a file.</li>
 <li><strong>libmpv</strong>, the mpv playback engine, as the Chapter
 Workbench’s player.</li>
-<li><strong>yt-dlp</strong>, for Convert from URL, and
+<li><strong>yt-dlp</strong>, for Convert from URL (a web address), and
 <strong>deno</strong>, the JavaScript runtime it needs for YouTube.</li>
 <li><strong>mutagen</strong>, for carrying cover art and chapters into
 the converted copy.</li>

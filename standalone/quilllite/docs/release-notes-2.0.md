@@ -6,7 +6,7 @@ Help > About (Alt+F1) shows the exact build you have.*
 Welcome to QUILL Lite 2.0. It's the first release since 1.1.2, and it's a big
 one. QUILL Lite is still the small, quick editor you know, the one that opens
 in a blink and stays out of your way. But now you can talk to it, tell it what
-you want in your own words, publish to your website from it, and pick which AI
+you want in your own words, publish to your website from it, and pick which AI (artificial intelligence)
 helps you, or none at all.
 
 Here are the moments we think you'll love most. Each one has its own section
@@ -451,7 +451,7 @@ has every model's published accuracy, what we measured on real speech, and
 
 - **Shared settings and words.** You can share dictation settings and your
   word list with QUILL, QUILL Transcribe and Quill Inkwell, and import or
-  export My Words and Phrases (**Alt+Shift+F10**) as Markdown or CSV.
+  export My Words and Phrases (**Alt+Shift+F10**) as Markdown or CSV (comma-separated values).
 - **Programs dictation never types into.** Password managers and Windows
   sign-in prompts are on the list to begin with, and you can add more. See
   "Programs dictation never types into".
@@ -875,7 +875,7 @@ Publishing requires matching site mode and ready providers/webhooks; Test on
 Site refuses a published live-payment form. Responses show payment metadata
 and include it in CSV/Word exports; Refresh Payment Status rereads the site.
 
-Checkout needs the separately installed QAF WordPress plugin to implement
+Checkout needs the separately installed QAF (QUILL Accessible Forms) WordPress plugin to implement
 payment contract version 1. Provider credentials, charging and webhooks stay
 in WordPress. This update does not deploy that plugin or certify live checkout.
 
@@ -924,7 +924,7 @@ in WordPress. This update does not deploy that plugin or certify live checkout.
   pages may read poorly. Page breaks are a pause, never "form feed". See
   "Opening a PDF".
 - **PDFs in the portable copy.** The portable QUILL Lite now reads PDFs and
-  has Windows OCR too, like the installed copy. The portable zip is about
+  has Windows OCR (optical character recognition) too, like the installed copy. The portable zip is about
   25 MB bigger.
 - **Import / Convert Document.** **File > Import / Convert Document
   (OCR)...**, QUILL's command, turns a document, an e-book, a PDF or a picture
@@ -1236,36 +1236,24 @@ See "Coding: project tasks, in the Developer profile" in the user guide.
 
 ### GitHub, from the editor
 
-**Signing in, kept simple.** The GitHub Guide teaches **Sign In with GitHub**,
-and keeps tokens in one advanced section for the few who need them. A broad
-classic token gets one gentle suggestion to sign in instead, a token about to
-expire gets a warning a few days ahead, and with GitHub Workbench Mode on, a
-**Workbench** cell on the status bar names the repository you're in. It all
-works as it does in QUILL.
+#### Connecting to GitHub
 
-#### Sign in to GitHub from QUILL Lite
+Choose **File > Manage GitHub Accounts...** (**Alt+F**, then **H**) and press
+**Sign In with GitHub...**. QUILL Lite puts a short code on the clipboard and
+opens GitHub's page; paste the code there, approve QUILL Lite, and you're
+signed in. That's all most people ever need. QUILL and QUILL Lite share the
+same accounts, so signing in once covers both.
 
-You no longer need QUILL to sign in to GitHub. **File > Manage GitHub
-Accounts...** (**Alt+F**, then **H**) adds an account from a personal access
-token, checks it with GitHub before saving it, and switches or removes saved
-accounts. It's the same window QUILL has, and both editors see the same
-accounts.
+If you open the GitHub Workbench before signing in, it offers to sign you in
+first, and **Continue as Guest** still opens public repositories. If you'd
+rather use a personal access token, you can add one there too; the GitHub
+Guide explains when you might want to.
 
-If you open the GitHub Workbench with no account saved, it now tells you so and
-offers Manage GitHub Accounts first. Once your account is added the Workbench
-opens signed in. **Continue as Guest** still opens it for public repositories.
+With GitHub Workbench Mode on, a **Workbench** cell on the status bar names the
+repository you're in.
 
 Export as HTML gave up its access letter, H, to make room; **Ctrl+Alt+Shift+End**
 still exports.
-
-#### Sign in to GitHub without a token
-
-**File > Manage GitHub Accounts...** (Alt+F, then H) now starts with **Sign In
-with GitHub...**: QUILL Lite puts a short code on the clipboard and opens
-GitHub's page, you paste the code there and approve QUILL Lite, and the account
-is added. No personal access token to make or paste. **Add Token
-(Advanced)...** is still there for a fine-grained token you made yourself. It's
-the same window as QUILL's.
 
 #### A GitHub menu, when you want one
 
@@ -1276,13 +1264,12 @@ notifications, a repository's issues and pull requests, its Actions runs and
 its releases in one step. Turn it off and the rows go back. It's the same menu
 as QUILL's, less the rows only QUILL has. **File > Clone Repository...**
 (Alt+F, then Y) is new too: it copies a repository to your computer, private
-ones included, without writing your token anywhere, and then offers to open a
-file from it.
+ones included, and then offers to open a file from it.
 
 #### The GitHub Workbench
 
 **File > GitHub Workbench...** (**Alt+F**, then **G**) opens the shared QUILL
-GitHub Items viewer. A PR expands into changed files, review threads, general
+GitHub Items viewer. A PR (pull request) expands into changed files, review threads, general
 conversations, and checks. Arrow to an item and Tab into its detail; Ctrl+R
 replies to a selected thread. Shift+F10 opens a context menu that fits the
 selected item. Public repositories can be read anonymously; posting needs a
@@ -1536,7 +1523,7 @@ the details.
   monitors. See "Text looks blurry, or a window is the wrong size".
 - **A spoken name for the profile description** in Preferences.
 - **The shared runtime under the hood.** Windows OCR now uses PyWinRT 4.0.3
-  and the Windows SDK 10.0.28000.2705 projections. Reading a scanned page works
+  and the Windows SDK (software development kit) 10.0.28000.2705 projections. Reading a scanned page works
   as before; nothing new is added to OCR.
 - **Licensing of the shared runtime.** The installed QUILL Lite uses the
   QuillVille Runtime, which includes PyMuPDF 1.28.2 under AGPL-3.0 through

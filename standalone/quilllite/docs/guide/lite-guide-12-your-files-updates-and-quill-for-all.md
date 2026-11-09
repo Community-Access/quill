@@ -261,7 +261,7 @@ it with a model you download, is only in QUILL.
 
 ### AI
 
-QUILL Lite has AI help, described in
+QUILL Lite has AI (artificial intelligence) help, described in
 [Chapter 10, AI help](lite-guide-10-ai-help.html#chapter-10-ai-help). It can summarize,
 rewrite, proofread and explain, answer a question about the document you have
 open, and a few more things that chapter walks you through. It is there so you

@@ -56,7 +56,7 @@ name empty, Weather continues to use the place name from the search result.
 
 ## AI, when you ask for it
 
-Quill Weather now has an AI menu (Alt+I), and it does nothing until you use it.
+Quill Weather now has an AI (artificial intelligence) menu (Alt+I), and it does nothing until you use it.
 
 - **Should I Go Out?** (Ctrl+Shift+G) answers in plain words from the forecast
   for your primary place. Any active alert comes first, in the Weather
