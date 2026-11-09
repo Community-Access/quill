@@ -352,6 +352,18 @@
 - The download page lists the GitHub Guide beside the user guide.
 
 
+### GitHub Workbench: review threads, Explore and job logs (2026-11-07)
+
+- QUILL and QUILL Lite share an expandable PR review outline with thread replies,
+  resolve/reopen actions, and exact changed-line navigation when a current patch
+  position is available.
+- Explore GitHub adds global saved searches, My Work, activity, repository and
+  people discovery, notifications, gists, labels, Pages builds, and security
+  views. The repository chooser includes pinned and recent repositories.
+- Workflow runs now expose jobs and text logs; run actions use the actual API
+  run ID. Redirected job-log downloads do not forward the account token.
+  See [the workbench reference](docs/github/workbench-reference.md).
+
 ### Quill Radio: ideas from BlindRadio (2026-11-07)
 
 - Quill Radio gains curated networks with direct streams (516 channels), the
@@ -13177,15 +13189,3 @@ Quill 0.1.1 Beta uses a unified Help-menu support flow. `Help -> Report a Bug...
 ### Notes
 
 This is a beta release. The product direction is aligned with the Quill 1.0 PRD, while some workflows are still evolving toward that fuller 1.0 target.
-# GitHub Workbench update (2026-11-05, pending release acceptance)
-
-- QUILL and QUILL Lite share an expandable PR review outline with thread replies,
-  resolve/reopen actions, and exact changed-line navigation when a current patch
-  position is available.
-- Explore GitHub adds global saved searches, My Work, activity, repository and
-  people discovery, notifications, gists, labels, Pages builds, and security
-  views. The repository chooser includes pinned and recent repositories.
-- Workflow runs now expose jobs and text logs; run actions use the actual API
-  run ID. Redirected job-log downloads do not forward the account token.
-- Native screen-reader acceptance and destination-branch integration are pending.
-  See [the workbench reference](docs/github/workbench-reference.md).

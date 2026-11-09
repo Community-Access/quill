@@ -2365,3 +2365,32 @@ the app's data folder), signed in to QUILL's free AI.
 - [ ] All nine with JAWS.
 - [ ] Checks 1, 2, 5 and 9 with Narrator.
 
+## GitHub Workbench: review threads, Explore and job logs (#1778, 2026-11-07)
+
+Shipped in QUILL 1.0 and QUILL Lite 2.0 without a recorded screen-reader pass.
+Its notes used to say "native screen-reader acceptance is pending"; this is
+that acceptance. Use a repository with an open pull request that has review
+comments, and a signed-in account.
+
+1. **The review tree.** Open the pull request in GitHub Items. Arrow through
+   it: its changed files, conversations and checks are read as tree items with
+   their level, and Right expands a file into its threads.
+2. **Into a thread and back.** Tab from a thread into its detail, read the
+   whole conversation, and Shift+Tab back to the same tree item.
+3. **Reply.** Ctrl+R on a thread opens the reply box with the thread named;
+   sending says it was posted, and focus returns to the thread.
+4. **Resolve and reopen.** Ctrl+Shift+R resolves the thread and says so; again
+   reopens it.
+5. **The exact line.** On a comment tied to a changed line, the detail names
+   the file and line; a comment on an outdated line says it is outdated.
+6. **Context menus.** Shift+F10 on a file, a thread and a check offers only
+   what fits each.
+7. **Explore.** Open Explore; move through saved searches, My Work and
+   notifications. Each list says its count and Enter opens the item.
+8. **Job logs.** Open a workflow run, then a job: its steps are listed, and its
+   log opens as text you can read and search.
+9. **QUILL Lite.** Checks 1, 3, 4 and 7 from Tools > GitHub Workbench.
+
+- [ ] All nine with NVDA.
+- [ ] All nine with JAWS.
+- [ ] Checks 1, 3 and 7 with Narrator.
