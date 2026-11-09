@@ -44,6 +44,7 @@ Safe Mode. wx-free, strict-typed.
 
 from __future__ import annotations
 
+import http.client
 import re
 import ssl
 import urllib.error
@@ -330,7 +331,13 @@ def _fetch(url: str) -> str | None:
         if error.code in (404, 410):
             return None
         raise StationPlaylistError(f"The playlist service answered {error.code}.") from error
-    except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
+    except (
+        urllib.error.URLError,
+        http.client.HTTPException,
+        TimeoutError,
+        ssl.SSLError,
+        OSError,
+    ) as error:
         raise StationPlaylistError(f"Could not reach the playlist service: {error}") from error
     if len(data) > _MAX_BYTES:
         raise StationPlaylistError("The playlist service sent far more than a playlist.")
