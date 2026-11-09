@@ -149,7 +149,7 @@ def test_the_commands_are_quills_commands() -> None:
     assert COMMAND_EQUIVALENTS["cmd_next_block"] == "navigate.next_block"
 
 
-# -- View > Problems Pane ------------------------------------------------------
+# -- View > Problems > Show Pane ------------------------------------------------------
 
 
 class _FakePane:
@@ -169,6 +169,9 @@ class _FakePane:
 
     def set_shown(self, shown: bool) -> None:
         self.shown = bool(shown)
+
+    def set_all_files(self, all_files: bool) -> None:
+        self.all_files = bool(all_files)
 
     def has_focus(self) -> bool:
         return self.focused
@@ -301,3 +304,56 @@ def test_check_after_a_pause_is_remembered_for_the_app(lite_window) -> None:
     assert win.app.settings.problems_check_after_pause is True
     assert win._problems_pause_enabled() is True
     assert win.app.queued_settings == queued + 1
+
+
+def test_all_open_files_lists_every_window_and_brings_one_forward(lite_window, tmp_path) -> None:
+    first = lite_window("<b>open", cursor=0)
+    first.path = tmp_path / "page.html"
+    first.set_document_language("html", announce=False)
+    second = lite_window("# Title" + "\n### Skipped" + "\n", cursor=0)
+    second.set_document_language("markdown", announce=False)
+    second.path = tmp_path / "notes.md"
+    first.app.frames.append(second)
+    pane = _with_pane(first)
+    pane.shown = True
+    first.cmd_check_this_file()
+    first._problems_set_all_files(True)
+    assert len(pane.report.problems) == 2
+    assert {p.document for p in pane.report.problems} == {
+        first.document_name(),
+        second.document_name(),
+    }
+    row = next(
+        i for i, p in enumerate(pane.report.problems) if p.document == second.document_name()
+    )
+    first._problems_pane_go_to(row)
+    assert first.app.focused[-1] is second
+    assert second.control.GetInsertionPoint() == second.control.GetValue().index("###")
+
+
+def test_view_problems_files_rows_switch_for_now(lite_window) -> None:
+    win = lite_window("<b>open", cursor=0)
+    win.set_document_language("html", announce=False)
+    pane = _with_pane(win)
+    chosen: list[bool] = []
+    pane.set_all_files = chosen.append
+    win.cmd_problems_all_files()
+    assert win.problems_listing_all_files() is True
+    assert win.app.settings.problems_all_open_files is False, "the setting is the default"
+    assert chosen[0] is True
+    win.apply_problems_pane_visibility()
+    assert pane.shown, "choosing from the menu shows a hidden pane"
+    assert win.announcements[-1].startswith("Problems pane shown, all open files.")
+    win.cmd_problems_this_file()
+    assert win.problems_listing_all_files() is False
+    assert win.announcements[-1] == "1 problem"
+
+
+def test_the_default_comes_from_preferences(lite_window) -> None:
+    win = lite_window("<b>open", cursor=0)
+    win.set_document_language("html", announce=False)
+    win.app.settings.problems_all_open_files = True
+    assert win.problems_listing_all_files() is True
+    _with_pane(win)
+    win.cmd_toggle_problems_pane()
+    assert win._problems_all_files is True

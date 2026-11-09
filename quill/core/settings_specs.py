@@ -556,6 +556,16 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("autocomplete", "prediction", "intellisense"),
     ),
     SettingSpec(
+        "problems_all_open_files",
+        "Problems pane lists all open files at first",
+        "editing",
+        "bool",
+        "The default for View > Problems: every open document's problems, or just "
+        "the one in front. View > Problems, the pane's Files chooser and F in its "
+        "list switch for now without changing this. QUILL Lite has the same setting.",
+        keywords=("problems", "check this file", "all open files", "errors"),
+    ),
+    SettingSpec(
         "snippet_trigger_expansion",
         "Expand snippet triggers while typing",
         "editing",

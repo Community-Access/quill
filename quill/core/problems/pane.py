@@ -18,13 +18,17 @@ The filter row has two choosers:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from pathlib import Path
 
 from quill.core.problems.model import CheckReport, Problem
 
 __all__ = [
     "ALL_SOURCES",
+    "SCOPE_CHOICES",
     "SHOW_CHOICES",
+    "OpenProblemDocument",
+    "combine_reports",
     "PaneFilter",
     "count_sentence",
     "filter_problems",
@@ -39,6 +43,12 @@ SHOW_CHOICES: tuple[tuple[str, str], ...] = (
     ("errors", "Errors only"),
 )
 
+#: The Files chooser, in order: ``(key, label)``. The first is the default.
+SCOPE_CHOICES: tuple[tuple[str, str], ...] = (
+    ("this", "This file"),
+    ("open", "All open files"),
+)
+
 #: The Source chooser's first row, which means "do not filter by source".
 ALL_SOURCES = "All sources"
 
@@ -50,6 +60,45 @@ _SHOWN_SEVERITIES: dict[str, frozenset[str]] = {
     "warnings": frozenset({"error", "warning"}),
     "errors": frozenset({"error"}),
 }
+
+
+@dataclass(frozen=True, slots=True)
+class OpenProblemDocument:
+    """One open document, as the pane's All open files needs it."""
+
+    #: Whatever the editor uses to bring it to the front (a tab index, a window).
+    key: object
+    name: str
+    text: str
+    language: str
+    path: Path | None = None
+    modified: bool = True
+
+
+def combine_reports(
+    parts: list[tuple[object, str, CheckReport]],
+) -> tuple[CheckReport, list[tuple[object, Problem]]]:
+    """One report from several documents' reports, and what each row came from.
+
+    Each problem keeps its own line and column and gains its document's name,
+    which the row reads first. The second value lists, row by row, the
+    document key and the problem as that document's report has it, so Go To
+    can bring the right document forward.
+    """
+    problems: list[Problem] = []
+    origins: list[tuple[object, Problem]] = []
+    checked: list[str] = []
+    for key, name, report in parts:
+        for problem in report.problems:
+            problems.append(replace(problem, document=name))
+            origins.append((key, problem))
+        checked.extend(tool for tool in report.checked_with if tool not in checked)
+    combined = CheckReport(
+        language=parts[0][2].language if parts else "",
+        problems=tuple(problems),
+        checked_with=tuple(checked),
+    )
+    return combined, origins
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,14 +141,15 @@ def filter_problems(
 
 
 def pane_row(problem: Problem) -> str:
-    """One row: severity, then line and column, the message, and the source.
+    """One row: the document (in All open files), severity, place, message, source.
 
     Severity first because the pane is a list you scan for errors; the modal
     list puts the place first because it is read in document order.
     """
+    where = f"{problem.document}: " if problem.document else ""
     return (
-        f"{problem.severity.capitalize()}, line {problem.line}, column {problem.column}: "
-        f"{problem.message} ({_source_name(problem)})"
+        f"{where}{problem.severity.capitalize()}, line {problem.line}, "
+        f"column {problem.column}: {problem.message} ({_source_name(problem)})"
     )
 
 

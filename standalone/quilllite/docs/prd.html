@@ -2788,7 +2788,7 @@ from the shared <code>quill/core/code_names.py</code>.</li>
 <h2 id="the-problems-pane-2026-11-08">The Problems pane
 (2026-11-08)</h2>
 <ul>
-<li><strong>View &gt; Problems Pane</strong>
+<li><strong>View &gt; Problems &gt; Show Pane</strong>
 (<code>cmd_toggle_problems_pane</code>, no key, as in QUILL, for the
 reason recorded there): QUILL’s pane, from the shared
 <code>quill/ui/problems_pane.py</code> and
@@ -2803,7 +2803,14 @@ and Show and Source narrow the list. While shown, Check This File fills
 the pane rather than opening <code>choose_from_rows</code>. Saving
 checks again, and so does a pause in typing when the pane’s Check after
 a pause box (<code>problems_check_after_pause</code>, QUILL’s field, off
-by default) is checked; only a changed count is said.</li>
+by default) is checked; only a changed count is said. View &gt; Problems
+&gt; This File Only / All Open Files
+(<code>cmd_problems_this_file</code>,
+<code>cmd_problems_all_files</code>, QUILL’s rows;
+<code>problems_all_open_files</code>, app-wide) and the pane’s Files
+chooser list every open window’s problems (built-in checkers), and Enter
+on another window’s row brings it forward with
+<code>focus_frame</code>.</li>
 </ul>
 <h2 id="word-documents-and-table-navigation-2026-10-17">Word documents
 and table navigation (2026-10-17)</h2>
