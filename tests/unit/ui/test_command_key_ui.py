@@ -320,10 +320,28 @@ def test_no_key_means_no_jev_and_no_question(monkeypatch: pytest.MonkeyPatch) ->
     from quill.core.command_catalogue import jev
 
     monkeypatch.setattr(jev, "_key_from_credential_manager", lambda: "")
+    monkeypatch.setattr(hosts, "_gateway_token", lambda: "")
     asked: list[int] = []
     monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a: asked.append(1) or "jev")
     host, _registry, _spoken = _host()
     assert hosts._assist_for(host) is None and asked == []
+
+
+def test_signed_in_to_free_ai_offers_jev_through_the_gateway(
+    tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quill.core.paths as paths
+    from quill.core.command_catalogue import jev
+
+    monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    monkeypatch.setattr(jev, "_key_from_credential_manager", lambda: "")
+    monkeypatch.setattr(hosts, "_gateway_token", lambda: "device-token")
+    monkeypatch.setattr(hosts, "_JEV_ROUTE", None)
+    monkeypatch.setattr(ui, "ask_command_understanding", lambda *_a: "jev")
+    host, _registry, _spoken = _host()
+    assert hosts._assist_for(host) is not None
+    assert isinstance(hosts._JEV_ROUTE, jev.GatewayJev)
 
 
 def test_safe_mode_means_no_jev(monkeypatch: pytest.MonkeyPatch) -> None:

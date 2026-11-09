@@ -270,8 +270,10 @@ CONSENT_TITLE = "Understanding Commands"
 CONSENT_TEXT = (
     "To understand requests the quick matcher can't, QUILL can send the words you "
     "typed or said, the name of this app, and the names of the commands it can do "
-    "right now to TypeSafe, a company in San Francisco, which picks one. Nothing else "
-    "is sent: no document text, file names, stations, places or accounts. TypeSafe "
+    "right now to Community Access's service, which asks TypeSafe, a company in San "
+    "Francisco, to pick one (if you stored your own TypeSafe key, QUILL asks TypeSafe "
+    "directly). Nothing else is sent: no document text, file names, stations, places "
+    "or accounts. TypeSafe "
     "keep the requests they receive, and say they do not train on them. You can "
     "change this at any time."
 )

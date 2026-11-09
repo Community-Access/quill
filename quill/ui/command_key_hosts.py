@@ -73,18 +73,17 @@ def command_understanding() -> str:
 def _assist_for(host: WxCommandKeyHost) -> Any:
     """Tier 3, when it can be offered and the person said yes (7.8, decision 7).
 
-    Jev is offered only where a route exists: an own TypeSafe key in Credential
-    Manager today, the gateway once ``/v1/decide`` is deployed. Never in Safe
-    Mode. The question is asked once, the first time Jev would be used, with
+    Jev is offered only where a route exists: this computer signed in to QUILL's
+    free AI (the gateway's ``/v1/decide``), or an own TypeSafe key in Credential
+    Manager. Never in Safe Mode. The question is asked once, the first time Jev would be used, with
     "my own AI" and "on this computer only" as equal answers.
     """
     import os
 
     from quill.core.command_catalogue.assist import JevAssist
-    from quill.core.command_catalogue.jev import _key_from_credential_manager
     from quill.ui.command_key_ui import ask_command_understanding
 
-    if os.environ.get("QUILL_SAFE_MODE") == "1" or not _key_from_credential_manager():
+    if os.environ.get("QUILL_SAFE_MODE") == "1" or not _route_available():
         return None
     choice = command_understanding()
     if not choice:
@@ -100,12 +99,35 @@ def _assist_for(host: WxCommandKeyHost) -> Any:
 _JEV_ROUTE: Any = None
 
 
+def _gateway_token() -> str:
+    """The device token for QUILL's free AI, or "" when this computer is not signed in."""
+    from quill.core.ai.gateway_session import load_token
+
+    return load_token()
+
+
+def _route_available() -> bool:
+    from quill.core.command_catalogue.jev import _key_from_credential_manager
+
+    return bool(_key_from_credential_manager() or _gateway_token())
+
+
 def _route() -> Any:
+    """An own TypeSafe key wins (the person chose to pay); otherwise the gateway."""
     global _JEV_ROUTE
     if _JEV_ROUTE is None:
-        from quill.core.command_catalogue.jev import OwnKeyJev
+        from quill.core.command_catalogue.jev import (
+            GatewayJev,
+            OwnKeyJev,
+            _key_from_credential_manager,
+        )
 
-        _JEV_ROUTE = OwnKeyJev()
+        if _key_from_credential_manager():
+            _JEV_ROUTE = OwnKeyJev()
+        else:
+            from quill.core.ai.gateway_session import base_url
+
+            _JEV_ROUTE = GatewayJev(base_url(), _gateway_token)
     return _JEV_ROUTE
 
 

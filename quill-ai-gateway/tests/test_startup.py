@@ -101,7 +101,22 @@ def test_a_fully_configured_deployment_has_nothing_to_say():
     class Complete(_Base):
         ADMIN_ALLOWLIST = frozenset({"some-device"})
         ALERT_WEBHOOK_URL = "https://example.invalid/hook"
+        TYPESAFE_API_KEY = "ts-configured"
 
     cfg = Complete()
     assert cfg.validate() == []
     assert cfg.warnings() == []
+
+
+def test_a_missing_typesafe_key_is_a_warning_not_a_failure():
+    """Jev is optional: without its key /v1/decide answers disabled and QUILL
+    matches commands on the computer, so the service must still start."""
+
+    class NoJev(_Base):
+        ADMIN_ALLOWLIST = frozenset({"some-device"})
+        ALERT_WEBHOOK_URL = "https://example.invalid/hook"
+        TYPESAFE_API_KEY = ""
+
+    cfg = NoJev()
+    assert cfg.validate() == []
+    assert any("TYPESAFE_API_KEY" in note for note in cfg.warnings())

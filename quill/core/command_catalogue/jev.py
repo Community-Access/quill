@@ -6,12 +6,13 @@ and 2 could not settle, and only ever chooses among the candidates it was sent.
 
 **Two routes.**
 
-- **The gateway** (the default once deployed): ``POST /v1/decide`` on the
-  Community Access gateway, with the person's device token; the gateway holds
-  the TypeSafe key and caps use. It is designed (section 7.6) to run on
-  lp.csedesigns.com, beside the other Community Access keys, rather than on
-  Cloudflare as first proposed; it is **not deployed**, so
-  :class:`GatewayJev` answers ``disabled`` until a base URL is configured.
+- **The gateway** (the default): ``POST /v1/decide`` on the Community Access
+  gateway (``quill-ai-gateway/app/routes/decide.py``, on lp.csedesigns.com),
+  with the person's device token. The gateway holds the TypeSafe key, caps use,
+  and builds the request itself from its own copy of the catalogue, so the
+  client sends only the app, the catalogue version, the ids of the commands it
+  can run now (in tier 2's order) and the state. :class:`GatewayJev` answers
+  ``disabled`` when it has no base URL.
 - **An own key**, for development and for anybody who wants to pay TypeSafe
   themselves. The key is read from Windows Credential Manager (a generic
   credential named ``QUILL TypeSafe dev key``), never from a file, never
@@ -369,7 +370,7 @@ class OwnKeyJev(_Route):
 
 
 class GatewayJev(_Route):
-    """``/v1/decide`` on the Community Access gateway. Not deployed yet: answers disabled."""
+    """``/v1/decide`` on the Community Access gateway, with the device token (7.6)."""
 
     def __init__(
         self,
@@ -386,15 +387,20 @@ class GatewayJev(_Route):
 
     def _call(self, request: JevRequest) -> dict[str, Any]:
         if not self._base_url:
-            raise JevDisabled("The decide route is not deployed yet.")
+            raise JevDisabled("No gateway address is set.")
+        token = self._token()
+        if not token:
+            raise JevDisabled("This computer is not signed in to QUILL's free AI.")
         body = {
             "app": request.body["state"].get("app", ""),
             "catalogue_version": _catalogue_version(),
             "question_set": request.question_set,
+            # Ids only, in tier 2's order: the gateway keeps the descriptions.
+            "candidates": list(request.offered),
             "state": request.body["state"],
         }
         return self._post(
-            f"{self._base_url}/v1/decide", body, self._token(), time.monotonic() + TIMEOUT_SECONDS
+            f"{self._base_url}/v1/decide", body, token, time.monotonic() + TIMEOUT_SECONDS
         )
 
 
