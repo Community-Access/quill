@@ -796,6 +796,17 @@ _REVIEWED_EGRESS: dict[str, str] = {
 _CHILD_PROCESS_EGRESS: dict[str, str] = {
     # The Codex engine and the commands a person approves for an agent.
     **AGENT_EGRESS,
+    "core/lsp/client.py::start": (
+        "None, by design: a note so nobody has to wonder. The language servers "
+        "(tools/language-servers, run by the bundled tools/nodejs/node.exe, or "
+        "clangd and PowerShell Editor Services when installed) are started over "
+        "standard input and output with every network feature switched off in "
+        "quill/core/lsp/servers.py: the JSON server fetches no schema "
+        "(handledSchemaProtocols file only, schemaDownload off), the Markdown "
+        "server follows no web link, and typescript-language-server runs tsserver "
+        "with automatic type acquisition disabled, so npm is never run. They read "
+        "the open document and its project folder and send nothing anywhere."
+    ),
     "ai_packs/copilot.py::_make_invoke": (
         "The GitHub Copilot engine. The Copilot SDK starts the bundled Copilot "
         "CLI (tools/copilot/copilot.exe, pinned by SHA-256 in "

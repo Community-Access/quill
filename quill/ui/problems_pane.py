@@ -21,8 +21,8 @@ The keys:
 * **Escape** anywhere in the pane goes back to the editor and leaves the pane
   open.
 * **F** in the list switches between this file and all open files.
-* The **context menu** (the Applications key or Shift+F10) has Go To and Copy
-  Message.
+* The **context menu** (the Applications key or Shift+F10) has Go To, Copy
+  Message and, where a language server offers fixes, Quick Fix.
 
 No control here has an access key. The pane sits under the window's menu bar,
 which owns Alt plus most letters, so a mnemonic here would either collide with
@@ -86,6 +86,7 @@ class ProblemsPane:
         say: Callable[[str], None],
         tick: Callable[[], None] | None = None,
         switch_files: Callable[[], None] | None = None,
+        quick_fix: Callable[[int], None] | None = None,
         pause_enabled: bool = False,
         set_pause_enabled: Callable[[bool], None] | None = None,
         set_all_files: Callable[[bool], None] | None = None,
@@ -97,6 +98,7 @@ class ProblemsPane:
         self._say = say
         self._tick = tick
         self._switch_files = switch_files
+        self._quick_fix = quick_fix
         self._set_pause_enabled = set_pause_enabled
         self._set_all_files = set_all_files
         self._report: CheckReport | None = None
@@ -334,8 +336,19 @@ class ProblemsPane:
         menu.Enable(copy_id, has_problem)
         menu.Bind(wx.EVT_MENU, lambda _e: self.go_to_selected(), id=go_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self._copy_selected(), id=copy_id)
+        if self._quick_fix is not None:
+            fix_id = wx.NewIdRef()
+            menu.Append(fix_id, "&Quick Fix...")
+            menu.Enable(fix_id, has_problem)
+            menu.Bind(wx.EVT_MENU, lambda _e: self.quick_fix_selected(), id=fix_id)
         self._list.PopupMenu(menu)
         menu.Destroy()
+
+    def quick_fix_selected(self) -> None:
+        """Ask the host for the language server's fixes for the selected problem."""
+        index = self._selected_problem_index()
+        if index is not None and self._quick_fix is not None:
+            self._quick_fix(index)
 
     def _copy_selected(self) -> None:
         index = self._selected_problem_index()

@@ -16,13 +16,23 @@ from quill.core.lite.features import PROFILES
 from quill.core.lite.parity import COMMAND_EQUIVALENTS
 
 #: Every developer command QUILL has: project tasks, local Git, the validator,
-#: and the features that now depend on core.developer.
+#: and the features that now depend on core.developer. Not core.github_remote,
+#: since 2026-11-08: the Workbench is in every QUILL Lite profile, so it is in
+#: QUILL's too (QUILL Lite may never be ahead).
 _DEVELOPER_FEATURES = (
     "core.developer",
-    "core.github_remote",
     "core.developer_console",
     "core.intellisense",
 )
+
+
+def test_the_github_workbench_is_not_a_developer_feature() -> None:
+    manager = FeatureManager(active_profile_id="essential")
+    assert manager.is_enabled("core.github_remote")
+    assert manager.is_enabled(feature_for_command("file.open_github_items"))
+    assert manager.is_enabled(feature_for_command("view.github_workbench_mode"))
+    # Local Git is still coding, and still the Developer profile's.
+    assert not manager.is_enabled(feature_for_command("localgit.worktrees"))
 
 
 def _project_commands() -> list[str]:

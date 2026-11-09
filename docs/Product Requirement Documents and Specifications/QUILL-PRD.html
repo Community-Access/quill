@@ -7806,11 +7806,39 @@ knows, prose excluded) the list offers the file’s own names nearest
 first via <code>quill/core/code_names.py</code>, each spoken with its
 kind (<code>spoken_suggestion</code>: “count_words, function”; open: “8
 suggestions. count_words, function”); budget 100 ms on 1 MB,
-perf-tested. Layer 2 (2026-11-08): when room remains, names from the
-rest of the project (<code>quill/core/project_names.py</code>: nearest
-marked folder, background walk on the task manager, capped at 5,000
-files, 1 MB a file and 40 MB in all; imported files first, then defined
-names), rebuilt in the background after five minutes; no network.</li>
+perf-tested. Layer 4 (2026-11-08): <code>quill/core/lsp/</code>
+(protocol, client, pool, servers, convert) runs the allowlisted language
+servers (<code>LANGUAGE_SERVERS</code>: VS Code’s HTML, CSS, JSON and
+Markdown servers, typescript-language-server with TypeScript 6.0.3, and
+Pyright, bundled at <code>tools/language-servers</code> and run by
+<code>tools/nodejs/node.exe</code>; clangd and PowerShell Editor
+Services only when installed) over stdio via
+<code>spawn_subprocess_safely</code>, with network features off (no
+schema download, no web links, no automatic type acquisition). Started
+on first use, stopped after 15 idle minutes, on closing the last file,
+and at exit. Through <code>quill/ui/language_servers.py</code> (shared):
+completions first in Ctrl+. once the server is running (the first press
+warms it), problems in Check This File and the pane (in the background),
+Quick Fix on a pane row (one undo step), Navigate &gt; Code &gt;
+Parameter Hints (<code>edit.parameter_hints</code>, no chord:
+Ctrl+Alt+Shift+Space is the Keyboard Manager and nothing near was free
+in both) and Language Servers… (<code>tools.language_servers</code>),
+whose window sets <code>language_servers_enabled</code>,
+<code>language_servers_off</code>,
+<code>language_server_completions</code>,
+<code>language_server_problems</code> and
+<code>parameter_hints_as_you_type</code> (off), the same names in QUILL
+Lite. Bundling: <code>scripts/fetch_language_servers.py</code> (Node
+24.22.1 SHA-256 pinned; the servers and Prettier 3.9.10 by
+<code>npm ci --ignore-scripts</code> from
+<code>scripts/language_servers/package-lock.json</code>; ripgrep 15.2.0
+SHA-256 pinned), staged by
+<code>standalone/runtime/build_runtime.ps1</code>. Layer 2 (2026-11-08):
+when room remains, names from the rest of the project
+(<code>quill/core/project_names.py</code>: nearest marked folder,
+background walk on the task manager, capped at 5,000 files, 1 MB a file
+and 40 MB in all; imported files first, then defined names), rebuilt in
+the background after five minutes; no network.</li>
 <li>Surface-aware formatting shortcuts (Markdown/HTML only):
 <code>Ctrl+B</code> bold, <code>Ctrl+I</code> italic, and heading levels
 <code>Ctrl+Alt+1</code> through <code>Ctrl+Alt+6</code>.</li>
@@ -19687,7 +19715,7 @@ submenu:</p>
   ---
   GitHub Repository...
   GitHub File URL...
-  Save to GitHub...
+  Commit to GitHub...
   GitHub Items...
   ---
   Manage Remote Sites...   (existing)
@@ -19759,8 +19787,8 @@ accepts a pasted
 <code>https://github.com/owner/repo/blob/branch/path</code> URL and
 opens the file directly without requiring the user to navigate the
 browser. Useful for sharing links.</p>
-<h3 id="257-save-to-github">§25.7 Save to GitHub</h3>
-<p><strong>File &gt; Open from Remote &gt; Save to GitHub…</strong> is
+<h3 id="257-commit-to-github">§25.7 Commit to GitHub</h3>
+<p><strong>File &gt; Open from Remote &gt; Commit to GitHub…</strong> is
 available when the active document was opened from GitHub. QUILL prompts
 for a commit message, then commits the current document text to the same
 repository, branch, and path using the GitHub API
@@ -20293,12 +20321,12 @@ project without leaving QUILL” path described in
 new GitHub-backed project meant leaving QUILL, creating the repo in a
 browser, then coming back to set up local sync as two disconnected
 steps.</p>
-<p><strong>Multi-file commits vs. Save to GitHub (§25.7).</strong> Save
-to GitHub commits exactly one already-open document to its own tracked
-origin. Commit Multiple Files is a separate, standalone command: it
-reads arbitrary local files (not necessarily open in QUILL) chosen via a
-file picker and commits all of them to a chosen repository/branch in a
-single atomic git commit (<code>create_git_tree</code> +
+<p><strong>Multi-file commits vs. Commit to GitHub (§25.7).</strong>
+Commit to GitHub commits exactly one already-open document to its own
+tracked origin. Commit Multiple Files is a separate, standalone command:
+it reads arbitrary local files (not necessarily open in QUILL) chosen
+via a file picker and commits all of them to a chosen repository/branch
+in a single atomic git commit (<code>create_git_tree</code> +
 <code>create_git_commit</code> + a fast-forward-only ref update —
 refused, not force-pushed, if the branch has moved since it was read).
 Binary files are rejected with a clear error; this call is UTF-8 text
@@ -20312,7 +20340,7 @@ Branch = Shift+B, Configure Branch Protection = Shift+L, Delete Branch =
 Shift+X, Commit Multiple Files = Shift+U. The five pre-existing
 read-only GitHub commands (§25.2), previously unbound, also gained
 default chords in the same release: GitHub Repository = Shift+Y, GitHub
-File URL = Shift+W, Save to GitHub = Shift+Q, Manage GitHub Accounts =
+File URL = Shift+W, Commit to GitHub = Shift+Q, Manage GitHub Accounts =
 Shift+Z, GitHub Items = Shift+I. All are freely reassignable in
 Preferences &gt; Keyboard Shortcuts, like every other QUILL command.</p>
 <p><strong>Implementation files:</strong></p>

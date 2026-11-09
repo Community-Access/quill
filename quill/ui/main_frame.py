@@ -350,6 +350,7 @@ from quill.ui.main_frame_github import GitHubRemoteMixin
 from quill.ui.main_frame_github_admin import GitHubAdminMixin
 from quill.ui.main_frame_github_extras import GitHubExtrasMixin
 from quill.ui.main_frame_github_items import GitHubItemsMixin
+from quill.ui.main_frame_github_menu import GitHubWorkbenchMenuMixin
 from quill.ui.main_frame_glow import GlowEditorMixin, GlowFileMixin
 from quill.ui.main_frame_go_to import GoToMixin
 from quill.ui.main_frame_guides import GuidesMenuMixin
@@ -692,6 +693,7 @@ class MainFrame(
     SshEditingMixin,
     GitHubRemoteMixin,
     GitHubItemsMixin,
+    GitHubWorkbenchMenuMixin,
     GitHubAdminMixin,
     GitHubExtrasMixin,
     GhBridgeMixin,
@@ -4134,7 +4136,9 @@ class MainFrame(
             return
 
         menu_by_key = {key: menu for menu, key in current if key is not None}
-        desired = cust.visible_top_keys(default_keys)
+        # Only the menus this bar has: GitHub is there in workbench mode alone,
+        # and AI only where AI is, so a saved order naming them must not fail.
+        desired = [key for key in cust.visible_top_keys(default_keys) if key in menu_by_key]
         # Detach every menu (from the end so indices stay valid), then re-append
         # the visible ones in the desired order and destroy the hidden ones.
         for index in range(menu_bar.GetMenuCount() - 1, -1, -1):
@@ -4331,6 +4335,7 @@ class MainFrame(
         menu_bar = get_menu_bar()
         if menu_bar is None:
             return
+        self._refresh_github_readout(menu_bar)  # main_frame_github_menu.py
         context = self._current_markup_context()
         html_only = context == "html"
         # Markdown only, where it used to be Markdown *or* plain. A plain

@@ -49,9 +49,14 @@ def test_mixin_in_base_classes() -> None:
 def test_menu_id_and_item_present() -> None:
     src = _src("quill/ui/main_frame_menu.py")
     assert "self._id_github_items = wx.NewIdRef()" in src
-    assert '"file.open_github_items"' in src
-    assert "GitHub &Items..." in src
-    assert "self._append_github_reference_menu(remote_menu)" in src
+    # The rows themselves come from the workbench table since 2026-11-08.
+    assert "self._append_github_remote_rows(remote_menu)" in src
+    table = _src("quill/core/github/workbench_menu.py")
+    assert 'Row("file.open_github_items", "GitHub &Items..."' in table
+    assert 'Row("file.open_github_reference", "Open GitHub &Reference...")' in table
+    assert '"file.open_github_items": "_id_github_items"' in _src(
+        "quill/ui/main_frame_github_menu.py"
+    )
 
 
 def test_menu_bound_in_bind_github_menu() -> None:

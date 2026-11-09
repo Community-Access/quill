@@ -208,3 +208,26 @@ def test_menu_editor_uses_modal_dialog_contract() -> None:
     assert "affirmative_id" in source
     assert "escape_id" in source
     assert "_show_modal_dialog" in source
+
+
+def test_a_saved_order_survives_the_github_menu_coming_and_going() -> None:
+    """GitHub Workbench Mode adds and removes a top-level menu (2026-11-08)."""
+    cust = MenuCustomization()
+    default_order = [key for key, _ in _TOP_MENU_DEFS]
+    cust.set_top_order([
+        "help",
+        "github",
+        *[k for k in default_order if k not in {"help", "github"}],
+    ])
+    frame = _build_frame(cust)
+
+    normal = _FakeMenuBar()
+    normal._menus = [(m, label) for m, label in normal._menus if m.key != "github"]
+    frame._apply_menu_customization(normal)
+    assert normal.keys()[0] == "help" and "github" not in normal.keys()
+
+    workbench = _FakeMenuBar()
+    frame._apply_menu_customization(workbench)
+    assert workbench.keys()[:2] == ["help", "github"]
+    # And the saved order is still whole after a normal-mode build.
+    assert cust.top_order[:2] == ["help", "github"]

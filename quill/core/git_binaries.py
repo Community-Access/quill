@@ -66,7 +66,7 @@ def validate_executable(path: Path) -> Path:
     git/gh executable name. Callers use this right before building a
     subprocess command line, so a corrupted or tampered path can never
     silently become "run whatever this string points at"."""
-    if path.name not in _GIT_EXECUTABLE_BASENAMES:
+    if path.name.lower() not in _GIT_EXECUTABLE_BASENAMES:  # shutil.which says git.EXE
         raise GitBinaryError(f"Refusing to run {path}: not a recognized git/gh executable name.")
     return path
 
@@ -106,6 +106,41 @@ def resolve_gh() -> Path | None:
     return None
 
 
+def _bundled_mingit() -> Path:
+    """Where a MinGit bundled with the shared runtime would sit.
+
+    Nothing ships there yet; a later release adds it. ``sys.executable`` is the
+    runtime's own ``python(w).exe``, so ``<runtime>/mingit/cmd/git.exe``.
+    """
+    exe = "git.exe" if sys.platform == "win32" else "git"
+    return Path(sys.executable).resolve().parent / "mingit" / "cmd" / exe
+
+
+def find_git() -> Path | None:
+    """The ``git`` that Clone Repository runs, or ``None`` when there is none.
+
+    In order: a ``QUILL_GIT`` override (dev builds only, like every other
+    ``QUILL_*`` path override, so a release build never runs a path from the
+    environment), then a MinGit bundled with the runtime, then the system's
+    ``git`` on ``PATH``, then the copy Download Optional Components fetches.
+    Every answer passes :func:`validate_executable`, so whatever is found is a
+    file named git or git.exe and nothing else.
+    """
+    import os
+
+    from quill.core import paths
+
+    override = os.environ.get("QUILL_GIT", "").strip()
+    if override and paths._DEV_BUILD:
+        candidate = Path(override)
+        if candidate.is_file():
+            return validate_executable(candidate)
+    bundled = _bundled_mingit()
+    if bundled.is_file():
+        return validate_executable(bundled)
+    return resolve_git()
+
+
 def git_available() -> bool:
     return resolve_git() is not None
 
@@ -116,6 +151,7 @@ def gh_available() -> bool:
 
 __all__ = [
     "GitBinaryError",
+    "find_git",
     "gh_available",
     "git_available",
     "resolve_gh",

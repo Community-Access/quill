@@ -526,7 +526,7 @@ once.
 
 ---
 
-## FILE-25 — Save to GitHub… (`file.github_save_back`, Ctrl+Shift+Grave then Shift+Q)
+## FILE-25 — Commit to GitHub… (`file.github_save_back`, Ctrl+Shift+Grave then Shift+Q)
 
 *What & why.* Commit the current document back to a GitHub repository.
 
@@ -537,7 +537,7 @@ once.
   **Shift+Q**. (Grave is the backtick key.)
 
 **Do this**
-1. Open the command via the chord, or **File menu ▸ Save to GitHub…**.
+1. Open the command via the chord, or **File menu ▸ Commit to GitHub…**.
 2. Enter a commit message by keyboard; confirm.
 
 **You should see and hear**

@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import os
 import subprocess
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from quill.stability.redaction import format_args_for_log
 
@@ -23,6 +23,7 @@ def run_subprocess_safely(
     timeout_seconds: float = 30.0,
     cwd: str | None = None,
     input: str | None = None,  # noqa: A002 - matches subprocess.run's own parameter name
+    env: Mapping[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
     """Run a subprocess with a timeout and clear, logged failure handling.
 
@@ -42,6 +43,10 @@ def run_subprocess_safely(
       limit, so an argv-embedded payload silently fails to launch once a
       caller's input grows past that (braille_worker_client hit exactly this
       with a large document). Stdin has no such ceiling.
+    - ``env``, when given, is the child's whole environment. It is **never
+      logged**: it is how a caller hands the child a secret (Clone Repository's
+      GitHub token) without putting it on the command line, where other
+      processes and the log could see it.
 
     Raises:
         ValueError: if ``args`` is empty or ``cwd`` is not an existing directory.
@@ -89,6 +94,7 @@ def run_subprocess_safely(
             timeout=timeout_seconds,
             check=False,
             input=input,
+            env=dict(env) if env is not None else None,
             **extra_kwargs,
         )
         logger.info(

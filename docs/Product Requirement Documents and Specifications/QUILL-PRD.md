@@ -3530,7 +3530,7 @@ A dedicated menu surfacing transforms that are otherwise reachable via Tools or 
 - List Manager: `Format -> List -> List Manager...` (`Ctrl+Alt+L`) opens a keyboard-first tree editor for moving, promoting/demoting, adding, editing, and deleting list items.
 - Magical tag helpers: Insert HTML Tag… (with attribute picker) and Insert Markdown Tag… (semantic snippet picker).
 - Snippet helpers: Insert Snippet… (`Ctrl+Alt+Space`) and Manage Snippets… (`Ctrl+Alt+Shift+Space`) with searchable filtering, placeholder prompts, and starter-pack onboarding.
-- Prediction helpers: Word Prediction… (`Ctrl+.`) with words, HTML tags, and Markdown tag completions. Since 2026-11-08 the key works in every profile (`edit.word_prediction` maps to `core.edit`), while `core.intellisense` governs only Toggle Word Prediction As You Type (`intellisense_as_you_type`, off by default). The list is `quill/ui/suggestion_list.py` (`SuggestionPopup`, `SuggestionListMixin`), shared with QUILL Lite, whose Edit > Word Prediction... (`cmd_word_prediction`, Ctrl+., rule 2) is `quill/apps/lite_window_word_prediction.py`; QUILL's adapter is `quill/ui/main_frame_intellisense.py`. Plan of record: `docs/design/intellisense.md`. Layer 1 (2026-11-08): in a code file (`code_language_for`: any extension Pygments knows, prose excluded) the list offers the file's own names nearest first via `quill/core/code_names.py`, each spoken with its kind (`spoken_suggestion`: "count_words, function"; open: "8 suggestions. count_words, function"); budget 100 ms on 1 MB, perf-tested. Layer 2 (2026-11-08): when room remains, names from the rest of the project (`quill/core/project_names.py`: nearest marked folder, background walk on the task manager, capped at 5,000 files, 1 MB a file and 40 MB in all; imported files first, then defined names), rebuilt in the background after five minutes; no network.
+- Prediction helpers: Word Prediction… (`Ctrl+.`) with words, HTML tags, and Markdown tag completions. Since 2026-11-08 the key works in every profile (`edit.word_prediction` maps to `core.edit`), while `core.intellisense` governs only Toggle Word Prediction As You Type (`intellisense_as_you_type`, off by default). The list is `quill/ui/suggestion_list.py` (`SuggestionPopup`, `SuggestionListMixin`), shared with QUILL Lite, whose Edit > Word Prediction... (`cmd_word_prediction`, Ctrl+., rule 2) is `quill/apps/lite_window_word_prediction.py`; QUILL's adapter is `quill/ui/main_frame_intellisense.py`. Plan of record: `docs/design/intellisense.md`. Layer 1 (2026-11-08): in a code file (`code_language_for`: any extension Pygments knows, prose excluded) the list offers the file's own names nearest first via `quill/core/code_names.py`, each spoken with its kind (`spoken_suggestion`: "count_words, function"; open: "8 suggestions. count_words, function"); budget 100 ms on 1 MB, perf-tested. Layer 4 (2026-11-08): `quill/core/lsp/` (protocol, client, pool, servers, convert) runs the allowlisted language servers (`LANGUAGE_SERVERS`: VS Code's HTML, CSS, JSON and Markdown servers, typescript-language-server with TypeScript 6.0.3, and Pyright, bundled at `tools/language-servers` and run by `tools/nodejs/node.exe`; clangd and PowerShell Editor Services only when installed) over stdio via `spawn_subprocess_safely`, with network features off (no schema download, no web links, no automatic type acquisition). Started on first use, stopped after 15 idle minutes, on closing the last file, and at exit. Through `quill/ui/language_servers.py` (shared): completions first in Ctrl+. once the server is running (the first press warms it), problems in Check This File and the pane (in the background), Quick Fix on a pane row (one undo step), Navigate > Code > Parameter Hints (`edit.parameter_hints`, no chord: Ctrl+Alt+Shift+Space is the Keyboard Manager and nothing near was free in both) and Language Servers... (`tools.language_servers`), whose window sets `language_servers_enabled`, `language_servers_off`, `language_server_completions`, `language_server_problems` and `parameter_hints_as_you_type` (off), the same names in QUILL Lite. Bundling: `scripts/fetch_language_servers.py` (Node 24.22.1 SHA-256 pinned; the servers and Prettier 3.9.10 by `npm ci --ignore-scripts` from `scripts/language_servers/package-lock.json`; ripgrep 15.2.0 SHA-256 pinned), staged by `standalone/runtime/build_runtime.ps1`. Layer 2 (2026-11-08): when room remains, names from the rest of the project (`quill/core/project_names.py`: nearest marked folder, background walk on the task manager, capped at 5,000 files, 1 MB a file and 40 MB in all; imported files first, then defined names), rebuilt in the background after five minutes; no network.
 - Surface-aware formatting shortcuts (Markdown/HTML only): `Ctrl+B` bold, `Ctrl+I` italic, and heading levels `Ctrl+Alt+1` through `Ctrl+Alt+6`.
 - Re-flow: Wrap to Column…, Re-flow Paragraph.
 
@@ -10555,7 +10555,7 @@ File > Open from Remote
   ---
   GitHub Repository...
   GitHub File URL...
-  Save to GitHub...
+  Commit to GitHub...
   GitHub Items...
   ---
   Manage Remote Sites...   (existing)
@@ -10610,9 +10610,9 @@ All controls have accessible names. Long operations (repository load, directory 
 
 **File > Open from Remote > GitHub File URL...** accepts a pasted `https://github.com/owner/repo/blob/branch/path` URL and opens the file directly without requiring the user to navigate the browser. Useful for sharing links.
 
-### §25.7 Save to GitHub
+### §25.7 Commit to GitHub
 
-**File > Open from Remote > Save to GitHub...** is available when the active document was opened from GitHub. QUILL prompts for a commit message, then commits the current document text to the same repository, branch, and path using the GitHub API (`update_file`). The file SHA is tracked for optimistic concurrency; if the file has changed remotely since it was opened, GitHub returns a 409 and QUILL shows a clear error.
+**File > Open from Remote > Commit to GitHub...** is available when the active document was opened from GitHub. QUILL prompts for a commit message, then commits the current document text to the same repository, branch, and path using the GitHub API (`update_file`). The file SHA is tracked for optimistic concurrency; if the file has changed remotely since it was opened, GitHub returns a 409 and QUILL shows a clear error.
 
 Requirements: the stored token must have `repo` (write) scope on the target repository.
 
@@ -10935,7 +10935,7 @@ local folder and run the first sync, all in one continuous flow. This is the
 project meant leaving QUILL, creating the repo in a browser, then coming back
 to set up local sync as two disconnected steps.
 
-**Multi-file commits vs. Save to GitHub (§25.7).** Save to GitHub commits
+**Multi-file commits vs. Commit to GitHub (§25.7).** Commit to GitHub commits
 exactly one already-open document to its own tracked origin. Commit Multiple
 Files is a separate, standalone command: it reads arbitrary local files (not
 necessarily open in QUILL) chosen via a file picker and commits all of them
@@ -10952,7 +10952,7 @@ Shift+V, Change Default Branch = Shift+B, Configure Branch Protection =
 Shift+L, Delete Branch = Shift+X, Commit Multiple Files = Shift+U. The five
 pre-existing read-only GitHub commands (§25.2), previously unbound, also
 gained default chords in the same release: GitHub Repository = Shift+Y,
-GitHub File URL = Shift+W, Save to GitHub = Shift+Q, Manage GitHub Accounts =
+GitHub File URL = Shift+W, Commit to GitHub = Shift+Q, Manage GitHub Accounts =
 Shift+Z, GitHub Items = Shift+I. All are freely reassignable in Preferences >
 Keyboard Shortcuts, like every other QUILL command.
 
