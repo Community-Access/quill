@@ -11,9 +11,12 @@ You can now ask the radio about what you are hearing, keep your own music and au
 
 - **Ask QUILL Radio (Ctrl+Shift+8)** answers questions about the station and the song playing, using your ChatGPT plan (Community > Use My ChatGPT Subscription, Alt+F5).
 
+- **Say or Type a Command (Alt+F11):** type what you want, such as "a lot louder" or "what song is this". Free and offline; Jev helps if you say yes.
+
 ## Your own music, YouTube and podcasts
 
 - **Local Media (Ctrl+O)** plays your music and audiobooks, with playlists from other players.
+- **Play files from File Explorer**, including songs whose names have spaces in them.
 - **Search YouTube (Ctrl+Shift+6)** for videos, playlists and channels; read comments, follow channels, hear about new videos, join live chat and skip sponsor segments.
 - **QUILL Lineups (Ctrl+U)**: named lists of stations, episodes, videos and files, by hand or by rules, shared with QUILL Cast.
 - Apple's podcast categories are full lists now, and the radio can tell you when your podcasts have new episodes.

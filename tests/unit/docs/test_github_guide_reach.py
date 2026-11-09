@@ -15,7 +15,7 @@ from quill.core import user_guide_files as ugf
 
 _ROOT = Path(__file__).resolve().parents[3]
 _QUILL_BOOK = _ROOT / "docs" / "user guide" / "github-guide"
-_LITE_GUIDE_DIR = _ROOT / "standalone" / "quilllite" / "docs" / "guide"
+_LITE_GUIDE_DIR = _ROOT / "standalone" / "quilllite" / "docs" / "github-guide"
 
 #: Contents page -> (the folder its GitHub chapters are in, their file prefix).
 _CONTENTS = {

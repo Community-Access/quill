@@ -2,6 +2,21 @@
 
 ## 1.0.0
 
+### Clearer command descriptions for Jev (2026-11-09)
+
+- Jev reads a one-line description of each command, and in the live test it
+  mixed up a few pairs whose descriptions were too alike. Those descriptions
+  now say what makes each one different: Save As, Volume Boost, What's Playing
+  and On Now, Record a Station and Record, the Sleep Timer, Favourite, Bigger
+  and Smaller Text against Zoom In and Out, Word Count against Word Summary,
+  and Quiet Mode against Stop Reading Aloud. Command list version 2026-11-09;
+  copies already installed keep working on 2026-11-08.
+- Jev was tested live through Community Access's service on 9 November 2026:
+  2,883 requests with no errors, half the answers within 176 milliseconds,
+  and 211 of 232 everyday requests right against the matcher's 154 alone. The
+  report, with every mistake and what is next, is
+  `docs/release/jev-live-test-2026-11-09.md`.
+
 ### Say or Type a Command can ask your own AI (2026-11-09)
 
 - Answer "Use My Own AI Instead" when Say or Type a Command first asks, and a

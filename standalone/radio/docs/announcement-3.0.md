@@ -2,7 +2,7 @@
 
 **A radio that answers the questions you open it with.**
 
-Version 3.2.0 (build 4), in beta for testers from October 2026.
+Version 3.2.0, in beta from November 2026.
 
 Community Access has released **Quill Radio 3.0** for Windows. It is free, it
 is part of the QuillVille family, and it is made for people who listen to

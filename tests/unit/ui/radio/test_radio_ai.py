@@ -200,6 +200,14 @@ def test_alt_f5_opens_choose_your_ai_on_the_chatgpt_row(radio, monkeypatch) -> N
 
 
 def test_which_ai_speaks_and_pressed_twice_opens_the_window(radio, monkeypatch) -> None:
+    import quill.ui.hosted_ai_choose_commands as presses
+
+    # A fixed clock: a slow runner can take longer than the double-press window
+    # to speak the first answer, and the second press then speaks again.
+    ticks = [100.0, 100.1]
+    monkeypatch.setattr(
+        presses.time, "monotonic", lambda: ticks.pop(0) if len(ticks) > 1 else ticks[0]
+    )
     opened: list[str] = []
     monkeypatch.setattr(type(radio), "cmd_ai_choose", lambda self: opened.append("choose"))
     radio.cmd_ai_which()

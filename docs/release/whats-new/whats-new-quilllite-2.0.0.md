@@ -16,8 +16,8 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 - Paid-form publication checks provider/webhook readiness and mode. Test on
   Site refuses a published live-payment checkout. Responses include payment
   status and exports, with Refresh Payment Status after confirming the site.
-- Chapter 16 of the guide walks through taking payments from start to
-  finish. Checkout needs the QAF plugin's payment support on your site.
+- Checkout needs the QAF plugin's payment support; chapter 16 walks you
+  through it.
 
 - **File > WordPress** writes, opens and publishes your sites' pages and posts. Connect by approving QUILL in your browser, or paste an application password. Ctrl+S only saves on this computer; Publish checks the page first. Scheduling, earlier versions and working offline are there too.
 - **Blocks read as plain text**, and Next Block and Where Am I say where you are. **Tools > WordPress** checks a page the way a visitor meets it and looks after media, comments, menus and users.
@@ -27,8 +27,9 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 
 - **File > New Form** writes an accessible form as plain text. Form Rules reads each rule as a sentence, and **Tools > Forms** checks it, lets you fill it in yourself in each of its languages, publishes it with the QUILL Accessible Forms plugin, reads the responses, or saves it in large print or braille.
 
-## Project tasks and the Command Palette
+## Say it, or find it
 
+- **Say or Type a Command (F11):** say what you want in your own words. Free and offline; Jev or your own AI helps if you say yes.
 - **The Developer profile:** open a project folder and Ctrl+3 asks an AI to work on it. You review every change and allow every command first, and Undo Last Agent Turn puts every file back.
 - **The Command Palette (Ctrl+Shift+P)** is in Tools and in every profile, and reaches every command and menu item.
 

@@ -136,10 +136,54 @@ A few more things to know:
   **Ctrl+F11**. The dictation command that used to be on F11 is now **Next
   Phrase Is a Dictation Command**, on the Dictation menu, with no key.
 
-It is free, it works without an internet connection, and nothing you type in
-the box leaves your computer. The page "What you can say in each app"
-(`command-catalogue.html` in the documentation folder) lists every command it
-understands in QUILL, QUILL Lite and Quill Radio, with examples.
+The matcher that understands you is free, works without an internet
+connection, and keeps everything you type on your computer. The page "What you
+can say in each app" (`command-catalogue.html` in the documentation folder)
+lists every command it understands in QUILL, QUILL Lite and Quill Radio, with
+examples.
+
+#### When the matcher is not sure: Jev, or your own AI
+
+The first time the matcher could use some help, QUILL asks you once what it
+may do. There are three equal answers:
+
+- **Use Jev.** Jev is TypeSafe's decision model. A request the matcher cannot
+  settle is sent to it, and it picks one of this window's commands, or none.
+  If this computer is signed in to QUILL's free AI, the request goes through
+  Community Access's service, which holds the key, so you do not need one of
+  your own. If you stored your own TypeSafe key, QUILL asks TypeSafe directly.
+  When Jev cannot answer, your own AI is asked next, if you have one.
+- **Use My Own AI Instead.** The request goes to the AI you chose in Choose
+  Your AI (**Ctrl+4**), when it is one of your own: your ChatGPT plan, GitHub
+  Copilot, Codex or your own key. It is asked one question, to pick one of
+  this window's commands or none, and nothing goes to Jev. QUILL's free AI is
+  never asked this question.
+- **Match on This Computer Only.** Nothing is ever sent. Escape gives the same
+  answer.
+
+What is sent is the words you typed or said, the app's name and the ids of the
+commands this window can do right now. Never document text, file names,
+stations, places or accounts. Community Access's service keeps counts, never
+what you typed. TypeSafe keep the requests they receive, and say they do not
+train on them.
+
+What you hear and what happens:
+
+- **"Asking your AI."** while your own AI thinks. If it takes more than eight
+  seconds, the matcher's answer stands.
+- **Nothing runs on a guess.** Jev's pick runs only when it is clearly sure.
+  Your AI's pick runs only when it agrees with the matcher's best guess and the
+  command is safe. Otherwise you get the Did You Mean list, and anything that
+  closes, clears or stops something still asks first.
+- **One line, once, when help is not available,** because you are offline, a
+  daily limit is reached or credit is spent. For example: "Jev's daily limit
+  is reached, so I'm asking your AI." After that the matcher carries on by
+  itself.
+- **Nothing is sent in Safe Mode.**
+
+Your answer is kept for every later request. The question's own window says
+you can change it at any time, but there is no setting for it yet; that is
+being fixed (issue 1819 on GitHub).
 
 ### The QUILL key
 

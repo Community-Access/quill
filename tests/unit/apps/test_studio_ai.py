@@ -206,6 +206,14 @@ def test_the_quick_list_starts_with_studios_own_questions(studio) -> None:
 
 
 def test_which_ai_speaks_and_pressed_twice_opens_choose_your_ai(studio, monkeypatch) -> None:
+    import quill.ui.hosted_ai_choose_commands as presses
+
+    # A fixed clock: a slow runner can take longer than the double-press window
+    # to speak the first answer, and the second press then speaks again.
+    ticks = [100.0, 100.1]
+    monkeypatch.setattr(
+        presses.time, "monotonic", lambda: ticks.pop(0) if len(ticks) > 1 else ticks[0]
+    )
     opened: list[str] = []
     monkeypatch.setattr(type(studio), "_ai_open_choose", lambda self, *a, **k: opened.append("x"))
     studio.cmd_ai_which()
