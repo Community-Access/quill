@@ -99,7 +99,8 @@ def test_the_code_arrives_spaced_on_the_clipboard_and_said_once(step_world, monk
 
     assert seen["title"] == "Sign In to Your AI"
     assert seen["sentence"] == "To use My GitHub Copilot, approve QUILL Lite on GitHub's page."
-    assert seen["code"].split() == ["W", "X", "Y", "Z", "d", "a", "s", "h", "9", "8", "7", "6"]
+    # "dash" as a word, from the one shared spoken_code (quill/core/ai/device_login.py).
+    assert seen["code"].split() == ["W", "X", "Y", "Z", "dash", "9", "8", "7", "6"]
     assert step_world.copied == ["WXYZ-9876"]
     assert said == [f"The code is {seen['code']}. It is on the clipboard."]
     assert _Flow.instances[0].agent == "QUILL Lite"  # its own registration and token

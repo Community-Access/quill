@@ -197,6 +197,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "help.copy_log": "Reached another way: Help > Copy Log, in both editors. No chord was "
     "free in both (measured 2026-11-06), and it is pressed when writing to support, not "
     "in the editing loop (rule 9).",
+    "view.github_workbench_mode": "Reached another way: View > GitHub Workbench Mode, in both "
+    "editors, and GitHub > Leave Workbench Mode while it is on. It is pressed a few times a "
+    "day at most, and no chord is free in both keymaps (rule 9).",
     "help.github_guide": "Reached another way: Help > Open GitHub Guide, in both editors, "
     "and the F1 window in every GitHub window. A manual is opened to learn, not in the "
     "editing loop, so a menu letter is the way in (rule 9).",
@@ -231,6 +234,12 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "view.problems_pane": "Reached another way: View > Problems > Show Pane, in both editors, "
     "and F6 once it is shown. Ctrl+Shift+M, VS Code's key, is Set Mark in both, and no "
     "chord near it was free in both (measured 2026-11-08); shown once, it stays (rule 9).",
+    "edit.parameter_hints": "Reached another way: Navigate > Code > Parameter Hints in both "
+    "editors, and Parameter hints as you type says it unasked. Ctrl+Shift+. and "
+    "Ctrl+Alt+Shift+Space (the Keyboard Manager) are taken in both, and nothing near "
+    "them was free in both (measured 2026-11-08) (rule 9).",
+    "tools.language_servers": "Reached another way: Navigate > Code > Language Servers... "
+    "in both editors. A settings window visited once in a while (rule 9).",
     "edit.paste_file": "Reached another way: Edit > Clipboard > Paste Copied Files..., in both "
     "editors. No chord was free in both (measured 2026-11-07), and it asks text or paths "
     "next, so a chord would save little (rule 9).",

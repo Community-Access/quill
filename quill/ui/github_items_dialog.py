@@ -142,6 +142,7 @@ class GitHubItemsDialog(
         ai_acquire_cb: Callable[[], Callable[[str], str] | None] | None = None,
         start_issue_worktree_cb: Callable[[object, str, int, str, bool], None] | None = None,
         gist_source_cb: Callable[[], tuple[str, str]] | None = None,
+        initial_view: str = "",
     ) -> None:
         import wx
 
@@ -156,9 +157,14 @@ class GitHubItemsDialog(
         self._ai_acquire = ai_acquire_cb
         self._repo = initial_repo.strip()
         self._initial_reference = initial_reference
+        # A reference decides the view; otherwise the opener's choice (the
+        # GitHub menu's Actions Runs and Releases), else Issues.
+        known_views = {key for key, _label in VIEWS}
         self._view = (
             VIEW_BRANCHES
             if initial_reference is not None and initial_reference.kind == "branch"
+            else initial_view
+            if initial_view in known_views
             else VIEW_ISSUES
         )
         self._show = "both"  # issues / prs / both (issues view only)

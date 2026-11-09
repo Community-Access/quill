@@ -331,7 +331,10 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         ),
         category="core",
         privacy="network after confirmation",
-        dependencies=("core.remote", "core.developer"),
+        # Not core.developer since 2026-11-08: reading issues and reviewing pull
+        # requests is not coding, and QUILL Lite has the Workbench in every
+        # profile, so QUILL had to as well. Local Git stays a developer feature.
+        dependencies=("core.remote",),
     ),
     "core.developer": FeatureDefinition(
         "core.developer",

@@ -702,6 +702,18 @@ Recommendation: servers first for the languages they cover, since
 they’re better than a parser there, and tree-sitter later for the long
 tail of other languages.</li>
 </ol>
+<p><strong>Further decisions, 2026-11-08 (Jeff):</strong> download and
+bundle Node 24.22.1, the servers and ripgrep (“get all language servers
+completed”); TypeScript 6.0.3 with typescript-language-server now,
+TypeScript 7’s native server later (“ok, make it so”); built-in
+quick-fix rules, widened to the common linters’ fixable rules, each
+family switchable (“do what you feel is best”); a formatter: Prettier
+3.9.10 bundled beside the servers, and ruff format, black, clang-format,
+gofmt and rustfmt allowed when installed (“yes”); a way to get each
+unbundled tool from Settings (“provide ways for users to get these tools
+inside of settings”), and rich formatting settings (“make rich settings
+so users can chose”). The switches live in one window, Code Checks and
+Fixes.</p>
 <h2 id="progress">Progress</h2>
 <ul>
 <li>2026-11-08: Problems pane P1 in both editors (PR #1798): docked, F6,
@@ -745,16 +757,26 @@ file, All open files) lists every open document’s problems through
 <code>combine_reports</code>, the others checked with the built-in
 checkers only; Enter on another document brings it forward. P2 is
 complete.</li>
+<li>2026-11-08: Layer 4, the language servers, in both editors:
+<code>quill/core/lsp/</code> and
+<code>quill/ui/language_servers.py</code>; completions, problems, Quick
+Fix, Parameter Hints, the Language Servers window; Node, the servers,
+Prettier and ripgrep bundled (measured: Node 90 MB, the servers and
+Prettier 135 MB with source maps dropped, ripgrep 4 MB). A fake-server
+suite runs everywhere; the <code>lsp</code>-marked real-server corpus
+passes against the staged servers. Found while building: a server that
+offers pull diagnostics with an empty options object was being treated
+as not offering them (fixed), and a just-opened file answers its first
+completion empty while the server reads it (one retry after a
+second).</li>
 </ul>
 <h2 id="remaining-tasks">Remaining tasks</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Problems pane P3 and P4 (P1 is PR
 #1798, P2 PRs #1804 and this one).</label></li>
-<li><label><input type="checkbox" />Read the licence of each server
-package before bundling it (TypeScript, vscode-langservers-extracted,
-Pyright, the Roslyn language server).</label></li>
-<li><label><input type="checkbox" />Measure Node plus the servers in the
-shared runtime.</label></li>
+<li><label><input type="checkbox" />The Roslyn language server for C#:
+its licence still to be read; OmniSharp is the MIT
+alternative.</label></li>
 <li><label><input type="checkbox" />Layer 4 phase: bundle ripgrep
 (<code>rg.exe</code>, about 5 MB) beside Node in the shared runtime,
 pinned and SHA-256 checked like Pandoc. Read its licence (MIT or
@@ -763,9 +785,16 @@ the component inventory, and add a network-audit note that it is local
 only. Layer 2’s project index uses it when present and falls back to the
 pure-Python walk. Ask Jeff before the first download (parent session,
 2026-11-08, with Jeff’s go-ahead).</label></li>
-<li><label><input type="checkbox" />Choose a key for parameter hints:
-Ctrl+Shift+. is taken in both editors (measured
-2026-11-08).</label></li>
+<li><label><input type="checkbox" />Try TypeScript 7’s native language
+server in place of typescript-language-server (no tsserver in
+7).</label></li>
+<li><label><input type="checkbox" />Built-in quick-fix rules, Format
+Document (Prettier and installed formatters), Get It for unbundled
+tools, rich formatting settings, and the Code Checks and Fixes
+window.</label></li>
+<li><label><input type="checkbox" />A CI job that fetches the pinned
+servers and runs the <code>lsp</code> corpus (ask Jeff: it changes
+CI).</label></li>
 <li><label><input type="checkbox" />Measure the tree-sitter grammar size
 for the languages we care about, before phase 4.</label></li>
 <li><label><input type="checkbox" />Screen-reader checks with JAWS and

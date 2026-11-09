@@ -2,6 +2,50 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## QUILL speaks code the way VS Code thinks it
+
+Here's a small moment that used to take a long time. You're in a JavaScript
+file and you type `console.lo`, and you can't remember whether it's `log` or
+`logger` or something else entirely. Now you press **Ctrl+.** and QUILL says
+"log, method". Enter, done.
+
+That's a language server talking: the same engines VS Code uses to understand
+code, now inside QUILL. VS Code's own servers for HTML, CSS, JSON and
+Markdown; TypeScript's language service for JavaScript and TypeScript; and
+Pyright, the open-source heart of Pylance, for Python. They come with QUILL,
+with the Node they run on, so there's nothing to install, and none of them
+ever touches the internet.
+
+They don't add new keys to learn. They make the keys you know smarter:
+
+- **Ctrl+.** asks the server first, so the list knows what can actually go
+  where your caret is, and says what each thing is.
+- **Check This File** and the **Problems pane** find the problems a compiler
+  would: a string where a number belongs, a name that doesn't exist, a
+  property a module doesn't have.
+- **Quick Fix...**, on a problem in the pane, offers the server's fixes. Pick
+  one and it's done, as a single undo step.
+- **Parameter Hints**, in Navigate > Code, tells you which argument you're
+  typing: "Parameter 2 of 2, limit: int". Turn on Parameter hints as you type
+  and you'll hear it every time you type an opening bracket or a comma.
+
+A server starts the first time you need it, not when QUILL starts, and goes
+to sleep when you stop using it. **Navigate > Code > Language Servers...**
+lets you switch any of it, or all of it, off. QUILL Lite has every bit of it.
+
+## A GitHub menu, when you want one
+
+Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a
+**GitHub** menu joins the menu bar after Tools. Everything GitHub that lived in
+the File and Tools menus moves into it, and it opens your inbox, your work,
+your notifications, a repository's issues and pull requests, its Actions runs
+and its releases in one step each. Turn it off and the rows go back where they
+were. New in both: **Clone Repository...** copies a repository to your
+computer, private ones included, without writing your token anywhere. And
+**Save to GitHub...** is now called **Commit to GitHub...**, because that is
+what it does. GitHub no longer needs the Developer profile, so the workbench is
+there in most profiles, as it always has been in QUILL Lite.
+
 ## Word Prediction knows your code
 
 In a code file, **Ctrl+.** now offers the file's own names that start with
@@ -10,12 +54,14 @@ function", "while, keyword". It's ready within a tenth of a second even on a
 large file, and when there's room it adds names from the rest of your
 project, read in the background. QUILL Lite has it too.
 
+
 ## Word Prediction in every profile
 
 **Ctrl+.** now opens Word Prediction in every profile, including the two that
 left it out. It only opens when you press the key; Word Prediction As You
 Type is still off unless you turn it on. QUILL Lite has the same list on the
 same key.
+
 
 ## A Problems pane that stays open
 

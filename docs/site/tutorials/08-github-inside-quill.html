@@ -57,24 +57,49 @@ everything.</li>
 interactive rebase. Needs no GitHub account at all; works on any local
 repository.</li>
 </ul>
+<p><strong>A shorter way to all of it.</strong> Turn on <strong>View
+&gt; GitHub Workbench Mode</strong> (<code>Alt+V</code>, then
+<code>K</code>), in either app. A <strong>GitHub</strong> menu joins the
+menu bar after Tools (<code>Alt+G</code>), and the GitHub rows of the
+File and Tools menus move into it, next to rows that open the views
+below in one step: <strong>Inbox...</strong>, <strong>Issues and Pull
+Requests...</strong>, <strong>Actions Runs...</strong> and the rest. The
+menu paths in this tutorial are the ones you see with the mode off; with
+it on, look in the GitHub menu instead. Turn it off from the same place,
+or with <strong>GitHub &gt; Leave Workbench Mode</strong>.</p>
 <h2 id="0-sign-in-once">0. Sign in (once)</h2>
 <p>The first time you touch any GitHub feature, QUILL shows a one-time
 consent dialog telling you it will connect to api.github.com. Accept it,
 then:</p>
 <ol type="1">
 <li><strong>File &gt; Open from Remote &gt; Manage GitHub
-Accounts...</strong></li>
-<li><strong>Add Token.</strong> On github.com: <strong>Settings &gt;
-Developer settings &gt; Personal access tokens &gt; Tokens (classic)
-&gt; Generate new token</strong>, select the <code>repo</code> scope,
-and copy it. You only see it once.</li>
-<li>Paste it into QUILL. It is kept safely in Windows Credential Manager
-or the macOS Keychain, never in a plain file.</li>
+Accounts...</strong> In QUILL Lite it's <strong>File &gt; Manage GitHub
+Accounts...</strong> (<code>Alt+F</code>, then <code>H</code>).</li>
+<li><strong>Sign In with GitHub...</strong>, the first button. QUILL
+puts a short code on the clipboard, opens github.com/login/device in
+your browser, and moves you to the code, which it spells out a character
+at a time.</li>
+<li>In the browser, paste the code, choose <strong>Continue</strong>,
+then <strong>Authorize</strong>.</li>
+<li>Come back to QUILL. The window closes by itself and you hear "Added
+and switched to GitHub account" and your username. What GitHub gave
+QUILL is kept safely in Windows Credential Manager or the macOS
+Keychain, never in a plain file.</li>
 </ol>
-<p>You can browse public repositories without a token, though GitHub
+<p>The code lasts about fifteen minutes; if it runs out, choose Sign In
+with GitHub again for a new one. If your organization makes members ask
+before an app can see its repositories, approve QUILL once on GitHub,
+under <strong>Settings &gt; Applications &gt; Authorized OAuth
+Apps</strong> (chapter 10 of the GitHub guide has the details).</p>
+<p><strong>Add Token (Advanced)...</strong> is still there for when you
+want a token you made yourself, such as a fine-grained token limited to
+a few repositories. Make one on github.com under <strong>Settings &gt;
+Developer settings &gt; Personal access tokens</strong>, then paste it
+in.</p>
+<p>You can browse public repositories without signing in, though GitHub
 limits how many requests you can make. Everything that <em>writes</em>
-to GitHub needs a token; if you try a write command without one, QUILL
-offers to sign you in right there instead of just refusing.</p>
+to GitHub needs an account; if you try a write command without one,
+QUILL offers to sign you in right there instead of just refusing.</p>
 <h2 id="1-browse-open-and-save-a-file">1. Browse, open, and save a
 file</h2>
 <ol type="1">
@@ -85,10 +110,16 @@ Repository...</strong></li>
 Enter.</li>
 <li>Arrow through the file list: folders first, then files. Enter opens
 a folder or a file.</li>
-<li>Edit the file, then <strong>File &gt; Open from Remote &gt; Save to
-GitHub...</strong> and type a commit message. QUILL commits straight to
-the same repository, branch, and path.</li>
+<li>Edit the file, then <strong>File &gt; Open from Remote &gt; Commit
+to GitHub...</strong> and type a commit message. QUILL commits straight
+to the same repository, branch, and path.</li>
 </ol>
+<p>To work on a whole repository in a folder of your own, <strong>File
+&gt; Open from Remote &gt; Clone Repository...</strong> copies it to
+your computer: type <code>owner/name</code>, choose a folder, and press
+Clone. QUILL Lite has it as <strong>File &gt; Clone
+Repository...</strong> (<code>Alt+F</code>, then <code>Y</code>). When
+it is done you can open a file from the new folder.</p>
 <p>If you already have the URL, <strong>File &gt; Open from Remote &gt;
 GitHub File URL...</strong> skips the browsing. Paste a
 <code>github.com/owner/repo/blob/branch/path</code> link and QUILL
@@ -329,7 +360,7 @@ either set required approving reviews and required status checks, or
 check "remove all protection instead" to clear existing rules.</li>
 <li><strong>Commit Multiple Files...</strong>: pick several local files
 with a file browser, choose a branch and a commit message, and QUILL
-commits all of them together. This is different from <strong>Save to
+commits all of them together. This is different from <strong>Commit to
 GitHub</strong> (section 1), which only ever handles the one document
 you have open.</li>
 </ol>

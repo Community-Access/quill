@@ -1444,7 +1444,7 @@ window. See
 
 #### Saving back to GitHub
 
-**File > Open from Remote > Save to GitHub...** commits your changes to a file
+**File > Open from Remote > Commit to GitHub...** commits your changes to a file
 you opened from GitHub, with a message you write. Pressing Save never does
 this for you. See
 [Opening and saving files in QUILL](../github-guide/github-guide-07-code-and-repositories.html#opening-and-saving-files-in-quill).
@@ -1457,6 +1457,23 @@ workflows and runs. It owes a great deal to
 [GHManage](https://github.com/kellylford/GHManage), Kelly Ford's open-source
 GitHub browser for screen-reader users, which QUILL has followed from the
 start. See [Chapter 2: Getting around](../github-guide/github-guide-02-getting-around.html).
+
+#### Cloning a repository
+
+**File > Open from Remote > Clone Repository...** copies a whole repository to
+a folder on your computer. Type `owner/name` or paste its address, choose the
+folder, and press Clone. A private repository works when you are signed in,
+and your token is never written into the copy. You need Git for Windows; if
+it is missing, QUILL offers its download page. See
+[Cloning a repository](../github-guide/github-guide-07-code-and-repositories.html#cloning-a-repository).
+
+#### GitHub Workbench Mode
+
+**View > GitHub Workbench Mode** (`Alt+V`, then `K`) adds a **GitHub** menu
+after Tools and moves these File and Tools rows into it, with a few more that
+open Inbox, My Work, Issues and Pull Requests and the other views in one step.
+Turn it off and the rows go back. See
+[GitHub Workbench Mode and the GitHub menu](../github-guide/github-guide-02-getting-around.html#github-workbench-mode-and-the-github-menu).
 
 #### The one-sentence summary
 

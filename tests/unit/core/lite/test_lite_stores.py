@@ -352,10 +352,12 @@ def test_switching_everything_off_still_leaves_a_usable_editor() -> None:
     cannot indent is broken rather than small -- and the two rows that switch
     everything else back on, which must never be switchable themselves.
     """
+    from quill.core.github.workbench_menu import lite_arrange
     from quill.core.lite.command_areas import visible_commands
     from quill.core.lite.commands import menu_titles
 
-    rows = visible_commands(lambda _area: False)
+    # The bar in normal mode: the GitHub menu is only there in workbench mode.
+    rows = lite_arrange(visible_commands(lambda _area: False), workbench=False)
     menus = [menu for menu in menu_titles() if any(row[0] == menu for row in rows)]
     assert menus == [
         "&File",

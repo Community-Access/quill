@@ -1242,7 +1242,11 @@ there until you turn it off again. QUILL remembers whether it's on.
   picks all problems, errors and warnings, or errors only. **Source** picks
   one checker, such as JSON or ruff. Changing either says the new count, for
   example "4 problems, 1 shown".
-- The context key (or Shift+F10) on a row has **Go To** and **Copy Message**.
+- The context key (or Shift+F10) on a row has **Go To**, **Copy Message**
+  and, for a problem a language server found, **Quick Fix...**: the server's
+  fixes as a list, applied as one undo step (see the Developer Guide, chapter
+  11). In HTML, CSS, JSON, Markdown, JavaScript, TypeScript and Python files
+  the language servers add their own problems to the list.
 - While the pane is on, saving checks the file again. If you'd also like it
   checked when you stop typing for a moment, check **Check after a pause**,
   beside the choosers. It's off unless you turn it on, and QUILL remembers it.

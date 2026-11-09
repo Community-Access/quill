@@ -51,6 +51,7 @@ from quill.core.ai.device_login import (
     DeviceFlowConfig,
     request_device_code,
     run_device_login,
+    spoken_code,
 )
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
@@ -175,16 +176,6 @@ def workbench_device_flow_config(
         token_url=copilot_auth.GITHUB_TOKEN_URL,
         scope=WORKBENCH_SCOPE,
     )
-
-
-def spoken_code(user_code: str) -> str:
-    """The code as separate characters, so a reader says each one.
-
-    ``WDJB-MJHT`` -> ``W D J B dash M J H T``: the letters spaced, the hyphen a
-    word. (Spacing the whole string after swapping in " dash " would spell the
-    word out letter by letter too.)
-    """
-    return " dash ".join(" ".join(part) for part in user_code.strip().split("-"))
 
 
 class _NoRedirect(HTTPRedirectHandler):

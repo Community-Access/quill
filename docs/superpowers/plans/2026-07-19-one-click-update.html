@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>One-Click Update (Apply and Restart) Implementation
 Plan</title>
@@ -12,7 +12,10 @@ Plan</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ Plan</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ Plan</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ Plan</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ Plan</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ Plan</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ Plan</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -740,7 +747,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a hr
 <span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    staging_root.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        extract_portable_update(zip_path, staging_root)</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - surface as a coded error</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - surface as a coded error</span></span>
 <span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> SelfUpdateError(<span class="ss">f&quot;Could not extract the update: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>) <span class="im">from</span> exc</span>
 <span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (staging_root <span class="op">/</span> exe_name).is_file():</span>
 <span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> staging_root</span>
@@ -887,7 +894,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a hr
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    creationflags <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.name <span class="op">==</span> <span class="st">&quot;nt&quot;</span>:</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        creationflags <span class="op">=</span> subprocess.CREATE_NO_WINDOW <span class="op">|</span> subprocess.DETACHED_PROCESS  <span class="co"># type: ignore[attr-defined]</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    subprocess.Popen(  <span class="co"># noqa: S603 - our own generated script, fixed path</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    subprocess.Popen(  <span class="co"># </span><span class="al">noqa:</span><span class="co"> S603 - our own generated script, fixed path</span></span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        [<span class="st">&quot;cmd.exe&quot;</span>, <span class="st">&quot;/c&quot;</span>, <span class="bu">str</span>(helper)],</span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        creationflags<span class="op">=</span>creationflags,</span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        close_fds<span class="op">=</span><span class="va">True</span>,</span>
@@ -1165,7 +1172,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a h
 <span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>            close_btn.SetDefault()</span>
 <span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... after ShowModal ...</span></span>
 <span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> result <span class="op">==</span> wx.ID_OPEN:</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>            subprocess.Popen([<span class="st">&quot;explorer&quot;</span>, <span class="st">&quot;/select,&quot;</span>, <span class="bu">str</span>(target)])  <span class="co"># noqa: S603,S607</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>            subprocess.Popen([<span class="st">&quot;explorer&quot;</span>, <span class="st">&quot;/select,&quot;</span>, <span class="bu">str</span>(target)])  <span class="co"># </span><span class="al">noqa:</span><span class="co"> S603,S607</span></span>
 <span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
 <span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> result <span class="op">==</span> wx.ID_OK <span class="kw">and</span> applyable:</span>
 <span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._apply_update_and_restart(release, Path(<span class="bu">str</span>(target)))</span></code></pre></div>

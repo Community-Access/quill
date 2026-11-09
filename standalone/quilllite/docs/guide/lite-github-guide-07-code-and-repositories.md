@@ -7,7 +7,8 @@ browsing files at any branch, tag or commit, blame and file history, opening a
 file to edit, branches and comparing them, commit comments, tags and
 releases, searching across GitHub, forks, templates and topics, the community
 profile, insights, looking after a repository, watching, starring and
-following, and writing and editing gists.
+following, writing and editing gists, and cloning a repository to your
+computer.
 
 ## Browsing a repository's files
 
@@ -82,15 +83,66 @@ alone.
   **Show all refs**, **Copy URL** and **Cancel**.
 - **GitHub File URL...** takes the address of one file, such as
   `https://github.com/owner/repo/blob/main/docs/readme.md`, and opens it.
-- **Save to GitHub...** sends your changes back. It works on a file you opened
-  from GitHub, and asks for a commit message, starting with "Update" and the
-  file's name. QUILL commits to the same repository, branch and path. If the
-  file changed on GitHub since you opened it, QUILL tells you, so you never
-  overwrite someone else's change. Pressing `Ctrl+S` saves on your computer
-  only; sending is always this separate command.
+- **Commit to GitHub...** sends your changes back. It was called Save to
+  GitHub until November 2026; it is the same command. It works on a file you
+  opened from GitHub, and asks for a commit message, starting with "Update"
+  and the file's name. QUILL commits to the same repository, branch and path.
+  If the file changed on GitHub since you opened it, QUILL tells you, so you
+  never overwrite someone else's change. Pressing `Ctrl+S` saves on your
+  computer only; sending is always this separate command.
 
 To commit several files from your computer at once, QUILL has
 **Commit Multiple Files...** on **Tools > Git and GitHub > GitHub**.
+
+In workbench mode these rows are in the GitHub menu: **GitHub File URL...**,
+**Commit to GitHub...**, and **Commit Multiple Files...** in its
+**Repository Admin** submenu. Chapter 2 lists the whole menu.
+
+## Cloning a repository
+
+Cloning copies a whole repository to your computer, with its history, so you
+can work on it in a folder of your own. Both apps can do it:
+
+- In QUILL, **File > Open from Remote > Clone Repository...**.
+- In QUILL Lite, **File > Clone Repository...**: `Alt+F`, then `Y`.
+- In workbench mode, in either app, **GitHub > Clone Repository...**:
+  `Alt+G`, then `C`.
+
+The Clone Repository window asks two things:
+
+- **Repository (owner/name or address)**: type `owner/name`, such as
+  `community-access/quill`, or paste the address from GitHub's green Code
+  button, or any GitHub page in the repository. When the document you have
+  open is already in a GitHub repository, its name is filled in for you.
+- **Into this folder**: the folder the copy goes in. QUILL makes a new folder
+  inside it, named after the repository. **Browse...** picks the folder. It
+  starts in the GitHub folder in your Documents folder when you have one, and in
+  Documents otherwise.
+
+Press **Clone**. QUILL says "Cloning" and the repository's name, and then,
+once, how it went: "Cloned" and the name, or why it could not, in Git's own
+words. A large repository can take a minute or two. You can keep working while
+it runs.
+
+When the clone is done, QUILL offers to open a file from it. In QUILL, when
+the Developer profile is on, it also offers **Open as Project**, which opens
+the new folder as your project.
+
+A few things worth knowing:
+
+- **Private repositories work when you are signed in.** QUILL hands your
+  GitHub account's token to Git for this one command only. It is never written
+  into the copy's settings, its remote address, or QUILL's log, so nothing in
+  the new folder holds your token afterwards. To pull or push later from
+  another tool, that tool signs in its own way.
+- **Cloning needs Git for Windows.** If it is not installed, QUILL says so and
+  offers to open its download page. Install it, then choose Clone Repository
+  again.
+- **The folder must be new or empty.** If a folder with the repository's name
+  already has something in it, QUILL asks you to choose another folder rather
+  than mixing the two.
+- **Safe Mode turns cloning off**, along with everything else that reaches the
+  network.
 
 ## Branches
 

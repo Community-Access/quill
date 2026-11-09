@@ -74,12 +74,36 @@ KEYLESS_WITH_REASON: dict[str, str] = {
         "remembered, so it is set once (rule 9). Alt+V, P, then T or A."
         for handler in ("cmd_problems_this_file", "cmd_problems_all_files")
     },
+    "cmd_parameter_hints": "As in QUILL (rule 2), where Parameter Hints has no chord "
+    "either: Ctrl+Shift+. and Ctrl+Alt+Shift+Space are taken in both editors (measured "
+    "2026-11-08), and Parameter hints as you type says it unasked. Alt+N, C, H.",
+    "cmd_language_servers": "As in QUILL (rule 2): a settings window visited once in a "
+    "while (rule 9). Alt+N, C, L.",
     "cmd_github_workbench": "As in QUILL (rule 2), where GitHub Items has no chord either; "
     "it sits in File, as QUILL's does, and Alt+F, G reaches it. Ctrl+Alt+Shift+F6 is "
     "Spelling Announcements in QUILL.",
     "cmd_github_manage_accounts": "As in QUILL (rule 2), where Manage GitHub Accounts has "
     "no chord either, and a once-in-a-while command (rule 9). It sits beside the Workbench "
     "in File, and Alt+F, H reaches it.",
+    "cmd_github_clone": "As in QUILL (rule 2), where Clone Repository has no chord either; "
+    "it asks for a repository and a folder next, so a chord would save little (rule 9). "
+    "Alt+F, Y reaches it.",
+    "cmd_toggle_github_workbench": "As in QUILL (rule 2), where GitHub Workbench Mode has "
+    "no chord either: it is pressed a few times a day at most, and no chord is free in both "
+    "keymaps (rule 9). Alt+V, K reaches it.",
+    **{
+        handler: "As in QUILL (rule 2), where no GitHub command has a chord: the GitHub menu "
+        "it sits in exists only in workbench mode, and its access letter, Alt+G, is the way in."
+        for handler in (
+            "cmd_github_inbox",
+            "cmd_github_my_work",
+            "cmd_github_notifications",
+            "cmd_github_issues",
+            "cmd_github_actions_runs",
+            "cmd_github_releases",
+            "cmd_github_explore",
+        )
+    },
     "cmd_open_studio": "Rule 7: launching another app does not take an editor chord. "
     "Lite already uses QUILL's positional QuillVille keys for editing commands. "
     "Alt+T, Q reaches Studio when the shared release gate permits it; the user can "

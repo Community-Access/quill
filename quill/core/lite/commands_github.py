@@ -1,4 +1,4 @@
-"""The GitHub rows of QUILL Lite's File menu: the Workbench and Manage GitHub Accounts.
+"""The GitHub rows of QUILL Lite's File menu: the Workbench, Clone and Manage Accounts.
 
 Split out of :mod:`quill.core.lite.commands` under GATE-11 and spliced back into
 ``COMMANDS`` where the Workbench row used to sit. The shape of every row is the
@@ -11,12 +11,18 @@ because QUILL's has none (family rule 2), and it is a once-in-a-while command
 already spent in File, and Export as HTML gave H up because it keeps its chord,
 Ctrl+Alt+Shift+End, as Print Preview keeps its own after giving V to Earlier
 Versions. This row had no other keyboard route to fall back on.
+
+All three move into the GitHub menu while GitHub Workbench Mode is on
+(:mod:`quill.core.github.workbench_menu`), and come back when it is off.
 """
 
 from __future__ import annotations
 
 GITHUB_FILE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&File", "&GitHub Workbench...", "", "cmd_github_workbench", ""),  # File, as in QUILL
+    # Clone Repository (2026-11-08): QUILL's github.clone_repository, the same
+    # shared window (quill/ui/github_clone.py). No chord, as in QUILL (rule 2).
+    ("&File", "Clone Repositor&y...", "", "cmd_github_clone", ""),  # Y: the only letter left
     ("&File", "Manage Git&Hub Accounts...", "", "cmd_github_manage_accounts", ""),
 )
 
