@@ -477,8 +477,9 @@ While it's on, Check This File fills the pane instead of opening the list.
 - If you've changed the document since the check, Enter checks it again and
   goes to the same problem where it is now, or tells you it's gone.
 - **F** in the pane's list switches between this document and all open
-  files. **View > Problems > This File Only** (Alt+V, P, T) or **All Open
-  Files** (Alt+V, P, A), and the pane's **Files** chooser, do the same. These
+  files. **View > Problems > This File Only** (Alt+V, P, T) or
+  **All Open Files** (Alt+V, P, A), and the pane's **Files** chooser, do the
+  same. These
   switch for now; which one each window starts with is **Problems pane
   lists all open files at first**, in Preferences. With all open files,
   each row starts with the document's name, and Enter on one brings that
