@@ -233,8 +233,68 @@ in a very large folder never slows you down. It reads the project again in
 the background if it's more than five minutes old. Nothing leaves your
 computer.
 
-The list doesn't yet know which names are in scope where you are; that needs
-a parser or a language server, which come later.
+## Language servers: the smarts VS Code has, in QUILL
+
+A language server is the part of VS Code that actually understands your code:
+it knows that `console` has a `log`, that `os.path` exists and `os.pa` doesn't,
+that the third argument to a function is `limit`, and that a string can't go
+where a number is expected. QUILL now carries the same ones VS Code uses, and
+they speak through the keys you already know.
+
+- **HTML, CSS, JSON and Markdown:** VS Code's own servers.
+- **JavaScript and TypeScript:** TypeScript's language service, the same
+  engine VS Code runs, through typescript-language-server.
+- **Python:** Pyright, the open-source engine inside VS Code's Pylance.
+- **C and C++,** with clangd, and **PowerShell,** with PowerShell Editor
+  Services, if you have them installed. QUILL finds them; it doesn't bundle
+  them.
+
+They're all inside QUILL, with the Node they run on. There's nothing to
+install, and none of them uses the internet: the JSON server never fetches a
+schema, the Markdown server never follows a web link, and TypeScript never
+goes looking for type packages online.
+
+### What they do for you
+
+- **Ctrl+. knows what can go here.** In `console.lo`, it offers `log`, said
+  as "log, method". In `os.pa` it offers `path`, `pardir` and `pathsep`. The
+  server's answers come first, then this file's names and your project's.
+- **Check This File finds real problems.** Beside QUILL's own checkers you get
+  the server's: "Type 'string' is not assignable to type 'number'", or
+  `"pa" is not a known attribute of module "os"`. They go in the Problems list
+  and the Problems pane like any other, with the server named as the source.
+- **Quick Fix.** On a row in the Problems pane, press the context key (or
+  Shift+F10) and choose **Quick Fix...**. You get the server's fixes for that
+  problem as a list; Enter applies one. It's one undo step, so Ctrl+Z takes it
+  all back, and the file is checked again straight away.
+- **Parameter Hints.** Inside a call's brackets, **Navigate > Code > Parameter
+  Hints** says where you are: "Parameter 2 of 2, limit: int", then the whole
+  signature. Turn on **Parameter hints as you type** and you'll hear it each
+  time you type an opening bracket or a comma.
+
+### When they run
+
+A server starts the first time you need it, in a file it reads, never when
+QUILL starts. So the first Ctrl+. in a new project answers from the file
+itself while the server warms up, and from then on the server answers. A
+server stops when it's been idle for fifteen minutes, or when you close the
+last file it was reading, and starts again the next time you need it. They
+all stop when QUILL closes.
+
+### Turning them on and off
+
+**Navigate > Code > Language Servers...** has every switch:
+
+- **Use language servers**, one switch for all of them;
+- each server on its own, with whether it's bundled with QUILL, installed on
+  your computer, or not found;
+- **Suggestions from language servers**, **Problems from language servers**
+  and **Parameter hints as you type** (that last one starts off).
+
+QUILL Lite has the same window and the same switches.
+
+The list doesn't yet know which names are in scope where you are when no
+server reads the file; for those languages, a parser comes later.
 
 ## Shell integration, in QUILL
 

@@ -54,22 +54,27 @@ class LanguageServersDialog:
         )
         root.Add(self.enabled, 0, wx.ALL, pad)
 
-        label = wx.StaticText(self.dialog, label="&Servers:")
-        self.servers = wx.CheckListBox(
-            self.dialog, choices=[server_row(spec) for spec in LANGUAGE_SERVERS]
-        )
-        self.servers.SetHelpText(
-            "Each language server, what it reads, and whether it is here: bundled "
-            "with QUILL, installed on this computer, or not found. Space checks or "
-            "clears one. A server starts the first time you need it in a file it "
-            "reads, never at launch, and stops when it has been idle a while. "
-            "None of them uses the internet."
-        )
+        # One check box per server rather than a check list: screen readers do
+        # not say a check list row's state as you arrow (A11Y-SR-1).
+        label = wx.StaticText(self.dialog, label="Servers:")
+        self.server_area = wx.ScrolledWindow(self.dialog, style=wx.VSCROLL)
+        self.server_area.SetScrollRate(0, self.dialog.FromDIP(10))
+        area = wx.BoxSizer(wx.VERTICAL)
         off = set(getattr(settings, "language_servers_off", []) or [])
-        for index, spec in enumerate(LANGUAGE_SERVERS):
-            self.servers.Check(index, spec.name not in off)
+        self.servers: list[wx.CheckBox] = []
+        for spec in LANGUAGE_SERVERS:
+            box = wx.CheckBox(self.server_area, label=server_row(spec))
+            box.SetValue(spec.name not in off)
+            box.SetHelpText(
+                f"{spec.name}: checked, it runs when you need it in a file it reads, "
+                "never at launch, and stops when it has been idle a while. It is "
+                f"{server_status(spec)}. None of the servers uses the internet."
+            )
+            self.servers.append(box)
+            area.Add(box, 0, wx.BOTTOM, pad // 2)
+        self.server_area.SetSizer(area)
         root.Add(label, 0, wx.LEFT | wx.RIGHT, pad)
-        root.Add(self.servers, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, pad)
+        root.Add(self.server_area, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, pad)
 
         self.features: dict[str, wx.CheckBox] = {}
         for setting, _label, help_text in FEATURE_SETTINGS:
@@ -100,8 +105,8 @@ class LanguageServersDialog:
         settings.language_servers_enabled = bool(self.enabled.GetValue())
         settings.language_servers_off = [
             spec.name
-            for index, spec in enumerate(LANGUAGE_SERVERS)
-            if not self.servers.IsChecked(index)
+            for spec, box in zip(LANGUAGE_SERVERS, self.servers, strict=True)
+            if not box.GetValue()
         ]
         for setting, box in self.features.items():
             setattr(settings, setting, bool(box.GetValue()))

@@ -402,6 +402,7 @@
   "quill/ui/keymap_editor.py::KeymapEditorMixin._rebind_quill_key::wx.TextEntryDialog": "native",
   "quill/ui/keymap_editor.py::KeymapEditorMixin.open_keymap_editor.edit_selected::wx.TextEntryDialog": "native",
   "quill/ui/keymap_editor.py::KeymapEditorMixin.open_keymap_editor::wx.Dialog": "hardened_custom",
+  "quill/ui/language_servers_dialog.py::LanguageServersDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/library_catalogs_dialog.py::LibraryCatalogsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/library_catalogs_dialog.py::LibraryCatalogsDialog._prompt::wx.TextEntryDialog": "native",
   "quill/ui/library_dialog.py::LibraryDialog::subclass:wx.Dialog": "hardened_custom",

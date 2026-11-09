@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 573.
+Editor commands with default bindings: 575.
 
 ## The QUILL editor
 
@@ -58,6 +58,7 @@ Editor commands with default bindings: 573.
 | (unbound by default) | Follow Link | `edit.follow_link` |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
 | (unbound by default) | Manage Replace Jobs... | `edit.manage_replace_jobs` |
+| (unbound by default) | Parameter Hints | `edit.parameter_hints` |
 | (unbound by default) | Paste Copied Files... | `edit.paste_file` |
 | (unbound by default) | Run Replace Job... | `edit.run_replace_job` |
 | (unbound by default) | Save Clipboard to File... | `edit.save_clipboard_to_file` |
@@ -318,6 +319,7 @@ Editor commands with default bindings: 573.
 | (unbound by default) | Translate Selection... | `tools.ai_translate_selection` |
 | (unbound by default) | Open CSV in Table Studio (Experimental) | `tools.csv_studio` |
 | (unbound by default) | Propose Alt Text... | `tools.hosted_ai_alt_text` |
+| (unbound by default) | Language Servers... | `tools.language_servers` |
 | (unbound by default) | Table Studio (Experimental) | `tools.table_studio` |
 | (unbound by default) | Voice Command (Offline) | `tools.voice_command` |
 | (unbound by default) | Voice Conversation Mode | `tools.voice_conversation` |

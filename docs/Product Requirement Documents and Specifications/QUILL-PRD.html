@@ -7806,11 +7806,39 @@ knows, prose excluded) the list offers the file’s own names nearest
 first via <code>quill/core/code_names.py</code>, each spoken with its
 kind (<code>spoken_suggestion</code>: “count_words, function”; open: “8
 suggestions. count_words, function”); budget 100 ms on 1 MB,
-perf-tested. Layer 2 (2026-11-08): when room remains, names from the
-rest of the project (<code>quill/core/project_names.py</code>: nearest
-marked folder, background walk on the task manager, capped at 5,000
-files, 1 MB a file and 40 MB in all; imported files first, then defined
-names), rebuilt in the background after five minutes; no network.</li>
+perf-tested. Layer 4 (2026-11-08): <code>quill/core/lsp/</code>
+(protocol, client, pool, servers, convert) runs the allowlisted language
+servers (<code>LANGUAGE_SERVERS</code>: VS Code’s HTML, CSS, JSON and
+Markdown servers, typescript-language-server with TypeScript 6.0.3, and
+Pyright, bundled at <code>tools/language-servers</code> and run by
+<code>tools/nodejs/node.exe</code>; clangd and PowerShell Editor
+Services only when installed) over stdio via
+<code>spawn_subprocess_safely</code>, with network features off (no
+schema download, no web links, no automatic type acquisition). Started
+on first use, stopped after 15 idle minutes, on closing the last file,
+and at exit. Through <code>quill/ui/language_servers.py</code> (shared):
+completions first in Ctrl+. once the server is running (the first press
+warms it), problems in Check This File and the pane (in the background),
+Quick Fix on a pane row (one undo step), Navigate &gt; Code &gt;
+Parameter Hints (<code>edit.parameter_hints</code>, no chord:
+Ctrl+Alt+Shift+Space is the Keyboard Manager and nothing near was free
+in both) and Language Servers… (<code>tools.language_servers</code>),
+whose window sets <code>language_servers_enabled</code>,
+<code>language_servers_off</code>,
+<code>language_server_completions</code>,
+<code>language_server_problems</code> and
+<code>parameter_hints_as_you_type</code> (off), the same names in QUILL
+Lite. Bundling: <code>scripts/fetch_language_servers.py</code> (Node
+24.22.1 SHA-256 pinned; the servers and Prettier 3.9.10 by
+<code>npm ci --ignore-scripts</code> from
+<code>scripts/language_servers/package-lock.json</code>; ripgrep 15.2.0
+SHA-256 pinned), staged by
+<code>standalone/runtime/build_runtime.ps1</code>. Layer 2 (2026-11-08):
+when room remains, names from the rest of the project
+(<code>quill/core/project_names.py</code>: nearest marked folder,
+background walk on the task manager, capped at 5,000 files, 1 MB a file
+and 40 MB in all; imported files first, then defined names), rebuilt in
+the background after five minutes; no network.</li>
 <li>Surface-aware formatting shortcuts (Markdown/HTML only):
 <code>Ctrl+B</code> bold, <code>Ctrl+I</code> italic, and heading levels
 <code>Ctrl+Alt+1</code> through <code>Ctrl+Alt+6</code>.</li>

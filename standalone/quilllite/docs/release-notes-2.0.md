@@ -1,5 +1,16 @@
 # QUILL Lite 2.0
 
+## Your code, understood
+
+QUILL Lite now carries the language servers VS Code uses: HTML, CSS, JSON,
+Markdown, JavaScript, TypeScript and Python. Press **Ctrl+.** in `console.lo`
+and you hear "log, method". Check This File finds the problems a compiler
+would, and does it in code files as well as Markdown and HTML. **Quick
+Fix...** on a problem in the Problems pane fixes it in one step, and
+**Navigate > Code > Parameter Hints** tells you which argument you're on.
+It all comes in the box, it never uses the internet, and **Navigate > Code >
+Language Servers...** switches any of it off.
+
 ## Word Prediction knows your code
 
 In a code file, the list offers the file's own names with their kinds, such as

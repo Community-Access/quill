@@ -174,13 +174,15 @@ Measured 2026-11-08: no chord near Ctrl+Shift+M is free in both editors, so the 
 - 2026-11-08: Problems pane P2, first half. While shown, the pane re-checks quietly after a save and, with its Check after a pause box (`problems_check_after_pause`, off by default, both editors), after 1.5 s of stillness; only a changed count is said. All open files is the second half, still to do.
 - 2026-11-08: Phase 3, layer 2. `quill/core/project_names.py` indexes the project (nearest folder with `.git`, `pyproject.toml`, `package.json`, `Cargo.toml`, `go.mod`, `.sln` or `composer.json`, else the document's folder) on the task manager in both editors, with one index per root shared by every window. Caps: 5,000 files, 1 MB a file, 40 MB in all; dependency, build and hidden folders skipped. Ranking after this file's names: same case, then names from imported files, then defined names. On this machine the walk of `quill/core` (1,773 files) took about 25 s, almost all of it in `open()` (antivirus); that is the case for ripgrep in the layer 4 phase.
 - 2026-11-08: Problems pane P2, second half. The Files chooser (this file, All open files) lists every open document's problems through `combine_reports`, the others checked with the built-in checkers only; Enter on another document brings it forward. P2 is complete.
+- 2026-11-08: Layer 4, the language servers, in both editors: `quill/core/lsp/` and `quill/ui/language_servers.py`; completions, problems, Quick Fix, Parameter Hints, the Language Servers window; Node, the servers, Prettier and ripgrep bundled (measured: Node 90 MB, the servers and Prettier 135 MB with source maps dropped, ripgrep 4 MB). A fake-server suite runs everywhere; the `lsp`-marked real-server corpus passes against the staged servers. Found while building: a server that offers pull diagnostics with an empty options object was being treated as not offering them (fixed), and a just-opened file answers its first completion empty while the server reads it (one retry after a second).
 
 ## Remaining tasks
 
 - [ ] Problems pane P3 and P4 (P1 is PR #1798, P2 PRs #1804 and this one).
-- [ ] Read the licence of each server package before bundling it (TypeScript, vscode-langservers-extracted, Pyright, the Roslyn language server).
-- [ ] Measure Node plus the servers in the shared runtime.
+- [ ] The Roslyn language server for C#: its licence still to be read; OmniSharp is the MIT alternative.
 - [ ] Layer 4 phase: bundle ripgrep (`rg.exe`, about 5 MB) beside Node in the shared runtime, pinned and SHA-256 checked like Pandoc. Read its licence (MIT or Unlicense) from the release first, record it in THIRD-PARTY-NOTICES and the component inventory, and add a network-audit note that it is local only. Layer 2's project index uses it when present and falls back to the pure-Python walk. Ask Jeff before the first download (parent session, 2026-11-08, with Jeff's go-ahead).
-- [ ] Choose a key for parameter hints: Ctrl+Shift+. is taken in both editors (measured 2026-11-08).
+- [ ] Try TypeScript 7's native language server in place of typescript-language-server (no tsserver in 7).
+- [ ] Built-in quick-fix rules, Format Document (Prettier and installed formatters), Get It for unbundled tools, rich formatting settings, and the Code Checks and Fixes window.
+- [ ] A CI job that fetches the pinned servers and runs the `lsp` corpus (ask Jeff: it changes CI).
 - [ ] Measure the tree-sitter grammar size for the languages we care about, before phase 4.
 - [ ] Screen-reader checks with JAWS and NVDA for each phase, added to `docs/qa/screen-reader-checks-2026-10.md`.

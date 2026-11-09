@@ -91,18 +91,18 @@ def test_the_window_writes_every_switch(wx_session_app: Any) -> None:
     window = LanguageServersDialog(None, settings)
     try:
         names = [spec.name for spec in LANGUAGE_SERVERS]
-        assert not window.servers.IsChecked(names.index("Pyright"))
-        assert window.servers.GetString(0) == server_row(LANGUAGE_SERVERS[0])
+        assert not window.servers[names.index("Pyright")].GetValue()
+        assert window.servers[0].GetLabel() == server_row(LANGUAGE_SERVERS[0])
         assert not window.features["parameter_hints_as_you_type"].GetValue()
-        window.servers.Check(names.index("Pyright"), True)
-        window.servers.Check(names.index("CSS server"), False)
+        window.servers[names.index("Pyright")].SetValue(True)
+        window.servers[names.index("CSS server")].SetValue(False)
         window.features["language_server_problems"].SetValue(False)
         window.enabled.SetValue(False)
         window.apply()
         assert settings.language_servers_off == ["CSS server"]
         assert settings.language_server_problems is False
         assert settings.language_servers_enabled is False
-        for control in (window.enabled, window.servers, *window.features.values()):
+        for control in (window.enabled, *window.servers, *window.features.values()):
             assert control.GetHelpText()
     finally:
         window.destroy()

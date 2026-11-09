@@ -74,6 +74,11 @@ KEYLESS_WITH_REASON: dict[str, str] = {
         "remembered, so it is set once (rule 9). Alt+V, P, then T or A."
         for handler in ("cmd_problems_this_file", "cmd_problems_all_files")
     },
+    "cmd_parameter_hints": "As in QUILL (rule 2), where Parameter Hints has no chord "
+    "either: Ctrl+Shift+. and Ctrl+Alt+Shift+Space are taken in both editors (measured "
+    "2026-11-08), and Parameter hints as you type says it unasked. Alt+N, C, H.",
+    "cmd_language_servers": "As in QUILL (rule 2): a settings window visited once in a "
+    "while (rule 9). Alt+N, C, L.",
     "cmd_github_workbench": "As in QUILL (rule 2), where GitHub Items has no chord either; "
     "it sits in File, as QUILL's does, and Alt+F, G reaches it. Ctrl+Alt+Shift+F6 is "
     "Spelling Announcements in QUILL.",

@@ -532,8 +532,76 @@ names, and the next has the project’s too. It skips folders like
 so opening a file in a very large folder never slows you down. It reads
 the project again in the background if it’s more than five minutes old.
 Nothing leaves your computer.</p>
-<p>The list doesn’t yet know which names are in scope where you are;
-that needs a parser or a language server, which come later.</p>
+<h2 id="language-servers-the-smarts-vs-code-has-in-quill">Language
+servers: the smarts VS Code has, in QUILL</h2>
+<p>A language server is the part of VS Code that actually understands
+your code: it knows that <code>console</code> has a <code>log</code>,
+that <code>os.path</code> exists and <code>os.pa</code> doesn’t, that
+the third argument to a function is <code>limit</code>, and that a
+string can’t go where a number is expected. QUILL now carries the same
+ones VS Code uses, and they speak through the keys you already know.</p>
+<ul>
+<li><strong>HTML, CSS, JSON and Markdown:</strong> VS Code’s own
+servers.</li>
+<li><strong>JavaScript and TypeScript:</strong> TypeScript’s language
+service, the same engine VS Code runs, through
+typescript-language-server.</li>
+<li><strong>Python:</strong> Pyright, the open-source engine inside VS
+Code’s Pylance.</li>
+<li><strong>C and C++,</strong> with clangd, and
+<strong>PowerShell,</strong> with PowerShell Editor Services, if you
+have them installed. QUILL finds them; it doesn’t bundle them.</li>
+</ul>
+<p>They’re all inside QUILL, with the Node they run on. There’s nothing
+to install, and none of them uses the internet: the JSON server never
+fetches a schema, the Markdown server never follows a web link, and
+TypeScript never goes looking for type packages online.</p>
+<h3 id="what-they-do-for-you">What they do for you</h3>
+<ul>
+<li><strong>Ctrl+. knows what can go here.</strong> In
+<code>console.lo</code>, it offers <code>log</code>, said as “log,
+method”. In <code>os.pa</code> it offers <code>path</code>,
+<code>pardir</code> and <code>pathsep</code>. The server’s answers come
+first, then this file’s names and your project’s.</li>
+<li><strong>Check This File finds real problems.</strong> Beside QUILL’s
+own checkers you get the server’s: “Type ‘string’ is not assignable to
+type ‘number’”, or
+<code>"pa" is not a known attribute of module "os"</code>. They go in
+the Problems list and the Problems pane like any other, with the server
+named as the source.</li>
+<li><strong>Quick Fix.</strong> On a row in the Problems pane, press the
+context key (or Shift+F10) and choose <strong>Quick Fix…</strong>. You
+get the server’s fixes for that problem as a list; Enter applies one.
+It’s one undo step, so Ctrl+Z takes it all back, and the file is checked
+again straight away.</li>
+<li><strong>Parameter Hints.</strong> Inside a call’s brackets,
+<strong>Navigate &gt; Code &gt; Parameter Hints</strong> says where you
+are: “Parameter 2 of 2, limit: int”, then the whole signature. Turn on
+<strong>Parameter hints as you type</strong> and you’ll hear it each
+time you type an opening bracket or a comma.</li>
+</ul>
+<h3 id="when-they-run">When they run</h3>
+<p>A server starts the first time you need it, in a file it reads, never
+when QUILL starts. So the first Ctrl+. in a new project answers from the
+file itself while the server warms up, and from then on the server
+answers. A server stops when it’s been idle for fifteen minutes, or when
+you close the last file it was reading, and starts again the next time
+you need it. They all stop when QUILL closes.</p>
+<h3 id="turning-them-on-and-off">Turning them on and off</h3>
+<p><strong>Navigate &gt; Code &gt; Language Servers…</strong> has every
+switch:</p>
+<ul>
+<li><strong>Use language servers</strong>, one switch for all of
+them;</li>
+<li>each server on its own, with whether it’s bundled with QUILL,
+installed on your computer, or not found;</li>
+<li><strong>Suggestions from language servers</strong>, <strong>Problems
+from language servers</strong> and <strong>Parameter hints as you
+type</strong> (that last one starts off).</li>
+</ul>
+<p>QUILL Lite has the same window and the same switches.</p>
+<p>The list doesn’t yet know which names are in scope where you are when
+no server reads the file; for those languages, a parser comes later.</p>
 <h2 id="shell-integration-in-quill">Shell integration, in QUILL</h2>
 <p><strong>Tools &gt; Advanced &gt; Install Shell Integration…</strong>
 adds QUILL to the Windows Explorer right-click menu, and <strong>Remove
