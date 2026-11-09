@@ -247,8 +247,9 @@ Troubleshooting, privacy and help</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
 <p>When GitHub says no, QUILL tells you why in a sentence and what to do
 next. This chapter lists the sentences you are most likely to hear, what
-each one means and how to fix it. Then it says exactly what the
-workbench sends over the network, and how to get help from a person.</p>
+each one means and how to fix it. Then it covers using a token instead
+of signing in, says exactly what the workbench sends over the network,
+and how to get help from a person.</p>
 <h2 id="how-a-refusal-sounds">How a refusal sounds</h2>
 <p>Most refusals have two parts: what QUILL was trying to do, and why it
 could not. “Could not re-run the failed jobs. Access denied. GitHub
@@ -266,8 +267,8 @@ token has reached its expiry date, or was cancelled on GitHub, perhaps
 because QUILL was revoked under Authorized OAuth Apps. Open
 <strong>Manage GitHub Accounts…</strong>, remove the old account, and
 choose <strong>Sign In with GitHub…</strong> again. If you added the
-account with a token, make a new token (Chapter 1) and add that
-instead.</p>
+account with a token, you can make a new one instead: see “Advanced:
+using a token”, below.</p>
 <h3 id="access-denied-github-refused-this-request">“Access denied.
 GitHub refused this request”</h3>
 <p>GitHub knows who you are, but will not let this token do this. One of
@@ -279,7 +280,7 @@ without <code>delete_repo</code> cannot delete one. Chapter 1 lists the
 scopes. An account added with Sign In with GitHub has every scope the
 workbench uses, so this usually means a token you added yourself. You
 cannot add a scope to a token from QUILL: edit the token on GitHub, or
-make a new one.</li>
+sign in with GitHub instead.</li>
 <li><strong>Your account lacks permission.</strong> Only people with
 write access can merge, rerun or label, and only administrators can
 rename, archive or change visibility. Ask a maintainer.</li>
@@ -330,9 +331,7 @@ yourself, the button says <strong>Grant</strong> and works at once. You
 only ask once per app and organization, however many times you sign
 in.</p>
 <p>If the organization would rather not approve apps, a token still
-works: add one with <strong>Add Token (Advanced)…</strong> (Chapter 1),
-and authorize it for the organization’s single sign-on if it uses
-that.</p>
+works: see “Advanced: using a token”, below.</p>
 <h3 id="github-could-not-find-it-or-this-account-cannot-see-it">“GitHub
 could not find it, or this account cannot see it.”</h3>
 <p>The full sentence ends “Refresh the list; it may already be gone.”
@@ -389,6 +388,83 @@ Restart it normally.</p>
 <p>Repository Files shows text only for UTF-8 text files up to 1 MB, and
 says which rule a file broke. Open it on GitHub, or download it
 there.</p>
+<h2 id="advanced-using-a-token">Advanced: using a token</h2>
+<p>Sign In with GitHub is the way to connect, and most people never need
+anything else. A token is a long code you make yourself on GitHub’s
+website and paste into QUILL. It’s worth the trouble in a few cases:</p>
+<ul>
+<li><strong>You want QUILL to reach only a few repositories.</strong> A
+fine-grained token can be limited to the repositories you pick, and to
+only the things you allow in them.</li>
+<li><strong>Your organization blocks sign-in apps</strong> and won’t
+approve QUILL, but still lets its members use tokens.</li>
+<li><strong>Your organization issues you a token</strong> and asks you
+to use that one.</li>
+<li><strong>Your network blocks GitHub’s sign-in page</strong>,
+github.com/login/device, but lets the workbench itself through.</li>
+</ul>
+<h3 id="making-a-token">Making a token</h3>
+<ol type="1">
+<li>Open github.com in your browser and sign in.</li>
+<li>Go to your profile settings, then <strong>Developer
+settings</strong>, then <strong>Personal access tokens</strong>.</li>
+<li>For a token limited to a few repositories, choose
+<strong>Fine-grained tokens</strong>, then <strong>Generate new
+token</strong>, and pick the repositories and permissions. Otherwise
+choose <strong>Tokens (classic)</strong>, then <strong>Generate new
+token (classic)</strong>, and check the scopes you need. Chapter 1 lists
+the scopes and what each one does.</li>
+<li>Give it a name you’ll recognise, such as “QUILL on my laptop”, and
+an expiry date.</li>
+<li>Generate the token and copy it. GitHub shows it only once.</li>
+</ol>
+<p>Some parts of GitHub, the notifications inbox among them, don’t
+accept fine-grained tokens. If you need those, use a classic token, or
+sign in with GitHub.</p>
+<p>If your organization uses single sign-on, there is one more step. On
+GitHub’s token page, choose <strong>Configure SSO</strong> beside the
+token and authorize it for the organization. Until you do, GitHub
+refuses the organization’s repositories even though the token is fine
+everywhere else.</p>
+<h3 id="adding-it-to-quill">Adding it to QUILL</h3>
+<p>Open <strong>Manage GitHub Accounts…</strong> and choose <strong>Add
+Token (Advanced)…</strong>. The <strong>Add GitHub Token</strong> window
+has one field, <strong>Personal access token</strong>. Paste the token
+and press <strong>Connect</strong>. QUILL asks GitHub who the token
+belongs to before it keeps it, so a mistyped or expired token is turned
+away with “GitHub did not confirm an account for that token. Nothing was
+saved.” When GitHub confirms it, you hear “Added and switched to GitHub
+account” and your GitHub username.</p>
+<p>The same window has <strong>Continue Anonymously</strong> for working
+as a guest, and <strong>Cancel</strong>. None of its buttons has an
+access key, so Tab to the one you want.</p>
+<p>To stop using a token, remove the account in Manage GitHub Accounts,
+then delete the token on GitHub’s token page. Removing it in QUILL
+doesn’t cancel it on GitHub.</p>
+<h3 id="when-quill-suggests-signing-in-instead">When QUILL suggests
+signing in instead</h3>
+<p>If you added an account with a classic token that can do a lot, such
+as one with the <code>repo</code> scope, QUILL mentions it once, the
+next time you open Manage GitHub Accounts: “This account uses a token.
+Sign In with GitHub is easier to keep up to date.” Then it asks whether
+to sign in with GitHub now. Choose <strong>Yes</strong> to go straight
+to Sign In with GitHub. Choose <strong>No</strong> and nothing changes:
+the token keeps working, the window opens as usual, and QUILL doesn’t
+ask again for that account. It never asks about an account you signed in
+with, or about a fine-grained token, since that’s the kind people choose
+on purpose.</p>
+<h3 id="when-a-token-is-about-to-expire">When a token is about to
+expire</h3>
+<p>Tokens you make yourself usually have an expiry date, and GitHub
+tells QUILL when it is. If the active account’s token expires within
+seven days, QUILL says so the first time the workbench talks to GitHub
+that day, for example “Your GitHub token for your-name expires in 3
+days.” If it has already expired, you hear “Your GitHub token for
+your-name has expired.” Either way it’s said at most once a day, and it
+also goes into <strong>Notifications</strong>, where opening it takes
+you to Manage GitHub Accounts. From there, sign in with GitHub, or add a
+new token.</p>
+<p>QUILL Lite does all of this the same way.</p>
 <h2 id="privacy-what-goes-over-the-network">Privacy: what goes over the
 network</h2>
 <p>The workbench talks to GitHub and to nobody else, and only when you

@@ -14,10 +14,14 @@ Enter opens Do a Project Task.
 A mixin of two small overrides rather than two more branches in
 :mod:`quill.ui.main_frame_statusbar`, which is at its size budget (GATE-11).
 Listed ahead of ``StatusBarMixin`` in ``MainFrame`` so these run first and
-hand every other cell on unchanged.
+hand every other cell on unchanged. The Workbench cell (2026-11-08) is a base of
+this one for the same reason: another cell QUILL Lite has with the same words
+(:mod:`quill.ui.main_frame_github_status`).
 """
 
 from __future__ import annotations
+
+from quill.ui.main_frame_github_status import GitHubWorkbenchStatusCellMixin
 
 __all__ = ["AiStatusCellMixin"]
 
@@ -25,7 +29,7 @@ _AI = "ai"
 _PROJECT = "project"
 
 
-class AiStatusCellMixin:
+class AiStatusCellMixin(GitHubWorkbenchStatusCellMixin):
     """The ``ai`` status cell's text and its Enter."""
 
     def _statusbar_text_for_item(self, item: str) -> str:

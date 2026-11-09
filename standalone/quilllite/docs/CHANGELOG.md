@@ -2,6 +2,20 @@
 
 ## 2.0.0
 
+### GitHub tokens are the advanced road, and a Workbench cell (2026-11-08)
+
+- The GitHub Guide teaches Sign In with GitHub; making and adding a token is
+  in one place now, chapter 10's "Advanced: using a token".
+- Accounts remember whether they were added by signing in or with a token.
+  Manage GitHub Accounts suggests Sign In with GitHub once for a broad classic
+  token, and No means no: the token keeps working and it never asks again.
+- A token that expires within seven days, or already has, is mentioned once a
+  day the first time the Workbench talks to GitHub, with a Notifications entry
+  that opens Manage GitHub Accounts.
+- With GitHub Workbench Mode on, the status bar has a Workbench cell,
+  "Workbench: owner/name" or "Workbench". F6 reaches it, it's never read out
+  on its own, and it leaves with the mode. QUILL has the same cell.
+
 ### GitHub Workbench Mode and Clone Repository (2026-11-08)
 
 - View > GitHub Workbench Mode (Alt+V, then K) is a check item, per window.

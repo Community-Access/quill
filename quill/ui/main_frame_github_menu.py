@@ -121,6 +121,11 @@ class GitHubWorkbenchMenuMixin:
         # rebuilding the largest bar in the family, so it is never late.
         self._announce(table.ANNOUNCE_ON if self._github_workbench_mode else table.ANNOUNCE_OFF)
         self._build_menu()
+        # The Workbench status cell comes or goes with the mode, unannounced
+        # (main_frame_github_status): the sentence above already said so.
+        refresh = getattr(self, "_refresh_github_status_cell", None)
+        if callable(refresh):
+            refresh()
 
     def clone_github_repository(self) -> None:
         """GitHub > Clone Repository..., and File > Open from Remote > Clone Repository..."""

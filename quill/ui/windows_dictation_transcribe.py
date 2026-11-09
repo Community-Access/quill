@@ -264,6 +264,9 @@ class DictationTranscribeMixin:
         """Open a saved dictation transcript only after its notice is activated."""
         prefix = "dictation-transcript:"
         target = str(target)
+        opener = getattr(self, "open_github_accounts_notice", None)  # github_token_expiry
+        if target == "github-accounts" and callable(opener):
+            return opener()
         identifier = target[len(prefix) :].lower() if target.startswith(prefix) else ""
         if len(identifier) != 32 or any(
             char not in "0123456789abcdef" for char in identifier.lower()

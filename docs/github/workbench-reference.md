@@ -27,8 +27,16 @@ Requests, Actions Runs and Releases open Items on `issues`, `runs` and
 its default. They are `quill/ui/github_workbench_commands.py`, shared, and go
 through each editor's existing opener and gates. The switch announces
 "Workbench mode on. GitHub menu added." and "Workbench mode off." through the
-announcement service; nothing else in the mode speaks. It is not remembered
-across sessions. In QUILL the mode needs GitHub Remote Access
+announcement service; nothing else in the mode speaks. While it is on, both
+editors' status bars carry a **Workbench** cell ("Workbench: owner/name", or
+"Workbench" with no repository), worded once in `workbench_menu`
+(`STATUS_CELL_KEY`, `status_cell_text`): QUILL's in
+`quill/ui/main_frame_github_status.py` (a `workbench` item in
+`STATUS_BAR_ITEMS`, hidden by default and shown only in the mode), QUILL Lite's
+in `quill/apps/lite_status_cells.py` (shown only with text). It is reached with
+F6 and the arrow keys like every cell and is never announced (GATE-13); the
+repository is looked up once per document path while the mode is on. It is not
+remembered across sessions. In QUILL the mode needs GitHub Remote Access
 (`core.github_remote`), which since 2026-11-08 no longer depends on
 `core.developer`.
 
@@ -65,9 +73,30 @@ in the same store as every other account; Copilot's token stays in its own
 entry. The scopes requested are `repo workflow gist read:org project
 security_events user:follow delete_repo`, each justified beside
 `WORKBENCH_SCOPES`, so one sign-in covers every Workbench command. **Add Token (Advanced)...** keeps the pasted-token route for
-fine-grained or limited tokens. Organizations that restrict OAuth apps must
+fine-grained or limited tokens; the guides teach it only in chapter 10,
+"Advanced: using a token". Organizations that restrict OAuth apps must
 approve QUILL once (Settings > Applications > Authorized OAuth Apps >
 Request or Grant).
+
+**Tokens (2026-11-08).** Each account records how it was added
+(`added_by`: `sign_in`, `token`, or `unknown` for accounts saved before) and a
+small state (`account_state` in `github-accounts.json`, never a secret): whether
+the sign-in suggestion was shown, the token's expiry as GitHub reported it, and
+the day the expiry was last mentioned. `quill/core/github/token_health.py`
+decides both messages. The **suggestion**: when the active account has a
+classic token (`ghp_`, or `X-OAuth-Scopes` on a pasted one) with a broad scope,
+Manage GitHub Accounts says "This account uses a token. Sign In with GitHub is
+easier to keep up to date." once, then asks; Yes opens Sign In with GitHub, No
+opens the window as usual, and it is never asked again for that account. The
+**expiry warning**: `TOKEN_EXPIRY` records `GitHub-Authentication-Token-Expiration`
+from every REST reply and every items-provider repository read (the token as a
+SHA-256 fingerprint, in memory); each editor's Workbench gate calls
+`quill/ui/github_token_expiry.py`'s `watch_token_expiry`, which, for a token
+expiring within seven days or already expired (the latter from the filed
+expiry, since a dead token's replies carry no header), says one sentence at most
+once a day per account and adds a Notifications entry whose target
+`github-accounts` opens Manage GitHub Accounts. No new network endpoint: both
+read headers of replies the Workbench already receives.
 
 In QUILL, **File > Open from Remote > Open GitHub Reference** accepts a pasted
 repository or GitHub URL. The Items window also has **Open Link...** in both

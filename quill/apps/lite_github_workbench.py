@@ -14,6 +14,9 @@ all of them: :class:`~quill.apps.lite_window.DocumentFrame` and the empty window
 * **Workbench mode** is per window: View > GitHub Workbench Mode (and the GitHub
   menu's Leave row) flips it, says one sentence, and rebuilds this window's bar.
   It is not remembered; a new window starts in normal mode.
+* **The Workbench status cell** reads "Workbench: owner/name" while the mode is
+  on (:meth:`GitHubWorkbenchLiteMixin.github_workbench_status_text`); QUILL's
+  says the same, from the same words in ``workbench_menu``.
 * **Clone Repository...** is the shared :mod:`quill.ui.github_clone`; afterwards
   QUILL Lite offers to open a file from the new folder.
 """
@@ -39,6 +42,8 @@ class GitHubWorkbenchLiteMixin:
     app: Any
     path: Any
     _github_workbench_mode: bool = False
+    #: The Workbench cell's repository per document path; ``None`` until asked.
+    _github_status_repo_cache: dict[str, str] | None = None
 
     # -- the gates, once ---------------------------------------------------- #
 
@@ -73,10 +78,13 @@ class GitHubWorkbenchLiteMixin:
         if not token and not self._github_workbench_as_guest(retry):  # type: ignore[attr-defined]
             return None
         try:
-            return GitHubItemsProvider(token=token or None)
+            provider = GitHubItemsProvider(token=token or None)
         except GitHubItemsError as exc:
             show_message_box(str(exc), _TITLE, wx.OK | wx.ICON_INFORMATION, self)
             return None
+        # The expiry warning (lite_github_accounts), before the first request.
+        self._watch_github_token_expiry(token)  # type: ignore[attr-defined]
+        return provider
 
     def _github_repository(self) -> str:
         from quill.core.github.local_repo import detect_github_repo
@@ -182,6 +190,29 @@ class GitHubWorkbenchLiteMixin:
         rebuild = getattr(self, "rebuild_workbench_menus", None)
         if callable(rebuild):
             rebuild()
+        # The Workbench cell comes or goes with the mode, unannounced (GATE-13):
+        # the sentence above already said so. The empty window has no bar.
+        self._github_status_repo_cache = None
+        touch = getattr(self, "_touch_status", None)
+        if callable(touch):
+            touch()
+
+    def github_workbench_status_text(self) -> str:
+        """The status cell: "Workbench: owner/name", "Workbench", or "" when off.
+
+        The repository is looked up once per document path while the mode is
+        on, because finding it reads ``.git/config`` and the bar refreshes on
+        every pause in typing.
+        """
+        if not self._github_workbench_mode:
+            return ""
+        cache = self._github_status_repo_cache
+        if cache is None:
+            cache = self._github_status_repo_cache = {}
+        key = str(getattr(self, "path", None) or "")
+        if key not in cache:
+            cache[key] = self._github_repository()
+        return workbench_menu.status_cell_text(cache[key])
 
     def cmd_github_clone(self) -> None:
         """File > Clone Repository..., and GitHub > Clone Repository..."""

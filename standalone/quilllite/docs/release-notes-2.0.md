@@ -1,5 +1,13 @@
 # QUILL Lite 2.0
 
+## Signing in to GitHub, kept simple
+
+The GitHub Guide teaches **Sign In with GitHub**, and keeps tokens in one
+advanced section for the few who need them. A broad classic token gets one
+gentle suggestion to sign in instead, a token about to expire gets a warning a
+few days ahead, and with GitHub Workbench Mode on, a **Workbench** cell on the
+status bar names the repository you're in. It all works as it does in QUILL.
+
 ## A GitHub menu, when you want one
 
 Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a

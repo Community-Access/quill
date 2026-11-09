@@ -106,7 +106,7 @@ def test_a_saved_token_is_checked_off_the_ui_thread_before_the_dialog(host, monk
 
 def test_a_signed_in_callback_runs_only_after_the_token_is_saved(host, monkeypatch) -> None:
     monkeypatch.setattr(
-        f"{_FLOW}.save_github_account", lambda login, _t: SimpleNamespace(login=login)
+        f"{_FLOW}.save_github_account", lambda login, _t, **_k: SimpleNamespace(login=login)
     )
     monkeypatch.setattr(f"{_FLOW}.delete_legacy_github_token", lambda: False)
     calls: list[str] = []
@@ -128,10 +128,12 @@ def test_the_flow_imports_no_window_of_its_own_at_module_scope() -> None:
 
 
 def test_sign_in_with_github_is_checked_and_saved_like_a_pasted_token(host, monkeypatch) -> None:
-    saved: list[tuple[str, str]] = []
+    saved: list[tuple[str, str, str]] = []
     monkeypatch.setattr(
         f"{_FLOW}.save_github_account",
-        lambda login, token: saved.append((login, token)) or SimpleNamespace(login=login),
+        lambda login, token, added_by="": (
+            saved.append((login, token, added_by)) or SimpleNamespace(login=login)
+        ),
     )
     monkeypatch.setattr(f"{_FLOW}.delete_legacy_github_token", lambda: False)
     asked: list[dict] = []
@@ -165,7 +167,8 @@ def test_sign_in_with_github_is_checked_and_saved_like_a_pasted_token(host, monk
     assert asked[0]["parent"] == "frame" and asked[0]["app"] == "QUILL Lite"
     assert asked[0]["submit"] is host.host.submit  # the host's task submitter, not a thread
     assert host.quiet == ["Checking the GitHub account..."]
-    assert saved == [("octocat", "gho_new")]
+    # Saved as signed in, which is what keeps the token suggestion away from it.
+    assert saved == [("octocat", "gho_new", "sign_in")]
     assert host.said == ["Added and switched to GitHub account octocat"]
 
 

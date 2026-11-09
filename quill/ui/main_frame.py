@@ -775,6 +775,7 @@ class MainFrame(
         "radio_player": "Radio",
         "podcast_player": "Podcasts",
         "ai": "AI",
+        "workbench": "Workbench",  # GitHub Workbench Mode (main_frame_github_status)
     }
     _STATUS_BAR_WIDTHS: dict[str, int] = {
         "message": -1,
@@ -9642,10 +9643,9 @@ class MainFrame(
             dialog.EndModal(wx.ID_OK)
             wx.CallAfter(opener, target)
 
-        # Copy is *explicit* only: double-click or Ctrl+C on the list, or the button.
-        # Do NOT bind EVT_LISTBOX (selection-changed) — that fires on every arrow-key
-        # move, so screen-reader users navigating the list would silently clobber the
-        # clipboard on each row (#1247).
+        # Copy is *explicit* only: double-click or Ctrl+C on the list, or the button. Do NOT
+        # bind EVT_LISTBOX (selection-changed): it fires on every arrow-key move, so screen-
+        # reader users navigating the list would silently clobber the clipboard (#1247).
         def _on_list_key(event: object) -> None:
             key_code = event.GetKeyCode()
             if event.ControlDown() and key_code in (ord("C"), ord("c")):
