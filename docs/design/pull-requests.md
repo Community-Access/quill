@@ -63,6 +63,14 @@ overwhelmed, never lost, always able to go one level deeper.
 8. **Delight is in the timing.** The right sentence at the right moment, a
    soft tone instead of a word you have heard a hundred times, and a moment of
    celebration when you have reviewed everything.
+9. **Descriptions guide; the text decides.** A spoken description is where you
+   start, never where you have to stop. Every change can be opened as real
+   text, before and after, to arrow through character by character, select,
+   copy and judge for yourself. A reviewer who wants to check QUILL's sentence
+   against the code can always do so in one key.
+10. **Every decision is yours, item by item.** You can accept or decline each
+   change and each suggestion on its own, and QUILL says plainly what that
+   does on GitHub before it does it.
 
 ## 3. The experience, from the reviewer's chair
 
@@ -104,6 +112,26 @@ its gist:
 
 and **Spell the Change** gives the characters that differ, with punctuation
 named, then puts you in the details field where you can arrow by character.
+
+**Seeing for yourself.** **Before and After** (`Ctrl+B`) opens the change in
+a window with two text fields, Before and After, holding the real lines with
+the lines around them. Arrow through either one; the other follows to the same
+line. A list of **Changed parts** takes you straight to each one: Enter
+selects the changed characters in both fields, so your screen reader reads
+exactly what differs and your braille display shows it under your fingers.
+Turn on **Mark changes** and the changed text is wrapped in spoken markers,
+"[was: 0.2]" and "[now: 0.25]", for when you would rather read a line than
+compare two.
+
+**Accept or decline, one at a time.** In the walk and in Before and After,
+**Accept** says this change is fine, and the outline shows it as accepted.
+**Decline** asks you why, in a comment that goes with your review, attached to
+those lines. When you compose the review, QUILL has counted for you: "18
+changes accepted, 2 declined", and with anything declined it starts the review
+as Request changes. If you are the author, a reviewer's suggestion has its own
+**Accept Suggestion**, which commits it to your branch after showing you the
+exact before and after, and **Decline Suggestion**, which replies with your
+reason and resolves the thread.
 
 **The same edit, many times.** When a pull request repeats one edit, QUILL says
 it once:
@@ -247,12 +275,47 @@ reads the details. The existing Next Unresolved and Next Unvisited stay.
 Pressing Tell Me More twice is Spell the Change, matching the family's "press
 twice for more" habit (Which AI Am I Using).
 
-### 6.3 Before and after
+### 6.3 Before and After: the text itself
 
-On any change, **Before and After** toggles the details field between the old
-text and the new, keeping the cursor on the same line, so a reviewer can
-arrow through either version. On a multi-line change this is the closest thing
-to side-by-side that works by ear.
+Spoken descriptions are a guide. The reviewer still needs the text: to arrow
+through it, read it at their own pace, check a single character, and decide.
+**Before and After** (`Ctrl+B` on a change, a file or a thread; also on each
+row's context menu) opens one window for that:
+
+- **Before** and **After**, two read-only multi-line text fields with the real
+  lines of the change and three lines of context around them (more with
+  **Show more context**, `Alt+M`). Each line can start with its line number
+  (**Line numbers**, a check box, kept as a preference) so a line can be
+  found and quoted.
+- **The caret follows.** Moving to a line in one field puts the other field's
+  caret on the matching line, so Tab between them always lands in the same
+  place. Nothing is announced when it moves; the screen reader reads the line
+  you land on (GATE-13).
+- **Changed parts**, a list of every changed span in the change, in order:
+  "Line 14: 0.2 became 0.25". Enter moves both carets there and **selects** the
+  changed characters in each field, which is how a screen reader and a braille
+  display show exactly what differs without colour. Ctrl+Alt+Shift+. and ,
+  move to the next and previous changed part from either field, as they move
+  to the next difference in Compare Documents.
+- **Mark changes** (a check box, kept as a preference) rewrites both fields
+  with the differences inline and named in words, "[was: 0.2]" in Before and
+  "[now: 0.25]" in After, or as symbols (`{-0.2-}` and `{+0.25+}`) for people
+  who prefer them, using the same Words or Symbols choice as the diff
+  window's Line marks. Off, the fields hold the code exactly.
+- **One column**, a check box, interleaves the two: "Before 14:" then "After
+  14:" line by line in a single field, for comparing line against line without
+  changing fields.
+- **Open Before as a Document** and **Open After as a Document** open the
+  text in a QUILL tab, read-only, with every editor tool: Find, Go To Line,
+  word count, and Compare Documents on the two.
+- **Accept** (`Alt+A`) and **Decline** (`Alt+D`), section 6.6, and **Comment
+  on This Change**, so the decision is made where the reading is done.
+- The window works for a whole file too: its fields hold every change in the
+  file, with the unchanged stretches between them folded into one line each,
+  "12 unchanged lines", which Enter unfolds.
+
+The same window serves Compare Documents and Review Changes in project tasks,
+so the way to look at a change is the same everywhere in the family.
 
 ### 6.4 Viewed, and progress
 
@@ -270,6 +333,38 @@ When the walk reaches the last change, a soft completion sound and one
 sentence: what you did and what is next. If comments are pending, Enter opens
 Compose Review with them listed by gist, not just by line.
 
+### 6.6 Accept and Decline, change by change
+
+GitHub has no "approve this one change": a review approves or requests
+changes on the whole pull request, and comments are what attach to lines. So
+Accept and Decline are built from what GitHub does have, and each says what it
+will do before it does it.
+
+- **Accept** (`Alt+A`, and on each change's context menu) records that you
+  have checked this change and it is fine. The outline row says "accepted",
+  the walk skips accepted changes when you ask it to (**Next Undecided**), and
+  accepting every change in a file offers to mark the file Viewed on GitHub.
+  Accepting sends nothing on its own.
+- **Decline** (`Alt+D`) opens the comment window on that change's lines,
+  titled "Decline: the tax rate went from 0.2 to 0.25", and asks for a reason:
+  a decline without a reason helps nobody. It is added to your review as a
+  pending comment, so it is sent with your verdict, not on its own.
+- **Undo** a decision with the same key again, or **Clear Decision** on the
+  context menu. A declined change's pending comment is removed with it, after
+  asking.
+- **Accept All in This File** and **Accept the Rest** exist, and ask first,
+  for formatting-only and generated files; QUILL suggests them for those.
+- **Decisions are kept** on this computer, for your account and this pull
+  request, beside the pending comments. Each is tied to the change's exact
+  text: when new commits arrive, an accepted change whose text is unchanged
+  stays accepted, and one that changed reads "changed since you accepted it"
+  and becomes undecided.
+- **Composing the review** starts from the decisions: the window says "18
+  changes accepted, 2 declined, 3 undecided", the action starts as Request
+  changes if anything was declined and Approve if everything was accepted, and
+  **Include the tally** adds that line to the review message. You can change
+  all of it; Submit Review is still the only thing that sends.
+
 ## 7. Commenting
 
 - **Comment on This Change** anchors to the change's exact lines (the
@@ -285,12 +380,33 @@ Compose Review with them listed by gist, not just by line.
 - **Reading a thread** says who said what, in order, with code blocks and
   suggestions announced as such ("Suggestion: replace line 14 with …").
 
+### 7.1 Accepting and declining suggestions (the author's side)
+
+When a reviewer suggests a change, the author decides on it, item by item:
+
+- A thread holding a suggestion reads "Suggestion from alice, on line 14:
+  the tax rate becomes 0.25", with the change described the way section 4
+  describes any change, and **Before and After** shows the lines as they are
+  and as the suggestion would make them.
+- **Accept Suggestion** commits the suggested lines to the pull request's
+  branch, with a commit message naming the reviewer ("Apply suggestion from
+  alice"), after showing exactly what will change and asking. It needs
+  permission to push to the branch, and says so when the account does not
+  have it. **Accept Selected Suggestions** puts several into one commit, as
+  GitHub's "Add suggestion to batch" does.
+- **Decline Suggestion** asks for a short reason, replies on the thread with
+  it, and offers to resolve the thread.
+- A suggestion on lines that have changed since it was written cannot be
+  applied cleanly; QUILL says so and offers Before and After against the
+  current lines instead of guessing.
+
+
 ## 8. Sound, braille and the screen reader
 
 - **Optional line cues.** In Patch lines, a soft high tone for an added line,
   a low one for a removed line, nothing for unchanged. With cues on, the words
-  "Added line" and "Removed line" shorten to the line number. Off by default;
-  turned on in the sound scheme, never required to understand anything.
+  "Added line" and "Removed line" shorten to the line number. Off by default,
+  a preference (section 10), never required to understand anything.
 - **Braille form.** Each gist has a compact braille rendering: `+14 0.2→0.25`,
   `~7 > → >=`, `mv 80→20 12L`. The full sentence is a press of a routing key
   or Tell Me More away. Arrow characters fall back to `->` on displays and
@@ -319,6 +435,8 @@ with it, and reviewers use that to find a file by name.
 | Before and After | `Ctrl+B` | |
 | Mark File Viewed | `Ctrl+Shift+V` | toggles |
 | Comment on This Change | `Enter` on a change row; `Alt+L` as today | |
+| Accept / Decline (in Before and After and the review window) | `Alt+A` / `Alt+D` as buttons | the review window's Auto-Merge button (`Alt+A`) and Convert to Draft (`Alt+D`) move to free letters; GATE-14 decides |
+| Next Undecided | `Ctrl+Alt+Shift+U` | Next Unresolved keeps `Alt+U` |
 | What Is This Pull Request? | a free access letter (`Alt+W` is Request Reviewers) | |
 | Review Progress | `Ctrl+Shift+P` | |
 
@@ -327,7 +445,73 @@ label (the menu accelerator rule), has F1 help written at the construction
 site, and appears in What Can I Say Here for the review window, so "next
 change" and "what changed here" work from Say or Type a Command.
 
-## 10. Documentation
+## 10. Fine-tuning: your preferences
+
+Jeff, 2026-11-09: "go with great defaults but allow the user to fine tune this
+the way they wish." Every choice below has a default chosen so that most
+people never need to change it, and every one can be changed. They live on
+one page, **Pull Requests**, in Preferences' GitHub area, shared by QUILL and
+QUILL Lite (the same settings, one implementation, rule 10), each with F1 help
+written where it is built and keywords for Find a Setting. Each is a field in
+`Settings` under the settings gates (the vocabulary audit and GATE-SETDOC).
+
+The defaults are chosen to be quiet and complete, not to be tuned away: the
+preferences are for taste and habit, never the fix for a sentence that says
+too much (GATE-13). If a default turns out to be chatty, the sentence is
+changed, not the default.
+
+**Hearing changes**
+
+| Preference | Default | Choices |
+| --- | --- | --- |
+| Say the pull request's shape when it opens | On | On, Off |
+| Start each change at | The gist | The gist, Before and after, The characters |
+| Name the characters that changed | On | On, Off (leave punctuation to the screen reader) |
+| Longest quote of code in a sentence | 60 characters | 20 to 200 |
+| Say repeated changes once | On, from 3 places | On (from 2 to 10 places), Off |
+| Find code that moved | On, from 3 lines | On (from 2 to 20 lines), Off |
+| Fold generated and lock files | On | On, Off |
+| Braille: compact change forms | On | On, Off (the full sentence) |
+
+**Patch lines and sounds**
+
+| Preference | Default | Choices |
+| --- | --- | --- |
+| Line marks | Words | Words, Symbols (as today) |
+| Sound cues for added and removed lines | Off | On, Off |
+| With sound cues on, drop "Added line" and "Removed line" | On | On, Off |
+| A sound when every change is walked | On | On, Off |
+
+**Before and After**
+
+| Preference | Default | Choices |
+| --- | --- | --- |
+| Lines of context | 3 | 0 to 20 |
+| Line numbers | On | On, Off |
+| Mark changes in the text | Off (the code exactly) | Off, Words ("[was: …]"), Symbols (`{-…-}`) |
+| Layout | Two fields | Two fields, One column |
+| The other field follows the caret | On | On, Off |
+
+**Deciding**
+
+| Preference | Default | Choices |
+| --- | --- | --- |
+| What Accept does | A private checkmark that counts toward the review | That, or also post a short "Looks good" comment |
+| When every change in a file is accepted | Offer to mark the file Viewed | Offer, Always, Never |
+| A decline needs a reason | On | On, Off |
+| Next Change skips decided changes | Off (Next Undecided does that) | On, Off |
+| Compose Review starts from the decisions | On | On, Off |
+| Add the tally to the review message | Off | On, Off |
+| Viewed is GitHub's own Viewed | On | On, Off (this computer only) |
+| Accepting a suggestion | Commit it after asking | Commit after asking; collect and commit when I say |
+
+**AI**
+
+| Preference | Default | Choices |
+| --- | --- | --- |
+| Explain This Pull Request | Available when your own AI is chosen; never automatic | Available, Hidden |
+
+## 11. Documentation
 
 Documentation is part of the feature, written as it is built:
 
@@ -342,7 +526,7 @@ Documentation is part of the feature, written as it is built:
   of each size.
 - **Release notes** tell it as the story it is, with "try this" lines.
 
-## 11. Testing
+## 12. Testing
 
 - **A corpus of real changes**: about 200 hunks taken from public pull
   requests in several languages, each with the expected kind and gist,
@@ -360,36 +544,56 @@ Documentation is part of the feature, written as it is built:
   GATE-BRAILLE, help audits, the dialog contract, and QUILL Lite's coverage
   gate for every new handler.
 
-## 12. Phases
+## 13. Phases
 
 Each phase ships on its own and is useful on its own.
 
 | Phase | What | Size |
 | --- | --- | --- |
-| 1 | The change describer (section 4) with its corpus, used by the diff window's Differences list and Compare Documents. Character vocabulary shared with dictation. | large |
-| 2 | Walking: Next/Previous Change and File across the pull request, three depths, Before and After, comment on this change. | large |
+| 1 | The change describer (section 4) with its corpus and its preferences (section 10, Hearing changes), used by the diff window's Differences list and Compare Documents. Character vocabulary shared with dictation. | large |
+| 2 | Walking: Next/Previous Change and File across the pull request, three depths, comment on this change; the Before and After window (section 6.3), shared with Compare Documents. | large |
 | 3 | The shape sentence and What Is This Pull Request? (without AI). Quick replies. Pending comments by gist. | medium |
-| 4 | Viewed (GitHub's own state), Review Progress, finishing well, line cues and braille forms. | medium |
+| 4 | Accept and Decline (section 6.6) and the decisions in Compose Review; Viewed (GitHub's own state), Review Progress, finishing well, line cues and braille forms. | large |
+| 4b | Accepting and declining suggestions as the author (section 7.1), including batches. | medium |
 | 5 | Moves, repeats and generated files across the whole pull request; Explain This Pull Request with consent. | medium |
 | 6 | Docs: chapter 5 as a story, the sound gallery, the practice lesson; release notes. | medium, alongside each phase |
 
-## 13. Open decisions for Jeff
+## 14. Decisions
 
-1. **Names.** "Next Change", "Tell Me More", "Spell the Change", "Before and
-   After", "What Is This Pull Request?" Are these the words you want?
-2. **Line cues.** Off by default (proposed), or on by default with words
-   dropped when they are on?
-3. **Viewed on GitHub.** Use GitHub's own viewed state (proposed, it syncs with
-   the website), or keep "viewed" on this computer only?
-4. **The AI summary.** Include Explain This Pull Request in phase 5 (proposed),
-   or leave AI out of reviewing entirely?
-5. **Where the describer is used first.** Pull requests and Compare Documents
-   together (proposed), or pull requests only to start?
-6. **The practice repository.** A fixture shipped with QUILL (works offline,
-   proposed), or a real public repository on GitHub?
+Decided 2026-11-09, on Jeff's direction "great defaults, and let people fine
+tune": every open question takes the proposed default, and each becomes a
+preference in section 10.
 
-## 14. Progress log
+1. **Names**: "Next Change", "Tell Me More", "Spell the Change", "Before and
+   After", "What Is This Pull Request?", "Accept", "Decline". Still open to a
+   better word from Jeff or testers before phase 2 ships.
+2. **Line cues**: off by default; a preference.
+3. **Viewed**: GitHub's own viewed state by default; "this computer only" is a
+   preference.
+4. **The AI summary**: in phase 5, a button, never automatic; can be hidden.
+5. **Where the describer is used first**: pull requests and Compare Documents
+   together.
+6. **The practice repository**: a fixture shipped with QUILL, so the lesson
+   works offline.
+7. **What Accept means**: a private checkmark that counts toward the review;
+   posting "Looks good" is a preference.
+8. **A decline needs a reason**: yes by default; a preference.
+9. **Accepting a suggestion**: commit after asking, as GitHub does; collecting
+   first is a preference.
+10. **Mark changes**: off by default, so the fields hold the code exactly;
+   Words or Symbols when turned on.
+
+## 15. Progress log
 
 - **2026-11-09.** Plan written, from GitHub Guide chapter 5, `diff_lines.py`,
   `compare_service.py` and `pr_summary.py` as they are on `main`. Nothing built
   yet.
+- **2026-11-09, later.** Jeff: "go with great defaults but allow the user to
+  fine tune this the way they wish." Section 10 lists every preference with
+  its default; section 14 records the decisions.
+- **2026-11-09, the same day.** Jeff: "users should also be able to richly
+  look at the before and after scenarios and arrow through the text ... Accept
+  and reject buttons should be provided ... they need to be able to analyze for
+  themselves." Added principles 9 and 10, the Before and After window (6.3),
+  Accept and Decline (6.6), accepting and declining suggestions (7.1), their
+  keys, phases and four more decisions.
