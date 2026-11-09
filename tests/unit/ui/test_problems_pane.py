@@ -212,3 +212,50 @@ def test_set_all_files_moves_the_chooser_quietly(pane) -> None:
     pane.set_all_files(True)
     assert pane.all_files()
     assert pane.record["scope"] == [], "the host set it; telling the host back would loop"
+
+
+class _FocusOn:
+    """The pane's wx, with focus reported on *window*."""
+
+    def __init__(self, window: Any) -> None:
+        self.Window = type("W", (), {"FindFocus": staticmethod(lambda: window)})
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(wx, name)
+
+
+def test_escape_in_an_open_dropdown_only_closes_it(pane, monkeypatch) -> None:
+    """Review 2026-11-09, QUILL 19 / QUILL Lite 16: one key, one thing."""
+    monkeypatch.setattr(pane._show, "IsPopupShown", lambda: True, raising=False)
+    pane._wx = _FocusOn(pane._show)
+    escape = _Event(wx.WXK_ESCAPE)
+    pane._on_char_hook(escape)
+    assert escape.skipped and pane.record["back"] == [], "the dropdown has the key"
+    monkeypatch.setattr(pane._show, "IsPopupShown", lambda: False, raising=False)
+    pane._on_char_hook(_Event(wx.WXK_ESCAPE))
+    assert pane.record["back"] == [True], "closed, Escape leaves the pane as before"
+
+
+def test_the_timer_stops_for_good_when_its_window_goes(wx_session_app: Any) -> None:
+    """Review 2026-11-09, QUILL Lite 2: no tick into a destroyed window."""
+    frame = wx.Frame(None)
+    ticks: list[bool] = []
+    widget = ProblemsPane(
+        wx,
+        frame,
+        go_to=lambda _i: None,
+        back_to_editor=lambda: None,
+        copy_text=lambda _t: None,
+        say=lambda _s: None,
+        tick=lambda: ticks.append(True),
+    )
+    widget.set_shown(True)
+    assert widget._timer.IsRunning()
+    widget.stop()
+    assert not widget._timer.IsRunning()
+    widget._on_timer(None)
+    assert ticks == [], "a stopped pane never ticks its host again"
+    widget.stop()  # twice is fine
+    widget.set_shown(True)
+    assert not widget._timer.IsRunning(), "showing it again does not restart a stopped pane"
+    frame.Destroy()

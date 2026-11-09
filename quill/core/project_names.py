@@ -37,6 +37,7 @@ __all__ = [
     "ProjectNameIndex",
     "build_project_index",
     "imported_modules",
+    "marked_project_root",
     "project_root_for",
 ]
 
@@ -94,14 +95,30 @@ _IMPORT = re.compile(
 
 
 def project_root_for(path: Path | str | None) -> Path | None:
-    """The project folder around *path*: the nearest marked folder, else its own."""
+    """The project folder around *path*: the nearest marked folder, else its own.
+
+    For a language server, which needs some folder to start in. The project
+    name index uses :func:`marked_project_root`, which has no fallback.
+    """
+    if path is None:
+        return None
+    return marked_project_root(path) or Path(path).resolve().parent
+
+
+def marked_project_root(path: Path | str | None) -> Path | None:
+    """The nearest folder above *path* with a project marker, or ``None``.
+
+    ``None`` for a loose file: indexing "its folder" would walk the Desktop or
+    the home folder, thousands of files nobody asked about (review 2026-11-09,
+    QUILL Lite 12).
+    """
     if path is None:
         return None
     start = Path(path).resolve().parent
     for folder in (start, *start.parents):
         if any((folder / marker).exists() for marker in PROJECT_MARKERS):
             return folder
-    return start
+    return None
 
 
 def imported_modules(text: str) -> set[str]:

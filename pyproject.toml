@@ -74,11 +74,12 @@ ui = [
     # wxWidgets master branch, which upstream documents as API/ABI UNSTABLE
     # between 4.3.x releases -- so a bare floor means a release build can
     # silently ship a wx the acceptance run never tested, and QUILL's whole
-    # product is screen-reader behavior on those widgets. 4.3.1 (wxWidgets
-    # 3.3.3) is the version the 1.0.0 suite and JAWS/NVDA pass ran against.
+    # product is screen-reader behavior on those widgets. 4.3.2 (wxWidgets
+    # 3.3.4, 2026-11) is the version the 1.0.0 suite ran against; it is the
+    # first with wx.Window.SetAccessibleName, which quill.ui.spoken_name uses.
     # Same rationale as the llama-cpp-python exact pin below. Re-test the
     # editor, dialogs, and braille surfaces before bumping.
-    "wxPython==4.3.1",
+    "wxPython==4.3.2",
     # Accessible wx.html2.WebView surfaces (chat, preview, dialogs) — extracted
     # from Quill and published so any wxPython app can reuse it.
     "wx-accessible-webview>=0.2.0",
@@ -627,6 +628,7 @@ addopts = "-p no:randomly --durations=10 --durations-min=5.0"
 markers = [
     "perf: wall-clock performance budgets; run with RUN_PERF=1 or exclude with -m 'not perf'",
     "smoke: fast, high-signal core checks; run the quick subset with -m smoke",
+    "lsp: drives the real bundled language servers; skipped unless QUILL_LANGUAGE_SERVERS_DIR names a staged folder (scripts/fetch_build_deps.py --only nodejs --only language-servers)",
     "uia: Windows UI-automation regression tests (launch the real app via UIA); opt-in with QUILL_UIA_TESTS=1 and -m uia on a Windows desktop session",
     "machine_global: touches a resource the machine owns rather than the process (the Windows clipboard, the system-wide RegisterHotKey table, the screen-reader COM bridges). Serialized onto one worker under -n --dist loadgroup; see tests/conftest.py.",
     "slow: runs for many minutes and only when asked by its own environment variable (the dictation soak, tests/stability/test_dictation_soak.py); never in CI",

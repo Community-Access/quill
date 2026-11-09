@@ -11,10 +11,12 @@ from __future__ import annotations
 from typing import Any
 
 from quill.platform.sr_announce import announce
+from quill.ui.atomic_edit import replace_as_one_undo
+from quill.ui.language_servers import LanguageServerMixin
 from quill.ui.suggestion_list import SuggestionListMixin
 
 
-class IntellisensePopupMixin(SuggestionListMixin):
+class IntellisensePopupMixin(LanguageServerMixin, SuggestionListMixin):
     # Host-provided by MainFrame: type-only annotations, never method stubs.
     _wx: Any
     frame: Any
@@ -36,7 +38,19 @@ class IntellisensePopupMixin(SuggestionListMixin):
         return int(self.editor.GetInsertionPoint())
 
     def _suggest_replace(self, start: int, end: int, text: str) -> None:
-        self.editor.Replace(start, end, text)
+        # One undo step, as in QUILL Lite: Ctrl+Z takes the whole suggestion
+        # back, not part of it (review 2026-11-09, QUILL 12).
+        replace_as_one_undo(self.editor, start, end, text)
+
+    def _suggest_control(self) -> Any:
+        return self.editor
+
+    def _suggest_char_before_caret(self) -> str:
+        get_range = getattr(self.editor, "GetRange", None)
+        if not callable(get_range):
+            return super()._suggest_char_before_caret()
+        caret = int(self.editor.GetInsertionPoint())
+        return str(get_range(caret - 1, caret)) if caret > 0 else ""
 
     def _suggest_set_caret(self, offset: int) -> None:
         self.editor.SetInsertionPoint(offset)
@@ -75,6 +89,15 @@ class IntellisensePopupMixin(SuggestionListMixin):
             on_failure=lambda _op, _error: done(None),
         )
         return True
+
+    def _ls_settings(self) -> Any:
+        return self.settings
+
+    def _refresh_intellisense_popup(self) -> None:
+        # QUILL calls this after every text change (main_frame_typing), which
+        # is also the moment Parameter Hints As You Type listens for.
+        super()._refresh_intellisense_popup()
+        self._ls_after_char()
 
     def _suggest_say(self, message: str) -> None:
         self._set_status(message)

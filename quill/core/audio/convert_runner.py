@@ -93,6 +93,9 @@ def _default_single_runner(
     """
     if not job.source.is_file():
         return JobResult(job=job, ok=False, error="input file not found")
+    if job.dest.exists() and os.path.samefile(job.source, job.dest):
+        # The move at the end would put the converted copy over the original.
+        return JobResult(job=job, ok=False, error="it would replace the original file")
     from quill.stability.safe_subprocess import run_subprocess_safely
 
     job.dest.parent.mkdir(parents=True, exist_ok=True)

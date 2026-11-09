@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ctypes
+import threading
 from types import SimpleNamespace
 
 import pytest
@@ -186,8 +187,17 @@ def test_mpv_negative_property_status_is_a_transport_error(operation):
         getattr(engine, operation)()
 
 
-def test_mpv_command_failure_is_not_ignored():
+def _bare_client() -> _MpvClient:
+    """A client built without libmpv, with the fields __init__ would set."""
     client = object.__new__(_MpvClient)
+    client._guard = threading.Lock()
+    client._busy = 0
+    client._closing = False
+    return client
+
+
+def test_mpv_command_failure_is_not_ignored():
+    client = _bare_client()
     client._handle = ctypes.c_void_p(1)
     client._lib = SimpleNamespace(mpv_command=lambda *_args: -2)
 
@@ -197,7 +207,7 @@ def test_mpv_command_failure_is_not_ignored():
 
 @pytest.mark.parametrize("operation", ["get_double", "get_flag", "get_str"])
 def test_a_terminated_client_never_passes_a_null_handle_to_native_code(operation):
-    client = object.__new__(_MpvClient)
+    client = _bare_client()
     client._handle = ctypes.c_void_p(None)
 
     with pytest.raises(OSError, match="no longer available"):

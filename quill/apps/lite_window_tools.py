@@ -45,9 +45,9 @@ from quill.apps.lite_window_replace_jobs import DocumentReplaceJobsMixin
 from quill.core import format_ops, line_ops, transforms
 from quill.core.lite import APP_NAME
 from quill.core.selection import word_span
-from quill.core.text_units import native_length
+from quill.core.text_units import native_length, native_offset, text_index
 from quill.core.wrap_ops import hard_wrap
-from quill.ui.atomic_edit import replace_as_one_undo
+from quill.ui.atomic_edit import edits_as_one_undo, replace_as_one_undo
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import RICH
 
@@ -385,7 +385,7 @@ class DocumentToolsMixin(
     # Indenting
     # ------------------------------------------------------------------ #
 
-    def _shift_indent(self, shift: _IndentOp, *, verb: str, announce: bool = True) -> None:
+    def _shift_indent(self, shift: _IndentOp, *, verb: str, announce: bool = True) -> bool:
         """Indent or outdent the selected lines, or the caret's line.
 
         Not ``_apply_tool``: indenting is defined by *where the lines are* in
@@ -400,27 +400,43 @@ class DocumentToolsMixin(
         the two, "4 spaces" carries the information a screen reader does not
         otherwise give. Refusals are still spoken either way: "nothing to
         outdent" is the one outcome where silence and success sound alike.
+
+        True when it changed something, so Tab says the new depth only then:
+        a refusal followed by "4 spaces" is two sentences for one key.
+
+        Only the indentation at each line start is inserted or removed, as one
+        undo step. Writing the whole document back, as this once did, turned a
+        rich or Word document into plain text -- headings and bold gone -- on a
+        Shift+Tab (review 2026-11-09, QUILL Lite 1).
         """
         text = self.control.GetValue()
         start, end = self.control.GetSelection()
-        changed, new_start, new_end = shift(text, start, end)
+        # format_ops counts code points; the control counts UTF-16 units (Lite 14).
+        changed, new_start, new_end = shift(text, text_index(text, start), text_index(text, end))
         if changed == text:
-            self._announce("Nothing to outdent")
-            return
-        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), changed)
-        self.control.SetSelection(new_start, new_end)
+            self._announce(f"Nothing to {verb.removesuffix('ed').lower()}")
+            return False
+        edits = _line_start_edits(text, changed)
+        edits_as_one_undo(
+            self.control,
+            [(native_offset(text, a), native_offset(text, b), new) for a, b, new in edits],
+        )
+        self.control.SetSelection(
+            native_offset(changed, new_start), native_offset(changed, new_end)
+        )
         self._set_modified(True)
         self._touch_status()
         if not announce:
-            return
+            return True
         lines = max(1, changed[new_start:new_end].count("\n") or 1)
         self._announce(f"{verb} {lines} line{'s' if lines != 1 else ''}")
+        return True
 
-    def cmd_indent(self, *, announce: bool = True) -> None:
-        self._shift_indent(format_ops.indent_lines, verb="Indented", announce=announce)
+    def cmd_indent(self, *, announce: bool = True) -> bool:
+        return self._shift_indent(format_ops.indent_lines, verb="Indented", announce=announce)
 
-    def cmd_outdent(self, *, announce: bool = True) -> None:
-        self._shift_indent(format_ops.outdent_lines, verb="Outdented", announce=announce)
+    def cmd_outdent(self, *, announce: bool = True) -> bool:
+        return self._shift_indent(format_ops.outdent_lines, verb="Outdented", announce=announce)
 
     def describe_indent_at_cursor(self) -> str:
         """How deeply the caret's line is indented, in words.
@@ -501,6 +517,7 @@ class DocumentToolsMixin(
 # 2026-09-18 so QUILL could read them too (bad.md P1.16): QUILL's line tools
 # announced a past tense and no number at all, including when nothing had
 # changed. Same functions, same behaviour, one copy.
+
 from quill.core.line_tool_report import changed_size as _difference  # noqa: E402
 from quill.core.line_tool_report import scope_size as _scope_size  # noqa: E402
 
@@ -515,3 +532,54 @@ def _newline_name(newline: str) -> str:
     from quill.apps.lite_window_status import newline_name
 
     return newline_name(newline)
+
+
+def _line_start_edits(old: str, new: str) -> list[tuple[int, int, str]]:
+    """The edits that turn *old* into *new* when only line starts changed.
+
+    ``(start, end, text)`` in code points against *old*, one per line whose
+    indentation changed, so the rest of each line -- and its formatting in a
+    rich document -- is never rewritten. Lines are paired one to one, which is
+    what Indent and Outdent produce; if they somehow are not, the changed span
+    is replaced in one edit, still no wider than the lines touched.
+    """
+    limit = min(len(old), len(new))
+    prefix = _common_run(old, new, limit, from_end=False)
+    # Back to a line start: everything before the first changed line is equal.
+    prefix = old.rfind("\n", 0, prefix) + 1
+    suffix = _common_run(old, new, limit - prefix, from_end=True)
+    old_lines = old[prefix : len(old) - suffix].split("\n")
+    new_lines = new[prefix : len(new) - suffix].split("\n")
+    if len(old_lines) != len(new_lines):
+        return [(prefix, len(old) - suffix, new[prefix : len(new) - suffix])]
+    edits: list[tuple[int, int, str]] = []
+    at = prefix
+    for before, after in zip(old_lines, new_lines, strict=True):
+        if before != after:
+            if after.endswith(before):
+                edits.append((at, at, after[: len(after) - len(before)]))
+            elif before.endswith(after):
+                edits.append((at, at + len(before) - len(after), ""))
+            else:
+                edits.append((at, at + len(before), after))
+        at += len(before) + 1
+    return edits
+
+
+def _common_run(old: str, new: str, limit: int, *, from_end: bool) -> int:
+    """How many characters (at most *limit*) *old* and *new* share at the start or end.
+
+    In blocks first, compared in C, so a long document costs little more than
+    the lines that changed.
+    """
+    run, block = 0, 4096
+    while block:
+        while run + block <= limit and (
+            old[len(old) - run - block : len(old) - run]
+            == new[len(new) - run - block : len(new) - run]
+            if from_end
+            else old[run : run + block] == new[run : run + block]
+        ):
+            run += block
+        block //= 8
+    return run

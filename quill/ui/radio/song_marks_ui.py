@@ -243,11 +243,13 @@ def save_songs(app: Any, which: Which) -> None:
         now=local_now(),
     )
 
+    load = extras.loads
+
     def _write(**_kwargs: object) -> list[Path]:
         folder.mkdir(parents=True, exist_ok=True)
         written: list[Path] = []
         for song, path in planned:
-            if not extras.dump(song.start, song.end, str(path)):
+            if not extras.dump(song.start, song.end, str(path), load=load):
                 break
             written.append(path)
         return written

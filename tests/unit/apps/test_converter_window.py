@@ -409,3 +409,122 @@ def test_a_downloaded_playlist_converts_into_its_own_folder(
     converter._dest.SetValue("")
     converter._entries = [(temp / "quill-url-list-abc" / "Talks" / "001 - One.webm", None)]
     assert converter._destination() == tmp_path / "home" / "Downloads" / "Converted" / "Talks"
+
+
+# -- one job at a time, previews, and the close (converter_lifecycle) -----------------
+
+
+class _CloseEvent:
+    def __init__(self) -> None:
+        self.vetoed = self.skipped = False
+
+    def CanVeto(self) -> bool:  # noqa: N802 - wx's name
+        return True
+
+    def Veto(self) -> None:  # noqa: N802
+        self.vetoed = True
+
+    def Skip(self) -> None:  # noqa: N802
+        self.skipped = True
+
+
+def test_a_link_being_read_is_a_job_convert_waits_for(converter, monkeypatch) -> None:
+    from quill.apps import converter_lifecycle
+
+    started: list[object] = []
+    monkeypatch.setattr(
+        converter_lifecycle.threading,
+        "Thread",
+        lambda target, **_k: type("T", (), {"start": lambda self: started.append(target)})(),
+    )
+    done: list[object] = []
+    converter._run_background_task(
+        "Reading the link", lambda _p: "info", done.append, exclusive=True
+    )
+    assert converter._busy and len(started) == 1
+    converter.convert_or_stop()  # while busy, Ctrl+Enter is Stop
+    assert converter.said[-1] == "Reading the link cannot be stopped; it ends on its own."
+    converter._run_background_task(
+        "Checking the files for Auphonic", lambda _p: 0, done.append, exclusive=True
+    )
+    assert converter.said[-1] == "A job is already running." and len(started) == 1
+    converter._finish_task("Reading the link", None, "info", done.append, True)
+    assert not converter._busy and done == ["info"]
+    converter._run_background_task("Proposing titles", lambda _p: 0, done.append)
+    assert not converter._busy  # the Chapter Workbench's helpers are not jobs
+
+
+def test_a_stopped_preview_never_plays_and_its_file_is_removed(
+    converter, tmp_path: Path, monkeypatch
+) -> None:
+    import os
+    import tempfile
+    import winsound
+
+    from quill.apps import converter_lifecycle
+
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+    jobs: list = []
+    monkeypatch.setattr(converter_lifecycle, "_off_ui_thread", lambda w, d: jobs.append(d))
+    played: list[object] = []
+    monkeypatch.setattr(winsound, "PlaySound", lambda name, _flags: played.append(name))
+    monkeypatch.setattr(converter_lifecycle.wx, "CallLater", lambda *_a: None)
+    monkeypatch.setattr(converter, "_ffmpeg", lambda: "ffmpeg")
+    (song,) = _files(tmp_path, "song.mp3")
+    converter.add_paths([song], announce=False)
+    converter.preview(original=True)  # preview 1
+    converter.preview(original=True)  # again: stop (and number 2 orphans it)
+    converter.preview(original=True)  # preview 3
+    wavs = [tmp_path / f"quill-converter-preview-{os.getpid()}-{n}.wav" for n in (1, 3)]
+    for wav in wavs:
+        wav.write_bytes(b"RIFF")  # what render_preview would have written
+    jobs[0](None, None)  # the stopped preview finishes rendering late
+    assert played == [None] and not wavs[0].exists()  # not played, and removed
+    jobs[1](None, None)
+    assert played == [None, str(wavs[1])]
+    converter._preview_ended(1)  # the first one's timer cannot end the second
+    assert converter._previewing
+    converter._preview_ended(converter._preview_number)
+    assert not converter._previewing and not wavs[1].exists()
+
+
+def test_closing_exits_and_removes_the_tray_icon_and_downloads(
+    converter, tmp_path: Path, monkeypatch
+) -> None:
+    import threading
+
+    from quill.core.audio.convert import CancelToken
+
+    folder = tmp_path / "quill-url-list-x"
+    (folder / "Talks").mkdir(parents=True)
+    converter._download_folders = [folder]
+    cancel = CancelToken()
+    worker = threading.Thread(target=lambda: cancel_seen.append(cancel_wait()), daemon=True)
+    cancel_seen: list[bool] = []
+
+    def cancel_wait() -> bool:
+        while not cancel.is_cancelled():
+            threading.Event().wait(0.01)
+        return True
+
+    converter._cancel, converter._work_thread = cancel, worker
+    worker.start()
+    event = _CloseEvent()
+    converter._on_converter_close(event)  # nothing is a job: closing exits, no question
+    assert event.skipped and not event.vetoed
+    assert cancel_seen == [True] and not worker.is_alive()  # stopped and waited for
+    assert converter._tray_icon is None and not folder.exists()
+
+
+def test_closing_during_a_conversion_asks_first(converter, monkeypatch) -> None:
+    calls: list[object] = []
+    monkeypatch.setattr(converter._wx, "CallAfter", lambda fn, *a: calls.append((fn, a)))
+    converter._busy = True
+    event = _CloseEvent()
+    converter._on_converter_close(event)
+    assert event.vetoed and not event.skipped and calls  # the question is deferred
+    converter._closing_in_progress = False
+    converter.boxes.clear()
+    monkeypatch.setattr(converter, "_show_message_box", lambda *_a, **_k: 0)  # No
+    assert converter._converter_close_confirm() is None
+    converter._busy = False

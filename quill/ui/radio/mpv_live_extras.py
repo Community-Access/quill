@@ -84,6 +84,9 @@ class LiveExtras:
         self.cushion = cushion.CushionPolicy() if clock is None else cushion.CushionPolicy(clock)
         self._ticks = 0
         self._last_title = ""
+        #: Streams loaded so far: a save planned against one buffer checks it
+        #: before each song, so a station change never saves from the next.
+        self.loads = 0
 
     # -- positions on the stream timeline -------------------------------------
 
@@ -107,6 +110,7 @@ class LiveExtras:
         Written unconditionally: an option set at runtime survives a load, so
         the last station's deep cushion would otherwise carry over.
         """
+        self.loads += 1
         self.marks.clear()
         self._last_title = ""
         self._ticks = 0
@@ -162,14 +166,18 @@ class LiveExtras:
             return False
         return True
 
-    def dump(self, start: float, end: float, target: str) -> bool:
+    def dump(self, start: float, end: float, target: str, *, load: int | None = None) -> bool:
         """Write the buffer from *start* to *end* to *target*, as the station sent it.
 
         mpv's ``dump-cache`` copies the packets without decoding them, into a
         container chosen from the file's extension. Safe from a worker thread:
         the libmpv client API is thread-safe, and the only reason to keep it
-        off the UI thread is that a long dump takes a while.
+        off the UI thread is that a long dump takes a while. *load*, when
+        given, is :attr:`loads` when the save was planned: another stream since
+        means these positions are in a different buffer, and nothing is written.
         """
+        if load is not None and load != self.loads:
+            return False
         try:
             self._mpv.command("dump-cache", f"{start:.3f}", f"{end:.3f}", target)
         except Exception:  # noqa: BLE001 - a failed dump is a failed save, never a crash

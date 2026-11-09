@@ -220,3 +220,28 @@ def test_the_adapter_has_no_command_of_its_own() -> None:
 
     for cls in (WeatherAiMixin, AppAiMixin, AppAiHost):
         assert [name for name in vars(cls) if name.startswith("cmd_")] == []
+
+
+def test_a_reply_that_cannot_be_read_is_said_not_left_hanging(weather, monkeypatch) -> None:
+    from quill.core.weather import nws
+
+    jobs: list[dict] = []
+    monkeypatch.setattr(
+        weather._task_manager, "submit", lambda _n, work, **k: jobs.append({"work": work, **k})
+    )
+    monkeypatch.setattr(weather, "_weather_ai_call_after", lambda func, *args: func(*args))
+    _places(monkeypatch, _report().location)
+
+    def unreadable(*_a, **_k):
+        raise KeyError("properties")  # a reply shaped wrong, not a WeatherError
+
+    monkeypatch.setattr(nws, "fetch_report_worldwide", unreadable)
+    weather.cmd_weather_go_out()
+    result = jobs[0]["work"]()
+    assert isinstance(result, KeyError)  # returned to the UI, not lost in the worker
+    jobs[0]["on_success"]("weather-ai-report", result)
+    assert weather.said[-1].startswith("Could not get weather.")
+    weather.said.clear()
+    jobs[0]["on_failure"]("weather-ai-report", RuntimeError("worker died"))
+    assert weather.said == ["Could not get weather. worker died"]
+    assert weather.sent == []

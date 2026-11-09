@@ -68,8 +68,11 @@ def record_song(host: Any, title: str) -> None:
     """
     from quill.ui.radio import dial_tuning_ui, scrobble_commands
 
-    if dial_tuning_ui.passing_through(host, _current_station(host)):
-        return  # dial tuning is only passing through: neither logged nor scrobbled
+    try:
+        if dial_tuning_ui.passing_through(host, _current_station(host)):
+            return  # dial tuning is only passing through: neither logged nor scrobbled
+    except Exception:  # noqa: BLE001 - a dial fault must not silence What's Playing
+        _log.debug("Could not ask dial tuning about a title", exc_info=True)
     scrobble_commands.on_title(host, title)
     try:
         history_settings = getattr(host, "_radio_history", None)

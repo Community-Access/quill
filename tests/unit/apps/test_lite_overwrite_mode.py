@@ -300,3 +300,17 @@ def test_toggling_tab_mode_says_which_way_it_went() -> None:
     win.cmd_toggle_tab_mode()
     assert win._tab_inserts_literal is True
     assert win.announcements[-1] == "Tab key types a tab character"
+
+
+def test_a_refused_outdent_is_said_once_not_followed_by_the_depth() -> None:
+    """Review 2026-11-09, QUILL Lite 13: one key, one sentence."""
+
+    class _Refusing(_TabWindow):
+        def cmd_outdent(self, *, announce: bool = True) -> bool:
+            self.outdented += 1
+            self._announce("Nothing to outdent")
+            return False
+
+    win = _Refusing("hello", 2)
+    win._on_key_down(_ShiftKeyEvent(wx.WXK_TAB, shift=True))
+    assert win.announcements == ["Nothing to outdent"]

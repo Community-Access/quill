@@ -60,6 +60,66 @@ def test_a_picture_over_the_cap_is_refused(monkeypatch) -> None:
         def read(self, limit: int) -> bytes:
             return b"x" * limit
 
-    monkeypatch.setattr(picture_fetch.urllib.request, "urlopen", lambda *_a, **_k: _Resp())
+    class _Opener:
+        def open(self, *_a, **_k):
+            return _Resp()
+
+    monkeypatch.setattr(picture_fetch, "refuse_local_host", lambda _url: None)
+    monkeypatch.setattr(picture_fetch.urllib.request, "build_opener", lambda *_a: _Opener())
     with pytest.raises(PictureFetchError, match="20 megabytes"):
         fetch_picture("https://a.invalid/big.png")
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://127.0.0.1/admin.png",
+        "http://192.168.1.1/logo.png",
+        "http://10.0.0.5/x.png",
+        "http://169.254.169.254/latest/meta-data",
+        "http://[::1]/x.png",
+        "http://[::ffff:192.168.0.1]/x.png",
+        "https://localhost/x.png",
+        "https://printer.local/x.png",
+        "https://router.example/x.png",
+    ],
+)
+def test_a_picture_on_the_local_network_is_never_fetched(monkeypatch, url: str) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr(picture_fetch, "_fetch_picture_bytes", lambda u: calls.append(u))
+    monkeypatch.setattr(
+        picture_fetch.socket,
+        "getaddrinfo",
+        lambda host, *_a: [(2, 1, 6, "", ("192.168.1.20", 0))],
+    )
+    with pytest.raises(PictureFetchError, match="local network"):
+        fetch_picture(url)
+    assert calls == []
+
+
+def test_a_public_picture_is_fetched_and_a_redirect_home_is_refused(monkeypatch) -> None:
+    monkeypatch.setattr(
+        picture_fetch.socket,
+        "getaddrinfo",
+        lambda host, *_a: [(2, 1, 6, "", ("93.184.216.34", 0))],
+    )
+    monkeypatch.setattr(picture_fetch, "_fetch_picture_bytes", lambda u: b"PNG")
+    assert fetch_picture("https://cdn.example/art.png") == b"PNG"
+    handler = picture_fetch._PublicRedirects()
+    with pytest.raises(PictureFetchError, match="local network"):
+        handler.redirect_request(None, None, 302, "Found", {}, "http://10.1.2.3/x.png")
+    with pytest.raises(PictureFetchError, match="does not fetch"):
+        handler.redirect_request(None, None, 302, "Found", {}, "file:///c:/secret.png")
+
+
+def test_a_cut_off_reply_is_a_fetch_error(monkeypatch) -> None:
+    import http.client
+
+    class _Opener:
+        def open(self, *_a, **_k):
+            raise http.client.IncompleteRead(b"half")
+
+    monkeypatch.setattr(picture_fetch, "refuse_local_host", lambda _url: None)
+    monkeypatch.setattr(picture_fetch.urllib.request, "build_opener", lambda *_a: _Opener())
+    with pytest.raises(PictureFetchError, match="Could not fetch"):
+        fetch_picture("https://cdn.example/art.png")

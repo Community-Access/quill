@@ -319,3 +319,36 @@ def test_provenance_names_the_publisher_and_host() -> None:
     assert "KEXP" in line and "not what Quill Radio heard" in line
     # Named as a word in the sentence, not checked as a URL.
     assert re.search(r"(?<![\w.-])api\.kexp\.org(?![\w-]|\.\w)", line)
+
+
+def test_a_cut_off_reply_tries_the_next_triton_mount(monkeypatch: pytest.MonkeyPatch) -> None:
+    import http.client
+
+    asked: list[str] = []
+
+    class _Resp:
+        def __init__(self, url: str) -> None:
+            self.url = url
+
+        def __enter__(self) -> _Resp:
+            return self
+
+        def __exit__(self, *_a: object) -> bool:
+            return False
+
+        def read(self, _limit: int) -> bytes:
+            if "mountName=977_HITS&" in self.url:
+                return _fixture("triton.xml").encode("utf-8")
+            raise http.client.IncompleteRead(b"<nowplaying")
+
+    def opened(request: object, **_k: object) -> _Resp:
+        url = request.full_url  # type: ignore[attr-defined]
+        asked.append(url)
+        return _Resp(url)
+
+    monkeypatch.setattr(sp.urllib.request, "urlopen", opened)
+    result = sp.fetch_station_playlist(
+        "https://playerservices.streamtheworld.com/api/livestream-redirect/977_HITS_SC.mp3"
+    )
+    assert result is not None and len(result.songs) == 2
+    assert len(asked) == 2, "the truncated first mount did not end the search"

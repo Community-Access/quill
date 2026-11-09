@@ -2,6 +2,54 @@
 
 ## 1.0.0
 
+### Built on wxPython 4.3.2 (2026-11-09)
+
+- QUILL now runs on wxPython 4.3.2 (wxWidgets 3.3.4). The change is
+  underneath: a control whose spoken name used to be set by a workaround now
+  carries it the way Windows expects, so your screen reader reads it straight
+  from the control.
+
+### Problems, Word Prediction and the code keys: fixes (2026-11-09)
+
+- An emoji early in a file no longer throws Next Problem, Go To on a Problems
+  row, Next Indent Change, Word Prediction or Parameter Hints off by one.
+- Word Prediction inserts for the word at the caret when you press Enter, not
+  the word it last saw, so typing fast and pressing Enter no longer gives you
+  "countern". Moving the caret, clicking, switching windows or moving focus
+  away closes the list, and Ctrl+Z takes a whole prediction back in one step.
+- The Problems pane no longer copies the whole document twice a second to see
+  whether it changed, Parameter Hints As You Type reads one character instead
+  of the whole file, and All Open Files checks the other documents in the
+  background.
+- The Quick Fix list is called Quick Fix and names the problem it fixes.
+- Rebuilding the menus no longer piles up handlers for View > Problems.
+- Escape in an open Show or Source list on the Problems pane closes the list
+  and leaves you in the pane.
+
+### Language servers: VS Code's smarts, inside QUILL (2026-11-08)
+
+- QUILL now carries the language servers VS Code uses: VS Code's own for HTML,
+  CSS, JSON and Markdown, TypeScript's for JavaScript and TypeScript, and
+  Pyright for Python, with the Node they run on. clangd (C and C++) and
+  PowerShell Editor Services are used if you have them installed.
+- **Ctrl+.** asks the server first: `console.lo` offers `log, method`. The
+  file's own names and your project's fill the rest of the list.
+- **Check This File** and the Problems pane include the server's problems,
+  with the server named as the source.
+- **Quick Fix...** on a Problems pane row lists the server's fixes; Enter
+  applies one as a single undo step and checks the file again.
+- **Navigate > Code > Parameter Hints** says "Parameter 2 of 3, seconds" and
+  the signature. **Parameter hints as you type** (off by default) says it as
+  you type an opening bracket or a comma.
+- **Navigate > Code > Language Servers...** switches all of them, each one, and
+  each use on or off.
+- Servers start the first time you need them, never at launch, stop after
+  fifteen idle minutes, and never use the internet.
+- Bundled, pinned and checked: Node 24.22.1, vscode-langservers-extracted
+  4.10.0, typescript-language-server 6.0.2, TypeScript 6.0.3, Pyright 1.1.414,
+  Prettier 3.9.10 (for Format Document, coming next) and ripgrep 15.2.0. Their
+  licences are in the third-party notices.
+
 ### One list of every command (2026-11-08)
 
 - The QUILL family now has one command catalogue: each command's spoken name,
@@ -19,6 +67,7 @@
 - Nothing new can be run by a sentence yet. A command with no reviewed row is
   never offered to one, and a new command fails the build until somebody
   writes its row.
+
 ### GitHub Workbench Mode and Clone Repository (2026-11-08)
 
 - **View > GitHub Workbench Mode** (Alt+V, then K) is a check item. Turn it on

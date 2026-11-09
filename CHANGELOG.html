@@ -244,69 +244,36 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
-<h3 id="one-list-of-every-command-2026-11-08">One list of every command
-(2026-11-08)</h3>
+<h3
+id="language-servers-vs-codes-smarts-inside-quill-2026-11-08">Language
+servers: VS Code’s smarts, inside QUILL (2026-11-08)</h3>
 <ul>
-<li>The QUILL family now has one command catalogue: each command’s
-spoken name, the other words people use for it, a few example sentences,
-what it does, and whether it is safe to do without asking. The Command
-Palette, the offline voice commands, Key Describer and the AI agents’
-list of commands they may run all read it, instead of four lists of
-their own.</li>
-<li>The Command Palette finds a few more commands by the words people
-use: “search” finds Find, “commands” finds the palette itself, and the
-voice commands’ phrases (“save my work”, “count words”) work there too.
-Every word it found before still finds the same command.</li>
-<li>What you can say in each app is a new page,
-<code>docs/command-catalogue.md</code>, made from the catalogue so it
-cannot go out of date: QUILL, QUILL Lite and Quill Radio, with each
-command’s key and example sentences.</li>
-<li>Nothing new can be run by a sentence yet. A command with no reviewed
-row is never offered to one, and a new command fails the build until
-somebody writes its row.</li>
-</ul>
-<h3 id="github-workbench-mode-and-clone-repository-2026-11-08">GitHub
-Workbench Mode and Clone Repository (2026-11-08)</h3>
-<ul>
-<li><strong>View &gt; GitHub Workbench Mode</strong> (Alt+V, then K) is
-a check item. Turn it on and a <strong>GitHub</strong> menu (Alt+G)
-joins the menu bar right after Tools. The GitHub rows of File &gt; Open
-from Remote and Tools &gt; Git and GitHub move into it, so nothing is
-listed twice, and turning the mode off puts them back. A key you gave
-one of those rows goes with it.</li>
-<li>The GitHub menu opens the views you use most in one step:
-<strong>Inbox…</strong>, <strong>My Work…</strong> and
-<strong>Notifications…</strong> open Explore GitHub on those views, and
-<strong>Issues and Pull Requests…</strong>, <strong>Actions
-Runs…</strong> and <strong>Releases…</strong> open GitHub Items on them.
-<strong>Leave Workbench Mode</strong> is its first row, and a disabled
-“Repository:” row above it names the repository you are in.</li>
-<li>The mode is per window and starts off. Turning it on or off says one
-sentence; nothing else in it speaks. It has no key of its own.</li>
-<li><strong>Clone Repository…</strong> is new, on File &gt; Open from
-Remote and in the GitHub menu. It asks for owner/name or an address and
-a folder, and runs Git for Windows in the background. A private
-repository works when you are signed in: the token goes to Git for that
-one command only, never into the copy’s settings, its remote address or
-the log. Afterwards QUILL offers to open a file from it, or, in the
-Developer profile, to open it as a project. With no Git installed, QUILL
-says so and offers the download page.</li>
-<li><strong>Save to GitHub… is now Commit to GitHub…</strong>, which is
-what it does. Same command, same place.</li>
-<li>GitHub Remote Access no longer needs the Developer profile. QUILL
-Lite has had the workbench in every profile, so QUILL now has it
-wherever GitHub Remote Access is on, which is most profiles. Local Git
-stays in the Developer profile.</li>
-<li>GitHub Items no longer says “Opening GitHub Items” on the way in.
-Your screen reader says the window’s title anyway.</li>
-<li>The Copilot and free AI sign-in codes now say “dash” as a word, as
-Sign In with GitHub does, instead of spelling it out letter by
-letter.</li>
-<li>The Menu Editor’s top-level order now applies again. The AI and
-QuillVille menus were missing from its list, and a bar with a menu it
-could not name was left as it was.</li>
-<li>Local Git and Clone now find Git when Windows reports it as
-git.EXE.</li>
+<li>QUILL now carries the language servers VS Code uses: VS Code’s own
+for HTML, CSS, JSON and Markdown, TypeScript’s for JavaScript and
+TypeScript, and Pyright for Python, with the Node they run on. clangd (C
+and C++) and PowerShell Editor Services are used if you have them
+installed.</li>
+<li><strong>Ctrl+.</strong> asks the server first:
+<code>console.lo</code> offers <code>log, method</code>. The file’s own
+names and your project’s fill the rest of the list.</li>
+<li><strong>Check This File</strong> and the Problems pane include the
+server’s problems, with the server named as the source.</li>
+<li><strong>Quick Fix…</strong> on a Problems pane row lists the
+server’s fixes; Enter applies one as a single undo step and checks the
+file again.</li>
+<li><strong>Navigate &gt; Code &gt; Parameter Hints</strong> says
+“Parameter 2 of 3, seconds” and the signature. <strong>Parameter hints
+as you type</strong> (off by default) says it as you type an opening
+bracket or a comma.</li>
+<li><strong>Navigate &gt; Code &gt; Language Servers…</strong> switches
+all of them, each one, and each use on or off.</li>
+<li>Servers start the first time you need them, never at launch, stop
+after fifteen idle minutes, and never use the internet.</li>
+<li>Bundled, pinned and checked: Node 24.22.1,
+vscode-langservers-extracted 4.10.0, typescript-language-server 6.0.2,
+TypeScript 6.0.3, Pyright 1.1.414, Prettier 3.9.10 (for Format Document,
+coming next) and ripgrep 15.2.0. Their licences are in the third-party
+notices.</li>
 </ul>
 <h3 id="the-problems-pane-lists-every-open-document-2026-11-08">The
 Problems pane lists every open document (2026-11-08)</h3>

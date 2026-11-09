@@ -60,9 +60,9 @@ class _Converter:
     """Just enough of the Converter window for File Properties."""
 
     def __init__(self, source: Path | None) -> None:
-        from quill.apps.converter_actions import ConverterActionsMixin
+        from quill.apps.converter_lifecycle import ConverterLifecycleMixin
 
-        self.show = ConverterActionsMixin.show_properties.__get__(self)
+        self.show = ConverterLifecycleMixin.show_properties.__get__(self)
         self.source = source
         self.said: list[str] = []
 
@@ -71,6 +71,9 @@ class _Converter:
 
     def _announce(self, text: str, **_kwargs: Any) -> None:
         self.said.append(text)
+
+    def _set_status(self, text: str) -> None:
+        self.status = text
 
 
 def test_converter_file_properties_end_with_the_drive(wx_app, monkeypatch, tmp_path) -> None:
@@ -85,7 +88,13 @@ def test_converter_file_properties_end_with_the_drive(wx_app, monkeypatch, tmp_p
     monkeypatch.setattr(volume_info, "describe_volume", lambda path: DRIVE)
     monkeypatch.setattr(converter_dialogs, "show_text", lambda _h, t, text: shown.append((t, text)))
     host = _Converter(tmp_path / "talk.mp3")
+    jobs = _queued(monkeypatch)
     host.show()
+    assert shown == [] and host.status == "Reading talk.mp3."  # off the UI thread
+    host.show()  # a second press while it reads starts nothing more
+    assert host.said == ["Still reading the file."] and len(jobs) == 1
+    work, deliver = jobs[0]
+    deliver(work(), None)
     assert shown == [("File Properties", "\n".join(["File: talk.mp3", *DRIVE]))]
 
 
@@ -93,3 +102,25 @@ def test_converter_file_properties_with_nothing_highlighted(wx_app) -> None:
     host = _Converter(None)
     host.show()
     assert host.said == ["Highlight a file in the queue first."]
+
+
+def _queued(monkeypatch) -> list:
+    from quill.apps import converter_lifecycle
+
+    jobs: list = []
+    monkeypatch.setattr(
+        converter_lifecycle, "_off_ui_thread", lambda work, deliver: jobs.append((work, deliver))
+    )
+    return jobs
+
+
+def test_converter_file_properties_that_cannot_be_read_are_said(
+    wx_app, monkeypatch, tmp_path
+) -> None:
+    host = _Converter(tmp_path / "talk.mp3")
+    jobs = _queued(monkeypatch)
+    host.show()
+    jobs[0][1](None, OSError("the drive went away"))
+    assert host.said == ["Could not read talk.mp3: the drive went away"]
+    host.show()  # and the next press reads again
+    assert len(jobs) == 2

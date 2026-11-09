@@ -9,6 +9,7 @@ from quill.core.ai.connection_choice import load_ai_fields
 from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
 from quill.core.editor_font import DEFAULT_FONT_POINTS, clamp_font_points
 from quill.core.inline_note_cue import coerce_note_line_cue
+from quill.core.language_server_settings import language_server_fields
 from quill.core.markdown_breaks import normalise_hard_break_style
 from quill.core.monitor_policy import (
     MONITOR_GITHUB,
@@ -115,10 +116,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     clipboard_collector_saves: bool = True  # shared; quill/core/clipboard_collector.py
     indent_with_tabs: bool = False
     indent_size: int = 4
-    # On by default so signed safety advisories (the remote feature kill
-    # switch) actually reach installs; the check fetches QUILL's own signed
-    # feed and sends nothing about the user. An explicit stored False is
-    # honored, and Safe Mode skips the check entirely.
+    # On so signed safety advisories reach installs; the check reads QUILL's own
+    # signed feed and sends nothing. A stored False is honored; Safe Mode skips it.
     auto_check_updates: bool = True
     beta_updates: bool = False
     # Recommended (force-once) updates to important defaults, e.g. restoring
@@ -140,24 +139,18 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # (works across formats; strips leading markup). On by default: it only
     # pre-fills the name for an untitled document, never renames anything.
     first_line_as_title: bool = True
-    # Restore points: snapshot the document text on every save so File >
-    # Restore Previous Version can bring any earlier save back. On by default;
-    # recording is content-addressed (an unchanged save stores nothing) and
-    # best-effort (it can never be the reason a save fails).
+    # Restore points: a snapshot per save for File > Restore Previous Version. On;
+    # content-addressed and best-effort (never the reason a save fails).
     restore_points_enabled: bool = True
-    # Per-document disk cap for restore-point history, in megabytes. Age
-    # thinning (keep a week fully, then daily, then weekly) runs first; the
-    # newest five versions are never pruned regardless of the cap.
+    # Per-document restore-point cap in MB, after age thinning; the newest five stay.
     restore_points_max_mb: int = 200
     # Background model warm-up after startup so the first use is fast. Loads the
     # model into memory; turn off to save RAM if you don't use the feature.
     warm_dictation_model: bool = True
     warm_kokoro_model: bool = True
     tray_enabled: bool = False
-    # Registers a per-user Windows Run-key entry (quill/platform/windows/startup.py);
-    # a no-op setting on non-Windows platforms. Checking this also forces
-    # tray_enabled on -- launching silently at login with no tray icon would
-    # leave no visible way back into a hidden window.
+    # A per-user Run-key entry (platform/windows/startup.py); also forces the tray
+    # on, since a silent login launch with no tray icon leaves no way back.
     launch_at_windows_startup: bool = False
     persistent_undo: bool = False
     spellcheck_as_you_type: bool = False
@@ -176,6 +169,11 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     problems_pane_visible: bool = False  # View > Problems > Show Pane; QUILL Lite's name too
     problems_check_after_pause: bool = False  # the pane's check box; QUILL Lite's too
     problems_all_open_files: bool = False  # View > Problems > All Open Files; Lite's too
+    language_servers_enabled: bool = True  # Navigate > Code > Language Servers; Lite's too
+    language_servers_off: list[str] = field(default_factory=list)
+    language_server_completions: bool = True
+    language_server_problems: bool = True
+    parameter_hints_as_you_type: bool = False
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -981,6 +979,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         problems_pane_visible = bool(data.get("problems_pane_visible", False))
         problems_check_after_pause = bool(data.get("problems_check_after_pause", False))
         problems_all_open_files = bool(data.get("problems_all_open_files", False))
+        language_servers = language_server_fields(data)
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -1733,6 +1732,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             problems_pane_visible=problems_pane_visible,
             problems_check_after_pause=problems_check_after_pause,
             problems_all_open_files=problems_all_open_files,
+            **language_servers,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,

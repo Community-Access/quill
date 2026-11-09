@@ -51,16 +51,18 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
 
     def _walk_block(self, *, forward: bool) -> None:
         from quill.core.navigation import next_block_start, previous_block_start
+        from quill.core.text_units import native_offset, text_index
 
         text = self.control.GetValue()
-        caret = int(self.control.GetInsertionPoint())
+        # Code points for the navigation, UTF-16 units for the control.
+        caret = text_index(text, int(self.control.GetInsertionPoint()))
         finder = next_block_start if forward else previous_block_start
         target = finder(text, caret, self._lite_block_pattern())
         if target is None:
             self._announce("No next block" if forward else "No previous block")
             return
         # The screen reader reads the line the caret lands on; nothing to add.
-        self._go_to(target)
+        self._go_to(native_offset(text, target))
 
     # -- indent changes ------------------------------------------------------ #
 
@@ -74,13 +76,15 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
 
     def _walk_indent(self, *, forward: bool) -> None:
         from quill.core.navigation import describe_indent, indent_change_target
+        from quill.core.text_units import native_offset, text_index
 
         text = self.control.GetValue()
-        target = indent_change_target(text, int(self.control.GetInsertionPoint()), forward=forward)
+        caret = text_index(text, int(self.control.GetInsertionPoint()))
+        target = indent_change_target(text, caret, forward=forward)
         if target is None:
             self._announce("No change of indent below" if forward else "No change of indent above")
             return
-        self._go_to(target)
+        self._go_to(native_offset(text, target))
         # The reader says the line; how deep it sits is the part it may not.
         self._announce(describe_indent(text, target).capitalize())
 
@@ -88,21 +92,21 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
 
     def cmd_check_this_file(self) -> None:
         """Check This File: every problem in a Markdown or HTML document, as a list."""
-        if self._problems_surface() is None:
+        if not self._problems_can_check():
             self._announce(_NOTHING_TO_CHECK)
             return
         self._check_this_file()
 
     def cmd_next_problem(self) -> None:
         """Next Problem: move to the next problem and say what it is."""
-        if self._problems_surface() is None:
+        if not self._problems_can_check():
             self._announce(_NOTHING_TO_CHECK)
             return
         self._step_problem(forward=True)
 
     def cmd_previous_problem(self) -> None:
         """Previous Problem: as Next Problem, backwards."""
-        if self._problems_surface() is None:
+        if not self._problems_can_check():
             self._announce(_NOTHING_TO_CHECK)
             return
         self._step_problem(forward=False)
@@ -134,7 +138,46 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
         return self._problems_all_files_setting()
 
     def _problems_can_check(self) -> bool:
-        return self._problems_surface() is not None
+        serves = getattr(self, "_ls_serves", None)
+        return self._problems_surface() is not None or bool(
+            callable(serves) and serves(self._problems_path())
+        )
+
+    def _problems_replace(self, start: int, end: int, text: str) -> None:
+        from quill.ui.atomic_edit import replace_as_one_undo
+
+        replace_as_one_undo(self.control, start, end, text)
+
+    def _problems_window_alive(self) -> bool:
+        # forget_frame takes a closing window out of the app's list before it
+        # is destroyed, so a late result finds it gone (review QUILL Lite 3).
+        frames = getattr(self.app, "frames", None)
+        return frames is None or self in frames
+
+    def _problems_is_active(self) -> bool:
+        # The pane shows in every window; only the one in front speaks (Lite 6).
+        active = getattr(self.app, "active_frame", None)
+        return active is None or active is self
+
+    def _problems_change_token(self) -> object:
+        # The text hook bumps the revision on every edit, and the length catches
+        # a change made around the hook; the pane's timer compares the pair
+        # instead of copying the buffer twice a second (review QUILL 8).
+        doc_text = getattr(self, "doc_text", None)
+        last = getattr(self.control, "GetLastPosition", None)
+        if doc_text is None or not callable(last):
+            return None
+        return (doc_text.revision, int(last()))
+
+    def _problems_in_background(self, work: Any, done: Any) -> None:
+        from quill.apps.lite_window_open import app_task_manager
+
+        app_task_manager(self.app).submit(
+            "check-this-file",
+            lambda **_kwargs: work(),
+            on_success=lambda _op, report: done(report),
+            on_failure=lambda _op, error: self._announce(f"Check This File failed: {error}"),
+        )
 
     def _problems_pane(self, *, create: bool) -> Any:
         pane = getattr(self, "_problems_pane_widget", None)
@@ -157,6 +200,7 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
             set_pause_enabled=self._problems_set_pause_enabled,
             set_all_files=self._problems_set_all_files,
             switch_files=self._problems_switch_files,
+            quick_fix=self._problems_quick_fix,
         )
         pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
         pane.panel.Hide()
@@ -221,11 +265,14 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
         return self
 
     def _problems_go_to_document(self, key: object, line: int, column: int) -> None:
-        from quill.core.problems import offset_for
-
         frame: Any = key
+        if frame not in list(getattr(self.app, "frames", []) or []):
+            # A window closed since the list was made: focusing it would touch
+            # a destroyed frame (review Lite 5).
+            self._announce("That document is closed")
+            return
         self.app.focus_frame(frame)
-        frame._problems_go_to(offset_for(str(frame.control.GetValue()), line, column))
+        frame._problems_go_to_line(str(frame.control.GetValue()), line, column)
 
     def _problems_pause_enabled(self) -> bool:
         return bool(getattr(self.app.settings, "problems_check_after_pause", False))
@@ -264,19 +311,31 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
     def _problems_say(self, message: str) -> None:
         self._announce(message)
 
-    def _problems_choose(self, summary: str, rows: list[str]) -> int | None:
+    def _problems_choose(
+        self, summary: str, rows: list[str], *, title: str = "Problems"
+    ) -> int | None:
         from quill.apps.lite_dialogs import choose_from_rows
 
-        chosen = choose_from_rows(
-            self,
-            title="Problems",
-            label=f"{summary} &Problems:",
-            help_text=(
+        if title == "Quick Fix":
+            label = f"{summary} &Fixes:"
+            help_text = (
+                "The language server's fixes for the problem named above. Press "
+                "Enter to apply the one selected, as one undo step; Escape closes "
+                "the list and changes nothing."
+            )
+        else:
+            label = f"{summary} &Problems:"
+            help_text = (
                 "Every problem Check This File found, in document order, with its "
                 "line and column. Press Enter to go to the one selected; Escape "
                 "closes the list. Next Problem and Previous Problem walk the same "
                 "list from the document without opening it."
-            ),
+            )
+        chosen = choose_from_rows(
+            self,
+            title=title,
+            label=label,
+            help_text=help_text,
             rows=[(index, row) for index, row in enumerate(rows)],
         )
         if chosen is None:

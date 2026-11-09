@@ -551,6 +551,11 @@ class DocumentFileMixin(DocumentWordMixin):
         if callable(cancel_open):
             cancel_open()
         self._stop_status_timer()
+        # The Problems pane's quiet-check timer, which fired into the destroyed
+        # window after a close (review 2026-11-09, QUILL Lite 2).
+        stop_pane = getattr(getattr(self, "_problems_pane_widget", None), "stop", None)
+        if callable(stop_pane):
+            stop_pane()
         stop_watch = getattr(self, "_stop_disk_watch", None)  # lite_window_watch.py
         if callable(stop_watch):
             stop_watch()

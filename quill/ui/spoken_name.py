@@ -10,8 +10,8 @@ function, or only exists as a ``SetName`` -- announces as a bare role.
 There are two supported ways to set ``accName`` from Python:
 
 * ``wx.Window.SetAccessibleName`` -- added in wxWidgets 3.3.4 (PR #27056) and
-  exposed from wxPython 4.3.2. QUILL pins 4.3.1, which does not have it, so
-  this path is taken only when the running wxPython offers it.
+  exposed from wxPython 4.3.2, which QUILL pins. The check stays, so an
+  older wxPython (a source checkout, macOS) still takes the path below.
 * ``wx.Window.SetAccessible`` with a ``wx.Accessible`` whose ``GetName`` answers
   for the control itself. Available in every wxPython on Windows (it is built
   with ``wxUSE_ACCESSIBILITY``); wxMSW answers ``WM_GETOBJECT`` with it and
@@ -100,6 +100,10 @@ def _attach(ctrl: Any, name: str) -> Any | None:
     return helper
 
 
+# The name given through wx.Window.SetAccessibleName, kept for spoken_name().
+_NATIVE_ATTR = "_quill_native_spoken_name"
+
+
 def _name_parts(ctrl: Any, name: str) -> None:
     """Name the inner edit and spinner of a composite spin control.
 
@@ -149,9 +153,18 @@ def set_spoken_name(ctrl: Any, name: object) -> bool:
     if callable(set_native):
         try:
             set_native(text)
-            return True
         except Exception:  # noqa: BLE001 - fall back to wx.Accessible
             pass
+        else:
+            # wxPython has no GetAccessibleName to read it back, so remember
+            # it for spoken_name(); and the native call names only the window
+            # itself, so a spin control's inner edit still needs a helper.
+            try:
+                setattr(ctrl, _NATIVE_ATTR, text)
+            except Exception:  # noqa: BLE001
+                pass
+            _name_parts(ctrl, text)
+            return True
     if _attach(ctrl, text) is None:
         return sys.platform == "darwin"
     _name_parts(ctrl, text)
@@ -164,6 +177,9 @@ def spoken_name(ctrl: Any) -> str:
     For tests and diagnostics. Reads ``GetAccessibleName`` where wxPython has
     it, otherwise asks the attached helper the way MSAA would.
     """
+    native = getattr(ctrl, _NATIVE_ATTR, None)
+    if native:
+        return str(native)
     getter = getattr(ctrl, "GetAccessibleName", None)
     if callable(getter):
         try:
