@@ -131,3 +131,28 @@ def test_nothing_is_sent_for_a_service_without_its_sign_in() -> None:
     assert scrobbling.Accounts(
         lastfm_session="SK", librefm_session="L", api_key="K", secret="S"
     ).services() == ["lastfm", "librefm"]
+
+
+def test_one_refused_song_never_throws_away_the_rest_of_its_batch(tmp_path: Path) -> None:
+    from quill.core.radio.scrobble_http import Reply
+
+    queue = sq.ScrobbleQueue(tmp_path)
+    for n in (1, 2, 3):
+        queue.add("listenbrainz", _listen(n))
+    accounts = scrobbling.Accounts(listenbrainz_token="LB")
+    retried: list[str] = []
+
+    def _post(_url: str, body: bytes, **_kwargs: object):
+        if b"import" in body:
+            return Reply(400, '{"error": "bad track"}')
+        if b"Song 2" in body and not retried:
+            retried.append("once")
+            return Reply(503, "")
+        return Reply(400, '{"error": "bad track"}') if b"Song 3" in body else Reply(200, "{}")
+
+    results = scrobbling.submit_due(queue, accounts, now=NOW, post=_post)
+    assert [outcome.kind for _, outcome in results] == [sq.SENT, sq.RETRY]
+    assert queue.pending("listenbrainz") == [_listen(2), _listen(3)], "only Song 1 went"
+    results = scrobbling.submit_due(queue, accounts, now=NOW + 3600, post=_post)
+    assert [outcome.kind for _, outcome in results] == [sq.SENT, sq.REJECTED]
+    assert queue.pending("listenbrainz") == [], "Song 2 sent; only Song 3 was refused"

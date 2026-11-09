@@ -565,3 +565,41 @@ def test_resting_on_the_station_already_playing_does_not_restart_it(rig):
     settle(rig, a)
     assert rig.main.loads == loads
     assert not dial_tuning_ui.passing_through(rig.app, a.station)
+
+
+def test_the_hiss_loops_on_its_own_mci_device_and_stops_only_itself() -> None:
+    from pathlib import Path as _Path
+
+    from quill.ui.radio import dial_hiss_player
+
+    sent: list[str] = []
+    start, stop = dial_hiss_player.mci_backend(lambda command: sent.append(command) or 0)
+    start(_Path("C:/clips/hiss-soft.wav"))
+    assert sent[-2:] == [
+        'open "C:\clips\hiss-soft.wav" type mpegvideo alias quill_dial_hiss',
+        "play quill_dial_hiss repeat",
+    ]
+    sent.clear()
+    stop()
+    assert sent == ["stop quill_dial_hiss", "close quill_dial_hiss"], (
+        "never a process-wide winsound stop, which cut off every earcon"
+    )
+
+
+def test_the_hiss_falls_back_to_winsound_when_mci_refuses(monkeypatch) -> None:
+    from pathlib import Path as _Path
+
+    from quill.ui.radio import dial_hiss_player
+
+    refused = dial_hiss_player.mci_backend(lambda command: 263 if command.startswith("open") else 0)
+    calls: list[str] = []
+    monkeypatch.setattr(dial_hiss_player, "mci_backend", lambda send=None: refused)
+    monkeypatch.setattr(
+        dial_hiss_player,
+        "winsound_backend",
+        lambda: (lambda path: calls.append(f"loop {path.name}"), lambda: calls.append("stop")),
+    )
+    start, stop = dial_hiss_player.default_backend()
+    start(_Path("hiss.wav"))
+    stop()
+    assert calls == ["loop hiss.wav", "stop"]
