@@ -207,4 +207,4 @@ def test_the_family_build_also_zips_each_installer_on_its_own() -> None:
     upload = script[script.index('Step "Upload zips"') :]
     assert '$file.Name -like "*Setup*"' in upload
     assert "Compress-Archive -LiteralPath $file.FullName -DestinationPath $setupZip" in upload
-    assert "$sums.Add(\"$hash  $app/$(Split-Path $setupZip -Leaf)\")" in upload
+    assert '$sums.Add("$hash  $app/$(Split-Path $setupZip -Leaf)")' in upload
