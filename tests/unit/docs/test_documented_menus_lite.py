@@ -58,7 +58,7 @@ ALLOW: dict[str, str] = {
         "release-gated: shown only once Studio is released, which the paragraph says"
     ),
     # The GitHub guide is one text shipped in both editors (docs/user guide/
-    # github-guide/ and guide/lite-github-guide*.md). Where it names QUILL's
+    # github-guide/ and github-guide/lite-github-guide*.md). Where it names QUILL's
     # menus it says so, and QUILL Lite reaches the same windows from
     # File > GitHub Workbench.
     "path:file > open from remote > github": _GITHUB_GUIDE_QUILL_MENU,

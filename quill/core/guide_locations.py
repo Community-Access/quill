@@ -20,7 +20,7 @@ A guide is looked for, in order:
 The installed layout is the one the packagers write: ``docs\\userguide.md``
 beside the chapter folder (``quill-guide`` for QUILL, ``guide`` for QUILL Lite)
 and the GitHub Guide at ``docs\\github-guide\\github-guide.html`` (QUILL) or
-``docs\\guide\\lite-github-guide.html`` (QUILL Lite). A user guide only counts
+``docs\\github-guide\\lite-github-guide.html`` (QUILL Lite). A user guide only counts
 when its chapter folder is beside it, so a folder holding the other editor's
 guide is never mistaken for this one's.
 
@@ -56,14 +56,14 @@ _INSTALLED: dict[tuple[Product, Guide], tuple[tuple[str, str], ...]] = {
     ("quill", "user"): (("docs/userguide.md", "docs/quill-guide"),),
     ("quill", "github"): (("docs/github-guide/github-guide.html", ""),),
     ("quilllite", "user"): (("docs/userguide.md", "docs/guide"),),
-    ("quilllite", "github"): (("docs/guide/lite-github-guide.html", ""),),
+    ("quilllite", "github"): (("docs/github-guide/lite-github-guide.html", ""),),
 }
 
 _SOURCE: dict[tuple[Product, Guide], str] = {
     ("quill", "user"): "docs/user guide/userguide.md",
     ("quill", "github"): "docs/user guide/github-guide/github-guide.html",
     ("quilllite", "user"): "standalone/quilllite/docs/userguide.md",
-    ("quilllite", "github"): "standalone/quilllite/docs/guide/lite-github-guide.html",
+    ("quilllite", "github"): "standalone/quilllite/docs/github-guide/lite-github-guide.html",
 }
 
 

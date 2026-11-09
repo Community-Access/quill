@@ -3085,6 +3085,51 @@ Narrator.</label></li>
 gives the window’s purpose, then the focused control’s
 help.</label></li>
 </ul>
+<h2
+id="say-or-type-a-command-jev-your-own-ai-and-the-lines-you-hear-command-keymd-2026-11-09">Say
+or Type a Command: Jev, your own AI, and the lines you hear
+(command-key.md, 2026-11-09)</h2>
+<p>Jev was tested live with 2,883 requests
+(<code>docs/release/jev-live-test-2026-11-09.md</code>), but nobody has
+yet heard the new windows and lines with a screen reader. Start with a
+profile that has never answered the question (no
+<code>command-key.json</code> in the app’s data folder), signed in to
+QUILL’s free AI.</p>
+<ol type="1">
+<li><strong>The question.</strong> In QUILL, press F11, type “make the
+words a bit bigger”, press Enter. The question opens once: its text is
+read, and the three buttons are Use Jev, Use My Own AI Instead and Match
+on This Computer Only, with no access keys. Tab reaches each; F1 on each
+gives its help.</li>
+<li><strong>Escape.</strong> On a fresh profile, Escape answers Match on
+This Computer Only: the request is matched on the computer, nothing is
+said about Jev, and the question never comes back.</li>
+<li><strong>Use Jev.</strong> Answer Use Jev. The request runs (or Did
+You Mean opens) with no extra announcement. Press F11 again with “make
+it bowled”: Did You Mean, or a plain “I can’t” line; never a silent
+nothing.</li>
+<li><strong>Jev unavailable.</strong> Disconnect from the network, press
+F11, type “the thing that counts words”. You hear one line, once, “…so I
+matched it here” (or “…so I’m asking your AI” with your own AI chosen),
+and not again for the rest of the day.</li>
+<li><strong>Use My Own AI Instead.</strong> With your ChatGPT plan or
+Copilot chosen in Choose Your AI, on a fresh profile, answer Use My Own
+AI Instead, type “the thing that counts words”. You hear “Asking your
+AI.” once, then Word Count runs or Did You Mean opens. Typing during the
+wait goes nowhere.</li>
+<li><strong>Free AI only.</strong> With only the free AI and no sign-in,
+F11 never asks the question.</li>
+<li><strong>Quill Radio.</strong> Alt+F11, “turn it up a lot”: the same
+question, once per profile. Note that Use My Own AI Instead sends
+nothing here (#1819).</li>
+<li><strong>QUILL Lite.</strong> Checks 1, 3 and 5 in QUILL Lite.</li>
+</ol>
+<ul class="task-list">
+<li><label><input type="checkbox" />All eight with NVDA.</label></li>
+<li><label><input type="checkbox" />All eight with JAWS.</label></li>
+<li><label><input type="checkbox" />Checks 1, 2 and 5 with
+Narrator.</label></li>
+</ul>
 </main>
 </body>
 </html>

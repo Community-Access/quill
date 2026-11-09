@@ -7,7 +7,8 @@
 #
 # The user guide is a contents page (docs\userguide.md) plus its chapters in
 # docs\guide\ (quill/core/user_guide_files.py), so the chapters are rendered
-# too, and userguide.epub is the whole book: every chapter joined, in order,
+# too, as is the GitHub Guide in its own folder, docs\github-guide\ (as
+# QUILL's is); and userguide.epub is the whole book: every chapter joined, in order,
 # by -Python (the contents page on its own would be a book of links).
 #
 # Usage: .\scripts\render_docs.ps1 [-Python <python.exe>]
@@ -45,6 +46,8 @@ Invoke-WithSourceDateEpoch {
     $sources = @(Get-ChildItem $docsDir -Filter "*.md")
     $guideDir = Join-Path $docsDir "guide"
     if (Test-Path $guideDir) { $sources += @(Get-ChildItem $guideDir -Filter "*.md") }
+    $githubGuideDir = Join-Path $docsDir "github-guide"
+    if (Test-Path $githubGuideDir) { $sources += @(Get-ChildItem $githubGuideDir -Filter "*.md") }
     $sources | ForEach-Object {
         $htmlOut = [System.IO.Path]::ChangeExtension($_.FullName, "html")
         $epubOut = [System.IO.Path]::ChangeExtension($_.FullName, "epub")

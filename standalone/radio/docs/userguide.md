@@ -1,8 +1,7 @@
 # Quill Radio User Guide
 
-Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0 was
-prepared on 2026-10-03 and is not yet published; the last published version
-is 3.0.4.
+Version 3.2.0, the beta, November 2026. The last published version is 3.0.4.
+Help > About (Alt+F1) shows the exact build you have.
 
 **Source change in 3.2.0:** The built-in SomaFM source has been retired in
 the shared Radio code in response to its published third-party-client terms.
@@ -836,6 +835,50 @@ is not a window, so Escape in the Player view does not close Quill Radio.
 If you used "Open Browse Stations at startup" in an older version, your main
 window now shows Browse instead, and nothing else opens by itself.
 
+### Say or Type a Command (Alt+F11)
+
+When you know what you want and not where it lives, press **Alt+F11**, type
+it in your own words, and press Enter. "A lot louder", "play favourite 3",
+"what song is this", "record this station" and "pause" all work. You do not
+need the command's exact name, and a small typo is forgiven. It is also on the
+Help menu. It is Alt+F11 here, not F11 as in QUILL, because F11 is Video >
+Full Screen.
+
+It only ever does what Quill Radio can do right now. If something is switched
+off, it says why, and it never does the next nearest thing instead. Recording,
+and anything that closes, clears or stops something, asks first. Exiting,
+signing in, deleting and changing settings are never done from a sentence: you
+are told where to find them. When it is not sure, a short Did You Mean list
+shows each choice with its key, so next time you can press the key yourself.
+"Undo that" and "do that again" work on what the box last did.
+
+**What Can I Say Here?** (**Ctrl+Alt+Shift+F1**, on the Help menu) lists
+everything you can ask for right now, menu by menu, with an example and a key
+for each. Press Enter on one to do it. Typing "what can I say" in the box opens
+it too.
+
+The matcher that understands you is free, works offline, and keeps what you
+type on your computer. When it is not sure, it can ask **Jev**, TypeSafe's
+decision model, to pick one of Quill Radio's commands, but only if you say yes.
+The first time it could, you are asked once, and **Match on This Computer
+Only** is an equal answer (Escape gives it too). Jev is offered when this
+computer is signed in to QUILL's free AI, in QUILL or QUILL Lite, through
+Community Access's service, or when you stored your own TypeSafe key. Only the
+words you typed, the app's name and the ids of the commands Quill Radio can do
+right now are sent; never stations, places or accounts. Jev's pick runs only
+when it is clearly sure. If Jev cannot answer, because you are offline or a
+limit is reached, you hear one line, once, and the matcher carries on.
+
+The question also offers **Use My Own AI Instead**, but asking your own AI is
+in QUILL and QUILL Lite only. In Quill Radio, choosing it means nothing is
+sent, the same as Match on This Computer Only. There is not yet a setting to
+change your answer later (issue 1819 on GitHub).
+
+Two requests the matcher gets wrong for now, because it is sure of itself and
+never asks Jev: "turn the radio off in half an hour" stops the radio rather
+than setting the Sleep Timer, and "save this station to my list" opens Browse.
+Ask for the Sleep Timer and Favourite This Station by name, or use their keys.
+
 ### The menus
 
 The main window's menu bar, from left to right, is **Station** (Alt+S),
@@ -1140,6 +1183,10 @@ chords" in Chapter 14.
 - **Repair FFmpeg...** (Ctrl+Alt+F) and **Repair mpv Playback Engine...**
   (Ctrl+Alt+M): emergency repairs, for when a tool that comes with Quill Radio
   has gone missing. You should never need them.
+- **Say or Type a Command...** (Alt+F11): do something by typing it in your
+  own words. See "Say or Type a Command" in Chapter 3.
+- **What Can I Say Here?** (Ctrl+Alt+Shift+F1): everything you can ask for
+  right now, with an example and a key for each.
 - **What Is This?** (F1): help for the window you are in and the control you
   are on.
 - **Tutorials...** (Ctrl+Alt+F1).
@@ -8688,6 +8735,8 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Action | Key |
 | --- | --- |
 | What Is This? (context help) | F1 |
+| Say or Type a Command | Alt+F11 |
+| What Can I Say Here? | Ctrl+Alt+Shift+F1 |
 | User Guide | Ctrl+F1 |
 | Release Notes | Shift+F1 |
 | What's New (the changelog) | Ctrl+Shift+F1 |

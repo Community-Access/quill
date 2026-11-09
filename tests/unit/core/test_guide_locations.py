@@ -17,8 +17,9 @@ def _quill_install(root: Path) -> Path:
 
 def _lite_install(root: Path) -> Path:
     (root / "docs" / "guide").mkdir(parents=True)
+    (root / "docs" / "github-guide").mkdir(parents=True)
     (root / "docs" / "userguide.md").write_text("# Lite\n", encoding="utf-8")
-    (root / "docs" / "guide" / "lite-github-guide.html").write_text("<p>", encoding="utf-8")
+    (root / "docs" / "github-guide" / "lite-github-guide.html").write_text("<p>", encoding="utf-8")
     return root
 
 
@@ -34,7 +35,7 @@ def test_an_installed_quill_lite_finds_its_guides_in_the_app_folder(tmp_path) ->
     app = _lite_install(tmp_path / "app")
     assert gl.find_guide("quilllite", "user", roots=[app]) == app / "docs" / "userguide.md"
     assert gl.find_guide("quilllite", "github", roots=[app]) == (
-        app / "docs" / "guide" / "lite-github-guide.html"
+        app / "docs" / "github-guide" / "lite-github-guide.html"
     )
 
 

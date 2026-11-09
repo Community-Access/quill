@@ -521,6 +521,16 @@ tells you how much you have used in plain sentences, and Do a Document Task
 before it changes anything. Your own key can now be a Google Gemini,
 Anthropic Claude or OpenRouter key, or Ollama on your own computer.
 
+### Say what you want, in your own words
+
+Press F11 and type what you want: "turn it down a bit", "go to line 120",
+"make this bold". Say or Type a Command does only what the window can do right
+now, asks before anything that closes, clears or stops, and is free and
+offline. If you say yes, Jev, TypeSafe's decision model, or your own AI helps
+with the requests it cannot settle by itself; in our live test that took the
+right answers from 154 of 232 everyday requests to 211. What Can I Say Here?
+(Ctrl+Alt+Shift+F1) lists everything you can ask for.
+
 ### Your website, from your editor
 
 If you look after a WordPress site, QUILL Lite now writes, opens, checks and

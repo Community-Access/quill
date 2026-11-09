@@ -45,7 +45,7 @@ WORDPRESS_FORMS_MANUAL = (
 )
 
 #: The GitHub guide both editors ship (QUILL's copy; QUILL Lite's is a chapter
-#: run of its own guide, ``guide/lite-github-guide*.md``). Its pages sit beside
+#: run of its own guide, ``github-guide/lite-github-guide*.md``). Its pages sit beside
 #: its contents page, so :func:`manual_files` reads it the same way.
 GITHUB_GUIDE = _REPO_ROOT / "docs" / "user guide" / "github-guide" / "github-guide.md"
 

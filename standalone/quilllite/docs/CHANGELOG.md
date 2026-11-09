@@ -2,6 +2,35 @@
 
 ## 2.0.0
 
+### The GitHub Guide has its own folder (2026-11-09)
+
+- The GitHub Guide's pages moved from `docs\guide\`, where they sat among the
+  user guide's chapters, to their own folder, `docs\github-guide\`, as QUILL's
+  do. **Help > Open GitHub Guide** and the Start menu's GitHub Guide shortcut
+  open it from there, and so does the website, at
+  `docs/github-guide/lite-github-guide.html`.
+
+### Say or Type a Command: Jev and your own AI (2026-11-09)
+
+- **Jev without a key of your own.** When this computer is signed in to
+  QUILL's free AI, a request the matcher cannot settle goes to Community
+  Access's service, which holds the TypeSafe key and asks Jev for you. Your
+  own TypeSafe key, if you stored one, is still used first. Only the words you
+  typed, the app's name and the ids of the commands this window can do right
+  now are sent, and the service keeps counts, never what you typed.
+- **Your own AI.** Answer "Use My Own AI Instead" when first asked, and a
+  request the matcher cannot settle goes to the AI you chose in Choose Your AI
+  (your ChatGPT plan, GitHub Copilot, Codex or your own key) as one question:
+  pick one of this window's commands, or none. With "Use Jev", your AI is the
+  next step when Jev cannot answer, and the line you hear says so. You hear
+  "Asking your AI." while it thinks; an answer after eight seconds is dropped.
+  Its pick runs only when it agrees with the matcher and the command is safe.
+  QUILL's free AI is never asked this question.
+- **Clearer descriptions** for the commands Jev mixed up in the live test:
+  Save As, Bigger and Smaller Text against Zoom In and Out, Word Count against
+  Word Summary, and Quiet Mode against Stop Reading Aloud.
+- QUILL has the same, from the same shared code.
+
 ### Built on wxPython 4.3.2 (2026-11-09)
 
 - QUILL Lite now runs on wxPython 4.3.2 (wxWidgets 3.3.4), like QUILL. The

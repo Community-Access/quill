@@ -167,24 +167,26 @@ def planned(app_key: str | None = None) -> list[tuple[Path, Path]]:
     return pairs
 
 
-#: app key -> the folder of chapter pages beside its user guide. A guide split
+#: app key -> the folders of chapter pages beside its user guide. A guide split
 #: into chapters (quill/core/user_guide_files.py) links them from its contents
 #: page as ``<folder>/<chapter>.html``, so the site publishes them in that same
 #: folder under ``docs/`` and those links work unchanged. Each chapter's own link
 #: back to the contents (``../userguide.html``) is the one thing rewritten: on
-#: the site, ``/docs/userguide.html`` is QUILL's guide, not this app's.
-GUIDE_FOLDERS: dict[str, str] = {"quilllite": "guide"}
+#: the site, ``/docs/userguide.html`` is QUILL's guide, not this app's. QUILL
+#: Lite's GitHub Guide has its own folder, as QUILL's does (2026-11-09).
+GUIDE_FOLDERS: dict[str, tuple[str, ...]] = {"quilllite": ("guide", "github-guide")}
 
 
 def guide_pages(app_key: str | None = None) -> list[tuple[Path, Path]]:
     """Every ``(site page, source render)`` pair for the guides' chapter folders."""
     pairs: list[tuple[Path, Path]] = []
-    for key, folder in sorted(GUIDE_FOLDERS.items()):
+    for key, folders in sorted(GUIDE_FOLDERS.items()):
         if app_key and key != app_key:
             continue
-        source_dir = _source(key, folder)
-        for source in sorted(source_dir.glob("*.html")):
-            pairs.append((_SITE_DOCS / folder / source.name, source))
+        for folder in folders:
+            source_dir = _source(key, folder)
+            for source in sorted(source_dir.glob("*.html")):
+                pairs.append((_SITE_DOCS / folder / source.name, source))
     return pairs
 
 
@@ -192,8 +194,8 @@ def site_copy(page: Path, source: Path) -> bytes:
     """What the site serves for *source*: a chapter's contents link renamed."""
     data = source.read_bytes()
     folder = page.parent.name
-    for key, guide_folder in GUIDE_FOLDERS.items():
-        if guide_folder == folder and page.parent.parent == _SITE_DOCS:
+    for key, guide_folders in GUIDE_FOLDERS.items():
+        if folder in guide_folders and page.parent.parent == _SITE_DOCS:
             renamed = f'href="../{key}-userguide.html'.encode()
             data = data.replace(b'href="../userguide.html', renamed)
     return data

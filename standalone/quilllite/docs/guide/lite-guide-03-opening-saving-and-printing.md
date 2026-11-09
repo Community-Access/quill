@@ -1129,9 +1129,9 @@ a GitHub launcher with nothing to write in. Chapter 2 of the GitHub Guide
 walks through the menu.
 
 All of it is in its own book, which ships with QUILL Lite:
-[The GitHub Guide for QUILL and QUILL Lite](lite-github-guide.html). Start
-with [Chapter 1: Getting started](lite-github-guide-01-getting-started.html)
-and [Chapter 2: Getting around](lite-github-guide-02-getting-around.html).
+[The GitHub Guide for QUILL and QUILL Lite](../github-guide/lite-github-guide.html). Start
+with [Chapter 1: Getting started](../github-guide/lite-github-guide-01-getting-started.html)
+and [Chapter 2: Getting around](../github-guide/lite-github-guide-02-getting-around.html).
 
 ## Opening something you worked on recently
 
