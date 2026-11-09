@@ -59,6 +59,9 @@ def _items() -> list[tuple[str, str, str, str]]:
 #: reason). The route is the menu's own Alt path, which the access-key checks
 #: below keep unique. Shrink this, never grow it without an argument.
 KEYLESS_WITH_REASON: dict[str, str] = {
+    "cmd_dictation_command": "Deliberately vacated (command-key.md decision 5): F11 is the "
+    "Command Key now, commands only, and the command word reaches the same dictation phrases; "
+    "a key beside F11 would mix commanding and dictating up again. Alt+T, D, M reaches it.",
     **{
         handler: "As in QUILL (rule 2), where Next and Previous Block have no chord either: "
         "every chord near them is taken in one editor or the other, and Navigate > Code "

@@ -805,7 +805,7 @@ def test_next_phrase_is_a_command_from_the_window_is_the_editors_key(host: Host)
     from quill.core.transcribe.parity import SHARED_COMMANDS
 
     assert SHARED_COMMANDS["tools.windows_dictation_command"] == "speak_a_command"
-    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == "Ctrl+Alt+Shift+Q"
+    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == ""
     host.speak_a_command()
     assert host._dictation.command_mode_text == "Waiting for a command"
     host.toggle_dictation()  # stop

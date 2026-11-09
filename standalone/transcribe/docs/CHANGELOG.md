@@ -15,9 +15,9 @@ grouped by area; most say where in the user guide to read more.
 
 ### F11 (2026-11-08)
 
-- Speak a Command is now **Next Phrase Is a Dictation Command**, on
-  Ctrl+Alt+Shift+Q. In QUILL and QUILL Lite, F11 became the Command Key, which
-  never touches dictation, so the window that matches their keys moves too.
+- Speak a Command is now **Next Phrase Is a Dictation Command**, with no key.
+  In QUILL and QUILL Lite, F11 became the Command Key, which never touches
+  dictation, so the window that matches their keys gives it up too.
 
 ### AI menu (2026-11-03)
 
@@ -178,8 +178,8 @@ grouped by area; most say where in the user guide to read more.
 - **Command Key and Speak a Command.** An optional system-wide key, empty until
   you choose it in setup or in **File > Command Key...** (Ctrl+Alt+Shift+K):
   press it in the field and the next thing you say is a command; twice,
-  command mode. **Dictation > Next Phrase Is a Dictation Command** (then F11,
-  now Ctrl+Alt+Shift+Q, as in QUILL and QUILL Lite) does the same from the window. Two new sounds play when QUILL hears the
+  command mode. **Dictation > Next Phrase Is a Dictation Command** (then
+  Speak a Command, on F11) does the same from the window. Two new sounds play when QUILL hears the
   command word and when command mode ends.
 - **Spell an address with pauses.** While spelling, each phrase joins the
   letters you spelled just before it, with no space: "QUILL start spelling",

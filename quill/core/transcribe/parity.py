@@ -49,8 +49,8 @@ SHARED_COMMANDS: dict[str, str] = {
     "tools.windows_dictation_switch_language": "switch_dictation_language",
     # Shift+F5: a recording into text, with dictation's models.
     "tools.windows_dictation_transcribe_file": "transcribe_a_recording",
-    # Next Phrase Is a Dictation Command (D-1), on Ctrl+Alt+Shift+Q since F11
-    # became the Command Key (command-key.md decision 5). The next thing said is a command; twice,
+    # Next Phrase Is a Dictation Command (D-1), with no key since F11 became the
+    # Command Key (command-key.md decision 5). The next thing said is a command; twice,
     # command mode. In another program the system-wide Command Key, empty until
     # chosen (transcribe_keys.py), does the same from the field itself.
     "tools.windows_dictation_command": "speak_a_command",

@@ -39,7 +39,7 @@ def test_the_two_rows_have_quills_keys() -> None:
     keys = {handler: key for _menu, _label, key, handler, _kind in COMMANDS}
     assert keys["cmd_command_key"] == "F11"
     assert keys["cmd_what_can_i_say_here"] == "Ctrl+Alt+Shift+F1"
-    assert keys["cmd_dictation_command"] == "Ctrl+Alt+Shift+Q"  # F11 is commands only now
+    assert keys["cmd_dictation_command"] == ""  # F11 is commands only now
 
 
 def test_lite_has_no_command_key_code_of_its_own() -> None:
