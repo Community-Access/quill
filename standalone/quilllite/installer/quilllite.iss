@@ -206,7 +206,7 @@ Type: files; Name: "{autodesktop}\QuillLite.lnk"
 ; before it is right on purpose.
 Name: "{group}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; AppUserModelID: "CommunityAccess.QuillLite"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"; Components: docs
-Name: "{group}\{#AppName} GitHub Guide"; Filename: "{app}\docs\guide\lite-github-guide.html"; Components: docs
+Name: "{group}\{#AppName} GitHub Guide"; Filename: "{app}\docs\github-guide\lite-github-guide.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; AppUserModelID: "CommunityAccess.QuillLite"; Check: WantsDesktopIcon; Components: main
 

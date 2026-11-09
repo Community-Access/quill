@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### The GitHub Guide has its own folder (2026-11-09)
+
+- The GitHub Guide's pages moved from `docs\guide\`, where they sat among the
+  user guide's chapters, to their own folder, `docs\github-guide\`, as QUILL's
+  do. **Help > Open GitHub Guide** and the Start menu's GitHub Guide shortcut
+  open it from there, and so does the website, at
+  `docs/github-guide/lite-github-guide.html`.
+
 ### Say or Type a Command: Jev and your own AI (2026-11-09)
 
 - **Jev without a key of your own.** When this computer is signed in to

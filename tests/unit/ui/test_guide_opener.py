@@ -27,7 +27,7 @@ def test_the_github_guide_opens_its_shipped_html(opened) -> None:
     for product in ("quill", "quilllite"):
         assert guide_opener.open_guide(product, "github", report=said.append)
     assert opened[0].endswith("github-guide/github-guide.html")
-    assert opened[1].endswith("guide/lite-github-guide.html")
+    assert opened[1].endswith("github-guide/lite-github-guide.html")
     assert said == ["Opened GitHub Guide in browser"] * 2
 
 

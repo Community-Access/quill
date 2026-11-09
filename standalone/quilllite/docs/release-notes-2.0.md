@@ -1324,7 +1324,7 @@ each saying plainly when Copilot is not available; Commit Comments on a commit;
 gists you can create from the document or its selection, edit, star and delete
 from Explore's My gists view; and the attention queue saying where each pull
 request stands. The details are in the
-[GitHub Guide](guide/lite-github-guide.html).
+[GitHub Guide](github-guide/lite-github-guide.html).
 
 #### Search, releases, housekeeping and rate limits
 
@@ -1348,7 +1348,7 @@ reopen security alerts with GitHub's own reasons.
 #### A complete GitHub guide
 
 QUILL Lite now ships a book on doing GitHub work with a screen reader, shared
-with QUILL: [The GitHub Guide for QUILL and QUILL Lite](guide/lite-github-guide.html).
+with QUILL: [The GitHub Guide for QUILL and QUILL Lite](github-guide/lite-github-guide.html).
 It covers getting around the GitHub windows, reading issues, reviewing a pull
 request line by line, what failed in a workflow run, repository files and
 releases, discussions and security alerts, and what to do when GitHub says
@@ -1644,7 +1644,7 @@ have the same box in their Preferences.
 
 **Help > Open User Guide** (Ctrl+Shift+F1, the same key as in QUILL) opens this
 guide, and **Help > Open GitHub Guide** (press Alt+H, then I) opens the
-[GitHub Guide](guide/lite-github-guide.html), both in your browser and both with
+[GitHub Guide](github-guide/lite-github-guide.html), both in your browser and both with
 no document open as well. F1 in any GitHub window offers the GitHub Guide too.
 The Compact installation now includes the documentation, and the Start menu has
 a shortcut to the GitHub Guide.

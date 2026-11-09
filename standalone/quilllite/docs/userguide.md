@@ -283,57 +283,57 @@ A book of its own, shipped with QUILL Lite and shared with QUILL, on doing
 GitHub work with a screen reader. **File > GitHub Workbench...** (**Alt+F**,
 then **G**) opens the windows it describes.
 
-### [The GitHub Guide for QUILL and QUILL Lite](guide/lite-github-guide.html)
+### [The GitHub Guide for QUILL and QUILL Lite](github-guide/lite-github-guide.html)
 
 Its contents page, with what each chapter covers and how to read it.
 
-### [Chapter 1: Getting started](guide/lite-github-guide-01-getting-started.html)
+### [Chapter 1: Getting started](github-guide/lite-github-guide-01-getting-started.html)
 
 What the workbench is, opening it, the one question QUILL Lite asks before it
 connects, accounts, and Safe Mode, with a two-minute tour.
 
-### [Chapter 2: Getting around](guide/lite-github-guide-02-getting-around.html)
+### [Chapter 2: Getting around](github-guide/lite-github-guide-02-getting-around.html)
 
 GitHub Items and Explore GitHub control by control, the keys that do most of
 the moving, searching, pasting a link, and GitHub's hourly allowance.
 
-### [Chapter 3: Your inbox and your work](guide/lite-github-guide-03-inbox-and-your-work.html)
+### [Chapter 3: Your inbox and your work](github-guide/lite-github-guide-03-inbox-and-your-work.html)
 
 Notifications, My Work, the attention queue and activity.
 
-### [Chapter 4: Issues](guide/lite-github-guide-04-issues.html)
+### [Chapter 4: Issues](github-guide/lite-github-guide-04-issues.html)
 
 Reading issues and comments, reactions, the timeline, new issues, labels,
 milestones, batch changes, housekeeping and Projects.
 
-### [Chapter 5: Pull requests and review](guide/lite-github-guide-05-pull-requests-and-review.html)
+### [Chapter 5: Pull requests and review](github-guide/lite-github-guide-05-pull-requests-and-review.html)
 
 The review outline, the one-sentence summary, the diff, line comments and
 suggestions, sending a review, and merging.
 
-### [Chapter 6: Actions and checks](guide/lite-github-guide-06-actions-and-checks.html)
+### [Chapter 6: Actions and checks](github-guide/lite-github-guide-06-actions-and-checks.html)
 
 Workflow runs, What Failed, jobs and logs, rerunning, checks, deployments,
 artifacts, caches and secret names.
 
-### [Chapter 7: Code and repositories](guide/lite-github-guide-07-code-and-repositories.html)
+### [Chapter 7: Code and repositories](github-guide/lite-github-guide-07-code-and-repositories.html)
 
 Files at any branch, blame and history, branches, releases, search, forks,
 insights, and looking after a repository.
 
-### [Chapter 8: Discussions and security](guide/lite-github-guide-08-discussions-and-security.html)
+### [Chapter 8: Discussions and security](github-guide/lite-github-guide-08-discussions-and-security.html)
 
 Discussion threads, answers and polls, and security alerts.
 
-### [Chapter 9: Codespaces and the GitHub CLI](guide/lite-github-guide-09-codespaces-and-the-cli.html)
+### [Chapter 9: Codespaces and the GitHub CLI](github-guide/lite-github-guide-09-codespaces-and-the-cli.html)
 
 Opening Codespaces, and QUILL's commands that use the GitHub CLI.
 
-### [Chapter 10: Troubleshooting, privacy and help](guide/lite-github-guide-10-troubleshooting.html)
+### [Chapter 10: Troubleshooting, privacy and help](github-guide/lite-github-guide-10-troubleshooting.html)
 
 Every common refusal and what to do, what goes over the network, and how to
 reach a person.
 
-### [Chapter 11: Keyboard reference](guide/lite-github-guide-11-keyboard-reference.html)
+### [Chapter 11: Keyboard reference](github-guide/lite-github-guide-11-keyboard-reference.html)
 
 Every key the workbench answers to, one window at a time.

@@ -46,7 +46,7 @@ def test_open_user_guide_says_when_there_is_none(lite_window, monkeypatch, opene
 def test_open_github_guide_opens_the_shipped_page(lite_window, opened) -> None:
     win = lite_window("text")
     win.cmd_github_guide()
-    assert opened[-1].endswith("guide/lite-github-guide.html")
+    assert opened[-1].endswith("github-guide/lite-github-guide.html")
     assert win.app.voice.said[-1] == "Opened GitHub Guide in browser"
 
 
@@ -81,5 +81,5 @@ def test_f1_in_a_github_window_speaks_through_the_shell(monkeypatch, opened) -> 
     route = app_context_help.guide_route_for("Explore GitHub")
     assert route is not None
     route[1]()
-    assert opened[-1].endswith("guide/lite-github-guide.html")
+    assert opened[-1].endswith("github-guide/lite-github-guide.html")
     assert said == ["Opened GitHub Guide in browser"]
