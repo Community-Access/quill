@@ -2,6 +2,16 @@
 
 ## 1.0.0
 
+### Word Prediction knows your code (2026-11-08)
+
+- In a code file, Ctrl+. offers the file's own names that start with what
+  you've typed, nearest first, instead of dictionary words. Each is said with
+  its kind: "8 suggestions. count_words, function".
+- Any language QUILL can colour counts as code, from its extension. Text,
+  Markdown and Word files keep word prediction.
+- The list is ready within a tenth of a second on a 1 MB file. QUILL Lite has
+  the same list.
+
 ### Word Prediction in every profile, and in QUILL Lite (2026-11-08)
 
 - **Edit > Word Prediction...** (Ctrl+.) works in every profile. The two

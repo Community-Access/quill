@@ -10,9 +10,12 @@ that drive it. Each editor supplies the ``_suggest_*`` hooks at the bottom of
 What a listener gets:
 
 * **Ctrl+.** opens the list. You hear the count and the first suggestion,
-  "8 predictions. counter". Focus stays in the text, so the screen reader
-  goes on reading what you type.
-* **Up** and **Down** move through the list and say each suggestion. The list
+  "8 predictions. counter". In a code file the list holds the file's own
+  names with their kinds instead (:mod:`quill.core.code_names`): "8
+  suggestions. count, function". Focus stays in the text, so the screen
+  reader goes on reading what you type.
+* **Up** and **Down** move through the list and say each suggestion, and in
+  code its kind. The list
   is not focused, so the app says it; the screen reader cannot.
 * **Enter** or **Tab** inserts the selected suggestion in place of the part of
   the word you typed, and nothing else. **Escape** closes the list and never
@@ -28,11 +31,15 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.code_names import code_language_for
 from quill.core.intellisense import (
     IntellisenseContext,
     IntellisenseSuggestion,
+    build_code_suggestions,
     build_intellisense_suggestions,
     collect_document_words,
+    spoken_suggestion,
+    suggestions_status,
 )
 from quill.ui.dpi import dip_size
 
@@ -43,8 +50,11 @@ SUGGESTION_LIMIT = 8
 
 
 def suggestion_status(suggestions: list[IntellisenseSuggestion]) -> str:
-    """What is said when the list opens: the count, then the first suggestion."""
-    return f"{len(suggestions)} prediction(s). {suggestions[0].label}"
+    """What is said when the list opens: the count, then the first suggestion.
+
+    In code, the first suggestion's kind too: "8 suggestions. count, function".
+    """
+    return suggestions_status(suggestions)
 
 
 class SuggestionPopup:
@@ -192,10 +202,17 @@ class SuggestionListMixin:
             return False
         text = self._suggest_text()
         cursor = self._suggest_caret()
-        dictionary = self._suggest_dictionary() | collect_document_words(text)
-        context, suggestions = build_intellisense_suggestions(
-            text, cursor, dictionary, limit=SUGGESTION_LIMIT
-        )
+        alias = code_language_for(self._suggest_path())
+        if alias is not None:
+            # A code file: its own names, with their kinds (layer 1).
+            context, suggestions = build_code_suggestions(
+                text, cursor, alias, limit=SUGGESTION_LIMIT
+            )
+        else:
+            dictionary = self._suggest_dictionary() | collect_document_words(text)
+            context, suggestions = build_intellisense_suggestions(
+                text, cursor, dictionary, limit=SUGGESTION_LIMIT
+            )
         if not suggestions:
             if popup.is_visible():
                 self._hide_intellisense_popup()
@@ -290,7 +307,7 @@ class SuggestionListMixin:
             popup.set_selection(popup.selection_index() + step)
             selection = popup.selected_suggestion()
             if selection is not None:
-                self._suggest_announce(selection.label)
+                self._suggest_announce(spoken_suggestion(selection))
             return True
         return False
 
@@ -334,6 +351,10 @@ class SuggestionListMixin:
 
     def _suggest_dictionary(self) -> set[str]:
         return set()
+
+    def _suggest_path(self) -> Any:
+        """The document's path; its extension says whether it is code."""
+        return None
 
     def _suggest_as_you_type(self) -> bool:
         return False

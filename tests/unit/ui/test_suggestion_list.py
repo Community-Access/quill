@@ -146,3 +146,15 @@ def test_closed_list_lets_every_key_through() -> None:
     host = _Host("text", 4)
     for code in (_WX.WXK_ESCAPE, _WX.WXK_RETURN, _WX.WXK_UP):
         assert not host._handle_intellisense_key_down(_key(code))
+
+
+def test_in_a_code_file_the_list_is_the_files_names_with_kinds(_quiet) -> None:
+    text = "def count_words(t):\n    pass\n\ncou"
+    host = _Host(text, len(text))
+    host.document = SimpleNamespace(path="tool.py")
+    assert host._show_intellisense_popup(manual=True)
+    assert _quiet[-1] == "1 suggestion. count_words, function"
+    host._handle_intellisense_key_down(_key(_WX.WXK_DOWN))
+    assert _quiet[-1] == "count_words, function"
+    host._handle_intellisense_key_down(_key(_WX.WXK_RETURN))
+    assert host.editor.text.endswith("\ncount_words")

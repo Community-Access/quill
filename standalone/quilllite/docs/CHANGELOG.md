@@ -2,6 +2,12 @@
 
 ## 2.0.0
 
+### Word Prediction knows your code (2026-11-08)
+
+- In a code file, Word Prediction offers the file's own names, nearest first,
+  each said with its kind: "8 suggestions. count_words, function". QUILL's
+  code, shared.
+
 ### Word Prediction (2026-11-08)
 
 - Edit > Word Prediction... (Ctrl+., Alt+E, then W) suggests the word you're

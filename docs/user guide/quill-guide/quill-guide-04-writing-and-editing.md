@@ -84,7 +84,9 @@ After those come the commands that know about selection and position:
   Escape closes the list without touching your text. It works in every
   profile. **Toggle Word Prediction As You Type**, in the Command Palette
   (Ctrl+Shift+P), opens the list on its own after two letters; that one is
-  off unless you turn it on, and a profile can switch it off.
+  off unless you turn it on, and a profile can switch it off. In a code file
+  the list offers the file's own names, each said with its kind, such as
+  "count_words, function" (see the Developer Guide, chapter 11).
 - **Extend Selection Mode** turns selection growth into a mode of its own.
 - The **Selection** submenu: Select Word, Select Line, Select Paragraph,
   Select Block, Select to Start or End of Line, Select to Start or End of

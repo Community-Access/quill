@@ -2,6 +2,13 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Word Prediction knows your code
+
+In a code file, **Ctrl+.** now offers the file's own names that start with
+what you've typed, nearest first, and says what each one is: "count_words,
+function", "while, keyword". It's ready within a tenth of a second even on a
+large file. QUILL Lite has it too.
+
 ## Word Prediction in every profile
 
 **Ctrl+.** now opens Word Prediction in every profile, including the two that

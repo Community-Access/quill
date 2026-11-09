@@ -208,6 +208,20 @@ Appendix A of the QUILL user guide covers it fully.
 from, never as ghost text, and only when you press the key. It works in
 every profile, and in QUILL Lite on the same key.
 
+In a code file the list holds the file's own names instead of dictionary
+words: every name and keyword that starts with what you've typed, nearest to
+the caret first. Each one is said with its kind, so you hear "8 suggestions.
+count_words, function" when the list opens and "counter, name" as you arrow.
+The kinds are function, class, keyword, builtin, type, constant, attribute,
+tag and name. A name written the same case as what you typed comes before one
+that isn't, because in code `count` and `Count` are different things.
+
+QUILL knows a file is code from its extension, for any language it can
+colour (Python, JavaScript, C, Go, Rust, PowerShell, HTML, JSON and hundreds
+more). Text, Markdown and Word files keep word prediction. The list can only
+see this file so far, and it doesn't yet know which names are in scope where
+you are; names from the rest of your project come next.
+
 ## Shell integration, in QUILL
 
 **Tools > Advanced > Install Shell Integration...** adds QUILL to the Windows
