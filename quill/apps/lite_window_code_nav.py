@@ -243,6 +243,11 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
         from quill.core.problems import offset_for
 
         frame: Any = key
+        if frame not in list(getattr(self.app, "frames", []) or []):
+            # A window closed since the list was made: focusing it would touch
+            # a destroyed frame (review Lite 5).
+            self._announce("That document is closed")
+            return
         self.app.focus_frame(frame)
         frame._problems_go_to(offset_for(str(frame.control.GetValue()), line, column))
 

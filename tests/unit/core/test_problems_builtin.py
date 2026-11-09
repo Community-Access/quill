@@ -153,3 +153,43 @@ def test_markdown_problems(tmp_path: Path) -> None:
 
 def test_markdown_without_a_path_does_not_check_files() -> None:
     assert check_markdown("# A\n\n[x](nowhere.md)\n", None) == []
+
+
+# -- review fixes, 2026-11-09 ---------------------------------------------------
+
+
+def test_unc_and_absolute_link_targets_are_never_touched(tmp_path, monkeypatch) -> None:
+    """Asking Windows whether \\host\share exists contacts that host."""
+    from pathlib import Path
+
+    from quill.core.problems.builtin import _broken_relative
+
+    touched: list[str] = []
+    real_exists = Path.exists
+
+    def spy(self: Path) -> bool:
+        touched.append(str(self))
+        return real_exists(self)
+
+    monkeypatch.setattr(Path, "exists", spy)
+    doc = tmp_path / "notes.md"
+    sep = chr(92)
+    for target in (
+        sep * 2 + "host" + sep + "share" + sep + "f",
+        "//host/share/f",
+        "C:/Windows/win.ini",
+        "%5C%5Chost%5Cshare",
+    ):
+        assert _broken_relative(target, doc) == ""
+    assert touched == []
+    assert _broken_relative("missing.md", doc) == "missing.md"
+
+
+def test_deeply_nested_json_and_python_are_reported_not_raised() -> None:
+    from quill.core.problems.builtin import check_json, check_python
+
+    deep = "[" * 100_000 + "]" * 100_000
+    assert [p.message for p in check_json(deep)] in ([], ["Nested too deeply to check"])
+    python = "x = " + "(" * 5_000 + ")" * 5_000
+    problems = check_python(python)
+    assert all(p.source == "Python" for p in problems)

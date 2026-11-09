@@ -278,13 +278,13 @@ class CodeNavMixin(ProblemsCommandsMixin):
         from quill.core.problems.pane import OpenProblemDocument
 
         documents = []
-        for index, tab in enumerate(list(getattr(self, "_document_tabs", []) or [])):
+        for tab in list(getattr(self, "_document_tabs", []) or []):
             document = tab.document
             path = getattr(document, "path", None)
             profile = getattr(tab, "_language_profile", None) or get_profile_for_path(path)
             documents.append(
                 OpenProblemDocument(
-                    key=index,
+                    key=tab,
                     name=getattr(document, "name", "") or "Untitled",
                     text=str(tab.editor.GetValue()),
                     language=language_key(getattr(profile, "name", None), path),
@@ -295,12 +295,20 @@ class CodeNavMixin(ProblemsCommandsMixin):
         return documents
 
     def _problems_document_key(self) -> object:
-        return int(getattr(self, "_active_tab_index", 0) or 0)
+        # The tab itself, not its index: closing a tab shifts every index
+        # after it, and a row would then bring the wrong document forward.
+        tabs = list(getattr(self, "_document_tabs", []) or [])
+        index = int(getattr(self, "_active_tab_index", 0) or 0)
+        return tabs[index] if 0 <= index < len(tabs) else None
 
     def _problems_go_to_document(self, key: object, line: int, column: int) -> None:
         from quill.core.problems import offset_for
 
-        self._select_tab(int(key))  # type: ignore[attr-defined, call-overload]
+        tabs = list(getattr(self, "_document_tabs", []) or [])
+        if key not in tabs:
+            self._problems_say("That document is closed")
+            return
+        self._select_tab(tabs.index(key))  # type: ignore[attr-defined]
         self._problems_go_to(offset_for(self._problems_text(), line, column))
 
     def _problems_pause_enabled(self) -> bool:

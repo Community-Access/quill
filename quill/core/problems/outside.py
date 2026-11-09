@@ -401,6 +401,11 @@ class OutsideResult:
     notes: tuple[str, ...]
 
 
+def is_batch_shim(executable: str) -> bool:
+    """True for a ``.cmd`` or ``.bat`` file, which Windows runs through cmd.exe."""
+    return Path(executable).suffix.lower() in {".cmd", ".bat"}
+
+
 def run_outside_checkers(
     text: str,
     *,
@@ -415,23 +420,36 @@ def run_outside_checkers(
     if not names:
         return OutsideResult((), (), ())
     found: list[tuple[str, str]] = []
+    skipped: list[str] = []
     for name in names:
         executable = which(CHECKER_TOOLS[name].executable)
+        if executable and is_batch_shim(executable):
+            # npm installs eslint and tsc as .cmd shims. Windows runs those
+            # through cmd.exe, which reads & | ^ % in the file name as
+            # commands, and Python cannot quote them safely ("BatBadBut").
+            # A shim is never started; the note says why it was skipped.
+            skipped.append(name)
+            continue
         if executable:
             found.append((name, executable))
     if language in FIRST_FOUND:
         found = found[:1]
+    shim_notes = tuple(
+        f"{name} is installed as a batch file, which QUILL does not run" for name in skipped
+    )
     if not found:
-        return OutsideResult((), (), ())
+        return OutsideResult((), (), shim_notes)
     if run is None:
         from quill.stability.safe_subprocess import run_subprocess_safely
 
         run = run_subprocess_safely
     problems: list[Problem] = []
     ran: list[str] = []
-    notes: list[str] = []
+    notes: list[str] = list(shim_notes)
     file_name = path.name if path is not None else f"untitled{_extension_for(language)}"
-    with tempfile.TemporaryDirectory(prefix="quill-check-") as scratch:
+    # ignore_cleanup_errors: antivirus or a tool's leftover child can hold the
+    # folder for a moment, and that must not throw away what was found.
+    with tempfile.TemporaryDirectory(prefix="quill-check-", ignore_cleanup_errors=True) as scratch:
         scratch_dir = Path(scratch)
         if path is not None and not modified and path.is_file():
             target = path

@@ -379,7 +379,20 @@ class ProblemsCommandsMixin:
         serves = getattr(self, "_ls_serves", None)
         use_server = callable(server_problems) and callable(serves) and bool(serves(path))
 
+        document = self._problems_document_key()
+
         def work() -> CheckReport:
+            # Never raises: a checker or server that fails becomes a note, so
+            # ``done`` always runs and a quiet check can never stay "running"
+            # for the rest of the session (review 2026-11-09, QUILL 3, Lite 4).
+            try:
+                return checked()
+            except Exception as error:  # noqa: BLE001 - reported, never lost
+                return CheckReport(
+                    language=language, notes=(f"The check could not finish: {error}",)
+                )
+
+        def checked() -> CheckReport:
             report = check_document(
                 text, language=language, path=path, modified=modified, outside=outside
             )
@@ -398,6 +411,13 @@ class ProblemsCommandsMixin:
             )
 
         def done(report: CheckReport) -> None:
+            if self._problems_document_key() != document:
+                # Another document came to the front while the check ran: its
+                # result belongs to a file nobody is looking at, so it is
+                # dropped rather than shown against this one (review QUILL 6).
+                # Edits to the same document keep it; Go To re-checks then.
+                self._problems_auto_running = False
+                return
             self._problems_report = report
             self._problems_checked_text = text
             self._problems_last_auto_changed = self._feed_problems_pane(report)
