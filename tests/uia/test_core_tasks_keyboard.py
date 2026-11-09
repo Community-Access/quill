@@ -307,6 +307,10 @@ def test_core_task_6_help_and_support(quill_app) -> None:
 def test_core_task_6_support_chord(quill_app) -> None:
     # The documented chord for Get Help from Support, Ctrl+Alt+F2. Kept apart
     # from the menu route so a chord problem cannot hide the task passing.
-    support = _open_window(quill_app, "^%{F2}", "Get Help from Support")
+    # #1703: "^%{F2}" reached QUILL as a bare F2 on the runner (it said "No
+    # bookmarks in this document", Next Bookmark's line), so Ctrl and Alt are
+    # held down explicitly around the key instead of through the shorthand.
+    chord = "{VK_CONTROL down}{VK_MENU down}{F2}{VK_MENU up}{VK_CONTROL up}"
+    support = _open_window(quill_app, chord, "Get Help from Support")
     support.type_keys("{ESC}")
     _assert_closes(support, "Get Help from Support")

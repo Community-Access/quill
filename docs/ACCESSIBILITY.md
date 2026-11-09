@@ -369,20 +369,21 @@ The third-party components that shape what users meet, what each affects, and
 what we know about its accessibility. Revisit this list whenever one of them is
 added, upgraded or replaced.
 
-- **wxPython 4.3.1** (wxWidgets): every window and control. On Windows it uses
-  native Win32 controls, so names, roles and states reach screen readers
+- **wxPython 4.3.2** (wxWidgets 3.3.4): every window and control. On Windows it
+  uses native Win32 controls, so names, roles and states reach screen readers
   through Microsoft Active Accessibility and UI Automation; a control's name is
-  the label created before it. Upstream blocker: a name set in code is not
-  read, and a picture-only button has no name, until wxPython exposes
-  `SetAccessibleName` (wxWidgets
-  [PR #27056](https://github.com/wxWidgets/wxWidgets/pull/27056) and
-  [PR #27051](https://github.com/wxWidgets/wxWidgets/pull/27051), both merged
-  in September 2026). Tracked in
-  [#1693](https://github.com/Community-Access/quill/issues/1693). Mitigation:
-  every control gets a real label created before it, and buttons carry their
-  object in the visible label. On macOS, VoiceOver ignores wx window names, so
-  `quill/ui/accessible_names.py` sets native accessibility labels
-  ([#1012](https://github.com/Community-Access/quill/issues/1012)).
+  the label created before it. The old upstream blocker is gone: 4.3.2 is the
+  first wxPython with `SetAccessibleName` (wxWidgets
+  [PR #27056](https://github.com/wxWidgets/wxWidgets/pull/27056)) and the fix
+  that names a picture-only button from its tooltip
+  ([PR #27051](https://github.com/wxWidgets/wxWidgets/pull/27051)), and
+  `quill/ui/spoken_name.py` uses it to name a control with no label of its own
+  (and `wx.Accessible` on an older wxPython). The by-ear confirmation is open
+  in [#1693](https://github.com/Community-Access/quill/issues/1693). The rule
+  stays anyway: every control gets a real label created before it, and buttons
+  carry their object in the visible label. On macOS, VoiceOver ignores wx
+  window names, so `quill/ui/accessible_names.py` sets native accessibility
+  labels ([#1012](https://github.com/Community-Access/quill/issues/1012)).
 - **Prism** (the `prismatoid` package): routes announcements to NVDA, JAWS and
   other screen readers, with speech and braille. Fallbacks: accessible_output2,
   Narrator's UI Automation notifications, VoiceOver, and the system voice.
@@ -443,11 +444,12 @@ These are the barriers we know about. Please report any we have missed.
   without results. Until they are recorded, treat a combination of app, screen
   reader and version that is not in a record as untested. Help is wanted in
   [#1694](https://github.com/Community-Access/quill/issues/1694).
-- **A control without a visible label can be announced without a name** on
-  Windows, because the toolkit does not yet let QUILL set one (see
-  [#1693](https://github.com/Community-Access/quill/issues/1693)). Our rule is
-  that every control has a label; if you find one that does not, please report
-  it.
+- **A control without a visible label could be announced without a name** on
+  Windows before wxPython 4.3.2. QUILL now gives such a control a name in code
+  (`SetAccessibleName`), but that is waiting for a by-ear check with a screen
+  reader ([#1693](https://github.com/Community-Access/quill/issues/1693)). Our
+  rule is still that every control has a label; if you find one that does not,
+  please report it.
 - **The screen reader does not say a paragraph is a heading** by itself in the
   editor, because no Windows edit control exposes paragraph styles. QUILL says
   it for you instead ("Heading 2, Installing") when you arrive on one.
@@ -495,7 +497,7 @@ where every action's state is checked off as it is met. As of October 2026,
   beginner-friendly and expert-help accessibility issues; an owner;
   documentation checked by the documentation gates; interface requirements
   enforced by the build and by review; and the dependency list above, with its
-  upstream blocker tracked.
+  last upstream blocker resolved and its by-ear check tracked.
 - **Testing:** automated accessibility checks on every pull request; a review
   of representative documentation; supported environments and known
   limitations above. Documented keyboard, screen reader and manual checks for
