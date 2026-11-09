@@ -43,6 +43,7 @@ import wx
 from quill.apps.lite_shell import MAX_NUMBERED
 from quill.apps.lite_window_markup import MARKUP_COMMANDS
 from quill.apps.lite_window_typing import overwrite_now
+from quill.core.github import workbench_menu
 from quill.core.lite.commands import SUBMENU_SEP, CommandRow, split_menu
 from quill.core.lite.format_kinds import FORMAT_COMMAND_KINDS, applies_to
 from quill.core.lite.keymap import default_aliases, resolved_commands
@@ -137,7 +138,14 @@ class DocumentMenuMixin:
         self._window_menu_items = []
         rows: dict[str, list[CommandRow]] = {}
         top_level: list[str] = []
-        for row in resolved_commands(self.app.feature_enabled, self.app.keymap):
+        # GitHub Workbench Mode moves File's GitHub rows into a GitHub menu after
+        # Tools (quill/core/github/workbench_menu.py); per window, off by default.
+        workbench = bool(getattr(self, "_github_workbench_mode", False))
+        for row in workbench_menu.lite_arrange(
+            resolved_commands(self.app.feature_enabled, self.app.keymap),
+            workbench=workbench,
+            repository=self._github_repository() if workbench else "",
+        ):
             rows.setdefault(row[0], []).append(row)
             parent_label, _child = split_menu(row[0])
             if parent_label not in top_level:
@@ -166,6 +174,11 @@ class DocumentMenuMixin:
         for _menu_path, label, key, handler, kind in rows.get(path, []):
             if kind == "sep":
                 menu.AppendSeparator()
+                continue
+            if kind == "readout":
+                # The GitHub menu's "Repository: owner/name": a status readout,
+                # disabled, which is the one exemption from the key rule.
+                menu.Append(wx.ID_ANY, label).Enable(False)
                 continue
             if kind == "sub":
                 child_path = f"{path}{SUBMENU_SEP}{label}"
@@ -210,6 +223,10 @@ class DocumentMenuMixin:
         out which rows to add and remove is the same walk as building it, with
         an extra chance to leave a stale accelerator behind.
         """
+        self._build_menus()
+
+    def rebuild_workbench_menus(self) -> None:
+        """GitHub Workbench Mode changed: this window's bar, rebuilt the same way."""
         self._build_menus()
 
     def _apply_alias_accelerators(self) -> None:
@@ -287,6 +304,10 @@ class DocumentMenuMixin:
             # and abbreviations either expand or do not, whichever document is
             # in front of you.
             "cmd_toggle_status_bar": getattr(self.app.settings, "show_status_bar", True),
+            "cmd_toggle_problems_pane": getattr(self.app.settings, "problems_pane_visible", False),
+            # Per window: a switch for now; the setting is only the default.
+            "cmd_problems_this_file": not _listing_all_files(self),
+            "cmd_problems_all_files": _listing_all_files(self),
             "cmd_toggle_abbreviations": self.app.feature_enabled("abbreviations"),
             # On while *this* document is being dictated into. There is one
             # microphone, so at most one window's mark is ever on.
@@ -314,6 +335,8 @@ class DocumentMenuMixin:
             "cmd_toggle_list_announcements": bool(
                 getattr(self.app.settings, "announce_lists", True)
             ),
+            # Per window: this window's bar is the one that changed.
+            "cmd_toggle_github_workbench": bool(getattr(self, "_github_workbench_mode", False)),
         }
         for handler, checked in marks.items():
             item = self._check_items.get(handler)
@@ -438,3 +461,9 @@ class DocumentMenuMixin:
     def _on_menu_open(self, event: wx.MenuEvent) -> None:
         self.sync_menu_state()
         event.Skip()
+
+
+def _listing_all_files(frame: Any) -> bool:
+    """Whether this window's Problems pane lists every open file (stand-ins may lack it)."""
+    listing = getattr(frame, "problems_listing_all_files", None)
+    return bool(listing()) if callable(listing) else False

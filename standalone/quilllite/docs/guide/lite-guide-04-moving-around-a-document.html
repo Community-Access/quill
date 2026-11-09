@@ -809,6 +809,56 @@ to the next or previous problem without the list, and say it: “Problem 2
 of 3, line 9, column 1, warning: Heading levels jump by more than one
 level.” They go round from the last to the first, and check the document
 again first if you have changed it.</p>
+<p>If you’d rather keep the problems in front of you while you fix them,
+turn on <strong>View &gt; Problems &gt; Show Pane</strong> (Alt+V, P,
+S). It sits under the document, above the status bar, in every window
+you have open, and QUILL Lite remembers whether it’s on. Turning it on
+checks the document and says what it found. While it’s on, Check This
+File fills the pane instead of opening the list.</p>
+<ul>
+<li><strong>F6</strong> goes from the document to the pane, and F6 again
+goes on to the status bar.</li>
+<li>Each row starts with how serious the problem is: “Warning, line 2,
+column 1: Heading levels jump by more than one level (Markdown)”.
+<strong>Enter</strong> goes to it.</li>
+<li><strong>Escape</strong> takes you back to the document and leaves
+the pane open.</li>
+<li>If you’ve changed the document since the check, Enter checks it
+again and goes to the same problem where it is now, or tells you it’s
+gone.</li>
+<li><strong>F</strong> in the pane’s list switches between this document
+and all open files. <strong>View &gt; Problems &gt; This File
+Only</strong> (Alt+V, P, T) or <strong>All Open Files</strong> (Alt+V,
+P, A), and the pane’s <strong>Files</strong> chooser, do the same. These
+switch for now; which one each window starts with is <strong>Problems
+pane lists all open files at first</strong>, in Preferences. With all
+open files, each row starts with the document’s name, and Enter on one
+brings that window to the front with the caret on the problem.</li>
+<li><strong>Shift+Tab</strong> from the list reaches
+<strong>Show</strong> (all problems, errors and warnings, or errors
+only) and <strong>Source</strong> (one checker). Changing either says
+the new count.</li>
+<li>The context key on a row has <strong>Go To</strong>, <strong>Copy
+Message</strong> and <strong>Quick Fix…</strong>, which offers the
+language server’s fixes for that problem.</li>
+</ul>
+<p>QUILL Lite carries the same language servers as QUILL: VS Code’s
+HTML, CSS, JSON and Markdown servers, TypeScript’s for JavaScript and
+TypeScript, and Pyright for Python. In those files, Check This File and
+the Problems pane include their problems too, so a <code>.py</code>,
+<code>.js</code> or <code>.json</code> file can be checked here as well
+as Markdown and HTML. <strong>Navigate &gt; Code &gt; Parameter
+Hints</strong> says which argument you’re on inside a call, and
+<strong>Navigate &gt; Code &gt; Language Servers…</strong> switches any
+of it on or off. None of them uses the internet.</p>
+<ul>
+<li>While the pane is on, saving checks the document again, and so does
+a moment’s pause in typing if you check <strong>Check after a
+pause</strong> beside the choosers (it starts off). You hear only the
+new count, and only when it changes.</li>
+</ul>
+<p>The pane has no shortcut key; Ctrl+Shift+M, the usual one, is Set
+Mark here and in QUILL. You can give it one in the Keyboard Manager.</p>
 <p>QUILL Lite checks the two kinds of document it knows. In a plain text
 document you hear “Nothing to check: QUILL Lite checks Markdown and HTML
 documents.” QUILL checks those too, and also code and data files such as

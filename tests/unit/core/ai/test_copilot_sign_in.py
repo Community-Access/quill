@@ -64,7 +64,7 @@ def _flow(poster: _GitHub, tmp_path: Path, agent: str = "QUILL Lite") -> Copilot
 def test_the_code_is_spaced_for_the_reader_as_the_free_ais_code_is() -> None:
     from quill.ui.hosted_ai_service import SignInCode
 
-    assert spoken_code("ABCD-1234") == SignInCode("ABCD-1234", "").spoken
+    assert spoken_code("ABCD-1234") == SignInCode("ABCD-1234", "").spoken == "A B C D dash 1 2 3 4"
     assert spoken_code("AB12").split() == ["A", "B", "1", "2"]
 
 

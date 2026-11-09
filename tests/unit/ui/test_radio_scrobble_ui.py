@@ -17,6 +17,7 @@ from quill.core.radio import scrobble_queue as sq
 from quill.core.radio.history import RadioHistory
 from quill.core.radio.scrobble_tracker import Listen
 from quill.ui.radio import scrobble_commands, scrobble_signin, song_identify_commands
+from quill.ui.radio.playback_state import RadioPlayerState
 
 T0 = 1_800_000_000.0
 
@@ -56,10 +57,11 @@ class _Controller:
     def __init__(self) -> None:
         self.behind = 0.0
         self.station: Any = _Station()
+        self.playing = RadioPlayerState.PLAYING
 
     @property
     def state(self) -> Any:
-        return type("S", (), {"station": self.station})()
+        return type("S", (), {"station": self.station, "state": self.playing})()
 
     def behind_live_seconds(self) -> float:
         return self.behind
@@ -134,6 +136,76 @@ def test_a_minute_of_a_song_is_sent_off_the_ui_thread(scrobbling_on: dict[str, A
     assert host.said == [], "a song sent is not news"
 
 
+@pytest.mark.parametrize("stopped", [RadioPlayerState.STOPPED, RadioPlayerState.PAUSED])
+def test_stopped_or_paused_time_is_never_heard(
+    scrobbling_on: dict[str, Any], stopped: RadioPlayerState
+) -> None:
+    host = scrobbling_on["host"]
+    scrobble_commands.on_title(host, "Artist - Song", now=T0)
+    _listen_for(host, 10)
+    host._radio_controller.playing = stopped
+    _listen_for(host, 120, start=T0 + 15)
+    assert scrobbling_on["batches"] == [], "ten seconds heard is not a listen"
+    host._radio_controller.playing = RadioPlayerState.PLAYING
+    _listen_for(host, 55, start=T0 + 140)
+    assert len(scrobbling_on["batches"]) == 1, "the minute is counted only while playing"
+
+
+class _DroppingTasks(_Tasks):
+    """A task manager that accepts a send and never runs it, or refuses it."""
+
+    def __init__(self, *, refuse: bool = False) -> None:
+        super().__init__()
+        self.refuse = refuse
+
+    def submit(self, name: str, work: Any, *, on_success: Any, on_failure: Any) -> None:
+        self.names.append(name)
+        if self.refuse:
+            raise RuntimeError("cannot schedule new futures after shutdown")
+
+
+@pytest.mark.parametrize("refuse", [False, True])
+def test_a_dropped_send_gives_its_songs_back_and_scrobbling_goes_on(
+    scrobbling_on: dict[str, Any], refuse: bool
+) -> None:
+    host = scrobbling_on["host"]
+    host._task_manager = _DroppingTasks(refuse=refuse)
+    scrobble_commands.on_title(host, "Artist - Song", now=T0)
+    _listen_for(host, 70)
+    found = scrobble_commands.state(host)
+    host._task_manager = _Tasks()
+    later = T0 + 75 + scrobble_commands.SEND_STALE_SECONDS
+    scrobble_commands.tick(host, now=later)
+    ((service, batch),) = scrobbling_on["batches"]
+    assert batch == [Listen("Artist", "Song", int(T0))], "the drained song was not lost"
+    assert found.sending is False
+
+
+def test_shutdown_stops_the_clock_and_queues_what_was_heard(
+    scrobbling_on: dict[str, Any],
+) -> None:
+    host = scrobbling_on["host"]
+    host._task_manager = _DroppingTasks()
+    scrobble_commands.on_title(host, "Artist - Song", now=T0)
+    _listen_for(host, 70)
+    found = scrobble_commands.state(host)
+    found.timer = _Timer()
+    scrobble_commands.shutdown(host)
+    assert found.timer.stopped
+    assert found.queue.pending("listenbrainz") == [Listen("Artist", "Song", int(T0))]
+
+
+class _Timer:
+    def __init__(self) -> None:
+        self.stopped = False
+
+    def IsRunning(self) -> bool:  # noqa: N802 - wx's name
+        return not self.stopped
+
+    def Stop(self) -> None:  # noqa: N802 - wx's name
+        self.stopped = True
+
+
 def test_time_shift_is_read_from_the_engine(scrobbling_on: dict[str, Any]) -> None:
     host = scrobbling_on["host"]
     scrobble_commands.on_title(host, "A - First", now=T0)
@@ -206,6 +278,22 @@ def test_record_song_feeds_scrobbling_even_with_song_history_off(
     seen: list[str] = []
     monkeypatch.setattr(scrobble_commands, "on_title", lambda _h, title, **_k: seen.append(title))
     song_history_commands.record_song(host, "Artist - Song")
+    assert seen == ["Artist - Song"]
+
+
+def test_a_dial_tuning_fault_never_stops_the_title_going_through(
+    scrobbling_on: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.ui.radio import dial_tuning_ui, song_history_commands
+
+    def broken(*_a: Any) -> bool:
+        raise AttributeError("half-built dial state")
+
+    host = scrobbling_on["host"]
+    seen: list[str] = []
+    monkeypatch.setattr(dial_tuning_ui, "passing_through", broken)
+    monkeypatch.setattr(scrobble_commands, "on_title", lambda _h, title, **_k: seen.append(title))
+    song_history_commands.record_song(host, "Artist - Song")  # must not raise
     assert seen == ["Artist - Song"]
 
 
@@ -362,6 +450,33 @@ def test_clearing_a_token_removes_it(radio_credential_store: dict[str, Any]) -> 
     rows = prefs.ScrobbleRows(_App())
     rows.apply([False, False, False], 0, ["", "", "", ""])
     assert radio_credentials.AUDD_TOKEN not in radio_credential_store
+
+
+def test_typing_your_own_key_after_signing_in_asks_for_a_new_sign_in(
+    monkeypatch: pytest.MonkeyPatch, radio_credential_store: dict[str, Any]
+) -> None:
+    monkeypatch.setattr(lastfm, "bundled_credentials", lambda: ("BUILDKEY", "BUILDSECRET"))
+    radio_credential_store[radio_credentials.LASTFM_SESSION] = ("OLDSESSION", "jeff")
+    rows = prefs.ScrobbleRows(_App())
+    said = rows.apply([False, True, False], 0, ["", "MYKEY", "MYSECRET", ""])
+    assert radio_credentials.LASTFM_SESSION not in radio_credential_store, (
+        "a session made with the build's key fails every scrobble under another key"
+    )
+    assert "The key changed, so sign in to last.fm again." in said
+
+
+def test_a_sign_in_made_with_the_typed_key_keeps_its_session(
+    monkeypatch: pytest.MonkeyPatch, radio_credential_store: dict[str, Any]
+) -> None:
+    monkeypatch.setattr(lastfm, "bundled_credentials", lambda: ("BUILDKEY", "BUILDSECRET"))
+    rows = prefs.ScrobbleRows(_App())  # opened with no key of your own
+    # ... then Sign In, from the typed boxes, saved the pair with its session.
+    radio_credential_store[radio_credentials.LASTFM_API_KEY] = ("MYKEY", "")
+    radio_credential_store[radio_credentials.LASTFM_SECRET] = ("MYSECRET", "")
+    radio_credential_store[radio_credentials.LASTFM_SESSION] = ("NEWSESSION", "jeff")
+    said = rows.apply([False, True, False], 0, ["", "MYKEY", "MYSECRET", ""])
+    assert radio_credential_store[radio_credentials.LASTFM_SESSION] == ("NEWSESSION", "jeff")
+    assert "sign in" not in said.lower()
 
 
 def test_the_sign_in_button_reads_the_boxes_as_typed(monkeypatch: pytest.MonkeyPatch) -> None:

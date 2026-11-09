@@ -2,6 +2,46 @@
 
 ## 2.0.0
 
+### Built on wxPython 4.3.2 (2026-11-09)
+
+- QUILL Lite now runs on wxPython 4.3.2 (wxWidgets 3.3.4), like QUILL. The
+  change is underneath: a control whose spoken name used to be set by a
+  workaround now carries it the way Windows expects, so your screen reader
+  reads it straight from the control.
+
+### Problems, Word Prediction and Indent: fixes (2026-11-09)
+
+- Indent and Outdent, from the Tools menu or the Tab key, change only the
+  start of each line now. In a rich or Word document they used to rewrite the
+  whole document as plain text and drop your headings and bold.
+- "Nothing to indent" is said for Indent, once, instead of "Nothing to
+  outdent" followed by the depth.
+- An emoji early in a file no longer throws Next Block, Next Indent Change,
+  the problem keys, Word Prediction or Indent off by one.
+- Word Prediction inserts for the word at the caret now, even after a menu key
+  moved it, and the list closes when you switch windows or move focus away.
+- Closing a window stops its Problems pane, and a check or a suggestion that
+  finishes after the window closed is dropped.
+- Only the window in front says a Problems pane count; the others update
+  quietly.
+- The Problems pane no longer copies the document twice a second or looks for
+  the language servers on disk each time, and All Open Files checks the other
+  windows in the background.
+- Word Prediction only reads a folder full of code when it is a project (it
+  has a .git folder, pyproject.toml, package.json and so on). A file on your
+  Desktop no longer makes it read the whole Desktop.
+- The Quick Fix list is called Quick Fix and names the problem it fixes, and
+  Escape in an open Show or Source list on the Problems pane only closes it.
+
+### Language servers (2026-11-08)
+
+- QUILL's language servers, in QUILL Lite: HTML, CSS, JSON, Markdown,
+  JavaScript, TypeScript and Python. Word Prediction asks them first, Check
+  This File and the Problems pane include their problems (so code files can
+  be checked too), Quick Fix applies their fixes, and Navigate > Code >
+  Parameter Hints says which argument you're on. Navigate > Code > Language
+  Servers... switches each one and each use. Nothing uses the internet.
+
 ### Say or Type a Command (2026-11-08)
 
 - **Say or Type a Command (F11).** Press F11, type what you want in your own
@@ -23,6 +63,68 @@
   the Dictation menu, with no key. Dictation keeps Ctrl+F11.
 - QUILL Lite runs QUILL's Command Key, from the same shared code, on the same
   keys.
+
+### GitHub Workbench Mode and Clone Repository (2026-11-08)
+
+- View > GitHub Workbench Mode (Alt+V, then K) is a check item, per window.
+  With it on, a GitHub menu (Alt+G) sits after Tools, File's three GitHub rows
+  move into it, and turning it off puts them back. It's QUILL's menu less
+  QUILL's own rows, built from the same table, so the letters match.
+- The GitHub menu opens Inbox, My Work, Notifications, Issues and Pull
+  Requests, Actions Runs, Releases and Explore GitHub in one step, and starts
+  with Leave Workbench Mode. It works in the empty window too.
+- File > Clone Repository... (Alt+F, then Y) copies a repository to your
+  computer with Git for Windows, using your signed-in account for a private
+  one without writing the token anywhere. Afterwards it offers to open a file.
+- Turning the mode on or off says one sentence, and nothing else in it speaks.
+- The Copilot and free AI sign-in codes now say "dash" as a word.
+
+### The Problems pane lists every open document (2026-11-08)
+
+- View > Problems > This File Only or All Open Files, F in the pane's list,
+  or the pane's Files chooser switches between this document and every open
+  window's problems; Problems pane lists all open files at first, in
+  Preferences, is the default. Each row names its document and Enter brings
+  it forward.
+
+
+### The Problems pane checks on save (2026-11-08)
+
+- While the pane is on, saving checks the document again, and a Check after a
+  pause box (off by default) checks it when you stop typing. Only a changed
+  count is said. QUILL's pane, shared.
+
+
+### Word Prediction knows your project (2026-11-08)
+
+- After the file's own names, Word Prediction adds names from the other code
+  files in the project, read in the background. QUILL's code, shared.
+
+### Word Prediction knows your code (2026-11-08)
+
+- In a code file, Word Prediction offers the file's own names, nearest first,
+  each said with its kind: "8 suggestions. count_words, function". QUILL's
+  code, shared.
+
+
+### Word Prediction (2026-11-08)
+
+- Edit > Word Prediction... (Ctrl+., Alt+E, then W) suggests the word you're
+  typing from the spelling dictionary and your document, plus Markdown and
+  HTML tags. Up and Down say each one, Enter or Tab inserts it, and Escape
+  closes the list without changing your text. It's QUILL's list, from the
+  same shared code, on QUILL's key.
+
+
+### The Problems pane (2026-11-08)
+
+- View > Problems > Show Pane (Alt+V, P, S) docks the problems Check This File finds
+  under the document, in every open window, and QUILL Lite remembers whether
+  it's on. While it's on, Check This File fills it instead of opening the list.
+- F6 goes from the document to the pane, then to the status bar. Enter on a
+  row goes to the problem, Escape goes back and leaves the pane open, and the
+  Show and Source choosers narrow the list.
+- It's QUILL's pane, from the same shared code, on the same menu.
 
 ### Sign In with GitHub (2026-11-08)
 

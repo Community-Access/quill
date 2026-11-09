@@ -22,6 +22,14 @@ NEVER_ROWS: tuple[CommandSpec, ...] = (
         where="F11",
     ),
     CommandSpec(
+        "tools.language_servers",
+        "Language Servers",
+        aliases=("language servers", "code servers", "intellisense settings"),
+        risk=_N,
+        group="Navigate",
+        where="Navigate, Code, Language Servers",
+    ),
+    CommandSpec(
         "app.exit",
         "Exit",
         aliases=("quit", "leave", "shut down"),

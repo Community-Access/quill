@@ -7695,6 +7695,60 @@ the buffer is unsaved; local only, so no network egress entry. QUILL
 runs outside checks on its task manager. QUILL Lite checks Markdown and
 HTML with the built-in tier only. The record of the tool table and the
 security model is <code>docs/design/syntax-checking.md</code>.</p>
+<h3 id="528c-the-problems-pane-2026-11-08">5.28c The Problems pane
+(2026-11-08)</h3>
+<p><strong>View &gt; Problems &gt; Show Pane</strong>
+(<code>view.problems_pane</code>, no default chord) docks the problems
+Check This File finds under the editor, above the status bar, and keeps
+them there while the user works; <code>problems_pane_visible</code>
+remembers it (the same field name in QUILL Lite, where it applies to
+every window at once). No chord was free in both editors (Ctrl+Shift+M
+is Set Mark in both, measured 2026-11-08), so the command has a rule 9
+reason in <code>UNBOUND_WITH_REASON</code>. Showing it runs a check and
+says “Problems pane shown.” with the summary. While shown, Check This
+File fills the pane instead of opening the modal list and leaves the
+caret where it was; every check, the problem keys’ re-checks included,
+keeps it current. F6 / Shift+F6 reach it as the “Problems” region, after
+Reveal Codes and before the status bar (screen order). Rows read
+severity first (“Error, line 12, column 5: message (JSON)”); Enter goes
+to the problem and focuses the editor, re-checking first when the text
+has changed and landing on the same problem (message, source and
+severity, nearest line) or saying “That problem is gone.” Escape returns
+to the editor without closing the pane. A filter row (Show: all, errors
+and warnings, errors only; Source: every checker found in this report)
+says one count sentence on change (“4 problems, 1 shown”); nothing is
+spoken on focus (GATE-13). The context menu has Go To and Copy Message.
+No control in the pane has an access key, since the menu bar owns Alt.
+P2 (2026-11-08): while shown, a 500 ms pane timer
+(<code>ProblemsPane.set_shown</code> starts and stops it) calls
+<code>_problems_tick</code>, which checks again, quietly, when the
+document goes from modified to saved and, with the pane’s Check after a
+pause box (<code>problems_check_after_pause</code>, off by default, the
+same field in QUILL Lite), once the text has been still for 1.5 s; never
+twice for the same text, and the only speech is
+<code>count_sentence</code> when the count changed. All open files
+(2026-11-08): View &gt; Problems became a submenu, Show Pane
+(<code>view.problems_pane</code>) then the radio pair This File Only
+(<code>view.problems_this_file</code>) and All Open Files
+(<code>view.problems_all_files</code>), no chords (rule 9); F in the
+pane’s list (<code>switch_files</code>) toggles the two. Those switch
+per window for the session; the default each window starts from is
+<code>problems_all_open_files</code> (Settings &gt; Editing, “Problems
+pane lists all open files at first”; QUILL Lite’s Preferences), and a
+menu choice shows the pane if hidden. It and the pane’s Files chooser
+(<code>SCOPE_CHOICES</code>) switch to <code>combine_reports</code> over
+<code>_problems_open_documents()</code>: this document’s report plus a
+built-in-only check of every other tab (outside tools only for the
+document in front), each <code>Problem</code> carrying
+<code>document</code>, which the row reads first; Enter on another
+document’s row calls <code>_problems_go_to_document</code> (QUILL
+<code>_select_tab</code>; QUILL Lite <code>focus_frame</code>). Code:
+<code>quill/core/problems/pane.py</code> (filters, rows, the count
+sentence; no wx), <code>quill/ui/problems_pane.py</code> (the widget,
+shared), <code>quill/ui/problems_commands.py</code> (the toggle and Go
+To, shared), <code>quill/ui/main_frame_code_nav.py</code> and
+<code>quill/apps/lite_window_code_nav.py</code> (each editor’s hooks).
+Plan of record: <code>docs/design/intellisense.md</code>.</p>
 <h3 id="529-format-menu-text-transforms-no-styling">5.29 Format menu
 (text transforms, no styling)</h3>
 <p>A dedicated menu surfacing transforms that are otherwise reachable
@@ -7736,7 +7790,55 @@ Insert Markdown Tag… (semantic snippet picker).</li>
 Manage Snippets… (<code>Ctrl+Alt+Shift+Space</code>) with searchable
 filtering, placeholder prompts, and starter-pack onboarding.</li>
 <li>Prediction helpers: Word Prediction… (<code>Ctrl+.</code>) with
-words, HTML tags, and Markdown tag completions.</li>
+words, HTML tags, and Markdown tag completions. Since 2026-11-08 the key
+works in every profile (<code>edit.word_prediction</code> maps to
+<code>core.edit</code>), while <code>core.intellisense</code> governs
+only Toggle Word Prediction As You Type
+(<code>intellisense_as_you_type</code>, off by default). The list is
+<code>quill/ui/suggestion_list.py</code> (<code>SuggestionPopup</code>,
+<code>SuggestionListMixin</code>), shared with QUILL Lite, whose Edit
+&gt; Word Prediction… (<code>cmd_word_prediction</code>, Ctrl+., rule 2)
+is <code>quill/apps/lite_window_word_prediction.py</code>; QUILL’s
+adapter is <code>quill/ui/main_frame_intellisense.py</code>. Plan of
+record: <code>docs/design/intellisense.md</code>. Layer 1 (2026-11-08):
+in a code file (<code>code_language_for</code>: any extension Pygments
+knows, prose excluded) the list offers the file’s own names nearest
+first via <code>quill/core/code_names.py</code>, each spoken with its
+kind (<code>spoken_suggestion</code>: “count_words, function”; open: “8
+suggestions. count_words, function”); budget 100 ms on 1 MB,
+perf-tested. Layer 4 (2026-11-08): <code>quill/core/lsp/</code>
+(protocol, client, pool, servers, convert) runs the allowlisted language
+servers (<code>LANGUAGE_SERVERS</code>: VS Code’s HTML, CSS, JSON and
+Markdown servers, typescript-language-server with TypeScript 6.0.3, and
+Pyright, bundled at <code>tools/language-servers</code> and run by
+<code>tools/nodejs/node.exe</code>; clangd and PowerShell Editor
+Services only when installed) over stdio via
+<code>spawn_subprocess_safely</code>, with network features off (no
+schema download, no web links, no automatic type acquisition). Started
+on first use, stopped after 15 idle minutes, on closing the last file,
+and at exit. Through <code>quill/ui/language_servers.py</code> (shared):
+completions first in Ctrl+. once the server is running (the first press
+warms it), problems in Check This File and the pane (in the background),
+Quick Fix on a pane row (one undo step), Navigate &gt; Code &gt;
+Parameter Hints (<code>edit.parameter_hints</code>, no chord:
+Ctrl+Alt+Shift+Space is the Keyboard Manager and nothing near was free
+in both) and Language Servers… (<code>tools.language_servers</code>),
+whose window sets <code>language_servers_enabled</code>,
+<code>language_servers_off</code>,
+<code>language_server_completions</code>,
+<code>language_server_problems</code> and
+<code>parameter_hints_as_you_type</code> (off), the same names in QUILL
+Lite. Bundling: <code>scripts/fetch_language_servers.py</code> (Node
+24.22.1 SHA-256 pinned; the servers and Prettier 3.9.10 by
+<code>npm ci --ignore-scripts</code> from
+<code>scripts/language_servers/package-lock.json</code>; ripgrep 15.2.0
+SHA-256 pinned), staged by
+<code>standalone/runtime/build_runtime.ps1</code>. Layer 2 (2026-11-08):
+when room remains, names from the rest of the project
+(<code>quill/core/project_names.py</code>: nearest marked folder,
+background walk on the task manager, capped at 5,000 files, 1 MB a file
+and 40 MB in all; imported files first, then defined names), rebuilt in
+the background after five minutes; no network.</li>
 <li>Surface-aware formatting shortcuts (Markdown/HTML only):
 <code>Ctrl+B</code> bold, <code>Ctrl+I</code> italic, and heading levels
 <code>Ctrl+Alt+1</code> through <code>Ctrl+Alt+6</code>.</li>
@@ -19613,7 +19715,7 @@ submenu:</p>
   ---
   GitHub Repository...
   GitHub File URL...
-  Save to GitHub...
+  Commit to GitHub...
   GitHub Items...
   ---
   Manage Remote Sites...   (existing)
@@ -19685,8 +19787,8 @@ accepts a pasted
 <code>https://github.com/owner/repo/blob/branch/path</code> URL and
 opens the file directly without requiring the user to navigate the
 browser. Useful for sharing links.</p>
-<h3 id="257-save-to-github">§25.7 Save to GitHub</h3>
-<p><strong>File &gt; Open from Remote &gt; Save to GitHub…</strong> is
+<h3 id="257-commit-to-github">§25.7 Commit to GitHub</h3>
+<p><strong>File &gt; Open from Remote &gt; Commit to GitHub…</strong> is
 available when the active document was opened from GitHub. QUILL prompts
 for a commit message, then commits the current document text to the same
 repository, branch, and path using the GitHub API
@@ -20219,12 +20321,12 @@ project without leaving QUILL” path described in
 new GitHub-backed project meant leaving QUILL, creating the repo in a
 browser, then coming back to set up local sync as two disconnected
 steps.</p>
-<p><strong>Multi-file commits vs. Save to GitHub (§25.7).</strong> Save
-to GitHub commits exactly one already-open document to its own tracked
-origin. Commit Multiple Files is a separate, standalone command: it
-reads arbitrary local files (not necessarily open in QUILL) chosen via a
-file picker and commits all of them to a chosen repository/branch in a
-single atomic git commit (<code>create_git_tree</code> +
+<p><strong>Multi-file commits vs. Commit to GitHub (§25.7).</strong>
+Commit to GitHub commits exactly one already-open document to its own
+tracked origin. Commit Multiple Files is a separate, standalone command:
+it reads arbitrary local files (not necessarily open in QUILL) chosen
+via a file picker and commits all of them to a chosen repository/branch
+in a single atomic git commit (<code>create_git_tree</code> +
 <code>create_git_commit</code> + a fast-forward-only ref update —
 refused, not force-pushed, if the branch has moved since it was read).
 Binary files are rejected with a clear error; this call is UTF-8 text
@@ -20238,7 +20340,7 @@ Branch = Shift+B, Configure Branch Protection = Shift+L, Delete Branch =
 Shift+X, Commit Multiple Files = Shift+U. The five pre-existing
 read-only GitHub commands (§25.2), previously unbound, also gained
 default chords in the same release: GitHub Repository = Shift+Y, GitHub
-File URL = Shift+W, Save to GitHub = Shift+Q, Manage GitHub Accounts =
+File URL = Shift+W, Commit to GitHub = Shift+Q, Manage GitHub Accounts =
 Shift+Z, GitHub Items = Shift+I. All are freely reassignable in
 Preferences &gt; Keyboard Shortcuts, like every other QUILL command.</p>
 <p><strong>Implementation files:</strong></p>

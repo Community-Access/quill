@@ -2759,7 +2759,7 @@ Save the current document as a plain text file. If it carries hidden formatting,
 
 ## Saving Back to GitHub
 
-### Save to GitHub...
+### Commit to GitHub...
 
 Save the current file back to the GitHub repository it came from, creating a commit with your changes.
 

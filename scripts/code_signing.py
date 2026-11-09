@@ -104,7 +104,10 @@ DEFAULT_SIGN_PATTERNS = ("*.exe", "*.dll")
 # binary that carries its maker's signature. (ffmpeg and libmpv ship unsigned
 # upstream and are signed with the rest of the payload; deno is signed by Deno
 # Land Inc. and is, for now, still re-signed -- a candidate for this list.)
-VENDOR_SIGNED_TOOL_DIRS = ("copilot", "codex")
+VENDOR_SIGNED_TOOL_DIRS = ("copilot", "codex", "nodejs")
+# nodejs: node.exe is signed by the OpenJS Foundation and SHA-256 pinned
+# (scripts/fetch_language_servers.py); ripgrep ships unsigned upstream and is
+# signed with the rest of the payload.
 
 
 def is_vendor_signed(path: Path) -> bool:

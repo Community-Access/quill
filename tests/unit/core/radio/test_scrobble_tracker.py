@@ -150,3 +150,15 @@ def test_listens_survive_the_round_trip_through_the_queue_file() -> None:
     assert Listen.from_dict(listen.to_dict()) == listen
     assert Listen.from_dict({"artist": "A", "title": "", "listened_at": 5}) is None
     assert Listen.from_dict("nonsense") is None
+
+
+def test_time_that_is_not_audible_adds_nothing() -> None:
+    tracker = HeardTracker()
+    tracker.note_title(STATION, "Artist - Song", now=T0)
+    _run(tracker, T0, T0 + 10)
+    for moment in range(int(T0) + 15, int(T0) + 300, 5):
+        assert tracker.tick(STATION, now=moment, behind=None, audible=False).heard == []
+    heard, _ = _run(tracker, T0 + 300, T0 + 340)
+    assert heard == [], "ten seconds before the stop plus forty after is not a minute"
+    heard, _ = _run(tracker, T0 + 345, T0 + 365)
+    assert heard == [Listen("Artist", "Song", int(T0))]

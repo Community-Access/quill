@@ -1884,6 +1884,15 @@ QUILL's Navigate > Code, in QUILL Lite with the same rows, letters and keys (fam
 - **Next / Previous Indent Change** (`cmd_next_indent` Alt+Shift+PageDown, `cmd_previous_indent` Alt+Shift+PageUp): the next line, skipping blanks, indented differently; the depth is announced after the move.
 - **Check This File** (`cmd_check_this_file` Ctrl+Alt+/), **Next Problem** (`cmd_next_problem` Ctrl+Alt+.), **Previous Problem** (`cmd_previous_problem` Ctrl+Alt+,): every problem in a Markdown or HTML document, in the Problems list (`choose_from_rows`) or one at a time with "Problem n of m, line, column, severity: message". Built-in checkers only: QUILL Lite never starts an outside tool. In plain text or rich text it says "Nothing to check: QUILL Lite checks Markdown and HTML documents." QUILL checks the same two languages and many more (rule 10: Lite level with QUILL, not ahead).
 
+## Word Prediction (2026-11-08)
+
+- **Edit > Word Prediction...** (`cmd_word_prediction`, Ctrl+., QUILL's chord by rule 2): QUILL's list from the shared `quill/ui/suggestion_list.py`, through `quill/apps/lite_window_word_prediction.py`. Words from the spelling dictionary and the document, plus Markdown and HTML tags. Up and Down say each suggestion, Enter or Tab replaces only the fragment typed, Escape closes without changing the text; typing with the list open narrows it. Key press only: QUILL Lite has no "as you type" setting, which keeps it level with QUILL rather than ahead. In a code file (by extension) the list is the file's own names with their kinds, from the shared `quill/core/code_names.py`. Language servers (2026-11-08), QUILL's from the shared `quill/ui/language_servers.py`: completions first, problems in Check This File and the pane (code files are checkable when a server reads them; `_problems_can_check`), Quick Fix on a pane row, Navigate > Code > Parameter Hints (`cmd_parameter_hints`) and Language Servers... (`cmd_language_servers`), with QUILL's setting names.
+
+## The Problems pane (2026-11-08)
+
+- **View > Problems > Show Pane** (`cmd_toggle_problems_pane`, no key, as in QUILL, for the reason recorded there): QUILL's pane, from the shared `quill/ui/problems_pane.py` and `quill/ui/problems_commands.py`, docked under the text and above the status bar. The setting is `problems_pane_visible`, QUILL's field name, and applies to every open window through `reapply_settings`.
+- F6 goes from the text to the pane, then to the status bar; F6 in the pane with the bar hidden goes back to the text. Enter goes to a problem (re-checking after an edit), Escape returns and leaves the pane open, and Show and Source narrow the list. While shown, Check This File fills the pane rather than opening `choose_from_rows`. Saving checks again, and so does a pause in typing when the pane's Check after a pause box (`problems_check_after_pause`, QUILL's field, off by default) is checked; only a changed count is said. View > Problems > This File Only / All Open Files (`cmd_problems_this_file`, `cmd_problems_all_files`, QUILL's rows), F in the pane's list, and the pane's Files chooser list every open window's problems (built-in checkers), and Enter on another window's row brings it forward with `focus_frame`. Those switch per window; `problems_all_open_files` (Preferences, `lite_preferences_problems.py`) is the default each window starts from.
+
 ## Word documents and table navigation (2026-10-17)
 
 **One implementation, moved.** QUILL's wx-free Word decisions left
@@ -2292,8 +2301,8 @@ so the two editors cannot do them two ways. The plan of record is
 |---|---|---|
 | File | Open Pro&ject Folder... | `cmd_open_project_folder` |
 | File | Close Projec&t | `cmd_close_project` |
-| Edit > Agent &Work | &Undo Last Agent Turn | `cmd_undo_agent_turn` |
-| Edit > Agent &Work | &Stop Agent | `cmd_stop_agent` |
+| Edit > Agent Wor&k | &Undo Last Agent Turn | `cmd_undo_agent_turn` |
+| Edit > Agent Wor&k | &Stop Agent | `cmd_stop_agent` |
 | View | Agent Task Transcri&pt | `cmd_project_transcript` |
 | View | Agent Command O&utput | `cmd_open_command_output` |
 | Tools | Commands Allowed in This Pro&ject... | `cmd_project_allowed_commands` |

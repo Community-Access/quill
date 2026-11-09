@@ -181,8 +181,15 @@ class HeardTracker:
                 break
         return found
 
-    def tick(self, station_key: str, *, now: float, behind: float | None) -> Tick:
-        """Advance the clock. *behind* is seconds behind live (None means live)."""
+    def tick(
+        self, station_key: str, *, now: float, behind: float | None, audible: bool = True
+    ) -> Tick:
+        """Advance the clock. *behind* is seconds behind live (None means live).
+
+        *audible* is False while the player is stopped, paused or connecting:
+        the clock moves on, but nothing counts as heard, whatever *behind* says
+        (an engine that cannot report it would otherwise look live and moving).
+        """
         result = Tick()
         if station_key != self._station:
             self.reset(station_key)
@@ -192,6 +199,11 @@ class HeardTracker:
         hearing = self._hearing
         if segment is None:
             self._hearing = None
+            return result
+        if not audible:
+            if hearing is not None:
+                hearing.last_wall = now
+                hearing.last_playhead = playhead
             return result
         if hearing is None or hearing.segment is not segment:
             self._hearing = _Hearing(

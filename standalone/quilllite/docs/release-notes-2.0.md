@@ -1,5 +1,51 @@
 # QUILL Lite 2.0
 
+## Your code, understood
+
+QUILL Lite now carries the language servers VS Code uses: HTML, CSS, JSON,
+Markdown, JavaScript, TypeScript and Python. Press **Ctrl+.** in `console.lo`
+and you hear "log, method". Check This File finds the problems a compiler
+would, and does it in code files as well as Markdown and HTML. **Quick
+Fix...** on a problem in the Problems pane fixes it in one step, and
+**Navigate > Code > Parameter Hints** tells you which argument you're on.
+It all comes in the box, it never uses the internet, and **Navigate > Code >
+Language Servers...** switches any of it off.
+
+## A GitHub menu, when you want one
+
+Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a
+**GitHub** menu (Alt+G) joins the menu bar after Tools, with the GitHub rows
+from the File menu in it and rows that open your inbox, your work, your
+notifications, a repository's issues and pull requests, its Actions runs and
+its releases in one step. Turn it off and the rows go back. It's the same menu
+as QUILL's, less the rows only QUILL has. **File > Clone Repository...**
+(Alt+F, then Y) is new too: it copies a repository to your computer, private
+ones included, without writing your token anywhere, and then offers to open a
+file from it.
+
+## Word Prediction knows your code
+
+In a code file, the list offers the file's own names with their kinds, such as
+"count_words, function", instead of dictionary words, and then names from
+the rest of the project.
+
+
+## Word Prediction
+
+Press **Ctrl+.** halfway through a word and QUILL Lite offers a short list of
+words and tags. Up and Down say each one, Enter puts it in, and Escape leaves
+your text alone. It's QUILL's list, on QUILL's key.
+
+
+## A Problems pane that stays open
+
+Turn on **View > Problems > Show Pane** and the problems Check This File finds stay
+under the document while you fix them, in every window. F6 reaches the pane,
+Enter goes to a problem, and Escape comes back without closing it. Saving
+checks again, and so can a pause in typing, and the pane can list every open
+window's problems at once. It's QUILL's pane, shared with
+QUILL.
+
 ## Sign in to GitHub without a token
 
 **File > Manage GitHub Accounts...** (Alt+F, then H) now starts with **Sign In

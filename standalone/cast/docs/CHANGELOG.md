@@ -30,6 +30,13 @@ and speed and reliability.
   Diagnostics for a report to send to support. The report never shows a
   password or token.
 
+### Pictures stay on the internet (2026-11-09)
+
+- **Ask About an Image never fetches a picture from your own network.** A
+  feed chooses its picture addresses, so one pointing at your router, a
+  printer or this computer, or redirecting there, is now refused and nothing
+  is sent.
+
 ### AI menu (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.

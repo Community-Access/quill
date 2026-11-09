@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>IntelliSense on a key press, for QUILL and QUILL Lite</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="intellisense-on-a-key-press-for-quill-and-quill-lite">IntelliSense
+on a key press, for QUILL and QUILL Lite</h1>
+<p>Written 2026-11-08 for Jeff to review. Accepted the same day; being
+built in the phase order below.</p>
+<h2 id="the-short-version">The short version</h2>
+<ul>
+<li>Suggestions appear only when you press the key, never on their own.
+Typing “as you type” stays an opt-in setting, off by default.</li>
+<li>QUILL already has the start of this: <strong>Edit &gt; Word
+Prediction…</strong> on <strong>Ctrl+.</strong> suggests words and
+Markdown or HTML tags. QUILL Lite has nothing yet.</li>
+<li>The plan grows that one command into real code completion in four
+layers, from no new dependencies to optional language servers. Each
+layer only adds better suggestions to the same list on the same
+key.</li>
+<li><strong>The first useful layer needs no new dependency at
+all.</strong> QUILL already ships Pygments, which can split over 500
+languages into names, keywords and strings.</li>
+</ul>
+<h2 id="what-exists-today">What exists today</h2>
+<ul>
+<li><code>quill/core/intellisense.py</code> (135 lines): words from the
+spelling dictionary and the document, plus Markdown and HTML tag
+choices.</li>
+<li><code>quill/ui/main_frame_intellisense.py</code>: the suggestion
+list. <code>_show_intellisense_popup(manual=True)</code> is the
+key-press path.</li>
+<li><code>edit.word_prediction</code> on Ctrl+. (<code>keymap.py</code>
+line 753). It lives in QUILL’s Edit menu.</li>
+<li>The setting <code>intellisense_as_you_type</code>, off by default,
+with a View menu toggle.</li>
+<li>The feature <code>core.intellisense</code> is off in two profiles
+and on but quiet in the rest. In an off profile, Ctrl+. says “Word
+prediction is unavailable in this profile”.</li>
+<li>Pygments (<code>pygments&gt;=2.21.0</code>) is already a dependency,
+used by spell checking to lex code
+(<code>quill/core/spellcheck_lexers.py</code>).</li>
+<li>Navigate &gt; Code and Check This File exist
+(<code>quill/core/problems/</code>), with an allowlist of outside tools
+(<code>CHECKER_TOOLS</code>) that run only if they’re installed.</li>
+</ul>
+<h2 id="do-we-need-a-language-parser">Do we need a language parser?</h2>
+<p>Not to start. It depends how smart the suggestions should be.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What it knows</th>
+<th>New dependency</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Names in this file</td>
+<td>every name, keyword and string in the file, for its language</td>
+<td>none (Pygments is shipped)</td>
+<td>small</td>
+</tr>
+<tr>
+<td>2. Names across the project</td>
+<td>the same across open files and the project folder</td>
+<td>none</td>
+<td>small</td>
+</tr>
+<tr>
+<td>3. Structure</td>
+<td>which names are in scope here, functions and their parameters,
+members after a dot</td>
+<td>tree-sitter and its grammars, or Jedi for Python</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>4. Full language smarts</td>
+<td>types, imports, documentation, signatures, the same as VS Code</td>
+<td>a language server per language</td>
+<td>large</td>
+</tr>
+</tbody>
+</table>
+<h3 id="layer-1-names-in-this-file">Layer 1: names in this file</h3>
+<ul>
+<li>Pygments identifies the language and splits the file into tokens.
+The list offers the names and keywords that start with what you’ve
+typed, nearest first.</li>
+<li>Works for every language Pygments knows, offline and instantly.</li>
+<li>Not smart about scope: it can offer a name that isn’t usable at that
+spot.</li>
+</ul>
+<h3 id="layer-2-names-across-the-project">Layer 2: names across the
+project</h3>
+<ul>
+<li>The same, over open documents and the project folder, with a size
+cap and a background index on the task manager.</li>
+<li>Prefers names from the current file, then from files it imports,
+then the rest.</li>
+</ul>
+<h3 id="layer-3-structure">Layer 3: structure</h3>
+<p>Two candidates, and the plan recommends trying the first:</p>
+<ul>
+<li><strong>tree-sitter</strong> (<code>tree-sitter</code> plus
+<code>tree-sitter-language-pack</code>, both MIT and published as
+Windows wheels). A real parser for about 160 languages. It gives scopes,
+function signatures, members after a dot, and the outline. Roughly 30 to
+60 MB of grammars, which go in the shared runtime under the
+bundle-everything rule. It would also improve Navigate &gt; Code.</li>
+<li><strong>Jedi</strong> (MIT, pure Python, about 5 MB), for Python
+only. It gives real Python completions, signatures and docstrings. Small
+and well proven, but one language.</li>
+</ul>
+<h3 id="layer-4-language-servers">Layer 4: language servers</h3>
+<ul>
+<li>A generic Language Server Protocol client, the protocol VS Code
+uses, talking to servers such as Pyright (Python),
+typescript-language-server (JavaScript and TypeScript), clangd (C and
+C++), rust-analyzer, gopls (Go) and OmniSharp (C#).</li>
+<li>This is the same kind of decision as Check This File’s outside
+tools: a fixed allowlist, run only if installed, through
+<code>safe_subprocess</code>, local only, no network. Widening that
+allowlist needs your approval, as it did on 2026-11-06.</li>
+<li>Correction: the shared runtime does not carry a general Node. The
+Copilot tools it ships are a self-contained bundle. Embedding the
+Microsoft servers below means bundling Node itself, about 30 MB.</li>
+</ul>
+<h3
+id="embedding-the-microsoft-language-tools-as-vs-code-does-jeff-2026-11-08">Embedding
+the Microsoft language tools, as VS Code does (Jeff, 2026-11-08)</h3>
+<p>VS Code’s language smarts come from separate language servers. Some
+are open source and can be embedded; some are licensed only for
+Microsoft’s own products and cannot. To check before bundling: each
+licence below is from memory and must be read from the package
+itself.</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>What VS Code uses</th>
+<th>Can QUILL embed it?</th>
+<th>Instead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JavaScript, TypeScript</td>
+<td>the TypeScript language service (<code>tsserver</code>, in the
+<code>typescript</code> package)</td>
+<td>yes, open source (Apache 2.0)</td>
+<td>wrapped by <code>typescript-language-server</code> (MIT)</td>
+</tr>
+<tr>
+<td>HTML, CSS, JSON, Markdown</td>
+<td>VS Code’s own servers, from the VS Code repository</td>
+<td>yes, open source (MIT), published together as
+<code>vscode-langservers-extracted</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Python</td>
+<td>Pylance</td>
+<td><strong>no</strong>: its licence allows only Microsoft’s VS Code
+products</td>
+<td><strong>Pyright</strong>, the open-source engine inside Pylance
+(MIT)</td>
+</tr>
+<tr>
+<td>C and C++</td>
+<td>the C/C++ extension’s engine</td>
+<td><strong>no</strong>: licensed for VS Code only</td>
+<td><strong>clangd</strong> (LLVM, Apache 2.0)</td>
+</tr>
+<tr>
+<td>C#</td>
+<td>the C# extension and C# Dev Kit</td>
+<td>Dev Kit <strong>no</strong>; the Roslyn language server needs its
+licence checked</td>
+<td>OmniSharp (MIT)</td>
+</tr>
+<tr>
+<td>PowerShell</td>
+<td>PowerShell Editor Services</td>
+<td>yes, open source (MIT); needs PowerShell, which Windows has</td>
+<td></td>
+</tr>
+<tr>
+<td>XML</td>
+<td>Red Hat’s LemMinX</td>
+<td>yes (Eclipse Public License); needs Java or its native build</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What embedding would take:</strong></p>
+<ul>
+<li><strong>A Language Server Protocol client</strong> in
+<code>quill/core</code>, talking over the server’s standard input and
+output, with no network: completions, signature help, hover
+documentation, go to definition and problems.</li>
+<li><strong>Node bundled in the shared runtime,</strong> pinned and
+hash-checked like Pandoc, for TypeScript, the VS Code HTML, CSS, JSON
+and Markdown servers, and Pyright. That’s about 30 MB for Node, plus
+roughly 15 to 40 MB of servers, all to be measured.</li>
+<li><strong>clangd as its own download</strong> (about 30 MB) if C and
+C++ matter. Otherwise it’s run only if it’s installed.</li>
+<li><strong>An allowlist entry for each server,</strong> like Check This
+File’s <code>CHECKER_TOOLS</code>: fixed arguments, run through
+<code>safe_subprocess</code>, local only. You approve the list.</li>
+<li><strong>Licence notices</strong> in
+<code>THIRD-PARTY-NOTICES.txt</code>, and the bundled-component
+inventory.</li>
+<li><strong>The same screen-reader experience as layers 1 to 3,</strong>
+fed by the server: the count, the kind, the signature, documentation in
+the details field, and parameter hints. Problems from the server feed
+Navigate &gt; Code and Check This File.</li>
+<li><strong>Start each server on first use,</strong> not at launch, and
+stop it when the last file of that language closes, so it costs nothing
+until you press Ctrl+..</li>
+</ul>
+<p><strong>Recommendation:</strong> embed in this order: (1) the VS Code
+HTML, CSS, JSON and Markdown servers, which are small, the ones writers
+most use, and the same as VS Code’s; (2) TypeScript and JavaScript; (3)
+Pyright for Python. Use clangd and PowerShell only if they’re installed.
+Never Pylance or the C/C++ extension’s engine.</p>
+<h2 id="how-it-works-for-someone-using-a-screen-reader">How it works for
+someone using a screen reader</h2>
+<ul>
+<li><strong>Press Ctrl+.</strong> In a code file you hear the count and
+the first suggestion with its kind, for example “8 suggestions. count,
+function, 2 parameters.” In prose, it stays word prediction.</li>
+<li><strong>Up and Down</strong> move through the list. Each item says
+its name and kind, and its signature or a one-line description where the
+layer has one. Tab or Enter inserts it. Escape closes the list and
+leaves the text untouched.</li>
+<li><strong>A details field</strong>, reached with a key, holds the full
+documentation for the selected item, where layer 3 or 4 has it.</li>
+<li><strong>Parameter hints on their own key</strong> (proposed
+Ctrl+Shift+. ): inside a call’s brackets, it says which parameter you’re
+on, “parameter 2 of 3, seconds”. This needs layer 3.</li>
+<li><strong>Nothing is announced that the screen reader already
+says</strong> (GATE-13), and everything spoken is also brailled
+(GATE-BRAILLE).</li>
+<li><strong>No sound or speech while typing</strong> unless “as you
+type” is turned on.</li>
+</ul>
+<h2 id="keys">Keys</h2>
+<ul>
+<li><strong>Ctrl+.</strong> stays the one key for suggestions, in both
+editors (rule 2: the command both products have keeps the chord). It’s
+free in QUILL Lite.</li>
+<li><strong>Ctrl+Shift+.</strong> for parameter hints, if it’s free in
+both keymaps. To be checked.</li>
+<li>Ctrl+Space stays with the sentence commands, as
+<code>keymap.py</code> records.</li>
+</ul>
+<h2 id="quill-lite">QUILL Lite</h2>
+<ul>
+<li>The suggestion list moves out of
+<code>main_frame_intellisense.py</code> into a shared module, so both
+editors run one implementation (the way the GitHub account flow was
+shared).</li>
+<li>Lite gets <strong>Edit &gt; Word Prediction…</strong> on Ctrl+.,
+with the same layers, at the same time as QUILL. QUILL Lite may never be
+ahead of QUILL.</li>
+</ul>
+<h2 id="a-problems-pane-in-quill-and-quill-lite-jeff-2026-11-08">A
+Problems pane, in QUILL and QUILL Lite (Jeff, 2026-11-08)</h2>
+<h3 id="what-exists-today-1">What exists today</h3>
+<ul>
+<li>Both editors already share
+<code>quill/ui/problems_commands.py</code>. <strong>Check This
+File</strong> (Ctrl+Alt+/) checks the document and opens a
+<strong>Problems list</strong>, one row per problem with the line and
+column first. <strong>Next Problem</strong> (Ctrl+Alt+.) and
+<strong>Previous Problem</strong> (Ctrl+Alt+,) walk them without the
+list.</li>
+<li>The list is a modal window. It closes when you pick a problem, so it
+can’t stay open while you fix things.</li>
+<li>QUILL already docks a pane below the editor, Reveal Codes
+(<code>quill/ui/reveal_codes_pane.py</code>), and F6 moves between
+regions. That’s the pattern to follow.</li>
+</ul>
+<h3 id="what-the-pane-would-be">What the pane would be</h3>
+<ul>
+<li>A <strong>Problems pane docked below the editor,</strong> like VS
+Code’s, that stays open while you work. It’s a list, one row per
+problem: severity, line and column, the message, and where it came from
+(built-in checker, outside tool, language server, spelling,
+accessibility check).</li>
+<li><strong>F6</strong> reaches it, as it reaches the other regions, and
+<strong>Escape</strong> returns to the editor without closing it. Enter
+on a row goes to that place in the text and puts focus there.</li>
+<li><strong>It updates after each check,</strong> never while you’re
+typing. The checks run when you save, when you ask, or after a pause you
+choose (off by default). When the count changes while you’re in the
+editor, it says one short sentence, such as “3 problems”, and nothing
+more (GATE-13). Always brailled too (GATE-BRAILLE).</li>
+<li><strong>Filters:</strong> errors only, this file or all open files,
+and by source. A filter row heads the pane, so Tab reaches it.</li>
+<li><strong>Every source feeds it:</strong> Check This File’s built-in
+checkers and outside tools today, the language servers in layer 4, and
+in time the accessibility check (GLOW), the Forms check and spelling.
+Each source writes the one problem model,
+<code>quill/core/problems/model.py</code>, so the pane never needs to
+know which tool spoke.</li>
+<li><strong>A context menu on each row:</strong> Go To, Copy Message,
+Explain (the server’s documentation, or the AI if one is chosen) and,
+where a server offers one, Quick Fix.</li>
+<li><strong>Show or hide it</strong> from View &gt; Problems Pane in
+both editors. Ctrl+Shift+M, VS Code’s key, is taken by Set Mark in both
+editors, so the plan proposes no chord at first (rule 9, with a written
+reason), or one checked free in both keymaps.</li>
+<li>The modal Problems list stays for people who prefer it. Check This
+File opens the pane instead when the pane is shown.</li>
+</ul>
+<h3 id="phases">Phases</h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>What ships</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>the pane in both editors over today’s checkers: docked, F6, filters,
+Go To, live count</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>all open files, and checking after a pause (off by default)</td>
+<td>small</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>language server problems and Quick Fix, with layer 4</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>accessibility, Forms and spelling problems in the same pane</td>
+<td>medium</td>
+</tr>
+</tbody>
+</table>
+<p>P1 needs no new dependency and can ship before any of the
+IntelliSense layers.</p>
+<h3 id="decisions">Decisions</h3>
+<ol start="7" type="1">
+<li><strong>Build the pane?</strong> Recommendation: yes, P1 first.</li>
+<li><strong>Its key:</strong> none at first, or a chord checked free in
+both editors? Recommendation: check the free chords, and use View &gt;
+Problems Pane until one is agreed.</li>
+<li><strong>Check after a pause while typing?</strong> Recommendation:
+off by default, a setting to turn on, and never an announcement until
+the count changes.</li>
+</ol>
+<h2 id="phases-1">Phases</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>What ships</th>
+<th>New dependency</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>your decisions below</td>
+<td>none</td>
+<td>small</td>
+</tr>
+<tr>
+<td>1</td>
+<td>the shared list in both editors, Lite gets Ctrl+., key-press only in
+every profile</td>
+<td>none</td>
+<td>small</td>
+</tr>
+<tr>
+<td>2</td>
+<td>layer 1, code names in this file, with kinds announced</td>
+<td>none</td>
+<td>small</td>
+</tr>
+<tr>
+<td>3</td>
+<td>layer 2, project-wide names, background index</td>
+<td>none</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>4</td>
+<td>layer 3, tree-sitter, or Jedi for Python, plus parameter hints</td>
+<td>tree-sitter wheels, or Jedi</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>5</td>
+<td>layer 4, the language server client with a fixed allowlist</td>
+<td>none bundled; servers only if installed</td>
+<td>large</td>
+</tr>
+</tbody>
+</table>
+<p>Each phase is its own PR, with behavioural tests (Lite command
+coverage), the menu and access key gates, F1 help, both user guides and
+the changelogs.</p>
+<h2 id="tests">Tests</h2>
+<ul>
+<li>A corpus of small files per language with the cursor at known spots
+and the expected suggestions.</li>
+<li>Speed budgets: the list appears within 100 ms for layers 1 to 3 on a
+1 MB file, measured the way GATE-PERF measures (never under
+<code>tracemalloc</code>).</li>
+<li>Announcement tests: the count, the first item and kind, and nothing
+repeated.</li>
+<li>Property tests: Escape never changes the text; inserting a
+suggestion replaces only the fragment typed.</li>
+</ul>
+<h2 id="decisions-for-you">Decisions for you</h2>
+<p><strong>Accepted, 2026-11-08.</strong> Jeff accepted every
+recommendation, decisions 1 to 9, in his words: “i agree with all
+assumptions, go and start this as well”. That acceptance also approves
+the layer 4 server allowlist for the named servers only (the VS Code
+HTML, CSS, JSON and Markdown servers, typescript-language-server with
+typescript, and Pyright; clangd and PowerShell Editor Services only if
+already installed). Each network download of Node or a server, and each
+new Python dependency, is still asked about first.</p>
+<p>Measured 2026-11-08: no chord near Ctrl+Shift+M is free in both
+editors, so the Problems pane ships with no chord (rule 9, reason
+recorded in the bound-command gate). Ctrl+Shift+. is taken in both
+editors too, so parameter hints need a different key when phase 4 or the
+servers arrive.</p>
+<ol type="1">
+<li><strong>Key-press only in every profile,</strong> including the two
+where word prediction is off today? Recommendation: yes. A list you have
+to ask for can’t get in anyone’s way.</li>
+<li><strong>How far to go:</strong> stop at layer 2 (no new dependency),
+or continue to layer 3? Recommendation: build phases 1 to 3 now, then
+decide on layer 3 once you’ve used it.</li>
+<li><strong>tree-sitter or Jedi for layer 3?</strong> Recommendation:
+tree-sitter, because it covers every language and also improves Navigate
+&gt; Code, at the cost of 30 to 60 MB in the shared runtime.</li>
+<li><strong>Embed Microsoft’s open-source language servers (layer
+4)?</strong> Recommendation: yes, in the order in the embedding section:
+the VS Code HTML, CSS, JSON and Markdown servers, then TypeScript, then
+Pyright. This means bundling Node (about 30 MB). Never Pylance or the
+C/C++ engine, whose licences forbid it.</li>
+<li><strong>Parameter hints on Ctrl+Shift+.</strong> if it’s free in
+both editors? Recommendation: yes.</li>
+<li><strong>Language servers before or after tree-sitter?</strong>
+Recommendation: servers first for the languages they cover, since
+they’re better than a parser there, and tree-sitter later for the long
+tail of other languages.</li>
+</ol>
+<p><strong>Further decisions, 2026-11-08 (Jeff):</strong> download and
+bundle Node 24.22.1, the servers and ripgrep (“get all language servers
+completed”); TypeScript 6.0.3 with typescript-language-server now,
+TypeScript 7’s native server later (“ok, make it so”); built-in
+quick-fix rules, widened to the common linters’ fixable rules, each
+family switchable (“do what you feel is best”); a formatter: Prettier
+3.9.10 bundled beside the servers, and ruff format, black, clang-format,
+gofmt and rustfmt allowed when installed (“yes”); a way to get each
+unbundled tool from Settings (“provide ways for users to get these tools
+inside of settings”), and rich formatting settings (“make rich settings
+so users can chose”). The switches live in one window, Code Checks and
+Fixes.</p>
+<h2 id="progress">Progress</h2>
+<ul>
+<li>2026-11-08: Problems pane P1 in both editors (PR #1798): docked, F6,
+Show and Source filters, Go To with a re-check after edits, the count
+sentence; no chord (rule 9).</li>
+<li>2026-11-08: Phase 1. The suggestion list moved into
+<code>quill/ui/suggestion_list.py</code>; QUILL’s
+<code>main_frame_intellisense.py</code> is its adapter and QUILL Lite’s
+is <code>quill/apps/lite_window_word_prediction.py</code> (Edit &gt;
+Word Prediction…, Ctrl+.). The key works in every QUILL profile; “as you
+type” stays off by default and still follows the profile.</li>
+<li>2026-11-08: Phase 2, layer 1. <code>quill/core/code_names.py</code>:
+in a code file (any extension Pygments knows, prose excluded) the list
+offers the file’s own names nearest first, with kinds.
+<code>str.find</code> over a lower-cased copy finds the names, a
+definition-word check at each occurrence gives function or class, and
+Pygments reads only 2,500 characters either side of the caret for the
+other kinds. Lexing the whole file was measured at about 1.5 s per 600
+KB, so it is never done. Under 100 ms on 1 MB of QUILL’s own code, best
+of five, in the perf test; one-letter fragments look 100,000 characters
+either side.</li>
+<li>2026-11-08: Problems pane P2, first half. While shown, the pane
+re-checks quietly after a save and, with its Check after a pause box
+(<code>problems_check_after_pause</code>, off by default, both editors),
+after 1.5 s of stillness; only a changed count is said. All open files
+is the second half, still to do.</li>
+<li>2026-11-08: Phase 3, layer 2.
+<code>quill/core/project_names.py</code> indexes the project (nearest
+folder with <code>.git</code>, <code>pyproject.toml</code>,
+<code>package.json</code>, <code>Cargo.toml</code>, <code>go.mod</code>,
+<code>.sln</code> or <code>composer.json</code>, else the document’s
+folder) on the task manager in both editors, with one index per root
+shared by every window. Caps: 5,000 files, 1 MB a file, 40 MB in all;
+dependency, build and hidden folders skipped. Ranking after this file’s
+names: same case, then names from imported files, then defined names. On
+this machine the walk of <code>quill/core</code> (1,773 files) took
+about 25 s, almost all of it in <code>open()</code> (antivirus); that is
+the case for ripgrep in the layer 4 phase.</li>
+<li>2026-11-08: Problems pane P2, second half. The Files chooser (this
+file, All open files) lists every open document’s problems through
+<code>combine_reports</code>, the others checked with the built-in
+checkers only; Enter on another document brings it forward. P2 is
+complete.</li>
+<li>2026-11-08: Layer 4, the language servers, in both editors:
+<code>quill/core/lsp/</code> and
+<code>quill/ui/language_servers.py</code>; completions, problems, Quick
+Fix, Parameter Hints, the Language Servers window; Node, the servers,
+Prettier and ripgrep bundled (measured: Node 90 MB, the servers and
+Prettier 135 MB with source maps dropped, ripgrep 4 MB). A fake-server
+suite runs everywhere; the <code>lsp</code>-marked real-server corpus
+passes against the staged servers. Found while building: a server that
+offers pull diagnostics with an empty options object was being treated
+as not offering them (fixed), and a just-opened file answers its first
+completion empty while the server reads it (one retry after a
+second).</li>
+</ul>
+<h2 id="remaining-tasks">Remaining tasks</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Problems pane P3 and P4 (P1 is PR
+#1798, P2 PRs #1804 and this one).</label></li>
+<li><label><input type="checkbox" />The Roslyn language server for C#:
+its licence still to be read; OmniSharp is the MIT
+alternative.</label></li>
+<li><label><input type="checkbox" />Layer 4 phase: bundle ripgrep
+(<code>rg.exe</code>, about 5 MB) beside Node in the shared runtime,
+pinned and SHA-256 checked like Pandoc. Read its licence (MIT or
+Unlicense) from the release first, record it in THIRD-PARTY-NOTICES and
+the component inventory, and add a network-audit note that it is local
+only. Layer 2’s project index uses it when present and falls back to the
+pure-Python walk. Ask Jeff before the first download (parent session,
+2026-11-08, with Jeff’s go-ahead).</label></li>
+<li><label><input type="checkbox" />Try TypeScript 7’s native language
+server in place of typescript-language-server (no tsserver in
+7).</label></li>
+<li><label><input type="checkbox" />Built-in quick-fix rules, Format
+Document (Prettier and installed formatters), Get It for unbundled
+tools, rich formatting settings, and the Code Checks and Fixes
+window.</label></li>
+<li><label><input type="checkbox" />A CI job that fetches the pinned
+servers and runs the <code>lsp</code> corpus (ask Jeff: it changes
+CI).</label></li>
+<li><label><input type="checkbox" />Measure the tree-sitter grammar size
+for the languages we care about, before phase 4.</label></li>
+<li><label><input type="checkbox" />Screen-reader checks with JAWS and
+NVDA for each phase, added to
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</label></li>
+</ul>
+</main>
+</body>
+</html>

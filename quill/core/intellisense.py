@@ -133,3 +133,60 @@ def build_intellisense_suggestions(
 
 def _is_word_character(character: str) -> bool:
     return character.isalpha() or character == "'"
+
+
+def extract_code_context(text: str, cursor: int) -> IntellisenseContext | None:
+    """The identifier being typed in code: letters, digits and underscores."""
+    if cursor < 0 or cursor > len(text):
+        return None
+    start = cursor
+    while start > 0 and (text[start - 1].isalnum() or text[start - 1] == "_"):
+        start -= 1
+    fragment = text[start:cursor]
+    if not fragment or fragment[0].isdigit():
+        return None
+    return IntellisenseContext(
+        replacement_start=start, replacement_end=cursor, fragment=fragment, mode="code"
+    )
+
+
+def build_code_suggestions(
+    text: str, cursor: int, alias: str, *, limit: int = 8
+) -> tuple[IntellisenseContext | None, list[IntellisenseSuggestion]]:
+    """Layer 1: the file's own names for the identifier under the caret.
+
+    Each suggestion's ``kind`` is the code kind ("function", "keyword"...),
+    which :func:`spoken_suggestion` says after the name.
+    """
+    from quill.core.code_names import complete_code_names
+
+    context = extract_code_context(text, cursor)
+    if context is None:
+        return None, []
+    names = complete_code_names(text, cursor, context.fragment, alias, limit=limit)
+    return context, [
+        IntellisenseSuggestion(
+            label=item.name, inserted_text=item.name, caret_offset=len(item.name), kind=item.kind
+        )
+        for item in names
+    ]
+
+
+def spoken_suggestion(suggestion: IntellisenseSuggestion) -> str:
+    """What is said for one row: the name, then its kind when it is code."""
+    from quill.core.code_names import CODE_KINDS
+
+    if suggestion.kind in CODE_KINDS:
+        return f"{suggestion.label}, {suggestion.kind}"
+    return suggestion.label
+
+
+def suggestions_status(suggestions: list[IntellisenseSuggestion]) -> str:
+    """What is said when the list opens: the count, then the first row."""
+    from quill.core.code_names import CODE_KINDS
+
+    first = suggestions[0]
+    if first.kind in CODE_KINDS:
+        noun = "suggestion" if len(suggestions) == 1 else "suggestions"
+        return f"{len(suggestions)} {noun}. {spoken_suggestion(first)}"
+    return f"{len(suggestions)} prediction(s). {first.label}"

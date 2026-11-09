@@ -34,6 +34,8 @@ import wx
 
 from quill.apps.lite_github_accounts import GitHubAccountsLiteMixin  # Manage GitHub Accounts
 from quill.apps.lite_github_open import GitHubFileOpenMixin  # GitHub Workbench's Open in Editor
+from quill.apps.lite_github_workbench import GitHubWorkbenchLiteMixin  # the Workbench and mode
+from quill.core.github import workbench_menu
 from quill.core.speakable import speakable_controls
 
 __all__ = ["NO_DOCUMENT_COMMANDS", "ShellMenuMixin"]
@@ -53,7 +55,19 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
     "cmd_preferences",
     "cmd_keyboard_manager",
     "cmd_github_workbench",
+    "cmd_github_clone",
     "cmd_github_manage_accounts",
+    # View: an empty window in workbench mode is a GitHub launcher with
+    # nothing to write in (quill/core/github/workbench_menu.py).
+    "cmd_toggle_github_workbench",
+    # GitHub, while the mode is on.
+    "cmd_github_inbox",
+    "cmd_github_my_work",
+    "cmd_github_notifications",
+    "cmd_github_issues",
+    "cmd_github_actions_runs",
+    "cmd_github_releases",
+    "cmd_github_explore",
     "cmd_sound_scheme",
     "cmd_backup_settings",
     "cmd_restore_settings",
@@ -75,7 +89,7 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
 _SHELL_OWN = frozenset({"cmd_open"})
 
 
-class ShellMenuMixin(GitHubFileOpenMixin, GitHubAccountsLiteMixin):
+class ShellMenuMixin(GitHubFileOpenMixin, GitHubAccountsLiteMixin, GitHubWorkbenchLiteMixin):
     """The empty-window bar, and the few attributes its borrowed handlers read."""
 
     app: Any
@@ -118,8 +132,9 @@ class ShellMenuMixin(GitHubFileOpenMixin, GitHubAccountsLiteMixin):
         # Defaults for a host still being built (or a test's bare one): every
         # area on and the shipped keys, which is what a new install has anyway.
         is_enabled = getattr(self.app, "feature_enabled", lambda _area: True)
-        for path, label, key, handler, kind in resolved_commands(
-            is_enabled, getattr(self.app, "keymap", None)
+        for path, label, key, handler, kind in workbench_menu.lite_arrange(
+            resolved_commands(is_enabled, getattr(self.app, "keymap", None)),
+            workbench=self._github_workbench_mode,
         ):
             if SUBMENU_SEP in path:
                 continue
@@ -136,7 +151,13 @@ class ShellMenuMixin(GitHubFileOpenMixin, GitHubAccountsLiteMixin):
             elif pending_separator.get(path):
                 menu.AppendSeparator()
             pending_separator[path] = False
-            item = menu.Append(wx.ID_ANY, f"{label}\t{key}" if key else label)
+            if kind == "check":
+                item = menu.AppendCheckItem(wx.ID_ANY, f"{label}\t{key}" if key else label)
+                item.Check(
+                    handler == workbench_menu.TOGGLE_LITE_HANDLER and self._github_workbench_mode
+                )
+            else:
+                item = menu.Append(wx.ID_ANY, f"{label}\t{key}" if key else label)
             self.Bind(wx.EVT_MENU, lambda _e, h=handler: self.run_shell_command(h), item)  # type: ignore[attr-defined]
         for path in order:
             menu_bar.Append(menus[path], path)
@@ -172,6 +193,10 @@ class ShellMenuMixin(GitHubFileOpenMixin, GitHubAccountsLiteMixin):
             self._build_placeholder_menu()
         except RuntimeError:
             pass  # the shell is on its way out
+
+    def rebuild_workbench_menus(self) -> None:
+        """GitHub Workbench Mode changed in the empty window: its bar again."""
+        self.rebuild_empty_menu()
 
     def run_shell_command(self, handler: str) -> None:
         """Run *handler* with no document open."""

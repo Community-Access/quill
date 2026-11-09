@@ -78,6 +78,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+F** | Search in Files... |
 | **Ctrl+Shift+R** | Replace Across Files... |
 | **Ctrl+G** | Go To... |
+| **Ctrl+.** | Word Prediction... |
 | **Ctrl+Shift+C** | Describe Character |
 | **Ctrl+Alt+C** | Character Details... |
 

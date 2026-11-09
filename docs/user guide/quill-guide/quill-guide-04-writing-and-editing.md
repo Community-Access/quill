@@ -78,7 +78,15 @@ After those come the commands that know about selection and position:
 - **Find in Open Documents...**, **Search in Files...** and **Replace Across
   Files...**, the three searches that reach beyond this document (Chapter 6
   covers them).
-- **Word Prediction...** opens inline word and tag suggestions (`Ctrl+.`).
+- **Word Prediction...** opens a list of word and tag suggestions (`Ctrl+.`).
+  You hear how many there are and the first one. Up and Down say each one,
+  Enter or Tab puts it in place of the part of the word you'd typed, and
+  Escape closes the list without touching your text. It works in every
+  profile. **Toggle Word Prediction As You Type**, in the Command Palette
+  (Ctrl+Shift+P), opens the list on its own after two letters; that one is
+  off unless you turn it on, and a profile can switch it off. In a code file
+  the list offers the file's own names, each said with its kind, such as
+  "count_words, function" (see the Developer Guide, chapter 11).
 - **Extend Selection Mode** turns selection growth into a mode of its own.
 - The **Selection** submenu: Select Word, Select Line, Select Paragraph,
   Select Block, Select to Start or End of Line, Select to Start or End of

@@ -6,7 +6,7 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 ## QUILL
 
-51 commands can be asked for in a sentence here.
+52 commands can be asked for in a sentence here.
 
 ### QUILL: Edit
 
@@ -86,6 +86,8 @@ Each command has a name, its key when it has one, what it does, and some of the 
   Say: "go to the next bookmark"; "jump to my next bookmark"; "next bookmark please".
 - **Next Heading (Ctrl+Alt+H).** Move to the next heading.
   Say: "go to the next heading"; "jump to the next section"; "next heading please".
+- **Parameter Hints.** Say which argument of the call at the cursor you are on, and its signature.
+  Say: "which parameter am I on"; "what arguments does this take"; "say the signature".
 - **Previous Heading (Ctrl+Alt+Shift+H).** Move to the previous heading.
   Say: "go back a heading"; "jump to the previous section"; "previous heading please".
 - **Say Time and Date (Alt+Shift+Space).** Say the time and the date.
@@ -141,6 +143,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Copy to the Next Tray Slot: Edit, Copy Tray.
 - Dark Mode: View, Dark Mode.
 - Exit: File, Exit.
+- Language Servers: Navigate, Code, Language Servers.
 - Open a Web Address: File, Open a Web Address.
 - Preferences Hub: Tools, Preferences Hub.
 - Replace All: Edit, Replace.
@@ -156,7 +159,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## QUILL Lite
 
-42 commands can be asked for in a sentence here.
+43 commands can be asked for in a sentence here.
 
 ### QUILL Lite: Edit
 
@@ -228,6 +231,8 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "go to the next bookmark"; "jump to my next bookmark"; "next bookmark please".
 - **Next Heading (Ctrl+Alt+H).** Move to the next heading.
   Say: "go to the next heading"; "jump to the next section"; "next heading please".
+- **Parameter Hints.** Say which argument of the call at the cursor you are on, and its signature.
+  Say: "which parameter am I on"; "what arguments does this take"; "say the signature".
 - **Previous Heading (Ctrl+Alt+Shift+H).** Move to the previous heading.
   Say: "go back a heading"; "jump to the previous section"; "previous heading please".
 - **Say Time and Date (Alt+Shift+Space).** Say the time and the date.
@@ -271,6 +276,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Copy to the Next Tray Slot: Edit, Copy Tray.
 - Dark Mode: View, Dark Mode.
 - Exit: File, Exit.
+- Language Servers: Navigate, Code, Language Servers.
 - Open a Web Address: File, Open a Web Address.
 - Say or Type a Command: F11.
 - Settings: Tools, Settings.

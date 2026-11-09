@@ -283,10 +283,7 @@ class Settings(DictationSettings):
     #: library becomes what its help text has always claimed it was; off, only
     #: Keep Clip puts anything in it.
     #:
-    #: Deliberately the same field name QUILL uses, so the grow-up path has one
-    #: fewer row to map (bad.md G1). QUILL Lite promised this history from 1.0
-    #: and never implemented it -- the capture method was written and called
-    #: from nowhere (bad.md C1).
+    #: QUILL's field name (bad.md G1); promised since 1.0, wired in bad.md C1.
     clip_library_autocapture: bool = False
     #: QUILL's setting and default; the rule is quill/core/clipboard_collector.py.
     clipboard_collector_saves: bool = True
@@ -297,9 +294,7 @@ class Settings(DictationSettings):
     #: per repeat floods the reader, and a listener who hits that has no way to
     #: ask for less short of switching speech off entirely (bad.md A5). The
     #: status bar is written whatever this says: the throttle drops the *speech*
-    #: and never the record.
-    #:
-    #: QUILL's own field name, so the grow-up path has one fewer row to map (G1).
+    #: and never the record. QUILL's own field name (G1).
     announcement_throttle_ms: int = 0
     # -- Printing ------------------------------------------------------------
     # Page Setup was in memory only, so paper size, orientation and all four
@@ -315,11 +310,16 @@ class Settings(DictationSettings):
     print_landscape: bool = False
     #: Left, top, right and bottom margins, in millimetres.
     print_margins_mm: list[int] = field(default_factory=lambda: [15, 15, 15, 15])
-    #: Whether the status bar is on screen at all. Notepad's View menu has had
-    #: this checkbox since Windows 95 and QUILL Lite had no answer to it: the bar
-    #: was always there. Per app rather than per document, because it is a
-    #: statement about how you want to work rather than about a file.
+    #: The status bar on screen at all (Notepad's View menu); per app, not per document.
     show_status_bar: bool = True
+    problems_pane_visible: bool = False  # View > Problems, its pane box: QUILL's names
+    problems_check_after_pause: bool = False
+    problems_all_open_files: bool = False
+    language_servers_enabled: bool = True  # Navigate > Code > Language Servers
+    language_servers_off: list[str] = field(default_factory=list)
+    language_server_completions: bool = True
+    language_server_problems: bool = True
+    parameter_hints_as_you_type: bool = False
     #: Check spelling as you type. On, but never in a source or configuration
     #: file: the per-document default comes from the extension
     #: (quill.core.spellcheck_filetypes), and this is the answer for everything

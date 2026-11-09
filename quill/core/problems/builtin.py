@@ -41,6 +41,8 @@ def check_json(text: str, _path: Path | None = None) -> list[Problem]:
         json.loads(text)
     except json.JSONDecodeError as error:
         return [Problem(error.lineno, error.colno, "error", error.msg, "JSON")]
+    except (RecursionError, MemoryError):
+        return [Problem(1, 1, "warning", "Nested too deeply to check", "JSON")]
     return []
 
 
@@ -72,6 +74,8 @@ def check_jsonc(text: str, _path: Path | None = None) -> list[Problem]:
         json.loads(strip_jsonc(text))
     except json.JSONDecodeError as error:
         return [Problem(error.lineno, error.colno, "error", error.msg, "JSONC")]
+    except (RecursionError, MemoryError):
+        return [Problem(1, 1, "warning", "Nested too deeply to check", "JSONC")]
     return []
 
 
@@ -253,6 +257,8 @@ def check_python(text: str, path: Path | None = None) -> list[Problem]:
             )
         except ValueError as error:  # a NUL byte in the source
             problems.append(Problem(1, 1, "error", str(error), "Python"))
+        except (RecursionError, MemoryError):
+            problems.append(Problem(1, 1, "warning", "Nested too deeply to check", "Python"))
     for item in caught:
         if issubclass(item.category, SyntaxWarning | DeprecationWarning):
             problems.append(
@@ -380,15 +386,25 @@ def check_markdown(text: str, path: Path | None = None) -> list[Problem]:
 
 
 def _broken_relative(target: str, path: Path | None) -> str:
-    if path is None or target.startswith(("#", "/", "<")) or _SCHEME.match(target):
+    """The relative link target that names no file beside the document, or "".
+
+    Only plain relative paths are looked at. A UNC path (``\\\\host\\share``,
+    ``//host/share``), a drive path or anything with a scheme is skipped: asking
+    Windows whether ``\\\\host\\share\\f`` exists makes it connect to that host,
+    which sends the user's credentials and can hang the window.
+    """
+    if path is None or target.startswith(("#", "/", "<", "\\")) or _SCHEME.match(target):
         return ""
     local = target.split("#", 1)[0].split("?", 1)[0]
-    if not local:
+    if not local or Path(local).is_absolute() or Path(local).drive:
         return ""
     from urllib.parse import unquote
 
+    decoded = unquote(local)
+    if decoded.startswith(("\\", "/")) or Path(decoded).is_absolute() or Path(decoded).drive:
+        return ""  # %5C%5Chost decodes to a UNC path: never touched either
     try:
-        exists = (path.parent / unquote(local)).exists()
+        exists = (path.parent / decoded).exists()
     except OSError:
         return ""
     return "" if exists else local

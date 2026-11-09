@@ -153,3 +153,75 @@ def test_the_branch_and_search_reach_existing_profiles() -> None:
     assert ("iprd", "networks") in search_sources.INTRODUCED_BY_EPOCH.values()
     assert search_sources.SEARCH_SOURCES_EPOCH == max(search_sources.INTRODUCED_BY_EPOCH)
     assert dict(browse_sources.ROOT_SOURCES)["iprd"] == "IPRD (Public Radio Directory)"
+
+
+def test_a_slow_fetch_never_stalls_a_reader_that_has_a_copy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import time
+
+    rows = iprd.catalog()
+    monkeypatch.setattr(iprd, "_memo", (time.monotonic() - 10_000, rows))
+    assert iprd._fetch_lock.acquire(blocking=False), "as if another folder were fetching"
+    try:
+        started = time.monotonic()
+        assert iprd.catalog() == rows, "the older copy, at once"
+        assert time.monotonic() - started < 1.0
+    finally:
+        iprd._fetch_lock.release()
+
+
+def test_callers_waiting_on_a_failed_fetch_do_not_each_fetch_again(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import threading
+
+    calls: list[int] = []
+    started = threading.Event()
+    gate = threading.Event()
+
+    def slow_and_down(key, fetch, **kw):
+        calls.append(1)
+        started.set()
+        gate.wait(5)
+        return kw["empty"], None
+
+    monkeypatch.setattr(directory_cache, "resolve", slow_and_down)
+    results: list[object] = []
+    first = threading.Thread(target=lambda: results.append(iprd.catalog()))
+    first.start()
+    assert started.wait(5)
+    second = threading.Thread(target=lambda: results.append(iprd.catalog()))
+    second.start()
+    second.join(0.2)
+    gate.set()
+    first.join(5)
+    second.join(5)
+    assert results == [[], []]
+    assert len(calls) == 1, "the waiter shared the outcome instead of a second 30 s wait"
+
+
+def test_a_packed_catalogue_is_inflated_only_up_to_the_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import gzip
+
+    monkeypatch.setattr(iprd, "_MAX_BYTES", 1000)
+    assert iprd._inflate(gzip.compress(b"x" * 1000)) == b"x" * 1000
+    with pytest.raises(iprd.IprdError):
+        iprd._inflate(gzip.compress(b"x" * 100_000))
+
+
+def test_odd_bitrates_and_shapes_are_skipped_not_raised() -> None:
+    payload = {
+        "stations": [
+            {**_station(1), "streams": [{"url": "https://a.example/1", "bitrate": float("inf")}]},
+            {**_station(2), "streams": [{"url": "https://a.example/2", "bitrate": float("nan")}]},
+            {**_station(3), "streams": [{"url": "https://a.example/3", "bitrate": "128"}]},
+            {**_station(4), "streams": 7, "genres": 3},
+            {**_station(5), "genres": 9},
+        ]
+    }
+    rows = iprd.trim_catalog(payload)
+    assert [row[5] for row in rows] == [0, 0, 0, 128]
+    assert rows[-1][3] == []

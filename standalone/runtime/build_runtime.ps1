@@ -134,10 +134,17 @@ if ($LASTEXITCODE -ne 0) { throw "enchant payload prune failed (see above)." }
 # signed binaries, copied unmodified (scripts\code_signing.py skips them).
 & $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only copilot --only codex
 if ($LASTEXITCODE -ne 0) { throw "Could not stage the AI engines (see scripts/fetch_build_deps.py)." }
+# IntelliSense layer 4: Node, the language servers and ripgrep, in every shared
+# runtime so no app downloads a server on first use (docs\design\intellisense.md).
+& $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only nodejs --only language-servers --only ripgrep
+if ($LASTEXITCODE -ne 0) { throw "Could not stage the language servers (see scripts/fetch_language_servers.py)." }
 . (Join-Path $quillRepo "scripts\StageMediaTools.ps1")
 Stage-QuillMediaTools -RuntimeDist $dist `
     -CopilotDir (Join-Path $quillRepo "build\deps\copilot") `
-    -CodexDir (Join-Path $quillRepo "build\deps\codex")
+    -CodexDir (Join-Path $quillRepo "build\deps\codex") `
+    -NodeDir (Join-Path $quillRepo "build\deps\nodejs") `
+    -LanguageServersDir (Join-Path $quillRepo "build\deps\language-servers") `
+    -RipgrepDir (Join-Path $quillRepo "build\deps\ripgrep")
 
 
 # -- stamp the version marker (installer's skip-if-present check reads this) ---

@@ -75,6 +75,7 @@ class ConverterAuphonicMixin(ConverterAuphonicHistoryMixin):
             "Checking the files for Auphonic",
             lambda _progress: inspect_files(paths),
             self._auphonic_inspected,
+            exclusive=True,
         )
 
     def _auphonic_inspected(self, inspected: Any) -> None:

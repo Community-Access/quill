@@ -35,6 +35,19 @@ _log = logging.getLogger(__name__)
 #: How often the clock is read while a song is followed.
 TICK_MS = 5000
 
+#: A send whose answer never came back (the task was dropped or cancelled) is
+#: given up after this long, so scrobbling does not stop for the session.
+SEND_STALE_SECONDS = 300.0
+
+
+@dataclass(slots=True)
+class _InFlight:
+    """Songs handed to a send; ``queued`` is set by the worker once on disk."""
+
+    songs: list[tuple[str, Listen]]
+    started: float
+    queued: bool = False
+
 
 @dataclass(slots=True)
 class ScrobbleState:
@@ -43,6 +56,8 @@ class ScrobbleState:
     accounts: scrobbling.Accounts
     timer: Any = None
     sending: bool = False
+    #: The send in progress, so a dropped one can give its songs back.
+    in_flight: _InFlight | None = None
     #: Songs heard but not yet written to the queue (the worker writes them).
     fresh: list[tuple[str, Listen]] = field(default_factory=list)
     #: Services whose sign-in problem has been said this session.
@@ -102,6 +117,14 @@ def _station(host: Any) -> Any:
 
 def _station_key(station: Any) -> str:
     return str(getattr(station, "station_uuid", "") or getattr(station, "stream_url", "") or "")
+
+
+def _audible(host: Any) -> bool:
+    """Only PLAYING is heard: stopped, paused or connecting time never counts."""
+    from quill.ui.radio.playback_state import RadioPlayerState
+
+    controller = getattr(host, "_radio_controller", None)
+    return getattr(getattr(controller, "state", None), "state", None) is RadioPlayerState.PLAYING
 
 
 def _behind(host: Any) -> float | None:
@@ -168,7 +191,9 @@ def tick(host: Any, *, now: float | None = None) -> None:
         _stop_timer(found)
         return
     moment = time.time() if now is None else now
-    result = found.tracker.tick(_station_key(station), now=moment, behind=_behind(host))
+    result = found.tracker.tick(
+        _station_key(station), now=moment, behind=_behind(host), audible=_audible(host)
+    )
     for listen in result.heard:
         for service in found.accounts.services():
             found.fresh.append((service, listen))
@@ -187,15 +212,31 @@ def _send_now_playing(host: Any, found: ScrobbleState, listen: Listen) -> None:
     def _work(**_kwargs: Any) -> None:
         scrobbling.send_now_playing(accounts, listen, safe_mode=safe_mode)
 
-    tasks.submit(
-        "radio-scrobble-now-playing",
-        _work,
-        on_success=lambda *_a: None,
-        on_failure=lambda *_a: None,
-    )
+    try:
+        tasks.submit(
+            "radio-scrobble-now-playing",
+            _work,
+            on_success=lambda *_a: None,
+            on_failure=lambda *_a: None,
+        )
+    except Exception:  # noqa: BLE001 - "now playing" is a courtesy, never retried
+        _log.debug("Could not start a now-playing send", exc_info=True)
+
+
+def _give_back(found: ScrobbleState) -> None:
+    """A send that will never answer: its unqueued songs go back to ``fresh``."""
+    flight = found.in_flight
+    found.in_flight = None
+    found.sending = False
+    if flight is not None and not flight.queued:
+        found.fresh = flight.songs + found.fresh
 
 
 def _send_due(host: Any, found: ScrobbleState, *, now: float) -> None:
+    flight = found.in_flight
+    if found.sending and flight is not None and now - flight.started >= SEND_STALE_SECONDS:
+        _log.debug("A scrobble send never answered; trying again")
+        _give_back(found)
     if found.sending:
         return
     services = found.accounts.services()
@@ -207,6 +248,7 @@ def _send_due(host: Any, found: ScrobbleState, *, now: float) -> None:
         return
     found.fresh = []
     found.sending = True
+    flight = found.in_flight = _InFlight(fresh, now)
     accounts = found.accounts
     safe_mode = bool(getattr(host, "_safe_mode", False))
 
@@ -214,20 +256,30 @@ def _send_due(host: Any, found: ScrobbleState, *, now: float) -> None:
         # Queued here, on the worker, so the file write never touches the UI thread.
         for service, listen in fresh:
             found.queue.add(service, listen)
+        flight.queued = True
         return scrobbling.submit_due(found.queue, accounts, now=now, safe_mode=safe_mode)
 
     def _done(_op: str, results: Any) -> None:
-        host._wx.CallAfter(_after_send, host, found, list(results or []))
+        host._wx.CallAfter(_after_send, host, found, list(results or []), flight)
 
     def _failed(*_args: Any) -> None:
-        host._wx.CallAfter(_after_send, host, found, [])
+        host._wx.CallAfter(_after_send, host, found, [], flight)
 
-    tasks.submit("radio-scrobble-send", _work, on_success=_done, on_failure=_failed)
+    try:
+        tasks.submit("radio-scrobble-send", _work, on_success=_done, on_failure=_failed)
+    except Exception:  # noqa: BLE001 - a pool shutting down; the songs wait
+        _log.debug("Could not start a scrobble send", exc_info=True)
+        _give_back(found)
 
 
-def _after_send(host: Any, found: ScrobbleState, results: list[Any]) -> None:
+def _after_send(
+    host: Any, found: ScrobbleState, results: list[Any], flight: _InFlight | None = None
+) -> None:
     """Back on the UI thread: say a lost sign-in once, and nothing else."""
-    found.sending = False
+    if flight is None or found.in_flight is flight:
+        # A send already given up as stale must not end the one after it.
+        found.sending = False
+        found.in_flight = None
     for service, outcome in results:
         if outcome.kind != SIGN_IN or service in found.warned:
             continue
@@ -238,4 +290,32 @@ def _after_send(host: Any, found: ScrobbleState, results: list[Any]) -> None:
         host._announce(f"Scrobbling: {detail} The songs wait until then.")
 
 
-__all__ = ["TICK_MS", "ScrobbleState", "on_title", "refresh_accounts", "state", "tick"]
+def shutdown(host: Any) -> None:
+    """Closing: stop the clock, and keep the songs heard but not yet queued.
+
+    Called before the task manager stops. A song still in ``fresh`` (or in a
+    send that never started its work) is written to the queue here, so it is
+    sent at the next launch rather than lost.
+    """
+    found = getattr(host, "_radio_scrobble", None)
+    if found is None:
+        return
+    _stop_timer(found)
+    flight = found.in_flight
+    songs = list(found.fresh)
+    if flight is not None and not flight.queued:
+        songs = flight.songs + songs
+    found.fresh = []
+    for service, listen in songs:
+        found.queue.add(service, listen)
+
+
+__all__ = [
+    "TICK_MS",
+    "ScrobbleState",
+    "on_title",
+    "refresh_accounts",
+    "shutdown",
+    "state",
+    "tick",
+]

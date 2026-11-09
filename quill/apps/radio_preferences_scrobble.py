@@ -226,6 +226,10 @@ class ScrobbleRows:
         index = min(max(0, int(choice_index)), len(recognition.SERVICE_CHOICES) - 1)
         history.recognition_service = recognition.SERVICE_CHOICES[index][0]
         lb_token, key, secret, audd_token = (text.strip() for text in texts)
+        # A session belongs to the key pair that asked for it. Compared with the
+        # store, not with the dialog's opening values: a sign-in made from these
+        # boxes has already saved its pair there, and keeps its session.
+        stale = lastfm.app_credentials(key, secret) != lastfm.stored_app_credentials()
         failed = False
         for target, new, old in (
             (radio_credentials.LISTENBRAINZ_TOKEN, lb_token, self._before["lb"]),
@@ -236,6 +240,10 @@ class ScrobbleRows:
                 failed = True
         if audd_token != self._before["audd"] and not audd.save_token(audd_token):
             failed = True
+        for service in (lastfm.LASTFM, lastfm.LIBREFM) if stale else ():
+            if radio_credentials.load(service.session_target).secret:
+                radio_credentials.save(service.session_target, "")
+                said.append(f"The key changed, so sign in to {service.name} again.")
         if failed:
             said.append("A token could not be saved on this computer.")
         if lb_on and not lb_token:
