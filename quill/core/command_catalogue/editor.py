@@ -64,7 +64,7 @@ _REVIEWED: tuple[CommandSpec, ...] = (
     CommandSpec(
         "verbosity.toggle_quiet",
         "Quiet Mode",
-        "Talk less, or talk as usual again",
+        "Make QUILL say less as you work, or talk as usual again",
         aliases=("quiet mode", "talk less", "less chatty"),
         examples=("talk less", "be less chatty", "turn quiet mode on"),
         risk=_S,
@@ -126,7 +126,7 @@ _REVIEWED: tuple[CommandSpec, ...] = (
     CommandSpec(
         "format.grow_font",
         "Bigger Text",
-        "Make the selected text bigger",
+        "Make the selected text's font bigger in the document itself",
         aliases=("bigger", "grow font", "larger text"),
         examples=("make the text bigger", "bigger font", "increase the font size"),
         risk=_S,
@@ -137,7 +137,7 @@ _REVIEWED: tuple[CommandSpec, ...] = (
     CommandSpec(
         "format.shrink_font",
         "Smaller Text",
-        "Make the selected text smaller",
+        "Make the selected text's font smaller in the document itself",
         aliases=("smaller", "shrink font", "smaller text"),
         examples=("make the text smaller", "smaller font", "decrease the font size"),
         risk=_S,
@@ -210,7 +210,7 @@ _REVIEWED: tuple[CommandSpec, ...] = (
     CommandSpec(
         "file.save_as",
         "Save As",
-        "Save this document under a new name",
+        "Save a copy of this document under a new name or in another place",
         aliases=("duplicate", "save copy", "save under a new name"),
         examples=("save this under a new name", "save a copy", "save it somewhere else"),
         risk=_S,
@@ -230,7 +230,7 @@ _REVIEWED: tuple[CommandSpec, ...] = (
     CommandSpec(
         "view.text_size_up",
         "Zoom In",
-        "Show the text larger on screen",
+        "Magnify the view on screen, without changing the document",
         aliases=("zoom in", "larger on screen"),
         examples=("zoom in", "make it larger on screen", "magnify the text"),
         risk=_S,
@@ -241,7 +241,7 @@ _REVIEWED: tuple[CommandSpec, ...] = (
     CommandSpec(
         "view.text_size_down",
         "Zoom Out",
-        "Show the text smaller on screen",
+        "Make the view on screen smaller, without changing the document",
         aliases=("zoom out", "smaller on screen"),
         examples=("zoom out", "make it smaller on screen", "less magnified"),
         risk=_S,
@@ -291,7 +291,7 @@ _REVIEWED: tuple[CommandSpec, ...] = (
     CommandSpec(
         "tools.word_summary",
         "Word Summary",
-        "Count the words, sentences and paragraphs",
+        "The full statistics: words, sentences, paragraphs and more",
         aliases=("word summary", "document statistics"),
         examples=(
             "give me the word summary",

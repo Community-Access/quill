@@ -40,7 +40,7 @@ __all__ = [
 #: The pinned model (7.6). A new version runs the recorded suite before this moves.
 JEV_MODEL = "jev-1.14.0"
 #: The catalogue version the gateway's copy of the descriptions is keyed by.
-CATALOGUE_VERSION = "2026-11-08"
+CATALOGUE_VERSION = "2026-11-09"
 #: At most this many candidates go in one choice (Jev allows 255; 7.4).
 MAX_CANDIDATES = 60
 MAX_REQUEST_CHARS = 300

@@ -39,12 +39,12 @@ Each command has a name, its key when it has one, what it does, and some of the 
   Say: "save this"; "save my document"; "keep my changes".
 - **Save All.** Save every open document.
   Say: "save all my documents"; "save every file"; "save everything that is open".
-- **Save As (Ctrl+Shift+S).** Save this document under a new name.
+- **Save As (Ctrl+Shift+S).** Save a copy of this document under a new name or in another place.
   Say: "save this under a new name"; "save a copy"; "save it somewhere else".
 
 ### QUILL: Format
 
-- **Bigger Text (Ctrl+Shift+.).** Make the selected text bigger.
+- **Bigger Text (Ctrl+Shift+.).** Make the selected text's font bigger in the document itself.
   Say: "make the text bigger"; "bigger font"; "increase the font size".
 - **Bold (Ctrl+B).** Make the selected text bold (rich documents only).
   Say: "make this bold"; "bold the selection"; "put it in bold".
@@ -58,7 +58,7 @@ Each command has a name, its key when it has one, what it does, and some of the 
   Say: "start a numbered list"; "make a list with numbers"; "number these lines".
 - **Sentence Case (Ctrl+Alt+Shift+U).** Capitalise only the first word of each sentence.
   Say: "make this sentence case"; "fix the capitals like a sentence"; "sentence case please".
-- **Smaller Text (Ctrl+Shift+,).** Make the selected text smaller.
+- **Smaller Text (Ctrl+Shift+,).** Make the selected text's font smaller in the document itself.
   Say: "make the text smaller"; "smaller font"; "decrease the font size".
 - **Title Case (Ctrl+Shift+T).** Capitalise each main word of the selection.
   Say: "make this title case"; "capitalise each word"; "turn it into a title".
@@ -107,11 +107,11 @@ Each command has a name, its key when it has one, what it does, and some of the 
   Say: "turn the sounds off"; "stop the beeps"; "sounds back on".
 - **Spelling (F7).** Check the spelling of the document.
   Say: "check my spelling"; "run the spell checker"; "are there any spelling mistakes".
-- **Stop Reading Aloud (Ctrl+Shift+Grave, Shift+R).** Stop reading aloud.
+- **Stop Reading Aloud (Ctrl+Shift+Grave, Shift+R).** Stop reading the document aloud.
   Say: "stop reading to me"; "stop reading aloud"; "that is enough reading".
-- **Word Count (Ctrl+Shift+G).** How many words the document has.
+- **Word Count (Ctrl+Shift+G).** Say how many words the document has.
   Say: "how many words is this"; "how long is this document"; "count the words".
-- **Word Summary (Ctrl+Alt+Shift+[).** Count the words, sentences and paragraphs.
+- **Word Summary (Ctrl+Alt+Shift+[).** The full statistics: words, sentences, paragraphs and more.
   Say: "give me the word summary"; "how many sentences are there"; "document statistics".
 
 ### QUILL: View
@@ -122,15 +122,15 @@ Each command has a name, its key when it has one, what it does, and some of the 
   Say: "I'm in a meeting"; "turn meeting mode on"; "meeting mode off".
 - **Normal Zoom (Ctrl+0).** Show the text at its normal size on screen.
   Say: "reset the zoom"; "back to normal size"; "normal zoom please".
-- **Quiet Mode (Ctrl+Shift+Grave, Shift+Q).** Talk less, or talk as usual again.
+- **Quiet Mode (Ctrl+Shift+Grave, Shift+Q).** Make QUILL say less as you work, or talk as usual again.
   Say: "talk less"; "be less chatty"; "turn quiet mode on".
 - **Say Headings As I Move (Ctrl+Alt+F3).** Say each heading you move onto, or stop.
   Say: "tell me the headings as I move"; "stop announcing headings"; "announce headings".
 - **Word Wrap (Alt+Z).** Wrap long lines to the window, or stop wrapping.
   Say: "turn word wrap on"; "stop wrapping lines"; "wrap the long lines".
-- **Zoom In (Ctrl+=).** Show the text larger on screen.
+- **Zoom In (Ctrl+=).** Magnify the view on screen, without changing the document.
   Say: "zoom in"; "make it larger on screen"; "magnify the text".
-- **Zoom Out (Ctrl+-).** Show the text smaller on screen.
+- **Zoom Out (Ctrl+-).** Make the view on screen smaller, without changing the document.
   Say: "zoom out"; "make it smaller on screen"; "less magnified".
 
 ### QUILL: only from its menu or key
@@ -188,12 +188,12 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "open my last document"; "show my recent files"; "what was I working on".
 - **Save (Ctrl+S).** Save this document.
   Say: "save this"; "save my document"; "keep my changes".
-- **Save As (Ctrl+Shift+S).** Save this document under a new name.
+- **Save As (Ctrl+Shift+S).** Save a copy of this document under a new name or in another place.
   Say: "save this under a new name"; "save a copy"; "save it somewhere else".
 
 ### QUILL Lite: Format
 
-- **Bigger Text (Ctrl+Shift+.).** Make the selected text bigger.
+- **Bigger Text (Ctrl+Shift+.).** Make the selected text's font bigger in the document itself.
   Say: "make the text bigger"; "bigger font"; "increase the font size".
 - **Bold (Ctrl+B).** Make the selected text bold (rich documents only).
   Say: "make this bold"; "bold the selection"; "put it in bold".
@@ -203,7 +203,7 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "make this lower case"; "no capitals in this bit"; "change it to small letters".
 - **Sentence Case (Ctrl+Alt+Shift+U).** Capitalise only the first word of each sentence.
   Say: "make this sentence case"; "fix the capitals like a sentence"; "sentence case please".
-- **Smaller Text (Ctrl+Shift+,).** Make the selected text smaller.
+- **Smaller Text (Ctrl+Shift+,).** Make the selected text's font smaller in the document itself.
   Say: "make the text smaller"; "smaller font"; "decrease the font size".
 - **Title Case (Ctrl+Shift+T).** Capitalise each main word of the selection.
   Say: "make this title case"; "capitalise each word"; "turn it into a title".
@@ -248,9 +248,9 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "turn the sounds off"; "stop the beeps"; "sounds back on".
 - **Spelling (F7).** Check the spelling of the document.
   Say: "check my spelling"; "run the spell checker"; "are there any spelling mistakes".
-- **Word Count (Ctrl+Shift+G).** How many words the document has.
+- **Word Count (Ctrl+Shift+G).** Say how many words the document has.
   Say: "how many words is this"; "how long is this document"; "count the words".
-- **Word Summary (Ctrl+Alt+Shift+[).** Count the words, sentences and paragraphs.
+- **Word Summary (Ctrl+Alt+Shift+[).** The full statistics: words, sentences, paragraphs and more.
   Say: "give me the word summary"; "how many sentences are there"; "document statistics".
 
 ### QUILL Lite: View
@@ -263,9 +263,9 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "tell me the headings as I move"; "stop announcing headings"; "announce headings".
 - **Word Wrap (Alt+Z).** Wrap long lines to the window, or stop wrapping.
   Say: "turn word wrap on"; "stop wrapping lines"; "wrap the long lines".
-- **Zoom In (Ctrl+=).** Show the text larger on screen.
+- **Zoom In (Ctrl+=).** Magnify the view on screen, without changing the document.
   Say: "zoom in"; "make it larger on screen"; "magnify the text".
-- **Zoom Out (Ctrl+-).** Show the text smaller on screen.
+- **Zoom Out (Ctrl+-).** Make the view on screen smaller, without changing the document.
   Say: "zoom out"; "make it smaller on screen"; "less magnified".
 
 ### QUILL Lite: only from its menu or key
@@ -292,7 +292,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ### Quill Radio: Favourites
 
-- **Favourite This Station (Ctrl+Shift+F).** Add the station on air to your favourites, or take it off.
+- **Favourite This Station (Ctrl+Shift+F).** Save the station on air to your favourites list, or take it off.
   Say: "add this station to my favourites"; "make this a favourite"; "take this off my favourites".
 - **Play a Favourite (Alt+Shift+F).** Play one of your favourite stations, by number or by name.
   Say: "play favourite 3"; "play my first favourite"; "put on a favourite station".
@@ -320,9 +320,9 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ### Quill Radio: Recording
 
-- **Record a Station (Ctrl+Alt+R).** Record a station you choose. It asks before it does it.
+- **Record a Station (Ctrl+Alt+R).** Set up a recording of a station you pick from a list. It asks before it does it.
   Say: "record a station"; "record the jazz station"; "set up a recording".
-- **Record or Stop Recording (Ctrl+R).** Record what is playing, or stop recording it. It asks before it does it.
+- **Record or Stop Recording (Ctrl+R).** Record what is playing now, or stop recording it. It asks before it does it.
   Say: "record this"; "start recording"; "stop the recording".
 - **Recordings (Ctrl+Shift+R).** Show your recordings.
   Say: "show my recordings"; "open the recordings"; "where are my recordings".
@@ -339,7 +339,7 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "tell me each song title"; "stop announcing the songs"; "announce titles".
 - **Song History (Ctrl+Shift+H).** List the songs that played earlier.
   Say: "what played earlier"; "show the song history"; "what was the last song".
-- **What's Playing (Ctrl+T).** Say what is on the air now.
+- **What's Playing (Ctrl+T).** Say the song and station playing right now.
   Say: "what's playing"; "what station is this"; "tell me what is on".
 
 ### Quill Radio: Stations
@@ -348,12 +348,12 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "browse the stations"; "find me a station"; "show me the stations".
 - **Find Streams on a Website (Ctrl+Alt+S).** Find the radio streams on a web page.
   Say: "find the streams on a website"; "get a station from a web page"; "look for streams on a site".
-- **On Now (Ctrl+Alt+H).** What is on the stations right now.
+- **On Now (Ctrl+Alt+H).** Show the programme schedule: the shows on the stations now and later.
   Say: "what's on right now"; "show what is on now"; "what programmes are on".
 
 ### Quill Radio: Timers
 
-- **Sleep Timer (Ctrl+Shift+Z).** Stop the radio after a while.
+- **Sleep Timer (Ctrl+Shift+Z).** Stop the radio after a set time, such as in half an hour.
   Say: "sleep in 20 minutes"; "stop playing in an hour"; "set a sleep timer".
 - **Wake Timer (Ctrl+Alt+Z).** Start the radio at a time you choose.
   Say: "wake me at 7"; "set a wake timer"; "start the radio in the morning".
@@ -362,7 +362,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 - **Mute (Ctrl+M).** Mute the radio, or unmute it.
   Say: "mute the radio"; "unmute it"; "silence it for a moment".
-- **Volume Boost (Ctrl+Shift+B).** Boost a quiet station, or stop boosting.
+- **Volume Boost (Ctrl+Shift+B).** Make a quiet station louder than full volume allows, or stop boosting.
   Say: "boost this quiet station"; "turn the boost on"; "stop boosting the volume".
 - **Volume Down (Ctrl+Down).** Make the radio quieter.
   Say: "turn it down a bit"; "much quieter"; "it's too loud".

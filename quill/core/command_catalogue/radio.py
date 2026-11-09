@@ -67,7 +67,7 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "radio.toggle_playing_favorite",
         "Favourite This Station",
-        "Add the station on air to your favourites, or take it off",
+        "Save the station on air to your favourites list, or take it off",
         aliases=(
             "add to favourites",
             "add to favorites",
@@ -128,7 +128,7 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "radio.volume_boost",
         "Volume Boost",
-        "Boost a quiet station, or stop boosting",
+        "Make a quiet station louder than full volume allows, or stop boosting",
         aliases=("boost", "volume boost", "boost the volume"),
         examples=("boost this quiet station", "turn the boost on", "stop boosting the volume"),
         risk=_S,
@@ -186,7 +186,7 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "radio.whats_playing_details",
         "What's Playing",
-        "Say what is on the air now",
+        "Say the song and station playing right now",
         # Not "what's on": that is On Now, the schedule.
         aliases=("whats playing", "what is playing", "now playing", "what's this"),
         examples=("what's playing", "what station is this", "tell me what is on"),
@@ -247,7 +247,7 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "radio.on_now",
         "On Now",
-        "What is on the stations right now",
+        "Show the programme schedule: the shows on the stations now and later",
         aliases=("on now", "whats on now", "schedule"),
         examples=("what's on right now", "show what is on now", "what programmes are on"),
         risk=_S,
@@ -258,7 +258,7 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "radio.record_station",
         "Record a Station",
-        "Record a station you choose",
+        "Set up a recording of a station you pick from a list",
         aliases=("record a station", "record station"),
         examples=("record a station", "record the jazz station", "set up a recording"),
         risk=_C,
@@ -269,7 +269,7 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "radio.record_toggle",
         "Record or Stop Recording",
-        "Record what is playing, or stop recording it",
+        "Record what is playing now, or stop recording it",
         aliases=("record", "start recording", "stop recording", "record this"),
         examples=("record this", "start recording", "stop the recording"),
         risk=_C,
@@ -315,7 +315,7 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
         "media.sleep_timer",
         "Sleep Timer",
-        "Stop the radio after a while",
+        "Stop the radio after a set time, such as in half an hour",
         aliases=("sleep timer", "sleep", "turn off later"),
         examples=("sleep in 20 minutes", "stop playing in an hour", "set a sleep timer"),
         args=(Arg("duration", ArgKind.DURATION),),

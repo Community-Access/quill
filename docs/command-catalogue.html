@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>What you can say in each app</title>
   <style>
@@ -11,10 +11,7 @@
     */
     html {
       color: #1a1a1a;
-      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
-      background-color: light-dark(#fdfdfd, #1a1a1a);
-      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -39,16 +36,12 @@
     }
     @media print {
       html {
-        color-scheme: light only;
+        background-color: white;
       }
-      html, body, pre, code {
+      body {
         background-color: transparent;
-      }
-      body, a, a:visited, blockquote {
         color: black;
-      }
-      pre, code {
-        padding: 0;
+        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -61,8 +54,11 @@
     p {
       margin: 1em 0;
     }
-    a, a:visited {
-      color: inherit;
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
     }
     img {
       max-width: 100%;
@@ -91,11 +87,8 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid;
-      border-color: #e6e6e6;
-      border-color: light-dark(#e6e6e6, #4c4c4c);
+      border-left: 2px solid #e6e6e6;
       color: #606060;
-      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -119,7 +112,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -136,11 +129,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid currentColor;
-      border-bottom: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
     }
     th {
-      border-top: 1px solid currentColor;
+      border-top: 1px solid #1a1a1a;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -179,6 +172,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -291,15 +285,15 @@ had open recently. Say: “open my last document”; “show my recent files”;
 this”; “save my document”; “keep my changes”.</li>
 <li><strong>Save All.</strong> Save every open document. Say: “save all
 my documents”; “save every file”; “save everything that is open”.</li>
-<li><strong>Save As (Ctrl+Shift+S).</strong> Save this document under a
-new name. Say: “save this under a new name”; “save a copy”; “save it
-somewhere else”.</li>
+<li><strong>Save As (Ctrl+Shift+S).</strong> Save a copy of this
+document under a new name or in another place. Say: “save this under a
+new name”; “save a copy”; “save it somewhere else”.</li>
 </ul>
 <h3 id="quill-format">QUILL: Format</h3>
 <ul>
-<li><strong>Bigger Text (Ctrl+Shift+.).</strong> Make the selected text
-bigger. Say: “make the text bigger”; “bigger font”; “increase the font
-size”.</li>
+<li><strong>Bigger Text (Ctrl+Shift+.).</strong> Make the selected
+text’s font bigger in the document itself. Say: “make the text bigger”;
+“bigger font”; “increase the font size”.</li>
 <li><strong>Bold (Ctrl+B).</strong> Make the selected text bold (rich
 documents only). Say: “make this bold”; “bold the selection”; “put it in
 bold”.</li>
@@ -316,9 +310,9 @@ numbered list”; “make a list with numbers”; “number these lines”.</li>
 <li><strong>Sentence Case (Ctrl+Alt+Shift+U).</strong> Capitalise only
 the first word of each sentence. Say: “make this sentence case”; “fix
 the capitals like a sentence”; “sentence case please”.</li>
-<li><strong>Smaller Text (Ctrl+Shift+,).</strong> Make the selected text
-smaller. Say: “make the text smaller”; “smaller font”; “decrease the
-font size”.</li>
+<li><strong>Smaller Text (Ctrl+Shift+,).</strong> Make the selected
+text’s font smaller in the document itself. Say: “make the text
+smaller”; “smaller font”; “decrease the font size”.</li>
 <li><strong>Title Case (Ctrl+Shift+T).</strong> Capitalise each main
 word of the selection. Say: “make this title case”; “capitalise each
 word”; “turn it into a title”.</li>
@@ -385,14 +379,15 @@ on”.</li>
 Say: “check my spelling”; “run the spell checker”; “are there any
 spelling mistakes”.</li>
 <li><strong>Stop Reading Aloud (Ctrl+Shift+Grave, Shift+R).</strong>
-Stop reading aloud. Say: “stop reading to me”; “stop reading aloud”;
-“that is enough reading”.</li>
-<li><strong>Word Count (Ctrl+Shift+G).</strong> How many words the
+Stop reading the document aloud. Say: “stop reading to me”; “stop
+reading aloud”; “that is enough reading”.</li>
+<li><strong>Word Count (Ctrl+Shift+G).</strong> Say how many words the
 document has. Say: “how many words is this”; “how long is this
 document”; “count the words”.</li>
-<li><strong>Word Summary (Ctrl+Alt+Shift+[).</strong> Count the words,
-sentences and paragraphs. Say: “give me the word summary”; “how many
-sentences are there”; “document statistics”.</li>
+<li><strong>Word Summary (Ctrl+Alt+Shift+[).</strong> The full
+statistics: words, sentences, paragraphs and more. Say: “give me the
+word summary”; “how many sentences are there”; “document
+statistics”.</li>
 </ul>
 <h3 id="quill-view">QUILL: View</h3>
 <ul>
@@ -405,19 +400,21 @@ mode on”; “meeting mode off”.</li>
 <li><strong>Normal Zoom (Ctrl+0).</strong> Show the text at its normal
 size on screen. Say: “reset the zoom”; “back to normal size”; “normal
 zoom please”.</li>
-<li><strong>Quiet Mode (Ctrl+Shift+Grave, Shift+Q).</strong> Talk less,
-or talk as usual again. Say: “talk less”; “be less chatty”; “turn quiet
-mode on”.</li>
+<li><strong>Quiet Mode (Ctrl+Shift+Grave, Shift+Q).</strong> Make QUILL
+say less as you work, or talk as usual again. Say: “talk less”; “be less
+chatty”; “turn quiet mode on”.</li>
 <li><strong>Say Headings As I Move (Ctrl+Alt+F3).</strong> Say each
 heading you move onto, or stop. Say: “tell me the headings as I move”;
 “stop announcing headings”; “announce headings”.</li>
 <li><strong>Word Wrap (Alt+Z).</strong> Wrap long lines to the window,
 or stop wrapping. Say: “turn word wrap on”; “stop wrapping lines”; “wrap
 the long lines”.</li>
-<li><strong>Zoom In (Ctrl+=).</strong> Show the text larger on screen.
-Say: “zoom in”; “make it larger on screen”; “magnify the text”.</li>
-<li><strong>Zoom Out (Ctrl+-).</strong> Show the text smaller on screen.
-Say: “zoom out”; “make it smaller on screen”; “less magnified”.</li>
+<li><strong>Zoom In (Ctrl+=).</strong> Magnify the view on screen,
+without changing the document. Say: “zoom in”; “make it larger on
+screen”; “magnify the text”.</li>
+<li><strong>Zoom Out (Ctrl+-).</strong> Make the view on screen smaller,
+without changing the document. Say: “zoom out”; “make it smaller on
+screen”; “less magnified”.</li>
 </ul>
 <h3 id="quill-only-from-its-menu-or-key">QUILL: only from its menu or
 key</h3>
@@ -481,15 +478,15 @@ had open recently. Say: “open my last document”; “show my recent files”;
 “what was I working on”.</li>
 <li><strong>Save (Ctrl+S).</strong> Save this document. Say: “save
 this”; “save my document”; “keep my changes”.</li>
-<li><strong>Save As (Ctrl+Shift+S).</strong> Save this document under a
-new name. Say: “save this under a new name”; “save a copy”; “save it
-somewhere else”.</li>
+<li><strong>Save As (Ctrl+Shift+S).</strong> Save a copy of this
+document under a new name or in another place. Say: “save this under a
+new name”; “save a copy”; “save it somewhere else”.</li>
 </ul>
 <h3 id="quill-lite-format">QUILL Lite: Format</h3>
 <ul>
-<li><strong>Bigger Text (Ctrl+Shift+.).</strong> Make the selected text
-bigger. Say: “make the text bigger”; “bigger font”; “increase the font
-size”.</li>
+<li><strong>Bigger Text (Ctrl+Shift+.).</strong> Make the selected
+text’s font bigger in the document itself. Say: “make the text bigger”;
+“bigger font”; “increase the font size”.</li>
 <li><strong>Bold (Ctrl+B).</strong> Make the selected text bold (rich
 documents only). Say: “make this bold”; “bold the selection”; “put it in
 bold”.</li>
@@ -502,9 +499,9 @@ small letters. Say: “make this lower case”; “no capitals in this bit”;
 <li><strong>Sentence Case (Ctrl+Alt+Shift+U).</strong> Capitalise only
 the first word of each sentence. Say: “make this sentence case”; “fix
 the capitals like a sentence”; “sentence case please”.</li>
-<li><strong>Smaller Text (Ctrl+Shift+,).</strong> Make the selected text
-smaller. Say: “make the text smaller”; “smaller font”; “decrease the
-font size”.</li>
+<li><strong>Smaller Text (Ctrl+Shift+,).</strong> Make the selected
+text’s font smaller in the document itself. Say: “make the text
+smaller”; “smaller font”; “decrease the font size”.</li>
 <li><strong>Title Case (Ctrl+Shift+T).</strong> Capitalise each main
 word of the selection. Say: “make this title case”; “capitalise each
 word”; “turn it into a title”.</li>
@@ -564,12 +561,13 @@ on”.</li>
 <li><strong>Spelling (F7).</strong> Check the spelling of the document.
 Say: “check my spelling”; “run the spell checker”; “are there any
 spelling mistakes”.</li>
-<li><strong>Word Count (Ctrl+Shift+G).</strong> How many words the
+<li><strong>Word Count (Ctrl+Shift+G).</strong> Say how many words the
 document has. Say: “how many words is this”; “how long is this
 document”; “count the words”.</li>
-<li><strong>Word Summary (Ctrl+Alt+Shift+[).</strong> Count the words,
-sentences and paragraphs. Say: “give me the word summary”; “how many
-sentences are there”; “document statistics”.</li>
+<li><strong>Word Summary (Ctrl+Alt+Shift+[).</strong> The full
+statistics: words, sentences, paragraphs and more. Say: “give me the
+word summary”; “how many sentences are there”; “document
+statistics”.</li>
 </ul>
 <h3 id="quill-lite-view">QUILL Lite: View</h3>
 <ul>
@@ -585,10 +583,12 @@ heading you move onto, or stop. Say: “tell me the headings as I move”;
 <li><strong>Word Wrap (Alt+Z).</strong> Wrap long lines to the window,
 or stop wrapping. Say: “turn word wrap on”; “stop wrapping lines”; “wrap
 the long lines”.</li>
-<li><strong>Zoom In (Ctrl+=).</strong> Show the text larger on screen.
-Say: “zoom in”; “make it larger on screen”; “magnify the text”.</li>
-<li><strong>Zoom Out (Ctrl+-).</strong> Show the text smaller on screen.
-Say: “zoom out”; “make it smaller on screen”; “less magnified”.</li>
+<li><strong>Zoom In (Ctrl+=).</strong> Magnify the view on screen,
+without changing the document. Say: “zoom in”; “make it larger on
+screen”; “magnify the text”.</li>
+<li><strong>Zoom Out (Ctrl+-).</strong> Make the view on screen smaller,
+without changing the document. Say: “zoom out”; “make it smaller on
+screen”; “less magnified”.</li>
 </ul>
 <h3 id="quill-lite-only-from-its-menu-or-key">QUILL Lite: only from its
 menu or key</h3>
@@ -614,8 +614,8 @@ key.</p>
 </ul>
 <h3 id="quill-radio-favourites">Quill Radio: Favourites</h3>
 <ul>
-<li><strong>Favourite This Station (Ctrl+Shift+F).</strong> Add the
-station on air to your favourites, or take it off. Say: “add this
+<li><strong>Favourite This Station (Ctrl+Shift+F).</strong> Save the
+station on air to your favourites list, or take it off. Say: “add this
 station to my favourites”; “make this a favourite”; “take this off my
 favourites”.</li>
 <li><strong>Play a Favourite (Alt+Shift+F).</strong> Play one of your
@@ -649,12 +649,13 @@ radio”; “turn the radio off”; “stop playing”.</li>
 </ul>
 <h3 id="quill-radio-recording">Quill Radio: Recording</h3>
 <ul>
-<li><strong>Record a Station (Ctrl+Alt+R).</strong> Record a station you
-choose. It asks before it does it. Say: “record a station”; “record the
-jazz station”; “set up a recording”.</li>
+<li><strong>Record a Station (Ctrl+Alt+R).</strong> Set up a recording
+of a station you pick from a list. It asks before it does it. Say:
+“record a station”; “record the jazz station”; “set up a
+recording”.</li>
 <li><strong>Record or Stop Recording (Ctrl+R).</strong> Record what is
-playing, or stop recording it. It asks before it does it. Say: “record
-this”; “start recording”; “stop the recording”.</li>
+playing now, or stop recording it. It asks before it does it. Say:
+“record this”; “start recording”; “stop the recording”.</li>
 <li><strong>Recordings (Ctrl+Shift+R).</strong> Show your recordings.
 Say: “show my recordings”; “open the recordings”; “where are my
 recordings”.</li>
@@ -675,9 +676,9 @@ announcing the songs”; “announce titles”.</li>
 <li><strong>Song History (Ctrl+Shift+H).</strong> List the songs that
 played earlier. Say: “what played earlier”; “show the song history”;
 “what was the last song”.</li>
-<li><strong>What’s Playing (Ctrl+T).</strong> Say what is on the air
-now. Say: “what’s playing”; “what station is this”; “tell me what is
-on”.</li>
+<li><strong>What’s Playing (Ctrl+T).</strong> Say the song and station
+playing right now. Say: “what’s playing”; “what station is this”; “tell
+me what is on”.</li>
 </ul>
 <h3 id="quill-radio-stations">Quill Radio: Stations</h3>
 <ul>
@@ -687,15 +688,15 @@ the stations”.</li>
 <li><strong>Find Streams on a Website (Ctrl+Alt+S).</strong> Find the
 radio streams on a web page. Say: “find the streams on a website”; “get
 a station from a web page”; “look for streams on a site”.</li>
-<li><strong>On Now (Ctrl+Alt+H).</strong> What is on the stations right
-now. Say: “what’s on right now”; “show what is on now”; “what programmes
-are on”.</li>
+<li><strong>On Now (Ctrl+Alt+H).</strong> Show the programme schedule:
+the shows on the stations now and later. Say: “what’s on right now”;
+“show what is on now”; “what programmes are on”.</li>
 </ul>
 <h3 id="quill-radio-timers">Quill Radio: Timers</h3>
 <ul>
 <li><strong>Sleep Timer (Ctrl+Shift+Z).</strong> Stop the radio after a
-while. Say: “sleep in 20 minutes”; “stop playing in an hour”; “set a
-sleep timer”.</li>
+set time, such as in half an hour. Say: “sleep in 20 minutes”; “stop
+playing in an hour”; “set a sleep timer”.</li>
 <li><strong>Wake Timer (Ctrl+Alt+Z).</strong> Start the radio at a time
 you choose. Say: “wake me at 7”; “set a wake timer”; “start the radio in
 the morning”.</li>
@@ -704,9 +705,9 @@ the morning”.</li>
 <ul>
 <li><strong>Mute (Ctrl+M).</strong> Mute the radio, or unmute it. Say:
 “mute the radio”; “unmute it”; “silence it for a moment”.</li>
-<li><strong>Volume Boost (Ctrl+Shift+B).</strong> Boost a quiet station,
-or stop boosting. Say: “boost this quiet station”; “turn the boost on”;
-“stop boosting the volume”.</li>
+<li><strong>Volume Boost (Ctrl+Shift+B).</strong> Make a quiet station
+louder than full volume allows, or stop boosting. Say: “boost this quiet
+station”; “turn the boost on”; “stop boosting the volume”.</li>
 <li><strong>Volume Down (Ctrl+Down).</strong> Make the radio quieter.
 Say: “turn it down a bit”; “much quieter”; “it’s too loud”.</li>
 <li><strong>Volume Up (Ctrl+Up).</strong> Make the radio louder. Say:
