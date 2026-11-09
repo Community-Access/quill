@@ -201,6 +201,7 @@
   "podcast_check_interrupt_speech": "grandfathered",
   "podcast_check_interval_minutes": "grandfathered",
   "preview_browser": "documented",
+  "problems_all_open_files": "documented",
   "problems_check_after_pause": "documented",
   "problems_pane_visible": "documented",
   "pronunciation_enabled": "grandfathered",

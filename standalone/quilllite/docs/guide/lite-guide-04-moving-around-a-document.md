@@ -464,7 +464,7 @@ They go round from the last to the first, and check the document again first
 if you have changed it.
 
 If you'd rather keep the problems in front of you while you fix them, turn on
-**View > Problems Pane** (Alt+V, then P). It sits under the document, above
+**View > Problems > Show Pane** (Alt+V, P, S). It sits under the document, above
 the status bar, in every window you have open, and QUILL Lite remembers
 whether it's on. Turning it on checks the document and says what it found.
 While it's on, Check This File fills the pane instead of opening the list.
@@ -476,7 +476,11 @@ While it's on, Check This File fills the pane instead of opening the list.
 - **Escape** takes you back to the document and leaves the pane open.
 - If you've changed the document since the check, Enter checks it again and
   goes to the same problem where it is now, or tells you it's gone.
-- **Files** picks this document or **All open files**. With all open files,
+- **F** in the pane's list switches between this document and all open
+  files. **View > Problems > This File Only** (Alt+V, P, T) or **All Open
+  Files** (Alt+V, P, A), and the pane's **Files** chooser, do the same. These
+  switch for now; which one each window starts with is **Problems pane
+  lists all open files at first**, in Preferences. With all open files,
   each row starts with the document's name, and Enter on one brings that
   window to the front with the caret on the problem.
 - **Shift+Tab** from the list reaches **Show** (all problems, errors and

@@ -15,7 +15,7 @@ What a listener gets, and why:
   list, moving the caret and saying the problem's number, place and message --
   which the screen reader cannot know. They check again first whenever the
   text has changed since the last check, so the line numbers are never stale.
-* **View > Problems Pane** docks the same problems below the editor, where they
+* **View > Problems > Show Pane** docks the same problems below the editor, where they
   stay while you work (:mod:`quill.ui.problems_pane`). While it is shown, Check
   This File fills it instead of opening the modal list, and every check keeps
   it current. F6 reaches it; Escape comes back. While it is shown, saving
@@ -68,6 +68,8 @@ class ProblemsCommandsMixin:
     _problems_last_auto_changed: bool = False
     # The pane's Files chooser, and, in All open files, what each row is.
     _problems_all_files: bool = False
+    #: True once this window has shown the pane or been told which files to list.
+    _problems_files_chosen: bool = False
     _problems_pane_origins: list[tuple[object, Problem]] | None = None
 
     # -- the commands ------------------------------------------------------- #
@@ -84,8 +86,8 @@ class ProblemsCommandsMixin:
 
     # -- what happens with a report ----------------------------------------- #
 
-    def _toggle_problems_pane(self) -> None:
-        """View > Problems Pane: show or hide it, and check the file on showing."""
+    def _toggle_problems_pane(self, *, keep_files: bool = False) -> None:
+        """View > Problems > Show Pane: show or hide it, and check the file on showing."""
         pane = self._problems_pane(create=True)
         if pane is None:
             return
@@ -99,9 +101,20 @@ class ProblemsCommandsMixin:
         if not self._problems_can_check():
             self._problems_say("Problems pane shown")
             return
-        self._run_problem_check(
-            lambda report: self._problems_say(f"Problems pane shown. {summarize(report)}")
-        )
+        if not keep_files and not self._problems_files_chosen:
+            # The first showing in this window starts from the default.
+            self._problems_all_files = self._problems_all_files_setting()
+        self._problems_files_chosen = True
+        pane.set_all_files(self._problems_all_files)
+        self._problems_mark_all_files(self._problems_all_files)
+
+        def shown(report: CheckReport) -> None:
+            if self._problems_all_files:
+                self._problems_say(f"Problems pane shown, all open files. {pane.count_sentence()}")
+            else:
+                self._problems_say(f"Problems pane shown. {summarize(report)}")
+
+        self._run_problem_check(shown)
 
     def _problems_pane_go_to(self, index: int) -> None:
         """Enter on a pane row: the caret to that problem, focus to the editor."""
@@ -184,9 +197,40 @@ class ProblemsCommandsMixin:
                 parts.append((document.key, document.name, report))
         return combine_reports(parts)
 
+    def _problems_choose_files(self, all_files: bool) -> None:
+        """View > Problems > This File Only / All Open Files.
+
+        The menu's way to the pane's Files chooser, and the easy one: it also
+        shows the pane when it is hidden, because choosing what the pane lists
+        and then not seeing it would be a command that did nothing you can hear.
+        """
+        pane = self._problems_pane(create=True)
+        if pane is None:
+            return
+        pane.set_all_files(all_files)
+        if not pane.is_shown():
+            self._problems_all_files = all_files
+            self._problems_mark_all_files(all_files)
+            self._toggle_problems_pane(keep_files=True)
+            return
+        self._problems_set_all_files(all_files)
+
+    def _problems_switch_files(self) -> None:
+        """F in the pane's list: this file, all open files, and back."""
+        self._problems_choose_files(not self._problems_all_files)
+
     def _problems_set_all_files(self, all_files: bool) -> None:
-        """The pane's Files chooser: refill, and say the new count."""
+        """The pane's Files chooser: refill, and say the new count.
+
+        A switch for now, not a new default: the default is the
+        ``problems_all_open_files`` setting, which each window starts from.
+        """
         self._problems_all_files = all_files
+        self._problems_files_chosen = True
+        self._problems_mark_all_files(all_files)
+        pane = self._problems_pane(create=False)
+        if pane is not None:
+            pane.set_all_files(all_files)
         report = self._problems_report
         if report is None:
             if self._problems_can_check():
@@ -337,6 +381,13 @@ class ProblemsCommandsMixin:
     def _problems_can_check(self) -> bool:
         """False where this document has nothing a checker reads."""
         return True
+
+    def _problems_all_files_setting(self) -> bool:
+        """``problems_all_open_files``: the default, set in Settings or Preferences."""
+        return False
+
+    def _problems_mark_all_files(self, all_files: bool) -> None:
+        """Check the View > Problems row that matches; nothing is saved."""
 
     def _problems_open_documents(self) -> list[OpenProblemDocument]:
         """Every open document, for the pane's All open files; [] means just this one."""

@@ -208,6 +208,8 @@
   "cmd_previous_window": "covered",
   "cmd_print": "covered",
   "cmd_print_preview": "covered",
+  "cmd_problems_all_files": "covered",
+  "cmd_problems_this_file": "covered",
   "cmd_project_allowed_commands": "covered",
   "cmd_project_engine_tools": "covered",
   "cmd_project_task": "covered",

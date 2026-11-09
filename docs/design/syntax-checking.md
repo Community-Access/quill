@@ -152,7 +152,7 @@ Approved by the user on 2026-11-06. CLAUDE.md records it as the
 
 ## The Problems pane
 
-Since 2026-11-08, View > Problems Pane docks the same problems under the
+Since 2026-11-08, View > Problems > Show Pane docks the same problems under the
 editor in both editors, and `problems_pane_visible` remembers it. Check This
 File fills the pane instead of opening the modal list while it is shown.
 Since P2, the pane also checks again after a save and, when its Check after a

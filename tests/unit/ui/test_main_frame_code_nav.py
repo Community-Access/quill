@@ -168,7 +168,7 @@ def test_rows_and_keys_match_quill_lite() -> None:
             assert lite[command_id] == (label, DEFAULT_KEYMAP[command_id]), command_id
 
 
-# -- View > Problems Pane ------------------------------------------------------
+# -- View > Problems > Show Pane ------------------------------------------------------
 
 
 class _FakePane:
@@ -183,6 +183,9 @@ class _FakePane:
 
     def set_shown(self, shown: bool) -> None:
         self.shown = bool(shown)
+
+    def set_all_files(self, all_files: bool) -> None:
+        self.all_files = bool(all_files)
 
     def has_focus(self) -> bool:
         return self.focused
@@ -285,7 +288,7 @@ def test_problems_pane_row_matches_quill_lite() -> None:
     from quill.core.lite.parity import COMMAND_EQUIVALENTS
 
     row = next(r for r in COMMANDS if r[3] == "cmd_toggle_problems_pane")
-    assert row[0] == "&View" and row[1] == "&Problems Pane"
+    assert row[0] == "&View|&Problems" and row[1] == "&Show Pane"
     assert COMMAND_EQUIVALENTS[row[3]] == "view.problems_pane"
     assert DEFAULT_KEYMAP["view.problems_pane"] == row[2] == ""
 
@@ -398,3 +401,49 @@ def test_all_open_files_lists_every_document_and_goes_to_another() -> None:
     assert host.editor.caret == other.editor.text.index("x=2")
     host._problems_set_all_files(False)
     assert len(pane.report.problems) == 1 and host._problems_pane_origins is None
+
+
+def test_view_problems_switches_for_now_and_shows_the_pane(
+    no_settings_write: list[Any],
+) -> None:
+    host = _PaneHost('{"a": }' + chr(10), "data.json")
+    host._problems_scope_ids = (11, 12)
+    pane = host._problems_pane_widget
+    chosen: list[bool] = []
+    pane.set_all_files = chosen.append
+    host.view_problems_all_files()
+    assert pane.shown, "choosing from the menu shows a hidden pane"
+    assert host._problems_all_files is True
+    assert getattr(host.settings, "problems_all_open_files", False) is False, (
+        "a switch is for now; the setting is the default"
+    )
+    assert chosen[0] is True
+    assert host.said[-1].startswith("Problems pane shown, all open files.")
+    host.view_problems_this_file()
+    assert host._problems_all_files is False
+    assert host.said[-1] == "1 problem"
+    host._problems_switch_files()
+    assert host._problems_all_files is True, "F in the list switches back"
+
+
+def test_problems_submenu_rows_match_quill_lite() -> None:
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+    from quill.core.lite.parity import COMMAND_EQUIVALENTS
+
+    rows = [r for r in COMMANDS if r[0] == "&View|&Problems" and r[3]]
+    assert [(r[1], COMMAND_EQUIVALENTS[r[3]]) for r in rows] == [
+        ("&Show Pane", "view.problems_pane"),
+        ("&This File Only", "view.problems_this_file"),
+        ("&All Open Files", "view.problems_all_files"),
+    ]
+    for row in rows:
+        assert DEFAULT_KEYMAP[COMMAND_EQUIVALENTS[row[3]]] == row[2] == ""
+
+
+def test_the_default_setting_decides_the_first_showing(no_settings_write: list[Any]) -> None:
+    host = _PaneHost('{"a": }' + chr(10), "data.json")
+    host.settings.problems_all_open_files = True
+    host.view_toggle_problems_pane()
+    assert host._problems_all_files is True
+    assert host.said[-1].startswith("Problems pane shown, all open files.")

@@ -20,7 +20,7 @@ same key.
 ## A Problems pane that stays open
 
 Check This File's list closed as soon as you picked a problem. Now you can
-turn on **View > Problems Pane** and keep the problems under the document
+turn on **View > Problems > Show Pane** and keep the problems under the document
 while you fix them. F6 reaches it, Enter goes to a problem, and Escape comes
 back without closing it. Two choosers at the top narrow it to errors only, or
 to one checker, and say the new count. If you've edited since the check,

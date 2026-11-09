@@ -4,8 +4,11 @@
 
 ### The Problems pane lists every open document (2026-11-08)
 
-- A **Files** chooser heads the Problems pane: this file, or **All open
-  files**. Each row then starts with the document's name, and Enter on
+- **View > Problems** is now a submenu: **Show Pane**, then **This File
+  Only** and **All Open Files**; choosing one shows the pane if it's hidden.
+  **F** in the pane's list switches between the two, and a **Files** chooser
+  heads the pane. These switch for now; **Problems pane lists all open files
+  at first**, in Settings under Editing, is the default. With all open files, each row starts with the document's name, and Enter on
   another document's problem brings it to the front with the caret there.
 - The other documents use QUILL's built-in checkers; the outside tools you
   have installed run only for the one in front. QUILL Lite does the same
@@ -51,7 +54,7 @@
 
 ### The Problems pane (2026-11-08)
 
-- **View > Problems Pane** (Alt+V, then P) docks the problems Check This File
+- **View > Problems > Show Pane** (Alt+V, P, S) docks the problems Check This File
   finds under the document, above the status bar, and keeps them there while
   you fix things. QUILL remembers whether it's on. Turning it on checks the
   document and says what it found.

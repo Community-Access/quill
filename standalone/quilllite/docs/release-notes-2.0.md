@@ -14,7 +14,7 @@ your text alone. It's QUILL's list, on QUILL's key.
 
 ## A Problems pane that stays open
 
-Turn on **View > Problems Pane** and the problems Check This File finds stay
+Turn on **View > Problems > Show Pane** and the problems Check This File finds stay
 under the document while you fix them, in every window. F6 reaches the pane,
 Enter goes to a problem, and Escape comes back without closing it. Saving
 checks again, and so can a pause in typing, and the pane can list every open

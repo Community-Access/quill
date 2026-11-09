@@ -7697,7 +7697,7 @@ HTML with the built-in tier only. The record of the tool table and the
 security model is <code>docs/design/syntax-checking.md</code>.</p>
 <h3 id="528c-the-problems-pane-2026-11-08">5.28c The Problems pane
 (2026-11-08)</h3>
-<p><strong>View &gt; Problems Pane</strong>
+<p><strong>View &gt; Problems &gt; Show Pane</strong>
 (<code>view.problems_pane</code>, no default chord) docks the problems
 Check This File finds under the editor, above the status bar, and keeps
 them there while the user works; <code>problems_pane_visible</code>
@@ -7727,8 +7727,16 @@ pause box (<code>problems_check_after_pause</code>, off by default, the
 same field in QUILL Lite), once the text has been still for 1.5 s; never
 twice for the same text, and the only speech is
 <code>count_sentence</code> when the count changed. All open files
-(2026-11-08): the pane’s Files chooser (<code>SCOPE_CHOICES</code>)
-switches to <code>combine_reports</code> over
+(2026-11-08): View &gt; Problems became a submenu, Show Pane
+(<code>view.problems_pane</code>) then the radio pair This File Only
+(<code>view.problems_this_file</code>) and All Open Files
+(<code>view.problems_all_files</code>), no chords (rule 9); F in the
+pane’s list (<code>switch_files</code>) toggles the two. Those switch
+per window for the session; the default each window starts from is
+<code>problems_all_open_files</code> (Settings &gt; Editing, “Problems
+pane lists all open files at first”; QUILL Lite’s Preferences), and a
+menu choice shows the pane if hidden. It and the pane’s Files chooser
+(<code>SCOPE_CHOICES</code>) switch to <code>combine_reports</code> over
 <code>_problems_open_documents()</code>: this document’s report plus a
 built-in-only check of every other tab (outside tools only for the
 document in front), each <code>Problem</code> carrying

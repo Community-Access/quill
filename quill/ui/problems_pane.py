@@ -20,6 +20,7 @@ The keys:
   puts focus there.
 * **Escape** anywhere in the pane goes back to the editor and leaves the pane
   open.
+* **F** in the list switches between this file and all open files.
 * The **context menu** (the Applications key or Shift+F10) has Go To and Copy
   Message.
 
@@ -84,6 +85,7 @@ class ProblemsPane:
         copy_text: Callable[[str], None],
         say: Callable[[str], None],
         tick: Callable[[], None] | None = None,
+        switch_files: Callable[[], None] | None = None,
         pause_enabled: bool = False,
         set_pause_enabled: Callable[[bool], None] | None = None,
         set_all_files: Callable[[bool], None] | None = None,
@@ -94,6 +96,7 @@ class ProblemsPane:
         self._copy_text = copy_text
         self._say = say
         self._tick = tick
+        self._switch_files = switch_files
         self._set_pause_enabled = set_pause_enabled
         self._set_all_files = set_all_files
         self._report: CheckReport | None = None
@@ -277,6 +280,12 @@ class ProblemsPane:
         # reader cannot know: one sentence, the new count.
         self._say(self.count_sentence())
 
+    def set_all_files(self, all_files: bool) -> None:
+        """Move the Files chooser without telling the host (the menu did)."""
+        wanted = "open" if all_files else "this"
+        keys = [key for key, _label in SCOPE_CHOICES]
+        self._scope.SetSelection(keys.index(wanted))
+
     def all_files(self) -> bool:
         return SCOPE_CHOICES[max(0, self._scope.GetSelection())][0] == "open"
 
@@ -302,6 +311,14 @@ class ProblemsPane:
             return
         if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and self._list.HasFocus():
             self.go_to_selected()
+            return
+        plain = not (event.ControlDown() or event.AltDown() or event.ShiftDown())
+        if key in (ord("F"), ord("f")) and plain and self._list.HasFocus():
+            # F for Files: this file, all open files, and back. A letter rather
+            # than a chord because every chord is taken (rule 9), and in this
+            # list a letter has nothing else to do: no row is found by typing.
+            if self._switch_files is not None:
+                self._switch_files()
             return
         event.Skip()
 

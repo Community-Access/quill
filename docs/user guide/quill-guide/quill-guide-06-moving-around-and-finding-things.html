@@ -1587,9 +1587,9 @@ can change all three in the Keyboard Manager.</p>
 <h4 id="the-problems-pane">The Problems pane</h4>
 <p>The Problems list closes when you pick a problem. If you’d rather
 keep the problems in front of you while you fix them, turn on
-<strong>View &gt; Problems Pane</strong> (Alt+V, then P). It sits under
-the document, above the status bar, and stays there until you turn it
-off again. QUILL remembers whether it’s on.</p>
+<strong>View &gt; Problems &gt; Show Pane</strong> (Alt+V, P, S). It
+sits under the document, above the status bar, and stays there until you
+turn it off again. QUILL remembers whether it’s on.</p>
 <ul>
 <li>Turning it on checks the document straight away, and you hear the
 result, such as “Problems pane shown. 2 problems: 1 error, 1
@@ -1609,13 +1609,20 @@ closing the pane.</li>
 <li>If you’ve changed the document since the check, Enter checks it
 again first and goes to the same problem where it is now. If your change
 fixed it, you hear “That problem is gone.” and the new count.</li>
-<li><strong>Files</strong>, the first chooser at the top, picks this
-file or <strong>All open files</strong>. With all open files, each row
-starts with the document’s name, such as “notes.md: Warning, line 4,
-column 1: …”, and Enter on another document’s problem brings that tab to
-the front with the caret on it. The other documents are checked with
-QUILL’s own checkers only; the tools you have installed run for the one
-in front of you.</li>
+<li><strong>Which files it lists is yours to choose, and quick to
+change.</strong> In the pane’s list, press <strong>F</strong> to switch
+between this file and all open files. On the menu it’s <strong>View &gt;
+Problems &gt; This File Only</strong> (Alt+V, P, T) or <strong>All Open
+Files</strong> (Alt+V, P, A), which also shows the pane if it’s hidden,
+and the pane’s <strong>Files</strong> chooser does the same. These
+switch for now. Which one the pane starts with is a setting:
+<strong>Problems pane lists all open files at first</strong>, in
+Settings under Editing. With all open files, each row starts with the
+document’s name, such as “notes.md: Warning, line 4, column 1: …”, and
+Enter on another document’s problem brings that tab to the front with
+the caret on it. The other documents are checked with QUILL’s own
+checkers only; the tools you have installed run for the one in front of
+you.</li>
 <li><strong>Shift+Tab</strong> from the list reaches the choosers at the
 top. <strong>Show</strong> picks all problems, errors and warnings, or
 errors only. <strong>Source</strong> picks one checker, such as JSON or
@@ -1632,8 +1639,9 @@ new count, such as “2 problems”, and only when it has changed.</li>
 <p>The pane has no shortcut key of its own. The obvious one,
 Ctrl+Shift+M, is Set Mark, and nothing near it was free in both QUILL
 and QUILL Lite. Once you’ve turned it on it stays on, so you rarely need
-the menu. You can give it a key in the Keyboard Manager; the command is
-called Problems Pane.</p>
+the menu. You can give it a key in the Keyboard Manager; the commands
+are called Problems Pane, Problems: This File Only and Problems: All
+Open Files.</p>
 <h4 id="what-quill-can-check">What QUILL can check</h4>
 <p>Some languages are checked by QUILL itself, with nothing else
 installed:</p>

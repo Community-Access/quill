@@ -1209,8 +1209,8 @@ keys instead. You can change all three in the Keyboard Manager.
 #### The Problems pane
 
 The Problems list closes when you pick a problem. If you'd rather keep the
-problems in front of you while you fix them, turn on **View > Problems Pane**
-(Alt+V, then P). It sits under the document, above the status bar, and stays
+problems in front of you while you fix them, turn on **View > Problems > Show Pane**
+(Alt+V, P, S). It sits under the document, above the status bar, and stays
 there until you turn it off again. QUILL remembers whether it's on.
 
 - Turning it on checks the document straight away, and you hear the result,
@@ -1226,8 +1226,14 @@ there until you turn it off again. QUILL remembers whether it's on.
 - If you've changed the document since the check, Enter checks it again first
   and goes to the same problem where it is now. If your change fixed it, you
   hear "That problem is gone." and the new count.
-- **Files**, the first chooser at the top, picks this file or **All open
-  files**. With all open files, each row starts with the document's name,
+- **Which files it lists is yours to choose, and quick to change.** In the
+  pane's list, press **F** to switch between this file and all open files.
+  On the menu it's **View > Problems > This File Only** (Alt+V, P, T) or
+  **All Open Files** (Alt+V, P, A), which also shows the pane if it's
+  hidden, and the pane's **Files** chooser does the same. These switch for
+  now. Which one the pane starts with is a setting: **Problems pane lists
+  all open files at first**, in Settings under Editing. With all open
+  files, each row starts with the document's name,
   such as "notes.md: Warning, line 4, column 1: ...", and Enter on another
   document's problem brings that tab to the front with the caret on it. The
   other documents are checked with QUILL's own checkers only; the tools you
@@ -1246,7 +1252,8 @@ there until you turn it off again. QUILL remembers whether it's on.
 The pane has no shortcut key of its own. The obvious one, Ctrl+Shift+M, is Set
 Mark, and nothing near it was free in both QUILL and QUILL Lite. Once you've
 turned it on it stays on, so you rarely need the menu. You can give it a key
-in the Keyboard Manager; the command is called Problems Pane.
+in the Keyboard Manager; the commands are called Problems Pane, Problems:
+This File Only and Problems: All Open Files.
 
 #### What QUILL can check
 

@@ -4,8 +4,11 @@
 
 ### The Problems pane lists every open document (2026-11-08)
 
-- The pane's Files chooser shows this document or all open windows'
-  problems, each row naming its document; Enter brings that window forward.
+- View > Problems > This File Only or All Open Files, F in the pane's list,
+  or the pane's Files chooser switches between this document and every open
+  window's problems; Problems pane lists all open files at first, in
+  Preferences, is the default. Each row names its document and Enter brings
+  it forward.
 
 ### The Problems pane checks on save (2026-11-08)
 
@@ -34,7 +37,7 @@
 
 ### The Problems pane (2026-11-08)
 
-- View > Problems Pane (Alt+V, then P) docks the problems Check This File finds
+- View > Problems > Show Pane (Alt+V, P, S) docks the problems Check This File finds
   under the document, in every open window, and QUILL Lite remembers whether
   it's on. While it's on, Check This File fills it instead of opening the list.
 - F6 goes from the document to the pane, then to the status bar. Enter on a
