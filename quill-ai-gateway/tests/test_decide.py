@@ -128,6 +128,8 @@ def test_the_descriptions_come_from_the_service_not_the_caller(client, signed_in
     [
         ({"catalogue_version": "1999-01-01"}, "unknown_catalogue"),
         ({"catalogue_version": "../config"}, "unknown_catalogue"),
+        ({"catalogue_version": "../jev_catalogue/2026-11-08"}, "unknown_catalogue"),
+        ({"catalogue_version": ["2026-11-08"]}, "unknown_catalogue"),
         ({"app": "spreadsheet"}, "unknown_app"),
         ({"candidates": []}, "bad_candidates"),
         ({"candidates": ["app.exit_and_format_disk"]}, "unknown_command"),

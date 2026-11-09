@@ -62,16 +62,23 @@ class DecideError(Exception):
         self.message = message
 
 
-@lru_cache(maxsize=8)
-def catalogue(version: str) -> dict[str, dict[str, dict[str, Any]]] | None:
+@lru_cache(maxsize=1)
+def _catalogues() -> dict[str, dict[str, dict[str, dict[str, Any]]]]:
+    """Every catalogue version this service ships, read once, keyed by version.
+
+    The caller's version is only ever looked up in this table, never turned
+    into a file name, so nothing a caller sends can reach the file system.
+    """
+    found: dict[str, dict[str, dict[str, dict[str, Any]]]] = {}
+    for path in sorted(_CATALOGUE_DIR.glob("*.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        found[str(data["version"])] = data["apps"]
+    return found
+
+
+def catalogue(version: object) -> dict[str, dict[str, dict[str, Any]]] | None:
     """The command descriptions for *version*, by app and id, or None for an unknown version."""
-    if not version or "/" in version or "\\" in version or ".." in version:
-        return None
-    path = _CATALOGUE_DIR / f"{version}.json"
-    if not path.is_file():
-        return None
-    data = json.loads(path.read_text(encoding="utf-8"))
-    return data["apps"]
+    return _catalogues().get(version) if isinstance(version, str) else None
 
 
 def _clean_text(value: object, limit: int) -> str:
@@ -170,7 +177,7 @@ class Built:
 def build_body(payload: object) -> Built:
     """The TypeSafe request for a ``/v1/decide`` body, or a 400 saying what was wrong."""
     payload = payload if isinstance(payload, dict) else {}
-    apps = catalogue(str(payload.get("catalogue_version", "")))
+    apps = catalogue(payload.get("catalogue_version"))
     if apps is None:
         raise DecideError(400, "unknown_catalogue", "This version of QUILL is not known here yet.")
     app = payload.get("app")
