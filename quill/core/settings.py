@@ -169,8 +169,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # Hunspell language the spell checker validates against. en_US ships bundled;
     # other languages download on demand (quill.core.spellcheck.install_language).
     spellcheck_language: str = "en_US"
-    # Reveal Codes pane (WordPerfect-style hidden-code inspector). Hidden by
-    # default; Alt+F3 toggles it, F6 cycles focus into it.
+    # Reveal Codes pane (WordPerfect style): hidden by default, Alt+F3, F6 reaches it.
     reveal_codes_visible: bool = False
     reveal_codes_view: str = "flowed"  # "flowed" (interactive) | "structured"
     reveal_codes_verbosity: str = "balanced"  # "quiet" | "balanced" | "detailed"
@@ -178,6 +177,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # pane. Off so the screen reader is the single voice (#1244, #1245).
     reveal_codes_speak: bool = False
     problems_pane_visible: bool = False  # View > Problems Pane; QUILL Lite's name too
+    problems_check_after_pause: bool = False  # the pane's check box; QUILL Lite's too
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -981,6 +981,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             reveal_codes_verbosity = "balanced"
         reveal_codes_speak = bool(data.get("reveal_codes_speak", False))
         problems_pane_visible = bool(data.get("problems_pane_visible", False))
+        problems_check_after_pause = bool(data.get("problems_check_after_pause", False))
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -1731,6 +1732,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             reveal_codes_verbosity=reveal_codes_verbosity,
             reveal_codes_speak=reveal_codes_speak,
             problems_pane_visible=problems_pane_visible,
+            problems_check_after_pause=problems_check_after_pause,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,

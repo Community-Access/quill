@@ -7719,7 +7719,15 @@ and warnings, errors only; Source: every checker found in this report)
 says one count sentence on change (“4 problems, 1 shown”); nothing is
 spoken on focus (GATE-13). The context menu has Go To and Copy Message.
 No control in the pane has an access key, since the menu bar owns Alt.
-Code: <code>quill/core/problems/pane.py</code> (filters, rows, the count
+P2 (2026-11-08): while shown, a 500 ms pane timer
+(<code>ProblemsPane.set_shown</code> starts and stops it) calls
+<code>_problems_tick</code>, which checks again, quietly, when the
+document goes from modified to saved and, with the pane’s Check after a
+pause box (<code>problems_check_after_pause</code>, off by default, the
+same field in QUILL Lite), once the text has been still for 1.5 s; never
+twice for the same text, and the only speech is
+<code>count_sentence</code> when the count changed. Code:
+<code>quill/core/problems/pane.py</code> (filters, rows, the count
 sentence; no wx), <code>quill/ui/problems_pane.py</code> (the widget,
 shared), <code>quill/ui/problems_commands.py</code> (the toggle and Go
 To, shared), <code>quill/ui/main_frame_code_nav.py</code> and

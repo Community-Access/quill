@@ -9,8 +9,8 @@ the widgets.
 
 The layout, top to bottom:
 
-* the **filter row**, Show and Source, so Tab and Shift+Tab reach it from the
-  list;
+* the **filter row**, Show and Source, and the Check After a Pause box, so
+  Tab and Shift+Tab reach it from the list;
 * the **list**, one row per problem, severity first. F6 lands here.
 
 The keys:
@@ -29,8 +29,11 @@ a menu (GATE-14) or steal it; Tab and Shift+Tab reach both choosers.
 Nothing is spoken when focus arrives -- the screen reader says the row
 (GATE-13). The host speaks the one count sentence when the count changes.
 
-*host* supplies four callables: ``go_to(index)`` with the problem's index in
-the report, ``back_to_editor()``, ``copy_text(text)`` and ``say(sentence)``.
+*host* supplies the callables: ``go_to(index)`` with the problem's index in
+the report, ``back_to_editor()``, ``copy_text(text)``, ``say(sentence)``,
+and optionally ``tick()`` (called twice a second while the pane is shown, for
+the quiet checks after a save or a pause), ``pause_enabled`` (the check box's
+first state) and ``set_pause_enabled(bool)`` (when it is changed).
 """
 
 from __future__ import annotations
@@ -49,7 +52,10 @@ from quill.core.problems.pane import (
     source_choices,
 )
 
-__all__ = ["NOT_CHECKED_ROW", "ProblemsPane"]
+__all__ = ["NOT_CHECKED_ROW", "TICK_MS", "ProblemsPane"]
+
+#: How often the pane asks whether a quiet check is due, in milliseconds.
+TICK_MS = 500
 
 #: The one row an empty, never-checked pane shows, so the list is never a bare
 #: "list, empty" that leaves somebody wondering whether it worked.
@@ -75,12 +81,17 @@ class ProblemsPane:
         back_to_editor: Callable[[], None],
         copy_text: Callable[[str], None],
         say: Callable[[str], None],
+        tick: Callable[[], None] | None = None,
+        pause_enabled: bool = False,
+        set_pause_enabled: Callable[[bool], None] | None = None,
     ) -> None:
         self._wx = wx
         self._go_to = go_to
         self._back_to_editor = back_to_editor
         self._copy_text = copy_text
         self._say = say
+        self._tick = tick
+        self._set_pause_enabled = set_pause_enabled
         self._report: CheckReport | None = None
         self._filter = PaneFilter()
         #: For each list row, the problem's index in the report, or ``None``
@@ -109,8 +120,16 @@ class ProblemsPane:
         )
         row.Add(show_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         row.Add(self._show, 0, wx.RIGHT, 8)
+        self._pause = wx.CheckBox(self.panel, label="Check after a pause")
+        self._pause.SetValue(bool(pause_enabled))
+        self._pause.SetHelpText(
+            "When checked, the file is checked again a moment after you stop "
+            "typing. It is always checked again when you save. Either way, "
+            "the only thing said is the new count, when it changes."
+        )
         row.Add(source_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
-        row.Add(self._source, 0)
+        row.Add(self._source, 0, wx.RIGHT, 8)
+        row.Add(self._pause, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(row, 0, wx.TOP | wx.BOTTOM, 2)
 
         list_label = wx.StaticText(self.panel, label="Problems")
@@ -124,7 +143,10 @@ class ProblemsPane:
         self._source.Bind(wx.EVT_CHOICE, self._on_filter)
         self._list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _event: self.go_to_selected())
         self._list.Bind(wx.EVT_CONTEXT_MENU, self._on_context_menu)
+        self._pause.Bind(wx.EVT_CHECKBOX, self._on_pause)
         self.panel.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        self._timer = wx.Timer(self.panel)
+        self.panel.Bind(wx.EVT_TIMER, self._on_timer, self._timer)
         self._fill()
 
     # -- what the host calls ------------------------------------------------- #
@@ -135,6 +157,17 @@ class ProblemsPane:
 
     def is_shown(self) -> bool:
         return bool(self.panel.IsShown())
+
+    def set_shown(self, shown: bool) -> None:
+        """Show or hide the panel; the quiet-check timer runs only while shown."""
+        self.panel.Show(shown)
+        if shown and self._tick is not None:
+            self._timer.Start(TICK_MS)
+        else:
+            self._timer.Stop()
+
+    def pause_enabled(self) -> bool:
+        return bool(self._pause.GetValue())
 
     def show_report(self, report: CheckReport) -> None:
         """Fill the list from *report*, keeping the filter and the selected row."""
@@ -228,6 +261,15 @@ class ProblemsPane:
         # The list changed while focus is on the chooser, which the screen
         # reader cannot know: one sentence, the new count.
         self._say(self.count_sentence())
+
+    def _on_pause(self, _event: Any) -> None:
+        # The check box is focused and the screen reader says its new state.
+        if self._set_pause_enabled is not None:
+            self._set_pause_enabled(self.pause_enabled())
+
+    def _on_timer(self, _event: Any) -> None:
+        if self._tick is not None:
+            self._tick()
 
     def _on_char_hook(self, event: Any) -> None:
         wx = self._wx

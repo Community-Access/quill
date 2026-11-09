@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### The Problems pane checks on save, and after a pause if you like (2026-11-08)
+
+- While the Problems pane is on, saving checks the file again.
+- A **Check after a pause** box beside the pane's choosers checks it again a
+  moment after you stop typing. It's off by default and remembered.
+- These checks say nothing but the new count, such as "2 problems", and only
+  when the count has changed. QUILL Lite has the same pane and the same box.
+
 ### Word Prediction knows your code (2026-11-08)
 
 - In a code file, Ctrl+. offers the file's own names that start with what

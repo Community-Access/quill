@@ -212,6 +212,9 @@ class CodeNavMixin(ProblemsCommandsMixin):
             back_to_editor=self._problems_back_to_editor,
             copy_text=self._problems_copy,
             say=self._problems_say,
+            tick=self._problems_tick,
+            pause_enabled=self._problems_pause_enabled(),
+            set_pause_enabled=self._problems_set_pause_enabled,
         )
         pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
         pane.panel.Hide()
@@ -242,7 +245,7 @@ class CodeNavMixin(ProblemsCommandsMixin):
 
     def _problems_pane_set_shown(self, shown: bool) -> None:
         pane = self._problems_pane(create=True)
-        pane.panel.Show(shown)
+        pane.set_shown(shown)
         self.frame.GetSizer().Layout()
         self.settings.problems_pane_visible = shown
         try:
@@ -255,6 +258,18 @@ class CodeNavMixin(ProblemsCommandsMixin):
         menu_bar = self.frame.GetMenuBar()
         if item_id is not None and menu_bar is not None:
             menu_bar.Check(item_id, shown)
+
+    def _problems_pause_enabled(self) -> bool:
+        return bool(getattr(self.settings, "problems_check_after_pause", False))
+
+    def _problems_set_pause_enabled(self, enabled: bool) -> None:
+        self.settings.problems_check_after_pause = enabled
+        try:
+            from quill.core.settings import save_settings
+
+            save_settings(self.settings)
+        except Exception:  # noqa: BLE001 - remembering it is best-effort
+            pass
 
     def _problems_back_to_editor(self) -> None:
         self._set_active_region("Editor")

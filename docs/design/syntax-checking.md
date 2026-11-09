@@ -154,7 +154,10 @@ Approved by the user on 2026-11-06. CLAUDE.md records it as the
 
 Since 2026-11-08, View > Problems Pane docks the same problems under the
 editor in both editors, and `problems_pane_visible` remembers it. Check This
-File fills the pane instead of opening the modal list while it is shown. The
+File fills the pane instead of opening the modal list while it is shown.
+Since P2, the pane also checks again after a save and, when its Check after a
+pause box (`problems_check_after_pause`) is checked, after 1.5 seconds without
+typing; those checks say only a changed count. The
 widget is `quill/ui/problems_pane.py`, its filters and sentences are
 `quill/core/problems/pane.py`, and the plan for what feeds it next (open
 files, a check after a pause, language servers) is `docs/design/intellisense.md`.

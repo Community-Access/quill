@@ -723,14 +723,19 @@ other kinds. Lexing the whole file was measured at about 1.5 s per 600
 KB, so it is never done. Under 100 ms on 1 MB of QUILL’s own code, best
 of five, in the perf test; one-letter fragments look 100,000 characters
 either side.</li>
+<li>2026-11-08: Problems pane P2, first half. While shown, the pane
+re-checks quietly after a save and, with its Check after a pause box
+(<code>problems_check_after_pause</code>, off by default, both editors),
+after 1.5 s of stillness; only a changed count is said. All open files
+is the second half, still to do.</li>
 </ul>
 <h2 id="remaining-tasks">Remaining tasks</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Problems pane P2 to P4 (P1 is PR
 #1798).</label></li>
-<li><label><input type="checkbox" />P2: check when you save, as well as
-after a pause (both off by default, both say the count only when it
-changes).</label></li>
+<li><label><input type="checkbox" />P2, second half: all open files in
+the pane, with a This file / All open files chooser and Go To switching
+documents.</label></li>
 <li><label><input type="checkbox" />Read the licence of each server
 package before bundling it (TypeScript, vscode-langservers-extracted,
 Pyright, the Roslyn language server).</label></li>
