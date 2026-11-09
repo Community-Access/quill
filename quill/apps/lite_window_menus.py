@@ -305,6 +305,9 @@ class DocumentMenuMixin:
             # in front of you.
             "cmd_toggle_status_bar": getattr(self.app.settings, "show_status_bar", True),
             "cmd_toggle_problems_pane": getattr(self.app.settings, "problems_pane_visible", False),
+            # Per window: a switch for now; the setting is only the default.
+            "cmd_problems_this_file": not _listing_all_files(self),
+            "cmd_problems_all_files": _listing_all_files(self),
             "cmd_toggle_abbreviations": self.app.feature_enabled("abbreviations"),
             # On while *this* document is being dictated into. There is one
             # microphone, so at most one window's mark is ever on.
@@ -458,3 +461,9 @@ class DocumentMenuMixin:
     def _on_menu_open(self, event: wx.MenuEvent) -> None:
         self.sync_menu_state()
         event.Skip()
+
+
+def _listing_all_files(frame: Any) -> bool:
+    """Whether this window's Problems pane lists every open file (stand-ins may lack it)."""
+    listing = getattr(frame, "problems_listing_all_files", None)
+    return bool(listing()) if callable(listing) else False

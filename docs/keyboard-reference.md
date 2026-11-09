@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 579.
+Editor commands with default bindings: 581.
 
 ## The QUILL editor
 
@@ -282,7 +282,9 @@ Editor commands with default bindings: 579.
 | Key | Command | Command id |
 | --- | --- | --- |
 | (unbound by default) | Github workbench mode | `view.github_workbench_mode` |
+| (unbound by default) | Problems: All Open Files | `view.problems_all_files` |
 | (unbound by default) | Problems Pane | `view.problems_pane` |
+| (unbound by default) | Problems: This File Only | `view.problems_this_file` |
 | Alt+F3 | Reveal Codes | `view.reveal_codes_toggle` |
 | Alt+F6 | Focus Preview | `view.focus_preview` |
 | Alt+Shift+B | Show Status Bar | `view.toggle_status_bar` |

@@ -163,21 +163,19 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     spellcheck_as_you_type: bool = False
     # Live check stays quiet in code; see quill/core/spellcheck_filetypes.py.
     spellcheck_skip_code_files: bool = True
-    # When True, saving a document first opens the F7 spelling review so the user
-    # can correct misspellings before the file is written. Off by default.
+    # Saving first opens the F7 spelling review. Off by default.
     spell_check_before_save: bool = False
-    # Hunspell language the spell checker validates against. en_US ships bundled;
-    # other languages download on demand (quill.core.spellcheck.install_language).
+    # Hunspell language; en_US ships, others via quill.core.spellcheck.install_language.
     spellcheck_language: str = "en_US"
     # Reveal Codes pane (WordPerfect style): hidden by default, Alt+F3, F6 reaches it.
     reveal_codes_visible: bool = False
     reveal_codes_view: str = "flowed"  # "flowed" (interactive) | "structured"
     reveal_codes_verbosity: str = "balanced"  # "quiet" | "balanced" | "detailed"
-    # Speak the code phrase ("italic on, 15 characters") on arrowing in the flowed
-    # pane. Off so the screen reader is the single voice (#1244, #1245).
+    # Speak the code phrase on arrowing; off so the reader is one voice (#1244, #1245).
     reveal_codes_speak: bool = False
-    problems_pane_visible: bool = False  # View > Problems Pane; QUILL Lite's name too
+    problems_pane_visible: bool = False  # View > Problems > Show Pane; QUILL Lite's name too
     problems_check_after_pause: bool = False  # the pane's check box; QUILL Lite's too
+    problems_all_open_files: bool = False  # View > Problems > All Open Files; Lite's too
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -982,6 +980,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         reveal_codes_speak = bool(data.get("reveal_codes_speak", False))
         problems_pane_visible = bool(data.get("problems_pane_visible", False))
         problems_check_after_pause = bool(data.get("problems_check_after_pause", False))
+        problems_all_open_files = bool(data.get("problems_all_open_files", False))
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -1733,6 +1732,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             reveal_codes_speak=reveal_codes_speak,
             problems_pane_visible=problems_pane_visible,
             problems_check_after_pause=problems_check_after_pause,
+            problems_all_open_files=problems_all_open_files,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,

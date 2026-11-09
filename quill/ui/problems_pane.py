@@ -9,7 +9,8 @@ the widgets.
 
 The layout, top to bottom:
 
-* the **filter row**, Show and Source, and the Check After a Pause box, so
+* the **filter row**, Files (this file or all open files), Show and Source,
+  and the Check After a Pause box, so
   Tab and Shift+Tab reach it from the list;
 * the **list**, one row per problem, severity first. F6 lands here.
 
@@ -19,6 +20,7 @@ The keys:
   puts focus there.
 * **Escape** anywhere in the pane goes back to the editor and leaves the pane
   open.
+* **F** in the list switches between this file and all open files.
 * The **context menu** (the Applications key or Shift+F10) has Go To and Copy
   Message.
 
@@ -44,6 +46,7 @@ from typing import Any
 from quill.core.problems.model import CheckReport, summarize
 from quill.core.problems.pane import (
     ALL_SOURCES,
+    SCOPE_CHOICES,
     SHOW_CHOICES,
     PaneFilter,
     count_sentence,
@@ -82,8 +85,10 @@ class ProblemsPane:
         copy_text: Callable[[str], None],
         say: Callable[[str], None],
         tick: Callable[[], None] | None = None,
+        switch_files: Callable[[], None] | None = None,
         pause_enabled: bool = False,
         set_pause_enabled: Callable[[bool], None] | None = None,
+        set_all_files: Callable[[bool], None] | None = None,
     ) -> None:
         self._wx = wx
         self._go_to = go_to
@@ -91,7 +96,9 @@ class ProblemsPane:
         self._copy_text = copy_text
         self._say = say
         self._tick = tick
+        self._switch_files = switch_files
         self._set_pause_enabled = set_pause_enabled
+        self._set_all_files = set_all_files
         self._report: CheckReport | None = None
         self._filter = PaneFilter()
         #: For each list row, the problem's index in the report, or ``None``
@@ -104,6 +111,16 @@ class ProblemsPane:
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         row = wx.BoxSizer(wx.HORIZONTAL)
+        scope_label = wx.StaticText(self.panel, label="Files:")
+        self._scope = wx.Choice(self.panel, choices=[label for _key, label in SCOPE_CHOICES])
+        self._scope.SetSelection(0)
+        self._scope.SetHelpText(
+            "Whose problems the list shows: this file's, or every open "
+            "document's, each row starting with the document's name. Enter on "
+            "another document's problem brings that document to the front."
+        )
+        row.Add(scope_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        row.Add(self._scope, 0, wx.RIGHT, 8)
         show_label = wx.StaticText(self.panel, label="Show:")
         self._show = wx.Choice(self.panel, choices=[label for _key, label in SHOW_CHOICES])
         self._show.SetSelection(0)
@@ -118,7 +135,7 @@ class ProblemsPane:
             "Which checker's problems the list shows: every checker, or only the "
             "one chosen, such as the built-in JSON checker or ruff."
         )
-        row.Add(show_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        row.Add(show_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         row.Add(self._show, 0, wx.RIGHT, 8)
         self._pause = wx.CheckBox(self.panel, label="Check after a pause")
         self._pause.SetValue(bool(pause_enabled))
@@ -139,6 +156,7 @@ class ProblemsPane:
         sizer.Add(self._list, 1, wx.EXPAND | wx.ALL, 2)
         self.panel.SetSizer(sizer)
 
+        self._scope.Bind(wx.EVT_CHOICE, self._on_scope)
         self._show.Bind(wx.EVT_CHOICE, self._on_filter)
         self._source.Bind(wx.EVT_CHOICE, self._on_filter)
         self._list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _event: self.go_to_selected())
@@ -262,6 +280,20 @@ class ProblemsPane:
         # reader cannot know: one sentence, the new count.
         self._say(self.count_sentence())
 
+    def set_all_files(self, all_files: bool) -> None:
+        """Move the Files chooser without telling the host (the menu did)."""
+        wanted = "open" if all_files else "this"
+        keys = [key for key, _label in SCOPE_CHOICES]
+        self._scope.SetSelection(keys.index(wanted))
+
+    def all_files(self) -> bool:
+        return SCOPE_CHOICES[max(0, self._scope.GetSelection())][0] == "open"
+
+    def _on_scope(self, _event: Any) -> None:
+        # The host refills the list and says the new count.
+        if self._set_all_files is not None:
+            self._set_all_files(self.all_files())
+
     def _on_pause(self, _event: Any) -> None:
         # The check box is focused and the screen reader says its new state.
         if self._set_pause_enabled is not None:
@@ -279,6 +311,14 @@ class ProblemsPane:
             return
         if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and self._list.HasFocus():
             self.go_to_selected()
+            return
+        plain = not (event.ControlDown() or event.AltDown() or event.ShiftDown())
+        if key in (ord("F"), ord("f")) and plain and self._list.HasFocus():
+            # F for Files: this file, all open files, and back. A letter rather
+            # than a chord because every chord is taken (rule 9), and in this
+            # list a letter has nothing else to do: no row is found by typing.
+            if self._switch_files is not None:
+                self._switch_files()
             return
         event.Skip()
 

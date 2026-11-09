@@ -67,7 +67,13 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     },
     "cmd_toggle_problems_pane": "As in QUILL (rule 2), where Problems Pane has no chord "
     "either: Ctrl+Shift+M is Set Mark in both editors and nothing near it was free in both "
-    "(measured 2026-11-08). Shown once, it stays shown (rule 9). Alt+V, P.",
+    "(measured 2026-11-08). Shown once, it stays shown (rule 9). Alt+V, P, S.",
+    **{
+        handler: "As in QUILL (rule 2), where This File Only and All Open Files have no "
+        "chord either; the pane's Files chooser does the same, and the choice is "
+        "remembered, so it is set once (rule 9). Alt+V, P, then T or A."
+        for handler in ("cmd_problems_this_file", "cmd_problems_all_files")
+    },
     "cmd_github_workbench": "As in QUILL (rule 2), where GitHub Items has no chord either; "
     "it sits in File, as QUILL's does, and Alt+F, G reaches it. Ctrl+Alt+Shift+F6 is "
     "Spelling Announcements in QUILL.",

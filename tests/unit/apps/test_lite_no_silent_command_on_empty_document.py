@@ -41,6 +41,11 @@ STUB_CANNOT_REACH: dict[str, str] = {
     "cmd_reopen_last_session": "FakeApp has no choose_session_documents",
     "cmd_toggle_problems_pane": "the pane is a wx.Panel and needs a real wx parent "
     "(its behaviour is tested in test_lite_code_nav.py with a stand-in pane)",
+    **{
+        handler: "they show the Problems pane, a wx.Panel that needs a real wx parent "
+        "(tested in test_lite_code_nav.py with a stand-in pane)"
+        for handler in ("cmd_problems_this_file", "cmd_problems_all_files")
+    },
     "cmd_snippet_gallery": "FakeApp.abbreviations is a dict, not the abbreviation store",
     "cmd_toggle_abbreviations": "FakeApp.abbreviations is a dict, not the abbreviation store",
     "cmd_clipboard_collector": "the collector's wx.Timer needs a real wx owner",

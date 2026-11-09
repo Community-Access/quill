@@ -317,9 +317,9 @@ class Settings(DictationSettings):
     print_margins_mm: list[int] = field(default_factory=lambda: [15, 15, 15, 15])
     #: The status bar on screen at all (Notepad's View menu); per app, not per document.
     show_status_bar: bool = True
-    #: View > Problems Pane and its Check After a Pause box; QUILL's names too.
-    problems_pane_visible: bool = False
+    problems_pane_visible: bool = False  # View > Problems, its pane box: QUILL's names
     problems_check_after_pause: bool = False
+    problems_all_open_files: bool = False
     #: Check spelling as you type. On, but never in a source or configuration
     #: file: the per-document default comes from the extension
     #: (quill.core.spellcheck_filetypes), and this is the answer for everything
