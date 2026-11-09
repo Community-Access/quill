@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from quill.tools.network_egress_entries_agents import AGENT_EGRESS, AGENT_HTTP_EGRESS
 from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
+from quill.tools.network_egress_entries_command_key import COMMAND_KEY_EGRESS
 from quill.tools.network_egress_entries_github import GITHUB_WORKBENCH_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 from quill.tools.network_egress_entries_radio_listening import RADIO_LISTENING_EGRESS
@@ -30,25 +31,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     **GITHUB_WORKBENCH_EGRESS,
     **WORDPRESS_EGRESS,
     **AGENT_HTTP_EGRESS,  # Ollama practice mode, loopback only
-    "core/command_catalogue/jev.py::_post_json": (
-        "The Command Key's one outbound call (docs/design/command-key.md 7.6 and 7.9): "
-        "Jev, TypeSafe's decision model, asked to pick one of this window's commands "
-        "for a sentence the offline matcher could not settle. Two routes share it: "
-        "POST https://api.typesafe.ai/v1/systemone with the person's own TypeSafe key "
-        "(read from Windows Credential Manager, generic credential 'QUILL TypeSafe "
-        "dev key'), and POST <gateway>/v1/decide with the QUILL device token once "
-        "the Community Access gateway route is deployed (it is not; the route "
-        "answers disabled). Sends only what jev_request.build_request built and "
-        "checked: the words typed or heard (at most 300 characters), the app id, "
-        "the surface name, recent command ids, whether a number or duration was "
-        "found, and the candidate commands' own descriptions. Never document text, "
-        "file names, stations, places or accounts (payload_is_private, refused "
-        "before sending). User-initiated: only after the person typed into the "
-        "Command Key and only when command_understanding is 'jev', which they chose "
-        "in the consent question. TLS with a verified context; three-second budget; "
-        "one request in flight. TypeSafe keep requests and do not train on them. "
-        "Off in Safe Mode (the Command Key builds no assist there)."
-    ),
+    **COMMAND_KEY_EGRESS,  # the Command Key's Jev call, beside this module
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "
@@ -815,6 +798,17 @@ _REVIEWED_EGRESS: dict[str, str] = {
 _CHILD_PROCESS_EGRESS: dict[str, str] = {
     # The Codex engine and the commands a person approves for an agent.
     **AGENT_EGRESS,
+    "core/lsp/client.py::start": (
+        "None, by design: a note so nobody has to wonder. The language servers "
+        "(tools/language-servers, run by the bundled tools/nodejs/node.exe, or "
+        "clangd and PowerShell Editor Services when installed) are started over "
+        "standard input and output with every network feature switched off in "
+        "quill/core/lsp/servers.py: the JSON server fetches no schema "
+        "(handledSchemaProtocols file only, schemaDownload off), the Markdown "
+        "server follows no web link, and typescript-language-server runs tsserver "
+        "with automatic type acquisition disabled, so npm is never run. They read "
+        "the open document and its project folder and send nothing anywhere."
+    ),
     "ai_packs/copilot.py::_make_invoke": (
         "The GitHub Copilot engine. The Copilot SDK starts the bundled Copilot "
         "CLI (tools/copilot/copilot.exe, pinned by SHA-256 in "

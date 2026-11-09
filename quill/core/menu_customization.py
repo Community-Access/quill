@@ -42,6 +42,31 @@ def menu_customization_path() -> Path:
     return app_data_dir() / "menu_customization.json"
 
 
+#: Stable key and factory label for each top-level menu, in default order.
+#: The Menu Editor and the menu-build transform pass share this list so a person
+#: can reorder, hide, and rename top-level menus without touching item code.
+TOP_MENU_DEFS: tuple[tuple[str, str], ...] = (
+    ("file", "&File"),
+    ("edit", "&Edit"),
+    ("view", "&View"),
+    ("insert", "&Insert"),
+    ("format", "F&ormat"),
+    ("navigate", "&Navigate"),
+    # Search left the bar on 2026-09-17 and is Edit > Search Tools (bad.md M1).
+    ("tools", "&Tools"),
+    # Only while GitHub Workbench Mode is on (quill/ui/main_frame_github_menu.py).
+    # A stable key, so a person's arrangement survives the menu coming and going.
+    ("github", "&GitHub"),
+    # AI and QuillVille were missing until 2026-11-08, and a bar holding a menu
+    # this table could not name made the customization pass bail out: top-level
+    # reordering had silently stopped applying.
+    ("ai", "&AI"),
+    ("window", "&Window"),
+    ("quillville", "&QuillVille"),
+    ("help", "&Help"),
+)
+
+
 @dataclass(slots=True)
 class MenuCustomization:
     """Deltas applied to the factory menu bar and editor context menu.

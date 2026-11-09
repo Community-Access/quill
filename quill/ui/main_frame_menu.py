@@ -252,32 +252,12 @@ class MenuBuilderMixin:
             self._id_save_copy_to_remote,
             self._menu_label(_("Save &Copy to Remote..."), "file.save_copy_to_remote"),
         )
-        remote_menu.AppendSeparator()
-        remote_menu.Append(
-            self._id_github_repository,
-            self._menu_label(_("&GitHub Repository..."), "file.open_github_repository"),
-        )
-        remote_menu.Append(
-            self._id_github_file_url,
-            self._menu_label(_("GitHub File &URL..."), "file.open_github_file_url"),
-        )
-        remote_menu.Append(
-            self._id_github_save_back,
-            self._menu_label(_("S&ave to GitHub..."), "file.github_save_back"),
-        )
-        remote_menu.Append(
-            self._id_github_items,
-            self._menu_label(_("GitHub &Items..."), "file.open_github_items"),
-        )
-        self._append_github_reference_menu(remote_menu)
         remote_menu.Append(
             self._id_manage_remote_sites,
             self._menu_label(_("&Manage Remote Sites..."), "file.manage_remote_sites"),
         )
-        remote_menu.Append(
-            self._id_github_manage_accounts,
-            self._menu_label(_("Ma&nage GitHub Accounts..."), "file.github_manage_accounts"),
-        )
+        # GitHub's rows, unless workbench mode has moved them (main_frame_github_menu.py).
+        self._append_github_remote_rows(remote_menu)
         file_menu.AppendSubMenu(remote_menu, _("Open from Remote"))  # E is Export's
         file_menu.AppendSubMenu(self._sessions_menu, _("&Snapshots"))
         # File > WordPress (wordpress.md 12) replaced the older Publish submenu:
@@ -892,6 +872,8 @@ class MenuBuilderMixin:
         view_menu.Check(
             self._id_reveal_codes, bool(getattr(self.settings, "reveal_codes_visible", False))
         )
+        self._append_github_workbench_toggle(view_menu)  # main_frame_github_menu.py
+        self._append_problems_pane_item(view_menu)  # main_frame_code_nav, as in QUILL Lite
         navigate_menu = wx.Menu()
         self._id_set_bookmark = wx.NewIdRef()
         self._id_go_to_bookmark = wx.NewIdRef()
@@ -1957,143 +1939,9 @@ class MenuBuilderMixin:
             self._id_vault_settings, self._menu_label(_("Vau&lt Settings..."), "vault.settings")
         )
         tools_menu.AppendSubMenu(vault_menu, _("&Vault"))
-        github_admin_menu = wx.Menu()
-        # Open/browse a repository -- the everyday "I just want to open a repo"
-        # action, alongside the admin operations. Reuses the same command (and its
-        # existing binding) as File > Open Remote > GitHub Repository.
-        github_admin_menu.Append(
-            self._id_github_repository,
-            self._menu_label(_("&Open a Repository..."), "file.open_github_repository"),
-        )
-        github_admin_menu.Append(
-            self._id_git_sync_folder,
-            self._menu_label(_("S&ync Folder with GitHub..."), "sync.sync_folder"),
-        )
-        github_admin_menu.AppendSeparator()
-        github_admin_menu.Append(
-            self._id_github_create_repo,
-            self._menu_label(_("&Create Repository..."), "github.create_repository"),
-        )
-        github_admin_menu.Append(
-            self._id_github_fork_repo,
-            self._menu_label(_("&Fork Repository..."), "github.fork_repository"),
-        )
-        github_admin_menu.Append(
-            self._id_github_rename_repo,
-            self._menu_label(_("&Rename Repository..."), "github.rename_repository"),
-        )
-        github_admin_menu.Append(
-            self._id_github_change_visibility,
-            self._menu_label(_("Change &Visibility..."), "github.change_repository_visibility"),
-        )
-        github_admin_menu.Append(
-            self._id_github_change_default_branch,
-            self._menu_label(_("Change &Default Branch..."), "github.change_default_branch"),
-        )
-        github_admin_menu.Append(
-            self._id_github_branch_protection,
-            self._menu_label(
-                _("Configure Branch &Protection..."), "github.configure_branch_protection"
-            ),
-        )
-        github_admin_menu.Append(
-            self._id_github_delete_branch,
-            self._menu_label(_("D&elete Branch..."), "github.delete_branch"),
-        )
-        github_admin_menu.Append(
-            self._id_github_commit_multiple,
-            self._menu_label(_("Commit &Multiple Files..."), "github.commit_multiple_files"),
-        )
-        github_admin_menu.AppendSeparator()
-        github_admin_menu.Append(
-            self._id_github_browse_org,
-            self._menu_label(
-                _("&Browse Organization Repositories..."), "github.browse_organization"
-            ),
-        )
-        github_admin_menu.Append(
-            self._id_github_create_release,
-            self._menu_label(_("Cre&ate Release..."), "github.create_release"),
-        )
-        github_admin_menu.Append(
-            self._id_github_dispatch_workflow,
-            self._menu_label(_("Dispatch &Workflow..."), "github.dispatch_workflow"),
-        )
-        github_admin_menu.Append(
-            self._id_github_notifications,
-            self._menu_label(_("&Notifications..."), "github.view_notifications"),
-        )
-        github_admin_menu.Append(
-            self._id_github_security_alerts,
-            self._menu_label(_("&Security Alerts..."), "github.view_security_alerts"),
-        )
-        github_admin_menu.AppendSeparator()
-        github_admin_menu.Append(
-            self._id_github_list_codespaces,
-            self._menu_label(_("Codespaces..."), "github.list_codespaces"),
-        )
-        github_admin_menu.Append(
-            self._id_github_create_codespace,
-            self._menu_label(_("Create Codespace..."), "github.create_codespace"),
-        )
-        git_family_menu = wx.Menu()
-        git_family_menu.AppendSubMenu(github_admin_menu, _("Git&Hub"))
-        local_git_menu = wx.Menu()
-        local_git_menu.Append(
-            self._id_localgit_uncommitted,
-            self._menu_label(_("&Uncommitted Changes..."), "localgit.uncommitted_changes"),
-        )
-        local_git_menu.Append(
-            self._id_localgit_switch_branch,
-            self._menu_label(_("Switch &Branch..."), "localgit.switch_branch"),
-        )
-        local_git_menu.AppendSeparator()
-        local_git_menu.Append(
-            self._id_localgit_stash_changes,
-            self._menu_label(_("&Stash Changes..."), "localgit.stash_changes"),
-        )
-        local_git_menu.Append(
-            self._id_localgit_manage_stashes,
-            self._menu_label(_("Manage St&ashes..."), "localgit.manage_stashes"),
-        )
-        local_git_menu.AppendSeparator()
-        local_git_menu.Append(
-            self._id_localgit_blame,
-            self._menu_label(_("&Who Wrote This Line..."), "localgit.blame_at_cursor"),
-        )
-        local_git_menu.AppendSeparator()
-        local_git_menu.Append(
-            self._id_localgit_bisect_start,
-            self._menu_label(_("S&tart Bisect..."), "localgit.bisect_start"),
-        )
-        local_git_menu.Append(
-            self._id_localgit_bisect_reset,
-            self._menu_label(_("&End Bisect"), "localgit.bisect_reset"),
-        )
-        local_git_menu.AppendSeparator()
-        local_git_menu.Append(
-            self._id_localgit_resolve_conflicts,
-            self._menu_label(_("&Resolve Conflicts..."), "localgit.resolve_conflicts"),
-        )
-        local_git_menu.Append(
-            self._id_localgit_interactive_rebase,
-            self._menu_label(_("&Interactive Rebase..."), "localgit.interactive_rebase"),
-        )
-        local_git_menu.Append(
-            self._id_localgit_rebase_abort,
-            self._menu_label(_("Ab&ort Rebase"), "localgit.rebase_abort"),
-        )
-        local_git_menu.AppendSeparator()
-        local_git_menu.Append(
-            self._id_localgit_worktrees,
-            self._menu_label(_("Wor&ktrees..."), "localgit.worktrees"),
-        )
-        local_git_menu.Append(
-            self._id_localgit_new_worktree,
-            self._menu_label(_("&New Worktree..."), "localgit.new_worktree"),
-        )
-        git_family_menu.AppendSubMenu(local_git_menu, _("&Local Git"))
-        tools_menu.AppendSubMenu(git_family_menu, _("&Git and GitHub"))
+        # Tools > Git and GitHub, unless workbench mode has moved it into the
+        # GitHub menu (main_frame_github_menu.py builds both from one table).
+        self._append_git_family_menu(tools_menu)
         tools_menu.AppendSeparator()
 
         # Writing & Language -----------------------------------------------
@@ -3264,6 +3112,7 @@ class MenuBuilderMixin:
         menu_bar.Append(format_menu, _("F&ormat"))
         menu_bar.Append(navigate_menu, _("&Navigate"))
         menu_bar.Append(tools_menu, _("&Tools"))
+        self._append_github_workbench_menu(menu_bar)  # only in workbench mode
         menu_bar.Append(ai_menu, _("&AI"))
         menu_bar.Append(window_menu, _("&Window"))
         # The QuillVille cross-app switcher, just before Help, as in every app.
@@ -3296,16 +3145,13 @@ class MenuBuilderMixin:
             except Exception:  # noqa: BLE001
                 pass
 
-        # #613: on macOS, tell wx that the "Help" menu is the system
-        # Help menu so the OS moves it to the rightmost position (where
-        # macOS users expect it) instead of leaving it in the slot wx
-        # gave it (the menu bar's tail, but wx only respects the
-        # SetHelpMenu hint for the system Help menu). Without this,
-        # VoiceOver users see a top-level menu order that does not
-        # match the macOS AppKit convention. Wrapped in hasattr +
-        # try/except so a wx build without the API degrades gracefully
-        # (and the dialog_inventory / module_size gates do not see an
-        # attribute error).
+        # #613: on macOS, tell wx that the "Help" menu is the system Help menu so the OS moves it to
+        # the rightmost position (where macOS users expect it) instead of leaving it in the slot wx
+        # gave it (the menu bar's tail, but wx only respects the SetHelpMenu hint for the system
+        # Help menu). Without this, VoiceOver users see a top-level menu order that does not match
+        # the macOS AppKit convention. Wrapped in hasattr + try/except so a wx build without the API
+        # degrades gracefully (and the dialog_inventory / module_size gates do not see an attribute
+        # error).
         if sys.platform == "darwin":
             try:
                 if hasattr(menu_bar, "SetHelpMenu"):

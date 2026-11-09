@@ -141,9 +141,15 @@ REGISTERED_ELSEWHERE: dict[str, str] = {
 
 def _registered_in_source(command_id: str) -> bool:
     where = REGISTERED_ELSEWHERE.get(command_id)
-    if where is None:
-        return False
-    return f'"{command_id}"' in (_ROOT / where).read_text(encoding="utf-8")
+    needle = f'"{command_id}"'
+    if where is not None:
+        return needle in (_ROOT / where).read_text(encoding="utf-8")
+    # Not in the table: look through the UI and app modules (slow, so only on a miss).
+    for folder in ("ui", "apps"):
+        for path in (_ROOT / "quill" / folder).rglob("*.py"):
+            if needle in path.read_text(encoding="utf-8", errors="replace"):
+                return True
+    return False
 
 
 def _dictation_phrases() -> set[str]:

@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Studio screenshot requirements coverage</title>
+  <title>QUILL Studio screenshot requirements: coverage and remaining
+work</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -280,17 +281,16 @@ acceptance.</p>
 <h2 id="consolidated-capture-requirements">Consolidated capture
 requirements</h2>
 <table>
-<caption>Table: Consolidated capture requirements</caption>
 <thead>
 <tr>
-<th scope="col">Requirement</th>
-<th scope="col">Status</th>
-<th scope="col">Present behavior and remaining work</th>
+<th>Requirement</th>
+<th>Status</th>
+<th>Present behavior and remaining work</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">CAP-001: capture modes and metadata</th>
+<td>CAP-001: capture modes and metadata</td>
 <td>Partial</td>
 <td>Named visible window, active window, display, full desktop, guided
 portions, optional exact rectangle, one-shot delay, PNG, clipboard copy
@@ -299,7 +299,7 @@ region, scrolling capture, timed sequences and actual scale-factor
 evidence remain. A single delay is not a sequence.</td>
 </tr>
 <tr>
-<th scope="row">CAP-002: Screenshot Inspector</th>
+<td>CAP-002: Screenshot Inspector</td>
 <td>Partial</td>
 <td>Dimensions, selectable local OCR, available engine confidence,
 editable prompts, grounded follow-ups, image copy and description export
@@ -309,14 +309,14 @@ search, keyboard zoom/crop and redaction. AI suggestions are not those
 tools.</td>
 </tr>
 <tr>
-<th scope="row">CAP-003: annotations and presentation tools</th>
+<td>CAP-003: annotations and presentation tools</td>
 <td>Pending</td>
 <td>No keyboard annotation objects, anchoring/revalidation, verbal
 preview, layering, magnification, pointer/focus highlight, break timer
 or spoken countdown.</td>
 </tr>
 <tr>
-<th scope="row">CAP-004: integrated capture workspace</th>
+<td>CAP-004: integrated capture workspace</td>
 <td>Partial</td>
 <td>Native menu, command palette, in-app accelerators, opt-in global
 keys, capture delay, local OCR, AI inspection and PNG clipboard copy
@@ -324,14 +324,14 @@ exist. Missing persistent named workspaces, recording, zoom/annotation,
 image resizing/conversion and broader clipboard transformations.</td>
 </tr>
 <tr>
-<th scope="row">CAP-005: Capture and Dictate</th>
+<td>CAP-005: Capture and Dictate</td>
 <td>Pending</td>
 <td>No screenshot-plus-dictation/transcript package or
 issue-tracker/HTML export journey. Existing transcription elsewhere in
 QUILL does not complete this workflow.</td>
 </tr>
 <tr>
-<th scope="row">CAP-006: comprehensive preflight</th>
+<td>CAP-006: comprehensive preflight</td>
 <td>Partial</td>
 <td>Invalid bounds, changed monitor topology, closed/minimized windows,
 changed window process and moved/resized guided-region source fail
@@ -345,25 +345,23 @@ completeness.</td>
 <h2 id="visual-inspection-requirements-relevant-to-screenshots">Visual
 inspection requirements relevant to screenshots</h2>
 <table>
-<caption>Table: Visual inspection requirements relevant to
-screenshots</caption>
 <thead>
 <tr>
-<th scope="col">Requirement</th>
-<th scope="col">Status</th>
-<th scope="col">Present behavior and remaining work</th>
+<th>Requirement</th>
+<th>Status</th>
+<th>Present behavior and remaining work</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">VIS-001: understand on-screen content</th>
+<td>VIS-001: understand on-screen content</td>
 <td>Partial</td>
 <td>Saved/reopened PNGs and newly captured windows/regions can be
 inspected with OCR or shared AI. No combined UIA/OCR/vision pipeline or
 unified live/window/webcam/video-frame command.</td>
 </tr>
 <tr>
-<th scope="row">VIS-002: layered structured answers</th>
+<td>VIS-002: layered structured answers</td>
 <td>Partial</td>
 <td>Rich presets request scene, text, controls, quality, privacy and
 chart explanations. Replies are selectable text; structured navigable
@@ -371,7 +369,7 @@ result layers, measured boxes and contrast calculations remain. A model
 inventing a location is not measured evidence.</td>
 </tr>
 <tr>
-<th scope="row">VIS-003: artifact-grounded conversation</th>
+<td>VIS-003: artifact-grounded conversation</td>
 <td>Partial</td>
 <td>Requests verify the same image hash, use an immutable temporary copy
 and retain prior conversation for follow-ups. Source evidence is
@@ -380,8 +378,7 @@ comparison remain; reopening an image does not guarantee restoration of
 all original source metadata.</td>
 </tr>
 <tr>
-<th scope="row">VIS-004: deterministic evidence before
-interpretation</th>
+<td>VIS-004: deterministic evidence before interpretation</td>
 <td>Partial</td>
 <td>Full image decode, nonzero dimensions, SHA-256, bounds and source
 identity checks exist. No UIA intersections, exhaustive
@@ -389,12 +386,12 @@ text/completeness checks or video/audio proofs. Uniform-pixel reporting
 does not prove protected-content detection.</td>
 </tr>
 <tr>
-<th scope="row">VIS-005: blind camera coach</th>
+<td>VIS-005: blind camera coach</td>
 <td>Pending; later camera work</td>
 <td>Not implemented by the still-screenshot milestone.</td>
 </tr>
 <tr>
-<th scope="row">VIS-006: configured providers and privacy</th>
+<td>VIS-006: configured providers and privacy</td>
 <td>Partial</td>
 <td>Shared provider adapters, provider-specific credentials, configured
 image-capable models, provider/model/endpoint consent, AI Off, Safe Mode
@@ -402,14 +399,14 @@ and offline capture/OCR are reused. Live-provider acceptance, cost
 estimates and complete provider/price disclosure remain.</td>
 </tr>
 <tr>
-<th scope="row">VIS-007: accessible visual revisions</th>
+<td>VIS-007: accessible visual revisions</td>
 <td>Pending</td>
 <td>No reversible keyboard/natural-language crop, annotation adjustment,
 background editing or versioned visual-edit workflow. Prompt editing
 does not edit the image.</td>
 </tr>
 <tr>
-<th scope="row">VIS-008: accessibility authoring</th>
+<td>VIS-008: accessibility authoring</td>
 <td>Partial</td>
 <td>Reviewable alt-text, extended-description, chart/text prompts and
 text export exist. Measured caption contrast/safe-area checks and
@@ -420,44 +417,43 @@ video/audio-description authoring remain.</td>
 <h2 id="expanded-prd-capture-requirements">Expanded PRD capture
 requirements</h2>
 <table>
-<caption>Table: Expanded PRD capture requirements</caption>
 <thead>
 <tr>
-<th scope="col">Requirement</th>
-<th scope="col">Status</th>
-<th scope="col">Present behavior and remaining work</th>
+<th>Requirement</th>
+<th>Status</th>
+<th>Present behavior and remaining work</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">CP-010: upstream compile and inventory spike</th>
+<td>CP-010: upstream compile and inventory spike</td>
 <td>Unverified</td>
 <td>Official source/license research is documented. No independent build
 of permitted upstream modules or completed dependency/packaging
 inventory. No upstream code has been imported.</td>
 </tr>
 <tr>
-<th scope="row">CP-011: zoom/presentation adapter</th>
+<td>CP-011: zoom/presentation adapter</td>
 <td>Pending</td>
 <td>No integrated zoom, annotation, magnification, timer, mirroring or
 screen-recording adapter. Current still capture uses existing
 Windows/Pillow dependencies.</td>
 </tr>
 <tr>
-<th scope="row">CP-012: capture targets and geometry</th>
+<td>CP-012: capture targets and geometry</td>
 <td>Partial</td>
 <td>Full monitor, chosen window, guided portions and optional numeric
 rectangle exist. UIA control selection and dedicated keyboard
 move/resize increments remain.</td>
 </tr>
 <tr>
-<th scope="row">CP-013: named regions, combining, annotation</th>
+<td>CP-013: named regions, combining, annotation</td>
 <td>Pending</td>
 <td>The in-session repeat recipe is not multiple saved named regions. No
 combined shots or keyboard annotations.</td>
 </tr>
 <tr>
-<th scope="row">CP-014: local OCR</th>
+<td>CP-014: local OCR</td>
 <td>Partial</td>
 <td>Shared offline OCR returns selectable text; description export
 includes observations and confidence when supplied. Real-engine
@@ -465,27 +461,26 @@ availability/quality and complete copy/export acceptance need
 testing.</td>
 </tr>
 <tr>
-<th scope="row">CP-015: scrolling/panoramic capture</th>
+<td>CP-015: scrolling/panoramic capture</td>
 <td>Pending</td>
 <td>No stitching, preview or partial-stitch recovery/warnings.</td>
 </tr>
 <tr>
-<th scope="row">CP-016: accessibility evidence bundle</th>
+<td>CP-016: accessibility evidence bundle</td>
 <td>Partial</td>
 <td>PNG plus JSON/Markdown evidence, source metadata and unverified
 observations exist. Reproduction steps, control details, annotation
 metadata and a bundled package remain.</td>
 </tr>
 <tr>
-<th scope="row">CP-017: keyboard alternatives to upstream pointer
-actions</th>
+<td>CP-017: keyboard alternatives to upstream pointer actions</td>
 <td>Unverified</td>
 <td>Current controls are native and keyboard-oriented; no upstream
 pointer surface has been integrated. This does not prove keyboard parity
 for the future adapter.</td>
 </tr>
 <tr>
-<th scope="row">CP-018: accessible drawing-object model</th>
+<td>CP-018: accessible drawing-object model</td>
 <td>Pending</td>
 <td>No drawing surface or object list, focus, selection, order or
 editable geometry model.</td>
@@ -501,17 +496,16 @@ acceptance remain separate work.</p>
 <h2 id="verification-requirements-and-release-gates">Verification
 requirements and release gates</h2>
 <table>
-<caption>Table: Verification requirements and release gates</caption>
 <thead>
 <tr>
-<th scope="col">Requirement</th>
-<th scope="col">Status</th>
-<th scope="col">Present behavior and remaining work</th>
+<th>Requirement</th>
+<th>Status</th>
+<th>Present behavior and remaining work</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">VERIFY-001: complete evidence report</th>
+<td>VERIFY-001: complete evidence report</td>
 <td>Partial</td>
 <td>JSON plus readable Markdown include image identity, dimensions,
 hash, decode results and unverified observations. No complete
@@ -519,54 +513,52 @@ user-goal/configuration/steps/error/provenance/export schema covering
 the whole PRD.</td>
 </tr>
 <tr>
-<th scope="row">VERIFY-002: result states and Strict Publish</th>
+<td>VERIFY-002: result states and Strict Publish</td>
 <td>Partial</td>
 <td>Objective checks are distinguished from unverified visual/privacy
 findings. No full state machine or Strict Publish gate/waiver
 workflow.</td>
 </tr>
 <tr>
-<th scope="row">VERIFY-003: comprehensive preflight</th>
+<td>VERIFY-003: comprehensive preflight</td>
 <td>Partial</td>
 <td>Geometry and source checks exist; full privacy/semantic preflight,
 storage estimates and practice-video checks do not.</td>
 </tr>
 <tr>
-<th scope="row">VERIFY-004/005/006: recording/export/routing proof</th>
+<td>VERIFY-004/005/006: recording/export/routing proof</td>
 <td>Pending; later audiovisual work</td>
 <td>Still-image decode/hash evidence is not recording recovery, media
 sampling, audiovisual timing or external privacy-isolation proof.</td>
 </tr>
 <tr>
-<th scope="row">VERIFY-007: guided verification questions</th>
+<td>VERIFY-007: guided verification questions</td>
 <td>Partial</td>
 <td>Readable capture guidance and framing prompts help users choose and
 review sources. No complete actionable issue list with
 jump-to-target/frame/track and correction history.</td>
 </tr>
 <tr>
-<th scope="row">VERIFY-008: release benchmark</th>
+<td>VERIFY-008: release benchmark</td>
 <td>Unverified</td>
 <td>Mandatory checks and human outcome evidence are not all complete. Do
 not claim screenshot release readiness.</td>
 </tr>
 <tr>
-<th scope="row">Expanded GATE-08: UIA capture plus numbered
-annotation</th>
+<td>Expanded GATE-08: UIA capture plus numbered annotation</td>
 <td>Not passed</td>
 <td>UIA selection and annotation are missing, so OCR and PNG evidence
 alone cannot pass it.</td>
 </tr>
 <tr>
-<th scope="row">Expanded GATE-09: authorized cloud transmission</th>
+<td>Expanded GATE-09: authorized cloud transmission</td>
 <td>Partial</td>
 <td>Consent refusal, AI Off, Safe Mode, exact-image grounding and queued
 automatic-permission revocation are tested. Live-provider/price
 disclosure and network observation acceptance remain.</td>
 </tr>
 <tr>
-<th scope="row">Expanded GATE-10 and consolidated upgrade/accessibility
-gates</th>
+<td>Expanded GATE-10 and consolidated upgrade/accessibility gates</td>
 <td>Unverified</td>
 <td>Source identity/version/legacy regressions have tests.
 Installed/portable upgrade, rollback, shortcut behavior and actual
@@ -603,49 +595,48 @@ complete the PRD’s more demanding guided-capture requirements.</p>
 <h2 id="cross-cutting-screenshot-acceptance">Cross-cutting screenshot
 acceptance</h2>
 <table>
-<caption>Table: Cross-cutting screenshot acceptance</caption>
 <thead>
 <tr>
-<th scope="col">Requirements</th>
-<th scope="col">Status and evidence still needed</th>
+<th>Requirements</th>
+<th>Status and evidence still needed</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">UX-001/002/004/008; A11Y-004/008</th>
+<td>UX-001/002/004/008; A11Y-004/008</td>
 <td>Partial: named sources, guided portions, optional typed geometry,
 readable plan and inspection steps exist. No complete
 guided/standard/advanced workspace with structured OCR-element
 navigation or correction loop.</td>
 </tr>
 <tr>
-<th scope="row">UX-003; A11Y-009</th>
+<td>UX-003; A11Y-009</td>
 <td>Partial: Capture menu, command palette, configurable in-app keys,
 global manager and authored F1 help exist. Full F6 workspace landmarks
 and end-to-end shortcut collision/AT acceptance remain.</td>
 </tr>
 <tr>
-<th scope="row">UX-005; A11Y-014/015/016/017</th>
+<td>UX-005; A11Y-014/015/016/017</td>
 <td>Partial: busy chat rejects duplicate submissions without disabling
 its focused action. Source refresh preserves missing selections. Real
 focus stability, composite-field input and refresh behavior require AT
 testing; these tests do not certify all shell interactions.</td>
 </tr>
 <tr>
-<th scope="row">UX-006; A11Y-005/011/012</th>
+<td>UX-006; A11Y-005/011/012</td>
 <td>Partial: shared speech/braille/text announcements and selectable
 guidance are reused. Full verbosity modes, searchable screenshot-event
 history and measured announcement behavior remain unverified.</td>
 </tr>
 <tr>
-<th scope="row">UX-007; A11Y-001/002/003/006/007/010/013</th>
+<td>UX-007; A11Y-001/002/003/006/007/010/013</td>
 <td>Unverified: native controls, names/help, scrolling layout and
 explicit errors exist. JAWS/NVDA/Narrator, braille, contrast, 200–400%
 scaling, visible focus, keyboard-only completion and 8 GB hardware
 require outcome logs.</td>
 </tr>
 <tr>
-<th scope="row">TRAY-001/003/004</th>
+<td>TRAY-001/003/004</td>
 <td>Partial: opt-in global screenshot actions work without restoring
 Studio; registration failure is reported. A dedicated take-screenshot
 tray entry, background job/verification summaries and full tray
@@ -653,20 +644,20 @@ accessibility remain. Global keys are not equivalent to completing the
 tray menu.</td>
 </tr>
 <tr>
-<th scope="row">Expanded SEC-004; consolidated privacy preflight</th>
+<td>Expanded SEC-004; consolidated privacy preflight</td>
 <td>Partial: consent and AI state are checked. No unified accessible
 privacy dashboard or independently proved absence of sensitive
 screenshot content.</td>
 </tr>
 <tr>
-<th scope="row">Expanded REL-001–006; consolidated seamless upgrade</th>
+<td>Expanded REL-001–006; consolidated seamless upgrade</td>
 <td>Unverified: stable identities/data paths and version-consistency
 regressions exist. Installed upgrade/rollback, portable acceptance,
 signed release assets/checksums and complete release documentation
 require release evidence.</td>
 </tr>
 <tr>
-<th scope="row">Expanded sections 14, 15.1 and 20</th>
+<td>Expanded sections 14, 15.1 and 20</td>
 <td>Unverified: no complete resource, hardware, fault-injection or
 observed blind-user outcome matrix. Required capture gates must pass
 before claiming this phase complete.</td>

@@ -408,3 +408,50 @@ def test_settings_dialog_builds_and_saves(app, tmp_path) -> None:
     assert saved.temperature_unit == "C"
     assert saved.quick_include_humidity is True
     dlg.dialog.Destroy()
+
+
+def test_a_cut_short_reply_or_a_failed_poll_still_arms_the_next_one(
+    app, tmp_path, monkeypatch
+) -> None:
+    import http.client
+
+    from quill.core.weather import locations as loc_store
+    from quill.core.weather import nws
+    from quill.ui.main_frame_weather import WeatherMixin
+
+    store = loc_store.WeatherLocationStore()
+    store.add(WeatherLocation(display_name="Tucson, AZ", latitude=32.22, longitude=-110.97))
+    loc_store.save_locations(tmp_path, store)
+
+    class _Host(WeatherMixin, _MenuHost):
+        def _weather_data_dir(self):
+            return tmp_path
+
+    frame = wx.Frame(None)
+    host = _Host(frame, wx)
+    bar = wx.MenuBar()  # kept alive: the monitor relabels its menu item
+    host._append_weather_menu(bar)
+    host.toggle_weather_monitoring()
+    jobs: list[dict] = []
+    host._task_manager = SimpleNamespace(  # type: ignore[assignment]
+        submit=lambda _n, work, **k: jobs.append({"work": work, **k})
+    )
+    host._wx = SimpleNamespace(CallAfter=lambda fn, *a: fn(*a))
+    armed: list[int] = []
+    host._weather_monitor_timer = SimpleNamespace(StartOnce=armed.append, Stop=lambda: None)
+
+    def cut_short(_url, **_k):
+        raise http.client.IncompleteRead(b"{")
+
+    monkeypatch.setattr(nws, "http_json", cut_short)
+    host._weather_monitor_poll()
+    result = jobs[-1]["work"]()
+    assert isinstance(result, nws.WeatherError)  # returned, not raised
+    jobs[-1]["on_success"]("weather-monitor", result)
+    assert len(armed) == 1
+
+    host._weather_monitor_poll()  # a worker that dies outright completes the round too
+    jobs[-1]["on_failure"]("weather-monitor", RuntimeError("boom"))
+    assert len(armed) == 2
+    host.stop_weather_monitoring(announce=False)
+    frame.Destroy()

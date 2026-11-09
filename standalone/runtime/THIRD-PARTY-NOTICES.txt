@@ -14,9 +14,9 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 60 components
+  MIT License: 64 components
   BSD 3-Clause License: 23 components
-  Apache License, version 2.0: 12 components
+  Apache License, version 2.0: 14 components
   Python Software Foundation License, version 2: 6 components
   GNU General Public License, version 3: 4 components
   GNU Lesser General Public License, version 2.1: 4 components
@@ -1071,7 +1071,7 @@ wxPython and wxWidgets
 ----------------------
 
 What it is: The windows, menus and controls of every app.
-Version: 4.3.1
+Version: 4.3.2
 Licence: wxWindows Library Licence 3.1 (LGPL-2.0-or-later with an exception for binary distribution); bundles Microsoft's WebView2Loader and cairo under their own terms
 Copyright: wxPython: Copyright (c) 1998-2026 Robin Dunn and contributors; wxWidgets: Copyright (c) 1998-2005 Julian Smart, Robert Roebling et al
 Upstream: https://wxpython.org/
@@ -1143,6 +1143,72 @@ Copyright: Copyright Gradium
 Upstream: https://github.com/gradium-ai/xn-ptts
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the copyright notice and the permission notice with every copy. Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
+
+Node.js (node.exe)
+------------------
+
+What it is: The JavaScript runtime the language servers and Prettier run on, run as a separate program. The official Windows x64 build, SHA-256 pinned, ships in the shared runtime's tools\nodejs with Node's LICENSE as NODE-LICENSE.txt; that file also carries the licences of the parts Node itself bundles (V8, ICU, OpenSSL, libuv, zlib and the rest).
+Version: 24.22.1
+Licence: MIT, with the permissive licences of Node's own bundled parts in the same file
+Copyright: Copyright Node.js contributors. All rights reserved.
+Upstream: https://nodejs.org/
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+VS Code HTML, CSS, JSON and Markdown language servers (vscode-langservers-extracted)
+------------------------------------------------------------------------------------
+
+What it is: The language servers VS Code uses for HTML, CSS, JSON and Markdown, packaged on their own: suggestions, problems and quick fixes in those files. Run by the bundled Node from tools\language-servers, with each package's licence in its own folder and a list in LANGUAGE-SERVERS-LICENSES.txt.
+Version: 4.10.0
+Licence: MIT
+Copyright: Copyright (c) 2020 hrsh7th; the servers themselves Copyright (c) Microsoft Corporation
+Upstream: https://github.com/hrsh7th/vscode-langservers-extracted
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+typescript-language-server
+--------------------------
+
+What it is: The language server for JavaScript and TypeScript, which drives TypeScript's own tsserver. Run by the bundled Node from tools\language-servers.
+Version: 6.0.2
+Licence: Apache-2.0, with parts copied from VS Code under MIT
+Copyright: Copyright TypeFox and contributors; parts Copyright (c) Microsoft Corporation
+Upstream: https://github.com/typescript-language-server/typescript-language-server
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
+
+TypeScript (tsserver)
+---------------------
+
+What it is: Microsoft's TypeScript language service, the same one VS Code uses for JavaScript and TypeScript. In tools\language-servers, with its LICENSE.txt and ThirdPartyNoticeText.txt.
+Version: 6.0.3
+Licence: Apache-2.0
+Copyright: Copyright (c) Microsoft Corporation
+Upstream: https://github.com/microsoft/TypeScript
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
+
+Pyright
+-------
+
+What it is: Microsoft's open-source Python language server, the engine inside Pylance (Pylance itself is not included: its licence allows only Microsoft's products). Suggestions, problems and parameter hints in Python files. In tools\language-servers.
+Version: 1.1.414
+Licence: MIT
+Copyright: Copyright (c) Microsoft Corporation. All rights reserved.
+Upstream: https://github.com/microsoft/pyright
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
+
+Prettier
+--------
+
+What it is: The code formatter behind Format Document for JavaScript, TypeScript, CSS, JSON, HTML, Markdown and YAML. Run by the bundled Node from tools\language-servers.
+Version: 3.9.10
+Licence: MIT, with its bundled parts' notices in its own THIRD-PARTY-NOTICES.md
+Copyright: Copyright (c) James Long and contributors
+Upstream: https://prettier.io/
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
 AUDIO AND VIDEO
 ===============
@@ -2118,7 +2184,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 Apache License, version 2.0
 ---------------------------
 
-Used by: cryptography, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe), ptts (Phonon text-to-speech runtime), Phonon 31m English model and voices.
+Used by: cryptography, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe), ptts (Phonon text-to-speech runtime), Phonon 31m English model and voices, typescript-language-server, TypeScript (tsserver).
 
 What it asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 
@@ -4620,7 +4686,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), ptts (Phonon text-to-speech runtime), Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), ripgrep (rg.exe), ptts (Phonon text-to-speech runtime), Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), Node.js (node.exe), VS Code HTML, CSS, JSON and Markdown language servers (vscode-langservers-extracted), Pyright, Prettier.
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

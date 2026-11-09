@@ -103,8 +103,12 @@ class GitHubItemsMixin:
         else:
             self._set_status("Could not open the GitHub link in your default browser.")
 
-    def open_github_items_viewer(self) -> None:
-        """File > Open Remote > GitHub Items..."""
+    def open_github_items_viewer(self, initial_view: str = "") -> None:
+        """File > Open Remote > GitHub Items..., and the GitHub menu's three views.
+
+        *initial_view* is the Items view to open on (``"runs"``, ``"releases"``);
+        empty for the issues view, as it always opened.
+        """
         # items_provider pulls the GitHub request stack (urllib); it is only
         # needed when the viewer is opened, so keep it off the cold-start path.
         from quill.core.github.items_provider import (
@@ -142,11 +146,13 @@ class GitHubItemsMixin:
         initial_repo = self._github_items_initial_repo()
         from quill.ui.github_items_dialog import GitHubItemsDialog
 
-        self._announce("Opening GitHub Items")
+        # Nothing said on the way in: the dialog's title and its focused list
+        # are what the screen reader says next (GATE-13).
         GitHubItemsDialog(
             self.frame,
             provider,
             initial_repo=initial_repo,
+            initial_view=initial_view,
             open_file_reference_cb=self.open_github_file_url,
             announce_cb=self._announce,
             ai_acquire_cb=self._github_ai_summarizer,

@@ -284,19 +284,19 @@ def _output_path(
     return dest_dir / rel_parent / filename
 
 
-def _resolve_conflict(path: Path, on_existing: OnExisting, planned: set[Path]) -> Path | None:
-    """Apply the existing-file policy; None means "skip this job".
-
-    Collisions are checked against both on-disk files and paths already planned
-    in this batch, so two sources that would map to one name never clobber.
-    """
+def _resolve_conflict(
+    path: Path, on_existing: OnExisting, planned: set[Path], sources: Iterable[Path] = ()
+) -> Path | None:
+    """Apply the existing-file policy; None means "skip this job". Collisions are
+    checked against on-disk files and paths already planned in this batch, and
+    Overwrite never replaces one of the batch's own *sources* (it renames)."""
 
     def taken(p: Path) -> bool:
         return p in planned or p.exists()
 
     if not taken(path):
         return path
-    if on_existing is OnExisting.OVERWRITE:
+    if on_existing is OnExisting.OVERWRITE and path.resolve() not in sources:
         return path
     if on_existing is OnExisting.SKIP:
         return None
@@ -374,7 +374,7 @@ def plan_jobs(
             index0=index0,
             total=total,
         )
-        resolved_out = _resolve_conflict(out, on_existing, planned)
+        resolved_out = _resolve_conflict(out, on_existing, planned, seen)
         if resolved_out is None:
             skipped.append(src)
             continue

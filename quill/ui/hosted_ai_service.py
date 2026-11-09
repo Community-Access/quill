@@ -67,7 +67,9 @@ class SignInCode:
         it is nine things a person can hear one at a time -- and they are going
         to be typing it into a different device with the reader still talking.
         """
-        return " ".join(self.user_code.replace("-", " dash "))
+        from quill.core.ai.device_login import spoken_code
+
+        return spoken_code(self.user_code)
 
 
 class AiService(

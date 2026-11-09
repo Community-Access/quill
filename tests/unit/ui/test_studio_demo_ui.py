@@ -694,3 +694,121 @@ def test_microphone_channel_choice_reaches_the_plan(parent, tmp_path):
         assert mic.channel_mode == "1"
     finally:
         dialog.Destroy()
+
+
+# -- a live show: starting, failing, protected on close, and quitting on air -----------
+
+
+class _LiveHost(Host):
+    def _announce_settled(self, sentence, *, status=""):
+        self.spoken.append(sentence)
+
+    def _demo_quiet_start(self, _plan):
+        pass
+
+
+class _FakeStream:
+    def __init__(self, *_args, fail=False, **kwargs):
+        self.fail = fail
+        self.stopped = 0
+        self.archive_path = kwargs.get("archive_path", "")
+
+    def start(self):
+        if self.fail:
+            raise OSError("refused")
+
+    def stop(self):
+        self.stopped += 1
+
+    def status_line(self):
+        return "On air."
+
+
+def _go_live(host, monkeypatch, *, fail=False):
+    from quill.core import storage
+    from quill.core.streaming import StreamSettings
+    from quill.platform.windows import credential_manager, live_stream
+    from quill.ui import studio_live_status
+
+    made = []
+
+    def stream(*args, **kwargs):
+        made.append(_FakeStream(*args, fail=fail, **kwargs))
+        return made[-1]
+
+    monkeypatch.setattr(credential_manager, "save_generic_credential", lambda *a, **k: None)
+    monkeypatch.setattr(storage, "write_json_atomic", lambda *a, **k: None)
+    monkeypatch.setattr(live_stream, "LiveStream", stream)
+    monkeypatch.setattr(
+        studio_live_status,
+        "LiveStatusFrame",
+        lambda **_k: SimpleNamespace(
+            ShowWithoutActivating=lambda: None, finish=lambda: made.append("finished")
+        ),
+    )
+    host._start_stream(StreamSettings(host="h.example"), "pw", {}, "ffmpeg")
+    return made
+
+
+def test_broadcast_cannot_start_twice_and_a_failed_start_stops_off_the_ui_thread(
+    parent, monkeypatch
+):
+    host = _LiveHost(parent)
+    made = _go_live(host, monkeypatch, fail=True)
+    host.broadcast_live()  # still connecting
+    assert host.spoken[-1] == "Studio is already going live."
+    name, work, kwargs = host._task_manager.jobs[-1]
+    assert name == "Go live"
+    with pytest.raises(OSError):
+        work()
+    assert made[0].stopped == 1  # stopped by the worker, before the UI hears of it
+    kwargs["on_failure"](None, OSError("refused"))
+    assert made[0].stopped == 1 and not host._live_starting
+    assert host.spoken[-1] == "Could not go live: refused"
+
+
+def test_a_live_show_is_protected_from_close_until_it_stops(parent, monkeypatch):
+    host = _LiveHost(parent)
+    made = _go_live(host, monkeypatch)
+    _name, work, kwargs = host._task_manager.jobs[-1]
+    work()
+    kwargs["on_success"](None, None)
+    assert list(host._protected_background_jobs.values()) == ["Broadcasting live"]
+    host.stop_broadcast()
+    assert host._protected_background_jobs == {} and "finished" in made
+
+
+def test_quitting_on_air_closes_the_status_window_and_hands_back_the_microphone(parent):
+    host = _LiveHost(parent)
+    stream, released, finished = _FakeStream(), [], []
+    host._live = stream
+    host._live_lock = SimpleNamespace(release=lambda: released.append(1))
+    host._live_status = SimpleNamespace(finish=lambda: finished.append(1))
+    host._protected_background_jobs["Broadcasting live"] = "Broadcasting live"
+    host._stream_shutdown()
+    assert (stream.stopped, released, finished) == (1, [1], [1])
+    assert host._live is None and host._live_status is None and host._live_lock is None
+    assert host._protected_background_jobs == {}
+
+
+def test_make_a_video_asks_before_replacing_one_already_there(parent, tmp_path):
+    from quill.core.picture_video import PictureVideoPlan
+
+    out = tmp_path / "show - video.mp4"
+    plan = PictureVideoPlan(tmp_path / "c.png", tmp_path / "s.m4a", out)
+    host = Host(parent)
+    assert host._picture_video_output(plan) is plan  # nothing there: no question
+    out.write_bytes(b"old")
+    for answer, expected in ((wx.ID_YES, out), (wx.ID_NO, tmp_path / "show - video (2).mp4")):
+        host._show_message_box = lambda *_a, answer=answer: answer
+        assert host._picture_video_output(plan).output == expected
+    host._show_message_box = lambda *_a: wx.ID_CANCEL
+    assert host._picture_video_output(plan) is None
+
+
+def test_a_failed_screen_capture_is_spoken(parent, tmp_path):
+    host = Host(parent)
+    host._start_capture(DESKTOP, tmp_path, 0)
+    host._task_manager.jobs[-1][2]["on_failure"](None, OSError("display gone"))
+    assert host.spoken[-1] == "Capture did not complete: display gone"
+    assert not host._capture_pending

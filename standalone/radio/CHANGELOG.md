@@ -47,6 +47,30 @@ radio player by serrebidev (github.com/serrebidev/blindradio, MIT). Thank you.
   on and sign in, and a song counts after a minute heard. Identify This Song
   can ask AudD instead of AcoustID, with your own AudD token.
 
+### Fixes to the new features (2026-11-09)
+
+- **Scrobbling counts only what you hear.** Time with the station stopped or
+  paused no longer counts toward the minute, so a song played for ten seconds
+  and stopped is never sent. Songs heard just before you close Quill Radio are
+  kept and sent next time, one song a service refuses no longer throws away
+  the rest sent with it, and a send that never came back no longer stops
+  scrobbling until you restart.
+- **Typing your own last.fm key after signing in** now asks you to sign in
+  again, instead of keeping a sign-in that the new key makes every scrobble
+  fail with.
+- **Save Songs from the Buffer is safer.** Closing Quill Radio while it saves
+  no longer risks a crash, and changing station partway through stops the
+  save instead of writing songs from the new station's buffer.
+- **IPRD folders and Find Stations no longer wait on each other.** While the
+  catalogue is fetched, folders use the copy already held, and an outage makes
+  each waiting folder give up at once rather than in turn. An odd or oversized
+  catalogue is refused instead of failing.
+- **A reply cut short** from IPRD or a station's playlist is a plain failure,
+  and What the Station Played goes on to try the station's other Triton mounts.
+- **What's Playing keeps talking** if dial tuning has a problem with a title.
+- **The dial hiss plays on its own.** Stopping it no longer cuts off other
+  sounds, and a sound played while it runs no longer stops it for good.
+
 ## [3.2.0] - 2026-10-03
 
 Testing rebuild: **3.2.0 (build 5)**. The packages have not been published yet.

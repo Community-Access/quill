@@ -11,6 +11,49 @@ can give them some in the Keymap Editor.
 Throughout, Shift+F10 or the Applications key opens the context menu of
 whatever has focus, and Escape closes the window you are in.
 
+## The GitHub menu, in workbench mode
+
+GitHub Workbench Mode is **View > GitHub Workbench Mode**: `Alt+V`, then `K`.
+While it is on, `Alt+G` opens the GitHub menu, and these letters choose a row
+in it. They are the same in both apps; the rows marked QUILL only are not in
+QUILL Lite's menu.
+
+| Letter | Row |
+| --- | --- |
+| `V` | Leave Workbench Mode |
+| `I` | Inbox... |
+| `W` | My Work... |
+| `N` | Notifications... |
+| `P` | Issues and Pull Requests... |
+| `A` | Actions Runs... |
+| `E` | Releases... |
+| `T` | Repository Items... |
+| `X` | Explore GitHub... |
+| `R` | Open GitHub Reference... (QUILL only) |
+| `O` | Open a Repository... (QUILL only) |
+| `C` | Clone Repository... |
+| `U` | GitHub File URL... (QUILL only) |
+| `M` | Commit to GitHub... (QUILL only) |
+| `Y` | Sync Folder with GitHub... (QUILL only) |
+| `D` | Repository Admin submenu (QUILL only) |
+| `L` | Local Git submenu (QUILL only) |
+| `S` | Codespaces submenu (QUILL only) |
+| `G` | Manage GitHub Accounts... |
+| `H` | Open GitHub Guide |
+
+None of these rows, and not the mode itself, has a key out of the box. A key
+you give one in the Keymap Editor works in both modes.
+
+### Clone Repository
+
+| Key | What it does |
+| --- | --- |
+| `Alt+R` | Move to Repository (owner/name or address) |
+| `Alt+I` | Move to Into this folder |
+| `Alt+B` | Browse... for the folder |
+| Enter | Clone |
+| Escape | Close without cloning |
+
 ## GitHub Items
 
 ### Anywhere in the window

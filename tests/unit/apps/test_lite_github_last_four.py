@@ -27,7 +27,9 @@ def test_last_four_actions_live_on_the_shared_dialogs() -> None:
 
 
 def test_lite_passes_its_document_to_new_gist() -> None:
-    source = inspect.getsource(DocumentToolsMixin.cmd_github_workbench)
+    # The row goes through the one opener every GitHub row shares (lite_github_workbench.py).
+    assert "self.open_github_items()" in inspect.getsource(DocumentToolsMixin.cmd_github_workbench)
+    source = inspect.getsource(DocumentToolsMixin.open_github_items)
     assert 'gist_source_cb=getattr(self, "_github_gist_source", None)' in source
     assert issubclass(ShellMenuMixin, GitHubFileOpenMixin)
 

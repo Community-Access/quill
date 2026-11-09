@@ -1109,6 +1109,25 @@ Export as HTML used to be Alt+F, then H. It gave the letter up because it
 still has its own key, **Ctrl+Alt+Shift+End**, and Manage GitHub Accounts has
 nothing else.
 
+**File > Clone Repository...** (**Alt+F**, then **Y**) copies a whole
+repository to a folder on your computer. Type `owner/name` or paste its
+address, choose the folder, and press Clone. When it is done, QUILL Lite
+offers to open a file from the new folder. A private repository works when you
+are signed in, and your token is never written into the copy. Cloning needs
+Git for Windows; if it is missing, QUILL Lite says so and offers its download
+page.
+
+**View > GitHub Workbench Mode** (**Alt+V**, then **K**) is for an afternoon of
+GitHub work. A **GitHub** menu (**Alt+G**) joins the menu bar after Tools, and
+the three GitHub rows above move into it, next to rows that open a view in
+one step: **Inbox...**, **My Work...**, **Notifications...**,
+**Issues and Pull Requests...**, **Actions Runs...**, **Releases...** and
+**Explore GitHub...**. Its first row, **Leave Workbench Mode**, turns it off
+again, and the rows go back to File. The mode belongs to one window; the
+others keep their own menus. It works in the empty window too, where it makes
+a GitHub launcher with nothing to write in. Chapter 2 of the GitHub Guide
+walks through the menu.
+
 All of it is in its own book, which ships with QUILL Lite:
 [The GitHub Guide for QUILL and QUILL Lite](lite-github-guide.html). Start
 with [Chapter 1: Getting started](lite-github-guide-01-getting-started.html)

@@ -1502,7 +1502,13 @@ only profile that turns on the coding features:
 <li><strong>The developer features already in QUILL move behind
 it:</strong> the shell, Git and GitHub, Codespaces, IntelliSense, the
 Developer Console and agent standards lint. They stay available, but are
-off in every other profile rather than merely quiet.</li>
+off in every other profile rather than merely quiet. <strong>Changed
+2026-11-08 (Jeff, the Workbench menu plan, decision 1):</strong> GitHub
+Remote Access (<code>core.github_remote</code>) no longer depends on
+<code>core.developer</code>. Reading issues and reviewing pull requests
+is not coding, and QUILL Lite had the Workbench in every profile, which
+put it ahead of QUILL. Local Git (<code>localgit.*</code>) stays a
+developer feature.</li>
 <li><strong>One new feature id, <code>core.developer</code>, groups
 them.</strong> Each developer feature depends on it (the catalogue’s
 <code>dependencies</code>). Turning it on by hand in Manage Individual

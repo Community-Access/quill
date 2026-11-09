@@ -54,6 +54,15 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "github.view_security_alerts": "core.github_remote",
     "github.list_codespaces": "core.github_remote",
     "github.create_codespace": "core.github_remote",
+    # GitHub Workbench Mode (2026-11-08): the switch and the GitHub menu's rows.
+    "view.github_workbench_mode": "core.github_remote",
+    "github.workbench_inbox": "core.github_remote",
+    "github.workbench_my_work": "core.github_remote",
+    "github.workbench_issues": "core.github_remote",
+    "github.workbench_actions_runs": "core.github_remote",
+    "github.workbench_releases": "core.github_remote",
+    "github.workbench_explore": "core.github_remote",
+    "github.clone_repository": "core.github_remote",
     "braille.read_status": "core.braille",
     "braille.read_detailed_status": "core.braille",
     "braille.read_line_and_cell": "core.braille",
@@ -275,7 +284,9 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "edit.find_next": "core.search",
     "edit.find_previous": "core.search",
     "edit.find_all_matches": "core.search",
-    "edit.word_prediction": "core.intellisense",
+    # In every profile: a list you ask for cannot get in anyone's way. The
+    # profile switch (core.intellisense) governs only "as you type".
+    "edit.word_prediction": "core.edit",
     "edit.replace": "core.search",
     "edit.replace_all": "core.search.regex",
     "edit.insert_link": "core.links",

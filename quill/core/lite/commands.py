@@ -21,6 +21,7 @@ wx-free on purpose: the tests, the shortcut text and F1 import it without a disp
 from __future__ import annotations
 
 from quill.core.forms import menu as forms_menu
+from quill.core.github import workbench_menu
 from quill.core.lite.commands_ai import (
     AI_MENU_ROWS,
     PROJECT_EDIT_ROWS,
@@ -222,6 +223,7 @@ COMMANDS: list[CommandRow] = [
     # (bad.md 5.4). Alt+Shift+G and Ctrl+Alt+L still go straight to their own
     # list, which is the faster route when you already know which kind you want.
     ("&Edit", "&Go To...", "Ctrl+G", "cmd_goto_line", ""),
+    ("&Edit", "&Word Prediction...", "Ctrl+.", "cmd_word_prediction", ""),  # QUILL's (rule 2)
     ("&Edit", "", "", "", "sep"),
     # A screen reader says "space" for four different characters. This is the
     # only way to find out which one broke the search.
@@ -498,6 +500,12 @@ COMMANDS: list[CommandRow] = [
     # rather than a setting. F6 with the bar hidden says so rather than failing
     # silently (see cmd_focus_status_bar).
     ("&View", "&Status Bar", "Alt+Shift+B", "cmd_toggle_status_bar", "check"),
+    # QUILL's View > Problems, the same rows; no chords (rule 9, reasons in the tests).
+    ("&View", "&Problems", "", "", "sub"),
+    ("&View|&Problems", "&Show Pane", "", "cmd_toggle_problems_pane", "check"),
+    ("&View|&Problems", "", "", "", "sep"),
+    ("&View|&Problems", "&This File Only", "", "cmd_problems_this_file", "check"),
+    ("&View|&Problems", "&All Open Files", "", "cmd_problems_all_files", "check"),
     ("&View", "", "", "", "sep"),
     # Notepad's own zoom chords.
     ("&View", "&Increase Text Size", "Ctrl+=", "cmd_zoom_in", ""),
@@ -514,6 +522,10 @@ COMMANDS: list[CommandRow] = [
     # sibling vacated on the same day: one letter, two scopes.
     ("&View", "Li&ne Statistics", "Ctrl+Alt+W", "cmd_line_statistics", ""),
     *PROJECT_VIEW_ROWS,  # the task's transcript and output: Developer only
+    ("&View", "", "", "", "sep"),
+    # GitHub Workbench Mode (quill/core/github/workbench_menu.py): QUILL's row,
+    # per window, no key in either editor (rule 9). See KEYLESS_WITH_REASON.
+    ("&View", workbench_menu.TOGGLE_VIEW_LABEL, "", workbench_menu.TOGGLE_LITE_HANDLER, "check"),
     # -- Insert -------------------------------------------------------------
     # Everything that puts something into the document that is not typing. The
     # top three were Edit > Insert and keep their keys exactly; the bottom three
@@ -798,6 +810,9 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Code", "&Check This File...", "Ctrl+Alt+/", "cmd_check_this_file", ""),
     ("&Navigate|&Code", "Next P&roblem", "Ctrl+Alt+.", "cmd_next_problem", ""),
     ("&Navigate|&Code", "Previous Pro&blem", "Ctrl+Alt+,", "cmd_previous_problem", ""),
+    ("&Navigate|&Code", "", "", "", "sep"),
+    ("&Navigate|&Code", "Parameter &Hints", "", "cmd_parameter_hints", ""),
+    ("&Navigate|&Code", "&Language Servers...", "", "cmd_language_servers", ""),
     # -- Navigate > Bookmarks ------------------------------------------------
     # A place you meant to come back to. There is no scrollbar thumb to remember
     # the position of and no glance that finds the place again, so a bookmark is
@@ -1029,6 +1044,10 @@ COMMANDS: list[CommandRow] = [
     # commands and they are not run in the editing loop.
     ("&Tools|Indentin&g", "Convert to &Spaces", "Alt+F11", "cmd_indentation_to_spaces", ""),
     ("&Tools|Indentin&g", "Convert to &Tabs", "Alt+F12", "cmd_indentation_to_tabs", ""),
+    # -- GitHub (workbench mode only) ---------------------------------------
+    # The GitHub menu's own rows; workbench_menu.lite_arrange builds the menu
+    # itself, with the File rows that move into it, only while the mode is on.
+    *workbench_menu.lite_rows(),
     # -- Window -------------------------------------------------------------
     # Ctrl+F6 is the Windows MDI convention and Ctrl+Tab is what everyone
     # actually presses; both are bound, because a key somebody expects and

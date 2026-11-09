@@ -351,6 +351,7 @@ from quill.ui.main_frame_github import GitHubRemoteMixin
 from quill.ui.main_frame_github_admin import GitHubAdminMixin
 from quill.ui.main_frame_github_extras import GitHubExtrasMixin
 from quill.ui.main_frame_github_items import GitHubItemsMixin
+from quill.ui.main_frame_github_menu import GitHubWorkbenchMenuMixin
 from quill.ui.main_frame_glow import GlowEditorMixin, GlowFileMixin
 from quill.ui.main_frame_go_to import GoToMixin
 from quill.ui.main_frame_guides import GuidesMenuMixin
@@ -456,6 +457,7 @@ from quill.ui.settings_live_switches import at_startup as start_live_settings
 from quill.ui.sound_manager import post_sound
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.status_bar_role import mark_as_status_bar
+from quill.ui.suggestion_list import SuggestionPopup as _IntellisensePopup
 from quill.ui.word_view import WordDocumentSurface
 
 
@@ -563,123 +565,6 @@ class _DocumentTab:
 class _EpubNavigatorTarget:
     chapter_index: int
     heading_index: int | None = None
-
-
-class _IntellisensePopup:
-    def __init__(self, wx: object, parent: object) -> None:
-        self._wx = wx
-        self._accept_callback = None
-        self._dismiss_callback = None
-        self.frame = wx.Frame(
-            parent,
-            title="Word Prediction",
-            style=wx.FRAME_NO_TASKBAR | wx.STAY_ON_TOP | wx.BORDER_SIMPLE,
-        )
-        self.frame.SetSize(dip_size(self.frame, 420, 220))
-        root = wx.BoxSizer(wx.VERTICAL)
-        self.status = wx.StaticText(self.frame, label="")
-        root.Add(self.status, 0, wx.EXPAND | wx.ALL, 6)
-        self.listbox = wx.ListBox(self.frame)
-        # Accessible name so a screen reader announces the list's purpose if
-        # focus ever lands here directly.
-        self.listbox.SetName("Word prediction suggestions")
-        root.Add(self.listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
-        self.frame.SetSizer(root)
-        self.suggestions: list[IntellisenseSuggestion] = []
-        self.frame.Bind(wx.EVT_CLOSE, self._on_close)
-        self.listbox.Bind(wx.EVT_LISTBOX_DCLICK, self._on_accept)
-        # The intended flow keeps focus in the editor and drives this list from
-        # the editor's char hook. But focus can still land in the listbox (Tab,
-        # mouse, or screen-reader navigation into this floating window), and a
-        # bare wx.ListBox has no way out — Escape/Tab/Enter would do nothing,
-        # trapping the user. Handle those keys here too so the list is never a
-        # dead end regardless of where focus is.
-        self.listbox.Bind(wx.EVT_CHAR_HOOK, self._on_listbox_key)
-
-    def set_accept_callback(self, callback: object) -> None:
-        self._accept_callback = callback
-
-    def set_dismiss_callback(self, callback: object) -> None:
-        self._dismiss_callback = callback
-
-    def _on_close(self, event: object) -> None:
-        self.frame.Hide()
-        skip = getattr(event, "Skip", None)
-        if callable(skip):
-            skip()
-
-    def _on_accept(self, _event: object) -> None:
-        if callable(self._accept_callback):
-            self._accept_callback()
-
-    def _dismiss(self) -> None:
-        if callable(self._dismiss_callback):
-            self._dismiss_callback()
-
-    def _on_listbox_key(self, event: object) -> None:
-        """Keep the listbox from becoming a keyboard trap when it has focus.
-
-        Escape cancels; Enter and Tab accept the highlighted suggestion. All
-        three return focus to the editor (via the accept/dismiss callbacks),
-        mirroring the editor-focused behaviour. Arrow keys fall through to the
-        native listbox so the screen reader announces each selection."""
-        wx = self._wx
-        key_code = event.GetKeyCode()
-        if key_code == wx.WXK_ESCAPE:
-            self._dismiss()
-            return
-        if key_code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER, wx.WXK_TAB):
-            if callable(self._accept_callback):
-                self._accept_callback()
-            else:
-                self._dismiss()
-            return
-        event.Skip()
-
-    def update(self, suggestions: list[IntellisenseSuggestion], status: str) -> None:
-        self.suggestions = list(suggestions)
-        labels = [item.label for item in suggestions]
-        self.listbox.Set(labels)
-        if labels:
-            self.listbox.SetSelection(0)
-        self.status.SetLabel(status)
-
-    def show(self, position: tuple[int, int]) -> None:
-        self.frame.SetPosition(position)
-        show_without_activating = getattr(self.frame, "ShowWithoutActivating", None)
-        if callable(show_without_activating):
-            show_without_activating()
-        else:
-            self.frame.Show(True)
-        self.frame.Raise()
-
-    def hide(self) -> None:
-        self.frame.Hide()
-
-    def is_visible(self) -> bool:
-        # The popup's frame is a child of MainFrame's own frame; if that parent
-        # was torn down and rebuilt (e.g. a crash-recovery restart) without this
-        # popup object being recreated alongside it, self.frame is a deleted
-        # C/C++ object and IsShown() raises RuntimeError (#917/#918).
-        try:
-            return bool(self.frame.IsShown())
-        except RuntimeError:
-            return False
-
-    def selection_index(self) -> int:
-        return self.listbox.GetSelection()
-
-    def set_selection(self, index: int) -> None:
-        if not self.suggestions:
-            return
-        index = max(0, min(index, len(self.suggestions) - 1))
-        self.listbox.SetSelection(index)
-
-    def selected_suggestion(self) -> IntellisenseSuggestion | None:
-        index = self.listbox.GetSelection()
-        if index < 0 or index >= len(self.suggestions):
-            return None
-        return self.suggestions[index]
 
 
 # #615: Short product+version label for the window title bar. Read once at
@@ -810,6 +695,7 @@ class MainFrame(
     SshEditingMixin,
     GitHubRemoteMixin,
     GitHubItemsMixin,
+    GitHubWorkbenchMenuMixin,
     GitHubAdminMixin,
     GitHubExtrasMixin,
     GhBridgeMixin,
@@ -1308,9 +1194,7 @@ class MainFrame(
         self._init_radio()
         self._init_podcasts()
         self._init_media_sleep_timer()
-        self._intellisense_popup = _IntellisensePopup(wx, self.frame)
-        self._intellisense_popup.set_accept_callback(self._apply_intellisense_selection)
-        self._intellisense_popup.set_dismiss_callback(self._dismiss_intellisense_popup)
+        self._suggest_popup()  # the Word Prediction list (quill/ui/suggestion_list.py)
         self._tab_control_visible = bool(self.settings.show_tab_control)
         self._active_notebook = None  # type: ignore[assignment]  # Notebook | None
         self._entries_panel_visible = False
@@ -4254,7 +4138,9 @@ class MainFrame(
             return
 
         menu_by_key = {key: menu for menu, key in current if key is not None}
-        desired = cust.visible_top_keys(default_keys)
+        # Only the menus this bar has: GitHub is there in workbench mode alone,
+        # and AI only where AI is, so a saved order naming them must not fail.
+        desired = [key for key in cust.visible_top_keys(default_keys) if key in menu_by_key]
         # Detach every menu (from the end so indices stay valid), then re-append
         # the visible ones in the desired order and destroy the hidden ones.
         for index in range(menu_bar.GetMenuCount() - 1, -1, -1):
@@ -4302,15 +4188,12 @@ class MainFrame(
         budget test guards. The statusbar catches up from the deferred edit
         pass and the coalesced caret refresh instead.
 
-        # #615: Surface the QUILL version in the window title so screen
-        # readers announcing the focused window (JAWS Insert+T, NVDA+T,
-        # Narrator Caps+H) read the version along with the document
-        # name. The Ctrl+JAWSKey+V path lives in the OS layer and reads
-        # from the launcher's VersionInfo; for the portable build
-        # there is no versioned launcher, so JAWS reports only
-        # "Version" with no number. The window title is the only
-        # in-process channel we control, and it is reachable from
-        # every screen reader.
+        # #615: Surface the QUILL version in the window title so screen readers announcing the
+        # focused window (JAWS Insert+T, NVDA+T, Narrator Caps+H) read the version along with the
+        # document name. The Ctrl+JAWSKey+V path lives in the OS layer and reads from the launcher's
+        # VersionInfo; for the portable build there is no versioned launcher, so JAWS reports only
+        # "Version" with no number. The window title is the only in-process channel we control, and
+        # it is reachable from every screen reader.
 
         Both native calls are skipped when the strings are unchanged, which is
         every keystroke after the first: retitling the frame fires
@@ -4451,6 +4334,7 @@ class MainFrame(
         menu_bar = get_menu_bar()
         if menu_bar is None:
             return
+        self._refresh_github_readout(menu_bar)  # main_frame_github_menu.py
         context = self._current_markup_context()
         html_only = context == "html"
         # Markdown only, where it used to be Markdown *or* plain. A plain
@@ -8916,6 +8800,8 @@ class MainFrame(
         reveal = getattr(self, "_reveal_pane", None)
         if reveal is not None and reveal.panel.IsShown():
             labels.append("Reveal Codes")
+        if self._problems_pane_is_shown():
+            labels.append("Problems")
         if self._tab_control_visible:
             try:
                 has_tabs = self.notebook.GetPageCount() > 0
@@ -8954,6 +8840,8 @@ class MainFrame(
         while win is not None:
             if reveal is not None and "Reveal Codes" in regions and win is reveal.panel:
                 return "Reveal Codes"
+            if "Problems" in regions and self._is_problems_panel(win):
+                return "Problems"
             if preview_ctrl is not None and win is preview_ctrl and "Preview" in regions:
                 return "Preview"
             if "Document Tabs" in regions and win is self.notebook:
@@ -8979,6 +8867,9 @@ class MainFrame(
             if reveal is not None and reveal.panel.IsShown():
                 reveal.focus()
                 return
+        if label == "Problems" and self._problems_pane_is_shown():
+            self._focus_problems_pane()
+            return
         if label == "Document Tabs":
             self.notebook.SetFocus()
             return
@@ -12754,9 +12645,6 @@ class MainFrame(
         self._set_status(f'Inserted snippet "{snippet.name}".')
 
     def show_word_prediction(self) -> None:
-        if not self._feature_enabled("core.intellisense"):
-            self._set_status("Word prediction is unavailable in this profile")
-            return
         if not self._show_intellisense_popup(manual=True):
             self._set_status("No predictions available")
 

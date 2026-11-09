@@ -13,16 +13,23 @@ connection that cannot see.
 
 wx-free and strict-typed. The fetch is a reviewed egress site
 (``network_egress_entries.py``): HTTPS or HTTP only, a verified TLS context, a
-bounded timeout and size, and refused in Safe Mode.
+bounded timeout and size, refused in Safe Mode, and never to a host on the
+local network or this computer: a feed chooses the address, so a picture
+address (or a redirect) pointing at a router or a local service is refused.
 """
 
 from __future__ import annotations
 
+import http.client
+import ipaddress
+import socket
 import ssl
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from html.parser import HTMLParser
+from typing import IO
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
@@ -106,15 +113,76 @@ def pictures_for(
     return pictures
 
 
+_LOCAL_HOST = "That picture is on the local network or this computer, so it was not fetched."
+
+
+def _is_public(address: str) -> bool:
+    try:
+        ip = ipaddress.ip_address(address.split("%", 1)[0])
+    except ValueError:
+        return False
+    mapped = getattr(ip, "ipv4_mapped", None)
+    ip = mapped if mapped is not None else ip
+    return ip.is_global and not ip.is_multicast
+
+
+def refuse_local_host(url: str) -> None:
+    """Raise :class:`PictureFetchError` when *url*'s host is not on the public internet.
+
+    A literal address is checked as written; a name is checked by every address
+    it resolves to. A name that does not resolve is left to the fetch, which
+    then fails on its own.
+    """
+    host = (urllib.parse.urlsplit(url).hostname or "").strip().lower()
+    if not host or host == "localhost" or host.endswith((".localhost", ".local")):
+        raise PictureFetchError(_LOCAL_HOST)
+    try:
+        ipaddress.ip_address(host.split("%", 1)[0])
+    except ValueError:
+        try:
+            addresses = [str(info[4][0]) for info in socket.getaddrinfo(host, None)]
+        except (OSError, UnicodeError):
+            return
+    else:
+        addresses = [host]
+    if not all(_is_public(address) for address in addresses):
+        raise PictureFetchError(_LOCAL_HOST)
+
+
+class _PublicRedirects(urllib.request.HTTPRedirectHandler):
+    """Follow a redirect only to another public HTTPS or HTTP address."""
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: IO[bytes],
+        code: int,
+        msg: str,
+        headers: http.client.HTTPMessage,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        if not transport.is_allowed(newurl):
+            raise PictureFetchError("That picture moved to an address Cast does not fetch.")
+        refuse_local_host(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def _fetch_picture_bytes(url: str) -> bytes:
     """One GET returning the picture's bytes -- the reviewed egress site."""
     request = urllib.request.Request(url, headers={"User-Agent": http_client.podcast_user_agent()})
+    opener = urllib.request.build_opener(
+        urllib.request.HTTPSHandler(context=verified_ssl_context()), _PublicRedirects()
+    )
     try:
-        with urllib.request.urlopen(  # noqa: S310 - scheme checked by the caller
-            request, timeout=_TIMEOUT_SECONDS, context=verified_ssl_context()
-        ) as resp:
+        with opener.open(request, timeout=_TIMEOUT_SECONDS) as resp:
             payload: bytes = resp.read(MAX_PICTURE_BYTES + 1)
-    except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
+    except (
+        urllib.error.URLError,
+        http.client.HTTPException,
+        TimeoutError,
+        ssl.SSLError,
+        OSError,
+    ) as error:
         raise PictureFetchError(f"Could not fetch that picture: {error}") from error
     if len(payload) > MAX_PICTURE_BYTES:
         raise PictureFetchError("That picture is larger than 20 megabytes. Nothing was sent.")
@@ -127,4 +195,5 @@ def fetch_picture(url: str, *, safe_mode: bool = False) -> bytes:
         raise PictureFetchError("Pictures are not fetched in Safe Mode. Nothing was sent.")
     if not transport.is_allowed(url):
         raise PictureFetchError("A picture address must start with https:// or http://.")
+    refuse_local_host(url)
     return _fetch_picture_bytes(url)

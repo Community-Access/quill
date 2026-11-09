@@ -322,6 +322,21 @@ _REVIEWED: tuple[CommandSpec, ...] = (
         risk=_C,
         group="Navigate",
     ),
+    CommandSpec(
+        "edit.parameter_hints",
+        "Parameter Hints",
+        "Say which argument of the call at the cursor you are on, and its signature",
+        aliases=("parameter hints", "signature help", "which parameter"),
+        examples=(
+            "which parameter am I on",
+            "what arguments does this take",
+            "say the signature",
+        ),
+        risk=_S,
+        kind=Kind.READOUT,
+        group="Navigate",
+        announces_itself=True,
+    ),
 )
 
 #: Every QUILL row: the agents' list first, in its old order, then the rest.

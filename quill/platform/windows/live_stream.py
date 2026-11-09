@@ -160,7 +160,7 @@ class LiveStream:
         for problem in problems:
             self.on_event(f"Left out of the stream: {problem}", True)
         if self.archive_path:
-            self._archive = self._popen(self._archive_command(), stdout=False)
+            self._archive = self._popen(self._archive_command(), stdout=False, stderr=False)
             self._archive_out = BlockWriter(
                 "stream-archive-writer",
                 self._to_archive,
@@ -186,12 +186,17 @@ class LiveStream:
     def _source_event(self, sentence: str, failure: bool) -> None:
         self.on_event(sentence, failure)
 
-    def _popen(self, command: list[str], *, stdout: bool) -> subprocess.Popen[bytes]:
+    def _popen(
+        self, command: list[str], *, stdout: bool, stderr: bool = True
+    ) -> subprocess.Popen[bytes]:
+        # Only the encoder's stderr is read (its progress lines). A pipe nobody
+        # reads fills up and stalls the process writing to it, so the archive's
+        # goes nowhere.
         return subprocess.Popen(
             command,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE if stdout else subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.PIPE if stderr else subprocess.DEVNULL,
             creationflags=_NO_WINDOW,
         )
 

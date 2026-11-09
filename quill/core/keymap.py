@@ -151,12 +151,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.text_size_down": "Ctrl+-",
     "view.text_size_reset": "Ctrl+0",
     "view.reveal_codes_toggle": "Alt+F3",  # WordPerfect Reveal Codes
+    "view.problems_pane": "",  # no chord free in both editors; see the gate's reason
+    "view.problems_this_file": "",
+    "view.problems_all_files": "",
+    "edit.parameter_hints": "",  # no chord free in both; Navigate > Code
+    "tools.language_servers": "",
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
-    # Say or Type a Command (command-key.md 9.1): F11, commands only, in every
-    # family app. Free in both editors once Speak a Command gave it up (rule 5),
-    # not on the leader (rule 6); Word's F11 is Next Field, which no family app
-    # has (rule 1). It never starts, stops or pauses dictation.
+    # Say or Type a Command (command-key.md 9.1): F11, commands only, never dictation; free in both
+    # editors since Speak a Command gave it up (rule 5); Word's F11 (Next Field) is no family key.
     "app.command_key": "F11",
     "app.preferences": "Ctrl+,",
     "app.preferences_hub": "Ctrl+Shift+Grave, O",  # the hub; Ctrl+, opens Settings
@@ -612,10 +615,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.windows_dictation_switch_language": "Ctrl+Shift+F11",
     "tools.windows_dictation_live_transcript": "Ctrl+Alt+Shift+PageDown",
     "tools.windows_dictation_context": "Ctrl+Alt+Shift+PageUp",
-    # Next Phrase Is a Dictation Command: no key (command-key.md decision 5). F11
-    # is the Command Key now, commands only, and never touches dictation; the
-    # command word ("QUILL scratch that") does this job, a key beside F11 would
-    # bring the confusion back, and no single chord is free in the whole family.
+    # Next Phrase Is a Dictation Command: no key (command-key.md decision 5); F11 is commands only,
+    # and the command word ("QUILL scratch that") does this job.
     "tools.windows_dictation_command": "",
     # D-2: free in both (rule 2). Every F11 chord and Ctrl+Alt+Shift+F11 (a
     # QuillVille launcher) are taken, and Ctrl+Alt+F4 is one missed Control
@@ -626,18 +627,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # editing-loop verb -- and Ctrl+Shift+I is where Insert Image goes, so
     # Ctrl+Alt+I can be Insert Markdown Tag as it is in QUILL Lite.
     "tools.document_intake_report": "Ctrl+Shift+Grave, Shift+I",  # I = Intake
-    # #357 keymap consolidation: AI commands move from inline F7/Shift+F7/F8/
-    # Shift+F8/Ctrl+Shift+T accelerators (which collided with the selection
-    # bindings at F8/Shift+F8/Ctrl+F8) to Ctrl+Alt+Shift+ chords, matching
-    # the EdSharp port convention. The chord class is reserved for AI so
-    # power users can find them by feel. Justifications name the screen-
-    # reader binding each chord displaces (NVDA review-cursor for the
-    # chord class; F7/F8 selection-start/complete for the displaced
-    # inline accelerators).
-    # The six AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,M,E} (bad.md P1.11,
-    # decided 2026-09-16). QUILL Lite spends the same six on editing verbs, and
-    # rule 2 gives a chord to the command both products have. AI keeps its
-    # menu, the palette and Alt+Q.
+    # #357 keymap consolidation: AI commands move from inline F7/Shift+F7/F8/ Shift+F8/Ctrl+Shift+T
+    # accelerators (which collided with the selection bindings at F8/Shift+F8/Ctrl+F8) to
+    # Ctrl+Alt+Shift+ chords, matching the EdSharp port convention. The chord class is reserved for
+    # AI so power users can find them by feel. Justifications name the screen- reader binding each
+    # chord displaces (NVDA review-cursor for the chord class; F7/F8 selection-start/complete for
+    # the displaced inline accelerators). The six AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,M,E}
+    # (bad.md P1.11, decided 2026-09-16). QUILL Lite spends the same six on editing verbs, and rule
+    # 2 gives a chord to the command both products have. AI keeps its menu, the palette and Alt+Q.
     "tools.ai_spell_check": "",
     "tools.ai_spell_check_interactive": "",
     "tools.ai_grammar_style": "",
@@ -1161,6 +1158,19 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # chords -- the leader-chord space is fully claimed.
     "github.list_codespaces": "",
     "github.create_codespace": "",
+    # GitHub Workbench Mode (2026-11-08, quill/core/github/workbench_menu.py).
+    # The switch and the GitHub menu's own rows have no chord, as no GitHub
+    # command does: the switch is pressed a few times a day at most (rule 9),
+    # no chord is free in both keymaps, and the GitHub menu's access letter is
+    # the way in. The same in QUILL Lite.
+    "view.github_workbench_mode": "",
+    "github.workbench_inbox": "",
+    "github.workbench_my_work": "",
+    "github.workbench_issues": "",
+    "github.workbench_actions_runs": "",
+    "github.workbench_releases": "",
+    "github.workbench_explore": "",
+    "github.clone_repository": "",
     # Local git (Tools > Local Git). No default chords -- the single-letter
     # leader-chord space is fully claimed (see the github.* block above);
     # these are reachable via the menu and the Command Palette, and freely

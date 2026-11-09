@@ -11,6 +11,43 @@ Open from Remote > GitHub Items**. Public repository reading works without an
 account. Account views and writes require a signed-in GitHub account. Safe Mode
 and the first-use network consent still apply.
 
+**GitHub Workbench Mode.** **View > GitHub Workbench Mode** (**Alt+V**, then
+**K**), a per-window check item in both editors, adds a **GitHub** menu
+(**Alt+G**) right after Tools and moves the GitHub rows of File > Open from
+Remote and Tools > Git and GitHub into it; turning it off puts them back. Both
+editors build it from one wx-free table, `quill/core/github/workbench_menu.py`
+(QUILL: `quill/ui/main_frame_github_menu.py`; QUILL Lite:
+`quill/apps/lite_github_workbench.py`, which also serves the empty window).
+QUILL Lite's menu is the table less QUILL's own rows. Rows keep their command
+ids, so a user-bound key follows the row; nothing in the mode has a default
+chord. New entry points open a view directly: Inbox, My Work and Notifications
+open Explore on `attention`, `my_work` and `notifications`; Issues and Pull
+Requests, Actions Runs and Releases open Items on `issues`, `runs` and
+`releases` (the new `initial_view` argument); Explore GitHub opens Explore on
+its default. They are `quill/ui/github_workbench_commands.py`, shared, and go
+through each editor's existing opener and gates. The switch announces
+"Workbench mode on. GitHub menu added." and "Workbench mode off." through the
+announcement service; nothing else in the mode speaks. It is not remembered
+across sessions. In QUILL the mode needs GitHub Remote Access
+(`core.github_remote`), which since 2026-11-08 no longer depends on
+`core.developer`.
+
+**Clone Repository.** QUILL: **File > Open from Remote > Clone Repository...**;
+QUILL Lite: **File > Clone Repository...** (**Alt+F**, then **Y**); both:
+**GitHub > Clone Repository...** in workbench mode. Shared window
+`quill/ui/github_clone.py`, core `quill/core/github/clone.py`. Git is found by
+`quill.core.git_binaries.find_git`: `QUILL_GIT` (dev builds only), then
+`<runtime>/mingit/cmd/git.exe`, then `git` on `PATH`, then the optional
+component copy. It runs `git clone -- <url> <folder>` through
+`run_subprocess_safely` (argv, no shell) on the task manager. For an https
+github.com clone the signed-in token travels only in the child's environment,
+as `GIT_CONFIG_COUNT`/`GIT_CONFIG_KEY_n`/`GIT_CONFIG_VALUE_n` setting
+`http.https://github.com/.extraheader` for that process; it is never in argv,
+`.git/config`, the remote URL or the log, and it is registered with
+`redaction.remember_secret`. `GIT_TERMINAL_PROMPT=0` stops a hidden password
+prompt. An address with a user name or password in it is refused. With no git,
+one sentence offers the Git for Windows download page.
+
 **Signing in.** Manage GitHub Accounts (QUILL: **File > Open from Remote**;
 QUILL Lite: **File**, **Alt+F** then **H**) offers **Sign In with GitHub...**
 first, and as the default button while no account is saved. It is GitHub's
@@ -194,7 +231,7 @@ typed or picked in **Branch, tag or commit** (Alt+B). Right arrow or Enter opens
 a folder (fetched the first time), Left closes it, and each file says its size.
 Enter on a file or **View File** (Alt+V) shows it read-only in **Contents**.
 **Open in Editor** (Alt+E) opens it for editing: QUILL uses the same path as a
-GitHub file link, so Save to GitHub works afterwards; QUILL Lite opens the text
+GitHub file link, so Commit to GitHub works afterwards; QUILL Lite opens the text
 as a new untitled document. **README** (Alt+R) shows the selected folder's or
 the repository's README. Binary files and files over GitHub's 1 MB contents
 limit say so instead of showing text.
