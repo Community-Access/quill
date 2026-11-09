@@ -2,6 +2,13 @@
 
 ## 2.0.0
 
+### Built on wxPython 4.3.2 (2026-11-09)
+
+- QUILL Lite now runs on wxPython 4.3.2 (wxWidgets 3.3.4), like QUILL. The
+  change is underneath: a control whose spoken name used to be set by a
+  workaround now carries it the way Windows expects, so your screen reader
+  reads it straight from the control.
+
 ### Problems, Word Prediction and Indent: fixes (2026-11-09)
 
 - Indent and Outdent, from the Tools menu or the Tab key, change only the
