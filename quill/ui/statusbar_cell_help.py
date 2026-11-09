@@ -13,6 +13,8 @@ the module that lays the row out should not grow with them.
 
 from __future__ import annotations
 
+from quill.core.github.workbench_menu import STATUS_CELL_HELP
+
 __all__ = ["STATUS_BAR_CELL_HELP"]
 
 
@@ -50,6 +52,7 @@ STATUS_BAR_CELL_HELP: dict[str, str] = {
         "Which AI is in use: QUILL's free AI, your ChatGPT plan or your own key, the "
         "same thing Control 8 says, shortened. Press Enter to choose a different one."
     ),
+    "workbench": STATUS_CELL_HELP,
     "project": (
         "The open project, its git branch, and whether the project task is waiting "
         "for you. Press Enter to open Do a Project Task."

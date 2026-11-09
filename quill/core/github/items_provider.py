@@ -60,6 +60,7 @@ from quill.core.github.notifications import (
 from quill.core.github.notifications import mark_notification_read as _mark_notification_read_raw
 from quill.core.github.repo_files import GitHubRepoFilesMixin
 from quill.core.github.run_actions import GitHubRunActionsMixin
+from quill.core.github.token_health import TOKEN_EXPIRY
 from quill.core.github.workflow_annotations import list_annotations
 from quill.core.github.workflow_jobs import list_jobs
 from quill.core.github.workflow_models import (
@@ -448,7 +449,10 @@ class GitHubItemsProvider(
     def _repo(self, full_name: str) -> Any:
         gh = _get_gh_module()
         try:
-            return self._gh.get_repo(full_name)
+            repo = self._gh.get_repo(full_name)
+            # The reply's headers carry the token's expiry, when it has one.
+            TOKEN_EXPIRY.observe(self._token, getattr(repo, "raw_headers", None))
+            return repo
         except gh.GithubException as exc:
             status = getattr(exc, "status", None)
             if status == 404:

@@ -56,6 +56,32 @@
   carries it the way Windows expects, so your screen reader reads it straight
   from the control.
 
+### GitHub tokens are the advanced road, and a Workbench cell (2026-11-08)
+
+- The GitHub Guide now teaches Sign In with GitHub and nothing else in
+  chapter 1. Making and adding a token moved to one section of chapter 10,
+  "Advanced: using a token", which says when you'd want one: a fine-grained
+  token for a few repositories, an organization that blocks sign-in apps, a
+  token your organization gives you, or a network that blocks GitHub's
+  sign-in page.
+- QUILL remembers how each account was added, by signing in or with a token.
+  Accounts added before this are "unknown".
+- If the active account uses a classic token that can do a lot (the `repo`
+  scope, say), Manage GitHub Accounts says once: "This account uses a token.
+  Sign In with GitHub is easier to keep up to date." Then it asks whether to
+  sign in now. No keeps the token and the window opens as usual, and it never
+  asks again for that account.
+- When the active account's token expires within seven days, the Workbench
+  says so the first time it talks to GitHub that day, and adds a
+  Notifications entry that opens Manage GitHub Accounts. A token that has
+  already expired gets one plain sentence and the same entry. At most once a
+  day. It reads GitHub's own expiry header on replies the Workbench already
+  gets, so there's no new network request.
+- While GitHub Workbench Mode is on, the status bar has a **Workbench** cell,
+  "Workbench: owner/name", or just "Workbench" when the document isn't in a
+  GitHub repository. F6 reaches it like every other cell, and it's never read
+  out on its own. It goes away when the mode does.
+
 ### Problems, Word Prediction and the code keys: fixes (2026-11-09)
 
 - An emoji early in a file no longer throws Next Problem, Go To on a Problems
@@ -72,6 +98,7 @@
 - Rebuilding the menus no longer piles up handlers for View > Problems.
 - Escape in an open Show or Source list on the Problems pane closes the list
   and leaves you in the pane.
+
 
 ### Language servers: VS Code's smarts, inside QUILL (2026-11-08)
 

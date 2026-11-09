@@ -35,6 +35,9 @@ class _Host(GitHubWorkbenchLiteMixin):
     def rebuild_workbench_menus(self) -> None:
         self.rebuilt += 1
 
+    def _watch_github_token_expiry(self, _token: object) -> None:
+        """The gate starts the expiry warning (lite_github_accounts); not under test here."""
+
 
 @pytest.fixture
 def opened(monkeypatch):

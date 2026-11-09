@@ -17,6 +17,29 @@ I open it every morning with my protein drink. I hope you end up doing the same.
 
 Jeff
 
+### The moments we think you'll love
+
+- **Everything in one window.** Tab takes you from top to bottom, **Ctrl+T**
+  tells you what's playing from anywhere, and **Ctrl+F** finds a podcast, an
+  episode or one of your own notes as you type. See "One window with
+  everything in it".
+- **Hear it before you follow it.** **Add Podcast** (**Ctrl+N**) searches
+  Apple's directory and Podcast Index at once, and Enter on a result tells you
+  what the show is about and what its last ten episodes were called. Patreon
+  and other password feeds work too. See "Finding podcasts to follow".
+- **Listening that feels natural.** Hold **Shift+Right** to race ahead at four
+  times speed and let go to drop back to your own pace, or jump straight to
+  1:02:03 with **Ctrl+Alt+J**. See "Listening".
+- **It keeps watch so you don't have to.** Cast checks your podcasts on your
+  schedule, and **Feed Check** (**Ctrl+Shift+C**) tells you in plain words when
+  a feed has gone wrong and why. See "Keeping up without keeping watch".
+- **Your library, wherever you go.** One file backs up every podcast, position,
+  note and bookmark, and moves it all to a new computer. See "Your library goes
+  where you go".
+- **AI, only if you ask.** A summary of an episode's show notes, or an answer
+  about them, from QUILL's free AI, your ChatGPT plan or your own key. See "AI
+  help, if you want it".
+
 You'll meet two new faces in these notes. QUILLBert finds the things worth
 trying, and QUILLBee tells you what has changed. They're new around here, and
 [Meet QUILLBert and QUILLBee](https://www.quillforall.org/meet-quillbert-and-quillbee.html)

@@ -425,60 +425,28 @@ still makes you type the repository’s full name before it deletes
 anything.</li>
 </ul>
 <p>One sign-in covers every command in the Workbench, so you never need
-a second token for any of them.</p>
+anything else for any of them.</p>
 <p>If your organization uses single sign-on, GitHub may ask you to sign
 in through the organization while you approve QUILL. If your
 organization restricts which apps can see its repositories, see Chapter
 10.</p>
-<h3 id="adding-a-token-instead">Adding a token instead</h3>
-<p><strong>Add Token (Advanced)…</strong> in Manage GitHub Accounts is
-for when you want to choose exactly what QUILL can reach: a fine-grained
-token limited to a few repositories, a token your organization gave you,
-or one with fewer scopes than Sign In with GitHub asks for. Most people
-never need it.</p>
-<p>To make a token:</p>
-<ol type="1">
-<li>Open github.com in your browser and sign in.</li>
-<li>Go to your profile settings, then <strong>Developer
-settings</strong>, then <strong>Personal access tokens</strong>, then
-<strong>Tokens (classic)</strong>.</li>
-<li>Choose <strong>Generate new token (classic)</strong>.</li>
-<li>Give it a name you will recognise, such as “QUILL on my laptop”, and
-an expiry date.</li>
-<li>Check the scopes you need. The list above says which do what.</li>
-<li>Generate the token and copy it. GitHub shows it only once.</li>
-</ol>
-<p>A classic token is the simpler choice for the workbench. Some parts
-of GitHub, the notifications inbox among them, do not accept the newer
-fine-grained tokens.</p>
-<p>If your organization uses single sign-on, there is one more step. On
-GitHub’s token page, choose <strong>Configure SSO</strong> beside the
-token and authorize it for the organization. Until you do, GitHub
-refuses the organization’s repositories even though the token is fine
-everywhere else.</p>
-<p>Then choose <strong>Add Token (Advanced)…</strong>. The <strong>Add
-GitHub Token</strong> window has one field, <strong>Personal access
-token</strong>. Paste the token and press <strong>Connect</strong>.
-QUILL asks GitHub who the token belongs to before it keeps it, so a
-mistyped or expired token is turned away with “GitHub did not confirm an
-account for that token. Nothing was saved.” When GitHub confirms it, you
-hear “Added and switched to GitHub account” and your GitHub
-username.</p>
-<p>The same window has <strong>Continue Anonymously</strong> for working
-as a guest, and <strong>Cancel</strong>. None of its buttons has an
-access key, so Tab to the one you want.</p>
+<p>Manage GitHub Accounts also has an <strong>Add Token
+(Advanced)…</strong> button. You don’t need it to sign in. It’s there
+for a few special cases, such as an organization that blocks sign-in
+apps, and Chapter 10 explains it under “Advanced: using a token”.</p>
 <p>Some QUILL commands on the Tools menu need an account before they can
 do anything. If you choose one while signed out, QUILL asks “This action
 needs a signed-in GitHub account. Sign in now?” and opens Sign In with
 GitHub.</p>
-<h3 id="where-the-token-is-kept">Where the token is kept</h3>
-<p>However you sign in, GitHub gives QUILL a token, and the token is
-kept in your operating system’s own secure store: Windows Credential
-Manager on Windows, or the Keychain on a Mac. A portable copy keeps it
-in its own encrypted file instead. It is never written into a settings
-file or a log. QUILL sends it to GitHub’s own servers and nowhere else.
-When GitHub hands a download to another address, such as a log or an
-artifact, QUILL fetches that without the token.</p>
+<h3 id="where-your-sign-in-is-kept">Where your sign-in is kept</h3>
+<p>When you sign in, GitHub gives QUILL a long code that stands for your
+approval, and QUILL keeps it in your operating system’s own secure
+store: Windows Credential Manager on Windows, or the Keychain on a Mac.
+A portable copy keeps it in its own encrypted file instead. It is never
+written into a settings file or a log. QUILL sends it to GitHub’s own
+servers and nowhere else. When GitHub hands a download to another
+address, such as a log or an artifact, QUILL fetches that without the
+token.</p>
 <p>The workbench’s sign-in is separate from My GitHub Copilot’s, even
 though both go through GitHub’s page under the same name. Signing out of
 one leaves the other alone.</p>
@@ -504,13 +472,12 @@ every account you have added. From there:</p>
 active one. You hear “Switched to GitHub account” and its name.</li>
 <li><strong>Remove Selected Account</strong> deletes that account’s
 token from this computer. It does not ask first, and it does not cancel
-the token on GitHub. To do that, open your GitHub settings: for an
-account added with Sign In with GitHub, revoke QUILL under
+the token on GitHub. To do that, open your GitHub settings, then
 <strong>Applications</strong>, then <strong>Authorized OAuth
-Apps</strong>; for one added with a token, delete the token on the token
-page.</li>
-<li><strong>Sign In with GitHub…</strong> adds another account, and
-<strong>Add Token (Advanced)…</strong> adds one from a token.</li>
+Apps</strong>, and revoke QUILL there.</li>
+<li><strong>Sign In with GitHub…</strong> adds another account.
+<strong>Add Token (Advanced)…</strong> is the advanced road, in Chapter
+10.</li>
 <li><strong>Done</strong> closes the window. Escape does too.</li>
 </ul>
 <p>Only github.com accounts are supported. GitHub Enterprise servers are

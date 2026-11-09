@@ -30,6 +30,20 @@
   workaround now carries it the way Windows expects, so your screen reader
   reads it straight from the control.
 
+### GitHub tokens are the advanced road, and a Workbench cell (2026-11-08)
+
+- The GitHub Guide teaches Sign In with GitHub; making and adding a token is
+  in one place now, chapter 10's "Advanced: using a token".
+- Accounts remember whether they were added by signing in or with a token.
+  Manage GitHub Accounts suggests Sign In with GitHub once for a broad classic
+  token, and No means no: the token keeps working and it never asks again.
+- A token that expires within seven days, or already has, is mentioned once a
+  day the first time the Workbench talks to GitHub, with a Notifications entry
+  that opens Manage GitHub Accounts.
+- With GitHub Workbench Mode on, the status bar has a Workbench cell,
+  "Workbench: owner/name" or "Workbench". F6 reaches it, it's never read out
+  on its own, and it leaves with the mode. QUILL has the same cell.
+
 ### Problems, Word Prediction and Indent: fixes (2026-11-09)
 
 - Indent and Outdent, from the Tools menu or the Tab key, change only the
@@ -53,6 +67,7 @@
   Desktop no longer makes it read the whole Desktop.
 - The Quick Fix list is called Quick Fix and names the problem it fixes, and
   Escape in an open Show or Source list on the Problems pane only closes it.
+
 
 ### Language servers (2026-11-08)
 

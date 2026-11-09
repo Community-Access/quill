@@ -72,6 +72,10 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # Podcasts mini-player + download activity. Hidden by default;
     # auto-surfaces the first time an episode plays or downloads.
     "podcast_player",
+    # GitHub Workbench Mode's readout, "Workbench: owner/name" (2026-11-08).
+    # Hidden by default and shown only while the mode is on, whatever the
+    # order says; QUILL Lite has the same cell.
+    "workbench",
     # The open project (code.md 2.1): its name, its git branch, and "waiting"
     # when the task needs you. Hidden by default; Open Project Folder shows it,
     # and only the Developer profile can open a project. QUILL Lite has it too.
@@ -119,6 +123,7 @@ def _default_status_bar_hidden() -> list[str]:
         "braille",
         "section_heading",
         "ai_engine",
+        "workbench",
         "project",
         "radio_player",
         "podcast_player",

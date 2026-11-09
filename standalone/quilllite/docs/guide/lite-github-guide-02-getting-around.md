@@ -30,6 +30,19 @@ The mode belongs to the window you turned it on in. Other windows keep their
 own menus, and a new window starts with the mode off. Nothing else changes:
 every other menu is where it was, and a document you have open keeps working.
 
+### The Workbench cell on the status bar
+
+While the mode is on, the status bar has one more cell, **Workbench**. It
+reads "Workbench:" and the repository the GitHub menu works on, such as
+"Workbench: community-access/quill", which is the repository the document
+you have open belongs to. When the document isn't in a GitHub repository, it
+just reads "Workbench". Turn the mode off and the cell goes away.
+
+Reach it like any other cell: press `F6` to move to the status bar, then the
+arrow keys to get to it. `F1` on it says what it is. QUILL never reads it out
+by itself, because "Workbench mode on" has already told you the same thing;
+it's there for when you want to check.
+
 ### What the GitHub menu holds
 
 From the top:

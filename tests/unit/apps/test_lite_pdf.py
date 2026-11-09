@@ -330,7 +330,7 @@ def test_the_page_cell_reads_page_n_of_m_only_when_there_are_pages() -> None:
     keys = [cell.key for cell in CELLS]
     assert keys.index("page") == keys.index("position") + 1
     # Project joins it: shown only while a project is open (code.md, 2026-11-04).
-    assert SHOWN_ONLY_WITH_TEXT == {"page", "project"}
+    assert SHOWN_ONLY_WITH_TEXT == {"page", "project", "workbench"}
 
 
 # -- Save never writes to the PDF ------------------------------------------------------ #

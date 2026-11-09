@@ -45,7 +45,7 @@ links to the chapters either side and back to these contents.
 ### [Chapter 1: Getting started](lite-github-guide-01-getting-started.html)
 
 What the workbench is, opening it in each editor, the one question QUILL asks
-before it connects, signing in with a token, keeping more than one account,
+before it connects, signing in with GitHub, keeping more than one account,
 and Safe Mode. It ends with a two-minute tour.
 
 - [Opening the workbench](lite-github-guide-01-getting-started.html#opening-the-workbench)
@@ -139,10 +139,11 @@ on, including how QUILL keeps the two sign-ins on the same account.
 
 ### [Chapter 10: Troubleshooting, privacy and help](lite-github-guide-10-troubleshooting.html)
 
-Every common refusal and what to do about it, exactly what goes over the
-network, and how to reach a person.
+Every common refusal and what to do about it, using a token instead of
+signing in, exactly what goes over the network, and how to reach a person.
 
 - [The refusals, one by one](lite-github-guide-10-troubleshooting.html#the-refusals-one-by-one)
+- [Advanced: using a token](lite-github-guide-10-troubleshooting.html#advanced-using-a-token)
 - [Privacy: what goes over the network](lite-github-guide-10-troubleshooting.html#privacy-what-goes-over-the-network)
 - [Getting help](lite-github-guide-10-troubleshooting.html#getting-help)
 

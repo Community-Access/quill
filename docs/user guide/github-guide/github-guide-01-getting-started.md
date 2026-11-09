@@ -174,58 +174,26 @@ What QUILL asks GitHub to allow, and why:
 - `delete_repo`: **Delete Repository**. It still makes you type the
   repository's full name before it deletes anything.
 
-One sign-in covers every command in the Workbench, so you never need a
-second token for any of them.
+One sign-in covers every command in the Workbench, so you never need
+anything else for any of them.
 
 If your organization uses single sign-on, GitHub may ask you to sign in
 through the organization while you approve QUILL. If your organization
 restricts which apps can see its repositories, see Chapter 10.
 
-### Adding a token instead
-
-**Add Token (Advanced)...** in Manage GitHub Accounts is for when you want to
-choose exactly what QUILL can reach: a fine-grained token limited to a few
-repositories, a token your organization gave you, or one with fewer scopes
-than Sign In with GitHub asks for. Most people never need it.
-
-To make a token:
-
-1. Open github.com in your browser and sign in.
-2. Go to your profile settings, then **Developer settings**, then
-   **Personal access tokens**, then **Tokens (classic)**.
-3. Choose **Generate new token (classic)**.
-4. Give it a name you will recognise, such as "QUILL on my laptop", and an
-   expiry date.
-5. Check the scopes you need. The list above says which do what.
-6. Generate the token and copy it. GitHub shows it only once.
-
-A classic token is the simpler choice for the workbench. Some parts of GitHub,
-the notifications inbox among them, do not accept the newer fine-grained
-tokens.
-
-If your organization uses single sign-on, there is one more step. On GitHub's
-token page, choose **Configure SSO** beside the token and authorize it for the
-organization. Until you do, GitHub refuses the organization's repositories
-even though the token is fine everywhere else.
-
-Then choose **Add Token (Advanced)...**. The **Add GitHub Token** window has
-one field, **Personal access token**. Paste the token and press **Connect**.
-QUILL asks GitHub who the token belongs to before it keeps it, so a mistyped
-or expired token is turned away with "GitHub did not confirm an account for
-that token. Nothing was saved." When GitHub confirms it, you hear "Added and
-switched to GitHub account" and your GitHub username.
-
-The same window has **Continue Anonymously** for working as a guest, and
-**Cancel**. None of its buttons has an access key, so Tab to the one you want.
+Manage GitHub Accounts also has an **Add Token (Advanced)...** button. You
+don't need it to sign in. It's there for a few special cases, such as an
+organization that blocks sign-in apps, and Chapter 10 explains it under
+"Advanced: using a token".
 
 Some QUILL commands on the Tools menu need an account before they can do
 anything. If you choose one while signed out, QUILL asks "This action needs a
 signed-in GitHub account. Sign in now?" and opens Sign In with GitHub.
 
-### Where the token is kept
+### Where your sign-in is kept
 
-However you sign in, GitHub gives QUILL a token, and the token is kept in
-your operating system's own secure store: Windows Credential Manager on
+When you sign in, GitHub gives QUILL a long code that stands for your
+approval, and QUILL keeps it in your operating system's own secure store: Windows Credential Manager on
 Windows, or the Keychain on a Mac. A portable copy keeps it in its own
 encrypted file instead. It is never written into a settings file or a log.
 QUILL sends it to GitHub's own servers and nowhere else. When GitHub hands a
@@ -260,11 +228,10 @@ have added. From there:
   "Switched to GitHub account" and its name.
 - **Remove Selected Account** deletes that account's token from this computer.
   It does not ask first, and it does not cancel the token on GitHub. To do
-  that, open your GitHub settings: for an account added with Sign In with
-  GitHub, revoke QUILL under **Applications**, then **Authorized OAuth Apps**;
-  for one added with a token, delete the token on the token page.
-- **Sign In with GitHub...** adds another account, and **Add Token
-  (Advanced)...** adds one from a token.
+  that, open your GitHub settings, then **Applications**, then **Authorized
+  OAuth Apps**, and revoke QUILL there.
+- **Sign In with GitHub...** adds another account. **Add Token
+  (Advanced)...** is the advanced road, in Chapter 10.
 - **Done** closes the window. Escape does too.
 
 Only github.com accounts are supported. GitHub Enterprise servers are not, yet.

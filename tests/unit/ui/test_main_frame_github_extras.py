@@ -49,6 +49,9 @@ class _Host(GitHubAdminMixin, GitHubExtrasMixin):
     def _announce(self, message: str) -> None:
         self.announcements.append(message)
 
+    def _watch_github_token_expiry(self, _token: object) -> None:
+        """Explore's gate starts the expiry warning (main_frame_github_accounts)."""
+
     def _show_modal_dialog(self, _dialog: object, _title: str) -> int:  # pragma: no cover
         raise AssertionError("wx dialogs must be short-circuited by per-test patches")
 

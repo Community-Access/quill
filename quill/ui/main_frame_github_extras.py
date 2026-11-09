@@ -198,6 +198,7 @@ class GitHubExtrasMixin:
         from quill.ui.github_explore_dialog import GitHubExploreDialog
 
         provider = GitHubItemsProvider(token=token)
+        self._watch_github_token_expiry(token)  # main_frame_github_accounts
         chosen: list[Any] = []
         try:
             GitHubExploreDialog(
