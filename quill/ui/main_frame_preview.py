@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import os
 import re
-import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -24,7 +23,6 @@ from quill.core.browser_preview import (
     render_preview_html,
 )
 from quill.core.paths import app_data_dir
-from quill.ui.dpi import dip_size
 
 
 @dataclass(slots=True)
@@ -135,89 +133,6 @@ class PreviewMixin:
                     pass
             tab.preview = None
             self._wx.CallAfter(self._show_side_preview_for, tab)
-
-    def _prewarm_webview_runtime(self) -> None:
-        """Initialise the WebView2 subprocess early so preview opens are instant.
-
-        wx.html2.WebView.New() launches the Edge WebView2 process on the first
-        call. On Windows this can take several seconds — occasionally minutes —
-        the first time (COM init, Edge runtime discovery, subprocess spawn). All
-        subsequent calls reuse the same subprocess and are near-instant.
-
-        Creating and immediately destroying a 1×1 hidden WebView here (during
-        the deferred startup task list, after the main window is visible) pays
-        that one-time cost before the user presses F6 or the AI chat pane opens.
-        The visible startup delay (#177) and the F6 freeze (#174) both trace back
-        to this initialisation happening on the user's first interaction instead.
-
-        No-ops silently if wx.html2 is unavailable (Linux/macOS without WebKit,
-        or if the runtime was not installed).
-        """
-        try:
-            import wx.html2
-
-            sentinel = self._wx.Panel(self.frame, size=dip_size(None, 1, 1))
-            sentinel.Hide()
-            # WebView.New() alone is enough to trigger WebView2 process
-            # initialisation — no page load required.  WebView2 fires
-            # EVT_WEBVIEW_LOADED for the implicit about:blank navigation; we
-            # destroy the sentinel then.  A 5-second fallback timer covers the
-            # case where the load event never arrives (e.g. no WebView2 runtime).
-            # No explicit page load needed — WebView2 navigates to about:blank on
-            # its own.  Explicit raw-HTML page calls are disallowed here by the
-            # web-surface governance gate (test_web_surface_governance.py).
-            #
-            # Diagnostics: time this call and log it. WebView2's first New() is
-            # the prime suspect for the ~7 s UI-thread stall (review.md §5); this
-            # New() runs on the UI thread and cannot be moved off it, so if it is
-            # the cause the elapsed here will show it directly in the log. Logged
-            # at WARNING when it blocks noticeably so it is findable without
-            # enabling QUILL_PROFILE_STARTUP.
-            import logging as _logging
-
-            _wv_start = time.perf_counter()
-            wv = wx.html2.WebView.New(sentinel)
-            _wv_elapsed = time.perf_counter() - _wv_start
-            _wv_log = _logging.getLogger(__name__)
-            if _wv_elapsed >= 1.0:
-                _wv_log.warning(
-                    "WebView2 first-init (WebView.New) blocked the UI thread for %.1f s",
-                    _wv_elapsed,
-                )
-            else:
-                # INFO (not DEBUG) so the timing is visible at the default level.
-                _wv_log.info("WebView2 first-init took %.3f s", _wv_elapsed)
-
-            # _alive guards both the EVT_WEBVIEW_LOADED callback and the
-            # 5-second fallback CallLater against calling methods on C++
-            # objects that have already been destroyed.  The parent frame
-            # may close (e.g. during startup profiling) before the fallback
-            # timer fires; EVT_WINDOW_DESTROY clears the flag so the
-            # CallLater becomes a no-op instead of an access violation.
-            _alive = [True]
-            sentinel.Bind(wx.EVT_WINDOW_DESTROY, lambda _e: _alive.__setitem__(0, False))
-
-            def _cleanup(_evt: object = None) -> None:
-                if not _alive[0]:
-                    return
-                _alive[0] = False
-                try:
-                    wv.Unbind(wx.html2.EVT_WEBVIEW_LOADED, handler=_cleanup)
-                    sentinel.Destroy()
-                except Exception:
-                    pass
-                # #179: once the sentinel has loaded (or the 5 s fallback has
-                # fired) the WebView2 subprocess is up.  ``_on_update_fetch_done``
-                # and ``preview_in_app`` read this flag to decide whether to
-                # defer their WebView2 dialog until warm-up completes.
-                self._webview_warm = True
-
-            wv.Bind(wx.html2.EVT_WEBVIEW_LOADED, _cleanup)
-            self._wx.CallLater(5000, _cleanup)
-        except Exception:
-            # No wx.html2 — WebView2 is unavailable on this build.  Treat
-            # that as "warm" so we don't keep deferring previews forever.
-            self._webview_warm = True
 
     def _preview_is_dark(self) -> bool:
         """Whether preview surfaces should render with the dark theme (issue #83).
@@ -362,14 +277,6 @@ class PreviewMixin:
             dark=self._preview_is_dark(),
             notes=True,
         )
-
-        # #179: WebView2's first ``New()`` call blocks the UI thread for tens
-        # of seconds.  If the deferred warm-up has not finished, defer the
-        # preview with a short status nudge so the editor stays responsive.
-        if not self._webview_warm:
-            self._set_status("Preparing preview... (one-time WebView2 setup)")
-            self._wx.CallLater(500, self._show_preview_in_app, title, body, anchor)
-            return
 
         self._show_preview_in_app(title, body, anchor)
 
