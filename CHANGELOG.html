@@ -244,6 +244,19 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="word-prediction-knows-your-project-2026-11-08">Word Prediction
+knows your project (2026-11-08)</h3>
+<ul>
+<li>When the file’s own names leave room, Ctrl+. fills the list with
+names from the rest of the project: the folder holding <code>.git</code>
+or a project file, or the file’s own folder. Names from files this one
+imports come first.</li>
+<li>The project is read in the background the first time you ask, and
+again when it’s more than five minutes old, skipping
+<code>node_modules</code>, <code>.venv</code>, <code>build</code> and
+the like, and stopping at 5,000 files. Nothing is sent anywhere. QUILL
+Lite does the same.</li>
+</ul>
 <h3 id="word-prediction-knows-your-code-2026-11-08">Word Prediction
 knows your code (2026-11-08)</h3>
 <ul>

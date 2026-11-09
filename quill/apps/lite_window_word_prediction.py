@@ -76,6 +76,17 @@ class DocumentWordPredictionMixin(SuggestionListMixin):
     def _suggest_path(self) -> Any:
         return getattr(self, "path", None)
 
+    def _suggest_in_background(self, work: Any, done: Any) -> bool:
+        from quill.apps.lite_window_open import app_task_manager
+
+        app_task_manager(self.app).submit(
+            "project-name-index",
+            lambda **_kwargs: work(),
+            on_success=lambda _op, result: done(result),
+            on_failure=lambda _op, _error: done(None),
+        )
+        return True
+
     def _suggest_say(self, message: str) -> None:
         self._announce(message)
 

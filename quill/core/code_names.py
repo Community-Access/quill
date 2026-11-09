@@ -93,9 +93,12 @@ def code_language_for(path: Path | str | None) -> str | None:
     if path is None:
         return None
     name = Path(path).name
-    if Path(name).suffix.lower() in _PROSE_SUFFIXES:
+    suffix = Path(name).suffix.lower()
+    if suffix in _PROSE_SUFFIXES:
         return None
-    return _alias_for_filename(name)
+    # By extension where there is one: the project walk asks about thousands of
+    # files, and Pygments' own lookup is slow enough to dominate it.
+    return _alias_for_filename(f"x{suffix}" if suffix else name)
 
 
 @lru_cache(maxsize=256)
