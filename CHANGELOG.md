@@ -2,6 +2,22 @@
 
 ## 1.0.0
 
+### Say or Type a Command can ask your own AI (2026-11-09)
+
+- Answer "Use My Own AI Instead" when Say or Type a Command first asks, and a
+  request the matcher on your computer cannot settle goes to the AI you chose
+  in Choose Your AI: your ChatGPT plan, GitHub Copilot, Codex or your own key.
+  It is asked one question, to pick one of this window's commands or none, and
+  you hear "Asking your AI." while it thinks. Nothing goes to Jev.
+- With "Use Jev", your own AI is the next step when Jev cannot answer, and the
+  one line you hear says so: "Jev's daily limit is reached, so I'm asking your
+  AI."
+- Your AI's answer is checked against the list. It runs a command straight
+  away only when it agrees with the matcher's best guess and the command is
+  safe; otherwise you get the Did You Mean list. An answer that takes more than
+  eight seconds is dropped, and the matcher's answer stands.
+- QUILL's free AI is not asked: there, "Use Jev" is the way.
+
 ### Jev through Community Access's service (2026-11-09)
 
 - Say or Type a Command can now use Jev without a TypeSafe key of your own.
