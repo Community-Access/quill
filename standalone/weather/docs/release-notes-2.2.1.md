@@ -1,19 +1,40 @@
 # Quill Weather 2.2.1 — Release Notes
 
+*Version 2.2.1, the beta, November 2026. Help > About shows the exact build
+you have.*
+
 Quill Weather now calls a saved place by the friendly name you gave it. If you
 save one place as **Home** and another as **Summer Home**, Current conditions and
 Quick Weather name the right place instead of leading with a ZIP code, town, or
 county. The local-time sentence uses that name too. If you leave the friendly
 name empty, Weather continues to use the place name from the search result.
 
-## What changed
+## What you'll notice
+
+- **Friendly names throughout weather reports.** The Location chooser, loading
+  message, current conditions, Quick Weather, local-time sentence, and alert
+  monitoring now consistently use your saved name.
+- **Settings tell you what happened.** If Windows refuses a startup or
+  background task change, or Weather cannot save a tray preference, the menu
+  reflects the actual state and Weather explains the problem.
+- **Tutorials and commands.** Help > Tutorials opens guided lessons. Weather
+  commands are also available by name in the Command Palette.
+- **Results you can revisit.** Help > Activity (Shift+F9) lists recent results
+  and any available retry. Help > Repeat Last Result (F9) speaks the latest
+  important result again, as in the other Quill apps.
+- **Show and hide key by choice.** Weather no longer reserves a system-wide key
+  by default. Choose one under File > Show and Hide Key if you want it.
+- **Your own sounds, where you want them.** **Options > App Sounds Play On...**
+  (Ctrl+Shift+S) sends Weather's own sounds to the system default, any sound
+  card or headset by name, or nowhere; **Alt+Shift+M** turns them off and on.
+- **QUILL Transcribe on the QuillVille menu.** The QuillVille menu and the tray
+  list QUILL Transcribe, new this month: it types what you say into any program.
+
+## Under the hood
 
 - **Sharp at any display scaling.** Quill Weather handles each monitor's
   scaling itself, so text stays sharp at 125, 150 and 200 percent, and the
   Weather Center's status line has a spoken name.
-- **Friendly names throughout weather reports.** The Location chooser, loading
-  message, current conditions, Quick Weather, local-time sentence, and alert
-  monitoring now consistently use your saved name.
 - **Two complete editions.** This release has a self-contained portable ZIP and
   a shared-runtime installer. The installer includes the runtime it needs; the
   portable ZIP keeps settings and saved places in its own `data` folder. Neither
@@ -24,29 +45,14 @@ name empty, Weather continues to use the place name from the search result.
 - **Portable copies stay portable.** A portable copy does not add a Windows
   startup entry or a scheduled background task. Install Weather to use those
   two Windows features. The portable launcher runs fully offline.
-- **Settings tell you what happened.** If Windows refuses a startup or
-  background task change, or Weather cannot save a tray preference, the menu
-  reflects the actual state and Weather explains the problem.
 - **Updates follow your edition.** Check for Updates offers the portable ZIP to
   a portable copy and the shared installer to an installed copy. The shared
   installer is checked against current Weather code during the build.
-- **Tutorials and commands.** Help > Tutorials opens guided lessons. Weather
-  commands are also available by name in the Command Palette.
-- **Results you can revisit.** Help > Activity (Shift+F9) lists recent results
-  and any available retry. Help > Repeat Last Result (F9) speaks the latest
-  important result again, as in the other Quill apps.
 - **A distinct Weather icon.** The sun-and-cloud icon distinguishes Weather
   from Radio in the taskbar, tray, and Alt+Tab.
-- **Show and hide key by choice.** Weather no longer reserves a system-wide key
-  by default. Choose one under File > Show and Hide Key if you want it.
-- **Your own sounds, where you want them.** **Options > App Sounds Play On...**
-  (Ctrl+Shift+S) sends Weather's own sounds to the system default, any sound
-  card or headset by name, or nowhere; **Alt+Shift+M** turns them off and on.
 - **What's New.** Help > What's New (Ctrl+Shift+F1) opens the changelog in your
   browser, on the same key as every other QuillVille app. Help also has the
   Command Palette (Ctrl+Shift+P) and Product Requirements (Alt+Shift+F1).
-- **QUILL Transcribe on the QuillVille menu.** The QuillVille menu and the tray
-  list QUILL Transcribe, released on 1 November 2026.
 
 ## AI, when you ask for it
 

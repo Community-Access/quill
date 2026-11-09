@@ -2060,7 +2060,7 @@ audio file", below.
 You can dictate into almost any program on your computer: an email, a web
 form, a chat window, another word processor. This is called **Dictate
 Anywhere**. It is done by another QuillVille program: **QUILL Transcribe**,
-the family app made for exactly this, released on 1 November 2026, or **Quill
+the family app made for exactly this, new in November 2026, or **Quill
 Inkwell**, the small program that also expands your abbreviations everywhere.
 
 ### What you need first

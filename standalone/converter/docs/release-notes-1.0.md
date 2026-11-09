@@ -1,6 +1,7 @@
 # Quill Converter 1.0.0 Release Notes
 
-Released September 28, 2026.
+*Version 1.0.0, the beta, November 2026. Help > About shows the exact build
+you have.*
 
 Somewhere between "I recorded this in the wrong format" and "my player will not
 open this," almost everybody hits the wall of media conversion. The usual answer
@@ -19,22 +20,24 @@ hear before you commit, chapters that survive every conversion, joining and
 splitting, an Explorer right-click, and reasons instead of error codes when
 something fails.
 
-## Sharp at any display scaling
+Here are the moments we think you'll love. Each one has its own part under
+"What is new, and why".
 
-Quill Converter handles each monitor's scaling itself, so text stays sharp at 125, 150
-and 200 percent and on monitors with different scaling, and windows and list
-columns keep their proportions.
-
-## Downloads
-
-Two downloads. Choose one.
-
-- **Quill-Converter-Setup-Shared-1.0.0.exe** -- the installer, recommended. It
-  installs the shared QuillVille runtime if the computer does not already have
-  it, then the app, with a Start Menu entry and an uninstaller.
-- **Quill-Converter-Portable-1.0.0.zip** -- unpack anywhere, a USB stick
-  or a folder with spaces in its name included. It keeps its settings in its own `data` folder next to the app and
-  writes nothing to the computer it runs on.
+- **Hear it before you commit.** Pick an effect named for the problem it
+  solves, such as **Clean up speech**, press **Ctrl+P**, and hear fifteen
+  seconds exactly as the result will sound. **Ctrl+Shift+P** plays the same
+  stretch as it is now, so you can compare.
+- **Right-click to convert.** Select files in File Explorer, press
+  **Shift+F10**, and convert them without opening anything else.
+- **A link becomes a file.** Paste a video, a whole playlist or a channel,
+  choose what you want, and Converter downloads and converts it in one go.
+- **Video as well as sound**, from 82 formats in to 34 out, each telling you
+  what it is for.
+- **Chapters that survive.** Chapters and cover art come through every
+  conversion, and the Chapter Workbench lets you hear, name and move them.
+- **Join and split** recordings without counting seconds by hand.
+- **Reasons, not error codes.** When something fails, you hear why, in a
+  sentence, and what to try next.
 
 ## Try this first
 
@@ -52,21 +55,7 @@ Two downloads. Choose one.
 6. Press **F1** on anything you are unsure of. It tells you what the window is
    for and what that control does.
 
-## Everything is included
-
-Nothing downloads the first time you use a feature. Both downloads carry:
-
-- **FFmpeg and ffprobe**, which do the converting and read what is inside a
-  file.
-- **libmpv**, the mpv playback engine, as the Chapter Workbench's player.
-- **yt-dlp**, for Convert from URL, and **deno**, the JavaScript runtime it
-  needs for YouTube.
-- **mutagen**, for carrying cover art and chapters into the converted copy.
-- **The OptiLab Core adapter**, for broadcast polish in Advanced Options, in
-  builds that include it.
-
-Conversion never touches the network. The only things that do are Check for
-Updates and Convert from URL, and both only when you ask.
+---
 
 ## What is new, and why
 
@@ -321,6 +310,39 @@ gets file details, never folders or the sound, and Safe Mode turns the menu off.
   loudness and noise reduction, a second format, and captions with a
   transcript. The confirmation lists all of it before anything is uploaded.
 
+---
+
+## Everything is included
+
+Nothing downloads the first time you use a feature. Both downloads carry:
+
+- **FFmpeg and ffprobe**, which do the converting and read what is inside a
+  file.
+- **libmpv**, the mpv playback engine, as the Chapter Workbench's player.
+- **yt-dlp**, for Convert from URL, and **deno**, the JavaScript runtime it
+  needs for YouTube.
+- **mutagen**, for carrying cover art and chapters into the converted copy.
+- **The OptiLab Core adapter**, for broadcast polish in Advanced Options, in
+  builds that include it.
+
+Conversion never touches the network. The only things that do are Check for
+Updates and Convert from URL, and both only when you ask.
+
+---
+
+## Downloads
+
+Two downloads. Choose one.
+
+- **Quill-Converter-Setup-Shared-1.0.0.exe** -- the installer, recommended. It
+  installs the shared QuillVille runtime if the computer does not already have
+  it, then the app, with a Start Menu entry and an uninstaller.
+- **Quill-Converter-Portable-1.0.0.zip** -- unpack anywhere, a USB stick
+  or a folder with spaces in its name included. It keeps its settings in its own `data` folder next to the app and
+  writes nothing to the computer it runs on.
+
+---
+
 ## Fixes since the July build
 
 - **AIFF output works.** AIFF and AU are written in the byte order those formats
@@ -328,6 +350,8 @@ gets file details, never folders or the sound, and Safe Mode turns the menu off.
 - **32-bit WAV is real 32-bit float**, as the Bit depth setting says.
 - **Several Explorer selections make one queue**, not a string of lost launches.
 - **A format's constraints no longer fail a file** half way through a batch.
+
+---
 
 ## Known limits
 
@@ -344,14 +368,25 @@ gets file details, never folders or the sound, and Safe Mode turns the menu off.
   MP3 first.
 - **Preview ignores chapters**; it plays fifteen seconds of sound.
 
+---
+
 ## Your version, and updates
 
-Help > About says **1.0.0 (build 1)**. If a fix comes out without a new
+Help > About says your version and build, such as **1.0.0 (build 2)**. If a fix
+comes out without a new
 version number, it is a newer build, and **Help > Check for Updates...**
 (Ctrl+Alt+U) offers it to you. Check for Updates only looks when you ask, and
 it offers the same kind of download you have, the installer or the portable
 zip. The installer is signed by Community Access, so Windows knows who it is
 from.
+
+### Sharp at any display scaling
+
+Quill Converter handles each monitor's scaling itself, so text stays sharp at 125, 150
+and 200 percent and on monitors with different scaling, and windows and list
+columns keep their proportions.
+
+---
 
 ## Getting help
 

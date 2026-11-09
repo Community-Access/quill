@@ -8,7 +8,8 @@ It uses the same speech models and the same dictation as QUILL and QUILL Lite.
 If you already dictate in QUILL, the words, punctuation and commands you know
 work here too.
 
-Version 1.0.0 (build 3), released on 1 November 2026: the first public release.
+Version 1.0.0, the beta, November 2026: the first public release. Help > About
+shows the exact build you have.
 
 ## What it promises
 
@@ -1643,7 +1644,7 @@ In the QUILL Transcribe window:
 | Discard held words | Ctrl+Shift+D |
 | Use the built-in model this time | Ctrl+B |
 | Dictation status | Alt+F9 |
-| Speak a command | F11 |
+| Next phrase is a dictation command | Alt+D, then M (the Dictation menu; no key of its own) |
 | Review dictation | Shift+F4 |
 | Recent phrases | Shift+F11 |
 | Switch dictation language | Ctrl+Shift+F11 |

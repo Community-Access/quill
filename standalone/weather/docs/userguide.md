@@ -165,7 +165,7 @@ held down:
 - **Open Quill Converter**: Alt+Q, then V (or Ctrl+Alt+Shift+F9)
 - **Open Quill Inkwell**: Alt+Q, then I (or Ctrl+Alt+Shift+F10)
 - **Open QUILL Transcribe**: Alt+Q, then T (or Ctrl+Alt+Shift+F11). QUILL
-  Transcribe, released on 1 November 2026, types what you say into any
+  Transcribe, new in November 2026, types what you say into any
   program.
 
 For example, to dictate a note about tomorrow's forecast into your email, press

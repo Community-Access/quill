@@ -1,6 +1,6 @@
 # Quill Converter -- Product Requirements
 
-Version 1.0.0 -- status: released September 28, 2026 (first public release)
+Version 1.0.0 -- status, 2026-11-09: going out as a public beta; not yet a full release (the first public release)
 
 **Proposed Studio integration:** The consolidated Studio planning PRD calls
 for a capability-probed, accessible project-to-Converter round trip and

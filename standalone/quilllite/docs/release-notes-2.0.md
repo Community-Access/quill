@@ -458,7 +458,7 @@ has every model's published accuracy, what we measured on real speech, and
 - **One microphone at a time.** If QUILL Transcribe is already listening,
   Ctrl+F11 tells you instead of opening a second microphone. QUILL Transcribe
   and Quill Inkwell keep out of QUILL Lite's window.
-- **QUILL Transcribe**, released on 1 November 2026, is now in the user
+- **QUILL Transcribe**, new in November 2026, is now in the user
   guide's list of QuillVille apps.
 - **Translate a recording into English.** In Transcribe a Recording
   (**Shift+F5**), check **Translate into English** for a Spanish recording.

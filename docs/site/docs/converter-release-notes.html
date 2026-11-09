@@ -244,7 +244,8 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-converter-100-release-notes">Quill Converter 1.0.0 Release
 Notes</h1>
-<p>Released September 28, 2026.</p>
+<p><em>Version 1.0.0, the beta, November 2026. Help &gt; About shows the
+exact build you have.</em></p>
 <p>Somewhere between “I recorded this in the wrong format” and “my
 player will not open this,” almost everybody hits the wall of media
 conversion. The usual answer is a website that wants you to upload your
@@ -260,21 +261,29 @@ months since went into making it the converter we wanted to hand people:
 video, effects you can hear before you commit, chapters that survive
 every conversion, joining and splitting, an Explorer right-click, and
 reasons instead of error codes when something fails.</p>
-<h2 id="sharp-at-any-display-scaling">Sharp at any display scaling</h2>
-<p>Quill Converter handles each monitor’s scaling itself, so text stays
-sharp at 125, 150 and 200 percent and on monitors with different
-scaling, and windows and list columns keep their proportions.</p>
-<h2 id="downloads">Downloads</h2>
-<p>Two downloads. Choose one.</p>
+<p>Here are the moments we think you’ll love. Each one has its own part
+under “What is new, and why”.</p>
 <ul>
-<li><strong>Quill-Converter-Setup-Shared-1.0.0.exe</strong> – the
-installer, recommended. It installs the shared QuillVille runtime if the
-computer does not already have it, then the app, with a Start Menu entry
-and an uninstaller.</li>
-<li><strong>Quill-Converter-Portable-1.0.0.zip</strong> – unpack
-anywhere, a USB stick or a folder with spaces in its name included. It
-keeps its settings in its own <code>data</code> folder next to the app
-and writes nothing to the computer it runs on.</li>
+<li><strong>Hear it before you commit.</strong> Pick an effect named for
+the problem it solves, such as <strong>Clean up speech</strong>, press
+<strong>Ctrl+P</strong>, and hear fifteen seconds exactly as the result
+will sound. <strong>Ctrl+Shift+P</strong> plays the same stretch as it
+is now, so you can compare.</li>
+<li><strong>Right-click to convert.</strong> Select files in File
+Explorer, press <strong>Shift+F10</strong>, and convert them without
+opening anything else.</li>
+<li><strong>A link becomes a file.</strong> Paste a video, a whole
+playlist or a channel, choose what you want, and Converter downloads and
+converts it in one go.</li>
+<li><strong>Video as well as sound</strong>, from 82 formats in to 34
+out, each telling you what it is for.</li>
+<li><strong>Chapters that survive.</strong> Chapters and cover art come
+through every conversion, and the Chapter Workbench lets you hear, name
+and move them.</li>
+<li><strong>Join and split</strong> recordings without counting seconds
+by hand.</li>
+<li><strong>Reasons, not error codes.</strong> When something fails, you
+hear why, in a sentence, and what to try next.</li>
 </ul>
 <h2 id="try-this-first">Try this first</h2>
 <ol type="1">
@@ -295,23 +304,7 @@ Your original is never changed.</li>
 <li>Press <strong>F1</strong> on anything you are unsure of. It tells
 you what the window is for and what that control does.</li>
 </ol>
-<h2 id="everything-is-included">Everything is included</h2>
-<p>Nothing downloads the first time you use a feature. Both downloads
-carry:</p>
-<ul>
-<li><strong>FFmpeg and ffprobe</strong>, which do the converting and
-read what is inside a file.</li>
-<li><strong>libmpv</strong>, the mpv playback engine, as the Chapter
-Workbench’s player.</li>
-<li><strong>yt-dlp</strong>, for Convert from URL, and
-<strong>deno</strong>, the JavaScript runtime it needs for YouTube.</li>
-<li><strong>mutagen</strong>, for carrying cover art and chapters into
-the converted copy.</li>
-<li><strong>The OptiLab Core adapter</strong>, for broadcast polish in
-Advanced Options, in builds that include it.</li>
-</ul>
-<p>Conversion never touches the network. The only things that do are
-Check for Updates and Convert from URL, and both only when you ask.</p>
+<hr />
 <h2 id="what-is-new-and-why">What is new, and why</h2>
 <h3 id="a-video-a-whole-playlist-or-a-channel">A video, a whole
 playlist, or a channel</h3>
@@ -564,6 +557,38 @@ and <strong>More Options</strong> sets your own loudness and noise
 reduction, a second format, and captions with a transcript. The
 confirmation lists all of it before anything is uploaded.</li>
 </ul>
+<hr />
+<h2 id="everything-is-included">Everything is included</h2>
+<p>Nothing downloads the first time you use a feature. Both downloads
+carry:</p>
+<ul>
+<li><strong>FFmpeg and ffprobe</strong>, which do the converting and
+read what is inside a file.</li>
+<li><strong>libmpv</strong>, the mpv playback engine, as the Chapter
+Workbench’s player.</li>
+<li><strong>yt-dlp</strong>, for Convert from URL, and
+<strong>deno</strong>, the JavaScript runtime it needs for YouTube.</li>
+<li><strong>mutagen</strong>, for carrying cover art and chapters into
+the converted copy.</li>
+<li><strong>The OptiLab Core adapter</strong>, for broadcast polish in
+Advanced Options, in builds that include it.</li>
+</ul>
+<p>Conversion never touches the network. The only things that do are
+Check for Updates and Convert from URL, and both only when you ask.</p>
+<hr />
+<h2 id="downloads">Downloads</h2>
+<p>Two downloads. Choose one.</p>
+<ul>
+<li><strong>Quill-Converter-Setup-Shared-1.0.0.exe</strong> – the
+installer, recommended. It installs the shared QuillVille runtime if the
+computer does not already have it, then the app, with a Start Menu entry
+and an uninstaller.</li>
+<li><strong>Quill-Converter-Portable-1.0.0.zip</strong> – unpack
+anywhere, a USB stick or a folder with spaces in its name included. It
+keeps its settings in its own <code>data</code> folder next to the app
+and writes nothing to the computer it runs on.</li>
+</ul>
+<hr />
 <h2 id="fixes-since-the-july-build">Fixes since the July build</h2>
 <ul>
 <li><strong>AIFF output works.</strong> AIFF and AU are written in the
@@ -576,6 +601,7 @@ string of lost launches.</li>
 <li><strong>A format’s constraints no longer fail a file</strong> half
 way through a batch.</li>
 </ul>
+<hr />
 <h2 id="known-limits">Known limits</h2>
 <ul>
 <li><strong>WebM (VP9) video is slow</strong>, and so is H.265 on a
@@ -593,13 +619,20 @@ Chapter marks, or convert to M4B or MP3 first.</li>
 <li><strong>Preview ignores chapters</strong>; it plays fifteen seconds
 of sound.</li>
 </ul>
+<hr />
 <h2 id="your-version-and-updates">Your version, and updates</h2>
-<p>Help &gt; About says <strong>1.0.0 (build 1)</strong>. If a fix comes
-out without a new version number, it is a newer build, and <strong>Help
-&gt; Check for Updates…</strong> (Ctrl+Alt+U) offers it to you. Check
-for Updates only looks when you ask, and it offers the same kind of
-download you have, the installer or the portable zip. The installer is
-signed by Community Access, so Windows knows who it is from.</p>
+<p>Help &gt; About says your version and build, such as <strong>1.0.0
+(build 2)</strong>. If a fix comes out without a new version number, it
+is a newer build, and <strong>Help &gt; Check for Updates…</strong>
+(Ctrl+Alt+U) offers it to you. Check for Updates only looks when you
+ask, and it offers the same kind of download you have, the installer or
+the portable zip. The installer is signed by Community Access, so
+Windows knows who it is from.</p>
+<h3 id="sharp-at-any-display-scaling">Sharp at any display scaling</h3>
+<p>Quill Converter handles each monitor’s scaling itself, so text stays
+sharp at 125, 150 and 200 percent and on monitors with different
+scaling, and windows and list columns keep their proportions.</p>
+<hr />
 <h2 id="getting-help">Getting help</h2>
 <p>Press <strong>F1</strong> anywhere to hear what the window is for and
 what the control you are on does. The user guide (Help &gt; User Guide,

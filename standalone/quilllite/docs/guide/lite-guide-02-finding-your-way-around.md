@@ -87,7 +87,7 @@ will not ask again.
 
 All the QuillVille apps work this way: QUILL, Quill Radio, Cast, Weather, Audio
 Studio, Inkwell, the Converter, QUILL Transcribe, the Media Player and Beacon.
-QUILL Transcribe, released on 1 November 2026, is the one that types what you
+QUILL Transcribe, new in November 2026, is the one that types what you
 say into other programs; in QUILL Lite itself you dictate with Ctrl+F11.
 
 ## Closing a lot of windows at once
