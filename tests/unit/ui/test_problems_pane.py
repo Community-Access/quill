@@ -37,6 +37,15 @@ class _Event:
     def Skip(self) -> None:  # noqa: N802
         self.skipped = True
 
+    def ControlDown(self) -> bool:  # noqa: N802
+        return False
+
+    def AltDown(self) -> bool:  # noqa: N802
+        return False
+
+    def ShiftDown(self) -> bool:  # noqa: N802
+        return False
+
 
 @pytest.fixture
 def pane(wx_session_app: Any):
@@ -51,6 +60,7 @@ def pane(wx_session_app: Any):
         "say": [],
         "tick": [],
         "pause": [],
+        "scope": [],
     }
     widget = ProblemsPane(
         wx,
@@ -61,6 +71,8 @@ def pane(wx_session_app: Any):
         say=record["say"].append,
         tick=lambda: record["tick"].append(True),
         set_pause_enabled=record["pause"].append,
+        set_all_files=record["scope"].append,
+        switch_files=lambda: record["scope"].append("switch"),
     )
     widget.record = record  # type: ignore[attr-defined]
     yield widget
@@ -164,6 +176,39 @@ def test_check_after_a_pause_box_is_off_and_tells_the_host(pane) -> None:
     assert pane.record["say"] == [], "the reader says a check box's new state"
 
 
+def test_the_files_chooser_tells_the_host(pane) -> None:
+    assert not pane.all_files()
+    pane._scope.SetSelection(1)
+    pane._on_scope(None)
+    assert pane.all_files()
+    assert pane.record["scope"] == [True]
+
+
 def test_every_control_has_inline_help(pane) -> None:
-    for control in (pane.panel, pane._show, pane._source, pane._pause, pane._list):
+    controls = (pane.panel, pane._scope, pane._show, pane._source, pane._pause, pane._list)
+    for control in controls:
         assert control.GetHelpText()
+
+
+class _KeyEvent(_Event):
+    def __init__(self, key: int, *, ctrl: bool = False) -> None:
+        super().__init__(key)
+        self.ctrl = ctrl
+
+    def ControlDown(self) -> bool:  # noqa: N802 - wx spelling
+        return self.ctrl
+
+
+def test_f_in_the_list_switches_files_and_ctrl_f_does_not(pane, monkeypatch) -> None:
+    monkeypatch.setattr(pane._list, "HasFocus", lambda: True)
+    pane._on_char_hook(_KeyEvent(ord("F")))
+    assert pane.record["scope"] == ["switch"]
+    other = _KeyEvent(ord("F"), ctrl=True)
+    pane._on_char_hook(other)
+    assert other.skipped and pane.record["scope"] == ["switch"]
+
+
+def test_set_all_files_moves_the_chooser_quietly(pane) -> None:
+    pane.set_all_files(True)
+    assert pane.all_files()
+    assert pane.record["scope"] == [], "the host set it; telling the host back would loop"

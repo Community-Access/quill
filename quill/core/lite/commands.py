@@ -499,7 +499,12 @@ COMMANDS: list[CommandRow] = [
     # rather than a setting. F6 with the bar hidden says so rather than failing
     # silently (see cmd_focus_status_bar).
     ("&View", "&Status Bar", "Alt+Shift+B", "cmd_toggle_status_bar", "check"),
-    ("&View", "&Problems Pane", "", "cmd_toggle_problems_pane", "check"),  # no chord (rule 9)
+    # QUILL's View > Problems, the same rows; no chords (rule 9, reasons in the tests).
+    ("&View", "&Problems", "", "", "sub"),
+    ("&View|&Problems", "&Show Pane", "", "cmd_toggle_problems_pane", "check"),
+    ("&View|&Problems", "", "", "", "sep"),
+    ("&View|&Problems", "&This File Only", "", "cmd_problems_this_file", "check"),
+    ("&View|&Problems", "&All Open Files", "", "cmd_problems_all_files", "check"),
     ("&View", "", "", "", "sep"),
     # Notepad's own zoom chords.
     ("&View", "&Increase Text Size", "Ctrl+=", "cmd_zoom_in", ""),

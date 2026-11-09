@@ -63,7 +63,7 @@ PROJECT_EDIT_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
 
 #: View: the two records a task leaves, opened as documents.
 PROJECT_VIEW_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
-    # G, not P: View > Problems Pane is in every profile and needs the P.
+    # G, not P: View > Problems > Show Pane is in every profile and needs the P.
     ("&View", "A&gent Task Transcript", "", "cmd_project_transcript", ""),
     ("&View", "Agent Command O&utput", "", "cmd_open_command_output", ""),
 )

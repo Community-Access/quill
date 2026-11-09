@@ -965,6 +965,8 @@
   "verbosity_what_changed",
   "verbosity_where_am_i",
   "view_mastodon_profile",
+  "view_problems_all_files",
+  "view_problems_this_file",
   "view_toggle_problems_pane",
   "voice_command_toggle",
   "voice_conversation_toggle",

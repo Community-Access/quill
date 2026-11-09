@@ -19,6 +19,9 @@ class Problem:
     message: str
     #: Which checker found it ("JSON", "node", "ruff"...), said in the list.
     source: str = ""
+    #: Which open document it is in, when the Problems pane lists them all
+    #: ("notes.md"); empty for the document in front of you.
+    document: str = ""
 
 
 @dataclass(frozen=True, slots=True)

@@ -504,6 +504,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_toggle_live_spelling": "view.toggle_spellcheck_as_you_type",
     "cmd_toggle_overwrite": "view.toggle_overwrite_mode",
     "cmd_toggle_problems_pane": "view.problems_pane",
+    "cmd_problems_this_file": "view.problems_this_file",
+    "cmd_problems_all_files": "view.problems_all_files",
     "cmd_word_prediction": "edit.word_prediction",
     "cmd_toggle_quiet_mode": "tools.sound_toggle",
     "cmd_toggle_status_bar": "view.toggle_status_bar",
