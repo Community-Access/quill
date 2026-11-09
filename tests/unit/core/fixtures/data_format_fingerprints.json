@@ -1013,7 +1013,7 @@
           "reveal_codes_speak": "_ungrouped",
           "problems_pane_visible": "_ungrouped",
           "problems_check_after_pause": "_ungrouped",
-          "problems_all_open_files": "_ungrouped",
+          "problems_all_open_files": "editing",
           "intellisense_as_you_type": "editing",
           "snippet_trigger_expansion": "editing",
           "preview_browser": "general",
