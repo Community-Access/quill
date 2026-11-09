@@ -10,8 +10,8 @@ function, or only exists as a ``SetName`` -- announces as a bare role.
 There are two supported ways to set ``accName`` from Python:
 
 * ``wx.Window.SetAccessibleName`` -- added in wxWidgets 3.3.4 (PR #27056) and
-  exposed from wxPython 4.3.2. QUILL pins 4.3.1, which does not have it, so
-  this path is taken only when the running wxPython offers it.
+  exposed from wxPython 4.3.2, which QUILL pins. The check stays, so an
+  older wxPython (a source checkout, macOS) still takes the path below.
 * ``wx.Window.SetAccessible`` with a ``wx.Accessible`` whose ``GetName`` answers
   for the control itself. Available in every wxPython on Windows (it is built
   with ``wxUSE_ACCESSIBILITY``); wxMSW answers ``WM_GETOBJECT`` with it and

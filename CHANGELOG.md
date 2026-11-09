@@ -2,6 +2,13 @@
 
 ## 1.0.0
 
+### Built on wxPython 4.3.2 (2026-11-09)
+
+- QUILL now runs on wxPython 4.3.2 (wxWidgets 3.3.4). The change is
+  underneath: a control whose spoken name used to be set by a workaround now
+  carries it the way Windows expects, so your screen reader reads it straight
+  from the control.
+
 ### Language servers: VS Code's smarts, inside QUILL (2026-11-08)
 
 - QUILL now carries the language servers VS Code uses: VS Code's own for HTML,
