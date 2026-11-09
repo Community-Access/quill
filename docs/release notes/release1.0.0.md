@@ -2,6 +2,19 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## A GitHub menu, when you want one
+
+Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a
+**GitHub** menu joins the menu bar after Tools. Everything GitHub that lived in
+the File and Tools menus moves into it, and it opens your inbox, your work,
+your notifications, a repository's issues and pull requests, its Actions runs
+and its releases in one step each. Turn it off and the rows go back where they
+were. New in both: **Clone Repository...** copies a repository to your
+computer, private ones included, without writing your token anywhere. And
+**Save to GitHub...** is now called **Commit to GitHub...**, because that is
+what it does. GitHub no longer needs the Developer profile, so the workbench is
+there in most profiles, as it always has been in QUILL Lite.
+
 ## Word Prediction knows your code
 
 In a code file, **Ctrl+.** now offers the file's own names that start with
@@ -10,12 +23,14 @@ function", "while, keyword". It's ready within a tenth of a second even on a
 large file, and when there's room it adds names from the rest of your
 project, read in the background. QUILL Lite has it too.
 
+
 ## Word Prediction in every profile
 
 **Ctrl+.** now opens Word Prediction in every profile, including the two that
 left it out. It only opens when you press the key; Word Prediction As You
 Type is still off unless you turn it on. QUILL Lite has the same list on the
 same key.
+
 
 ## A Problems pane that stays open
 

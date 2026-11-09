@@ -122,7 +122,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "file.github_save_back",
-            "Save to GitHub...",
+            "Commit to GitHub...",
             self.github_save_back,
             None,
         )
@@ -133,6 +133,7 @@ class CommandRegistryMixin:
             None,
         )
         self._register_github_reference_command()
+        self._register_github_workbench_commands()  # main_frame_github_menu.py
         self.commands.register(
             "tools.open_python_console",
             "Open Python Console...",

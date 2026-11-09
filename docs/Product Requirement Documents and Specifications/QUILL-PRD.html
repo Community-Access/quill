@@ -19687,7 +19687,7 @@ submenu:</p>
   ---
   GitHub Repository...
   GitHub File URL...
-  Save to GitHub...
+  Commit to GitHub...
   GitHub Items...
   ---
   Manage Remote Sites...   (existing)
@@ -19759,8 +19759,8 @@ accepts a pasted
 <code>https://github.com/owner/repo/blob/branch/path</code> URL and
 opens the file directly without requiring the user to navigate the
 browser. Useful for sharing links.</p>
-<h3 id="257-save-to-github">§25.7 Save to GitHub</h3>
-<p><strong>File &gt; Open from Remote &gt; Save to GitHub…</strong> is
+<h3 id="257-commit-to-github">§25.7 Commit to GitHub</h3>
+<p><strong>File &gt; Open from Remote &gt; Commit to GitHub…</strong> is
 available when the active document was opened from GitHub. QUILL prompts
 for a commit message, then commits the current document text to the same
 repository, branch, and path using the GitHub API
@@ -20293,12 +20293,12 @@ project without leaving QUILL” path described in
 new GitHub-backed project meant leaving QUILL, creating the repo in a
 browser, then coming back to set up local sync as two disconnected
 steps.</p>
-<p><strong>Multi-file commits vs. Save to GitHub (§25.7).</strong> Save
-to GitHub commits exactly one already-open document to its own tracked
-origin. Commit Multiple Files is a separate, standalone command: it
-reads arbitrary local files (not necessarily open in QUILL) chosen via a
-file picker and commits all of them to a chosen repository/branch in a
-single atomic git commit (<code>create_git_tree</code> +
+<p><strong>Multi-file commits vs. Commit to GitHub (§25.7).</strong>
+Commit to GitHub commits exactly one already-open document to its own
+tracked origin. Commit Multiple Files is a separate, standalone command:
+it reads arbitrary local files (not necessarily open in QUILL) chosen
+via a file picker and commits all of them to a chosen repository/branch
+in a single atomic git commit (<code>create_git_tree</code> +
 <code>create_git_commit</code> + a fast-forward-only ref update —
 refused, not force-pushed, if the branch has moved since it was read).
 Binary files are rejected with a clear error; this call is UTF-8 text
@@ -20312,7 +20312,7 @@ Branch = Shift+B, Configure Branch Protection = Shift+L, Delete Branch =
 Shift+X, Commit Multiple Files = Shift+U. The five pre-existing
 read-only GitHub commands (§25.2), previously unbound, also gained
 default chords in the same release: GitHub Repository = Shift+Y, GitHub
-File URL = Shift+W, Save to GitHub = Shift+Q, Manage GitHub Accounts =
+File URL = Shift+W, Commit to GitHub = Shift+Q, Manage GitHub Accounts =
 Shift+Z, GitHub Items = Shift+I. All are freely reassignable in
 Preferences &gt; Keyboard Shortcuts, like every other QUILL command.</p>
 <p><strong>Implementation files:</strong></p>

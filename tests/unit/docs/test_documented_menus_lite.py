@@ -25,6 +25,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from quill.core.github.workbench_menu import lite_arrange
 from quill.core.lite.command_areas import visible_commands
 from quill.core.lite.commands import SUBMENU_SEP, CommandRow
 from quill.core.lite.features import DEFAULT_OFF
@@ -65,6 +66,7 @@ ALLOW: dict[str, str] = {
     "path:file > open from remote > manage github accounts": _GITHUB_GUIDE_QUILL_MENU,
     "path:file > open from remote > open github reference": _GITHUB_GUIDE_QUILL_MENU,
     "path:file > open from remote > save": _GITHUB_GUIDE_QUILL_MENU,
+    "path:file > open from remote > clone repository": _GITHUB_GUIDE_QUILL_MENU,
     "path:tools > git and github": _GITHUB_GUIDE_QUILL_MENU,
     "path:tools > git and github > github": _GITHUB_GUIDE_QUILL_MENU,
     "path:tools > git and github > github > notifications": _GITHUB_GUIDE_QUILL_MENU,
@@ -104,11 +106,19 @@ def _items(rows: list[CommandRow]) -> list[MenuItem]:
 
 
 def _new_install() -> list[MenuItem]:
-    return _items(visible_commands(lambda area: area not in DEFAULT_OFF))
+    # The bar as built: the GitHub menu is there only in workbench mode.
+    rows = visible_commands(lambda area: area not in DEFAULT_OFF)
+    return _items(lite_arrange(rows, workbench=False))
 
 
 def _everything() -> list[MenuItem]:
-    return _items(visible_commands(lambda _area: True))
+    return _items(lite_arrange(visible_commands(lambda _area: True), workbench=False))
+
+
+def _workbench() -> list[MenuItem]:
+    """The bar with View > GitHub Workbench Mode on: a GitHub menu after Tools."""
+    rows = visible_commands(lambda area: area not in DEFAULT_OFF)
+    return _items(lite_arrange(rows, workbench=True))
 
 
 def _aliases() -> dict[str, str]:
@@ -124,7 +134,11 @@ def test_every_documented_menu_path_and_command_is_on_a_new_install_menu() -> No
         _new_install(),
         ALLOW,
         extra_keys=_aliases(),
-        opt_in=[OptIn(_everything(), _SWITCH_PHRASES)],
+        opt_in=[
+            OptIn(_everything(), _SWITCH_PHRASES),
+            # A GitHub menu path passes where its section says workbench mode.
+            OptIn(_workbench(), ("workbench mode",)),
+        ],
     )
     assert not findings, (
         "QUILL Lite's documents promise menu paths or commands a new install "

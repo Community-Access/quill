@@ -10555,7 +10555,7 @@ File > Open from Remote
   ---
   GitHub Repository...
   GitHub File URL...
-  Save to GitHub...
+  Commit to GitHub...
   GitHub Items...
   ---
   Manage Remote Sites...   (existing)
@@ -10610,9 +10610,9 @@ All controls have accessible names. Long operations (repository load, directory 
 
 **File > Open from Remote > GitHub File URL...** accepts a pasted `https://github.com/owner/repo/blob/branch/path` URL and opens the file directly without requiring the user to navigate the browser. Useful for sharing links.
 
-### §25.7 Save to GitHub
+### §25.7 Commit to GitHub
 
-**File > Open from Remote > Save to GitHub...** is available when the active document was opened from GitHub. QUILL prompts for a commit message, then commits the current document text to the same repository, branch, and path using the GitHub API (`update_file`). The file SHA is tracked for optimistic concurrency; if the file has changed remotely since it was opened, GitHub returns a 409 and QUILL shows a clear error.
+**File > Open from Remote > Commit to GitHub...** is available when the active document was opened from GitHub. QUILL prompts for a commit message, then commits the current document text to the same repository, branch, and path using the GitHub API (`update_file`). The file SHA is tracked for optimistic concurrency; if the file has changed remotely since it was opened, GitHub returns a 409 and QUILL shows a clear error.
 
 Requirements: the stored token must have `repo` (write) scope on the target repository.
 
@@ -10935,7 +10935,7 @@ local folder and run the first sync, all in one continuous flow. This is the
 project meant leaving QUILL, creating the repo in a browser, then coming back
 to set up local sync as two disconnected steps.
 
-**Multi-file commits vs. Save to GitHub (§25.7).** Save to GitHub commits
+**Multi-file commits vs. Commit to GitHub (§25.7).** Commit to GitHub commits
 exactly one already-open document to its own tracked origin. Commit Multiple
 Files is a separate, standalone command: it reads arbitrary local files (not
 necessarily open in QUILL) chosen via a file picker and commits all of them
@@ -10952,7 +10952,7 @@ Shift+V, Change Default Branch = Shift+B, Configure Branch Protection =
 Shift+L, Delete Branch = Shift+X, Commit Multiple Files = Shift+U. The five
 pre-existing read-only GitHub commands (§25.2), previously unbound, also
 gained default chords in the same release: GitHub Repository = Shift+Y,
-GitHub File URL = Shift+W, Save to GitHub = Shift+Q, Manage GitHub Accounts =
+GitHub File URL = Shift+W, Commit to GitHub = Shift+Q, Manage GitHub Accounts =
 Shift+Z, GitHub Items = Shift+I. All are freely reassignable in Preferences >
 Keyboard Shortcuts, like every other QUILL command.
 

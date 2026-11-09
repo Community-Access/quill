@@ -21,6 +21,15 @@ There are three parts, and you can use any of them on its own:
 - **Local Git**: accessible merge-conflict resolution and interactive rebase.
   Needs no GitHub account at all; works on any local repository.
 
+**A shorter way to all of it.** Turn on **View > GitHub Workbench Mode**
+(`Alt+V`, then `K`), in either app. A **GitHub** menu joins the menu bar after
+Tools (`Alt+G`), and the GitHub rows of the File and Tools menus move into it,
+next to rows that open the views below in one step: **Inbox...**,
+**Issues and Pull Requests...**, **Actions Runs...** and the rest. The menu
+paths in this tutorial are the ones you see with the mode off; with it on,
+look in the GitHub menu instead. Turn it off from the same place, or with
+**GitHub > Leave Workbench Mode**.
+
 ## 0. Sign in (once)
 
 The first time you touch any GitHub feature, QUILL shows a one-time consent
@@ -60,9 +69,15 @@ right there instead of just refusing.
    handy) and press Enter.
 3. Arrow through the file list: folders first, then files. Enter opens a
    folder or a file.
-4. Edit the file, then **File > Open from Remote > Save to GitHub...** and
+4. Edit the file, then **File > Open from Remote > Commit to GitHub...** and
    type a commit message. QUILL commits straight to the same repository,
    branch, and path.
+
+To work on a whole repository in a folder of your own, **File > Open from
+Remote > Clone Repository...** copies it to your computer: type `owner/name`,
+choose a folder, and press Clone. QUILL Lite has it as **File > Clone
+Repository...** (`Alt+F`, then `Y`). When it is done you can open a file from
+the new folder.
 
 If you already have the URL, **File > Open from Remote > GitHub File URL...**
 skips the browsing. Paste a `github.com/owner/repo/blob/branch/path` link and
@@ -274,7 +289,7 @@ GitHub** creates and configures them.
    protection instead" to clear existing rules.
 5. **Commit Multiple Files...**: pick several local files with a file browser,
    choose a branch and a commit message, and QUILL commits all of them
-   together. This is different from **Save to GitHub** (section 1), which only
+   together. This is different from **Commit to GitHub** (section 1), which only
    ever handles the one document you have open.
 
 All eight commands are in the Command Palette and ship default keyboard

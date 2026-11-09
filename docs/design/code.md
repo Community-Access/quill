@@ -489,7 +489,11 @@ palette or a tutorial.
 - **The developer features already in QUILL move behind it:** the shell, Git
   and GitHub, Codespaces, IntelliSense, the Developer Console and agent
   standards lint. They stay available, but are off in every other profile
-  rather than merely quiet.
+  rather than merely quiet. **Changed 2026-11-08 (Jeff, the Workbench menu
+  plan, decision 1):** GitHub Remote Access (`core.github_remote`) no longer
+  depends on `core.developer`. Reading issues and reviewing pull requests is
+  not coding, and QUILL Lite had the Workbench in every profile, which put it
+  ahead of QUILL. Local Git (`localgit.*`) stays a developer feature.
 - **One new feature id, `core.developer`, groups them.** Each developer
   feature depends on it (the catalogue's `dependencies`). Turning it on by
   hand in Manage Individual Features is the escape hatch for someone who wants

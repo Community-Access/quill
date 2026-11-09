@@ -1,16 +1,30 @@
 # QUILL Lite 2.0
 
+## A GitHub menu, when you want one
+
+Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a
+**GitHub** menu (Alt+G) joins the menu bar after Tools, with the GitHub rows
+from the File menu in it and rows that open your inbox, your work, your
+notifications, a repository's issues and pull requests, its Actions runs and
+its releases in one step. Turn it off and the rows go back. It's the same menu
+as QUILL's, less the rows only QUILL has. **File > Clone Repository...**
+(Alt+F, then Y) is new too: it copies a repository to your computer, private
+ones included, without writing your token anywhere, and then offers to open a
+file from it.
+
 ## Word Prediction knows your code
 
 In a code file, the list offers the file's own names with their kinds, such as
 "count_words, function", instead of dictionary words, and then names from
 the rest of the project.
 
+
 ## Word Prediction
 
 Press **Ctrl+.** halfway through a word and QUILL Lite offers a short list of
 words and tags. Up and Down say each one, Enter puts it in, and Escape leaves
 your text alone. It's QUILL's list, on QUILL's key.
+
 
 ## A Problems pane that stays open
 

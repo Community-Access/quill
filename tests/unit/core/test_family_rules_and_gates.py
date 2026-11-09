@@ -197,6 +197,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "help.copy_log": "Reached another way: Help > Copy Log, in both editors. No chord was "
     "free in both (measured 2026-11-06), and it is pressed when writing to support, not "
     "in the editing loop (rule 9).",
+    "view.github_workbench_mode": "Reached another way: View > GitHub Workbench Mode, in both "
+    "editors, and GitHub > Leave Workbench Mode while it is on. It is pressed a few times a "
+    "day at most, and no chord is free in both keymaps (rule 9).",
     "help.github_guide": "Reached another way: Help > Open GitHub Guide, in both editors, "
     "and the F1 window in every GitHub window. A manual is opened to learn, not in the "
     "editing loop, so a menu letter is the way in (rule 9).",

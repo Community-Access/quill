@@ -250,7 +250,8 @@ It covers browsing files at any branch, tag or commit, blame and file
 history, opening a file to edit, branches and comparing them, commit
 comments, tags and releases, searching across GitHub, forks, templates
 and topics, the community profile, insights, looking after a repository,
-watching, starring and following, and writing and editing gists.</p>
+watching, starring and following, writing and editing gists, and cloning
+a repository to your computer.</p>
 <h2 id="browsing-a-repositorys-files">Browsing a repository’s files</h2>
 <p><strong>Files…</strong> (<code>Alt+F</code>) in GitHub Items, or
 <strong>Browse Repository Files…</strong> on any row’s context menu,
@@ -333,8 +334,9 @@ URL</strong> and <strong>Cancel</strong>.</li>
 such as
 <code>https://github.com/owner/repo/blob/main/docs/readme.md</code>, and
 opens it.</li>
-<li><strong>Save to GitHub…</strong> sends your changes back. It works
-on a file you opened from GitHub, and asks for a commit message,
+<li><strong>Commit to GitHub…</strong> sends your changes back. It was
+called Save to GitHub until November 2026; it is the same command. It
+works on a file you opened from GitHub, and asks for a commit message,
 starting with “Update” and the file’s name. QUILL commits to the same
 repository, branch and path. If the file changed on GitHub since you
 opened it, QUILL tells you, so you never overwrite someone else’s
@@ -344,6 +346,58 @@ sending is always this separate command.</li>
 <p>To commit several files from your computer at once, QUILL has
 <strong>Commit Multiple Files…</strong> on <strong>Tools &gt; Git and
 GitHub &gt; GitHub</strong>.</p>
+<p>In workbench mode these rows are in the GitHub menu: <strong>GitHub
+File URL…</strong>, <strong>Commit to GitHub…</strong>, and
+<strong>Commit Multiple Files…</strong> in its <strong>Repository
+Admin</strong> submenu. Chapter 2 lists the whole menu.</p>
+<h2 id="cloning-a-repository">Cloning a repository</h2>
+<p>Cloning copies a whole repository to your computer, with its history,
+so you can work on it in a folder of your own. Both apps can do it:</p>
+<ul>
+<li>In QUILL, <strong>File &gt; Open from Remote &gt; Clone
+Repository…</strong>.</li>
+<li>In QUILL Lite, <strong>File &gt; Clone Repository…</strong>:
+<code>Alt+F</code>, then <code>Y</code>.</li>
+<li>In workbench mode, in either app, <strong>GitHub &gt; Clone
+Repository…</strong>: <code>Alt+G</code>, then <code>C</code>.</li>
+</ul>
+<p>The Clone Repository window asks two things:</p>
+<ul>
+<li><strong>Repository (owner/name or address)</strong>: type
+<code>owner/name</code>, such as <code>community-access/quill</code>, or
+paste the address from GitHub’s green Code button, or any GitHub page in
+the repository. When the document you have open is already in a GitHub
+repository, its name is filled in for you.</li>
+<li><strong>Into this folder</strong>: the folder the copy goes in.
+QUILL makes a new folder inside it, named after the repository.
+<strong>Browse…</strong> picks the folder. It starts in the GitHub
+folder in your Documents folder when you have one, and in Documents
+otherwise.</li>
+</ul>
+<p>Press <strong>Clone</strong>. QUILL says “Cloning” and the
+repository’s name, and then, once, how it went: “Cloned” and the name,
+or why it could not, in Git’s own words. A large repository can take a
+minute or two. You can keep working while it runs.</p>
+<p>When the clone is done, QUILL offers to open a file from it. In
+QUILL, when the Developer profile is on, it also offers <strong>Open as
+Project</strong>, which opens the new folder as your project.</p>
+<p>A few things worth knowing:</p>
+<ul>
+<li><strong>Private repositories work when you are signed in.</strong>
+QUILL hands your GitHub account’s token to Git for this one command
+only. It is never written into the copy’s settings, its remote address,
+or QUILL’s log, so nothing in the new folder holds your token
+afterwards. To pull or push later from another tool, that tool signs in
+its own way.</li>
+<li><strong>Cloning needs Git for Windows.</strong> If it is not
+installed, QUILL says so and offers to open its download page. Install
+it, then choose Clone Repository again.</li>
+<li><strong>The folder must be new or empty.</strong> If a folder with
+the repository’s name already has something in it, QUILL asks you to
+choose another folder rather than mixing the two.</li>
+<li><strong>Safe Mode turns cloning off</strong>, along with everything
+else that reaches the network.</li>
+</ul>
 <h2 id="branches">Branches</h2>
 <p>The <strong>Branches</strong> view lists every branch, whether it is
 protected, and its last commit. Enter on a branch opens its commits, in
