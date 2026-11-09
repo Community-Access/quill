@@ -514,6 +514,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_toggle_list_announcements": "view.toggle_list_announcements",
     "cmd_toggle_live_spelling": "view.toggle_spellcheck_as_you_type",
     "cmd_toggle_overwrite": "view.toggle_overwrite_mode",
+    "cmd_toggle_problems_pane": "view.problems_pane",
     "cmd_toggle_quiet_mode": "tools.sound_toggle",
     "cmd_toggle_status_bar": "view.toggle_status_bar",
     "cmd_toggle_tab_mode": "format.toggle_tab_insert_mode",

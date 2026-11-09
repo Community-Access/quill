@@ -65,6 +65,9 @@ KEYLESS_WITH_REASON: dict[str, str] = {
         "reaches both (Alt+N, C, then N or P)."
         for handler in ("cmd_next_block", "cmd_previous_block")
     },
+    "cmd_toggle_problems_pane": "As in QUILL (rule 2), where Problems Pane has no chord "
+    "either: Ctrl+Shift+M is Set Mark in both editors and nothing near it was free in both "
+    "(measured 2026-11-08). Shown once, it stays shown (rule 9). Alt+V, P.",
     "cmd_github_workbench": "As in QUILL (rule 2), where GitHub Items has no chord either; "
     "it sits in File, as QUILL's does, and Alt+F, G reaches it. Ctrl+Alt+Shift+F6 is "
     "Spelling Announcements in QUILL.",
@@ -128,7 +131,7 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "
     "commands (rule 9). "
-    "Agent Task Transcript: Alt+R in the task window; elsewhere Alt+V, P.",
+    "Agent Task Transcript: Alt+R in the task window; elsewhere Alt+V, G.",
     "cmd_project_allowed_commands": "As in QUILL (rule 2), where it has no plain key either: "
     "no chord is free in both editors (measured 2026-11-04; keymap.py lists what "
     "took each candidate), and these are the Developer profile's once-a-task "

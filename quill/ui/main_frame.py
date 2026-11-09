@@ -8919,6 +8919,8 @@ class MainFrame(
         reveal = getattr(self, "_reveal_pane", None)
         if reveal is not None and reveal.panel.IsShown():
             labels.append("Reveal Codes")
+        if self._problems_pane_is_shown():
+            labels.append("Problems")
         if self._tab_control_visible:
             try:
                 has_tabs = self.notebook.GetPageCount() > 0
@@ -8957,6 +8959,8 @@ class MainFrame(
         while win is not None:
             if reveal is not None and "Reveal Codes" in regions and win is reveal.panel:
                 return "Reveal Codes"
+            if "Problems" in regions and self._is_problems_panel(win):
+                return "Problems"
             if preview_ctrl is not None and win is preview_ctrl and "Preview" in regions:
                 return "Preview"
             if "Document Tabs" in regions and win is self.notebook:
@@ -8982,6 +8986,9 @@ class MainFrame(
             if reveal is not None and reveal.panel.IsShown():
                 reveal.focus()
                 return
+        if label == "Problems" and self._problems_pane_is_shown():
+            self._focus_problems_pane()
+            return
         if label == "Document Tabs":
             self.notebook.SetFocus()
             return

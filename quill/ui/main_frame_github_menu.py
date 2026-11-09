@@ -14,7 +14,7 @@ bindings; the new ones are bound here to the command registry.
 The mode's own entry points (Inbox, My Work, the three Items views, Explore) are
 :class:`quill.ui.github_workbench_commands.GitHubWorkbenchCommands`, which QUILL
 Lite shares. This mixin is the adapter: it owns no view logic of its own, and
-``tests/unit/ui/test_github_workbench_menu.py`` asserts that.
+``tests/unit/ui/test_github_workbench_menu_bar.py`` asserts that.
 
 The mode is per window and is not remembered: QUILL starts in normal mode.
 """

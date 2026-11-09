@@ -5,6 +5,9 @@ QUILL's side of three things QUILL Lite has too, over the same shared code:
 * **Next / Previous Indent Change** (``quill.core.navigation.indent_change_target``):
   the next line, skipping blanks, whose indentation differs from this one --
   how you get out of a Python block or a YAML mapping without reading it.
+* **View > Problems Pane** (:class:`quill.ui.problems_pane.ProblemsPane`):
+  the same problems docked under the editor, above the status bar, which F6
+  reaches. Built the first time it is shown, so it costs nothing until then.
 * **Check This File**, **Next Problem**, **Previous Problem**
   (:class:`quill.ui.problems_commands.ProblemsCommandsMixin`, over
   :mod:`quill.core.problems`). QUILL checks every language it has a checker
@@ -16,7 +19,8 @@ the document's language profile (``_block_pattern``).
 
 Host requirements (provided by MainFrame): ``editor``, ``document``,
 ``_set_status``, ``_announce_navigation_move``, ``_record_location_before_jump``,
-``_location_ring``, ``_show_modal_dialog``, ``_task_manager``.
+``_location_ring``, ``_show_modal_dialog``, ``_task_manager``, ``statusbar``,
+``settings``, ``_set_active_region``, ``_copy_text_to_clipboard``.
 """
 
 from __future__ import annotations
@@ -67,6 +71,10 @@ class CodeNavMixin(ProblemsCommandsMixin):
     _record_location_before_jump: Any
     _show_modal_dialog: Any
     _task_manager: Any
+    statusbar: Any
+    settings: Any
+    _set_active_region: Any
+    _copy_text_to_clipboard: Any
 
     # -- language-aware blocks ------------------------------------------------ #
 
@@ -183,6 +191,97 @@ class CodeNavMixin(ProblemsCommandsMixin):
             on_failure=lambda _op, error: self._set_status(f"Check This File failed: {error}"),
         )
 
+    # -- the Problems pane ---------------------------------------------------- #
+
+    def view_toggle_problems_pane(self) -> None:
+        self._toggle_problems_pane()
+
+    def _problems_pane(self, *, create: bool) -> Any:
+        pane = getattr(self, "_problems_pane_widget", None)
+        if pane is not None or not create:
+            return pane
+        import wx
+
+        from quill.ui.dpi import dip_size
+        from quill.ui.problems_pane import ProblemsPane
+
+        pane = ProblemsPane(
+            wx,
+            self.frame,
+            go_to=self._problems_pane_go_to,
+            back_to_editor=self._problems_back_to_editor,
+            copy_text=self._problems_copy,
+            say=self._problems_say,
+        )
+        pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
+        pane.panel.Hide()
+        sizer = self.frame.GetSizer()
+        # Under the editor and Reveal Codes, above the status bar: where F6
+        # finds it, because the ring is in screen order.
+        index = sizer.GetItemCount()
+        for position in range(sizer.GetItemCount()):
+            if sizer.GetItem(position).GetWindow() is self.statusbar:
+                index = position
+                break
+        sizer.Insert(index, pane.panel, 0, wx.EXPAND)
+        self._problems_pane_widget = pane
+        return pane
+
+    def _problems_pane_is_shown(self) -> bool:
+        pane = self._problems_pane(create=False)
+        return pane is not None and pane.is_shown()
+
+    def _is_problems_panel(self, window: Any) -> bool:
+        pane = self._problems_pane(create=False)
+        return pane is not None and window is pane.panel
+
+    def _focus_problems_pane(self) -> None:
+        pane = self._problems_pane(create=False)
+        if pane is not None:
+            pane.focus()
+
+    def _problems_pane_set_shown(self, shown: bool) -> None:
+        pane = self._problems_pane(create=True)
+        pane.panel.Show(shown)
+        self.frame.GetSizer().Layout()
+        self.settings.problems_pane_visible = shown
+        try:
+            from quill.core.settings import save_settings
+
+            save_settings(self.settings)
+        except Exception:  # noqa: BLE001 - remembering it is best-effort
+            pass
+        item_id = getattr(self, "_id_problems_pane", None)
+        menu_bar = self.frame.GetMenuBar()
+        if item_id is not None and menu_bar is not None:
+            menu_bar.Check(item_id, shown)
+
+    def _problems_back_to_editor(self) -> None:
+        self._set_active_region("Editor")
+        self.editor.SetFocus()
+
+    def _problems_copy(self, text: str) -> None:
+        self._copy_text_to_clipboard(text)
+
+    def _append_problems_pane_item(self, view_menu: Any) -> None:
+        """View > Problems Pane, under Reveal Codes: the other pane under the editor."""
+        import wx
+
+        from quill.core.i18n import _
+
+        self._id_problems_pane = wx.NewIdRef()
+        view_menu.AppendCheckItem(
+            self._id_problems_pane,
+            self._menu_label(_("&Problems Pane"), "view.problems_pane"),  # type: ignore[attr-defined]
+        )
+        shown = bool(getattr(self.settings, "problems_pane_visible", False))
+        if shown and not self._problems_pane_is_shown():
+            self._problems_pane_set_shown(True)
+        view_menu.Check(self._id_problems_pane, shown)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.view_toggle_problems_pane(), id=self._id_problems_pane
+        )
+
     # -- Navigate > Code ------------------------------------------------------ #
 
     def _code_menu_ids(self) -> dict[str, Any]:
@@ -195,6 +294,12 @@ class CodeNavMixin(ProblemsCommandsMixin):
         return ids
 
     def _register_code_commands(self) -> None:
+        self.commands.try_register(  # type: ignore[attr-defined]
+            "view.problems_pane",
+            "Problems Pane",
+            self.view_toggle_problems_pane,
+            self._binding_for("view.problems_pane"),  # type: ignore[attr-defined]
+        )
         for command_id, _label, palette, handler_name in _CODE_ROWS:
             if command_id:
                 self.commands.try_register(  # type: ignore[attr-defined]
@@ -229,4 +334,7 @@ class CodeNavMixin(ProblemsCommandsMixin):
     def _command_to_menu_id_map(self) -> dict[str, int]:
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
         mapping.update(self._code_menu_ids())
+        item_id = getattr(self, "_id_problems_pane", None)
+        if item_id is not None:
+            mapping["view.problems_pane"] = item_id
         return mapping

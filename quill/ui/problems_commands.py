@@ -15,12 +15,17 @@ What a listener gets, and why:
   list, moving the caret and saying the problem's number, place and message --
   which the screen reader cannot know. They check again first whenever the
   text has changed since the last check, so the line numbers are never stale.
+* **View > Problems Pane** docks the same problems below the editor, where they
+  stay while you work (:mod:`quill.ui.problems_pane`). While it is shown, Check
+  This File fills it instead of opening the modal list, and every check keeps
+  it current. F6 reaches it; Escape comes back.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from quill.core.problems import (
     CheckReport,
@@ -30,14 +35,17 @@ from quill.core.problems import (
     problem_after,
     summarize,
 )
-from quill.core.problems.model import list_row
+from quill.core.problems.model import Problem, list_row
 from quill.core.problems.outside import tools_for
+
+if TYPE_CHECKING:
+    from quill.ui.problems_pane import ProblemsPane
 
 __all__ = ["ProblemsCommandsMixin"]
 
 
 class ProblemsCommandsMixin:
-    """The three problem commands. Hooks: ``_problems_*`` below."""
+    """The problem commands and the pane. Hooks: ``_problems_*`` below."""
 
     _problems_report: CheckReport | None = None
     _problems_checked_text: str | None = None
@@ -56,7 +64,67 @@ class ProblemsCommandsMixin:
 
     # -- what happens with a report ----------------------------------------- #
 
+    def _toggle_problems_pane(self) -> None:
+        """View > Problems Pane: show or hide it, and check the file on showing."""
+        pane = self._problems_pane(create=True)
+        if pane is None:
+            return
+        if pane.is_shown():
+            if pane.has_focus():
+                self._problems_back_to_editor()
+            self._problems_pane_set_shown(False)
+            self._problems_say("Problems pane hidden")
+            return
+        self._problems_pane_set_shown(True)
+        if not self._problems_can_check():
+            self._problems_say("Problems pane shown")
+            return
+        self._run_problem_check(
+            lambda report: self._problems_say(f"Problems pane shown. {summarize(report)}")
+        )
+
+    def _problems_pane_go_to(self, index: int) -> None:
+        """Enter on a pane row: the caret to that problem, focus to the editor."""
+        report = self._problems_report
+        if report is None or not 0 <= index < len(report.problems):
+            return
+        problem = report.problems[index]
+        if self._problems_checked_text == self._problems_text():
+            self._problems_go_to(offset_for(self._problems_text(), problem.line, problem.column))
+            return
+        # You fixed something since the check, which is the point of a pane
+        # that stays open: check again, then go to the same problem where it
+        # is now. If the fix removed it, say so rather than land on a stale line.
+        self._run_problem_check(lambda fresh: self._go_to_same_problem(fresh, problem))
+
+    def _go_to_same_problem(self, report: CheckReport, wanted: Problem) -> None:
+        matches = [
+            p
+            for p in report.problems
+            if (p.message, p.source, p.severity) == (wanted.message, wanted.source, wanted.severity)
+        ]
+        if not matches:
+            self._problems_say(f"That problem is gone. {summarize(report)}")
+            return
+        nearest = min(matches, key=lambda p: abs(p.line - wanted.line))
+        self._problems_go_to(offset_for(self._problems_text(), nearest.line, nearest.column))
+
+    def _feed_problems_pane(self, report: CheckReport) -> bool:
+        """Update the pane, if shown; True when the count it shows changed."""
+        pane = self._problems_pane(create=False)
+        if pane is None or not pane.is_shown():
+            return False
+        before = pane.count_sentence() if pane.report is not None else None
+        pane.show_report(report)
+        return before != pane.count_sentence()
+
     def _present_problems(self, report: CheckReport) -> None:
+        pane = self._problems_pane(create=False)
+        if pane is not None and pane.is_shown():
+            # The pane already has the report (``done`` fed it); say what was
+            # found and leave focus in the text. F6 reaches the rows.
+            self._problems_say(summarize(report))
+            return
         if not report.problems:
             self._problems_say(summarize(report))
             return
@@ -96,6 +164,7 @@ class ProblemsCommandsMixin:
         def done(report: CheckReport) -> None:
             self._problems_report = report
             self._problems_checked_text = text
+            self._feed_problems_pane(report)
             then(report)
 
         if outside and tools_for(language):
@@ -140,3 +209,22 @@ class ProblemsCommandsMixin:
         self, work: Callable[[], CheckReport], done: Callable[[CheckReport], None]
     ) -> None:
         done(work())
+
+    def _problems_can_check(self) -> bool:
+        """False where this document has nothing a checker reads."""
+        return True
+
+    def _problems_pane(self, *, create: bool) -> ProblemsPane | None:
+        """The docked pane; built (hidden) on first use when *create*."""
+        return None
+
+    def _problems_pane_set_shown(self, shown: bool) -> None:
+        """Show or hide the pane, lay the window out, remember the choice."""
+        raise NotImplementedError
+
+    def _problems_back_to_editor(self) -> None:
+        """Escape in the pane: focus to the text, the caret where it was."""
+        raise NotImplementedError
+
+    def _problems_copy(self, text: str) -> None:
+        raise NotImplementedError

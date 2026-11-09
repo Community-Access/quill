@@ -499,6 +499,7 @@ COMMANDS: list[CommandRow] = [
     # rather than a setting. F6 with the bar hidden says so rather than failing
     # silently (see cmd_focus_status_bar).
     ("&View", "&Status Bar", "Alt+Shift+B", "cmd_toggle_status_bar", "check"),
+    ("&View", "&Problems Pane", "", "cmd_toggle_problems_pane", "check"),  # no chord (rule 9)
     ("&View", "", "", "", "sep"),
     # Notepad's own zoom chords.
     ("&View", "&Increase Text Size", "Ctrl+=", "cmd_zoom_in", ""),

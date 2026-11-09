@@ -15,6 +15,16 @@ computer, private ones included, without writing your token anywhere. And
 what it does. GitHub no longer needs the Developer profile, so the workbench is
 there in most profiles, as it always has been in QUILL Lite.
 
+## A Problems pane that stays open
+
+Check This File's list closed as soon as you picked a problem. Now you can
+turn on **View > Problems Pane** and keep the problems under the document
+while you fix them. F6 reaches it, Enter goes to a problem, and Escape comes
+back without closing it. Two choosers at the top narrow it to errors only, or
+to one checker, and say the new count. If you've edited since the check,
+Enter checks again and finds the same problem where it is now. QUILL Lite has
+the same pane.
+
 ## Sign in to GitHub without a token
 
 Signing in to the GitHub windows no longer means making a personal access

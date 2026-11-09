@@ -873,6 +873,7 @@ class MenuBuilderMixin:
             self._id_reveal_codes, bool(getattr(self.settings, "reveal_codes_visible", False))
         )
         self._append_github_workbench_toggle(view_menu)  # main_frame_github_menu.py
+        self._append_problems_pane_item(view_menu)  # main_frame_code_nav, as in QUILL Lite
         navigate_menu = wx.Menu()
         self._id_set_bookmark = wx.NewIdRef()
         self._id_go_to_bookmark = wx.NewIdRef()

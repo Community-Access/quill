@@ -150,6 +150,15 @@ Approved by the user on 2026-11-06. CLAUDE.md records it as the
 - `tests/unit/ui/test_main_frame_code_nav.py` and
   `tests/unit/apps/test_lite_code_nav.py`: the commands in each editor.
 
+## The Problems pane
+
+Since 2026-11-08, View > Problems Pane docks the same problems under the
+editor in both editors, and `problems_pane_visible` remembers it. Check This
+File fills the pane instead of opening the modal list while it is shown. The
+widget is `quill/ui/problems_pane.py`, its filters and sentences are
+`quill/core/problems/pane.py`, and the plan for what feeds it next (open
+files, a check after a pause, language servers) is `docs/design/intellisense.md`.
+
 ## Possible later work
 
 - A language server client would give problems as you type. It is a much larger

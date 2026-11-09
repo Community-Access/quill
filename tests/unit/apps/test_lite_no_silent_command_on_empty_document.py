@@ -39,6 +39,8 @@ HANDLERS = sorted({row[3] for row in COMMANDS if row[3]})
 STUB_CANNOT_REACH: dict[str, str] = {
     "cmd_recent_documents": "defined on DocumentFrame itself, not on a mixin the stub composes",
     "cmd_reopen_last_session": "FakeApp has no choose_session_documents",
+    "cmd_toggle_problems_pane": "the pane is a wx.Panel and needs a real wx parent "
+    "(its behaviour is tested in test_lite_code_nav.py with a stand-in pane)",
     "cmd_snippet_gallery": "FakeApp.abbreviations is a dict, not the abbreviation store",
     "cmd_toggle_abbreviations": "FakeApp.abbreviations is a dict, not the abbreviation store",
     "cmd_clipboard_collector": "the collector's wx.Timer needs a real wx owner",

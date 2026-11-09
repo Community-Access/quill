@@ -463,6 +463,27 @@ take you to the next or previous problem without the list, and say it: "Problem
 They go round from the last to the first, and check the document again first
 if you have changed it.
 
+If you'd rather keep the problems in front of you while you fix them, turn on
+**View > Problems Pane** (Alt+V, then P). It sits under the document, above
+the status bar, in every window you have open, and QUILL Lite remembers
+whether it's on. Turning it on checks the document and says what it found.
+While it's on, Check This File fills the pane instead of opening the list.
+
+- **F6** goes from the document to the pane, and F6 again goes on to the
+  status bar.
+- Each row starts with how serious the problem is: "Warning, line 2, column 1:
+  Heading levels jump by more than one level (Markdown)". **Enter** goes to it.
+- **Escape** takes you back to the document and leaves the pane open.
+- If you've changed the document since the check, Enter checks it again and
+  goes to the same problem where it is now, or tells you it's gone.
+- **Shift+Tab** from the list reaches **Show** (all problems, errors and
+  warnings, or errors only) and **Source** (one checker). Changing either says
+  the new count.
+- The context key on a row has **Go To** and **Copy Message**.
+
+The pane has no shortcut key; Ctrl+Shift+M, the usual one, is Set Mark here
+and in QUILL. You can give it one in the Keyboard Manager.
+
 QUILL Lite checks the two kinds of document it knows. In a plain text document
 you hear "Nothing to check: QUILL Lite checks Markdown and HTML documents."
 QUILL checks those too, and also code and data files such as JSON, XML, Python

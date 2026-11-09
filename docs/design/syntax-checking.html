@@ -577,6 +577,15 @@ wrap-around, the sentences.</li>
 <code>tests/unit/apps/test_lite_code_nav.py</code>: the commands in each
 editor.</li>
 </ul>
+<h2 id="the-problems-pane">The Problems pane</h2>
+<p>Since 2026-11-08, View &gt; Problems Pane docks the same problems
+under the editor in both editors, and <code>problems_pane_visible</code>
+remembers it. Check This File fills the pane instead of opening the
+modal list while it is shown. The widget is
+<code>quill/ui/problems_pane.py</code>, its filters and sentences are
+<code>quill/core/problems/pane.py</code>, and the plan for what feeds it
+next (open files, a check after a pause, language servers) is
+<code>docs/design/intellisense.md</code>.</p>
 <h2 id="possible-later-work">Possible later work</h2>
 <ul>
 <li>A language server client would give problems as you type. It is a

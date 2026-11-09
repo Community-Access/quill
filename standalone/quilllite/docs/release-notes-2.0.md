@@ -12,6 +12,13 @@ as QUILL's, less the rows only QUILL has. **File > Clone Repository...**
 ones included, without writing your token anywhere, and then offers to open a
 file from it.
 
+## A Problems pane that stays open
+
+Turn on **View > Problems Pane** and the problems Check This File finds stay
+under the document while you fix them, in every window. F6 reaches the pane,
+Enter goes to a problem, and Escape comes back without closing it. It's
+QUILL's pane, shared with QUILL.
+
 ## Sign in to GitHub without a token
 
 **File > Manage GitHub Accounts...** (Alt+F, then H) now starts with **Sign In

@@ -17,6 +17,16 @@
 - Turning the mode on or off says one sentence, and nothing else in it speaks.
 - The Copilot and free AI sign-in codes now say "dash" as a word.
 
+### The Problems pane (2026-11-08)
+
+- View > Problems Pane (Alt+V, then P) docks the problems Check This File finds
+  under the document, in every open window, and QUILL Lite remembers whether
+  it's on. While it's on, Check This File fills it instead of opening the list.
+- F6 goes from the document to the pane, then to the status bar. Enter on a
+  row goes to the problem, Escape goes back and leaves the pane open, and the
+  Show and Source choosers narrow the list.
+- It's QUILL's pane, from the same shared code, on the same menu.
+
 ### Sign In with GitHub (2026-11-08)
 
 - Manage GitHub Accounts (Alt+F, then H) has Sign In with GitHub... as its

@@ -1884,6 +1884,11 @@ QUILL's Navigate > Code, in QUILL Lite with the same rows, letters and keys (fam
 - **Next / Previous Indent Change** (`cmd_next_indent` Alt+Shift+PageDown, `cmd_previous_indent` Alt+Shift+PageUp): the next line, skipping blanks, indented differently; the depth is announced after the move.
 - **Check This File** (`cmd_check_this_file` Ctrl+Alt+/), **Next Problem** (`cmd_next_problem` Ctrl+Alt+.), **Previous Problem** (`cmd_previous_problem` Ctrl+Alt+,): every problem in a Markdown or HTML document, in the Problems list (`choose_from_rows`) or one at a time with "Problem n of m, line, column, severity: message". Built-in checkers only: QUILL Lite never starts an outside tool. In plain text or rich text it says "Nothing to check: QUILL Lite checks Markdown and HTML documents." QUILL checks the same two languages and many more (rule 10: Lite level with QUILL, not ahead).
 
+## The Problems pane (2026-11-08)
+
+- **View > Problems Pane** (`cmd_toggle_problems_pane`, no key, as in QUILL, for the reason recorded there): QUILL's pane, from the shared `quill/ui/problems_pane.py` and `quill/ui/problems_commands.py`, docked under the text and above the status bar. The setting is `problems_pane_visible`, QUILL's field name, and applies to every open window through `reapply_settings`.
+- F6 goes from the text to the pane, then to the status bar; F6 in the pane with the bar hidden goes back to the text. Enter goes to a problem (re-checking after an edit), Escape returns and leaves the pane open, and Show and Source narrow the list. While shown, Check This File fills the pane rather than opening `choose_from_rows`.
+
 ## Word documents and table navigation (2026-10-17)
 
 **One implementation, moved.** QUILL's wx-free Word decisions left
