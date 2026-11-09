@@ -3,13 +3,6 @@
 *Version 2.0.0 (build 6), the beta for testers, October 2026. 2.0.0 was
 prepared on October 3, 2026 and is not yet published.*
 
-## A note on the shared runtime's licence
-
-Installed Cast uses the shared QuillVille Runtime, which includes PyMuPDF
-1.28.2 under AGPL-3.0 through GLOW. Cast does not itself expose GLOW. The
-exact source of PyMuPDF, and of every other GPL part, is published with each
-release, and the portable package leaves it out.
-
 I listen to a lot of podcasts, and I do it with a screen reader. For years
 that meant apps where the list I wanted was three windows away, buttons that
 said "Play" without saying what they would play, and news that went by while
@@ -28,127 +21,6 @@ You'll meet two new faces in these notes. QUILLBert finds the things worth
 trying, and QUILLBee tells you what has changed. They're new around here, and
 [Meet QUILLBert and QUILLBee](https://www.quillforall.org/meet-quillbert-and-quillbee.html)
 has the proper introductions.
-
-## This build: 2.0.0 (build 6)
-
-Build 6 keeps everything from build 5, below, and adds **Help > What's New**
-(Ctrl+Shift+F1), which opens QUILL Cast's changelog in your browser.
-
-**Slider Keys** is new in Preferences (Ctrl+,), in the When Cast opens
-section, and it is one choice for every Quill app at once. **Up is more**
-stays the default: Up, Page Up and Home raise the volume slider and the
-Sound Enhancements sliders, and Home is now the top, 100 percent, with End
-the bottom. Or choose **As Windows sliders**, where Down, Page Down and End
-raise a slider. Right is more and Left is less either way, and Ctrl+Up and
-Ctrl+Down, the volume keys that work from anywhere, are not changed. Each key
-press also tells your screen reader the new value straight away.
-
-**Pinned to the taskbar, QUILL Cast opens as itself.** Its shortcuts now carry
-its own taskbar identity, as Quill Radio's have since 3.0.2, so pinning
-the running QUILL Cast pins its shortcut. An older pin that asks "Several
-QuillVille apps are installed" now opens the app you pick through its own
-launcher, with all of its settings. To replace an old pin, unpin it and pin
-QUILL Cast again after you update. Reported on QUILLVille for QUILL Lite; every
-QuillVille app has the fix.
-
-### Since build 6
-
-Text stays sharp at 125, 150 and 200 percent display scaling and on monitors
-with different scaling. Links in show notes follow your Windows colours,
-including a high contrast theme, and the sleep timer's custom minutes box
-now has a spoken name.
-
-## Build 5
-
-Build 5 has everything that was in build 4, plus the fixes for large
-libraries and long refreshes described below. Builds 3 to 5 are for testers
-and have not been published.
-
-QUILL Cast now runs on Python 3.14. When you install it, older Python 3.13
-runtimes that no QuillVille app uses any more are removed for you.
-
-Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
-Show and Hide Key window writes out the combination you press. You can still
-type it.
-
-**Your library.** Cast remembers where you were in each podcast: Enter on a
-podcast in Favorites opens its list on the episode you last had selected.
-**Ctrl+Shift+Y** (Podcasts > **Copy to Folder...**) puts a podcast in a
-second folder without following it twice, and **Ctrl+Shift+V** moves it.
-A copy keeps one set of episodes, history and downloads, OPML export and
-import keep every copy, and unfollowing a podcast removes all its copies.
-Show notes that used to be full of codes such as `&#8217;` read as words.
-See "Organising podcasts into folders" and "Where you were in each podcast"
-in the user guide.
-
-**Big libraries and long refreshes.** Refresh All has its own progress
-window. Closing it does not stop the run, **Stop remaining checks** cancels
-only the feeds that have not started, and updates already finished are kept.
-OPML files are read and planned in the background, an import no longer
-announces hundreds of "new" episodes, and if you stop the optional feed check
-the podcasts already imported stay in your library. Saving, opening a large
-place such as Downloads, and checking disk space no longer hold up the
-window, even with thousands of podcasts.
-
-**Your listening is kept safe.** A feed check that finishes late never undoes
-what you did meanwhile: your place in an episode and your own episode names
-stay, and a podcast you unfollowed does not come back. Ctrl+Z after
-unfollowing puts the podcast back in your queue, playlists, Inbox and
-folders, and tells you how it went once its files are back. If Cast cannot
-save a change to Preferences, it says so.
-
-**QUILL Lineups.** **Episode > Lineups...** (**Ctrl+U**) builds named lists of
-episodes, podcasts and anything Quill Radio can play, by hand or by rules you
-write, shared with Quill Radio. Save Lineup and Apply Lineup on the Play Queue
-use them too. Add to Lineup... is on every episode and podcast menu, and
-**Lineup > Start Here** in the Lineups window makes Cast open in that
-Lineup. See Chapter 9 and the tutorial **Build a lineup that fills
-itself**.
-
-**Keys.** F5 checks the selected podcast and **Ctrl+F5** checks them all.
-**Ctrl+Shift+E** makes a folder. Favorites moved to **Alt+Shift+V**,
-Playlists to **Alt+Shift+Y**, Mark All as Played to **Alt+Shift+E**, and Ask
-About an Image to **Ctrl+Alt+F5**. With Simple menus, every Advanced command
-can still be reached from the Command Palette (**Ctrl+Shift+P**). An Advanced
-command's own key works only while **View > Advanced Features**
-(**Ctrl+Alt+Shift+G**) is on, and the user guide now says which commands are
-Advanced.
-
-**Sounds.** **Preferences > App Sounds Play On...** chooses where Cast's own
-sounds play; they start out following the episode. **Alt+Shift+M** turns
-them off and back on.
-
-**Dictation.** **Edit > Dictate Here** (**Ctrl+F11**) dictates into a search
-box, such as Add Podcast's name box, through QUILL Transcribe, released on 1
-November 2026. That section of the user guide now says what happens when
-QUILL Transcribe is running, not running or not installed, and that your
-voice stays on your computer unless you chose an online speech provider in
-QUILL Transcribe.
-
-**Connections and starting up.** Feeds and downloads check certificates the
-way Windows does, and the user guide's "Feeds over http and https" explains
-what Cast does with each. **Preferences > When Cast opens** can start the
-installed copy when you sign in to Windows. Cast installs for you alone,
-with no administrator prompt.
-
-**Playing and moving around.** CBC podcasts play again. Arrow keys stay in
-the control you are using: in Podcasts, Left Arrow closes an open folder
-without leaving the list. The cursor stays put while feeds update, and after
-you move a podcast it lands on the next one. A podcast's menu has Refresh
-Feed, and opening a podcast with no episodes checks it before calling it
-empty.
-Playback letters such as C work only in Now Playing, so in the library they
-jump to a podcast by name again. Play/Pause tells you when the player
-refused. **Help > Notifications...** says how many are unread. **Connect to
-Spotify...** (**Ctrl+Alt+S**) and **Browse Spotify Podcasts...**
-(**Ctrl+Alt+V**) are on the Help menu from the start.
-
-**Updates.** A portable copy updates in place and keeps its `data` folder
-where Cast looks for it. A failed update puts back the version you had. The
-Beta engine's 335 MB are removed when the last app on Beta returns to
-Stable, and the installer carries FFmpeg's licence.
-
-This beta is not a GitHub release or a Stable-channel promotion.
 
 ## Already using Cast? Before you update
 
@@ -185,6 +57,8 @@ A few things work differently now:
   Show Notes, Notifications and several others are on the Window menu while
   they're open. Escape or Ctrl+W closes one and puts you back where you were.
 
+---
+
 ## Try this first
 
 1. Open QUILL Cast. The first time, one short welcome window says hello and
@@ -211,6 +85,8 @@ Want a library to explore straight away? Podcasts > Follow ACB Media Podcasts
 > pressed Ctrl+Alt+B to see what would happen, and he now has more listening
 > lined up than he can get through this year. He's calling that a good
 > problem.
+
+---
 
 ## One window with everything in it
 
@@ -247,6 +123,19 @@ and the clock. It stays out of your way until you press F6 to go in.
 > **QUILLBee:** It's a place now, in this window. Ctrl+Shift+Q goes straight
 > there, and every other place has a key of its own in the View menu.
 
+### Keys
+
+F5 checks the selected podcast and **Ctrl+F5** checks them all.
+**Ctrl+Shift+E** makes a folder. Favorites moved to **Alt+Shift+V**,
+Playlists to **Alt+Shift+Y**, Mark All as Played to **Alt+Shift+E**, and Ask
+About an Image to **Ctrl+Alt+F5**. With Simple menus, every Advanced command
+can still be reached from the Command Palette (**Ctrl+Shift+P**). An Advanced
+command's own key works only while **View > Advanced Features**
+(**Ctrl+Alt+Shift+G**) is on, and the user guide now says which commands are
+Advanced.
+
+---
+
 ## Finding podcasts to follow
 
 Add Podcast (Ctrl+N) looks in Apple's directory and in Podcast Index at the
@@ -280,6 +169,17 @@ Rearrange Library and Inbox. Show your folders first, folders only or podcasts
 only, sort them the way you like, and choose what the counts say. Each choice
 takes effect as you make it, so you can try one and listen. The same choices
 are in Preferences, in The library section.
+
+### Dictation
+
+**Edit > Dictate Here** (**Ctrl+F11**) dictates into a search
+box, such as Add Podcast's name box, through QUILL Transcribe, released on 1
+November 2026. That section of the user guide now says what happens when
+QUILL Transcribe is running, not running or not installed, and that your
+voice stays on your computer unless you chose an online speech provider in
+QUILL Transcribe.
+
+---
 
 ## Listening
 
@@ -329,6 +229,32 @@ the show notes and a place for a note of your own. From there you can also
 share the moment: Cast copies a sentence like "Blind Abilities, Episode 214,
 at 41 minutes 12 seconds", with a link that opens the episode at that second
 for anyone who has Cast.
+
+### Playing and moving around
+
+CBC podcasts play again. Arrow keys stay in
+the control you are using: in Podcasts, Left Arrow closes an open folder
+without leaving the list. The cursor stays put while feeds update, and after
+you move a podcast it lands on the next one. A podcast's menu has Refresh
+Feed, and opening a podcast with no episodes checks it before calling it
+empty.
+Playback letters such as C work only in Now Playing, so in the library they
+jump to a podcast by name again. Play/Pause tells you when the player
+refused. **Help > Notifications...** says how many are unread. **Connect to
+Spotify...** (**Ctrl+Alt+S**) and **Browse Spotify Podcasts...**
+(**Ctrl+Alt+V**) are on the Help menu from the start.
+
+### QUILL Lineups
+
+**Episode > Lineups...** (**Ctrl+U**) builds named lists of
+episodes, podcasts and anything Quill Radio can play, by hand or by rules you
+write, shared with Quill Radio. Save Lineup and Apply Lineup on the Play Queue
+use them too. Add to Lineup... is on every episode and podcast menu, and
+**Lineup > Start Here** in the Lineups window makes Cast open in that
+Lineup. See Chapter 9 and the tutorial **Build a lineup that fills
+itself**.
+
+---
 
 ## Keeping up without keeping watch
 
@@ -404,6 +330,28 @@ filtered is ever deleted.
 > QUILLBert tried it on one trailer and found eleven more he'd been politely
 > skipping for months.
 
+### Big libraries and long refreshes
+
+Refresh All has its own progress
+window. Closing it does not stop the run, **Stop remaining checks** cancels
+only the feeds that have not started, and updates already finished are kept.
+OPML files are read and planned in the background, an import no longer
+announces hundreds of "new" episodes, and if you stop the optional feed check
+the podcasts already imported stay in your library. Saving, opening a large
+place such as Downloads, and checking disk space no longer hold up the
+window, even with thousands of podcasts.
+
+### Your listening is kept safe
+
+A feed check that finishes late never undoes
+what you did meanwhile: your place in an episode and your own episode names
+stay, and a podcast you unfollowed does not come back. Ctrl+Z after
+unfollowing puts the podcast back in your queue, playlists, Inbox and
+folders, and tells you how it went once its files are back. If Cast cannot
+save a change to Preferences, it says so.
+
+---
+
 ## Making it yours
 
 Preferences (Ctrl+,) holds the settings every podcast shares. Settings for
@@ -448,6 +396,48 @@ overnight. Anything you ask for still answers.
 Close the window and Cast can keep playing from the system tray, if you would
 like it to. Ctrl+W sends it there any time.
 
+### Slider Keys
+
+**Slider Keys** is new in Preferences (Ctrl+,), in the When Cast opens
+section, and it is one choice for every Quill app at once. **Up is more**
+stays the default: Up, Page Up and Home raise the volume slider and the
+Sound Enhancements sliders, and Home is now the top, 100 percent, with End
+the bottom. Or choose **As Windows sliders**, where Down, Page Down and End
+raise a slider. Right is more and Left is less either way, and Ctrl+Up and
+Ctrl+Down, the volume keys that work from anywhere, are not changed. Each key
+press also tells your screen reader the new value straight away.
+
+### Sounds
+
+**Preferences > App Sounds Play On...** chooses where Cast's own
+sounds play; they start out following the episode. **Alt+Shift+M** turns
+them off and back on.
+
+### Choosing a show and hide key
+
+Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
+Show and Hide Key window writes out the combination you press. You can still
+type it.
+
+### Pinned to the taskbar, QUILL Cast opens as itself
+
+Its shortcuts now carry
+its own taskbar identity, as Quill Radio's have since 3.0.2, so pinning
+the running QUILL Cast pins its shortcut. An older pin that asks "Several
+QuillVille apps are installed" now opens the app you pick through its own
+launcher, with all of its settings. To replace an old pin, unpin it and pin
+QUILL Cast again after you update. Reported on QUILLVille for QUILL Lite; every
+QuillVille app has the fix.
+
+### Sharp text, and a name for every box
+
+Text stays sharp at 125, 150 and 200 percent display scaling and on monitors
+with different scaling. Links in show notes follow your Windows colours,
+including a high contrast theme, and the sleep timer's custom minutes box
+now has a spoken name.
+
+---
+
 ## Your library goes where you go
 
 Back up your whole library to one file, with your podcasts, playlists,
@@ -479,6 +469,20 @@ Cast also shares its library with QUILL and Quill Radio on the same computer.
 Follow a podcast here and it is there too. Pause an episode in Radio, and Cast
 picks it up where you left off.
 
+### Folders, and where you were
+
+Cast remembers where you were in each podcast: Enter on a
+podcast in Favorites opens its list on the episode you last had selected.
+**Ctrl+Shift+Y** (Podcasts > **Copy to Folder...**) puts a podcast in a
+second folder without following it twice, and **Ctrl+Shift+V** moves it.
+A copy keeps one set of episodes, history and downloads, OPML export and
+import keep every copy, and unfollowing a podcast removes all its copies.
+Show notes that used to be full of codes such as `&#8217;` read as words.
+See "Organising podcasts into folders" and "Where you were in each podcast"
+in the user guide.
+
+---
+
 ## AI help, if you want it
 
 Cast can ask an AI to summarize the show notes of the episode you are on, or
@@ -504,6 +508,8 @@ names. Every suggestion waits for you in a list, and nothing changes until you
 apply it. And Tidy the Podcasts I Follow finds podcasts that stopped years
 ago, ones you follow twice, and feeds that keep failing, without sending
 anything anywhere.
+
+---
 
 ## Choose Stable, Beta or Dev
 
@@ -540,6 +546,37 @@ Help > About now shows a build number after the version: this release is
 2.0.0 (build 6). If a fix comes out without a new version number, it is a
 newer build, and Check for Updates offers it to you.
 
+### Updates
+
+A portable copy updates in place and keeps its `data` folder
+where Cast looks for it. A failed update puts back the version you had. The
+Beta engine's 335 MB are removed when the last app on Beta returns to
+Stable, and the installer carries FFmpeg's licence.
+
+### Connections and starting up
+
+Feeds and downloads check certificates the
+way Windows does, and the user guide's "Feeds over http and https" explains
+what Cast does with each. **Preferences > When Cast opens** can start the
+installed copy when you sign in to Windows. Cast installs for you alone,
+with no administrator prompt.
+
+### Running on Python 3.14
+
+QUILL Cast now runs on Python 3.14. When you install it, older Python 3.13
+runtimes that no QuillVille app uses any more are removed for you.
+
+---
+
+## A note on the shared runtime's licence
+
+Installed Cast uses the shared QuillVille Runtime, which includes PyMuPDF
+1.28.2 under AGPL-3.0 through GLOW. Cast does not itself expose GLOW. The
+exact source of PyMuPDF, and of every other GPL part, is published with each
+release, and the portable package leaves it out.
+
+---
+
 ## When you need a hand
 
 - **F1** anywhere tells you what the window is for and what the control you
@@ -565,3 +602,8 @@ The user guide covers everything here in more detail, one chapter at a time,
 and Chapter 8, When you need a hand, is there whenever you get stuck. Start
 with the six steps at the top, press F1 whenever you wonder where you are, and
 let me know what you think.
+
+### Help > What's New
+
+**Help > What's New** (Ctrl+Shift+F1) opens QUILL Cast's changelog in
+your browser, with every change and when it arrived.

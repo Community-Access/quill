@@ -244,382 +244,6 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-10">QUILL 1.0</h1>
 <p><em>Version 1.0.0. From Community Access. Free.</em></p>
-<h2 id="quill-speaks-code-the-way-vs-code-thinks-it">QUILL speaks code
-the way VS Code thinks it</h2>
-<p>Here’s a small moment that used to take a long time. You’re in a
-JavaScript file and you type <code>console.lo</code>, and you can’t
-remember whether it’s <code>log</code> or <code>logger</code> or
-something else entirely. Now you press <strong>Ctrl+.</strong> and QUILL
-says “log, method”. Enter, done.</p>
-<p>That’s a language server talking: the same engines VS Code uses to
-understand code, now inside QUILL. VS Code’s own servers for HTML, CSS,
-JSON and Markdown; TypeScript’s language service for JavaScript and
-TypeScript; and Pyright, the open-source heart of Pylance, for Python.
-They come with QUILL, with the Node they run on, so there’s nothing to
-install, and none of them ever touches the internet.</p>
-<p>They don’t add new keys to learn. They make the keys you know
-smarter:</p>
-<ul>
-<li><strong>Ctrl+.</strong> asks the server first, so the list knows
-what can actually go where your caret is, and says what each thing
-is.</li>
-<li><strong>Check This File</strong> and the <strong>Problems
-pane</strong> find the problems a compiler would: a string where a
-number belongs, a name that doesn’t exist, a property a module doesn’t
-have.</li>
-<li><strong>Quick Fix…</strong>, on a problem in the pane, offers the
-server’s fixes. Pick one and it’s done, as a single undo step.</li>
-<li><strong>Parameter Hints</strong>, in Navigate &gt; Code, tells you
-which argument you’re typing: “Parameter 2 of 2, limit: int”. Turn on
-Parameter hints as you type and you’ll hear it every time you type an
-opening bracket or a comma.</li>
-</ul>
-<p>A server starts the first time you need it, not when QUILL starts,
-and goes to sleep when you stop using it. <strong>Navigate &gt; Code
-&gt; Language Servers…</strong> lets you switch any of it, or all of it,
-off. QUILL Lite has every bit of it.</p>
-<h2 id="a-github-menu-when-you-want-one">A GitHub menu, when you want
-one</h2>
-<p>Turn on <strong>View &gt; GitHub Workbench Mode</strong> (press
-Alt+V, then K) and a <strong>GitHub</strong> menu joins the menu bar
-after Tools. Everything GitHub that lived in the File and Tools menus
-moves into it, and it opens your inbox, your work, your notifications, a
-repository’s issues and pull requests, its Actions runs and its releases
-in one step each. Turn it off and the rows go back where they were. New
-in both: <strong>Clone Repository…</strong> copies a repository to your
-computer, private ones included, without writing your token anywhere.
-And <strong>Save to GitHub…</strong> is now called <strong>Commit to
-GitHub…</strong>, because that is what it does. GitHub no longer needs
-the Developer profile, so the workbench is there in most profiles, as it
-always has been in QUILL Lite.</p>
-<h2 id="word-prediction-knows-your-code">Word Prediction knows your
-code</h2>
-<p>In a code file, <strong>Ctrl+.</strong> now offers the file’s own
-names that start with what you’ve typed, nearest first, and says what
-each one is: “count_words, function”, “while, keyword”. It’s ready
-within a tenth of a second even on a large file, and when there’s room
-it adds names from the rest of your project, read in the background.
-QUILL Lite has it too.</p>
-<h2 id="word-prediction-in-every-profile">Word Prediction in every
-profile</h2>
-<p><strong>Ctrl+.</strong> now opens Word Prediction in every profile,
-including the two that left it out. It only opens when you press the
-key; Word Prediction As You Type is still off unless you turn it on.
-QUILL Lite has the same list on the same key.</p>
-<h2 id="a-problems-pane-that-stays-open">A Problems pane that stays
-open</h2>
-<p>Check This File’s list closed as soon as you picked a problem. Now
-you can turn on <strong>View &gt; Problems &gt; Show Pane</strong> and
-keep the problems under the document while you fix them. F6 reaches it,
-Enter goes to a problem, and Escape comes back without closing it. Two
-choosers at the top narrow it to errors only, or to one checker, and say
-the new count. If you’ve edited since the check, Enter checks again and
-finds the same problem where it is now. While it’s on, saving checks the
-file again, and a Check after a pause box does the same when you stop
-typing; either way you hear only a changed count. A Files chooser lists
-every open document’s problems at once, and Enter on one brings that
-document forward. QUILL Lite has the same pane.</p>
-<h2 id="sign-in-to-github-without-a-token">Sign in to GitHub without a
-token</h2>
-<p>Signing in to the GitHub windows no longer means making a personal
-access token. In <strong>Manage GitHub Accounts…</strong>, choose
-<strong>Sign In with GitHub…</strong>: QUILL puts a short code on the
-clipboard and opens GitHub’s page, you paste the code there and approve
-QUILL, and the account is added. If the code expires or something goes
-wrong, QUILL says so in one sentence. A token you made yourself still
-works, under <strong>Add Token (Advanced)…</strong>, for when you want a
-fine-grained token limited to a few repositories. QUILL Lite has the
-same window.</p>
-<h2 id="the-guides-from-every-download">The guides, from every
-download</h2>
-<p><strong>Help &gt; Open GitHub Guide</strong> opens the GitHub Guide
-in your browser (press Alt+H, then I), and F1 in any GitHub window
-offers it too. <strong>Help &gt; Open User Guide</strong>
-(Ctrl+Shift+F1) now finds the guide however QUILL was started; before,
-an installed copy started by opening a file from File Explorer opened
-the welcome guide instead. The Start menu has a GitHub Guide shortcut,
-the macOS disk image carries the guides, and the user guide’s contents
-page lists all eleven GitHub Guide chapters.</p>
-<h2
-id="github-copilot-commit-comments-gists-and-queue-summaries">GitHub:
-Copilot, commit comments, gists and queue summaries</h2>
-<p>You can now ask Copilot to review a pull request (Request Copilot
-Review on the pull request’s context menu in the review window) and hand
-an issue to Copilot’s coding agent (Assign to Copilot on the issue’s
-context menu in GitHub Items). Both say plainly when Copilot is not
-available to your account or repository, and neither claims success
-GitHub did not confirm.</p>
-<p>A commit’s context menu has Commit Comments, which reads its comments
-as author, date and text and adds one on the whole commit or on a line
-of a file. Explore’s My gists view now writes gists as well as listing
-them: new from the document or its selection, public or secret; edit the
-description and files; star, unstar and delete, with a question before
-anything is deleted. And the attention queue says where each pull
-request stands, in the same one sentence the review window opens with,
-read for the whole queue in one request.</p>
-<h2 id="a-complete-github-guide">A complete GitHub guide</h2>
-<p>QUILL now ships a book of its own on doing GitHub work with a screen
-reader: <a href="https://www.quillforall.org/docs/github-guide.html">The
-GitHub Guide for QUILL and QUILL Lite</a>. Its eleven chapters cover
-signing in, getting around the GitHub windows, your notifications,
-issues, reviewing a pull request line by line, what failed in a workflow
-run, repository files and releases, discussions and security alerts,
-Codespaces, and every refusal GitHub can give and what to do about it.
-The last chapter is a keyboard reference for every window. It is in the
-docs folder beside QUILL, and the user guide’s GitHub section is now a
-short map of it.</p>
-<h2 id="github-search-releases-housekeeping-and-rate-limits">GitHub:
-search, releases, housekeeping and rate limits</h2>
-<p>The GitHub windows now search code, commits and repositories, and
-read a repository’s Insights (traffic and contributors) and community
-profile as plain sentences. Explore’s context menu has Repository
-Actions: sync a fork, set topics, choose a watch level, archive, create
-from a template, and delete a repository after typing its name. It lists
-Actions caches and secret and variable names, never values, and people
-rows have Follow and Unfollow.</p>
-<p>In GitHub Items, releases can be edited and published, and files
-uploaded with progress said at quarter steps, or deleted. An issue’s
-Housekeeping submenu locks, transfers, pins, sets the type and reorders
-sub-issues.</p>
-<p>Ctrl+Shift+L says how much of GitHub’s hourly allowance is left.
-QUILL now asks GitHub only for what changed, says “No changes since the
-last load” when nothing did, checks notifications less often when the
-allowance runs low, and says a request to wait once instead of failing
-repeatedly.</p>
-<h2 id="paste-a-copied-file-and-replace-jobs-you-can-save">Paste a
-copied file, and replace jobs you can save</h2>
-<p>Copy a file in File Explorer and press <strong>Ctrl+V</strong> in an
-editor, and you usually get nothing, or a path you did not want.
-<strong>Edit &gt; Clipboard &gt; Paste Copied Files…</strong> asks which
-you meant: <strong>Each file’s text</strong>, read the way QUILL would
-open it, so a Word document or a PDF comes in as its words, or
-<strong>Each file’s full path</strong>, one per line. Files over 5 MB,
-folders and anything that is not text are left out, and QUILL tells you
-which and why.</p>
-<p>Some find-and-replace work is the same every week. <strong>Edit &gt;
-Search Tools &gt; Manage Replace Jobs…</strong> saves a list of steps
-under a name, each with its own Find what, Replace with, Regular
-expression and Match case, and <strong>Run Replace Job…</strong> runs
-one, in order, on the selection or the whole document. It is one change,
-so one <strong>Ctrl+Z</strong> takes the whole job back, and if any
-step’s pattern is bad nothing changes at all. Three jobs are there to
-start with: Tidy spaces, Straighten quote marks and Close up blank
-lines. Multi Replace is still there for a quick one-off.</p>
-<p>Three smaller things. A snippet with blanks now asks them all in one
-form, the same one abbreviation fields use. <strong>AI
-Translate</strong> has a <strong>Translate from</strong> list: leave it
-on Detect, or choose the language your text is in when the result comes
-back unchanged, which QUILL now tells you in those words. And
-<strong>What’s New</strong> and <strong>Open Keyboard Reference</strong>
-have keys at last: the QUILL key, then <strong>W</strong>, and the QUILL
-key, then <strong>Shift+K</strong>.</p>
-<p>QUILL Lite has Paste Copied Files, the replace jobs and fields in its
-abbreviations, from the same code.</p>
-<h2
-id="github-repository-files-milestones-discussions-and-security-triage">GitHub:
-repository files, milestones, discussions and security triage</h2>
-<p><strong>Files…</strong> (Alt+F) in GitHub Items opens a repository as
-a tree you can walk with the arrow keys, at any branch, tag or commit.
-Read a file in place, open it in the editor, read a folder’s README,
-list the commits that changed it, or read its blame. Blame comes in
-runs, each one a sentence: “Lines 10 to 14: Jeff Bishop, 3 November,
-1a2b3c4, Fix the diff”. Alt+N and Alt+P move between runs.</p>
-<p><strong>Milestones…</strong> says each milestone the way you would
-say it: “61 percent done, 5 open, 8 closed, due 12 December”. You can
-create, edit and close them, and the <strong>Batch…</strong> menu now
-sets a milestone or adds assignees on the issues you select.</p>
-<p>Discussions are no longer read-only. Enter on one in Explore opens
-its thread, says who answered it, and reads any poll as text. You can
-reply, mark the answer, and start a discussion. And in Explore’s
-security alerts you can dismiss an alert with GitHub’s own reasons,
-after QUILL checks with you, or reopen one. QUILL Lite has all of this
-in the same windows.</p>
-<h2 id="github-reviewing-a-pull-request-line-by-line">GitHub: reviewing
-a pull request line by line</h2>
-<p>Open a pull request in Review and the first thing you hear is the
-whole of it in one sentence: “Approved, 2 checks failing, 1 open thread,
-3 commits behind main.” If QUILL is missing part of the picture, it says
-“merge readiness unknown” rather than telling you it is ready.</p>
-<p>In the diff, <strong>Patch lines</strong> lists each changed line,
-marked with words or, if you prefer and your screen reader reads
-punctuation, with + and -. Pick a line, or a run of them, and comment on
-it. Keep the comment with your review until you submit, or post it now.
-<strong>Suggest a change</strong> writes the code for the author to
-accept. <strong>Copy Diff</strong> and <strong>Open Diff in Default
-App</strong> hand the whole thing over as a <code>.diff</code>.</p>
-<p>Coming back to a pull request? Check <strong>Changed since my last
-review</strong> and you see only the files that changed since you last
-looked, with a count. If the branch was force-pushed, QUILL tells you
-so. <strong>Timeline</strong> reads the conversation’s history one line
-at a time, and you can react with a thumbs up, heart and the rest,
-chosen by name. QUILL Lite has all of it in the same windows.</p>
-<h2 id="github-notifications-what-failed-and-merge-automation">GitHub:
-notifications, what failed, and merge automation</h2>
-<p>Your GitHub notifications are now something you can work through
-rather than just read. <strong>Tools &gt; Git and GitHub &gt; GitHub
-&gt; Notifications…</strong> opens the inbox in Explore and says how
-many are unread. Each one says why you got it, in words: “review
-requested”, “you were mentioned”. Press Enter and QUILL marks it read
-and opens it in its own view, a pull request in Review and an issue in
-GitHub Items. Press Delete for Done, or Alt+U to unsubscribe, and you
-land on the next one, so you never lose your place.</p>
-<p>When a workflow run fails, select it and press
-<strong>Ctrl+Shift+W</strong>. <strong>What Failed</strong> gives you
-one plain text to arrow through: the failed jobs, the steps that failed,
-the annotations with file and line, and the last 40 lines of each failed
-step’s log, without the timestamps and colour codes. You can re-run only
-the failed jobs, cancel or delete a run, approve a run from a fork, and
-approve or reject a deployment that is waiting for you.</p>
-<p>In pull request Review, <strong>Auto-Merge and Queue…</strong>
-(Alt+A) turns on auto-merge with the merge method you choose, or adds
-the pull request to the merge queue, and tells you plainly what GitHub
-did. QUILL Lite has all of this in the same windows.</p>
-<h2 id="dictation-nemotron-keeps-its-last-word">Dictation: Nemotron
-keeps its last word</h2>
-<p>If you dictate with <strong>Nemotron</strong>, short phrases no
-longer lose their last word. Before, saying “choose one” could give you
-just “Choose.” Nemotron now gets enough quiet after you stop to finish
-the word. This is the same in QUILL Lite and QUILL Transcribe.</p>
-<p>Locked Dictation’s own <strong>Nemotron and Parakeet</strong> engines
-are retired; they became the one <strong>QUILL speech models</strong>
-engine, and your choice moved with them. QUILL tells you once, a moment
-after it starts. If an older Nemotron model is still taking space on
-your computer, the message asks: “Delete the older files to free 650 MB?
-No keeps them.” Press Enter to keep them, or choose Yes, and QUILL says
-how much it freed. The <strong>Dictation</strong> command (QUILL Key +
-D) works as before, and now opens Windows’ panel the same way the
-Windows voice typing engine does.</p>
-<h2 id="new-in-this-build-moving-through-code-and-check-this-file">New
-in this build: moving through code, and Check This File</h2>
-<p>A new <strong>Navigate &gt; Code</strong> submenu helps anyone who
-writes code or edits data files.</p>
-<p><strong>Next Block</strong> and <strong>Previous Block</strong> now
-move by what a block means in the language you are in: from one Python
-<code>def</code> or <code>class</code> to the next, between C#, Java,
-JavaScript and TypeScript declarations and methods, between
-<code>[sections]</code> in INI and TOML files, between
-<code>:labels</code> in batch files, between <code>\section</code>
-commands in LaTeX, and between headings and landmarks in HTML. QUILL
-says the line you land on. Prose still moves by paragraph.</p>
-<p><strong>Next Indent Change</strong>
-(<strong>Alt+Shift+PageDown</strong>) and <strong>Previous Indent
-Change</strong> (<strong>Alt+Shift+PageUp</strong>) jump to the next
-line whose indentation differs from yours, skipping blank lines, and say
-how deep it is. It is the quickest way in and out of a block in Python
-or YAML.</p>
-<p><strong>Check This File…</strong> (<strong>Ctrl+Alt+/</strong>) finds
-every problem in the document and lists them in a Problems list, line
-and column first; Enter takes you to one. <strong>Next Problem</strong>
-(<strong>Ctrl+Alt+.</strong>) and <strong>Previous Problem</strong>
-(<strong>Ctrl+Alt+,</strong>) step through them from the document and
-say each one, such as “Problem 2 of 3, line 12, column 5, error:
-Expecting ‘,’ delimiter”. QUILL checks JSON, XML, HTML, TOML, YAML,
-Python, INI, CSV and Markdown by itself, and JavaScript, TypeScript,
-PHP, Ruby, Perl, shell scripts, C, C++, Go, Rust and C# with a tool you
-already have installed, such as Node.js or GCC. It never downloads one,
-and nothing leaves your computer. QUILL Lite has the same submenu and
-keys, and checks Markdown and HTML.</p>
-<p><strong>Try this:</strong> open a JSON file, delete a comma, and
-press <strong>Ctrl+Alt+.</strong>. QUILL takes you to the line and tells
-you what is wrong.</p>
-<h2 id="the-quill-key-on-every-keyboard-layout">The QUILL key on every
-keyboard layout</h2>
-<p>The QUILL key is Control, Shift and the grave key, the key just above
-Tab. On a Mac with a German layout it used to do nothing until you
-switched to US English, because that key types <code>^</code> there and
-QUILL was listening for a backtick. QUILL now finds the key by where it
-sits, so the QUILL key works on German, French, Nordic and every other
-layout, on Windows and on macOS. On a European (ISO) Mac keyboard, the
-key beside the left Shift key works too. You hear the same double ping
-as always. The WordPress key, <code>Ctrl+Alt+Shift+Grave</code>, works
-the same way. Chapter 2 of the user guide has the details.</p>
-<h2 id="diagrams-math-and-pictures-in-markdown-pages">Diagrams, math and
-pictures in Markdown pages</h2>
-<p><strong>AI &gt; Accessibility Tune-Up…</strong> now checks Mermaid
-diagrams in Markdown. For each fenced <code>mermaid</code> block it
-tells you, by line number, when the diagram has no accessible title
-(<code>accTitle</code>) or description (<code>accDescr</code>), when an
-init block forces a theme, and when it sets its own colours so you
-should check the contrast. With more than one diagram on a page, it asks
-for a heading before each. A new starter snippet pack,
-<strong>mermaid-diagrams</strong>, has eight diagram types, and every
-one asks for the title and description before anything else.</p>
-<p>Equations in Browser Preview, the side preview and <strong>File &gt;
-Export &gt; HTML…</strong> are now MathML. Nothing is downloaded from
-the internet to show them, and NVDA and JAWS read them with their own
-math support. When Pandoc writes the page, pictures are found beside
-your document and, with Pandoc 2 or 3, carried inside the page so it can
-be emailed on its own. QUILL Lite’s Export as HTML writes math as MathML
-too.</p>
-<h2 id="replace-export-and-backups-you-can-trust">Replace, export and
-backups you can trust</h2>
-<p>Three things that should never surprise you now do not.</p>
-<p><strong>Replace puts in what you typed.</strong> Unless you are
-searching with a regular expression, the Replace box is taken exactly as
-typed. Replace a folder name with <code>C:\new\reports</code> and that
-is what lands in your document, not a line break where the
-<code>\n</code> was. With a regular expression, <code>\1</code> and
-<code>\2</code> still bring back the parts of the match. This holds for
-Replace All and Replace Across Files (<code>Ctrl+Shift+R</code>).</p>
-<p><strong>Exporting over an earlier file is safe.</strong> File &gt;
-Export, Convert File and every other Pandoc conversion now build the new
-file under a hidden temporary name and swap it in only when it is
-finished. If the export fails, times out or is cancelled, the file you
-exported yesterday is still there, untouched.</p>
-<p><strong>A backup that fails is on the record.</strong> When a backup
-cannot be written before a save, QUILL still says “Could not write a
-backup; saving anyway” and saves, and now it writes the reason to its
-log as well, so <strong>Help &gt; Save Diagnostics…</strong> can explain
-a missing backup later.</p>
-<h2 id="taking-payments-with-your-forms">Taking payments with your
-forms</h2>
-<p>Both user guides have a new chapter, “Taking payments with your
-forms”, that walks through a paid form from start to finish: what you
-need, test mode, fixed amounts, donations and totals, choosing Stripe or
-PayPal, publishing and what each refusal means, what the person paying
-hears with a screen reader, receipts, refunds, seeing who paid, and
-going live.</p>
-<p>Alongside it, a few things got easier. Insert Payment Field tells you
-which total and price fields the form has. QUILL catches an amount finer
-than its currency, or a statement descriptor the site would refuse,
-before it publishes. Test on Site tells you which test card or sandbox
-account to use. Responses say “partly refunded” and “PayPal” rather than
-reading out codes.</p>
-<h2 id="form-payment-setup-and-reporting">Form payment setup and
-reporting</h2>
-<p>QUILL and QUILL Lite now share <strong>Tools &gt; Forms &gt; Insert
-Payment Field</strong>, <strong>Form Payments Setup</strong>, and
-<strong>Verify Payment Setup</strong>. Choose Stripe, PayPal, or both;
-author a fixed, calculated or donation amount; and start in test mode.
-Publishing verifies the site’s payment contract, provider/webhook
-readiness and matching test/live mode. Test on Site refuses published
-live-payment forms. Responses show payment metadata and can refresh it
-from the site or export it to CSV and Word.</p>
-<p>Checkout requires a QAF WordPress plugin implementing payment
-contract version 1. Provider credentials, charging and webhooks stay on
-WordPress; this desktop update does not deploy the plugin or establish
-live checkout acceptance. The WordPress and Forms guide covers the
-sandbox-first workflow.</p>
-<h2 id="document-statistics-pressed-twice">Document Statistics, pressed
-twice</h2>
-<p><strong>Tools &gt; Writing and Language &gt; Document
-Statistics…</strong> (<code>Ctrl+Shift+G</code>) still tells you words,
-lines and characters straight away. Press it twice quickly and you hear
-the full writing report too: paragraphs, sentences, how many sentences
-run over 30 words, the reading time and the reading grade, for example
-“about 7 minutes to read, reading grade about 9th grade”. Select some
-text first and it counts just that. QUILL Lite does the same on the same
-key.</p>
-<p><strong>Unreleased correction:</strong> The shared Radio code retires
-the built-in SomaFM source in response to its published
-third-party-client terms; known catalogue entries and direct playback
-and recording paths are filtered or blocked. Indirect paths, existing
-user data and earlier packages still need review. QUILL no longer
-downloads or distributes DECtalk while its redistribution terms are
-unclear, though a separately installed copy remains supported. Windows
-OCR and Media projections move to PyWinRT 4.0.3 and Windows SDK
-10.0.28000.2705. These notes do not imply that a new release is
-published.</p>
 <p>Welcome to QUILL. It is a writing, reading and document suite for
 people who work by ear and by touch: blind and print-disabled readers,
 writers, students, proofreaders and braille transcribers, and anyone who
@@ -638,454 +262,6 @@ accident.</p>
 trying, and QUILLBee explains. They’re new around here, and <a
 href="https://www.quillforall.org/meet-quillbert-and-quillbee.html">Meet
 QUILLBert and QUILLBee</a> has the proper introductions.</p>
-<h2 id="new-in-this-build-wordpress">New in this build: WordPress</h2>
-<p>If you look after a WordPress website, QUILL now writes, opens,
-checks and publishes its pages and posts in the editor you already use,
-and looks after the site too. You can connect as many sites as you like,
-self-hosted or on WordPress.com. The site keeps its theme; QUILL works
-on the words, the blocks and the pictures. The whole story is in <a
-href="https://www.quillforall.org/docs/wordpress-forms-guide.html">WordPress
-and Forms in QUILL</a>, and Help &gt; Tutorials has seven guided
-WordPress lessons.</p>
-<p><strong>Connecting.</strong> <strong>File &gt; WordPress &gt; Connect
-a Site…</strong> asks for the site’s address, your username and an
-application password, which is a separate password WordPress makes for
-one program. Press <strong>Get Password with My Browser</strong> and
-QUILL opens your site’s own Authorize Application page; approve QUILL
-there and the password comes back by itself. On an older site WordPress
-shows it to you, and QUILL offers the one you just copied. QUILL checks
-the password before it saves it, keeps it in Windows Credential Manager,
-and tells you plainly what went wrong if it cannot connect. The browser
-sign-in for WordPress.com is built and waits on the family’s
-registration with WordPress.com; until then, a WordPress.com plan that
-allows plugins connects with an application password at the site’s own
-address. <strong>Sites</strong> lists every site you have connected, and
-<strong>Switch Site</strong> chooses the one New Page and New Post go
-to.</p>
-<p><strong>Writing and saving.</strong> <strong>New Page</strong>,
-<strong>New Post</strong>, <strong>Open Page or Post</strong> and
-<strong>Open by Web Address</strong> are in File &gt; WordPress, and you
-can work in HTML or Markdown. Saving with <strong>Ctrl+S</strong> stays
-on your computer, always. <strong>Save Draft to Site</strong> sends an
-unpublished draft. <strong>Publish or Update…</strong> runs Check Before
-Publishing first, for missing alternative text, vague links and skipped
-heading levels, and then asks you to confirm with the page and the site
-named. If someone else changed the page while you worked, nothing is
-overwritten: you can compare, open their copy, or send yours anyway. You
-can schedule a post, go back to a previous version, restore from the
-Trash, and keep working when the connection drops; QUILL queues the send
-and tells you when it goes through. Every two minutes your work is
-autosaved, here and on the site.</p>
-<p><strong>Blocks, made plain.</strong> Paragraphs, headings, lists and
-pictures are written the way you always write them, and QUILL handles
-WordPress’s block markup for you. A button, columns or an accordion is a
-short <code>:::</code> fence line in Markdown, and a block QUILL does
-not know is a protected island that goes back to the site exactly as it
-came. <strong>Insert &gt; WordPress Block…</strong> lists the site’s
-blocks and patterns. <strong>Edit &gt; WordPress</strong> has Next
-Block, Previous Block and Where Am I, which say each block’s kind, place
-and first words. <strong>View &gt; WordPress Blocks…</strong> moves,
-duplicates, groups and removes blocks, one Undo each, and <strong>Format
-&gt; WordPress &gt; Block Settings…</strong> names the theme’s own
-colours and sizes, with the contrast of each colour.</p>
-<p><strong>Pictures and media.</strong> <strong>Insert &gt; Picture from
-the Media Library…</strong> and <strong>Picture from This
-Computer…</strong> ask for alternative text, or let you mark a picture
-decorative. <strong>Tools &gt; WordPress &gt; Media Library…</strong>
-shows every file on the site, and Enter plays a sound or video file
-right there, with the same keys as Quill Media Player. More Media
-uploads many files at once, makes a smaller copy without replacing the
-original, changes the site logo, and makes captions for a video, a
-transcript for a sound file and a listening version of a page, all on
-this computer.</p>
-<p><strong>Checking the site the visitor’s way.</strong> <strong>Tools
-&gt; WordPress &gt; Check This Page</strong> runs the published page
-through axe-core, which comes with QUILL, in a hidden copy of the Edge
-or Chrome you already have, and explains each problem in plain words
-with Go to It. <strong>Check the Whole Site</strong> checks every page
-and post, groups the problems with counts, and fixes the safe ones in
-bulk after one confirmation, with Undo Site Fix.</p>
-<p><strong>Running the site.</strong> Tools &gt; WordPress also has
-Comments, Categories and Tags, Menus, Site Check and Site Settings, and
-a Manage submenu for users, application passwords, plugins, themes and
-more. Every window reads your role first and tells you what you cannot
-do, instead of offering a button the site would refuse.</p>
-<p><strong>Keys.</strong> The WordPress commands share one layer key.
-Press <strong>Ctrl+Alt+Shift+Grave</strong> (the key above Tab, with
-Ctrl, Alt and Shift), hear “WordPress keys”, then one letter: O opens a
-page or post, P publishes or updates, D saves a draft to the site, M
-opens the Media Library, S switches site, W opens by web address, G
-starts a new page and N a new post, K is Check Before Publishing and B
-the Blocks window. The menus show every letter. Escape leaves the layer.
-Every WordPress command is in the Command Palette too.</p>
-<p><strong>What happened to File &gt; Publish.</strong> One WordPress
-feature replaces the two Publishing features, and is on in every profile
-except Essential. The old File &gt; Publish submenu is gone; your saved
-publishing connections and their passwords come across the first time
-you open File &gt; WordPress. QUILL Cast and Audio Studio can post an
-episode to WordPress, and Quill Converter can upload to it; each writes
-a draft and opens it in QUILL to finish. QUILL Lite has all of it, in
-the same places, on the same keys.</p>
-<blockquote>
-<p><strong>QUILLBert found something:</strong> He pressed
-<strong>Ctrl+Alt+Shift+Grave</strong>, then W, pasted the address of a
-page he had been reading on his own site, and fixed a typo in it without
-ever opening the block editor. Then he pressed
-<strong>Ctrl+Alt+Shift+Grave</strong> and P, heard the page and the site
-named, and pressed Enter.</p>
-</blockquote>
-<p><strong>Try this:</strong> connect your site with File &gt; WordPress
-&gt; Connect a Site…, press <strong>Ctrl+Alt+Shift+Grave</strong> then G
-for a new page, write two sentences, and press
-<strong>Ctrl+Alt+Shift+Grave</strong> then D to send it as a draft.
-Nothing is public until you choose Publish or Update.</p>
-<h2 id="new-in-this-build-forms">New in this build: Forms</h2>
-<p>QUILL writes accessible forms: contact forms, event sign-ups,
-membership renewals, surveys and feedback forms. A form is a short,
-readable text document, so every tool you already use works on it, and
-QUILL turns it into a form on your WordPress site, a web page, a Word
-document, large print or braille-ready text. Before anyone else sees it,
-you can fill it in yourself with your screen reader. QUILL Lite has
-every Forms command, in the same places. <a
-href="https://www.quillforall.org/docs/wordpress-forms-guide.html">WordPress
-and Forms in QUILL</a> has the whole story, and Help &gt; Tutorials has
-seven guided Forms lessons.</p>
-<p><strong>What a form looks like.</strong> It is written in the QAF
-form language, the language of the QUILL Accessible Forms plugin for
-WordPress (it used to be called BITS Accessible Forms). A
-<code>section</code> line and a <code>page</code> line are headings, so
-heading navigation jumps through a long form. Each question is one line,
-its type, its ID and its label in quotes, such as
-<code>email #email "Email address"</code>, with indented <code>@</code>
-lines under it for its settings, such as <code>@required</code>. Choices
-are lines that start with a plus sign. A rule is a line such as
-<code>@when #access is "yes"</code>, and Form Rules reads it back to you
-as a sentence. A form is saved as a <code>.qaf</code> file, and its
-first line, <code>bfl 1</code>, says which version of the language it
-uses. Underneath, QUILL and the plugin share one form definition, so
-what you write is exactly what your site reads.</p>
-<p><strong>Writing one.</strong> <strong>File &gt; New Form…</strong>
-starts from a template: blank, contact, event registration, membership
-renewal, survey, accessibility feedback or volunteer sign-up.
-<strong>Insert &gt; Form Field…</strong> lists every question type with
-a one-line description, then asks only what that type needs; about 120
-ready-made choice lists, such as countries, states and time zones, work
-without the internet. <strong>View &gt; Form Outline…</strong> is a tree
-of pages, sections and questions you can move through and rearrange.
-<strong>Format &gt; Form Rules…</strong> lists every rule as a sentence,
-“Show Company name when Type is Business”, and Add Rule builds one from
-three choices.</p>
-<p><strong>Checking it and trying it.</strong> <strong>Tools &gt; Forms
-&gt; Check This Form…</strong> finds a question with no label, a group
-of choices with no question, a field marked required only by an
-asterisk, a name or email field with no autofill hint, and a rule that
-points at nothing, each with Go to It. <strong>Fill It In
-Yourself…</strong> builds the form as a real window and you tab through
-it as a visitor would: labels, help, errors and required states
-announced, rules showing and hiding questions, Next and Back between
-pages, in each of the form’s languages. Submit sends nothing; it shows
-you what would have been sent.</p>
-<p><strong>Publishing and paper.</strong> On a site running QUILL
-Accessible Forms, Tools &gt; Forms has <strong>Publish Form…</strong>,
-<strong>Insert Form Into Page…</strong>, <strong>Test on Site</strong>
-and <strong>Responses…</strong>, which lists what people sent, newest
-first, one at a time or by date, with Find and exports to CSV, Word and
-a table. WordPress itself has no forms, so a site needs that plugin to
-show them; everything else in QUILL’s WordPress support needs nothing on
-the site. Without the plugin, or with no site at all, <strong>Save As
-Web Page…</strong>, <strong>Save As Word Document…</strong>,
-<strong>Save As Large Print…</strong> and <strong>Save As Braille-Ready
-Text…</strong> all work on this computer, even in Safe Mode. With an AI
-chosen, Draft a Form, Plain Language and Suggest Autofill Hints propose
-changes for you to accept, and Summarise Responses asks every time
-before it sends anything.</p>
-<p><strong>Keys.</strong> The Forms commands have no keys of their own.
-Writing a form is occasional, so each command is on its menu, by its
-access letters, and in the Command Palette
-(<strong>Ctrl+Shift+P</strong>): type “form”. The Forms feature is on in
-every profile except Essential.</p>
-<p><strong>Try this:</strong> choose File &gt; New Form…, pick the
-contact template, then Tools &gt; Forms &gt; Fill It In Yourself… and
-tab through your own form. Each required question says so. Answer them
-and press Submit: the What Would Be Sent window lists each question with
-its answer, and nothing has gone anywhere.</p>
-<h2
-id="new-in-this-build-hear-the-clipboard-the-time-and-what-is-open">New
-in this build: hear the clipboard, the time and what is open</h2>
-<p>You copied something, but did it work, and what did you get? Press
-<strong>Alt+Shift+Home</strong> (<strong>Edit &gt; Clipboard &gt; Say
-Clipboard</strong>) and QUILL reads you the clipboard without pasting
-it. Long text is read up to its first 2,000 characters, and QUILL tells
-you how many more there are. Files copied in File Explorer are counted
-and named: “2 files on the clipboard: report.docx, notes.txt”. Press it
-twice quickly to hear the text spelled letter by letter, with capitals
-said as “cap”, or each file’s full path. Press it three times to open a
-read-only window titled Clipboard, and read it line by line with the
-arrow keys; Escape closes it. An empty clipboard says “The clipboard is
-empty”, and a picture says so too.</p>
-<p><strong>Alt+Shift+End</strong> (<strong>Append Selection to
-Clipboard</strong>) adds the selection to the end of the clipboard’s
-text, on a new line, and tells you the total: “Appended 5 characters to
-the clipboard, which now holds 11 characters”. Gather a name, an address
-and a phone number from three places, then paste them once. <strong>Save
-Clipboard to File…</strong> saves the clipboard’s text as a UTF-8 file,
-offering a name such as “clipboard 2026-11-06 1405.txt”, and
-<strong>Clear Clipboard</strong> empties it, which is worth doing after
-you copy a password. Both are on <strong>Edit &gt; Clipboard</strong>
-with no key: no chord was free in both editors, and a key that could
-clear the clipboard by accident would be a trap.</p>
-<p>Two more quick questions. <strong>Alt+Shift+Space</strong>
-(<strong>Navigate &gt; Say Time and Date</strong>) says the time, “2:05
-PM”, and on a quick second press the date, “Friday, November 6, 2026”.
-<strong>Ctrl+Shift+Space</strong> (<strong>Window &gt; Say Windows
-Open</strong>) says “3 documents open”, and on a quick second press
-names them in tab order, marking the one you are in “(current)”.</p>
-<p>When support asks for your log, <strong>Help &gt; Copy Log</strong>
-puts this session’s <code>quill.log</code> on the clipboard as a file
-and as its path. Paste into an email and it is attached; paste into a
-document or a form and you get where it is. If no log has been written
-yet, QUILL says so.</p>
-<p>Every press answers straight away, and a quick press is one within
-half a second of the last. QUILL Lite has all seven commands, from the
-same code, on the same keys.</p>
-<p><strong>Try this:</strong> select a word, press
-<strong>Ctrl+C</strong>, then press <strong>Alt+Shift+Home</strong>
-twice, quickly. QUILL spells the word back to you, and nothing has been
-pasted.</p>
-<h2 id="new-in-this-build-searches-that-say-more">New in this build:
-searches that say more</h2>
-<p>Every list you narrow by typing now understands a small query, so one
-search can ask for more than one thing. <code>&amp;</code> needs both
-words, and two words side by side mean the same. <code>|</code> takes
-either. <code>!</code> leaves a word out. <code>*</code> stands for any
-run of letters inside a word and <code>?</code> for exactly one. Double
-quotes match exact text, spaces included. <code>!</code> is read first,
-then <code>&amp;</code>, then <code>|</code>, so
-<code>draft | notes !old</code> means “draft, or notes that are not
-old”.</p>
-<p>It works in Go to Anything (<strong>Ctrl+Alt+Shift+A</strong>),
-including its <code>#</code> search for headings, and in Insert Snippet,
-Insert HTML Tag, Insert Markdown Tag, both lists of Move Section To
-(<strong>Ctrl+Alt+Shift+F5</strong>), the abbreviation manager and the
-Copy Tray search. The File pattern of Search in Files
-(<strong>Ctrl+Alt+Shift+F</strong>) combines patterns the same way:
-<code>*.md | *.txt</code> takes both kinds, and <code>* !*.bak</code>
-leaves the backups out. QUILL Lite has it in the same lists, from the
-same code. A search with none of those characters works exactly as
-before, and you never hear an error for a half-typed one. Press F1 in
-any of these search boxes for a short reminder.</p>
-<p><strong>Try this:</strong> open a long document, press
-<strong>Ctrl+Alt+Shift+A</strong>, and type
-<code>#chapter !draft</code>. The list holds every chapter heading
-except the drafts; press Enter to go to the one on top.</p>
-<h2 id="fixed-in-this-build-first-page-and-even-page-word-headers">Fixed
-in this build: first-page and even-page Word headers</h2>
-<p>When you open a Word document for rich editing, QUILL tells you what
-the editor cannot keep, and makes a backup before your first save over
-the file. Headers and footers have always been on that list, but only
-the ordinary ones. A header set to appear on the first page only (Word’s
-Different First Page), or on even pages only (Different Odd and Even
-Pages), slipped past: the file opened with no question, and saving it
-removed the header without a word. Now those count as headers and
-footers too, in every section of the document, so you hear them named in
-the <strong>Open Word document</strong> question and the backup is made.
-QUILL Lite has the same fix.</p>
-<p><strong>Try this:</strong> in Word, make a title page with its own
-first-page header and save it. Open it in QUILL and choose the normal
-text editor. The question lists “headers”.</p>
-<h2 id="new-in-this-build-every-menu-item-in-the-command-palette">New in
-this build: every menu item in the Command Palette</h2>
-<p>The Command Palette (<strong>Ctrl+Shift+P</strong>, first in the
-Tools menu) now finds everything in the menus, not just the registered
-commands. A few dozen menu items were never in it before, among them
-your recent files, your open documents and some of the braille tools, so
-typing their names found nothing. Now the palette reads the menus each
-time it opens, names each item by the menu it sits in, and runs it
-exactly as the menu would. A dimmed item tells you why it is not
-available instead of doing nothing. QUILL Lite’s palette does the same,
-sits first in its Tools menu, and is there in every profile, WordPad and
-Notepad included.</p>
-<p><strong>Try this:</strong> press <strong>Ctrl+Shift+P</strong> and
-type the name of a document you opened recently. It is there, with the
-menu it lives in, and Enter opens it.</p>
-<h2 id="new-in-this-build-ctrlenter-for-a-page-break">New in this build:
-Ctrl+Enter for a page break</h2>
-<p><strong>Ctrl+Enter</strong> inserts a page break, as it does in Word.
-<strong>Format &gt; Insert Page Break</strong> is the same command. In a
-Word or Rich Text document it is a real page break, kept when you save.
-In Markdown it is the <code>::: pagebreak</code> line, which becomes a
-page break when you export, and in a braille file it is a braille page
-break. In plain text, which has no pages, QUILL tells you so rather than
-doing nothing. Word documents also keep their page breaks now: they used
-to open as empty lines, so saving the document removed every one.</p>
-<p>If your fingers know Ctrl+Enter as Follow Link, it still follows a
-link when the cursor is on one in a text document. Follow Link is on the
-Navigate menu, and you can give it a key of its own in the Keymap
-Editor. QUILL Lite has the same key.</p>
-<p><strong>Try this:</strong> open a Word document, put the cursor at
-the start of a heading, and press <strong>Ctrl+Enter</strong>. Save,
-open the file in Word, and the heading starts a new page.</p>
-<h2
-id="new-in-this-build-choose-your-ai-with-github-copilot-and-codex">New
-in this build: Choose Your AI, with GitHub Copilot and Codex</h2>
-<p>Press <strong>Ctrl+4</strong> (<strong>AI &gt; Choose Your
-AI…</strong>) and one window lists every place your AI can come from:
-QUILL’s free AI, your ChatGPT plan, your GitHub Copilot, Codex, or your
-own key. Each row tells you whether it is in use, signed in or not set
-up, and one line says what it can do, who gets your text and what it
-costs. Enter uses it or signs you in. GitHub Copilot signs in with a
-short code that your screen reader spells out and that is already on the
-clipboard; Copilot Free works too, and the Copilot engine comes with
-QUILL, so there is nothing else to install. Codex uses your ChatGPT
-plan’s sign-in.</p>
-<p><strong>Which AI Am I Using</strong> (<strong>Ctrl+8</strong>) tells
-you in one line where your words are going, the model, and one thing
-about usage. <strong>AI Usage</strong>
-(<strong>Ctrl+Alt+Shift+F2</strong>) is one plain list, a sentence for
-each AI you have set up, each saying whose count it is: no meters, no
-charts. <strong>Do a Document Task</strong> (<strong>Ctrl+3</strong>)
-hands GitHub Copilot or Codex a job with several steps, asks before
-every step that changes something, and sends every edit through the
-review you already know, one undo each. When the AI you are using cannot
-do something, the command stays where it was, its name says what it
-needs, and pressing it offers to switch. QUILL Lite has all of this on
-the same keys, from the same code. See “Choose Your AI” in the <a
-href="https://www.quillforall.org/docs/userguide.html">user
-guide</a>.</p>
-<p><strong>Try this:</strong> press <strong>Ctrl+4</strong>, arrow
-through the list and hear what each AI costs and who gets your text.
-Choose one, then press <strong>Ctrl+8</strong> to hear, in one line,
-which AI will answer you.</p>
-<h2 id="new-in-this-build-project-tasks-for-people-who-write-code">New
-in this build: project tasks, for people who write code</h2>
-<p>Choose the <strong>Developer</strong> profile (it used to be called
-Developer and Power Text) and QUILL can work on a folder of code with an
-AI. <strong>File &gt; Open Project Folder…</strong> opens a project, and
-with a project open <strong>Ctrl+3</strong> opens <strong>Do a Project
-Task</strong> instead of a document task. Type what you want done. The
-agent writes its plan first, and you hear “The plan is ready.” Focus
-never moves under you, and no streaming text is read at you.</p>
-<p>Nothing is written until you accept it. <strong>Review
-Changes</strong> lists each file as a sentence, then walks its changes
-one at a time with line numbers, and <strong>Apply Accepted
-Changes</strong> writes what you took. Nothing runs until you allow it.
-<strong>Run This Command?</strong> shows the exact command in a field
-you can braille, and QUILL adds a warning when a command may reach the
-internet, deletes files or reaches outside the project. Pushing,
-publishing, forcing a remote and changing system settings are never run
-for an agent. You hear test results in one sentence, such as “Tests: 12
-passed, 1 failed”, and the full output is a document. <strong>Undo Last
-Agent Turn</strong> (the QUILL key, then <code>U</code>) puts back every
-file a turn changed, and <strong>Stop Agent</strong> (the QUILL key,
-then <code>K</code>) stops a task from anywhere.</p>
-<p>Coach mode has the agent explain and point to the line instead of
-editing, so you make the change yourself. The transcript is a document
-with a heading per turn that you can save as Markdown. Allow lists, undo
-copies and transcripts stay in QUILL’s own data, never in your project.
-One thing said plainly: Windows gives QUILL no way to fence in a command
-you allow, so it can reach the internet and do anything your account
-can. Your approval is the safety line.</p>
-<p>It works on GitHub Copilot and Codex, on Claude with your own
-Anthropic key, and on Ollama on your own computer as a slower practice
-mode. QUILL’s free AI does not do project tasks. The tutorial “Your
-first project task” walks you through one in about twelve minutes. QUILL
-Lite has the same feature in its own Developer profile. See “Project
-tasks: coding with an AI” in the <a
-href="https://www.quillforall.org/docs/userguide.html">user
-guide</a>.</p>
-<p>To get there, choose Help &gt; Feature Profiles &gt; Switch Profile…
-and pick Developer. If you want the coding tools without the rest of the
-profile, check Developer Tools in Help &gt; Feature Profiles &gt; Manage
-Individual Features… instead. A Project cell appears in the status bar
-the first time you open a project; it names the project and its git
-branch, and says “waiting for you” when the agent has a question.</p>
-<p><strong>Try this:</strong> make an empty folder, open it with File
-&gt; Open Project Folder…, press <strong>Ctrl+3</strong> and type “Write
-a README that says what this folder is for.” Listen to the plan, accept
-the change in Review Changes, then press the QUILL key and U to undo the
-whole turn.</p>
-<h2 id="new-in-this-build-find-in-open-documents">New in this build:
-Find in Open Documents</h2>
-<p>Press <strong>Ctrl+Shift+F10</strong> to find and replace across
-every document you have open, not just the one in front of you. It
-searches what is in each window right now, including changes you have
-not saved and documents you have never saved. Find Next moves from
-document to document and tells you each one’s name, Find All lists every
-match, and Replace All tells you how many it found before it changes
-anything, lets you undo each document on its own, and saves nothing.
-Afterwards, F3 keeps searching across your documents until you start an
-ordinary Find. QUILL Lite has it too, on Ctrl+Alt+Shift+F8. Thanks to
-Chris Nova for asking.</p>
-<p><strong>Try this:</strong> open two documents that share a word,
-press <strong>Ctrl+Shift+F10</strong>, type the word and choose Find
-All. The list names each document beside each match.</p>
-<h2 id="new-in-this-build-tables-you-can-read-and-build">New in this
-build: tables you can read and build</h2>
-<p><strong>Real tables in rich text.</strong> In a rich text document a
-table is now a real table: a grid on screen, with no <code>|</code>
-characters, that your screen reader, Word and WordPad all read as a
-table. <strong>Insert &gt; Insert Table…</strong>
-(<strong>Ctrl+Alt+T</strong>) asks how many columns and rows and whether
-the first row is a header, then makes one. Word and RTF tables open as
-real tables, and saved to RTF or Word a table stays one. In Markdown and
-plain text a table is still <code>|</code> rows, and in HTML a real
-<code>&lt;table&gt;</code> whose header cells your screen reader
-announces.</p>
-<p><strong>The arrows read a table cell by cell.</strong> Inside a
-table, <strong>Up</strong> and <strong>Down</strong> go to the cell
-above and below and say it, instead of your screen reader reading the
-whole row as one line. <strong>Right</strong> at the end of a cell and
-<strong>Left</strong> at its start step to the next or previous cell.
-Arrowing down onto a table says its shape, “Table, 3 rows, 2 columns”,
-and leaving it says “Out of table”. It works the same with JAWS, NVDA
-and Narrator, with nothing to install. The <strong>Ctrl+Alt</strong>
-arrow keys still move cell by cell too.</p>
-<p><strong>Tab works as in Word.</strong> <strong>Tab</strong> and
-<strong>Shift+Tab</strong> move cell to cell, and <strong>Tab</strong>
-in the last cell adds a row. <strong>Navigate &gt; Table</strong>
-gathers the table keys and five edits: Insert Row Below, Insert Column
-Right, Delete Row, Delete Column and Tidy Table, each one Undo. One
-thing to know: adding or deleting a row or column of a real table keeps
-its text, but not bold, italic or a font inside its cells, so format
-cell text once the table has its shape.</p>
-<p>QUILL Lite has all of this too, on the same keys.</p>
-<p><strong>Try this:</strong> in a new rich text document press
-<strong>Ctrl+Alt+T</strong>, make a table of two columns and three rows
-with a header, type in the first cell, then press Tab and Down and
-listen to the cells being read.</p>
-<h2 id="new-in-this-build-help--whats-new">New in this build: Help &gt;
-What’s New</h2>
-<p><strong>Help &gt; What’s New</strong> opens QUILL’s changelog, the
-list of everything that changed, in your web browser. Press
-<strong>Alt+H</strong>, then <strong>W</strong>. Every app in the
-QuillVille family has it on its Help menu now.</p>
-<p><strong>Try this:</strong> press Alt+H, then W, and use your screen
-reader’s heading keys to jump from one change to the next.</p>
-<h2 id="new-in-this-build-three-smaller-fixes">New in this build: three
-smaller fixes</h2>
-<ul>
-<li><strong>Describe Formatting names the colour.</strong> In a rich
-text document, <strong>Ctrl+Shift+D</strong> (Format &gt; Describe
-Formatting at Cursor) now names the text colour, just before any
-highlight: “Calibri, 11 point, red, yellow highlight”. A colour from
-<strong>Format &gt; Text Color</strong> comes back under the name you
-chose; any other shade is named after the nearest common colour.
-Uncoloured text, black text and a dark theme’s page colour say nothing
-about colour. QUILL Lite gives the same answer.</li>
-<li><strong>AI Translate says when nothing was translated.</strong> If
-the result is the same as your text, ignoring spacing and capital
-letters, the result box says “The translation came back the same as the
-original. The text may already be in the target language.” and takes
-focus, and the Copy, Replace and New Document buttons stay unavailable.
-Try another language or the other provider.</li>
-<li><strong>Ctrl+O starts where you last opened a file.</strong> Opening
-a file from File Explorer, the command line, Open Recent or a tab that
-already had it now sets the folder the next Open dialog starts in, just
-as the Open and Save As dialogs always did.</li>
-</ul>
-<p><strong>Try this:</strong> double-click a document in File Explorer
-to open it in QUILL, then press Ctrl+O. The dialog is already in that
-document’s folder.</p>
 <h2 id="try-this-first">Try this first</h2>
 <ol type="1">
 <li>Open QUILL. The first time, a short welcome asks what kind of
@@ -4275,6 +3451,844 @@ and whether a result interrupts you. Set it once and it means the same
 thing everywhere.</li>
 </ul>
 <hr />
+<h2 id="added-while-10-was-in-testing">Added while 1.0 was in
+testing</h2>
+<p>QUILL kept growing while testers had it. Everything here arrived in a
+later test build, newest first, and all of it is part of 1.0.0.</p>
+<h2 id="quill-speaks-code-the-way-vs-code-thinks-it">QUILL speaks code
+the way VS Code thinks it</h2>
+<p>Here’s a small moment that used to take a long time. You’re in a
+JavaScript file and you type <code>console.lo</code>, and you can’t
+remember whether it’s <code>log</code> or <code>logger</code> or
+something else entirely. Now you press <strong>Ctrl+.</strong> and QUILL
+says “log, method”. Enter, done.</p>
+<p>That’s a language server talking: the same engines VS Code uses to
+understand code, now inside QUILL. VS Code’s own servers for HTML, CSS,
+JSON and Markdown; TypeScript’s language service for JavaScript and
+TypeScript; and Pyright, the open-source heart of Pylance, for Python.
+They come with QUILL, with the Node they run on, so there’s nothing to
+install, and none of them ever touches the internet.</p>
+<p>They don’t add new keys to learn. They make the keys you know
+smarter:</p>
+<ul>
+<li><strong>Ctrl+.</strong> asks the server first, so the list knows
+what can actually go where your caret is, and says what each thing
+is.</li>
+<li><strong>Check This File</strong> and the <strong>Problems
+pane</strong> find the problems a compiler would: a string where a
+number belongs, a name that doesn’t exist, a property a module doesn’t
+have.</li>
+<li><strong>Quick Fix…</strong>, on a problem in the pane, offers the
+server’s fixes. Pick one and it’s done, as a single undo step.</li>
+<li><strong>Parameter Hints</strong>, in Navigate &gt; Code, tells you
+which argument you’re typing: “Parameter 2 of 2, limit: int”. Turn on
+Parameter hints as you type and you’ll hear it every time you type an
+opening bracket or a comma.</li>
+</ul>
+<p>A server starts the first time you need it, not when QUILL starts,
+and goes to sleep when you stop using it. <strong>Navigate &gt; Code
+&gt; Language Servers…</strong> lets you switch any of it, or all of it,
+off. QUILL Lite has every bit of it.</p>
+<h2 id="a-github-menu-when-you-want-one">A GitHub menu, when you want
+one</h2>
+<p>Turn on <strong>View &gt; GitHub Workbench Mode</strong> (press
+Alt+V, then K) and a <strong>GitHub</strong> menu joins the menu bar
+after Tools. Everything GitHub that lived in the File and Tools menus
+moves into it, and it opens your inbox, your work, your notifications, a
+repository’s issues and pull requests, its Actions runs and its releases
+in one step each. Turn it off and the rows go back where they were. New
+in both: <strong>Clone Repository…</strong> copies a repository to your
+computer, private ones included, without writing your token anywhere.
+And <strong>Save to GitHub…</strong> is now called <strong>Commit to
+GitHub…</strong>, because that is what it does. GitHub no longer needs
+the Developer profile, so the workbench is there in most profiles, as it
+always has been in QUILL Lite.</p>
+<h2 id="word-prediction-knows-your-code">Word Prediction knows your
+code</h2>
+<p>In a code file, <strong>Ctrl+.</strong> now offers the file’s own
+names that start with what you’ve typed, nearest first, and says what
+each one is: “count_words, function”, “while, keyword”. It’s ready
+within a tenth of a second even on a large file, and when there’s room
+it adds names from the rest of your project, read in the background.
+QUILL Lite has it too.</p>
+<h2 id="word-prediction-in-every-profile">Word Prediction in every
+profile</h2>
+<p><strong>Ctrl+.</strong> now opens Word Prediction in every profile,
+including the two that left it out. It only opens when you press the
+key; Word Prediction As You Type is still off unless you turn it on.
+QUILL Lite has the same list on the same key.</p>
+<h2 id="a-problems-pane-that-stays-open">A Problems pane that stays
+open</h2>
+<p>Check This File’s list closed as soon as you picked a problem. Now
+you can turn on <strong>View &gt; Problems &gt; Show Pane</strong> and
+keep the problems under the document while you fix them. F6 reaches it,
+Enter goes to a problem, and Escape comes back without closing it. Two
+choosers at the top narrow it to errors only, or to one checker, and say
+the new count. If you’ve edited since the check, Enter checks again and
+finds the same problem where it is now. While it’s on, saving checks the
+file again, and a Check after a pause box does the same when you stop
+typing; either way you hear only a changed count. A Files chooser lists
+every open document’s problems at once, and Enter on one brings that
+document forward. QUILL Lite has the same pane.</p>
+<h2 id="sign-in-to-github-without-a-token">Sign in to GitHub without a
+token</h2>
+<p>Signing in to the GitHub windows no longer means making a personal
+access token. In <strong>Manage GitHub Accounts…</strong>, choose
+<strong>Sign In with GitHub…</strong>: QUILL puts a short code on the
+clipboard and opens GitHub’s page, you paste the code there and approve
+QUILL, and the account is added. If the code expires or something goes
+wrong, QUILL says so in one sentence. A token you made yourself still
+works, under <strong>Add Token (Advanced)…</strong>, for when you want a
+fine-grained token limited to a few repositories. QUILL Lite has the
+same window.</p>
+<h2 id="the-guides-from-every-download">The guides, from every
+download</h2>
+<p><strong>Help &gt; Open GitHub Guide</strong> opens the GitHub Guide
+in your browser (press Alt+H, then I), and F1 in any GitHub window
+offers it too. <strong>Help &gt; Open User Guide</strong>
+(Ctrl+Shift+F1) now finds the guide however QUILL was started; before,
+an installed copy started by opening a file from File Explorer opened
+the welcome guide instead. The Start menu has a GitHub Guide shortcut,
+the macOS disk image carries the guides, and the user guide’s contents
+page lists all eleven GitHub Guide chapters.</p>
+<h2
+id="github-copilot-commit-comments-gists-and-queue-summaries">GitHub:
+Copilot, commit comments, gists and queue summaries</h2>
+<p>You can now ask Copilot to review a pull request (Request Copilot
+Review on the pull request’s context menu in the review window) and hand
+an issue to Copilot’s coding agent (Assign to Copilot on the issue’s
+context menu in GitHub Items). Both say plainly when Copilot is not
+available to your account or repository, and neither claims success
+GitHub did not confirm.</p>
+<p>A commit’s context menu has Commit Comments, which reads its comments
+as author, date and text and adds one on the whole commit or on a line
+of a file. Explore’s My gists view now writes gists as well as listing
+them: new from the document or its selection, public or secret; edit the
+description and files; star, unstar and delete, with a question before
+anything is deleted. And the attention queue says where each pull
+request stands, in the same one sentence the review window opens with,
+read for the whole queue in one request.</p>
+<h2 id="a-complete-github-guide">A complete GitHub guide</h2>
+<p>QUILL now ships a book of its own on doing GitHub work with a screen
+reader: <a href="https://www.quillforall.org/docs/github-guide.html">The
+GitHub Guide for QUILL and QUILL Lite</a>. Its eleven chapters cover
+signing in, getting around the GitHub windows, your notifications,
+issues, reviewing a pull request line by line, what failed in a workflow
+run, repository files and releases, discussions and security alerts,
+Codespaces, and every refusal GitHub can give and what to do about it.
+The last chapter is a keyboard reference for every window. It is in the
+docs folder beside QUILL, and the user guide’s GitHub section is now a
+short map of it.</p>
+<h2 id="github-search-releases-housekeeping-and-rate-limits">GitHub:
+search, releases, housekeeping and rate limits</h2>
+<p>The GitHub windows now search code, commits and repositories, and
+read a repository’s Insights (traffic and contributors) and community
+profile as plain sentences. Explore’s context menu has Repository
+Actions: sync a fork, set topics, choose a watch level, archive, create
+from a template, and delete a repository after typing its name. It lists
+Actions caches and secret and variable names, never values, and people
+rows have Follow and Unfollow.</p>
+<p>In GitHub Items, releases can be edited and published, and files
+uploaded with progress said at quarter steps, or deleted. An issue’s
+Housekeeping submenu locks, transfers, pins, sets the type and reorders
+sub-issues.</p>
+<p>Ctrl+Shift+L says how much of GitHub’s hourly allowance is left.
+QUILL now asks GitHub only for what changed, says “No changes since the
+last load” when nothing did, checks notifications less often when the
+allowance runs low, and says a request to wait once instead of failing
+repeatedly.</p>
+<h2 id="paste-a-copied-file-and-replace-jobs-you-can-save">Paste a
+copied file, and replace jobs you can save</h2>
+<p>Copy a file in File Explorer and press <strong>Ctrl+V</strong> in an
+editor, and you usually get nothing, or a path you did not want.
+<strong>Edit &gt; Clipboard &gt; Paste Copied Files…</strong> asks which
+you meant: <strong>Each file’s text</strong>, read the way QUILL would
+open it, so a Word document or a PDF comes in as its words, or
+<strong>Each file’s full path</strong>, one per line. Files over 5 MB,
+folders and anything that is not text are left out, and QUILL tells you
+which and why.</p>
+<p>Some find-and-replace work is the same every week. <strong>Edit &gt;
+Search Tools &gt; Manage Replace Jobs…</strong> saves a list of steps
+under a name, each with its own Find what, Replace with, Regular
+expression and Match case, and <strong>Run Replace Job…</strong> runs
+one, in order, on the selection or the whole document. It is one change,
+so one <strong>Ctrl+Z</strong> takes the whole job back, and if any
+step’s pattern is bad nothing changes at all. Three jobs are there to
+start with: Tidy spaces, Straighten quote marks and Close up blank
+lines. Multi Replace is still there for a quick one-off.</p>
+<p>Three smaller things. A snippet with blanks now asks them all in one
+form, the same one abbreviation fields use. <strong>AI
+Translate</strong> has a <strong>Translate from</strong> list: leave it
+on Detect, or choose the language your text is in when the result comes
+back unchanged, which QUILL now tells you in those words. And
+<strong>What’s New</strong> and <strong>Open Keyboard Reference</strong>
+have keys at last: the QUILL key, then <strong>W</strong>, and the QUILL
+key, then <strong>Shift+K</strong>.</p>
+<p>QUILL Lite has Paste Copied Files, the replace jobs and fields in its
+abbreviations, from the same code.</p>
+<h2
+id="github-repository-files-milestones-discussions-and-security-triage">GitHub:
+repository files, milestones, discussions and security triage</h2>
+<p><strong>Files…</strong> (Alt+F) in GitHub Items opens a repository as
+a tree you can walk with the arrow keys, at any branch, tag or commit.
+Read a file in place, open it in the editor, read a folder’s README,
+list the commits that changed it, or read its blame. Blame comes in
+runs, each one a sentence: “Lines 10 to 14: Jeff Bishop, 3 November,
+1a2b3c4, Fix the diff”. Alt+N and Alt+P move between runs.</p>
+<p><strong>Milestones…</strong> says each milestone the way you would
+say it: “61 percent done, 5 open, 8 closed, due 12 December”. You can
+create, edit and close them, and the <strong>Batch…</strong> menu now
+sets a milestone or adds assignees on the issues you select.</p>
+<p>Discussions are no longer read-only. Enter on one in Explore opens
+its thread, says who answered it, and reads any poll as text. You can
+reply, mark the answer, and start a discussion. And in Explore’s
+security alerts you can dismiss an alert with GitHub’s own reasons,
+after QUILL checks with you, or reopen one. QUILL Lite has all of this
+in the same windows.</p>
+<h2 id="github-reviewing-a-pull-request-line-by-line">GitHub: reviewing
+a pull request line by line</h2>
+<p>Open a pull request in Review and the first thing you hear is the
+whole of it in one sentence: “Approved, 2 checks failing, 1 open thread,
+3 commits behind main.” If QUILL is missing part of the picture, it says
+“merge readiness unknown” rather than telling you it is ready.</p>
+<p>In the diff, <strong>Patch lines</strong> lists each changed line,
+marked with words or, if you prefer and your screen reader reads
+punctuation, with + and -. Pick a line, or a run of them, and comment on
+it. Keep the comment with your review until you submit, or post it now.
+<strong>Suggest a change</strong> writes the code for the author to
+accept. <strong>Copy Diff</strong> and <strong>Open Diff in Default
+App</strong> hand the whole thing over as a <code>.diff</code>.</p>
+<p>Coming back to a pull request? Check <strong>Changed since my last
+review</strong> and you see only the files that changed since you last
+looked, with a count. If the branch was force-pushed, QUILL tells you
+so. <strong>Timeline</strong> reads the conversation’s history one line
+at a time, and you can react with a thumbs up, heart and the rest,
+chosen by name. QUILL Lite has all of it in the same windows.</p>
+<h2 id="github-notifications-what-failed-and-merge-automation">GitHub:
+notifications, what failed, and merge automation</h2>
+<p>Your GitHub notifications are now something you can work through
+rather than just read. <strong>Tools &gt; Git and GitHub &gt; GitHub
+&gt; Notifications…</strong> opens the inbox in Explore and says how
+many are unread. Each one says why you got it, in words: “review
+requested”, “you were mentioned”. Press Enter and QUILL marks it read
+and opens it in its own view, a pull request in Review and an issue in
+GitHub Items. Press Delete for Done, or Alt+U to unsubscribe, and you
+land on the next one, so you never lose your place.</p>
+<p>When a workflow run fails, select it and press
+<strong>Ctrl+Shift+W</strong>. <strong>What Failed</strong> gives you
+one plain text to arrow through: the failed jobs, the steps that failed,
+the annotations with file and line, and the last 40 lines of each failed
+step’s log, without the timestamps and colour codes. You can re-run only
+the failed jobs, cancel or delete a run, approve a run from a fork, and
+approve or reject a deployment that is waiting for you.</p>
+<p>In pull request Review, <strong>Auto-Merge and Queue…</strong>
+(Alt+A) turns on auto-merge with the merge method you choose, or adds
+the pull request to the merge queue, and tells you plainly what GitHub
+did. QUILL Lite has all of this in the same windows.</p>
+<h2 id="dictation-nemotron-keeps-its-last-word">Dictation: Nemotron
+keeps its last word</h2>
+<p>If you dictate with <strong>Nemotron</strong>, short phrases no
+longer lose their last word. Before, saying “choose one” could give you
+just “Choose.” Nemotron now gets enough quiet after you stop to finish
+the word. This is the same in QUILL Lite and QUILL Transcribe.</p>
+<p>Locked Dictation’s own <strong>Nemotron and Parakeet</strong> engines
+are retired; they became the one <strong>QUILL speech models</strong>
+engine, and your choice moved with them. QUILL tells you once, a moment
+after it starts. If an older Nemotron model is still taking space on
+your computer, the message asks: “Delete the older files to free 650 MB?
+No keeps them.” Press Enter to keep them, or choose Yes, and QUILL says
+how much it freed. The <strong>Dictation</strong> command (QUILL Key +
+D) works as before, and now opens Windows’ panel the same way the
+Windows voice typing engine does.</p>
+<h2 id="new-in-this-build-moving-through-code-and-check-this-file">New
+in this build: moving through code, and Check This File</h2>
+<p>A new <strong>Navigate &gt; Code</strong> submenu helps anyone who
+writes code or edits data files.</p>
+<p><strong>Next Block</strong> and <strong>Previous Block</strong> now
+move by what a block means in the language you are in: from one Python
+<code>def</code> or <code>class</code> to the next, between C#, Java,
+JavaScript and TypeScript declarations and methods, between
+<code>[sections]</code> in INI and TOML files, between
+<code>:labels</code> in batch files, between <code>\section</code>
+commands in LaTeX, and between headings and landmarks in HTML. QUILL
+says the line you land on. Prose still moves by paragraph.</p>
+<p><strong>Next Indent Change</strong>
+(<strong>Alt+Shift+PageDown</strong>) and <strong>Previous Indent
+Change</strong> (<strong>Alt+Shift+PageUp</strong>) jump to the next
+line whose indentation differs from yours, skipping blank lines, and say
+how deep it is. It is the quickest way in and out of a block in Python
+or YAML.</p>
+<p><strong>Check This File…</strong> (<strong>Ctrl+Alt+/</strong>) finds
+every problem in the document and lists them in a Problems list, line
+and column first; Enter takes you to one. <strong>Next Problem</strong>
+(<strong>Ctrl+Alt+.</strong>) and <strong>Previous Problem</strong>
+(<strong>Ctrl+Alt+,</strong>) step through them from the document and
+say each one, such as “Problem 2 of 3, line 12, column 5, error:
+Expecting ‘,’ delimiter”. QUILL checks JSON, XML, HTML, TOML, YAML,
+Python, INI, CSV and Markdown by itself, and JavaScript, TypeScript,
+PHP, Ruby, Perl, shell scripts, C, C++, Go, Rust and C# with a tool you
+already have installed, such as Node.js or GCC. It never downloads one,
+and nothing leaves your computer. QUILL Lite has the same submenu and
+keys, and checks Markdown and HTML.</p>
+<p><strong>Try this:</strong> open a JSON file, delete a comma, and
+press <strong>Ctrl+Alt+.</strong>. QUILL takes you to the line and tells
+you what is wrong.</p>
+<h2 id="the-quill-key-on-every-keyboard-layout">The QUILL key on every
+keyboard layout</h2>
+<p>The QUILL key is Control, Shift and the grave key, the key just above
+Tab. On a Mac with a German layout it used to do nothing until you
+switched to US English, because that key types <code>^</code> there and
+QUILL was listening for a backtick. QUILL now finds the key by where it
+sits, so the QUILL key works on German, French, Nordic and every other
+layout, on Windows and on macOS. On a European (ISO) Mac keyboard, the
+key beside the left Shift key works too. You hear the same double ping
+as always. The WordPress key, <code>Ctrl+Alt+Shift+Grave</code>, works
+the same way. Chapter 2 of the user guide has the details.</p>
+<h2 id="diagrams-math-and-pictures-in-markdown-pages">Diagrams, math and
+pictures in Markdown pages</h2>
+<p><strong>AI &gt; Accessibility Tune-Up…</strong> now checks Mermaid
+diagrams in Markdown. For each fenced <code>mermaid</code> block it
+tells you, by line number, when the diagram has no accessible title
+(<code>accTitle</code>) or description (<code>accDescr</code>), when an
+init block forces a theme, and when it sets its own colours so you
+should check the contrast. With more than one diagram on a page, it asks
+for a heading before each. A new starter snippet pack,
+<strong>mermaid-diagrams</strong>, has eight diagram types, and every
+one asks for the title and description before anything else.</p>
+<p>Equations in Browser Preview, the side preview and <strong>File &gt;
+Export &gt; HTML…</strong> are now MathML. Nothing is downloaded from
+the internet to show them, and NVDA and JAWS read them with their own
+math support. When Pandoc writes the page, pictures are found beside
+your document and, with Pandoc 2 or 3, carried inside the page so it can
+be emailed on its own. QUILL Lite’s Export as HTML writes math as MathML
+too.</p>
+<h2 id="replace-export-and-backups-you-can-trust">Replace, export and
+backups you can trust</h2>
+<p>Three things that should never surprise you now do not.</p>
+<p><strong>Replace puts in what you typed.</strong> Unless you are
+searching with a regular expression, the Replace box is taken exactly as
+typed. Replace a folder name with <code>C:\new\reports</code> and that
+is what lands in your document, not a line break where the
+<code>\n</code> was. With a regular expression, <code>\1</code> and
+<code>\2</code> still bring back the parts of the match. This holds for
+Replace All and Replace Across Files (<code>Ctrl+Shift+R</code>).</p>
+<p><strong>Exporting over an earlier file is safe.</strong> File &gt;
+Export, Convert File and every other Pandoc conversion now build the new
+file under a hidden temporary name and swap it in only when it is
+finished. If the export fails, times out or is cancelled, the file you
+exported yesterday is still there, untouched.</p>
+<p><strong>A backup that fails is on the record.</strong> When a backup
+cannot be written before a save, QUILL still says “Could not write a
+backup; saving anyway” and saves, and now it writes the reason to its
+log as well, so <strong>Help &gt; Save Diagnostics…</strong> can explain
+a missing backup later.</p>
+<h2 id="taking-payments-with-your-forms">Taking payments with your
+forms</h2>
+<p>Both user guides have a new chapter, “Taking payments with your
+forms”, that walks through a paid form from start to finish: what you
+need, test mode, fixed amounts, donations and totals, choosing Stripe or
+PayPal, publishing and what each refusal means, what the person paying
+hears with a screen reader, receipts, refunds, seeing who paid, and
+going live.</p>
+<p>Alongside it, a few things got easier. Insert Payment Field tells you
+which total and price fields the form has. QUILL catches an amount finer
+than its currency, or a statement descriptor the site would refuse,
+before it publishes. Test on Site tells you which test card or sandbox
+account to use. Responses say “partly refunded” and “PayPal” rather than
+reading out codes.</p>
+<h2 id="form-payment-setup-and-reporting">Form payment setup and
+reporting</h2>
+<p>QUILL and QUILL Lite now share <strong>Tools &gt; Forms &gt; Insert
+Payment Field</strong>, <strong>Form Payments Setup</strong>, and
+<strong>Verify Payment Setup</strong>. Choose Stripe, PayPal, or both;
+author a fixed, calculated or donation amount; and start in test mode.
+Publishing verifies the site’s payment contract, provider/webhook
+readiness and matching test/live mode. Test on Site refuses published
+live-payment forms. Responses show payment metadata and can refresh it
+from the site or export it to CSV and Word.</p>
+<p>Checkout requires a QAF WordPress plugin implementing payment
+contract version 1. Provider credentials, charging and webhooks stay on
+WordPress; this desktop update does not deploy the plugin or establish
+live checkout acceptance. The WordPress and Forms guide covers the
+sandbox-first workflow.</p>
+<h2 id="document-statistics-pressed-twice">Document Statistics, pressed
+twice</h2>
+<p><strong>Tools &gt; Writing and Language &gt; Document
+Statistics…</strong> (<code>Ctrl+Shift+G</code>) still tells you words,
+lines and characters straight away. Press it twice quickly and you hear
+the full writing report too: paragraphs, sentences, how many sentences
+run over 30 words, the reading time and the reading grade, for example
+“about 7 minutes to read, reading grade about 9th grade”. Select some
+text first and it counts just that. QUILL Lite does the same on the same
+key.</p>
+<h2 id="new-in-this-build-wordpress">New in this build: WordPress</h2>
+<p>If you look after a WordPress website, QUILL now writes, opens,
+checks and publishes its pages and posts in the editor you already use,
+and looks after the site too. You can connect as many sites as you like,
+self-hosted or on WordPress.com. The site keeps its theme; QUILL works
+on the words, the blocks and the pictures. The whole story is in <a
+href="https://www.quillforall.org/docs/wordpress-forms-guide.html">WordPress
+and Forms in QUILL</a>, and Help &gt; Tutorials has seven guided
+WordPress lessons.</p>
+<p><strong>Connecting.</strong> <strong>File &gt; WordPress &gt; Connect
+a Site…</strong> asks for the site’s address, your username and an
+application password, which is a separate password WordPress makes for
+one program. Press <strong>Get Password with My Browser</strong> and
+QUILL opens your site’s own Authorize Application page; approve QUILL
+there and the password comes back by itself. On an older site WordPress
+shows it to you, and QUILL offers the one you just copied. QUILL checks
+the password before it saves it, keeps it in Windows Credential Manager,
+and tells you plainly what went wrong if it cannot connect. The browser
+sign-in for WordPress.com is built and waits on the family’s
+registration with WordPress.com; until then, a WordPress.com plan that
+allows plugins connects with an application password at the site’s own
+address. <strong>Sites</strong> lists every site you have connected, and
+<strong>Switch Site</strong> chooses the one New Page and New Post go
+to.</p>
+<p><strong>Writing and saving.</strong> <strong>New Page</strong>,
+<strong>New Post</strong>, <strong>Open Page or Post</strong> and
+<strong>Open by Web Address</strong> are in File &gt; WordPress, and you
+can work in HTML or Markdown. Saving with <strong>Ctrl+S</strong> stays
+on your computer, always. <strong>Save Draft to Site</strong> sends an
+unpublished draft. <strong>Publish or Update…</strong> runs Check Before
+Publishing first, for missing alternative text, vague links and skipped
+heading levels, and then asks you to confirm with the page and the site
+named. If someone else changed the page while you worked, nothing is
+overwritten: you can compare, open their copy, or send yours anyway. You
+can schedule a post, go back to a previous version, restore from the
+Trash, and keep working when the connection drops; QUILL queues the send
+and tells you when it goes through. Every two minutes your work is
+autosaved, here and on the site.</p>
+<p><strong>Blocks, made plain.</strong> Paragraphs, headings, lists and
+pictures are written the way you always write them, and QUILL handles
+WordPress’s block markup for you. A button, columns or an accordion is a
+short <code>:::</code> fence line in Markdown, and a block QUILL does
+not know is a protected island that goes back to the site exactly as it
+came. <strong>Insert &gt; WordPress Block…</strong> lists the site’s
+blocks and patterns. <strong>Edit &gt; WordPress</strong> has Next
+Block, Previous Block and Where Am I, which say each block’s kind, place
+and first words. <strong>View &gt; WordPress Blocks…</strong> moves,
+duplicates, groups and removes blocks, one Undo each, and <strong>Format
+&gt; WordPress &gt; Block Settings…</strong> names the theme’s own
+colours and sizes, with the contrast of each colour.</p>
+<p><strong>Pictures and media.</strong> <strong>Insert &gt; Picture from
+the Media Library…</strong> and <strong>Picture from This
+Computer…</strong> ask for alternative text, or let you mark a picture
+decorative. <strong>Tools &gt; WordPress &gt; Media Library…</strong>
+shows every file on the site, and Enter plays a sound or video file
+right there, with the same keys as Quill Media Player. More Media
+uploads many files at once, makes a smaller copy without replacing the
+original, changes the site logo, and makes captions for a video, a
+transcript for a sound file and a listening version of a page, all on
+this computer.</p>
+<p><strong>Checking the site the visitor’s way.</strong> <strong>Tools
+&gt; WordPress &gt; Check This Page</strong> runs the published page
+through axe-core, which comes with QUILL, in a hidden copy of the Edge
+or Chrome you already have, and explains each problem in plain words
+with Go to It. <strong>Check the Whole Site</strong> checks every page
+and post, groups the problems with counts, and fixes the safe ones in
+bulk after one confirmation, with Undo Site Fix.</p>
+<p><strong>Running the site.</strong> Tools &gt; WordPress also has
+Comments, Categories and Tags, Menus, Site Check and Site Settings, and
+a Manage submenu for users, application passwords, plugins, themes and
+more. Every window reads your role first and tells you what you cannot
+do, instead of offering a button the site would refuse.</p>
+<p><strong>Keys.</strong> The WordPress commands share one layer key.
+Press <strong>Ctrl+Alt+Shift+Grave</strong> (the key above Tab, with
+Ctrl, Alt and Shift), hear “WordPress keys”, then one letter: O opens a
+page or post, P publishes or updates, D saves a draft to the site, M
+opens the Media Library, S switches site, W opens by web address, G
+starts a new page and N a new post, K is Check Before Publishing and B
+the Blocks window. The menus show every letter. Escape leaves the layer.
+Every WordPress command is in the Command Palette too.</p>
+<p><strong>What happened to File &gt; Publish.</strong> One WordPress
+feature replaces the two Publishing features, and is on in every profile
+except Essential. The old File &gt; Publish submenu is gone; your saved
+publishing connections and their passwords come across the first time
+you open File &gt; WordPress. QUILL Cast and Audio Studio can post an
+episode to WordPress, and Quill Converter can upload to it; each writes
+a draft and opens it in QUILL to finish. QUILL Lite has all of it, in
+the same places, on the same keys.</p>
+<blockquote>
+<p><strong>QUILLBert found something:</strong> He pressed
+<strong>Ctrl+Alt+Shift+Grave</strong>, then W, pasted the address of a
+page he had been reading on his own site, and fixed a typo in it without
+ever opening the block editor. Then he pressed
+<strong>Ctrl+Alt+Shift+Grave</strong> and P, heard the page and the site
+named, and pressed Enter.</p>
+</blockquote>
+<p><strong>Try this:</strong> connect your site with File &gt; WordPress
+&gt; Connect a Site…, press <strong>Ctrl+Alt+Shift+Grave</strong> then G
+for a new page, write two sentences, and press
+<strong>Ctrl+Alt+Shift+Grave</strong> then D to send it as a draft.
+Nothing is public until you choose Publish or Update.</p>
+<h2 id="new-in-this-build-forms">New in this build: Forms</h2>
+<p>QUILL writes accessible forms: contact forms, event sign-ups,
+membership renewals, surveys and feedback forms. A form is a short,
+readable text document, so every tool you already use works on it, and
+QUILL turns it into a form on your WordPress site, a web page, a Word
+document, large print or braille-ready text. Before anyone else sees it,
+you can fill it in yourself with your screen reader. QUILL Lite has
+every Forms command, in the same places. <a
+href="https://www.quillforall.org/docs/wordpress-forms-guide.html">WordPress
+and Forms in QUILL</a> has the whole story, and Help &gt; Tutorials has
+seven guided Forms lessons.</p>
+<p><strong>What a form looks like.</strong> It is written in the QAF
+form language, the language of the QUILL Accessible Forms plugin for
+WordPress (it used to be called BITS Accessible Forms). A
+<code>section</code> line and a <code>page</code> line are headings, so
+heading navigation jumps through a long form. Each question is one line,
+its type, its ID and its label in quotes, such as
+<code>email #email "Email address"</code>, with indented <code>@</code>
+lines under it for its settings, such as <code>@required</code>. Choices
+are lines that start with a plus sign. A rule is a line such as
+<code>@when #access is "yes"</code>, and Form Rules reads it back to you
+as a sentence. A form is saved as a <code>.qaf</code> file, and its
+first line, <code>bfl 1</code>, says which version of the language it
+uses. Underneath, QUILL and the plugin share one form definition, so
+what you write is exactly what your site reads.</p>
+<p><strong>Writing one.</strong> <strong>File &gt; New Form…</strong>
+starts from a template: blank, contact, event registration, membership
+renewal, survey, accessibility feedback or volunteer sign-up.
+<strong>Insert &gt; Form Field…</strong> lists every question type with
+a one-line description, then asks only what that type needs; about 120
+ready-made choice lists, such as countries, states and time zones, work
+without the internet. <strong>View &gt; Form Outline…</strong> is a tree
+of pages, sections and questions you can move through and rearrange.
+<strong>Format &gt; Form Rules…</strong> lists every rule as a sentence,
+“Show Company name when Type is Business”, and Add Rule builds one from
+three choices.</p>
+<p><strong>Checking it and trying it.</strong> <strong>Tools &gt; Forms
+&gt; Check This Form…</strong> finds a question with no label, a group
+of choices with no question, a field marked required only by an
+asterisk, a name or email field with no autofill hint, and a rule that
+points at nothing, each with Go to It. <strong>Fill It In
+Yourself…</strong> builds the form as a real window and you tab through
+it as a visitor would: labels, help, errors and required states
+announced, rules showing and hiding questions, Next and Back between
+pages, in each of the form’s languages. Submit sends nothing; it shows
+you what would have been sent.</p>
+<p><strong>Publishing and paper.</strong> On a site running QUILL
+Accessible Forms, Tools &gt; Forms has <strong>Publish Form…</strong>,
+<strong>Insert Form Into Page…</strong>, <strong>Test on Site</strong>
+and <strong>Responses…</strong>, which lists what people sent, newest
+first, one at a time or by date, with Find and exports to CSV, Word and
+a table. WordPress itself has no forms, so a site needs that plugin to
+show them; everything else in QUILL’s WordPress support needs nothing on
+the site. Without the plugin, or with no site at all, <strong>Save As
+Web Page…</strong>, <strong>Save As Word Document…</strong>,
+<strong>Save As Large Print…</strong> and <strong>Save As Braille-Ready
+Text…</strong> all work on this computer, even in Safe Mode. With an AI
+chosen, Draft a Form, Plain Language and Suggest Autofill Hints propose
+changes for you to accept, and Summarise Responses asks every time
+before it sends anything.</p>
+<p><strong>Keys.</strong> The Forms commands have no keys of their own.
+Writing a form is occasional, so each command is on its menu, by its
+access letters, and in the Command Palette
+(<strong>Ctrl+Shift+P</strong>): type “form”. The Forms feature is on in
+every profile except Essential.</p>
+<p><strong>Try this:</strong> choose File &gt; New Form…, pick the
+contact template, then Tools &gt; Forms &gt; Fill It In Yourself… and
+tab through your own form. Each required question says so. Answer them
+and press Submit: the What Would Be Sent window lists each question with
+its answer, and nothing has gone anywhere.</p>
+<h2
+id="new-in-this-build-hear-the-clipboard-the-time-and-what-is-open">New
+in this build: hear the clipboard, the time and what is open</h2>
+<p>You copied something, but did it work, and what did you get? Press
+<strong>Alt+Shift+Home</strong> (<strong>Edit &gt; Clipboard &gt; Say
+Clipboard</strong>) and QUILL reads you the clipboard without pasting
+it. Long text is read up to its first 2,000 characters, and QUILL tells
+you how many more there are. Files copied in File Explorer are counted
+and named: “2 files on the clipboard: report.docx, notes.txt”. Press it
+twice quickly to hear the text spelled letter by letter, with capitals
+said as “cap”, or each file’s full path. Press it three times to open a
+read-only window titled Clipboard, and read it line by line with the
+arrow keys; Escape closes it. An empty clipboard says “The clipboard is
+empty”, and a picture says so too.</p>
+<p><strong>Alt+Shift+End</strong> (<strong>Append Selection to
+Clipboard</strong>) adds the selection to the end of the clipboard’s
+text, on a new line, and tells you the total: “Appended 5 characters to
+the clipboard, which now holds 11 characters”. Gather a name, an address
+and a phone number from three places, then paste them once. <strong>Save
+Clipboard to File…</strong> saves the clipboard’s text as a UTF-8 file,
+offering a name such as “clipboard 2026-11-06 1405.txt”, and
+<strong>Clear Clipboard</strong> empties it, which is worth doing after
+you copy a password. Both are on <strong>Edit &gt; Clipboard</strong>
+with no key: no chord was free in both editors, and a key that could
+clear the clipboard by accident would be a trap.</p>
+<p>Two more quick questions. <strong>Alt+Shift+Space</strong>
+(<strong>Navigate &gt; Say Time and Date</strong>) says the time, “2:05
+PM”, and on a quick second press the date, “Friday, November 6, 2026”.
+<strong>Ctrl+Shift+Space</strong> (<strong>Window &gt; Say Windows
+Open</strong>) says “3 documents open”, and on a quick second press
+names them in tab order, marking the one you are in “(current)”.</p>
+<p>When support asks for your log, <strong>Help &gt; Copy Log</strong>
+puts this session’s <code>quill.log</code> on the clipboard as a file
+and as its path. Paste into an email and it is attached; paste into a
+document or a form and you get where it is. If no log has been written
+yet, QUILL says so.</p>
+<p>Every press answers straight away, and a quick press is one within
+half a second of the last. QUILL Lite has all seven commands, from the
+same code, on the same keys.</p>
+<p><strong>Try this:</strong> select a word, press
+<strong>Ctrl+C</strong>, then press <strong>Alt+Shift+Home</strong>
+twice, quickly. QUILL spells the word back to you, and nothing has been
+pasted.</p>
+<h2 id="new-in-this-build-searches-that-say-more">New in this build:
+searches that say more</h2>
+<p>Every list you narrow by typing now understands a small query, so one
+search can ask for more than one thing. <code>&amp;</code> needs both
+words, and two words side by side mean the same. <code>|</code> takes
+either. <code>!</code> leaves a word out. <code>*</code> stands for any
+run of letters inside a word and <code>?</code> for exactly one. Double
+quotes match exact text, spaces included. <code>!</code> is read first,
+then <code>&amp;</code>, then <code>|</code>, so
+<code>draft | notes !old</code> means “draft, or notes that are not
+old”.</p>
+<p>It works in Go to Anything (<strong>Ctrl+Alt+Shift+A</strong>),
+including its <code>#</code> search for headings, and in Insert Snippet,
+Insert HTML Tag, Insert Markdown Tag, both lists of Move Section To
+(<strong>Ctrl+Alt+Shift+F5</strong>), the abbreviation manager and the
+Copy Tray search. The File pattern of Search in Files
+(<strong>Ctrl+Alt+Shift+F</strong>) combines patterns the same way:
+<code>*.md | *.txt</code> takes both kinds, and <code>* !*.bak</code>
+leaves the backups out. QUILL Lite has it in the same lists, from the
+same code. A search with none of those characters works exactly as
+before, and you never hear an error for a half-typed one. Press F1 in
+any of these search boxes for a short reminder.</p>
+<p><strong>Try this:</strong> open a long document, press
+<strong>Ctrl+Alt+Shift+A</strong>, and type
+<code>#chapter !draft</code>. The list holds every chapter heading
+except the drafts; press Enter to go to the one on top.</p>
+<h2 id="fixed-in-this-build-first-page-and-even-page-word-headers">Fixed
+in this build: first-page and even-page Word headers</h2>
+<p>When you open a Word document for rich editing, QUILL tells you what
+the editor cannot keep, and makes a backup before your first save over
+the file. Headers and footers have always been on that list, but only
+the ordinary ones. A header set to appear on the first page only (Word’s
+Different First Page), or on even pages only (Different Odd and Even
+Pages), slipped past: the file opened with no question, and saving it
+removed the header without a word. Now those count as headers and
+footers too, in every section of the document, so you hear them named in
+the <strong>Open Word document</strong> question and the backup is made.
+QUILL Lite has the same fix.</p>
+<p><strong>Try this:</strong> in Word, make a title page with its own
+first-page header and save it. Open it in QUILL and choose the normal
+text editor. The question lists “headers”.</p>
+<h2 id="new-in-this-build-every-menu-item-in-the-command-palette">New in
+this build: every menu item in the Command Palette</h2>
+<p>The Command Palette (<strong>Ctrl+Shift+P</strong>, first in the
+Tools menu) now finds everything in the menus, not just the registered
+commands. A few dozen menu items were never in it before, among them
+your recent files, your open documents and some of the braille tools, so
+typing their names found nothing. Now the palette reads the menus each
+time it opens, names each item by the menu it sits in, and runs it
+exactly as the menu would. A dimmed item tells you why it is not
+available instead of doing nothing. QUILL Lite’s palette does the same,
+sits first in its Tools menu, and is there in every profile, WordPad and
+Notepad included.</p>
+<p><strong>Try this:</strong> press <strong>Ctrl+Shift+P</strong> and
+type the name of a document you opened recently. It is there, with the
+menu it lives in, and Enter opens it.</p>
+<h2 id="new-in-this-build-ctrlenter-for-a-page-break">New in this build:
+Ctrl+Enter for a page break</h2>
+<p><strong>Ctrl+Enter</strong> inserts a page break, as it does in Word.
+<strong>Format &gt; Insert Page Break</strong> is the same command. In a
+Word or Rich Text document it is a real page break, kept when you save.
+In Markdown it is the <code>::: pagebreak</code> line, which becomes a
+page break when you export, and in a braille file it is a braille page
+break. In plain text, which has no pages, QUILL tells you so rather than
+doing nothing. Word documents also keep their page breaks now: they used
+to open as empty lines, so saving the document removed every one.</p>
+<p>If your fingers know Ctrl+Enter as Follow Link, it still follows a
+link when the cursor is on one in a text document. Follow Link is on the
+Navigate menu, and you can give it a key of its own in the Keymap
+Editor. QUILL Lite has the same key.</p>
+<p><strong>Try this:</strong> open a Word document, put the cursor at
+the start of a heading, and press <strong>Ctrl+Enter</strong>. Save,
+open the file in Word, and the heading starts a new page.</p>
+<h2
+id="new-in-this-build-choose-your-ai-with-github-copilot-and-codex">New
+in this build: Choose Your AI, with GitHub Copilot and Codex</h2>
+<p>Press <strong>Ctrl+4</strong> (<strong>AI &gt; Choose Your
+AI…</strong>) and one window lists every place your AI can come from:
+QUILL’s free AI, your ChatGPT plan, your GitHub Copilot, Codex, or your
+own key. Each row tells you whether it is in use, signed in or not set
+up, and one line says what it can do, who gets your text and what it
+costs. Enter uses it or signs you in. GitHub Copilot signs in with a
+short code that your screen reader spells out and that is already on the
+clipboard; Copilot Free works too, and the Copilot engine comes with
+QUILL, so there is nothing else to install. Codex uses your ChatGPT
+plan’s sign-in.</p>
+<p><strong>Which AI Am I Using</strong> (<strong>Ctrl+8</strong>) tells
+you in one line where your words are going, the model, and one thing
+about usage. <strong>AI Usage</strong>
+(<strong>Ctrl+Alt+Shift+F2</strong>) is one plain list, a sentence for
+each AI you have set up, each saying whose count it is: no meters, no
+charts. <strong>Do a Document Task</strong> (<strong>Ctrl+3</strong>)
+hands GitHub Copilot or Codex a job with several steps, asks before
+every step that changes something, and sends every edit through the
+review you already know, one undo each. When the AI you are using cannot
+do something, the command stays where it was, its name says what it
+needs, and pressing it offers to switch. QUILL Lite has all of this on
+the same keys, from the same code. See “Choose Your AI” in the <a
+href="https://www.quillforall.org/docs/userguide.html">user
+guide</a>.</p>
+<p><strong>Try this:</strong> press <strong>Ctrl+4</strong>, arrow
+through the list and hear what each AI costs and who gets your text.
+Choose one, then press <strong>Ctrl+8</strong> to hear, in one line,
+which AI will answer you.</p>
+<h2 id="new-in-this-build-project-tasks-for-people-who-write-code">New
+in this build: project tasks, for people who write code</h2>
+<p>Choose the <strong>Developer</strong> profile (it used to be called
+Developer and Power Text) and QUILL can work on a folder of code with an
+AI. <strong>File &gt; Open Project Folder…</strong> opens a project, and
+with a project open <strong>Ctrl+3</strong> opens <strong>Do a Project
+Task</strong> instead of a document task. Type what you want done. The
+agent writes its plan first, and you hear “The plan is ready.” Focus
+never moves under you, and no streaming text is read at you.</p>
+<p>Nothing is written until you accept it. <strong>Review
+Changes</strong> lists each file as a sentence, then walks its changes
+one at a time with line numbers, and <strong>Apply Accepted
+Changes</strong> writes what you took. Nothing runs until you allow it.
+<strong>Run This Command?</strong> shows the exact command in a field
+you can braille, and QUILL adds a warning when a command may reach the
+internet, deletes files or reaches outside the project. Pushing,
+publishing, forcing a remote and changing system settings are never run
+for an agent. You hear test results in one sentence, such as “Tests: 12
+passed, 1 failed”, and the full output is a document. <strong>Undo Last
+Agent Turn</strong> (the QUILL key, then <code>U</code>) puts back every
+file a turn changed, and <strong>Stop Agent</strong> (the QUILL key,
+then <code>K</code>) stops a task from anywhere.</p>
+<p>Coach mode has the agent explain and point to the line instead of
+editing, so you make the change yourself. The transcript is a document
+with a heading per turn that you can save as Markdown. Allow lists, undo
+copies and transcripts stay in QUILL’s own data, never in your project.
+One thing said plainly: Windows gives QUILL no way to fence in a command
+you allow, so it can reach the internet and do anything your account
+can. Your approval is the safety line.</p>
+<p>It works on GitHub Copilot and Codex, on Claude with your own
+Anthropic key, and on Ollama on your own computer as a slower practice
+mode. QUILL’s free AI does not do project tasks. The tutorial “Your
+first project task” walks you through one in about twelve minutes. QUILL
+Lite has the same feature in its own Developer profile. See “Project
+tasks: coding with an AI” in the <a
+href="https://www.quillforall.org/docs/userguide.html">user
+guide</a>.</p>
+<p>To get there, choose Help &gt; Feature Profiles &gt; Switch Profile…
+and pick Developer. If you want the coding tools without the rest of the
+profile, check Developer Tools in Help &gt; Feature Profiles &gt; Manage
+Individual Features… instead. A Project cell appears in the status bar
+the first time you open a project; it names the project and its git
+branch, and says “waiting for you” when the agent has a question.</p>
+<p><strong>Try this:</strong> make an empty folder, open it with File
+&gt; Open Project Folder…, press <strong>Ctrl+3</strong> and type “Write
+a README that says what this folder is for.” Listen to the plan, accept
+the change in Review Changes, then press the QUILL key and U to undo the
+whole turn.</p>
+<h2 id="new-in-this-build-find-in-open-documents">New in this build:
+Find in Open Documents</h2>
+<p>Press <strong>Ctrl+Shift+F10</strong> to find and replace across
+every document you have open, not just the one in front of you. It
+searches what is in each window right now, including changes you have
+not saved and documents you have never saved. Find Next moves from
+document to document and tells you each one’s name, Find All lists every
+match, and Replace All tells you how many it found before it changes
+anything, lets you undo each document on its own, and saves nothing.
+Afterwards, F3 keeps searching across your documents until you start an
+ordinary Find. QUILL Lite has it too, on Ctrl+Alt+Shift+F8. Thanks to
+Chris Nova for asking.</p>
+<p><strong>Try this:</strong> open two documents that share a word,
+press <strong>Ctrl+Shift+F10</strong>, type the word and choose Find
+All. The list names each document beside each match.</p>
+<h2 id="new-in-this-build-tables-you-can-read-and-build">New in this
+build: tables you can read and build</h2>
+<p><strong>Real tables in rich text.</strong> In a rich text document a
+table is now a real table: a grid on screen, with no <code>|</code>
+characters, that your screen reader, Word and WordPad all read as a
+table. <strong>Insert &gt; Insert Table…</strong>
+(<strong>Ctrl+Alt+T</strong>) asks how many columns and rows and whether
+the first row is a header, then makes one. Word and RTF tables open as
+real tables, and saved to RTF or Word a table stays one. In Markdown and
+plain text a table is still <code>|</code> rows, and in HTML a real
+<code>&lt;table&gt;</code> whose header cells your screen reader
+announces.</p>
+<p><strong>The arrows read a table cell by cell.</strong> Inside a
+table, <strong>Up</strong> and <strong>Down</strong> go to the cell
+above and below and say it, instead of your screen reader reading the
+whole row as one line. <strong>Right</strong> at the end of a cell and
+<strong>Left</strong> at its start step to the next or previous cell.
+Arrowing down onto a table says its shape, “Table, 3 rows, 2 columns”,
+and leaving it says “Out of table”. It works the same with JAWS, NVDA
+and Narrator, with nothing to install. The <strong>Ctrl+Alt</strong>
+arrow keys still move cell by cell too.</p>
+<p><strong>Tab works as in Word.</strong> <strong>Tab</strong> and
+<strong>Shift+Tab</strong> move cell to cell, and <strong>Tab</strong>
+in the last cell adds a row. <strong>Navigate &gt; Table</strong>
+gathers the table keys and five edits: Insert Row Below, Insert Column
+Right, Delete Row, Delete Column and Tidy Table, each one Undo. One
+thing to know: adding or deleting a row or column of a real table keeps
+its text, but not bold, italic or a font inside its cells, so format
+cell text once the table has its shape.</p>
+<p>QUILL Lite has all of this too, on the same keys.</p>
+<p><strong>Try this:</strong> in a new rich text document press
+<strong>Ctrl+Alt+T</strong>, make a table of two columns and three rows
+with a header, type in the first cell, then press Tab and Down and
+listen to the cells being read.</p>
+<h2 id="new-in-this-build-help--whats-new">New in this build: Help &gt;
+What’s New</h2>
+<p><strong>Help &gt; What’s New</strong> opens QUILL’s changelog, the
+list of everything that changed, in your web browser. Press
+<strong>Alt+H</strong>, then <strong>W</strong>. Every app in the
+QuillVille family has it on its Help menu now.</p>
+<p><strong>Try this:</strong> press Alt+H, then W, and use your screen
+reader’s heading keys to jump from one change to the next.</p>
+<h2 id="new-in-this-build-three-smaller-fixes">New in this build: three
+smaller fixes</h2>
+<ul>
+<li><strong>Describe Formatting names the colour.</strong> In a rich
+text document, <strong>Ctrl+Shift+D</strong> (Format &gt; Describe
+Formatting at Cursor) now names the text colour, just before any
+highlight: “Calibri, 11 point, red, yellow highlight”. A colour from
+<strong>Format &gt; Text Color</strong> comes back under the name you
+chose; any other shade is named after the nearest common colour.
+Uncoloured text, black text and a dark theme’s page colour say nothing
+about colour. QUILL Lite gives the same answer.</li>
+<li><strong>AI Translate says when nothing was translated.</strong> If
+the result is the same as your text, ignoring spacing and capital
+letters, the result box says “The translation came back the same as the
+original. The text may already be in the target language.” and takes
+focus, and the Copy, Replace and New Document buttons stay unavailable.
+Try another language or the other provider.</li>
+<li><strong>Ctrl+O starts where you last opened a file.</strong> Opening
+a file from File Explorer, the command line, Open Recent or a tab that
+already had it now sets the folder the next Open dialog starts in, just
+as the Open and Save As dialogs always did.</li>
+</ul>
+<p><strong>Try this:</strong> double-click a document in File Explorer
+to open it in QUILL, then press Ctrl+O. The dialog is already in that
+document’s folder.</p>
+<h2 id="github-workbench-update-release-acceptance-pending">GitHub
+Workbench update (release acceptance pending)</h2>
+<p>The shared QUILL and QUILL Lite GitHub windows add PR thread
+resolve/reopen, exact changed-line navigation when a patch position is
+current, global saved searches, My Work, activity and people views,
+repository discovery and watch controls, Pages builds, labels, gists,
+and workflow job logs. Run actions now use GitHub’s actual run ID. See
+the <a href="../github/workbench-reference.md">workbench reference</a>
+for keys, context menus, account requirements, and current
+limitations.</p>
+<p><strong>Unreleased correction:</strong> The shared Radio code retires
+the built-in SomaFM source in response to its published
+third-party-client terms; known catalogue entries and direct playback
+and recording paths are filtered or blocked. Indirect paths, existing
+user data and earlier packages still need review. QUILL no longer
+downloads or distributes DECtalk while its redistribution terms are
+unclear, though a separately installed copy remains supported. Windows
+OCR and Media projections move to PyWinRT 4.0.3 and Windows SDK
+10.0.28000.2705. These notes do not imply that a new release is
+published.</p>
 <h2 id="getting-help-and-helping-back">Getting help, and helping
 back</h2>
 <p><strong>Help &gt; Get Help from Support…</strong>
@@ -4315,16 +4329,6 @@ ideas first, and QUILL learned from it.</p>
 “this works perfectly” helps as much as one that says it does not.</p>
 <p>Thank you for trying QUILL 1.0.0. I hope it becomes the place you
 like to write, and I look forward to hearing what you make with it.</p>
-<h1 id="github-workbench-update-release-acceptance-pending">GitHub
-Workbench update (release acceptance pending)</h1>
-<p>The shared QUILL and QUILL Lite GitHub windows add PR thread
-resolve/reopen, exact changed-line navigation when a patch position is
-current, global saved searches, My Work, activity and people views,
-repository discovery and watch controls, Pages builds, labels, gists,
-and workflow job logs. Run actions now use GitHub’s actual run ID. See
-the <a href="../github/workbench-reference.md">workbench reference</a>
-for keys, context menus, account requirements, and current
-limitations.</p>
 </main>
 </body>
 </html>
