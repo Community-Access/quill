@@ -103,8 +103,11 @@ def test_render_keeps_the_layout_and_opens_the_right_page(tmp_path: Path) -> Non
 def test_every_chapter_file_is_on_the_contents_page(index: Path) -> None:
     chapters = ugf.chapter_paths(index)
     assert len(chapters) > 15
-    folder = chapters[0].parent
-    assert sorted(folder.glob("*.md")) == sorted(chapters), "a chapter the contents never links"
+    # Every folder the contents page links into (QUILL Lite's guide/ and, since
+    # 2026-11-09, github-guide/) holds only chapters it links.
+    folders = {chapter.parent for chapter in chapters}
+    on_disk = sorted(path for folder in folders for path in folder.glob("*.md"))
+    assert on_disk == sorted(chapters), "a chapter the contents never links"
     for chapter in chapters:
         first = ugf.headings(chapter.read_text(encoding="utf-8"))
         assert first[0][0] == 1 and [lvl for lvl, _t, _n in first].count(1) == 1, chapter.name
