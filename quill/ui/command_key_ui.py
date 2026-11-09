@@ -293,6 +293,8 @@ def ask_command_understanding(wx: Any, parent: Any, show_modal: ShowModal) -> st
         260,
     )
     sizer = wx.BoxSizer(wx.VERTICAL)
+    # Constructed just before the box, so wxMSW reads it as the box's name.
+    sizer.Add(wx.StaticText(dialog, label="&What is sent:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
     text = wx.TextCtrl(
         dialog, value=CONSENT_TEXT, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
     )
