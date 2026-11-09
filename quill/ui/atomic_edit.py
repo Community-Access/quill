@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
-__all__ = ["replace_as_one_undo"]
+__all__ = ["edits_as_one_undo", "replace_as_one_undo"]
 
 
 class _TextControl(Protocol):  # pragma: no cover - a shape, not behaviour
@@ -50,3 +50,45 @@ def replace_as_one_undo(control: Any, start: int, end: int, text: str) -> None:
         write_text(text)
         return
     control.Replace(start, end, text)  # pragma: no cover - minimal stubs only
+
+
+def edits_as_one_undo(control: Any, edits: list[tuple[int, int, str]]) -> None:
+    """Make several small *edits* ``(start, end, text)`` in *control* as one undo step.
+
+    For a change that touches a few places in a long document -- the line
+    starts of an Indent -- where replacing the whole span would rewrite it as
+    plain text and drop a rich document's headings and bold (review
+    2026-11-09, QUILL Lite 1). Positions are the control's, against the text
+    *before* any edit; they are applied last first so each stays true.
+
+    Grouped by Rich Edit's own edit collection where the control has one; a
+    control without it gets one undo entry per edit rather than a failure.
+    """
+    ordered = sorted(edits, key=lambda edit: edit[0], reverse=True)
+    if len(ordered) == 1:
+        replace_as_one_undo(control, *ordered[0])
+        return
+    with _edit_collection(control):
+        for start, end, text in ordered:
+            replace_as_one_undo(control, start, end, text)
+
+
+class _NoCollection:
+    def __enter__(self) -> None:
+        return None
+
+    def __exit__(self, *_exc: object) -> None:
+        return None
+
+
+def _edit_collection(control: Any) -> Any:
+    """Rich Edit's ``BeginEditCollection`` around a block, or nothing at all."""
+    get_handle = getattr(control, "GetHandle", None)
+    if not callable(get_handle):
+        return _NoCollection()
+    try:
+        from quill.ui.richedit_rtf_surface import _one_undo_step
+
+        return _one_undo_step(int(get_handle()))
+    except Exception:  # noqa: BLE001 - grouping is an improvement, never a gate
+        return _NoCollection()

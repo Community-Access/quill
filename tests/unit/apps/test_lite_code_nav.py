@@ -3,6 +3,11 @@ problem keys (quill/apps/lite_window_code_nav.py), called the way the menu does.
 
 from __future__ import annotations
 
+import sys
+from types import SimpleNamespace
+
+import pytest
+
 from quill.core.lite.parity import COMMAND_EQUIVALENTS
 
 HTML = "<body>\n<header>Top</header>\n<p>one</p>\n<p>two</p>\n<main>\n<h2>Title</h2>\n</main>\n"
@@ -188,6 +193,24 @@ class _FakePane:
         self.focus_calls += 1
 
 
+class _InlineTasks:
+    """The app's task manager, run at once, recording what was submitted."""
+
+    def __init__(self) -> None:
+        self.names: list[str] = []
+
+    def submit(self, name, func, *, on_success=None, on_failure=None, **_kwargs):
+        self.names.append(name)
+        try:
+            result = func()
+        except Exception as error:  # noqa: BLE001 - handed on, as the real one does
+            if on_failure is not None:
+                on_failure(None, error)
+            return
+        if on_success is not None:
+            on_success(None, result)
+
+
 def _with_pane(win) -> _FakePane:
     pane = _FakePane()
     win._problems_pane_widget = pane
@@ -314,10 +337,13 @@ def test_all_open_files_lists_every_window_and_brings_one_forward(lite_window, t
     second.set_document_language("markdown", announce=False)
     second.path = tmp_path / "notes.md"
     first.app.frames.append(second)
+    first.app.task_manager = _InlineTasks()
     pane = _with_pane(first)
     pane.shown = True
     first.cmd_check_this_file()
     first._problems_set_all_files(True)
+    # The other windows are checked on the background runner (review Lite 10).
+    assert first.app.task_manager.names == ["check-this-file"]
     assert len(pane.report.problems) == 2
     assert {p.document for p in pane.report.problems} == {
         first.document_name(),
@@ -334,6 +360,7 @@ def test_all_open_files_lists_every_window_and_brings_one_forward(lite_window, t
 def test_view_problems_files_rows_switch_for_now(lite_window) -> None:
     win = lite_window("<b>open", cursor=0)
     win.set_document_language("html", announce=False)
+    win.app.task_manager = _InlineTasks()
     pane = _with_pane(win)
     chosen: list[bool] = []
     pane.set_all_files = chosen.append
@@ -357,3 +384,84 @@ def test_the_default_comes_from_preferences(lite_window) -> None:
     _with_pane(win)
     win.cmd_toggle_problems_pane()
     assert win._problems_all_files is True
+
+
+# -- review 2026-11-09 -----------------------------------------------------------
+
+
+class _DeferredTasks(_InlineTasks):
+    """Holds each job until the test runs it, as a slow outside tool would."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.pending: list = []
+
+    def submit(self, name, func, *, on_success=None, on_failure=None, **_kwargs):
+        self.names.append(name)
+        self.pending.append((func, on_success))
+
+    def run_all(self) -> None:
+        while self.pending:
+            func, on_success = self.pending.pop(0)
+            on_success(None, func())
+
+
+def test_a_check_that_finishes_after_its_window_closed_is_dropped(lite_window) -> None:
+    """QUILL Lite 3: a late result must not touch a closed window."""
+    win = lite_window("<b>open\n", cursor=0)
+    win.set_document_language("html", announce=False)
+    win.app.task_manager = tasks = _DeferredTasks()
+    win._ls_serves = lambda _path: True  # a server: the check goes to the background
+    win._ls_problems_for = lambda _path, _text: []
+    pane = _with_pane(win)
+    pane.shown = True
+    win.cmd_check_this_file()
+    assert tasks.pending, "the check is out"
+    said = list(win.announcements)
+    win.app.frames.remove(win)  # closing: forget_frame
+    tasks.run_all()
+    assert pane.report is None and win._problems_report is None
+    assert win.announcements == said
+
+
+def test_only_the_window_in_front_speaks_a_quiet_count(lite_window) -> None:
+    """QUILL Lite 6: with the pane in every window, a background one stays quiet."""
+    front = lite_window("<p>ok</p>\n", cursor=0)
+    back = lite_window("<p>ok</p>\n", cursor=0)
+    back.set_document_language("html", announce=False)
+    back.app = front.app
+    front.app.frames.append(back)
+    front.app.active_frame = front
+    pane = _with_pane(back)
+    pane.shown = True
+    back.app.settings.problems_check_after_pause = True
+    back._problems_tick(now=0.0)
+    back.control.SetValue("<b>open\n")
+    back.doc_text.invalidate()
+    back._problems_tick(now=1.0)
+    back._problems_tick(now=10.0)
+    assert pane.report is not None and len(pane.report.problems) == 1, "it still checks"
+    assert back.announcements == [], "and says nothing from behind"
+
+
+def test_closing_a_window_stops_its_problems_pane(lite_window) -> None:
+    """QUILL Lite 2: the pane's timer was left running after the window closed."""
+    win = lite_window("text", cursor=0)
+    pane = _with_pane(win)
+    stopped: list[bool] = []
+    pane.stop = lambda: stopped.append(True)
+    # What stop_timers stops besides, which this stand-in window lacks.
+    win._autosave = SimpleNamespace(Stop=lambda: None)
+    win._stop_status_timer = lambda: None
+    win.stop_timers()
+    assert stopped == [True]
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="UTF-16 positions are wxMSW's")
+def test_next_block_after_an_emoji_lands_in_the_controls_units(lite_window) -> None:
+    """QUILL Lite 7: a code-point target sent to a UTF-16 control lands one short."""
+    text = "\U0001f600 first\n\nsecond para\n"
+    win = lite_window(text, cursor=0)
+    win.set_document_language("markdown", announce=False)
+    win.cmd_next_block()
+    assert win.control.GetInsertionPoint() == text.index("second") + 1

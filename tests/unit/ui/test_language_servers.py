@@ -54,6 +54,7 @@ def pool(monkeypatch) -> _Pool:
     fake = _Pool()
     monkeypatch.setattr(ls_module, "shared_pool", lambda: fake)
     monkeypatch.setattr(ls_module, "resolve_server", lambda spec: object())
+    monkeypatch.setattr(ls_module, "server_present", lambda spec: True)
     return fake
 
 
@@ -164,3 +165,23 @@ def test_status_words_for_the_window() -> None:
     spec = server_for_path("a.json")
     assert ls_module.server_status(spec) in {"bundled with QUILL", "not found"}
     assert _WX and _key and _Popup  # the shared stand-ins this file builds on
+
+
+def test_hints_as_you_type_read_one_character_not_the_text(pool, tmp_path, _quiet) -> None:
+    """Review 2026-11-09, QUILL 9: after every pause, only the character before the caret."""
+
+    class _RangeEditor(_Editor):
+        def GetValue(self) -> str:  # noqa: N802
+            raise AssertionError("the whole text was read")
+
+        def GetRange(self, start: int, end: int) -> str:  # noqa: N802
+            return self.text[start:end]
+
+    host = _LsHost("f(", 2, tmp_path, parameter_hints_as_you_type=True)
+    host.editor = _RangeEditor("fx", 2)
+    host._ls_after_char()
+    assert pool.asked == []
+    host.settings.parameter_hints_as_you_type = False
+    host.editor = _RangeEditor("f(", 2)
+    host._ls_after_char()
+    assert pool.asked == [], "off: nothing is read or asked"

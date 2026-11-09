@@ -31,6 +31,7 @@ from __future__ import annotations
 import os
 import shutil
 import sys
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -44,6 +45,7 @@ __all__ = [
     "language_servers_dir",
     "resolve_server",
     "server_for_path",
+    "server_present",
 ]
 
 
@@ -301,3 +303,34 @@ def resolve_server(spec: ServerSpec) -> ResolvedServer | None:
             ),
         )
     return ResolvedServer(spec, (found, *spec.args))
+
+
+#: How long a "present" or "not found" answer is trusted, in seconds.
+PRESENCE_SECONDS = 30.0
+
+#: server name -> (present, when asked). Plain dict reads and writes, which
+#: are atomic in CPython; a race only means asking the disk once more.
+_PRESENCE: dict[str, tuple[bool, float]] = {}
+
+
+def server_present(spec: ServerSpec, *, now: float | None = None) -> bool:
+    """Whether *spec* can be started here, remembered for :data:`PRESENCE_SECONDS`.
+
+    :func:`resolve_server` looks on disk and on the PATH, and the Problems
+    pane asks twice a second in every window; this asks the disk at most
+    once in half a minute per server (review 2026-11-09, QUILL Lite 11).
+    The Language Servers window still asks :func:`resolve_server` itself, so
+    what it shows is never stale.
+    """
+    now = time.monotonic() if now is None else now
+    known = _PRESENCE.get(spec.name)
+    if known is not None and now - known[1] < PRESENCE_SECONDS:
+        return known[0]
+    present = resolve_server(spec) is not None
+    _PRESENCE[spec.name] = (present, now)
+    return present
+
+
+def forget_server_presence() -> None:
+    """Ask the disk again next time, after the servers' settings change."""
+    _PRESENCE.clear()

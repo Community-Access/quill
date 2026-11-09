@@ -115,3 +115,33 @@ def test_word_prediction_is_quills_command_on_quills_chord() -> None:
     assert row[0] == "&Edit" and row[1] == "&Word Prediction..."
     assert COMMAND_EQUIVALENTS["cmd_word_prediction"] == "edit.word_prediction"
     assert row[2] == DEFAULT_KEYMAP["edit.word_prediction"] == "Ctrl+."
+
+
+def test_a_completion_that_answers_after_the_window_closed_is_dropped(
+    lite_window, tmp_path
+) -> None:
+    """Review 2026-11-09, QUILL Lite 3: no list on a closed window."""
+    from quill.core.lsp.convert import ServerCompletion
+
+    win = _window(lite_window, "count = 1\ncou", 13)
+    win.path = tmp_path / "tool.py"
+    asked: list = []
+    win._ls_completions_ready = lambda _path: True
+    win._ls_request_completions = lambda *args: asked.append(args[-1]) or True
+    win.cmd_word_prediction()
+    assert asked, "the server was asked"
+    said = list(win.announcements)
+    win.app.frames.remove(win)  # closing: forget_frame
+    asked[0]([ServerCompletion("counter", "counter", "variable", "")])
+    assert not win._intellisense_popup.visible
+    assert win.announcements == said
+
+
+def test_enter_after_a_menu_caret_move_inserts_at_the_caret(lite_window) -> None:
+    """Review 2026-11-09, QUILL Lite 8: the context is the caret's now."""
+    win = _window(lite_window, "An ele and ele", 6)
+    win.cmd_word_prediction()
+    chosen = win._intellisense_popup.suggestions[0].inserted_text
+    win.control.SetInsertionPoint(len("An ele and ele"))  # moved by a menu key
+    assert win._word_prediction_key_down(_key(wx.WXK_RETURN))
+    assert win.control.GetValue() == f"An ele and {chosen}"

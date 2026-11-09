@@ -57,7 +57,10 @@ def test_quick_fix_lists_fixes_applies_one_span_and_checks_again() -> None:
     host.tools_check_this_file()
     host._problems_quick_fix(0)
     summary, rows = host.lists[-1]
-    assert summary == "2 quick fixes." and rows == ["Use const", "Ignore"]
+    # Titled Quick Fix and naming the problem it fixes (review QUILL 13).
+    assert host.titles[-1] == "Quick Fix"
+    assert summary == "2 quick fixes for line 1, column 7: Type 'string' is not assignable."
+    assert rows == ["Use const", "Ignore"]
     assert len(host.replaced) == 1, "one span: one undo step"
     assert host.editor.text == "const a = 1;\n"
     assert host.said[-1] == "Fixed: Use const" or host.said[-2] == "Fixed: Use const"
