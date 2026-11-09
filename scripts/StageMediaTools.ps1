@@ -65,7 +65,16 @@ function Stage-QuillMediaTools {
         # CODEX-NOTICE.txt (scripts\fetch_build_deps.py --only codex). OpenAI's
         # Codex app-server, found by quill.core.ai.codex_binary; staged by
         # build_runtime.ps1 into every shared runtime, unmodified.
-        [string]$CodexDir = ""
+        [string]$CodexDir = "",
+        # IntelliSense layer 4 (docs\design\intellisense.md), staged by
+        # build_runtime.ps1 into every shared runtime from the pinned cache
+        # (scripts\fetch_build_deps.py --only nodejs --only language-servers
+        # --only ripgrep): node.exe with NODE-LICENSE.txt; the language servers
+        # (node_modules from a lockfile, each package's licence inside it, and
+        # LANGUAGE-SERVERS-LICENSES.txt); rg.exe with its three licence files.
+        [string]$NodeDir = "",
+        [string]$LanguageServersDir = "",
+        [string]$RipgrepDir = ""
     )
 
     if (-not (Test-Path (Join-Path $RuntimeDist "QuillVilleRuntime.exe"))) {
@@ -140,7 +149,13 @@ function Stage-QuillMediaTools {
             "copilot.exe", "copilot-runtime.exe", "runtime.node",
             ".hostless-runtime-assets-v2", "COPILOT-CLI-LICENSE.txt") },
         @{ Dir = $CodexDir; Name = "codex"; Copy = "files"; Files = @(
-            "codex-app-server.exe", "CODEX-LICENSE.txt", "CODEX-NOTICE.txt") }
+            "codex-app-server.exe", "CODEX-LICENSE.txt", "CODEX-NOTICE.txt") },
+        @{ Dir = $NodeDir; Name = "nodejs"; Copy = "files"; Files = @(
+            "node.exe", "NODE-LICENSE.txt") },
+        @{ Dir = $LanguageServersDir; Name = "language-servers"; Copy = "tree"; Files = @(
+            "package.json", "package-lock.json", "LANGUAGE-SERVERS-LICENSES.txt") },
+        @{ Dir = $RipgrepDir; Name = "ripgrep"; Copy = "files"; Files = @(
+            "rg.exe", "COPYING", "LICENSE-MIT", "UNLICENSE") }
     )
     foreach ($engine in $engines) {
         if (-not $engine.Dir) { continue }

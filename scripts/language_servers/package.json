@@ -1,0 +1,13 @@
+{
+  "name": "quill-language-servers",
+  "private": true,
+  "version": "1.0.0",
+  "description": "The language servers QUILL bundles in its shared runtime (docs/design/intellisense.md, layer 4).",
+  "license": "MIT",
+  "dependencies": {
+    "pyright": "1.1.414",
+    "typescript": "6.0.3",
+    "typescript-language-server": "6.0.2",
+    "vscode-langservers-extracted": "4.10.0"
+  }
+}
