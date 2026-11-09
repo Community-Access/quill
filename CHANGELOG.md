@@ -49,6 +49,27 @@
   4.10.0, typescript-language-server 6.0.2, TypeScript 6.0.3, Pyright 1.1.414,
   Prettier 3.9.10 (for Format Document, coming next) and ripgrep 15.2.0. Their
   licences are in the third-party notices.
+### Say or Type a Command (2026-11-08)
+
+- **Say or Type a Command (F11).** Press F11, type what you want in your own
+  words ("turn it down a bit", "go to line 120", "make this bold") and press
+  Enter. It only does what this window can do right now; anything switched off
+  here is refused with the reason, never swapped for the next nearest thing.
+  Commands that close, clear or stop something ask first. Exiting, signing in,
+  sending, deleting and settings are never done from a sentence, and you are
+  told where they are. When it is not sure, a Did You Mean list shows each
+  choice with its key. "Undo that" and "do that again" work on the box's own
+  last actions. It is free, works offline, and nothing typed leaves the
+  computer.
+- **What Can I Say Here? (Ctrl+Alt+Shift+F1)**, in the Help menu: everything
+  this window can do right now, by menu, with one way of saying each and its
+  key. Enter does the one you choose. Typing "what can I say" in the box opens
+  it too, and "what can I say about bookmarks" narrows it.
+- What Can I Do Here? is now **What Can I Say Here?**, on the same key.
+- **F11 is commands only and never starts or stops dictation.** Speak a
+  Command, which was on F11, is now **Next Phrase Is a Dictation Command** on
+  the Dictation menu, with no key. The command word ("QUILL scratch that")
+  does the same, and dictation keeps Ctrl+F11.
 
 ### One list of every command (2026-11-08)
 

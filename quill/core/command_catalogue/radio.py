@@ -187,7 +187,8 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
         "radio.whats_playing_details",
         "What's Playing",
         "Say what is on the air now",
-        aliases=("whats playing", "what is playing", "now playing", "what's on"),
+        # Not "what's on": that is On Now, the schedule.
+        aliases=("whats playing", "what is playing", "now playing", "what's this"),
         examples=("what's playing", "what station is this", "tell me what is on"),
         risk=_S,
         kind=Kind.READOUT,
@@ -385,6 +386,14 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
         apps=_R,
     ),
     # -- NEVER, named so a refusal can point at them ---------------------------
+    CommandSpec(
+        "app.command_key",
+        "Say or Type a Command",
+        risk=_N,
+        group="Help",
+        where="the Help menu, Alt+F11",
+        apps=_R,
+    ),
     CommandSpec(
         "radio.forget_station_volumes",
         "Forget Station Volumes",

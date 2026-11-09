@@ -7008,18 +7008,18 @@ command instead of dictating: QUILL scratch that, QUILL select the cat.
 It counts only as the first word after a pause, so I told Quill about it
 is written as words. If what follows is not a command, nothing is typed,
 and QUILL type that writes it. Say literal QUILL to write the word
-itself. Leave it empty to give commands with the Speak a Command key
-only. A common word, or one of your own words in My Words and Phrases,
-is refused.</li>
+itself. Leave it empty to give commands with Next Phrase Is a Dictation
+Command only. A common word, or one of your own words in My Words and
+Phrases, is refused.</li>
 <li><code>self.command_required</code>: When this is on, a command said
 on its own, like scratch that, is written as words, and only QUILL
 scratch that is a command. The stop phrase always works. On by default
 in QUILL Transcribe, where a command typed into an email by mistake is
 hard to take back; off in QUILL and QUILL Lite.</li>
-<li><code>self.command_timeout</code>: Say QUILL command mode, or press
-Speak a Command twice, and everything you say is a command until you say
-dictation mode or give no command for this many seconds. A falling tone
-says it has ended. From 5 to 30; 8 by default.</li>
+<li><code>self.command_timeout</code>: Say QUILL command mode, or choose
+Next Phrase Is a Dictation Command twice, and all you say is a command
+until you say dictation mode or give no command for this many seconds. A
+falling tone says it has ended. From 5 to 30; 8 by default.</li>
 <li><code>self.review_first</code>: When this is on, what you dictate
 goes into the Review Dictation window instead of the document or the
 other program. Read it, change it, and press Control Enter to insert it

@@ -18,6 +18,8 @@ HELP_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     # does. The static key list moved to Ctrl+F1 rather than taking F1 from the
     # engine every other QuillVille app answers with.
     ("&Help", "&Help for This Window", "F1", "cmd_context_help", ""),
+    # QUILL's key and id for it (rule 2; command-key.md decision 12). No access key.
+    ("&Help", "What Can I Say Here?", "Ctrl+Alt+Shift+F1", "cmd_what_can_i_say_here", ""),
     # The family key for lessons, and the family window. Ctrl+Alt+F1 is what
     # Radio, Cast, Weather and QUILL answer with (bad.md P3.2).
     ("&Help", "&Tutorials...", "Ctrl+Alt+F1", "cmd_tutorials", ""),

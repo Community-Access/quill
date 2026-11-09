@@ -11,6 +11,7 @@ from __future__ import annotations
 import wx
 
 from quill.apps import radio_audio_menu, radio_go_to, radio_playback_extras, radio_timeshift_menu
+from quill.apps.radio_command_key import append_command_key_rows
 from quill.ui.radio.radio_ai_host import RadioAiMixin
 
 
@@ -374,8 +375,7 @@ class RadioMenuBarMixin(RadioAiMixin):  # Ask and the AI rows (Community)
 
         community_menu = wx.Menu()
         append_calendar_menu(self, community_menu, wx)
-        # No chord in the title (2026-08-25): Alt+C already opens this menu, and
-        # the Ctrl+Alt+A it used to advertise is Bookmark This Moment.
+        # No chord in the title: Alt+C opens it; Ctrl+Alt+A is Bookmark This Moment.
         menu_bar.Append(community_menu, "&Community")
 
         help_menu = wx.Menu()
@@ -386,8 +386,8 @@ class RadioMenuBarMixin(RadioAiMixin):  # Ask and the AI rows (Community)
         )
         help_menu.Append(palette_id, self._menu_label("Command &Palette...", "app.command_palette"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
-        # The Keyboard Shortcuts editor and the Global Hotkeys manager open the
-        # same already-accessible dialogs QUILL uses (KeymapEditorMixin /
+        append_command_key_rows(self, help_menu, wx)  # F11 and Ctrl+Alt+Shift+F1
+        # QUILL's Keyboard Shortcuts and Global Hotkeys dialogs (KeymapEditorMixin,
         # GlobalHotkeysMixin), scoped to this app's own commands.
         shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
         help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...\tCtrl+Alt+K")

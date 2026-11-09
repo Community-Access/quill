@@ -109,16 +109,16 @@ def _command_word_section(
             f'"{word} scratch that". It counts only as the first word after a pause, '
             f'so "I told {word} about it" is written as words.'
             if prefix
-            else "No command word is set, so give commands with the Speak a Command key."
+            else "No command word is set, so give commands with Next Phrase Is a Dictation Command."
         ),
         "Every command in this list works after the command word. If what follows it is "
         f'not a command, nothing is typed: you hear "Not a command", and "{word} type '
         'that" writes it after all.',
         f'Say "literal {word}" to write the word itself.',
         strict,
-        "Speak a Command (F11 in QUILL and QUILL Lite, and in QUILL Transcribe the "
-        "Command Key you choose) does the same without the word: the next thing you say "
-        "is a command. Press it twice for command mode.",
+        "Next Phrase Is a Dictation Command, on the Dictation menu, does the same without "
+        "the word: the next thing you say is a dictation command. Choose it twice for "
+        "command mode. It has no key: F11 is the Command Key, which never dictates.",
     ):
         lines.append(("- " + sentence) if md else sentence)
     if md:

@@ -13,6 +13,12 @@ new in 1.0.0, including what the first test builds (builds 1 and 2) already
 did. Build 3 adds Help > What's New and keeps everything else. The changes are
 grouped by area; most say where in the user guide to read more.
 
+### F11 (2026-11-08)
+
+- Speak a Command is now **Next Phrase Is a Dictation Command**, with no key.
+  In QUILL and QUILL Lite, F11 became the Command Key, which never touches
+  dictation, so the window that matches their keys gives it up too.
+
 ### AI menu (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.
@@ -172,8 +178,8 @@ grouped by area; most say where in the user guide to read more.
 - **Command Key and Speak a Command.** An optional system-wide key, empty until
   you choose it in setup or in **File > Command Key...** (Ctrl+Alt+Shift+K):
   press it in the field and the next thing you say is a command; twice,
-  command mode. **Dictation > Speak a Command** (F11, as in QUILL and QUILL
-  Lite) does the same from the window. Two new sounds play when QUILL hears the
+  command mode. **Dictation > Next Phrase Is a Dictation Command** (then
+  Speak a Command, on F11) does the same from the window. Two new sounds play when QUILL hears the
   command word and when command mode ends.
 - **Spell an address with pauses.** While spelling, each phrase joins the
   letters you spelled just before it, with no space: "QUILL start spelling",

@@ -1577,8 +1577,8 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "help.what_can_i_do_here",
-            "What Can I Do Here?",
-            self.show_context_help,
+            "What Can I Say Here?",
+            self.show_what_can_i_say_here,
             self._binding_for("help.what_can_i_do_here"),
         )
         self.commands.register(
@@ -1743,6 +1743,7 @@ class CommandRegistryMixin:
         )
         self._register_open_documents_command()  # main_frame_open_documents
         self._register_typing_assist_commands()  # main_frame_typing_assist
+        self._register_command_key_commands()  # main_frame_command_key
         self.commands.register(
             "tools.search_in_files",
             "Search in Files...",

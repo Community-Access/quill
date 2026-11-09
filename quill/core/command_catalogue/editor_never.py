@@ -15,6 +15,13 @@ _N = Risk.NEVER
 
 NEVER_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
+        "app.command_key",
+        "Say or Type a Command",
+        risk=_N,
+        group="Tools",
+        where="F11",
+    ),
+    CommandSpec(
         "tools.language_servers",
         "Language Servers",
         aliases=("language servers", "code servers", "intellisense settings"),

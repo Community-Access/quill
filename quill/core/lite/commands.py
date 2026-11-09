@@ -860,6 +860,8 @@ COMMANDS: list[CommandRow] = [
     # why Preferences and Customize Features are here rather than in View.
     # First in Tools, as in QUILL. No access key: all its letters are taken (GATE-14).
     ("&Tools", "Command Palette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
+    # The Command Key, F11 in every family app (command-key.md 9.1). No access key either.
+    ("&Tools", "Say or Type a Command...", "F11", "cmd_command_key", ""),
     ("&Tools", "", "", "", "sep"),
     ("&Tools", "&Spelling", "", "", "sub"),
     *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
