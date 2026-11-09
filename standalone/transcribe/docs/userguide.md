@@ -416,8 +416,8 @@ and it is on in QUILL Transcribe; QUILL and QUILL Lite leave it off.
   in: press it, then say the command. Press it twice for command mode, and
   once more to go back. If dictation is off, it starts dictation in that field
   first. In the QUILL Transcribe window, **Next Phrase Is a Dictation Command**
-  on the Dictation menu does the same. It has no key: in QUILL and QUILL Lite,
-  F11 is now the Command Key, which never touches dictation.
+  (Ctrl+Alt+Shift+Q, the key QUILL and QUILL Lite use) does the same. In QUILL
+  and QUILL Lite, F11 is now the Command Key, which never touches dictation.
 
 The command word, strict mode, and how long command mode waits are in
 **More Dictation Settings** (see "Dictation Settings").
@@ -1290,7 +1290,8 @@ that model.
 Where QUILL Transcribe has the same dictation command as the editors, it has the
 same key: Ctrl+F11 starts and stops, Alt+Shift+F6 opens Dictation Settings,
 Alt+Shift+F10 opens My Words and Phrases, Ctrl+Shift+F11 switches the language,
-Shift+F11 opens Recent Phrases, Shift+F4 is Review
+Shift+F11 opens Recent Phrases, Ctrl+Alt+Shift+Q is Next Phrase Is a Dictation
+Command, Shift+F4 is Review
 Dictation, Alt+F9 is Dictation Status, and Shift+F5 transcribes a recording. The keys
 from version 1.0 (Ctrl+D, Ctrl+, and Ctrl+O) still work. These work in the
 QUILL Transcribe window; from other programs, use your start and stop key.

@@ -151,7 +151,8 @@ def test_the_ai_conversation_window_dictates_in_both() -> None:
 
 
 def test_the_command_word_and_its_key_are_one_thing_in_all_three() -> None:
-    """D-1 (2026-10-15): Speak a Command is F11 in QUILL, QUILL Lite and QUILL
+    """D-1 (2026-10-15): Next Phrase Is a Dictation Command (Speak a Command until
+    2026-11-08, when F11 became the Command Key) is one key in QUILL, QUILL Lite and QUILL
     Transcribe's window, from one handler in the editors; the command word's
     three settings are shared fields; the phrases come from one table."""
     from quill.apps.lite_window_dictation import DocumentDictationMixin
@@ -161,9 +162,9 @@ def test_the_command_word_and_its_key_are_one_thing_in_all_three() -> None:
     from quill.ui.main_frame_windows_dictation import WindowsDictationCommandsMixin
     from quill.ui.windows_dictation_command_key import DictationCommandKeyMixin
 
-    assert _lite_dictation_rows()["cmd_dictation_command"] == "F11"
+    assert _lite_dictation_rows()["cmd_dictation_command"] == "Ctrl+Alt+Shift+Q"
     assert COMMAND_EQUIVALENTS["cmd_dictation_command"] == "tools.windows_dictation_command"
-    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == "F11"
+    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == "Ctrl+Alt+Shift+Q"
     assert SHARED_COMMANDS["tools.windows_dictation_command"] == "speak_a_command"
     for adapter in (DocumentDictationMixin, WindowsDictationCommandsMixin):
         assert adapter.cmd_dictation_command is DictationCommandKeyMixin.cmd_dictation_command

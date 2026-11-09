@@ -612,11 +612,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.windows_dictation_switch_language": "Ctrl+Shift+F11",
     "tools.windows_dictation_live_transcript": "Ctrl+Alt+Shift+PageDown",
     "tools.windows_dictation_context": "Ctrl+Alt+Shift+PageUp",
-    # Next Phrase Is a Dictation Command: no key (command-key.md decision 5). F11
-    # is the Command Key now, commands only, and never touches dictation; the
-    # command word ("QUILL scratch that") does this job, and a key beside F11
-    # would bring back the confusion between commanding and dictating.
-    "tools.windows_dictation_command": "",
+    # Next Phrase Is a Dictation Command (command-key.md decision 5): off F11,
+    # which is the Command Key now and never touches dictation, and nowhere
+    # near it, so commanding and dictating do not share a neighbourhood. Q for
+    # the command word, QUILL; one of two letter chords free in the whole family.
+    "tools.windows_dictation_command": "Ctrl+Alt+Shift+Q",
     # D-2: free in both (rule 2). Every F11 chord and Ctrl+Alt+Shift+F11 (a
     # QuillVille launcher) are taken, and Ctrl+Alt+F4 is one missed Control
     # from Alt+F4; F4 alone is unbound in both, so a missed Shift does nothing.

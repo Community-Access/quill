@@ -129,9 +129,6 @@ NOT_EDITOR_COMMANDS: dict[str, str] = {
 }
 
 UNBOUND_WITH_REASON: dict[str, str] = {
-    "tools.windows_dictation_command": "Deliberately vacated: F11 is the Command Key now "
-    "(command-key.md decision 5). The command word reaches the same dictation phrases, and "
-    "a key beside F11 would mix commanding and dictating up again.",
     "app.repeat_last_announcement": "The user binds it. Which key a listener wants "
     "for 'say that again' depends on their reader's own layer keys, and guessing "
     "wrong puts it under something they use constantly.",

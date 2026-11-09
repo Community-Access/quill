@@ -19,8 +19,8 @@
   key. Enter does the one you choose. Typing "what can I say" in the box opens
   it too, and "what can I say about bookmarks" narrows it.
 - **F11 is commands only and never starts or stops dictation.** Speak a
-  Command, which was on F11, is now **Next Phrase Is a Dictation Command** on
-  the Dictation menu, with no key. Dictation keeps Ctrl+F11.
+  Command, which was on F11, is now **Next Phrase Is a Dictation Command**, on
+  Ctrl+Alt+Shift+Q (Q for QUILL). Dictation keeps Ctrl+F11.
 - QUILL Lite runs QUILL's Command Key, from the same shared code, on the same
   keys.
 

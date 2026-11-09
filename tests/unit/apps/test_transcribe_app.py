@@ -800,12 +800,12 @@ def test_the_command_key_starts_dictation_with_one_command_armed(host: Host) -> 
     assert host.world.typed == ["edit-1:PANCAKES"]  # all caps on, from the first command
 
 
-def test_speak_a_command_from_the_window_is_the_editors_f11(host: Host) -> None:
+def test_next_phrase_is_a_command_from_the_window_is_the_editors_key(host: Host) -> None:
     from quill.core.keymap import DEFAULT_KEYMAP
     from quill.core.transcribe.parity import SHARED_COMMANDS
 
     assert SHARED_COMMANDS["tools.windows_dictation_command"] == "speak_a_command"
-    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == "F11"
+    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == "Ctrl+Alt+Shift+Q"
     host.speak_a_command()
     assert host._dictation.command_mode_text == "Waiting for a command"
     host.toggle_dictation()  # stop

@@ -417,6 +417,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+PageDown** | Start or Stop Live Transcript |
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document... |
 | **Alt+F9** | Dictation Status |
+| **Ctrl+Alt+Shift+Q** | Next Phrase Is a Dictation Command |
 | **Shift+F4** | Review Dictation... |
 
 ### Change Case (in Tools)

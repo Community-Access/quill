@@ -208,7 +208,9 @@ def _lite_host(window: Any) -> WxCommandKeyHost:
     sync = getattr(window, "_sync_enabled_items", None)
     if callable(sync):
         sync()
-    items = getattr(window, "_menu_items", {})
+    items = getattr(window, "_menu_items", None)
+    if not isinstance(items, dict):
+        items = {}  # a window built without menus dims nothing
 
     def probe(spec: CommandSpec) -> str:
         return _dimmed(items.get(spec.id.removeprefix("lite.")), spec)

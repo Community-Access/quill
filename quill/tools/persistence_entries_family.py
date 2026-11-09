@@ -16,4 +16,7 @@ FAMILY_ENTRIES: dict[str, str] = {
     # Saved find-and-replace jobs, in each editor's own data folder: lists the
     # user made, whose shape only ever grows (both editors, 2026-11-07).
     "core/replace_jobs.py::save_replace_jobs": "content",
+    # The Command Key's own small file (command-key.json): whether the one-time
+    # hint has been said, and the answer to the Jev consent question.
+    "ui/command_key_hosts.py::_save_state": "marker",
 }

@@ -134,7 +134,7 @@ A few more things to know:
   Enter on one to do it. "What can I say about bookmarks" shows only those.
 - **F11 never starts, stops or pauses dictation.** Dictation keeps
   **Ctrl+F11**. The dictation command that used to be on F11 is now **Next
-  Phrase Is a Dictation Command**, on the Dictation menu, with no key.
+  Phrase Is a Dictation Command**, on **Ctrl+Alt+Shift+Q**.
 
 It is free, it works without an internet connection, and nothing you type in
 the box leaves your computer. The page "What you can say in each app"

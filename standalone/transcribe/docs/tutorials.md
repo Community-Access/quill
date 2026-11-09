@@ -82,6 +82,7 @@ Say QUILL before a command so it is never typed as words, and use command mode f
    - You should hear: A rising tone, then "Scratched" and your words.
 
 3. **Give a command with the key.** Choose Next Phrase Is a Dictation Command, then say a command without the command word, such as caps on. Chosen twice, it starts command mode.
+   - Keys: Ctrl+Alt+Shift+Q
    - You should hear: "Caps on."
    - Worth knowing: Say dictation mode, or wait, to go back to dictating.
 
