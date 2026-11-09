@@ -363,7 +363,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Ask what you can do here",
                 body=(
-                    "What Can I Do Here answers for the document you are in, "
+                    "What Can I Say Here answers for the document you are in, "
                     "which is a different question from what is this control: "
                     "it is about the work rather than the widget."
                 ),

@@ -8,6 +8,15 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Say or Type a Command (2026-11-08)
+
+- **Say or Type a Command (Alt+F11)**, in the Help menu: type what you want
+  ("a lot louder", "play favourite 3", "what song is this") and press Enter.
+  It only does what Quill Radio can do right now, and recording asks first.
+  It is Alt+F11 here rather than F11 because F11 is Video > Full Screen.
+- **What Can I Say Here? (Ctrl+Alt+Shift+F1)**, in the Help menu: everything
+  you can ask for right now, by menu, with an example and a key each.
+
 ### Ideas from BlindRadio
 
 Seven things arrive together, each an idea from BlindRadio, a screen-reader-first

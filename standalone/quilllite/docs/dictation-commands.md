@@ -19,7 +19,7 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 - Every command in this list works after the command word. If what follows it is not a command, nothing is typed: you hear "Not a command", and "QUILL type that" writes it after all.
 - Say "literal QUILL" to write the word itself.
 - With "Commands only after the command word" switched on in More Dictation Settings (it is on in QUILL Transcribe), a command said on its own is written as words, except the stop phrase.
-- Speak a Command (F11 in QUILL and QUILL Lite, and in QUILL Transcribe the Command Key you choose) does the same without the word: the next thing you say is a command. Press it twice for command mode.
+- Next Phrase Is a Dictation Command, on the Dictation menu, does the same without the word: the next thing you say is a dictation command. Choose it twice for command mode. It has no key: F11 is the Command Key, which never dictates.
 
 | Say, after the command word | What happens |
 |---|---|

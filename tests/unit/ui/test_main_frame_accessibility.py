@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
+
+import pytest
 
 from quill.core.a11y_regions import RegionTracker
 from quill.platform.sr_announce import (
@@ -10,6 +13,27 @@ from quill.platform.sr_announce import (
     transcript_entries,
 )
 from quill.ui.main_frame import MainFrame
+
+
+@pytest.fixture(autouse=True)
+def _no_leftover_announce_handler() -> Iterator[None]:
+    """Start with no screen-reader handler, and put back whatever was there.
+
+    ``MainFrame.__init__`` installs its own ``_announce`` as the process-wide
+    handler (``sr_announce.set_announce_handler``), and a test elsewhere that
+    built a frame leaves it installed. When such a test ran earlier on the same
+    worker, every line these tests announce was recorded twice: once here and
+    once by the leftover frame passing it back through ``sr_announce``. Seen
+    on 2026-11-09, when new test files moved which files share a CI shard.
+    """
+    from quill.platform.windows import sr_announce
+
+    previous = sr_announce._handler
+    sr_announce._handler = None
+    try:
+        yield
+    finally:
+        sr_announce._handler = previous
 
 
 @dataclass

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>What you can say in each app</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="what-you-can-say-in-each-app">What you can say in each app</h1>
+<p>This page is made from the command catalogue, the one list every
+QUILL family app reads to understand what you type or say to it. Do not
+edit it by hand; run
+<code>python -m quill.tools.build_command_catalogue_reference --write</code>.</p>
+<p>Each command has a name, its key when it has one, what it does, and
+some of the ways you might ask for it. The Command Palette
+(Ctrl+Shift+P) finds a command by these words as well as by its name.
+Commands that change or lose something ask first.</p>
+<h2 id="quill">QUILL</h2>
+<p>52 commands can be asked for in a sentence here.</p>
+<h3 id="quill-edit">QUILL: Edit</h3>
+<ul>
+<li><strong>Find (Ctrl+F).</strong> Find words in the document. Say:
+“find a word”; “search the document”; “look for something”.</li>
+<li><strong>Find Next (F3).</strong> Find the next match of what you
+last searched for. Say: “find the next one”; “next match please”;
+“search again”.</li>
+<li><strong>Redo (Ctrl+Y).</strong> Put back the change you just undid.
+Say: “redo that change”; “put the change back”; “redo what I
+undid”.</li>
+<li><strong>Say Selection (Ctrl+Shift+Y).</strong> Read out what is
+selected. Say: “what have I selected”; “read me the selected text”; “say
+the selection”.</li>
+<li><strong>Select All.</strong> Select the whole document. Say: “select
+the whole document”; “select everything”; “highlight all the text”.</li>
+<li><strong>Undo (Ctrl+Z).</strong> Take back the last change. Say:
+“undo the last change”; “oops take that back”; “revert my last
+edit”.</li>
+</ul>
+<h3 id="quill-file">QUILL: File</h3>
+<ul>
+<li><strong>Close Document (Ctrl+W).</strong> Close this document. It
+asks before it does it. Say: “close this document”; “I’m done with this
+file”; “close it”.</li>
+<li><strong>New Document (Ctrl+N).</strong> Start a new blank document.
+Say: “start a new document”; “give me a blank page”; “new file
+please”.</li>
+<li><strong>Open (Ctrl+O).</strong> Open a document from a folder. Say:
+“open a document”; “open a file from my folders”; “load a file”.</li>
+<li><strong>Print (Ctrl+P).</strong> Print this document. Say: “print
+this”; “print the document”; “send it to the printer”.</li>
+<li><strong>Recent Documents (Alt+Shift+0).</strong> Open a document you
+had open recently. Say: “open my last document”; “show my recent files”;
+“what was I working on”.</li>
+<li><strong>Save (Ctrl+S).</strong> Save this document. Say: “save
+this”; “save my document”; “keep my changes”.</li>
+<li><strong>Save All.</strong> Save every open document. Say: “save all
+my documents”; “save every file”; “save everything that is open”.</li>
+<li><strong>Save As (Ctrl+Shift+S).</strong> Save a copy of this
+document under a new name or in another place. Say: “save this under a
+new name”; “save a copy”; “save it somewhere else”.</li>
+</ul>
+<h3 id="quill-format">QUILL: Format</h3>
+<ul>
+<li><strong>Bigger Text (Ctrl+Shift+.).</strong> Make the selected
+text’s font bigger in the document itself. Say: “make the text bigger”;
+“bigger font”; “increase the font size”.</li>
+<li><strong>Bold (Ctrl+B).</strong> Make the selected text bold (rich
+documents only). Say: “make this bold”; “bold the selection”; “put it in
+bold”.</li>
+<li><strong>Bulleted List.</strong> Start a bulleted list. Say: “start a
+bulleted list”; “make a list with bullets”; “add bullet points”.</li>
+<li><strong>Italic (Ctrl+I).</strong> Make the selected text italic
+(rich documents only). Say: “make this italic”; “put it in italics”;
+“italicise the selection”.</li>
+<li><strong>Lower Case (Ctrl+Shift+K).</strong> Change the selection to
+small letters. Say: “make this lower case”; “no capitals in this bit”;
+“change it to small letters”.</li>
+<li><strong>Numbered List.</strong> Start a numbered list. Say: “start a
+numbered list”; “make a list with numbers”; “number these lines”.</li>
+<li><strong>Sentence Case (Ctrl+Alt+Shift+U).</strong> Capitalise only
+the first word of each sentence. Say: “make this sentence case”; “fix
+the capitals like a sentence”; “sentence case please”.</li>
+<li><strong>Smaller Text (Ctrl+Shift+,).</strong> Make the selected
+text’s font smaller in the document itself. Say: “make the text
+smaller”; “smaller font”; “decrease the font size”.</li>
+<li><strong>Title Case (Ctrl+Shift+T).</strong> Capitalise each main
+word of the selection. Say: “make this title case”; “capitalise each
+word”; “turn it into a title”.</li>
+<li><strong>Upper Case (Ctrl+Shift+U).</strong> Change the selection to
+capital letters. Say: “make this all capitals”; “change it to upper
+case”; “shout this part”.</li>
+</ul>
+<h3 id="quill-help">QUILL: Help</h3>
+<ul>
+<li><strong>Command Palette (Ctrl+Shift+P).</strong> Show every command,
+to search them. Say: “show me every command”; “open the command
+palette”; “list all the commands”.</li>
+<li><strong>What Can I Say Here (Ctrl+Alt+Shift+F1).</strong> List what
+you can say or do in this window. Say: “what can I do in this window”;
+“list what I can say here”; “what are my options”.</li>
+</ul>
+<h3 id="quill-navigate">QUILL: Navigate</h3>
+<ul>
+<li><strong>Clear Bookmarks (Ctrl+Alt+B).</strong> Remove every bookmark
+in this document. It asks before it does it. Say: “clear all my
+bookmarks”; “remove every bookmark”; “get rid of the bookmarks”.</li>
+<li><strong>Go to Anything (Ctrl+Alt+Shift+A).</strong> Move to a
+heading, bookmark or line by name. Say: “go to anything”; “jump to a
+heading by name”; “take me somewhere”.</li>
+<li><strong>Go to Line (Ctrl+G).</strong> Move to a line by its number.
+Say: “go to line 120”; “jump to line 5”; “take me to line 40”.</li>
+<li><strong>Headings List (Ctrl+Shift+O).</strong> Show the headings, to
+move to one. Say: “show me the headings”; “list the headings”; “open the
+outline”.</li>
+<li><strong>Next Bookmark (F2).</strong> Move to the next bookmark. Say:
+“go to the next bookmark”; “jump to my next bookmark”; “next bookmark
+please”.</li>
+<li><strong>Next Heading (Ctrl+Alt+H).</strong> Move to the next
+heading. Say: “go to the next heading”; “jump to the next section”;
+“next heading please”.</li>
+<li><strong>Parameter Hints.</strong> Say which argument of the call at
+the cursor you are on, and its signature. Say: “which parameter am I
+on”; “what arguments does this take”; “say the signature”.</li>
+<li><strong>Previous Heading (Ctrl+Alt+Shift+H).</strong> Move to the
+previous heading. Say: “go back a heading”; “jump to the previous
+section”; “previous heading please”.</li>
+<li><strong>Say Time and Date (Alt+Shift+Space).</strong> Say the time
+and the date. Say: “what time is it”; “what is today’s date”; “tell me
+the time”.</li>
+<li><strong>Set Bookmark (Ctrl+Shift+B).</strong> Bookmark this spot.
+Say: “bookmark this spot”; “put a bookmark here”; “remember this
+place”.</li>
+<li><strong>Where Am I (Ctrl+Shift+Grave, Q).</strong> Say where you are
+and the state of the document. Say: “where am I”; “what is the state of
+this document”; “tell me where I am”.</li>
+</ul>
+<h3 id="quill-tools">QUILL: Tools</h3>
+<ul>
+<li><strong>Next Misspelling (Ctrl+F7).</strong> Move to the next
+misspelled word. Say: “go to the next spelling mistake”; “find the next
+typo”; “next misspelled word”.</li>
+<li><strong>Read Aloud (Ctrl+Shift+Grave, R).</strong> Read the document
+aloud, or pause reading. Say: “read this to me”; “read the document out
+loud”; “pause the reading”.</li>
+<li><strong>Sounds On or Off (Alt+Shift+M).</strong> Turn QUILL’s sounds
+on or off. Say: “turn the sounds off”; “stop the beeps”; “sounds back
+on”.</li>
+<li><strong>Spelling (F7).</strong> Check the spelling of the document.
+Say: “check my spelling”; “run the spell checker”; “are there any
+spelling mistakes”.</li>
+<li><strong>Stop Reading Aloud (Ctrl+Shift+Grave, Shift+R).</strong>
+Stop reading the document aloud. Say: “stop reading to me”; “stop
+reading aloud”; “that is enough reading”.</li>
+<li><strong>Word Count (Ctrl+Shift+G).</strong> Say how many words the
+document has. Say: “how many words is this”; “how long is this
+document”; “count the words”.</li>
+<li><strong>Word Summary (Ctrl+Alt+Shift+[).</strong> The full
+statistics: words, sentences, paragraphs and more. Say: “give me the
+word summary”; “how many sentences are there”; “document
+statistics”.</li>
+</ul>
+<h3 id="quill-view">QUILL: View</h3>
+<ul>
+<li><strong>Check Spelling As I Type (Ctrl+Alt+F7).</strong> Check
+spelling while you type, or stop. Say: “check my spelling as I type”;
+“stop checking spelling while I type”; “live spelling on”.</li>
+<li><strong>Meeting Mode (Ctrl+Shift+Grave, Shift+M).</strong> Stay
+quiet while you are in a meeting. Say: “I’m in a meeting”; “turn meeting
+mode on”; “meeting mode off”.</li>
+<li><strong>Normal Zoom (Ctrl+0).</strong> Show the text at its normal
+size on screen. Say: “reset the zoom”; “back to normal size”; “normal
+zoom please”.</li>
+<li><strong>Quiet Mode (Ctrl+Shift+Grave, Shift+Q).</strong> Make QUILL
+say less as you work, or talk as usual again. Say: “talk less”; “be less
+chatty”; “turn quiet mode on”.</li>
+<li><strong>Say Headings As I Move (Ctrl+Alt+F3).</strong> Say each
+heading you move onto, or stop. Say: “tell me the headings as I move”;
+“stop announcing headings”; “announce headings”.</li>
+<li><strong>Word Wrap (Alt+Z).</strong> Wrap long lines to the window,
+or stop wrapping. Say: “turn word wrap on”; “stop wrapping lines”; “wrap
+the long lines”.</li>
+<li><strong>Zoom In (Ctrl+=).</strong> Magnify the view on screen,
+without changing the document. Say: “zoom in”; “make it larger on
+screen”; “magnify the text”.</li>
+<li><strong>Zoom Out (Ctrl+-).</strong> Make the view on screen smaller,
+without changing the document. Say: “zoom out”; “make it smaller on
+screen”; “less magnified”.</li>
+</ul>
+<h3 id="quill-only-from-its-menu-or-key">QUILL: only from its menu or
+key</h3>
+<p>These are never done from a sentence, because they send, delete, sign
+in, change settings or leave the app. Each is still on its menu and its
+key.</p>
+<ul>
+<li>Check for Updates: Help, Check for Updates.</li>
+<li>Compare Braille Surfaces: Help, Troubleshooting.</li>
+<li>Copy a Diagnostic Summary: Help, Troubleshooting.</li>
+<li>Copy to the Next Tray Slot: Edit, Copy Tray.</li>
+<li>Dark Mode: View, Dark Mode.</li>
+<li>Exit: File, Exit.</li>
+<li>Language Servers: Navigate, Code, Language Servers.</li>
+<li>Open a Web Address: File, Open a Web Address.</li>
+<li>Preferences Hub: Tools, Preferences Hub.</li>
+<li>Replace All: Edit, Replace.</li>
+<li>Report the Editor Surface: Help, Troubleshooting.</li>
+<li>Restore a Backup: File, Restore a Backup.</li>
+<li>Save to GitHub: the GitHub menu.</li>
+<li>Save to Remote: File, Save to Remote.</li>
+<li>Say or Type a Command: F11.</li>
+<li>Send to Tray: View, Send to Tray.</li>
+<li>Settings: Tools, Settings.</li>
+<li>Speech and Braille Self-Test: Help, Troubleshooting.</li>
+<li>Where Am I, in Detail: Navigate, Where Am I.</li>
+</ul>
+<h2 id="quill-lite">QUILL Lite</h2>
+<p>43 commands can be asked for in a sentence here.</p>
+<h3 id="quill-lite-edit">QUILL Lite: Edit</h3>
+<ul>
+<li><strong>Find (Ctrl+F).</strong> Find words in the document. Say:
+“find a word”; “search the document”; “look for something”.</li>
+<li><strong>Find Next (F3).</strong> Find the next match of what you
+last searched for. Say: “find the next one”; “next match please”;
+“search again”.</li>
+<li><strong>Redo (Ctrl+Y).</strong> Put back the change you just undid.
+Say: “redo that change”; “put the change back”; “redo what I
+undid”.</li>
+<li><strong>Say Selection (Ctrl+Shift+Y).</strong> Read out what is
+selected. Say: “what have I selected”; “read me the selected text”; “say
+the selection”.</li>
+<li><strong>Undo (Ctrl+Z).</strong> Take back the last change. Say:
+“undo the last change”; “oops take that back”; “revert my last
+edit”.</li>
+</ul>
+<h3 id="quill-lite-file">QUILL Lite: File</h3>
+<ul>
+<li><strong>Close Document (Ctrl+W).</strong> Close this document. It
+asks before it does it. Say: “close this document”; “I’m done with this
+file”; “close it”.</li>
+<li><strong>New Document (Ctrl+N).</strong> Start a new blank document.
+Say: “start a new document”; “give me a blank page”; “new file
+please”.</li>
+<li><strong>Open (Ctrl+O).</strong> Open a document from a folder. Say:
+“open a document”; “open a file from my folders”; “load a file”.</li>
+<li><strong>Print (Ctrl+P).</strong> Print this document. Say: “print
+this”; “print the document”; “send it to the printer”.</li>
+<li><strong>Recent Documents (Alt+Shift+0).</strong> Open a document you
+had open recently. Say: “open my last document”; “show my recent files”;
+“what was I working on”.</li>
+<li><strong>Save (Ctrl+S).</strong> Save this document. Say: “save
+this”; “save my document”; “keep my changes”.</li>
+<li><strong>Save As (Ctrl+Shift+S).</strong> Save a copy of this
+document under a new name or in another place. Say: “save this under a
+new name”; “save a copy”; “save it somewhere else”.</li>
+</ul>
+<h3 id="quill-lite-format">QUILL Lite: Format</h3>
+<ul>
+<li><strong>Bigger Text (Ctrl+Shift+.).</strong> Make the selected
+text’s font bigger in the document itself. Say: “make the text bigger”;
+“bigger font”; “increase the font size”.</li>
+<li><strong>Bold (Ctrl+B).</strong> Make the selected text bold (rich
+documents only). Say: “make this bold”; “bold the selection”; “put it in
+bold”.</li>
+<li><strong>Italic (Ctrl+I).</strong> Make the selected text italic
+(rich documents only). Say: “make this italic”; “put it in italics”;
+“italicise the selection”.</li>
+<li><strong>Lower Case (Ctrl+Shift+K).</strong> Change the selection to
+small letters. Say: “make this lower case”; “no capitals in this bit”;
+“change it to small letters”.</li>
+<li><strong>Sentence Case (Ctrl+Alt+Shift+U).</strong> Capitalise only
+the first word of each sentence. Say: “make this sentence case”; “fix
+the capitals like a sentence”; “sentence case please”.</li>
+<li><strong>Smaller Text (Ctrl+Shift+,).</strong> Make the selected
+text’s font smaller in the document itself. Say: “make the text
+smaller”; “smaller font”; “decrease the font size”.</li>
+<li><strong>Title Case (Ctrl+Shift+T).</strong> Capitalise each main
+word of the selection. Say: “make this title case”; “capitalise each
+word”; “turn it into a title”.</li>
+<li><strong>Upper Case (Ctrl+Shift+U).</strong> Change the selection to
+capital letters. Say: “make this all capitals”; “change it to upper
+case”; “shout this part”.</li>
+</ul>
+<h3 id="quill-lite-help">QUILL Lite: Help</h3>
+<ul>
+<li><strong>Command Palette (Ctrl+Shift+P).</strong> Show every command,
+to search them. Say: “show me every command”; “open the command
+palette”; “list all the commands”.</li>
+<li><strong>What Can I Say Here (Ctrl+Alt+Shift+F1).</strong> List what
+you can say or do in this window. Say: “what can I do in this window”;
+“list what I can say here”; “what are my options”.</li>
+</ul>
+<h3 id="quill-lite-navigate">QUILL Lite: Navigate</h3>
+<ul>
+<li><strong>Clear Bookmarks (Ctrl+Alt+B).</strong> Remove every bookmark
+in this document. It asks before it does it. Say: “clear all my
+bookmarks”; “remove every bookmark”; “get rid of the bookmarks”.</li>
+<li><strong>Go to Anything (Ctrl+Alt+Shift+A).</strong> Move to a
+heading, bookmark or line by name. Say: “go to anything”; “jump to a
+heading by name”; “take me somewhere”.</li>
+<li><strong>Go to Line (Ctrl+G).</strong> Move to a line by its number.
+Say: “go to line 120”; “jump to line 5”; “take me to line 40”.</li>
+<li><strong>Headings List (Ctrl+Alt+L).</strong> Show the headings, to
+move to one. Say: “show me the headings”; “list the headings”; “open the
+outline”.</li>
+<li><strong>Next Bookmark (F2).</strong> Move to the next bookmark. Say:
+“go to the next bookmark”; “jump to my next bookmark”; “next bookmark
+please”.</li>
+<li><strong>Next Heading (Ctrl+Alt+H).</strong> Move to the next
+heading. Say: “go to the next heading”; “jump to the next section”;
+“next heading please”.</li>
+<li><strong>Parameter Hints.</strong> Say which argument of the call at
+the cursor you are on, and its signature. Say: “which parameter am I
+on”; “what arguments does this take”; “say the signature”.</li>
+<li><strong>Previous Heading (Ctrl+Alt+Shift+H).</strong> Move to the
+previous heading. Say: “go back a heading”; “jump to the previous
+section”; “previous heading please”.</li>
+<li><strong>Say Time and Date (Alt+Shift+Space).</strong> Say the time
+and the date. Say: “what time is it”; “what is today’s date”; “tell me
+the time”.</li>
+<li><strong>Set Bookmark (Ctrl+Shift+B).</strong> Bookmark this spot.
+Say: “bookmark this spot”; “put a bookmark here”; “remember this
+place”.</li>
+</ul>
+<h3 id="quill-lite-tools">QUILL Lite: Tools</h3>
+<ul>
+<li><strong>Next Misspelling (Ctrl+F7).</strong> Move to the next
+misspelled word. Say: “go to the next spelling mistake”; “find the next
+typo”; “next misspelled word”.</li>
+<li><strong>Sounds On or Off (Alt+Shift+M).</strong> Turn QUILL’s sounds
+on or off. Say: “turn the sounds off”; “stop the beeps”; “sounds back
+on”.</li>
+<li><strong>Spelling (F7).</strong> Check the spelling of the document.
+Say: “check my spelling”; “run the spell checker”; “are there any
+spelling mistakes”.</li>
+<li><strong>Word Count (Ctrl+Shift+G).</strong> Say how many words the
+document has. Say: “how many words is this”; “how long is this
+document”; “count the words”.</li>
+<li><strong>Word Summary (Ctrl+Alt+Shift+[).</strong> The full
+statistics: words, sentences, paragraphs and more. Say: “give me the
+word summary”; “how many sentences are there”; “document
+statistics”.</li>
+</ul>
+<h3 id="quill-lite-view">QUILL Lite: View</h3>
+<ul>
+<li><strong>Check Spelling As I Type (Ctrl+Alt+F7).</strong> Check
+spelling while you type, or stop. Say: “check my spelling as I type”;
+“stop checking spelling while I type”; “live spelling on”.</li>
+<li><strong>Normal Zoom (Ctrl+0).</strong> Show the text at its normal
+size on screen. Say: “reset the zoom”; “back to normal size”; “normal
+zoom please”.</li>
+<li><strong>Say Headings As I Move (Ctrl+Alt+F3).</strong> Say each
+heading you move onto, or stop. Say: “tell me the headings as I move”;
+“stop announcing headings”; “announce headings”.</li>
+<li><strong>Word Wrap (Alt+Z).</strong> Wrap long lines to the window,
+or stop wrapping. Say: “turn word wrap on”; “stop wrapping lines”; “wrap
+the long lines”.</li>
+<li><strong>Zoom In (Ctrl+=).</strong> Magnify the view on screen,
+without changing the document. Say: “zoom in”; “make it larger on
+screen”; “magnify the text”.</li>
+<li><strong>Zoom Out (Ctrl+-).</strong> Make the view on screen smaller,
+without changing the document. Say: “zoom out”; “make it smaller on
+screen”; “less magnified”.</li>
+</ul>
+<h3 id="quill-lite-only-from-its-menu-or-key">QUILL Lite: only from its
+menu or key</h3>
+<p>These are never done from a sentence, because they send, delete, sign
+in, change settings or leave the app. Each is still on its menu and its
+key.</p>
+<ul>
+<li>Check for Updates: Help, Check for Updates.</li>
+<li>Copy to the Next Tray Slot: Edit, Copy Tray.</li>
+<li>Dark Mode: View, Dark Mode.</li>
+<li>Exit: File, Exit.</li>
+<li>Language Servers: Navigate, Code, Language Servers.</li>
+<li>Open a Web Address: File, Open a Web Address.</li>
+<li>Say or Type a Command: F11.</li>
+<li>Settings: Tools, Settings.</li>
+</ul>
+<h2 id="quill-radio">Quill Radio</h2>
+<p>30 commands can be asked for in a sentence here.</p>
+<h3 id="quill-radio-edit">Quill Radio: Edit</h3>
+<ul>
+<li><strong>Undo (Ctrl+Z).</strong> Undo the last thing you did. Say:
+“undo the last thing”; “put it back how it was”; “take that back”.</li>
+</ul>
+<h3 id="quill-radio-favourites">Quill Radio: Favourites</h3>
+<ul>
+<li><strong>Favourite This Station (Ctrl+Shift+F).</strong> Save the
+station on air to your favourites list, or take it off. Say: “add this
+station to my favourites”; “make this a favourite”; “take this off my
+favourites”.</li>
+<li><strong>Play a Favourite (Alt+Shift+F).</strong> Play one of your
+favourite stations, by number or by name. Say: “play favourite 3”; “play
+my first favourite”; “put on a favourite station”.</li>
+</ul>
+<h3 id="quill-radio-playback">Quill Radio: Playback</h3>
+<ul>
+<li><strong>Fast Forward (Ctrl+Shift+Right).</strong> Go forward in what
+is playing. Say: “skip ahead 30 seconds”; “go forward a bit”; “fast
+forward”.</li>
+<li><strong>Faster (Ctrl+Shift+Up).</strong> Play faster. Say: “play it
+faster”; “speed it up a bit”; “a lot faster”.</li>
+<li><strong>Jump to Live (Ctrl+Shift+L).</strong> Go back to the live
+broadcast. Say: “go back to live”; “jump to the live broadcast”; “catch
+up to live”.</li>
+<li><strong>Normal Speed (Ctrl+Shift+0).</strong> Play at normal speed
+again. Say: “back to normal speed”; “reset the speed”; “play at normal
+speed”.</li>
+<li><strong>Play or Pause (Ctrl+P).</strong> Start the radio, or pause
+it. Say: “play the radio”; “pause it”; “carry on playing”.</li>
+<li><strong>Play the Last Station (Ctrl+L).</strong> Play the station
+you listened to last. Say: “play the last station”; “go back to the
+station I had on”; “play what I was listening to”.</li>
+<li><strong>Rewind (Ctrl+Shift+Left).</strong> Go back in what is
+playing. Say: “skip back 30 seconds”; “go back a bit”; “rewind”.</li>
+<li><strong>Slower (Ctrl+Shift+Down).</strong> Play slower. Say: “play
+it slower”; “slow it down a bit”; “a lot slower”.</li>
+<li><strong>Stop (Ctrl+.).</strong> Stop the radio. Say: “stop the
+radio”; “turn the radio off”; “stop playing”.</li>
+</ul>
+<h3 id="quill-radio-recording">Quill Radio: Recording</h3>
+<ul>
+<li><strong>Record a Station (Ctrl+Alt+R).</strong> Set up a recording
+of a station you pick from a list. It asks before it does it. Say:
+“record a station”; “record the jazz station”; “set up a
+recording”.</li>
+<li><strong>Record or Stop Recording (Ctrl+R).</strong> Record what is
+playing now, or stop recording it. It asks before it does it. Say:
+“record this”; “start recording”; “stop the recording”.</li>
+<li><strong>Recordings (Ctrl+Shift+R).</strong> Show your recordings.
+Say: “show my recordings”; “open the recordings”; “where are my
+recordings”.</li>
+<li><strong>Stop Every Recording (Ctrl+Alt+X).</strong> Stop every
+recording that is running. It asks before it does it. Say: “stop all the
+recordings”; “stop every recording”; “end all recordings”.</li>
+</ul>
+<h3 id="quill-radio-song">Quill Radio: Song</h3>
+<ul>
+<li><strong>Identify Song (Ctrl+K).</strong> Find out what song this is.
+Say: “what song is this”; “identify this song”; “who sings this”.</li>
+<li><strong>Lyrics (Ctrl+Alt+B).</strong> Show the words of the song
+playing. Say: “show me the lyrics”; “what are the words to this”;
+“lyrics please”.</li>
+<li><strong>Say Song Titles (Ctrl+Alt+T).</strong> Say each song’s title
+when it starts, or stop. Say: “tell me each song title”; “stop
+announcing the songs”; “announce titles”.</li>
+<li><strong>Song History (Ctrl+Shift+H).</strong> List the songs that
+played earlier. Say: “what played earlier”; “show the song history”;
+“what was the last song”.</li>
+<li><strong>What’s Playing (Ctrl+T).</strong> Say the song and station
+playing right now. Say: “what’s playing”; “what station is this”; “tell
+me what is on”.</li>
+</ul>
+<h3 id="quill-radio-stations">Quill Radio: Stations</h3>
+<ul>
+<li><strong>Browse Stations (Ctrl+B).</strong> Look through the stations
+to find one. Say: “browse the stations”; “find me a station”; “show me
+the stations”.</li>
+<li><strong>Find Streams on a Website (Ctrl+Alt+S).</strong> Find the
+radio streams on a web page. Say: “find the streams on a website”; “get
+a station from a web page”; “look for streams on a site”.</li>
+<li><strong>On Now (Ctrl+Alt+H).</strong> Show the programme schedule:
+the shows on the stations now and later. Say: “what’s on right now”;
+“show what is on now”; “what programmes are on”.</li>
+</ul>
+<h3 id="quill-radio-timers">Quill Radio: Timers</h3>
+<ul>
+<li><strong>Sleep Timer (Ctrl+Shift+Z).</strong> Stop the radio after a
+set time, such as in half an hour. Say: “sleep in 20 minutes”; “stop
+playing in an hour”; “set a sleep timer”.</li>
+<li><strong>Wake Timer (Ctrl+Alt+Z).</strong> Start the radio at a time
+you choose. Say: “wake me at 7”; “set a wake timer”; “start the radio in
+the morning”.</li>
+</ul>
+<h3 id="quill-radio-volume">Quill Radio: Volume</h3>
+<ul>
+<li><strong>Mute (Ctrl+M).</strong> Mute the radio, or unmute it. Say:
+“mute the radio”; “unmute it”; “silence it for a moment”.</li>
+<li><strong>Volume Boost (Ctrl+Shift+B).</strong> Make a quiet station
+louder than full volume allows, or stop boosting. Say: “boost this quiet
+station”; “turn the boost on”; “stop boosting the volume”.</li>
+<li><strong>Volume Down (Ctrl+Down).</strong> Make the radio quieter.
+Say: “turn it down a bit”; “much quieter”; “it’s too loud”.</li>
+<li><strong>Volume Up (Ctrl+Up).</strong> Make the radio louder. Say:
+“turn it up a bit”; “much louder”; “I can’t hear it”.</li>
+</ul>
+<h3 id="quill-radio-only-from-its-menu-or-key">Quill Radio: only from
+its menu or key</h3>
+<p>These are never done from a sentence, because they send, delete, sign
+in, change settings or leave the app. Each is still on its menu and its
+key.</p>
+<ul>
+<li>ChatGPT Account: the AI menu, Accounts and Usage.</li>
+<li>Download Preferences: the Stations menu.</li>
+<li>Export Setup: the File menu.</li>
+<li>Forget Station Volumes: the Volume menu.</li>
+<li>Import Setup: the File menu.</li>
+<li>Say or Type a Command: the Help menu, Alt+F11.</li>
+<li>Suggest a Station: the AI menu.</li>
+<li>Update the Station Catalogue: the Stations menu.</li>
+</ul>
+</main>
+</body>
+</html>

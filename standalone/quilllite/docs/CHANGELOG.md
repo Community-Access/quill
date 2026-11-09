@@ -2,6 +2,13 @@
 
 ## 2.0.0
 
+### Built on wxPython 4.3.2 (2026-11-09)
+
+- QUILL Lite now runs on wxPython 4.3.2 (wxWidgets 3.3.4), like QUILL. The
+  change is underneath: a control whose spoken name used to be set by a
+  workaround now carries it the way Windows expects, so your screen reader
+  reads it straight from the control.
+
 ### Problems, Word Prediction and Indent: fixes (2026-11-09)
 
 - Indent and Outdent, from the Tools menu or the Tab key, change only the
@@ -34,6 +41,28 @@
   be checked too), Quick Fix applies their fixes, and Navigate > Code >
   Parameter Hints says which argument you're on. Navigate > Code > Language
   Servers... switches each one and each use. Nothing uses the internet.
+
+### Say or Type a Command (2026-11-08)
+
+- **Say or Type a Command (F11).** Press F11, type what you want in your own
+  words ("turn it down a bit", "go to line 120", "make this bold") and press
+  Enter. It only does what this window can do right now; anything switched off
+  here is refused with the reason, never swapped for the next nearest thing.
+  Commands that close, clear or stop something ask first. Exiting, signing in,
+  sending, deleting and settings are never done from a sentence, and you are
+  told where they are. When it is not sure, a Did You Mean list shows each
+  choice with its key. "Undo that" and "do that again" work on the box's own
+  last actions. It is free, works offline, and nothing typed leaves the
+  computer.
+- **What Can I Say Here? (Ctrl+Alt+Shift+F1)**, in the Help menu: everything
+  this window can do right now, by menu, with one way of saying each and its
+  key. Enter does the one you choose. Typing "what can I say" in the box opens
+  it too, and "what can I say about bookmarks" narrows it.
+- **F11 is commands only and never starts or stops dictation.** Speak a
+  Command, which was on F11, is now **Next Phrase Is a Dictation Command** on
+  the Dictation menu, with no key. Dictation keeps Ctrl+F11.
+- QUILL Lite runs QUILL's Command Key, from the same shared code, on the same
+  keys.
 
 ### GitHub Workbench Mode and Clone Repository (2026-11-08)
 

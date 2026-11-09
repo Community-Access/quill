@@ -49,6 +49,9 @@ class CommandRegistry:
         #: so surfaces like the palette can *display and speak the reason*
         #: before the user ever tries to run the command.
         self._availability_probe: Callable[[str], str] | None = None
+        #: Per-command probes (:meth:`set_command_probe`), asked after the
+        #: registry-wide one.
+        self._command_probes: dict[str, Callable[[], str]] = {}
         #: Optional answer to a command the Read-Only Guard stopped part-way
         #: (``DocumentReadOnlyError``), so every entry point -- keys, palette,
         #: hotkeys, voice -- says one sentence instead of raising (2026-10-16).
@@ -196,20 +199,48 @@ class CommandRegistry:
         self._require_owner_thread()
         self._availability_probe = probe
 
+    def set_command_probe(self, command_id: str, probe: Callable[[], str] | None) -> None:
+        """Install (or clear) one command's own "can it run here, now?" probe.
+
+        The registry-wide probe answers for feature locks and Safe Mode; this
+        one answers for the command itself -- Bold in a plain text document, the
+        next favourite when there are none. It returns "" when the command can
+        run, or the sentence that says why not. Side-effect-free, like the
+        registry-wide probe, because the Command Key asks it for every candidate
+        before choosing one (docs/design/command-key.md 5.1).
+        """
+        self._require_owner_thread()
+        if probe is None:
+            self._command_probes.pop(command_id, None)
+        else:
+            self._command_probes[command_id] = probe
+
     def unavailable_reason(self, command_id: str) -> str:
         """Why *command_id* cannot run right now, as a user-facing sentence.
 
         Returns "" when the command is runnable, unknown, or no probe is
-        installed. Probe failures are suppressed. Like every registry method,
-        this must be called on the creating thread.
+        installed. The registry-wide probe is asked first, then the command's
+        own. Probe failures are suppressed. Like every registry method, this
+        must be called on the creating thread.
         """
         self._require_owner_thread()
-        if self._availability_probe is None or command_id not in self._commands:
+        if command_id not in self._commands:
             return ""
-        try:
-            return str(self._availability_probe(command_id) or "")
-        except Exception:  # noqa: BLE001 - a probe failure means "no reason known"
-            return ""
+        probes: list[Callable[[], str]] = []
+        if self._availability_probe is not None:
+            general = self._availability_probe
+            probes.append(lambda: general(command_id))
+        own = self._command_probes.get(command_id)
+        if own is not None:
+            probes.append(own)
+        for probe in probes:
+            try:
+                reason = str(probe() or "")
+            except Exception:  # noqa: BLE001 - a probe failure means "no reason known"
+                reason = ""
+            if reason:
+                return reason
+        return ""
 
     def run(self, command_id: str) -> None:
         self._require_owner_thread()

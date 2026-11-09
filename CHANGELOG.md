@@ -2,6 +2,45 @@
 
 ## 1.0.0
 
+### Say or Type a Command can ask your own AI (2026-11-09)
+
+- Answer "Use My Own AI Instead" when Say or Type a Command first asks, and a
+  request the matcher on your computer cannot settle goes to the AI you chose
+  in Choose Your AI: your ChatGPT plan, GitHub Copilot, Codex or your own key.
+  It is asked one question, to pick one of this window's commands or none, and
+  you hear "Asking your AI." while it thinks. Nothing goes to Jev.
+- With "Use Jev", your own AI is the next step when Jev cannot answer, and the
+  one line you hear says so: "Jev's daily limit is reached, so I'm asking your
+  AI."
+- Your AI's answer is checked against the list. It runs a command straight
+  away only when it agrees with the matcher's best guess and the command is
+  safe; otherwise you get the Did You Mean list. An answer that takes more than
+  eight seconds is dropped, and the matcher's answer stands.
+- QUILL's free AI is not asked: there, "Use Jev" is the way.
+
+### Jev through Community Access's service (2026-11-09)
+
+- Say or Type a Command can now use Jev without a TypeSafe key of your own.
+  When this computer is signed in to QUILL's free AI, a request the matcher on
+  your computer cannot settle goes to Community Access's service, which holds
+  the TypeSafe key and asks Jev for you. You are still asked first, once, and
+  "Match on This Computer Only" stays an equal answer.
+- Only the words you typed, the app's name and the ids of the commands this
+  window can do right now leave the computer. The service keeps its own copy of
+  each command's description, so it cannot be asked anything else, and it keeps
+  counts, never what you typed.
+- The service caps use (per computer and per network a minute, everyone a day,
+  and a monthly budget). When a cap is reached you hear one line, once, and the
+  Command Key matches on your computer until the next day.
+- Your own TypeSafe key, if you stored one, is still used first.
+
+### Built on wxPython 4.3.2 (2026-11-09)
+
+- QUILL now runs on wxPython 4.3.2 (wxWidgets 3.3.4). The change is
+  underneath: a control whose spoken name used to be set by a workaround now
+  carries it the way Windows expects, so your screen reader reads it straight
+  from the control.
+
 ### Problems, Word Prediction and the code keys: fixes (2026-11-09)
 
 - An emoji early in a file no longer throws Next Problem, Go To on a Problems
@@ -42,6 +81,62 @@
   4.10.0, typescript-language-server 6.0.2, TypeScript 6.0.3, Pyright 1.1.414,
   Prettier 3.9.10 (for Format Document, coming next) and ripgrep 15.2.0. Their
   licences are in the third-party notices.
+
+### Jev, for commands the quick matcher cannot settle (2026-11-08)
+
+- Say or Type a Command can ask Jev, TypeSafe's decision model, to pick from
+  this window's commands when the matcher on your computer is not sure. It
+  sends only the words you typed, this app's name and the names of the
+  commands it can do right now; never document text, file names, stations,
+  places or accounts. TypeSafe keep the requests they receive, and say they do
+  not train on them.
+- You are asked once, with three equal answers: Use Jev, Use My Own AI
+  Instead, or Match on This Computer Only.
+- For now Jev is offered only where a TypeSafe key is stored in Windows
+  Credential Manager. Everyone else keeps the free, offline Command Key
+  exactly as it is.
+- When Jev cannot answer (offline, a limit, credit spent), you hear one line,
+  once, and the Command Key matches on your computer.
+
+### Say or Type a Command (2026-11-08)
+
+- **Say or Type a Command (F11).** Press F11, type what you want in your own
+  words ("turn it down a bit", "go to line 120", "make this bold") and press
+  Enter. It only does what this window can do right now; anything switched off
+  here is refused with the reason, never swapped for the next nearest thing.
+  Commands that close, clear or stop something ask first. Exiting, signing in,
+  sending, deleting and settings are never done from a sentence, and you are
+  told where they are. When it is not sure, a Did You Mean list shows each
+  choice with its key. "Undo that" and "do that again" work on the box's own
+  last actions. It is free, works offline, and nothing typed leaves the
+  computer.
+- **What Can I Say Here? (Ctrl+Alt+Shift+F1)**, in the Help menu: everything
+  this window can do right now, by menu, with one way of saying each and its
+  key. Enter does the one you choose. Typing "what can I say" in the box opens
+  it too, and "what can I say about bookmarks" narrows it.
+- What Can I Do Here? is now **What Can I Say Here?**, on the same key.
+- **F11 is commands only and never starts or stops dictation.** Speak a
+  Command, which was on F11, is now **Next Phrase Is a Dictation Command** on
+  the Dictation menu, with no key. The command word ("QUILL scratch that")
+  does the same, and dictation keeps Ctrl+F11.
+
+### One list of every command (2026-11-08)
+
+- The QUILL family now has one command catalogue: each command's spoken name,
+  the other words people use for it, a few example sentences, what it does,
+  and whether it is safe to do without asking. The Command Palette, the
+  offline voice commands, Key Describer and the AI agents' list of commands
+  they may run all read it, instead of four lists of their own.
+- The Command Palette finds a few more commands by the words people use:
+  "search" finds Find, "commands" finds the palette itself, and the voice
+  commands' phrases ("save my work", "count words") work there too. Every
+  word it found before still finds the same command.
+- What you can say in each app is a new page, `docs/command-catalogue.md`,
+  made from the catalogue so it cannot go out of date: QUILL, QUILL Lite and
+  Quill Radio, with each command's key and example sentences.
+- Nothing new can be run by a sentence yet. A command with no reviewed row is
+  never offered to one, and a new command fails the build until somebody
+  writes its row.
 
 ### GitHub Workbench Mode and Clone Repository (2026-11-08)
 

@@ -45,8 +45,11 @@ def test_normalize() -> None:
 
 def test_aliases_are_all_in_allowlist() -> None:
     # Security invariant: every aliased command is in the safe-tool allowlist.
-    for command_id in vc._ALIASES:
-        assert command_id in SAFE_TOOL_IDS
+    from quill.core.command_catalogue import rows_for_app
+
+    for spec in rows_for_app("quill"):
+        if spec.agent_ok:
+            assert spec.id in SAFE_TOOL_IDS
 
 
 def test_build_only_includes_registered_allowlisted() -> None:

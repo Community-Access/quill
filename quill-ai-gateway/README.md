@@ -238,6 +238,35 @@ override. The per-search charge is reckoned at `WEB_SEARCH_CALL_COST_USD`
 ($0.03): it reaches each usage event and the global budget, but not the
 person's own monthly cost ceiling, which the search cap bounds instead.
 
+## Jev for the Command Key (`POST /v1/decide`)
+
+QUILL's Say or Type a Command asks Jev, TypeSafe's decision model, to pick one
+of a window's commands when the matcher on the person's computer is not sure
+(QUILL's `docs/design/command-key.md`, sections 7.6 to 7.9). This service holds
+the TypeSafe key, so it never ships in an app.
+
+- **Turning it on:** put `TYPESAFE_API_KEY=...` in `.env` beside
+  `OPENAI_API_KEY`, then `docker compose -f docker-compose.prod.yml up -d web`.
+  Without the key the route answers `disabled` and QUILL matches on the
+  computer. To switch it off without removing the key, set
+  `GATEWAY_JEV_ENABLED=0`, or add a `command_decide` row, off, on the Features
+  page.
+- **What a caller can send:** the app, the catalogue version, the ids of the
+  commands it can run now and a small state (the words typed, at most 300
+  characters). The descriptions and questions come from this service's own copy,
+  `app/jev_catalogue/<version>.json`, regenerated in QUILL with
+  `python -m quill.tools.build_jev_gateway_catalogue --write` whenever the
+  catalogue version moves. An unknown version, app or id is refused, so the
+  route cannot be used to ask anything else.
+- **Caps** (`app/config.py`, from the environment): 20 a minute per device,
+  60 a minute per address, 20,000 a day for everyone, and a monthly dollar
+  ceiling, `GATEWAY_JEV_MONTHLY_USD_CEILING` (default $25), reckoned at
+  $0.042 per million input tokens. Over any of them the answer is
+  `limit_reached`, and QUILL stops asking until the next day.
+- **Nothing typed is kept.** Redis holds daily counts only, under
+  `jev:stats:<day>:*`: requests, answers, refusals by reason, input tokens
+  and total latency.
+
 ## Deployment
 
 Recommended: **the same server already running GLOW**, using the exact

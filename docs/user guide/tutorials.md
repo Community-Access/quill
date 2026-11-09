@@ -206,7 +206,7 @@ F1, the echo of what QUILL just said, why a thing is unavailable, and the undo t
    - Keys: F1
    - You should hear: The window's purpose, then the control's own help.
 
-2. **Ask what you can do here.** What Can I Do Here answers for the document you are in, which is a different question from what is this control: it is about the work rather than the widget.
+2. **Ask what you can do here.** What Can I Say Here answers for the document you are in, which is a different question from what is this control: it is about the work rather than the widget.
    - Keys: Ctrl+Alt+Shift+F1
    - You should hear: What this kind of document supports, in context.
 

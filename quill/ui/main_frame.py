@@ -326,6 +326,7 @@ from quill.ui.main_frame_classic_editor import ClassicEditorMixin
 from quill.ui.main_frame_clip_library import ClipLibraryMixin
 from quill.ui.main_frame_close_others import CloseOthersMixin
 from quill.ui.main_frame_code_nav import CodeNavMixin
+from quill.ui.main_frame_command_key import CommandKeyMixin
 from quill.ui.main_frame_commands import CommandRegistryMixin
 from quill.ui.main_frame_compare import CompareMixin
 from quill.ui.main_frame_convert_file import ConvertFileMixin
@@ -605,6 +606,7 @@ class MainFrame(
     ExtendSelectionMixin,
     SelectionSpanMixin,
     RichParagraphMixin,
+    CommandKeyMixin,
     TypingModesMixin,
     PersistentUndoMixin,
     AnnounceCommandsMixin,
@@ -4186,15 +4188,12 @@ class MainFrame(
         budget test guards. The statusbar catches up from the deferred edit
         pass and the coalesced caret refresh instead.
 
-        # #615: Surface the QUILL version in the window title so screen
-        # readers announcing the focused window (JAWS Insert+T, NVDA+T,
-        # Narrator Caps+H) read the version along with the document
-        # name. The Ctrl+JAWSKey+V path lives in the OS layer and reads
-        # from the launcher's VersionInfo; for the portable build
-        # there is no versioned launcher, so JAWS reports only
-        # "Version" with no number. The window title is the only
-        # in-process channel we control, and it is reachable from
-        # every screen reader.
+        # #615: Surface the QUILL version in the window title so screen readers announcing the
+        # focused window (JAWS Insert+T, NVDA+T, Narrator Caps+H) read the version along with the
+        # document name. The Ctrl+JAWSKey+V path lives in the OS layer and reads from the launcher's
+        # VersionInfo; for the portable build there is no versioned launcher, so JAWS reports only
+        # "Version" with no number. The window title is the only in-process channel we control, and
+        # it is reachable from every screen reader.
 
         Both native calls are skipped when the strings are unchanged, which is
         every keystroke after the first: retitling the frame fires

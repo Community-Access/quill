@@ -128,10 +128,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         # window the same key is Add Media Files, so Ctrl+O twice gets you from
         # anywhere to the file picker.
         "radio.local_media": "Ctrl+O",
-        # Edit > Dictate Here (dict.md D-16), as in QUILL Cast: Ctrl+F11, the
-        # editors' Start Dictation key (family rule 2). Plain F11 is Full Screen
-        # in the video window; Ctrl+F11 was free.
+        # Edit > Dictate Here (dict.md D-16): Ctrl+F11, the editors' Start Dictation key (rule 2).
         "app.dictate_here": "Ctrl+F11",
+        # Video > Full Screen keeps F11 (decision 2); beside it, never a dictation key.
+        "app.command_key": "Alt+F11",
         # QUILL Lineups (2026-10-13): Ctrl+U, "lineUp". Ctrl+Alt+U was the first
         # choice and is Help > Check for Updates here; Ctrl+U was one of the few
         # chords free on both this bar and Cast's, where the same command keeps

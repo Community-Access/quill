@@ -77,6 +77,10 @@ services:
       - GATEWAY_PUBLIC_BASE_URL=${GATEWAY_PUBLIC_BASE_URL:?set GATEWAY_PUBLIC_BASE_URL in .env}
       - GATEWAY_OPENAI_MODEL=${GATEWAY_OPENAI_MODEL:-gpt-6-luna}
       - GATEWAY_ALERT_WEBHOOK_URL=${GATEWAY_ALERT_WEBHOOK_URL:-}
+      # Jev for QUILL's Command Key (POST /v1/decide). Empty key: the route answers disabled.
+      - TYPESAFE_API_KEY=${TYPESAFE_API_KEY:-}
+      - GATEWAY_JEV_MONTHLY_USD_CEILING=${GATEWAY_JEV_MONTHLY_USD_CEILING:-25}
+      - GATEWAY_JEV_DAILY_REQUEST_CAP=${GATEWAY_JEV_DAILY_REQUEST_CAP:-20000}
     depends_on:
       postgres:
         condition: service_healthy
