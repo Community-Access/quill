@@ -15,6 +15,14 @@ _N = Risk.NEVER
 
 NEVER_ROWS: tuple[CommandSpec, ...] = (
     CommandSpec(
+        "tools.language_servers",
+        "Language Servers",
+        aliases=("language servers", "code servers", "intellisense settings"),
+        risk=_N,
+        group="Navigate",
+        where="Navigate, Code, Language Servers",
+    ),
+    CommandSpec(
         "app.exit",
         "Exit",
         aliases=("quit", "leave", "shut down"),
