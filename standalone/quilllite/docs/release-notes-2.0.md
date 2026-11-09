@@ -24,7 +24,8 @@ yet. Here is what is new.
 - **Paste a copied file's text**, and **save find-and-replace jobs** to run
   again.
 - **Say or Type a Command.** Press F11 and type what you want in your own
-  words; it does only what this window can do, free and offline.
+  words; it does only what this window can do, free and offline. If you say
+  yes, Jev or your own AI helps when the matcher is not sure.
 - **The Command Palette in every profile**, reaching every command and menu
   item, now in Tools as in QUILL.
 - **Words.** A thesaurus that finds the word you are really on, a dictionary
@@ -500,7 +501,9 @@ You Mean list shows each choice with its key, so next time you can press the
 key yourself. "Undo that" and "do that again" work on the box's own last
 actions.
 
-It is free, it works offline, and nothing you type leaves your computer.
+The matcher that does this is free, works offline, and keeps everything you
+type on your computer. Jev and your own AI, below, are only ever asked if you
+say yes.
 
 **What Can I Say Here?** (**Ctrl+Alt+Shift+F1**, in the Help menu) lists
 everything this window can do right now, menu by menu, with one way of saying
@@ -510,6 +513,39 @@ replaces What Can I Do Here?, on the same key.
 
 > **A note from QUILLBee:** Commanding and dictating never share a key.
 > **F11** only ever runs commands. Dictation keeps **Ctrl+F11**.
+
+
+### Jev, and your own AI, when the matcher is not sure
+
+The first time either could help, QUILL Lite asks once, with three equal
+answers: **Use Jev**, **Use My Own AI Instead**, or **Match on This Computer
+Only**. Escape means Match on This Computer Only.
+
+- **Jev** is TypeSafe's decision model. If this computer is signed in to
+  QUILL's free AI, the request goes to Community Access's service, which holds
+  the key and asks Jev for you; no key of your own is needed. If you stored
+  your own TypeSafe key, QUILL Lite asks TypeSafe directly.
+- **Only what is needed is sent:** the words you typed or said, the app's name
+  and the ids of the commands this window can do right now. Never document
+  text, file names, places or accounts. The service keeps counts, never what
+  you typed. TypeSafe keep the requests they receive, and say they do not
+  train on them.
+- **Your own AI** is the one you chose in Choose Your AI (**Ctrl+4**): your
+  ChatGPT plan, GitHub Copilot, Codex or your own key. With Use My Own AI
+  Instead, it is asked one question, to pick one of this window's commands or
+  none, and nothing goes to Jev. With Use Jev, it is the next step when Jev
+  cannot answer. QUILL's free AI is never asked this question.
+- **Nothing runs on a guess.** Jev's pick runs only when it is clearly sure.
+  Your AI's pick runs only when it agrees with the matcher and the command is
+  safe. Otherwise you get the Did You Mean list, and anything that closes,
+  clears or stops something still asks first.
+- **When they cannot answer**, because you are offline, a limit is reached or
+  credit is spent, you hear one line, once, and the matcher carries on.
+
+Jev was tested live on 9 November 2026: 2,883 requests with no errors, most
+answers within a quarter of a second, and 211 of 232 everyday requests right
+against the matcher's 154 alone. The full report is
+[Jev, tested live](https://www.quillforall.org/docs/jev-live-test-2026-11-09.html).
 
 ---
 
@@ -1629,6 +1665,10 @@ it takes over, and QUILL does the same.
 
 ## Things that work better now
 
+- **Built on wxPython 4.3.2.** QUILL Lite now runs on wxPython 4.3.2
+  (wxWidgets 3.3.4). Controls whose spoken names used to be set by a
+  workaround now carry them the way Windows expects, so your screen reader
+  reads them straight from the control.
 - Portable copies now start from a folder whose name has a space in it.
 - **Coming back with Alt+Tab** puts your focus in your document, even when
   Windows is slow about it. It leaves the Find box and menus alone.

@@ -252,6 +252,27 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="unreleased---2026-11-07">[Unreleased] - 2026-11-07</h2>
+<h3 id="say-or-type-a-command-can-ask-jev-2026-11-09">Say or Type a
+Command can ask Jev (2026-11-09)</h3>
+<ul>
+<li>When the matcher on your computer is not sure what you meant, Say or
+Type a Command (<strong>Alt+F11</strong>) can ask Jev, TypeSafe’s
+decision model, to pick one of Quill Radio’s commands. You are asked
+once first, and “Match on This Computer Only” is an equal answer. Jev is
+offered when this computer is signed in to QUILL’s free AI (in QUILL or
+QUILL Lite), through Community Access’s service, or when you stored your
+own TypeSafe key.</li>
+<li>Only the words you typed, the app’s name and the ids of the commands
+Quill Radio can do right now are sent; never stations, places or
+accounts. The service keeps counts, never what you typed.</li>
+<li>Clearer descriptions for the commands Jev mixed up in the live test:
+Volume Boost, What’s Playing and On Now, Record a Station and Record,
+the Sleep Timer and Favourite.</li>
+<li>Known: “turn the radio off in half an hour” still stops the radio,
+and “save this station to my list” opens Browse, because the matcher is
+sure of itself and never asks Jev. Use the Sleep Timer and Favourite
+This Station by name or key for now.</li>
+</ul>
 <h3 id="say-or-type-a-command-2026-11-08">Say or Type a Command
 (2026-11-08)</h3>
 <ul>
@@ -674,8 +695,11 @@ in it.</strong> A portable copy unpacked to a folder such as
 open file …pythonw.exe”. The QuillVille launcher passed its own path to
 Python unquoted, so Python read it as two words. The same mistake split
 a file opened from File Explorer out of a folder with a space in its
-name, which Play with Quill Radio depends on. Every 3.0 release had it
-(<code>quill/native/launcher/cmdline.c</code>,
+name, which Play with Quill Radio depends on. With Quill Radio as the
+default media player, pressing Enter on a song whose name has spaces
+said it could not find several files, one per word (reported on
+QUILLVille by Chris Nova, 2026-11-09, on 3.0.4). Every 3.0 release had
+it (<code>quill/native/launcher/cmdline.c</code>,
 <code>quill/native/launcher/launcher.c</code>).</li>
 <li><strong>The portable copy has the Windows Media engine too.</strong>
 A stick copy of an early 3.1 build offered only “Windows Media

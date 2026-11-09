@@ -8,6 +8,25 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Say or Type a Command can ask Jev (2026-11-09)
+
+- When the matcher on your computer is not sure what you meant, Say or Type a
+  Command (**Alt+F11**) can ask Jev, TypeSafe's decision model, to pick one of
+  Quill Radio's commands. You are asked once first, and "Match on This
+  Computer Only" is an equal answer. Jev is offered when this computer is
+  signed in to QUILL's free AI (in QUILL or QUILL Lite), through Community
+  Access's service, or when you stored your own TypeSafe key.
+- Only the words you typed, the app's name and the ids of the commands Quill
+  Radio can do right now are sent; never stations, places or accounts. The
+  service keeps counts, never what you typed.
+- Clearer descriptions for the commands Jev mixed up in the live test: Volume
+  Boost, What's Playing and On Now, Record a Station and Record, the Sleep
+  Timer and Favourite.
+- Known: "turn the radio off in half an hour" still stops the radio, and "save
+  this station to my list" opens Browse, because the matcher is sure of itself
+  and never asks Jev. Use the Sleep Timer and Favourite This Station by name or
+  key for now.
+
 ### Say or Type a Command (2026-11-08)
 
 - **Say or Type a Command (Alt+F11)**, in the Help menu: type what you want
@@ -283,7 +302,7 @@ than by build. A date in brackets says when a change arrived.
   runtimes (Python 3.13) that no installed QuillVille app uses any more; one that
   an app or a shortcut still points to is left alone. Portable copies carry their
   own Python and change nothing outside their folder.
-- **Portable copies start from a folder whose name has a space in it.** A portable copy unpacked to a folder such as `C:\portable\Quill Radio` said it did not start, with "can't open file ...pythonw.exe". The QuillVille launcher passed its own path to Python unquoted, so Python read it as two words. The same mistake split a file opened from File Explorer out of a folder with a space in its name, which Play with Quill Radio depends on. Every 3.0 release had it (`quill/native/launcher/cmdline.c`, `quill/native/launcher/launcher.c`).
+- **Portable copies start from a folder whose name has a space in it.** A portable copy unpacked to a folder such as `C:\portable\Quill Radio` said it did not start, with "can't open file ...pythonw.exe". The QuillVille launcher passed its own path to Python unquoted, so Python read it as two words. The same mistake split a file opened from File Explorer out of a folder with a space in its name, which Play with Quill Radio depends on. With Quill Radio as the default media player, pressing Enter on a song whose name has spaces said it could not find several files, one per word (reported on QUILLVille by Chris Nova, 2026-11-09, on 3.0.4). Every 3.0 release had it (`quill/native/launcher/cmdline.c`, `quill/native/launcher/launcher.c`).
 - **The portable copy has the Windows Media engine too.** A stick copy of an early 3.1 build offered only "Windows Media (classic)" in Preferences and could not change the sound card, though an installed copy could: the modern engine's Windows components (the pywinrt wheels) were frozen into the shared runtime the installer ships and were never listed for the portable build. The portable now carries them, so Audio > Output Device, the now-playing card and the modern engine behave the same way in both downloads (`standalone/studio/scripts/build_portable.py`).
 - **A portable copy's Yes to "copy my favorites" now copies them.** A 3.0.0 portable that had been opened once had a favorites file with nothing in it, and the import skipped every file the bundle already had -- so the question was asked, answered Yes, remembered as done, and nothing arrived. A favorites file with no favorites is replaced; everything else the bundle has is still left alone (`quill/core/radio/portable_migration.py`).
 - **A "start with Windows" entry an older build wrote is repaired by the installer.** A listener who had set Quill Radio to start with Windows met PyInstaller's "Unhandled exception in script" box at every login instead of the radio -- "Failed to execute script 'runtime_launcher'... 'NoneType' object has no attribute 'write'" (reported 2026-09-29). Builds between the shared-runtime move and 3.0.1 wrote the entry as the bare `QuillVilleRuntime.exe`, which is the engine rather than an app; run with no module it printed an explanation, and a windowed process has no console to print to, so writing it was the crash. 3.0.2 fixed both halves -- the runtime's streams, and a bare launch starting the installed app -- and Quill Radio has repaired the entry at every launch since. That repair needed a launch, which is the one thing the broken entry prevented: nothing told the listener that opening the radio by hand would cure their login. The installer now repairs the entry as it stages the new build, before the next login, and names this copy's own `QuillRadio.exe` so the entry survives the next runtime upgrade. An app you never asked to start with Windows stays absent, a portable copy is left alone, and a locked-down registry costs the repair and not the install (`quill/core/runtime_cli.py`, `installer/shared-runtime.iss`).

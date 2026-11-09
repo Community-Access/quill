@@ -2326,3 +2326,39 @@ checked. Use a test account with a few credits and two short WAV files.
 - [ ] Checks 1, 6, 9 and 13 with Narrator.
 - [ ] F1 in each of the four new windows gives the window's purpose, then the
       focused control's help.
+
+## Say or Type a Command: Jev, your own AI, and the lines you hear (command-key.md, 2026-11-09)
+
+Jev was tested live with 2,883 requests (`docs/release/jev-live-test-2026-11-09.md`),
+but nobody has yet heard the new windows and lines with a screen reader. Start
+with a profile that has never answered the question (no `command-key.json` in
+the app's data folder), signed in to QUILL's free AI.
+
+1. **The question.** In QUILL, press F11, type "make the words a bit bigger",
+   press Enter. The question opens once: its text is read, and the three
+   buttons are Use Jev, Use My Own AI Instead and Match on This Computer Only,
+   with no access keys. Tab reaches each; F1 on each gives its help.
+2. **Escape.** On a fresh profile, Escape answers Match on This Computer Only:
+   the request is matched on the computer, nothing is said about Jev, and the
+   question never comes back.
+3. **Use Jev.** Answer Use Jev. The request runs (or Did You Mean opens) with
+   no extra announcement. Press F11 again with "make it bowled": Did You Mean,
+   or a plain "I can't" line; never a silent nothing.
+4. **Jev unavailable.** Disconnect from the network, press F11, type "the
+   thing that counts words". You hear one line, once, "...so I matched it
+   here" (or "...so I'm asking your AI" with your own AI chosen), and not
+   again for the rest of the day.
+5. **Use My Own AI Instead.** With your ChatGPT plan or Copilot chosen in
+   Choose Your AI, on a fresh profile, answer Use My Own AI Instead, type "the
+   thing that counts words". You hear "Asking your AI." once, then Word Count
+   runs or Did You Mean opens. Typing during the wait goes nowhere.
+6. **Free AI only.** With only the free AI and no sign-in, F11 never asks the
+   question.
+7. **Quill Radio.** Alt+F11, "turn it up a lot": the same question, once per
+   profile. Note that Use My Own AI Instead sends nothing here (#1819).
+8. **QUILL Lite.** Checks 1, 3 and 5 in QUILL Lite.
+
+- [ ] All eight with NVDA.
+- [ ] All eight with JAWS.
+- [ ] Checks 1, 2 and 5 with Narrator.
+

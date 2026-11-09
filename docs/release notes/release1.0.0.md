@@ -80,6 +80,10 @@ keymap, Preferences where Mac programs keep it, and notarized,
 Developer-ID-signed builds. Linux and other Unix systems are not a target for
 QUILL, and we make no promises about them.
 
+QUILL 1.0 is built on wxPython 4.3.2 (wxWidgets 3.3.4). Controls whose spoken
+names used to be set by a workaround now carry them the way Windows expects, so
+your screen reader reads them straight from the control.
+
 ### How you can install it
 
 - **Windows installer.** The usual choice. It installs for you alone or for
@@ -438,7 +442,9 @@ You Mean list shows each choice with its key, so next time you can press the
 key yourself. "Undo that" and "do that again" work on the box's own last
 actions.
 
-It is free, it works offline, and nothing you type leaves your computer.
+The matcher that does this is free, works offline, and keeps everything you
+type on your computer. Jev and your own AI, below, are only ever asked if you
+say yes.
 
 **What Can I Say Here?** (**Ctrl+Alt+Shift+F1**, in the Help menu) lists
 everything this window can do right now, menu by menu, with one way of saying
@@ -451,18 +457,59 @@ replaces What Can I Do Here?, on the same key.
 
 ### Jev, when the quick matcher is not sure
 
-Say or Type a Command can ask Jev, TypeSafe's decision model, to pick from this
-window's commands when the matcher on your computer is not sure. It sends only
-the words you typed, the app's name and the names of the commands it can do
-right now; never document text, file names, stations, places or accounts.
-TypeSafe keep the requests they receive, and say they do not train on them.
+Most requests are settled by the matcher on your computer. When it is not
+sure, Say or Type a Command can ask Jev, TypeSafe's decision model, to pick one
+of this window's commands, or none.
 
-You are asked once, with three equal answers: Use Jev, Use My Own AI Instead,
-or Match on This Computer Only. For now Jev is offered only where a TypeSafe
-key is stored in Windows Credential Manager, so for nearly everyone the
-Command Key stays free and offline, exactly as described above. When Jev
-cannot answer, because you are offline, a limit was reached or credit is
-spent, you hear one line, once, and matching carries on on your computer.
+- **No key of your own needed.** If this computer is signed in to QUILL's free
+  AI, the request goes to Community Access's service, which holds the TypeSafe
+  key and asks Jev for you. If you stored your own TypeSafe key, QUILL asks
+  TypeSafe directly instead.
+- **What is sent, and nothing more.** The words you typed or said, the app's
+  name and the ids of the commands this window can do right now. Never
+  document text, file names, stations, places or accounts. The service keeps
+  its own copy of every command's description, so it cannot be asked anything
+  else, and it keeps counts, never what you typed. TypeSafe keep the requests
+  they receive, and say they do not train on them.
+- **Asked once, with three equal answers:** Use Jev, Use My Own AI Instead, or
+  Match on This Computer Only. Escape means Match on This Computer Only.
+- **Only when it is clearly sure.** Jev's pick runs only when it is clearly
+  sure and well ahead of the next choice; otherwise you get the Did You Mean
+  list. Anything that closes, clears or stops something still asks first.
+- **Limits.** The service caps use per computer, per network and per day, and
+  has a monthly budget. When Jev cannot answer, because you are offline, a
+  limit is reached or credit is spent, you hear one line, once, and the
+  matcher carries on.
+
+**How well it works.** Jev was tested live on 9 November 2026 with 2,883
+requests and no errors. Half the answers came back within 176 milliseconds,
+nine in ten within a quarter of a second. On 232 requests written the way
+people talk, the matcher alone got 154 right; with Jev behind it, 211 were
+right. On the 2,184 requests the matcher was built from, Jev changed one
+result. Its weak spot is misheard speech, such as "make it bowled" for bold.
+The full report is
+[Jev, tested live](https://www.quillforall.org/docs/jev-live-test-2026-11-09.html).
+
+### Your own AI, instead of Jev or after it
+
+If you chose your ChatGPT plan, GitHub Copilot, Codex or your own key in
+Choose Your AI (**Ctrl+4**), Say or Type a Command can ask it instead.
+
+- Answer **Use My Own AI Instead** and a request the matcher cannot settle is
+  put to your AI as one question: pick one of this window's commands, or none.
+  Nothing goes to Jev.
+- With **Use Jev**, your AI is the next step when Jev cannot answer, and the
+  one line you hear says so: "Jev's daily limit is reached, so I'm asking your
+  AI."
+- You hear "Asking your AI." while it thinks. An answer that takes more than
+  eight seconds is dropped and the matcher's answer stands.
+- Your AI's answer is checked against the list. It runs a command straight
+  away only when it agrees with the matcher's best guess and the command is
+  safe; otherwise you get the Did You Mean list.
+- QUILL's free AI is never asked this question. On the free AI, Use Jev is the
+  way.
+
+Nothing is sent anywhere in Safe Mode.
 
 ---
 

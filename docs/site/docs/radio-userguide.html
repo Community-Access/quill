@@ -1249,6 +1249,50 @@ not close Quill Radio.</p>
 <p>If you used “Open Browse Stations at startup” in an older version,
 your main window now shows Browse instead, and nothing else opens by
 itself.</p>
+<h3 id="say-or-type-a-command-altf11">Say or Type a Command
+(Alt+F11)</h3>
+<p>When you know what you want and not where it lives, press
+<strong>Alt+F11</strong>, type it in your own words, and press Enter. “A
+lot louder”, “play favourite 3”, “what song is this”, “record this
+station” and “pause” all work. You do not need the command’s exact name,
+and a small typo is forgiven. It is also on the Help menu. It is Alt+F11
+here, not F11 as in QUILL, because F11 is Video &gt; Full Screen.</p>
+<p>It only ever does what Quill Radio can do right now. If something is
+switched off, it says why, and it never does the next nearest thing
+instead. Recording, and anything that closes, clears or stops something,
+asks first. Exiting, signing in, deleting and changing settings are
+never done from a sentence: you are told where to find them. When it is
+not sure, a short Did You Mean list shows each choice with its key, so
+next time you can press the key yourself. “Undo that” and “do that
+again” work on what the box last did.</p>
+<p><strong>What Can I Say Here?</strong>
+(<strong>Ctrl+Alt+Shift+F1</strong>, on the Help menu) lists everything
+you can ask for right now, menu by menu, with an example and a key for
+each. Press Enter on one to do it. Typing “what can I say” in the box
+opens it too.</p>
+<p>The matcher that understands you is free, works offline, and keeps
+what you type on your computer. When it is not sure, it can ask
+<strong>Jev</strong>, TypeSafe’s decision model, to pick one of Quill
+Radio’s commands, but only if you say yes. The first time it could, you
+are asked once, and <strong>Match on This Computer Only</strong> is an
+equal answer (Escape gives it too). Jev is offered when this computer is
+signed in to QUILL’s free AI, in QUILL or QUILL Lite, through Community
+Access’s service, or when you stored your own TypeSafe key. Only the
+words you typed, the app’s name and the ids of the commands Quill Radio
+can do right now are sent; never stations, places or accounts. Jev’s
+pick runs only when it is clearly sure. If Jev cannot answer, because
+you are offline or a limit is reached, you hear one line, once, and the
+matcher carries on.</p>
+<p>The question also offers <strong>Use My Own AI Instead</strong>, but
+asking your own AI is in QUILL and QUILL Lite only. In Quill Radio,
+choosing it means nothing is sent, the same as Match on This Computer
+Only. There is not yet a setting to change your answer later (issue 1819
+on GitHub).</p>
+<p>Two requests the matcher gets wrong for now, because it is sure of
+itself and never asks Jev: “turn the radio off in half an hour” stops
+the radio rather than setting the Sleep Timer, and “save this station to
+my list” opens Browse. Ask for the Sleep Timer and Favourite This
+Station by name, or use their keys.</p>
 <h3 id="the-menus">The menus</h3>
 <p>The main window’s menu bar, from left to right, is
 <strong>Station</strong> (Alt+S), <strong>Edit</strong> (Alt+E),
@@ -1602,6 +1646,12 @@ as “Notifications (3 new)…”. See “Notifications” in Chapter 12.</li>
 Playback Engine…</strong> (Ctrl+Alt+M): emergency repairs, for when a
 tool that comes with Quill Radio has gone missing. You should never need
 them.</li>
+<li><strong>Say or Type a Command…</strong> (Alt+F11): do something by
+typing it in your own words. See “Say or Type a Command” in Chapter
+3.</li>
+<li><strong>What Can I Say Here?</strong> (Ctrl+Alt+Shift+F1):
+everything you can ask for right now, with an example and a key for
+each.</li>
 <li><strong>What Is This?</strong> (F1): help for the window you are in
 and the control you are on.</li>
 <li><strong>Tutorials…</strong> (Ctrl+Alt+F1).</li>
@@ -10812,6 +10862,14 @@ Player</td>
 <tr>
 <td>What Is This? (context help)</td>
 <td>F1</td>
+</tr>
+<tr>
+<td>Say or Type a Command</td>
+<td>Alt+F11</td>
+</tr>
+<tr>
+<td>What Can I Say Here?</td>
+<td>Ctrl+Alt+Shift+F1</td>
 </tr>
 <tr>
 <td>User Guide</td>

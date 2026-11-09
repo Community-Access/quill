@@ -91,6 +91,16 @@ the palette has everything the menus have, down to your recent files and your
 open documents, each named by the menu it lives in. The
 status bar is a control panel too: arrow to any cell and press Enter to act on it.
 
+And when you know what you want but not where it lives, press **F11** and say
+it in your own words: "turn it down a bit", "go to line 120", "make this bold".
+Say or Type a Command does only what the window in front of you can do right
+now, and asks before anything that closes, clears or stops. It is free and
+works offline. If you say yes, Jev, TypeSafe's decision model, or your own AI
+helps with the requests the matcher on your computer cannot settle; in our
+live test that took the right answers from 154 of 232 everyday requests to
+211. **What Can I Say Here?** (**Ctrl+Alt+Shift+F1**) lists everything you can
+ask for, wherever you are.
+
 ## Braille files, kept exactly as they are
 
 QUILL opens and saves `.brf`, `.brl`, `.pef` and `.ueb` files without changing

@@ -7500,6 +7500,58 @@ or Favorites, else says it is in no list.</li>
 <li>Warm neighbours open only the station streams the player itself
 would open; no new destination and no new egress call site.</li>
 </ul>
+<h2 id="32-say-or-type-a-command-unreleased-2026-11-08-and-09">32. Say
+or Type a Command (unreleased, 2026-11-08 and 09)</h2>
+<p><strong>Alt+F11</strong> (Help &gt; Say or Type a Command…), not F11,
+because Video &gt; Full Screen holds F11 on the same menu bar
+(<code>quill/apps/radio_command_key.py</code>; moving Full Screen is a
+remaining task in <code>command-key.md</code> 21). <strong>What Can I
+Say Here?</strong> is Ctrl+Alt+Shift+F1. Recording confirms first.</p>
+<p>The working plan, its decisions and its progress log are
+<code>docs/design/command-key.md</code> (cited as
+<code>command-key.md &lt;section&gt;</code>). The shared code is
+<code>quill/core/command_catalogue/</code> (rows, matcher, policy, Jev
+request and client, assist tiers) and
+<code>quill/ui/command_key_*.py</code> (the box, the hosts, tier 4);
+every app runs the same session.</p>
+<p><strong>Tiers.</strong> Tier 1 (exact names and aliases) and tier 2
+(the fuzzy matcher and policy) run on the computer, free and offline,
+and settle most requests. Tier 3 is Jev, TypeSafe’s decision model
+(<code>jev-1.14.0</code>), asked to pick one offered command or none.
+Tier 4 (the person’s own AI) is in QUILL and QUILL Lite only: Quill
+Radio has no <code>AiService</code>, so in Radio “Use My Own AI Instead”
+sends nothing (#1819).</p>
+<p><strong>Consent (<code>command-key.md</code> 7.8).</strong> Nothing
+leaves the computer until the person answers one question, asked once
+and only when a route exists: Use Jev (Jev, then tier 4), Use My Own AI
+Instead (tier 4 only) or Match on This Computer Only (neither; Escape).
+The answer is <code>command_understanding</code> in
+<code>command-key.json</code>. It cannot yet be changed (#1819).</p>
+<p><strong>Routes for Jev.</strong> An own TypeSafe key in Windows
+Credential Manager (<code>QUILL TypeSafe dev key</code>) is used first.
+Otherwise, when this computer is signed in to QUILL’s free AI,
+<code>POST /v1/decide</code> on Community Access’s gateway, which holds
+the key, rebuilds the questions from its own catalogue snapshot, and
+caps use (20 a minute a device, 60 a minute an IP, 20,000 a day, $25 a
+month). Only the typed words (at most 300 characters), the app, the
+catalogue version and the offered ids are sent; never document text,
+file names, stations, places or accounts. The gateway stores counts,
+never text.</p>
+<p><strong>Safety.</strong> Only commands this window can run now are
+offered. A disabled command is refused with its reason, never swapped.
+CAUTION commands confirm; exit, sign-in, send, delete and settings are
+never run from a sentence. Jev’s pick runs only above the 6.4 thresholds
+(confidence, fit, margin); tier 4’s only when it agrees with tier 2 and
+the command is SAFE. Otherwise “Did you mean”. Failures say one line,
+once, and fall to the next tier. Nothing is sent in Safe Mode.</p>
+<p><strong>Measured.</strong> Live through the gateway on 2026-11-09:
+2,883 requests, no errors, median 176 ms; 211 of 232 hand-written
+requests right against tier 2’s 154; 2,183 of 2,184 corpus rows
+(<code>docs/release/jev-live-test-2026-11-09.md</code>).</p>
+<p><strong>Known misses</strong> (live report): “turn the radio off in
+half an hour” runs Stop and “save this station to my list” runs Browse,
+because tier 2 is sure and Jev is never asked. Making tier 2 less sure
+there is a remaining task.</p>
 </main>
 </body>
 </html>

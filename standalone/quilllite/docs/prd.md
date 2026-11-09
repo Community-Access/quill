@@ -2686,3 +2686,19 @@ backup failure and now logs it too. Tests:
 `docx_open.write_docx_from_rtf` and HTML export through `write_text_atomic`,
 both already atomic. QUILL's Pandoc writer now stages beside the target and
 replaces it only on success (QUILL PRD 5.3a.1.1).
+
+## Say or Type a Command (2026-11-08 and 09)
+
+**F11** (Tools > Say or Type a Command...) and **What Can I Say Here?** (Ctrl+Alt+Shift+F1), QUILL's Command Key from the same shared code on the same keys; QUILL Lite is never ahead of QUILL here (QUILL PRD §37). F11 is commands only; dictation keeps Ctrl+F11.
+
+The working plan, its decisions and its progress log are `docs/design/command-key.md` (cited as `command-key.md <section>`). The shared code is `quill/core/command_catalogue/` (rows, matcher, policy, Jev request and client, assist tiers) and `quill/ui/command_key_*.py` (the box, the hosts, tier 4); every app runs the same session.
+
+**Tiers.** Tier 1 (exact names and aliases) and tier 2 (the fuzzy matcher and policy) run on the computer, free and offline, and settle most requests. Tier 3 is Jev, TypeSafe's decision model (`jev-1.14.0`), asked to pick one offered command or none. Tier 4 is the AI chosen in Choose Your AI, when it is the person's own (ChatGPT plan, Copilot, Codex, own key), asked the same as one question; never the free hosted AI.
+
+**Consent (`command-key.md` 7.8).** Nothing leaves the computer until the person answers one question, asked once and only when a route exists: Use Jev (Jev, then tier 4), Use My Own AI Instead (tier 4 only) or Match on This Computer Only (neither; Escape). The answer is `command_understanding` in `command-key.json`. It cannot yet be changed (#1819).
+
+**Routes for Jev.** An own TypeSafe key in Windows Credential Manager (`QUILL TypeSafe dev key`) is used first. Otherwise, when this computer is signed in to QUILL's free AI, `POST /v1/decide` on Community Access's gateway, which holds the key, rebuilds the questions from its own catalogue snapshot, and caps use (20 a minute a device, 60 a minute an IP, 20,000 a day, $25 a month). Only the typed words (at most 300 characters), the app, the catalogue version and the offered ids are sent; never document text, file names, stations, places or accounts. The gateway stores counts, never text.
+
+**Safety.** Only commands this window can run now are offered. A disabled command is refused with its reason, never swapped. CAUTION commands confirm; exit, sign-in, send, delete and settings are never run from a sentence. Jev's pick runs only above the 6.4 thresholds (confidence, fit, margin); tier 4's only when it agrees with tier 2 and the command is SAFE. Otherwise "Did you mean". Failures say one line, once, and fall to the next tier. Nothing is sent in Safe Mode.
+
+**Measured.** Live through the gateway on 2026-11-09: 2,883 requests, no errors, median 176 ms; 211 of 232 hand-written requests right against tier 2's 154; 2,183 of 2,184 corpus rows (`docs/release/jev-live-test-2026-11-09.md`).

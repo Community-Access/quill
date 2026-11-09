@@ -244,6 +244,31 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="200">2.0.0</h2>
+<h3 id="say-or-type-a-command-jev-and-your-own-ai-2026-11-09">Say or
+Type a Command: Jev and your own AI (2026-11-09)</h3>
+<ul>
+<li><strong>Jev without a key of your own.</strong> When this computer
+is signed in to QUILL’s free AI, a request the matcher cannot settle
+goes to Community Access’s service, which holds the TypeSafe key and
+asks Jev for you. Your own TypeSafe key, if you stored one, is still
+used first. Only the words you typed, the app’s name and the ids of the
+commands this window can do right now are sent, and the service keeps
+counts, never what you typed.</li>
+<li><strong>Your own AI.</strong> Answer “Use My Own AI Instead” when
+first asked, and a request the matcher cannot settle goes to the AI you
+chose in Choose Your AI (your ChatGPT plan, GitHub Copilot, Codex or
+your own key) as one question: pick one of this window’s commands, or
+none. With “Use Jev”, your AI is the next step when Jev cannot answer,
+and the line you hear says so. You hear “Asking your AI.” while it
+thinks; an answer after eight seconds is dropped. Its pick runs only
+when it agrees with the matcher and the command is safe. QUILL’s free AI
+is never asked this question.</li>
+<li><strong>Clearer descriptions</strong> for the commands Jev mixed up
+in the live test: Save As, Bigger and Smaller Text against Zoom In and
+Out, Word Count against Word Summary, and Quiet Mode against Stop
+Reading Aloud.</li>
+<li>QUILL has the same, from the same shared code.</li>
+</ul>
 <h3 id="built-on-wxpython-432-2026-11-09">Built on wxPython 4.3.2
 (2026-11-09)</h3>
 <ul>

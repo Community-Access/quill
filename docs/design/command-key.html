@@ -1323,20 +1323,33 @@ aggregate counts only: requests, latency, chosen id and confidence
 band.</p></li>
 </ul>
 <h3 id="78-consent-wording">7.8 Consent wording</h3>
-<p>The first time Jev would be used (proposed):</p>
+<p>The first time Jev or tier 4 could be used. As shipped on 2026-11-09
+(<code>CONSENT_TEXT</code> in
+<code>quill/ui/command_key_ui.py</code>):</p>
 <blockquote>
 <p>To understand requests the quick matcher can’t, QUILL can send the
 words you typed or said, the name of this app, and the names of the
 commands it can do right now to Community Access’s service, which asks
-TypeSafe, a company in San Francisco, to pick one. Nothing else is sent:
-no document text, file names, stations, places or accounts. TypeSafe say
-they do not train on it. You can change this at any time in
-Settings.</p>
-<p>[Use Jev] [Use my own AI instead] [Match on this computer only]</p>
+TypeSafe, a company in San Francisco, to pick one (if you stored your
+own TypeSafe key, QUILL asks TypeSafe directly). Nothing else is sent:
+no document text, file names, stations, places or accounts. TypeSafe
+keep the requests they receive, and say they do not train on them. If
+Jev cannot answer, or you choose your own AI instead, the same words go
+to the AI you chose in Choose Your AI, when it is one of your own. You
+can change this at any time.</p>
+<p>[Use Jev] [Use My Own AI Instead] [Match on This Computer Only]</p>
 </blockquote>
-<p>The choice is a setting, <code>command_understanding</code>
-(<code>jev</code>, <code>my_ai</code> or <code>local</code>), shared by
-both editors and every app.</p>
+<p>Escape answers Match on This Computer Only. The question is asked
+only when a route exists: a Jev route (this computer signed in to
+QUILL’s free AI, or an own TypeSafe key) or a tier 4 engine (an own AI
+in Choose Your AI).</p>
+<p>The choice is meant to be a setting,
+<code>command_understanding</code> (<code>jev</code>, <code>my_ai</code>
+or <code>local</code>), shared by both editors and every app.
+<strong>Not yet:</strong> it lives in <code>command-key.json</code> in
+the app’s data folder, and nothing lets a person change it, although the
+text above says they can. Issue #1819 tracks the Preferences row, and
+Radio offering “Use My Own AI Instead” when it has no tier 4.</p>
 <h3 id="79-egress-rows-and-error-codes">7.9 Egress rows and error
 codes</h3>
 <ul>
@@ -1395,10 +1408,25 @@ point does nothing.</li>
 <h3 id="710-tier-4-choose-your-ai">7.10 Tier 4, Choose Your AI</h3>
 <ul>
 <li><strong>One more <code>AiService</code> feature,
-<code>command_pick</code>.</strong> It needs a fixed template on the
-gateway for the free hosted AI, and the matching
-<code>INSTRUCTIONS</code> row in <code>own_key.py</code> for own key,
-ChatGPT and Copilot.</li>
+<code>command_pick</code>.</strong> It has the <code>INSTRUCTIONS</code>
+row in <code>own_key.py</code>, used by own key, ChatGPT, Copilot and
+Codex. <strong>Built 2026-11-09 (#1814)</strong> as
+<code>quill/ui/command_key_ai.py</code>:
+<code>AiService.ask("command_pick", ..., requires=("text",))</code>, so
+Safe Mode, the agreement, GATE-CAPS and the route-changed question all
+apply; “Asking your AI.” is said first; the box waits at most eight
+seconds with <code>wx.SafeYield</code> (every window disabled, so
+nothing typed lands anywhere) and then cancels.
+<code>CommandPickAssist</code> acts only when the answer agrees with
+tier 2’s best guess and the command is SAFE, and otherwise offers “Did
+you mean”.</li>
+<li><strong>Not on the free hosted AI.</strong> No gateway template was
+added: a person on the free AI who says yes to Jev already has the
+gateway route, and tier 4 there would spend their free allowance on a
+lookup. <code>command_pick_engine</code> answers None for it.</li>
+<li><strong>Only where the app has an <code>AiService</code>.</strong>
+QUILL and QUILL Lite do (<code>HostedAiMixin</code>); Quill Radio does
+not, so in Radio “Use My Own AI Instead” sends nothing (#1819).</li>
 <li><strong>Local Ollama and llama.cpp</strong> reuse llama.cpp’s
 <code>decide</code> pattern.</li>
 <li><strong>One question per request.</strong> It asks only the
@@ -4082,20 +4110,55 @@ that take them (<code>run_with_args</code>) once each app exposes a way
 in.</label></li>
 <li><label><input type="checkbox" />Phase 2 go or no-go with JAWS and
 NVDA testers.</label></li>
-<li><label><input type="checkbox" />PR 3a: the relay’s
-<code>/v1/decide</code>, caps, ceiling, out-of-credit answers. It goes
-on lp.csedesigns.com, which holds the TypeSafe key, not on Cloudflare
-(decided 2026-11-08); the client takes its base URL, so nothing in the
-apps changes.</label></li>
-<li><label><input type="checkbox" />Phase 3 follow-ups:
-<code>command_understanding</code> as a real shared setting (settings
-vocabulary, GATE-SETDOC; it lives in <code>command-key.json</code> for
-now); tier 4 wired to <code>AiService.ask</code> once the gateway has a
-<code>command_pick</code> template and <code>own_key.py</code> its
-<code>INSTRUCTIONS</code> row; the recorded cassettes replayed in PR CI
-after a first live run; the speculative group fan-out for more than 60
-candidates; <code>correction_pick</code>, <code>steps</code> and
-<code>slot_</code> questions (phase 5).</label></li>
+<li><label><input type="checkbox" checked="" />PR 3a: the relay’s
+<code>/v1/decide</code>, caps, ceiling, out-of-credit answers, on
+lp.csedesigns.com with the TypeSafe key in the server’s
+<code>.env</code> (#1812, deployed 2026-11-09).</label></li>
+<li><label><input type="checkbox" checked="" />Tier 4 wired to
+<code>AiService.ask</code> with the <code>own_key.py</code>
+<code>INSTRUCTIONS</code> row (#1814, 2026-11-09). No free-AI template,
+on purpose (7.10).</label></li>
+<li><label><input type="checkbox" checked="" />A first live run, through
+the gateway (#1813 tools, #1815 report, 2026-11-09):
+<code>docs/release/jev-live-test-2026-11-09.md</code>.</label></li>
+<li><label><input type="checkbox" checked="" />Command descriptions Jev
+confused, sharpened; catalogue 2026-11-09, with 2026-11-08 kept on the
+gateway for installed copies (#1816).</label></li>
+<li><label><input type="checkbox" /><code>command_understanding</code>
+as a real shared setting, with a Preferences row in every app (settings
+vocabulary, GATE-SETDOC); and Radio’s question without “Use My Own AI
+Instead” while Radio has no tier 4. Issue #1819. The consent text
+already promises it.</label></li>
+<li><label><input type="checkbox" />Jev without the free sign-in:
+automatic free sign-in, an anonymous capped route, or neither.
+Undecided; today Jev needs the free-AI sign-in or an own
+key.</label></li>
+<li><label><input type="checkbox" />From the live report: make tier 2
+less sure of itself where a request carries a duration or a “to my list”
+(“turn the radio off in half an hour” ran Stop; “save this station to my
+list” ran Browse), so Jev is asked.</label></li>
+<li><label><input type="checkbox" />From the live report: send
+dictation’s alternative hearings (<code>heard_alternatives</code>) to
+Jev, for misheard words (“make it bowled”, “word cow”,
+“paws”).</label></li>
+<li><label><input type="checkbox" />From the live report: Top of
+Document and Bottom of Document as catalogue rows with keys, in both
+editors.</label></li>
+<li><label><input type="checkbox" />From the live report: QUILL Lite’s
+“statistics” goes to Word Count, because Jev reads ids as option names
+and <code>lite.cmd_statistics</code> says “statistics”. Give the option
+a name, not the handler’s.</label></li>
+<li><label><input type="checkbox" />From the live report: replace
+<code>tests/live/test_jev_live.py</code> (2 of 2,184 rows) with the
+evaluation set and its pinned thresholds, run through the
+gateway.</label></li>
+<li><label><input type="checkbox" />Jeff’s by-ear check of the consent
+question, “Asking your AI.” and the fallback lines with JAWS and
+NVDA.</label></li>
+<li><label><input type="checkbox" />The recorded cassettes replayed in
+PR CI; the speculative group fan-out for more than 60 candidates;
+<code>correction_pick</code>, <code>steps</code> and <code>slot_</code>
+questions (phase 5).</label></li>
 <li><label><input type="checkbox" />Check Ctrl+Alt+PageDown and
 Ctrl+Alt+PageUp against JAWS, NVDA, Narrator, Magnifier, ZoomText and
 laptop utilities.</label></li>
@@ -4193,6 +4256,42 @@ row covers the call. The live suite,
 <code>tests/live/test_jev_live.py</code>, runs only with
 <code>QUILL_JEV_LIVE=1</code> and the stored key. It has not been run
 yet.</li>
+<li><strong>2026-11-09, phase 3 finished: Jev through the gateway, tier
+4, tested live.</strong> Five PRs. <strong>#1812</strong> put
+<code>POST /v1/decide</code> on Community Access’s gateway
+(<code>quill-ai-gateway/app/jev.py</code>,
+<code>app/routes/decide.py</code>): ids only from the client, the
+questions built on the server from its own catalogue snapshot
+(<code>app/jev_catalogue/&lt;version&gt;.json</code>, looked up by the
+version inside each file, never a path built from the request), caps of
+20 a minute a device, 60 a minute an IP, 20,000 a day and a monthly
+ceiling of $25 (<code>GATEWAY_JEV_MONTHLY_USD_CEILING</code>; decision 8
+said $30, the deployed value is lower), counts kept and never what was
+typed, and TypeSafe’s 402 read as “no credit” and 401/403 as “disabled”.
+The key is <code>TYPESAFE_API_KEY</code> in the server’s
+<code>.env</code>, placed by Jeff. The client’s <code>GatewayJev</code>
+sends ids and the device token; an own key still wins. Jev is now
+offered wherever this computer is signed in to QUILL’s free AI, not only
+where a TypeSafe key is stored. <strong>#1814</strong> built tier 4
+(7.10) and made the consent answer choose tiers: Use Jev is Jev then
+tier 4, Use My Own AI Instead is tier 4 only, Match on This Computer
+Only is neither; Jev’s failure line says “so I’m asking your AI” when
+tier 4 is next. <strong>#1813</strong> added the evaluation set
+(<code>quill/tools/jev_eval_cases.py</code>, 232 hand-written phrasings;
+<code>build_jev_eval_set.py</code> writes
+<code>tests/fixtures/command_key/jev_eval.jsonl</code>, 2,416 cases with
+the corpus) and its runner and judge
+(<code>quill-ai-gateway/scripts/jev_eval.py</code>,
+<code>quill/tools/jev_eval_report.py</code>). <strong>#1815</strong> is
+the live report: 2,883 requests, no errors, median 176 ms, nine in ten
+under a quarter of a second, about 7.5 cents a thousand; 210 of 232 hand
+phrasings right in the app against 154 for tier 2 alone; 2,183 of 2,184
+corpus rows; sizes 11 of 11, questions 7 of 7, the same answer three
+times for 230 of 232. <strong>#1816</strong> sharpened the descriptions
+Jev mixed up, which took the hand set to 211. The consent text, the
+egress row and the release notes, changelogs and user guides (QUILL,
+QUILL Lite, Quill Radio) describe all of this. Found while documenting:
+the consent answer cannot be changed (#1819).</li>
 </ul>
 </main>
 </body>

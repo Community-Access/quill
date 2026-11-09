@@ -31,6 +31,10 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 - **Tools > Forms > Fill It In Yourself** lets you tab through your own form as a visitor would, before anyone else sees it.
 - Check This Form, rules read as sentences in Format > Form Rules, and saving as a web page, Word, large print or braille-ready text. Publish and Responses work with sites running the plugin.
 
+## Say or Type a Command
+
+- **F11:** type what you want in your own words, such as "make this bold". It does only what this window can, free and offline. If you say yes, Jev or your own AI helps when it is not sure. **What Can I Say Here? (Ctrl+Alt+Shift+F1)** lists the rest.
+
 ## AI and code
 
 - **Choose Your AI (Ctrl+4)** lists QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex and your own key. **Which AI Am I Using (Ctrl+8)** says where your words go.

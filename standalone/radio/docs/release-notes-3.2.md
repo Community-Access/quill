@@ -447,6 +447,26 @@ Alt+F11 here rather than F11 because F11 is Video > Full Screen.
 everything you can ask for right now, by menu, with an example and a key for
 each.
 
+The matcher that understands you is free and works offline. When it is not
+sure, it can ask Jev, TypeSafe's decision model, to pick one of Quill Radio's
+commands, but only if you say yes the first time it could. Jev is offered when
+this computer is signed in to QUILL's free AI (in QUILL or QUILL Lite), through
+Community Access's service, or when you stored your own TypeSafe key. Only the
+words you typed, the app's name and the ids of the commands Quill Radio can do
+right now are sent; never stations, places or accounts. Jev's pick runs only
+when it is clearly sure, recording still asks first, and if Jev cannot answer
+you hear one line, once, and the matcher carries on. Asking your own AI
+instead is in QUILL and QUILL Lite, not Quill Radio.
+
+Jev was tested live on 9 November 2026: 2,883 requests with no errors, most
+answers within a quarter of a second, and 211 of 232 everyday requests right
+against the matcher's 154 alone. Two Quill Radio requests still go wrong,
+because the matcher is sure of itself and never asks Jev: "turn the radio off
+in half an hour" stops the radio rather than setting the Sleep Timer, and
+"save this station to my list" opens Browse. Use the Sleep Timer and Favourite
+This Station by name or by their keys for now. The full report is
+[Jev, tested live](https://www.quillforall.org/docs/jev-live-test-2026-11-09.html).
+
 ---
 
 ## Recording
@@ -1097,7 +1117,12 @@ newer build, and Check for Updates offers it to you.
   Unfollow", the same word QUILL Cast uses.
 - **Bringing favorites into a portable copy works.** Answering Yes to copy your
   favorites into a portable copy you had opened before now copies them.
-- Portable copies now start from a folder whose name has a space in it.
+- **Songs whose names have spaces open from File Explorer.** With Quill Radio
+  as your media player, pressing Enter on a file such as "My Favourite
+  Song.mp3" in 3.0 said it could not find three files: the launcher passed the
+  path on in pieces, one per word. It now arrives whole. Portable copies
+  unpacked to a folder whose name has a space in it start too, for the same
+  reason. Reported on QUILLVille by Chris Nova.
 - **Backups say what they hold, and name anything left out.** A backup now
   carries the podcasts you follow and where you are in each episode, your
   notes, tags, bookmarks and recording settings, as well as your favorites
