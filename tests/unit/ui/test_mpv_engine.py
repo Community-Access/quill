@@ -162,3 +162,42 @@ def test_find_libmpv_beside_the_runtime_without_app_root(monkeypatch, tmp_path: 
     (runtime / "tools" / "mpv" / "libmpv-2.dll").write_bytes(b"MZ")
     monkeypatch.setattr(me.sys, "executable", str(runtime / "QuillVilleRuntime.exe"))
     assert find_libmpv() == runtime / "tools" / "mpv" / "libmpv-2.dll"
+
+
+def test_closing_the_client_during_a_worker_call_waits_for_it_to_return(monkeypatch) -> None:
+    """Save Songs runs dump-cache on a worker: the handle must outlive that call."""
+    import threading
+    from unittest import mock
+
+    import pytest
+
+    import quill.ui.audio.mpv_engine as me
+
+    lib = mock.MagicMock()
+    lib.mpv_create.return_value = 1
+    lib.mpv_initialize.return_value = 0
+    lib.mpv_set_option_string.return_value = 0
+    inside = threading.Event()
+    release = threading.Event()
+    destroyed_during_call: list[bool] = []
+
+    def _command(_handle: object, _array: object) -> int:
+        inside.set()
+        release.wait(5)
+        destroyed_during_call.append(lib.mpv_terminate_destroy.called)
+        return 0
+
+    lib.mpv_command.side_effect = _command
+    monkeypatch.setattr(me.ctypes, "CDLL", lambda _path: lib)
+    client = me._MpvClient(Path("libmpv-2.dll"))
+    worker = threading.Thread(target=lambda: client.command("dump-cache", "0", "1", "x.mp3"))
+    worker.start()
+    assert inside.wait(5)
+    client.close()
+    assert not lib.mpv_terminate_destroy.called, "never destroyed under a running call"
+    release.set()
+    worker.join(5)
+    assert destroyed_during_call == [False]
+    assert lib.mpv_terminate_destroy.call_count == 1, "destroyed once the call returned"
+    with pytest.raises(OSError):
+        client.get_double("time-pos")

@@ -36,28 +36,51 @@ class HeadlessCheckResult:
     #: False when the check was skipped (Safe Mode, no saved location).
     checked: bool = False
     reason: str = ""
+    #: The place (or places, comma-separated) the new alerts are for.
+    location_label: str = ""
 
 
 def run_check(
     data_dir: Path, *, fetch_alerts: AlertFetcher, safe_mode: bool = False
 ) -> HeadlessCheckResult:
-    """Perform one headless alert check for the watched (or primary) location.
+    """Perform one headless alert check for every watched place.
 
-    Returns the alerts issued since the last check (empty on the first run,
-    which just records a baseline). Persists the notified-id set so the next
-    run -- and the live in-app watch -- will not repeat them. The caller must
-    handle a fetch that raises (offline / transient); this function assumes a
-    successful fetch and never invents notifications on error.
+    The places are the ones the live watch uses: the watch list when there is
+    one, else every saved place. Returns the alerts issued since the last check
+    (empty on the first run, which just records a baseline). Persists the
+    notified-id set so the next run -- and the live in-app watch -- will not
+    repeat them. A place whose fetch fails is skipped and the earlier ids are
+    kept, so its alerts are not toasted again next time; when every fetch
+    fails the first error is raised for the caller (offline / transient).
     """
     if safe_mode:
         return HeadlessCheckResult(checked=False, reason="safe mode")
     store = loc_store.load_locations(data_dir)
     config = monitor.load_config(data_dir)
-    location = store.find(config.location_id) or store.primary()
-    if location is None:
+    watched = config.watched_ids() or [loc.id for loc in store.locations]
+    places = [loc for cid in watched if (loc := store.find(cid)) is not None]
+    if not places and (primary := store.primary()) is not None:
+        places = [primary]
+    if not places:
         return HeadlessCheckResult(checked=False, reason="no location")
 
-    alerts = list(fetch_alerts(location.latitude, location.longitude))
+    alerts: list[WeatherAlert] = []
+    where: dict[str, str] = {}  # alert id -> the first place it was seen for
+    failures: list[Exception] = []
+    for place in places:
+        try:
+            found = list(fetch_alerts(place.latitude, place.longitude))
+        except Exception as error:  # noqa: BLE001 - one place offline is not all of them
+            failures.append(error)
+            continue
+        for alert in found:
+            if alert.id and alert.id in where:
+                continue  # one alert covering two watched places is said once
+            if alert.id:
+                where[alert.id] = place.label
+            alerts.append(alert)
+    if failures and len(failures) == len(places):
+        raise failures[0]
     # Fold in any alerts contributed by enabled Quillin ``weather.alerts`` sources
     # (a QuillinAppHost populates the registry; empty when none / in Safe Mode).
     # The sources make no network call of their own, so this adds no egress.
@@ -74,9 +97,10 @@ def run_check(
 
     previous = monitor.load_notified_ids(data_dir)
     fresh = [a for a in alerts if a.id and a.id not in previous]
-    monitor.save_notified_ids(data_dir, current_ids)
+    monitor.save_notified_ids(data_dir, current_ids | previous if failures else current_ids)
     fresh.sort(key=lambda a: a.tier_rank)
-    return HeadlessCheckResult(new_alerts=fresh, checked=True)
+    labels = list(dict.fromkeys(where[a.id] for a in fresh if a.id in where))
+    return HeadlessCheckResult(new_alerts=fresh, checked=True, location_label=", ".join(labels))
 
 
 def toast_content(new_alerts: list[WeatherAlert], location_label: str) -> tuple[str, str]:

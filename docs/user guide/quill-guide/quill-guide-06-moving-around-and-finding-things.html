@@ -1628,8 +1628,12 @@ top. <strong>Show</strong> picks all problems, errors and warnings, or
 errors only. <strong>Source</strong> picks one checker, such as JSON or
 ruff. Changing either says the new count, for example “4 problems, 1
 shown”.</li>
-<li>The context key (or Shift+F10) on a row has <strong>Go To</strong>
-and <strong>Copy Message</strong>.</li>
+<li>The context key (or Shift+F10) on a row has <strong>Go To</strong>,
+<strong>Copy Message</strong> and, for a problem a language server
+found, <strong>Quick Fix…</strong>: the server’s fixes as a list,
+applied as one undo step (see the Developer Guide, chapter 11). In HTML,
+CSS, JSON, Markdown, JavaScript, TypeScript and Python files the
+language servers add their own problems to the list.</li>
 <li>While the pane is on, saving checks the file again. If you’d also
 like it checked when you stop typing for a moment, check <strong>Check
 after a pause</strong>, beside the choosers. It’s off unless you turn it

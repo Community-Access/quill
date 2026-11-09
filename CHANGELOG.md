@@ -28,6 +28,30 @@
   GitHub repository. F6 reaches it like every other cell, and it's never read
   out on its own. It goes away when the mode does.
 
+### Language servers: VS Code's smarts, inside QUILL (2026-11-08)
+
+- QUILL now carries the language servers VS Code uses: VS Code's own for HTML,
+  CSS, JSON and Markdown, TypeScript's for JavaScript and TypeScript, and
+  Pyright for Python, with the Node they run on. clangd (C and C++) and
+  PowerShell Editor Services are used if you have them installed.
+- **Ctrl+.** asks the server first: `console.lo` offers `log, method`. The
+  file's own names and your project's fill the rest of the list.
+- **Check This File** and the Problems pane include the server's problems,
+  with the server named as the source.
+- **Quick Fix...** on a Problems pane row lists the server's fixes; Enter
+  applies one as a single undo step and checks the file again.
+- **Navigate > Code > Parameter Hints** says "Parameter 2 of 3, seconds" and
+  the signature. **Parameter hints as you type** (off by default) says it as
+  you type an opening bracket or a comma.
+- **Navigate > Code > Language Servers...** switches all of them, each one, and
+  each use on or off.
+- Servers start the first time you need them, never at launch, stop after
+  fifteen idle minutes, and never use the internet.
+- Bundled, pinned and checked: Node 24.22.1, vscode-langservers-extracted
+  4.10.0, typescript-language-server 6.0.2, TypeScript 6.0.3, Pyright 1.1.414,
+  Prettier 3.9.10 (for Format Document, coming next) and ripgrep 15.2.0. Their
+  licences are in the third-party notices.
+
 ### GitHub Workbench Mode and Clone Repository (2026-11-08)
 
 - **View > GitHub Workbench Mode** (Alt+V, then K) is a check item. Turn it on

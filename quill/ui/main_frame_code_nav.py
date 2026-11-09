@@ -56,6 +56,14 @@ _CODE_ROWS: tuple[tuple[str, str, str, str], ...] = (
         "Previous Problem",
         "navigate_previous_problem",
     ),
+    ("", "", "", ""),
+    ("edit.parameter_hints", "Parameter &Hints", "Parameter Hints", "edit_parameter_hints"),
+    (
+        "tools.language_servers",
+        "&Language Servers...",
+        "Language Servers...",
+        "tools_language_servers",
+    ),
 )
 
 
@@ -217,6 +225,7 @@ class CodeNavMixin(ProblemsCommandsMixin):
             set_pause_enabled=self._problems_set_pause_enabled,
             set_all_files=self._problems_set_all_files,
             switch_files=self._problems_switch_files,
+            quick_fix=self._problems_quick_fix,
         )
         pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
         pane.panel.Hide()
@@ -305,6 +314,34 @@ class CodeNavMixin(ProblemsCommandsMixin):
             save_settings(self.settings)
         except Exception:  # noqa: BLE001 - remembering it is best-effort
             pass
+
+    def edit_parameter_hints(self) -> None:
+        self._ls_parameter_hints()  # type: ignore[attr-defined]
+
+    def tools_language_servers(self) -> None:
+        import wx
+
+        from quill.ui.language_servers_dialog import LanguageServersDialog
+
+        window = LanguageServersDialog(self.frame, self.settings)
+        try:
+            if self._show_modal_dialog(window.dialog, "Language Servers") != wx.ID_OK:
+                return
+            window.apply()
+        finally:
+            window.destroy()
+        try:
+            from quill.core.settings import save_settings
+
+            save_settings(self.settings)
+        except Exception:  # noqa: BLE001 - remembering it is best-effort
+            pass
+        self._set_status("Language server settings saved")
+
+    def _problems_replace(self, start: int, end: int, text: str) -> None:
+        from quill.ui.atomic_edit import replace_as_one_undo
+
+        replace_as_one_undo(self.editor, start, end, text)
 
     def view_problems_this_file(self) -> None:
         self._problems_choose_files(False)

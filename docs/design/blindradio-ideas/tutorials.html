@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
@@ -180,15 +180,72 @@
       vertical-align: middle;
     }
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Tutorials for the BlindRadio ideas</h1>
-</header>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1 id="tutorials-for-the-blindradio-ideas">Tutorials for the BlindRadio
 ideas</h1>
 <p>Branch <code>feat/br-tutorials</code>. Six guided lessons in Quill
-Radio's Help &gt; Tutorials (Ctrl+Alt+F1) for the features on
+Radio’s Help &gt; Tutorials (Ctrl+Alt+F1) for the features on
 <code>feat/radio-blindradio-ideas</code>. The features come from
 BlindRadio by serrebidev (MIT, Copyright (c) 2026 serrebidev); each new
 lesson module credits the idea in its docstring and its closing
@@ -262,10 +319,10 @@ is being built separately.</p>
 <p>27 minutes and 32 steps added. New totals: <strong>50 lessons, 330
 steps, about 292 minutes</strong> (was 44 lessons, 298 steps, 265
 minutes).</p>
-<p>Order: the Networks lesson sits after "Find stations by name, tag and
-country" and before "Add a station nobody lists". The five living
-lessons sit after "Sleeping, waking, and being left alone" and before
-"Shape the sound".</p>
+<p>Order: the Networks lesson sits after “Find stations by name, tag and
+country” and before “Add a station nobody lists”. The five living
+lessons sit after “Sleeping, waking, and being left alone” and before
+“Shape the sound”.</p>
 <p>Commands named (all real ids, keys from
 <code>APP_KEYMAPS["radio"]</code>): <code>radio.browse</code> (Ctrl+B),
 <code>radio.station_playlist</code> (Alt+Shift+H),
@@ -288,8 +345,8 @@ are modal, not peer windows, so no window check is possible there, as
 with the other modal surfaces. No new check ids were added.</p>
 <p>The scrobbling and AudD lessons need no account: the token boxes are
 named and left empty, and the last step offers Escape. The scrobbling
-lesson's note says what OK with the check box on and no token says
-("ListenBrainz is on, but there is no user token yet.").</p>
+lesson’s note says what OK with the check box on and no token says
+(“ListenBrainz is on, but there is no user token yet.”).</p>
 <p>Generated: <code>standalone/radio/docs/tutorials.md</code> (by
 <code>python -m quill.tools.build_tutorials_reference --app radio --write</code>),
 and its <code>tutorials.html</code> and <code>tutorials.epub</code>,
@@ -306,8 +363,8 @@ integrator</h2>
 <blockquote>
 <p>50 guided tutorials (Ctrl+Alt+F1)</p>
 </blockquote>
-<p><code>standalone/radio/docs/userguide.md</code>, "Learning by doing:
-the tutorials" (about line 123). Replace:</p>
+<p><code>standalone/radio/docs/userguide.md</code>, “Learning by doing:
+the tutorials” (about line 123). Replace:</p>
 <blockquote>
 <p>Quill Radio comes with 44 short guided lessons.</p>
 </blockquote>
@@ -316,7 +373,7 @@ the tutorials" (about line 123). Replace:</p>
 <p>Quill Radio comes with 50 short guided lessons.</p>
 </blockquote>
 <p><code>standalone/radio/docs/userguide.md</code>, Chapter 16
-"Tutorials" (about line 7188). Replace:</p>
+“Tutorials” (about line 7188). Replace:</p>
 <blockquote>
 <p>opens 44 guided lessons, 298 steps in</p>
 </blockquote>
@@ -326,12 +383,12 @@ the tutorials" (about line 123). Replace:</p>
 </blockquote>
 <p>The historical counts in <code>announcement-3.0.md</code> and
 <code>release-notes-3.0.md</code> (41 lessons) describe that release and
-should stay. <code>docs/design/wordpress.md</code>'s "44 lessons" is
-QUILL's own set, not Radio's.</p>
+should stay. <code>docs/design/wordpress.md</code>’s “44 lessons” is
+QUILL’s own set, not Radio’s.</p>
 <h2 id="user-guide-text-to-add-lesson-pointers">User-guide text to add
 (lesson pointers)</h2>
-<p>Chapter 6, the paragraph that starts "The <strong>Finding something
-to listen to</strong> track". Replace its lesson list with:</p>
+<p>Chapter 6, the paragraph that starts “The <strong>Finding something
+to listen to</strong> track”. Replace its lesson list with:</p>
 <blockquote>
 <p>The <strong>Finding something to listen to</strong> track of the
 tutorials walks through all of this: <strong>Wander the browse
@@ -342,24 +399,24 @@ broadcaster, or a public station</strong>, <strong>Add a station nobody
 lists</strong>, <strong>The catalog on your own disk</strong> and
 <strong>When a station will not play</strong>.</p>
 </blockquote>
-<p>Chapter 4, at the end of "Jumping between songs in the buffer"
-(before "Saving songs from the buffer" or after it):</p>
+<p>Chapter 4, at the end of “Jumping between songs in the buffer”
+(before “Saving songs from the buffer” or after it):</p>
 <blockquote>
 <p>The tutorial <strong>Jump between songs, and save one</strong> walks
 through this, and <strong>Give one station a time-shift length of its
 own</strong> covers the length.</p>
 </blockquote>
-<p>Chapter 5, at the end of "What the Station Played, step by step":</p>
+<p>Chapter 5, at the end of “What the Station Played, step by step”:</p>
 <blockquote>
 <p>The tutorial <strong>Ask the station what it played</strong> walks
 through this.</p>
 </blockquote>
-<p>Chapter 5, at the end of "Choosing AudD instead of AcoustID":</p>
+<p>Chapter 5, at the end of “Choosing AudD instead of AcoustID”:</p>
 <blockquote>
 <p>The tutorial <strong>AcoustID or AudD: which one names the
 song</strong> explains the choice without changing anything.</p>
 </blockquote>
-<p>Chapter 5, at the end of the ListenBrainz steps in "Scrobbling":</p>
+<p>Chapter 5, at the end of the ListenBrainz steps in “Scrobbling”:</p>
 <blockquote>
 <p>The tutorial <strong>Keep a list of what you heard on
 ListenBrainz</strong> shows you where everything is, and needs no
@@ -388,10 +445,10 @@ AudD lessons are completable without an account.</p>
 ids.</p>
 <h2 id="not-done-or-not-verified">Not done or not verified</h2>
 <ul>
-<li>The "hear" lines were written from the code's announcement strings
+<li>The “hear” lines were written from the code’s announcement strings
 and the user guide; they were not checked against JAWS or NVDA live. Two
 are approximate: the Networks folder row (the exact wording of a channel
-count, written as "how many channels it holds") and the Preferences
+count, written as “how many channels it holds”) and the Preferences
 group controls (written as a screen reader would read a check box and an
 edit box).</li>
 <li>The Networks lesson tells the listener to arrow down to the branch;
@@ -399,5 +456,6 @@ the tree order puts Networks about twenty rows down.</li>
 <li>The user guide and README were not edited; the text above is for the
 integrator.</li>
 </ul>
+</main>
 </body>
 </html>

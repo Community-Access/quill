@@ -132,7 +132,7 @@ class _Show:
         )
         monkeypatch.setattr(self.stream, "_popen", self._popen)
 
-    def _popen(self, command, *, stdout):
+    def _popen(self, command, *, stdout, stderr=True):
         if command[-1] == "show.flac":
             return self.archive
         proc = _Proc(_Sink(self.encoder_hold))
@@ -404,7 +404,7 @@ def test_a_shoutcast_password_refused_on_a_retry_stops_there(monkeypatch):
     monkeypatch.setattr(show.stream, "_shoutcast_login", login)
     original = show._popen
 
-    def popen(command, *, stdout):
+    def popen(command, *, stdout, stderr=True):
         proc = original(command, stdout=stdout)
         proc.stdout = _Empty()
         return proc
@@ -416,5 +416,28 @@ def test_a_shoutcast_password_refused_on_a_retry_stops_there(monkeypatch):
         time.sleep(0.3)
         assert len(calls) == 2
         assert show.stream.ended
+    finally:
+        show.stream.stop()
+
+
+def test_the_saved_copys_error_pipe_goes_nowhere_so_it_cannot_fill(monkeypatch):
+    """Nobody reads the archive FFmpeg's stderr; a pipe would fill and stall the copy."""
+    import subprocess
+
+    from quill.platform.windows import live_stream
+
+    show = _Show(monkeypatch, archive=True)
+    pipes: dict[str, object] = {}
+
+    def fake_popen(command, **kwargs):
+        pipes["archive" if command[-1] == "show.flac" else "encoder"] = kwargs["stderr"]
+        return fakes(command, stdout=False)
+
+    fakes = show._popen
+    monkeypatch.delattr(show.stream, "_popen")  # the real _popen, over a fake Popen
+    monkeypatch.setattr(live_stream.subprocess, "Popen", fake_popen)
+    show.stream.start()
+    try:
+        assert pipes == {"archive": subprocess.DEVNULL, "encoder": subprocess.PIPE}
     finally:
         show.stream.stop()

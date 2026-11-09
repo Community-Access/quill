@@ -216,7 +216,7 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioAiMix
 
         def failed(_task_id, error):
             self._capture_pending = False
-            self._set_status(f"Capture did not complete: {error}")
+            self._announce(f"Capture did not complete: {error}")  # a failure is heard
 
         self._capture_task = self._task_manager.submit(
             "Capture screen",
@@ -439,7 +439,7 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioAiMix
             )
 
         def failed(_task, error):
-            self._set_status(
+            self._announce(
                 f"Automatic screenshot analysis failed; the image remains saved: {error}"
             )
 

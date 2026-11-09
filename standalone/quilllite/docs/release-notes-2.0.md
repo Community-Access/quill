@@ -8,6 +8,17 @@ gentle suggestion to sign in instead, a token about to expire gets a warning a
 few days ahead, and with GitHub Workbench Mode on, a **Workbench** cell on the
 status bar names the repository you're in. It all works as it does in QUILL.
 
+## Your code, understood
+
+QUILL Lite now carries the language servers VS Code uses: HTML, CSS, JSON,
+Markdown, JavaScript, TypeScript and Python. Press **Ctrl+.** in `console.lo`
+and you hear "log, method". Check This File finds the problems a compiler
+would, and does it in code files as well as Markdown and HTML. **Quick
+Fix...** on a problem in the Problems pane fixes it in one step, and
+**Navigate > Code > Parameter Hints** tells you which argument you're on.
+It all comes in the box, it never uses the internet, and **Navigate > Code >
+Language Servers...** switches any of it off.
+
 ## A GitHub menu, when you want one
 
 Turn on **View > GitHub Workbench Mode** (press Alt+V, then K) and a

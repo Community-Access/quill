@@ -88,21 +88,21 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
 
     def cmd_check_this_file(self) -> None:
         """Check This File: every problem in a Markdown or HTML document, as a list."""
-        if self._problems_surface() is None:
+        if not self._problems_can_check():
             self._announce(_NOTHING_TO_CHECK)
             return
         self._check_this_file()
 
     def cmd_next_problem(self) -> None:
         """Next Problem: move to the next problem and say what it is."""
-        if self._problems_surface() is None:
+        if not self._problems_can_check():
             self._announce(_NOTHING_TO_CHECK)
             return
         self._step_problem(forward=True)
 
     def cmd_previous_problem(self) -> None:
         """Previous Problem: as Next Problem, backwards."""
-        if self._problems_surface() is None:
+        if not self._problems_can_check():
             self._announce(_NOTHING_TO_CHECK)
             return
         self._step_problem(forward=False)
@@ -134,7 +134,25 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
         return self._problems_all_files_setting()
 
     def _problems_can_check(self) -> bool:
-        return self._problems_surface() is not None
+        serves = getattr(self, "_ls_serves", None)
+        return self._problems_surface() is not None or bool(
+            callable(serves) and serves(self._problems_path())
+        )
+
+    def _problems_replace(self, start: int, end: int, text: str) -> None:
+        from quill.ui.atomic_edit import replace_as_one_undo
+
+        replace_as_one_undo(self.control, start, end, text)
+
+    def _problems_in_background(self, work: Any, done: Any) -> None:
+        from quill.apps.lite_window_open import app_task_manager
+
+        app_task_manager(self.app).submit(
+            "check-this-file",
+            lambda **_kwargs: work(),
+            on_success=lambda _op, report: done(report),
+            on_failure=lambda _op, error: self._announce(f"Check This File failed: {error}"),
+        )
 
     def _problems_pane(self, *, create: bool) -> Any:
         pane = getattr(self, "_problems_pane_widget", None)
@@ -157,6 +175,7 @@ class DocumentCodeNavMixin(ProblemsCommandsMixin):
             set_pause_enabled=self._problems_set_pause_enabled,
             set_all_files=self._problems_set_all_files,
             switch_files=self._problems_switch_files,
+            quick_fix=self._problems_quick_fix,
         )
         pane.panel.SetMinSize(dip_size(pane.panel, -1, 140))
         pane.panel.Hide()

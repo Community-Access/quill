@@ -213,6 +213,12 @@ def _install_audio() -> None:
     wave_out = _optional("quill.platform.windows.wave_out")
     if wave_out is not None:
         _patch(wave_out, "_winmm", lambda: None)
+    dial_hiss = _optional("quill.ui.radio.dial_hiss_player")
+    if dial_hiss is not None:
+        # The dial hiss loops through MCI, not winsound: no winmm device either,
+        # so it falls back to the recording winsound above.
+        real_mci = dial_hiss.mci_backend
+        _patch(dial_hiss, "mci_backend", lambda send=None: None if send is None else real_mci(send))
     winrt_engine = _optional("quill.ui.audio.winrt_engine")
     if winrt_engine is not None:
         _patch(winrt_engine, "winrt_media_available", lambda: False)

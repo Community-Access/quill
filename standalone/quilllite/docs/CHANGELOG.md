@@ -16,6 +16,15 @@
   "Workbench: owner/name" or "Workbench". F6 reaches it, it's never read out
   on its own, and it leaves with the mode. QUILL has the same cell.
 
+### Language servers (2026-11-08)
+
+- QUILL's language servers, in QUILL Lite: HTML, CSS, JSON, Markdown,
+  JavaScript, TypeScript and Python. Word Prediction asks them first, Check
+  This File and the Problems pane include their problems (so code files can
+  be checked too), Quick Fix applies their fixes, and Navigate > Code >
+  Parameter Hints says which argument you're on. Navigate > Code > Language
+  Servers... switches each one and each use. Nothing uses the internet.
+
 ### GitHub Workbench Mode and Clone Repository (2026-11-08)
 
 - View > GitHub Workbench Mode (Alt+V, then K) is a check item, per window.

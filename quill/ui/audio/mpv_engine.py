@@ -25,7 +25,9 @@ import ctypes
 import logging
 import os
 import sys
-from collections.abc import Callable
+import threading
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 import wx
@@ -168,43 +170,68 @@ class _MpvClient:
         if lib.mpv_initialize(self._handle) < 0:
             lib.mpv_terminate_destroy(self._handle)
             raise OSError("mpv_initialize failed")
+        # Calls may come from a worker (Radio's Save Songs runs a long
+        # dump-cache there), so the handle is never destroyed under a call:
+        # close() during one defers the destroy to the moment it returns.
+        self._guard = threading.Lock()
+        self._busy = 0
+        self._closing = False
+
+    @contextmanager
+    def _use(self) -> Iterator[ctypes.c_void_p]:
+        with self._guard:
+            if not self._handle or self._closing:
+                raise OSError("The mpv client is no longer available.")
+            self._busy += 1
+        try:
+            yield self._handle
+        finally:
+            with self._guard:
+                self._busy -= 1
+                destroy = self._closing and self._busy == 0 and bool(self._handle)
+            if destroy:
+                self._destroy()
+
+    def _destroy(self) -> None:
+        handle, self._handle = self._handle, ctypes.c_void_p(None)
+        self._lib.mpv_terminate_destroy(handle)
 
     def close(self) -> None:
-        if self._handle:
-            self._lib.mpv_terminate_destroy(self._handle)
-            self._handle = ctypes.c_void_p(None)
+        with self._guard:
+            if not self._handle or self._closing:
+                return
+            self._closing = True
+            if self._busy:
+                return
+        self._destroy()
 
     def command(self, *args: str) -> None:
-        if not self._handle:
-            raise OSError("The mpv client is no longer available.")
         encoded = [a.encode("utf-8") for a in args]
         array = (ctypes.c_char_p * (len(encoded) + 1))(*encoded, None)
-        status = int(self._lib.mpv_command(self._handle, array))
+        with self._use() as handle:
+            status = int(self._lib.mpv_command(handle, array))
         if status < 0:
             raise OSError(f"mpv rejected an audio command (status {status}).")
 
     def set_str(self, name: str, value: str) -> int:
         """Set a property; the mpv status (0 on success, negative on refusal)."""
-        if not self._handle:
-            raise OSError("The mpv client is no longer available.")
-        return int(self._lib.mpv_set_property_string(self._handle, name.encode(), value.encode()))
+        with self._use() as handle:
+            return int(self._lib.mpv_set_property_string(handle, name.encode(), value.encode()))
 
     def get_double(self, name: str) -> float | None:
-        if not self._handle:
-            raise OSError("The mpv client is no longer available.")
         out = ctypes.c_double(0.0)
-        status = self._lib.mpv_get_property(
-            self._handle, name.encode(), _MPV_FORMAT_DOUBLE, ctypes.byref(out)
-        )
+        with self._use() as handle:
+            status = self._lib.mpv_get_property(
+                handle, name.encode(), _MPV_FORMAT_DOUBLE, ctypes.byref(out)
+            )
         return float(out.value) if status >= 0 else None
 
     def get_flag(self, name: str) -> bool | None:
-        if not self._handle:
-            raise OSError("The mpv client is no longer available.")
         out = ctypes.c_int(0)
-        status = self._lib.mpv_get_property(
-            self._handle, name.encode(), _MPV_FORMAT_FLAG, ctypes.byref(out)
-        )
+        with self._use() as handle:
+            status = self._lib.mpv_get_property(
+                handle, name.encode(), _MPV_FORMAT_FLAG, ctypes.byref(out)
+            )
         return bool(out.value) if status >= 0 else None
 
     def get_str(self, name: str) -> str | None:
@@ -213,18 +240,17 @@ class _MpvClient:
         The returned C string is owned by libmpv and must be released with
         ``mpv_free`` -- copied out before freeing.
         """
-        if not self._handle:
-            raise OSError("The mpv client is no longer available.")
         out = ctypes.c_char_p(None)
-        status = self._lib.mpv_get_property(
-            self._handle, name.encode(), _MPV_FORMAT_STRING, ctypes.byref(out)
-        )
-        if status < 0 or out.value is None:
-            return None
-        try:
-            return out.value.decode("utf-8", "replace")
-        finally:
-            self._lib.mpv_free(out)
+        with self._use() as handle:
+            status = self._lib.mpv_get_property(
+                handle, name.encode(), _MPV_FORMAT_STRING, ctypes.byref(out)
+            )
+            if status < 0 or out.value is None:
+                return None
+            try:
+                return out.value.decode("utf-8", "replace")
+            finally:
+                self._lib.mpv_free(out)
 
 
 class MpvAudioEngine:

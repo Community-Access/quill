@@ -154,6 +154,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.problems_pane": "",  # no chord free in both editors; see the gate's reason
     "view.problems_this_file": "",
     "view.problems_all_files": "",
+    "edit.parameter_hints": "",  # no chord free in both; Navigate > Code
+    "tools.language_servers": "",
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
     "app.preferences": "Ctrl+,",

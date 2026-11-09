@@ -256,6 +256,40 @@ a day, with a Notifications entry that takes you to Manage GitHub
 Accounts. And while GitHub Workbench Mode is on, a
 <strong>Workbench</strong> cell on the status bar names the repository
 you’re working in.</p>
+<h2 id="quill-speaks-code-the-way-vs-code-thinks-it">QUILL speaks code
+the way VS Code thinks it</h2>
+<p>Here’s a small moment that used to take a long time. You’re in a
+JavaScript file and you type <code>console.lo</code>, and you can’t
+remember whether it’s <code>log</code> or <code>logger</code> or
+something else entirely. Now you press <strong>Ctrl+.</strong> and QUILL
+says “log, method”. Enter, done.</p>
+<p>That’s a language server talking: the same engines VS Code uses to
+understand code, now inside QUILL. VS Code’s own servers for HTML, CSS,
+JSON and Markdown; TypeScript’s language service for JavaScript and
+TypeScript; and Pyright, the open-source heart of Pylance, for Python.
+They come with QUILL, with the Node they run on, so there’s nothing to
+install, and none of them ever touches the internet.</p>
+<p>They don’t add new keys to learn. They make the keys you know
+smarter:</p>
+<ul>
+<li><strong>Ctrl+.</strong> asks the server first, so the list knows
+what can actually go where your caret is, and says what each thing
+is.</li>
+<li><strong>Check This File</strong> and the <strong>Problems
+pane</strong> find the problems a compiler would: a string where a
+number belongs, a name that doesn’t exist, a property a module doesn’t
+have.</li>
+<li><strong>Quick Fix…</strong>, on a problem in the pane, offers the
+server’s fixes. Pick one and it’s done, as a single undo step.</li>
+<li><strong>Parameter Hints</strong>, in Navigate &gt; Code, tells you
+which argument you’re typing: “Parameter 2 of 2, limit: int”. Turn on
+Parameter hints as you type and you’ll hear it every time you type an
+opening bracket or a comma.</li>
+</ul>
+<p>A server starts the first time you need it, not when QUILL starts,
+and goes to sleep when you stop using it. <strong>Navigate &gt; Code
+&gt; Language Servers…</strong> lets you switch any of it, or all of it,
+off. QUILL Lite has every bit of it.</p>
 <h2 id="a-github-menu-when-you-want-one">A GitHub menu, when you want
 one</h2>
 <p>Turn on <strong>View &gt; GitHub Workbench Mode</strong> (press

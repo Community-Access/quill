@@ -234,6 +234,12 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "view.problems_pane": "Reached another way: View > Problems > Show Pane, in both editors, "
     "and F6 once it is shown. Ctrl+Shift+M, VS Code's key, is Set Mark in both, and no "
     "chord near it was free in both (measured 2026-11-08); shown once, it stays (rule 9).",
+    "edit.parameter_hints": "Reached another way: Navigate > Code > Parameter Hints in both "
+    "editors, and Parameter hints as you type says it unasked. Ctrl+Shift+. and "
+    "Ctrl+Alt+Shift+Space (the Keyboard Manager) are taken in both, and nothing near "
+    "them was free in both (measured 2026-11-08) (rule 9).",
+    "tools.language_servers": "Reached another way: Navigate > Code > Language Servers... "
+    "in both editors. A settings window visited once in a while (rule 9).",
     "edit.paste_file": "Reached another way: Edit > Clipboard > Paste Copied Files..., in both "
     "editors. No chord was free in both (measured 2026-11-07), and it asks text or paths "
     "next, so a chord would save little (rule 9).",

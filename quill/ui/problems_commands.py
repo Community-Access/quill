@@ -31,7 +31,7 @@ from __future__ import annotations
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from quill.core.problems import (
     CheckReport,
@@ -41,7 +41,7 @@ from quill.core.problems import (
     problem_after,
     summarize,
 )
-from quill.core.problems.model import Problem, list_row
+from quill.core.problems.model import Problem, list_row, sort_problems
 from quill.core.problems.outside import tools_for
 from quill.core.problems.pane import OpenProblemDocument, combine_reports
 
@@ -141,6 +141,58 @@ class ProblemsCommandsMixin:
         # that stays open: check again, then go to the same problem where it
         # is now. If the fix removed it, say so rather than land on a stale line.
         self._run_problem_check(lambda fresh: self._go_to_same_problem(fresh, problem))
+
+    def _problems_quick_fix(self, index: int) -> None:
+        """Quick Fix on a pane row: the server's fixes for it, chosen from a list."""
+        report = self._problems_report
+        if report is None:
+            return
+        origins = self._problems_pane_origins
+        if origins is not None:
+            if not 0 <= index < len(origins):
+                return
+            key, problem = origins[index]
+            if key != self._problems_document_key():
+                self._problems_say("Go to that document first, then ask for a quick fix")
+                return
+        elif 0 <= index < len(report.problems):
+            problem = report.problems[index]
+        else:
+            return
+        ask = getattr(self, "_ls_quick_fixes", None)
+        path = self._problems_path()
+        text = self._problems_text()
+        if not callable(ask) or not ask(
+            path, text, problem, lambda fixes: self._offer_quick_fixes(text, fixes)
+        ):
+            self._problems_say("No quick fix: no language server for this file")
+
+    def _offer_quick_fixes(self, text: str, fixes: list[Any] | None) -> None:
+        from quill.core.lsp.convert import apply_text_edits
+
+        if not fixes:
+            self._problems_say("No quick fix for this problem")
+            return
+        if self._problems_text() != text:
+            self._problems_say("The text changed; ask for the quick fix again")
+            return
+        noun = "quick fix" if len(fixes) == 1 else "quick fixes"
+        chosen = self._problems_choose(f"{len(fixes)} {noun}.", [fix.title for fix in fixes])
+        if chosen is None:
+            return
+        fix = fixes[chosen]
+        new_text = apply_text_edits(text, fix.edits)
+        start = 0
+        while start < min(len(text), len(new_text)) and text[start] == new_text[start]:
+            start += 1
+        end_old, end_new = len(text), len(new_text)
+        while end_old > start and end_new > start and text[end_old - 1] == new_text[end_new - 1]:
+            end_old -= 1
+            end_new -= 1
+        # One span, one undo step: Ctrl+Z takes the whole fix back.
+        self._problems_replace(start, end_old, new_text[start:end_new])
+        self._problems_say(f"Fixed: {fix.title}")
+        self._run_problem_check(lambda _report: None, quiet=True)
 
     def _go_to_same_problem(self, report: CheckReport, wanted: Problem) -> None:
         matches = [
@@ -323,9 +375,26 @@ class ProblemsCommandsMixin:
         modified = self._problems_modified()
         outside = self._problems_outside_allowed()
 
+        server_problems = getattr(self, "_ls_problems_for", None)
+        serves = getattr(self, "_ls_serves", None)
+        use_server = callable(server_problems) and callable(serves) and bool(serves(path))
+
         def work() -> CheckReport:
-            return check_document(
+            report = check_document(
                 text, language=language, path=path, modified=modified, outside=outside
+            )
+            if not use_server:
+                return report
+            # Layer 4: the language server's problems beside the checkers'.
+            found = server_problems(path, text)  # type: ignore[misc]
+            if found is None:
+                return report
+            name = found[0].source if found else "language server"
+            return CheckReport(
+                language=report.language,
+                problems=sort_problems([*report.problems, *found]),
+                checked_with=(*report.checked_with, name),
+                notes=report.notes,
             )
 
         def done(report: CheckReport) -> None:
@@ -334,7 +403,7 @@ class ProblemsCommandsMixin:
             self._problems_last_auto_changed = self._feed_problems_pane(report)
             then(report)
 
-        if outside and tools_for(language):
+        if use_server or (outside and tools_for(language)):
             # An outside tool can take seconds; the window stays responsive.
             if not quiet:
                 self._problems_say("Checking this file")
@@ -388,6 +457,10 @@ class ProblemsCommandsMixin:
 
     def _problems_mark_all_files(self, all_files: bool) -> None:
         """Check the View > Problems row that matches; nothing is saved."""
+
+    def _problems_replace(self, start: int, end: int, text: str) -> None:
+        """Replace ``[start, end)`` of the document with *text* as one undo step."""
+        raise NotImplementedError
 
     def _problems_open_documents(self) -> list[OpenProblemDocument]:
         """Every open document, for the pane's All open files; [] means just this one."""

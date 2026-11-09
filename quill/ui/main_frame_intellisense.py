@@ -11,10 +11,11 @@ from __future__ import annotations
 from typing import Any
 
 from quill.platform.sr_announce import announce
+from quill.ui.language_servers import LanguageServerMixin
 from quill.ui.suggestion_list import SuggestionListMixin
 
 
-class IntellisensePopupMixin(SuggestionListMixin):
+class IntellisensePopupMixin(LanguageServerMixin, SuggestionListMixin):
     # Host-provided by MainFrame: type-only annotations, never method stubs.
     _wx: Any
     frame: Any
@@ -75,6 +76,15 @@ class IntellisensePopupMixin(SuggestionListMixin):
             on_failure=lambda _op, _error: done(None),
         )
         return True
+
+    def _ls_settings(self) -> Any:
+        return self.settings
+
+    def _refresh_intellisense_popup(self) -> None:
+        # QUILL calls this after every text change (main_frame_typing), which
+        # is also the moment Parameter Hints As You Type listens for.
+        super()._refresh_intellisense_popup()
+        self._ls_after_char()
 
     def _suggest_say(self, message: str) -> None:
         self._set_status(message)

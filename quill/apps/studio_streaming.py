@@ -15,6 +15,8 @@ from pathlib import Path
 import wx
 
 _FILE = "studio-streams.json"
+#: The protected-jobs key a live show holds, so closing Studio asks first.
+_ON_AIR = "Broadcasting live"
 
 
 class StudioStreamingMixin:
@@ -117,6 +119,9 @@ class StudioStreamingMixin:
             if status:
                 status.Show()
                 status.Raise()
+            return
+        if getattr(self, "_live_starting", False):
+            self._announce("Studio is already going live.")
             return
         ffmpeg = self._demo_ffmpeg()
         if not ffmpeg:
@@ -224,14 +229,21 @@ class StudioStreamingMixin:
             studio_pid=os.getpid(),
         )
         self._announce_settled("Going live.")
+        self._live_starting = True
 
         def work(**_kwargs):
-            stream.start()
+            try:
+                stream.start()
+            except BaseException:
+                stream.stop()  # here, not on the UI thread: it can wait 17 seconds
+                raise
 
         def live(_task, _result):
             from quill.ui.studio_live_status import LiveStatusFrame
 
+            self._live_starting = False
             self._live, self._live_lock = stream, lock
+            self._protected_background_jobs[_ON_AIR] = _ON_AIR
             self._demo_quiet_start(_QuietPlan())
             self._live_status = LiveStatusFrame(
                 status=stream.status_line,
@@ -244,8 +256,8 @@ class StudioStreamingMixin:
             # two seconds of audio (BCAST-027): a connection alone is not a show.
 
         def failed(_task, error):
+            self._live_starting = False
             self._release_demo_microphone(lock)
-            stream.stop()
             self._announce(f"Could not go live: {error}")
 
         self._task_manager.submit(
@@ -294,10 +306,11 @@ class StudioStreamingMixin:
             self._announce("Nothing is being broadcast.")
             return
         self._live = None
+        self._protected_background_jobs.pop(_ON_AIR, None)
         status, self._live_status = getattr(self, "_live_status", None), None
         if status:
             status.finish()
-        lock = getattr(self, "_live_lock", None)
+        lock, self._live_lock = getattr(self, "_live_lock", None), None
 
         def work(**_kwargs):
             stream.stop()
@@ -321,10 +334,21 @@ class StudioStreamingMixin:
         )
 
     def _stream_shutdown(self) -> None:
+        """On exit while on air: the status window and its timer go too (or the
+        app never exits), and the microphone lock is handed back."""
         stream = getattr(self, "_live", None)
-        if stream is not None:
-            self._live = None
+        if stream is None:
+            return
+        self._live = None
+        self._protected_background_jobs.pop(_ON_AIR, None)
+        status, self._live_status = getattr(self, "_live_status", None), None
+        if status:
+            status.finish()
+        try:
             stream.stop()
+        finally:
+            self._release_demo_microphone(getattr(self, "_live_lock", None))
+            self._live_lock = None
             self._demo_quiet_stop()
 
 

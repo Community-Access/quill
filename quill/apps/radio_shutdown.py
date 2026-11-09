@@ -41,6 +41,8 @@ def run_radio_shutdown(app: Any) -> None:
         BEST_EFFORT,
         lambda: app.stop_weather_monitoring(announce=False, persist=False),
     )
+    # Songs heard but not yet queued are written down before the workers stop.
+    report.step("scrobbling", BEST_EFFORT, lambda: _stop_scrobbling(app))
     for timer_attr in ("_radio_last_seen_timer", "_ipc_timer"):
         timer = getattr(app, timer_attr, None)
         if timer is not None:
@@ -73,6 +75,12 @@ def run_radio_shutdown(app: Any) -> None:
     report.step("second_output", BEST_EFFORT, lambda: _stop_second_output(app))
     report.step("tray", BEST_EFFORT, lambda: app._remove_tray_icon())
     report.persist(app_data_dir())
+
+
+def _stop_scrobbling(app: Any) -> None:
+    from quill.ui.radio import scrobble_commands
+
+    scrobble_commands.shutdown(app)
 
 
 def _release_favorite_hotkeys(app: Any) -> None:
