@@ -222,6 +222,7 @@ COMMANDS: list[CommandRow] = [
     # (bad.md 5.4). Alt+Shift+G and Ctrl+Alt+L still go straight to their own
     # list, which is the faster route when you already know which kind you want.
     ("&Edit", "&Go To...", "Ctrl+G", "cmd_goto_line", ""),
+    ("&Edit", "&Word Prediction...", "Ctrl+.", "cmd_word_prediction", ""),  # QUILL's (rule 2)
     ("&Edit", "", "", "", "sep"),
     # A screen reader says "space" for four different characters. This is the
     # only way to find out which one broke the search.

@@ -275,7 +275,9 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "edit.find_next": "core.search",
     "edit.find_previous": "core.search",
     "edit.find_all_matches": "core.search",
-    "edit.word_prediction": "core.intellisense",
+    # In every profile: a list you ask for cannot get in anyone's way. The
+    # profile switch (core.intellisense) governs only "as you type".
+    "edit.word_prediction": "core.edit",
     "edit.replace": "core.search",
     "edit.replace_all": "core.search.regex",
     "edit.insert_link": "core.links",

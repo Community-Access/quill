@@ -564,6 +564,24 @@ see them in Manage Abbreviations if you choose that category. They are not
 abbreviations, though: they never expand just because **Expand Abbreviations**
 is on, and they are not in **Snippets**.
 
+### Word Prediction (Ctrl+.)
+
+Halfway through a long word, press **Ctrl+.** (Edit > Word Prediction...).
+A short list of suggestions opens, and you hear how many there are and the
+first one, such as "8 prediction(s). elephant". Your focus stays in the
+document.
+
+- **Up** and **Down** move through the list and say each suggestion.
+- **Enter** or **Tab** puts the one you've chosen in place of the part of the
+  word you typed, and nothing else.
+- **Escape** closes the list and leaves your text exactly as it was.
+- Keep typing with the list open and it narrows to match.
+
+The suggestions come from the spelling dictionary and the words already in
+your document, plus Markdown and HTML tags where they fit. It's QUILL's list
+on QUILL's key. QUILL can also open it on its own as you type; QUILL Lite
+only opens it when you ask.
+
 ## Undo, and getting text back
 
 | Key | What it does |

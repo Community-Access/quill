@@ -1,5 +1,11 @@
 # QUILL Lite 2.0
 
+## Word Prediction
+
+Press **Ctrl+.** halfway through a word and QUILL Lite offers a short list of
+words and tags. Up and Down say each one, Enter puts it in, and Escape leaves
+your text alone. It's QUILL's list, on QUILL's key.
+
 ## A Problems pane that stays open
 
 Turn on **View > Problems Pane** and the problems Check This File finds stay

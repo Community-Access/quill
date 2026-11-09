@@ -2,6 +2,13 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+## Word Prediction in every profile
+
+**Ctrl+.** now opens Word Prediction in every profile, including the two that
+left it out. It only opens when you press the key; Word Prediction As You
+Type is still off unless you turn it on. QUILL Lite has the same list on the
+same key.
+
 ## A Problems pane that stays open
 
 Check This File's list closed as soon as you picked a problem. Now you can

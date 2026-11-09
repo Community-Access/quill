@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### Word Prediction (2026-11-08)
+
+- Edit > Word Prediction... (Ctrl+., Alt+E, then W) suggests the word you're
+  typing from the spelling dictionary and your document, plus Markdown and
+  HTML tags. Up and Down say each one, Enter or Tab inserts it, and Escape
+  closes the list without changing your text. It's QUILL's list, from the
+  same shared code, on QUILL's key.
+
 ### The Problems pane (2026-11-08)
 
 - View > Problems Pane (Alt+V, then P) docks the problems Check This File finds

@@ -202,11 +202,11 @@ TypeScript Worker. The TypeScript console needs Node.js. The console also
 needs **Enable Developer Console** on the Administration page of Settings.
 Appendix A of the QUILL user guide covers it fully.
 
-## Word prediction, in QUILL
+## Word prediction, in both editors
 
-**Word Prediction...** (`Ctrl+.`) offers words and snippets as a list you
-choose from, never as ghost text. It is on but quiet in the Developer
-profile.
+**Word Prediction...** (`Ctrl+.`) offers words and tags as a list you choose
+from, never as ghost text, and only when you press the key. It works in
+every profile, and in QUILL Lite on the same key.
 
 ## Shell integration, in QUILL
 

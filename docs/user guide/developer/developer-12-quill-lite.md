@@ -89,10 +89,10 @@ GitHub dependency.
 
 QUILL Lite is the editor-only sibling, so the developer tools that are not
 about editing are QUILL's alone: Local Git and worktrees, Codespaces,
-editing over SSH, the Developer Console, Word Prediction, shell
-integration and Validate Agents. QUILL Lite has the folder search, encodings
-and line endings, document language, folding, line comments and the
-indentation tools (Chapter 11).
+editing over SSH, the Developer Console, shell integration and Validate
+Agents. QUILL Lite has the folder search, encodings and line endings,
+document language, folding, line comments, the indentation tools and Word
+Prediction on `Ctrl+.` (Chapter 11).
 
 QUILL Lite is never ahead of QUILL: anything it gains for coding, QUILL gains
 in the same change.

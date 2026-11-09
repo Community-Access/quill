@@ -97,8 +97,8 @@ These are on only in Developer and Full Quill:
   depends on Developer Tools.
 - **The Developer Console,** the Python and TypeScript consoles under
   **Tools > Advanced > Developer Console**.
-- **Word Prediction** (`Ctrl+.`), which is on but quiet in the Developer
-  profile.
+- **Word Prediction As You Type**, which is on but quiet in the Developer
+  profile. Word Prediction itself (`Ctrl+.`) is in every profile.
 - **Validate Agents,** the agent standards check, reached from an agent in
   the AI Library.
 

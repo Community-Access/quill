@@ -702,11 +702,22 @@ Recommendation: servers first for the languages they cover, since
 they’re better than a parser there, and tree-sitter later for the long
 tail of other languages.</li>
 </ol>
+<h2 id="progress">Progress</h2>
+<ul>
+<li>2026-11-08: Problems pane P1 in both editors (PR #1798): docked, F6,
+Show and Source filters, Go To with a re-check after edits, the count
+sentence; no chord (rule 9).</li>
+<li>2026-11-08: Phase 1. The suggestion list moved into
+<code>quill/ui/suggestion_list.py</code>; QUILL’s
+<code>main_frame_intellisense.py</code> is its adapter and QUILL Lite’s
+is <code>quill/apps/lite_window_word_prediction.py</code> (Edit &gt;
+Word Prediction…, Ctrl+.). The key works in every QUILL profile; “as you
+type” stays off by default and still follows the profile.</li>
+</ul>
 <h2 id="remaining-tasks">Remaining tasks</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" />Problems pane P1 (in progress on
-branch <code>claude/intellisense-problems-pane-e3cdff</code>), then P2
-to P4.</label></li>
+<li><label><input type="checkbox" />Problems pane P2 to P4 (P1 is PR
+#1798).</label></li>
 <li><label><input type="checkbox" />P2: check when you save, as well as
 after a pause (both off by default, both say the count only when it
 changes).</label></li>
@@ -715,11 +726,17 @@ package before bundling it (TypeScript, vscode-langservers-extracted,
 Pyright, the Roslyn language server).</label></li>
 <li><label><input type="checkbox" />Measure Node plus the servers in the
 shared runtime.</label></li>
+<li><label><input type="checkbox" />Layer 4 phase: bundle ripgrep
+(<code>rg.exe</code>, about 5 MB) beside Node in the shared runtime,
+pinned and SHA-256 checked like Pandoc. Read its licence (MIT or
+Unlicense) from the release first, record it in THIRD-PARTY-NOTICES and
+the component inventory, and add a network-audit note that it is local
+only. Layer 2’s project index uses it when present and falls back to the
+pure-Python walk. Ask Jeff before the first download (parent session,
+2026-11-08, with Jeff’s go-ahead).</label></li>
 <li><label><input type="checkbox" />Choose a key for parameter hints:
 Ctrl+Shift+. is taken in both editors (measured
 2026-11-08).</label></li>
-<li><label><input type="checkbox" />Phase 1: shared list, Lite command,
-every profile.</label></li>
 <li><label><input type="checkbox" />Phase 2: layer 1.</label></li>
 <li><label><input type="checkbox" />Phase 3: layer 2.</label></li>
 <li><label><input type="checkbox" />Measure the tree-sitter grammar size
