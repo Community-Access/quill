@@ -36,12 +36,13 @@ def server_row(spec: Any) -> str:
     return f"{spec.name} ({serves}): {server_status(spec)}"
 
 
-class LanguageServersDialog:
+class LanguageServersDialog(wx.Dialog):
     """The window; :meth:`apply` writes the choices back to *settings*."""
 
     def __init__(self, parent: Any, settings: Any) -> None:
         self._settings = settings
-        self.dialog = wx.Dialog(parent, title="Language Servers")
+        super().__init__(parent, title="Language Servers")
+        self.dialog = self
         root = wx.BoxSizer(wx.VERTICAL)
         pad = self.dialog.FromDIP(8)
 
@@ -112,4 +113,4 @@ class LanguageServersDialog:
             setattr(settings, setting, bool(box.GetValue()))
 
     def destroy(self) -> None:
-        self.dialog.Destroy()
+        self.Destroy()

@@ -495,8 +495,8 @@ JSON and Markdown servers, TypeScript's for JavaScript and TypeScript, and
 Pyright for Python. In those files, Check This File and the Problems pane
 include their problems too, so a `.py`, `.js` or `.json` file can be checked
 here as well as Markdown and HTML. **Navigate > Code > Parameter Hints** says
-which argument you're on inside a call, and **Navigate > Code > Language
-Servers...** switches any of it on or off. None of them uses the internet.
+which argument you're on inside a call, and
+**Navigate > Code > Language Servers...** switches any of it on or off. None of them uses the internet.
 - While the pane is on, saving checks the document again, and so does a
   moment's pause in typing if you check **Check after a pause** beside the
   choosers (it starts off). You hear only the new count, and only when it
