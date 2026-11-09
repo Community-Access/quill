@@ -53,6 +53,7 @@ class _Host(CodeNavMixin):
         self.moves: list[tuple[str, int]] = []
         self.chosen: int | None = None
         self.lists: list[tuple[str, list[str]]] = []
+        self.titles: list[str] = []
         self.background: list[Any] = []
 
     def _set_status(self, message: str) -> None:
@@ -64,8 +65,11 @@ class _Host(CodeNavMixin):
     def _record_location_before_jump(self) -> None:
         pass
 
-    def _problems_choose(self, summary: str, rows: list[str]) -> int | None:
+    def _problems_choose(
+        self, summary: str, rows: list[str], *, title: str = "Problems"
+    ) -> int | None:
         self.lists.append((summary, rows))
+        self.titles.append(title)
         return self.chosen
 
     def _problems_in_background(self, work, done) -> None:  # type: ignore[no-untyped-def]
@@ -447,3 +451,103 @@ def test_the_default_setting_decides_the_first_showing(no_settings_write: list[A
     host.view_toggle_problems_pane()
     assert host._problems_all_files is True
     assert host.said[-1].startswith("Problems pane shown, all open files.")
+
+
+# -- review 2026-11-09 -----------------------------------------------------------
+
+
+class _Utf16Editor(_Editor):
+    """An editor whose positions are UTF-16 units, as wxMSW's are."""
+
+    def __init__(self, text: str, caret: int = 0) -> None:
+        super().__init__(text, caret)
+        self.value_reads = 0
+
+    def GetValue(self) -> str:  # noqa: N802
+        self.value_reads += 1
+        return self.text
+
+    def GetLastPosition(self) -> int:  # noqa: N802
+        return len(self.text.encode("utf-16-le")) // 2
+
+
+def _units(text: str) -> int:
+    return len(text.encode("utf-16-le")) // 2
+
+
+@pytest.mark.skipif(__import__("sys").platform != "win32", reason="UTF-16 positions are wxMSW's")
+def test_next_problem_after_an_emoji_lands_on_the_problem(no_settings_write: list[Any]) -> None:
+    """QUILL 5: an emoji early in the file must not shift Next Problem by one."""
+    text = '{"face": "\U0001f600",\n  "b": \n}\n'
+    host = _Host(text, "data.json")
+    host.editor = _Utf16Editor(text)
+    host.navigate_next_problem()
+    assert host.editor.caret == _units(text[: text.index("}")])
+    from quill.core.navigation import indent_change_target
+
+    host.editor.caret = 0
+    host.navigate_next_indent()
+    assert host.editor.caret == _units(text[: indent_change_target(text, 0, forward=True)])
+
+
+def test_the_pane_timer_does_not_copy_the_buffer_while_nothing_changes() -> None:
+    """QUILL 8: a change token is compared, the text read only when a check is due."""
+    host = _shown_host('{"a": }\n')
+    host.editor = _Utf16Editor(host.editor.text)
+    host.document.revision = 1
+    host.document.modified = True
+    for second in range(10):
+        host._problems_tick(now=float(second))
+    assert host.editor.value_reads == 0
+    host.document.modified = False
+    host._problems_tick(now=11.0)
+    assert host.said == ["1 problem"], "a save still checks"
+    reads = host.editor.value_reads
+    for second in range(12, 20):
+        host._problems_tick(now=float(second))
+    assert host.editor.value_reads == reads, "and the checked revision is not read again"
+
+
+def test_all_open_files_checks_the_other_documents_in_the_background() -> None:
+    """QUILL 10: the other tabs are checked on the task manager, not the UI thread."""
+    host = _PaneHost('{"a": }\n', "data.json")
+    host._problems_pane_widget.shown = True
+    host.document.name = "data.json"
+    other = _Tab("[a]\nx=1\nx=2\n", "settings.ini")
+    host._document_tabs = [SimpleNamespace(editor=host.editor, document=host.document), other]
+    host._active_tab_index = 0
+    host.tools_check_this_file()
+    before = len(host.background)
+    deferred: list[Any] = []
+    host._problems_in_background = lambda work, done: deferred.append((work, done))
+    host._problems_set_all_files(True)
+    assert len(deferred) == 1 and len(host.background) == before
+    assert len(host._problems_pane_widget.report.problems) == 1, "not until it finishes"
+    work, done = deferred.pop()
+    done(work())
+    assert len(host._problems_pane_widget.report.problems) == 2
+    assert host.said[-1] == "2 problems"
+
+
+def test_rebuilding_the_menu_binds_view_problems_once(wx_session_app: Any) -> None:
+    """QUILL 17: each rebuild bound three more handlers to fresh ids."""
+    import wx
+
+    host = _PaneHost("x", "a.json")
+    host._id_problems_pane = None
+    host._problems_scope_ids = None
+    binds: list[Any] = []
+    host.frame = SimpleNamespace(
+        Bind=lambda _event, _handler, id=None: binds.append(id),  # noqa: A006 - wx's name
+        GetSizer=host.frame.GetSizer,
+        GetMenuBar=lambda: None,
+    )
+    host._menu_label = lambda title, _command: title
+    menus = [wx.Menu(), wx.Menu()]
+    host._append_problems_pane_item(menus[0])
+    ids = (host._id_problems_pane, *host._problems_scope_ids)
+    host._append_problems_pane_item(menus[1])
+    assert (host._id_problems_pane, *host._problems_scope_ids) == ids
+    assert len(binds) == 3
+    for menu in menus:
+        menu.Destroy()

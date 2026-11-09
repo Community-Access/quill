@@ -88,3 +88,16 @@ def test_imports_in_several_languages() -> None:
         '#include "point.h"\nuse std::io;\n'
     )
     assert imported_modules(text) >= {"code_names", "os", "util", "widgets", "point", "io"}
+
+
+def test_a_loose_file_has_no_marked_project_and_is_never_indexed(tmp_path: Path) -> None:
+    """Review 2026-11-09, QUILL Lite 12: a file on the Desktop must not index the Desktop."""
+    from quill.core.project_names import marked_project_root
+
+    loose = tmp_path / "desk" / "note.py"
+    loose.parent.mkdir()
+    loose.write_text("x = 1\n", encoding="utf-8")
+    assert marked_project_root(loose) is None
+    assert project_root_for(loose) == loose.parent.resolve(), "a server still gets a folder"
+    (tmp_path / "desk" / "pyproject.toml").write_text("", encoding="utf-8")
+    assert marked_project_root(loose) == loose.parent.resolve()

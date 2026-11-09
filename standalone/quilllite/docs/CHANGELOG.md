@@ -2,6 +2,30 @@
 
 ## 2.0.0
 
+### Problems, Word Prediction and Indent: fixes (2026-11-09)
+
+- Indent and Outdent, from the Tools menu or the Tab key, change only the
+  start of each line now. In a rich or Word document they used to rewrite the
+  whole document as plain text and drop your headings and bold.
+- "Nothing to indent" is said for Indent, once, instead of "Nothing to
+  outdent" followed by the depth.
+- An emoji early in a file no longer throws Next Block, Next Indent Change,
+  the problem keys, Word Prediction or Indent off by one.
+- Word Prediction inserts for the word at the caret now, even after a menu key
+  moved it, and the list closes when you switch windows or move focus away.
+- Closing a window stops its Problems pane, and a check or a suggestion that
+  finishes after the window closed is dropped.
+- Only the window in front says a Problems pane count; the others update
+  quietly.
+- The Problems pane no longer copies the document twice a second or looks for
+  the language servers on disk each time, and All Open Files checks the other
+  windows in the background.
+- Word Prediction only reads a folder full of code when it is a project (it
+  has a .git folder, pyproject.toml, package.json and so on). A file on your
+  Desktop no longer makes it read the whole Desktop.
+- The Quick Fix list is called Quick Fix and names the problem it fixes, and
+  Escape in an open Show or Source list on the Problems pane only closes it.
+
 ### Language servers (2026-11-08)
 
 - QUILL's language servers, in QUILL Lite: HTML, CSS, JSON, Markdown,

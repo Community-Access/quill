@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.platform.sr_announce import announce
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.language_servers import LanguageServerMixin
 from quill.ui.suggestion_list import SuggestionListMixin
 
@@ -37,7 +38,19 @@ class IntellisensePopupMixin(LanguageServerMixin, SuggestionListMixin):
         return int(self.editor.GetInsertionPoint())
 
     def _suggest_replace(self, start: int, end: int, text: str) -> None:
-        self.editor.Replace(start, end, text)
+        # One undo step, as in QUILL Lite: Ctrl+Z takes the whole suggestion
+        # back, not part of it (review 2026-11-09, QUILL 12).
+        replace_as_one_undo(self.editor, start, end, text)
+
+    def _suggest_control(self) -> Any:
+        return self.editor
+
+    def _suggest_char_before_caret(self) -> str:
+        get_range = getattr(self.editor, "GetRange", None)
+        if not callable(get_range):
+            return super()._suggest_char_before_caret()
+        caret = int(self.editor.GetInsertionPoint())
+        return str(get_range(caret - 1, caret)) if caret > 0 else ""
 
     def _suggest_set_caret(self, offset: int) -> None:
         self.editor.SetInsertionPoint(offset)

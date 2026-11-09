@@ -58,3 +58,16 @@ def test_dictation_line_bounds_count_an_emoji_as_the_control_does() -> None:
     if sys.platform == "win32":
         assert (start, end) == (line_start, line_end)
         assert document._control.GetRange(start, end) == "hi \U0001f600 there"
+
+
+def test_offsets_convert_both_ways_around_emoji() -> None:
+    """Review 2026-11-09, QUILL 5: code points to the control's units and back."""
+    from quill.core.text_units import native_offset, text_index
+
+    text = "a\U0001f600b\U0001f600\U0001f600c"
+    units = [native_offset(text, i, platform="win32") for i in range(len(text) + 1)]
+    assert units == [0, 1, 3, 4, 6, 8, 9]
+    assert [text_index(text, u, platform="win32") for u in units] == list(range(len(text) + 1))
+    assert text_index(text, 2, platform="win32") == 2, "inside a pair: the character after"
+    assert text_index(text, 99, platform="win32") == len(text)
+    assert native_offset(text, 3, platform="linux") == text_index(text, 3, platform="linux") == 3

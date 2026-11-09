@@ -36,6 +36,7 @@ class DocumentWordPredictionMixin(LanguageServerMixin, SuggestionListMixin):
 
     def cmd_language_servers(self) -> None:
         """Language Servers: which servers run, and what they are used for."""
+        from quill.core.lsp.servers import forget_server_presence
         from quill.ui.dialog_contract import show_modal_dialog
         from quill.ui.language_servers_dialog import LanguageServersDialog
 
@@ -46,6 +47,7 @@ class DocumentWordPredictionMixin(LanguageServerMixin, SuggestionListMixin):
             window.apply()
         finally:
             window.destroy()
+        forget_server_presence()
         self.app._queue_settings_save()
         self._announce("Language server settings saved")
 
@@ -91,6 +93,19 @@ class DocumentWordPredictionMixin(LanguageServerMixin, SuggestionListMixin):
 
     def _suggest_focus_editor(self) -> None:
         self.control.SetFocus()
+
+    def _suggest_control(self) -> Any:
+        return self.control
+
+    def _suggest_window_alive(self) -> bool:
+        # A closing window leaves the app's list before it is destroyed, so a
+        # completion or hint that answers late finds it gone (QUILL Lite 3).
+        frames = getattr(self.app, "frames", None)
+        return frames is None or self in frames
+
+    def _suggest_char_before_caret(self) -> str:
+        caret = int(self.control.GetInsertionPoint())
+        return str(self.control.GetRange(caret - 1, caret)) if caret > 0 else ""
 
     def _suggest_screen_position(self) -> tuple[int, int]:
         position = self.control.GetScreenPosition()
