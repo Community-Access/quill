@@ -1,8 +1,7 @@
 # Quill Radio 3.2
 
-Version 3.2.0 (build 5), the beta for testers, October 2026. 3.2.0 was
-prepared on 2026-10-03 and is not yet published; the last published version
-is 3.0.4.
+Version 3.2.0, the beta, November 2026. The last published version is 3.0.4.
+Help > About (Alt+F1) shows the exact build you have.
 
 Welcome to Quill Radio 3.2. Turn it on, and you'll notice it has learned a few
 tricks. You can ask it about the song that's playing. It plays your own music

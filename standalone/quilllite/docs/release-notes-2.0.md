@@ -1,7 +1,7 @@
 # QUILL Lite 2.0
 
-*Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1); the last
-published version is 1.1.2.*
+*Version 2.0.0, the beta, November 2026. The last published version is 1.1.2.
+Help > About (Alt+F1) shows the exact build you have.*
 
 Welcome to QUILL Lite 2.0. It's the first release since 1.1.2, and it's a big
 one. QUILL Lite is still the small, quick editor you know, the one that opens

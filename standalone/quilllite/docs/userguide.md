@@ -1,8 +1,7 @@
 # QUILL Lite User Guide
 
-*For QUILL Lite 2.0.0 (build 1), the beta for testers, October 2026. 2.0.0
-was prepared as 1.2.0 on October 3, 2026, renumbered on October 31, and is
-not yet published; the last published version is 1.1.2.*
+*For QUILL Lite 2.0.0, the beta, November 2026. The last published version is
+1.1.2. Help > About (Alt+F1) shows the exact build you have.*
 
 This is the guide to QUILL Lite, the text editor for people who use a screen
 reader. You can open any text file, change it, and save it back exactly the

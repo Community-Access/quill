@@ -1,6 +1,6 @@
 # QUILL Cast -- Product Requirements
 
-Version 2.0.0 (build 5). Status, 2026-10-17: in beta for testers, not yet published. Everything in the changelog's 2.0.0 section is built and documented.
+Version 2.0.0. Status, 2026-11-09: going out as a public beta, not yet a full release. Everything in the changelog's 2.0.0 section is built and documented.
 
 **Distribution licensing:** Installed Cast editions use the QuillVille
 Runtime, which includes PyMuPDF 1.28.2 under AGPL-3.0 through GLOW, although

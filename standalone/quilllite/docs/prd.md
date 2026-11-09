@@ -12,8 +12,8 @@ requirement does not claim they are already present in Lite.
 
 **Version 2.0.0 (build 1) · Windows · MIT · part of the QuillVille family**
 
-Status, 2026-10-31: 2.0.0 (prepared as 1.2.0 through six testing builds) is
-in beta for testers and not yet published; the last published version is
+Status, 2026-11-09: 2.0.0 (prepared as 1.2.0 through six testing builds) goes
+out as a public beta; the last published version is
 1.1.2 (1.0.0 was first released on 2026-09-25).
 Everything in the changelog's 2.0.0 section is built and
 documented.

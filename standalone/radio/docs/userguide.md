@@ -1,8 +1,7 @@
 # Quill Radio User Guide
 
-Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0 was
-prepared on 2026-10-03 and is not yet published; the last published version
-is 3.0.4.
+Version 3.2.0, the beta, November 2026. The last published version is 3.0.4.
+Help > About (Alt+F1) shows the exact build you have.
 
 **Source change in 3.2.0:** The built-in SomaFM source has been retired in
 the shared Radio code in response to its published third-party-client terms.
