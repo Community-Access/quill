@@ -38,6 +38,15 @@
   left as it was.
 - Local Git and Clone now find Git when Windows reports it as git.EXE.
 
+### The Problems pane checks on save, and after a pause if you like (2026-11-08)
+
+- While the Problems pane is on, saving checks the file again.
+- A **Check after a pause** box beside the pane's choosers checks it again a
+  moment after you stop typing. It's off by default and remembered.
+- These checks say nothing but the new count, such as "2 problems", and only
+  when the count has changed. QUILL Lite has the same pane and the same box.
+
+
 ### Word Prediction knows your project (2026-11-08)
 
 - When the file's own names leave room, Ctrl+. fills the list with names from

@@ -44,7 +44,14 @@ def pane(wx_session_app: Any):
 
     ensure_help_provider(wx)  # without one, SetHelpText stores nothing
     frame = wx.Frame(None)
-    record: dict[str, list[Any]] = {"go": [], "back": [], "copy": [], "say": []}
+    record: dict[str, list[Any]] = {
+        "go": [],
+        "back": [],
+        "copy": [],
+        "say": [],
+        "tick": [],
+        "pause": [],
+    }
     widget = ProblemsPane(
         wx,
         frame,
@@ -52,6 +59,8 @@ def pane(wx_session_app: Any):
         back_to_editor=lambda: record["back"].append(True),
         copy_text=record["copy"].append,
         say=record["say"].append,
+        tick=lambda: record["tick"].append(True),
+        set_pause_enabled=record["pause"].append,
     )
     widget.record = record  # type: ignore[attr-defined]
     yield widget
@@ -138,6 +147,23 @@ def test_copy_message_copies_and_says_so(pane) -> None:
     assert pane.record["say"] == ["Message copied"]
 
 
+def test_the_timer_runs_only_while_shown_and_ticks_the_host(pane) -> None:
+    pane.set_shown(True)
+    assert pane._timer.IsRunning()
+    pane._on_timer(None)
+    assert pane.record["tick"] == [True]
+    pane.set_shown(False)
+    assert not pane._timer.IsRunning()
+
+
+def test_check_after_a_pause_box_is_off_and_tells_the_host(pane) -> None:
+    assert not pane.pause_enabled()
+    pane._pause.SetValue(True)
+    pane._on_pause(None)
+    assert pane.record["pause"] == [True]
+    assert pane.record["say"] == [], "the reader says a check box's new state"
+
+
 def test_every_control_has_inline_help(pane) -> None:
-    for control in (pane.panel, pane._show, pane._source, pane._list):
+    for control in (pane.panel, pane._show, pane._source, pane._pause, pane._list):
         assert control.GetHelpText()

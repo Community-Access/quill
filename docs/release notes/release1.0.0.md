@@ -39,8 +39,10 @@ turn on **View > Problems Pane** and keep the problems under the document
 while you fix them. F6 reaches it, Enter goes to a problem, and Escape comes
 back without closing it. Two choosers at the top narrow it to errors only, or
 to one checker, and say the new count. If you've edited since the check,
-Enter checks again and finds the same problem where it is now. QUILL Lite has
-the same pane.
+Enter checks again and finds the same problem where it is now. While it's on,
+saving checks the file again, and a Check after a pause box does the same
+when you stop typing; either way you hear only a changed count. QUILL Lite
+has the same pane.
 
 ## Sign in to GitHub without a token
 

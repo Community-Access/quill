@@ -480,6 +480,10 @@ While it's on, Check This File fills the pane instead of opening the list.
   warnings, or errors only) and **Source** (one checker). Changing either says
   the new count.
 - The context key on a row has **Go To** and **Copy Message**.
+- While the pane is on, saving checks the document again, and so does a
+  moment's pause in typing if you check **Check after a pause** beside the
+  choosers (it starts off). You hear only the new count, and only when it
+  changes.
 
 The pane has no shortcut key; Ctrl+Shift+M, the usual one, is Set Mark here
 and in QUILL. You can give it one in the Keyboard Manager.
