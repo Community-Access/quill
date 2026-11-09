@@ -29,7 +29,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from quill.core.problems import CheckReport, language_key
+from quill.core.problems import language_key
 from quill.ui.problems_commands import ProblemsCommandsMixin
 
 #: Navigate > Code, top to bottom: ``(command id, menu label, palette label,
@@ -109,23 +109,29 @@ class CodeNavMixin(ProblemsCommandsMixin):
 
     def _navigate_indent(self, *, forward: bool) -> None:
         from quill.core.navigation import describe_indent, indent_change_target
+        from quill.core.text_units import native_offset, text_index
 
         text = self.editor.GetValue()
         tab_size = int(getattr(self._current_language_profile(), "indent_unit", 4) or 4)
-        target = indent_change_target(
-            text, self.editor.GetInsertionPoint(), forward=forward, tab_size=max(tab_size, 1)
+        # The navigation works in code points, the control in UTF-16 units.
+        found = indent_change_target(
+            text,
+            text_index(text, self.editor.GetInsertionPoint()),
+            forward=forward,
+            tab_size=max(tab_size, 1),
         )
-        if target is None:
+        if found is None:
             self._set_status(
                 "No change of indent below" if forward else "No change of indent above"
             )
             return
+        target = native_offset(text, found)
         self._record_location_before_jump()
         self.editor.SetInsertionPoint(target)
         self.editor.SetSelection(target, target)
         self.editor.SetFocus()
         self._location_ring.record(target)
-        self._announce_navigation_move(describe_indent(text, target).capitalize(), target)
+        self._announce_navigation_move(describe_indent(text, found).capitalize(), target)
 
     # -- Check This File and the problem keys -------------------------------- #
 
@@ -155,6 +161,15 @@ class CodeNavMixin(ProblemsCommandsMixin):
     def _problems_modified(self) -> bool:
         return bool(getattr(self.document, "modified", True))
 
+    def _problems_change_token(self) -> object:
+        # The document counts its own edits, so the pane's timer compares a
+        # number rather than copying the buffer (review 2026-11-09, QUILL 8).
+        revision = getattr(self.document, "revision", None)
+        last = getattr(self.editor, "GetLastPosition", None)
+        if revision is None or not callable(last):
+            return None
+        return (id(self.document), revision, int(last()))
+
     def _problems_outside_allowed(self) -> bool:
         return True
 
@@ -168,26 +183,31 @@ class CodeNavMixin(ProblemsCommandsMixin):
     def _problems_say(self, message: str) -> None:
         self._set_status(message)
 
-    def _problems_choose(self, summary: str, rows: list[str]) -> int | None:
+    def _problems_choose(
+        self, summary: str, rows: list[str], *, title: str = "Problems"
+    ) -> int | None:
         import wx
 
         from quill.ui.dialog_contract import apply_modal_ids
 
+        prompt = (
+            "Choose a fix to apply it:"
+            if title == "Quick Fix"
+            else ("Choose a problem to go to it:")
+        )
         with wx.SingleChoiceDialog(
             self.frame,
-            f"{summary} Choose a problem to go to it:",
-            "Problems",
+            f"{summary} {prompt}",
+            title,
             choices=rows,
         ) as dialog:
             dialog.SetSelection(0)
             apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-            if self._show_modal_dialog(dialog, "Problems") != wx.ID_OK:
+            if self._show_modal_dialog(dialog, title) != wx.ID_OK:
                 return None
             return int(dialog.GetSelection())
 
-    def _problems_in_background(
-        self, work: Callable[[], CheckReport], done: Callable[[CheckReport], None]
-    ) -> None:
+    def _problems_in_background(self, work: Callable[[], Any], done: Callable[[Any], None]) -> None:
         manager = getattr(self, "_task_manager", None)
         if manager is None:
             done(work())
@@ -278,13 +298,13 @@ class CodeNavMixin(ProblemsCommandsMixin):
         from quill.core.problems.pane import OpenProblemDocument
 
         documents = []
-        for index, tab in enumerate(list(getattr(self, "_document_tabs", []) or [])):
+        for tab in list(getattr(self, "_document_tabs", []) or []):
             document = tab.document
             path = getattr(document, "path", None)
             profile = getattr(tab, "_language_profile", None) or get_profile_for_path(path)
             documents.append(
                 OpenProblemDocument(
-                    key=index,
+                    key=tab,
                     name=getattr(document, "name", "") or "Untitled",
                     text=str(tab.editor.GetValue()),
                     language=language_key(getattr(profile, "name", None), path),
@@ -295,13 +315,19 @@ class CodeNavMixin(ProblemsCommandsMixin):
         return documents
 
     def _problems_document_key(self) -> object:
-        return int(getattr(self, "_active_tab_index", 0) or 0)
+        # The tab itself, not its index: closing a tab shifts every index
+        # after it, and a row would then bring the wrong document forward.
+        tabs = list(getattr(self, "_document_tabs", []) or [])
+        index = int(getattr(self, "_active_tab_index", 0) or 0)
+        return tabs[index] if 0 <= index < len(tabs) else None
 
     def _problems_go_to_document(self, key: object, line: int, column: int) -> None:
-        from quill.core.problems import offset_for
-
-        self._select_tab(int(key))  # type: ignore[attr-defined, call-overload]
-        self._problems_go_to(offset_for(self._problems_text(), line, column))
+        tabs = list(getattr(self, "_document_tabs", []) or [])
+        if key not in tabs:
+            self._problems_say("That document is closed")
+            return
+        self._select_tab(tabs.index(key))  # type: ignore[attr-defined]
+        self._problems_go_to_line(self._problems_text(), line, column)
 
     def _problems_pause_enabled(self) -> bool:
         return bool(getattr(self.settings, "problems_check_after_pause", False))
@@ -330,6 +356,9 @@ class CodeNavMixin(ProblemsCommandsMixin):
             window.apply()
         finally:
             window.destroy()
+        from quill.core.lsp.servers import forget_server_presence
+
+        forget_server_presence()
         try:
             from quill.core.settings import save_settings
 
@@ -378,9 +407,13 @@ class CodeNavMixin(ProblemsCommandsMixin):
 
         label = self._menu_label  # type: ignore[attr-defined]
         submenu = wx.Menu()
-        self._id_problems_pane = wx.NewIdRef()
-        this_id, all_id = wx.NewIdRef(), wx.NewIdRef()
-        self._problems_scope_ids = (this_id, all_id)
+        # The ids, and their handlers, once for the window's life: each menu
+        # rebuild binding three more handlers is a leak, and with fresh ids
+        # the old bindings never go away (review 2026-11-09, QUILL 17).
+        if getattr(self, "_problems_scope_ids", None) is None:
+            self._id_problems_pane = wx.NewIdRef()
+            self._problems_scope_ids = (wx.NewIdRef(), wx.NewIdRef())
+        this_id, all_id = self._problems_scope_ids
         submenu.AppendCheckItem(
             self._id_problems_pane, label(_("&Show Pane"), "view.problems_pane")
         )
@@ -398,6 +431,9 @@ class CodeNavMixin(ProblemsCommandsMixin):
             else self._problems_all_files_setting()
         )
         submenu.Check(all_id if listing_all else this_id, True)
+        if getattr(self, "_problems_menu_wired", False):
+            return
+        self._problems_menu_wired = True
         for item_id, run in (
             (self._id_problems_pane, self.view_toggle_problems_pane),
             (this_id, self.view_problems_this_file),

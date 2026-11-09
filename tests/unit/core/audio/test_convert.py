@@ -368,3 +368,31 @@ def test_default_worker_count_is_positive() -> None:
 def test_empty_batch_is_a_noop() -> None:
     result = cv.run_conversion_batch("ffmpeg", [], single_runner=lambda f, j: cv.JobResult(j, True))
     assert result.results == [] and result.converted == 0
+
+
+def test_overwrite_never_replaces_a_source_in_its_own_folder(tmp_path: Path) -> None:
+    # MP3 to MP3 into the source folder, with Overwrite: the original survives.
+    src = _make(tmp_path, "song.mp3")
+    other = _make(tmp_path, "other.wav")
+    (tmp_path / "other.mp3").write_bytes(b"an earlier conversion")
+    jobs, skipped = cv.plan_jobs(
+        [(src, None), (other, None)],
+        tmp_path,
+        ConversionSpec(fmt="mp3"),
+        on_existing=OnExisting.OVERWRITE,
+    )
+    assert not skipped
+    assert jobs[0].dest.name == "song (1).mp3"  # renamed, not over the source
+    assert jobs[1].dest.name == "other.mp3"  # a file that is not a source is replaced
+
+
+def test_the_runner_refuses_to_write_over_its_own_source(tmp_path: Path) -> None:
+    from quill.core.audio import convert_runner
+
+    src = _make(tmp_path, "song.mp3")
+    before = src.read_bytes()
+    result = convert_runner._default_single_runner(
+        "ffmpeg-does-not-exist", ConversionJob(src, src, ConversionSpec(fmt="mp3"))
+    )
+    assert not result.ok and "replace the original" in result.error
+    assert src.read_bytes() == before

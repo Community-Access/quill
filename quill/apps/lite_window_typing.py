@@ -332,12 +332,15 @@ class DocumentTypingMixin(DocumentAbbreviationsMixin, DocumentTypingAssistMixin)
         if not any(held) and table_tab is not None and table_tab(backwards=event.ShiftDown()):
             return True
         if event.ShiftDown():
-            self.cmd_outdent(announce=False)
+            changed = self.cmd_outdent(announce=False)
         elif self._tab_types_a_tab():
             return False
         else:
-            self.cmd_indent(announce=False)
-        self._announce(self.describe_indent_at_cursor())
+            changed = self.cmd_indent(announce=False)
+        if changed is not False:
+            # A refusal has already been said; the depth would be a second
+            # sentence for one key (review 2026-11-09, QUILL Lite 13).
+            self._announce(self.describe_indent_at_cursor())
         return True
 
     def _tab_types_a_tab(self) -> bool:

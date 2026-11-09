@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.radio import lastfm, listenbrainz, radio_credentials
-from quill.core.radio.scrobble_queue import RETRY, Outcome, ScrobbleQueue
+from quill.core.radio.scrobble_queue import REJECTED, RETRY, Outcome, ScrobbleQueue
 from quill.core.radio.scrobble_tracker import Listen
 
 PRIVACY_NOTE = (
@@ -121,7 +121,9 @@ def submit_due(
     """Send every due batch for every signed-in service. Runs on a worker.
 
     Returns ``(service id, outcome)`` for each batch tried. A RETRY stops that
-    service for this round; the queue says when to try again.
+    service for this round; the queue says when to try again. A batch refused
+    as a whole is sent again one song at a time, so one song the service will
+    not take never throws away the other forty-nine.
     """
     results: list[tuple[str, Outcome]] = []
     for service_id in accounts.services():
@@ -130,11 +132,45 @@ def submit_due(
             if not batch:
                 break
             outcome = _send(service_id, accounts, batch, safe_mode=safe_mode, post=post)
-            queue.settle(service_id, batch, outcome, now=now)
-            results.append((service_id, outcome))
+            if outcome.kind == REJECTED and len(batch) > 1:
+                outcome = _send_singly(
+                    queue,
+                    accounts,
+                    service_id,
+                    batch,
+                    results,
+                    now=now,
+                    safe_mode=safe_mode,
+                    post=post,
+                )
+            else:
+                queue.settle(service_id, batch, outcome, now=now)
+                results.append((service_id, outcome))
             if outcome.kind == RETRY or queue.is_blocked(service_id):
                 break
     return results
+
+
+def _send_singly(
+    queue: ScrobbleQueue,
+    accounts: Accounts,
+    service_id: str,
+    batch: list[Listen],
+    results: list[tuple[str, Outcome]],
+    *,
+    now: float,
+    safe_mode: bool,
+    post: Callable[..., Any] | None,
+) -> Outcome:
+    """A refused batch, again one song at a time; the last outcome is returned."""
+    outcome = Outcome(REJECTED)
+    for listen in batch:
+        outcome = _send(service_id, accounts, [listen], safe_mode=safe_mode, post=post)
+        queue.settle(service_id, [listen], outcome, now=now)
+        results.append((service_id, outcome))
+        if outcome.kind == RETRY or queue.is_blocked(service_id):
+            break
+    return outcome
 
 
 def send_now_playing(

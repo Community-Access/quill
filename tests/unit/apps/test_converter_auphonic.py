@@ -106,7 +106,10 @@ class _Host(ConverterAuphonicMixin):
     def _set_status(self, text: str) -> None:
         self.status.append(text)
 
-    def _run_background_task(self, label: str, work: Any, on_success: Any) -> None:
+    def _run_background_task(
+        self, label: str, work: Any, on_success: Any, *, exclusive: bool = False
+    ) -> None:
+        self.exclusive = exclusive
         on_success(work(lambda *_a: None))
 
     def _destination(self) -> Path:
@@ -272,6 +275,7 @@ def test_skipped_items_are_counted_in_the_summary(env, monkeypatch) -> None:
     )
     _answer(monkeypatch, (AuphonicChoices(), "t", True, ""))
     host.process_with_auphonic()
+    assert host.exclusive  # the check is a job: Convert waits for it
     assert "1 queued item was not sent." in host.said[-1]
     assert "guest.wav: gone." in host._last_report
 

@@ -9,6 +9,23 @@
   carries it the way Windows expects, so your screen reader reads it straight
   from the control.
 
+### Problems, Word Prediction and the code keys: fixes (2026-11-09)
+
+- An emoji early in a file no longer throws Next Problem, Go To on a Problems
+  row, Next Indent Change, Word Prediction or Parameter Hints off by one.
+- Word Prediction inserts for the word at the caret when you press Enter, not
+  the word it last saw, so typing fast and pressing Enter no longer gives you
+  "countern". Moving the caret, clicking, switching windows or moving focus
+  away closes the list, and Ctrl+Z takes a whole prediction back in one step.
+- The Problems pane no longer copies the whole document twice a second to see
+  whether it changed, Parameter Hints As You Type reads one character instead
+  of the whole file, and All Open Files checks the other documents in the
+  background.
+- The Quick Fix list is called Quick Fix and names the problem it fixes.
+- Rebuilding the menus no longer piles up handlers for View > Problems.
+- Escape in an open Show or Source list on the Problems pane closes the list
+  and leaves you in the pane.
+
 ### Language servers: VS Code's smarts, inside QUILL (2026-11-08)
 
 - QUILL now carries the language servers VS Code uses: VS Code's own for HTML,

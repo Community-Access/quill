@@ -22,6 +22,10 @@ What a listener gets:
   changes the text.
 * Typing with the list open narrows it. With "as you type" on (QUILL only, off
   by default) the list also opens on its own after two letters.
+* Moving the caret any other way (Left, Right, Home, End, Page Up, Page Down,
+  a click), switching to another window or moving focus out of the text
+  closes it, and Enter always inserts for the word at the caret *now*, never
+  for the one the list was last refreshed for.
 
 If focus ever lands in the floating window (Tab, the mouse, a screen reader's
 own navigation), Escape, Enter and Tab still work there, so it is never a trap.
@@ -41,6 +45,8 @@ from quill.core.intellisense import (
     build_code_suggestions,
     build_intellisense_suggestions,
     collect_document_words,
+    extract_code_context,
+    extract_intellisense_context,
     spoken_suggestion,
     suggestions_status,
 )
@@ -48,14 +54,20 @@ from quill.core.project_names import (
     ProjectNameIndex,
     build_project_index,
     imported_modules,
-    project_root_for,
+    marked_project_root,
 )
+from quill.core.text_units import native_length, native_offset, text_index
 from quill.ui.dpi import dip_size
+from quill.ui.suggestion_watch import SuggestionWatchMixin
 
 __all__ = ["SuggestionListMixin", "SuggestionPopup", "suggestion_status"]
 
 #: How many suggestions the list holds.
 SUGGESTION_LIMIT = 8
+
+#: Keys that move the caret without typing: with the list open they close it
+#: and then move the caret as usual (review 2026-11-09, QUILL 7).
+_CARET_KEYS = ("WXK_LEFT", "WXK_RIGHT", "WXK_HOME", "WXK_END", "WXK_PAGEUP", "WXK_PAGEDOWN")
 
 #: How old a project index may be before the next Ctrl+. rebuilds it in the
 #: background (the old one answers meanwhile).
@@ -174,6 +186,15 @@ class SuggestionPopup:
     def hide(self) -> None:
         self.frame.Hide()
 
+    def contains(self, window: Any) -> bool:
+        """True when *window* is this floating window or inside it."""
+        while window is not None:
+            if window is self.frame:
+                return True
+            get_parent = getattr(window, "GetParent", None)
+            window = get_parent() if callable(get_parent) else None
+        return False
+
     def is_visible(self) -> bool:
         # The popup's frame is a child of the editor's window; if that parent
         # was torn down and rebuilt (e.g. a crash-recovery restart) without this
@@ -200,7 +221,7 @@ class SuggestionPopup:
         return self.suggestions[index]
 
 
-class SuggestionListMixin:
+class SuggestionListMixin(SuggestionWatchMixin):
     """Word Prediction's list and keys. Hooks: ``_suggest_*`` below."""
 
     _intellisense_popup: SuggestionPopup | None = None
@@ -220,7 +241,8 @@ class SuggestionListMixin:
                 self._hide_intellisense_popup()
             return False
         text = self._suggest_text()
-        cursor = self._suggest_caret()
+        # Code points from here on; the control counts UTF-16 units (QUILL 5).
+        cursor = text_index(text, self._suggest_caret())
         alias = code_language_for(self._suggest_path())
         if alias is not None:
             # A code file: its own names, with their kinds (layer 1), then
@@ -262,7 +284,11 @@ class SuggestionListMixin:
             return False
 
         def done(items: list[Any] | None) -> None:
-            if self._suggest_text() != text or self._suggest_caret() != cursor:
+            if not self._suggest_window_alive():
+                # The window closed while the server answered (QUILL Lite 3).
+                return
+            now = self._suggest_text()
+            if now != text or text_index(now, self._suggest_caret()) != cursor:
                 return
             rows = [
                 IntellisenseSuggestion(
@@ -310,6 +336,7 @@ class SuggestionListMixin:
         popup.update(suggestions, status)
         if not was_visible:
             popup.show(self._suggest_screen_position())
+            self._watch_for_caret_and_focus(popup)
             self._suggest_announce(status)
         return True
 
@@ -341,20 +368,34 @@ class SuggestionListMixin:
 
     def _apply_intellisense_selection(self) -> bool:
         popup = self._suggest_popup(create=False)
-        context = self._intellisense_context
-        if popup is None or context is None:
+        refreshed = self._intellisense_context
+        if popup is None or refreshed is None:
             return False
         suggestion = popup.selected_suggestion()
         if suggestion is None:
             return False
+        # The word at the caret now, not at the last refresh: a letter typed
+        # and Enter pressed before the list caught up gave "countern", and a
+        # caret moved by a menu key put the word somewhere else entirely
+        # (review 2026-11-09, QUILL 7 and QUILL Lite 8).
+        text = self._suggest_text()
+        cursor = text_index(text, self._suggest_caret())
+        if refreshed.mode == "code":
+            context = extract_code_context(text, cursor)
+        else:
+            context = extract_intellisense_context(text, cursor)
+        if context is None:
+            context = IntellisenseContext(
+                replacement_start=cursor, replacement_end=cursor, fragment="", mode=refreshed.mode
+            )
+        start = native_offset(text, context.replacement_start)
         self._intellisense_guard = True
         try:
             self._suggest_replace(
-                context.replacement_start, context.replacement_end, suggestion.inserted_text
+                start, native_offset(text, context.replacement_end), suggestion.inserted_text
             )
-            caret = context.replacement_start + suggestion.caret_offset
-            caret = max(0, min(caret, len(self._suggest_text())))
-            self._suggest_set_caret(caret)
+            offset = max(0, min(suggestion.caret_offset, len(suggestion.inserted_text)))
+            self._suggest_set_caret(start + native_length(suggestion.inserted_text[:offset]))
         finally:
             self._intellisense_guard = False
         self._hide_intellisense_popup()
@@ -380,6 +421,11 @@ class SuggestionListMixin:
             return True
         if key_code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER, wx.WXK_TAB):
             return self._apply_intellisense_selection()
+        if key_code in {getattr(wx, name, None) for name in _CARET_KEYS} - {None}:
+            # The caret is about to move without typing: the list is for a word
+            # it is leaving. Close it and let the key do what it does.
+            self._hide_intellisense_popup()
+            return False
         if key_code in (wx.WXK_UP, wx.WXK_DOWN):
             step = -1 if key_code == wx.WXK_UP else 1
             popup.set_selection(popup.selection_index() + step)
@@ -395,7 +441,9 @@ class SuggestionListMixin:
         self, text: str, fragment: str, already: set[str]
     ) -> list[IntellisenseSuggestion]:
         path = self._suggest_path()
-        root = project_root_for(path)
+        # Only a marked project: a loose file on the Desktop would otherwise
+        # index the whole Desktop, or the home folder (review QUILL Lite 12).
+        root = marked_project_root(path)
         if root is None:
             return []
         entry = _PROJECT_INDEXES.get(root)
@@ -461,6 +509,24 @@ class SuggestionListMixin:
 
     def _suggest_parent(self) -> Any:
         raise NotImplementedError
+
+    def _suggest_control(self) -> Any:
+        """The text control the list serves; ``None`` leaves clicks unwatched."""
+        return None
+
+    def _suggest_window_alive(self) -> bool:
+        """False once this window has closed: a late answer is dropped."""
+        return True
+
+    def _suggest_char_before_caret(self) -> str:
+        """The one character before the caret ("" at the start).
+
+        The default reads the whole text; each editor reads just that
+        character from its control.
+        """
+        text = self._suggest_text()
+        caret = text_index(text, self._suggest_caret())
+        return text[caret - 1] if 0 < caret <= len(text) else ""
 
     def _suggest_text(self) -> str:
         raise NotImplementedError

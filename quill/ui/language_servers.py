@@ -35,9 +35,15 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.lsp.pool import shared_pool
-from quill.core.lsp.servers import LANGUAGE_SERVERS, resolve_server, server_for_path
+from quill.core.lsp.servers import (
+    LANGUAGE_SERVERS,
+    resolve_server,
+    server_for_path,
+    server_present,
+)
 from quill.core.problems.model import Problem
 from quill.core.project_names import project_root_for
+from quill.core.text_units import text_index
 
 __all__ = [
     "FEATURE_SETTINGS",
@@ -97,7 +103,7 @@ class LanguageServerMixin:
         spec = server_for_path(path)
         if spec is None or spec.name in set(getattr(settings, "language_servers_off", []) or []):
             return False
-        return resolve_server(spec) is not None
+        return server_present(spec)
 
     def _ls_root(self, path: Any) -> Path | None:
         return project_root_for(path) if path is not None else None
@@ -172,10 +178,13 @@ class LanguageServerMixin:
             return
         root = self._ls_root(path)
         text = self._suggest_text()  # type: ignore[attr-defined]
-        offset = self._suggest_caret()  # type: ignore[attr-defined]
+        # The server's offsets are code points; the control's are UTF-16 units.
+        offset = text_index(text, self._suggest_caret())  # type: ignore[attr-defined]
         pool = shared_pool()
 
         def done(sentence: str) -> None:
+            if not self._suggest_window_alive():  # type: ignore[attr-defined]
+                return  # the window closed while the server answered (Lite 3)
             if sentence:
                 self._suggest_announce(sentence)  # type: ignore[attr-defined]
             elif not quiet:
@@ -184,15 +193,21 @@ class LanguageServerMixin:
         self._ls_background(lambda: pool.signature(Path(path), root, text, offset), done)
 
     def _ls_after_char(self) -> None:
-        """After a key reached the text: the character before the caret decides."""
-        text = self._suggest_text()  # type: ignore[attr-defined]
-        caret = self._suggest_caret()  # type: ignore[attr-defined]
-        if 0 < caret <= len(text):
-            self._ls_typed(text[caret - 1])
+        """After a key reached the text: the character before the caret decides.
+
+        Only that character is read, and only once the setting and a server
+        say a hint could follow: QUILL calls this after every pause in
+        typing, and reading the whole text each time was the cost (review
+        2026-11-09, QUILL 9).
+        """
+        path = self._suggest_path()  # type: ignore[attr-defined]
+        if path is None or not self._ls_wanted(path, "parameter_hints_as_you_type"):
+            return
+        self._ls_typed(self._suggest_char_before_caret())  # type: ignore[attr-defined]
 
     def _ls_typed(self, character: str) -> None:
         """After a key reached the text: speak a hint on "(" or "," if asked to."""
-        if character not in "(,":
+        if not character or character not in "(,":
             return
         path = self._suggest_path()  # type: ignore[attr-defined]
         if path is None or not self._ls_wanted(path, "parameter_hints_as_you_type"):

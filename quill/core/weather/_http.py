@@ -5,6 +5,7 @@ TLS, identifying User-Agent (NWS requires one), bounded timeout. wx-free.
 
 from __future__ import annotations
 
+import http.client
 import json
 import ssl
 import urllib.error
@@ -36,4 +37,13 @@ def http_json(url: str, *, accept: str = "application/json") -> Any:
 
 
 #: The exception classes http_json can raise, for callers' ``except`` clauses.
-HTTP_ERRORS = (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError, ValueError)
+#: ``HTTPException`` covers a reply cut short (``IncompleteRead``), which is
+#: not an ``OSError`` and used to escape every caller's handler.
+HTTP_ERRORS = (
+    urllib.error.URLError,
+    TimeoutError,
+    ssl.SSLError,
+    OSError,
+    ValueError,
+    http.client.HTTPException,
+)
