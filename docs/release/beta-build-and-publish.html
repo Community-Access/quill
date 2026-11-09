@@ -358,10 +358,11 @@ document, then run step 4 again. Commit the two rebaselined inventory
 files afterwards.</li>
 </ul></li>
 <li><strong>Collect:</strong> everything lands in
-<code>dist\release-builds\&lt;date-time&gt;\</code>: an installer and a
-portable zip per app, a zip per app, an everything zip and
-<code>SHA256SUMS.txt</code>. Share that folder (or the per-app zips)
-with the beta group together with the checksums.</li>
+<code>dist\release-builds\&lt;date-time&gt;\</code>: an installer, the
+same installer zipped on its own (for places that refuse a bare
+<code>.exe</code>) and a portable zip per app, a zip per app, an
+everything zip and <code>SHA256SUMS.txt</code>. Share that folder (or
+the per-app zips) with the beta group together with the checksums.</li>
 <li><strong>Before sending, a two-minute smoke test</strong> on each:
 install or unzip, start it, and for QUILL Lite open a
 <code>.docx</code>, edit, save, reopen; for Radio play a station; for

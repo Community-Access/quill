@@ -13,7 +13,7 @@
          (GATE-SIBVER, docs/release/RELEASE.md "A joint release of several apps").
       4. Builds each app's installer and portable zip with its own build script,
          passing the build number the source says (the app's _BUILD / APP_BUILD).
-      5. Collects each app's fresh installer and portable zip into one upload folder,
+      5. Collects each app's fresh installer (also zipped on its own) and portable zip into one upload folder,
          with the app's LICENSE.txt, THIRD-PARTY-NOTICES.txt and copyleft source
          manifest (scripts/collect_copyleft_sources.py, versions read from the
          runtime build, nothing downloaded), zips each app's set, writes
@@ -406,7 +406,7 @@ foreach ($app in $selected) {
 
 Step "Upload zips"
 if ($DryRun) {
-    Say "  Would copy each app's installer and portable zip, its LICENSE.txt and THIRD-PARTY-NOTICES.txt, and its copyleft source manifest to $uploadDir, zip each app, and write SHA256SUMS.txt."
+    Say "  Would copy each app's installer, the installer zipped on its own, and its portable zip, its LICENSE.txt and THIRD-PARTY-NOTICES.txt, and its copyleft source manifest to $uploadDir, zip each app, and write SHA256SUMS.txt."
 } elseif ($artifacts.Count -eq 0) {
     Say "  Nothing was built, so there is nothing to zip."
 } else {
@@ -419,6 +419,15 @@ if ($DryRun) {
             Copy-Item -LiteralPath $file.FullName -Destination $appDir -Force
             $hash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             $sums.Add("$hash  $app/$($file.Name)")
+            # The installer also goes up zipped on its own, for the places that
+            # refuse a bare .exe (mail, some file shares). The zip holds the same
+            # signed Setup.exe, so its signature survives the trip.
+            if ($file.Extension -eq ".exe" -and $file.Name -like "*Setup*") {
+                $setupZip = Join-Path $appDir ($file.BaseName + ".zip")
+                Compress-Archive -LiteralPath $file.FullName -DestinationPath $setupZip -Force
+                $hash = (Get-FileHash -LiteralPath $setupZip -Algorithm SHA256).Hash.ToLowerInvariant()
+                $sums.Add("$hash  $app/$(Split-Path $setupZip -Leaf)")
+            }
         }
         # The licence, the notices and the copyleft source manifest go with every
         # app. The manifest reads exact versions from the runtime build; it never
