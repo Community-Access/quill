@@ -42,9 +42,11 @@ __all__ = ["LanguageServerPool", "shared_pool"]
 logger = logging.getLogger(__name__)
 
 #: How long a check waits for a server's diagnostics after sending the text.
-DIAGNOSTICS_WAIT = 3.0
+DIAGNOSTICS_WAIT = 5.0
 #: How long a server may sit unused before it is stopped (it restarts on demand).
 IDLE_STOP = 15 * 60.0
+#: How long to wait before asking again about a file the server was just given.
+WARM_UP_RETRY = 1.0
 #: After a server fails to start, how long before it is tried again.
 RETRY_AFTER = 300.0
 
@@ -132,13 +134,23 @@ class LanguageServerPool:
         language = language_id_for(path)
         if client is None or language is None:
             return []
+        opened = client.open_documents
         uri = client.sync(path, language, text)
+        params = {"textDocument": {"uri": uri}, "position": lsp_position(text, offset)}
+        names = self._ask(client, "textDocument/completion", params, fragment, limit)
+        if not names and client.open_documents > opened:
+            # A file the server has only just been given: it is still reading
+            # it. One more try after a moment beats an empty first list.
+            time.sleep(WARM_UP_RETRY)
+            names = self._ask(client, "textDocument/completion", params, fragment, limit)
+        return names
+
+    @staticmethod
+    def _ask(
+        client: LspClient, method: str, params: dict[str, Any], fragment: str, limit: int
+    ) -> list[ServerCompletion]:
         try:
-            result = client.request(
-                "textDocument/completion",
-                {"textDocument": {"uri": uri}, "position": lsp_position(text, offset)},
-                timeout=3.0,
-            )
+            result = client.request(method, params, timeout=3.0)
         except LspError:
             return []
         return completion_names(result, fragment, limit=limit)
@@ -148,16 +160,20 @@ class LanguageServerPool:
         language = language_id_for(path)
         if client is None or language is None:
             return ""
+        opened = client.open_documents
         uri = client.sync(path, language, text)
-        try:
-            result = client.request(
-                "textDocument/signatureHelp",
-                {"textDocument": {"uri": uri}, "position": lsp_position(text, offset)},
-                timeout=3.0,
-            )
-        except LspError:
-            return ""
-        return signature_sentence(result)
+        params = {"textDocument": {"uri": uri}, "position": lsp_position(text, offset)}
+        for attempt in range(2):
+            try:
+                sentence = signature_sentence(
+                    client.request("textDocument/signatureHelp", params, timeout=3.0)
+                )
+            except LspError:
+                return ""
+            if sentence or attempt or client.open_documents <= opened:
+                return sentence
+            time.sleep(WARM_UP_RETRY)
+        return ""
 
     def problems(self, path: Path, root: Path, text: str) -> list[Problem] | None:
         """The server's problems for *text*, or None when no server answered.
@@ -174,7 +190,7 @@ class LanguageServerPool:
             event = self._arrived.setdefault(uri, threading.Event())
             event.clear()
         client.sync(path, language, text)
-        if client.capabilities.get("diagnosticProvider"):
+        if "diagnosticProvider" in client.capabilities:
             # LSP 3.17 pull diagnostics (the VS Code Markdown server): ask.
             try:
                 report = client.request(

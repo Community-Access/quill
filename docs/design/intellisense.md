@@ -164,6 +164,8 @@ Measured 2026-11-08: no chord near Ctrl+Shift+M is free in both editors, so the 
 5. **Parameter hints on Ctrl+Shift+.** if it's free in both editors? Recommendation: yes.
 6. **Language servers before or after tree-sitter?** Recommendation: servers first for the languages they cover, since they're better than a parser there, and tree-sitter later for the long tail of other languages.
 
+**Further decisions, 2026-11-08 (Jeff):** download and bundle Node 24.22.1, the servers and ripgrep ("get all language servers completed"); TypeScript 6.0.3 with typescript-language-server now, TypeScript 7's native server later ("ok, make it so"); built-in quick-fix rules, widened to the common linters' fixable rules, each family switchable ("do what you feel is best"); a formatter: Prettier 3.9.10 bundled beside the servers, and ruff format, black, clang-format, gofmt and rustfmt allowed when installed ("yes"); a way to get each unbundled tool from Settings ("provide ways for users to get these tools inside of settings"), and rich formatting settings ("make rich settings so users can chose"). The switches live in one window, Code Checks and Fixes.
+
 ## Progress
 
 - 2026-11-08: Problems pane P1 in both editors (PR #1798): docked, F6, Show and Source filters, Go To with a re-check after edits, the count sentence; no chord (rule 9).

@@ -72,6 +72,7 @@ PACKAGE_DIR = Path(__file__).with_name("language_servers")
 #: The four packages, as package.json pins them; tests read this to keep the
 #: two in step.
 LANGUAGE_SERVERS_PACKAGES = {
+    "prettier": "3.9.10",
     "pyright": "1.1.414",
     "typescript": "6.0.3",
     "typescript-language-server": "6.0.2",

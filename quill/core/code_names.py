@@ -39,6 +39,7 @@ __all__ = [
 
 #: The kinds a code suggestion can have, as they are said.
 CODE_KINDS = frozenset({
+    # Layer 1's own words.
     "function",
     "class",
     "keyword",
@@ -48,6 +49,27 @@ CODE_KINDS = frozenset({
     "constant",
     "tag",
     "type",
+    # And the language servers' (LSP CompletionItemKind, quill.core.lsp.convert).
+    "method",
+    "constructor",
+    "field",
+    "variable",
+    "interface",
+    "module",
+    "property",
+    "unit",
+    "value",
+    "enum",
+    "enum member",
+    "snippet",
+    "colour",
+    "file",
+    "folder",
+    "reference",
+    "struct",
+    "event",
+    "operator",
+    "type parameter",
 })
 
 #: How much text either side of the caret Pygments reads.

@@ -79,6 +79,15 @@ _LAYOUTS: dict[str, tuple[tuple[str, str], ...]] = {
 #: do, not to go hunting for a stray package. Remove an entry once the
 #: committed inventory lists the name.
 KNOWN_ADDITIONS: dict[str, str] = {
+    **{
+        name: (
+            "IntelliSense layer 4 (docs/design/intellisense.md), staged into tools by "
+            "build_runtime.ps1 since 2026-11-08: Node, the language servers with Prettier, "
+            "and ripgrep. Expected: rebaseline with --write after the first build that "
+            "carries them."
+        )
+        for name in ("nodejs", "language-servers", "ripgrep")
+    },
     "copilot": (
         "The GitHub Copilot SDK's package data (py.typed), collected whole by "
         "quillville-runtime.spec since 2026-10-31 (codex.md 10A.12). Expected: "
