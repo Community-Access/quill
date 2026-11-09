@@ -2,6 +2,22 @@
 
 ## 1.0.0
 
+### Jev through Community Access's service (2026-11-09)
+
+- Say or Type a Command can now use Jev without a TypeSafe key of your own.
+  When this computer is signed in to QUILL's free AI, a request the matcher on
+  your computer cannot settle goes to Community Access's service, which holds
+  the TypeSafe key and asks Jev for you. You are still asked first, once, and
+  "Match on This Computer Only" stays an equal answer.
+- Only the words you typed, the app's name and the ids of the commands this
+  window can do right now leave the computer. The service keeps its own copy of
+  each command's description, so it cannot be asked anything else, and it keeps
+  counts, never what you typed.
+- The service caps use (per computer and per network a minute, everyone a day,
+  and a monthly budget). When a cap is reached you hear one line, once, and the
+  Command Key matches on your computer until the next day.
+- Your own TypeSafe key, if you stored one, is still used first.
+
 ### Built on wxPython 4.3.2 (2026-11-09)
 
 - QUILL now runs on wxPython 4.3.2 (wxWidgets 3.3.4). The change is

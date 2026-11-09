@@ -335,9 +335,11 @@ def test_own_key_posts_the_body_to_typesafe_with_the_key() -> None:
     assert answer.ranked()[0][0] == "radio.volume_down"
 
 
-def test_the_gateway_route_is_not_deployed_yet() -> None:
+def test_the_gateway_route_needs_an_address_and_a_sign_in() -> None:
     with pytest.raises(JevDisabled):
         GatewayJev().decide(_request())
+    with pytest.raises(JevDisabled):
+        GatewayJev("https://gateway.test", lambda: "").decide(_request())
 
 
 def test_the_gateway_route_sends_state_and_version_not_questions() -> None:
@@ -349,7 +351,11 @@ def test_the_gateway_route_sends_state_and_version_not_questions() -> None:
 
     GatewayJev("https://gateway.test", lambda: "device-token", post=post).decide(_request())
     assert seen["url"] == "https://gateway.test/v1/decide"
-    assert set(seen["body"]) == {"app", "catalogue_version", "question_set", "state"}
+    assert set(seen["body"]) == {"app", "catalogue_version", "question_set", "candidates", "state"}
+    assert seen["bearer"] == "device-token"
+    # Ids only: the descriptions and questions come from the gateway's own copy.
+    assert all(isinstance(item, str) for item in seen["body"]["candidates"])
+    assert "questions" not in seen["body"]
 
 
 def test_a_limit_stops_asking_until_tomorrow() -> None:

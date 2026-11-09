@@ -65,6 +65,21 @@ class Config:
         "GATEWAY_OPENAI_SEARCH_MODEL", "gpt-4o-mini-search-preview"
     )
 
+    # --- Jev, for the Command Key (QUILL docs/design/command-key.md 7.6, 7.7) ----
+    # The TypeSafe key for POST /v1/decide. Optional: without it the route
+    # answers "disabled" and QUILL matches commands on the computer, so a
+    # missing key is a warning, never a reason to refuse to start. Never log it.
+    TYPESAFE_API_KEY = os.environ.get("TYPESAFE_API_KEY", "")
+    TYPESAFE_URL = os.environ.get("TYPESAFE_URL", "https://api.typesafe.ai/v1/systemone")
+    # QUILL gives the whole call three seconds; this leaves it time to hear back.
+    TYPESAFE_TIMEOUT_SECONDS = float(os.environ.get("GATEWAY_TYPESAFE_TIMEOUT", "2.5"))
+    JEV_ENABLED = os.environ.get("GATEWAY_JEV_ENABLED", "1") != "0"
+    # The caps (7.7). Changing one is a restart, not a new build.
+    JEV_DEVICE_PER_MINUTE = int(os.environ.get("GATEWAY_JEV_DEVICE_PER_MINUTE", "20"))
+    JEV_IP_PER_MINUTE = int(os.environ.get("GATEWAY_JEV_IP_PER_MINUTE", "60"))
+    JEV_DAILY_REQUEST_CAP = int(os.environ.get("GATEWAY_JEV_DAILY_REQUEST_CAP", "20000"))
+    JEV_MONTHLY_USD_CEILING = float(os.environ.get("GATEWAY_JEV_MONTHLY_USD_CEILING", "25"))
+
     # --- Admin allowlist ---------------------------------------------------
     # Comma-separated device_ids (or, once email accounts exist, email
     # addresses) permitted to reach the /admin/* routes. Kept out of the
@@ -138,6 +153,12 @@ class Config:
                 "restart. If you are past first-run, this is a configuration "
                 "mistake."
             )
+        if not self.TYPESAFE_API_KEY:
+            notes.append(
+                "TYPESAFE_API_KEY is not set, so POST /v1/decide answers "
+                "'disabled' and QUILL's Command Key matches on the computer. "
+                "Set it beside OPENAI_API_KEY to turn Jev on."
+            )
         if not self.ALERT_WEBHOOK_URL:
             notes.append(
                 "GATEWAY_ALERT_WEBHOOK_URL is not set, so the 50%, 75% and 90% "
@@ -157,3 +178,4 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")
     REDIS_URL = os.environ.get("TEST_REDIS_URL", "redis://localhost:6379/15")
     ADMIN_ALLOWLIST = frozenset({"test-admin-device"})
+    TYPESAFE_API_KEY = "test-typesafe-key-never-used"
