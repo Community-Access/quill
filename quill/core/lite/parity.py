@@ -312,7 +312,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_dictation_context": "tools.windows_dictation_context",
     "cmd_dictation_status": "tools.dictation_status",
     # 2026-10-15 (D-1): Next Phrase Is a Dictation Command, one shared handler, on
-    # Ctrl+Alt+Shift+Q in both since F11 became the Command Key (2026-11-08).
+    # no key in either since F11 became the Command Key (2026-11-08).
     "cmd_dictation_command": "tools.windows_dictation_command",
     # 2026-10-15 (D-2): Review Dictation, Shift+F4 in both, one handler.
     "cmd_dictation_review": "tools.windows_dictation_review",

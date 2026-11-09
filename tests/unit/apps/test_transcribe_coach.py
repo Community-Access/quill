@@ -279,7 +279,11 @@ def test_five_lessons_and_every_command_a_step_names_runs_here() -> None:
                 assert method and callable(getattr(QuillTranscribeFrame, method, None)), (
                     step.command
                 )
-                assert key_for(step.command), step.command
+                # The one keyless dictation command (command-key.md decision 5)
+                # is reached by its menu, which the step says.
+                assert key_for(step.command) or step.command == "tools.windows_dictation_command", (
+                    step.command
+                )
 
 
 def test_the_lesson_host_resolves_and_runs_commands(host: Host) -> None:

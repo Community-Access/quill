@@ -29,7 +29,7 @@ class _Frame(CommandKeyMixin):
 
 def test_f11_is_the_command_key_and_never_dictation() -> None:
     assert DEFAULT_KEYMAP[COMMAND_KEY] == "F11"
-    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == "Ctrl+Alt+Shift+Q"
+    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == ""
     assert DEFAULT_KEYMAP["tools.windows_dictation_toggle"] == "Ctrl+F11"
     dictation = [cid for cid, key in DEFAULT_KEYMAP.items() if key == "F11"]
     assert dictation == [COMMAND_KEY]

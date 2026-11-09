@@ -60,7 +60,8 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     def _shared(menu: Any, label: str, command_id: str) -> Any:
         """A command the editors have too, on the editors' chord (rule 2)."""
         method = SHARED_COMMANDS[command_id]
-        item_id = _add(host, menu, f"{label}\t{chord(command_id)}", getattr(host, method))
+        key = chord(command_id)
+        item_id = _add(host, menu, f"{label}\t{key}" if key else label, getattr(host, method))
         shared[method] = item_id
         return item_id
 
@@ -93,7 +94,13 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
         host.use_built_in_model_once,
     )
     _shared(dictation, "Dictation St&atus", "tools.dictation_status")
-    _shared(dictation, "Next Phrase Is a Dictation Co&mmand", "tools.windows_dictation_command")
+    # No chord (command-key.md decision 5), so its Alt path shows instead, as
+    # Release Channel's does.
+    _shared(
+        dictation,
+        "Next Phrase Is a Dictation Co&mmand (Alt+D, M)",
+        "tools.windows_dictation_command",
+    )
     _shared(dictation, "Re&view Dictation...", "tools.windows_dictation_review")
     _shared(dictation, "Recent &Phrases...", "tools.windows_dictation_recent")
     _shared(dictation, "Switch Dictation &Language", "tools.windows_dictation_switch_language")

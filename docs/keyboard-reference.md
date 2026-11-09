@@ -320,6 +320,7 @@ Editor commands with default bindings: 571.
 | (unbound by default) | Voice Conversation Mode | `tools.voice_conversation` |
 | (unbound by default) | Speak Voice Status | `tools.voice_status` |
 | (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
+| (unbound by default) | Windows dictation command | `tools.windows_dictation_command` |
 | Alt+F10 | Look Up Word... | `tools.look_up` |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
@@ -364,7 +365,6 @@ Editor commands with default bindings: 571.
 | Ctrl+Alt+Shift+O | Sound Scheme | `tools.sound_events` |
 | Ctrl+Alt+Shift+PageDown | Windows dictation live transcript | `tools.windows_dictation_live_transcript` |
 | Ctrl+Alt+Shift+PageUp | Windows dictation context | `tools.windows_dictation_context` |
-| Ctrl+Alt+Shift+Q | Windows dictation command | `tools.windows_dictation_command` |
 | Ctrl+Alt+Shift+Space | Keymap Editor... | `tools.keymap_editor` |
 | Ctrl+Alt+Shift+[ | Word Summary | `tools.word_summary` |
 | Ctrl+Alt+Shift+] | Find the Word For... | `tools.find_word` |

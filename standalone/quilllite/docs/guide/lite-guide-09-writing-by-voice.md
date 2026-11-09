@@ -345,7 +345,6 @@ walking the menu too.
 | **Ctrl+Alt+Shift+PageDown** | Start or Stop Live Transcript |
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document... |
 | **Alt+F9** | Dictation Status |
-| **Ctrl+Alt+Shift+Q** | Next Phrase Is a Dictation Command (the next thing you say is a command; twice, command mode) |
 | **Shift+F4** | Review Dictation... (read, change and insert the last phrase once) |
 | **Ctrl+F3** | Tidy Dictated Text... (in Tools > AI) |
 
@@ -753,10 +752,10 @@ Every command in the list works this way.
   mode. Say **"dictation mode"** to go back. If you give no command for eight
   seconds, it ends by itself with a falling tone, and what you say next is
   written.
-- **Next Phrase Is a Dictation Command** (**Ctrl+Alt+Shift+Q**, Q for QUILL)
-  does the same from the keyboard: press it, then say the command. Press it
-  twice for command mode, and once more to leave. If dictation is off, it
-  starts dictation first. It used to be Speak a Command on F11; F11 is now Say
+- **Next Phrase Is a Dictation Command**, on the Dictation menu, does the same
+  without the word: choose it, then say the command. Choose it twice for
+  command mode, and once more to leave. If dictation is off, it starts
+  dictation first. It used to be Speak a Command on F11; F11 is now Say
   or Type a Command, which is for QUILL Lite's own commands.
 
 More Dictation Settings has three choices for it: the **Command word**

@@ -284,7 +284,6 @@
   ["QUILL Lite", "core/lite/commands_dictation.py Dictation Settings...", "Alt+Shift+F6"],
   ["QUILL Lite", "core/lite/commands_dictation.py Dictation Status", "Alt+F9"],
   ["QUILL Lite", "core/lite/commands_dictation.py My Words and Phrases...", "Alt+Shift+F10"],
-  ["QUILL Lite", "core/lite/commands_dictation.py Next Phrase Is a Dictation Command", "Ctrl+Alt+Shift+Q"],
   ["QUILL Lite", "core/lite/commands_dictation.py Recent Phrases...", "Shift+F11"],
   ["QUILL Lite", "core/lite/commands_dictation.py Review Dictation...", "Shift+F4"],
   ["QUILL Lite", "core/lite/commands_dictation.py Start or Stop Live Transcript", "Ctrl+Alt+Shift+PageDown"],

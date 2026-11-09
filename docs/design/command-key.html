@@ -4022,11 +4022,12 @@ empty until chosen; the picker suggests Ctrl+Alt+PageDown, then
 Ctrl+Alt+PageUp.</li>
 <li>Anyone who already chose a Transcribe Command Key keeps it as the
 new Command Key and is told once.</li>
-<li>“Next Phrase Is a Dictation Command” stays on dictation’s side, off
-F11. Amended in phase 2: it has a key, Ctrl+Alt+Shift+Q (Q for the
-command word), because the menu-accelerator rule allows no enabled row
-without one; it is nowhere near F11, which keeps the two apart as the
-decision intended.</li>
+<li>“Next Phrase Is a Dictation Command” stays on dictation’s side, with
+no key and a written reason. Phase 2 looked for a key anyway, because
+the menu rule wants one on every enabled row: no single chord is free in
+the whole family (Ctrl+Alt+Shift+Q and R are QUILL’s and Radio’s
+system-wide keys), so the row carries a recorded exemption in each key
+gate, and its access letter is its route.</li>
 <li>“Hey Quill” (“Oye Quill”), off by default.</li>
 <li>Jev is the default assist only after the person says yes to the
 section 7.8 question; “my own AI” and “on this computer only” are equal
@@ -4136,16 +4137,16 @@ in its Help menu, because Video &gt; Full Screen holds F11 on the same
 menu bar and wx cannot bind Ctrl+Grave, the 9.4 fallback. And What Can I
 Say Here (Ctrl+Alt+Shift+F1) replaces What Can I Do Here in QUILL,
 keeping its id and key, and is new in QUILL Lite and Radio’s Help menus.
-Speak a Command is now Next Phrase Is a Dictation Command, on
-Ctrl+Alt+Shift+Q, in both editors and Transcribe (decision 5, amended:
-the menu rule needs a key on every enabled row). The wx-free pieces are
-<code>words.py</code> (normalising, a stemmer, synonyms, one typo in
-long words, checked against the written word as well as the stem),
-<code>args.py</code> (numbers, ordinals, durations, “a bit” and “a
-lot”), <code>resolver.py</code> (tier 1 word for word and on meaningful
-words, tier 2 as the harmonic mean of recall and precision, acting at
-0.74 with a 0.15 margin), <code>policy.py</code> (the only code that
-runs a command for a sentence), <code>help_list.py</code> and
+Speak a Command is now Next Phrase Is a Dictation Command, with no key,
+in both editors and Transcribe (decision 5), exempted in each key gate
+with its reason. The wx-free pieces are <code>words.py</code>
+(normalising, a stemmer, synonyms, one typo in long words, checked
+against the written word as well as the stem), <code>args.py</code>
+(numbers, ordinals, durations, “a bit” and “a lot”),
+<code>resolver.py</code> (tier 1 word for word and on meaningful words,
+tier 2 as the harmonic mean of recall and precision, acting at 0.74 with
+a 0.15 margin), <code>policy.py</code> (the only code that runs a
+command for a sentence), <code>help_list.py</code> and
 <code>errors.py</code>. The windows are
 <code>quill/ui/command_key_ui.py</code>, and each app’s four answers are
 <code>quill/ui/command_key_hosts.py</code>; a dimmed menu row is a

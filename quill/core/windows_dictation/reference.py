@@ -116,9 +116,9 @@ def _command_word_section(
         'that" writes it after all.',
         f'Say "literal {word}" to write the word itself.',
         strict,
-        "Next Phrase Is a Dictation Command (Ctrl+Alt+Shift+Q in QUILL and QUILL Lite) "
-        "does the same without the word: the next thing you say is a dictation command. "
-        "Press it twice for command mode. F11 is the Command Key, which never dictates.",
+        "Next Phrase Is a Dictation Command, on the Dictation menu, does the same without "
+        "the word: the next thing you say is a dictation command. Choose it twice for "
+        "command mode. It has no key: F11 is the Command Key, which never dictates.",
     ):
         lines.append(("- " + sentence) if md else sentence)
     if md:
