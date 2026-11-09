@@ -70,28 +70,44 @@ def command_understanding() -> str:
     return value if value in {"jev", "my_ai", "local"} else ""
 
 
-def _assist_for(host: WxCommandKeyHost) -> Any:
-    """Tier 3, when it can be offered and the person said yes (7.8, decision 7).
+def _assist_for(host: WxCommandKeyHost, owner: Any = None) -> Any:
+    """Tiers 3 and 4, when they can be offered and the person said yes (7.8, 7.10).
 
-    Jev is offered only where a route exists: this computer signed in to QUILL's
-    free AI (the gateway's ``/v1/decide``), or an own TypeSafe key in Credential
-    Manager. Never in Safe Mode. The question is asked once, the first time Jev would be used, with
-    "my own AI" and "on this computer only" as equal answers.
+    Jev is offered where a route exists: this computer signed in to QUILL's free
+    AI (the gateway's ``/v1/decide``), or an own TypeSafe key in Credential
+    Manager. Tier 4 is the AI chosen in Choose Your AI, when it is one of the
+    person's own (a ChatGPT plan, Copilot, Codex or a key). The question is
+    asked once, the first time either could be used, with "my own AI" and "on
+    this computer only" as equal answers. Never in Safe Mode.
+
+    - "Use Jev": Jev, falling to tier 4 when Jev cannot answer.
+    - "Use My Own AI Instead": tier 4 only; nothing goes to Jev.
+    - "Match on This Computer Only": neither.
     """
     import os
 
-    from quill.core.command_catalogue.assist import JevAssist
+    from quill.core.command_catalogue.assist import CommandPickAssist, JevAssist
+    from quill.ui.command_key_ai import command_pick_engine
     from quill.ui.command_key_ui import ask_command_understanding
 
-    if os.environ.get("QUILL_SAFE_MODE") == "1" or not _route_available():
+    if os.environ.get("QUILL_SAFE_MODE") == "1":
+        return None
+    engine = command_pick_engine(owner, host.announce) if owner is not None else None
+    jev_ready = _route_available()
+    if not jev_ready and engine is None:
         return None
     choice = command_understanding()
     if not choice:
         choice = ask_command_understanding(host._wx, host._parent, host._show_modal)
         _save_state(command_understanding=choice)
+    tier_4 = CommandPickAssist(engine) if engine is not None else None
+    if choice == "my_ai":
+        return tier_4
     if choice != "jev":
         return None
-    return JevAssist(_route(), host.app, host.announce)
+    if not jev_ready:
+        return tier_4
+    return JevAssist(_route(), host.app, host.announce, fallback=tier_4)
 
 
 #: One route for the process, so its "stop for the day" and its one request in
@@ -196,7 +212,7 @@ def quill_command_key(frame: Any) -> None:
         host,
         getattr(frame, "_command_key_session", None),
         first_time=not hint_shown(),
-        assist=_assist_for(host),
+        assist=_assist_for(host, frame),
     )
 
 
@@ -257,7 +273,7 @@ def lite_command_key(window: Any) -> None:
         host,
         getattr(window, "_command_key_session", None),
         first_time=not hint_shown(),
-        assist=_assist_for(host),
+        assist=_assist_for(host, window),
     )
 
 
@@ -294,7 +310,7 @@ def radio_command_key(frame: Any) -> None:
         host,
         getattr(frame, "_command_key_session", None),
         first_time=not hint_shown(),
-        assist=_assist_for(host),
+        assist=_assist_for(host, frame),
     )
 
 

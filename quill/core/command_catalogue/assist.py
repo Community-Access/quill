@@ -105,7 +105,10 @@ class JevAssist:
             _log.info("%s", error)
             if error.code not in self._said:
                 self._said.add(error.code)
-                self.announce(error.fallback_line)
+                line = error.fallback_line
+                if self.fallback is not None:  # tier 4 is next, so say so (7.7)
+                    line = line.replace("so I matched it here", "so I'm asking your AI")
+                self.announce(line)
             return self.fallback(text, candidates) if self.fallback is not None else None
         except CodedError as error:  # a private word: nothing was sent
             _log.warning("%s", error)

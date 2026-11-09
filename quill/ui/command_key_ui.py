@@ -274,8 +274,10 @@ CONSENT_TEXT = (
     "Francisco, to pick one (if you stored your own TypeSafe key, QUILL asks TypeSafe "
     "directly). Nothing else is sent: no document text, file names, stations, places "
     "or accounts. TypeSafe "
-    "keep the requests they receive, and say they do not train on them. You can "
-    "change this at any time."
+    "keep the requests they receive, and say they do not train on them. If Jev "
+    "cannot answer, or you choose your own AI instead, the same words go to the AI "
+    "you chose in Choose Your AI, when it is one of your own. You can change this "
+    "at any time."
 )
 #: The three equal answers, and the setting each one stores.
 CONSENT_CHOICES: tuple[tuple[str, str], ...] = (
