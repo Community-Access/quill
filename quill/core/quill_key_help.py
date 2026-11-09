@@ -379,6 +379,14 @@ def _chord_description(command_id: str) -> str:
     title = _CHORD_COMMAND_TITLES.get(command_id)
     if title:
         return title
+    # The family command catalogue names a command once for every reader
+    # (docs/design/command-key.md 5.5), so a row there is a better name than
+    # one guessed from the id.
+    from quill.core.command_catalogue import row
+
+    spec = row(command_id)
+    if spec is not None:
+        return spec.title
     if "." in command_id:
         return command_id.split(".", 1)[1].replace("_", " ").title()
     return command_id

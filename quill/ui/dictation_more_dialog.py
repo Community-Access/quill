@@ -418,8 +418,8 @@ class MoreDictationDialog(wx.Dialog):
             "that, QUILL select the cat. It counts only as the first word after a pause, "
             "so I told Quill about it is written as words. If what follows is not a "
             "command, nothing is typed, and QUILL type that writes it. Say literal QUILL "
-            "to write the word itself. Leave it empty to give commands with the Speak a "
-            "Command key only. A common word, or one of your own words in My Words and "
+            "to write the word itself. Leave it empty to give commands with Next Phrase "
+            "Is a Dictation Command only. A common word, or one of your own words in My Words and "
             "Phrases, is refused."
         )
         self.command_required = wx.CheckBox(
@@ -444,9 +444,9 @@ class MoreDictationDialog(wx.Dialog):
             ),
         )
         self.command_timeout.SetHelpText(
-            "Say QUILL command mode, or press Speak a Command twice, and everything you "
-            "say is a command until you say dictation mode or give no command for this "
-            "many seconds. A falling tone says it has ended. From 5 to 30; 8 by default."
+            "Say QUILL command mode, or choose Next Phrase Is a Dictation Command twice, "
+            "and all you say is a command until you say dictation mode or give no command "
+            "for this many seconds. A falling tone says it has ended. From 5 to 30; 8 by default."
         )
         box_sizer.Add(prefix_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         box_sizer.Add(self.command_prefix, 0, wx.EXPAND | wx.ALL, _PAD)

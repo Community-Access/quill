@@ -317,6 +317,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.data_format_audit"),
     ),
     Gate(
+        "command-catalogue",
+        "GATE-CATALOGUE: every command is catalogued or classified; no row breaks a rule",
+        (sys.executable, "-m", "quill.tools.command_catalogue_audit"),
+    ),
+    Gate(
         "fixed-pixels",
         "GATE-DPI: no window size in raw pixels now every app is DPI aware",
         (sys.executable, "-m", "quill.tools.fixed_pixel_audit"),

@@ -1853,6 +1853,7 @@ class MenuBuilderMixin:
             self._id_palette,
             self._menu_label(_("&Command Palette..."), "app.command_palette"),
         )
+        self._append_command_key_item(tools_menu)  # main_frame_command_key
         tools_menu.Append(
             self._id_open_story_studio,
             self._menu_label(_("Story &Studio..."), "story.open_studio"),
@@ -2989,7 +2990,7 @@ class MenuBuilderMixin:
         )
         help_menu.Append(
             self._id_context_help,
-            self._menu_label(_("&What Can I Do Here?"), "help.what_can_i_do_here"),
+            self._menu_label(_("&What Can I Say Here?"), "help.what_can_i_do_here"),
         )
         help_menu.Append(
             self._id_announce_context_shortcuts,
@@ -3144,16 +3145,13 @@ class MenuBuilderMixin:
             except Exception:  # noqa: BLE001
                 pass
 
-        # #613: on macOS, tell wx that the "Help" menu is the system
-        # Help menu so the OS moves it to the rightmost position (where
-        # macOS users expect it) instead of leaving it in the slot wx
-        # gave it (the menu bar's tail, but wx only respects the
-        # SetHelpMenu hint for the system Help menu). Without this,
-        # VoiceOver users see a top-level menu order that does not
-        # match the macOS AppKit convention. Wrapped in hasattr +
-        # try/except so a wx build without the API degrades gracefully
-        # (and the dialog_inventory / module_size gates do not see an
-        # attribute error).
+        # #613: on macOS, tell wx that the "Help" menu is the system Help menu so the OS moves it to
+        # the rightmost position (where macOS users expect it) instead of leaving it in the slot wx
+        # gave it (the menu bar's tail, but wx only respects the SetHelpMenu hint for the system
+        # Help menu). Without this, VoiceOver users see a top-level menu order that does not match
+        # the macOS AppKit convention. Wrapped in hasattr + try/except so a wx build without the API
+        # degrades gracefully (and the dialog_inventory / module_size gates do not see an attribute
+        # error).
         if sys.platform == "darwin":
             try:
                 if hasattr(menu_bar, "SetHelpMenu"):

@@ -365,6 +365,18 @@ class DocumentViewCommandsMixin:
         palette.show_modal_and_run()
         self.control.SetFocus()
 
+    def cmd_command_key(self) -> None:
+        """F11, Say or Type a Command: QUILL's, through the shared module."""
+        from quill.ui.command_key_hosts import lite_command_key
+
+        lite_command_key(self)
+
+    def cmd_what_can_i_say_here(self) -> None:
+        """Ctrl+Alt+Shift+F1: this window's commands right now, to read or run."""
+        from quill.ui.command_key_hosts import lite_what_can_i_say_here
+
+        lite_what_can_i_say_here(self)
+
     def cmd_go_to_anything(self) -> None:
         """One box for commands, headings and bookmarks together.
 

@@ -81,8 +81,7 @@ Say QUILL before a command so it is never typed as words, and use command mode f
 2. **Take it back by voice.** Say: QUILL scratch that. The command word first is what makes it a command; scratch that on its own is typed as words here.
    - You should hear: A rising tone, then "Scratched" and your words.
 
-3. **Give a command with the key.** Press Speak a Command, then say a command without the command word, such as caps on. Pressed twice, it starts command mode.
-   - Keys: F11
+3. **Give a command with the key.** Choose Next Phrase Is a Dictation Command, then say a command without the command word, such as caps on. Chosen twice, it starts command mode.
    - You should hear: "Caps on."
    - Worth knowing: Say dictation mode, or wait, to go back to dictating.
 

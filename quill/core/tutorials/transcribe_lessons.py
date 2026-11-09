@@ -161,8 +161,9 @@ def transcribe_lessons(track: str) -> tuple[Tutorial, ...]:
                 Step(
                     title="Give a command with the key",
                     body=(
-                        "Press Speak a Command, then say a command without the command "
-                        "word, such as caps on. Pressed twice, it starts command mode."
+                        "Choose Next Phrase Is a Dictation Command, then say a command "
+                        "without the command word, such as caps on. Chosen twice, it starts "
+                        "command mode."
                     ),
                     command="tools.windows_dictation_command",
                     hear='"Caps on."',

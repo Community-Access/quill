@@ -45,7 +45,11 @@ def test_every_live_dictation_row_is_bound_and_wired() -> None:
     ids = {command_id for command_id, _label, _title, _handler in _ROWS}
     assert ids == {c for c in DEFAULT_KEYMAP if c.startswith("tools.windows_dictation_")}
     for command_id, _label, _title, handler in _ROWS:
-        assert DEFAULT_KEYMAP[command_id], command_id
+        # Decision 5 (command-key.md): F11 went to the Command Key, and no
+        # single chord is free in the whole family for this one.
+        assert DEFAULT_KEYMAP[command_id] or command_id == "tools.windows_dictation_command", (
+            command_id
+        )
         assert callable(getattr(WindowsDictationCommandsMixin, handler)), handler
     assert DEFAULT_KEYMAP["tools.windows_dictation_switch_language"] == "Ctrl+Shift+F11"
     assert DEFAULT_KEYMAP["file.forget_external_change_answers"] == "Ctrl+Shift+0"

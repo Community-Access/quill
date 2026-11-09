@@ -1,0 +1,4199 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Say or Type a Command: one key for every QUILL family
+app</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="say-or-type-a-command-one-key-for-every-quill-family-app">Say or
+Type a Command: one key for every QUILL family app</h1>
+<p>Plan of record, third revision, 2026-11-08; kept here since
+2026-11-08 (it was
+<code>S:\wt\jev-natural-language-control-spec.md</code>, and the
+2026-11-07 draft is still beside that file). Code cites it by section as
+<code>command-key.md &lt;section&gt;</code>, and those citations resolve
+in this file. Section 20.1 records the decisions, section 21 is the
+remaining work, and section 22 is the progress log.</p>
+<h2 id="1-the-short-version">1. The short version</h2>
+<ul>
+<li><strong>One Command Key in every app: F11.</strong> Tap it to type
+what you want, or hold it and say it. It works the same in QUILL, QUILL
+Lite, Radio, Cast, Studio, Weather, Inkwell, Converter, Player, Beacon
+and Transcribe.</li>
+<li><strong>Commanding and dictating never share a key or a
+phrase.</strong>
+<ul>
+<li>F11 is commands only. It never starts, stops or pauses dictation, in
+any app.</li>
+<li>Dictation keeps its own keys: Ctrl+F11 in the editors, Dictate Here
+in Radio and Cast, and Transcribe’s system-wide Alt+Shift+\ with its
+other dictation keys.</li>
+<li>Spoken, “Quill dictate” writes, and a separate command phrase (“Hey
+Quill” is proposed) acts.</li>
+</ul></li>
+<li><strong>A system-wide Command Key, separate from
+dictation’s.</strong> It ships with speech. As with every system-wide
+key in the family, it is registered only once the person picks it. The
+picker suggests Ctrl+Alt+PageDown, which clashes with no family key,
+dictation’s included. From anywhere, a command goes to the family app in
+front, or to the app you name (“Radio, pause”). Anything else is
+declined in one sentence.</li>
+<li><strong>It only listens for what it can do.</strong> Every request
+is matched against one list: the commands this window has, that are
+switched on and can run right now. Nothing outside that list can be
+chosen, by any matcher or any engine. Anything else gets a plain “I
+can’t do that here”, with a pointer to where it can be done when that is
+known.</li>
+<li><strong>One family command catalogue.</strong> Every app publishes
+its commands once: a name, aliases, example phrases, a description,
+arguments, when it can run, and whether it is safe to do without asking.
+The Command Palette, the Command Key, Key Describer, F1, “What can I say
+here”, voice, Jev and the AI agents all read it. Nothing is listed
+twice.</li>
+<li><strong>Matching, cheapest first; then Jev as the core
+assist.</strong>
+<ul>
+<li>Exact and fuzzy matching go first, because they are free and
+instant.</li>
+<li>Anything they can’t settle with confidence goes to
+<strong>Jev</strong>, TypeSafe’s decision model. It picks the command,
+fills in the arguments, checks whether the request fits anything on the
+list at all, and turns a split decision into one short question.</li>
+<li>When Jev isn’t available (offline, credit spent, or the person
+turned cloud help off), the AI chosen in Choose Your AI is the fallback.
+That includes local Ollama, which works offline. When none of those is
+available, the offline answer stands.</li>
+</ul></li>
+<li><strong>Rich ways to command.</strong> Arguments (numbers,
+durations, times, dates, names, stations, files), relative commands
+(“louder”, “do that again”, “undo that”), questions answered from the
+app (“what’s playing”), short multi-step requests (“open my last
+document and read it aloud”), corrections (“no, the other one”) and
+requests to another app (“Radio, pause”). Section 8 gives example
+phrases and the Jev question for each.</li>
+<li><strong>“What can I say here?”</strong> typed or spoken, or from
+What Can I Say Here in every Help menu, lists only what this window can
+do right now. It is read in short pages, can be browsed and filtered,
+and gives an example for each command. “What can I say while dictating”
+lists the dictation phrases separately.</li>
+<li><strong>Tested hard.</strong> There is a corpus of tens of thousands
+of phrasings with their expected results, a scripted fake Jev and a fake
+Choose Your AI engine so every tier and threshold runs offline in CI,
+and property tests for the safety rules (never outside the list, never a
+NEVER-class command, CONFIRM always asks). A recorded live Jev suite
+runs nightly or by hand, never in PR CI. Coverage gates run over all of
+it. Section 14 sets the targets.</li>
+<li><strong>Order.</strong> The first shippable release is typed,
+offline, free and needs no account: QUILL and QUILL Lite together (QUILL
+Lite is never ahead of QUILL), plus Radio. Jev comes in the next phase,
+then speech and the system-wide key.</li>
+<li><strong>Who pays.</strong> Jev is pay-per-use. People using QUILL
+pay nothing, because requests go through the Community Access gateway,
+which holds the TypeSafe key. Jeff pays the bill, and a daily cap on the
+server sets the most it can ever cost. At the expected sizes that is
+cents a day (section 17).</li>
+</ul>
+<h2 id="2-what-changed-in-this-revision">2. What changed in this
+revision</h2>
+<h3 id="21-third-pass-2026-11-08-jev-rich-commanding-testing">2.1 Third
+pass, 2026-11-08 (Jev, rich commanding, testing)</h3>
+<ul>
+<li><strong>Jev is now the core assist, not an optional extra.</strong>
+It is the default engine for whatever exact and fuzzy matching can’t
+settle: picking the command, filling arguments, the fit check that
+enforces “only what it can act on”, and a short question when its
+confidence is split. Choose Your AI becomes the fallback. Section 7
+designs the request within Jev’s limits.</li>
+<li><strong>A rich catalogue of ways to command</strong> (section 8):
+arguments, relative commands, questions about app state, multi-step
+requests, corrections and cross-app requests, each with examples and its
+Jev question.</li>
+<li><strong>A testing strategy that drives the phases</strong> (section
+14): the corpus, fakes, property tests, context-gating tests, a recorded
+live suite, coverage gates, announcement tests, and target numbers.</li>
+<li><strong>Jev moves from phase 7 to phase 3,</strong> directly after
+the free offline release. The gateway route <code>/v1/decide</code>, the
+consent, the egress rows, the error codes, the caps and the
+out-of-credit behaviour are all specified.</li>
+<li><strong>Multi-step requests are now allowed,</strong> up to three
+steps with a preview. The earlier “one thing at a time” rule is replaced
+(section 8.6).</li>
+</ul>
+<h3 id="22-second-pass-2026-11-08-separate-keys-discoverability">2.2
+Second pass, 2026-11-08 (separate keys, discoverability)</h3>
+<ul>
+<li><strong>Commanding and dictating are fully separate,</strong> in
+keys and in spoken phrases. F11 is commands only and never touches
+dictation. Section 9.2 audits every key in the family into one table,
+dictation on one side and commands on the other.</li>
+<li><strong>A system-wide Command Key arrives with speech.</strong>
+Transcribe’s existing Command Key becomes that route. The picker
+suggests Ctrl+Alt+PageDown, and section 9.5 says how that was
+checked.</li>
+<li><strong>Separate spoken phrases,</strong> each with its own setting:
+“Quill dictate” writes, “Hey Quill” commands. There are targeting rules
+for a spoken command from anywhere.</li>
+<li><strong>One listening switch and one privacy notice</strong> cover
+dictation and commands together.</li>
+<li><strong>Discoverability</strong> (section 11): “What can I say
+here”, the dictation equivalent, an <code>examples</code> field in every
+catalogue row, a What Can I Say Here row in every Help menu, “I can’t do
+that here, but you can…” answers, and a generated reference.</li>
+</ul>
+<h3
+id="23-first-pass-2026-11-08-from-an-engine-to-a-key-and-a-catalogue">2.3
+First pass, 2026-11-08 (from an engine to a key and a catalogue)</h3>
+<ul>
+<li>The plan is built around one key and one family command catalogue,
+with section 4 mapping the existing command and control code it
+unifies.</li>
+<li>Free and offline come first.</li>
+<li>Transcribe and the GitHub Workbench were added to the per-app
+scope.</li>
+<li>A phased attack layout replaced the prototype list.</li>
+<li>Kept from the 2026-11-07 draft: gent’s lessons, the thresholds, the
+undo-or-opposite rule, the “what would you do” preview, the
+never-exposed lists, the privacy rules, the TypeSafe cost figures and
+the evaluation targets.</li>
+</ul>
+<h2 id="3-the-idea">3. The idea</h2>
+<h3 id="31-ways-in">3.1 Ways in</h3>
+<ul>
+<li><strong>Type it.</strong> Tap F11. A one-line box opens, titled “Say
+or Type a Command”. Type “a lot slower” or “play favourite 3” and press
+Enter.</li>
+<li><strong>Say it.</strong> Hold F11, speak, then let go. What you said
+goes through exactly the same matching as typed text.</li>
+<li><strong>From anywhere in Windows.</strong> The system-wide Command
+Key does the same, once you have picked one. So does the spoken command
+phrase, once it is turned on.</li>
+<li><strong>Ask what you can say.</strong> “What can I say here?”
+through any of the above, or Help, What Can I Say Here.</li>
+</ul>
+<h3 id="32-only-what-this-window-can-do-right-now">3.2 Only what this
+window can do right now</h3>
+<p>The list a request is matched against is built fresh each time from
+four things:</p>
+<ul>
+<li>the app;</li>
+<li>the window or surface that has focus;</li>
+<li>the commands enabled there, using the same check the menu and
+palette use;</li>
+<li>the commands allowed to run from a sentence at all (their risk
+class, section 5.3).</li>
+</ul>
+<p>“Next favourite” is not on the list when you have no favourites.
+“Make that bold” is not on it in a plain text document. No Radio command
+is on it while you are in Weather.</p>
+<h3 id="33-commanding-and-dictating-never-mix">3.3 Commanding and
+dictating never mix</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Dictation</th>
+<th>Commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does</td>
+<td>writes words where you are</td>
+<td>runs one of this window’s commands</td>
+</tr>
+<tr>
+<td>Keys</td>
+<td>its own (section 9.2)</td>
+<td>F11, and the system-wide Command Key</td>
+</tr>
+<tr>
+<td>Spoken phrase</td>
+<td>“Quill dictate” to start, “stop dictation” to stop</td>
+<td>“Hey Quill” (proposed)</td>
+</tr>
+<tr>
+<td>Phrases while dictating</td>
+<td>“scratch that”, “caps on”, “select the cat”, after the “QUILL”
+command word or on their own</td>
+<td>none; hold F11 instead</td>
+</tr>
+<tr>
+<td>Help</td>
+<td>“what can I say while dictating”</td>
+<td>“what can I say here”</td>
+</tr>
+</tbody>
+</table>
+<p>While you are dictating, F11 still means a command. A tap opens the
+box. While you hold it, what you say is a command and is not written.
+Dictation stays on and goes back to writing when you let go. F11 never
+starts, stops or pauses dictation.</p>
+<p>Today’s F11, Speak a Command, made the next dictated phrase a
+<em>dictation</em> command. Under this plan it is simply a command. The
+dictation phrases are still reached through the “QUILL” command word,
+exactly as now (section 9.3).</p>
+<h2 id="4-what-already-exists">4. What already exists</h2>
+<p>Every path in this section is in <code>S:\QUILL</code>.</p>
+<h3 id="41-the-command-registry-and-keymaps">4.1 The command registry
+and keymaps</h3>
+<ul>
+<li><strong>The registry,</strong> <code>quill/core/commands.py</code>:
+<ul>
+<li><code>Command</code> (lines 14 to 19) holds <code>id</code>,
+<code>title</code>, <code>keybinding</code>, <code>handler</code> and
+<code>feature_id</code>. <code>CommandRegistry</code> starts at line
+22.</li>
+<li><code>set_availability_probe</code> (line 194) and
+<code>unavailable_reason</code> (line 199) say why a command can’t run.
+<code>run</code> (line 214) is the single dispatch path.</li>
+<li>It has no aliases, descriptions, arguments, risk class or
+per-command enabled check.</li>
+</ul></li>
+<li><strong>Enabled state is coarse.</strong>
+<ul>
+<li><code>quill/ui/app_availability.py</code> (lines 21 to 57) and the
+editor’s probe (<code>quill/ui/main_frame.py</code>, around lines 1266
+to 1270) check only feature locks, Safe Mode and whether the feature is
+on.</li>
+<li>Per-document dimming is written by hand: QUILL Lite in
+<code>lite_window_menus.py</code> (lines 335 to 358), Studio in
+<code>_on_studio_menu_open</code> (<code>studio.py</code>, line 1176),
+and Cast in one <code>EVT_UPDATE_UI</code>
+(<code>podcasts_menu.py</code>, line 280).</li>
+<li>Cast has the richest probe,
+<code>_cast_command_unavailable_reason</code>
+(<code>podcasts_routes.py</code>, line 342).</li>
+</ul></li>
+<li><strong>The keymaps:</strong>
+<ul>
+<li><code>quill/core/keymap.py</code>: <code>DEFAULT_KEYMAP</code> (line
+72) has about 570 ids, about 440 of them with a chord. The QUILL key
+leader is Ctrl+Shift+Grave.</li>
+<li><code>quill/core/app_keymaps.py</code>: <code>APP_KEYMAPS</code> has
+entries for studio, transcribe, radio, cast and weather. Converter,
+player, inkwell and beacon have AI rows only, through
+<code>app_keymaps_ai.py</code>.</li>
+<li><code>quill/core/lite/keymap.py</code> is QUILL Lite’s.</li>
+<li><code>quill/core/data/family_menu_chords.json</code> lists every
+menu chord in the family.</li>
+<li><code>quill/core/family_chords.py</code> holds
+<code>SHOW_HIDE_DEFAULTS</code> (line 66),
+<code>default_system_wide_keys</code> (line 135) and
+<code>show_hide_key_problem</code> (line 368), which is the family key
+picker’s own check.</li>
+</ul></li>
+</ul>
+<h3 id="42-the-command-palette">4.2 The Command Palette</h3>
+<ul>
+<li><strong>Ctrl+Shift+P</strong> (<code>app.command_palette</code>,
+<code>keymap.py</code> line 155). <code>open_command_palette</code> is
+at <code>quill/ui/app_shell.py</code> line 822.</li>
+<li><strong>Ranking</strong> is <code>rank_commands</code>
+(<code>quill/core/palette.py</code> line 65), with
+<code>COMMAND_ALIASES</code> (line 92) covering 22 commands and a usage
+memory (line 50). It is the best offline matcher in the tree.</li>
+<li><strong>Apps with no registry</strong> use the menu-walking palette,
+<code>quill/ui/menu_palette.py</code> (<code>MenuRow</code>, line
+28).</li>
+<li><strong>Beacon</strong> has its own <code>Command</code> class and
+palette (<code>quill/apps/beacon/commands.py</code>, lines 20 to
+31).</li>
+</ul>
+<h3 id="43-quill-lites-command-table">4.3 QUILL Lite’s command
+table</h3>
+<ul>
+<li><strong>The rows.</strong> <code>COMMANDS</code>
+(<code>quill/core/lite/commands.py</code>, from line 77) is a list of
+<code>(menu, label, key, handler, kind)</code> rows, with more in the
+<code>commands_*.py</code> tables.</li>
+<li><strong>Areas.</strong> <code>command_areas.py</code> decides which
+areas are shown (<code>visible_commands</code>, line 250).</li>
+<li><strong>The palette.</strong> It builds a fresh registry on each
+call (<code>command_registry</code>,
+<code>quill/apps/lite_services.py</code>, line 186), so the list matches
+the document in front of you.</li>
+<li><strong>The join to QUILL.</strong> <code>COMMAND_EQUIVALENTS</code>
+(<code>quill/core/lite/parity.py</code>, line 172) maps 186 QUILL Lite
+handlers to QUILL ids. It is the ready-made join for the catalogue.</li>
+</ul>
+<h3 id="44-each-apps-commands">4.4 Each app’s commands</h3>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Defined today</th>
+<th>Ids</th>
+<th>APP_KEYMAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radio</td>
+<td><code>quill/ui/radio/palette_commands.py</code> lines 94 to 398,
+plus transport</td>
+<td><code>radio.*</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Cast</td>
+<td><code>quill/ui/podcasts/palette_commands.py</code> lines 27 to
+157</td>
+<td><code>podcasts.*</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Studio</td>
+<td><code>quill/apps/studio.py</code> lines 1220 to 1269, plus capture
+and demo</td>
+<td><code>studio.*</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td><code>quill/apps/weather_commands.py</code> lines 17 to 80</td>
+<td><code>weather.*</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Inkwell</td>
+<td>menu labels in <code>inkwell.py</code>,
+<code>inkwell_keys.py</code></td>
+<td>none</td>
+<td>AI rows only</td>
+</tr>
+<tr>
+<td>Converter</td>
+<td><code>converter_menu.py</code> lines 43 to 158</td>
+<td>none</td>
+<td>AI rows only</td>
+</tr>
+<tr>
+<td>Player</td>
+<td><code>player_menus.py</code> lines 27 to 134</td>
+<td>AI rows only</td>
+<td>AI rows only</td>
+</tr>
+<tr>
+<td>Beacon</td>
+<td>its own <code>Command</code> class</td>
+<td>display names</td>
+<td>AI rows only</td>
+</tr>
+<tr>
+<td>Transcribe</td>
+<td><code>transcribe_menus.py</code> line 37;
+<code>quill/core/transcribe/parity.py</code></td>
+<td>partly</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>GitHub (editors)</td>
+<td><code>main_frame_github.py</code> lines 63 to 77;
+<code>main_frame_github_admin.py</code> from line 557</td>
+<td><code>github.*</code></td>
+<td>mostly keyless</td>
+</tr>
+</tbody>
+</table>
+<p>The GitHub Workbench branch, <code>feat/github-workbench-menu</code>,
+currently holds the Sign In with GitHub work rather than a new menu
+shape. Its commands are registered like any other, so the catalogue
+covers them without special handling.</p>
+<h3 id="45-speech-dictation-and-voice">4.5 Speech, dictation and
+voice</h3>
+<ul>
+<li><strong>Push-to-talk voice commands</strong>
+(<code>tools.voice_command</code>, no key).
+<ul>
+<li><code>quill/core/speech/voice_commands.py</code> has an alias table
+(<code>_ALIASES</code>, line 39), a 0.6 threshold (line 71) and
+<code>match_command</code> (line 133). It works only over
+<code>SAFE_TOOL_IDS</code>.</li>
+<li>Dispatch is in <code>main_frame_speech_voice.py</code> (lines 195 to
+209) and never confirms.</li>
+<li><code>voice_routing.classify</code> (line 58) sorts what was said
+into cancel, question or command.</li>
+</ul></li>
+<li><strong>Dictation’s command word and today’s F11.</strong>
+<ul>
+<li>The command word “QUILL” (<code>DEFAULT_COMMAND_PREFIX</code>,
+<code>quill/core/windows_dictation/command_mode.py</code> line 66)
+starts a dictation phrase, as in “QUILL scratch that”.</li>
+<li>Today’s F11, Speak a Command
+(<code>quill/ui/windows_dictation_command_key.py</code>,
+<code>keymap.py</code> line 610), makes the next dictated phrase one of
+those phrases.</li>
+<li>The dictation grammar is the 81-member <code>Command</code> enum
+(<code>vocabulary_types.py</code>, line 46).</li>
+<li>Its “What can I say?” list is already generated from the table
+(<code>quill/core/windows_dictation/reference.py</code>).</li>
+</ul></li>
+<li><strong>The wake and stop phrases.</strong> “Quill dictate” and
+“stop dictation” in English, “Quill dicta” and “deja de dictar” in
+Spanish (<code>quill/core/windows_dictation/wake.py</code>).</li>
+<li><strong>Transcribe’s system-wide keys</strong>
+(<code>quill/apps/transcribe_keys.py</code>).
+<ul>
+<li>Start and stop defaults to Alt+Shift+\
+(<code>quill/core/transcribe/settings.py</code>, line 56).</li>
+<li>The Command Key, Status, Resume and Discard keys are all empty until
+the person chooses them. The Command Key is set from File, Command Key…
+(Ctrl+Alt+Shift+K).</li>
+<li>Holding a registered key is followed by asking Windows whether it is
+still down (<code>quill/platform/windows/key_state.py</code>,
+<code>HoldToTalk</code> in
+<code>quill/core/windows_dictation/hold.py</code> line 53).</li>
+<li><code>KeyHeldGate</code>
+(<code>quill/core/transcribe/talk.py</code>) holds words while a
+modifier key is down.</li>
+</ul></li>
+<li><strong>The Player’s typed voice commands.</strong>
+<code>parse_voice_command</code>
+(<code>quill/core/media/voice.py</code>, line 118) produces
+<code>VoiceIntent(action, value)</code>. It is the only matcher in the
+tree with arguments.</li>
+<li><strong>Dictate Here</strong> in Radio and Cast
+(<code>quill/ui/dictate_here_ui.py</code>, Ctrl+F11) asks Transcribe to
+type into the focused field. It goes through the family microphone
+(<code>MicrophoneLock</code>, <code>quill/core/dictation_owner.py</code>
+line 183) and a request file (<code>send_request</code> and
+<code>take_requests</code>, lines 352 and 366). That request file is
+also the route for a command to reach another app.</li>
+<li><strong>The wake word.</strong>
+<code>quill/core/speech/wakeword.py</code> (<code>WakeController</code>)
+and Ask’s voice mode (Alt+Shift+Q).</li>
+</ul>
+<h3 id="46-the-ai-agents-and-ask">4.6 The AI agents and Ask</h3>
+<ul>
+<li><strong>The safe list.</strong> <code>SAFE_TOOL_IDS</code>
+(<code>quill/core/ai/agent.py</code>, lines 17 to 42) holds 24 editor
+ids.
+<ul>
+<li><code>family_tools.py</code> (line 446) turns it into a closed
+<code>enum</code> for agents.</li>
+<li><code>permissions.py</code> (lines 238 to 249) refuses any other
+id.</li>
+<li><code>approvals.py</code> asks before every write.</li>
+</ul></li>
+<li><strong>Ask can already choose a command.</strong>
+<code>Assistant.decide</code> (<code>assistant.py</code>, line 539)
+chooses from the allowed ids, then asks “Run …?”. Only the llama.cpp
+backend (<code>llama_cpp_backend.py</code>, lines 168 to 215) and
+Apple’s on-device model implement it.</li>
+<li><strong>Choose Your AI.</strong>
+<ul>
+<li><code>AiService.ask</code>
+(<code>quill/ui/hosted_ai_service.py</code>, lines 205 to 283) reaches
+the free hosted AI, ChatGPT, Copilot, Codex or an own key, with local
+Ollama as an own-key provider.</li>
+<li>The gateway accepts only fixed server templates
+(<code>own_key.py</code>, line 109), and no route has JSON mode.</li>
+</ul></li>
+<li><strong>The gateway,</strong>
+<code>quill/core/ai/gateway_client.py</code>
+(<code>https://ai.community-access.org</code>):
+<ul>
+<li>routes <code>/v1/chat</code>, <code>/v1/config</code> and
+<code>/v1/quota</code>, plus device tokens;</li>
+<li>caps of 1,500 input and 500 output tokens a request;</li>
+<li>daily and monthly quotas.</li>
+</ul></li>
+<li><strong>“What can I do here?”</strong>
+(<code>family_prompt_catalogue.py</code>, line 218) is answered on the
+computer from F1 and the menu chords. QUILL has it as Help, What Can I
+Do Here? on Ctrl+Alt+Shift+F1 (<code>help.what_can_i_do_here</code>,
+<code>keymap.py</code> line 464).</li>
+</ul>
+<h3 id="47-names-help-and-dates">4.7 Names, help and dates</h3>
+<ul>
+<li><strong>Key Describer titles:</strong>
+<code>_CHORD_COMMAND_TITLES</code>
+(<code>quill/core/quill_key_help.py</code>, line 245), about 140
+rows.</li>
+<li><strong>Menu labels:</strong> <code>_menu_label</code>
+(<code>main_frame.py</code> line 4161, <code>app_shell.py</code> line
+306).</li>
+<li><strong>F1:</strong> each app’s <code>surface_help</code> catalogue,
+keyed by window title, through <code>quill/core/control_help.py</code>.
+These are the catalogue’s surface names.</li>
+<li><strong>Quillin smart triggers</strong>
+(<code>quill/core/quillins/smart_triggers.py</code>) and Inkwell’s
+abbreviations are exact typed triggers. They stay as they are.</li>
+<li><strong>Dates:</strong> <code>quill/core/date_parse.py</code>
+already reads dates, so the argument reader uses it.</li>
+</ul>
+<h3 id="48-what-is-missing">4.8 What is missing</h3>
+<ul>
+<li>One place that holds a command’s description, aliases, examples,
+arguments and risk.</li>
+<li>A per-command “can it run here, now” answer for every app.</li>
+<li>One resolver and one confirmation policy. Voice never confirms
+today, and Ask always does.</li>
+<li>Command ids in Inkwell, Converter, Player, Beacon and
+Transcribe.</li>
+<li>A way to send a candidate list to any engine and get one checked id
+back.</li>
+</ul>
+<h2 id="5-one-family-command-catalogue">5. One family command
+catalogue</h2>
+<h3 id="51-the-decision">5.1 The decision</h3>
+<p>The catalogue has two halves, joined by command id:</p>
+<ul>
+<li><strong>The static half</strong> is new, wx-free and strict-typed:
+<code>quill/core/command_catalogue/</code>, one module per app. It
+records what a command is.</li>
+<li><strong>The runtime half</strong> is the existing
+<code>CommandRegistry</code>. It records what a command can do right
+now. It gains one method,
+<code>set_command_probe(command_id, probe)</code>, where
+<code>probe(context)</code> returns ““ or the reason the command can’t
+run.</li>
+</ul>
+<h3 id="52-one-row">5.2 One row</h3>
+<pre><code>CommandSpec(
+    id=&quot;radio.volume_down&quot;,
+    apps=(&quot;radio&quot;,),
+    title=&quot;Volume Down&quot;,                       # spoken name; Key Describer title
+    aliases=(&quot;quieter&quot;, &quot;softer&quot;, &quot;turn it down&quot;),
+    examples=(&quot;turn it down a bit&quot;, &quot;much quieter&quot;, &quot;it&#39;s too loud&quot;),
+    description=&quot;Make the radio quieter&quot;,      # what the person wants
+    args=(Stepped(),),                         # see 5.4
+    risk=Risk.SAFE,                            # SAFE, CONFIRM or NEVER
+    kind=Kind.STEP,                            # ACTION, TOGGLE, OPENS_DIALOG, READOUT, STEP
+    surfaces=(&quot;Quill Radio&quot;,),                 # F1 surface names; empty means app-wide
+    group=&quot;Playback&quot;,                          # the menu it lives in, for help pages
+    opposite=&quot;radio.volume_up&quot;,
+    announces_itself=True,
+    agent_ok=True,
+)</code></pre>
+<p>A row shared by both editors is written once, under the QUILL id.
+QUILL Lite reaches it through <code>COMMAND_EQUIVALENTS</code>.</p>
+<ul>
+<li><strong>Aliases</strong> are short keys the matcher scores
+against.</li>
+<li><strong>Examples</strong> are whole sentences a person might say.
+They are shown in help, F1 and the generated docs, sent to Jev, and
+every one is a test (section 14.5).</li>
+</ul>
+<h3 id="53-risk-classes">5.3 Risk classes</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>From a sentence</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAFE</td>
+<td>runs when the match is confident</td>
+<td>play, louder, next heading, word count, open a dialog</td>
+</tr>
+<tr>
+<td>CONFIRM</td>
+<td>always asks first, at any confidence</td>
+<td>close, stop recording, mark all played, convert, anything that
+spends hosted AI</td>
+</tr>
+<tr>
+<td>NEVER</td>
+<td>not offered; stays in the palette and on its key</td>
+<td>sign-in, keys, sending, publishing, deleting, Safe Mode, updates,
+privacy settings</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-arguments">5.4 Arguments</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Examples</th>
+<th>Read by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stepped</td>
+<td>“a bit”, “a lot”, “much”</td>
+<td>Jev <code>size</code>; tier 1 words</td>
+</tr>
+<tr>
+<td>Number</td>
+<td>“favourite 3”, “line 120”, “the third one”</td>
+<td>the local reader</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>“30 seconds”, “an hour and a half”, “20 minutes”</td>
+<td>the local reader, lifted from <code>media/voice.py</code></td>
+</tr>
+<tr>
+<td>Time and date</td>
+<td>“at 7”, “tomorrow morning”, “next Friday”</td>
+<td><code>quill/core/date_parse.py</code></td>
+</tr>
+<tr>
+<td>Choice (closed set)</td>
+<td>“as MP3”, “the Spanish voice”, “tornado alerts”</td>
+<td>local match, then Jev <code>choice</code> over app constants</td>
+</tr>
+<tr>
+<td>Name (person’s data)</td>
+<td>“WNYC”, “my podcast about history”, “the heading Budget”</td>
+<td>matched locally against the app’s own list, never sent</td>
+</tr>
+<tr>
+<td>File</td>
+<td>“my last document”, “the report from yesterday”</td>
+<td>the recent-files list, matched locally</td>
+</tr>
+</tbody>
+</table>
+<h3 id="55-who-reads-the-catalogue">5.5 Who reads the catalogue</h3>
+<table>
+<thead>
+<tr>
+<th>Reader</th>
+<th>What it takes</th>
+<th>What it replaces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Command Key</td>
+<td>everything</td>
+<td>new</td>
+</tr>
+<tr>
+<td>Command Palette</td>
+<td>title, aliases, examples, description</td>
+<td><code>COMMAND_ALIASES</code></td>
+</tr>
+<tr>
+<td>Key Describer</td>
+<td>title</td>
+<td>duplicated <code>_CHORD_COMMAND_TITLES</code> rows</td>
+</tr>
+<tr>
+<td>Push-to-talk voice</td>
+<td>aliases, risk</td>
+<td><code>voice_commands._ALIASES</code>; retired into F11 in phase
+4</td>
+</tr>
+<tr>
+<td>AI agents, Ask’s <code>decide</code></td>
+<td><code>agent_ok</code> ids, descriptions</td>
+<td><code>SAFE_TOOL_IDS</code>, now a view of the catalogue</td>
+</tr>
+<tr>
+<td>Player typed voice</td>
+<td>aliases, arguments</td>
+<td>the intent table in <code>media/voice.py</code></td>
+</tr>
+<tr>
+<td>“What can I say here”, F1</td>
+<td>titles, examples, chords, groups</td>
+<td>the menu-chord list in <code>what_can_i_do_here</code></td>
+</tr>
+<tr>
+<td>Jev and Choose Your AI</td>
+<td>descriptions, examples, argument shapes</td>
+<td>new</td>
+</tr>
+<tr>
+<td>Generated docs</td>
+<td>everything</td>
+<td>new <code>docs/command-catalogue.md</code></td>
+</tr>
+</tbody>
+</table>
+<p>The dictation grammar stays dictation’s own table. It is a different
+job, and keeping it separate is what keeps commanding and dictating
+apart.</p>
+<h3 id="56-seeding">5.6 Seeding</h3>
+<p>A one-time script seeds the catalogue from:</p>
+<ul>
+<li>the registry titles;</li>
+<li><code>_CHORD_COMMAND_TITLES</code>;</li>
+<li><code>COMMAND_ALIASES</code> and <code>_ALIASES</code>;</li>
+<li><code>SAFE_TOOL_IDS</code>;</li>
+<li><code>COMMAND_FEATURE_MAP</code>;</li>
+<li><code>COMMAND_EQUIVALENTS</code>;</li>
+<li>the per-app tables in section 13.</li>
+</ul>
+<p>Every other row starts NEVER, marked “unreviewed”, so nothing becomes
+reachable by sentence until a person has classified it.</p>
+<h2 id="6-matching-in-tiers">6. Matching in tiers</h2>
+<h3 id="61-the-candidate-list">6.1 The candidate list</h3>
+<p>Every tier is given the same list, built per request:</p>
+<ol type="1">
+<li>this app’s catalogue rows;</li>
+<li>narrowed to the focused surface, plus the app-wide rows;</li>
+<li>narrowed again to the rows the registry and the command probe say
+can run now;</li>
+<li>with NEVER rows dropped;</li>
+<li>plus the shared rows: undo that, do that again, what can I say here,
+ask instead, another app, and none of these.</li>
+</ol>
+<h3 id="62-how-only-what-it-can-act-on-is-enforced-in-every-tier">6.2
+How “only what it can act on” is enforced, in every tier</h3>
+<ul>
+<li><strong>Input.</strong> An engine sees the candidate list and
+nothing else.</li>
+<li><strong>Fit.</strong> Jev’s yes or no <code>fits</code> question
+must pass as well as its <code>action</code> choice (section 7.3). An
+engine answering “none of these” means none.</li>
+<li><strong>Output.</strong> An answer that is not a candidate id is
+discarded, logged as a defect
+(<code>QUILL-CORE-COMMAND-NOT-OFFERED</code>) and never run.</li>
+<li><strong>Run time.</strong> The command is checked again just before
+it runs. If it became unavailable while the engine was working, it isn’t
+run.</li>
+<li><strong>Path.</strong> The run is always
+<code>registry.run(id)</code>, the same call the menu makes.</li>
+<li><strong>Words.</strong> Everything the person hears is the app’s own
+string. No engine’s text is ever spoken.</li>
+</ul>
+<h3 id="63-the-tiers-in-order">6.3 The tiers in order</h3>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>What</th>
+<th>Cost and network</th>
+<th>Settles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Exact: titles, aliases, “press control s”, numbered rows, shared
+rows</td>
+<td>free, offline, under 5 ms</td>
+<td>“louder”, “next heading”, “favourite 3”</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Fuzzy: the palette ranker merged with the push-to-talk matcher,
+stemming, a synonym table, edit distance on words, the local argument
+reader</td>
+<td>free, offline, under 50 ms</td>
+<td>“turn it down”, “go to line 120”</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Jev</strong>: command, arguments, fit, splits, steps,
+corrections</td>
+<td>gateway, capped, about 0.3 to 0.6 s</td>
+<td>“it’s way too loud in here”, “open my last document and read it
+aloud”</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Choose Your AI</strong>, the fallback when Jev is
+unavailable</td>
+<td>the person’s AI; local Ollama is free and offline</td>
+<td>the same, less calibrated</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>A request leaves tier 2 for tier 3 only when tier 2 is not
+confident: the top score is below its act threshold, or doesn’t beat the
+runner-up by a clear margin.</li>
+<li>Tier 4 is used only when Jev is unavailable: offline, the gateway’s
+limit or credit is spent, a timeout, or the person said no to cloud
+help.</li>
+<li>When no engine can be reached, the offline answer stands: act if it
+was confident, “Did you mean” if it was close, otherwise “I can’t do
+that here”.</li>
+</ul>
+<h3 id="64-thresholds">6.4 Thresholds</h3>
+<p>Starting values, tuned on the test set and pinned with the Jev model
+version:</p>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Act without asking</th>
+<th>Ask</th>
+<th>Say it can’t</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAFE</td>
+<td>tier 1 single hit; tier 2 confident with a margin; Jev confidence
+0.7 or more, fits 0.7 or more, margin 0.2 or more</td>
+<td>Jev’s top two within 0.2 of each other, or confidence between 0.4
+and 0.7</td>
+<td>fits below 0.3, or confidence below 0.4</td>
+</tr>
+<tr>
+<td>CONFIRM</td>
+<td>never</td>
+<td>always, as one line</td>
+<td>as for SAFE</td>
+</tr>
+<tr>
+<td>NEVER</td>
+<td>not in the list</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Jev’s confidence depends on the list.</strong> It is
+<code>(p_max - 1/n) / (1 - 1/n)</code>, so the policy also reads the top
+probability directly and records n with every decision.</li>
+<li><strong>Tier 4 has no calibrated confidence.</strong> Its answer
+acts without asking only when it is SAFE and agrees with tier 2’s best
+guess. Otherwise it asks.</li>
+<li><strong>gent’s rule stays.</strong> A split between “undo that” and
+the opposite of the last change counts as agreement.</li>
+</ul>
+<h3 id="65-the-spoken-route">6.5 The spoken route</h3>
+<p>Speech only turns sound into text. The text then goes through the
+tiers above.</p>
+<ul>
+<li><strong>QUILL, QUILL Lite and Transcribe</strong> use their own
+dictation controller and the person’s chosen engine, for F11 held.</li>
+<li><strong>Every other app</strong> uses Dictate Here into the command
+box. Transcribe types the words into the box, and the box submits them
+when F11 comes up.</li>
+<li><strong>Engines that accept a phrase list or a prompt</strong> are
+given the candidate titles and examples while F11 is held. Whether that
+helps is measured.</li>
+<li><strong>A recogniser that returns several guesses</strong> has its
+top three sent through tiers 1 and 2 (and, as one state field, to Jev),
+so a misheard word can still land.</li>
+</ul>
+<h2 id="7-jev-as-the-core-assist">7. Jev as the core assist</h2>
+<h3 id="71-what-jev-is-asked">7.1 What Jev is asked</h3>
+<p>Jev answers typed questions about one <code>state</code>: choice,
+score (ordered levels), and noul (the probability that a yes or no
+statement is true). It has no number type, as of the 2026-11-07 docs. So
+numbers, durations and dates are read on the computer, and Jev only
+decides which slot they belong to and whether the request carries one.
+All questions in a request run in parallel against the same state, for
+almost no extra time.</p>
+<h3 id="72-the-state">7.2 The state</h3>
+<pre><code>state = {
+  &quot;request&quot;: &quot;&lt;what was typed or heard, up to 300 characters&gt;&quot;,
+  &quot;heard_alternatives&quot;: [&quot;&lt;second guess&gt;&quot;, &quot;&lt;third guess&gt;&quot;],   # spoken only
+  &quot;app&quot;: &quot;radio&quot;,
+  &quot;surface&quot;: &quot;player&quot;,
+  &quot;recent&quot;: [{&quot;id&quot;: &quot;radio.volume_up&quot;, &quot;result&quot;: &quot;ok&quot;}, ...],  # up to five
+  &quot;last_offer&quot;: [&quot;radio.play_favorite&quot;, &quot;radio.play_last&quot;],     # for corrections, 30 s
+  &quot;local_matches&quot;: {&quot;name&quot;: true, &quot;number&quot;: 3, &quot;duration&quot;: null}
+}</code></pre>
+<ul>
+<li><strong>What is never in it:</strong> document text, the selection,
+file names, station or episode names, locations, account names, or
+anything a Quillin contributes.</li>
+<li><strong>What <code>local_matches</code> says</strong> is only
+whether the computer found a name, and the values of any numbers. It
+never contains the name itself.</li>
+</ul>
+<h3 id="73-the-questions-in-one-request">7.3 The questions, in one
+request</h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Type</th>
+<th>Options</th>
+<th>Read when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fits</code></td>
+<td>noul</td>
+<td>“The request asks this app to do one of the listed actions, or asks
+what it can do”</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td>choice</td>
+<td>the candidates, each with its description and one example, plus the
+shared rows</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>steps</code></td>
+<td>choice</td>
+<td>one, two, three</td>
+<td>always; a second action is read only if steps is more than one</td>
+</tr>
+<tr>
+<td><code>action_2</code>, <code>action_3</code></td>
+<td>choice</td>
+<td>the candidates again</td>
+<td>steps is two or three</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td>choice</td>
+<td>small, large</td>
+<td>the chosen command is stepped</td>
+</tr>
+<tr>
+<td><code>direction</code></td>
+<td>choice</td>
+<td>forward, back</td>
+<td>the chosen command has a direction and none was said</td>
+</tr>
+<tr>
+<td><code>slot_&lt;arg&gt;</code></td>
+<td>choice</td>
+<td>the argument’s closed set, or “a name from the person’s list”,
+“none”</td>
+<td>the chosen command takes that argument</td>
+</tr>
+<tr>
+<td><code>correction</code></td>
+<td>noul</td>
+<td>“The request corrects or rejects the previous result”</td>
+<td><code>last_offer</code> or <code>recent</code> is not empty</td>
+</tr>
+<tr>
+<td><code>correction_pick</code></td>
+<td>choice</td>
+<td>the last offer’s ids</td>
+<td>correction is likely</td>
+</tr>
+<tr>
+<td><code>target_app</code></td>
+<td>choice</td>
+<td>the family apps, plus “this app” and “none”</td>
+<td>system-wide, with no family app in front and none named</td>
+</tr>
+<tr>
+<td><code>is_question</code></td>
+<td>noul</td>
+<td>“The request asks for information, not an action”</td>
+<td>always, to route questions to readouts or to Ask</td>
+</tr>
+</tbody>
+</table>
+<p>The gateway decides which questions a request carries. The client
+asks for a catalogue version and a question set (for example
+<code>basic</code>, <code>with_args</code> or <code>system_wide</code>),
+never for free-form questions.</p>
+<h3 id="74-the-candidate-list-within-jevs-limits">7.4 The candidate
+list, within Jev’s limits</h3>
+<ul>
+<li><strong>Size.</strong> Jev takes up to 255 options a choice and 64k
+tokens a request (32k a question). We send at most 60 candidates and the
+six shared rows. Each candidate is a description of under 20 words plus
+one example, so about 2,000 to 3,000 tokens a request.</li>
+<li><strong>When an app has more than 60 eligible candidates</strong>
+(the editor can), the gateway uses Jev’s speculative fan-out in one
+request:
+<ul>
+<li>a <code>group</code> choice over the menu groups;</li>
+<li>an <code>action_&lt;group&gt;</code> choice for each of the top
+groups that tier 2 found;</li>
+<li>the app reads the action for whichever group won.</li>
+</ul></li>
+<li><strong>Versions.</strong> Candidate descriptions are versioned with
+the catalogue. The gateway keeps its own copy of each version, so a
+client can only name ids the server knows. An older client is never
+handed a command it doesn’t have.</li>
+<li><strong>Narrowing first.</strong> Tier 2’s ranking orders the list,
+so the right answer is usually near the top. The list is never cut to
+tier 2’s top few, because Jev exists for the cases tier 2
+misjudges.</li>
+</ul>
+<h3 id="75-reading-the-answer">7.5 Reading the answer</h3>
+<ol type="1">
+<li>Is <code>fits</code> below 0.3? Then the answer is “I can’t do that
+here”, with the section 11.5 pointer if one exists.</li>
+<li>Is <code>is_question</code> high and the top action a READOUT? Then
+run the readout. If no readout fits, hand the request to Ask with the
+text filled in.</li>
+<li>Is the top action confident with a margin (section 6.4)? Then act,
+or confirm if it is CONFIRM.</li>
+<li>Are the top two split? Then ask “Did you mean X or Y?”, using the
+two titles and chords, then “Something else”. The answer goes back as
+<code>last_offer</code>.</li>
+<li>Is <code>correction</code> high? Then undo the last action if it can
+be undone, and run <code>correction_pick</code> (section 8.7).</li>
+<li>Is <code>steps</code> more than one? Then build the plan of up to
+three steps and preview it (section 8.6).</li>
+<li>Fill any arguments from the local reader and the <code>slot_</code>
+answers. If a name is needed and the computer found none, open the
+command’s dialog with the words filled in.</li>
+</ol>
+<h3 id="76-where-it-runs">7.6 Where it runs</h3>
+<ul>
+<li><strong>The default route</strong> is the gateway,
+<code>POST https://ai.community-access.org/v1/decide</code>, with the
+person’s existing QUILL device token.
+<ul>
+<li>The client sends
+<code>{app, catalogue_version, question_set, state}</code>.</li>
+<li>The server builds the Jev request from its own copy of that
+catalogue version and calls
+<code>POST https://api.typesafe.ai/v1/systemone</code> with the pinned
+model (<code>jev-1.14.0</code> today) and the TypeSafe key.</li>
+<li>It returns
+<code>{probabilities, confidence, fits, size, steps, ..., model, usage}</code>.</li>
+<li>The key never ships in an app. Callers cannot send their own
+questions, so the route can’t be used for anything else.</li>
+</ul></li>
+<li><strong>An optional own-key route.</strong> A person can store their
+own TypeSafe key, encrypted with DPAPI like every other own key. The
+client then calls TypeSafe directly with the same request the gateway
+would build: the request builder is shared wx-free code
+(<code>quill/core/command_catalogue/jev_request.py</code>), and the
+gateway runs a copy of it.</li>
+<li><strong>Limits.</strong> Three seconds total from the client. A 429
+is honoured with its <code>retry-after</code>, but never by waiting more
+than the three seconds. One request in flight at a time.</li>
+</ul>
+<h3 id="77-caps-credit-and-failure">7.7 Caps, credit and failure</h3>
+<ul>
+<li><p><strong>Caps on the server:</strong></p>
+<ul>
+<li>per device, 20 a minute;</li>
+<li>per IP address, 60 a minute;</li>
+<li>for everyone, a daily request cap (20,000 to start);</li>
+<li>a monthly dollar ceiling Jeff sets.</li>
+</ul>
+<p>All are server settings, so changing them needs no new
+build.</p></li>
+<li><p><strong>When the cap is reached, the credit runs out or Jeff
+turns Jev off:</strong></p>
+<ul>
+<li>The gateway answers <code>limit_reached</code>,
+<code>no_credit</code> or <code>disabled</code>.</li>
+<li>The app says one line, once: “Jev’s daily limit is reached, so I’m
+using your AI”, or “… so I matched it here”.</li>
+<li>It uses tier 4, or the offline answer, until the next day. It does
+not ask the server again on every sentence.</li>
+</ul></li>
+<li><p><strong>Automatic refill</strong> on the TypeSafe account is off,
+or capped at the monthly ceiling.</p></li>
+<li><p><strong>The server logs no request bodies.</strong> It keeps
+aggregate counts only: requests, latency, chosen id and confidence
+band.</p></li>
+</ul>
+<h3 id="78-consent-wording">7.8 Consent wording</h3>
+<p>The first time Jev would be used (proposed):</p>
+<blockquote>
+<p>To understand requests the quick matcher can’t, QUILL can send the
+words you typed or said, the name of this app, and the names of the
+commands it can do right now to Community Access’s service, which asks
+TypeSafe, a company in San Francisco, to pick one. Nothing else is sent:
+no document text, file names, stations, places or accounts. TypeSafe say
+they do not train on it. You can change this at any time in
+Settings.</p>
+<p>[Use Jev] [Use my own AI instead] [Match on this computer only]</p>
+</blockquote>
+<p>The choice is a setting, <code>command_understanding</code>
+(<code>jev</code>, <code>my_ai</code> or <code>local</code>), shared by
+both editors and every app.</p>
+<h3 id="79-egress-rows-and-error-codes">7.9 Egress rows and error
+codes</h3>
+<ul>
+<li><strong>Egress.</strong> One reviewed site for the gateway’s
+<code>/v1/decide</code> call, and one for the own-key TypeSafe call.
+Each is a <code>_REVIEWED_EGRESS</code> entry in
+<code>quill/tools/network_egress_entries.py</code> saying what is sent,
+that it is user-initiated, the consent setting, TLS and Safe Mode. The
+egress gate test is what counts, because the audit’s command-line entry
+point does nothing.</li>
+<li><strong>Error codes,</strong> all <code>CodedError</code>
+(GATE-EC):</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QUILL-AI-DECIDE-FAILED</code></td>
+<td>network or server failure</td>
+</tr>
+<tr>
+<td><code>QUILL-AI-DECIDE-LIMIT</code></td>
+<td>daily cap reached</td>
+</tr>
+<tr>
+<td><code>QUILL-AI-DECIDE-NO-CREDIT</code></td>
+<td>TypeSafe credit spent</td>
+</tr>
+<tr>
+<td><code>QUILL-AI-DECIDE-DISABLED</code></td>
+<td>turned off on the server</td>
+</tr>
+<tr>
+<td><code>QUILL-AI-DECIDE-BAD-ANSWER</code></td>
+<td>a malformed answer, or a version mismatch</td>
+</tr>
+<tr>
+<td><code>QUILL-AI-COMMANDPICK-FAILED</code></td>
+<td>tier 4 failed</td>
+</tr>
+<tr>
+<td><code>QUILL-CORE-COMMAND-NOT-OFFERED</code></td>
+<td>any engine named an id outside the list</td>
+</tr>
+<tr>
+<td><code>QUILL-CORE-COMMAND-NO-LONGER-AVAILABLE</code></td>
+<td>the command became unavailable before it ran</td>
+</tr>
+</tbody>
+</table>
+<h3 id="710-tier-4-choose-your-ai">7.10 Tier 4, Choose Your AI</h3>
+<ul>
+<li><strong>One more <code>AiService</code> feature,
+<code>command_pick</code>.</strong> It needs a fixed template on the
+gateway for the free hosted AI, and the matching
+<code>INSTRUCTIONS</code> row in <code>own_key.py</code> for own key,
+ChatGPT and Copilot.</li>
+<li><strong>Local Ollama and llama.cpp</strong> reuse llama.cpp’s
+<code>decide</code> pattern.</li>
+<li><strong>One question per request.</strong> It asks only the
+<code>action</code> and <code>steps</code> questions, as “reply with one
+id from this list, or none”.</li>
+<li><strong>Checking the answer.</strong> The answer is parsed on the
+computer and checked against the list.</li>
+</ul>
+<h2 id="8-rich-ways-to-command">8. Rich ways to command</h2>
+<p>Each pattern below lists example phrases, which tier usually settles
+it, and the Jev question shape when Jev is needed. Every example becomes
+a corpus row (section 14).</p>
+<h3 id="81-plain-commands">8.1 Plain commands</h3>
+<ul>
+<li><strong>Examples:</strong> “save”, “next heading”, “what’s playing”,
+“mute”.</li>
+<li><strong>Settled by:</strong> tier 1.</li>
+</ul>
+<h3 id="82-loose-phrasing">8.2 Loose phrasing</h3>
+<ul>
+<li><strong>Examples:</strong> “I can’t hear it”, “this voice is like a
+chipmunk”, “the radio is way too loud”, “get me out of this
+window”.</li>
+<li><strong>Settled by:</strong> Jev, using <code>fits</code>,
+<code>action</code> and <code>size</code>.</li>
+</ul>
+<h3 id="83-arguments">8.3 Arguments</h3>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Examples</th>
+<th>Settled by</th>
+<th>Jev shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Number</td>
+<td>“favourite 3”, “go to line 120”, “bookmark 2”, “the third one”</td>
+<td>tier 1 or 2</td>
+<td><code>action</code> only; the number is local</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>“skip back 30 seconds”, “sleep in 20 minutes”, “an hour and a half
+from now”</td>
+<td>tier 2</td>
+<td><code>action</code>, <code>direction</code></td>
+</tr>
+<tr>
+<td>Time, date</td>
+<td>“wake me at 7 tomorrow”, “remind me next Friday”, “alerts for this
+weekend”</td>
+<td>tier 2 plus <code>date_parse</code></td>
+<td><code>action</code>, <code>slot_when</code> (now, a time, a
+date)</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>“play WNYC”, “play that history podcast”, “go to the Budget
+heading”</td>
+<td>local name match</td>
+<td><code>action</code>; <code>slot_name</code> = “a name from the
+person’s list”</td>
+</tr>
+<tr>
+<td>Station or episode</td>
+<td>“play the latest episode of my news podcast”, “record the jazz
+station”</td>
+<td>local match</td>
+<td><code>action</code>, <code>slot_which</code> (latest, next, by
+name)</td>
+</tr>
+<tr>
+<td>File</td>
+<td>“open my last document”, “open the report from yesterday”</td>
+<td>the recent-files list</td>
+<td><code>action</code>, <code>slot_which</code> (last, by name, by
+date)</td>
+</tr>
+<tr>
+<td>Closed set</td>
+<td>“convert these to MP3”, “read with the Spanish voice”, “only tornado
+alerts”</td>
+<td>local, then Jev</td>
+<td><code>action</code>, <code>slot_&lt;set&gt;</code> choice over the
+app’s constants</td>
+</tr>
+</tbody>
+</table>
+<h3 id="84-relative-commands">8.4 Relative commands</h3>
+<ul>
+<li><strong>Examples:</strong>
+<ul>
+<li>“louder”, “a lot faster”, “more”, “less”;</li>
+<li>“go back”, “do that again”, “again but bigger”;</li>
+<li>“undo that”, “put it back”, “how it was before”.</li>
+</ul></li>
+<li><strong>Settled by:</strong> tier 1 for the plain words. Jev reads
+<code>recent</code> for “more”, “again” and “how it was”.</li>
+<li><strong>Jev shape:</strong> <code>action</code> with
+<code>undo_last</code> and <code>repeat_last</code> among the options,
+plus <code>size</code>.</li>
+<li><strong>Context decides “go back”:</strong> in Radio the list holds
+rewind, and in the editor it holds the previous position.</li>
+</ul>
+<h3 id="85-questions-answered-from-the-app">8.5 Questions answered from
+the app</h3>
+<ul>
+<li><strong>Examples:</strong>
+<ul>
+<li>“what’s playing”, “how long is left”;</li>
+<li>“how long is this document”, “how many words”;</li>
+<li>“what’s the weather like”, “are there any alerts”;</li>
+<li>“is it recording”, “where am I”.</li>
+</ul></li>
+<li><strong>Settled by:</strong> a READOUT row. The answer comes from
+the command’s own handler, and never from Jev’s text.</li>
+<li><strong>Jev shape:</strong> <code>is_question</code> plus
+<code>action</code>. A question no readout answers (“why is the sky
+blue”) goes to Ask, with the text filled in and not sent.</li>
+</ul>
+<h3 id="86-multi-step-requests">8.6 Multi-step requests</h3>
+<ul>
+<li><strong>Examples:</strong>
+<ul>
+<li>“open my last document and read it aloud”;</li>
+<li>“pause the radio and tell me the weather” (two apps, system-wide
+only);</li>
+<li>“save and close”;</li>
+<li>“go to the Budget heading and select the paragraph”.</li>
+</ul></li>
+<li><strong>Settled by:</strong> a local split on “and”, “then” and “and
+then”, with each part resolved separately. Jev’s <code>steps</code>
+question decides whether the split is real (“rock and roll” is one
+station).</li>
+<li><strong>The rules:</strong>
+<ul>
+<li>at most three steps;</li>
+<li>before running, a one-line preview: “Open Report.docx, then read it
+aloud. Enter to go.” A chain of SAFE steps can skip the preview once the
+person turns off “Preview multi-step requests” (open decision 9);</li>
+<li>a CONFIRM step anywhere makes the preview mandatory;</li>
+<li>steps run in order and stop at the first failure, saying which step
+failed;</li>
+<li>“undo that” undoes the chain step by step, newest first;</li>
+<li>each step is checked against the list again just before it runs,
+because an earlier step can change what is available (opening a document
+enables Read Aloud).</li>
+</ul></li>
+</ul>
+<h3 id="87-corrections">8.7 Corrections</h3>
+<ul>
+<li><strong>Examples:</strong> “no, the other one”, “not that”, “no,
+louder”, “I meant the second one”, “wrong one”.</li>
+<li><strong>Settled by:</strong> tier 1 for “no” and “wrong”, and Jev
+for the rest.</li>
+<li><strong>Jev shape:</strong> <code>correction</code> plus
+<code>correction_pick</code> over <code>last_offer</code>, plus
+<code>action</code> for “no, louder”.</li>
+<li><strong>The rule:</strong>
+<ul>
+<li>When the last action ran and can be undone, undo it and run the
+correction.</li>
+<li>When it can’t be undone, ask first.</li>
+<li>When the correction’s target is unclear, show the last offer again
+as “Did you mean”.</li>
+<li>A correction is accepted only within 30 seconds of the last
+result.</li>
+</ul></li>
+</ul>
+<h3 id="88-cross-app-requests">8.8 Cross-app requests</h3>
+<ul>
+<li><strong>Examples:</strong> “Radio, pause”, “Weather, any alerts”,
+“pause the radio”, “Cast, play the next episode”, “open Quill
+Radio”.</li>
+<li><strong>Settled by:</strong> a local match on the app name at the
+start (“Radio”, “the radio”, “podcasts” for Cast). Jev’s
+<code>target_app</code> is used only when no app is named and none is in
+front.</li>
+<li><strong>The route:</strong> the request goes to the target app
+through the request file Dictate Here already uses. The target app
+builds its own candidate list and resolves the request itself (section
+9.7).</li>
+</ul>
+<h3 id="89-discoverability-phrases">8.9 Discoverability phrases</h3>
+<ul>
+<li><strong>Examples:</strong>
+<ul>
+<li>“what can I say”, “what can I ask”, “help”, “what can I do
+here”;</li>
+<li>“what can I say about bookmarks”;</li>
+<li>“what can I say while dictating”.</li>
+</ul></li>
+<li><strong>Settled by:</strong> tier 1, from the shared rows (section
+11).</li>
+</ul>
+<h3 id="810-things-it-refuses-and-how">8.10 Things it refuses, and
+how</h3>
+<table>
+<thead>
+<tr>
+<th>Request</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“delete all my recordings”</td>
+<td>“I won’t do that from a sentence. It’s in the Recordings
+window.”</td>
+</tr>
+<tr>
+<td>“write me a poem”</td>
+<td>“That’s a question for Ask. Press Alt+Shift+Q.” The text is filled
+in, not sent.</td>
+</tr>
+<tr>
+<td>“make this bold”, in a plain text file</td>
+<td>“Bold needs a rich document. This one is plain text.”</td>
+</tr>
+<tr>
+<td>“clone a repository”, without Workbench mode</td>
+<td>“Clone is in the GitHub menu, which Workbench mode turns on.”</td>
+</tr>
+<tr>
+<td>“sign me in to ChatGPT”</td>
+<td>“Sign-in is done in Choose Your AI.”</td>
+</tr>
+<tr>
+<td>“flibbertigibbet”</td>
+<td>“I can’t do that here. Say ‘what can I say’ for ideas.”</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-keys-and-phrases">9. Keys and phrases</h2>
+<h3 id="91-f11-is-the-in-app-command-key">9.1 F11 is the in-app Command
+Key</h3>
+<table>
+<thead>
+<tr>
+<th>What you do</th>
+<th>Any time, dictating or not</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tap F11</td>
+<td>opens the Say or Type a Command box</td>
+</tr>
+<tr>
+<td>Hold F11</td>
+<td>speak a command; it runs when you let go</td>
+</tr>
+<tr>
+<td>Hold F11 in the box</td>
+<td>speak into the box</td>
+</tr>
+</tbody>
+</table>
+<p>F11 never starts, stops or pauses dictation. While you are dictating
+and hold F11, the same microphone hears a command and nothing is
+written. Writing resumes when you let go. It is the same microphone
+(<code>MicrophoneLock</code>), not the same key.</p>
+<p>Why F11:</p>
+<ul>
+<li>It already means “command” in both editors (rule 2).</li>
+<li>It is free in both as a plain key (rule 5).</li>
+<li>It is not on QUILL’s leader (rule 6).</li>
+<li>Word’s F11 is Next Field, which no family app has (rule 1).</li>
+<li>It is free in every <code>APP_KEYMAPS</code> entry and every menu
+chord, apart from the Radio video window.</li>
+<li>It is not a JAWS or NVDA key.</li>
+</ul>
+<h3
+id="92-every-key-dictation-on-one-side-and-commands-on-the-other">9.2
+Every key, dictation on one side and commands on the other</h3>
+<p>This audit covers <code>keymap.py</code>,
+<code>app_keymaps.py</code>, QUILL Lite’s tables,
+<code>transcribe_keys.py</code>, the Dictate Here binding, Inkwell’s
+settings and <code>family_chords.default_system_wide_keys</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Dictation (writes)</th>
+<th>Commands (acts)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL and QUILL Lite</td>
+<td>Ctrl+F11 Dictation On (hold to talk, as set); Shift+F11 Recent
+Phrases; Ctrl+Shift+F11 Switch Language; Alt+Shift+F6 Dictation
+Settings; Alt+Shift+F10 My Words; Shift+F5 Transcribe a File; Shift+F4
+Review; Alt+F9 Dictation Status; Ctrl+F3 Tidy; Ctrl+Alt+Shift+PageDown
+Live Transcript; Ctrl+Alt+Shift+PageUp Context</td>
+<td>F11 Command Key; Ctrl+Shift+P Command Palette; Ctrl+Alt+Shift+F1
+What Can I Say Here</td>
+</tr>
+<tr>
+<td>QUILL only</td>
+<td>Ctrl+Shift+Grave, D and Ctrl+Shift+Grave, Shift+D (older dictation);
+Ctrl+F9 Locked Dictation; Ctrl+Shift+F9 pause; Escape and Shift+Escape
+while recording</td>
+<td>Voice Command (Offline), no key, retired into F11</td>
+</tr>
+<tr>
+<td>Radio, Cast</td>
+<td>Ctrl+F11 Dictate Here</td>
+<td>F11 (Radio’s video window keeps F11 for Full Screen, section 9.4);
+Ctrl+Shift+P</td>
+</tr>
+<tr>
+<td>Studio, Weather, Converter, Player, Beacon, Inkwell</td>
+<td>Dictate Here on Ctrl+F11 (phase 4)</td>
+<td>F11; Ctrl+Shift+P; Ctrl+Alt+Shift+F1</td>
+</tr>
+<tr>
+<td>Transcribe window</td>
+<td>Ctrl+F11 and the editors’ dictation keys</td>
+<td>F11; Command Key… (Ctrl+Alt+Shift+K) picks the system-wide Command
+Key</td>
+</tr>
+<tr>
+<td>System-wide</td>
+<td>Transcribe start and stop, Alt+Shift+\ (default); Status, Resume and
+Discard Held Words (empty until chosen); Inkwell Dictate Anywhere (empty
+until chosen)</td>
+<td>the system-wide Command Key (empty until chosen; the picker suggests
+Ctrl+Alt+PageDown)</td>
+</tr>
+<tr>
+<td>Spoken</td>
+<td>“Quill dictate”, “stop dictation”; the “QUILL” command word for
+dictation phrases</td>
+<td>“Hey Quill” (proposed)</td>
+</tr>
+</tbody>
+</table>
+<p>Overlaps found and fixed:</p>
+<ol type="1">
+<li><strong>F11 while dictating</strong> made the next phrase a
+dictation command. Now it is a command.</li>
+<li><strong>F11 while not dictating</strong> started dictation. It no
+longer does.</li>
+<li><strong>Transcribe’s system-wide Command Key</strong> armed the
+dictation command word. It becomes the system-wide <em>command</em> key.
+Anyone who already chose one keeps the key, and is told once what it now
+does (open decision 4).</li>
+<li><strong>The first pass had dictation phrases fall through to the
+catalogue.</strong> That is removed; the two tables never mix.</li>
+<li><strong>Speak a Command lives in the Tools, Dictation
+submenu</strong> in both editors (<code>commands_dictation.py</code>,
+line 84). It moves out, as Say or Type a Command.</li>
+</ol>
+<p>Not changed:</p>
+<ul>
+<li>Push-to-talk and hold-to-talk on Ctrl+F11 stay dictation.</li>
+<li>Inkwell’s Quick Insert and Expand keys aren’t dictation, and stay
+where they are.</li>
+</ul>
+<h3 id="93-the-keyboard-way-to-a-dictation-phrase">9.3 The keyboard way
+to a dictation phrase</h3>
+<p>Today, F11 then “scratch that” was the keyboard way into the
+dictation grammar. With F11 now commands only, the dictation grammar is
+still reached by the command word (“QUILL scratch that”) and by its bare
+phrases.</p>
+<p><strong>Recommendation:</strong> keep a dictation-side command, “Next
+Phrase Is a Dictation Command”. Give it no key, with a written reason
+(rule 8): the command word does the same job, and a key beside F11 would
+bring back the confusion this plan removes. Open decision 5.</p>
+<h3 id="94-conflicts-and-fallbacks">9.4 Conflicts and fallbacks</h3>
+<ul>
+<li><strong>The one in-app conflict is the Radio video window,</strong>
+where F11 is Full Screen (<code>radio_video_menu.py</code>, line 132),
+as browsers do it.
+<ul>
+<li>Keep it there (rule 1). The Command Key is reached from the player
+window.</li>
+<li>Record it with a <code>keymap.py</code> comment and a parity row
+(rule 11).</li>
+</ul></li>
+<li><strong>Fallbacks if F11 is refused:</strong>
+<ul>
+<li>Ctrl+Grave. It is free everywhere, but it is a dead key on many
+layouts and easy to confuse with QUILL’s leader.</li>
+<li>The palette acting on a confident sentence. The palette gets the
+matcher anyway.</li>
+</ul></li>
+<li><strong>Already taken:</strong>
+<ul>
+<li>Ctrl+Shift+Space is Say Windows Open in both editors.</li>
+<li>Ctrl+Alt+Shift+K is taken in eight apps.</li>
+</ul></li>
+</ul>
+<h3 id="95-the-system-wide-command-key">9.5 The system-wide Command
+Key</h3>
+<ul>
+<li><strong>The route.</strong> Transcribe’s existing Command Key
+setting (<code>command_hotkey</code>) becomes the system-wide Command
+Key, offered beside the Record Key in setup and on File, Command
+Key….</li>
+<li><strong>Registered only once chosen.</strong> It stays empty until
+the person picks one, as the family rule requires.</li>
+<li><strong>Tap and hold.</strong> A tap opens a small Command box from
+Transcribe, wherever you are. Holding it speaks a command, using
+Transcribe’s held-key reading. Words wait until the modifiers are up,
+through <code>KeyHeldGate</code>.</li>
+<li><strong>The suggestion.</strong> The picker suggests
+<strong>Ctrl+Alt+PageDown</strong>, and the person can take it or choose
+another.</li>
+</ul>
+<p>How it was checked:</p>
+<ol type="1">
+<li>Every Alt+Shift, Ctrl+Alt and Ctrl+Alt+Shift chord with a letter,
+digit, F1 to F12, punctuation or navigation key was run through
+<code>family_chords.show_hide_key_problem</code>. That is the picker’s
+own check against every family app’s menus, keymaps and system-wide
+keys. 14 chords passed, not counting Alt+Shift+, which is dictation’s
+own key:
+<ul>
+<li>Alt+Shift+F4, Alt+Shift+Backspace;</li>
+<li>Ctrl+Alt+8, Ctrl+Alt+F4, Ctrl+Alt+, Ctrl+Alt+;, Ctrl+Alt+’,
+Ctrl+Alt+[, Ctrl+Alt+];</li>
+<li>Ctrl+Alt+PageUp, Ctrl+Alt+PageDown, Ctrl+Alt+Delete;</li>
+<li>Ctrl+Alt+Shift+Left, Ctrl+Alt+Shift+Right.</li>
+</ul></li>
+<li>Then they were filtered by hand:
+<ul>
+<li><strong>Ctrl+Alt with a digit or punctuation</strong> is AltGr on
+many European layouts. A system-wide one would stop people typing
+characters, so 8, , ;, ’, [ and ] are out.</li>
+<li><strong>Ctrl+Alt+Delete</strong> is Windows’.</li>
+<li><strong>Alt+Shift+F4 and Ctrl+Alt+F4</strong> are one slip from
+closing a window.</li>
+<li><strong>Alt+Shift+Backspace</strong> is next to the input-language
+switch and to Alt+Backspace, which is undo.</li>
+<li><strong>Ctrl+Alt+Shift with the arrows</strong> is one slip from the
+screen readers’ table keys, Ctrl+Alt with the arrows.</li>
+</ul></li>
+<li>That left Ctrl+Alt+PageDown and Ctrl+Alt+PageUp.
+<ul>
+<li>Neither types a character, and neither is a JAWS or NVDA default as
+far as we know.</li>
+<li>Neither is near dictation’s Alt+Shift+\ or Inkwell’s keys, which are
+empty by default.</li>
+<li>PageDown reads as “go in”.</li>
+<li>The cost: while registered, Word loses Ctrl+Alt+PageDown, “bottom of
+window”. That is acceptable for an opt-in key.</li>
+</ul></li>
+<li><strong>Still to check:</strong> JAWS, NVDA, Narrator, Magnifier and
+ZoomText key lists, and common laptop vendor utilities, before phase
+4.</li>
+</ol>
+<p>The alternative suggestion is Ctrl+Alt+PageUp.</p>
+<h3 id="96-spoken-phrases">9.6 Spoken phrases</h3>
+<ul>
+<li><strong>“Quill dictate”</strong> (setting
+<code>windows_dictation_wake_phrase</code>, unchanged) starts dictation.
+“Stop dictation” stops it.</li>
+<li><strong>The command phrase</strong> (new setting
+<code>command_wake_phrase</code>, off by default). Saying it, then the
+request, runs a command, from the target window’s list only.
+Options:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Phrase</th>
+<th>For</th>
+<th>Against</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>“Hey Quill”</strong> (recommended)</td>
+<td>It doesn’t start with “Quill”, so the dictation command-word parser
+(which matches “QUILL” as the first word after a pause) never sees it.
+It sounds nothing like “Quill dictate” after the first syllable. It is
+two words, as the wake rule requires. It matches the Hey QUILL plan of
+record. Spanish is “Oye Quill”.</td>
+<td>People may expect it to answer questions. Questions go to Ask with
+the text filled in, as section 8.5 says.</td>
+</tr>
+<tr>
+<td>“Quill do”</td>
+<td>short, and Jeff’s example</td>
+<td>It starts with the dictation command word, so the two parsers would
+have to share a boundary. “Do” is often heard as “to”, “two” or “due”,
+and it shares its first sound with “dictate”.</td>
+</tr>
+<tr>
+<td>“Okay Quill”</td>
+<td>the same separation as “Hey Quill”</td>
+<td>“Okay” begins many dictated sentences</td>
+</tr>
+<tr>
+<td>“Quill command”</td>
+<td>clear</td>
+<td>collides with “QUILL command mode”, which is already a dictation
+phrase</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Like the wake phrase,</strong> the command phrase is
+listened for only while the shared listening switch is on (section
+10.9), and nothing heard before it is kept or sent.</li>
+</ul>
+<h3 id="97-targeting-from-anywhere">9.7 Targeting from anywhere</h3>
+<p>For the system-wide key or the command phrase:</p>
+<ol type="1">
+<li><strong>A family app is in front.</strong> That app and its focused
+window’s list.</li>
+<li><strong>Otherwise, the request starts with an app’s name.</strong>
+“Radio, pause” and “Weather, any alerts” go to that app’s main window
+list, if the app is running. If it isn’t, the only command offered is
+“open Quill Radio”.</li>
+<li><strong>Otherwise,</strong> one sentence: “Say which app, for
+example ‘Radio, pause’.”</li>
+</ol>
+<p>Transcribe only hears and routes. It sends the text to the target app
+through the request file (<code>send_request</code>, with a new
+<code>command</code> request kind), and the target app resolves it
+against its own list. Transcribe never resolves another app’s commands,
+so the list is always the target window’s. The result is spoken by the
+target app through its announcement service.</p>
+<h2 id="10-the-user-experience">10. The user experience</h2>
+<p>This section is written for a screen-reader user throughout, under
+GATE-13 (speak only what the reader doesn’t already say) and
+GATE-BRAILLE (everything spoken is brailled).</p>
+<h3 id="101-typed">10.1 Typed</h3>
+<ol type="1">
+<li><strong>Tap F11.</strong> The reader says the box’s title. The app
+says nothing, except a one-time hint the very first time (section
+11.4).</li>
+<li><strong>Type and press Enter.</strong></li>
+<li><strong>One result line,</strong> in the command’s words with the
+new value: “Reading speed 40”. It is silent if the handler announces its
+own result. <code>action_feedback</code> applies; counts and failures
+are always spoken.</li>
+<li><strong>Focus returns.</strong> The reader says where.</li>
+</ol>
+<h3 id="102-spoken-in-an-app">10.2 Spoken in an app</h3>
+<ol type="1">
+<li><strong>Hold F11.</strong> The listening sound plays and nothing is
+said.</li>
+<li><strong>Speak and let go.</strong> The words are shown in the status
+bar for braille.</li>
+<li><strong>One result line.</strong></li>
+<li><strong>When something goes wrong:</strong> “Didn’t catch that” when
+nothing usable was heard, and “I can’t do that here” when nothing
+fits.</li>
+</ol>
+<h3 id="103-from-anywhere">10.3 From anywhere</h3>
+<ol type="1">
+<li><strong>Press the system-wide Command Key,</strong> or say “Hey
+Quill”.</li>
+<li><strong>The result line comes from the target app.</strong></li>
+<li><strong>When there is no target,</strong> one sentence says which
+app to name.</li>
+</ol>
+<h3 id="104-clarification">10.4 Clarification</h3>
+<ul>
+<li><strong>The list.</strong> “Did you mean” holds two or three
+commands, each with its title and chord, then “Something else”.</li>
+<li><strong>The keys.</strong> Arrows move, Enter runs and Escape
+leaves.</li>
+<li><strong>Announcements.</strong> The reader reads the list, so the
+app announces nothing.</li>
+<li><strong>Spoken.</strong> In the spoken route, the question is said
+once (“Pause, or stop?”). Holding F11 and answering, or saying “the
+first one”, picks.</li>
+</ul>
+<h3 id="105-corrections-undo-and-preview">10.5 Corrections, undo and
+preview</h3>
+<ul>
+<li><strong>Corrections</strong> follow section 8.7.</li>
+<li><strong>Undo that</strong> puts back the last five changes made from
+the box, each with its old value. Document edits use the editor’s own
+undo, so Ctrl+Z works too.</li>
+<li><strong>“What would you do if I said…”</strong>, or the “Tell me,
+don’t do it” check box, describes what would happen and runs
+nothing.</li>
+</ul>
+<h3 id="106-confirmation">10.6 Confirmation</h3>
+<ul>
+<li><strong>CONFIRM commands always ask,</strong> in one line: “Stop
+every recording? Enter to stop, Escape to cancel.”</li>
+<li><strong>The dialog.</strong> It is shown through
+<code>_show_modal_dialog</code>, with <code>bind_close_button</code>. OK
+and Cancel carry no access key.</li>
+<li><strong>Multi-step.</strong> A preview for a request with several
+steps is a confirmation of the same kind.</li>
+</ul>
+<h3 id="107-offline">10.7 Offline</h3>
+<ul>
+<li><strong>Without a network,</strong> tiers 1 and 2 still work, and so
+does a local tier 4.</li>
+<li><strong>When Jev can’t be reached,</strong> the app says one line,
+once, and uses the next tier. The fallback is visible, never
+silent.</li>
+</ul>
+<h3 id="108-speed">10.8 Speed</h3>
+<ul>
+<li><strong>Tiers 1 and 2</strong> answer at once.</li>
+<li><strong>Jev or tier 4</strong> plays the thinking sound once at 600
+ms, and gives up at 3 seconds.</li>
+<li><strong>Escape</strong> cancels.</li>
+</ul>
+<h3 id="109-one-listening-switch-and-one-privacy-notice">10.9 One
+listening switch and one privacy notice</h3>
+<ul>
+<li><p><strong>One switch: Listening On or Off.</strong></p>
+<ul>
+<li>It is a family setting, kept beside the family microphone lock in
+<code>dictation_owner</code>. Every app’s Tools menu has it, and so does
+Transcribe’s tray.</li>
+<li>Off stops everything that listens: dictation, Dictate Here, the wake
+phrase, the command phrase, and F11 held.</li>
+<li>Turning it off says “Listening off”, once. F11 held while it is off
+says “Listening is off”, and a tap still opens the typed box.</li>
+<li>Its key is open decision 11.</li>
+</ul></li>
+<li><p><strong>One privacy notice for listening,</strong> shown the
+first time anything in the family listens, whether for dictation or for
+commands. It covers:</p>
+<ul>
+<li>when the microphone is used (only while dictating, while a key is
+held, or while waiting for a phrase you turned on);</li>
+<li>which speech engine hears you, and whether that engine is on this
+computer or a named cloud service;</li>
+<li>that nothing heard before a wake or command phrase is kept or
+sent;</li>
+<li>where to turn listening off.</li>
+</ul>
+<p>It replaces the separate first-use notes. It is shown once, and can
+be read again from Help.</p></li>
+<li><p><strong>Text sent to an engine is a separate question,</strong>
+because it is not about listening: the Jev consent in section
+7.8.</p></li>
+<li><p><strong>Safe Mode</strong> turns the whole feature off, along
+with listening for commands.</p></li>
+</ul>
+<h2 id="11-finding-out-what-you-can-say">11. Finding out what you can
+say</h2>
+<h3 id="111-what-can-i-say-here">11.1 “What can I say here?”</h3>
+<ul>
+<li><strong>The phrases:</strong> “what can I say”, “what can I ask”,
+“what can I do here” and “help”, typed or spoken through the Command
+Key. Also Help, What Can I Say Here.</li>
+<li><strong>What it answers from:</strong> the catalogue, for this
+window, right now, and only enabled commands. It uses exactly the
+candidate list a request would get.</li>
+<li><strong>How it is ordered:</strong> most used first (from the
+palette’s usage memory), then by menu group.</li>
+<li><strong>Each entry has</strong> a spoken name, one short example and
+its key if it has one: “Volume Down. Say ‘turn it down’. Control
+Down.”</li>
+<li><strong>Typed:</strong> the box becomes a browsable list, with group
+headings as the first item of each group. Arrows move, Enter runs the
+command, Escape leaves. The reader reads the items, and the app says
+only the count when the list opens (“12 things you can do here”),
+because only the app knows it.</li>
+<li><strong>Spoken:</strong> it is read in pages, never as one long
+announcement.
+<ol type="1">
+<li>The count and the groups first: “12 things you can do here, in 3
+groups: Playback, Favourites, Recording.”</li>
+<li>Then the first group, up to five entries.</li>
+<li>“Next”, “previous”, “repeat” or “stop”, said with F11 held within 30
+seconds, moves on. So does F11 tapped, which opens the list at that
+page.</li>
+</ol></li>
+<li><strong>Filters:</strong> “what can I say about bookmarks” narrows
+by words in titles, aliases, examples and group names. With no hits, it
+says “Nothing about bookmarks here” and offers the whole list.</li>
+</ul>
+<h3 id="112-what-can-i-say-while-dictating">11.2 “What can I say while
+dictating?”</h3>
+<ul>
+<li><strong>It answers dictation’s list,</strong> from the existing
+generated reference
+(<code>quill/core/windows_dictation/reference.py</code>): scratch that,
+caps on, select the cat, and the rest.</li>
+<li><strong>It is titled “While dictating, you can say”</strong> and
+shown in its own list, never mixed with commands, to match the separate
+keys.</li>
+<li><strong>It is reached</strong> through the Command Key, through the
+dictation command word (“QUILL what can I say”, which dictation already
+understands), and from Dictation Settings’ Commands button.</li>
+</ul>
+<h3 id="113-examples-in-the-catalogue">11.3 Examples in the
+catalogue</h3>
+<ul>
+<li><strong>The field.</strong> Every SAFE and CONFIRM row has an
+<code>examples</code> tuple. The gate requires at least one, and the
+target is three.</li>
+<li><strong>What the examples feed:</strong> this help, F1,
+<code>docs/command-catalogue.md</code>, Jev’s candidate descriptions,
+and the corpus. Every example must resolve to its own command through
+tiers 1 and 2, or through Jev in the recorded suite.</li>
+</ul>
+<h3 id="114-other-ways-in">11.4 Other ways in</h3>
+<ul>
+<li><strong>The Help menu.</strong> Every app gets a What Can I Say
+Here? row in its Help menu, on Ctrl+Alt+Shift+F1.
+<ul>
+<li>In QUILL it replaces What Can I Do Here?
+(<code>help.what_can_i_do_here</code>), keeping the id and the key, so
+nobody’s binding breaks.</li>
+<li>The F-row comment in <code>app_keymaps.py</code> already reserves
+Ctrl+Alt+Shift+F1 for it across the family.</li>
+<li>Ask’s “What can I do here?” prompt gives the same answer, from the
+same rows.</li>
+</ul></li>
+<li><strong>A one-time hint</strong> the first time the box ever opens,
+in any app: “Type what you want, or say ‘what can I say’.” It is never
+repeated (GATE-13). Whether it has been shown is a family setting.</li>
+</ul>
+<h3 id="115-i-cant-do-that-here-but-you-can">11.5 “I can’t do that here,
+but you can…”</h3>
+<p>When nothing in the candidate list fits, the request is matched
+locally against the whole catalogue, including disabled commands and
+other apps. That wider match is only used to explain. It never runs
+anything, and no engine sees it.</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Disabled here</td>
+<td>the command probe’s reason: “Bold needs a rich document. This one is
+plain text.”</td>
+</tr>
+<tr>
+<td>In another window of this app</td>
+<td>“That’s in the Recordings window. Ctrl+Shift+R opens it.”</td>
+</tr>
+<tr>
+<td>In another app</td>
+<td>“That’s in Quill Radio. Say ‘Radio, play’.”</td>
+</tr>
+<tr>
+<td>Behind a mode or feature</td>
+<td>“Clone is in the GitHub menu, which Workbench mode turns on.”</td>
+</tr>
+<tr>
+<td>NEVER</td>
+<td>“I won’t do that from a sentence. It’s in File, Accounts.”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="116-the-generated-reference">11.6 The generated reference</h3>
+<p><code>docs/command-catalogue.md</code> (“What you can say in each
+app”) lists every command per app, with its examples, key and group. It
+is generated and drift-gated (GATE-CATREF), like the keyboard reference.
+Dictation’s list stays in its own generated document.</p>
+<h2 id="12-safety">12. Safety</h2>
+<ul>
+<li><strong>Never offered by sentence:</strong>
+<ul>
+<li>sign-in, sign-out and account removal;</li>
+<li>keys, tokens and passwords;</li>
+<li>updates, installs and downloads;</li>
+<li>Safe Mode and diagnostics;</li>
+<li>outside code, shells, Quillin commands, agents, and Codex and
+Copilot sessions;</li>
+<li>sending, publishing, uploading and pushing;</li>
+<li>deleting files, recordings or episodes;</li>
+<li>editing keys and keymaps;</li>
+<li>network and privacy settings, including this feature’s own
+consent;</li>
+<li>choosing or registering system-wide keys.</li>
+</ul></li>
+<li><strong>Always confirm:</strong>
+<ul>
+<li>discarding unsaved work, closing and exiting;</li>
+<li>stopping a recording;</li>
+<li>overwriting or writing many files;</li>
+<li>marking many items;</li>
+<li>spending hosted-AI quota;</li>
+<li>anything that can’t be undone;</li>
+<li>multi-step chains that include any of these.</li>
+</ul></li>
+<li><strong>Validation</strong> follows section 6.2.</li>
+<li><strong>Agents.</strong> <code>agent_ok</code> is false on every
+CONFIRM and NEVER row, and <code>SAFE_TOOL_IDS</code> becomes the
+catalogue’s <code>agent_ok</code> view.</li>
+<li><strong>Push-to-talk</strong> gets the shared policy, so it confirms
+CONFIRM rows. Today it never confirms.</li>
+<li><strong>Quillins</strong> can’t add catalogue rows until a reviewed
+manifest field for descriptions and risk exists. A Quillin command is
+NEVER by default.</li>
+</ul>
+<h2 id="13-per-app-scope">13. Per-app scope</h2>
+<p>The tables below list the commands each app offers by sentence.
+Chords are today’s defaults. “Confirm” means CONFIRM class. Every app
+also has the shared rows. Examples come in phase 1’s review, at least
+one and ideally three per row.</p>
+<ul>
+<li><strong>QUILL has no faster or slower command for Read
+Aloud.</strong> <code>tools.read_aloud_faster</code> and
+<code>tools.read_aloud_slower</code> are added, with keys, in the shared
+package (rules 8 and 10).</li>
+<li><strong>Inkwell, Converter, Player, Beacon and Transcribe</strong>
+get command ids in phase 6.</li>
+</ul>
+<h3 id="131-quill">13.1 QUILL</h3>
+<table>
+<thead>
+<tr>
+<th>Command id</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools.read_aloud_start_pause</code></td>
+<td>Ctrl+Shift+Grave, R</td>
+<td>Read the document aloud, or pause</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>tools.read_aloud_stop</code></td>
+<td>Ctrl+Shift+Grave, Shift+R</td>
+<td>Stop reading aloud</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>tools.read_aloud_faster</code> / <code>slower</code>
+(new)</td>
+<td>to be chosen</td>
+<td>Faster or slower reading voice</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>tools.read_aloud_voice</code></td>
+<td>none</td>
+<td>Choose a reading voice (“the Spanish voice” picks it)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>edit.say_selected</code></td>
+<td>Ctrl+Shift+Y</td>
+<td>Read out what is selected</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>navigate.say_time</code></td>
+<td>Alt+Shift+Space</td>
+<td>The time and date</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>navigate.speak_status_summary</code></td>
+<td>Ctrl+Shift+Grave, Q</td>
+<td>Where am I, and the document’s state</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>verbosity.toggle_quiet</code> /
+<code>toggle_meeting</code></td>
+<td>Ctrl+Shift+Grave, Shift+Q / Shift+M</td>
+<td>Talk less; I’m in a meeting</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>tools.sound_toggle</code></td>
+<td>Alt+Shift+M</td>
+<td>Sounds on or off</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>edit.undo</code> / <code>edit.redo</code></td>
+<td>Ctrl+Z / Ctrl+Y</td>
+<td>Undo, redo</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>edit.find</code></td>
+<td>Ctrl+F</td>
+<td>Find (the words fill the box)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>navigate.go_to_line</code></td>
+<td>Ctrl+G</td>
+<td>Go to line 120</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>navigate.next_heading</code> /
+<code>previous_heading</code></td>
+<td>Ctrl+Alt+H / Ctrl+Alt+Shift+H</td>
+<td>Next or previous heading</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>navigate.outline_navigator</code></td>
+<td>Ctrl+Shift+O</td>
+<td>Show the headings; “go to the Budget heading” matches locally</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>navigate.next_bookmark</code> /
+<code>set_numbered_bookmark</code></td>
+<td>F2 / Ctrl+Shift+B</td>
+<td>Next bookmark; bookmark this spot</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>format.bold</code> / <code>format.italic</code></td>
+<td>Ctrl+B / Ctrl+I</td>
+<td>Bold or italic (rich documents only)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>format.grow_font</code> / <code>shrink_font</code></td>
+<td>Ctrl+Shift+. / Ctrl+Shift+,</td>
+<td>Bigger or smaller text</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>tools.word_count</code></td>
+<td>Ctrl+Shift+G</td>
+<td>How many words; how long is this document</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>tools.spell_check_dialog</code> /
+<code>next_misspelling</code></td>
+<td>F7 / Ctrl+F7</td>
+<td>Spelling</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>file.recent_documents</code></td>
+<td>Alt+Shift+0</td>
+<td>Open my last document (a name matches locally)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>file.save</code></td>
+<td>Ctrl+S</td>
+<td>Save</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>file.close_document</code></td>
+<td>Ctrl+W</td>
+<td>Close this document</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>app.command_palette</code></td>
+<td>Ctrl+Shift+P</td>
+<td>Show me every command</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in QUILL:</p>
+<ul>
+<li><code>app.exit</code>, <code>tools.check_updates</code>, and every
+<code>tools.hosted_ai_*</code> sign-in, key and account command;</li>
+<li><code>file.save_to_remote</code> and
+<code>file.github_save_back</code>;</li>
+<li>the <code>project.*</code> agent commands;</li>
+<li>every dictation command, which is dictation’s side.</li>
+</ul>
+<h3 id="132-quill-lite">13.2 QUILL Lite</h3>
+<p>These are the same rows as QUILL wherever
+<code>COMMAND_EQUIVALENTS</code> maps them. QUILL Lite has no Read
+Aloud, and it gains no row that QUILL lacks.</p>
+<table>
+<thead>
+<tr>
+<th>QUILL Lite handler</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cmd_say_selection</code>, <code>cmd_say_time</code></td>
+<td>Ctrl+Shift+Y, Alt+Shift+Space</td>
+<td>Read the selection; time and date</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_word_summary</code></td>
+<td>Ctrl+Alt+Shift+[</td>
+<td>How many words</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_undo</code>, <code>cmd_redo</code></td>
+<td>Ctrl+Z, Ctrl+Y</td>
+<td>Undo, redo</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_find</code>, <code>cmd_find_next</code></td>
+<td>Ctrl+F, F3</td>
+<td>Find, find next</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_goto_line</code>, <code>cmd_go_to_anything</code></td>
+<td>Ctrl+G, Ctrl+Alt+Shift+A</td>
+<td>Go to a line; go to anything</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_next_heading</code>, <code>cmd_previous_heading</code>,
+<code>cmd_list_headings</code></td>
+<td>Ctrl+Alt+H, Ctrl+Alt+Shift+H, Ctrl+Alt+L</td>
+<td>Headings</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_toggle_heading_announcements</code></td>
+<td>Ctrl+Alt+F3</td>
+<td>Say headings as I move</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_set_bookmark</code>, <code>cmd_next_bookmark</code></td>
+<td>Ctrl+Shift+B, F2</td>
+<td>Bookmarks</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_zoom_in</code>, <code>cmd_zoom_out</code>,
+<code>cmd_zoom_reset</code></td>
+<td>Ctrl+=, Ctrl+-, Ctrl+0</td>
+<td>Text size</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_spell_review</code>,
+<code>cmd_toggle_live_spelling</code></td>
+<td>F7, Ctrl+Alt+F7</td>
+<td>Spelling</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_toggle_quiet_mode</code></td>
+<td>Alt+Shift+M</td>
+<td>Sounds on or off</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_save</code></td>
+<td>Ctrl+S</td>
+<td>Save</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>cmd_close</code></td>
+<td>Ctrl+W</td>
+<td>Close this window</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>cmd_clear_bookmarks</code></td>
+<td>Ctrl+Alt+B</td>
+<td>Clear all bookmarks</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in QUILL Lite: <code>cmd_exit</code>,
+<code>cmd_toggle_read_only</code>, <code>cmd_close_project</code>,
+<code>cmd_undo_agent_turn</code>,
+<code>cmd_github_manage_accounts</code> and the dictation commands.</p>
+<h3 id="133-radio">13.3 Radio</h3>
+<table>
+<thead>
+<tr>
+<th>Command id</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>radio.play_pause</code>, <code>radio.stop</code>,
+<code>radio.play_last</code></td>
+<td>Ctrl+P, Ctrl+., Ctrl+L</td>
+<td>Play or pause, stop, the last station</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.play_favorite</code></td>
+<td>Alt+Shift+F</td>
+<td>Play a favourite, by number or by name (local)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.toggle_playing_favorite</code></td>
+<td>Ctrl+Shift+F</td>
+<td>Add to favourites, or take off</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.volume_up</code>, <code>volume_down</code>,
+<code>mute_toggle</code></td>
+<td>Ctrl+Up, Ctrl+Down, Ctrl+M</td>
+<td>Louder, quieter, mute</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.volume_boost</code></td>
+<td>Ctrl+Shift+B</td>
+<td>Boost a quiet station</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.rewind</code>, <code>radio.forward</code>,
+<code>radio.jump_to_live</code></td>
+<td>Ctrl+Shift+Left, Ctrl+Shift+Right, Ctrl+Shift+L</td>
+<td>Back, forward (“back 30 seconds”), live</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.identify_song</code>,
+<code>whats_playing_details</code>, <code>song_history</code></td>
+<td>Ctrl+K, Ctrl+T, Ctrl+Shift+H</td>
+<td>What’s this song; what’s playing; what played earlier</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.lyrics</code>, <code>browse</code>,
+<code>find_streams</code>, <code>on_now</code></td>
+<td>Ctrl+Alt+B, Ctrl+B, Ctrl+Alt+S, Ctrl+Alt+H</td>
+<td>Lyrics, browse, find a station, what’s on</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.record_station</code>, <code>record_toggle</code>,
+<code>stop_all_recordings</code></td>
+<td>Ctrl+Alt+R, Ctrl+R, Ctrl+Alt+X</td>
+<td>Recording</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>radio.recordings</code></td>
+<td>Ctrl+Shift+R</td>
+<td>My recordings</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.wake_timer</code>, <code>media.sleep_timer</code></td>
+<td>Ctrl+Alt+Z, Ctrl+Shift+Z</td>
+<td>“Wake me at 7”; “sleep in 20 minutes”</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.transport.speed_up</code>, <code>speed_down</code>,
+<code>speed_reset</code></td>
+<td>Ctrl+Shift+Up, Ctrl+Shift+Down, Ctrl+Shift+0</td>
+<td>Faster, slower, normal</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>radio.toggle_title_announcements</code></td>
+<td>Ctrl+Alt+T</td>
+<td>Say song titles, or stop</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>app.undo_last</code></td>
+<td>Ctrl+Z</td>
+<td>Undo the last thing I did</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Radio:</p>
+<ul>
+<li><code>radio.forget_station_volumes</code>,
+<code>radio.update_catalog</code> and
+<code>radio.download_preferences</code>;</li>
+<li><code>app.import_setup</code> and
+<code>app.export_setup</code>;</li>
+<li><code>radio.chatgpt_account</code>, and every hosted AI account, key
+and privacy command;</li>
+<li>the YouTube imports;</li>
+<li><code>radio.suggest_pick</code>.</li>
+</ul>
+<h3 id="134-cast">13.4 Cast</h3>
+<table>
+<thead>
+<tr>
+<th>Command id</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>podcasts.say_now_playing</code>, <code>time_remaining</code>,
+<code>player_information</code></td>
+<td>Ctrl+T, Ctrl+Shift+T, Ctrl+I</td>
+<td>What’s playing, how long is left, about this episode</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>podcasts.skip_silence</code></td>
+<td>Ctrl+Shift+9</td>
+<td>Skip silences</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>podcasts.go_to_position</code></td>
+<td>Ctrl+Alt+J</td>
+<td>“Go to 12 minutes”</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>podcasts.mark_played_and_next</code></td>
+<td>Ctrl+Alt+Shift+Down</td>
+<td>Mark played, play next</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>podcasts.bookmark_note</code>, <code>episode_bookmarks</code>,
+<code>app.bookmark_moment</code></td>
+<td>Ctrl+Shift+D, Ctrl+Shift+J, Ctrl+Alt+A</td>
+<td>Bookmarks</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>podcasts.refresh_feed</code>,
+<code>media.refresh_podcasts</code></td>
+<td>F5, Ctrl+F5</td>
+<td>Check for new episodes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>podcasts.now_playing</code>,
+<code>podcasts.lineups</code></td>
+<td>Ctrl+Alt+2, Ctrl+U</td>
+<td>What’s playing; lineups</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>podcasts.new_folder</code>, <code>move_to_folder</code></td>
+<td>Ctrl+Shift+E, Ctrl+Shift+V</td>
+<td>Folders</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>podcasts.mark_all_played</code></td>
+<td>Alt+Shift+E</td>
+<td>Mark everything played</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>app.repeat_last_result</code>, <code>app.quiet_hours</code>,
+<code>app.undo_last</code></td>
+<td>F9, Ctrl+Alt+Shift+Z, Ctrl+Z</td>
+<td>Say that again; quiet hours; undo</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Cast:</p>
+<ul>
+<li>backup, restore, and import or export of setup;</li>
+<li><code>media.sync_places</code>;</li>
+<li>every hosted AI account command.</li>
+</ul>
+<p>Cast’s <code>_cast_command_unavailable_reason</code> becomes its
+command probes.</p>
+<h3 id="135-studio">13.5 Studio</h3>
+<table>
+<thead>
+<tr>
+<th>Command id</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>studio.capture</code>, <code>capture_active</code>,
+<code>capture_desktop</code></td>
+<td>Ctrl+Alt+Shift+S, Ctrl+Alt+Shift+F5, Ctrl+Alt+Shift+F6</td>
+<td>Screenshots</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>studio.inspect_capture</code></td>
+<td>Ctrl+Alt+Shift+I</td>
+<td>About the last screenshot</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>studio.describe_picture</code></td>
+<td>Ctrl+F5</td>
+<td>Describe this picture (spends hosted AI)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>studio.record_demo</code></td>
+<td>Ctrl+Alt+Shift+V</td>
+<td>Start recording a demo</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>studio.record_pause</code>, <code>record_marker</code>,
+<code>record_mute</code>, <code>record_status</code></td>
+<td>Ctrl+Alt+Shift+P, Ctrl+Alt+Shift+B, Ctrl+Alt+Shift+U,
+Ctrl+Alt+Shift+T</td>
+<td>Pause, marker, mute, status</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>studio.camera_check</code>, <code>studio.mixer</code></td>
+<td>Ctrl+Alt+Shift+C, Ctrl+Alt+Shift+M</td>
+<td>Camera check, mixer</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>studio.broadcast_mute</code></td>
+<td>Ctrl+Alt+Shift+Z</td>
+<td>Mute the broadcast</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>studio.broadcast_stop</code></td>
+<td>Ctrl+Alt+Shift+E</td>
+<td>Stop broadcasting</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Studio: <code>record_discard</code>,
+<code>record_emergency_stop</code>, <code>record_recover</code>,
+<code>broadcast</code>, <code>chatgpt_account</code> and
+<code>tools.hosted_ai_privacy</code>.</p>
+<h3 id="136-weather">13.6 Weather</h3>
+<table>
+<thead>
+<tr>
+<th>Command id</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>weather.now</code>, <code>quick</code>,
+<code>alerts</code></td>
+<td>Ctrl+Shift+W, Ctrl+Shift+Q, Ctrl+Shift+Alt+A</td>
+<td>Weather now; short version; any alerts</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>weather.monitor_toggle</code>, <code>monitor_pause</code>,
+<code>test_alert</code></td>
+<td>Ctrl+Alt+Shift+M, Ctrl+Alt+Shift+P, Ctrl+Alt+Shift+T</td>
+<td>Alerts on or off; “pause alerts for an hour”; test</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>weather.noaa_listen</code></td>
+<td>Ctrl+Alt+N</td>
+<td>NOAA weather radio (when installed)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>weather.add_location</code>,
+<code>weather.settings</code></td>
+<td>Ctrl+Alt+Shift+L, Ctrl+Alt+Shift+F</td>
+<td>Add a place (typed in the dialog); settings</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Weather: <code>weather.noaa_update</code>.
+Locations are matched locally, never sent.</p>
+<h3 id="137-inkwell-ids-in-phase-6">13.7 Inkwell (ids in phase 6)</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manage Abbreviations</td>
+<td>Ctrl+M</td>
+<td>Show my abbreviations</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Quick Insert</td>
+<td>Ctrl+K</td>
+<td>Insert an abbreviation (a name matches locally)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Expand the Word I Just Typed</td>
+<td>Ctrl+Alt+E</td>
+<td>Expand what I typed</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Expand in other applications</td>
+<td>Ctrl+Shift+E</td>
+<td>Expansion in other programs on or off</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Excluded Applications</td>
+<td>Ctrl+Alt+X</td>
+<td>Stop expanding in a program</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Inkwell: Start with Windows, Insert by Pasting,
+the key pickers, Exit and Check for Updates.</p>
+<h3 id="138-converter-ids-in-phase-6">13.8 Converter (ids in phase
+6)</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Convert Now</td>
+<td>Ctrl+Enter</td>
+<td>Convert (“as MP3” picks the format)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Preview with Your Settings</td>
+<td>Ctrl+P</td>
+<td>Hear how it will sound</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Paste Files, Convert from URL</td>
+<td>Ctrl+V, Ctrl+U</td>
+<td>Add copied files; convert from a web address</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Join into One File, Split by Chapters</td>
+<td>Ctrl+J, Ctrl+Shift+S</td>
+<td>Join; split</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Chapter Workbench, Edit Tags, Custom Effects</td>
+<td>Ctrl+H, Ctrl+T, Ctrl+E</td>
+<td>Chapters, tags, effects</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Open Output Folder, Open Output Folder When Done</td>
+<td>Ctrl+Shift+F, Ctrl+Shift+W</td>
+<td>Where the files went</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Conversion Report</td>
+<td>Ctrl+R</td>
+<td>How did it go</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Converter: Upload to WordPress, every Auphonic
+command, Get FFmpeg and Exit.</p>
+<h3 id="139-player-ids-in-phase-6">13.9 Player (ids in phase 6)</h3>
+<p>The Player’s <code>VoiceIntent</code> actions become catalogue rows,
+and Ctrl+Shift+V opens the Command box.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>toggle, play, pause, stop</td>
+<td>player keys</td>
+<td>Playback</td>
+<td>No</td>
+</tr>
+<tr>
+<td>faster, slower, volume up and down, mute</td>
+<td>player keys</td>
+<td>Speed, volume</td>
+<td>No</td>
+</tr>
+<tr>
+<td>skip, seek</td>
+<td>player keys</td>
+<td>“Skip back 30 seconds”, “go to 1 hour 5”</td>
+<td>No</td>
+</tr>
+<tr>
+<td>next and previous chapter</td>
+<td>player keys</td>
+<td>Chapters</td>
+<td>No</td>
+</tr>
+<tr>
+<td>where am I</td>
+<td>Shift+F6</td>
+<td>Where am I in the book</td>
+<td>No</td>
+</tr>
+<tr>
+<td>bookmark</td>
+<td>Ctrl+Shift+B</td>
+<td>Bookmark this spot</td>
+<td>No</td>
+</tr>
+<tr>
+<td>sleep, sleep at end of chapter</td>
+<td>Sleep Timer submenu</td>
+<td>“Stop in 20 minutes”, “at the end of the chapter”</td>
+<td>No</td>
+</tr>
+<tr>
+<td>recap, summarize</td>
+<td>Playback menu</td>
+<td>What happened so far (hosted AI)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Go to Position, Bookmarks, Lyrics, Audio Output Device</td>
+<td>Ctrl+G, Ctrl+Alt+M, Ctrl+Alt+L, Ctrl+Shift+K</td>
+<td>Position, bookmarks, lyrics, sound card</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Player: Import Sync Bundle, Check for Updates
+and Exit.</p>
+<h3 id="1310-beacon-ids-in-phase-6">13.10 Beacon (ids in phase 6)</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New Bookmark, Build Search, Open Selected</td>
+<td>Ctrl+N, Ctrl+Shift+F, Enter</td>
+<td>Save, find, open</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Toggle Favorite, Add to Collection</td>
+<td>Ctrl+D, Ctrl+L</td>
+<td>Favourite; collection</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Archive Selected, Trash Selected</td>
+<td>Ctrl+Shift+A, Delete</td>
+<td>Archive; trash</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Restore Selected, Undo</td>
+<td>Shift+Delete, Ctrl+Z</td>
+<td>Bring back; undo</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Play in Player, Refresh Feeds, Sync Now</td>
+<td>Ctrl+Shift+L, Ctrl+Shift+R, F9</td>
+<td>Play, check feeds, sync</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Status Center, Where Am I?</td>
+<td>Ctrl+Alt+I, Ctrl+F1</td>
+<td>How is everything; where am I</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Suggest Tags, Summarize Note</td>
+<td>Ctrl+Shift+T, Ctrl+Shift+M</td>
+<td>Local suggestions</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Beacon: every Bulk command, Import, Export, Sync
+Settings, Capture Bridge and Review Location Repair.</p>
+<h3 id="1311-transcribe-ids-in-phase-6">13.11 Transcribe (ids in phase
+6)</h3>
+<p>Transcribe’s window commands are commands. Its dictation keys stay on
+dictation’s side.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Chord</th>
+<th>What the person wants</th>
+<th>Confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dictation Status (readout)</td>
+<td>chosen by the person</td>
+<td>Is it listening, and where is it typing</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Recent Phrases</td>
+<td>Shift+F11</td>
+<td>What did I just say</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Resume Held Words</td>
+<td>chosen</td>
+<td>Type the held words</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Discard Held Words</td>
+<td>chosen</td>
+<td>Throw the held words away</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Show or hide the window</td>
+<td>chosen</td>
+<td>Bring Transcribe up, or away</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Open a family app</td>
+<td>none</td>
+<td>“Open Quill Radio” (system-wide)</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Never by sentence in Transcribe:</p>
+<ul>
+<li>starting or stopping dictation, which belongs to dictation’s keys
+and phrase;</li>
+<li>choosing any system-wide key;</li>
+<li>the never-type list, model downloads and cloud sign-in;</li>
+<li>Exit and Check for Updates.</li>
+</ul>
+<h3 id="1312-github-workbench-both-editors">13.12 GitHub Workbench (both
+editors)</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What the person wants</th>
+<th>Class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open the GitHub Workbench</td>
+<td>Show my GitHub</td>
+<td>SAFE</td>
+</tr>
+<tr>
+<td>Open from GitHub, Open GitHub Reference</td>
+<td>Open a file or the guide (a repository name matches locally)</td>
+<td>SAFE</td>
+</tr>
+<tr>
+<td>Notifications, issues, pull requests</td>
+<td>What needs my attention</td>
+<td>SAFE</td>
+</tr>
+<tr>
+<td>Compare branches, workflow runs, artifacts</td>
+<td>Show me</td>
+<td>SAFE</td>
+</tr>
+<tr>
+<td>Draft an issue</td>
+<td>Start an issue (nothing is sent)</td>
+<td>SAFE</td>
+</tr>
+<tr>
+<td>Clone</td>
+<td>Clone a repository (opens the dialog)</td>
+<td>SAFE, Workbench mode only</td>
+</tr>
+<tr>
+<td>Save back, push, merge, comment, create, fork, rename or delete a
+repository, branch protection, releases</td>
+<td>Anything that changes GitHub</td>
+<td>NEVER</td>
+</tr>
+<tr>
+<td>Sign In with GitHub, Manage Accounts</td>
+<td>Accounts</td>
+<td>NEVER</td>
+</tr>
+</tbody>
+</table>
+<p>These rows join once the menu work settles the ids.</p>
+<h2 id="14-testing-strategy">14. Testing strategy</h2>
+<p>Testing drives the phases. No phase ships without its corpus rows and
+the gates below passing.</p>
+<h3 id="141-the-corpus">14.1 The corpus</h3>
+<p>There is one file per app,
+<code>tests/fixtures/command_key/&lt;app&gt;.jsonl</code>. Each row
+holds:</p>
+<pre><code>{&quot;text&quot;: &quot;turn it down a bit&quot;, &quot;mode&quot;: &quot;typed|dictated|misheard&quot;,
+ &quot;heard_alternatives&quot;: [], &quot;app&quot;: &quot;radio&quot;, &quot;surface&quot;: &quot;Quill Radio&quot;,
+ &quot;enabled&quot;: [&quot;...ids, or &#39;default&#39;&quot;], &quot;recent&quot;: [], &quot;last_offer&quot;: [],
+ &quot;expect&quot;: {&quot;id&quot;: &quot;radio.volume_down&quot;, &quot;args&quot;: {&quot;size&quot;: &quot;small&quot;}}
+           | {&quot;refuse&quot;: &quot;not_here|never|ask|other_app|disabled&quot;, &quot;pointer&quot;: &quot;radio&quot;}
+ , &quot;tier_max&quot;: 2, &quot;set&quot;: &quot;train|held_out&quot;}</code></pre>
+<p>What goes in it, for every offered command:</p>
+<ul>
+<li>at least 20 typed phrasings: plain, terse, indirect, complaints,
+typos and other people’s words;</li>
+<li>at least 5 dictated phrasings, recorded through the default offline
+engine;</li>
+<li>at least 5 misheard ones, including common misrecognitions (“quill”
+as “quilt”, “favourite” as “favour it”);</li>
+<li>every catalogue example, each expected to resolve to its own
+command.</li>
+</ul>
+<p>What goes in it, for every app:</p>
+<ul>
+<li>25 percent or more negatives: NEVER commands, questions for Ask,
+other apps’ commands and nonsense;</li>
+<li>10 percent or more disabled-here rows: the right command, but the
+<code>enabled</code> field leaves it out, so the expected answer is a
+refusal with the right reason.</li>
+</ul>
+<p>Each pattern in section 8 has its own rows: arguments, relative,
+questions, multi-step, corrections, cross-app and discoverability.</p>
+<p>Sizes:</p>
+<ul>
+<li><strong>Phase 2:</strong> about 2,500 rows for QUILL, QUILL Lite and
+Radio.</li>
+<li><strong>Phase 3:</strong> 6,000 rows.</li>
+<li><strong>Full scope:</strong> about 20,000 rows family-wide. QUILL
+around 5,000, QUILL Lite 3,000, Radio 2,500, and every other app 800 to
+1,500.</li>
+<li><strong>Held out:</strong> a fifth of the rows, including every
+blind tester’s phrasing. It is never used for tuning.</li>
+</ul>
+<h3 id="142-fakes-so-everything-runs-offline-in-ci">14.2 Fakes, so
+everything runs offline in CI</h3>
+<ul>
+<li><p><strong><code>FakeJevClient</code></strong> takes scripted
+probabilities, confidence and <code>fits</code> for each request, chosen
+per test or by a rule. It can also:</p>
+<ul>
+<li>raise a 429 with <code>retry-after</code>, a timeout,
+<code>no_credit</code>, <code>limit_reached</code> or
+<code>disabled</code>;</li>
+<li>return a malformed answer, an id outside the list, or an older
+catalogue version.</li>
+</ul>
+<p>It records every request, so tests can assert what was and wasn’t
+sent.</p></li>
+<li><p><strong><code>FakeCommandPickEngine</code></strong>, for Choose
+Your AI, returns scripted text: a clean id, an id wrapped in prose,
+JSON-like text, an id not in the list, an empty answer, or a
+failure.</p></li>
+<li><p><strong><code>FakeRecognizer</code></strong> feeds transcripts,
+n-best lists and misrecognitions, and can time out.</p></li>
+<li><p><strong><code>FakeContext</code> and
+<code>FakeRegistry</code></strong> script the app, the surface, the
+availability probes, and changes between asking and running.</p></li>
+<li><p><strong><code>FakeAnnouncer</code></strong> captures every spoken
+and brailled string.</p></li>
+<li><p><strong><code>FakeClock</code></strong> controls the 30-second
+correction window, the 600 ms thinking sound and the 3-second
+timeout.</p></li>
+<li><p><strong><code>FakeRequestFile</code></strong> carries cross-app
+routing.</p></li>
+</ul>
+<p>All live in <code>tests/unit/core/command_catalogue/fakes.py</code>,
+wx-free.</p>
+<h3 id="143-property-tests-hypothesis-already-a-dev-dependency">14.3
+Property tests (Hypothesis, already a dev dependency)</h3>
+<p>These are generated over random catalogues, contexts, enabled sets,
+engine answers and phrasings.</p>
+<ul>
+<li><strong>No command runs outside the candidate list</strong> handed
+to the policy, whatever any engine returns.</li>
+<li><strong>No NEVER command runs,</strong> and none is ever sent to any
+engine.</li>
+<li><strong>Every CONFIRM command, and every chain containing one,
+confirms</strong> before running, at any confidence.</li>
+<li><strong>A command unavailable at run time never runs,</strong> even
+if it was available when asked.</li>
+<li><strong>No local name, document text or file name</strong> ever
+appears in a Jev or tier-4 request payload.</li>
+<li><strong>At most one engine request is in flight,</strong> and every
+request ends in a result, a question, a refusal or a fallback. Nothing
+hangs.</li>
+<li><strong>Undo after any sequence of up to five actions</strong>
+restores the recorded values in reverse order.</li>
+<li><strong>The words a person hears</strong> come only from the app’s
+strings, never from an engine’s text.</li>
+</ul>
+<h3 id="144-context-gating-tests">14.4 Context gating tests</h3>
+<ul>
+<li>For every corpus row, run the resolver with the row’s
+<code>enabled</code> set and assert the expected id or refusal.</li>
+<li>Then rerun with the expected command removed from
+<code>enabled</code>, and assert a refusal with the probe’s reason. The
+command must not be swapped for a near miss.</li>
+<li>Surface tests: a Radio recording command is never chosen while the
+focus is in Settings. Bold is never chosen in a plain text
+document.</li>
+<li>Cross-app: a request routed to Radio is resolved against Radio’s
+list only, never the sender’s.</li>
+<li>Separation: no dictation phrase ever resolves to a command, no
+command phrase ever writes text, and F11 never changes dictation’s
+state.</li>
+</ul>
+<h3 id="145-coverage-gates">14.5 Coverage gates</h3>
+<ul>
+<li><strong>GATE-CORPUS.</strong> Every SAFE and CONFIRM catalogue row
+has at least the section 14.1 minimums in the corpus. Every example
+resolves to its own command in tiers 1 and 2, or is marked
+<code>needs_jev</code> and passes in the recorded suite.</li>
+<li><strong>GATE-CATALOGUE.</strong> Every registered command is
+classified (section 15).</li>
+<li><strong>Line and branch coverage</strong> of
+<code>quill/core/command_catalogue/</code> is at least 95 percent, and
+the policy module is at 100 percent.</li>
+<li><strong>Every Jev question</strong> in section 7.3 has a test where
+it decides the outcome.</li>
+</ul>
+<h3 id="146-announcement-tests-gate-13-gate-braille">14.6 Announcement
+tests (GATE-13, GATE-BRAILLE)</h3>
+<ul>
+<li>The box’s title, what was typed, the list’s items and focus changes
+are never announced.</li>
+<li>Every result line goes through the announcement service, and the
+<code>FakeAnnouncer</code> sees the same string in speech and
+braille.</li>
+<li>The one-time hint is spoken once, ever. The help count is spoken
+once a list.</li>
+<li>No result line is longer than 12 words. A spoken help page has no
+more than five entries.</li>
+</ul>
+<h3 id="147-the-recorded-live-suite">14.7 The recorded live suite</h3>
+<ul>
+<li><strong>Where it lives.</strong>
+<code>tests/live/test_jev_live.py</code>, marked <code>live_jev</code>.
+It needs a gateway token or a TypeSafe key, and is skipped without
+one.</li>
+<li><strong>When it runs.</strong> By hand or nightly, never in PR
+CI.</li>
+<li><strong>What it does.</strong>
+<ul>
+<li>It sends the held-out set and the <code>needs_jev</code> rows
+through the real gateway, with the model version pinned.</li>
+<li>It records each request and answer as a cassette under
+<code>tests/fixtures/command_key/cassettes/</code>, which PR CI then
+replays offline as a regression test.</li>
+<li>It writes a report: accuracy, calibration by confidence band,
+latency (median and 95th percentile), tokens, and dollars per 1,000
+requests, by app and by pattern.</li>
+</ul></li>
+<li><strong>A new Jev version</strong> runs the whole suite before the
+pin moves.</li>
+</ul>
+<h3 id="148-targets">14.8 Targets</h3>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wrong act, all tiers</td>
+<td>under 1 percent of positives</td>
+</tr>
+<tr>
+<td>Wrong act on CONFIRM, and any NEVER run</td>
+<td>zero (property-tested)</td>
+</tr>
+<tr>
+<td>Correct act or correct clarification</td>
+<td>95 percent or more</td>
+</tr>
+<tr>
+<td>Clarifications</td>
+<td>under 10 percent of positives</td>
+</tr>
+<tr>
+<td>Negatives that act</td>
+<td>under 2 percent</td>
+</tr>
+<tr>
+<td>Disabled-here rows refused with the right reason</td>
+<td>98 percent or more</td>
+</tr>
+<tr>
+<td>Tiers 1 and 2 alone, terse and plain phrasings</td>
+<td>90 percent correct acts</td>
+</tr>
+<tr>
+<td>Jev over tiers 1 and 2, loose phrasing</td>
+<td>15 points more correct acts, or better</td>
+</tr>
+<tr>
+<td>Jev calibration error (expected calibration error)</td>
+<td>under 0.05</td>
+</tr>
+<tr>
+<td>Dictated against typed</td>
+<td>within 10 points</td>
+</tr>
+<tr>
+<td>Multi-step plans correct</td>
+<td>90 percent, with every CONFIRM previewed</td>
+</tr>
+<tr>
+<td>Latency, tiers 1 and 2</td>
+<td>under 50 ms</td>
+</tr>
+<tr>
+<td>Latency, Jev from the client</td>
+<td>median under 700 ms, 95th percentile under 1.5 s</td>
+</tr>
+<tr>
+<td>Jev cost</td>
+<td>under $0.15 per 1,000 Jev requests</td>
+</tr>
+<tr>
+<td>Whole offline suite in CI</td>
+<td>under 90 seconds</td>
+</tr>
+</tbody>
+</table>
+<h2 id="15-gates">15. Gates</h2>
+<ul>
+<li><strong>GATE-CATALOGUE</strong>
+(<code>tests/unit/core/test_command_catalogue.py</code>, plus
+<code>quill/tools/command_catalogue_audit.py</code> in
+<code>platform_report</code>):
+<ul>
+<li>Every registered command is a row, or is classified in
+<code>tests/unit/core/fixtures/command_catalogue.json</code> as
+<code>reviewed</code>, <code>unreviewed</code> (meaning NEVER) or
+<code>internal</code>. The <code>unreviewed</code> list may only
+shrink.</li>
+<li>Senders, deleters, overwriters and exits must be CONFIRM or
+NEVER.</li>
+<li>No CONFIRM or NEVER row has <code>agent_ok</code>.</li>
+<li>Aliases are unique on a surface.</li>
+<li>Every QUILL Lite row maps to a QUILL row (rule 10).</li>
+<li>Every SAFE and CONFIRM row has a description and at least one
+example.</li>
+<li>No catalogue row is a dictation phrase, and no dictation phrase is a
+catalogue alias.</li>
+</ul></li>
+<li><strong>GATE-CORPUS</strong> (section 14.5).</li>
+<li><strong>GATE-CATREF:</strong> <code>docs/command-catalogue.md</code>
+is generated and drift-gated.</li>
+<li><strong>Documentation chords and GATE-DOCKEY</strong> read catalogue
+titles.</li>
+<li><strong>The engine boundary:</strong> only the policy module may
+call <code>registry.run</code>, which a source test checks.</li>
+<li><strong>Existing gates that apply:</strong>
+<ul>
+<li>menu accelerators, for F11, What Can I Say Here and Listening On or
+Off;</li>
+<li>the bound-command gate, rules 8 and 11, including the Radio video
+window row;</li>
+<li>GATE-14 access keys;</li>
+<li>dialogs through <code>_show_modal_dialog</code>, with
+<code>bind_close_button</code>;</li>
+<li>GATE-13 and GATE-BRAILLE;</li>
+<li>F1 in every app;</li>
+<li>GATE-REACH;</li>
+<li>GATE-DPI;</li>
+<li>GATE-DESCRIBE and GATE-KEYREF;</li>
+<li>settings vocabulary and GATE-SETDOC, for
+<code>command_understanding</code>, <code>command_wake_phrase</code>,
+the listening switch, the hint-shown flag and multi-step preview;</li>
+<li>GATE-LITE-COVER;</li>
+<li>GATE-EC, for the codes in section 7.9;</li>
+<li>network egress, for the rows in section 7.9;</li>
+<li>GATE-11 module size: one catalogue module per app, and the editor
+side in a mixin (<code>main_frame_command_key.py</code>), never in
+<code>main_frame.py</code>;</li>
+<li>the system-wide key checks (<code>show_hide_key_problem</code>), for
+the Command Key picker.</li>
+</ul></li>
+</ul>
+<h2 id="16-the-attack-layout">16. The attack layout</h2>
+<h3 id="161-phases-at-a-glance">16.1 Phases at a glance</h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>What ships</th>
+<th>Size</th>
+<th>Depends on</th>
+<th>Beside</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Decisions only</td>
+<td>small</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Catalogue with examples, GATE-CATALOGUE, the fakes, the corpus
+format, the palette and Key Describer reading it</td>
+<td>large</td>
+<td>0</td>
+<td>6</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Typed F11 with tiers 1 and 2, policy, undo, preview, typed
+discoverability, the generated reference, for QUILL, QUILL Lite and
+Radio; about 2,500 corpus rows</td>
+<td>medium to large</td>
+<td>1</td>
+<td>3’s gateway half, 6</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Jev: <code>/v1/decide</code>, the request builder, all section 7.3
+questions, consent, caps, egress, error codes, the recorded suite; then
+Choose Your AI as tier 4</td>
+<td>large</td>
+<td>2</td>
+<td>4, 6</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Speech: hold F11, the system-wide Command Key, the command phrase,
+targeting, the listening switch and privacy notice, spoken help and
+dictation help</td>
+<td>large</td>
+<td>2 (and 3 for the best results)</td>
+<td>3, 6</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Rich commanding: arguments, multi-step, corrections, cross-app, “you
+can do that in…”</td>
+<td>medium to large</td>
+<td>3, 4</td>
+<td>6</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Command ids for Inkwell, Converter, Player, Beacon and Transcribe;
+Cast, Studio and Weather reviewed; their corpora</td>
+<td>large, one PR per app</td>
+<td>1</td>
+<td>2 to 5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>GitHub Workbench rows; push-to-talk retired into F11; Hey QUILL
+handing questions to Ask’s conversation</td>
+<td>medium</td>
+<td>4, 6</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>The first shippable phase is 2:</strong> typed, offline,
+free, no account.</li>
+<li><strong>Jev arrives in phase 3,</strong> behind its consent. A
+person who says no keeps phases 2 and 4 in full.</li>
+<li><strong>QUILL and QUILL Lite</strong> get every phase in the same
+PR.</li>
+</ul>
+<h3 id="162-phase-0-decisions">16.2 Phase 0: decisions</h3>
+<p>Jeff answers section 20. The plan of record moves to
+<code>docs/design/command-key.md</code>, with a progress log and its own
+remaining tasks.</p>
+<p><strong>Go or no-go:</strong> the key, the phrase, the catalogue
+shape and the Jev budget are agreed.</p>
+<h3 id="163-phase-1-the-catalogue-large">16.3 Phase 1: the catalogue
+(large)</h3>
+<ul>
+<li><strong>PR 1a:</strong>
+<ul>
+<li>the schema, with <code>examples</code> and <code>group</code>;</li>
+<li><code>set_command_probe</code>;</li>
+<li>GATE-CATALOGUE, with everything <code>unreviewed</code>;</li>
+<li>the corpus format and loader;</li>
+<li>every fake in section 14.2.</li>
+</ul></li>
+<li><strong>PR 1b:</strong>
+<ul>
+<li>the seed script;</li>
+<li>QUILL, QUILL Lite and Radio rows reviewed, with examples;</li>
+<li><code>SAFE_TOOL_IDS</code> as a catalogue view, with a test that it
+is unchanged.</li>
+</ul></li>
+<li><strong>PR 1c:</strong>
+<ul>
+<li>the palette, Key Describer and push-to-talk read the catalogue;</li>
+<li><code>COMMAND_ALIASES</code> and <code>_ALIASES</code> deleted;</li>
+<li><code>docs/command-catalogue.md</code> generated.</li>
+</ul></li>
+<li><strong>Tests:</strong> the gate; palette golden rankings before and
+after; GATE-DESCRIBE; the agent allowlist.</li>
+</ul>
+<p><strong>Go or no-go:</strong> no palette search gets worse.</p>
+<h3 id="164-phase-2-the-typed-key-medium-to-large-first-shippable">16.4
+Phase 2: the typed key (medium to large, first shippable)</h3>
+<ul>
+<li><strong>PR 2a:</strong>
+<ul>
+<li>the resolver (tiers 1 and 2) and the local argument reader for
+numbers and durations;</li>
+<li>the policy, the undo ring and the property tests in section
+14.3.</li>
+</ul></li>
+<li><strong>PR 2b:</strong>
+<ul>
+<li>the box, “Did you mean” and the confirmation;</li>
+<li>the QUILL mixin, QUILL Lite’s adapter (with no commands of its own,
+which a test checks) and Radio’s adapter;</li>
+<li>F11 in each app, with the Radio video window row;</li>
+<li>Speak a Command moved out of the Dictation submenu.</li>
+</ul></li>
+<li><strong>PR 2c,</strong> the typed half of discoverability:
+<ul>
+<li>the “what can I say here” list with groups, filter and
+examples;</li>
+<li>What Can I Say Here on Ctrl+Alt+Shift+F1 in the three apps’ Help
+menus;</li>
+<li>the one-time hint;</li>
+<li>“I can’t do that here, but you can…”;</li>
+<li>GATE-CATREF.</li>
+</ul></li>
+<li><strong>PR 2d:</strong> the 2,500-row corpus, the context-gating
+tests and GATE-CORPUS for the three apps. Blind testers’ phrasings are
+collected before any tuning.</li>
+</ul>
+<p><strong>Go or no-go:</strong></p>
+<ul>
+<li>the tier 1 and 2 targets in section 14.8 are met on the held-out
+set;</li>
+<li>two blind testers (JAWS and NVDA) use it for a week and don’t find
+it chatty;</li>
+<li>there are zero property-test failures.</li>
+</ul>
+<h3 id="165-phase-3-jev-large">16.5 Phase 3: Jev (large)</h3>
+<ul>
+<li><strong>PR 3a, on the gateway:</strong>
+<ul>
+<li><code>/v1/decide</code>;</li>
+<li>the server copy of the request builder and catalogue versions;</li>
+<li>the question sets;</li>
+<li>the caps, the monthly ceiling, and the <code>limit_reached</code>,
+<code>no_credit</code> and <code>disabled</code> answers;</li>
+<li>no body logging.</li>
+</ul></li>
+<li><strong>PR 3b, on the client:</strong>
+<ul>
+<li><code>jev_request.py</code>, shared with the gateway;</li>
+<li>the Jev engine, the policy’s Jev thresholds and the fan-out for
+large lists;</li>
+<li>the consent and the <code>command_understanding</code> setting;</li>
+<li>the egress rows and the error codes;</li>
+<li>the own-key route.</li>
+</ul></li>
+<li><strong>PR 3c:</strong> the recorded live suite, the cassettes and
+the nightly job.</li>
+<li><strong>PR 3d,</strong> tier 4:
+<ul>
+<li>the gateway’s <code>command_pick</code> template and
+<code>INSTRUCTIONS</code>;</li>
+<li><code>AiService</code> support, plus local Ollama and
+llama.cpp;</li>
+<li>the fallback rules.</li>
+</ul></li>
+<li><strong>Tests:</strong>
+<ul>
+<li>every section 7.3 question decides at least one test through
+<code>FakeJevClient</code>;</li>
+<li>every failure code falls back as specified;</li>
+<li>the property tests rerun with Jev answers generated at random.</li>
+</ul></li>
+</ul>
+<p><strong>Go or no-go:</strong></p>
+<ul>
+<li>Jev meets its section 14.8 targets on the held-out set, with the
+model pinned;</li>
+<li>the measured cost per 1,000 requests is under target;</li>
+<li>TypeSafe’s answers on retention and use are acceptable (section
+17.6).</li>
+</ul>
+<p>If not, Jev ships off by default, and tier 4 becomes the default
+assist.</p>
+<h3 id="166-phase-4-speech-and-the-system-wide-command-key-large">16.6
+Phase 4: speech, and the system-wide Command Key (large)</h3>
+<ul>
+<li><strong>PR 4a, in the editors and Transcribe:</strong>
+<ul>
+<li>hold F11 through <code>HoldToTalk</code> and the dictation
+controller;</li>
+<li>F11 never changes dictation’s state, which a test checks;</li>
+<li>recogniser n-best and biasing, measured.</li>
+</ul></li>
+<li><strong>PR 4b:</strong> Dictate Here into the box in Radio and Cast,
+then the other apps as phase 6 reaches them.</li>
+<li><strong>PR 4c:</strong>
+<ul>
+<li>the system-wide Command Key, using Transcribe’s
+<code>command_hotkey</code>;</li>
+<li>the picker suggesting Ctrl+Alt+PageDown, after the screen-reader and
+Magnifier key check;</li>
+<li>the migration line for anyone who already chose a key;</li>
+<li>the <code>command</code> request kind and the targeting rules in
+section 9.7.</li>
+</ul></li>
+<li><strong>PR 4d:</strong> the command phrase
+(<code>command_wake_phrase</code>, “Hey Quill”) beside the unchanged
+“Quill dictate”.</li>
+<li><strong>PR 4e:</strong>
+<ul>
+<li>the shared Listening On or Off switch and the one privacy
+notice;</li>
+<li>spoken help pages;</li>
+<li>“what can I say while dictating”.</li>
+</ul></li>
+<li><strong>Tests:</strong>
+<ul>
+<li>the dictated and misheard corpus rows;</li>
+<li>the separation tests in section 14.4;</li>
+<li>targeting through <code>FakeRequestFile</code>;</li>
+<li>the listening switch stops every listener.</li>
+</ul></li>
+</ul>
+<p><strong>Go or no-go:</strong> dictated within 10 points of typed; no
+dictation state change from F11 in any test; testers find the spoken
+help pages usable.</p>
+<h3 id="167-phase-5-rich-commanding-medium-to-large">16.7 Phase 5: rich
+commanding (medium to large)</h3>
+<ul>
+<li><strong>PR 5a:</strong> arguments for time and date
+(<code>date_parse</code>), names, stations, episodes and files, all
+matched locally; closed sets through Jev <code>slot_</code>
+questions.</li>
+<li><strong>PR 5b:</strong> multi-step plans, with preview, step-by-step
+checks and chain undo.</li>
+<li><strong>PR 5c:</strong> corrections, with <code>last_offer</code>,
+the 30-second window and undo-then-redo.</li>
+<li><strong>PR 5d:</strong> cross-app requests in the system-wide route,
+and the full section 11.5 pointers.</li>
+<li><strong>Tests:</strong> the pattern rows from section 8, the
+payload-privacy property, and multi-step property tests.</li>
+</ul>
+<p><strong>Go or no-go:</strong> the multi-step and correction targets
+are met.</p>
+<h3
+id="168-phase-6-every-app-has-ids-large-one-pr-per-app-all-parallel">16.8
+Phase 6: every app has ids (large, one PR per app, all parallel)</h3>
+<ul>
+<li><strong>The new ids:</strong> PR 6a Inkwell, 6b Converter, 6c Player
+(folding in <code>VoiceIntent</code>), 6d Beacon (replacing its own
+palette) and 6e Transcribe.</li>
+<li><strong>The review:</strong> PR 6f reviews Cast, Studio and
+Weather.</li>
+<li><strong>What each PR does:</strong>
+<ul>
+<li>registers its commands and moves its menus to
+<code>_menu_label</code>;</li>
+<li>adds an <code>APP_KEYMAPS</code> entry, catalogue rows, examples and
+probes;</li>
+<li>adds the box and What Can I Say Here;</li>
+<li>adds its corpus of at least 800 rows.</li>
+</ul></li>
+<li><strong>When it starts:</strong> as soon as PR 1a merges.</li>
+</ul>
+<h3 id="169-phase-7-last-pieces-medium">16.9 Phase 7: last pieces
+(medium)</h3>
+<ul>
+<li><strong>PR 7a:</strong> the GitHub Workbench rows.</li>
+<li><strong>PR 7b:</strong> Voice Command (Offline) retired into F11,
+keeping its id as an alias.</li>
+<li><strong>PR 7c:</strong> a question to “Hey Quill” can continue as an
+Ask conversation, with the person’s consent, through Ask’s existing
+voice mode.</li>
+</ul>
+<h3 id="1610-order-and-parallel-work">16.10 Order and parallel work</h3>
+<ul>
+<li><strong>The critical path</strong> is 0, 1a, 1b, 2, 3 and 4. That
+gives typed and spoken commanding with Jev in QUILL, QUILL Lite and
+Radio.</li>
+<li><strong>Phase 6</strong> runs beside everything from 1a, one app per
+person or agent.</li>
+<li><strong>The gateway half of phase 3</strong> (PR 3a) can start
+during phase 2.</li>
+<li><strong>Phase 5</strong> follows 3 and 4. Phase 7 comes last.</li>
+</ul>
+<h2 id="17-costs">17. Costs</h2>
+<h3 id="171-what-is-free">17.1 What is free</h3>
+<ul>
+<li><strong>Free to everyone:</strong> tiers 1 and 2, speech through the
+person’s own dictation engine, local Ollama, the whole of phase 2, and
+everything when Jev is declined.</li>
+<li><strong>Choose Your AI:</strong> the free hosted AI runs under the
+gateway’s existing caps. Own keys, ChatGPT and Copilot are paid by their
+owners, as now.</li>
+</ul>
+<h3 id="172-jev-is-not-free">17.2 Jev is not free</h3>
+<ul>
+<li><strong>Price:</strong> $42 per billion input tokens, which is
+$0.042 per million. Output tokens are free. <code>jev-1.14.0</code> and
+<code>jev-1.13.0</code> cost the same (docs.typesafe.ai, read
+2026-11-07).</li>
+<li><strong>Prepaid credit.</strong> Credit is bought in advance (Master
+Customer Agreement, typesafe.ai/legal/mca, section 8.2). It expires
+after 12 months, unused credit is not refunded, and requests stop when
+it runs out unless automatic refill is on.</li>
+<li><strong>No free tier was found.</strong> Promotional credit is at
+TypeSafe’s discretion.</li>
+</ul>
+<h3 id="173-who-pays">17.3 Who pays</h3>
+<ul>
+<li><strong>People using QUILL pay nothing,</strong> and need no
+TypeSafe account.</li>
+<li><strong>Jeff pays,</strong> through one Community Access TypeSafe
+account. The agreement (its section 2.2) allows building the API into
+our own applications for our users, and our gateway asks only its own
+fixed questions.</li>
+<li><strong>A person’s own TypeSafe key</strong> is optional, and that
+person pays for it.</li>
+</ul>
+<h3 id="174-worked-examples">17.4 Worked examples</h3>
+<p>A Jev request under this plan carries up to 60 candidates, each with
+a description and an example. That is about 2,000 to 3,000 input tokens,
+and the extra questions run against the same state for almost nothing
+more.</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>At 2,000 tokens</th>
+<th>At 3,000 tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One request</td>
+<td>$0.000084</td>
+<td>$0.000126</td>
+</tr>
+<tr>
+<td>1,000 requests</td>
+<td>$0.084</td>
+<td>$0.126</td>
+</tr>
+<tr>
+<td>1,000 people, 20 commands a day, all to Jev</td>
+<td>$1.68 a day</td>
+<td>$2.52 a day</td>
+</tr>
+<tr>
+<td>The same, when tiers 1 and 2 settle 70 percent</td>
+<td>$0.50 a day</td>
+<td>$0.76 a day</td>
+</tr>
+<tr>
+<td>That, for a 30-day month</td>
+<td>$15.12</td>
+<td>$22.68</td>
+</tr>
+</tbody>
+</table>
+<h3 id="175-the-cap">17.5 The cap</h3>
+<ul>
+<li><strong>The daily cap.</strong> It starts at 20,000 Jev requests a
+day, at most $2.52 a day or $75.60 a month at 3,000 tokens. Request
+20,001 is refused, and the app falls back as in section 7.7.</li>
+<li><strong>The monthly ceiling</strong> is a second guard, in
+dollars.</li>
+<li><strong>Both are server settings,</strong> reviewed as use grows.
+1,000 people at 20 Jev requests a day would reach the cap exactly.</li>
+</ul>
+<h3 id="176-before-phase-3-goes-live">17.6 Before phase 3 goes live</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Jeff has read the Master Customer
+Agreement. Still open: retention in days, named sub-processors, and
+whether the perpetual telemetry right can be narrowed in an order
+form.</label></li>
+<li><label><input type="checkbox" />The acceptable use policy permits a
+consumer accessibility product.</label></li>
+<li><label><input type="checkbox" />The price is checked again. TypeSafe
+have been asked about introductory pricing and nonprofit
+credit.</label></li>
+<li><label><input type="checkbox" />The monthly ceiling is agreed, with
+automatic refill off or capped.</label></li>
+<li><label><input type="checkbox" />The organisation’s rate limits are
+known.</label></li>
+<li><label><input type="checkbox" />The section 14.8 targets are met on
+the held-out set, with the model pinned.</label></li>
+<li><label><input type="checkbox" />Turning Jev off on the server leaves
+every app working.</label></li>
+</ul>
+<h2 id="18-what-jev-is-and-what-gent-taught-us">18. What Jev is, and
+what gent taught us</h2>
+<h3 id="181-jev">18.1 Jev</h3>
+<ul>
+<li><strong>What it is.</strong> TypeSafe’s “System One” decision model.
+<code>POST https://api.typesafe.ai/v1/systemone</code>, with a bearer
+key.</li>
+<li><strong>Question types:</strong> choice, score, noul and box.</li>
+<li><strong>Answers:</strong> a probability for every option, and a
+confidence of <code>(p_max - 1/n) / (1 - 1/n)</code>.</li>
+<li><strong>Limits:</strong> 255 options a choice, 64k tokens a request
+and 32k a question. Rate limits are per organisation; a 429 carries
+<code>retry-after</code>.</li>
+<li><strong>Models:</strong> <code>jev-1.14.0</code> and
+<code>jev-1.13.0</code>, with moving aliases. Pin a version.</li>
+<li><strong>Advice from TypeSafe:</strong>
+<ul>
+<li>a choice always picks something, so ask a companion yes or no “fits”
+question;</li>
+<li>use parallel questions for arguments;</li>
+<li>use speculative fan-out for big lists.</li>
+</ul></li>
+<li><strong>Privacy:</strong> no training on input. Retention is “as
+long as reasonably necessary”, and telemetry is kept “in
+perpetuity”.</li>
+</ul>
+<h3 id="182-gent">18.2 gent</h3>
+<p>gent is an NVDA add-on (github.com/Carrados/nvda-addons, GPL-2.0).
+You type “talk a bit faster” and NVDA does it, through a relay that
+holds the TypeSafe key, caps use and logs nothing. Its lessons:</p>
+<ul>
+<li>write each option as what the person wants;</li>
+<li>send the recent changes;</li>
+<li>act at 0.7 and ask below;</li>
+<li>treat a split between undo and the opposite of the last change as
+agreement;</li>
+<li>version the action table;</li>
+<li>send your own user agent, because Cloudflare blocks Python’s default
+one.</li>
+</ul>
+<p>Fourteen live phrases came back right in 0.3 to 0.6 seconds each.
+That is encouraging, and it is not evidence.</p>
+<h2 id="19-risks">19. Risks</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>What we do about it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase 6 is large</td>
+<td>One PR per app, all parallel, each worth having for its palette
+alone</td>
+</tr>
+<tr>
+<td>Mixing up commanding and dictating</td>
+<td>Separate keys, phrases, tables and help; separation tests; a gate
+rule</td>
+</tr>
+<tr>
+<td>A misheard sentence runs the wrong thing</td>
+<td>Hold-to-talk, CONFIRM always asks, margins, n-best, corrections,
+undo</td>
+</tr>
+<tr>
+<td>Jev’s price or terms change</td>
+<td>Caps, a ceiling, a server switch; tier 4 and the offline tiers carry
+on</td>
+</tr>
+<tr>
+<td>Jev is wrong with confidence</td>
+<td>Thresholds from the calibration table; a recorded suite on each new
+version; property tests make sure it can never reach outside the
+list</td>
+</tr>
+<tr>
+<td>Personal data leaks into a request</td>
+<td>Local name matching; a payload property test; no bodies logged</td>
+</tr>
+<tr>
+<td>The catalogue rots</td>
+<td>GATE-CATALOGUE and GATE-CORPUS; <code>unreviewed</code> is never
+offered</td>
+</tr>
+<tr>
+<td>Chatty results or help</td>
+<td>GATE-13 tests; paged help; testers before every go</td>
+</tr>
+<tr>
+<td>A system-wide key steals another program’s key</td>
+<td>Opt-in only; the picker’s family check; a screen-reader key check
+before phase 4</td>
+</tr>
+<tr>
+<td>Multi-step requests do too much</td>
+<td>Three steps at most; a preview; re-checking before each step; chain
+undo</td>
+</tr>
+</tbody>
+</table>
+<h2 id="20-open-decisions-for-jeff">20. Open decisions for Jeff</h2>
+<ol type="1">
+<li><strong>The name.</strong> <em>Recommendation:</em> “Say or Type a
+Command” for the menu and box; “the Command Key” for the key.</li>
+<li><strong>The in-app key.</strong> <em>Recommendation:</em> F11,
+commands only, everywhere, with Full Screen kept in Radio’s video
+window.</li>
+<li><strong>The system-wide Command Key.</strong>
+<em>Recommendation:</em> Transcribe’s Command Key setting, empty until
+chosen, with the picker suggesting Ctrl+Alt+PageDown (alternative
+Ctrl+Alt+PageUp).</li>
+<li><strong>People who already chose a Transcribe Command Key.</strong>
+<em>Recommendation:</em> keep their key, as the new Command Key, and
+tell them once.</li>
+<li><strong>The keyboard way into dictation phrases.</strong>
+<em>Recommendation:</em> “Next Phrase Is a Dictation Command” stays on
+dictation’s side, with no key and a written reason. The command word
+does the job.</li>
+<li><strong>The command phrase.</strong> <em>Recommendation:</em> “Hey
+Quill” (“Oye Quill” in Spanish), off by default. “Quill do” is the
+alternative, with the risks in section 9.6.</li>
+<li><strong>Jev as the default assist.</strong> <em>Recommendation:</em>
+yes, once the person agrees in the section 7.8 question, with “my own
+AI” and “on this computer only” as equal choices. Never on without that
+answer.</li>
+<li><strong>Jev’s budget.</strong> <em>Recommendation:</em> a daily cap
+of 20,000 requests and a monthly ceiling of $30 to start, reviewed
+monthly.</li>
+<li><strong>Multi-step preview.</strong> <em>Recommendation:</em> always
+preview at first. Let a person turn it off for chains of only SAFE
+steps.</li>
+<li><strong>Remembering “Did you mean” picks as personal
+aliases</strong> (local only). <em>Recommendation:</em> yes, with Forget
+My Command Words.</li>
+<li><strong>The listening switch’s key.</strong>
+<em>Recommendation:</em> a menu row in every app and Transcribe’s tray.
+No default key, with a written reason (rule 9: it is rarely used, and a
+system-wide key can be chosen).</li>
+<li><strong>What Can I Say Here replacing What Can I Do Here in
+QUILL.</strong> <em>Recommendation:</em> yes, keeping the same id and
+Ctrl+Alt+Shift+F1, and giving the row to every app.</li>
+<li><strong>Sending favourites’ names to Jev to match “play WNYC”
+better.</strong> <em>Recommendation:</em> no. Match names locally, as
+planned.</li>
+<li><strong>Quillins adding commands.</strong> <em>Recommendation:</em>
+not until a reviewed manifest field exists.</li>
+<li><strong>Push-to-talk Voice Command (Offline).</strong>
+<em>Recommendation:</em> retire it into F11 in phase 7, keeping its id
+as an alias.</li>
+</ol>
+<h3 id="201-decided-2026-11-08">20.1 Decided, 2026-11-08</h3>
+<p>Every recommendation above was taken. None of Jeff’s later words
+overrode one: “keys for commanding should be different then dictating”
+is decision 2 and 5, and “ways of asking ‘what can I ask’” is decision
+12.</p>
+<ol type="1">
+<li>The name: “Say or Type a Command” for the menu and box, “the Command
+Key” for the key.</li>
+<li>F11, commands only, everywhere; Full Screen stays on F11 in Radio’s
+video window.</li>
+<li>The system-wide Command Key is Transcribe’s Command Key setting,
+empty until chosen; the picker suggests Ctrl+Alt+PageDown, then
+Ctrl+Alt+PageUp.</li>
+<li>Anyone who already chose a Transcribe Command Key keeps it as the
+new Command Key and is told once.</li>
+<li>“Next Phrase Is a Dictation Command” stays on dictation’s side, with
+no key and a written reason. Phase 2 looked for a key anyway, because
+the menu rule wants one on every enabled row: no single chord is free in
+the whole family (Ctrl+Alt+Shift+Q and R are QUILL’s and Radio’s
+system-wide keys), so the row carries a recorded exemption in each key
+gate, and its access letter is its route.</li>
+<li>“Hey Quill” (“Oye Quill”), off by default.</li>
+<li>Jev is the default assist only after the person says yes to the
+section 7.8 question; “my own AI” and “on this computer only” are equal
+choices.</li>
+<li>A daily cap of 20,000 Jev requests and a monthly ceiling of $30,
+reviewed monthly.</li>
+<li>Multi-step requests always preview at first; a person may turn the
+preview off for chains of SAFE steps only.</li>
+<li>“Did you mean” picks are remembered as personal aliases, on this
+computer only, with Forget My Command Words.</li>
+<li>The listening switch is a menu row in every app and Transcribe’s
+tray, with no default key (rule 9).</li>
+<li>What Can I Say Here replaces What Can I Do Here in QUILL, keeping
+<code>help.what_can_i_do_here</code> and Ctrl+Alt+Shift+F1, and every
+app gets the row.</li>
+<li>Favourites’ names are never sent to Jev; names are matched on the
+computer.</li>
+<li>Quillins cannot add catalogue rows until a reviewed manifest field
+exists.</li>
+<li>Voice Command (Offline) retires into F11 in phase 7, keeping its id
+as an alias.</li>
+</ol>
+<h2 id="21-remaining-tasks">21. Remaining tasks</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Email TypeSafe: retention in days,
+sub-processors, order-form telemetry, acceptable use, price stability,
+nonprofit credit, and whether a number question type is
+planned.</label></li>
+<li><label><input type="checkbox" />The section 14.2 fakes: each arrives
+with the phase that first uses it (the resolver’s in phase 2,
+<code>FakeJevClient</code> and <code>FakeCommandPickEngine</code> in
+phase 3, <code>FakeRecognizer</code> and <code>FakeRequestFile</code> in
+phase 4).</label></li>
+<li><label><input type="checkbox" />Review the 510
+<code>unreviewed</code> QUILL and 84 Radio commands into rows; the list
+may only shrink.</label></li>
+<li><label><input type="checkbox" />Add
+<code>tools.read_aloud_faster</code> and
+<code>tools.read_aloud_slower</code>, with keys, in both
+editors.</label></li>
+<li><label><input type="checkbox" />Collect blind testers’ phrasings for
+the held-out set before any tuning.</label></li>
+<li><label><input type="checkbox" />Radio’s Say or Type a Command is on
+Alt+F11, because Video &gt; Full Screen holds F11 on the same menu bar.
+Move Full Screen to the video window’s own keys so the player gets F11
+too.</label></li>
+<li><label><input type="checkbox" />Phase 2 follow-ups: the one-time
+hint as a family setting; Radio’s own probes (playback commands while
+nothing plays); the corpus minimums raised to 20 typed rows a command as
+hand-written rows arrive; numbers and durations handed to the commands
+that take them (<code>run_with_args</code>) once each app exposes a way
+in.</label></li>
+<li><label><input type="checkbox" />Phase 2 go or no-go with JAWS and
+NVDA testers.</label></li>
+<li><label><input type="checkbox" />PR 3a: the relay’s
+<code>/v1/decide</code>, caps, ceiling, out-of-credit answers. It goes
+on lp.csedesigns.com, which holds the TypeSafe key, not on Cloudflare
+(decided 2026-11-08); the client takes its base URL, so nothing in the
+apps changes.</label></li>
+<li><label><input type="checkbox" />Phase 3 follow-ups:
+<code>command_understanding</code> as a real shared setting (settings
+vocabulary, GATE-SETDOC; it lives in <code>command-key.json</code> for
+now); tier 4 wired to <code>AiService.ask</code> once the gateway has a
+<code>command_pick</code> template and <code>own_key.py</code> its
+<code>INSTRUCTIONS</code> row; the recorded cassettes replayed in PR CI
+after a first live run; the speculative group fan-out for more than 60
+candidates; <code>correction_pick</code>, <code>steps</code> and
+<code>slot_</code> questions (phase 5).</label></li>
+<li><label><input type="checkbox" />Check Ctrl+Alt+PageDown and
+Ctrl+Alt+PageUp against JAWS, NVDA, Narrator, Magnifier, ZoomText and
+laptop utilities.</label></li>
+<li><label><input type="checkbox" />PRs 4a to 4e: hold F11, Dictate Here
+into the box, the system-wide Command Key, “Hey Quill”, the listening
+switch and privacy notice, spoken and dictation help.</label></li>
+<li><label><input type="checkbox" />PRs 5a to 5d: arguments, multi-step,
+corrections, cross-app pointers.</label></li>
+<li><label><input type="checkbox" />PRs 6a to 6f: ids, rows, examples,
+probes, box and corpus for every remaining app.</label></li>
+<li><label><input type="checkbox" />PRs 7a to 7c: GitHub rows,
+push-to-talk retired, the hand-off to Ask’s conversation.</label></li>
+<li><label><input type="checkbox" />User guides for every app: one “Say
+or Type a Command” section in Jeff’s voice, with lists generated from
+the catalogue.</label></li>
+</ul>
+<h2 id="22-progress-log">22. Progress log</h2>
+<ul>
+<li><strong>2026-11-08, phase 1 (the catalogue and its gate).</strong>
+<code>quill/core/command_catalogue/</code> holds the rows: 68 for QUILL,
+which QUILL Lite reaches as 47 through <code>COMMAND_EQUIVALENTS</code>,
+and 37 for Radio. Every other command is <code>unreviewed</code> (NEVER)
+in <code>tests/unit/core/fixtures/command_catalogue.json</code>: 510 in
+QUILL and 84 in Radio. <code>CommandRegistry.set_command_probe</code> is
+the runtime half. <code>COMMAND_ALIASES</code> and
+<code>voice_commands._ALIASES</code> are gone, and
+<code>SAFE_TOOL_IDS</code> is the catalogue’s <code>agent_ok</code>
+view, unchanged. The palette’s alias words are all still found, apart
+from “search”, which now leads to Find rather than Replace All. Key
+Describer falls back to the catalogue’s title. GATE-CATALOGUE is
+<code>quill/tools/command_catalogue_audit.py</code>, on the platform
+report, and GATE-CATREF generates
+<code>docs/command-catalogue.md</code>. The corpus format and loader are
+<code>quill/core/command_catalogue/corpus.py</code>; the fakes arrive
+with the phases that use them.</li>
+<li><strong>2026-11-08, phase 2 (the typed Command Key).</strong> F11 is
+Say or Type a Command in QUILL and QUILL Lite; Radio has it on Alt+F11
+in its Help menu, because Video &gt; Full Screen holds F11 on the same
+menu bar and wx cannot bind Ctrl+Grave, the 9.4 fallback. And What Can I
+Say Here (Ctrl+Alt+Shift+F1) replaces What Can I Do Here in QUILL,
+keeping its id and key, and is new in QUILL Lite and Radio’s Help menus.
+Speak a Command is now Next Phrase Is a Dictation Command, with no key,
+in both editors and Transcribe (decision 5), exempted in each key gate
+with its reason. The wx-free pieces are <code>words.py</code>
+(normalising, a stemmer, synonyms, one typo in long words, checked
+against the written word as well as the stem), <code>args.py</code>
+(numbers, ordinals, durations, “a bit” and “a lot”),
+<code>resolver.py</code> (tier 1 word for word and on meaningful words,
+tier 2 as the harmonic mean of recall and precision, acting at 0.74 with
+a 0.15 margin), <code>policy.py</code> (the only code that runs a
+command for a sentence), <code>help_list.py</code> and
+<code>errors.py</code>. The windows are
+<code>quill/ui/command_key_ui.py</code>, and each app’s four answers are
+<code>quill/ui/command_key_hosts.py</code>; a dimmed menu row is a
+command switched off here. The seed corpus
+(<code>tests/fixtures/command_key/</code>, generated by
+<code>generate_corpus.py</code>) has 2,129 rows: 631 of QUILL Lite’s 637
+positives act correctly, every disabled-here row is refused without a
+swap, and the misses left are two genuine ties that ask. Requests take
+13 to 32 ms. The corpus found one real defect before shipping: with the
+right command switched off, tier 2 ran the next nearest one (“save all
+my documents” ran Save). Now a better-fitting command that is here but
+off, or NEVER, is refused with its reason. Two plan details changed:
+refusal lines read “Not from a sentence: it’s in File, Exit.” so they
+fit the 12-word limit in 14.6, and the one-time hint is remembered per
+app for now, not family-wide.</li>
+<li><strong>2026-11-08, phase 3 (Jev as the assist), the client
+half.</strong> <code>jev_request.py</code> builds TypeSafe’s
+<code>{model, state, questions}</code> request (the <code>fits</code>
+and <code>is_question</code> noul questions, the <code>action</code>
+choice with “none” over at most 60 candidates in tier 2’s order,
+<code>size</code> when a stepped command is a candidate,
+<code>correction</code> when there is something to correct), pinned to
+<code>jev-1.14.0</code>, and refuses to build one that would carry a
+private word (<code>QUILL-AI-DECIDE-PRIVATE-DATA</code>).
+<code>jev.py</code> has the own-key route (the key from Windows
+Credential Manager, generic credential
+<code>QUILL TypeSafe dev key</code>), the gateway route
+(<code>/v1/decide</code>, which answers disabled until deployed), a
+three-second budget, <code>retry-after</code> honoured only within it,
+one request in flight, a day’s stop after a limit, a spent credit or a
+switch-off, the section 7.9 codes, and section 7.5’s reading of the
+answer with the 6.4 thresholds. <code>assist.py</code> is tier 3
+(<code>JevAssist</code>, which says one line once on failure, then falls
+to tier 4) and tier 4 (<code>CommandPickAssist</code>, one question to
+the person’s AI, which acts only when it agrees with tier 2 and the
+command is SAFE). The session asks an assist only what tiers 1 and 2
+left open, never about a deliberate refusal. The consent question (7.8)
+is asked once, says TypeSafe keep requests and say they do not train on
+them, and offers Use Jev, Use My Own AI Instead and Match on This
+Computer Only as equal answers. Because the gateway is not deployed and
+the 16.5 go or no-go has not been met, Jev is offered only where a
+TypeSafe key is stored; for everyone else nothing changes. One egress
+row covers the call. The live suite,
+<code>tests/live/test_jev_live.py</code>, runs only with
+<code>QUILL_JEV_LIVE=1</code> and the stored key. It has not been run
+yet.</li>
+</ul>
+</main>
+</body>
+</html>

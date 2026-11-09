@@ -158,6 +158,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.language_servers": "",
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
+    # Say or Type a Command (command-key.md 9.1): F11, commands only, never dictation; free in both
+    # editors since Speak a Command gave it up (rule 5); Word's F11 (Next Field) is no family key.
+    "app.command_key": "F11",
     "app.preferences": "Ctrl+,",
     "app.preferences_hub": "Ctrl+Shift+Grave, O",  # the hub; Ctrl+, opens Settings
     # #608: app.exit is bound to Ctrl+Q so it maps to Cmd+Q on macOS
@@ -612,7 +615,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.windows_dictation_switch_language": "Ctrl+Shift+F11",
     "tools.windows_dictation_live_transcript": "Ctrl+Alt+Shift+PageDown",
     "tools.windows_dictation_context": "Ctrl+Alt+Shift+PageUp",
-    "tools.windows_dictation_command": "F11",  # free in both editors (rule 2)
+    # Next Phrase Is a Dictation Command: no key (command-key.md decision 5); F11 is commands only,
+    # and the command word ("QUILL scratch that") does this job.
+    "tools.windows_dictation_command": "",
     # D-2: free in both (rule 2). Every F11 chord and Ctrl+Alt+Shift+F11 (a
     # QuillVille launcher) are taken, and Ctrl+Alt+F4 is one missed Control
     # from Alt+F4; F4 alone is unbound in both, so a missed Shift does nothing.
@@ -622,18 +627,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # editing-loop verb -- and Ctrl+Shift+I is where Insert Image goes, so
     # Ctrl+Alt+I can be Insert Markdown Tag as it is in QUILL Lite.
     "tools.document_intake_report": "Ctrl+Shift+Grave, Shift+I",  # I = Intake
-    # #357 keymap consolidation: AI commands move from inline F7/Shift+F7/F8/
-    # Shift+F8/Ctrl+Shift+T accelerators (which collided with the selection
-    # bindings at F8/Shift+F8/Ctrl+F8) to Ctrl+Alt+Shift+ chords, matching
-    # the EdSharp port convention. The chord class is reserved for AI so
-    # power users can find them by feel. Justifications name the screen-
-    # reader binding each chord displaces (NVDA review-cursor for the
-    # chord class; F7/F8 selection-start/complete for the displaced
-    # inline accelerators).
-    # The six AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,M,E} (bad.md P1.11,
-    # decided 2026-09-16). QUILL Lite spends the same six on editing verbs, and
-    # rule 2 gives a chord to the command both products have. AI keeps its
-    # menu, the palette and Alt+Q.
+    # #357 keymap consolidation: AI commands move from inline F7/Shift+F7/F8/ Shift+F8/Ctrl+Shift+T
+    # accelerators (which collided with the selection bindings at F8/Shift+F8/Ctrl+F8) to
+    # Ctrl+Alt+Shift+ chords, matching the EdSharp port convention. The chord class is reserved for
+    # AI so power users can find them by feel. Justifications name the screen- reader binding each
+    # chord displaces (NVDA review-cursor for the chord class; F7/F8 selection-start/complete for
+    # the displaced inline accelerators). The six AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,M,E}
+    # (bad.md P1.11, decided 2026-09-16). QUILL Lite spends the same six on editing verbs, and rule
+    # 2 gives a chord to the command both products have. AI keeps its menu, the palette and Alt+Q.
     "tools.ai_spell_check": "",
     "tools.ai_spell_check_interactive": "",
     "tools.ai_grammar_style": "",

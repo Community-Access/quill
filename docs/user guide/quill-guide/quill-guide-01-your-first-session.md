@@ -26,7 +26,7 @@ If you only have five minutes, do this.
 7. Press `F1` on any control to hear what it does and which keys work there.
 
 If you ever feel lost, `F1` is the first thing to try. For ideas about the
-document you have open, choose **Help > What Can I Do Here?**
+document you have open, choose **Help > What Can I Say Here?**
 (`Ctrl+Alt+Shift+F1`). Between them, they are like having a friend at your
 elbow.
 
@@ -120,7 +120,7 @@ show you the rest, taken from the keys you actually have.
 You have opened QUILL, written something, found commands by name with the
 Command Palette, and met the keys you will use every day. You also know the two
 ways out of any muddle: `F1` on whatever you are on, and
-**Help > What Can I Do Here?**.
+**Help > What Can I Say Here?**.
 
 If you would like to go over this with QUILL keeping you company, open
 **Help > Tutorials...** (`Ctrl+Alt+F1`) and take the track called Your first

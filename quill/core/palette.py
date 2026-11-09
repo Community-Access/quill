@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
+from quill.core.command_catalogue import palette_alias_text
 from quill.core.commands import Command
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
@@ -85,39 +86,17 @@ def rank_commands(
     return [item[4] for item in scored]
 
 
-#: Intent aliases for palette search: extra words a user might type for a
-#: command that appear in neither its title nor its id. Users search by what
-#: they mean ("settings", "quit", "theme"), not by QUILL's vocabulary. Keyed by
-#: command id; entries for ids that are not registered are simply unused.
-COMMAND_ALIASES: dict[str, str] = {
-    "file.new": "create blank fresh",
-    "file.open": "load browse",
-    "file.save": "write store keep",
-    "file.save_as": "duplicate save copy",
-    "file.restore_backup": "recover previous version undelete",
-    "file.print": "printer paper",
-    "file.open_url": "web address link internet",
-    "app.preferences": "settings options configure",
-    "app.preferences_hub": "preferences hub recipes working modes quillin glow pages",
-    "app.exit": "quit leave shut down",
-    "app.announcement_self_test": "speech test braille test output check",
-    "app.report_editor_surface": "braille diagnostic surface class emulation",
-    "app.braille_ab": "braille compare test display cell dots emulate system edit",
-    "edit.undo": "revert back mistake",
-    "edit.redo": "again restore change",
-    "edit.replace_all": "search substitute swap",
-    "edit.copy_to_next_slot": "clipboard tray multi copy",
-    "view.toggle_dark_mode": "theme light night appearance",
-    "view.toggle_soft_wrap": "word wrap line wrap",
-    "view.send_to_tray": "minimize background hide",
-    "verbosity.where_am_i": "position location context orient",
-    "tools.copy_diagnostic_summary": "debug info support report",
-}
+#: The palette's intent aliases -- words a person types for a command that are
+#: in neither its title nor its id ("settings", "quit", "theme") -- now live in
+#: the family command catalogue, beside every other word for that command
+#: (docs/design/command-key.md 5.5). This was ``COMMAND_ALIASES``.
+def _aliases(command: Command) -> str:
+    return palette_alias_text(command.id)
 
 
 def _searchable_text(command: Command) -> str:
     binding = command.keybinding or ""
-    aliases = COMMAND_ALIASES.get(command.id, "")
+    aliases = _aliases(command)
     return f"{command.title} {command.id} {binding} {aliases}".lower()
 
 
@@ -148,7 +127,7 @@ def _match_score(command: Command, query: str) -> int:
         return 700
     if query in command_id:
         return 650
-    aliases = COMMAND_ALIASES.get(command.id, "")
+    aliases = _aliases(command)
     if aliases and query in aliases:
         return 620
     binding = (command.keybinding or "").lower()

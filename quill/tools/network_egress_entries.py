@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from quill.tools.network_egress_entries_agents import AGENT_EGRESS, AGENT_HTTP_EGRESS
 from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
+from quill.tools.network_egress_entries_command_key import COMMAND_KEY_EGRESS
 from quill.tools.network_egress_entries_github import GITHUB_WORKBENCH_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 from quill.tools.network_egress_entries_radio_listening import RADIO_LISTENING_EGRESS
@@ -30,6 +31,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     **GITHUB_WORKBENCH_EGRESS,
     **WORDPRESS_EGRESS,
     **AGENT_HTTP_EGRESS,  # Ollama practice mode, loopback only
+    **COMMAND_KEY_EGRESS,  # the Command Key's Jev call, beside this module
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "

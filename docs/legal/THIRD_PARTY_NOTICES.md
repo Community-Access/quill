@@ -1136,7 +1136,7 @@ Python itself and libraries shipped in the shared runtime or an app's own depend
 
 - **What it is:** The windows, menus and controls of every app.
 - **Included in:** Every product in the family.
-- **Version:** 4.3.1
+- **Version:** 4.3.2
 - **Licence:** wxWindows Library Licence 3.1 (LGPL-2.0-or-later with an exception for binary distribution); bundles Microsoft's WebView2Loader and cairo under their own terms
 - **Copyright:** wxPython: Copyright (c) 1998-2026 Robin Dunn and contributors; wxWidgets: Copyright (c) 1998-2005 Julian Smart, Robert Roebling et al
 - **Upstream:** https://wxpython.org/
