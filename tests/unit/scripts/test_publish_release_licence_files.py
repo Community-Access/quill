@@ -199,3 +199,12 @@ def test_the_family_build_puts_the_licence_files_in_every_upload_without_downloa
     assert "--download" not in call
     for name in ("LICENSE.txt", "THIRD-PARTY-NOTICES.txt", "copyleft-sources.json"):
         assert name in upload
+
+
+def test_the_family_build_also_zips_each_installer_on_its_own() -> None:
+    """Some mail and file shares refuse a bare .exe; the upload carries a zip of it too."""
+    script = (REPO / "build-quill-apps.ps1").read_text(encoding="utf-8-sig")
+    upload = script[script.index('Step "Upload zips"') :]
+    assert '$file.Name -like "*Setup*"' in upload
+    assert "Compress-Archive -LiteralPath $file.FullName -DestinationPath $setupZip" in upload
+    assert '$sums.Add("$hash  $app/$(Split-Path $setupZip -Leaf)")' in upload

@@ -42,7 +42,8 @@ reference: `docs/building-windows-family.md`.
      then run step 4 again.
    Commit the two rebaselined inventory files afterwards.
 6. **Collect:** everything lands in `dist\release-builds\<date-time>\`:
-   an installer and a portable zip per app, a zip per app, an everything zip
+   an installer, the same installer zipped on its own (for places that refuse
+   a bare `.exe`) and a portable zip per app, a zip per app, an everything zip
    and `SHA256SUMS.txt`. Share that folder (or the per-app zips) with the beta
    group together with the checksums.
 7. **Before sending, a two-minute smoke test** on each: install or unzip,
