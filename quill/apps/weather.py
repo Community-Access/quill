@@ -539,7 +539,7 @@ def _run_headless_check() -> int:
             alert_sound.play_alert_sound(settings.alert_sound_path, settings.alert_sound_repeat)
         store = loc_store.load_locations(data_dir)
         primary = store.primary()
-        label = primary.label if primary is not None else "your area"
+        label = result.location_label or (primary.label if primary is not None else "your area")
         title, body = headless_check.toast_content(result.new_alerts, label)
         _show_alert_toast(title, body)
     return 0

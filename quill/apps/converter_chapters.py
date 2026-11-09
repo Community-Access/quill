@@ -97,7 +97,8 @@ class ConverterChaptersMixin:
                 )
             wx.CallAfter(self._finish_simple, message, out_path.parent)
 
-        threading.Thread(target=worker, daemon=True, name="converter-join").start()
+        self._work_thread = threading.Thread(target=worker, daemon=True, name="converter-join")
+        self._work_thread.start()
 
     def split_by_chapters(self) -> None:
         """One file per chapter, for every queued file that has chapters."""

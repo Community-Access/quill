@@ -15,6 +15,7 @@ from quill.core.video_review import (
     parse_time,
     question_prompt,
     section,
+    sheet_path,
     transcript_excerpt,
 )
 
@@ -80,3 +81,13 @@ def test_the_prompt_asks_for_honesty_about_small_text_and_gaps():
     prompt = question_prompt(Path("Demo.mp4"), Section(0, 60), [30.0], "")
     assert "say so instead of guessing" in prompt
     assert "between two frames" in prompt
+
+
+def test_two_videos_with_one_name_get_their_own_contact_sheets(tmp_path):
+    folder = tmp_path / "sheets"
+    one, two = tmp_path / "a" / "Demo.mp4", tmp_path / "b" / "Demo.mp4"
+    assert sheet_path(folder, one) != sheet_path(folder, two)
+    assert sheet_path(folder, one) != sheet_path(folder, one.with_suffix(".mov"))
+    assert sheet_path(folder, one) == sheet_path(folder, one)
+    assert sheet_path(folder, one).parent == folder
+    assert sheet_path(folder, one).name.startswith("Demo - ")

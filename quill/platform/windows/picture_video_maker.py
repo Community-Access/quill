@@ -7,7 +7,10 @@ the result with the same independent check a recording gets.
 
 from __future__ import annotations
 
+import contextlib
+import os
 import tempfile
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -40,23 +43,32 @@ def make_picture_video(
     if duration <= 0:
         raise DemoRecordingError("The sound file has no length.")
     chapters = youtube_chapters(plan.chapters, duration)
-    with tempfile.TemporaryDirectory(prefix="studio-picture-video-") as scratch:
-        metadata = None
-        if chapters or plan.title:
-            metadata = Path(scratch) / "chapters.txt"
-            metadata.write_text(ffmetadata(chapters, duration, plan.title), encoding="utf-8")
-        if cancellation is not None:
-            cancellation.raise_if_cancelled()
-        result = run_subprocess_safely(
-            video_command(ffmpeg, plan, picture_size=picture_size, metadata=metadata),
-            timeout_seconds=max(300.0, duration * 3 + 120),
-        )
-    if result.returncode != 0 or not plan.output.is_file():
-        lines = (result.stderr or "").strip().splitlines()
-        raise DemoRecordingError(
-            "The video could not be made: "
-            + (lines[-1] if lines else f"exit code {result.returncode}")
-        )
+    # Encoded beside the video under another name and moved into place only
+    # when FFmpeg succeeds: a failed run leaves no broken file, and an earlier
+    # video of the same name survives it.
+    partial = plan.output.with_name(f"{plan.output.stem}.partial.mp4")
+    try:
+        with tempfile.TemporaryDirectory(prefix="studio-picture-video-") as scratch:
+            metadata = None
+            if chapters or plan.title:
+                metadata = Path(scratch) / "chapters.txt"
+                metadata.write_text(ffmetadata(chapters, duration, plan.title), encoding="utf-8")
+            if cancellation is not None:
+                cancellation.raise_if_cancelled()
+            command = video_command(
+                ffmpeg, replace(plan, output=partial), picture_size=picture_size, metadata=metadata
+            )
+            result = run_subprocess_safely(command, timeout_seconds=max(300.0, duration * 3 + 120))
+        if result.returncode != 0 or not partial.is_file():
+            lines = (result.stderr or "").strip().splitlines()
+            raise DemoRecordingError(
+                "The video could not be made: "
+                + (lines[-1] if lines else f"exit code {result.returncode}")
+            )
+        os.replace(partial, plan.output)
+    finally:
+        with contextlib.suppress(OSError):
+            partial.unlink(missing_ok=True)
     stand_in = DemoPlan(
         target_kind="display",
         target_label=plan.output.stem,

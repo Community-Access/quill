@@ -17,6 +17,30 @@ The first public release. The app was first built in July 2026 as an audio
 converter (an entry here once dated it 2026-07-31); that build was never
 published as an installer, and everything in it is part of 1.0.0.
 
+Fixes from the November review (2026-11-09):
+
+- **Closing Quill Converter really closes it** (2026-11-09). Closing the
+  window left the tray icon behind and the program running, so opening files
+  from File Explorer afterwards did nothing. Now closing exits. If a
+  conversion is running it asks first, and a conversion you leave is stopped
+  properly instead of carrying on with no window.
+- **Overwrite never replaces the file you are converting** (2026-11-09). With
+  "If a file already exists" set to Overwrite, converting into the same folder in the
+  same format used to replace the original. The new copy now gets a numbered
+  name instead.
+- **Playlist downloads are cleaned up** (2026-11-09). The files a playlist or
+  channel download puts in the temporary folder are removed when Quill
+  Converter closes, instead of staying there for good.
+- **One job at a time** (2026-11-09). While a link is being read or files are
+  being checked for Auphonic, Convert waits for it, instead of starting a
+  second job that Stop could not reach.
+- **Previews tidy up after themselves** (2026-11-09). Each preview's sound file
+  is removed when it is done, and stopping one preview and starting another
+  never lets the first one play.
+- **File Properties no longer freezes the window** (2026-11-09). The file is
+  read in the background, so a large file or a slow drive does not lock the
+  window for up to a minute.
+
 Sound scheme (2026-11-02):
 
 - **A second sound scheme: VS Code Signals** (2026-11-02). Quill Converter

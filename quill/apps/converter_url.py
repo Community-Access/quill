@@ -57,6 +57,7 @@ class ConverterUrlMixin:
             "Reading the link",
             lambda _progress: read_link(url),
             lambda info: self._link_read(url, info),
+            exclusive=True,  # a job: Convert waits for it (converter_lifecycle)
         )
 
     def _link_read(self, url: str, info: Any) -> None:
@@ -84,6 +85,8 @@ class ConverterUrlMixin:
         what = "channel" if choice.is_channel else "playlist"
         self._begin_work(f"Downloading the {what} {choice.title}", cancel)
         dest = Path(tempfile.mkdtemp(prefix="quill-url-list-"))
+        # Removed when the Converter exits; the queue does not outlive it.
+        self._download_folders = [*getattr(self, "_download_folders", []), dest]
         ffmpeg = self._ffmpeg_quiet()
 
         def progress(done: int, total: int, fraction: float, title: str) -> None:
@@ -108,7 +111,8 @@ class ConverterUrlMixin:
                 return
             wx.CallAfter(self._collection_done, choice, result)
 
-        threading.Thread(target=worker, daemon=True, name="converter-url-list").start()
+        self._work_thread = threading.Thread(target=worker, daemon=True, name="converter-url-list")
+        self._work_thread.start()
 
     def _collection_failed(self, message: str) -> None:
         self._end_work()

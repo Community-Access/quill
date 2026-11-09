@@ -9,6 +9,20 @@ update independently. This version history begins with 2.2.0.
 
 ## 2.2.1 - 2026-10-08
 
+### Fixes from the November review (2026-11-09)
+
+- **Alert monitoring keeps going after a bad reply** (2026-11-09). One
+  reply from the Weather Service that was cut short could stop alert
+  monitoring for good, without a word. Now that check is missed and the next
+  one runs on time.
+- **With the app closed, every watched place is checked** (2026-11-09). The
+  background check that runs while Quill Weather is closed looked only at the
+  first place you watch. It now checks them all, the same places the app
+  watches when it is open, and the alert names the place it is for.
+- **"Getting weather" always gets an answer** (2026-11-09). If the forecast
+  for an AI question could not be read, Quill Weather said "Getting weather
+  for" your place and then nothing. Now it says it could not get the weather.
+
 ### AI menu (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.
