@@ -567,6 +567,13 @@ Folder, and Ctrl+3 asks an AI to work on the whole project. You read every
 change before it is written, allow every command before it runs, hear the
 test results in one sentence, and Undo Last Agent Turn puts every file back.
 
+GitHub comes along too. Expand a pull request into its changed files, its
+conversations and its checks; arrow to a thread, Tab into it, and press
+**Ctrl+R** to reply or **Ctrl+Shift+R** to resolve it. **Explore** gathers saved
+searches, My Work, repositories, notifications and workflow job logs in one
+window. The [guided tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
+walks through every key.
+
 ### Finding the right word
 
 The Thesaurus (Shift+F7) finds the word you are really on. Look Up (Alt+F10)
@@ -668,10 +675,3 @@ tries again when you next open Preferences.
 Do you know someone who puts up with an editor that does not talk to them? Or
 someone who was told AI is not for them, because every AI tool they tried was
 made for somebody else? Please send them this.
-# GitHub Workbench update (release acceptance pending)
-
-QUILL Lite's shared GitHub workbench adds the same PR review tree, conversation
-reply and resolution commands, exact diff-line targeting, and Explore views as
-QUILL. The [guided tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
-explains arrow keys, Tab, Ctrl+R, Ctrl+Shift+R, and context menus. Native
-screen-reader acceptance remains pending.

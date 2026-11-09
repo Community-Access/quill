@@ -1293,8 +1293,7 @@ signed-in account. See the [full GitHub tutorial](https://www.quillforall.org/do
 The shared GitHub Items and Explore windows add global saved search, My Work,
 activity, account and repository views, PR thread resolve/reopen, exact current
 diff-line targeting, Pages and labels, and workflow jobs and logs. See the
-[workbench reference](https://www.quillforall.org/docs/workbench-reference.html). Native
-screen-reader acceptance and integration into the destination branch are pending.
+[workbench reference](https://www.quillforall.org/docs/workbench-reference.html).
 
 #### Reviewing a pull request line by line
 

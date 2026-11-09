@@ -208,6 +208,13 @@
 - The download page lists the GitHub Guide beside the user guide.
 
 
+### GitHub Workbench: review threads, Explore and job logs (2026-11-07)
+
+QUILL Lite's shared GitHub Items window now includes Explore, saved global
+searches, My Work, repository discovery, PR thread resolution and exact diff
+line targeting, and workflow job logs. The same keyboard and context-menu
+patterns are described in the QUILL [workbench reference](https://www.quillforall.org/docs/workbench-reference.html).
+
 ### GitHub: Copilot, commit comments, gists and queue summaries (2026-11-07)
 
 - The review window's pull request context menu has Request Copilot Review, and
@@ -4111,10 +4118,3 @@ editors in one family disagreeing about Justify outranks both. `Ctrl+Alt+J` and
 `Ctrl+Alt+V` are Set Temporary Bookmark and the copy tray in QUILL now; the eight
 keys that still differ on purpose are listed in `quill/core/lite/parity.py`, each
 with its reason.
-# GitHub Workbench update (2026-11-05, pending release acceptance)
-
-QUILL Lite's shared GitHub Items window now includes Explore, saved global
-searches, My Work, repository discovery, PR thread resolution and exact diff
-line targeting, and workflow job logs. The same keyboard and context-menu
-patterns are described in the QUILL [workbench reference](https://www.quillforall.org/docs/workbench-reference.html).
-Native screen-reader acceptance and destination-branch integration are pending.
